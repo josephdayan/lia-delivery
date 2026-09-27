@@ -1,3 +1,12 @@
+## 27/09/2026 — Supermercado: só o Mambo fecha por API em SP; catálogo ampliado para 3.662 itens
+
+2ª varredura (~50 redes): checkout VTEX aberto em Savegnago, Covabra, Zona Sul, Prezunic,
+Giassi, Super Nosso e Bretas, mas nenhum entrega no endereço de sondagem (SP capital).
+Continuam fora: Pão de Açúcar, Dia, St Marche, Emporium, Sonda, Hirota (não são VTEX abertos
+ou barram), Oba (sem Pix), Carrefour (barra o servidor). Mambo recolhido com top-vendas +
+buscas de itens de mercado: 1.500 → 3.662 itens (frios, congelados, mercearia, bebidas, carnes,
+limpeza, padaria, hortifruti). Vitrine por API: ~20 mil itens em 9 lojas.
+
 ## 25/09/2026 (noite) — RESOLVIDO: nome público do WhatsApp agora é "Lia Delivery"
 
 O dono re-registrou o número (POST `register` no /ops, PIN digitado por ele). Leitura da

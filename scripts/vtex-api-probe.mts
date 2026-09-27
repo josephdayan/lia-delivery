@@ -37,6 +37,11 @@ const STORES: Record<string, string> = {
   epocacosmeticos: "www.epocacosmeticos.com.br",
   livup: "www.livup.com.br",
   tokstok: "www.tokstok.com.br",
+  // Supermercados da 2ª varredura (27/09).
+  savegnago: "www.savegnago.com.br",
+  covabra: "www.covabra.com.br",
+  zonasul: "www.zonasul.com.br",
+  supernosso: "www.supernosso.com",
 };
 const PIX_SYSTEM = 125;
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";
