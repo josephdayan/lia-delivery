@@ -9,6 +9,12 @@ import { swiftStore } from "./swift";
 import { mamboStore } from "./mambo";
 import { epocacosmeticosStore } from "./epocacosmeticos";
 import { drogalStore } from "./drogal";
+import { martinsfontesStore } from "./martinsfontes";
+import { brinoxStore } from "./brinox";
+import { creamyStore } from "./creamy";
+import { casaevideoStore } from "./casaevideo";
+import { telhanorteStore } from "./telhanorte";
+import { zonacriativaStore } from "./zonacriativa";
 import { kalungaStore } from "./kalunga";
 import { rihappyStore } from "./rihappy";
 import { cacauShowStore } from "./cacaushow";
@@ -70,6 +76,13 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_MAMBO !== "false" ? { [mamboStore.key]: mamboStore } : {}),
   ...(process.env.LIA_ENABLE_EPOCACOSMETICOS !== "false" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}),
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
+  // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.
+  ...(process.env.LIA_ENABLE_MARTINSFONTES !== "false" ? { [martinsfontesStore.key]: martinsfontesStore } : {}),
+  ...(process.env.LIA_ENABLE_BRINOX !== "false" ? { [brinoxStore.key]: brinoxStore } : {}),
+  ...(process.env.LIA_ENABLE_CREAMY !== "false" ? { [creamyStore.key]: creamyStore } : {}),
+  ...(process.env.LIA_ENABLE_CASAEVIDEO !== "false" ? { [casaevideoStore.key]: casaevideoStore } : {}),
+  ...(process.env.LIA_ENABLE_TELHANORTE !== "false" ? { [telhanorteStore.key]: telhanorteStore } : {}),
+  ...(process.env.LIA_ENABLE_ZONACRIATIVA !== "false" ? { [zonacriativaStore.key]: zonacriativaStore } : {}),
   // Mercado Livre: vitrine de CAUDA LONGA, ao vivo (decisão do dono 16/08). Fica por
   // ÚLTIMO no registry de propósito: as lojas locais decidem o "hoje"; o ML entra pra
   // resolver o que ninguém tem. Desligado por padrão — LIA_ENABLE_MERCADOLIVRE=true.

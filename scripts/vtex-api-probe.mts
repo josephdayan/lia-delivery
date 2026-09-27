@@ -42,6 +42,14 @@ const STORES: Record<string, string> = {
   covabra: "www.covabra.com.br",
   zonasul: "www.zonasul.com.br",
   supernosso: "www.supernosso.com",
+  // Fora de farmácia/mercado (27/09): livros, casa, festa, roupa, skincare.
+  martinsfontes: "www.martinsfontespaulista.com.br",
+  telhanorte: "www.telhanorte.com.br",
+  brinox: "www.brinox.com.br",
+  zonacriativa: "www.zonacriativa.com.br",
+  creamy: "www.creamy.com.br",
+  hering: "www.hering.com.br",
+  casaevideo: "www.casaevideo.com.br",
 };
 const PIX_SYSTEM = 125;
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";

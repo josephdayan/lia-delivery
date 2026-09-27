@@ -39,7 +39,13 @@ const VTEX_LIVE: Record<string, { domain: string; sku: RegExp }> = {
   naturaldaterra: { domain: "www.naturaldaterra.com.br", sku: /^naturaldaterra-(\d+)$/ },
   mambo: { domain: "www.mambo.com.br", sku: /^mambo-(\d+)$/ },
   epocacosmeticos: { domain: "www.epocacosmeticos.com.br", sku: /^epoca-(\d+)$/ },
-  drogal: { domain: "www.drogal.com.br", sku: /^drogal-(\d+)$/ }
+  drogal: { domain: "www.drogal.com.br", sku: /^drogal-(\d+)$/ },
+  martinsfontes: { domain: "www.martinsfontespaulista.com.br", sku: /^martinsfontes-(\d+)$/ },
+  brinox: { domain: "www.brinox.com.br", sku: /^brinox-(\d+)$/ },
+  creamy: { domain: "www.creamy.com.br", sku: /^creamy-(\d+)$/ },
+  casaevideo: { domain: "www.casaevideo.com.br", sku: /^casaevideo-(\d+)$/ },
+  telhanorte: { domain: "www.telhanorte.com.br", sku: /^telhanorte-(\d+)$/ },
+  zonacriativa: { domain: "www.zonacriativa.com.br", sku: /^zonacriativa-(\d+)$/ }
 };
 
 function maxFastExtra(): number {

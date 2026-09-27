@@ -17,4 +17,4 @@ process.env.LIA_SEND_PHOTOS = "false";
 for (const store of ["CARREFOUR", "OBA", "PETZ", "BOTICARIO", "DECATHLON", "SWIFT", "KALUNGA", "RIHAPPY", "CACAUSHOW", "KOPENHAGEN", "DROGARAIA", "DROGARIASP", "PAGUEMENOS", "DIVVINO", "IMIGRANTES", "NATURALDATERRA", "COBASI", "GIULIANAFLORES"]) {
   process.env[`LIA_ENABLE_${store}`] = "true";
 }
-for (const store of ["MAMBO", "EPOCACOSMETICOS", "DROGAL"]) process.env[`LIA_ENABLE_${store}`] = "false";
+for (const store of ["MAMBO", "EPOCACOSMETICOS", "DROGAL", "MARTINSFONTES", "BRINOX", "CREAMY", "CASAEVIDEO", "TELHANORTE", "ZONACRIATIVA"]) process.env[`LIA_ENABLE_${store}`] = "false";

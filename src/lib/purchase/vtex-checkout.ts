@@ -27,6 +27,13 @@ export const VTEX_API_STORES: Record<string, { domain: string; skuPrefix: string
   mambo: { domain: "www.mambo.com.br", skuPrefix: "mambo-", label: "Mambo" },
   epocacosmeticos: { domain: "www.epocacosmeticos.com.br", skuPrefix: "epoca-", label: "Época Cosméticos" },
   drogal: { domain: "www.drogal.com.br", skuPrefix: "drogal-", label: "Drogal" },
+  // 27/09: fora de farmácia/mercado (livros, casa, construção, presentes, skincare).
+  martinsfontes: { domain: "www.martinsfontespaulista.com.br", skuPrefix: "martinsfontes-", label: "Martins Fontes" },
+  brinox: { domain: "www.brinox.com.br", skuPrefix: "brinox-", label: "Brinox" },
+  creamy: { domain: "www.creamy.com.br", skuPrefix: "creamy-", label: "Creamy" },
+  casaevideo: { domain: "www.casaevideo.com.br", skuPrefix: "casaevideo-", label: "Casa & Vídeo" },
+  telhanorte: { domain: "www.telhanorte.com.br", skuPrefix: "telhanorte-", label: "Telhanorte" },
+  zonacriativa: { domain: "www.zonacriativa.com.br", skuPrefix: "zonacriativa-", label: "Zona Criativa" },
 };
 export const VTEX_API_STORE_KEYS = Object.keys(VTEX_API_STORES);
 export const PIX_PAYMENT_SYSTEM = "125";

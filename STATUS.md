@@ -1,3 +1,16 @@
+## 27/09/2026 — Fora de farmácia/mercado: +6 lojas por API (~14 mil itens): livros, casa, construção
+
+Pergunta do dono: a Lia só serve para farmácia sem remédio. Varredura de ~60 lojas de livros,
+casa, eletro, papelaria, bebidas e moda (VTEX, Magento, Shopify). Com checkout aberto + Pix +
+entrega no endereço do dono, entraram: Martins Fontes (livros, 4.054), Casa & Vídeo (casa e
+utilidades, 5.079), Telhanorte (construção, 3.548, entrega agendada tratada), Brinox (panelas,
+576), Zona Criativa (casa e presentes, 884), Creamy (skincare, 129). Todas conferidas com o
+cliente do servidor até o Pix (cesta esvaziada). Prazos de 2 a 5 dias úteis (não é "hoje").
+Fora: Hering (sem Pix); Havan/Grand Cru/Divinho são Magento (Divinho com GraphQL público —
+checkout de convidado por GraphQL é o próximo tipo de plataforma a estudar); Shopify expõe
+catálogo mas não fecha pagamento sem navegador. Amazon, ML, Magalu, Americanas, Leroy, Kabum,
+Saraiva/Cultura não têm porta de compra. Vitrine por API: 15 lojas, ~34 mil itens.
+
 ## 27/09/2026 — Supermercado: só o Mambo fecha por API em SP; catálogo ampliado para 3.662 itens
 
 2ª varredura (~50 redes): checkout VTEX aberto em Savegnago, Covabra, Zona Sul, Prezunic,
