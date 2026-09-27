@@ -225,7 +225,7 @@ export class VtexCheckoutSession {
       if ((raw.availableDeliveryWindows as unknown[] | undefined)?.length && !chosen?.endDateUtc) throw new Error("Janela de entrega não selecionada.");
       if (!chosen?.endDateUtc) return raw;
       const hours = Math.max(1, Math.ceil((Date.parse(chosen.endDateUtc) - Date.now()) / 3_600_000));
-      return { ...raw, shippingEstimate: `${hours}h`, windowLabel: `${chosen.startDateUtc}→${chosen.endDateUtc}` };
+      return { ...raw, shippingEstimate: `${hours}h@${chosen.startDateUtc}~${chosen.endDateUtc}`, windowLabel: `${chosen.startDateUtc}→${chosen.endDateUtc}` };
     });
     const promises = [...new Set(selected.map((s) => humanEstimate(String(s.shippingEstimate))))];
     if (!selected.length || promises.length !== 1 || !promises[0]) throw new Error("Prazo do checkout precisa de conferência.");

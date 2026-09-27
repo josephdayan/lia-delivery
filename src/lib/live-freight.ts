@@ -89,7 +89,7 @@ export function effectiveSla<T extends Sla>(sla: T, now = new Date()): T & { del
   // Janelas todas no passado: sem entrega possível por essa SLA.
   if (!w) return { ...sla, price: undefined };
   const hours = Math.max(1, Math.ceil((Date.parse(w.endDateUtc) - now.getTime()) / 3_600_000));
-  return { ...sla, price: (sla.price ?? 0) + (w.price ?? 0), shippingEstimate: `${hours}h`, deliveryWindow: w };
+  return { ...sla, price: (sla.price ?? 0) + (w.price ?? 0), shippingEstimate: `${hours}h@${w.startDateUtc}~${w.endDateUtc}`, deliveryWindow: w };
 }
 type SimItem = { id?: string | number; quantity?: number; availability?: string };
 type LogisticsInfo = { itemIndex?: number; slas?: Sla[] };
@@ -109,7 +109,22 @@ export function liveCheckSupported(storeKey: string): boolean {
 // Redação (04/09, dono: "tava escrito que chegava em 90 min mas não acho que é verdade"):
 // o prazo é DA LOJA e conta a partir da compra na loja — que hoje é manual. "Chega em 90
 // min" fazia o relógio começar no toque do cliente. Agora a frase diz de quem é o prazo.
+// Janela de entrega agendada (27/09): "17h@<início ISO>~<fim ISO>" — o número à esquerda é o
+// prazo até o FIM da janela (compara como qualquer "17h"); a janela vira texto legível para o
+// cliente ("em até 17h (seg. 11h–14h)"), em vez de um "17h" que parece horário.
+function windowText(start: string, end: string): string {
+  const tz = "America/Sao_Paulo";
+  const day = (d: Date) => d.toLocaleDateString("pt-BR", { timeZone: tz });
+  const s = new Date(start), e = new Date(end);
+  const today = day(new Date()), tomorrow = day(new Date(Date.now() + 86_400_000));
+  const when = day(s) === today ? "hoje" : day(s) === tomorrow ? "amanhã" : s.toLocaleDateString("pt-BR", { timeZone: tz, weekday: "short" }).replace(".", "");
+  const hour = (d: Date) => `${Number(d.toLocaleTimeString("pt-BR", { timeZone: tz, hour: "2-digit", hour12: false }))}h`;
+  const endHour = new Date(e.getTime() + 60_000); // janelas terminam em hh:00:59
+  return `${when}, ${hour(s)}–${hour(endHour)}`;
+}
 export function humanEstimate(estimate?: string): string | undefined {
+  const windowed = /^(\d+)h@([^~]+)~(.+)$/.exec((estimate ?? "").trim());
+  if (windowed) return `prazo da loja: em até ${windowed[1]}h (${windowText(windowed[2], windowed[3])})`;
   const m = /^(\d+)\s*(bd|d|h|m)$/i.exec((estimate ?? "").trim());
   if (!m) return undefined;
   const value = Number(m[1]);
@@ -126,7 +141,7 @@ export function humanEstimate(estimate?: string): string | undefined {
 // Dia útil vale 1 dia aqui: a comparação só serve para dizer QUAL item chega por
 // último; a promessa exibida continua sendo a string original da loja.
 export function estimateMinutes(estimate?: string): number {
-  const m = /^(\d+)\s*(bd|d|h|m)$/i.exec((estimate ?? "").trim());
+  const m = /^(\d+)\s*(bd|d|h|m)(?:@.*)?$/i.exec((estimate ?? "").trim());
   if (!m) return -1;
   const value = Number(m[1]);
   const unit = m[2].toLowerCase();

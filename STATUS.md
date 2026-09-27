@@ -1,3 +1,11 @@
+## 27/09/2026 — Prazo agendado legível; mercado no mesmo dia existe (Mambo, pedidos até o começo da tarde)
+
+Dono: não urgente (livro, panela) pode levar dias se o cliente vir o prazo; o problema é
+farmácia e mercado. Farmácia já é rápida (Drogal 30 min–3h, Drogaria SP 90 min, Pague Menos
+2h). Mambo: janelas de 3h das 5h às 18h; pedido feito cedo cai no mesmo dia (domingo 19h → seg
+11h–14h). Antes o cliente lia "prazo da loja: 17h" (parecia horário); agora lê "prazo da loja:
+em até 17h (seg, 11h–14h)". A comparação interna segue por horas até o fim da janela.
+
 ## 27/09/2026 — Fora de farmácia/mercado: +6 lojas por API (~14 mil itens): livros, casa, construção
 
 Pergunta do dono: a Lia só serve para farmácia sem remédio. Varredura de ~60 lojas de livros,

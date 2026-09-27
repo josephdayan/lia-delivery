@@ -247,7 +247,12 @@ test("cotação: entrega agendada custa SLA + janela e o prazo vai até o fim da
   ] };
   const eff = effectiveSla(sla, now);
   assert.equal(eff.price, 1590);
-  assert.equal(eff.shippingEstimate, "17h");
+  assert.match(eff.shippingEstimate!, /^17h@2026-09-26T10:00:00\+00:00~/);
+  const { estimateMinutes, humanEstimate, promisedMinutes } = await import("../src/lib/live-freight");
+  assert.equal(estimateMinutes(eff.shippingEstimate), 17 * 60);
+  const text = humanEstimate(eff.shippingEstimate)!;
+  assert.match(text, /^prazo da loja: em até 17h \((sáb|amanhã|hoje), 7h–10h\)$/);
+  assert.equal(promisedMinutes(`pela própria loja · ${text}`), 17 * 60, "a promessa guardada compara pelo prazo, não pelo horário da janela");
   assert.equal(eff.deliveryWindow?.startDateUtc, "2026-09-26T10:00:00+00:00");
   assert.equal(effectiveSla({ ...sla, availableDeliveryWindows: [{ startDateUtc: "2026-09-25T10:00:00Z", endDateUtc: "2026-09-25T13:00:00Z", price: 300 }] }, now).price, undefined, "só janelas passadas: sem entrega");
   assert.equal(effectiveSla({ name: "Normal", price: 690, shippingEstimate: "1bd" }, now).price, 690, "SLA sem janela não muda");

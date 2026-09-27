@@ -150,7 +150,7 @@ test("entrega agendada (Mambo): escolhe a janela mais cedo, soma o preço dela e
   assert.equal(sel.deliveryWindow?.startDateUtc, start.toISOString(), "janela mais cedo");
   const e = session.snapshot(job);
   assert.equal(e.freightCents, 1590, "SLA 12,90 + janela 3,00");
-  assert.equal(e.deliveryPromise, "prazo da loja: 13h");
+  assert.match(e.deliveryPromise, /^prazo da loja: em até 13h \(/);
   assert.match(e.deliveryOption, /Entrega Agendada \[/);
   const pix = await session.placeOrder();
   assert.equal(parsePixEmv(pix.code).amountCents, 539 + 1590);
