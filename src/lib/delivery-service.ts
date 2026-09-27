@@ -4438,7 +4438,51 @@ async function continueAfterBasket(
 // (subtotal da vitrine + frete POR LOJA, da unidade mais próxima até a casa do cliente;
 // 2 lojas = 2 fretes) e o pedido chega ao /ops já indo pra pagamento. Linha livre (sem
 // preço) mantém o caminho manual — não se cobra o que não tem preço.
-async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: DeliveryContext, prefix?: string) {
+function operatorQuoteEnabled(): boolean {
+  return process.env.LIA_OPERATOR_QUOTE === "true";
+}
+
+// Fechamento sem operador: tira da cesta o que a loja não confirmou e cota o resto.
+async function closeWithoutOperator(
+  phone: string,
+  convoId: string,
+  ctx: DeliveryContext,
+  orderId: string,
+  holdupStores: string[] | undefined,
+  prefix: string | undefined,
+  depth: number
+) {
+  const basket = ctx.basket ?? [];
+  const blocked = holdupStores?.length ? basket.filter((i) => holdupStores.includes(i.storeKey ?? CONCIERGE_STORE_KEY)) : [];
+  const rest = basket.filter((i) => !blocked.includes(i));
+  const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
+  await prisma.deliveryOrder.updateMany({
+    where: { id: orderId, status: AWAITING_OPERATOR_QUOTE_STATUS },
+    data: {
+      status: "canceled",
+      notes: appendOrderNote(current?.notes ?? null, `🚫 Sem cotação automática e sem operador (regra 25/09): ${blocked.length ? `fora — ${blocked.map((i) => i.name).join(", ")}` : "loja não confirmou o total"}.`)
+    }
+  });
+  if (prefix) await reply(phone, prefix);
+  // Falha sem culpado identificado (loja fora do ar, erro): a cesta fica, o cliente tenta de novo.
+  if (!blocked.length) {
+    await writeCtx(convoId, { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket, ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}) });
+    await reply(phone, copy.quoteUnavailableNow());
+    return;
+  }
+  const names = blocked.map((i) => (i.qty > 1 ? `${i.qty}x ${i.name}` : i.name));
+  if (!rest.length || depth >= 3) {
+    await writeCtx(convoId, { ...addressOnlyCtx(ctx) });
+    await reply(phone, copy.itemsNotDeliverableHere(names, false));
+    return;
+  }
+  const next: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: rest, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}) };
+  await writeCtx(convoId, next);
+  await reply(phone, copy.itemsNotDeliverableHere(names, true));
+  await createOperatorQuoteRequest(phone, convoId, next, undefined, depth + 1);
+}
+
+async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: DeliveryContext, prefix?: string, depth = 0) {
   const convo = await prisma.conversation.findUnique({ where: { id: convoId } });
   if (!convo) throw new Error("Conversation not found while creating concierge quote request.");
   const basket = (ctx.basket ?? []) as unknown as object;
@@ -4510,11 +4554,25 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
   });
 
   let holdupItem: string | undefined;
+  let holdupStores: string[] | undefined;
   if (instantQuoteEligible((ctx.basket ?? []) as InstantQuoteItem[], CONCIERGE_STORE_KEY) && ctx.cep) {
     // `handled` = a Lia resolveu o turno (publicou a cotação OU parou na escolha de entrega).
     const outcome = await tryPublishInstantQuote(order.id, phone, ctx, prefix, convoId);
     if (outcome.handled) return;
     holdupItem = outcome.holdup;
+    holdupStores = outcome.holdupStores;
+  } else {
+    // Cesta que nem é cotável automaticamente: os itens sem loja/preço é que travam.
+    holdupStores = [...new Set((ctx.basket ?? []).filter((i) => !(i.unitPrice > 0) || !i.storeKey || i.storeKey === CONCIERGE_STORE_KEY || PER_AD_FREIGHT_STORES.has(i.storeKey)).map((i) => i.storeKey ?? CONCIERGE_STORE_KEY))];
+  }
+
+  // 27/09/2026 — sem operador (decisão de 25/09): o que a loja não confirma para o CEP NÃO
+  // vira espera de cotação humana. "Se não tem, fala que não tem": cancela o pedido aberto,
+  // diz o que ficou de fora e fecha o resto na hora. LIA_OPERATOR_QUOTE=true volta ao
+  // caminho antigo (operador cota no /ops).
+  if (!operatorQuoteEnabled()) {
+    await closeWithoutOperator(phone, convoId, ctx, order.id, holdupStores, prefix, depth);
+    return;
   }
 
   if (prefix) await reply(phone, prefix);
@@ -4536,7 +4594,7 @@ async function tryPublishInstantQuote(
   ctx: DeliveryContext,
   prefix?: string,
   convoId?: string
-): Promise<{ handled: boolean; holdup?: string }> {
+): Promise<{ handled: boolean; holdup?: string; holdupStores?: string[] }> {
   try {
     const items = ctx.basket ?? [];
     // Quais itens travaram a cotação automática — vai pra nota do /ops E pra copy do
@@ -4577,7 +4635,7 @@ async function tryPublishInstantQuote(
             )
           }
         });
-        return { handled: false, holdup };
+        return { handled: false, holdup, holdupStores: [freights[i].storeKey] };
       }
       freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
       mlEstimate = outcome.estimate;
@@ -4620,7 +4678,7 @@ async function tryPublishInstantQuote(
               notes: appendOrderNote(current?.notes ?? null, `⚠️ Cotação instantânea abortada: ${freights[i].storeKey} — ${why}. Itens: ${holdup}.`)
             }
           });
-          return { handled: false, holdup };
+          return { handled: false, holdup, holdupStores: [freights[i].storeKey] };
         }
         if (outcome.kind === "ok") {
           freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
@@ -4649,7 +4707,7 @@ async function tryPublishInstantQuote(
           )
         }
       });
-      return { handled: false, holdup };
+      return { handled: false, holdup, holdupStores: guessed.map((f) => f.storeKey) };
     }
     const totalFee = Math.round(freights.reduce((sum, f) => sum + f.fee, 0) * 100) / 100;
     const itemsSubtotal = roundMoney(items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0));

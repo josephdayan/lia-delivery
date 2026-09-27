@@ -46,6 +46,10 @@ process.env.LIA_LIVE_FREIGHT_OFF = "true";
 // caminho da cotação instantânea. O modo estrito tem teste próprio
 // (tests/paid-order-watchdog.test.ts).
 process.env.LIA_CHARGE_ONLY_VERIFIED ??= "false";
+// Sem operador (27/09): em produção o que a loja não confirma é recusado na hora. Os evals
+// antigos exercitam a cotação do operador, então o harness mantém o caminho antigo ligado;
+// o comportamento novo tem teste próprio (manual-concierge: "sem operador").
+process.env.LIA_OPERATOR_QUOTE ??= "true";
 // Mercado Livre é vitrine AO VIVO (rede + custo por busca): fica desligado nos testes,
 // como em produção por padrão. Seus próprios testes vivem em mercadolivre-store.test.ts.
 process.env.LIA_ENABLE_MERCADOLIVRE = "false";

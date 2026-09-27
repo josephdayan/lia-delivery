@@ -308,6 +308,52 @@ test("cotação instantânea: kill-switch LIA_INSTANT_QUOTE=false volta ao fluxo
   }
 });
 
+test("sem operador: item que a loja não confirma para o CEP é recusado NA HORA; nada de 'vou cotar'", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_OPERATOR_QUOTE = "false";
+  process.env.LIA_CHARGE_ONLY_VERIFIED = "true"; // frete sem confirmação ao vivo = loja não confirmou
+  try {
+    const c = await returningCustomer();
+    await c.send("quero 10 coca cola");
+    const afterChoice = await c.send("1");
+    if (/quantas unidades/i.test(afterChoice)) await c.send("10");
+    const closed = await c.send("só isso");
+    assert.match(closed, /Não tenho .*coca/i, `fechamento: ${closed.slice(0, 300)}`);
+    assert.doesNotMatch(closed, /Recebi seu pedido|vou cotar|te aviso/i);
+    const order = await prisma.deliveryOrder.findFirst({ where: { phone: c.phone }, orderBy: { createdAt: "desc" } });
+    assert.equal(order!.status, "canceled");
+    assert.match(order!.notes ?? "", /sem operador/i);
+    // A conversa segue: pedido novo não esbarra em "ainda estou cotando".
+    const next = await c.send("quero 10 coca cola");
+    assert.doesNotMatch(next, /ainda estou|cotando/i);
+  } finally {
+    process.env.LIA_OPERATOR_QUOTE = "true";
+    process.env.LIA_CHARGE_ONLY_VERIFIED = "false";
+  }
+});
+
+test("sem operador: falha sem culpado (cotação indisponível) mantém a lista e pede para tentar de novo", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_OPERATOR_QUOTE = "false";
+  process.env.LIA_INSTANT_QUOTE = "false";
+  try {
+    const c = await returningCustomer();
+    await c.send("quero 10 coca cola");
+    const afterChoice = await c.send("1");
+    if (/quantas unidades/i.test(afterChoice)) await c.send("10");
+    const closed = await c.send("só isso");
+    assert.match(closed, /Não consegui confirmar o total/i, `fechamento: ${closed.slice(0, 300)}`);
+    const order = await prisma.deliveryOrder.findFirst({ where: { phone: c.phone }, orderBy: { createdAt: "desc" } });
+    assert.equal(order!.status, "canceled");
+    delete process.env.LIA_INSTANT_QUOTE;
+    const retry = await c.send("fechar");
+    assert.match(retry, /Total/i, `retry: ${retry.slice(0, 300)}`);
+  } finally {
+    process.env.LIA_OPERATOR_QUOTE = "true";
+    delete process.env.LIA_INSTANT_QUOTE;
+  }
+});
+
 test("concierge completo: pede → operador cota → paga → compra → loja entrega → entregue", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();

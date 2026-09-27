@@ -1607,3 +1607,16 @@ export const planBNotVerified = () => "Não consegui confirmar a disponibilidade
 export function operatorHumanChallenge(shortId: string, storeLabel: string, minutes: number): string {
   return `🧩 A ${storeLabel} pediu verificação humana pra fechar o pedido #${shortId}. Abra a janela do comprador no Mac e resolva o desafio nos próximos ${minutes} min — a compra continua sozinha depois. Sem isso, o pedido volta pra fila e o cliente é estornado.`;
 }
+
+// Sem operador (25/09): o que a loja não confirma para o endereço é dito na hora, sem espera.
+export function itemsNotDeliverableHere(items: string[], closingRest: boolean): string {
+  const what = items.length === 1 ? `*${items[0]}*` : items.map((i) => `• ${i}`).join("\n");
+  const head = items.length === 1
+    ? `Não tenho ${what} para entregar no seu endereço agora — a loja não confirmou estoque ou entrega.`
+    : `Não tenho estes itens para entregar no seu endereço agora — a loja não confirmou estoque ou entrega:\n${what}`;
+  return closingRest ? `${head}\nFecho o resto pra você:` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
+}
+
+export function quoteUnavailableNow(): string {
+  return "Não consegui confirmar o total com a loja agora. Me manda *fechar* de novo em alguns minutos que eu tento outra vez — sua lista continua salva.";
+}
