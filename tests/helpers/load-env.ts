@@ -90,7 +90,12 @@ for (const store of [
   "CREAMY",
   "CASAEVIDEO",
   "TELHANORTE",
-  "ZONACRIATIVA"
+  "ZONACRIATIVA",
+  "PHILCO",
+  "MONDIAL",
+  "OXFORD",
+  "POLISHOP",
+  "OBRAMAX"
 ]) {
   process.env[`LIA_ENABLE_${store}`] = "false";
 }

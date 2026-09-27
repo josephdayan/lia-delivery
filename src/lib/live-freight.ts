@@ -45,7 +45,12 @@ const VTEX_LIVE: Record<string, { domain: string; sku: RegExp }> = {
   creamy: { domain: "www.creamy.com.br", sku: /^creamy-(\d+)$/ },
   casaevideo: { domain: "www.casaevideo.com.br", sku: /^casaevideo-(\d+)$/ },
   telhanorte: { domain: "www.telhanorte.com.br", sku: /^telhanorte-(\d+)$/ },
-  zonacriativa: { domain: "www.zonacriativa.com.br", sku: /^zonacriativa-(\d+)$/ }
+  zonacriativa: { domain: "www.zonacriativa.com.br", sku: /^zonacriativa-(\d+)$/ },
+  philco: { domain: "www.philco.com.br", sku: /^philco-(\d+)$/ },
+  mondial: { domain: "www.mondial.com.br", sku: /^mondial-(\d+)$/ },
+  oxford: { domain: "www.oxfordporcelanas.com.br", sku: /^oxford-(\d+)$/ },
+  polishop: { domain: "www.polishop.com.br", sku: /^polishop-(\d+)$/ },
+  obramax: { domain: "www.obramax.com.br", sku: /^obramax-(\d+)$/ }
 };
 
 function maxFastExtra(): number {

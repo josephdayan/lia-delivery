@@ -1,6 +1,6 @@
 ## 27/09/2026 — 6 lojas novas
 
-- [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 15 lojas (comando no chat de 27/09) + redeploy.
+- [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 20 lojas (comando no chat de 27/09) + redeploy.
 - [ ] 1 pedido real em cada loja nova antes de confiar (livro na Martins Fontes é o mais barato de provar).
 - [ ] Magento por GraphQL (Divinho e afins): prova de checkout de convidado com Pix.
 - [ ] Decisão do Mercado Livre como "motor de amplitude" (tudo que as 15 lojas não têm).

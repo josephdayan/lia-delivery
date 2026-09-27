@@ -6,7 +6,8 @@ export const PURCHASE_DOMAINS: Record<string, string> = {
   swift: "swift.com.br", divvino: "divvino.com.br", kopenhagen: "kopenhagen.com.br",
   rihappy: "rihappy.com.br", naturaldaterra: "naturaldaterra.com.br",
   mambo: "mambo.com.br", epocacosmeticos: "epocacosmeticos.com.br", drogal: "drogal.com.br",
-  martinsfontes: "martinsfontespaulista.com.br", brinox: "brinox.com.br", creamy: "creamy.com.br", casaevideo: "casaevideo.com.br", telhanorte: "telhanorte.com.br", zonacriativa: "zonacriativa.com.br"
+  martinsfontes: "martinsfontespaulista.com.br", brinox: "brinox.com.br", creamy: "creamy.com.br", casaevideo: "casaevideo.com.br", telhanorte: "telhanorte.com.br", zonacriativa: "zonacriativa.com.br",
+  philco: "philco.com.br", mondial: "mondial.com.br", oxford: "oxfordporcelanas.com.br", polishop: "polishop.com.br", obramax: "obramax.com.br"
 };
 // Domínios adicionais por onde o checkout da loja passa (redirect de pagamento etc.).
 // O Mercado Livre paga no Mercado Pago e usa o domínio .com para alguns fluxos.

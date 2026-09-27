@@ -33,7 +33,12 @@ export const VTEX_API_STORES: Record<string, { domain: string; skuPrefix: string
   creamy: { domain: "www.creamy.com.br", skuPrefix: "creamy-", label: "Creamy" },
   casaevideo: { domain: "www.casaevideo.com.br", skuPrefix: "casaevideo-", label: "Casa & Vídeo" },
   telhanorte: { domain: "www.telhanorte.com.br", skuPrefix: "telhanorte-", label: "Telhanorte" },
-  zonacriativa: { domain: "www.zonacriativa.com.br", skuPrefix: "zonacriativa-", label: "Zona Criativa" },
+  zonacriativa: { domain: "www.zonacriativa.com.br", skuPrefix: "zonacriativa-", label: "Zona Criativa" },  // 27/09 (2ª leva): eletro e casa.
+  philco: { domain: "www.philco.com.br", skuPrefix: "philco-", label: "Philco" },
+  mondial: { domain: "www.mondial.com.br", skuPrefix: "mondial-", label: "Mondial" },
+  oxford: { domain: "www.oxfordporcelanas.com.br", skuPrefix: "oxford-", label: "Oxford Porcelanas" },
+  polishop: { domain: "www.polishop.com.br", skuPrefix: "polishop-", label: "Polishop" },
+  obramax: { domain: "www.obramax.com.br", skuPrefix: "obramax-", label: "Obramax" },
 };
 export const VTEX_API_STORE_KEYS = Object.keys(VTEX_API_STORES);
 export const PIX_PAYMENT_SYSTEM = "125";

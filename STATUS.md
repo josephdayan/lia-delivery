@@ -1,3 +1,14 @@
+## 27/09/2026 — Eletro e casa: +5 lojas por API (Philco, Mondial, Oxford, Polishop, Obramax)
+
+Pesquisa de categorias (Nuvemshop/Confi-Neotrust 2026): moda é 43% dos pedidos, depois eletro,
+saúde & beleza, casa & jardim. Sondagem dos líderes de cada categoria no endereço do dono: os
+grandes de moda e eletro (Renner, C&A, Dafiti, Netshoes, Centauro, Shein, Magalu, Casas Bahia,
+Amazon, Kabum, Fast Shop) barram programa; Farm, Animale e Brastemp só cartão. Entraram, a
+pedido do dono, as de eletro e casa que fecham com Pix: Philco (460 itens, ~5 dias úteis),
+Mondial (472, ~6), Oxford Porcelanas (1.215, ~8), Polishop (144, ~3), Obramax (2.048, ~2).
+Ficaram de fora por decisão: Reserva e Osklen (moda de grife, 5–7 dias) e PB Kids (13 dias).
+Vitrine por API: 20 lojas, ~38 mil itens.
+
 ## 27/09/2026 — Prazo agendado legível; mercado no mesmo dia existe (Mambo, pedidos até o começo da tarde)
 
 Dono: não urgente (livro, panela) pode levar dias se o cliente vir o prazo; o problema é

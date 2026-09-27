@@ -48,6 +48,11 @@ export const STORE_MAIL_RULES: Record<string, Rule> = {
   casaevideo: { domains: ["casaevideo.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   telhanorte: { domains: ["telhanorte.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   zonacriativa: { domains: ["zonacriativa.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  philco: { domains: ["philco.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  mondial: { domains: ["mondial.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  oxford: { domains: ["oxfordporcelanas.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  polishop: { domains: ["polishop.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  obramax: { domains: ["obramax.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   // Drogaria SP numera como v79835708dgsp-01 e o assunto é "Pagamento foi aprovado" (25/09, pedido real).
   drogariasp: { domains: ["drogariasaopaulo.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   naturaldaterra: { domains: ["naturaldaterra.com.br"], number: VTEX_NUMBER, kinds: VTEX_KINDS },

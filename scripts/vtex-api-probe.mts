@@ -50,6 +50,19 @@ const STORES: Record<string, string> = {
   creamy: "www.creamy.com.br",
   hering: "www.hering.com.br",
   casaevideo: "www.casaevideo.com.br",
+  // Candidatos por categoria de e-commerce (27/09): moda, eletro, brinquedos, casa, construção.
+  pbkids: "www.pbkids.com.br",
+  farmrio: "www.farmrio.com.br",
+  animale: "www.animale.com.br",
+  usereserva: "www.usereserva.com",
+  osklen: "www.osklen.com.br",
+  oxford: "www.oxfordporcelanas.com.br",
+  brastemp: "www.brastemp.com.br",
+  philco: "www.philco.com.br",
+  mondial: "www.mondial.com.br",
+  obramax: "www.obramax.com.br",
+  lojasrede: "www.lojasrede.com.br",
+  polishop: "www.polishop.com.br",
 };
 const PIX_SYSTEM = 125;
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";

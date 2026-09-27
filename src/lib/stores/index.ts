@@ -15,6 +15,11 @@ import { creamyStore } from "./creamy";
 import { casaevideoStore } from "./casaevideo";
 import { telhanorteStore } from "./telhanorte";
 import { zonacriativaStore } from "./zonacriativa";
+import { philcoStore } from "./philco";
+import { mondialStore } from "./mondial";
+import { oxfordStore } from "./oxford";
+import { polishopStore } from "./polishop";
+import { obramaxStore } from "./obramax";
 import { kalungaStore } from "./kalunga";
 import { rihappyStore } from "./rihappy";
 import { cacauShowStore } from "./cacaushow";
@@ -83,6 +88,12 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_CASAEVIDEO !== "false" ? { [casaevideoStore.key]: casaevideoStore } : {}),
   ...(process.env.LIA_ENABLE_TELHANORTE !== "false" ? { [telhanorteStore.key]: telhanorteStore } : {}),
   ...(process.env.LIA_ENABLE_ZONACRIATIVA !== "false" ? { [zonacriativaStore.key]: zonacriativaStore } : {}),
+  // 27/09 (2ª leva): eletro e casa — Philco, Mondial, Oxford, Polishop, Obramax.
+  ...(process.env.LIA_ENABLE_PHILCO !== "false" ? { [philcoStore.key]: philcoStore } : {}),
+  ...(process.env.LIA_ENABLE_MONDIAL !== "false" ? { [mondialStore.key]: mondialStore } : {}),
+  ...(process.env.LIA_ENABLE_OXFORD !== "false" ? { [oxfordStore.key]: oxfordStore } : {}),
+  ...(process.env.LIA_ENABLE_POLISHOP !== "false" ? { [polishopStore.key]: polishopStore } : {}),
+  ...(process.env.LIA_ENABLE_OBRAMAX !== "false" ? { [obramaxStore.key]: obramaxStore } : {}),
   // Mercado Livre: vitrine de CAUDA LONGA, ao vivo (decisão do dono 16/08). Fica por
   // ÚLTIMO no registry de propósito: as lojas locais decidem o "hoje"; o ML entra pra
   // resolver o que ninguém tem. Desligado por padrão — LIA_ENABLE_MERCADOLIVRE=true.
