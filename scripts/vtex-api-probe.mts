@@ -298,6 +298,12 @@ const payment = await call(`${base}/orderForm/${orderFormId}/attachments/payment
 });
 summary = orderFormSummary(payment.json as Json);
 step("paymentData(Pix)", payment.status, { payments: summary.payments, pixOffered: summary.pixOffered, value });
+// Desconto de Pix (28/09: Kopenhagen/Creamy): a loja recalcula o pagamento abaixo do total da
+// cesta. O fechamento manda o valor do PAGAMENTO e o da cesta como referência, igual ao
+// comprador do servidor (vtex-checkout.ts); mandar o total cheio faz a loja devolver 200 sem pedido.
+const paid = (((payment.json as Json)?.paymentData as Json | undefined)?.payments as Json[] | undefined)?.[0]?.value;
+const payValue = Number.isFinite(Number(paid)) && Number(paid) > 0 ? Number(paid) : value;
+const cartValue = Number(((payment.json as Json)?.value as number | undefined) ?? value);
 // Objeto de pagamento completo da cesta: é o que o checkout-ui copia (com `merchantSellerPayments`)
 // para montar o envio ao gateway. Guardado no JSON para inspeção.
 dump.paymentDataPayments = ((payment.json as Json).paymentData as Json | undefined)?.payments ?? null;
@@ -319,12 +325,16 @@ const tx = await call(`${base}/orderForm/${orderFormId}/transaction`, {
   referenceId: orderFormId,
   savePersonalData: false,
   optinNewsLetter: false,
-  value,
-  referenceValue: value,
+  value: payValue,
+  referenceValue: cartValue,
   interestValue: 0,
 });
 const txJson = tx.json as Json;
-step("transaction", tx.status, tx.status === 200 ? { orderGroup: txJson.orderGroup, receiverUri: txJson.receiverUri, merchantTransactions: txJson.merchantTransactions } : tx.text.slice(0, 400));
+step("transaction", tx.status, tx.status === 200 ? { orderGroup: txJson.orderGroup, receiverUri: txJson.receiverUri, merchantTransactions: txJson.merchantTransactions, sent: { value: payValue, referenceValue: cartValue }, ...(txJson.orderGroup ? {} : { messages: (txJson.messages as unknown) ?? tx.text.slice(0, 400) }) } : tx.text.slice(0, 400));
+if (tx.status === 200 && !txJson.orderGroup) {
+  await clearCart();
+  fail("a loja respondeu 200 sem pedido (sem orderGroup); nenhum pedido criado — ver messages no JSON");
+}
 if (tx.status !== 200) {
   await clearCart();
   fail(
@@ -351,7 +361,7 @@ const templatePath = String(
 const cartPayments = (((txJson.paymentData as Json | undefined)?.payments as Json[] | undefined) ?? (dump.paymentDataPayments as Json[] | null) ?? []) as Json[];
 const merchants = (txJson.merchantTransactions as Json[]) ?? [];
 const payments = cartPayments.flatMap((p, i) =>
-  ((p.merchantSellerPayments as Json[] | undefined) ?? [{ id: merchant.id, installments: 1, referenceValue: value, value, interestRate: 0, installmentValue: value }]).map((m) => {
+  ((p.merchantSellerPayments as Json[] | undefined) ?? [{ id: merchant.id, installments: 1, referenceValue: payValue, value: payValue, interestRate: 0, installmentValue: payValue }]).map((m) => {
     const t = merchants.find((x) => String(x.id).toLowerCase() === String(m.id).toLowerCase()) ?? merchant;
     return {
       ...p,
@@ -360,7 +370,7 @@ const payments = cartPayments.flatMap((p, i) =>
       group: "instantPaymentPaymentGroup",
       fields: {},
       transaction: { id: t.transactionId, merchantName: t.merchantName },
-      installmentsValue: m.installmentValue ?? value,
+      installmentsValue: m.installmentValue ?? payValue,
       installmentsInterestRate: m.interestRate ?? 0,
       currencyCode: "BRL",
       originalPaymentIndex: i,
