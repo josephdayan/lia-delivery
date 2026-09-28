@@ -1,3 +1,16 @@
+## 28/09/2026 — Carrossel volta a mostrar 5 opções; sai o "Preço garantido por N min"
+
+O dono perguntou por que os cards traziam só 3 opções. Os dados mostraram que o carrossel
+estava ligado e sendo entregue (5 envios em 10 dias, nenhum `meta-status-failed`), mas os
+envios de 25/09 a 28/09 levaram só 3 cards. A causa era um `slice(0, 3)` fixo no
+`rerankShoppingOptions`, que sobrou de 06/08: desde 10/09 o prompt pede até 5, e o corte
+jogava fora o resto. O único carrossel de 5 (23/09) veio do fallback determinístico. Reproduzi
+com as lojas de produção: lenço, shampoo e ração saem com 5; água de coco (3) e cabo USB-C
+(2) saem com menos porque não há mais produtos que sirvam. Teste de regressão em
+`tests/search-rerank.test.ts`. Botões: o card do carrossel já usa o teto da Meta (2) e o card
+solto também (3: Adicionar / Ver detalhes / Outras opções). A mensagem "Preço garantido por
+N min…" depois da cotação foi removida a pedido do dono.
+
 ## 28/09/2026 (madrugada) — 1ª compra na Mambo: pedido criado, Pix da loja não pago, cliente estornado sozinho
 
 Pedido #YYHUGW (2x lenço Huggies, R$48,92 no cartão Pagar.me). A Lia criou o pedido na

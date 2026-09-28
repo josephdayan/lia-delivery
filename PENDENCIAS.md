@@ -1,3 +1,7 @@
+## 28/09/2026 — Vitrine de 5
+
+- [ ] Depois do deploy, uma busca real ("shampoo") deve trazer o carrossel com 5 cards.
+
 ## 28/09/2026 — Pix da loja pago pelo Asaas (bloqueia compra sozinha)
 
 - [ ] CAUSA ACHADA (#E0RH3W, 28/09 12:10): a recusa é da NOSSA guarda, não do Asaas.
