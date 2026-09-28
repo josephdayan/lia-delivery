@@ -1,3 +1,28 @@
+## 27/09/2026 (noite) — Sem operador de verdade: "não tem" na hora, entrega precisa, preço vivo, refresh semanal, mínimo levantado
+
+Pedido do dono: (3) sem operador, o que não tem é dito na hora; (4) preço revisado toda
+semana; pedido mínimo de cada loja; "saiu pra entrega" preciso. Feito:
+
+- **"Não tenho X" na hora (ca10574).** Quando a loja não confirma estoque/entrega no
+  fechamento, o pedido não vai mais para "operador cota": é cancelado, o cliente ouve o que
+  ficou de fora e o resto fecha na mesma resposta. Falha sem culpado mantém a lista.
+  `LIA_OPERATOR_QUOTE=true` volta ao caminho antigo (só o harness de teste usa).
+- **Entrega precisa (fb6d507).** Novo estágio "enviado pela loja" (e-mail "a caminho",
+  "enviado", "transportadora"; rastreio com eventos) → "📦 A loja enviou seu pedido —
+  previsão: até X". "Saiu pra entrega" só com evidência de última milha. Leitor novo
+  (`src/lib/purchase/vtex-status.ts`, cron store-mail) lê o pedido na loja com os cookies do
+  fechamento: faturado (aviso 1x), enviado, saiu, entregue, cancelado pela loja (alerta ao dono).
+- **Preço vivo no fechamento (a614d84).** A simulação da loja devolve o preço de agora; o
+  total sai com ele e o cliente é avisado da mudança. Catálogo velho deixa de virar estorno.
+- **Refresh semanal (a614d84).** `.github/workflows/refresh-precos.yml`, segunda 06h:
+  recolhe as 20 lojas, tsc + testes de catálogo/busca/ANVISA, commit e deploy. O script
+  colhe em arquivo temporário e não troca catálogo que encolheu >40%.
+- **Pedido mínimo:** nenhuma das 20 lojas publica mínimo e nenhum checkout tem trava de valor
+  (18 scripts de checkout lidos). Provado sem mínimo até R$10–14: Drogaria SP, Cobasi, Pague
+  Menos (pedidos reais 25/09). Mambo: o widget de mínimo do carrinho está configurado em 0; um
+  site de cupons cita R$70 (fonte fraca). Todas ficam com mínimo 0; se alguma recusar o
+  fechamento por valor, o estorno automático protege o cliente e o valor vai para o conector.
+
 ## 27/09/2026 — Eletro e casa: +5 lojas por API (Philco, Mondial, Oxford, Polishop, Obramax)
 
 Pesquisa de categorias (Nuvemshop/Confi-Neotrust 2026): moda é 43% dos pedidos, depois eletro,

@@ -25,9 +25,8 @@ exige re-registro em até 14 dias; o webhook agora avisa a decisão.
 ## 25/09/2026 (noite) — depois do 1º pedido real
 
 - [x] #UY6IV9 e #DSP0Y0 estornados automaticamente em 25/09 17:38 (regra nova).
-- [ ] Avisar "faturado/a caminho" consultando o status do pedido na loja (`orders/order-group`
-  com os cookies salvos na tentativa `vtex_order`) em cron, além dos e-mails.
-- [ ] Pedido mínimo real de cada uma das 9 lojas (hoje todas 0 por env) para a ordem das opções.
+- [x] Status do pedido na loja em cron (27/09, fb6d507): faturado/enviado/saiu/entregue.
+- [x] Pedido mínimo levantado (27/09): nenhuma loja publica; todas 0. Mambo R$70 só em site de cupom.
 
 ## 25/09/2026 — Para operar de fato sem ninguém (depois de ligar)
 
@@ -36,8 +35,7 @@ exige re-registro em até 14 dias; o webhook agora avisa a decisão.
 - [ ] `LIA_OPERATOR_PHONE` → telefone do dono (ou vazio) quando o operador sair; conferir
   `operatorIsHired()` e a promessa fora de horário (`LIA_OPERATOR_HOURS`), que hoje assume
   operador contratado.
-- [ ] Caminho "operador cota" (`awaiting_operator_quote`) → recusa honesta + sugestão de
-  substituto nas 9 lojas (copy + evals). Sem isso, item fora do catálogo trava esperando humano.
+- [x] Caminho "operador cota" → recusa honesta na hora (27/09, ca10574).
 - [ ] `needs_review` por item sem estoque/entrega na compra → substituição automática ou estorno
   automático com aviso ao cliente.
 - [ ] Cesta com mais de uma loja → dividir em jobs por loja (hoje é manual).
