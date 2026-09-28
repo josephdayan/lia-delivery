@@ -1,3 +1,10 @@
+## 27/09/2026 — Regras vigentes de operação sem operador
+
+- Item que a loja não confirma no fechamento → "não tenho X", resto fecha; nunca espera humana.
+- "Saiu pra entrega" só com última milha explícita; "a caminho/enviado/transportadora" = envio.
+- O total usa o preço da loja ao vivo; o catálogo é vitrine e se atualiza toda segunda (GitHub Actions).
+- Pedido mínimo: 0 em todas as lojas por API até alguma recusar por valor.
+
 ## 25/09/2026 (noite) — RESOLVIDO: nome público do WhatsApp agora é "Lia Delivery"
 
 O dono re-registrou o número (POST `register` no /ops, PIN digitado por ele). Leitura da
