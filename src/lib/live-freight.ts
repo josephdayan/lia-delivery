@@ -17,7 +17,9 @@
 // que a loja oferece para a cesta, quando é mais rápida que a mais barata e o extra cabe
 // em LIA_FAST_FREIGHT_MAX_EXTRA (R$ 20). Quem escolhe é o cliente (botão).
 export type LiveFreightOutcome =
-  | { kind: "ok"; fee: number; estimate?: string; faster?: { fee: number; estimate?: string; name?: string } }
+  // `unitPrices` (27/09): preço de CUSTO por unidade que a loja cobra AGORA (sellingPrice da
+  // simulação), por sku da Lia — o total sai com ele, não com a foto do catálogo.
+  | { kind: "ok"; fee: number; estimate?: string; faster?: { fee: number; estimate?: string; name?: string }; unitPrices?: Record<string, number> }
   | { kind: "no-delivery" }
   // O site respondeu, mas algum item da cesta não está disponível pra esse CEP (sem
   // estoque / não vendido na região). Cobrar pela tabela venderia o que a loja não
@@ -96,7 +98,7 @@ export function effectiveSla<T extends Sla>(sla: T, now = new Date()): T & { del
   const hours = Math.max(1, Math.ceil((Date.parse(w.endDateUtc) - now.getTime()) / 3_600_000));
   return { ...sla, price: (sla.price ?? 0) + (w.price ?? 0), shippingEstimate: `${hours}h@${w.startDateUtc}~${w.endDateUtc}`, deliveryWindow: w };
 }
-type SimItem = { id?: string | number; quantity?: number; availability?: string };
+type SimItem = { id?: string | number; quantity?: number; availability?: string; sellingPrice?: number };
 type LogisticsInfo = { itemIndex?: number; slas?: Sla[] };
 
 // Loja com checkout consultável (mapa VTEX_LIVE), independente do kill-switch — o plano B
@@ -284,7 +286,13 @@ export async function liveStoreFreight(
       fastMinutes >= 0 && (cheapMinutes < 0 || fastMinutes < cheapMinutes) && extra >= 0 && extra <= maxFastExtra() && fastFee <= maxLiveFee()
         ? { fee: fastFee, estimate: fastEstimate, name: [...new Set(fastNames)].join(" + ") || undefined }
         : undefined;
-    return { kind: "ok", fee, estimate, ...(faster ? { faster } : {}) };
+    const unitPrices: Record<string, number> = {};
+    for (const item of items) {
+      const m = store.sku.exec(item.sku);
+      const sim = m ? simulated.find((x) => String(x.id ?? "") === m[1]) : undefined;
+      if (sim && typeof sim.sellingPrice === "number" && Number.isFinite(sim.sellingPrice) && sim.sellingPrice > 0) unitPrices[item.sku] = sim.sellingPrice / 100;
+    }
+    return { kind: "ok", fee, estimate, ...(faster ? { faster } : {}), ...(Object.keys(unitPrices).length ? { unitPrices } : {}) };
   } catch {
     return { kind: "unavailable" };
   }

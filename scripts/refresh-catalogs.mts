@@ -30,6 +30,8 @@ type Source = {
    * na Natural da Terra (Sorvete Zero Nestlé/Yamo) e nunca entrava no top 1000.
    */
   ft?: string;
+  /** Loja que devolve links no host técnico da VTEX (…vtexcommercestable): troca pelo site público. */
+  rewriteHost?: string;
 };
 
 // O deny-regex de medicamento é o mesmo das duas farmácias. A terceira guarda
@@ -57,6 +59,25 @@ const SOURCES: Source[] = [
     categories: "200,300,400,600",
     deny: PHARMACY_DENY
   },
+  // 25–27/09: lojas da compra por API (sem operador). Mesmos parâmetros da colheita original.
+  { key: "mambo", origin: "https://www.mambo.com.br", max: 6000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
+  { key: "epocacosmeticos", origin: "https://www.epocacosmeticos.com.br", max: 1200, rewriteHost: "www.epocacosmeticos.com.br" },
+  {
+    key: "drogal", origin: "https://www.drogal.com.br", max: 1500,
+    categories: "1,3,5,7,30,38,52,62,77,90,94,121,195,372,382,329,456,258",
+    deny: "(analg[eé]s|antit[eé]rm|anti-?inflam|antibi[oó]t|antial[eé]rg|antigrip|dipirona|paracetamol|ibuprofen|loratadina|omeprazol|nimesulida|dorflex|neosaldina|vitamina|suplement|nutrac|polivitam|medicament|rem[eé]dio|comprimid|c[aá]psula|xarope|col[ií]rio|anest[eé]s|antiss[eé]ptico|descongest|nasal|gotas|mg\\b)"
+  },
+  { key: "martinsfontes", origin: "https://www.martinsfontespaulista.com.br", max: 4000, ft: "romance;literatura brasileira;ficcao;fantasia;suspense;filosofia;historia;psicologia;arte;arquitetura;design;fotografia;infantil;juvenil;quadrinhos;manga;poesia;biografia;culinaria;autoajuda;negocios;economia;politica;sociologia;direito;ciencia;religiao;viagem;dicionario;classicos" },
+  { key: "brinox", origin: "https://www.brinox.com.br", max: 2000, ft: "panela;frigideira;faqueiro;talher;pote;garrafa;assadeira;chaleira;travessa;jarra;caneca;copo;prato;tabua;espremedor;escorredor;organizador;lixeira;utensilio;forma" },
+  { key: "creamy", origin: "https://www.creamy.com.br", max: 600 },
+  { key: "casaevideo", origin: "https://www.casaevideo.com.br", max: 4000, rewriteHost: "www.casaevideo.com.br", ft: "toalha;lencol;travesseiro;edredom;cortina;tapete;panela;copo;prato;organizador;ventilador;liquidificador;cafeteira;ferro;aspirador;luminaria;espelho;cabide;cesto;pote;garrafa;talher;jogo de cama;almofada;vaso" },
+  { key: "telhanorte", origin: "https://www.telhanorte.com.br", max: 3000, ft: "tinta;lampada;torneira;chuveiro;fechadura;parafuso;furadeira;extensao;tomada;interruptor;cola;fita;pincel;rolo;veda;silicone;registro;ralo;vaso sanitario;assento;prateleira;suporte;escada;mangueira;ferramenta" },
+  { key: "zonacriativa", origin: "https://www.zonacriativa.com.br", max: 2000, ft: "caneca;copo;garrafa;luminaria;vela;quadro;almofada;organizador;presente;decoracao;jogo;brinquedo;pelucia;chaveiro;mochila;necessaire;papelaria;agenda;caderno;cozinha" },
+  { key: "philco", origin: "https://www.philco.com.br", max: 1500, ft: "ventilador;liquidificador;air fryer;fritadeira;cafeteira;micro-ondas;aspirador;ferro;sanduicheira;batedeira;tv;caixa de som;fone;panela eletrica;secador;chapinha;umidificador;purificador;forno" },
+  { key: "mondial", origin: "https://www.mondial.com.br", max: 1500, ft: "liquidificador;ventilador;air fryer;fritadeira;cafeteira;sanduicheira;batedeira;mixer;processador;panela;grill;secador;chapinha;espremedor;ferro;aspirador;torradeira;forno;chaleira" },
+  { key: "oxford", origin: "https://www.oxfordporcelanas.com.br", max: 1200, ft: "prato;xicara;caneca;bowl;tigela;travessa;jogo de jantar;aparelho de jantar;sobremesa;sopa;bule;pires;saladeira;porcelana" },
+  { key: "polishop", origin: "https://www.polishop.com.br", max: 1500, ft: "aspirador;air fryer;panela;faca;ventilador;massageador;organizador;limpeza;cozinha;beleza;fitness;travesseiro;colchao;cafeteira;grill" },
+  { key: "obramax", origin: "https://www.obramax.com.br", max: 2500, ft: "tinta;lampada;torneira;chuveiro;fechadura;parafuso;furadeira;extensao;tomada;interruptor;cola;fita;pincel;rolo;silicone;registro;ralo;vaso sanitario;prateleira;escada;mangueira;ferramenta;piso;argamassa;cimento" },
   {
     key: "drogariasp",
     origin: "https://www.drogariasaopaulo.com.br",
@@ -152,12 +173,29 @@ function compare(key: string, before: Map<string, number>, after: Map<string, nu
 const reports: Report[] = [];
 const failed: string[] = [];
 // No modo --dry a colheita vai para um arquivo temporário e o catálogo real não é tocado.
-const scratch = dryRun ? mkdtempSync(join(tmpdir(), "lia-catalog-")) : null;
+// Colheita SEMPRE em arquivo temporário (27/09, rotina semanal sem supervisão): o catálogo real
+// só é trocado se a nova colheita tiver pelo menos MIN_KEEP do tamanho anterior — loja que
+// bloqueou ou mudou de layout nunca apaga um catálogo bom.
+const work = mkdtempSync(join(tmpdir(), "lia-catalog-"));
+const scratch = dryRun ? work : null;
+const MIN_KEEP = Number(process.env.LIA_CATALOG_MIN_KEEP ?? 0.6);
+function accept(key: string, tempFile: string, target: string, before: Map<string, number>, after: Map<string, number>, rewriteHost?: string): boolean {
+  if (after.size === 0 || (before.size > 0 && after.size < before.size * MIN_KEEP)) {
+    console.error(`   ✖ colheita encolheu (${before.size} → ${after.size}) — catálogo anterior preservado`);
+    return false;
+  }
+  if (!dryRun) {
+    let text = readFileSync(tempFile, "utf8");
+    if (rewriteHost) text = text.replace(/https:\/\/[a-z0-9-]+\.vtexcommercestable\.com\.br/g, `https://${rewriteHost}`);
+    writeFileSync(target, text);
+  }
+  return true;
+}
 
 for (const source of SOURCES) {
   if (!wanted(source.key)) continue;
   const target = catalogPath(source.key);
-  const out = scratch ? join(scratch, `${source.key}.ts`) : target;
+  const out = join(work, `${source.key}.ts`);
   const before = readPrices(target);
   process.stdout.write(`→ ${source.key.padEnd(16)}`);
   const args = [source.origin, source.key, out, String(source.max)];
@@ -169,11 +207,7 @@ for (const source of SOURCES) {
     continue;
   }
   const after = readPrices(out);
-  // Uma colheita vazia normalmente é a loja bloqueando, não a loja sem produto:
-  // nunca deixar isso apagar um catálogo bom.
-  if (after.size === 0) {
-    console.error(`   ✖ colheita vazia — catálogo anterior preservado`);
-    if (!scratch && before.size > 0) writeFileSync(target, readFileSync(target, "utf8"));
+  if (!accept(source.key, out, target, before, after, source.rewriteHost)) {
     failed.push(source.key);
     continue;
   }
@@ -187,7 +221,7 @@ for (const source of SOURCES) {
 for (const custom of CUSTOM) {
   if (!wanted(custom.key)) continue;
   const target = catalogPath(custom.key);
-  const out = scratch ? join(scratch, `${custom.key}.ts`) : target;
+  const out = join(work, `${custom.key}.ts`);
   const before = readPrices(target);
   process.stdout.write(`→ ${custom.key.padEnd(16)}`);
   if (!run(custom.script, custom.args(out))) {
@@ -195,8 +229,7 @@ for (const custom of CUSTOM) {
     continue;
   }
   const after = readPrices(out);
-  if (after.size === 0) {
-    console.error(`   ✖ colheita vazia — catálogo anterior preservado`);
+  if (!accept(custom.key, out, target, before, after)) {
     failed.push(custom.key);
     continue;
   }
@@ -230,3 +263,5 @@ console.log(
 if (!dryRun) {
   console.log("\nPróximo passo: conferir o resumo, rodar `npm test`, commitar os *-catalog.ts e implantar.");
 }
+// Resumo legível por máquina (rotina semanal): uma linha JSON no fim.
+console.log(`\nREFRESH_SUMMARY ${JSON.stringify({ stores: reports.length, items: totalAfter, changed: totalChanged, failed })}`);

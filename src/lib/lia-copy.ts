@@ -1631,3 +1631,11 @@ export function itemsNotDeliverableHere(items: string[], closingRest: boolean): 
 export function quoteUnavailableNow(): string {
   return "Não consegui confirmar o total com a loja agora. Me manda *fechar* de novo em alguns minutos que eu tento outra vez — sua lista continua salva.";
 }
+
+// 27/09: o preço mudou na loja desde a vitrine. Avisa antes do total, sem drama.
+export function pricesUpdatedByStore(items: Array<{ name: string; from: number; to: number }>): string {
+  const line = (i: { name: string; from: number; to: number }) => `*${i.name}*: ${brl(i.from)} → ${brl(i.to)}`;
+  return items.length === 1
+    ? `A loja mudou o preço agora há pouco — ${line(items[0])}. O total abaixo já está com o preço certo.`
+    : `A loja mudou alguns preços agora há pouco:\n${items.map((i) => `• ${line(i)}`).join("\n")}\nO total abaixo já está com os preços certos.`;
+}

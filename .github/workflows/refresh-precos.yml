@@ -1,0 +1,51 @@
+# Refresh semanal de preços dos catálogos (27/09/2026, decisão do dono).
+# Toda segunda às 06h (São Paulo): recolhe as lojas da compra por API, confere tipos e os
+# testes de catálogo/busca/ANVISA, e só então commita — o push dispara o deploy na Vercel.
+# Colheita que encolhe >40% não substitui o catálogo (guarda em scripts/refresh-catalogs.mts).
+# O preço EXATO de cada pedido vem da loja ao vivo no fechamento; isto mantém a vitrine perto.
+name: Refresh semanal de precos
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: refresh-precos
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Recolher catálogos
+        run: |
+          npx tsx scripts/refresh-catalogs.mts \
+            drogariasp cobasi paguemenos swift kopenhagen rihappy mambo epocacosmeticos drogal \
+            martinsfontes brinox creamy casaevideo telhanorte zonacriativa philco mondial oxford polishop obramax \
+            | tee refresh.log
+      - name: Conferir tipos
+        run: npx tsc --noEmit -p tsconfig.json
+      - name: Testes de catálogo, busca e ANVISA
+        run: npm run test:local -- tests/anvisa-pharmacy.test.ts tests/catalog-gaps.test.ts tests/search-golden.test.ts tests/vtex-checkout.test.ts tests/live-freight.test.ts
+      - name: Commitar e publicar
+        run: |
+          git config user.name "Lia refresh semanal"
+          git config user.email "codex@local"
+          git add src/lib/stores/*-catalog.ts
+          if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
+          SUMMARY=$(grep '^REFRESH_SUMMARY' refresh.log | sed 's/^REFRESH_SUMMARY //')
+          git commit -m "Refresh semanal de preços ($(date -u +%F))" -m "$SUMMARY"
+          git push
+      - name: Resumo
+        if: always()
+        run: |
+          echo '### Refresh semanal de preços' >> "$GITHUB_STEP_SUMMARY"
+          grep -A 200 '^─' refresh.log | head -80 >> "$GITHUB_STEP_SUMMARY" || true

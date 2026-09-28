@@ -257,3 +257,13 @@ test("cotação: entrega agendada custa SLA + janela e o prazo vai até o fim da
   assert.equal(effectiveSla({ ...sla, availableDeliveryWindows: [{ startDateUtc: "2026-09-25T10:00:00Z", endDateUtc: "2026-09-25T13:00:00Z", price: 300 }] }, now).price, undefined, "só janelas passadas: sem entrega");
   assert.equal(effectiveSla({ name: "Normal", price: 690, shippingEstimate: "1bd" }, now).price, 690, "SLA sem janela não muda");
 });
+
+test("ao vivo: devolve o preço que a loja cobra AGORA (sellingPrice em centavos, por unidade)", async () => {
+  mockResponse({
+    items: [{ id: "1639750", quantity: 2, sellingPrice: 1299 }],
+    logisticsInfo: [{ slas: [{ name: "Econômica", price: 490, shippingEstimate: "1bd" }] }]
+  });
+  const out = await liveStoreFreight("paguemenos", ITEMS, "01310-100");
+  assert.equal(out.kind, "ok");
+  assert.deepEqual(out.kind === "ok" ? out.unitPrices : null, { "paguemenos-1639750": 12.99 });
+});

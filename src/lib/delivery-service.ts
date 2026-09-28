@@ -4651,6 +4651,7 @@ async function tryPublishInstantQuote(
     const storeEstimates: string[] = [];
     // Entrega mais rápida da loja (SUPER EXPRESSA etc.), por loja da cesta.
     const storeFaster: Array<{ index: number; cheapFee: number; faster: { fee: number; estimate?: string; name?: string } }> = [];
+    const repriced: Array<{ name: string; from: number; to: number }> = [];
     if (liveFreightEnabled() && ctx.cep) {
       const outcomes = await Promise.all(
         freights.map((f) =>
@@ -4681,6 +4682,14 @@ async function tryPublishInstantQuote(
           return { handled: false, holdup, holdupStores: [freights[i].storeKey] };
         }
         if (outcome.kind === "ok") {
+          // Preço da loja AGORA (27/09): catálogo é foto; o total sai com o preço vivo.
+          for (const item of items) {
+            const live = outcome.unitPrices?.[item.sku];
+            if (item.storeKey !== freights[i].storeKey || live == null || Math.abs(live - item.unitPrice) < 0.005) continue;
+            repriced.push({ name: item.name, from: item.unitPrice, to: live });
+            item.unitPrice = live;
+            (item as { lineTotal?: number }).lineTotal = roundMoney(live * item.qty);
+          }
           freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
           if (outcome.estimate) storeEstimates.push(outcome.estimate);
           if (outcome.faster) storeFaster.push({ index: i, cheapFee: outcome.fee, faster: outcome.faster });
@@ -4708,6 +4717,15 @@ async function tryPublishInstantQuote(
         }
       });
       return { handled: false, holdup, holdupStores: guessed.map((f) => f.storeKey) };
+    }
+    if (repriced.length) {
+      const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
+      await prisma.deliveryOrder.update({ where: { id: orderId }, data: {
+        items: items as unknown as object,
+        notes: appendOrderNote(current?.notes ?? null, `💲 Preço atualizado pela loja no fechamento: ${repriced.map((r) => `${r.name} R$${r.from.toFixed(2)} → R$${r.to.toFixed(2)}`).join("; ")}.`),
+      } });
+      if (convoId) await writeCtx(convoId, { ...ctx, basket: items });
+      await reply(phone, copy.pricesUpdatedByStore(repriced.map((r) => ({ name: r.name, from: displayPrice(r.from), to: displayPrice(r.to) }))));
     }
     const totalFee = Math.round(freights.reduce((sum, f) => sum + f.fee, 0) * 100) / 100;
     const itemsSubtotal = roundMoney(items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0));
