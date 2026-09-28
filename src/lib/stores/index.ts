@@ -79,16 +79,17 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_GIULIANAFLORES === "true" ? { [giulianaFloresStore.key]: giulianaFloresStore } : {}),
   // 25/09/2026: lojas somadas pela varredura de checkout VTEX aberto (compra por API no servidor).
   ...(process.env.LIA_ENABLE_MAMBO !== "false" ? { [mamboStore.key]: mamboStore } : {}),
-  ...(process.env.LIA_ENABLE_EPOCACOSMETICOS !== "false" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}),
+  ...(process.env.LIA_ENABLE_EPOCACOSMETICOS === "true" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
   // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.
   // 28/09: teste de Pix loja a loja. Martins Fontes e Mondial recusam criar o pedido (ORD062
-  // "Acesso negado"); Obramax e Telhanorte recusam autorizar o Pix (CHK0223). Sem operador,
+  // "Acesso negado"); Obramax, Telhanorte, Época e Casa & Vídeo recusam autorizar o Pix (CHK0223,
+  // também com item do próprio seller). Sem operador,
   // loja que não fecha sozinha sai da vitrine (regra do dono 25/09). LIA_ENABLE_<LOJA>=true religa.
   ...(process.env.LIA_ENABLE_MARTINSFONTES === "true" ? { [martinsfontesStore.key]: martinsfontesStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_BRINOX !== "false" ? { [brinoxStore.key]: brinoxStore } : {}),
   ...(process.env.LIA_ENABLE_CREAMY !== "false" ? { [creamyStore.key]: creamyStore } : {}),
-  ...(process.env.LIA_ENABLE_CASAEVIDEO !== "false" ? { [casaevideoStore.key]: casaevideoStore } : {}),
+  ...(process.env.LIA_ENABLE_CASAEVIDEO === "true" ? { [casaevideoStore.key]: casaevideoStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_TELHANORTE === "true" ? { [telhanorteStore.key]: telhanorteStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_ZONACRIATIVA !== "false" ? { [zonacriativaStore.key]: zonacriativaStore } : {}),
   // 27/09 (2ª leva): eletro e casa — Philco, Mondial, Oxford, Polishop, Obramax.

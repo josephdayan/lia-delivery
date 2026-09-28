@@ -1,4 +1,4 @@
-## 28/09/2026 (tarde) — Pix loja a loja: 8 passam, 4 desligadas, 8 em teste
+## 28/09/2026 (tarde) — Pix loja a loja: 8 passam, 6 desligadas, 6 no reteste
 
 Pedido real sem pagamento em cada loja (dono rodou; vencem sozinhos), lendo o Pix emitido:
 
@@ -8,13 +8,13 @@ Pedido real sem pagamento em cada loja (dono rodou; vencem sozinhos), lendo o Pi
 | Drogaria SP | Adyen com URL | passa |
 | Mambo, Swift, Brinox | Mercado Pago (chave+valor+txid) | passa (Mambo pago de verdade) |
 | Martins Fontes, Mondial | — | ORD062 "Acesso negado" no `transaction`: DESLIGADAS |
-| Obramax, Telhanorte | — | CHK0223 "pagamento não autorizado" sem Tid: DESLIGADAS |
-| Kopenhagen, Creamy, Zona Criativa, Philco, Oxford, Polishop | ? | sumiram sem arquivo em --buy (seco passa); 3ª rodada |
-| Época, Casa & Vídeo | ? | 1ª: CHK0223 com item de seller parceiro; 2ª: sem estoque; 3ª rodada com item próprio |
+| Obramax, Telhanorte, Época, Casa & Vídeo | — | CHK0223 "pagamento não autorizado" (Época/C&V também com item do próprio seller): DESLIGADAS |
+| Kopenhagen, Creamy, Zona Criativa, Philco, Oxford, Polishop | ? | dão desconto no Pix; a SONDAGEM mandava o total cheio e a loja devolvia 200 sem pedido. Sondagem corrigida (63eece5); produção já usava o valor do Pix. Reteste pendente |
 
-Desligadas = opt-in no registry (`LIA_ENABLE_<LOJA>=true` religa). A sondagem agora grava o
-rastro em erro inesperado. Swift cobra num Mercado Pago de nome pessoal: se o documento
-for CPF, a 1ª compra pede o toque do dono (aprovação automática é só para CNPJ).
+Desligadas = opt-in no registry (`LIA_ENABLE_<LOJA>=true` religa). Sem Casa & Vídeo não há
+carregador USB-C no elenco: o golden agora exige "não tenho" (nunca veicular). Swift cobra
+num Mercado Pago de nome pessoal: se o documento for CPF, a 1ª compra pede o toque do dono.
+Hipótese para o CHK0223 (não testada): conector de Pix que exige pagador CPF.
 
 ## 28/09/2026 (tarde) — PROVADO: primeira compra 100% automática, sem nenhum toque humano
 

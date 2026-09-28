@@ -1,9 +1,9 @@
 ## 28/09/2026 — Pix loja a loja
 
-- [ ] 3ª rodada (dono roda `testa-pix-3.sh` da pasta temporária): Kopenhagen, Creamy, Zona
-  Criativa, Philco, Oxford, Polishop, Época (sku 85173), Casa & Vídeo (sku 4782361).
-- [ ] Martins Fontes/Mondial (ORD062) e Obramax/Telhanorte (CHK0223) desligadas; só religar
-  com um fechamento provado.
+- [ ] Reteste (dono roda `testa-pix-4.sh` da pasta temporária): Kopenhagen, Creamy, Zona
+  Criativa, Philco, Oxford, Polishop, com a sondagem mandando o valor do Pix com desconto.
+- [ ] Desligadas até provar um fechamento: Martins Fontes, Mondial (ORD062), Obramax,
+  Telhanorte, Época, Casa & Vídeo (CHK0223).
 
 ## 28/09/2026 — Vitrine de 5
 

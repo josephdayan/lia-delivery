@@ -46,10 +46,12 @@ export type GoldenCase = {
 export const GOLDEN_CASES: GoldenCase[] = [
   // ---- o caso que motivou tudo (06/08): forma/uso errados com palavras parecidas ----
   {
-    name: "carregador usb c → parede/cabo USB-C, nunca veicular",
+    name: "carregador usb c → nunca veicular; sem loja que venda, linha livre",
     query: "carregador usb c",
-    top1Include: /usb.?c|parede/,
-    allExclude: /veicular/,
+    // 28/09: a única loja com carregador USB-C (Casa & Vídeo) saiu da vitrine (Pix recusado).
+    // O certo agora é "não tenho", nunca um veicular no lugar. Se voltar uma loja com o item,
+    // troque por top1Include: /usb.?c|parede/.
+    none: true,
     deterministic: true,
     note: "3 carregadores veiculares venciam por empate léxico + desempate por preço"
   },
