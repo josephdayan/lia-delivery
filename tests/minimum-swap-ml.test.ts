@@ -121,7 +121,7 @@ test("mínimo sem alternativa local: o MERCADO LIVRE entra na troca e fecha na h
   assert.match(wall, /outra loja SEM pedido mínimo|Trocar de loja/i, `sem oferta (ML deveria cobrir): ${wall.slice(0, 400)}`);
   const done = await c.send("minswap:yes");
   assert.match(done, /Troquei de loja/i, done.slice(0, 300));
-  assert.match(done, /Preço garantido|Como prefere pagar/i, `não fechou: ${done.slice(0, 400)}`);
+  assert.match(done, /Como prefere pagar/i, `não fechou: ${done.slice(0, 400)}`);
   const order = await prisma.deliveryOrder.findFirst({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   const items = (order!.items as Array<{ storeKey?: string; sku?: string }>) ?? [];
   assert.ok(items.length > 0, "pedido criado");

@@ -56,6 +56,17 @@ test("rerank: sku inventado/duplicado é filtrado; corte em 3", async () => {
   assert.deepEqual(out?.lines[0].skus, ["PM-1", "PETZ-1", "PETZ-2"]);
 });
 
+// Vitrine do carrossel (dono, 28/09): o teto é o `limit` do chamador. Desde 10/09 o
+// prompt pedia até 5, mas um slice(0, 3) fixo aqui cortava — o carrossel saía sempre com 3.
+test("rerank: respeita o teto do chamador (5 no carrossel)", async () => {
+  const many: RerankLine[] = [
+    { query: "shampoo", candidates: ["A", "B", "C", "D", "E", "F"].map((sku) => ({ sku, name: `Shampoo ${sku}`, price: 20, store: "Loja" })) }
+  ];
+  mockResponse({ lines: [{ skus: ["A", "B", "C", "D", "E", "F"] }] });
+  const out = await rerankShoppingOptions("shampoo", many, 5);
+  assert.deepEqual(out?.lines[0].skus, ["A", "B", "C", "D", "E"]);
+});
+
 test("rerank: resposta com nº de linhas errado é descartada inteira (null)", async () => {
   mockResponse({ lines: [{ skus: ["PM-1"] }] });
   assert.equal(await rerankShoppingOptions("qualquer", LINES), null);

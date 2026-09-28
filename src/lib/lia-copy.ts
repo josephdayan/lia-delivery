@@ -622,10 +622,6 @@ export function quoteExpired(): string {
   return "Esse preço venceu. Fecho um novo antes de cobrar qualquer coisa.";
 }
 
-export function quoteValidFor(minutes: number): string {
-  return `Preço garantido por ${minutes} min. Escolhe Pix ou cartão pra eu gerar o pagamento.`;
-}
-
 export function pixNotSeenYet(): string {
   return "O Pix ainda não caiu aqui. Assim que cair, te aviso na hora. Se passar de 5 min, me chama.";
 }

@@ -243,7 +243,6 @@ export async function opsPublishManualQuote(
   try {
     const interactive = await whatsappAdapter.sendPaymentChoices(order.phone, total, cardTotal(total));
     if (!interactive) await reply(order.phone, copy.paymentMethod(total, cardTotal(total)));
-    await reply(order.phone, copy.quoteValidFor(quoteTtlMinutes()));
   } catch (error) {
     // Resumo já chegou: o cliente tem o total e "pix"/"cartão" por texto funcionam.
     console.warn("[ops:publish-quote:followup-send-failed]", error instanceof Error ? error.message : error);

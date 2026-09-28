@@ -118,7 +118,7 @@ test("pedido mínimo oferece TROCA DE LOJA e o aceite fecha na hora (2º testado
   const done = await c.send("minswap:yes");
   assert.match(done, /Troquei de loja/i, done.slice(0, 300));
   assert.match(done, /→/, `aceite sem os pares antigo→novo: ${done.slice(0, 400)}`);
-  assert.match(done, /Preço garantido|Como prefere pagar/i, `não fechou: ${done.slice(0, 400)}`);
+  assert.match(done, /Como prefere pagar/i, `não fechou: ${done.slice(0, 400)}`);
   // A cesta virou PEDIDO no fechamento: a prova da troca mora nos itens do pedido.
   const order = await prisma.deliveryOrder.findFirst({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   const items = (order!.items as Array<{ storeKey?: string }>) ?? [];
