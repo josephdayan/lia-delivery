@@ -23,7 +23,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # O package-lock está fora de sincronia com o package.json (anterior a 27/09); a Vercel usa
+      # npm install, então aqui também. Só os *-catalog.ts são commitados.
+      - run: npm install --no-audit --no-fund
       - run: npx prisma generate
       - name: Recolher catálogos
         run: |
