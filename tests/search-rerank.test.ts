@@ -56,15 +56,34 @@ test("rerank: sku inventado/duplicado é filtrado; corte em 3", async () => {
   assert.deepEqual(out?.lines[0].skus, ["PM-1", "PETZ-1", "PETZ-2"]);
 });
 
-// Vitrine do carrossel (dono, 28/09): o teto é o `limit` do chamador. Desde 10/09 o
-// prompt pedia até 5, mas um slice(0, 3) fixo aqui cortava — o carrossel saía sempre com 3.
-test("rerank: respeita o teto do chamador (5 no carrossel)", async () => {
-  const many: RerankLine[] = [
-    { query: "shampoo", candidates: ["A", "B", "C", "D", "E", "F"].map((sku) => ({ sku, name: `Shampoo ${sku}`, price: 20, store: "Loja" })) }
+// Vitrine do carrossel (dono, 28/09): "se tem 5, mostra as 5; se não tem, mostra as que
+// tem". A IA só julga (o que serve + ordem); o código monta: todos os aprovados, produtos
+// distintos primeiro, variantes (sabor/tamanho) depois, até o teto do chamador.
+test("rerank: todos os aprovados entram, distintos antes das variantes, até o teto", async () => {
+  const coco: RerankLine[] = [
+    {
+      query: "água de coco",
+      candidates: [
+        { sku: "K-200", name: "Água de Coco Kero Coco 200ml", brand: "Kero Coco", price: 4, store: "Mambo" },
+        { sku: "K-1L", name: "Água de Coco Kero Coco 1L", brand: "Kero Coco", price: 11, store: "Mambo" },
+        { sku: "MEL", name: "Água de Coco Sococo Sabor Melancia 200ml", brand: "Sococo", price: 3, store: "Drogal" },
+        { sku: "MAMBO", name: "Água de Coco Momento Mambo 1L", brand: "Mambo", price: 10, store: "Mambo" },
+        { sku: "OBRIGADO", name: "Água de Coco Obrigado 1L", brand: "Obrigado", price: 12, store: "Swift" },
+        { sku: "PURITY", name: "Água de Coco Puraty 330ml", brand: "Puraty", price: 7, store: "Swift" },
+        { sku: "TONICA", name: "Água Tônica Schweppes 350ml", brand: "Schweppes", price: 3, store: "Swift" }
+      ]
+    }
   ];
-  mockResponse({ lines: [{ skus: ["A", "B", "C", "D", "E", "F"] }] });
-  const out = await rerankShoppingOptions("shampoo", many, 5);
-  assert.deepEqual(out?.lines[0].skus, ["A", "B", "C", "D", "E"]);
+  mockResponse({ lines: [{ skus: ["K-200", "K-1L", "MEL", "MAMBO", "OBRIGADO", "PURITY"] }] });
+  const five = await rerankShoppingOptions("água de coco", coco, 5);
+  // O Kero de 1L (variante de tamanho) cede a vaga pros distintos; sabor conta como
+  // produto distinto; a tônica (reprovada pela IA) nunca entra.
+  assert.deepEqual(five?.lines[0].skus, ["K-200", "MEL", "MAMBO", "OBRIGADO", "PURITY"]);
+
+  mockResponse({ lines: [{ skus: ["K-200", "K-1L", "MEL"] }] });
+  const few = await rerankShoppingOptions("água de coco", coco, 5);
+  // Menos distintos que vagas: a variante completa — mas só o que a IA aprovou.
+  assert.deepEqual(few?.lines[0].skus, ["K-200", "MEL", "K-1L"]);
 });
 
 test("rerank: resposta com nº de linhas errado é descartada inteira (null)", async () => {

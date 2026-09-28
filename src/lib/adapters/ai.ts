@@ -3,6 +3,8 @@
 
 
 
+import { diversifyOptions } from "../stores/types";
+
 // Robust everyday-delivery matching: given the store catalog + the customer's
 // message, map the request to catalog SKUs. The LLM handles synonyms
 // ("pasta de dente"=creme dental, "refri"=refrigerante), greetings, typos, qty and
@@ -120,7 +122,7 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
           {
             role: "system",
             content:
-              `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, uma lista de CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item, escolha até ${limit} candidatos que sejam REALMENTE o produto pedido, em ordem de recomendação. Regras: (1) Só inclua um candidato se um atendente humano o entregaria sem o cliente reclamar — mesmo tipo, forma e uso; palavras parecidas não bastam. Ex.: pedido 'carregador usb c' → carregador de parede/cabo USB-C serve; 'carregador veicular' (de carro) NÃO serve, a menos que o cliente tenha pedido veicular. A RECÍPROCA NÃO VALE: pedido 'cabo usb c' → um CARREGADOR não serve (carregador não é cabo) — sem cabo de verdade, devolva lista vazia. Atributo pedido (tamanho, litragem, metragem) vale para TODAS as opções que você listar, não só a primeira. Pedido 'escova de dente' → 'Escova Dental' serve (mesmo produto, outro nome); 'escova de cabelo' não. (2) Atributos que o cliente pediu (tamanho, cor, sabor, marca, espécie/porte do pet, 'sem açúcar', 'sem lactose') são obrigatórios quando os candidatos os distinguem. (3) Diversifique as até ${limit} escolhas: cada uma deve ser um produto realmente DIFERENTE que ainda atenda o pedido — outra marca, outro modelo, outro tipo ou outra loja, espalhadas por faixas de preço (do mais barato ao premium). A variação é DENTRO do pedido: nunca use uma vaga para algo que o cliente não pediu. PREENCHA AS ${limit} VAGAS com o que É o produto pedido: primeiro produtos distintos; se faltarem, complete com variantes (outro sabor, cor, tamanho ou embalagem) de produtos já listados — variante continua sendo o que o cliente pediu, e o cliente vê todas num carrossel. Variantes vão depois dos distintos. Só devolva menos que ${limit} quando não houver mais candidatos que sejam de verdade o produto pedido; NUNCA complete uma vaga com algo de outro tipo, nem quebrando as regras (1) e (2): se o cliente pediu uma marca, tamanho, espécie ou porte, TODAS as opções precisam ter esse atributo (pedido 'ração golden' → só Golden; outra marca não entra nem na última vaga). Mostrar algo que não tem nada a ver é o pior erro possível; vaga vazia é aceitável. Ordene do mais recomendado para o menos. (4) Se NENHUM candidato serve de verdade, devolva lista vazia para aquele item — um operador humano cota e compra qualquer coisa, então lista vazia é melhor que sugestão errada. (5) Use APENAS skus da lista daquele item; nunca invente. (6) Devolva exatamente um resultado por item, na mesma ordem dos itens. Responda apenas JSON válido.`
+              `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, uma lista de CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item, julgue CADA candidato e liste todos os que são REALMENTE o produto pedido, em ordem de recomendação. Regras: (1) Só inclua um candidato se um atendente humano o entregaria sem o cliente reclamar — mesmo tipo, forma e uso; palavras parecidas não bastam. Ex.: pedido 'carregador usb c' → carregador de parede/cabo USB-C serve; 'carregador veicular' (de carro) NÃO serve, a menos que o cliente tenha pedido veicular. A RECÍPROCA NÃO VALE: pedido 'cabo usb c' → um CARREGADOR não serve (carregador não é cabo) — sem cabo de verdade, devolva lista vazia. Atributo pedido (tamanho, litragem, metragem) vale para TODAS as opções que você listar, não só a primeira. Pedido 'escova de dente' → 'Escova Dental' serve (mesmo produto, outro nome); 'escova de cabelo' não. (2) Atributos que o cliente pediu (tamanho, cor, sabor, marca, espécie/porte do pet, 'sem açúcar', 'sem lactose') são obrigatórios quando os candidatos os distinguem. (3) Liste TODOS os candidatos que servem — não existe limite de quantidade; quem monta a vitrine (até ${limit} cards) é o sistema, a partir da sua lista. Nunca deixe de fora um candidato que é o produto pedido só porque ele é outro sabor, cor, tamanho ou embalagem de um já listado: variante continua sendo o que o cliente pediu (o sistema põe as variantes depois dos produtos distintos). E nunca inclua algo de outro tipo ou que quebre as regras (1) e (2): se o cliente pediu uma marca, tamanho, espécie ou porte, TODOS os listados precisam ter esse atributo (pedido 'ração golden' → só Golden). Mostrar algo que não tem nada a ver é o pior erro possível. Ordem: o mais recomendado primeiro; nas primeiras posições alterne marca, loja e faixa de preço (do barato ao premium). (4) Se NENHUM candidato serve de verdade, devolva lista vazia para aquele item — um operador humano cota e compra qualquer coisa, então lista vazia é melhor que sugestão errada. (5) Use APENAS skus da lista daquele item; nunca invente. (6) Devolva exatamente um resultado por item, na mesma ordem dos itens. Responda apenas JSON válido.`
           },
           {
             role: "user",
@@ -178,7 +180,13 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
           seen.add(sku);
           return true;
         });
-        return { skus: skus.slice(0, limit) };
+        // A IA julga (o que serve + ordem); a quantidade é regra do código: todos os
+        // aprovados entram, distintos primeiro e variantes depois, até o teto. Pedir
+        // "até N" deixava a IA decidir o tamanho da vitrine — a mesma busca saía com 5
+        // numa rodada e 3 na outra (dono, 28/09: "se tem 5, mostra as 5").
+        const bySku = new Map(lines[i].candidates.map((c) => [c.sku, c]));
+        const approved = skus.map((sku) => bySku.get(sku)!);
+        return { skus: diversifyOptions(lines[i].query, approved, limit).map((c) => c.sku) };
       })
     };
   } catch (error) {
