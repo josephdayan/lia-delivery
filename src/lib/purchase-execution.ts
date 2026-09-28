@@ -809,12 +809,22 @@ export async function ownerStoreNumber(jobId: string, storeOrderNumber: string, 
 // copia-e-cola. Aqui: CRC, valor exato, cobrança dinâmica, recebedor na allowlist da loja.
 // Recebedor novo pede um toque do dono; aprovado → pagamento ÚNICO por API bancária.
 const PIX_SETTLE_STATUSES = ["pix_submitted", "pix_paid", "store_confirmed"];
-export async function capturePix(jobId: string, workerId: string, token: string, submissionId: string, code: string) {
+// `issuedByStoreApi`: o código veio direto da API de checkout da loja para ESTE pedido (não de
+// tela raspada). Aí também vale a cobrança no formato chave + valor + txid, que é como o
+// Mercado Pago (adquirente da Mambo, 28/09) emite o Pix de cada pedido: sem URL em 26-25.
+// Exige valor embutido igual ao conferido e txid real; o pagamento continua sendo do valor
+// exato, único, e o recebedor continua na allowlist da loja. Liberado pelo dono em 28/09.
+export function storeChargeAccepted(emv: ReturnType<typeof parsePixEmv>, issuedByStoreApi: boolean) {
+  if (emv.dynamic) return true;
+  return issuedByStoreApi && emv.amountCents != null && Boolean(emv.txid && emv.txid.length >= 8);
+}
+export async function capturePix(jobId: string, workerId: string, token: string, submissionId: string, code: string, opts: { issuedByStoreApi?: boolean } = {}) {
   if (process.env.LIA_PURCHASE_SUBMIT_OFF === "true") throw new Error("Finalização de compras pausada.");
   const provider = pixOutProvider();
   const emv = parsePixEmv(code);
   if (!emv.valid) throw new Error(`Copia-e-cola inválido (${emv.reason ?? "formato"}).`);
-  if (!emv.dynamic) throw new Error("Só pagamos cobrança Pix dinâmica gerada pelo checkout.");
+  const storeCharge = !emv.dynamic && storeChargeAccepted(emv, Boolean(opts.issuedByStoreApi));
+  if (!emv.dynamic && !storeCharge) throw new Error(`Só pagamos cobrança Pix dinâmica gerada pelo checkout (recebido: chave ${emv.pixKey ? "sim" : "não"}, valor ${emv.amountCents ?? "—"}, txid ${emv.txid ?? "—"}).`);
   const decoded = await provider.decode(code.trim());
   const base = await prisma.purchaseJob.findUniqueOrThrow({ where: { id: jobId } });
   const shortId = base.deliveryOrderId.slice(-6).toUpperCase();
@@ -825,9 +835,11 @@ export async function capturePix(jobId: string, workerId: string, token: string,
     const e = parseStoredEvidence(job.checkoutEvidence);
     if (e.payment.kind !== "pix_store") throw new Error("Este checkout não é Pix da loja.");
     const amount = decoded.amountCents ?? emv.amountCents;
-    if (amount !== e.totalCents || (emv.amountCents != null && emv.amountCents !== e.totalCents) || decoded.canBePaidWithDifferentValue)
-      throw new Error("Valor do Pix não bate com o checkout conferido.");
-    if (decoded.type !== "dynamic") throw new Error("Só pagamos cobrança Pix dinâmica.");
+    // Cobrança da loja em formato chave+valor: o banco pode marcar "valor alterável", mas o
+    // valor embutido já foi conferido e a Lia paga exatamente ele.
+    if (amount !== e.totalCents || (emv.amountCents != null && emv.amountCents !== e.totalCents) || (decoded.canBePaidWithDifferentValue && !storeCharge))
+      throw new Error(`Valor do Pix não bate com o checkout conferido (Pix ${amount ?? "—"}, conferido ${e.totalCents}).`);
+    if (decoded.type !== "dynamic" && !storeCharge) throw new Error("Só pagamos cobrança Pix dinâmica.");
     if (!/^\d{11}$|^\d{14}$/.test(decoded.receiverDoc)) throw new Error("Recebedor do Pix sem documento legível.");
     const existing = await tx.pixPayout.findUnique({ where: { purchaseJobId: job.id } });
     if (existing) throw new Error("Já existe um pagamento para esta compra; nunca pagar duas vezes.");

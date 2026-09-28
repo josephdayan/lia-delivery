@@ -192,7 +192,7 @@ export async function executeVtexJob(
 
   // ---- Pix da loja pago pela Lia ----
   let captured;
-  try { captured = await capturePix(...ids, submissionId, pix.code); } catch (error) {
+  try { captured = await capturePix(...ids, submissionId, pix.code, { issuedByStoreApi: true }); } catch (error) {
     // Pedido criado e Pix em mãos, mas a conferência do Pix falhou (valor, dinâmico, banco).
     // Nenhum dinheiro saiu (o PixPayout nasce só depois da conferência): o motivo fica gravado
     // e a varredura estorna o cliente; o pedido na loja vence sozinho sem pagamento.
