@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-25 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.epocacosmeticos.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.epocacosmeticos.com.br epoca src/lib/stores/epocacosmeticos-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.epocacosmeticos.com.br epoca /var/folders/7r/7hym0mvj1_l51n6b8pm8ym9h0000gn/T/lia-catalog-ojnVnD/epocacosmeticos.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -28,28 +28,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 2
  },
  {
-  sku: "epoca-42017",
-  name: "Óleo Capilar Sebastian Dark Oil 30ml",
-  brand: "Sebastian Professional",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2132852/sebastian-dark-oil-oleo-capilar--1-.jpg?v=639147992521600000",
-  productUrl: "https://www.epocacosmeticos.com.br/sebastian-dark-oil-oleo-capilar/p",
-  popularity: 3
- },
- {
-  sku: "epoca-25357",
-  name: "Kérastase Résistance Masque Thérapiste - Máscara de Tratamento 200ml",
-  brand: "Kerastase",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras danificados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496312/therapiste--1-.jpg?v=637921947711270000",
-  productUrl: "https://www.epocacosmeticos.com.br/kerastase-resistance-masque-therapiste-mascara-de-tratamento/p",
-  popularity: 4
- },
- {
   sku: "epoca-226373",
   name: "Máscara Sebastian Penetraitt 30ml",
   brand: "Sebastian Professional",
@@ -58,7 +36,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1830802/4068359105902.jpg?v=639120509511230000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-sebastian-penetraitt/p",
-  popularity: 5
+  popularity: 3
  },
  {
   sku: "epoca-136902",
@@ -69,7 +47,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo loiros e descoloridos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/953824/shampoo-fortificante-wella-professionals-blondorplex--1-.png?v=638901867186830000",
   productUrl: "https://www.epocacosmeticos.com.br/shampoo-fortificante-wella-professionals-blondorplex/p",
-  popularity: 6
+  popularity: 4
  },
  {
   sku: "epoca-88264",
@@ -80,18 +58,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3017800/7908785408000--01-.jpg?v=639232553729770000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-skinceuticals-p-tiox/p",
-  popularity: 7
+  popularity: 5
  },
  {
   sku: "epoca-86396",
   name: "Creme Hidratante Facial Creamy - Calming Cream 40g",
   brand: "Creamy",
-  unitPrice: 52.62,
+  unitPrice: 44.73,
   unit: "un",
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/660983/creme-hidratante-creamy-calming-cream-20-5-.jpg.jpg?v=638625277316400000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-creamy-calming-cream/p",
-  popularity: 8
+  popularity: 6
  },
  {
   sku: "epoca-85987",
@@ -102,7 +80,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem aplicadores para maquiagem esponja",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/611048/esponja-de-maquiagem-oceane-flat-blend--1-.jpg?v=638518352367330000",
   productUrl: "https://www.epocacosmeticos.com.br/esponja-de-maquiagem-oceane-flat-blend/p",
-  popularity: 9
+  popularity: 7
  },
  {
   sku: "epoca-82747",
@@ -113,7 +91,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios batom",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/829249/batom-mac-macximal-silky-matte-lipstick--1-.jpg?v=638803434325070000",
   productUrl: "https://www.epocacosmeticos.com.br/batom-mac-macximal-silky-matte-lipstick/p",
-  popularity: 10
+  popularity: 8
  },
  {
   sku: "epoca-78633",
@@ -124,7 +102,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559281/kerastase-nutritive-masquintense-riche-mascara--1-.jpg?v=638241714109430000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-nutritive-masquintense-riche-mascara/p",
-  popularity: 11
+  popularity: 9
  },
  {
   sku: "epoca-72063",
@@ -135,18 +113,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1372522/protetor-solar-facial-com-cor-la-roche-posay-anthelios-ultra-cover-fps60--1---1-.jpg?v=639035862255230000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-com-cor-la-roche-posay-anthelios-ultra-cover-fps60/p",
-  popularity: 12
+  popularity: 10
  },
  {
-  sku: "epoca-70769",
-  name: "Cetaphil Kit com Dois Cremes Hidratantes Pele Extremamente Seca e Sensível Kit",
-  brand: "Cetaphil",
-  unitPrice: 239.21,
+  sku: "epoca-67635",
+  name: "Protetor Solar Facial FPS96 Pink Cheeks – Speedo 14g",
+  brand: "Pink Cheeks",
+  unitPrice: 49.99,
   unit: "un",
-  category: "skincare kits de skincare",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1398887/cetaphil-kit-com-dois-cremes-hidratantes--2-.jpg?v=639050368252000000",
-  productUrl: "https://www.epocacosmeticos.com.br/cetaphil-kit-com-dois-cremes-hidratantes/p",
-  popularity: 13
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481595/protetor-solar-facial-fps96-pink-cheeks-speedo.jpg?v=637838300284330000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-fps96-pink-cheeks-speedo/p",
+  popularity: 11
  },
  {
   sku: "epoca-44896",
@@ -157,7 +135,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/734105/Po-Compacto-Protetor-Solar-FPS-50-Episol---Mantecorp-Skincare-extra-clara.jpg?v=638726515844370000",
   productUrl: "https://www.epocacosmeticos.com.br/po-compacto-protetor-solar-mantecorp-skincare-episol-fps-50/p",
-  popularity: 14
+  popularity: 12
+ },
+ {
+  sku: "epoca-42017",
+  name: "Óleo Capilar Sebastian Dark Oil 30ml",
+  brand: "Sebastian Professional",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2132852/sebastian-dark-oil-oleo-capilar--1-.jpg?v=639147992521600000",
+  productUrl: "https://www.epocacosmeticos.com.br/sebastian-dark-oil-oleo-capilar/p",
+  popularity: 13
  },
  {
   sku: "epoca-39524",
@@ -168,18 +157,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/573007/wella-nutri-enrich-kit-shampoo-e-condicionador--2-.jpg?v=638325649984400000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-kit-shampoo-condicionador-/p",
-  popularity: 15
+  popularity: 14
  },
  {
   sku: "epoca-36949",
   name: "Wella Professionals Invigo Nutri-Enrich - Máscara 150ml",
   brand: "Wella Professionals",
-  unitPrice: 115.9,
+  unitPrice: 107.87,
   unit: "un",
   category: "cabelos tratamentos e mascaras seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/883933/wella-professionals-invigo-nutri-enrich-mascara--1-.jpg?v=638864557706130000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-mascara/p",
-  popularity: 16
+  popularity: 15
  },
  {
   sku: "epoca-30716",
@@ -190,6 +179,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1270376/OR_Oil-Reflections-Light-100ml-7898973417047.jpg?v=638991749853800000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflections-reflective-light-oleo-capilar/p",
+  popularity: 16
+ },
+ {
+  sku: "epoca-25357",
+  name: "Kérastase Résistance Masque Thérapiste - Máscara de Tratamento 200ml",
+  brand: "Kerastase",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496312/therapiste--1-.jpg?v=637921947711270000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-resistance-masque-therapiste-mascara-de-tratamento/p",
   popularity: 17
  },
  {
@@ -281,17 +281,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 25
  },
  {
-  sku: "epoca-94460",
-  name: "Máscara de Nutrição Wella Professionals Invigo Nutri Enrich 500ml",
-  brand: "Wella Professionals",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650495/17262380814100.jpg?v=638621149607600000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-mascara-de-nutricao-500ml-71813/p",
-  popularity: 26
- },
- {
   sku: "epoca-94458",
   name: "Kit Cronograma Capilar Wella Professionals",
   brand: "Wella Professionals",
@@ -300,7 +289,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650492/17262381796273.jpg?v=638621149601070000",
   productUrl: "https://www.epocacosmeticos.com.br/cronograma-capilar-wella-professionals-71811/p",
-  popularity: 27
+  popularity: 26
  },
  {
   sku: "epoca-94455",
@@ -311,7 +300,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores protetor termico",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650480/17265096336073.jpg?v=638621149596100000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-eimi-thermal-image-protetor-termico-150ml-71808/p",
-  popularity: 28
+  popularity: 27
  },
  {
   sku: "epoca-89640",
@@ -322,7 +311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628415/17245010552127.jpg?v=639186072803000000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-light---oleo-capilar-100ml-67114/p",
-  popularity: 29
+  popularity: 28
  },
  {
   sku: "epoca-88581",
@@ -333,7 +322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem aplicadores para maquiagem esponja",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/631580/esponja-de-maquiagem-sister-blend-by-oceane--1-.jpg?v=638609860257200000",
   productUrl: "https://www.epocacosmeticos.com.br/esponja-de-maquiagem-sister-blend-by-oceane/p",
-  popularity: 30
+  popularity: 29
  },
  {
   sku: "epoca-88418",
@@ -344,7 +333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem estojo completo ou kit de maquiagem",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/727192/kit-de-pinceis-real-techniques-epoca-cosmeticos-the-makeup-expert-favorites--1-.jpg.jpg?v=638720230930600000",
   productUrl: "https://www.epocacosmeticos.com.br/kit-de-pinceis-real-techniques-epoca-cosmeticos-the-makeup-expert-favorites/p",
-  popularity: 31
+  popularity: 30
  },
  {
   sku: "epoca-85594",
@@ -355,7 +344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/606491/wella-professionals-oil-reflections-kit-shampoo-condicionador-250ml.jpg?v=638499933943100000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-kit-shampoo-condicionador-250ml/p",
-  popularity: 32
+  popularity: 31
  },
  {
   sku: "epoca-117047",
@@ -366,7 +355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento creme clareador",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1454448/serum-la-roche-posay-mela-b3--3-.jpg?v=639068339258200000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-la-roche-posay-mela-b3/p",
-  popularity: 33
+  popularity: 32
  },
  {
   sku: "epoca-84833",
@@ -377,7 +366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/601308/kit-2.jpg?v=638477511287700000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-kit-shampoo-condicionador/p",
-  popularity: 34
+  popularity: 33
  },
  {
   sku: "epoca-85292",
@@ -388,7 +377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mundo epoca",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/613240/epoca-cosmeticos-sacola-presenteavel-tam-p--1-.jpg?v=638527665134100000",
   productUrl: "https://www.epocacosmeticos.com.br/epoca-cosmeticos-sacola-presenteavel/p",
-  popularity: 35
+  popularity: 34
  },
  {
   sku: "epoca-84063",
@@ -399,7 +388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/599549/wella-professionals-ultimate-luxe-oil-oleo-capilar--1-.jpg?v=638471399036070000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-ultimate-luxe-oil-oleo-capilar/p",
-  popularity: 36
+  popularity: 35
  },
  {
   sku: "epoca-83517",
@@ -410,29 +399,29 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele demaquilante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2553234/serum-facial-antioxidante-fisiogel-c22.jpg?v=639183310183470000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-antioxidante-fisiogel-c22/p",
-  popularity: 37
+  popularity: 36
  },
  {
   sku: "epoca-83625",
   name: "Perfume MYSLF Yves Saint Laurent Eau de Parfum Masculino 150ml",
   brand: "Yves Saint Laurent",
-  unitPrice: 1124.9,
+  unitPrice: 1093.26,
   unit: "un",
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/595765/3614273852807.01.jpg?v=638586616075270000",
   productUrl: "https://www.epocacosmeticos.com.br/yves-saint-laurent-myslf-perfume-masculino-eau-de-parfum/p",
-  popularity: 38
+  popularity: 37
  },
  {
   sku: "epoca-81379",
   name: "Hidratante Facial Neutrogena Refil - Hydro Boost Water Gel 50g",
   brand: "Neutrogena",
-  unitPrice: 55.99,
+  unitPrice: 50.38,
   unit: "un",
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2795175/7891010255725_3.jpg?v=639205988676970000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-neutrogena-refil-hydro-boost-water-gel/p",
-  popularity: 39
+  popularity: 38
  },
  {
   sku: "epoca-300016",
@@ -443,7 +432,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3187413/eudora-siage-condicionador-pro-cronology -1-.webp?v=639253374910670000",
   productUrl: "https://www.epocacosmeticos.com.br/eudora-siage-condicionador-pro-cronology/p",
-  popularity: 40
+  popularity: 39
  },
  {
   sku: "epoca-79238",
@@ -454,7 +443,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3224842/eudora-siage-shampoo-pro-cronology2.jpg?v=639257708616000000",
   productUrl: "https://www.epocacosmeticos.com.br/eudora-siage-shampoo-pro-cronology/p",
-  popularity: 41
+  popularity: 40
  },
  {
   sku: "epoca-75226",
@@ -465,7 +454,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3060660/3614273760713.01.jpg?v=639238717103000000",
   productUrl: "https://www.epocacosmeticos.com.br/prada-paradoxe-perfume-feminino-eau-de-parfum/p",
-  popularity: 42
+  popularity: 41
  },
  {
   sku: "epoca-74485",
@@ -476,7 +465,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1332004/7896026171267_0.jpg?v=639009143521870000",
   productUrl: "https://www.epocacosmeticos.com.br/fotoprotetor-facial-com-cor-umbrella-perfect-skin-fps50/p",
-  popularity: 43
+  popularity: 42
  },
  {
   sku: "epoca-73602",
@@ -487,40 +476,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/518551/dermage-photoage-water-kit-com-2-unidades-protetor-solar-facial-fps50-40g.jpg?v=638031085130130000",
   productUrl: "https://www.epocacosmeticos.com.br/dermage-photoage-water-kit-com-2-unidades-protetor-solar-facial-fps50-40g/p",
+  popularity: 43
+ },
+ {
+  sku: "epoca-70769",
+  name: "Cetaphil Kit com Dois Cremes Hidratantes Pele Extremamente Seca e Sensível Kit",
+  brand: "Cetaphil",
+  unitPrice: 239.21,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1398887/cetaphil-kit-com-dois-cremes-hidratantes--2-.jpg?v=639050368252000000",
+  productUrl: "https://www.epocacosmeticos.com.br/cetaphil-kit-com-dois-cremes-hidratantes/p",
   popularity: 44
- },
- {
-  sku: "epoca-70687",
-  name: "Fixador de Maquiagem Vizzela Real Fix 150ml",
-  brand: "Vizzela",
-  unitPrice: 86.9,
-  unit: "un",
-  category: "maquiagem primer e finalizador fixador da maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499636/fixador-de-maquiagem-vizzela-real-fix--1-.jpg?v=637940991084430000",
-  productUrl: "https://www.epocacosmeticos.com.br/fixador-de-maquiagem-vizzela-real-fix/p",
-  popularity: 45
- },
- {
-  sku: "epoca-69269",
-  name: "Reparador de Pontas Amend Gold Black Nutritivo 30ml",
-  brand: "Amend",
-  unitPrice: 8.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras seco e ressecados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/531886/7896852611050.jpg?v=638100750484900000",
-  productUrl: "https://www.epocacosmeticos.com.br/reparador-de-pontas-amend-gold-black-nutritivo/p",
-  popularity: 46
- },
- {
-  sku: "epoca-67635",
-  name: "Protetor Solar Facial FPS96 Pink Cheeks – Speedo 14g",
-  brand: "Pink Cheeks",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481595/protetor-solar-facial-fps96-pink-cheeks-speedo.jpg?v=637838300284330000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-fps96-pink-cheeks-speedo/p",
-  popularity: 47
  },
  {
   sku: "epoca-67460",
@@ -531,1250 +498,18 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face po facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/480462/po-solto-facial-bruna-tavares-bt-skinpowder-deep.jpg?v=637832098424570000",
   productUrl: "https://www.epocacosmeticos.com.br/po-solto-facial-bruna-tavares-bt-skinpowder/p",
-  popularity: 48
+  popularity: 45
  },
  {
   sku: "epoca-27209",
   name: "Shampoo Antiqueda Estimulante Vichy Dercos Energy+ 400g",
   brand: "Vichy",
-  unitPrice: 186.9,
+  unitPrice: 149.18,
   unit: "un",
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3217015/7899706254403---2.jpg?v=639256858322030000",
   productUrl: "https://www.epocacosmeticos.com.br/dercos-shampoo-energizante-vichy-shampoo-para-enfraquecimento-capilar-e-queda-200ml/p",
-  popularity: 49
- },
- {
-  sku: "epoca-62404",
-  name: "Avène Cicalfate+ Creme Reparador Facial 20ml",
-  brand: "Avène",
-  unitPrice: 44.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1092040/creme-facial-reparador-avene-cicalfate--8-.jpg?v=638948556984130000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-reparador-avene-cicalfate/p",
-  popularity: 50
- },
- {
-  sku: "epoca-58407",
-  name: "Gel Incolor para Sobrancelhas Dailus Incolor",
-  brand: "Dailus",
-  unitPrice: 14.89,
-  unit: "un",
-  category: "maquiagem sobrancelhas mascara para sobrancelhas",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/421436/mascara-incolor-para-sobrancelhas-dailus-gel-para-sobrancelhas.jpg?v=637493385457600000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-incolor-para-sobrancelhas-dailus-gel-para-sobrancelhas/p",
-  popularity: 51
- },
- {
-  sku: "epoca-56147",
-  name: "Base Líquida Niina Secrets by Eudora – Hidra Glow 00",
-  brand: "Eudora Niina Secrets",
-  unitPrice: 75.64,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/406512/base-liquida-niina-secrets-by-eudora-hidra-glow-00.jpg?v=637383592271430000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-niina-secrets-by-eudora-hidra-glow/p",
-  popularity: 52
- },
- {
-  sku: "epoca-55454",
-  name: "Sérum Facial Antimanchas e Anti-idade Eucerin Anti-Pigment Clareador Dual Sérum 30ml",
-  brand: "Eucerin",
-  unitPrice: 299,
-  unit: "un",
-  category: "skincare hidratacao e tratamento creme clareador",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1555771/4006000101279-EUCERIN_Dual_S_rum_Facial_Antimanchas_e_Anti_idade_30ml_Anti_Pigment_Clareador_Thiamidol__cido_Hialur_nico-Face-Eucerin_--1-.jpg?v=639086875530570000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-eucerin-anti-pigment-dual-serum/p",
-  popularity: 53
- },
- {
-  sku: "epoca-52274",
-  name: "Protetor Solar Bioré - Aqua Rich Watery Essence FPS 50 50g",
-  brand: "Bioré",
-  unitPrice: 62.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1322744/protetor-solar-facial-biore-aqua-rich-watery-essence-fps-50--8-.webp?v=639005572100830000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-biore-aqua-rich-watery-essence-fps-50/p",
-  popularity: 54
- },
- {
-  sku: "epoca-52251",
-  name: "Protetor Solar Facial Bioré Perfect Milk 50 FPS 40ml",
-  brand: "Bioré",
-  unitPrice: 64.4,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/822119/4901301303844---2-.jpg.jpg?v=638793903650000000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-biore-perfect-milk-50-fps/p",
-  popularity: 55
- },
- {
-  sku: "epoca-52245",
-  name: "Óleo Demaquilante Facial Bioré - Cleansing Oil 150ml",
-  brand: "Bioré",
-  unitPrice: 57.9,
-  unit: "un",
-  category: "maquiagem remocao da maquiagem demaquilante",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922572/oleo-demaquilante-facial-biore-make-up-remover-150ml.jpg?v=638884391911600000",
-  productUrl: "https://www.epocacosmeticos.com.br/oleo-demaquilante-facial-biore-make-up-remover/p",
-  popularity: 56
- },
- {
-  sku: "epoca-51690",
-  name: "Libre Yves Saint Laurent Perfume Feminino - Eau de Parfum 30ml",
-  brand: "Yves Saint Laurent",
-  unitPrice: 527.9,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400238/libre-yves-saint-laurent-perfume-feminino-eau-de-parfum-30ml--1-.jpg?v=639051234140000000",
-  productUrl: "https://www.epocacosmeticos.com.br/libre-yves-saint-laurent-perfume-feminino-eau-de-parfum/p",
-  popularity: 57
- },
- {
-  sku: "epoca-49022",
-  name: "Base Facial Multifuncional Shiseido BB For Sports Fps50+ Dark",
-  brand: "Shiseido",
-  unitPrice: 388,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/469873/base-solar-liquida-shiseido-bb-for-sports-fps50.jpg?v=637757191469770000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-solar-liquida-shiseido-bb-for-sports-fps-50/p",
-  popularity: 58
- },
- {
-  sku: "epoca-48647",
-  name: "Shampoo L'Oréal Professionnel Absolut Repair Com Proteína e Ômega 9 300ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cabelos shampoo danificados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162553/7899706189606_1.jpg?v=638972590989530000",
-  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-gold-quinoa-protein-shampoo/p",
-  popularity: 59
- },
- {
-  sku: "epoca-48452",
-  name: "Promopack Neostrata Minesol OC FPS70 50% Desconto na 2a unidade Kit",
-  brand: "Neostrata",
-  unitPrice: 123.74,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/473273/NEO_7891010248703_Promopack-2x-Minesol-Oil-Control-FPS-70_F.jpg?v=637783872701100000",
-  productUrl: "https://www.epocacosmeticos.com.br/neostrata-minesol-oil-control-fps-70-2-protetores-solares/p",
-  popularity: 60
- },
- {
-  sku: "epoca-45251",
-  name: "Perfume Idôle Lancôme Feminino Eau de Parfum Refilável 25ml",
-  brand: "Lancôme",
-  unitPrice: 361.31,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3151264/3614272639638.01.jpg?v=639250131481070000",
-  productUrl: "https://www.epocacosmeticos.com.br/idole-lancome-perfume-feminino-eau-de-parfum/p",
-  popularity: 61
- },
- {
-  sku: "epoca-42891",
-  name: "Óleo Capilar Lola Cosmetics Argan Oil 50ml",
-  brand: "Lola From Rio",
-  unitPrice: 17.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/332680/lola-cosmetics-argan-oil-oleo-capilar.jpg?v=636911265415830000",
-  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-argan-oil-oleo-capilar/p",
-  popularity: 62
- },
- {
-  sku: "epoca-30714",
-  name: "Óleo Capilar Wella Professionals Oil Reflections Smoothening 100ml",
-  brand: "Wella Professionals",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1270427/4064666306179--7-.jpg?v=638991758527200000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflectionsluminous-smoothening-oelo-capilar/p",
-  popularity: 63
- },
- {
-  sku: "epoca-30712",
-  name: "Wella Professionals Oil Reflections Máscara de Hidratação 150ml",
-  brand: "Wella Professionals",
-  unitPrice: 142.8,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/883994/wella-sp-oil-reflections-mascara-de-hidratacao--1-.jpg?v=638864566014200000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflections-mascara-de-hidratacao/p",
-  popularity: 64
- },
- {
-  sku: "epoca-27020",
-  name: "Widi Care Encaracolando a Juba Creme de Pentear 500ml",
-  brand: "Widi Care",
-  unitPrice: 45.1,
-  unit: "un",
-  category: "cabelos leave in e creme para pentear cacheado e crespo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/246425/encaracolando-a-juba-widi-care-leave-in.jpg?v=636474558816200000",
-  productUrl: "https://www.epocacosmeticos.com.br/encaracolando-a-juba-widi-care-creme-de-pentear/p",
-  popularity: 65
- },
- {
-  sku: "epoca-26558",
-  name: "Shampoo Anti-quebra L’Oréal Professionnel Serie Expert Inforcer 300ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 82.1,
-  unit: "un",
-  category: "cabelos shampoo danificados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537762/loreal-professionnel-inforcer-shampoo-anti-quebra--1-.jpg?v=638131217643830000",
-  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-inforcer-shampoo-anti-quebra/p",
-  popularity: 66
- },
- {
-  sku: "epoca-25450",
-  name: "Solução Facial Antioleosidade Redução de Poros SkinCeuticals Blemish + Age 125ml",
-  brand: "Skinceuticals",
-  unitPrice: 104.9,
-  unit: "un",
-  category: "skincare limpeza de pele tonico facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/526335/skinceuticals-blemish-age-solution--1-.jpg?v=638067350490470000",
-  productUrl: "https://www.epocacosmeticos.com.br/tonico-facial-skinceuticals-blemish-age-solution/p",
-  popularity: 67
- },
- {
-  sku: "epoca-21385",
-  name: "Hidratante Facial Mantecorp Skincare Epidrat Calm 40g",
-  brand: "Mantecorp Skincare",
-  unitPrice: 89.17,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/507395/Hidratante-Facial-Epidrat-Calm---Mantecorp-Skincare---40g-2--2-.jpg?v=637979965656470000",
-  productUrl: "https://www.epocacosmeticos.com.br/epidrat-calm-epidrat-locao-hidratante-corporal/p",
-  popularity: 68
- },
- {
-  sku: "epoca-21120",
-  name: "Hidratante Facial Neutrogena Hydro Boost Water Gel 50g",
-  brand: "Neutrogena",
-  unitPrice: 77.24,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375238/hydro-boost-water-gel-neutrogena-hidratante-facial--1-.jpg?v=639202554699700000",
-  productUrl: "https://www.epocacosmeticos.com.br/hydro-boost-water-gel-neutrogena-hidratante-facial/p",
-  popularity: 69
- },
- {
-  sku: "epoca-11504",
-  name: "Óleo Capilar Cadiveu Açaí Oil de Tratamento 60ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1259226/acai-oil-oleo-tratamento-cadiveu-60ml1.jpg?v=638990723839330000",
-  productUrl: "https://www.epocacosmeticos.com.br/acai-oil-cadiveu-tratamento-reconstrutor/p",
-  popularity: 70
- },
- {
-  sku: "epoca-10036",
-  name: "Máscara de Cílios Maybelline The Colossal Volum' Express Lavável Preto Preto",
-  brand: "Maybelline",
-  unitPrice: 65.95,
-  unit: "un",
-  category: "maquiagem olhos mascara para cilios",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2789904/7899026456020_00.jpg?v=639205167783700000",
-  productUrl: "https://www.epocacosmeticos.com.br/the-colossal-volum--express-maybelline-mascara-para-cilios/p",
-  popularity: 71
- },
- {
-  sku: "epoca-9891",
-  name: "Óleo Capilar L'Oréal Paris Elseve Óleo Extraordinário Finalizador 100ml",
-  brand: "Elseve",
-  unitPrice: 44.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores protetor termico",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3097761/7899026478909--1-.jpg?v=639243284647870000",
-  productUrl: "https://www.epocacosmeticos.com.br/oleo-extraordinario-elseve-l-oreal-paris-tratamento-reconstrutor/p",
-  popularity: 72
- },
- {
-  sku: "epoca-26466",
-  name: "Sérum Antioxidante Vitamina C 15% e Ácido Ferúlico Antirrugas SkinCeuticals C E Ferulic 15ml",
-  brand: "Skinceuticals",
-  unitPrice: 394.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/248510/ce-ferulic.jpg?v=636485806514070000",
-  productUrl: "https://www.epocacosmeticos.com.br/c-e-ferulic-skinceuticals-rejuvenescedor-facial/p",
-  popularity: 73
- },
- {
-  sku: "epoca-2546",
-  name: "Perfume 1 Million Rabanne Eau de Toilette Masculino 50ml",
-  brand: "Rabanne",
-  unitPrice: 511.9,
-  unit: "un",
-  category: "perfumes perfume masculino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/244473/50ml.jpg?v=636464434394730000",
-  productUrl: "https://www.epocacosmeticos.com.br/1-million-eau-de-toilette-paco-rabanne-perfume-masculino/p",
-  popularity: 74
- },
- {
-  sku: "epoca-294981",
-  name: "Protetor Solar Bastão Helioderm Cover Protect Fps90 Cor 40 16g",
-  brand: "Helioderm",
-  unitPrice: 93.39,
-  unit: "un",
-  category: "tratamentos cuidados com o sol protetor solar",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3119733/17868784188328.jpg?v=639245642861100000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-bastao-helioderm-cover-protect-fps90-cor-40-16g-283898/p",
-  popularity: 75
- },
- {
-  sku: "epoca-265227",
-  name: "Perfume Million Red For Her Rabanne Feminino Parfum 30ml",
-  brand: "Rabanne",
-  unitPrice: 509.15,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3072336/_3349668664894_0065229934_0.jpg?v=639240360138430000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-million-red-for-her-rabanne-feminino-parfum/p",
-  popularity: 76
- },
- {
-  sku: "epoca-246659",
-  name: "Kit Lola From Rio Morte Súbita - Shampoo + Condicionador + Spray Kit",
-  brand: "Lola From Rio",
-  unitPrice: 48.9,
-  unit: "un",
-  category: "cabelos kits para cabelos danificados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2857446/7899572816507_1.jpg?v=639213865886670000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-lola-from-rio-morte-subita-shampoo--condicionador--spray/p",
-  popularity: 77
- },
- {
-  sku: "epoca-241532",
-  name: "Celimax Retinal Shot Tightening Booster – 15Ml",
-  brand: "Celimax",
-  unitPrice: 163.9,
-  unit: "un",
-  category: "skincare limpeza de pele",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2079292/17786058976473.jpg?v=639143670912100000",
-  productUrl: "https://www.epocacosmeticos.com.br/celimax-retinal-shot-tightening-booster-%E2%80%93-15ml-230612/p",
-  popularity: 78
- },
- {
-  sku: "epoca-239970",
-  name: "Shampoo Profissional L'Oréal Professionnel Keratin Alpha Sleek 300ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 225.9,
-  unit: "un",
-  category: "cabelos shampoo normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2433301/3474637335748_1.jpg?v=639172102408930000",
-  productUrl: "https://www.epocacosmeticos.com.br/shampoo-profissional-loreal-professionnel-keratin-alpha-sleek/p",
-  popularity: 79
- },
- {
-  sku: "epoca-239911",
-  name: "Creme Calmante Multirreparador Fisiogel Rosto e Corpo 20g",
-  brand: "Fisiogel",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "skincare cuidados corporais",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2428296/7896026173346.jpg?v=639171457197000000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-multirreparador-fisiogel-rosto-e-corpo/p",
-  popularity: 80
- },
- {
-  sku: "epoca-236751",
-  name: "Condicionador Antiqueda DS Laboratories Revita 205ml",
-  brand: "Revita",
-  unitPrice: 104.99,
-  unit: "un",
-  category: "cabelos condicionador com queda",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534631/7896026173292.jpg?v=639181037879400000",
-  productUrl: "https://www.epocacosmeticos.com.br/condicionador-antiqueda-ds-laboratories-revita/p",
-  popularity: 81
- },
- {
-  sku: "epoca-259665",
-  name: "Shampoo Antiqueda DS Laboratories Revita 205ml",
-  brand: "Revita",
-  unitPrice: 90.99,
-  unit: "un",
-  category: "cabelos shampoo com queda",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534676/REVITA-ALTA-PERF-DC-ANTIQ-SHP-205ML---7896026173285--1-.jpg?v=639181040335870000",
-  productUrl: "https://www.epocacosmeticos.com.br/shampoo-antiqueda-ds-laboratories-revita/p",
-  popularity: 82
- },
- {
-  sku: "epoca-223711",
-  name: "Kit SkinCeuticals Antienvelhecimento - P-Tiox + A.G.E. Interrupter Kit",
-  brand: "Skinceuticals",
-  unitPrice: 810.26,
-  unit: "un",
-  category: "skincare kits de skincare",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1618682/Kits-155-03.png?v=639095250479130000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-skinceuticals-antienvelhecimento-p-tiox-age-interrupter/p",
-  popularity: 83
- },
- {
-  sku: "epoca-222875",
-  name: "Leave In Sebastian Potion 9 145ml",
-  brand: "Sebastian Professional",
-  unitPrice: 133.45,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1830474/0070018000835_1.jpg?v=639120489013000000",
-  productUrl: "https://www.epocacosmeticos.com.br/leave-in-sebastian-potion-9/p",
-  popularity: 84
- },
- {
-  sku: "epoca-221029",
-  name: "Perfume Armaf Club De Nuit Intense Masculino Eau de Toilette 105ml",
-  brand: "Armaf",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "perfumes perfume masculino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1571700/17691914675164.jpg?v=639088648818200000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-armaf-club-de-nuit-intense-edt-masculino-105ml-194735/p",
-  popularity: 85
- },
- {
-  sku: "epoca-217840",
-  name: "Óleo Finalizador Sebastian Dark Oil Taming Elixir 140ml",
-  brand: "Sebastian Professional",
-  unitPrice: 126.81,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1757079/4068359110081_1.jpg?v=639111853034900000",
-  productUrl: "https://www.epocacosmeticos.com.br/finalizador-sebastian-dark-oil-taming-elix/p",
-  popularity: 86
- },
- {
-  sku: "epoca-217836",
-  name: "Shampoo Sebastian Dark Oil 280ml",
-  brand: "Sebastian Professional",
-  unitPrice: 123.9,
-  unit: "un",
-  category: "cabelos shampoo normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1756760/4068359129724_1.jpg?v=639111818920000000",
-  productUrl: "https://www.epocacosmeticos.com.br/shampoo-sebastian-dark-oil/p",
-  popularity: 87
- },
- {
-  sku: "epoca-217819",
-  name: "Protetor Térmico Sebastian Styling & Texture Trilliant 150ml",
-  brand: "Sebastian Professional",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores protetor termico",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1747848/4068359196962_1.jpg?v=639110978828470000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-termico-sebastian-styling--texture-trilliant/p",
-  popularity: 88
- },
- {
-  sku: "epoca-207888",
-  name: "Base Líquida Dior Forever 24h Wear 30ml 0 Neutral",
-  brand: "Dior",
-  unitPrice: 455,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1541062/1.3348901792585.jpg?v=639084262149330000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-dior-forever-skin-wear-30ml/p",
-  popularity: 89
- },
- {
-  sku: "epoca-207500",
-  name: "Coloração Koleston Deluxe Preto 2.0",
-  brand: "Koleston Deluxe",
-  unitPrice: 26.32,
-  unit: "un",
-  category: "cabelos coloracao permanente",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400461/coloracao-koleston-deluxe4.jpg?v=639051390677030000",
-  productUrl: "https://www.epocacosmeticos.com.br/coloracao-koleston-deluxe/p",
-  popularity: 90
- },
- {
-  sku: "epoca-205271",
-  name: "Perfume Feminino Lancôme La Vie Est Belle Vanille Nude Eau de Parfum 30ml",
-  brand: "Lancôme",
-  unitPrice: 449.65,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1696340/3614274397239_1.jpg?v=639105676661070000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-vie-est-belle-lancome-vanille-nude/p",
-  popularity: 91
- },
- {
-  sku: "epoca-192189",
-  name: "Kit Revlon Professional Uniq One All in One - Leave-in 2 unidades",
-  brand: "Revlon Professional",
-  unitPrice: 104.9,
-  unit: "un",
-  category: "cabelos leave in e creme para pentear",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1205190/17624462229270.jpg?v=638983974286630000",
-  productUrl: "https://www.epocacosmeticos.com.br/revlon-professional-kit-uniq-one-all-in-one-leave-in--2-produtos--166111/p",
-  popularity: 92
- },
- {
-  sku: "epoca-171955",
-  name: "Protetor Solar Facial La Roche 40g + Gel Effaclar Concentrado - Kit",
-  brand: "La Roche-Posay",
-  unitPrice: 78.89,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1119516/17589055484296.jpg?v=638956286243070000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-la-roche-40g---gel-effaclar-concentrado---kit-145615/p",
-  popularity: 93
- },
- {
-  sku: "epoca-171009",
-  name: "Body Mist Jo Malone London English Pear & Freesia 100ml",
-  brand: "Jo Malone London",
-  unitPrice: 414.9,
-  unit: "un",
-  category: "perfumes perfume para o corpo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1148974/body-mist-jo-malone-london-english-pear--freesia -1-.jpg?v=638967422599130000",
-  productUrl: "https://www.epocacosmeticos.com.br/body-mist-jo-malone-london-english-pear--freesia/p",
-  popularity: 94
- },
- {
-  sku: "epoca-162129",
-  name: "Óleo Capilar L'Oréal Professionnel Absolut Repair 10 em 1 30ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 90.19,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1099350/7908785419723.1.jpg?v=638950304284270000",
-  productUrl: "https://www.epocacosmeticos.com.br/oleo-10-em-1-l-oreal-professionnel-absolut-repair-multibeneficios-travel-size/p",
-  popularity: 95
- },
- {
-  sku: "epoca-157374",
-  name: "Protetor Solar Facial com Cor Principia PS-05 FPS 70 30ml 1.0",
-  brand: "Principia",
-  unitPrice: 49,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1624349/0070341368565--1-.jpg?v=639095506220200000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-com-cor-principia-ps-05-fps-70-30ml/p",
-  popularity: 96
- },
- {
-  sku: "epoca-145590",
-  name: "Blush Líquido Dior Forever Blush Soft Filter 11ml 01 Petal",
-  brand: "Dior",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "maquiagem face blush",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/925160/blush-liquido-dior-forever-blush-soft-filter-11ml--2-.jpg?v=638887055216470000",
-  productUrl: "https://www.epocacosmeticos.com.br/blush-liquido-dior-forever-blush-soft-filter-11ml/p",
-  popularity: 97
- },
- {
-  sku: "epoca-143718",
-  name: "Perfume La Bomba Carolina Herrera Feminino Eau de Parfum 30ml",
-  brand: "Carolina Herrera",
-  unitPrice: 429.9,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/993811/_8411061077146_0065195952_0.jpg?v=638925013548830000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-bomba-carolina-herrera-feminino-eau-de-parfum/p",
-  popularity: 98
- },
- {
-  sku: "epoca-136395",
-  name: "Creme Hidratante Facial Principia CH-01 50g",
-  brand: "Principia",
-  unitPrice: 39,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/906880/creme-hidratante-facial-principia-ch-01--2-.jpg?v=639239515584770000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-facial-principia-ch-01/p",
-  popularity: 99
- },
- {
-  sku: "epoca-129503",
-  name: "Sérum Óleo Rejuvenescedor Guerlain Abeille Royale 15ml",
-  brand: "Guerlain",
-  unitPrice: 355.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/854317/serum-oleo-rejuvenescedor-guerlain-abeille-royale--1-.jpg?v=638839519570270000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-oleo-rejuvenescedor-guerlain-abeille-royale/p",
-  popularity: 100
- },
- {
-  sku: "epoca-127438",
-  name: "Shampoo Fortalecedor Antiqueda Mantecorp Pielus Forte 200ml",
-  brand: "Mantecorp Skincare",
-  unitPrice: 103.9,
-  unit: "un",
-  category: "cabelos shampoo grisalhos ou brancos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922369/shampoo-fortalecedor-mantecorp-antiqueda-pielus--1-.jpg.jpg?v=638884019684900000",
-  productUrl: "https://www.epocacosmeticos.com.br/shampoo-fortalecedor-mantecorp-antiqueda-pielus/p",
-  popularity: 101
- },
- {
-  sku: "epoca-118325",
-  name: "EUCERIN Sérum Facial Anti-Idade Epigenetic 30ml",
-  brand: "Eucerin",
-  unitPrice: 338.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1851536/serum-epigenetic-facial-eucerin-hyaluron-filler.jpg?v=639123271904700000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-epigenetic-facial-eucerin-hyaluron-filler/p",
-  popularity: 102
- },
- {
-  sku: "epoca-110021",
-  name: "Protetor Solar Facial Compacto Refil Shiseido Uv Protective FPS 30 Fair Ivory",
-  brand: "Shiseido",
-  unitPrice: 356,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/739581/730852212848-21284_S_IMAG-01.jpg.jpg?v=638733410950170000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-compacto-refil-shiseido-uv-protective-fps-30/p",
-  popularity: 103
- },
- {
-  sku: "epoca-107964",
-  name: "Loção Facial Hidratante para Pele Oleosa com Controle do Brilho CeraVe Oil Control 52g",
-  brand: "CeraVe",
-  unitPrice: 107.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2570449/locao-facial-hidratante-cerave-oil-control.jpg?v=639184444301230000",
-  productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hidratante-cerave-oil-control/p",
-  popularity: 104
- },
- {
-  sku: "epoca-103784",
-  name: "Kit Joico Hydra Splash Smart Release - Shampoo 300ml + Condicionador 250ml",
-  brand: "Joico",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cabelos kits para cabelos fino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2906618/07863901122595.jpg?v=639219869297130000",
-  productUrl: "https://www.epocacosmeticos.com.br/joico-hydra-splash-smart-release---shampoo-300ml-condicionador-250ml-80779/p",
-  popularity: 105
- },
- {
-  sku: "epoca-101824",
-  name: "Primer Fixador Dailus - Blindagem Fix Tudo 30ml",
-  brand: "Dailus",
-  unitPrice: 55.9,
-  unit: "un",
-  category: "maquiagem primer e finalizador fixador da maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/708659/primer-fixador-dailus-blindagem-fix-tudo (1).jpg.jpg?v=638681509948570000",
-  productUrl: "https://www.epocacosmeticos.com.br/primer-fixador-dailus-blindagem-fix-tudo/p",
-  popularity: 106
- },
- {
-  sku: "epoca-99385",
-  name: "Kit Australian Gold - Protetor Solar Corporal FPS50 + Protetor Solar Facial Antipoluição FPS50 Kit",
-  brand: "Australian Gold",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/679348/kit-australian-gold-protetor-solar-corporal-fps50-protetor-solar-facial-antipoluicao-fps50-20-1-.jpg.jpg?v=638636502924600000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-australian-gold-protetor-solar-corporal-fps50-protetor-solar-facial-antipoluicao-fps50/p",
-  popularity: 107
- },
- {
-  sku: "epoca-98878",
-  name: "Contorno em Bastão Cremoso Océane Contour Stick Marrom escuro",
-  brand: "Océane",
-  unitPrice: 50.9,
-  unit: "un",
-  category: "maquiagem face contorno",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/914966/contorno-em-bastao-cremoso-oceane-contour-stick-20-9-.jpg.jpg?v=638881912748430000",
-  productUrl: "https://www.epocacosmeticos.com.br/contorno-em-bastao-cremoso-oceane-contour-stick/p",
-  popularity: 108
- },
- {
-  sku: "epoca-98742",
-  name: "Máscara Absolut Repair Gold Quinoa + Protein 500g - L'oréal",
-  brand: "LOréal Professionnel",
-  unitPrice: 220.08,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669484/17272913620389.jpg?v=638629740930000000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-absolut-repair-gold-quinoa---protein-500g---l-oreal-76096/p",
-  popularity: 109
- },
- {
-  sku: "epoca-98376",
-  name: "Shampoo Cadiveu Glamour Rubi 3L",
-  brand: "Cadiveu Professional",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cabelos shampoo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667782/17246964895160.jpg?v=638629344293700000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-glamour-rubi-shampoo-3l-75730/p",
-  popularity: 110
- },
- {
-  sku: "epoca-94591",
-  name: "Shampoo Refil L'Oréal Professionnel Absolut Repair Com Proteína e Ômega 9 240ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 78.1,
-  unit: "un",
-  category: "cabelos shampoo normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162520/7908785404958_1.jpg?v=638972582079000000",
-  productUrl: "https://www.epocacosmeticos.com.br/refil-loreal-professionnel-absolut-repair-gold-quinoa--protein-shampoo/p",
-  popularity: 111
- },
- {
-  sku: "epoca-94450",
-  name: "Máscara Capilar Wella Professionals Oil Reflections Luminous Reboost 500ml",
-  brand: "Wella Professionals",
-  unitPrice: 184.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650471/17262380646137.jpg?v=638621149593470000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-luminous-reboost---mascara-capilar-500ml-71803/p",
-  popularity: 112
- },
- {
-  sku: "epoca-89306",
-  name: "Kit Wella Professionals Oil Reflections - Shampoo + Máscara",
-  brand: "Wella Professionals",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "cabelos kits para cabelos fino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/626761/17245010821664.jpg?v=638604725244870000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-oil-reflections-shampoo-e-mascara--2-produtos--66780/p",
-  popularity: 113
- },
- {
-  sku: "epoca-88419",
-  name: "Kit Mini Pincéis Real Techniques + Época Cosméticos - Essentials Brush Kit",
-  brand: "Real Techniques",
-  unitPrice: 56.9,
-  unit: "un",
-  category: "maquiagem estojo completo ou kit de maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/726427/kit-mini-pinceis-real-techniques-epoca-cosmeticos-essentials-brush--1---1-.jpg.jpg?v=638918323426570000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-mini-pinceis-real-techniques-epoca-cosmeticos-essentials-brush/p",
-  popularity: 114
- },
- {
-  sku: "epoca-88149",
-  name: "Contorno Facial Payot Claro",
-  brand: "Payot",
-  unitPrice: 36.9,
-  unit: "un",
-  category: "maquiagem face contorno",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/623772/contorno-facial-payot--4-.jpg?v=638598721787500000",
-  productUrl: "https://www.epocacosmeticos.com.br/contorno-facial-payot/p",
-  popularity: 115
- },
- {
-  sku: "epoca-87960",
-  name: "Protetor Solar Facial La Roche-Posay Anthelios UVMune 400 Airlicium 40ml",
-  brand: "La Roche-Posay",
-  unitPrice: 113.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/839510/la-roche-posay-anthelios-uvmune-400-airlicium-40ml--1-.jpg.jpg?v=639192843691330000",
-  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-uvmune-400-airlicium-40ml/p",
-  popularity: 116
- },
- {
-  sku: "epoca-87589",
-  name: "Máscara de Tratamento L'Oréal Professionnel Absolut Repair Molecular 250ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 260.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667692/mascara-de-tratamento-l-oreal-professionnel-serie-expert-absolut-repair-molecular-20-4-.jpg.jpg?v=638628950132530000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-l-oreal-professionnel-serie-expert-absolut-repair-molecular/p",
-  popularity: 117
- },
- {
-  sku: "epoca-87588",
-  name: "Óleo Capilar Kérastase Elixir Ultime L'Huile Originale Finalizador 30 ml",
-  brand: "Kerastase",
-  unitPrice: 191.93,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/850198/oleo-capilar-kerastase-elixir-ultime-lhuile-originale--1-.jpg?v=638833592289770000",
-  productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-kerastase-elixir-ultime-lhuile-originale/p",
-  popularity: 118
- },
- {
-  sku: "epoca-87002",
-  name: "Creme Corporal Antimanchas Intenso Eucerin Anti-Pigment Clareador 200ml",
-  brand: "Eucerin",
-  unitPrice: 179,
-  unit: "un",
-  category: "skincare cuidados corporais",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597063/4006000017389--1-.jpg?v=639185997825100000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-corporal-intensivo-eucerin-anti-pigment-areas-especificas/p",
-  popularity: 119
- },
- {
-  sku: "epoca-86633",
-  name: "Protetor Solar Facial Principia - PS-01 FPS60 40ml",
-  brand: "Principia",
-  unitPrice: 49,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743890/EAN-0609963220694.jpg.jpg?v=638742774115470000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-principia-ps01-fps60/p",
-  popularity: 120
- },
- {
-  sku: "epoca-86592",
-  name: "Base Matte Payot 1",
-  brand: "Payot",
-  unitPrice: 38.9,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/620943/base-matte-payot--1-.jpg?v=638584614400270000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-matte-payot/p",
-  popularity: 121
- },
- {
-  sku: "epoca-86053",
-  name: "Pó Compacto Boca Rosa BR01",
-  brand: "Boca Rosa",
-  unitPrice: 69.9,
-  unit: "un",
-  category: "maquiagem face po compacto",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/725250/POCORBR01-FECHADO-7908847800636-jpg.jpg?v=638715325714770000",
-  productUrl: "https://www.epocacosmeticos.com.br/po-compacto-boca-rosa/p",
-  popularity: 122
- },
- {
-  sku: "epoca-85990",
-  name: "Base Multifuncional Boca Rosa - Stick Pele BR01",
-  brand: "Boca Rosa",
-  unitPrice: 57.9,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/729282/STICKPELE-BR01-7908847800001-jpg.jpg?v=638724519985200000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-multifuncional-boca-rosa-stick-pele/p",
-  popularity: 123
- },
- {
-  sku: "epoca-83906",
-  name: "Base Líquida M·A·C Soft Matte Studio Fix - Tons Claros FPS15 NC15",
-  brand: "MAC",
-  unitPrice: 251.9,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/597295/base-matte-mac-studio-fix-fluid--1-.jpg?v=638458544365500000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-matte-mac-studio-fix-fluid-tons-claros/p",
-  popularity: 124
- },
- {
-  sku: "epoca-84473",
-  name: "Wella Professionals Ultimate Luxe Oil Máscara 500ml",
-  brand: "Wella Professionals",
-  unitPrice: 360.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/600368/wella-professional-ultimate-luxe-oil-mascara.jpg?v=638475803006400000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professional-ultimate-luxe-oil-mascara/p",
-  popularity: 125
- },
- {
-  sku: "epoca-83254",
-  name: "Base Líquida Alta Cobertura Pri Lessa by Catharine Hill - Angel Wings A1",
-  brand: "Catharine Hill",
-  unitPrice: 70.9,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/594055/7898600994132_2.jpg?v=638442264410970000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-catharine-hill-angel-wings-alta-cobertura/p",
-  popularity: 126
- },
- {
-  sku: "epoca-82346",
-  name: "Pó Solto Dailus Ultrafino Claro",
-  brand: "Dailus",
-  unitPrice: 32.9,
-  unit: "un",
-  category: "maquiagem face po facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589573/7894222039220-fazer-cor-e-textura.jpg?v=638411192929670000",
-  productUrl: "https://www.epocacosmeticos.com.br/po-solto-dailus-ultrafino/p",
-  popularity: 127
- },
- {
-  sku: "epoca-80539",
-  name: "Protetor Solar Bioré Aqua Rich - Aqua Protect Lotion FPS 50 70g",
-  brand: "Bioré",
-  unitPrice: 98.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/822146/4901301406866--1-.jpg.jpg?v=638793906476400000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-biore-aqua-rich-aqua-protect-lotion-fps-50/p",
-  popularity: 128
- },
- {
-  sku: "epoca-80421",
-  name: "Esponja para Acabamento Océane - Mini Powder Puff 1 Un",
-  brand: "Océane",
-  unitPrice: 14.9,
-  unit: "un",
-  category: "maquiagem aplicadores para maquiagem esponja",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/576672/esponja-para-acabamento-oceane-mini-powder-puff--2-.jpg?v=638343784738330000",
-  productUrl: "https://www.epocacosmeticos.com.br/esponja-para-acabamento-oceane-mini-powder-puff/p",
-  popularity: 129
- },
- {
-  sku: "epoca-80288",
-  name: "EUCERIN Creme de Olhos Clareador de Olheiras Anti-Pigment 15ml",
-  brand: "Eucerin",
-  unitPrice: 239,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/821507/4006000101972_1..jpg.jpg?v=638793102424070000",
-  productUrl: "https://www.epocacosmeticos.com.br/clareador-de-olheiras-eucerin-anti-pigment/p",
-  popularity: 130
- },
- {
-  sku: "epoca-78636",
-  name: "Sérum Capilar Noturno Kérastase Nutrição Profunda 8H Magic Night 90ml",
-  brand: "Kerastase",
-  unitPrice: 416.6,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores serum",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/608259/3474637155025--1-.jpg?v=638507091724670000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-kerastase-nutritive-8h-magic-night/p",
-  popularity: 131
- },
- {
-  sku: "epoca-77618",
-  name: "Base Líquida Lancôme Teint Idôle Ultra Wear Foundation 30ml 105W",
-  brand: "Lancôme",
-  unitPrice: 449,
-  unit: "un",
-  category: "maquiagem face base",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3018250/3614273792349_01.jpg?v=639232616194170000",
-  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-lancome-teint-idole-ultra-wear/p",
-  popularity: 132
- },
- {
-  sku: "epoca-77243",
-  name: "Hidratante Corporal Multirreparador para Pele Sensível e Irritada La Roche-Posay Cicaplast Baume B5+ 20ml",
-  brand: "La Roche-Posay",
-  unitPrice: 46.78,
-  unit: "un",
-  category: "skincare cuidados corporais hidratante corporal",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/564578/cicaplast-baume-b5-la-roche-posay-hidratante-reparador.jpg?v=638277151174500000",
-  productUrl: "https://www.epocacosmeticos.com.br/cicaplast-baume-la-roche-posay-b5-plus-hidratante/p",
-  popularity: 133
- },
- {
-  sku: "epoca-77295",
-  name: "Wella Professionals Oil Reflections Kit – Shampoo + Condicionador Kit",
-  brand: "Wella Professionals",
-  unitPrice: 308.63,
-  unit: "un",
-  category: "cabelos kits para cabelos normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/556352/wella-professionals-oil-reflections-kit-shampoo-condicionador.jpg?v=638223588310670000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-kit-shampoo-condicionador/p",
-  popularity: 134
- },
- {
-  sku: "epoca-76550",
-  name: "Corretivo Dior Forever Skin Correct 11ml 3,5N",
-  brand: "Dior",
-  unitPrice: 334.9,
-  unit: "un",
-  category: "maquiagem face corretivo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/691788/corretivo-para-os-olhos-dior-forever-skin-correct--1-.jpg.jpg?v=638654845012570000",
-  productUrl: "https://www.epocacosmeticos.com.br/corretivo-para-os-olhos-dior-forever-skin-correct/p",
-  popularity: 135
- },
- {
-  sku: "epoca-75022",
-  name: "Paleta de Sombras BT Transition 1Un",
-  brand: "Bruna Tavares",
-  unitPrice: 65.6,
-  unit: "un",
-  category: "maquiagem olhos sombra",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/542161/paleta-de-sombras-bt-transition--1-.jpg?v=638150833945600000",
-  productUrl: "https://www.epocacosmeticos.com.br/paleta-de-sombras-bt-transition/p",
-  popularity: 136
- },
- {
-  sku: "epoca-74340",
-  name: "Máscara de Cílios Essence I Love Extreme Crazy Volume à Prova D’água Preto",
-  brand: "Essence",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "maquiagem olhos mascara para cilios",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/564637/mascara-de-cilios-essence-i-love-extreme-crazy-volume-a-prova-dagua--1---7---5---9---1-.jpg?v=638277838755470000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-essence-i-love-extreme-crazy-volume-a-prova-dagua/p",
-  popularity: 137
- },
- {
-  sku: "epoca-73096",
-  name: "Fixador de Maquiagem Franciny Ehlke Power Finish 120ml",
-  brand: "Franciny Ehlke",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "maquiagem primer e finalizador fixador da maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/515663/fixador-de-maquiagem-franciny-ehlke-power-finish.jpg?v=638019493914570000",
-  productUrl: "https://www.epocacosmeticos.com.br/fixador-de-maquiagem-franciny-ehlke-power-finish/p",
-  popularity: 138
- },
- {
-  sku: "epoca-72974",
-  name: "La Roche-Posay Anthelios Airlicium+ Kit com 2 Unidades - Protetor Solar Facial FPS80 - 40g Kit",
-  brand: "La Roche-Posay",
-  unitPrice: 181.36,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/514686/la-roche-posay-anthelios-airlicium-kit-com-2-unidades-protetor-solar-facial-fps80-40g--1-.jpg?v=638013671928830000",
-  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-airlicium-kit-com-2-unidades-protetor-solar-facial-fps80-40g/p",
-  popularity: 139
- },
- {
-  sku: "epoca-71714",
-  name: "Cadiveu Professional Nutri Glow Máscara Nutritiva 200ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 59.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras seco e ressecados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/505943/cadiveu-professional-nutri-glow-mascara-nutritiva--1-.jpg?v=637973928696700000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-nutri-glow-mascara-nutritiva/p",
-  popularity: 140
- },
- {
-  sku: "epoca-71093",
-  name: "Corretivo Líquido Too Faced Born This Way Super Coverage 13,5ml Swan",
-  brand: "Too Faced",
-  unitPrice: 289,
-  unit: "un",
-  category: "maquiagem face corretivo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1377015/651986006298_1.jpg?v=639039110884700000",
-  productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-too-faced-born-this-way-super-coverage/p",
-  popularity: 141
- },
- {
-  sku: "epoca-70771",
-  name: "CeraVe Kit com Duas Loções Hidratantes Kit",
-  brand: "CeraVe",
-  unitPrice: 209.9,
-  unit: "un",
-  category: "skincare kits de skincare",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499984/cerave-kit-com-duas-locoes-hidratantes.jpg?v=637944351298770000",
-  productUrl: "https://www.epocacosmeticos.com.br/cerave-kit-com-duas-locoes-hidratantes/p",
-  popularity: 142
- },
- {
-  sku: "epoca-70688",
-  name: "Fluido Vizzela Gotas Fix Blindagem 30ml",
-  brand: "Vizzela",
-  unitPrice: 78.9,
-  unit: "un",
-  category: "maquiagem primer e finalizador fixador da maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/975739/fluido-vizzela-gotas-fix-blindagem -3-.jpg?v=638909766354770000",
-  productUrl: "https://www.epocacosmeticos.com.br/fluido-vizzela-gotas-fix-blindagem/p",
-  popularity: 143
- },
- {
-  sku: "epoca-70552",
-  name: "Protetor Solar Stick Multifuncional com Cor Pink Cheeks Pro Stick Pro10",
-  brand: "Pink Cheeks",
-  unitPrice: 88.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/942215/protetor-solar-stick-multifuncional-com-cor-pink-cheeks-pro-stick--4-.jpg?v=638896458328470000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-stick-multifuncional-com-cor-pink-cheeks-pro-stick/p",
-  popularity: 144
- },
- {
-  sku: "epoca-69664",
-  name: "Hidratante Corporal Mantecorp Skincare Epidrat Calm 120ml",
-  brand: "Mantecorp Skincare",
-  unitPrice: 169.92,
-  unit: "un",
-  category: "skincare cuidados corporais hidratante corporal",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/509483/mantecorp-epidrat-calm.jpg?v=637987760660100000",
-  productUrl: "https://www.epocacosmeticos.com.br/hidratante-corporal-mantecorp-epidrat-calm/p",
-  popularity: 145
- },
- {
-  sku: "epoca-69653",
-  name: "Rejuvenescedor Facial Mantecorp Ivy C Ferulic Sérum 30g",
-  brand: "Mantecorp Skincare",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651397/7891142981240_1.jpg?v=639099827229930000",
-  productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-facial-mantecorp-ivy-c-ferulic-serum/p",
-  popularity: 146
- },
- {
-  sku: "epoca-67927",
-  name: "L’Oreal Professionnel Pro Longer Kit – Shampoo + Máscara Kit",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 282.33,
-  unit: "un",
-  category: "cabelos kits para cabelos danificados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/483294/loreal-professionnel-pro-longer-kit-shampoo-mascar.jpg?v=637850437903300000",
-  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-pro-longer-kit-shampoo-mascar/p",
-  popularity: 147
- },
- {
-  sku: "epoca-66382",
-  name: "Blush Facial Dailus Tô Bege",
-  brand: "Dailus",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "maquiagem face blush",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/471787/blush-facial-dailus-to-bege.jpg?v=637776120572870000",
-  productUrl: "https://www.epocacosmeticos.com.br/blush-facial-dailus/p",
-  popularity: 148
- },
- {
-  sku: "epoca-64737",
-  name: "Óleo Capilar Cadiveu Essentials Quartzo Shine 65ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 35.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores serum",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/852482/7898606742904_F.jpg?v=638836125815130000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-quartzo-shine-by-boca-rosa-hair-serum-liquido-condicionante-65ml/p",
-  popularity: 149
- },
- {
-  sku: "epoca-64495",
-  name: "Óleo Capilar Lola Cosmetics Pinga! Açaí e Pracaxi 50ml",
-  brand: "Lola From Rio",
-  unitPrice: 23.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/457149/lola-cosmetics-pinga-acai-e-pracaxi-oleo-reparador-pos-quimica-50ml.jpg?v=637690726255670000",
-  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-pinga-acai-e-pracaxi-oleo-reparador-pos-quimica-50ml/p",
-  popularity: 150
- },
- {
-  sku: "epoca-64448",
-  name: "Protetor Solar com Cor Mantecorp Skincare Episol Color FPS70 1",
-  brand: "Mantecorp Skincare",
-  unitPrice: 78.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/748817/protetor-solar-com-cor-fps70-mantecorp-skicare-episol--1-.jpg?v=638745713457570000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-com-cor-fps70-mantecorp-skicare-episol/p",
-  popularity: 151
- },
- {
-  sku: "epoca-64215",
-  name: "Óleo Capilar L'Oréal Professionnel Absolut Repair 10 em 1 90ml",
-  brand: "L'Oréal Professionnel",
-  unitPrice: 206.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/951794/loreal-professionnel-absolut-repair-gold-quinoa-oleo-reparacao-10-em-1-90ml.jpg?v=638900866121300000",
-  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-oleo-10-em-1-90ml/p",
-  popularity: 152
- },
- {
-  sku: "epoca-64191",
-  name: "Óleo Capilar Lola Cosmetics Danos Vorazes 50ml",
-  brand: "Lola From Rio",
-  unitPrice: 21.9,
-  unit: "un",
-  category: "cabelos finalizadores e modeladores oleo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/724234/7899572812158.jpg.jpg?v=638714220965870000",
-  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-danos-vorazes-oleo-50ml/p",
-  popularity: 153
- },
- {
-  sku: "epoca-64134",
-  name: "Sérum Ultra Concentrado Antiacne e Antimarcas La Roche-Posay Effaclar 30ml",
-  brand: "La Roche-Posay",
-  unitPrice: 231.29,
-  unit: "un",
-  category: "skincare hidratacao e tratamento acne e oleosidade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1372184/serum-effaclar-ultra-concentrado-la-roche-posay--2-.jpg?v=639062667992100000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-effaclar-ultra-concentrado-la-roche-posay/p",
-  popularity: 154
- },
- {
-  sku: "epoca-64090",
-  name: "EUCERIN Protetor Solar Facial Oil Control Antioleosidade FPS70 Claro",
-  brand: "Eucerin",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1560137/4005900840349-EUCERIN_Protetor_Solar_Facial_Oil_Control_Cor_Clara_FPS_70_50ml_Antioleosidade_Prote_o_UVA_UVB_e_Luz_Vis_vel_Pele_Oleosa-Sun-Eucerin_--2-.jpg?v=639087520870470000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-eucerin-sun-oil-control-tinted-fps-70-50g/p",
-  popularity: 155
- },
- {
-  sku: "epoca-59037",
-  name: "Óleo Demaquilante Facial Bioré - Cleansing Oil Refil 210ml",
-  brand: "Bioré",
-  unitPrice: 58.25,
-  unit: "un",
-  category: "maquiagem remocao da maquiagem demaquilante",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922580/oleo-demaquilante-facial-biore-make-up-remover.jpg?v=638884392892230000",
-  productUrl: "https://www.epocacosmeticos.com.br/oleo-demaquilante-facial-biore-make-up-remover-refil/p",
-  popularity: 156
- },
- {
-  sku: "epoca-62073",
-  name: "Gel de Limpeza Facial Alta Tolerância para Peles Sensíveis Refil La Roche-Posay Effaclar 240g",
-  brand: "La Roche-Posay",
-  unitPrice: 85.9,
-  unit: "un",
-  category: "skincare limpeza de pele sabonete facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/441871/gel-de-limpeza-facial-la-roche-posay-refil-effaclar-alta-tolerancia.jpg?v=637613470192900000",
-  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-la-roche-posay-refil-effaclar-alta-tolerancia/p",
-  popularity: 157
- },
- {
-  sku: "epoca-108264",
-  name: "Rejuvenescedor Facial Mantecorp Skincare Reviline Retinol Sérum 30ml",
-  brand: "Mantecorp Skincare",
-  unitPrice: 215.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651553/7891142984005_1.jpg?v=639099846901030000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-rejuvenescedor-facial-mantecorp-skincare-reviline-r/p",
-  popularity: 158
- },
- {
-  sku: "epoca-61034",
-  name: "Cadiveu Professional Bye Bye Frizz Leave In Selagem Gradativa 200ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "cabelos leave in e creme para pentear rebeldes ou com frizz",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549132/cadiveu-essentials-bye-bye-frizz-leave-in-selagem-gradativa-200ml--1-.jpg?v=638193350304430000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-bye-bye-frizz-leave-in-selagem-gradativa-200ml/p",
-  popularity: 159
- },
- {
-  sku: "epoca-60470",
-  name: "Perfume Feminino Eau de Parfum Intense Yves Saint Laurent Libre 30ml",
-  brand: "Yves Saint Laurent",
-  unitPrice: 556.9,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1378540/libre-intense-yves-saint-laurent-perfume-feminino-edp--1-.jpg?v=639039232614330000",
-  productUrl: "https://www.epocacosmeticos.com.br/libre-intense-yves-saint-laurent-perfume-feminino-edp/p",
-  popularity: 160
- },
- {
-  sku: "epoca-60456",
-  name: "Refil Shampoo Estimulante Antiqueda Fortalecedor Dercos Vichy Energy+ 200g",
-  brand: "Vichy",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "skincare couro cabeludo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/977682/7899706254373--2-.JPG.jpg?v=638911329526900000",
-  productUrl: "https://www.epocacosmeticos.com.br/shampoo-refil-vichy-dercos-energizante-200-ml/p",
-  popularity: 161
+  popularity: 46
  },
  {
   sku: "epoca-60390",
@@ -1785,7 +520,1250 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1015149/protetor-solar-facial-dermage-photoage-water-fps50 -1-.jpg?v=638936320063030000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-dermage-photoage-water-fps50/p",
-  popularity: 162
+  popularity: 47
+ },
+ {
+  sku: "epoca-58407",
+  name: "Gel Incolor para Sobrancelhas Dailus Incolor",
+  brand: "Dailus",
+  unitPrice: 14.89,
+  unit: "un",
+  category: "maquiagem sobrancelhas mascara para sobrancelhas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/421436/mascara-incolor-para-sobrancelhas-dailus-gel-para-sobrancelhas.jpg?v=637493385457600000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-incolor-para-sobrancelhas-dailus-gel-para-sobrancelhas/p",
+  popularity: 48
+ },
+ {
+  sku: "epoca-56147",
+  name: "Base Líquida Niina Secrets by Eudora – Hidra Glow 00",
+  brand: "Eudora Niina Secrets",
+  unitPrice: 75.64,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/406512/base-liquida-niina-secrets-by-eudora-hidra-glow-00.jpg?v=637383592271430000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-niina-secrets-by-eudora-hidra-glow/p",
+  popularity: 49
+ },
+ {
+  sku: "epoca-55454",
+  name: "Sérum Facial Antimanchas e Anti-idade Eucerin Anti-Pigment Clareador Dual Sérum 30ml",
+  brand: "Eucerin",
+  unitPrice: 290.51,
+  unit: "un",
+  category: "skincare hidratacao e tratamento creme clareador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1555771/4006000101279-EUCERIN_Dual_S_rum_Facial_Antimanchas_e_Anti_idade_30ml_Anti_Pigment_Clareador_Thiamidol__cido_Hialur_nico-Face-Eucerin_--1-.jpg?v=639086875530570000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-eucerin-anti-pigment-dual-serum/p",
+  popularity: 50
+ },
+ {
+  sku: "epoca-52251",
+  name: "Protetor Solar Facial Bioré Perfect Milk 50 FPS 40ml",
+  brand: "Bioré",
+  unitPrice: 64.4,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/822119/4901301303844---2-.jpg.jpg?v=638793903650000000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-biore-perfect-milk-50-fps/p",
+  popularity: 51
+ },
+ {
+  sku: "epoca-52245",
+  name: "Óleo Demaquilante Facial Bioré - Cleansing Oil 150ml",
+  brand: "Bioré",
+  unitPrice: 57.9,
+  unit: "un",
+  category: "maquiagem remocao da maquiagem demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922572/oleo-demaquilante-facial-biore-make-up-remover-150ml.jpg?v=638884391911600000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-demaquilante-facial-biore-make-up-remover/p",
+  popularity: 52
+ },
+ {
+  sku: "epoca-51690",
+  name: "Libre Yves Saint Laurent Perfume Feminino - Eau de Parfum 30ml",
+  brand: "Yves Saint Laurent",
+  unitPrice: 476.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400238/libre-yves-saint-laurent-perfume-feminino-eau-de-parfum-30ml--1-.jpg?v=639051234140000000",
+  productUrl: "https://www.epocacosmeticos.com.br/libre-yves-saint-laurent-perfume-feminino-eau-de-parfum/p",
+  popularity: 53
+ },
+ {
+  sku: "epoca-49022",
+  name: "Base Facial Multifuncional Shiseido BB For Sports Fps50+ Dark",
+  brand: "Shiseido",
+  unitPrice: 388,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/469873/base-solar-liquida-shiseido-bb-for-sports-fps50.jpg?v=637757191469770000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-solar-liquida-shiseido-bb-for-sports-fps-50/p",
+  popularity: 54
+ },
+ {
+  sku: "epoca-48647",
+  name: "Shampoo L'Oréal Professionnel Absolut Repair Com Proteína e Ômega 9 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 98.64,
+  unit: "un",
+  category: "cabelos shampoo danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162553/7899706189606_1.jpg?v=638972590989530000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-gold-quinoa-protein-shampoo/p",
+  popularity: 55
+ },
+ {
+  sku: "epoca-48452",
+  name: "Promopack Neostrata Minesol OC FPS70 50% Desconto na 2a unidade Kit",
+  brand: "Neostrata",
+  unitPrice: 99,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/473273/NEO_7891010248703_Promopack-2x-Minesol-Oil-Control-FPS-70_F.jpg?v=637783872701100000",
+  productUrl: "https://www.epocacosmeticos.com.br/neostrata-minesol-oil-control-fps-70-2-protetores-solares/p",
+  popularity: 56
+ },
+ {
+  sku: "epoca-45251",
+  name: "Perfume Idôle Lancôme Feminino Eau de Parfum Refilável 25ml",
+  brand: "Lancôme",
+  unitPrice: 361.31,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3151264/3614272639638.01.jpg?v=639250131481070000",
+  productUrl: "https://www.epocacosmeticos.com.br/idole-lancome-perfume-feminino-eau-de-parfum/p",
+  popularity: 57
+ },
+ {
+  sku: "epoca-42891",
+  name: "Óleo Capilar Lola Cosmetics Argan Oil 50ml",
+  brand: "Lola From Rio",
+  unitPrice: 17.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/332680/lola-cosmetics-argan-oil-oleo-capilar.jpg?v=636911265415830000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-argan-oil-oleo-capilar/p",
+  popularity: 58
+ },
+ {
+  sku: "epoca-30714",
+  name: "Óleo Capilar Wella Professionals Oil Reflections Smoothening 100ml",
+  brand: "Wella Professionals",
+  unitPrice: 149.32,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1270427/4064666306179--7-.jpg?v=638991758527200000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflectionsluminous-smoothening-oelo-capilar/p",
+  popularity: 59
+ },
+ {
+  sku: "epoca-30712",
+  name: "Wella Professionals Oil Reflections Máscara de Hidratação 150ml",
+  brand: "Wella Professionals",
+  unitPrice: 142.8,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/883994/wella-sp-oil-reflections-mascara-de-hidratacao--1-.jpg?v=638864566014200000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflections-mascara-de-hidratacao/p",
+  popularity: 60
+ },
+ {
+  sku: "epoca-27020",
+  name: "Widi Care Encaracolando a Juba Creme de Pentear 500ml",
+  brand: "Widi Care",
+  unitPrice: 45.1,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/246425/encaracolando-a-juba-widi-care-leave-in.jpg?v=636474558816200000",
+  productUrl: "https://www.epocacosmeticos.com.br/encaracolando-a-juba-widi-care-creme-de-pentear/p",
+  popularity: 61
+ },
+ {
+  sku: "epoca-26558",
+  name: "Shampoo Anti-quebra L’Oréal Professionnel Serie Expert Inforcer 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 82.1,
+  unit: "un",
+  category: "cabelos shampoo danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537762/loreal-professionnel-inforcer-shampoo-anti-quebra--1-.jpg?v=638131217643830000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-inforcer-shampoo-anti-quebra/p",
+  popularity: 62
+ },
+ {
+  sku: "epoca-21385",
+  name: "Hidratante Facial Mantecorp Skincare Epidrat Calm 40g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 84.75,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/507395/Hidratante-Facial-Epidrat-Calm---Mantecorp-Skincare---40g-2--2-.jpg?v=637979965656470000",
+  productUrl: "https://www.epocacosmeticos.com.br/epidrat-calm-epidrat-locao-hidratante-corporal/p",
+  popularity: 63
+ },
+ {
+  sku: "epoca-21120",
+  name: "Hidratante Facial Neutrogena Hydro Boost Water Gel 50g",
+  brand: "Neutrogena",
+  unitPrice: 69.67,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375238/hydro-boost-water-gel-neutrogena-hidratante-facial--1-.jpg?v=639202554699700000",
+  productUrl: "https://www.epocacosmeticos.com.br/hydro-boost-water-gel-neutrogena-hidratante-facial/p",
+  popularity: 64
+ },
+ {
+  sku: "epoca-11504",
+  name: "Óleo Capilar Cadiveu Açaí Oil de Tratamento 60ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1259226/acai-oil-oleo-tratamento-cadiveu-60ml1.jpg?v=638990723839330000",
+  productUrl: "https://www.epocacosmeticos.com.br/acai-oil-cadiveu-tratamento-reconstrutor/p",
+  popularity: 65
+ },
+ {
+  sku: "epoca-10036",
+  name: "Máscara de Cílios Maybelline The Colossal Volum' Express Lavável Preto Preto",
+  brand: "Maybelline",
+  unitPrice: 55.49,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2789904/7899026456020_00.jpg?v=639205167783700000",
+  productUrl: "https://www.epocacosmeticos.com.br/the-colossal-volum--express-maybelline-mascara-para-cilios/p",
+  popularity: 66
+ },
+ {
+  sku: "epoca-9891",
+  name: "Óleo Capilar L'Oréal Paris Elseve Óleo Extraordinário Finalizador 100ml",
+  brand: "Elseve",
+  unitPrice: 42.19,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores protetor termico",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3097761/7899026478909--1-.jpg?v=639243284647870000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-extraordinario-elseve-l-oreal-paris-tratamento-reconstrutor/p",
+  popularity: 67
+ },
+ {
+  sku: "epoca-26466",
+  name: "Sérum Antioxidante Vitamina C 15% e Ácido Ferúlico Antirrugas SkinCeuticals C E Ferulic 15ml",
+  brand: "Skinceuticals",
+  unitPrice: 394.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/248510/ce-ferulic.jpg?v=636485806514070000",
+  productUrl: "https://www.epocacosmeticos.com.br/c-e-ferulic-skinceuticals-rejuvenescedor-facial/p",
+  popularity: 68
+ },
+ {
+  sku: "epoca-2546",
+  name: "Perfume 1 Million Rabanne Eau de Toilette Masculino 50ml",
+  brand: "Rabanne",
+  unitPrice: 511.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/244473/50ml.jpg?v=636464434394730000",
+  productUrl: "https://www.epocacosmeticos.com.br/1-million-eau-de-toilette-paco-rabanne-perfume-masculino/p",
+  popularity: 69
+ },
+ {
+  sku: "epoca-303719",
+  name: "Kit Siàge Pro Cronology - Shampoo + Condicionador Kit",
+  brand: "Eudora Siàge",
+  unitPrice: 114.98,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3245976/Kit-103.jpg?v=639259435288700000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-siage-pro-cronology-shampoo-condicionador/p",
+  popularity: 70
+ },
+ {
+  sku: "epoca-294981",
+  name: "Protetor Solar Bastão Helioderm Cover Protect Fps90 Cor 40 16g",
+  brand: "Helioderm",
+  unitPrice: 93.39,
+  unit: "un",
+  category: "tratamentos cuidados com o sol protetor solar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3119733/17868784188328.jpg?v=639245642861100000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-bastao-helioderm-cover-protect-fps90-cor-40-16g-283898/p",
+  popularity: 71
+ },
+ {
+  sku: "epoca-265235",
+  name: "Perfume La Bomba Intensa Carolina Herrera Feminino Eau de Parfum 30ml",
+  brand: "Carolina Herrera",
+  unitPrice: 471.12,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3055804/_8411061137970_0065242088_0.jpg?v=639238018412430000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-bomba-intensa-carolina-herrera-feminino-eau-de-parfum/p",
+  popularity: 72
+ },
+ {
+  sku: "epoca-265227",
+  name: "Perfume Million Red For Her Rabanne Feminino Parfum 30ml",
+  brand: "Rabanne",
+  unitPrice: 509.15,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3072336/_3349668664894_0065229934_0.jpg?v=639240360138430000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-million-red-for-her-rabanne-feminino-parfum/p",
+  popularity: 73
+ },
+ {
+  sku: "epoca-260043",
+  name: "Kit Lola From Rio Celebridades - Máscara Capilar Morte Súbira + Máscara Danos Vorazes + Máscara Rapunzel Kit",
+  brand: "Lola From Rio",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cabelos kits para cabelos seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2784057/7899572816613_1.jpg?v=639204368964400000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-lola-from-rio-mascara-capilar-lola-star-morte-subita-danos-vorazes-rapunzel/p",
+  popularity: 74
+ },
+ {
+  sku: "epoca-246659",
+  name: "Kit Lola From Rio Morte Súbita - Shampoo + Condicionador + Spray Kit",
+  brand: "Lola From Rio",
+  unitPrice: 48.9,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2857446/7899572816507_1.jpg?v=639213865886670000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-lola-from-rio-morte-subita-shampoo--condicionador--spray/p",
+  popularity: 75
+ },
+ {
+  sku: "epoca-241532",
+  name: "Celimax Retinal Shot Tightening Booster – 15Ml",
+  brand: "Celimax",
+  unitPrice: 163.9,
+  unit: "un",
+  category: "skincare limpeza de pele",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2079292/17786058976473.jpg?v=639143670912100000",
+  productUrl: "https://www.epocacosmeticos.com.br/celimax-retinal-shot-tightening-booster-%E2%80%93-15ml-230612/p",
+  popularity: 76
+ },
+ {
+  sku: "epoca-236751",
+  name: "Condicionador Antiqueda DS Laboratories Revita 205ml",
+  brand: "Revita",
+  unitPrice: 104.99,
+  unit: "un",
+  category: "cabelos condicionador com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534631/7896026173292.jpg?v=639181037879400000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-antiqueda-ds-laboratories-revita/p",
+  popularity: 77
+ },
+ {
+  sku: "epoca-259665",
+  name: "Shampoo Antiqueda DS Laboratories Revita 205ml",
+  brand: "Revita",
+  unitPrice: 90.99,
+  unit: "un",
+  category: "cabelos shampoo com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534676/REVITA-ALTA-PERF-DC-ANTIQ-SHP-205ML---7896026173285--1-.jpg?v=639181040335870000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-antiqueda-ds-laboratories-revita/p",
+  popularity: 78
+ },
+ {
+  sku: "epoca-223711",
+  name: "Kit SkinCeuticals Antienvelhecimento - P-Tiox + A.G.E. Interrupter Kit",
+  brand: "Skinceuticals",
+  unitPrice: 810.26,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1618682/Kits-155-03.png?v=639095250479130000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-skinceuticals-antienvelhecimento-p-tiox-age-interrupter/p",
+  popularity: 79
+ },
+ {
+  sku: "epoca-222875",
+  name: "Leave In Sebastian Potion 9 145ml",
+  brand: "Sebastian Professional",
+  unitPrice: 133.45,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1830474/0070018000835_1.jpg?v=639120489013000000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-sebastian-potion-9/p",
+  popularity: 80
+ },
+ {
+  sku: "epoca-221029",
+  name: "Perfume Armaf Club De Nuit Intense Masculino Eau de Toilette 105ml",
+  brand: "Armaf",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1571700/17691914675164.jpg?v=639088648818200000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-armaf-club-de-nuit-intense-edt-masculino-105ml-194735/p",
+  popularity: 81
+ },
+ {
+  sku: "epoca-217840",
+  name: "Óleo Finalizador Sebastian Dark Oil Taming Elixir 140ml",
+  brand: "Sebastian Professional",
+  unitPrice: 126.81,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1757079/4068359110081_1.jpg?v=639111853034900000",
+  productUrl: "https://www.epocacosmeticos.com.br/finalizador-sebastian-dark-oil-taming-elix/p",
+  popularity: 82
+ },
+ {
+  sku: "epoca-217836",
+  name: "Shampoo Sebastian Dark Oil 280ml",
+  brand: "Sebastian Professional",
+  unitPrice: 123.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1756760/4068359129724_1.jpg?v=639111818920000000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-sebastian-dark-oil/p",
+  popularity: 83
+ },
+ {
+  sku: "epoca-207888",
+  name: "Base Líquida Dior Forever 24h Wear 30ml 0 Neutral",
+  brand: "Dior",
+  unitPrice: 455,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1541062/1.3348901792585.jpg?v=639084262149330000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-dior-forever-skin-wear-30ml/p",
+  popularity: 84
+ },
+ {
+  sku: "epoca-207500",
+  name: "Coloração Koleston Deluxe Preto 2.0",
+  brand: "Koleston Deluxe",
+  unitPrice: 26.32,
+  unit: "un",
+  category: "cabelos coloracao permanente",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400461/coloracao-koleston-deluxe4.jpg?v=639051390677030000",
+  productUrl: "https://www.epocacosmeticos.com.br/coloracao-koleston-deluxe/p",
+  popularity: 85
+ },
+ {
+  sku: "epoca-205271",
+  name: "Perfume Feminino Lancôme La Vie Est Belle Vanille Nude Eau de Parfum 30ml",
+  brand: "Lancôme",
+  unitPrice: 449.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1696340/3614274397239_1.jpg?v=639105676661070000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-vie-est-belle-lancome-vanille-nude/p",
+  popularity: 86
+ },
+ {
+  sku: "epoca-197667",
+  name: "Revlon Professional Uniq One Kit Leave In 2 Unidades Kit",
+  brand: "Revlon Professional",
+  unitPrice: 128.9,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1254550/duo-revlon-1-8432225139272.jpg?v=638989892942170000",
+  productUrl: "https://www.epocacosmeticos.com.br/revlon-professional-uniq-one-kit-leave-in-2-unidades/p",
+  popularity: 87
+ },
+ {
+  sku: "epoca-192189",
+  name: "Kit Revlon Professional Uniq One All in One - Leave-in 2 unidades",
+  brand: "Revlon Professional",
+  unitPrice: 104.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1205190/17624462229270.jpg?v=638983974286630000",
+  productUrl: "https://www.epocacosmeticos.com.br/revlon-professional-kit-uniq-one-all-in-one-leave-in--2-produtos--166111/p",
+  popularity: 88
+ },
+ {
+  sku: "epoca-171009",
+  name: "Body Mist Jo Malone London English Pear & Freesia 100ml",
+  brand: "Jo Malone London",
+  unitPrice: 414.9,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1148974/body-mist-jo-malone-london-english-pear--freesia -1-.jpg?v=638967422599130000",
+  productUrl: "https://www.epocacosmeticos.com.br/body-mist-jo-malone-london-english-pear--freesia/p",
+  popularity: 89
+ },
+ {
+  sku: "epoca-162129",
+  name: "Óleo Capilar L'Oréal Professionnel Absolut Repair 10 em 1 30ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 90.19,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1099350/7908785419723.1.jpg?v=638950304284270000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-10-em-1-l-oreal-professionnel-absolut-repair-multibeneficios-travel-size/p",
+  popularity: 90
+ },
+ {
+  sku: "epoca-157374",
+  name: "Protetor Solar Facial com Cor Principia PS-05 FPS 70 30ml 1.0",
+  brand: "Principia",
+  unitPrice: 49,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1624349/0070341368565--1-.jpg?v=639095506220200000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-com-cor-principia-ps-05-fps-70-30ml/p",
+  popularity: 91
+ },
+ {
+  sku: "epoca-145590",
+  name: "Blush Líquido Dior Forever Blush Soft Filter 11ml 01 Petal",
+  brand: "Dior",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/925160/blush-liquido-dior-forever-blush-soft-filter-11ml--2-.jpg?v=638887055216470000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-liquido-dior-forever-blush-soft-filter-11ml/p",
+  popularity: 92
+ },
+ {
+  sku: "epoca-143718",
+  name: "Perfume La Bomba Carolina Herrera Feminino Eau de Parfum 30ml",
+  brand: "Carolina Herrera",
+  unitPrice: 429.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/993811/_8411061077146_0065195952_0.jpg?v=638925013548830000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-bomba-carolina-herrera-feminino-eau-de-parfum/p",
+  popularity: 93
+ },
+ {
+  sku: "epoca-140916",
+  name: "Creme Facial Vichy Liftactiv Colageno Specialist 16 50ml",
+  brand: "Vichy",
+  unitPrice: 263.92,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1689310/creme-facial-vichy-liftactiv-colageno-specialist-167.jpg?v=639105007281030000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-vichy-liftactiv-colageno-specialist-16/p",
+  popularity: 94
+ },
+ {
+  sku: "epoca-136395",
+  name: "Creme Hidratante Facial Principia CH-01 50g",
+  brand: "Principia",
+  unitPrice: 39,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/906880/creme-hidratante-facial-principia-ch-01--2-.jpg?v=639239515584770000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-facial-principia-ch-01/p",
+  popularity: 95
+ },
+ {
+  sku: "epoca-129503",
+  name: "Sérum Óleo Rejuvenescedor Guerlain Abeille Royale 15ml",
+  brand: "Guerlain",
+  unitPrice: 355.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/854317/serum-oleo-rejuvenescedor-guerlain-abeille-royale--1-.jpg?v=638839519570270000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-oleo-rejuvenescedor-guerlain-abeille-royale/p",
+  popularity: 96
+ },
+ {
+  sku: "epoca-127438",
+  name: "Shampoo Fortalecedor Antiqueda Mantecorp Pielus Forte 200ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 103.9,
+  unit: "un",
+  category: "cabelos shampoo grisalhos ou brancos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922369/shampoo-fortalecedor-mantecorp-antiqueda-pielus--1-.jpg.jpg?v=638884019684900000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-fortalecedor-mantecorp-antiqueda-pielus/p",
+  popularity: 97
+ },
+ {
+  sku: "epoca-118325",
+  name: "EUCERIN Sérum Facial Anti-Idade Epigenetic 30ml",
+  brand: "Eucerin",
+  unitPrice: 338.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1851536/serum-epigenetic-facial-eucerin-hyaluron-filler.jpg?v=639123271904700000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-epigenetic-facial-eucerin-hyaluron-filler/p",
+  popularity: 98
+ },
+ {
+  sku: "epoca-110021",
+  name: "Protetor Solar Facial Compacto Refil Shiseido Uv Protective FPS 30 Fair Ivory",
+  brand: "Shiseido",
+  unitPrice: 356,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/739581/730852212848-21284_S_IMAG-01.jpg.jpg?v=638733410950170000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-compacto-refil-shiseido-uv-protective-fps-30/p",
+  popularity: 99
+ },
+ {
+  sku: "epoca-107964",
+  name: "Loção Facial Hidratante para Pele Oleosa com Controle do Brilho CeraVe Oil Control 52g",
+  brand: "CeraVe",
+  unitPrice: 107.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2570449/locao-facial-hidratante-cerave-oil-control.jpg?v=639184444301230000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hidratante-cerave-oil-control/p",
+  popularity: 100
+ },
+ {
+  sku: "epoca-103784",
+  name: "Kit Joico Hydra Splash Smart Release - Shampoo 300ml + Condicionador 250ml",
+  brand: "Joico",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cabelos kits para cabelos fino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2906618/07863901122595.jpg?v=639219869297130000",
+  productUrl: "https://www.epocacosmeticos.com.br/joico-hydra-splash-smart-release---shampoo-300ml-condicionador-250ml-80779/p",
+  popularity: 101
+ },
+ {
+  sku: "epoca-101824",
+  name: "Primer Fixador Dailus - Blindagem Fix Tudo 30ml",
+  brand: "Dailus",
+  unitPrice: 55.9,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/708659/primer-fixador-dailus-blindagem-fix-tudo (1).jpg.jpg?v=638681509948570000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-fixador-dailus-blindagem-fix-tudo/p",
+  popularity: 102
+ },
+ {
+  sku: "epoca-99385",
+  name: "Kit Australian Gold - Protetor Solar Corporal FPS50 + Protetor Solar Facial Antipoluição FPS50 Kit",
+  brand: "Australian Gold",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/679348/kit-australian-gold-protetor-solar-corporal-fps50-protetor-solar-facial-antipoluicao-fps50-20-1-.jpg.jpg?v=638636502924600000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-australian-gold-protetor-solar-corporal-fps50-protetor-solar-facial-antipoluicao-fps50/p",
+  popularity: 103
+ },
+ {
+  sku: "epoca-98878",
+  name: "Contorno em Bastão Cremoso Océane Contour Stick Marrom escuro",
+  brand: "Océane",
+  unitPrice: 50.9,
+  unit: "un",
+  category: "maquiagem face contorno",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/914966/contorno-em-bastao-cremoso-oceane-contour-stick-20-9-.jpg.jpg?v=638881912748430000",
+  productUrl: "https://www.epocacosmeticos.com.br/contorno-em-bastao-cremoso-oceane-contour-stick/p",
+  popularity: 104
+ },
+ {
+  sku: "epoca-98742",
+  name: "Máscara Absolut Repair Gold Quinoa + Protein 500g - L'oréal",
+  brand: "LOréal Professionnel",
+  unitPrice: 220.08,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669484/17272913620389.jpg?v=638629740930000000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-absolut-repair-gold-quinoa---protein-500g---l-oreal-76096/p",
+  popularity: 105
+ },
+ {
+  sku: "epoca-98376",
+  name: "Shampoo Cadiveu Glamour Rubi 3L",
+  brand: "Cadiveu Professional",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667782/17246964895160.jpg?v=638629344293700000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-glamour-rubi-shampoo-3l-75730/p",
+  popularity: 106
+ },
+ {
+  sku: "epoca-94591",
+  name: "Shampoo Refil L'Oréal Professionnel Absolut Repair Com Proteína e Ômega 9 240ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 76,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162520/7908785404958_1.jpg?v=638972582079000000",
+  productUrl: "https://www.epocacosmeticos.com.br/refil-loreal-professionnel-absolut-repair-gold-quinoa--protein-shampoo/p",
+  popularity: 107
+ },
+ {
+  sku: "epoca-94460",
+  name: "Máscara de Nutrição Wella Professionals Invigo Nutri Enrich 500ml",
+  brand: "Wella Professionals",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650495/17262380814100.jpg?v=638621149607600000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-mascara-de-nutricao-500ml-71813/p",
+  popularity: 108
+ },
+ {
+  sku: "epoca-94450",
+  name: "Máscara Capilar Wella Professionals Oil Reflections Luminous Reboost 500ml",
+  brand: "Wella Professionals",
+  unitPrice: 184.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650471/17262380646137.jpg?v=638621149593470000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-luminous-reboost---mascara-capilar-500ml-71803/p",
+  popularity: 109
+ },
+ {
+  sku: "epoca-88419",
+  name: "Kit Mini Pincéis Real Techniques + Época Cosméticos - Essentials Brush Kit",
+  brand: "Real Techniques",
+  unitPrice: 56.9,
+  unit: "un",
+  category: "maquiagem estojo completo ou kit de maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/726427/kit-mini-pinceis-real-techniques-epoca-cosmeticos-essentials-brush--1---1-.jpg.jpg?v=638918323426570000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-mini-pinceis-real-techniques-epoca-cosmeticos-essentials-brush/p",
+  popularity: 110
+ },
+ {
+  sku: "epoca-88149",
+  name: "Contorno Facial Payot Claro",
+  brand: "Payot",
+  unitPrice: 36.9,
+  unit: "un",
+  category: "maquiagem face contorno",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/623772/contorno-facial-payot--4-.jpg?v=638598721787500000",
+  productUrl: "https://www.epocacosmeticos.com.br/contorno-facial-payot/p",
+  popularity: 111
+ },
+ {
+  sku: "epoca-87960",
+  name: "Protetor Solar Facial La Roche-Posay Anthelios UVMune 400 Airlicium 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 113.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/839510/la-roche-posay-anthelios-uvmune-400-airlicium-40ml--1-.jpg.jpg?v=639192843691330000",
+  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-uvmune-400-airlicium-40ml/p",
+  popularity: 112
+ },
+ {
+  sku: "epoca-87588",
+  name: "Óleo Capilar Kérastase Elixir Ultime L'Huile Originale Finalizador 30 ml",
+  brand: "Kerastase",
+  unitPrice: 191.93,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/850198/oleo-capilar-kerastase-elixir-ultime-lhuile-originale--1-.jpg?v=638833592289770000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-kerastase-elixir-ultime-lhuile-originale/p",
+  popularity: 113
+ },
+ {
+  sku: "epoca-87002",
+  name: "Creme Corporal Antimanchas Intenso Eucerin Anti-Pigment Clareador 200ml",
+  brand: "Eucerin",
+  unitPrice: 176.71,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597063/4006000017389--1-.jpg?v=639185997825100000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-corporal-intensivo-eucerin-anti-pigment-areas-especificas/p",
+  popularity: 114
+ },
+ {
+  sku: "epoca-86633",
+  name: "Protetor Solar Facial Principia - PS-01 FPS60 40ml",
+  brand: "Principia",
+  unitPrice: 49,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743890/EAN-0609963220694.jpg.jpg?v=638742774115470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-principia-ps01-fps60/p",
+  popularity: 115
+ },
+ {
+  sku: "epoca-86592",
+  name: "Base Matte Payot 1",
+  brand: "Payot",
+  unitPrice: 38.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/620943/base-matte-payot--1-.jpg?v=638584614400270000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-matte-payot/p",
+  popularity: 116
+ },
+ {
+  sku: "epoca-86053",
+  name: "Pó Compacto Boca Rosa BR01",
+  brand: "Boca Rosa",
+  unitPrice: 69.9,
+  unit: "un",
+  category: "maquiagem face po compacto",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/725250/POCORBR01-FECHADO-7908847800636-jpg.jpg?v=638715325714770000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-compacto-boca-rosa/p",
+  popularity: 117
+ },
+ {
+  sku: "epoca-85990",
+  name: "Base Multifuncional Boca Rosa - Stick Pele BR01",
+  brand: "Boca Rosa",
+  unitPrice: 57.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/729282/STICKPELE-BR01-7908847800001-jpg.jpg?v=638724519985200000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-multifuncional-boca-rosa-stick-pele/p",
+  popularity: 118
+ },
+ {
+  sku: "epoca-83906",
+  name: "Base Líquida M·A·C Soft Matte Studio Fix - Tons Claros FPS15 NC15",
+  brand: "MAC",
+  unitPrice: 251.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/597295/base-matte-mac-studio-fix-fluid--1-.jpg?v=638458544365500000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-matte-mac-studio-fix-fluid-tons-claros/p",
+  popularity: 119
+ },
+ {
+  sku: "epoca-84473",
+  name: "Wella Professionals Ultimate Luxe Oil Máscara 500ml",
+  brand: "Wella Professionals",
+  unitPrice: 360.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/600368/wella-professional-ultimate-luxe-oil-mascara.jpg?v=638475803006400000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professional-ultimate-luxe-oil-mascara/p",
+  popularity: 120
+ },
+ {
+  sku: "epoca-83254",
+  name: "Base Líquida Alta Cobertura Pri Lessa by Catharine Hill - Angel Wings A1",
+  brand: "Catharine Hill",
+  unitPrice: 70.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/594055/7898600994132_2.jpg?v=638442264410970000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-catharine-hill-angel-wings-alta-cobertura/p",
+  popularity: 121
+ },
+ {
+  sku: "epoca-82346",
+  name: "Pó Solto Dailus Ultrafino Claro",
+  brand: "Dailus",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589573/7894222039220-fazer-cor-e-textura.jpg?v=638411192929670000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-solto-dailus-ultrafino/p",
+  popularity: 122
+ },
+ {
+  sku: "epoca-80539",
+  name: "Protetor Solar Bioré Aqua Rich - Aqua Protect Lotion FPS 50 70g",
+  brand: "Bioré",
+  unitPrice: 98.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/822146/4901301406866--1-.jpg.jpg?v=638793906476400000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-biore-aqua-rich-aqua-protect-lotion-fps-50/p",
+  popularity: 123
+ },
+ {
+  sku: "epoca-80421",
+  name: "Esponja para Acabamento Océane - Mini Powder Puff 1 Un",
+  brand: "Océane",
+  unitPrice: 14.9,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem esponja",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/576672/esponja-para-acabamento-oceane-mini-powder-puff--2-.jpg?v=638343784738330000",
+  productUrl: "https://www.epocacosmeticos.com.br/esponja-para-acabamento-oceane-mini-powder-puff/p",
+  popularity: 124
+ },
+ {
+  sku: "epoca-80288",
+  name: "EUCERIN Creme de Olhos Clareador de Olheiras Anti-Pigment 15ml",
+  brand: "Eucerin",
+  unitPrice: 230.7,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/821507/4006000101972_1..jpg.jpg?v=638793102424070000",
+  productUrl: "https://www.epocacosmeticos.com.br/clareador-de-olheiras-eucerin-anti-pigment/p",
+  popularity: 125
+ },
+ {
+  sku: "epoca-78636",
+  name: "Sérum Capilar Noturno Kérastase Nutrição Profunda 8H Magic Night 90ml",
+  brand: "Kerastase",
+  unitPrice: 416.6,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores serum",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/608259/3474637155025--1-.jpg?v=638507091724670000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-kerastase-nutritive-8h-magic-night/p",
+  popularity: 126
+ },
+ {
+  sku: "epoca-77908",
+  name: "Wella Professionals Kit com 3 Máscara - Oil Reflections + Fusion + Invigo Kit",
+  brand: "Wella Professionals",
+  unitPrice: 397.6,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554278/wella-professionals-kit-com-3-mascara-oil-reflections-fusion-invigo--1-.jpg?v=638212216090570000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-kit-com-3-mascara-oil-reflections-fusion-invigo/p",
+  popularity: 127
+ },
+ {
+  sku: "epoca-77618",
+  name: "Base Líquida Lancôme Teint Idôle Ultra Wear Foundation 30ml 105W",
+  brand: "Lancôme",
+  unitPrice: 381.65,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3018250/3614273792349_01.jpg?v=639232616194170000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-lancome-teint-idole-ultra-wear/p",
+  popularity: 128
+ },
+ {
+  sku: "epoca-77243",
+  name: "Hidratante Corporal Multirreparador para Pele Sensível e Irritada La Roche-Posay Cicaplast Baume B5+ 20ml",
+  brand: "La Roche-Posay",
+  unitPrice: 46.78,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/564578/cicaplast-baume-b5-la-roche-posay-hidratante-reparador.jpg?v=638277151174500000",
+  productUrl: "https://www.epocacosmeticos.com.br/cicaplast-baume-la-roche-posay-b5-plus-hidratante/p",
+  popularity: 129
+ },
+ {
+  sku: "epoca-77295",
+  name: "Wella Professionals Oil Reflections Kit – Shampoo + Condicionador Kit",
+  brand: "Wella Professionals",
+  unitPrice: 308.63,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/556352/wella-professionals-oil-reflections-kit-shampoo-condicionador.jpg?v=638223588310670000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-kit-shampoo-condicionador/p",
+  popularity: 130
+ },
+ {
+  sku: "epoca-77097",
+  name: "Paleta de Sombras Océane Edition Pocket Palette Nude 1 Un",
+  brand: "Océane",
+  unitPrice: 56.72,
+  unit: "un",
+  category: "maquiagem olhos sombra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/547960/paleta-de-sombras-oceane-edition-pocket-palette-nude.jpg?v=638188956386470000",
+  productUrl: "https://www.epocacosmeticos.com.br/paleta-de-sombras-oceane-edition-pocket-palette-nude/p",
+  popularity: 131
+ },
+ {
+  sku: "epoca-76550",
+  name: "Corretivo Dior Forever Skin Correct 11ml 3,5N",
+  brand: "Dior",
+  unitPrice: 334.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/691788/corretivo-para-os-olhos-dior-forever-skin-correct--1-.jpg.jpg?v=638654845012570000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-para-os-olhos-dior-forever-skin-correct/p",
+  popularity: 132
+ },
+ {
+  sku: "epoca-75538",
+  name: "Espuma Cremosa de Limpeza Facial Antioleosidade La Roche-Posay Effaclar Reequilibrante 100g",
+  brand: "La Roche-Posay",
+  unitPrice: 78.47,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/563144/espuma-de-limpeza-facial-cremosa-la-roche-posay-effaclar-reequilibrante.jpg?v=638265892098500000",
+  productUrl: "https://www.epocacosmeticos.com.br/espuma-de-limpeza-facial-cremosa-la-roche-posay-effaclar-reequilibrante/p",
+  popularity: 133
+ },
+ {
+  sku: "epoca-75022",
+  name: "Paleta de Sombras BT Transition 1Un",
+  brand: "Bruna Tavares",
+  unitPrice: 65.6,
+  unit: "un",
+  category: "maquiagem olhos sombra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/542161/paleta-de-sombras-bt-transition--1-.jpg?v=638150833945600000",
+  productUrl: "https://www.epocacosmeticos.com.br/paleta-de-sombras-bt-transition/p",
+  popularity: 134
+ },
+ {
+  sku: "epoca-74340",
+  name: "Máscara de Cílios Essence I Love Extreme Crazy Volume à Prova D’água Preto",
+  brand: "Essence",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/564637/mascara-de-cilios-essence-i-love-extreme-crazy-volume-a-prova-dagua--1---7---5---9---1-.jpg?v=638277838755470000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-essence-i-love-extreme-crazy-volume-a-prova-dagua/p",
+  popularity: 135
+ },
+ {
+  sku: "epoca-74160",
+  name: "Lápis para os Olhos Vult Preto Intenso",
+  brand: "Vult",
+  unitPrice: 16.56,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/522640/7899852022420.2.jpg?v=638052370491000000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-para-os-olhos-vult/p",
+  popularity: 136
+ },
+ {
+  sku: "epoca-73096",
+  name: "Fixador de Maquiagem Franciny Ehlke Power Finish 120ml",
+  brand: "Franciny Ehlke",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/515663/fixador-de-maquiagem-franciny-ehlke-power-finish.jpg?v=638019493914570000",
+  productUrl: "https://www.epocacosmeticos.com.br/fixador-de-maquiagem-franciny-ehlke-power-finish/p",
+  popularity: 137
+ },
+ {
+  sku: "epoca-72974",
+  name: "La Roche-Posay Anthelios Airlicium+ Kit com 2 Unidades - Protetor Solar Facial FPS80 - 40g Kit",
+  brand: "La Roche-Posay",
+  unitPrice: 181.36,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/514686/la-roche-posay-anthelios-airlicium-kit-com-2-unidades-protetor-solar-facial-fps80-40g--1-.jpg?v=638013671928830000",
+  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-airlicium-kit-com-2-unidades-protetor-solar-facial-fps80-40g/p",
+  popularity: 138
+ },
+ {
+  sku: "epoca-71714",
+  name: "Cadiveu Professional Nutri Glow Máscara Nutritiva 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/505943/cadiveu-professional-nutri-glow-mascara-nutritiva--1-.jpg?v=637973928696700000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-nutri-glow-mascara-nutritiva/p",
+  popularity: 139
+ },
+ {
+  sku: "epoca-70771",
+  name: "CeraVe Kit com Duas Loções Hidratantes Kit",
+  brand: "CeraVe",
+  unitPrice: 209.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499984/cerave-kit-com-duas-locoes-hidratantes.jpg?v=637944351298770000",
+  productUrl: "https://www.epocacosmeticos.com.br/cerave-kit-com-duas-locoes-hidratantes/p",
+  popularity: 140
+ },
+ {
+  sku: "epoca-70688",
+  name: "Fluido Vizzela Gotas Fix Blindagem 30ml",
+  brand: "Vizzela",
+  unitPrice: 78.9,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/975739/fluido-vizzela-gotas-fix-blindagem -3-.jpg?v=638909766354770000",
+  productUrl: "https://www.epocacosmeticos.com.br/fluido-vizzela-gotas-fix-blindagem/p",
+  popularity: 141
+ },
+ {
+  sku: "epoca-70687",
+  name: "Fixador de Maquiagem Vizzela Real Fix 150ml",
+  brand: "Vizzela",
+  unitPrice: 86.9,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499636/fixador-de-maquiagem-vizzela-real-fix--1-.jpg?v=637940991084430000",
+  productUrl: "https://www.epocacosmeticos.com.br/fixador-de-maquiagem-vizzela-real-fix/p",
+  popularity: 142
+ },
+ {
+  sku: "epoca-70552",
+  name: "Protetor Solar Stick Multifuncional com Cor Pink Cheeks Pro Stick Pro10",
+  brand: "Pink Cheeks",
+  unitPrice: 88.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/942215/protetor-solar-stick-multifuncional-com-cor-pink-cheeks-pro-stick--4-.jpg?v=638896458328470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-stick-multifuncional-com-cor-pink-cheeks-pro-stick/p",
+  popularity: 143
+ },
+ {
+  sku: "epoca-69664",
+  name: "Hidratante Corporal Mantecorp Skincare Epidrat Calm 120ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 169.92,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/509483/mantecorp-epidrat-calm.jpg?v=637987760660100000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-corporal-mantecorp-epidrat-calm/p",
+  popularity: 144
+ },
+ {
+  sku: "epoca-69653",
+  name: "Rejuvenescedor Facial Mantecorp Ivy C Ferulic Sérum 30g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651397/7891142981240_1.jpg?v=639099827229930000",
+  productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-facial-mantecorp-ivy-c-ferulic-serum/p",
+  popularity: 145
+ },
+ {
+  sku: "epoca-67927",
+  name: "L’Oreal Professionnel Pro Longer Kit – Shampoo + Máscara Kit",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 282.33,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/483294/loreal-professionnel-pro-longer-kit-shampoo-mascar.jpg?v=637850437903300000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-pro-longer-kit-shampoo-mascar/p",
+  popularity: 146
+ },
+ {
+  sku: "epoca-66382",
+  name: "Blush Facial Dailus Tô Bege",
+  brand: "Dailus",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/471787/blush-facial-dailus-to-bege.jpg?v=637776120572870000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-facial-dailus/p",
+  popularity: 147
+ },
+ {
+  sku: "epoca-64495",
+  name: "Óleo Capilar Lola Cosmetics Pinga! Açaí e Pracaxi 50ml",
+  brand: "Lola From Rio",
+  unitPrice: 23.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/457149/lola-cosmetics-pinga-acai-e-pracaxi-oleo-reparador-pos-quimica-50ml.jpg?v=637690726255670000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-pinga-acai-e-pracaxi-oleo-reparador-pos-quimica-50ml/p",
+  popularity: 148
+ },
+ {
+  sku: "epoca-64448",
+  name: "Protetor Solar com Cor Mantecorp Skincare Episol Color FPS70 1",
+  brand: "Mantecorp Skincare",
+  unitPrice: 78.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/748817/protetor-solar-com-cor-fps70-mantecorp-skicare-episol--1-.jpg?v=638745713457570000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-com-cor-fps70-mantecorp-skicare-episol/p",
+  popularity: 149
+ },
+ {
+  sku: "epoca-64215",
+  name: "Óleo Capilar L'Oréal Professionnel Absolut Repair 10 em 1 90ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 206.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/951794/loreal-professionnel-absolut-repair-gold-quinoa-oleo-reparacao-10-em-1-90ml.jpg?v=638900866121300000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-oleo-10-em-1-90ml/p",
+  popularity: 150
+ },
+ {
+  sku: "epoca-64191",
+  name: "Óleo Capilar Lola Cosmetics Danos Vorazes 50ml",
+  brand: "Lola From Rio",
+  unitPrice: 21.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/724234/7899572812158.jpg.jpg?v=638714220965870000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-danos-vorazes-oleo-50ml/p",
+  popularity: 151
+ },
+ {
+  sku: "epoca-64134",
+  name: "Sérum Ultra Concentrado Antiacne e Antimarcas La Roche-Posay Effaclar 30ml",
+  brand: "La Roche-Posay",
+  unitPrice: 231.29,
+  unit: "un",
+  category: "skincare hidratacao e tratamento acne e oleosidade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1372184/serum-effaclar-ultra-concentrado-la-roche-posay--2-.jpg?v=639062667992100000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-effaclar-ultra-concentrado-la-roche-posay/p",
+  popularity: 152
+ },
+ {
+  sku: "epoca-64090",
+  name: "EUCERIN Protetor Solar Facial Oil Control Antioleosidade FPS70 Claro",
+  brand: "Eucerin",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1560137/4005900840349-EUCERIN_Protetor_Solar_Facial_Oil_Control_Cor_Clara_FPS_70_50ml_Antioleosidade_Prote_o_UVA_UVB_e_Luz_Vis_vel_Pele_Oleosa-Sun-Eucerin_--2-.jpg?v=639087520870470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-eucerin-sun-oil-control-tinted-fps-70-50g/p",
+  popularity: 153
+ },
+ {
+  sku: "epoca-59037",
+  name: "Óleo Demaquilante Facial Bioré - Cleansing Oil Refil 210ml",
+  brand: "Bioré",
+  unitPrice: 58.25,
+  unit: "un",
+  category: "maquiagem remocao da maquiagem demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922580/oleo-demaquilante-facial-biore-make-up-remover.jpg?v=638884392892230000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-demaquilante-facial-biore-make-up-remover-refil/p",
+  popularity: 154
+ },
+ {
+  sku: "epoca-62404",
+  name: "Avène Cicalfate+ Creme Reparador Facial 20ml",
+  brand: "Avène",
+  unitPrice: 44.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1092040/creme-facial-reparador-avene-cicalfate--8-.jpg?v=638948556984130000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-reparador-avene-cicalfate/p",
+  popularity: 155
+ },
+ {
+  sku: "epoca-62073",
+  name: "Gel de Limpeza Facial Alta Tolerância para Peles Sensíveis Refil La Roche-Posay Effaclar 240g",
+  brand: "La Roche-Posay",
+  unitPrice: 74.14,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/441871/gel-de-limpeza-facial-la-roche-posay-refil-effaclar-alta-tolerancia.jpg?v=637613470192900000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-la-roche-posay-refil-effaclar-alta-tolerancia/p",
+  popularity: 156
+ },
+ {
+  sku: "epoca-108264",
+  name: "Rejuvenescedor Facial Mantecorp Skincare Reviline Retinol Sérum 30ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 215.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651553/7891142984005_1.jpg?v=639099846901030000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-rejuvenescedor-facial-mantecorp-skincare-reviline-r/p",
+  popularity: 157
+ },
+ {
+  sku: "epoca-61034",
+  name: "Cadiveu Professional Bye Bye Frizz Leave In Selagem Gradativa 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear rebeldes ou com frizz",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549132/cadiveu-essentials-bye-bye-frizz-leave-in-selagem-gradativa-200ml--1-.jpg?v=638193350304430000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-bye-bye-frizz-leave-in-selagem-gradativa-200ml/p",
+  popularity: 158
+ },
+ {
+  sku: "epoca-60470",
+  name: "Perfume Feminino Eau de Parfum Intense Yves Saint Laurent Libre 30ml",
+  brand: "Yves Saint Laurent",
+  unitPrice: 556.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1378540/libre-intense-yves-saint-laurent-perfume-feminino-edp--1-.jpg?v=639039232614330000",
+  productUrl: "https://www.epocacosmeticos.com.br/libre-intense-yves-saint-laurent-perfume-feminino-edp/p",
+  popularity: 159
+ },
+ {
+  sku: "epoca-60456",
+  name: "Refil Shampoo Estimulante Antiqueda Fortalecedor Dercos Vichy Energy+ 200g",
+  brand: "Vichy",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/977682/7899706254373--2-.JPG.jpg?v=638911329526900000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-refil-vichy-dercos-energizante-200-ml/p",
+  popularity: 160
  },
  {
   sku: "epoca-60266",
@@ -1796,7 +1774,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem primer e finalizador fixador da maquiagem",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/769640/7898600993234--2-.jpg.jpg?v=638761739726570000",
   productUrl: "https://www.epocacosmeticos.com.br/primer-facial-catharine-hill-angel-magic/p",
-  popularity: 163
+  popularity: 161
  },
  {
   sku: "epoca-59700",
@@ -1807,7 +1785,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/429838/base-liquida-bt-skin-f30--2-.jpg?v=637548922477300000",
   productUrl: "https://www.epocacosmeticos.com.br/base-liquida-bt-skin-tons-claros/p",
-  popularity: 164
+  popularity: 162
  },
  {
   sku: "epoca-59676",
@@ -1818,18 +1796,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face contorno",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/429419/blush-contour-bt-contorno-4.jpg?v=637547981986430000",
   productUrl: "https://www.epocacosmeticos.com.br/blush-contour-bt-contorno/p",
-  popularity: 165
- },
- {
-  sku: "epoca-59044",
-  name: "Desodorante Roll On Perspirex Unissex – Strong Antitranspirante 20ml",
-  brand: "Perspirex",
-  unitPrice: 100.9,
-  unit: "un",
-  category: "skincare desodorantes",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1345877/desodorante-roll-on-perspirex-unissex-strong-antitranspirante -1-.jpg?v=639016621220100000",
-  productUrl: "https://www.epocacosmeticos.com.br/desodorante-roll-on-perspirex-unissex-strong-antitranspirante/p",
-  popularity: 166
+  popularity: 163
  },
  {
   sku: "epoca-58701",
@@ -1840,18 +1807,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361587/my-way-giorgio-armani-perfume-feminino-edp--1-.jpg?v=639029782541700000",
   productUrl: "https://www.epocacosmeticos.com.br/my-way-giorgio-armani-perfume-feminino-edp/p",
-  popularity: 167
- },
- {
-  sku: "epoca-57290",
-  name: "Protetor Solar Neutrogena Sun Fresh Derm Care Facial FPS70 40g",
-  brand: "Neutrogena",
-  unitPrice: 62.99,
-  unit: "un",
-  category: "skincare protetor solar protetor solar corporal",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2795530/7891010253196_3.jpg?v=639206037715300000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-neutrogena-sun-fresh-derm-care-facial-fps70/p",
-  popularity: 168
+  popularity: 164
  },
  {
   sku: "epoca-56821",
@@ -1862,7 +1818,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios contorno labial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/409130/contorno-labial-rk-by-kiss-ultra-easy-lip-liner.jpg?v=637401793930630000",
   productUrl: "https://www.epocacosmeticos.com.br/contorno-labial-rk-by-kiss-ultra-easy-lip-liner/p",
-  popularity: 169
+  popularity: 165
  },
  {
   sku: "epoca-55638",
@@ -1873,7 +1829,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651314/7891142204257_1.jpg?v=639099823375900000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-rejuvenescedor-facial-mantecorp-ivy-c-aox/p",
-  popularity: 170
+  popularity: 166
  },
  {
   sku: "epoca-55474",
@@ -1884,7 +1840,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais hidratante corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3134878/4005800220012-EUCERIN_Pomada_Reparadora_Aquaphor_Duopack_10ml_Hidrata_o_Intensiva_Hidratante_Labial-Body-Eucerin_--2-.jpg?v=639247601518200000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-reparador-intensivo-eucerin-aquaphor-2-10ml/p",
-  popularity: 171
+  popularity: 167
  },
  {
   sku: "epoca-52202",
@@ -1895,18 +1851,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2776256/loreal-professionnel-absolut-repair-gold-quinoa-protein-kit-shampoo-mascara.jpg?v=639203257185230000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-gold-quinoa-protein-kit-shampoo-mascara/p",
-  popularity: 172
+  popularity: 168
  },
  {
   sku: "epoca-51314",
   name: "Óleo Demaquilante Hada Labo Gokujyun Cleansing Oil 200ml",
   brand: "Hada Labo",
-  unitPrice: 86.9,
+  unitPrice: 74.54,
   unit: "un",
   category: "skincare limpeza de pele cleansing oil",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361356/limpador-facial-hada-labo-gokujyun-oil-cleansing--1-.jpg?v=639238898331570000",
   productUrl: "https://www.epocacosmeticos.com.br/limpador-facial-hada-labo-gokujyun-oil-cleansing/p",
-  popularity: 173
+  popularity: 169
  },
  {
   sku: "epoca-49174",
@@ -1917,7 +1873,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante labial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1560791/4005808934980-NIVEA_Hidratante_Labial_Melancia_Shine_4_8_g-LIP-NIVEA--1-.jpg?v=639087592417000000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-labial-nivea-shine/p",
-  popularity: 174
+  popularity: 170
  },
  {
   sku: "epoca-48641",
@@ -1928,7 +1884,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162328/7899706189682_1.jpg?v=638972549257100000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-gold-quinoa-protein-mascara-de-tratamento-tamanho-profissional/p",
-  popularity: 175
+  popularity: 171
  },
  {
   sku: "epoca-48639",
@@ -1939,7 +1895,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1162289/7899706189668_1.jpg?v=638972544471170000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-gold-quinoa-protein-mascara-de-tratamento/p",
-  popularity: 176
+  popularity: 172
  },
  {
   sku: "epoca-48039",
@@ -1950,7 +1906,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/769687/7898600992510-2021_1---Base-Angel-Wings-Media-Cobertura-MC1.jpg.jpg?v=638761768048430000",
   productUrl: "https://www.epocacosmeticos.com.br/base-liquida-catharine-hill-media-cobertura/p",
-  popularity: 177
+  popularity: 173
  },
  {
   sku: "epoca-43266",
@@ -1961,7 +1917,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem aplicadores para maquiagem esponja",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/334466/esponja-para-acabamento-oceane-powder-puff.jpg?v=636922482664230000",
   productUrl: "https://www.epocacosmeticos.com.br/esponja-para-acabamento-oceane-powder-puff-/p",
-  popularity: 178
+  popularity: 174
  },
  {
   sku: "epoca-41990",
@@ -1972,7 +1928,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume para o corpo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/328897/212-vip-rose-carolina-herrera-body-spray.jpg?v=636893083372370000",
   productUrl: "https://www.epocacosmeticos.com.br/212-vip-rose-carolina-herrera-body-spray/p",
-  popularity: 179
+  popularity: 175
  },
  {
   sku: "epoca-40935",
@@ -1983,7 +1939,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/324184/widi-care-higienizando-a-juba-shampoo.jpg?v=636858355016170000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-higienizando-a-juba-shampoo/p",
-  popularity: 180
+  popularity: 176
  },
  {
   sku: "epoca-40181",
@@ -1994,7 +1950,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios contorno labial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1440922/1996.jpg?v=639065049090830000",
   productUrl: "https://www.epocacosmeticos.com.br/lapis-labial-m-a-c-lip-pencils/p",
-  popularity: 181
+  popularity: 177
  },
  {
   sku: "epoca-39516",
@@ -2005,7 +1961,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/316887/Kit-Enrich-SH--CD---MASK.jpg?v=636824834651700000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-kit-shampoo-condicionador-mascara-/p",
-  popularity: 182
+  popularity: 178
  },
  {
   sku: "epoca-36954",
@@ -2016,7 +1972,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo coloridos e com mechas",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/940327/4064666435459_1.jpg?v=638895655543000000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-booster-shampoo/p",
-  popularity: 183
+  popularity: 179
  },
  {
   sku: "epoca-35666",
@@ -2027,7 +1983,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/859791/enrich-wella-professionals-mascara-capilar- -1-.jpg?v=638845699196100000",
   productUrl: "https://www.epocacosmeticos.com.br/enrich-wella-professionals-mascara-capilar-/p",
-  popularity: 184
+  popularity: 180
+ },
+ {
+  sku: "epoca-35581",
+  name: "Perfume Givenchy L'Interdit Eau de Parfum Feminino 35ml",
+  brand: "Givenchy",
+  unitPrice: 490.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3132189/3274872372139--1-.jpg?v=639247255866200000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-interdit-givenchy-perfume-feminino-eau-de-parfum/p",
+  popularity: 181
  },
  {
   sku: "epoca-34891",
@@ -2038,7 +2005,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/883985/wella-professionals-oil-reflections-condicionador-200ml -1-.jpg?v=638864561062600000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-condicionador-200ml/p",
-  popularity: 185
+  popularity: 182
  },
  {
   sku: "epoca-34728",
@@ -2049,7 +2016,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/457421/loreal-professionnel-serie-expert-kit-shampoo-mascara--1-.jpg?v=637693119736970000",
   productUrl: "https://www.epocacosmeticos.com.br/-l-oreal-professionnel-inforcer-kit-shampoo-mascara-/p",
-  popularity: 186
+  popularity: 183
  },
  {
   sku: "epoca-29683",
@@ -2060,7 +2027,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361604/serum-anti-idade-la-roche-posay-hyalu-b5-repair--2-.jpg?v=639029790651930000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-anti-idade-la-roche-posay-hyalu-b5-repair/p",
-  popularity: 187
+  popularity: 184
+ },
+ {
+  sku: "epoca-29213",
+  name: "Loção Hidratante Corporal CeraVe para Pele Seca a Extra Seca com Ácido Hialurônico e Ceramidas 473ml",
+  brand: "CeraVe",
+  unitPrice: 121,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2567312/locao-corporal-hidratante-cerave-473ml7.jpg?v=639184258051970000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-corporal-hidratante-cerave-473ml/p",
+  popularity: 185
  },
  {
   sku: "epoca-59216",
@@ -2071,7 +2049,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496198/Locao-Facial-Hidratante-CeraVe-2--1-.jpg?v=637921312096270000",
   productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hidratante-cerave/p",
-  popularity: 188
+  popularity: 186
  },
  {
   sku: "epoca-28228",
@@ -2082,7 +2060,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/672513/sauvage-eau-de-parfum--dior-perfume-masculino-20-4-.jpg.jpg?v=638633220188400000",
   productUrl: "https://www.epocacosmeticos.com.br/sauvage-eau-de-parfum--dior-perfume-masculino/p",
-  popularity: 189
+  popularity: 187
  },
  {
   sku: "epoca-27816",
@@ -2093,7 +2071,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos corretivo para area dos olhos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/490932/Corretivo-para-area-dos-Olhos-Maybelline---Instant-Age-Eraser---Honey--1-.jpg?v=637895099476000000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-para-area-dos-olhos-maybelline-instant-age-eraser-dark-circles/p",
-  popularity: 190
+  popularity: 188
  },
  {
   sku: "epoca-27097",
@@ -2104,7 +2082,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1092294/gel-de-limpeza-facial-avene-cleanance-gel--2-.jpg?v=638972757672570000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-avene-cleanance-gel/p",
-  popularity: 191
+  popularity: 189
  },
  {
   sku: "epoca-27017",
@@ -2115,18 +2093,29 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores mousse",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/459943/juba-criador-de-cachos-widi-care-mousse.jpg?v=637709626067700000",
   productUrl: "https://www.epocacosmeticos.com.br/juba-criador-de-cachos-widi-care-mousse/p",
-  popularity: 192
+  popularity: 190
+ },
+ {
+  sku: "epoca-25450",
+  name: "Solução Facial Antioleosidade Redução de Poros SkinCeuticals Blemish + Age 125ml",
+  brand: "Skinceuticals",
+  unitPrice: 104.9,
+  unit: "un",
+  category: "skincare limpeza de pele tonico facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/526335/skinceuticals-blemish-age-solution--1-.jpg?v=638067350490470000",
+  productUrl: "https://www.epocacosmeticos.com.br/tonico-facial-skinceuticals-blemish-age-solution/p",
+  popularity: 191
  },
  {
   sku: "epoca-24491",
   name: "Sérum Facial Fortalecedor para Hidratação Intensa com Ácido Hialurônico Vichy Minéral 89 50ml",
   brand: "Vichy",
-  unitPrice: 199.9,
+  unitPrice: 195.14,
   unit: "un",
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1866984/3337875543248-1.jpg?v=639124896039930000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-vichy-mineral-89/p",
-  popularity: 193
+  popularity: 192
  },
  {
   sku: "epoca-20390",
@@ -2137,7 +2126,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1945623/good-girl-eau-de-parfum-carolina-herrera-perfume-feminino--1-.jpg?v=639131575267530000",
   productUrl: "https://www.epocacosmeticos.com.br/good-girl-eau-de-parfum-carolina-herrera-perfume-feminino/p",
-  popularity: 194
+  popularity: 193
  },
  {
   sku: "epoca-18098",
@@ -2148,7 +2137,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare agua micelar",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/476983/sensibio-h2o-solucao-micellare-demaquilante-bioderma-demaquilante-250ml--1-.jpg?v=637808026517130000",
   productUrl: "https://www.epocacosmeticos.com.br/agua-micelar-calmante-bioderma-sensibio-h2o-solution-micellaire/p",
-  popularity: 195
+  popularity: 194
  },
  {
   sku: "epoca-15928",
@@ -2159,7 +2148,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2089766/7898952466240_PINKStick_001_5KM.jpg?v=639144481012500000",
   productUrl: "https://www.epocacosmeticos.com.br/pink-stick-fps-60-pink-cheeks-protetor-solar-facial/p",
-  popularity: 196
+  popularity: 195
  },
  {
   sku: "epoca-14826",
@@ -2170,7 +2159,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1335926/7899572802289.jpg?v=639009861421930000",
   productUrl: "https://www.epocacosmeticos.com.br/rapunzel-tonico-do-crescimento-lola-cosmetics-tratamento-antiqueda/p",
-  popularity: 197
+  popularity: 196
  },
  {
   sku: "epoca-9341",
@@ -2181,7 +2170,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/515116/212-VIP-Rose-Carolina-Herrera---Perfume-Feminino---Eau-de-Parfum-30ml--1-.jpg?v=638017223482400000",
   productUrl: "https://www.epocacosmeticos.com.br/212-vip-rose-eau-de-parfum-carolina-herrera-perfume-feminino/p",
-  popularity: 198
+  popularity: 197
  },
  {
   sku: "epoca-6534",
@@ -2192,18 +2181,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361531/acqua-di-gio-homme-eau-de-toilette-giorgio-armani-perfume-masculino--1-.jpg?v=639035678266700000",
   productUrl: "https://www.epocacosmeticos.com.br/acqua-di-gio-homme-eau-de-toilette-giorgio-armani-perfume-masculino/p",
-  popularity: 199
- },
- {
-  sku: "epoca-3247",
-  name: "Chloé Signature - Perfume Feminino - Eau de Parfum 75ml",
-  brand: "Chloé",
-  unitPrice: 939,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/403986/chloe-eau-de-parfum-chloe-perfume-feminino-75ml--2-.jpg?v=637364778502700000",
-  productUrl: "https://www.epocacosmeticos.com.br/chloe-eau-de-parfum-chloe-perfume-feminino/p",
-  popularity: 200
+  popularity: 198
  },
  {
   sku: "epoca-3008",
@@ -2214,7 +2192,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento acne e oleosidade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/526239/blemish-age-defense-skinceuticals-tratamento-antiacne-30ml--1---1---1-.jpg?v=638067295747770000",
   productUrl: "https://www.epocacosmeticos.com.br/blemish-age-defense-skinceuticals-tratamento-antiacne/p",
-  popularity: 201
+  popularity: 199
  },
  {
   sku: "epoca-2818",
@@ -2225,7 +2203,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1343551/Azzaro-Pour-Homme-Azzaro---Perfume-Masculino---Eau-de-Toilette-.jpg.jpg?v=639014888191400000",
   productUrl: "https://www.epocacosmeticos.com.br/azzaro-pour-homme-eau-de-toilette-azzaro-perfume-masculino/p",
-  popularity: 202
+  popularity: 200
  },
  {
   sku: "epoca-4013",
@@ -2236,7 +2214,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/265686/666660.jpg?v=636644157247130000",
   productUrl: "https://www.epocacosmeticos.com.br/212-sexy-eau-de-parfum-carolina-herrera-perfume-feminino/p",
-  popularity: 203
+  popularity: 201
  },
  {
   sku: "epoca-6505",
@@ -2247,7 +2225,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/556948/tommy-girl-eau-de-toilette-tommy-hilfiger-perfume-feminino--1-.jpg?v=638227794458200000",
   productUrl: "https://www.epocacosmeticos.com.br/tommy-girl-eau-de-toilette-tommy-hilfiger-perfume-feminino/p",
-  popularity: 204
+  popularity: 202
  },
  {
   sku: "epoca-295142",
@@ -2258,7 +2236,18 @@ export const CATALOG: CatalogItem[] = [
   category: "tratamentos cuidados com o sol protetor solar",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3120472/17883803808828.jpg?v=639245661362400000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-corporal-australian-gold-fps-30-120g-284080/p",
-  popularity: 205
+  popularity: 203
+ },
+ {
+  sku: "epoca-280183",
+  name: "Perfume 1 Million Black Rabanne Masculino Eau de Parfum 50ml",
+  brand: "Rabanne",
+  unitPrice: 534.65,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3056062/3349668672950_3_Product_Front_Squared.jpg?v=639238056941670000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-1-million-black-rabanne-masculino-eau-de-parfum/p",
+  popularity: 204
  },
  {
   sku: "epoca-279746",
@@ -2269,6 +2258,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2904581/17861398912849.jpg?v=639219636606930000",
   productUrl: "https://www.epocacosmeticos.com.br/numbuzim-no-9-nad--retinol-volumetox---creme-para-os-olhos-10ml-268884/p",
+  popularity: 205
+ },
+ {
+  sku: "epoca-277376",
+  name: "Wella Professionals Ultimate Luxe Oil - Máscara Capilar 500ml",
+  brand: "Wella Professionals",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2868595/17849914916711.jpg?v=639215473448970000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-ultimate-luxe-oil---mascara-capilar-500ml-266447/p",
   popularity: 206
  },
  {
@@ -2294,6 +2294,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 208
  },
  {
+  sku: "epoca-273213",
+  name: "Máscara Capilar Eudora Siàge Ultra Bond Reset Regeneradora 250ml",
+  brand: "Eudora Siàge",
+  unitPrice: 58.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2965080/7891033896806_Imagem-3_3000x3000.jpg?v=639227624949400000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-eudora-siage-ultra-bond-reset-regeneradora/p",
+  popularity: 209
+ },
+ {
   sku: "epoca-271263",
   name: "Lilyeve Grow Turn Exosome Brush Ampoule 100ml",
   brand: "Lilyeve",
@@ -2302,7 +2313,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2736334/17839725644266.jpg?v=639199142370400000",
   productUrl: "https://www.epocacosmeticos.com.br/lilyeve-grow-turn-exosome-brush-ampoule-100ml-260390/p",
-  popularity: 209
+  popularity: 210
  },
  {
   sku: "epoca-267451",
@@ -2313,29 +2324,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2772295/Gemini_Generated_Image_xcza1oxcza1oxcza.png?v=639202618035500000",
   productUrl: "https://www.epocacosmeticos.com.br/perfume-new-miss-dior-feminino-eau-de-parfum/p",
-  popularity: 210
- },
- {
-  sku: "epoca-265235",
-  name: "Perfume La Bomba Intensa Carolina Herrera Feminino Eau de Parfum 30ml",
-  brand: "Carolina Herrera",
-  unitPrice: 471.12,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3055804/_8411061137970_0065242088_0.jpg?v=639238018412430000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-bomba-intensa-carolina-herrera-feminino-eau-de-parfum/p",
   popularity: 211
- },
- {
-  sku: "epoca-260061",
-  name: "Perfume Aromáticos Phebo Rosmarino Eau de Toilette 200ml",
-  brand: "Phebo",
-  unitPrice: 217.9,
-  unit: "un",
-  category: "perfumes perfume unissex",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3038412/perfume-aromaticos-phebo-rosmarino-eau-de-toilette2.jpg?v=639235401630370000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-aromaticos-phebo-rosmarino-eau-de-toilette/p",
-  popularity: 212
  },
  {
   sku: "epoca-260060",
@@ -2346,7 +2335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume unissex",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3038312/perfume-aromaticos-phebo-folha-de-menta-eau-de-toilette2.jpg?v=639235397003230000",
   productUrl: "https://www.epocacosmeticos.com.br/perfume-aromaticos-phebo-folha-de-menta-eau-de-toilette/p",
-  popularity: 213
+  popularity: 212
  },
  {
   sku: "epoca-260047",
@@ -2357,18 +2346,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2862544/7908966566550.jpg?v=639214663404630000",
   productUrl: "https://www.epocacosmeticos.com.br/condicionador-loreal-professionnel-absolut-repair/p",
-  popularity: 214
- },
- {
-  sku: "epoca-260043",
-  name: "Kit Lola From Rio Celebridades - Máscara Capilar Morte Súbira + Máscara Danos Vorazes + Máscara Rapunzel Kit",
-  brand: "Lola From Rio",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cabelos kits para cabelos seco e ressecados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2784057/7899572816613_1.jpg?v=639204368964400000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-lola-from-rio-mascara-capilar-lola-star-morte-subita-danos-vorazes-rapunzel/p",
-  popularity: 215
+  popularity: 213
  },
  {
   sku: "epoca-252038",
@@ -2379,7 +2357,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2465473/3474637335687_1.jpg?v=639174094580430000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-profissional-loreal-professionnel-keratin-alpha-sleek/p",
-  popularity: 216
+  popularity: 214
  },
  {
   sku: "epoca-246658",
@@ -2390,6 +2368,28 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2659150/7899572816415_V2.jpg?v=639191298615900000",
   productUrl: "https://www.epocacosmeticos.com.br/kit-lola-from-rio-danos-vorazes-shampoo--condicionador--leave-in/p",
+  popularity: 215
+ },
+ {
+  sku: "epoca-239970",
+  name: "Shampoo Profissional L'Oréal Professionnel Keratin Alpha Sleek 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 225.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2433301/3474637335748_1.jpg?v=639172102408930000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-profissional-loreal-professionnel-keratin-alpha-sleek/p",
+  popularity: 216
+ },
+ {
+  sku: "epoca-239911",
+  name: "Creme Calmante Multirreparador Fisiogel Rosto e Corpo 20g",
+  brand: "Fisiogel",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2428296/7896026173346.jpg?v=639171457197000000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-multirreparador-fisiogel-rosto-e-corpo/p",
   popularity: 217
  },
  {
@@ -2407,7 +2407,7 @@ export const CATALOG: CatalogItem[] = [
   sku: "epoca-231355",
   name: "Perfume Stronger With You Powerfully Emporio Armani Masculino EDP 50ml",
   brand: "Giorgio Armani",
-  unitPrice: 659,
+  unitPrice: 560.15,
   unit: "un",
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2132946/perfume-stronger-with-you-powerfully-emporio-armani-masculino--1-.jpg?v=639174006862700000",
@@ -2470,6 +2470,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 224
  },
  {
+  sku: "epoca-223038",
+  name: "Perfume ck one calvin klein eau de toilette perfume unissex 200ml",
+  brand: "Calvin Klein",
+  unitPrice: 239.99,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1604725/17648551289552.jpg?v=639093141553800000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ck-one-calvin-klein-eau-de-toilette-perfume-unissex-200ml-196714/p",
+  popularity: 225
+ },
+ {
   sku: "epoca-220269",
   name: "Sérum Facial Isdin Rejuvenate Retinal 50ml",
   brand: "Isdin",
@@ -2478,7 +2489,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1562891/17714397299537.jpg?v=639087704679300000",
   productUrl: "https://www.epocacosmeticos.com.br/isdin-rejuvenate-retinal-serum-facial-50ml-193982/p",
-  popularity: 225
+  popularity: 226
  },
  {
   sku: "epoca-217838",
@@ -2489,7 +2500,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1829849/4068359129793_1.jpg?v=639120429785800000",
   productUrl: "https://www.epocacosmeticos.com.br/shampoo-sebastian-penetraitt/p",
-  popularity: 226
+  popularity: 227
  },
  {
   sku: "epoca-217834",
@@ -2500,7 +2511,29 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1756584/4068359106282_1.jpg?v=639111802257970000",
   productUrl: "https://www.epocacosmeticos.com.br/condicionador-sebastian-dark-oil/p",
-  popularity: 227
+  popularity: 228
+ },
+ {
+  sku: "epoca-217830",
+  name: "Tratamento Firmador Pró Colágeno Sallve 30g",
+  brand: "Sallve",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1627682/7908335408573--2-.jpg?v=639096108769070000",
+  productUrl: "https://www.epocacosmeticos.com.br/firmador-pro-colageno-sallve/p",
+  popularity: 229
+ },
+ {
+  sku: "epoca-217819",
+  name: "Protetor Térmico Sebastian Styling & Texture Trilliant 150ml",
+  brand: "Sebastian Professional",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores protetor termico",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1747848/4068359196962_1.jpg?v=639110978828470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-termico-sebastian-styling--texture-trilliant/p",
+  popularity: 230
  },
  {
   sku: "epoca-217319",
@@ -2511,7 +2544,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais desodorantes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1496487/17664250927316.jpg?v=639076462361000000",
   productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-aerossol-rexona-sem-perfume-masculino-72-horas-150ml-190981/p",
-  popularity: 228
+  popularity: 231
  },
  {
   sku: "epoca-215769",
@@ -2522,7 +2555,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2568402/serum-regenerador-antiqueda-vichy-dercos-aminexil-clinical-regen-booster.jpg?v=639184327707600000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-regenerador-antiqueda-vichy-dercos-aminexil-clinical-regen-booster/p",
-  popularity: 229
+  popularity: 232
  },
  {
   sku: "epoca-215133",
@@ -2533,7 +2566,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1618433/810023675686.1--1-.jpg?v=639095214620830000",
   productUrl: "https://www.epocacosmeticos.com.br/body-splash-sweet-tooth-sabrina-carpenter/p",
-  popularity: 230
+  popularity: 233
  },
  {
   sku: "epoca-207815",
@@ -2544,18 +2577,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios gloss",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1397587/1.3348901792127.jpg?v=639047918674730000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-labial-dior-lip-glow-oil-/p",
-  popularity: 231
- },
- {
-  sku: "epoca-212620",
-  name: "Perfume Good Girl Jasmine Absolute Carolina Herrera Feminino Eau de Parfum 30ml",
-  brand: "Carolina Herrera",
-  unitPrice: 475.15,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1946131/perfume-good-girl-jasmine-absolute-carolina-herrera-feminino-edp -1-.jpg?v=639131598277530000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-good-girl-jasmine-absolute-carolina-herrera-feminino-edp/p",
-  popularity: 232
+  popularity: 234
  },
  {
   sku: "epoca-211535",
@@ -2566,7 +2588,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1396226/906409---leave-in-loreal-paris-elseve-collagen-lifter-injecao-de-massa-100ml-1.jpg?v=639047029518800000",
   productUrl: "https://www.epocacosmeticos.com.br/leave-in-loreal-paris-collagen-lifter/p",
-  popularity: 233
+  popularity: 235
  },
  {
   sku: "epoca-211534",
@@ -2577,7 +2599,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1396305/7908966528367_00.jpg?v=639047044846570000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-loreal-paris-collagen-lifter/p",
-  popularity: 234
+  popularity: 236
  },
  {
   sku: "epoca-195674",
@@ -2588,7 +2610,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar bronzeadores",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1379363/autobronzeador-em-mousse-skelt-mousse--1-.jpg?v=639039944142330000",
   productUrl: "https://www.epocacosmeticos.com.br/autobronzeador-em-mousse-skelt-mousse/p",
-  popularity: 235
+  popularity: 237
  },
  {
   sku: "epoca-209804",
@@ -2599,7 +2621,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1715313/7908966523737--01---1-.jpg?v=639107509849130000",
   productUrl: "https://www.epocacosmeticos.com.br/condicionador-ultra-reparacao-vichy-dercos-collagen-repair-17/p",
-  popularity: 236
+  popularity: 238
  },
  {
   sku: "epoca-209803",
@@ -2610,7 +2632,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1388305/shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17--2-.jpg?v=639041957239700000",
   productUrl: "https://www.epocacosmeticos.com.br/shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17/p",
-  popularity: 237
+  popularity: 239
  },
  {
   sku: "epoca-207821",
@@ -2621,7 +2643,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1360559/rejuvenescedor-facial-mantecorp-skincare-ivy-c-aox-gel--2-.jpg?v=639238924512000000",
   productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-facial-mantecorp-skincare-ivy-c-aox-gel/p",
-  popularity: 238
+  popularity: 240
  },
  {
   sku: "epoca-207499",
@@ -2632,7 +2654,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1367834/7908946100576_Koleston-OleoPoderoso_100ml.jpg?v=639034763085400000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-koleston-poderoso-9-em-1/p",
-  popularity: 239
+  popularity: 241
+ },
+ {
+  sku: "epoca-205798",
+  name: "Gel Hidratante Facial Preenchedor Matificante La Roche-Posay Hyalu B5 40g",
+  brand: "La Roche-Posay",
+  unitPrice: 153.42,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1349677/primer-preenchedor-de-linhas-finas-matificante-la-roche-posay-hyalu-b5-water-gel--2-.jpg?v=639123106526930000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-preenchedor-de-linhas-finas-matificante-la-roche-posay-hyalu-b5-water-gel/p",
+  popularity: 242
  },
  {
   sku: "epoca-204057",
@@ -2643,29 +2676,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1318033/17648425722175.jpg?v=639004632257270000",
   productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-kit-plastica-dos-fios-disciplina-maxima--3-produtos--177931/p",
-  popularity: 240
- },
- {
-  sku: "epoca-203876",
-  name: "BT Coca Cola Blush Stick Bruna Tavares 7g Drink Please",
-  brand: "Bruna Tavares",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "maquiagem face blush",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1342929/blush-stick-bruna-tavares-bt-coca-cola-7g--2-.jpg?v=639014275436700000",
-  productUrl: "https://www.epocacosmeticos.com.br/blush-stick-bruna-tavares-bt-coca-cola-7g/p",
-  popularity: 241
- },
- {
-  sku: "epoca-197667",
-  name: "Revlon Professional Uniq One Kit Leave In 2 Unidades Kit",
-  brand: "Revlon Professional",
-  unitPrice: 130.9,
-  unit: "un",
-  category: "cabelos kits para cabelos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1254550/duo-revlon-1-8432225139272.jpg?v=638989892942170000",
-  productUrl: "https://www.epocacosmeticos.com.br/revlon-professional-uniq-one-kit-leave-in-2-unidades/p",
-  popularity: 242
+  popularity: 243
  },
  {
   sku: "epoca-195677",
@@ -2676,17 +2687,6 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar bronzeadores",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1379985/autobronzeador-em-mousse-skelt-dark--1-.jpg?v=639239537852800000",
   productUrl: "https://www.epocacosmeticos.com.br/autobronzeador-em-mousse-skelt-dark/p",
-  popularity: 243
- },
- {
-  sku: "epoca-195675",
-  name: "Bronzeado Instantâneo Skelt 120ml",
-  brand: "Skelt",
-  unitPrice: 66.99,
-  unit: "un",
-  category: "skincare protetor solar bronzeadores",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1379973/bronzeado-instantaneo-skelt--1-.jpg?v=639239538343130000",
-  productUrl: "https://www.epocacosmeticos.com.br/bronzeado-instantaneo-skelt/p",
   popularity: 244
  },
  {
@@ -2745,6 +2745,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 249
  },
  {
+  sku: "epoca-171955",
+  name: "Protetor Solar Facial La Roche 40g + Gel Effaclar Concentrado - Kit",
+  brand: "La Roche-Posay",
+  unitPrice: 78.89,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1119516/17589055484296.jpg?v=638956286243070000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-la-roche-40g---gel-effaclar-concentrado---kit-145615/p",
+  popularity: 250
+ },
+ {
   sku: "epoca-167732",
   name: "Sabonete Phebo Coco da Bahia 100g",
   brand: "Phebo",
@@ -2753,7 +2764,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais sabonetes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1099886/17585512877261.jpg?v=638950643330230000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-phebo-coco-da-bahia-100g-141377/p",
-  popularity: 250
+  popularity: 251
  },
  {
   sku: "epoca-166985",
@@ -2764,7 +2775,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1159338/620001---EAN-8809543253544-ELIZAVECCA-CER-100-COLLAGEN-CERAMIDE-COATING-PROTEIN-TREATMENT-100ML.jpg?v=638971830302170000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-elizavecca-cer-100-collagen-ceramide-coating-protein/p",
-  popularity: 251
+  popularity: 252
  },
  {
   sku: "epoca-166008",
@@ -2775,17 +2786,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais sabonetes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1090189/17585664426653.jpg?v=638948387590300000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-em-barra-phebo-limao-siciliano-100g-139621/p",
-  popularity: 252
- },
- {
-  sku: "epoca-163773",
-  name: "Bioré Aqua Rich Watery Essence Kit – Protetor Solar FPS 50 Com 2 Unidades 50g Kit",
-  brand: "Bioré",
-  unitPrice: 121.39,
-  unit: "un",
-  category: "skincare kits de skincare",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1083023/biore-aqua-rich-watery-essence-kit-protetor-solar-fps-50-com-2-unidades--1-.png?v=638947650182170000",
-  productUrl: "https://www.epocacosmeticos.com.br/biore-aqua-rich-watery-essence-kit-protetor-solar-fps-50-com-2-unidades/p",
   popularity: 253
  },
  {
@@ -2800,6 +2800,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 254
  },
  {
+  sku: "epoca-155369",
+  name: "Protetor Solar Fluido Control Oil Neutrogena Derma Care Sun Fresh FPS 80 40ml Sem Cor",
+  brand: "Neutrogena",
+  unitPrice: 78.39,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2665540/7891010256999_3.jpg?v=639192208628000000",
+  productUrl: "https://www.epocacosmeticos.com.br/fluido-control-oil-neutrogena-derma-care-sun-fresh-fps-80-40ml/p",
+  popularity: 255
+ },
+ {
   sku: "epoca-157365",
   name: "Reparador Labial Eucerin Aquaphor 10ml",
   brand: "Eucerin",
@@ -2808,7 +2819,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3134870/reparador-labial-eucerin-aquaphorf.jpg?v=639247600977700000",
   productUrl: "https://www.epocacosmeticos.com.br/reparador-labial-eucerin-aquaphor/p",
-  popularity: 255
+  popularity: 256
  },
  {
   sku: "epoca-150927",
@@ -2819,17 +2830,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/993151/3474637257651_1.jpg?v=638924313917130000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-l-oreal-professionnel-metal-detox/p",
-  popularity: 256
- },
- {
-  sku: "epoca-142543",
-  name: "Kit Wella Professionals Nutri-Enrich - Shampoo 1L + Condicionador 1L",
-  brand: "Wella Professionals",
-  unitPrice: 290.9,
-  unit: "un",
-  category: "cabelos kits para cabelos normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2598188/17581865786789.jpg?v=639186141697130000",
-  productUrl: "https://www.epocacosmeticos.com.br/kit-com-2-produtos--wella-nutri-enrich-shampoo---condicionador-para-cabelos-sem-brilho-117465/p",
   popularity: 257
  },
  {
@@ -2844,17 +2844,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 258
  },
  {
-  sku: "epoca-140916",
-  name: "Creme Facial Vichy Liftactiv Colageno Specialist 16 50ml",
-  brand: "Vichy",
-  unitPrice: 263.92,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1689310/creme-facial-vichy-liftactiv-colageno-specialist-167.jpg?v=639105007281030000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-vichy-liftactiv-colageno-specialist-16/p",
-  popularity: 259
- },
- {
   sku: "epoca-139461",
   name: "Wella Professionals Oil Reflections Luminous Reveal Restaure Shampoo 1L",
   brand: "Wella Professionals",
@@ -2863,18 +2852,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/876808/17484447391915.jpg?v=638858718385500000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-luminous-reveal-restaure--shampoo-1l-114587/p",
-  popularity: 260
- },
- {
-  sku: "epoca-138849",
-  name: "Matrix Food For Soft Kit – Shampoo + Condicionador Kit",
-  brand: "MATRIX",
-  unitPrice: 130.91,
-  unit: "un",
-  category: "cabelos kits para cabelos normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1074615/matrix-food-for-soft-kit-shampoo-condicionador--1-.jpg?v=638942390111730000",
-  productUrl: "https://www.epocacosmeticos.com.br/matrix-food-for-soft-kit-shampoo-condicionador/p",
-  popularity: 261
+  popularity: 259
  },
  {
   sku: "epoca-136159",
@@ -2885,29 +2863,29 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/861195/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador--1-.jpg?v=638847323264070000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador/p",
-  popularity: 262
+  popularity: 260
  },
  {
   sku: "epoca-135960",
   name: "Perfume Masculino Refilável Prada Paradigme Eau de Parfum 50ml",
   brand: "Prada",
-  unitPrice: 797.77,
+  unitPrice: 755.78,
   unit: "un",
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186645/3614274182897.1.jpg?v=639253289289400000",
   productUrl: "https://www.epocacosmeticos.com.br/perfume-new-masculino-prada/p",
-  popularity: 263
+  popularity: 261
  },
  {
   sku: "epoca-135951",
   name: "Vitamina C Creamy Gold 30ml",
   brand: "Creamy",
-  unitPrice: 126.31,
+  unitPrice: 107.36,
   unit: "un",
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/958930/vitamina-c-creamy-gold--1-.jpg?v=639240513143200000",
   productUrl: "https://www.epocacosmeticos.com.br/vitamina-c-creamy-gold/p",
-  popularity: 264
+  popularity: 262
  },
  {
   sku: "epoca-135407",
@@ -2918,7 +2896,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895929/mascara-widi-care-juba-butter-oil-ultranutritiva--1-.jpg?v=638870650086930000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-widi-care-juba-butter-oil-ultranutritiva/p",
-  popularity: 265
+  popularity: 263
  },
  {
   sku: "epoca-135405",
@@ -2929,29 +2907,29 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895925/mascara-widi-care-juba-butter-oil-umectacao--1-.jpg?v=638870683639300000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-widi-care-juba-butter-oil-umectacao/p",
-  popularity: 266
+  popularity: 264
  },
  {
-  sku: "epoca-135379",
-  name: "Protetor Solar Facial Dermage Photoage UV Water Color FPS50 Nude",
-  brand: "Dermage",
-  unitPrice: 68.9,
+  sku: "epoca-134915",
+  name: "Máscara de Hidratação Capilar Matrix Food For Soft 500ml",
+  brand: "MATRIX",
+  unitPrice: 99.9,
   unit: "un",
-  category: "skincare protetor solar protetor solar com cor",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/899262/7895389160420-7895389160451-7895389160437--1-.jpg?v=638871681782100000",
-  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-dermage-photoage-uv-water-color-fps50-1/p",
-  popularity: 267
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3097861/884486507099-1.jpg?v=639243297434800000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-hidratante-matrix-food-for-soft/p",
+  popularity: 265
  },
  {
   sku: "epoca-134796",
   name: "Tratamento Pré Shampoo L'Oréal Paris Elseve Bond Repair 200ml",
   brand: "Elseve",
-  unitPrice: 51.7,
+  unitPrice: 49.04,
   unit: "un",
   category: "cabelos shampoo danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/853530/elseve-pre-shampoo-bond-repair--1-.jpg?v=638907959960400000",
   productUrl: "https://www.epocacosmeticos.com.br/elseve-pre-shampoo-bond-repair/p",
-  popularity: 268
+  popularity: 266
  },
  {
   sku: "epoca-134401",
@@ -2962,18 +2940,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores anti-frizz",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/855574/spray-anti-frizz-gloss-absolu-kerastase-glaze-milk--1-.jpg?v=638844625221600000",
   productUrl: "https://www.epocacosmeticos.com.br/spray-anti-frizz-gloss-absolu-kerastase-glaze-milk/p",
-  popularity: 269
+  popularity: 267
  },
  {
   sku: "epoca-133725",
   name: "Shampoo Gloss Absolu Kérastase Bain Hydra - Glaze 250ml",
   brand: "Kerastase",
-  unitPrice: 239.13,
+  unitPrice: 227.02,
   unit: "un",
   category: "cabelos shampoo rebeldes ou com frizz",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/855169/shampoo-gloss-absolu-kerastase-bain-hydra-glaze--1-.jpg?v=638844621187070000",
   productUrl: "https://www.epocacosmeticos.com.br/shampoo-gloss-absolu-kerastase-bain-hydra-glaze/p",
-  popularity: 270
+  popularity: 268
  },
  {
   sku: "epoca-133630",
@@ -2984,7 +2962,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/855619/oleo-capilar-gloss-absolu-kerastase-glaze--1-.jpg?v=638844789079600000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-gloss-absolu-kerastase-glaze/p",
-  popularity: 271
+  popularity: 269
  },
  {
   sku: "epoca-133629",
@@ -2995,7 +2973,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/868226/condicionador-gloss-absolu-kerastase-insta-glaze--1-.jpg?v=638852696855630000",
   productUrl: "https://www.epocacosmeticos.com.br/condicionador-gloss-absolu-kerastase-insta-glaze/p",
-  popularity: 272
+  popularity: 270
+ },
+ {
+  sku: "epoca-132528",
+  name: "Óleo em Creme Eudora Siàge Nutri Acid.Complex 100ml",
+  brand: "Eudora Siàge",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/860063/oleo-em-creme-eudora-siage-nutri-acid-complex -1-.jpg?v=638845758021030000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-em-creme-eudora-siage-nutri-acid-complex/p",
+  popularity: 271
  },
  {
   sku: "epoca-132503",
@@ -3006,18 +2995,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1092227/creme-facial-intensivo-multi-corretor-avene-retrinal-0-1--1-.jpg?v=638948609335100000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-facial-intensivo-multi-corretor-avene-retrinal-0-1/p",
-  popularity: 273
+  popularity: 272
  },
  {
   sku: "epoca-130724",
   name: "Creme Multireparador FPS 50 La Roche-Posay Cicaplast B5 40ml",
   brand: "La Roche-Posay",
-  unitPrice: 130.9,
+  unitPrice: 122.81,
   unit: "un",
   category: "skincare limpeza de pele demaquilante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/833968/creme-multireparador-fps-50-la-roche-posay-cicaplast-b5 -1-.jpg.jpg?v=638814467454700000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-multireparador-fps-50-la-roche-posay-cicaplast-b5/p",
-  popularity: 274
+  popularity: 273
  },
  {
   sku: "epoca-129572",
@@ -3028,18 +3017,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2806878/7908785405429--01-.jpg?v=639207795945870000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-harmonizador-anti-idade-skinceuticals-ha-intensifier-multi-glycan/p",
-  popularity: 275
+  popularity: 274
  },
  {
-  sku: "epoca-128246",
-  name: "Bruma Fixadora Mari Maria Makeup Ultimate Fix 100ml",
-  brand: "Mari Maria Makeup",
-  unitPrice: 169.9,
+  sku: "epoca-127733",
+  name: "Sérum Reconstrutor L'Oréal Professionnel Absolut Repair Molecular 75ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 140.9,
   unit: "un",
-  category: "maquiagem primer e finalizador fixador da maquiagem",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/899408/7898767910174--2-DEIXAR-COM-FUNDO-BRANCO.jpg?v=638871712544070000",
-  productUrl: "https://www.epocacosmeticos.com.br/bruma-fixadora-mari-maria-makeup-ultimate-fix/p",
-  popularity: 276
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/840154/serum-reconstrutor-loreal-professionnel-absolut-repair-molecular--1-.jpg.jpg?v=638821332492630000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-reconstrutor-loreal-professionnel-absolut-repair-molecular/p",
+  popularity: 275
  },
  {
   sku: "epoca-126017",
@@ -3050,7 +3039,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/836387/wella-professionals-ultimate-repair-nigth-serum--1-.jpg.jpg?v=638820484139300000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-ultimate-repair-nigth-serum/p",
-  popularity: 277
+  popularity: 276
  },
  {
   sku: "epoca-122314",
@@ -3061,7 +3050,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/789414/17399194931163.jpg?v=638769727684430000",
   productUrl: "https://www.epocacosmeticos.com.br/rose-tangerine-feminino-eau-de-toilette-50-ml-98617/p",
-  popularity: 278
+  popularity: 277
  },
  {
   sku: "epoca-118333",
@@ -3072,7 +3061,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele demaquilante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1101377/serum-vitamina-c-darrow-actine -1-.jpg?v=638951115332570000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-vitamina-c-darrow-actine/p",
-  popularity: 279
+  popularity: 278
  },
  {
   sku: "epoca-117144",
@@ -3083,7 +3072,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/768586/17400021813322.jpg?v=638761067829800000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-contorno-dos-olhos-isdinceutics-k-ox-eyes--15ml-93513/p",
-  popularity: 280
+  popularity: 279
  },
  {
   sku: "epoca-111094",
@@ -3094,7 +3083,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras expostos ao sol",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1409267/7899572814435-2--1-.jpg?v=639057378192170000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-from-rio-ela-e-carioca-proteina/p",
-  popularity: 281
+  popularity: 280
  },
  {
   sku: "epoca-110344",
@@ -3105,18 +3094,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/741076/7908335406876--1---1-.jpg.jpg?v=638738389819300000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-bastao-sallve-antimanchas-com-cor-fps-90/p",
-  popularity: 282
- },
- {
-  sku: "epoca-110064",
-  name: "Perfume 212 VIP Black Elixir Carolina Herrera Masculino Eau de Parfum 100ml",
-  brand: "Carolina Herrera",
-  unitPrice: 768.93,
-  unit: "un",
-  category: "perfumes perfume masculino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/766089/perfume-212-black-carolina-herrera-masculino-eau-de-parfum-elixir--1-.jpg.jpg?v=638786968555700000",
-  productUrl: "https://www.epocacosmeticos.com.br/perfume-212-black-carolina-herrera-masculino-eau-de-parfum-elixir/p",
-  popularity: 283
+  popularity: 281
  },
  {
   sku: "epoca-243315",
@@ -3127,18 +3105,18 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2153507/17793484400903.jpg?v=639149922979770000",
   productUrl: "https://www.epocacosmeticos.com.br/chloe-eau-de-parfum---perfume-feminino-86017/p",
-  popularity: 284
+  popularity: 282
  },
  {
   sku: "epoca-109091",
   name: "Blush Stick Niina Secrets by Eudora - Daily 5g Rosa",
   brand: "Eudora Niina Secrets",
-  unitPrice: 46.1,
+  unitPrice: 45.13,
   unit: "un",
   category: "maquiagem face blush",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/808777/blush-stick-niina-secrets-by-eudora-daily--3-.jpg.jpg?v=638779272434800000",
   productUrl: "https://www.epocacosmeticos.com.br/blush-stick-niina-secrets-by-eudora-daily/p",
-  popularity: 285
+  popularity: 283
  },
  {
   sku: "epoca-108063",
@@ -3149,7 +3127,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186833/3614272761421.01.jpg?v=639253307700270000",
   productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-donna-feminino-eau-de-parfum/p",
-  popularity: 286
+  popularity: 284
  },
  {
   sku: "epoca-107880",
@@ -3160,62 +3138,29 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/728776/7908785422099.jpg?v=638723745974400000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-antimanchas-garnier-vitamina-c-toque-seco/p",
-  popularity: 287
+  popularity: 285
  },
  {
   sku: "epoca-107604",
   name: "Sérum Antirrugas La Roche-Posay - Pure Vitamin C12 Oil Control 15ml",
   brand: "La Roche-Posay",
-  unitPrice: 223.2,
+  unitPrice: 210.53,
   unit: "un",
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/722063/7908615086484_1.jpg.jpg?v=638708222415700000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-antirrugas-la-roche-posay-pure-vitamin-c12-oil-control/p",
-  popularity: 288
- },
- {
-  sku: "epoca-104222",
-  name: "Contorno Facial em Bastão Dior Forever Skin Contour 1",
-  brand: "Dior",
-  unitPrice: 425,
-  unit: "un",
-  category: "maquiagem face contorno",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/702660/contorno-facial-dior-forever-skin-contour--2-.jpg.jpg?v=638671207157200000",
-  productUrl: "https://www.epocacosmeticos.com.br/contorno-facial-dior-forever-skin-contour/p",
-  popularity: 289
- },
- {
-  sku: "epoca-104204",
-  name: "Alastin Restorative Neck Complex - Creme para Colo e Pescoço 50ml",
-  brand: "Alastin",
-  unitPrice: 495.9,
-  unit: "un",
-  category: "skincare limpeza de pele sabonete facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/715562/creme-restaurador-para-pescoco-e-colo-alastin-restorative-neck-complex--2-.jpg.jpg?v=639238836065670000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-restaurador-para-pescoco-e-colo-alastin-restorative-neck-complex/p",
-  popularity: 290
+  popularity: 286
  },
  {
   sku: "epoca-98944",
   name: "Base em Bastão Semi-Matte Océane Edition - Foundation Stick Ivory",
   brand: "Océane",
-  unitPrice: 72.42,
+  unitPrice: 67.52,
   unit: "un",
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/692767/base-em-bastao-semi-matte-oceane-edition-foundation-stick--1-.jpg.jpg?v=638658182215570000",
   productUrl: "https://www.epocacosmeticos.com.br/base-em-bastao-semi-matte-oceane-edition-foundation-stick/p",
-  popularity: 291
- },
- {
-  sku: "epoca-98719",
-  name: "Máscara Capilar Oil Reflections Luminous 150ml - Wella",
-  brand: "Wella Professionals",
-  unitPrice: 108.97,
-  unit: "un",
-  category: "cabelos kits para cabelos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669319/17272913996139.jpg?v=638629731022030000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-oil-reflections-luminous-150ml---wella-76073/p",
-  popularity: 292
+  popularity: 287
  },
  {
   sku: "epoca-94592",
@@ -3226,7 +3171,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo coloridos e com mechas",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/658107/refil-l-oreal-profissionnel-resveratrol-vitamino-color-shampoo-20-1-.jpg.jpg?v=638623650804200000",
   productUrl: "https://www.epocacosmeticos.com.br/refil-l-oreal-profissionnel-resveratrol-vitamino-color-shampoo/p",
-  popularity: 293
+  popularity: 288
  },
  {
   sku: "epoca-94366",
@@ -3237,7 +3182,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1055740/07582162024691.jpg?v=638938164131530000",
   productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-invigo-nutri-enrich-shampoo-e-condicionador-litro--2-produtos--71719/p",
-  popularity: 294
+  popularity: 289
  },
  {
   sku: "epoca-94360",
@@ -3248,29 +3193,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/650018/17262381260812.jpg?v=638621148089300000",
   productUrl: "https://www.epocacosmeticos.com.br/cronograma-capilar-wella-professionals-500g-71713/p",
-  popularity: 295
- },
- {
-  sku: "epoca-91074",
-  name: "Océane Nadia Tambasco Hair Makeup - Maquiagem Capilar Castanho Escuro 4g",
-  brand: "Océane",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "cabelos coloracao retoque de raiz",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667802/00117254685920900.jpg?v=638629467010670000",
-  productUrl: "https://www.epocacosmeticos.com.br/oceane-nadia-tambasco-hair-makeup---maquiagem-capilar-castanho-escuro-4g-68493/p",
-  popularity: 296
- },
- {
-  sku: "epoca-90371",
-  name: "Wella Professionals Oil Reflections+ - Shampoo 250ml+Condicionador 200ml+Máscara Capilar 150ml+Oil Reflections 30ml",
-  brand: "Wella Professionals",
-  unitPrice: 364.9,
-  unit: "un",
-  category: "cabelos kits para cabelos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/630582/17250119154954.jpg?v=639238598695270000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections----shampoo-250ml-condicionador-200ml-mascara-capilar-150ml-oil-reflections-30ml-67797/p",
-  popularity: 297
+  popularity: 290
  },
  {
   sku: "epoca-90191",
@@ -3281,7 +3204,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face po facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/657843/po-solto-niina-secrets-by-eudora-perfect-match-20-3-.jpg.jpg?v=638623617972200000",
   productUrl: "https://www.epocacosmeticos.com.br/po-solto-niina-secrets-by-eudora-perfect-match/p",
-  popularity: 298
+  popularity: 291
  },
  {
   sku: "epoca-89703",
@@ -3292,18 +3215,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628903/lola-cosmetics-chocobomb-kit-mascara-shampoo-para-todos-os-tipos-de-cabelo-2.jpg?v=638606197001030000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-chocobomb-kit-mascara-shampoo-para-todos-os-tipos-de-cabelo-2/p",
-  popularity: 299
+  popularity: 292
  },
  {
-  sku: "epoca-89564",
-  name: "Shampoo Wella Professionals Oil Reflections Luminous Reveal 1L",
+  sku: "epoca-89306",
+  name: "Kit Wella Professionals Oil Reflections - Shampoo + Máscara",
   brand: "Wella Professionals",
-  unitPrice: 186.9,
+  unitPrice: 349.9,
   unit: "un",
-  category: "cabelos shampoo",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628042/17245081333842.jpg?v=638605529183270000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-luminous-reveal---shampoo-1l-67038/p",
-  popularity: 300
+  category: "cabelos kits para cabelos fino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/626761/17245010821664.jpg?v=638604725244870000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-oil-reflections-shampoo-e-mascara--2-produtos--66780/p",
+  popularity: 293
  },
  {
   sku: "epoca-87586",
@@ -3314,18 +3237,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/850207/oleo-capilar-kerastase-elixir-ultime-lhuile-originale--1-.jpg?v=638833592898000000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-kerastase-elixir-ultime-lhuile-original/p",
-  popularity: 301
- },
- {
-  sku: "epoca-88465",
-  name: "Demaquilante Facial Bioré The Cleanse 190ml",
-  brand: "Bioré",
-  unitPrice: 102.9,
-  unit: "un",
-  category: "skincare limpeza de pele demaquilante",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/626279/demaquilante-facial-biore-the-cleanse.jpg?v=638603705939100000",
-  productUrl: "https://www.epocacosmeticos.com.br/demaquilante-facial-biore-the-cleanse/p",
-  popularity: 302
+  popularity: 294
  },
  {
   sku: "epoca-88307",
@@ -3336,7 +3248,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628590/lola-cosmetics-chocobomb-shampoo.jpg?v=638605643131630000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-chocobomb-shampoo/p",
-  popularity: 303
+  popularity: 295
  },
  {
   sku: "epoca-87865",
@@ -3347,7 +3259,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/617896/vichy-dercos-kit-shampoo-estimulante-condicionador-energizante-antiqueda.jpg?v=638567369891170000",
   productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-kit-shampoo-estimulante-condicionador-energizante-antiqueda/p",
-  popularity: 304
+  popularity: 296
+ },
+ {
+  sku: "epoca-87589",
+  name: "Máscara de Tratamento L'Oréal Professionnel Absolut Repair Molecular 250ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 254.84,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667692/mascara-de-tratamento-l-oreal-professionnel-serie-expert-absolut-repair-molecular-20-4-.jpg.jpg?v=638628950132530000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-l-oreal-professionnel-serie-expert-absolut-repair-molecular/p",
+  popularity: 297
  },
  {
   sku: "epoca-87583",
@@ -3358,7 +3281,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/808397/oleo-de-banho-hidratante-bioderma-atoderm-refil-huile-de-douche--1-.jpg?v=638779152623300000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-de-banho-hidratante-bioderma-atoderm-refil-huile-de-douche/p",
-  popularity: 305
+  popularity: 298
  },
  {
   sku: "epoca-87146",
@@ -3369,7 +3292,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face blush",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619472/7908725500856-MINI-BLUSH-STICK-EDITION---PINK.ROSA.jpg?v=638574528866270000",
   productUrl: "https://www.epocacosmeticos.com.br/blush-oceane-edition-mini-stick/p",
-  popularity: 306
+  popularity: 299
  },
  {
   sku: "epoca-87125",
@@ -3380,7 +3303,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616311/loreal-professionnel-absolut-repair-kit-shampoo-condicionador.jpg?v=638550006222430000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-kit-shampoo-condicionador/p",
-  popularity: 307
+  popularity: 300
  },
  {
   sku: "epoca-87034",
@@ -3391,7 +3314,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare kits de skincare",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/615403/la-roche-posay-gel-de-limpeza-refil-effaclar-concentrado-kit-com-2-unidades.jpg?v=638543266673700000",
   productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-gel-de-limpeza-refil-effaclar-concentrado-kit-com-2-unidades/p",
-  popularity: 308
+  popularity: 301
  },
  {
   sku: "epoca-86632",
@@ -3402,7 +3325,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614493/gel-de-limpeza-principia-gl02.jpg?v=638537320730330000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-principia-gl02/p",
-  popularity: 309
+  popularity: 302
  },
  {
   sku: "epoca-86631",
@@ -3413,7 +3336,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614485/creme-calmante-multirreparador-principia-cm01.jpg?v=638537304600930000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-calmante-multirreparador-principia-cm01/p",
-  popularity: 310
+  popularity: 303
  },
  {
   sku: "epoca-86601",
@@ -3424,95 +3347,73 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face corretivo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/620985/corretivo-liquido-matte-payot--1-.jpg?v=638584628526830000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-matte-payot/p",
-  popularity: 311
+  popularity: 304
  },
  {
   sku: "epoca-86419",
   name: "Creme para Olhos Creamy - Eye Cream 15g",
   brand: "Creamy",
-  unitPrice: 136.83,
+  unitPrice: 116.31,
   unit: "un",
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616295/creme-de-olhos-creamy-eye-cream.jpg?v=638549479589330000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-de-olhos-creamy-eye-cream/p",
-  popularity: 312
+  popularity: 305
  },
  {
   sku: "epoca-86402",
   name: "Sérum Facial Ultraconcentrado Creamy - Niacinamide B Complex 20 30ml",
   brand: "Creamy",
-  unitPrice: 94.73,
+  unitPrice: 80.52,
   unit: "un",
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616290/serum-facial-ultraconcentrado-creamy-niacinamide-b-complex-20.jpg?v=638549477537370000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-ultraconcentrado-creamy-niacinamide-b-complex-20/p",
-  popularity: 313
+  popularity: 306
  },
  {
   sku: "epoca-86401",
   name: "Protetor Solar Facial Creamy - Watery Lotion FPS60 50ml",
   brand: "Creamy",
-  unitPrice: 63.15,
+  unitPrice: 53.68,
   unit: "un",
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614890/protetor-solar-creamy-watery-lotion-fps60.jpg?v=638538252565230000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-creamy-watery-lotion-fps60/p",
-  popularity: 314
+  popularity: 307
  },
  {
   sku: "epoca-86395",
   name: "Gel Creme Facial Creamy - Retinol 30g",
   brand: "Creamy",
-  unitPrice: 89.46,
+  unitPrice: 76.04,
   unit: "un",
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/660981/gel-creme-creamy-retinol.jpg.jpg?v=638625274569230000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-creme-creamy-retinol/p",
-  popularity: 315
+  popularity: 308
  },
  {
   sku: "epoca-86392",
   name: "Gel Clareador Creamy - Ácido Mandélico+Alfa-Arbutin 30g",
   brand: "Creamy",
-  unitPrice: 84.2,
+  unitPrice: 71.57,
   unit: "un",
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/660968/gel-clareador-creamy-acido-mandelico-alfa-arbutin.jpg.jpg?v=638625261671170000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-clareador-creamy-acido-mandelico-alfa-arbutin/p",
-  popularity: 316
+  popularity: 309
  },
  {
   sku: "epoca-86391",
   name: "Creme Rejuvenescedor Facial Creamy - Ácido Glicólico+Niacinamida 30g",
   brand: "Creamy",
-  unitPrice: 84.2,
+  unitPrice: 71.57,
   unit: "un",
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616275/creme-rejuvenescedor-creamy-acido-glicolico-niacinamida--3-.jpg?v=638549472253700000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-rejuvenescedor-creamy-acido-glicolico-niacinamida/p",
-  popularity: 317
- },
- {
-  sku: "epoca-86060",
-  name: "Pó Compacto Translúcido Boca Rosa Cocada",
-  brand: "Boca Rosa",
-  unitPrice: 72.9,
-  unit: "un",
-  category: "maquiagem face po compacto",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/727108/POTRANSCOC-FECHADO-7908847800704-jpg.jpg?v=638719694601100000",
-  productUrl: "https://www.epocacosmeticos.com.br/po-compacto-translucido-boca-rosa/p",
-  popularity: 318
- },
- {
-  sku: "epoca-85320",
-  name: "Hidratante Facial Eau Thermale Avène Cleanance - Aqua-Gel 30g",
-  brand: "Avène",
-  unitPrice: 113.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/608610/3282770390544_0.jpg?v=638508012289400000",
-  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-avene-eau-thermale-cleanance-aqua-gel/p",
-  popularity: 319
+  popularity: 310
  },
  {
   sku: "epoca-84954",
@@ -3523,7 +3424,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400303/7908615082462-.01.jpg.jpg?v=639051288538270000",
   productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-shampoo-anticaspa-ds-cabelos-normais-a-oleosos/p",
-  popularity: 320
+  popularity: 311
  },
  {
   sku: "epoca-84952",
@@ -3534,7 +3435,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare couro cabeludo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400315/7908615088136-.01.jpg.jpg?v=639051291079770000",
   productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-shampoo-anticaspa-ds-cabelos-normais-a-oleosos-refil/p",
-  popularity: 321
+  popularity: 312
  },
  {
   sku: "epoca-84894",
@@ -3545,18 +3446,18 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3131926/3348901708944_1.jpg?v=639247225324930000",
   productUrl: "https://www.epocacosmeticos.com.br/miss-dior-perfume-feminino-parfum/p",
-  popularity: 322
+  popularity: 313
  },
  {
   sku: "epoca-84476",
   name: "Leave-in Plástica Capilar e Reparação 10 em 1 L'Oréal Paris Elseve Cicatri Renov 100ml",
   brand: "Elseve",
-  unitPrice: 35.16,
+  unitPrice: 34.32,
   unit: "un",
   category: "cabelos leave in e creme para pentear danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/600398/elseve-reparacao-total-5-cicatri-renov-leave-in--1-.jpg?v=638475833102900000",
   productUrl: "https://www.epocacosmeticos.com.br/elseve-reparacao-total-5-cicatri-renov-leave-in/p",
-  popularity: 323
+  popularity: 314
  },
  {
   sku: "epoca-84245",
@@ -3567,29 +3468,18 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/603323/the-secret-banderas-perfume-masculino-eau-de-toilette--1-.jpg?v=638485266451000000",
   productUrl: "https://www.epocacosmeticos.com.br/the-secret-banderas-perfume-masculino-eau-de-toilette/p",
-  popularity: 324
+  popularity: 315
  },
  {
   sku: "epoca-84059",
   name: "Máscara de Cílios Niina Secrets by Eudora - Super Bold 1 Un",
   brand: "Eudora Niina Secrets",
-  unitPrice: 59.18,
+  unitPrice: 58.42,
   unit: "un",
   category: "maquiagem olhos mascara para cilios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/598470/mascara-de-cilios-niina-secrets-by-eudora-super-bold--1-.jpg?v=638464709049570000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-niina-secrets-by-eudora-super-bold/p",
-  popularity: 325
- },
- {
-  sku: "epoca-83512",
-  name: "Sérum Facial Iluminador Avène Vitamin Activ Cg 30ml",
-  brand: "Avène",
-  unitPrice: 227,
-  unit: "un",
-  category: "skincare hidratacao e tratamento anti idade",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2532187/3282770393477_1.jpg?v=639180796040330000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-iluminador-antioxidante-avene-vitamin-activ-cg/p",
-  popularity: 326
+  popularity: 316
  },
  {
   sku: "epoca-83436",
@@ -3600,7 +3490,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1930369/good-girl-blush-elixir-carolina-herrera-perfume-feminino-edp -1-.jpg?v=639130673716600000",
   productUrl: "https://www.epocacosmeticos.com.br/good-girl-blush-elixir-carolina-herrera-perfume-feminino-edp/p",
-  popularity: 327
+  popularity: 317
  },
  {
   sku: "epoca-83034",
@@ -3611,7 +3501,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face contorno",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/595435/7908725500481--9-.jpg?v=638448373476570000",
   productUrl: "https://www.epocacosmeticos.com.br/contorno-oceane-stick-edition/p",
-  popularity: 328
+  popularity: 318
  },
  {
   sku: "epoca-83031",
@@ -3622,18 +3512,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face blush",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/595384/7908725500450--8-.jpg?v=638448353913600000",
   productUrl: "https://www.epocacosmeticos.com.br/blush-em-bastao-oceane-edition-stick/p",
-  popularity: 329
- },
- {
-  sku: "epoca-82036",
-  name: "Neutrogena Protetor Solar Facial Sun Fresh Derm Care FPS70 40g Kit - 2 unidades Kit",
-  brand: "Neutrogena",
-  unitPrice: 119.68,
-  unit: "un",
-  category: "skincare protetor solar protetor solar facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/580067/neutrogena-protetor-solar-facial-sun-fresh-derm-care-fps70-40g-kit-2-unidades.jpg?v=638355830101770000",
-  productUrl: "https://www.epocacosmeticos.com.br/neutrogena-protetor-solar-facial-sun-fresh-derm-care-fps70-40g-kit-2-unidades/p",
-  popularity: 330
+  popularity: 319
  },
  {
   sku: "epoca-81612",
@@ -3644,7 +3523,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios batom",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589144/1.jpg?v=638409183197570000",
   productUrl: "https://www.epocacosmeticos.com.br/batom-liquido-bruna-tavares-e-lu/p",
-  popularity: 331
+  popularity: 320
  },
  {
   sku: "epoca-81352",
@@ -3655,7 +3534,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face corretivo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/579817/corretivo-liquido-vizzela-soft-matte-fix--1-.jpg?v=638355686055500000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-vizzela-soft-matte-fix/p",
-  popularity: 332
+  popularity: 321
  },
  {
   sku: "epoca-81334",
@@ -3666,7 +3545,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/579953/base-liquida-vizzela-soft-matte-fix--1-.jpg?v=638355764915670000",
   productUrl: "https://www.epocacosmeticos.com.br/base-liquida-vizzela-soft-matte-fix/p",
-  popularity: 333
+  popularity: 322
  },
  {
   sku: "epoca-81269",
@@ -3677,7 +3556,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1396457/7899572813718-7899572813711.jpg?v=639047123197570000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-xapadinha-mascara-disciplinante/p",
-  popularity: 334
+  popularity: 323
  },
  {
   sku: "epoca-81246",
@@ -3688,7 +3567,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/975297/gel-de-limpeza-facial-principia-gl-01--6-.jpg?v=638909523834030000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-principia-gl-01/p",
-  popularity: 335
+  popularity: 324
  },
  {
   sku: "epoca-81244",
@@ -3699,7 +3578,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele demaquilante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743885/serum-facial-anti-idade-principia-rn-03 -1-.jpg.jpg?v=638742773058830000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-anti-idade-principia-rn-03/p",
-  popularity: 336
+  popularity: 325
  },
  {
   sku: "epoca-81243",
@@ -3710,7 +3589,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele demaquilante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/581674/serum-facial-antioxidante-principia-vc-10.jpg?v=638362662125870000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-antioxidante-principia-vc-10/p",
-  popularity: 337
+  popularity: 326
  },
  {
   sku: "epoca-80866",
@@ -3721,7 +3600,18 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face po facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/571118/po-facial-solto-karen-bachini-beauty.jpg?v=638315262555330000",
   productUrl: "https://www.epocacosmeticos.com.br/po-facial-solto-karen-bachini-beauty/p",
-  popularity: 338
+  popularity: 327
+ },
+ {
+  sku: "epoca-80593",
+  name: "Creme Hidratante Corporal Mantecorp Skincare Epidrat Corpo Intensivo 500g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 105.89,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1650941/7891142982995_1.jpg?v=639099767582800000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-corporal-mantecorp-skincare-epidrat-corpo-intensivo/p",
+  popularity: 328
  },
  {
   sku: "epoca-80588",
@@ -3732,7 +3622,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos escovas e acessorios acessorios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/658173/presilhas-para-cabelo-oceane-hair-clip-edition-20-3-.jpg.jpg?v=638623656846400000",
   productUrl: "https://www.epocacosmeticos.com.br/presilhas-para-cabelo-oceane-hair-clip-edition/p",
-  popularity: 339
+  popularity: 329
  },
  {
   sku: "epoca-80432",
@@ -3743,18 +3633,29 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos corretivo para area dos olhos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/576675/corretivo-liquido-oceane-concealer--3-.jpg?v=638343788457000000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-oceane-concealer/p",
-  popularity: 340
+  popularity: 330
  },
  {
   sku: "epoca-79912",
   name: "Goddess Burberry Perfume Feminino Eau de Parfum 100ml",
   brand: "Burberry",
-  unitPrice: 1068.9,
+  unitPrice: 758.68,
   unit: "un",
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/567413/goddess-burberry-perfume-feminino-eau-de-parfum--1-.jpg?v=638301318377500000",
   productUrl: "https://www.epocacosmeticos.com.br/goddess-burberry-perfume-feminino-eau-de-parfum/p",
-  popularity: 341
+  popularity: 331
+ },
+ {
+  sku: "epoca-79348",
+  name: "Neutrogena Kit - Protetor Solar + Gel de Limpeza Kit",
+  brand: "Neutrogena",
+  unitPrice: 64.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/567158/neutrogena-kit-protetor-solar-gel-de-limpeza.jpg?v=638300569750630000",
+  productUrl: "https://www.epocacosmeticos.com.br/neutrogena-kit-protetor-solar-gel-de-limpeza/p",
+  popularity: 332
  },
  {
   sku: "epoca-79120",
@@ -3765,7 +3666,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/567370/omnia-collection-crystalline-bvlgari-perfume-feminino-eau-de-toilette--1-.jpg?v=638301253666130000",
   productUrl: "https://www.epocacosmeticos.com.br/omnia-collection-crystalline-bvlgari-perfume-feminino-eau-de-toilette/p",
-  popularity: 342
+  popularity: 333
  },
  {
   sku: "epoca-78905",
@@ -3776,7 +3677,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face corretivo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/561557/corretivo-facial-payot-serum-retinol--1-.jpg?v=638253750517370000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-facial-payot-serum-retinol/p",
-  popularity: 343
+  popularity: 334
  },
  {
   sku: "epoca-78637",
@@ -3787,7 +3688,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores protetor termico",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559316/protetor-termico-kerastase-nutritive-lotion-thermique--1-.jpg?v=638241721933170000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-termico-kerastase-nutritive-lotion-thermique/p",
-  popularity: 344
+  popularity: 335
  },
  {
   sku: "epoca-78632",
@@ -3798,18 +3699,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador finos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559273/kerastase-nutritive-lait-vital-condicionador-200ml--1-.jpg?v=638241711616500000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-nutritive-lait-vital-condicionador-200ml/p",
-  popularity: 345
+  popularity: 336
  },
  {
   sku: "epoca-78631",
   name: "Kérastase Nutritive Bain Satin Riche Shampoo 250ml",
   brand: "Kerastase",
-  unitPrice: 219.25,
+  unitPrice: 213.18,
   unit: "un",
   category: "cabelos shampoo seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559251/kerastase-nutritive-bain-satin-riche-shampoo--1-.jpg?v=638241706032400000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-nutritive-bain-satin-riche-shampoo/p",
-  popularity: 346
+  popularity: 337
  },
  {
   sku: "epoca-78630",
@@ -3820,18 +3721,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559238/kerastase-nutritive-bain-satin-shampoo--1-.jpg?v=638241703470670000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-nutritive-bain-satin-shampoo/p",
-  popularity: 347
- },
- {
-  sku: "epoca-78510",
-  name: "Esthederm Sérum Facial Anti-idade Age Proteom Advanced Serum 30ml",
-  brand: "Esthederm",
-  unitPrice: 408.9,
-  unit: "un",
-  category: "skincare limpeza de pele demaquilante",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/558591/serum-facial-esthederm-age-proteom.jpg?v=638641891476300000",
-  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-esthederm-age-proteom/p",
-  popularity: 348
+  popularity: 338
  },
  {
   sku: "epoca-78429",
@@ -3842,7 +3732,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare kits de skincare",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/557955/skinceuticals-blemish-age-solution-kit-com-2-unidades-tonico-facial.jpg?v=638231330573730000",
   productUrl: "https://www.epocacosmeticos.com.br/skinceuticals-blemish-age-solution-kit-com-2-unidades-tonico-facial/p",
-  popularity: 349
+  popularity: 339
  },
  {
   sku: "epoca-78344",
@@ -3853,18 +3743,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/557296/wella-professionals-ultimate-repair-miracle-rescue-leave-in--1-.jpg?v=638228703920270000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-ultimate-repair-miracle-rescue-leave-in/p",
-  popularity: 350
- },
- {
-  sku: "epoca-77908",
-  name: "Wella Professionals Kit com 3 Máscara - Oil Reflections + Fusion + Invigo Kit",
-  brand: "Wella Professionals",
-  unitPrice: 397.6,
-  unit: "un",
-  category: "cabelos kits para cabelos normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554278/wella-professionals-kit-com-3-mascara-oil-reflections-fusion-invigo--1-.jpg?v=638212216090570000",
-  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-kit-com-3-mascara-oil-reflections-fusion-invigo/p",
-  popularity: 351
+  popularity: 340
  },
  {
   sku: "epoca-77681",
@@ -3875,29 +3754,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/552829/widi-care-juba.jpg?v=638206323237400000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-juba-butter-oil-tratamento-capilar/p",
-  popularity: 352
- },
- {
-  sku: "epoca-77097",
-  name: "Paleta de Sombras Océane Edition Pocket Palette Nude 1 Un",
-  brand: "Océane",
-  unitPrice: 62.41,
-  unit: "un",
-  category: "maquiagem olhos sombra",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/547960/paleta-de-sombras-oceane-edition-pocket-palette-nude.jpg?v=638188956386470000",
-  productUrl: "https://www.epocacosmeticos.com.br/paleta-de-sombras-oceane-edition-pocket-palette-nude/p",
-  popularity: 353
- },
- {
-  sku: "epoca-75538",
-  name: "Espuma Cremosa de Limpeza Facial Antioleosidade La Roche-Posay Effaclar Reequilibrante 100g",
-  brand: "La Roche-Posay",
-  unitPrice: 83.9,
-  unit: "un",
-  category: "skincare limpeza de pele sabonete facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/563144/espuma-de-limpeza-facial-cremosa-la-roche-posay-effaclar-reequilibrante.jpg?v=638265892098500000",
-  productUrl: "https://www.epocacosmeticos.com.br/espuma-de-limpeza-facial-cremosa-la-roche-posay-effaclar-reequilibrante/p",
-  popularity: 354
+  popularity: 341
  },
  {
   sku: "epoca-74809",
@@ -3908,7 +3765,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/530306/redken-all-soft-moisture-restore-leave-in--1-.jpg?v=638090348363530000",
   productUrl: "https://www.epocacosmeticos.com.br/redken-all-soft-moisture-restore-leave-in/p",
-  popularity: 355
+  popularity: 342
  },
  {
   sku: "epoca-74803",
@@ -3919,29 +3776,18 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1930139/good-girl-blush-carolina-herrera-perfume-feminino-eau-de-parfum--1-.jpg?v=639130669101800000",
   productUrl: "https://www.epocacosmeticos.com.br/good-girl-blush-carolina-herrera-perfume-feminino-eau-de-parfum/p",
-  popularity: 356
+  popularity: 343
  },
  {
   sku: "epoca-74764",
   name: "Protetor Solar Facial Skin Aqua UV Super Moisture Gel FPS50 110g",
   brand: "SKIN AQUA",
-  unitPrice: 95.9,
+  unitPrice: 91.19,
   unit: "un",
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/763767/7898967229021--5-.jpg.jpg?v=638755928097970000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-skin-aqua-uv-super-moisture-gel-fps50/p",
-  popularity: 357
- },
- {
-  sku: "epoca-74762",
-  name: "Creme Hidratante Facial Anti-Idade Hada Labo Gokujyun Aging Cream 50g",
-  brand: "Hada Labo",
-  unitPrice: 152.9,
-  unit: "un",
-  category: "skincare hidratacao e tratamento hidratante facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/529681/creme-hidratante-facial-anti-idade-hada-labo-gokujyun-aging-cream--1-.jpg?v=638085343363100000",
-  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-facial-anti-idade-hada-labo-gokujyun-aging-cream/p",
-  popularity: 358
+  popularity: 344
  },
  {
   sku: "epoca-74641",
@@ -3952,18 +3798,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare kits de skincare",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/529092/mantecorp-skincare-kit-com-2-unidades-hidratante-facial-epidrat-calm-40g--1-.png?v=638083469679270000",
   productUrl: "https://www.epocacosmeticos.com.br/mantecorp-skincare-kit-com-2-unidades-hidratante-facial-epidrat-calm-40g/p",
-  popularity: 359
- },
- {
-  sku: "epoca-74528",
-  name: "Gloss Labial Dior Addict Lip Maximizer 6ml 003 Holographic Lavender",
-  brand: "Dior",
-  unitPrice: 289,
-  unit: "un",
-  category: "maquiagem labios gloss",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/719573/gloss-labial-dior-addict-lip-maximizer--5--jpg.jpg?v=638701282332870000",
-  productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-dior-addict-lip-maximizer/p",
-  popularity: 360
+  popularity: 345
  },
  {
   sku: "epoca-74267",
@@ -3974,29 +3809,18 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos mascara para cilios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/821677/mascara-para-cilios-vizzela-big-no-panda--3-.jpg?v=638793112156400000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-para-cilios-vizzela-big-no-panda/p",
-  popularity: 361
- },
- {
-  sku: "epoca-74160",
-  name: "Lápis para os Olhos Vult Preto Intenso",
-  brand: "Vult",
-  unitPrice: 16.56,
-  unit: "un",
-  category: "maquiagem olhos lapis e kajal",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/522640/7899852022420.2.jpg?v=638052370491000000",
-  productUrl: "https://www.epocacosmeticos.com.br/lapis-para-os-olhos-vult/p",
-  popularity: 362
+  popularity: 346
  },
  {
   sku: "epoca-74050",
   name: "Base Líquida Multifuncional Niina Secrets by Eudora Daily Tint Cream 0",
   brand: "Eudora Niina Secrets",
-  unitPrice: 59.01,
+  unitPrice: 58.24,
   unit: "un",
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/521931/base-liquida-multifuncional-niina-secrets-by-eudora-daily-tint-cream-0.jpg?v=638047323652070000",
   productUrl: "https://www.epocacosmeticos.com.br/base-liquida-multifuncional-niina-secrets-by-eudora-daily-tint-cream/p",
-  popularity: 363
+  popularity: 347
  },
  {
   sku: "epoca-73571",
@@ -4007,7 +3831,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem estojo completo ou kit de maquiagem",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/529139/real-techniques-kit-10-pinceis-bolsa-travel-fantasy--1-.jpg?v=638083674547930000",
   productUrl: "https://www.epocacosmeticos.com.br/real-techniques-kit-10-pinceis-bolsa-travel-fantasy/p",
-  popularity: 364
+  popularity: 348
  },
  {
   sku: "epoca-73489",
@@ -4018,7 +3842,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/519954/loreal-professionnel-nutrioil-leave-in--1-.jpg?v=638035392789030000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-nutrioil-leave-in/p",
-  popularity: 365
+  popularity: 349
  },
  {
   sku: "epoca-73349",
@@ -4029,18 +3853,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/517345/widi-care-juba-blend-de-oleos-vegetais.jpg?v=638027567851030000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-juba-blend-de-oleos-vegetais/p",
-  popularity: 366
+  popularity: 350
  },
  {
   sku: "epoca-72671",
   name: "Eudora Siàge Hidratação Micelar Máscara 250g",
   brand: "Eudora Siàge",
-  unitPrice: 81.99,
+  unitPrice: 57,
   unit: "un",
   category: "cabelos tratamentos e mascaras oleoso ou misto",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/512308/eudora-siage-hidratacao-micelar-mascara.jpg?v=638000633201800000",
   productUrl: "https://www.epocacosmeticos.com.br/eudora-siage-hidratacao-micelar-mascara/p",
-  popularity: 367
+  popularity: 351
  },
  {
   sku: "epoca-72525",
@@ -4051,18 +3875,18 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos mascara para cilios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/511064/mascara-de-cilios-niina-secrets-by-eudora-super-up.jpg?v=637994586628230000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-niina-secrets-by-eudora-super-up/p",
-  popularity: 368
+  popularity: 352
  },
  {
   sku: "epoca-72520",
   name: "Gloss Labial Niina Secrets by Eudora Gloss Crystal Topázio",
   brand: "Eudora Niina Secrets",
-  unitPrice: 45.5,
+  unitPrice: 45.41,
   unit: "un",
   category: "maquiagem labios gloss",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/987165/gloss-labial-niina-secrets-by-eudora-gloss-crystal-topazio.jpg?v=638919069095570000",
   productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-niina-secrets-by-eudora-gloss-crystal/p",
-  popularity: 369
+  popularity: 353
  },
  {
   sku: "epoca-72049",
@@ -4073,40 +3897,29 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem labios batom",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/851394/41554071047---LIPPY.jpg.jpg?v=638835108106270000",
   productUrl: "https://www.epocacosmeticos.com.br/batom-labial-maybelline-superstay-vinyl-ink/p",
-  popularity: 370
- },
- {
-  sku: "epoca-71715",
-  name: "Cadiveu Professional Nutri Glow Leave-in Fluído 215ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 67.9,
-  unit: "un",
-  category: "cabelos leave in e creme para pentear seco e ressecados",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/505951/cadiveu-professional-nutri-glow-leave-in-fluido--1-.jpg?v=637973931689070000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-nutri-glow-leave-in-fluido/p",
-  popularity: 371
+  popularity: 354
  },
  {
   sku: "epoca-71248",
   name: "Protetor Solar Facial Antioleosidade Efeito Matte La Roche-Posay Anthelios Airlicium FPS 80 40g",
   brand: "La Roche-Posay",
-  unitPrice: 102.77,
+  unitPrice: 102.37,
   unit: "un",
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2806854/7899706195027--01-.jpg?v=639207792225170000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-la-roche-posey-anthelios-airlicium-fps80/p",
-  popularity: 372
+  popularity: 355
  },
  {
-  sku: "epoca-68958",
-  name: "Cetaphil Kit - 2 Loções Hidratantes Kit",
-  brand: "Cetaphil",
-  unitPrice: 243.01,
+  sku: "epoca-69658",
+  name: "Hidratante Facial Mantecorp Skincare Epidrat Acqua 50ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 91.9,
   unit: "un",
-  category: "skincare kits de skincare",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1397750/cetaphil-kit-2-locoes-hidratantes -2-.jpg?v=639047967529500000",
-  productUrl: "https://www.epocacosmeticos.com.br/cetaphil-kit-2-locoes-hidratantes/p",
-  popularity: 373
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/494735/hidratante-facial-mantecorp-epidrat-acqua--4-.jpg?v=637916027820370000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-mantecorp-epidrat-acqua/p",
+  popularity: 356
  },
  {
   sku: "epoca-68898",
@@ -4117,7 +3930,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear coloridos e com mechas",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1123877/3474637059057--1-.jpg?v=638959799145800000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-chroma-absolu-thermique-hair-serum/p",
-  popularity: 374
+  popularity: 357
  },
  {
   sku: "epoca-68423",
@@ -4128,18 +3941,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/724231/7899572812271.jpg.jpg?v=638714219806270000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-danos-vorazes-mascara-de-reparacao-intensiva/p",
-  popularity: 375
- },
- {
-  sku: "epoca-67576",
-  name: "Máscara Facial Hidramais Peel Gel 8g",
-  brand: "Hidramais",
-  unitPrice: 3,
-  unit: "un",
-  category: "skincare limpeza de pele sabonete facial",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481202/mascara-facial-hidramais-peel-gel.jpg?v=637836612217700000",
-  productUrl: "https://www.epocacosmeticos.com.br/mascara-facial-hidramais-peel-gel/p",
-  popularity: 376
+  popularity: 358
  },
  {
   sku: "epoca-67529",
@@ -4150,7 +3952,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos mascara para cilios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481057/mascara-de-cilios-dailus-volume-russo.jpg?v=637835601479630000",
   productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-dailus-volume-russo/p",
-  popularity: 377
+  popularity: 359
  },
  {
   sku: "epoca-100741",
@@ -4161,7 +3963,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2348474/serum-facial-shiseido-ultimune-power-infusing-concentrate--1-.jpg?v=639165392362470000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-facial-shiseido-ultimune-power-infusing-concentrate/p",
-  popularity: 378
+  popularity: 360
  },
  {
   sku: "epoca-67476",
@@ -4172,7 +3974,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496480/creme-nutritivo-vichy-neovadiol-menopausa--1-.jpg?v=637922935603230000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-nutritivo-vichy-neovadiol-menopausa/p",
-  popularity: 379
+  popularity: 361
  },
  {
   sku: "epoca-65511",
@@ -4183,7 +3985,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/464483/hidratante-mantecorp-skincare-epidrat-calm-b5--1-.jpg?v=637721528455300000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-mantecorp-skincare-epidrat-calm-b5/p",
-  popularity: 380
+  popularity: 362
  },
  {
   sku: "epoca-65490",
@@ -4194,7 +3996,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/464436/widi-care-ondulando-a-juba-creme-de-pentear-500ml.jpg?v=637720896835800000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-ondulando-a-juba-creme-de-pentear-500ml/p",
-  popularity: 381
+  popularity: 363
  },
  {
   sku: "epoca-34779",
@@ -4205,7 +4007,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/352976/1.jpg?v=637027031473200000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-phyto-manga-mascara-ultra-nutritiva-300g/p",
-  popularity: 382
+  popularity: 364
  },
  {
   sku: "epoca-64902",
@@ -4216,7 +4018,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos com queda",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/582674/vichy-dercos-energizante-kit-shampoo-shampoo-refil.jpg?v=638367897310770000",
   productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-energizante-kit-shampoo-shampoo-refil/p",
-  popularity: 383
+  popularity: 365
  },
  {
   sku: "epoca-64866",
@@ -4227,7 +4029,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face corretivo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/459785/corretivo-makie-camuflagem-banana.jpg?v=637709373616700000",
   productUrl: "https://www.epocacosmeticos.com.br/corretivo-makie-camuflagem/p",
-  popularity: 384
+  popularity: 366
  },
  {
   sku: "epoca-64738",
@@ -4238,7 +4040,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/553394/cadiveu-essential-quartzo-shine-by-boca-rosa-hair-proteina-200ml--1-.jpg?v=638209748197400000",
   productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essential-quartzo-shine-by-boca-rosa-hair-proteina-200ml/p",
-  popularity: 385
+  popularity: 367
+ },
+ {
+  sku: "epoca-64737",
+  name: "Óleo Capilar Cadiveu Essentials Quartzo Shine 65ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores serum",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/852482/7898606742904_F.jpg?v=638836125815130000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-quartzo-shine-by-boca-rosa-hair-serum-liquido-condicionante-65ml/p",
+  popularity: 368
  },
  {
   sku: "epoca-62416",
@@ -4249,7 +4062,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/444892/widi-care-juba-kit-leave-in-mascara-geleia-shampoo.jpg?v=637630789079570000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-juba-kit-leave-in-mascara-geleia-shampoo/p",
-  popularity: 386
+  popularity: 369
  },
  {
   sku: "epoca-62378",
@@ -4260,7 +4073,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628749/shampoo-loreal-professionnel-metal-detox-300ml--1-.jpg?v=638606172786670000",
   productUrl: "https://www.epocacosmeticos.com.br/shampoo-loreal-professionnel-metal-detox-300ml/p",
-  popularity: 387
+  popularity: 370
  },
  {
   sku: "epoca-61199",
@@ -4271,7 +4084,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1521205/7891010253813_1.jpg?v=639080752905400000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-neutrogena-face-care-intensive-3-em-1/p",
-  popularity: 388
+  popularity: 371
  },
  {
   sku: "epoca-61031",
@@ -4282,18 +4095,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador rebeldes ou com frizz",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/551856/cadiveu-essentials-bye-bye-frizz-condicionador-250ml--1-.jpg?v=638204478514830000",
   productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-bye-bye-frizz-condicionador-250ml/p",
-  popularity: 389
- },
- {
-  sku: "epoca-61030",
-  name: "Cadiveu Professional Bye Bye Frizz Shampoo 250ml",
-  brand: "Cadiveu Professional",
-  unitPrice: 31.9,
-  unit: "un",
-  category: "cabelos shampoo normal ou todos os tipos",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549098/cadiveu-essentials-bye-bye-frizz-shampoo-250ml--1-.jpg?v=638193259952300000",
-  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-bye-bye-frizz-shampoo-250ml/p",
-  popularity: 390
+  popularity: 372
  },
  {
   sku: "epoca-60763",
@@ -4304,7 +4106,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/492382/oleo-capilar-felps-argan--3-.jpg?v=637902062837870000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-felps-argan/p",
-  popularity: 391
+  popularity: 373
  },
  {
   sku: "epoca-60487",
@@ -4315,7 +4117,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3150330/3614272050341.01.jpg?v=639250106756730000",
   productUrl: "https://www.epocacosmeticos.com.br/y-yves-saint-laurent-perfume-masculino-edp/p",
-  popularity: 392
+  popularity: 374
  },
  {
   sku: "epoca-60386",
@@ -4326,18 +4128,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/584702/protetor-solar-com-cor-dermage-photoage-stick-color-fps99--7-.jpg?v=638379892950230000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-com-cor-dermage-photoage-stick-color-fps99/p",
-  popularity: 393
+  popularity: 375
  },
  {
   sku: "epoca-59896",
   name: "Gel de Limpeza Facial para Pele Oleosa e Acneica Refil La Roche-Posay Effaclar 240g",
   brand: "La Roche-Posay",
-  unitPrice: 86.9,
+  unitPrice: 74.96,
   unit: "un",
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/430766/gel-de-limpeza-la-roche-posay-refil-effaclar-concentrado.jpg?v=637553129882730000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-la-roche-posay-refil-effaclar-concentrado/p",
-  popularity: 394
+  popularity: 376
  },
  {
   sku: "epoca-59892",
@@ -4348,7 +4150,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/526165/Cerave_CremeparaOlhos_15ml_01Pack.jpg?v=638067215092900000",
   productUrl: "https://www.epocacosmeticos.com.br/cerave-creme-reparador-para-olhos/p",
-  popularity: 395
+  popularity: 377
  },
  {
   sku: "epoca-59684",
@@ -4359,7 +4161,18 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem face base",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/739536/base-e-corretivo-matte-mari-maria-velvet-skin-20-3-.jpg.jpg?v=638733369960870000",
   productUrl: "https://www.epocacosmeticos.com.br/base-e-corretivo-matte-mari-maria-velvet-skin/p",
-  popularity: 396
+  popularity: 378
+ },
+ {
+  sku: "epoca-59044",
+  name: "Desodorante Roll On Perspirex Unissex – Strong Antitranspirante 20ml",
+  brand: "Perspirex",
+  unitPrice: 96.92,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1345877/desodorante-roll-on-perspirex-unissex-strong-antitranspirante -1-.jpg?v=639016621220100000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-roll-on-perspirex-unissex-strong-antitranspirante/p",
+  popularity: 379
  },
  {
   sku: "epoca-58961",
@@ -4370,7 +4183,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento hidratante facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/618857/192333066911_p.jpg?v=638573293868000000",
   productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-clinique-moisture-surge-100h/p",
-  popularity: 397
+  popularity: 380
  },
  {
   sku: "epoca-58405",
@@ -4381,7 +4194,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem sobrancelhas lapis para sobrancelhas",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/421421/lapiseira-chanfrada-para-sobrancelha-dailus-medio.jpg?v=637493377739400000",
   productUrl: "https://www.epocacosmeticos.com.br/lapiseira-chanfrada-para-sobrancelha-dailus/p",
-  popularity: 398
+  popularity: 381
  },
  {
   sku: "epoca-58269",
@@ -4392,7 +4205,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495683/Kerastase-Chronologiste-Masque-Intense-Regenerant-Mascara-Capilar--3---1-.jpg?v=637920236345570000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-chronologiste-masque-intense-regenerant-mascara-capilar-200ml/p",
-  popularity: 399
+  popularity: 382
  },
  {
   sku: "epoca-57659",
@@ -4403,7 +4216,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1365222/7899572811731.jpg?v=639033158210500000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-danos-vorazes-leave-in-finalizador-200ml/p",
-  popularity: 400
+  popularity: 383
+ },
+ {
+  sku: "epoca-57290",
+  name: "Protetor Solar Neutrogena Sun Fresh Derm Care Facial FPS70 40g",
+  brand: "Neutrogena",
+  unitPrice: 59.85,
+  unit: "un",
+  category: "skincare protetor solar protetor solar corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2795530/7891010253196_3.jpg?v=639206037715300000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-neutrogena-sun-fresh-derm-care-facial-fps70/p",
+  popularity: 384
  },
  {
   sku: "epoca-57193",
@@ -4414,7 +4238,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1359909/protetor-solar-com-cor-neutrogena-sun-fresh-oily-skin-fps-70--2-.jpg?v=639027233274430000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-com-cor-neutrogena-sun-fresh-oily-skin-fps-70/p",
-  popularity: 401
+  popularity: 385
  },
  {
   sku: "epoca-56912",
@@ -4425,7 +4249,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais hidratante corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651346/7891142204745_1.jpg?v=639099825233170000",
   productUrl: "https://www.epocacosmeticos.com.br/serum-rejuvenescedor-corporal-ivy-c-corpo-e-colo-fps20/p",
-  popularity: 402
+  popularity: 386
  },
  {
   sku: "epoca-55681",
@@ -4436,7 +4260,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499075/le-male-le-parfum-jean-paul-gaultier-perfume-masculino-edp-75ml--1-.jpg?v=637938807151630000",
   productUrl: "https://www.epocacosmeticos.com.br/le-male-le-parfum-jean-paul-gaultier-perfume-masculino-edp-75ml/p",
-  popularity: 403
+  popularity: 387
  },
  {
   sku: "epoca-54972",
@@ -4447,7 +4271,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537948/loreal-professionnel-pro-longer-shampoo-reparador-300ml--1-.jpg?v=638131899891700000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-pro-longer-shampoo-reparador-300ml/p",
-  popularity: 404
+  popularity: 388
  },
  {
   sku: "epoca-54969",
@@ -4458,7 +4282,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537964/loreal-professionnel-pro-longer-mascara-reparadora-250g--1-.jpg?v=638131906052770000",
   productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-pro-longer-mascara-reparadora-250g/p",
-  popularity: 405
+  popularity: 389
  },
  {
   sku: "epoca-54323",
@@ -4469,7 +4293,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/397703/sabonete-liquido-facial-biore-marshmallow-whip-moisture-refil.jpg?v=637311870204200000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-facial-biore-marshmallow-whip-moisture-refil/p",
-  popularity: 406
+  popularity: 390
  },
  {
   sku: "epoca-54322",
@@ -4480,7 +4304,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/397701/sabonete-liquido-facial-biore-marshmallow-whip-moisture.jpg?v=637311868695400000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-facial-biore-marshmallow-whip-moisture/p",
-  popularity: 407
+  popularity: 391
  },
  {
   sku: "epoca-54069",
@@ -4491,7 +4315,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores spray",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/505781/revlon-uniq-one-coconut-hair-tretmeant-mascara-em-spray-150ml--1-.jpg?v=637973783583700000",
   productUrl: "https://www.epocacosmeticos.com.br/revlon-uniq-one-coconut-hair-tretmeant-mascara-em-spray-150ml/p",
-  popularity: 408
+  popularity: 392
  },
  {
   sku: "epoca-53614",
@@ -4502,7 +4326,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores serum",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/508171/kerastase-anti-chute-fortifiant-serum-finalizador--1---1-.jpg?v=637983333064400000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-genesis-anti-chute-fortifiant-serum-finalizador/p",
-  popularity: 409
+  popularity: 393
  },
  {
   sku: "epoca-53126",
@@ -4513,7 +4337,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/391168/wella-professionals-invigo-nutri-enrich-kit-shampoo-mascara.jpg?v=637266933662570000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-kit-shampoo250-mascara150/p",
-  popularity: 410
+  popularity: 394
  },
  {
   sku: "epoca-50291",
@@ -4524,7 +4348,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores ativador de cachos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/365160/widi-care-geleia-texturizadora-juba--1-.jpg?v=637110673832500000",
   productUrl: "https://www.epocacosmeticos.com.br/widi-care-modelando-a-juba-geleia-seladora/p",
-  popularity: 411
+  popularity: 395
  },
  {
   sku: "epoca-50151",
@@ -4535,7 +4359,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais sabonetes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/825206/4005808808281_1.jpg.jpg?v=638798259101930000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-nivea-natural-oil/p",
-  popularity: 412
+  popularity: 396
  },
  {
   sku: "epoca-47390",
@@ -4546,7 +4370,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem primer e finalizador fixador da maquiagem",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/769617/7898413331339-2205_1---Po-Fixador-Translucido-Branco--1-.jpg.jpg?v=638761724495730000",
   productUrl: "https://www.epocacosmeticos.com.br/face-powder-fixer-po-fixador-translucido-branco/p",
-  popularity: 413
+  popularity: 397
  },
  {
   sku: "epoca-46851",
@@ -4557,18 +4381,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais hidratante corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1331973/clareador-corporal-bioderma-pigmentbio-sensitive-areas--1-.jpg?v=639009140731430000",
   productUrl: "https://www.epocacosmeticos.com.br/clareador-corporal-bioderma-pigmentbio-sensitive-areas/p",
-  popularity: 414
- },
- {
-  sku: "epoca-35037",
-  name: "Escova de Cabelo Tangle Teezer - The Wet Detangler 1 Un",
-  brand: "Tangle Teezer",
-  unitPrice: 121.9,
-  unit: "un",
-  category: "cabelos escovas e acessorios escovas e pentes",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/741015/pink2--4-.jpg?v=638738385720500000",
-  productUrl: "https://www.epocacosmeticos.com.br/escova-de-cabelo-tangle-teezer-the-wet-detangler-pink/p",
-  popularity: 415
+  popularity: 398
  },
  {
   sku: "epoca-45512",
@@ -4579,7 +4392,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/439394/Creme-Anti-idade-L-Oreal-Paris---Revitalift-Hialuronico-Noturno---49g-2.jpg?v=637601820245870000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-loreal-paris-revitalift-hialuronico-noturno/p",
-  popularity: 416
+  popularity: 399
  },
  {
   sku: "epoca-127447",
@@ -4590,18 +4403,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo fino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/825792/shampoo-nioxin-system-4--1-.jpg.jpg?v=638880143611070000",
   productUrl: "https://www.epocacosmeticos.com.br/nioxin-scalp-therapy-sistema-4-shampoo-de-limpeza/p",
-  popularity: 417
- },
- {
-  sku: "epoca-127436",
-  name: "Sérum Nioxin Night Density Rescue 70ml",
-  brand: "Nioxin",
-  unitPrice: 96.9,
-  unit: "un",
-  category: "cabelos leave in e creme para pentear fino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/824557/serum-nioxin-night-density-rescue--1-.jpg.jpg?v=639172106544630000",
-  productUrl: "https://www.epocacosmeticos.com.br/nioxin-night-density-rescue-leave-in-noturno-terapia-intensiva/p",
-  popularity: 418
+  popularity: 400
  },
  {
   sku: "epoca-42615",
@@ -4612,7 +4414,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume feminino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/999831/stronger-with-you-intensely-giorgio-armani-perfume-masculino-eau-de-parfum--1-.jpg?v=638930505790500000",
   productUrl: "https://www.epocacosmeticos.com.br/stronger-with-you-intensely-giorgio-armani-perfume-masculino-eau-de-parfum/p",
-  popularity: 419
+  popularity: 401
  },
  {
   sku: "epoca-41798",
@@ -4623,7 +4425,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais sabonetes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/695143/sabonete-em-barra-granado-lavanda (2).jpg.jpg?v=638660797995430000",
   productUrl: "https://www.epocacosmeticos.com.br/sabonete-em-barra-granado-lavanda/p",
-  popularity: 420
+  popularity: 402
  },
  {
   sku: "epoca-41548",
@@ -4634,7 +4436,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar com cor",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/499511/protetor-solar-stick-multifuncional-com-cor-pink-cheeks-pro-stick--1-.jpg?v=637940273909900000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-base-stick-tonalizante-fps-55-adcos/p",
-  popularity: 421
+  popularity: 403
  },
  {
   sku: "epoca-41119",
@@ -4645,18 +4447,29 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos finalizadores e modeladores oleo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1407316/0185.jpg?v=639056599123670000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-pinga-cenoura-oliva-oleo/p",
-  popularity: 422
+  popularity: 404
  },
  {
   sku: "epoca-41097",
   name: "Tratamento Acidificante Pós-Química K-Pro - pH 50g",
   brand: "KPro",
-  unitPrice: 43.59,
+  unitPrice: 41.31,
   unit: "un",
   category: "cabelos tratamentos e mascaras quimicamente tratados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/327939/ph-balancer.jpg?v=636887626654000000",
   productUrl: "https://www.epocacosmeticos.com.br/tratamento-pos-quimica-k-pro-ph-balancer/p",
-  popularity: 423
+  popularity: 405
+ },
+ {
+  sku: "epoca-40420",
+  name: "Real Techniques Everyday Essentials Kit de Pincéis Kit",
+  brand: "Real Techniques",
+  unitPrice: 128.7,
+  unit: "un",
+  category: "maquiagem estojo completo ou kit de maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/320167/real-techniques-everyday-essentials-kit-pinceis.jpg?v=636844690651370000",
+  productUrl: "https://www.epocacosmeticos.com.br/real-techniques-everyday-essentials-kit-pinceis/p",
+  popularity: 406
  },
  {
   sku: "epoca-39514",
@@ -4667,7 +4480,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos kits para cabelos loiros ou descoloridos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/316845/Kit-Cool-Blonde-SH---CD-3.jpg?v=636824673767470000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-cool-blond-recharge-invigo-kit--shampoo-condicionador/p",
-  popularity: 424
+  popularity: 407
  },
  {
   sku: "epoca-36958",
@@ -4678,7 +4491,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/285251/2406.jpg?v=636766985239330000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-balance-aqua-pure-shampoo/p",
-  popularity: 425
+  popularity: 408
  },
  {
   sku: "epoca-36947",
@@ -4689,7 +4502,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/883896/wella-professionals-invigo-nutri-enrich-condicionador--1-.jpg?v=638864554040700000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-condicionador/p",
-  popularity: 426
+  popularity: 409
  },
  {
   sku: "epoca-36758",
@@ -4700,7 +4513,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras coloridos e com mechas",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/859108/wella-professionals-invigo-color-brilliance-mascara--1-.jpg?v=638845582838970000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-color-brilliance-mascara/p",
-  popularity: 427
+  popularity: 410
  },
  {
   sku: "epoca-36734",
@@ -4711,18 +4524,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/283633/lola-cosmetics-be-m-dita-ghee-kit-hidratacao-nutricao-reconstrucao-100g.jpg?v=636761498038570000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-be-m-dita-ghee-kit-hidratacao-nutricao-reconstrucao-100g/p",
-  popularity: 428
+  popularity: 411
  },
  {
   sku: "epoca-36628",
   name: "Kit Wella Professionals Fusion - Shampoo + Condicionador Kit",
   brand: "Wella Professionals",
-  unitPrice: 198.76,
+  unitPrice: 179,
   unit: "un",
   category: "cabelos kits para cabelos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/283437/kit5-3.jpg?v=636760724202570000",
   productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-fusion-shampoo-condicionador/p",
-  popularity: 429
+  popularity: 412
  },
  {
   sku: "epoca-35663",
@@ -4733,18 +4546,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos condicionador normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/859714/wella-professionals-condicionador--fusion--1-.jpg?v=638845693674670000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-condicionador--fusion/p",
-  popularity: 430
- },
- {
-  sku: "epoca-35581",
-  name: "Perfume Givenchy L'Interdit Eau de Parfum Feminino 35ml",
-  brand: "Givenchy",
-  unitPrice: 490.9,
-  unit: "un",
-  category: "perfumes perfume feminino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3132189/3274872372139--1-.jpg?v=639247255866200000",
-  productUrl: "https://www.epocacosmeticos.com.br/l-interdit-givenchy-perfume-feminino-eau-de-parfum/p",
-  popularity: 431
+  popularity: 413
  },
  {
   sku: "epoca-34858",
@@ -4755,7 +4557,7 @@ export const CATALOG: CatalogItem[] = [
   category: "maquiagem olhos lapis e kajal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/275824/black.jpg?v=636707206562770000",
   productUrl: "https://www.epocacosmeticos.com.br/lapis-retratil-para-olhos-rk-by-kiss/p",
-  popularity: 432
+  popularity: 414
  },
  {
   sku: "epoca-34594",
@@ -4766,7 +4568,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais pos-banho hidratante",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/500525/CremeNeutroparaMassagemHidramaisProfissional--1-.jpg?v=637945439828100000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-neutro-para-massagem-hidramais-profissional/p",
-  popularity: 433
+  popularity: 415
  },
  {
   sku: "epoca-34459",
@@ -4777,18 +4579,18 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/476912/Oleo-de-Banho-Bioderma---Atoderm--1-.jpg?v=637807935214170000",
   productUrl: "https://www.epocacosmeticos.com.br/oleo-de-banho-bioderma-atoderm/p",
-  popularity: 434
+  popularity: 416
  },
  {
   sku: "epoca-31552",
   name: "Discos de Algodão 70un - Ricca 70 Un",
   brand: "Ricca",
-  unitPrice: 10.9,
+  unitPrice: 10.72,
   unit: "un",
   category: "maquiagem remocao da maquiagem acessorios de remocao da maquiagem",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/684681/discos-de-algodao-ricca (1).jpg.jpg?v=638642734337070000",
   productUrl: "https://www.epocacosmeticos.com.br/discos-de-algodao-ricca/p",
-  popularity: 435
+  popularity: 417
  },
  {
   sku: "epoca-35504",
@@ -4799,7 +4601,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras normal ou todos os tipos",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/884124/WellaProfessionalsOilReflectionsShampoo--1-.jpg?v=638864576938700000",
   productUrl: "https://www.epocacosmeticos.com.br/wella-sp-oil-reflections-shampoo/p",
-  popularity: 436
+  popularity: 418
  },
  {
   sku: "epoca-29671",
@@ -4810,18 +4612,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537908/lorealprofessionnelinforcermascaracapilar250ml--1-.jpg?v=638131881326400000",
   productUrl: "https://www.epocacosmeticos.com.br/l-oreal-professionnel-inforcer-mascara-capilar-250ml/p",
-  popularity: 437
- },
- {
-  sku: "epoca-29213",
-  name: "Loção Hidratante Corporal CeraVe para Pele Seca a Extra Seca com Ácido Hialurônico e Ceramidas 473ml",
-  brand: "CeraVe",
-  unitPrice: 121,
-  unit: "un",
-  category: "skincare cuidados corporais hidratante corporal",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2567312/locao-corporal-hidratante-cerave-473ml7.jpg?v=639184258051970000",
-  productUrl: "https://www.epocacosmeticos.com.br/locao-corporal-hidratante-cerave-473ml/p",
-  popularity: 438
+  popularity: 419
  },
  {
   sku: "epoca-29207",
@@ -4832,7 +4623,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare cuidados corporais",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1438363/7899706159197--1-.jpg?v=639064437837700000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-corporal-cerave-453g/p",
-  popularity: 439
+  popularity: 420
  },
  {
   sku: "epoca-28985",
@@ -4843,7 +4634,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare hidratacao e tratamento anti idade",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651493/7891142201515_1.jpg?v=639099843896630000",
   productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-olhos-mantecorp-skincare-reviline/p",
-  popularity: 440
+  popularity: 421
  },
  {
   sku: "epoca-27716",
@@ -4854,7 +4645,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597346/4005900183125--1-.jpg?v=639186024497900000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-eucerin-sun-gel-creme-oil-control-fps-60/p",
-  popularity: 441
+  popularity: 422
  },
  {
   sku: "epoca-27019",
@@ -4865,7 +4656,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos leave in e creme para pentear cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/246423/encrespando-a-juba-widi-care-leave-in.jpg?v=636474553626430000",
   productUrl: "https://www.epocacosmeticos.com.br/encrespando-a-juba-widi-care-leave-in/p",
-  popularity: 442
+  popularity: 423
  },
  {
   sku: "epoca-25945",
@@ -4876,7 +4667,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/485914/212-vip-black-carolina-herrera-perfume-masculino-eau-de-parfum2--1-.jpg?v=637867877096070000",
   productUrl: "https://www.epocacosmeticos.com.br/212-vip-black-carolina-herrera-perfume-masculino-eau-de-parfum/p",
-  popularity: 443
+  popularity: 424
  },
  {
   sku: "epoca-25484",
@@ -4887,7 +4678,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/533014/Protetor-Solar-Corporal-FPS-30-Australian-Gold---Instant-Bronzer-Spray--1-.jpg?v=638104511712470000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-corporal-fps-30-australian-gold-instant-bronzer-spray-gel/p",
-  popularity: 444
+  popularity: 425
  },
  {
   sku: "epoca-25480",
@@ -4898,7 +4689,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare protetor solar protetor solar corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/532992/Protetor-Solar-Corporal-FPS-8-Australian-Gold---Instant-Bronzer-Spray-Gel--1-.jpg?v=638104508308900000",
   productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-corporal-fps-8-australian-gold-instant-bronzer-spray-gel/p",
-  popularity: 445
+  popularity: 426
  },
  {
   sku: "epoca-25395",
@@ -4909,7 +4700,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras danificados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1360328/7899572807482.jpg?v=639027830865700000",
   productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-bemdita-ghee-banana-e-aloe-vera-mascara-de-hidratacao/p",
-  popularity: 446
+  popularity: 427
  },
  {
   sku: "epoca-25343",
@@ -4920,18 +4711,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo fino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/341840/shampoo-densite.jpg?v=636965411709170000",
   productUrl: "https://www.epocacosmeticos.com.br/kerastase-densifique-bain-densite-shampoo/p",
-  popularity: 447
- },
- {
-  sku: "epoca-25317",
-  name: "Kérastase Densifique Masque Densité - Máscara de Tratamento 200ml",
-  brand: "Kerastase",
-  unitPrice: 346.9,
-  unit: "un",
-  category: "cabelos tratamentos e mascaras fino",
-  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/607440/kerastase-densifique-mascara-para-cabelos.jpg?v=638503397649130000",
-  productUrl: "https://www.epocacosmeticos.com.br/kerastase-densifique-masque-densite-mascara-de-tratamento/p",
-  popularity: 448
+  popularity: 428
  },
  {
   sku: "epoca-21379",
@@ -4942,7 +4722,7 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume para o corpo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/215158/212-nyc-men-seductive-body-spray-carolina-herrera-perfume-masculino-para-o-corpo-.jpg?v=639202588937930000",
   productUrl: "https://www.epocacosmeticos.com.br/212-nyc-men-vintage-body-spray-carolina-herrera-perfume-masculino-para-o-corpo/p",
-  popularity: 449
+  popularity: 429
  },
  {
   sku: "epoca-44729",
@@ -4953,18 +4733,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2307058/7899572810567.jpg?v=639161163165200000",
   productUrl: "https://www.epocacosmeticos.com.br/meu-cacho-minha-vida-lola-cosmetics-mascara-hidratante/p",
-  popularity: 450
+  popularity: 430
  },
  {
   sku: "epoca-20359",
   name: "Creme de Pentear Lola Cosmetics Meu Cacho Minha Vida 500g",
   brand: "Lola From Rio",
-  unitPrice: 36.9,
+  unitPrice: 35.52,
   unit: "un",
   category: "cabelos leave in e creme para pentear cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2306855/7899572806775.jpg?v=639161150967270000",
   productUrl: "https://www.epocacosmeticos.com.br/meu-cacho-minha-vida-lola-cosmetics-creme-de-pentear/p",
-  popularity: 451
+  popularity: 431
  },
  {
   sku: "epoca-20357",
@@ -4975,7 +4755,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos shampoo cacheado e crespo",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2306680/7899572806751.jpg?v=639161138696900000",
   productUrl: "https://www.epocacosmeticos.com.br/meu-cacho-minha-vida-lola-cosmetics-shampoo-hidratante/p",
-  popularity: 452
+  popularity: 432
  },
  {
   sku: "epoca-18754",
@@ -4986,7 +4766,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cabelos tratamentos e mascaras seco e ressecados",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/445399/all-soft-heavy-cream-redken-mascara-de-hidratacao-250ml.jpg?v=637631728296570000",
   productUrl: "https://www.epocacosmeticos.com.br/all-soft-heavy-cream-redken-mascara-de-hidratacao/p",
-  popularity: 453
+  popularity: 433
  },
  {
   sku: "epoca-18090",
@@ -4997,7 +4777,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/808507/sebium-gel-moussant-bioderma-gel-de-limpeza-100ml--1-.jpg?v=638779178526430000",
   productUrl: "https://www.epocacosmeticos.com.br/sebium-gel-moussant-bioderma-gel-de-limpeza/p",
-  popularity: 454
+  popularity: 434
  },
  {
   sku: "epoca-15826",
@@ -5008,18 +4788,18 @@ export const CATALOG: CatalogItem[] = [
   category: "perfumes perfume masculino",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/672420/sauvage-eau-de-toilette-dior-perfume-masculino-20-1-.jpg.jpg?v=638633210014330000",
   productUrl: "https://www.epocacosmeticos.com.br/sauvage-eau-de-toilette-dior-perfume-masculino/p",
-  popularity: 455
+  popularity: 435
  },
  {
   sku: "epoca-15349",
   name: "Loção Hidratante Corporal Cetaphil para Pele Normal a Seca 473ml",
   brand: "Cetaphil",
-  unitPrice: 127.9,
+  unitPrice: 110.16,
   unit: "un",
   category: "skincare cuidados corporais hidratante corporal",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1495204/7897930777743.jpg?v=639076241247530000",
   productUrl: "https://www.epocacosmeticos.com.br/cetaphil-locao-hidratante-pele-normal-a-seca-hidratante-corporal/p",
-  popularity: 456
+  popularity: 436
  },
  {
   sku: "epoca-14722",
@@ -5030,7 +4810,7 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare desodorantes",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1345874/antiperspirante-roll-on-perspirex-tratamento-para-transpiracao-e-odores--1-.jpg?v=639129761481600000",
   productUrl: "https://www.epocacosmeticos.com.br/antiperspirante-roll-on-perspirex-tratamento-para-transpiracao-e-odores/p",
-  popularity: 457
+  popularity: 437
  },
  {
   sku: "epoca-69351",
@@ -5041,17 +4821,7365 @@ export const CATALOG: CatalogItem[] = [
   category: "skincare limpeza de pele sabonete facial",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1100343/gel-de-limpeza-darrow-actine-vitamina-c--2-.jpg?v=638977781369030000",
   productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-darrow-actine-vitamina-c/p",
-  popularity: 458
+  popularity: 438
  },
  {
   sku: "epoca-10037",
   name: "Máscara de Cílios Maybelline The Colossal Volum' Express à Prova D'água Preto",
   brand: "Maybelline",
-  unitPrice: 66.25,
+  unitPrice: 55.75,
   unit: "un",
   category: "maquiagem olhos mascara para cilios",
   imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2789972/7899026456051_00.jpg?v=639205172028630000",
   productUrl: "https://www.epocacosmeticos.com.br/the-colossal-volum--express-waterproof-maybelline-mascara-para-cilios/p",
+  popularity: 439
+ },
+ {
+  sku: "epoca-8108",
+  name: "Perfume Invictus Rabanne Eau de Toilette 100ml",
+  brand: "Rabanne",
+  unitPrice: 648.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/192156/invictus-eau-de-toilette-paco-rabanne-perfume-masculino.jpg?v=635729819014900000",
+  productUrl: "https://www.epocacosmeticos.com.br/invictus-eau-de-toilette-paco-rabanne-perfume-masculino/p",
+  popularity: 440
+ },
+ {
+  sku: "epoca-6542",
+  name: "Perfume Amor Amor Cacharel Feminino Eau de Toilette 50ml",
+  brand: "Cacharel",
+  unitPrice: 266.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1466788/amor-amor-eau-de-toilette-cacharel-perfume-feminino--1-.jpg?v=639071092408530000",
+  productUrl: "https://www.epocacosmeticos.com.br/amor-amor-eau-de-toilette-cacharel-perfume-feminino/p",
+  popularity: 441
+ },
+ {
+  sku: "epoca-7014",
+  name: "Acqua Di Gioia Giorgio Armani - Perfume Feminino - Eau de Parfum 100ml",
+  brand: "Giorgio Armani",
+  unitPrice: 931.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/612184/acqua-di-gioia-eau-de-parfum-giorgio-armani-perfume-feminino--1-.jpg?v=638523347758930000",
+  productUrl: "https://www.epocacosmeticos.com.br/acqua-di-gioia-eau-de-parfum-giorgio-armani-perfume-feminino/p",
+  popularity: 442
+ },
+ {
+  sku: "epoca-3216",
+  name: "CH Carolina Herrera - Perfume Feminino - Eau de Toilette 30ml",
+  brand: "Carolina Herrera",
+  unitPrice: 393.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/213779/ch-carolina-herrera-edt-30ml-carolina-herrera.jpg?v=636126680827130000",
+  productUrl: "https://www.epocacosmeticos.com.br/ch-carolina-herrera-eau-de-toilette-carolina-herrera-perfume-feminino/p",
+  popularity: 443
+ },
+ {
+  sku: "epoca-2960",
+  name: "Tratamento Antiestrias Bio-Oil 60ml",
+  brand: "Bio-Oil",
+  unitPrice: 44.47,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/498198/bio-oil-tratamento-antiestrias--1-.jpg?v=637933349782700000",
+  productUrl: "https://www.epocacosmeticos.com.br/bio-oil-tratamento-antiestrias/p",
+  popularity: 444
+ },
+ {
+  sku: "epoca-2553",
+  name: "212 Men Nyc Carolina Herrera - Perfume Masculino - Eau de Toilette 50ml",
+  brand: "Carolina Herrera",
+  unitPrice: 492.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/485854/212-Men-Nyc-Eau-De-Toilette-Carolina-Herrera---Perfume-Masculino--1-.jpg?v=637867682490700000",
+  productUrl: "https://www.epocacosmeticos.com.br/212-men-nyc-eau-de-toilette-carolina-herrera-perfume-masculino/p",
+  popularity: 445
+ },
+ {
+  sku: "epoca-5493",
+  name: "Perfume For Her Narciso Rodriguez Feminino Eau de Toilette 100ml",
+  brand: "Narciso Rodriguez",
+  unitPrice: 687.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1609328/narciso-rodriguez-for-her-edt-100ml--3-.gif?v=639093731315100000",
+  productUrl: "https://www.epocacosmeticos.com.br/narciso-rodriguez-for-her-eau-de-toilette-narciso-rodriguez-perfume-feminino/p",
+  popularity: 446
+ },
+ {
+  sku: "epoca-135920",
+  name: "Perfume Light Blue Dolce&Gabbana Eau de Toilette Feminino 30ml",
+  brand: "Dolce&Gabbana",
+  unitPrice: 489.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/891080/light-blue-eau-de-toilette-dolce-gabbana-perfume-feminino--1-.jpg?v=638866457802070000",
+  productUrl: "https://www.epocacosmeticos.com.br/light-blue-eau-de-toilette-dolce-gabbana-perfume-feminino/p",
+  popularity: 447
+ },
+ {
+  sku: "epoca-877",
+  name: "L'eau D'issey Pour Homme Issey Miyake - Perfume Masculino - Eau de Toilette 125ml",
+  brand: "Issey Miyake",
+  unitPrice: 672.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2805590/3423470311365_IM_EH_EDT_125ml_1.gif?v=639207601542600000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-eau-d-issey-pour-homme-eau-de-toilette-issey-miyake-perfume-masculino/p",
+  popularity: 448
+ },
+ {
+  sku: "epoca-618",
+  name: "Perfume J'adore Dior Eau de Parfum Feminino 30ml",
+  brand: "Dior",
+  unitPrice: 638.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2931462/1.3348901738200.jpg?v=639222514945600000",
+  productUrl: "https://www.epocacosmeticos.com.br/j-adore-eau-de-parfum-dior-perfume-feminino/p",
+  popularity: 449
+ },
+ {
+  sku: "epoca-34",
+  name: "Facial Cotton Shiseido - Discos Demaquilantes 165 Un",
+  brand: "Shiseido",
+  unitPrice: 107,
+  unit: "un",
+  category: "maquiagem remocao da maquiagem acessorios de remocao da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/160466/facial-cotton-shiseido.jpg?v=635186640044930000",
+  productUrl: "https://www.epocacosmeticos.com.br/facial-cotton-shiseido-discos-demaquilantes/p",
+  popularity: 450
+ },
+ {
+  sku: "epoca-296041",
+  name: "MEDICUBE Máscara de Hidrogel para Olhos com PDRN e Colageno 6g",
+  brand: "Medicube",
+  unitPrice: 19,
+  unit: "un",
+  category: "skincare hidratacao e tratamento",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3189188/07891356765380.jpg?v=639253533282470000",
+  productUrl: "https://www.epocacosmeticos.com.br/medicube-mascara-de-hidrogel-para-olhos-com-pdrn-e-colageno-6g-284880/p",
+  popularity: 451
+ },
+ {
+  sku: "epoca-293802",
+  name: "Sunmax Color Protetor Solar Diário Facial Fps65 Tom Claro 30G (7896026173087)",
+  brand: "Sunmax",
+  unitPrice: 8.19,
+  unit: "un",
+  category: "tratamentos cuidados com o sol protetor solar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3111037/17885550069238.jpg?v=639244816105270000",
+  productUrl: "https://www.epocacosmeticos.com.br/sunmax-color-protetor-solar-diario-facial-fps65-tom-claro-30g--7896026173087--282758/p",
+  popularity: 452
+ },
+ {
+  sku: "epoca-290113",
+  name: "Kit Eudora Siàge Ultra Bond Reset - Shampoo + Condicionador + Máscara Kit",
+  brand: "Eudora Siàge",
+  unitPrice: 135.7,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3031838/Kits-228-03.jpg?v=639234517522730000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-eudora-siage-ultra-bond-reset-shampoo-condicionador-mascara/p",
+  popularity: 453
+ },
+ {
+  sku: "epoca-281424",
+  name: "Lenço Umedecido Huggies Higiene Diária 88 Unidades",
+  brand: "Huggies",
+  unitPrice: 9.29,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis lencos umedecidos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2927849/17766036879386.jpg?v=639222370337530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lenco-umedecido-huggies-higiene-diaria-88-unidades-270414/p",
+  popularity: 454
+ },
+ {
+  sku: "epoca-280120",
+  name: "Máscara de Cílios á Prova D´água Essence I Love Extreme Crazy Volume Marrom",
+  brand: "Essence",
+  unitPrice: 36.9,
+  unit: "un",
+  category: "maquiagem olhos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2957657/4059729583260_01.jpg?v=639226600933570000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-a-prova-dagua-essence-i-love-extreme-crazy-volume/p",
+  popularity: 455
+ },
+ {
+  sku: "epoca-277013",
+  name: "Shampoo Sebastian Potion 9 280ml",
+  brand: "Sebastian Professional",
+  unitPrice: 283.9,
+  unit: "un",
+  category: "cabelos shampoo danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3014210/4068359129816_1.jpg?v=639231989747330000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-sebastian-potion-9-280ml/p",
+  popularity: 456
+ },
+ {
+  sku: "epoca-272982",
+  name: "Kit 2 Toalhas Umedecidas Mustela Compostáveis com Perfume 60 Unidades cada Kit",
+  brand: "Mustela",
+  unitPrice: 46.63,
+  unit: "un",
+  category: "cuidados pessoais kits de higiene",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2779113/Kits-184-03.jpg?v=639203537248770000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-2-toalhas-umedecidas-mustela-compostaveis-com-perfume-60-unidades-cada-1/p",
+  popularity: 457
+ },
+ {
+  sku: "epoca-265296",
+  name: "Medicube Pdrn Pink Peptide - Serum Facial 30ml",
+  brand: "Medicube",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "skincare limpeza de pele hidratantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2608420/17829243245400.jpg?v=639186955557200000",
+  productUrl: "https://www.epocacosmeticos.com.br/medicube-pdrn-pink-peptide---serum-facial-30ml-254228/p",
+  popularity: 458
+ },
+ {
+  sku: "epoca-265260",
+  name: "Shampoo Eudora Siàge Ultra Bond Reset 250ml",
+  brand: "Eudora Siàge",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cabelos shampoo danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2964329/7891033896783_Imagem-1_1000x1000.jpg?v=639227606906300000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-eudora-siage-ultra-bond-reset/p",
   popularity: 459
+ },
+ {
+  sku: "epoca-260421",
+  name: "Lancôme La Vie Est Belle Rose Extraordinaire Eau de Parfum - Perfume Feminino 100ml",
+  brand: "Lancôme",
+  unitPrice: 699,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2554829/17791143450686.jpg?v=639183375839470000",
+  productUrl: "https://www.epocacosmeticos.com.br/lancome-la-vie-est-belle-rose-extraordinaire-eau-de-parfum---perfume-feminino-100ml-249301/p",
+  popularity: 460
+ },
+ {
+  sku: "epoca-260062",
+  name: "Perfume Aromáticos Phebo Lavanda Eau de Toilette 200ml",
+  brand: "Phebo",
+  unitPrice: 217.9,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3038446/perfume-aromaticos-phebo-lavanda-eau-de-toilette1.jpg?v=639235403380270000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-aromaticos-phebo-lavanda-eau-de-toilette/p",
+  popularity: 461
+ },
+ {
+  sku: "epoca-260059",
+  name: "Perfume Aromáticos Phebo Manjericão Roxo Eau de Toilette 200ml",
+  brand: "Phebo",
+  unitPrice: 217.9,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2818432/perfume-aromaticos-phebo-manjericao-roxo-eau-de-toiletce -1-.jpg?v=639209348250570000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-aromaticos-phebo-manjericao-roxo-eau-de-toiletce/p",
+  popularity: 462
+ },
+ {
+  sku: "epoca-260044",
+  name: "Shampoo L'Oréal Professionnel Vitamino Color Tamanho Profissional 1L",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "cabelos shampoo coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2862099/7908966568189_1.jpg?v=639214586943430000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-refil-loreal-professionnel-vitamino-color/p",
+  popularity: 463
+ },
+ {
+  sku: "epoca-258838",
+  name: "Kit Coffret Acqua Di Gio Giorgio Armani - Perfume Eau de Toilette + Shower Gel Kit",
+  brand: "Giorgio Armani",
+  unitPrice: 584.35,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2694271/kit-coffret-acqua-di-gio-giorgio-armani-perfume-eau-de-toilette--shower-gel--7-.jpg?v=639204107066100000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-acqua-di-gio-giorgio-armani-perfume-eau-de-toilette--shower-gel/p",
+  popularity: 464
+ },
+ {
+  sku: "epoca-256389",
+  name: "Kit Refil L'Oréal Professionnel Absolut Repair – Shampoo + Máscara Kit",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 216.6,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2428162/Kits-213-03.jpg?v=639171450138230000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-refil-loreal-professionnel-absolut-repair-shampoo-mascara/p",
+  popularity: 465
+ },
+ {
+  sku: "epoca-256338",
+  name: "Lip Tint Lustreglass Mac Stainglass Trinket",
+  brand: "MAC",
+  unitPrice: 140.9,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2778512/Copia-de-773602789948_1.jpg?v=639203487949070000",
+  productUrl: "https://www.epocacosmeticos.com.br/lip-tint-lustreglass-mac-stainglass/p",
+  popularity: 466
+ },
+ {
+  sku: "epoca-252463",
+  name: "OPI - Top Coat - Cobertura Brilhante 15ml",
+  brand: "OPI",
+  unitPrice: 61.8,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2355597/17806701243719.jpg?v=639166073668470000",
+  productUrl: "https://www.epocacosmeticos.com.br/opi---top-coat---cobertura-brilhante-15ml-241459/p",
+  popularity: 467
+ },
+ {
+  sku: "epoca-250191",
+  name: "Corretivo em Bastão Océane Edition Concealer Stick FAIR 1.1",
+  brand: "Océane",
+  unitPrice: 55.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2524403/7908725504601--2-.jpg?v=639179925835100000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-em-bastao-oceane-edition-4g/p",
+  popularity: 468
+ },
+ {
+  sku: "epoca-249000",
+  name: "Seiva Finalização de Cachos 300ml | bn.Cachos",
+  brand: "Bn.Cachos",
+  unitPrice: 26.39,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2250211/07742923087630.jpg?v=639156779951700000",
+  productUrl: "https://www.epocacosmeticos.com.br/seiva-finalizacao-de-cachos-300ml-|-bn-cachos-238064/p",
+  popularity: 469
+ },
+ {
+  sku: "epoca-241718",
+  name: "Condicionador Tsubaki Premium Ex Hair Fall Care & Repair 450ml",
+  brand: "Tsubaki",
+  unitPrice: 180.9,
+  unit: "un",
+  category: "cabelos condicionador quebradicos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2361434/4550516485403.jpg?v=639166114297330000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-tsubaki-premium-ex-hair-fall-care--repair/p",
+  popularity: 470
+ },
+ {
+  sku: "epoca-241717",
+  name: "Shampoo Tsubaki Premium Ex Hair Fall Care & Repair 450ml",
+  brand: "Tsubaki",
+  unitPrice: 171.9,
+  unit: "un",
+  category: "cabelos shampoo com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2360787/4550516485502.jpg?v=639166099725730000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-tsubaki-premium-ex-hair-fall-care--repair/p",
+  popularity: 471
+ },
+ {
+  sku: "epoca-240988",
+  name: "Esponja Esfoliante Facial e Corporal Ruby Skin Clean Girl Hb-a7000-1",
+  brand: "Ruby Rose",
+  unitPrice: 17.9,
+  unit: "un",
+  category: "cuidados pessoais banho esponja de banho",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2055193/17782387723032.jpg?v=639141245734830000",
+  productUrl: "https://www.epocacosmeticos.com.br/esponja-esfoliante-facial-e-corporal-ruby-skin-clean-girl-hb-a7000-1-230059/p",
+  popularity: 472
+ },
+ {
+  sku: "epoca-240960",
+  name: "Esponja Esfoliante Facial e Corporal Ruby Skin Clean Girl Hb-a7000-2",
+  brand: "Ruby Rose",
+  unitPrice: 17.9,
+  unit: "un",
+  category: "cuidados pessoais banho esponja de banho",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2055287/17781823530233.jpg?v=639141245739530000",
+  productUrl: "https://www.epocacosmeticos.com.br/esponja-esfoliante-facial-e-corporal-ruby-skin-clean-girl-hb-a7000-2-230031/p",
+  popularity: 473
+ },
+ {
+  sku: "epoca-240900",
+  name: "Tônico Facial em Pads Medicube Zero Pore Pads 70 Unidades (155g)",
+  brand: "Medicube",
+  unitPrice: 255.9,
+  unit: "un",
+  category: "skincare limpeza de pele esfoliante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2054682/17781901661245.jpg?v=639141235612130000",
+  productUrl: "https://www.epocacosmeticos.com.br/medicube-toner-pads-zero-pore---tonico-facial-em-pads---70-unidades--155g-229969/p",
+  popularity: 474
+ },
+ {
+  sku: "epoca-236750",
+  name: "Refil Shampoo Antiqueda DS Laboratories Revita 400ml",
+  brand: "Revita",
+  unitPrice: 96.9,
+  unit: "un",
+  category: "cabelos shampoo com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534734/REVITA-ALTA-PERF-DC-ANTIQUEDA-SHP-R400ML---7896026173421--1-.jpg?v=639181042545330000",
+  productUrl: "https://www.epocacosmeticos.com.br/refil-shampoo-antiqueda-ds-laboratories-revita/p",
+  popularity: 475
+ },
+ {
+  sku: "epoca-233030",
+  name: "Pincel para Blush Real Techniques Cherry On Top It's All Blush Brush 1un",
+  brand: "Real Techniques",
+  unitPrice: 82.9,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem pincel ou aplicador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2055069/pincel-para-blush-real-techniques-cherry-on-top-its-all-blush-brush--1-.jpg?v=639142722639730000",
+  productUrl: "https://www.epocacosmeticos.com.br/pincel-para-blush-real-techniques-cherry-on-top-its-all-blush-brush/p",
+  popularity: 476
+ },
+ {
+  sku: "epoca-233028",
+  name: "Kit de Pincéis Real Techniques Best-Selling Blends Set Kit",
+  brand: "Real Techniques",
+  unitPrice: 332.9,
+  unit: "un",
+  category: "maquiagem estojo completo ou kit de maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2363351/0079625452457.1.jpg?v=639166172558370000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-de-pinceis-real-techniques-best-selling-blends-set/p",
+  popularity: 477
+ },
+ {
+  sku: "epoca-231945",
+  name: "Hidratante Facial CeraVe HA Water Gel 85g",
+  brand: "CeraVe",
+  unitPrice: 103.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1984480/hidratante-facial-cerave-ha-water-gel--1-.jpg?v=639238815775600000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-cerave-ha-water-gel/p",
+  popularity: 478
+ },
+ {
+  sku: "epoca-231880",
+  name: "Refil Máscara de tratamento L'Oréal Professionnel Pro Longer 200g",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1807307/7908966550023_1.jpg?v=639117938659970000",
+  productUrl: "https://www.epocacosmeticos.com.br/refil-mascara-de-tratamento-loreal-professionnel-pro-longer/p",
+  popularity: 479
+ },
+ {
+  sku: "epoca-219844",
+  name: "Gloss Labial Bruna Tavares BT Glaze Alice",
+  brand: "Bruna Tavares",
+  unitPrice: 54.33,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1851216/BT-GLAZE-ALICE_BGG01B_7908985913991_PRODUTO-FECHADO.jpg?v=639123243155100000",
+  productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-bruna-tavares-bt-glaze-1/p",
+  popularity: 480
+ },
+ {
+  sku: "epoca-230726",
+  name: "Lenço Umedecido Huggies Recém Nascido 192 Unidades",
+  brand: "Huggies",
+  unitPrice: 27.99,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis lencos umedecidos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1755341/17725969376945.jpg?v=639111779882330000",
+  productUrl: "https://www.epocacosmeticos.com.br/lenco-umedecido-huggies-recem-nascido-192-unidades-219952/p",
+  popularity: 481
+ },
+ {
+  sku: "epoca-226334",
+  name: "Primer Lola From Rio A Fórmula Brilho Lamelar 250ml",
+  brand: "Lola From Rio",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1748252/7899572816293--8-.jpg?v=639111024195770000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-lola-from-rio-a-formula-brilho-lamelar/p",
+  popularity: 482
+ },
+ {
+  sku: "epoca-225075",
+  name: "Perfume Tommy New York Tommy Hilfiger Masculino Eau de Toilette 30ML",
+  brand: "Tommy Hilfiger",
+  unitPrice: 166.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1706700/perfume-tommy-new-york-tommy-hilfiger-masculino-eau-de-toilette--1-.jpg?v=639106728420770000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-tommy-new-york-tommy-hilfiger-masculino-eau-de-toilette/p",
+  popularity: 483
+ },
+ {
+  sku: "epoca-225012",
+  name: "Leave-in Kerástase Gloss Absolu Riche Hydra-Glaze 240ml",
+  brand: "Kerastase",
+  unitPrice: 359.91,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1772005/3474637329860_EN_01.jpg?v=639113590561730000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-kerastase-gloss-absolu-riche-hydra-glaze/p",
+  popularity: 484
+ },
+ {
+  sku: "epoca-224270",
+  name: "Óleo Capilar Poderoso Koleston 9 em 1 100ml",
+  brand: "Koleston",
+  unitPrice: 39.09,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1643785/17706505728007.jpg?v=639098825566270000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-poderoso-koleston-9-em-1-100ml-198075/p",
+  popularity: 485
+ },
+ {
+  sku: "epoca-222924",
+  name: "Shampoo Kerástase Gloss Absolu Riche Hydra-Glaze 250ml",
+  brand: "Kerastase",
+  unitPrice: 250.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1771705/3474637308728_EN_01.jpg?v=639113556259670000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-kerastase-gloss-absolu-riche-hydra-glaze/p",
+  popularity: 486
+ },
+ {
+  sku: "epoca-222872",
+  name: "Máscara Sebastian No Breaker 145ml",
+  brand: "Sebastian Professional",
+  unitPrice: 156.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1770096/4068359105414_1.jpg?v=639113353179400000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-sebastian-no-breaker/p",
+  popularity: 487
+ },
+ {
+  sku: "epoca-221875",
+  name: "Máscara Equilíbrio Ph Acidificante Amend Essencial 250g",
+  brand: "Amend",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1577917/17730819412586.jpg?v=639089167320570000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-equilibrio-ph-acidificante-amend-essencial-250g-195636/p",
+  popularity: 488
+ },
+ {
+  sku: "epoca-221030",
+  name: "Perfume CK Be Calvin Klein Unissex Eau de Toilette 200ml",
+  brand: "Calvin Klein",
+  unitPrice: 209.9,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1572469/17648550404225.jpg?v=639088817012230000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ck-be-eau-de-toilette-calvin-klein-perfume-unissex-200ml-194736/p",
+  popularity: 489
+ },
+ {
+  sku: "epoca-220288",
+  name: "Perfume Lattafa Asad Masculino Eau De Parfum 100ml",
+  brand: "Lattafa Perfumes",
+  unitPrice: 169.99,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1564325/17691842946911.jpg?v=639087957895830000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-lattafa-asad-eau-de-parfum-masculino-100ml-194001/p",
+  popularity: 490
+ },
+ {
+  sku: "epoca-218582",
+  name: "Kit Coffret 212 VIP Rosé - Perfume CH Feminino Eau de Parfum + Creme Corporal + Travel Size Kit",
+  brand: "Carolina Herrera",
+  unitPrice: 854.05,
+  unit: "un",
+  category: "perfumes kits de perfumes kits femininos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1714921/kit-coffret-212-vip-rose-perfume-carolina-herrera-feminino-eau-de-parfum--creme-corp--travel-siz--1-.jpg?v=639147345653770000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-212-vip-rose-perfume-carolina-herrera-feminino-eau-de-parfum--creme-corp--travel-siz/p",
+  popularity: 491
+ },
+ {
+  sku: "epoca-217820",
+  name: "Kit Coffret Giorgio Armani Stronger With You - Perfume Masculino Eau de Toilette + Travel Size Kit",
+  brand: "Giorgio Armani",
+  unitPrice: 499,
+  unit: "un",
+  category: "perfumes kits de perfumes kits masculinos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1765520/3614274821703.02.jpg?v=639112768105470000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-giorgio-armani-stronger-with-you-perfume-masculino-eau-de-toilette--travel-size/p",
+  popularity: 492
+ },
+ {
+  sku: "epoca-217849",
+  name: "Spray Sebastian Styling & Texture Shine Define 200ml",
+  brand: "Sebastian Professional",
+  unitPrice: 150.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores spray",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1757759/4068359093889_1.jpg?v=639111922536770000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-sebastian-styling--texture-shine-define/p",
+  popularity: 493
+ },
+ {
+  sku: "epoca-217844",
+  name: "Shampoo Sebastian Hydre 280ml",
+  brand: "Sebastian Professional",
+  unitPrice: 123.9,
+  unit: "un",
+  category: "cabelos shampoo seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1757541/4068359129755_1.jpg?v=639111904840670000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-sebastian-hydre/p",
+  popularity: 494
+ },
+ {
+  sku: "epoca-215763",
+  name: "Creme Facial Antirrugas Superativado La Roche-Posay Hyalu B5 Refil 50g",
+  brand: "La Roche-Posay",
+  unitPrice: 220.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1502130/7908966509793--1-.jpg?v=639077204460270000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-antirrugas-superativado-la-roche-posay-hyalu-b5-refil/p",
+  popularity: 495
+ },
+ {
+  sku: "epoca-215117",
+  name: "Loção Facial Hidratante com Ácido Hialurônico Cetaphil 50ml",
+  brand: "Cetaphil",
+  unitPrice: 60.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1754020/locao-facial-hidratante-com-acido-hialuronico-cetaphil4.jpg?v=639111656244530000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hidratante-com-acido-hialuronico-cetaphil/p",
+  popularity: 496
+ },
+ {
+  sku: "epoca-214328",
+  name: "Condicionador Mise en Scène Perfect Serum Super Rich 530ml",
+  brand: "Mise en Scène",
+  unitPrice: 130.9,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1520704/8800283640366.jpg?v=639080679765500000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-mise-en-scene-perfect-serum-super-rich/p",
+  popularity: 497
+ },
+ {
+  sku: "epoca-214315",
+  name: "Condicionador Kerasys Coconut Oil 400ml",
+  brand: "Kerasys",
+  unitPrice: 80.9,
+  unit: "un",
+  category: "cabelos condicionador normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1524954/8801046439609.jpg?v=639081469364300000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-kerasys-coconut-oil/p",
+  popularity: 498
+ },
+ {
+  sku: "epoca-214374",
+  name: "Gloss Labial Fran By Franciny Ehlke Franboesa",
+  brand: "Franciny Ehlke",
+  unitPrice: 37.49,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1753456/gloss-labial-fran-by-franciny-ehlke1.jpg?v=639111597490770000",
+  productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-fran-by-franciny-ehlke-2/p",
+  popularity: 499
+ },
+ {
+  sku: "epoca-212620",
+  name: "Perfume Good Girl Jasmine Absolute Carolina Herrera Feminino Eau de Parfum 30ml",
+  brand: "Carolina Herrera",
+  unitPrice: 475.15,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1946131/perfume-good-girl-jasmine-absolute-carolina-herrera-feminino-edp -1-.jpg?v=639131598277530000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-good-girl-jasmine-absolute-carolina-herrera-feminino-edp/p",
+  popularity: 500
+ },
+ {
+  sku: "epoca-210888",
+  name: "Perfume Dolce & Gabbana Light Blue Feminino Eau de Toilette 200ml",
+  brand: "Dolce&Gabbana",
+  unitPrice: 796,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1387539/17648391992985.jpg?v=639041864294830000",
+  productUrl: "https://www.epocacosmeticos.com.br/light-blue--eau-de-toilette--feminino--200-ml-184654/p",
+  popularity: 501
+ },
+ {
+  sku: "epoca-209805",
+  name: "Tratamento Pré-Shampoo Reparação Profunda Vichy Dercos Collagen Repair 17 150g",
+  brand: "Vichy",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1689801/tratamento-pre-shampoo-ultra-reparacao-vichy-dercos-collagen-repair-177.jpg?v=639105027892300000",
+  productUrl: "https://www.epocacosmeticos.com.br/tratamento-pre-shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17/p",
+  popularity: 502
+ },
+ {
+  sku: "epoca-208531",
+  name: "Base Líquida de Longa Duração Estée Lauder Double Wear 30ml 4N1 Shell Beige",
+  brand: "ESTEE LAUDER",
+  unitPrice: 399,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3015286/887167495036_1.jpg?v=639232156387630000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-de-longa-duracao-estee-lauder-double-wear-30ml/p",
+  popularity: 503
+ },
+ {
+  sku: "epoca-207823",
+  name: "Protetor Solar Iluminador Mantecorp Skincare Episol FPS60 40ml Glow",
+  brand: "Mantecorp Skincare",
+  unitPrice: 94.41,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651153/protetor-solar-iluminador-mantecorp-skincare-episol-fps60-40ml--9-.jpg?v=639099794219230000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-iluminador-mantecorp-skincare-episol-fps60-40ml/p",
+  popularity: 504
+ },
+ {
+  sku: "epoca-206315",
+  name: "Gel Hidratante Estimulador de Colágeno com Efeito Lifting Vichy Liftactiv Collagel 50g",
+  brand: "Vichy",
+  unitPrice: 152.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1355706/gel-hidratante-facial-vichy-liftactiv-colageno-specialist-16-collagel--3-.jpg?v=639070365095630000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-hidratante-facial-vichy-liftactiv-colageno-specialist-16-collagel/p",
+  popularity: 505
+ },
+ {
+  sku: "epoca-206047",
+  name: "Perfume Signature Montblanc Feminino Elixir Eau de Parfum 90ml",
+  brand: "Montblanc",
+  unitPrice: 650,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1428240/perfume-signature-montblanc-elixir--1-.jpg?v=639062403879270000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-signature-montblanc-elixir/p",
+  popularity: 506
+ },
+ {
+  sku: "epoca-204299",
+  name: "Pré Tratamento Metal Detox 500ml - L'Oréal",
+  brand: "LOréal Professionnel",
+  unitPrice: 212.99,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1320097/17510540868453.jpg?v=639005501960830000",
+  productUrl: "https://www.epocacosmeticos.com.br/pre-tratamento-metal-detox-500ml---l-oreal-178172/p",
+  popularity: 507
+ },
+ {
+  sku: "epoca-203897",
+  name: "BT Coca Cola Tint Labial Oil Tint 4.75g Bruna Tavares Spicy",
+  brand: "Bruna Tavares",
+  unitPrice: 69.9,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1343000/tint-labial-bruna-tavares-bt-coca-cola-oil-tint-4-75g--8-.jpg?v=639014307179700000",
+  productUrl: "https://www.epocacosmeticos.com.br/tint-labial-bruna-tavares-bt-coca-cola-oil-tint-4-75g/p",
+  popularity: 508
+ },
+ {
+  sku: "epoca-203876",
+  name: "BT Coca Cola Blush Stick Bruna Tavares 7g Drink Please",
+  brand: "Bruna Tavares",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1342929/blush-stick-bruna-tavares-bt-coca-cola-7g--2-.jpg?v=639014275436700000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-stick-bruna-tavares-bt-coca-cola-7g/p",
+  popularity: 509
+ },
+ {
+  sku: "epoca-203808",
+  name: "Desodorante Antitranspirante Vichy 72h Homme Rollon 50ml",
+  brand: "Vichy",
+  unitPrice: 169.09,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1311701/17625562457912.jpg?v=639002111556170000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-vichy-72h-homme-rollon-50ml-177708/p",
+  popularity: 510
+ },
+ {
+  sku: "epoca-202608",
+  name: "Perfume Femme Lacoste Original Eau de Parfum 40ml",
+  brand: "Lacoste",
+  unitPrice: 229.5,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400390/perfume-femme-lacoste-original-eau-de-parfum--1-.jpg?v=639051364967000000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-femme-lacoste-original-eau-de-parfum/p",
+  popularity: 511
+ },
+ {
+  sku: "epoca-202588",
+  name: "Protetor Solar Expertise L'Oréal Paris Efeito Makeup 2.0",
+  brand: "L'Oréal Paris",
+  unitPrice: 52.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375537/protetor-solar-expertise-loreal-paris-efeito-makeup--1-.jpg?v=639038392153330000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-expertise-loreal-paris-efeito-makeup/p",
+  popularity: 512
+ },
+ {
+  sku: "epoca-202523",
+  name: "Esmalte Top Coat Dailus Glass 1Un",
+  brand: "Dailus",
+  unitPrice: 12.33,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1315515/esmalte-top-coat-dailus-glass -1-.jpg?v=639003658993400000",
+  productUrl: "https://www.epocacosmeticos.com.br/esmalte-top-coat-dailus-glass/p",
+  popularity: 513
+ },
+ {
+  sku: "epoca-196824",
+  name: "Sabonete Granado Glicerina 90g",
+  brand: "Granado",
+  unitPrice: 6.39,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1237039/17585407540565.jpg?v=638986660434000000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-granado-glicerina-90g-170171/p",
+  popularity: 514
+ },
+ {
+  sku: "epoca-195675",
+  name: "Bronzeado Instantâneo Skelt 120ml",
+  brand: "Skelt",
+  unitPrice: 66.99,
+  unit: "un",
+  category: "skincare protetor solar bronzeadores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1379973/bronzeado-instantaneo-skelt--1-.jpg?v=639239538343130000",
+  productUrl: "https://www.epocacosmeticos.com.br/bronzeado-instantaneo-skelt/p",
+  popularity: 515
+ },
+ {
+  sku: "epoca-194208",
+  name: "Protetor Solar Facial Vichy Capital Soleil UV-Aqua FPS60 40ml Incolor",
+  brand: "Vichy",
+  unitPrice: 98.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1437359/7908785497738--2-.jpg?v=639064203257030000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-vichy-capital-soleil-uv-aqua-fps60-40ml/p",
+  popularity: 516
+ },
+ {
+  sku: "epoca-192031",
+  name: "Sabonete Facial Bioré Marshmallow Limpeza Facial Moist 150ml",
+  brand: "BIORE",
+  unitPrice: 36.99,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1200431/17585517476116.jpg?v=638981189685470000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-facial-biore-marshmallow-limpeza-facial-moist-150ml-165954/p",
+  popularity: 517
+ },
+ {
+  sku: "epoca-191917",
+  name: "Perfume Masculino Fougère Azzaro The Most Wanted Parfum 50ml",
+  brand: "Azzaro",
+  unitPrice: 582.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186555/3614273638869.01.jpg?v=639253279185570000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-the-most-azzaro-parfum/p",
+  popularity: 518
+ },
+ {
+  sku: "epoca-191823",
+  name: "Hidratante Matificante Antimanchas Facial para Pele Oleosa a Acneica Cetaphil Oil Control 100ml",
+  brand: "Cetaphil",
+  unitPrice: 143.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1344558/hidratante-matificante-antimanchas-facial-para-pele-oleosa-a-acneica-cetaphil-oil-control--3-.jpg?v=639239516014970000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-matificante-antimanchas-facial-para-pele-oleosa-a-acneica-cetaphil-oil-control/p",
+  popularity: 519
+ },
+ {
+  sku: "epoca-191819",
+  name: "Sérum Tensor Anti-Idade SkinCeuticals A.G.E. Interrupter Ultra 30ml",
+  brand: "Skinceuticals",
+  unitPrice: 407.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3017877/7908785461937--01-.jpg?v=639232564364530000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-anti-idade-skinceuticals-a-g-e-interrupter-ultra-serum/p",
+  popularity: 520
+ },
+ {
+  sku: "epoca-182422",
+  name: "Sabonete em Barra Dove Cuidado Antibac 90g",
+  brand: "Dove",
+  unitPrice: 4.9,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1165026/07615918948369.jpg?v=638972630165030000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-em-barra-dove-cuidado-antibac-90g-156084/p",
+  popularity: 521
+ },
+ {
+  sku: "epoca-179860",
+  name: "Óleo Capilar &honey Melty Moist Repair Finalizador 100ml",
+  brand: "&honey",
+  unitPrice: 147.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1193706/4589546892271.jpg?v=638979518303230000",
+  productUrl: "https://www.epocacosmeticos.com.br/oil-honey-melty-moist-repair-step-3-0/p",
+  popularity: 522
+ },
+ {
+  sku: "epoca-172429",
+  name: "Kit L'Oréal Professionnel Pro Longer - Shampoo, Condicionador E Máscara",
+  brand: "LOréal Professionnel",
+  unitPrice: 429.99,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1121884/17601084983803.jpg?v=638957665242500000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-pro-longer-shampoo-condicionador-e-mascara---l-oreal-146098/p",
+  popularity: 523
+ },
+ {
+  sku: "epoca-171935",
+  name: "Creme Hidratante Reparador Corporal Cicaplast Baume B5 La Roche-Posay 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 72.89,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1119455/17585487720934.jpg?v=638956286205130000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-reparador-corporal-cicaplast-baume-b5-la-roche-posay-40ml-145597/p",
+  popularity: 524
+ },
+ {
+  sku: "epoca-170226",
+  name: "Shampoo Oil Reflections 1L - Wella Professionals",
+  brand: "Wella Professionals",
+  unitPrice: 178.99,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1112022/17510571667113.jpg?v=638954549252530000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-oil-reflections-1l---wella-professionals-143909/p",
+  popularity: 525
+ },
+ {
+  sku: "epoca-170172",
+  name: "Alicate Cutícula Mundial Profissional Inox 722",
+  brand: "Mundial",
+  unitPrice: 44.99,
+  unit: "un",
+  category: "unhas manicure e pedicure",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1111681/17585907328490.jpg?v=638954443958500000",
+  productUrl: "https://www.epocacosmeticos.com.br/alicate-cuticula-mundial-profissional-inox-722-143856/p",
+  popularity: 526
+ },
+ {
+  sku: "epoca-170003",
+  name: "Cicaplast Baume B5+ La Roche-posay 20ml",
+  brand: "La Roche-Posay",
+  unitPrice: 40.69,
+  unit: "un",
+  category: "skincare labios hidratantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1111027/17585487909759.jpg?v=638954434341270000",
+  productUrl: "https://www.epocacosmeticos.com.br/cicaplast-baume-b5--la-roche-posay-20ml-143690/p",
+  popularity: 527
+ },
+ {
+  sku: "epoca-166974",
+  name: "Blush Líquido Iluminador Bruna Tavares BT Cushion Glow 15g Pearly",
+  brand: "Bruna Tavares",
+  unitPrice: 66.41,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1115071/blush-liquido-iluminador-bruna-tavares-bt-cushion-glow-15g--1-.jpg?v=638954717738700000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-liquido-iluminador-bruna-tavares-bt-cushion-glow-15g/p",
+  popularity: 528
+ },
+ {
+  sku: "epoca-166240",
+  name: "Sérum Hidratante Corporal Dove Niacinamida + Uniformizador 380Ml",
+  brand: "Dove",
+  unitPrice: 39.39,
+  unit: "un",
+  category: "tratamentos corpo hidratantes corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1091356/17585689356346.jpg?v=638948408992970000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-hidratante-corporal-dove-niacinamida---uniformizador-380ml-139852/p",
+  popularity: 529
+ },
+ {
+  sku: "epoca-166161",
+  name: "Protetor Solar Facial La Roche-Posay Anthelios Airlicium Ultra Cover FPS 60 Cor 3.0 30g",
+  brand: "La Roche-Posay",
+  unitPrice: 75.49,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1091013/17585482179949.jpg?v=638948402831130000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-anthelios-airlicium-ultra-cover-fps60-cor-3-0-30g-139773/p",
+  popularity: 530
+ },
+ {
+  sku: "epoca-165702",
+  name: "Sabonete Phebo Odor Rosas 90g",
+  brand: "Granado",
+  unitPrice: 4.59,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1088665/17585407585175.jpg?v=638948368658630000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-phebo-odor-rosas-90g-139321/p",
+  popularity: 531
+ },
+ {
+  sku: "epoca-163852",
+  name: "Shampoo Nutritivo Lola from Rio Bossa Crespos & Cachos 500ml",
+  brand: "Lola From Rio",
+  unitPrice: 26.9,
+  unit: "un",
+  category: "cabelos shampoo cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1754177/7899572815784.jpg?v=639111674746030000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-nutritivo-lola-from-rio-bossa-crespos--cachos/p",
+  popularity: 532
+ },
+ {
+  sku: "epoca-163818",
+  name: "Refil Oil Cleansing Hada Labo Gokujyun 180ml",
+  brand: "Hada Labo",
+  unitPrice: 75,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1146361/refil-oil-cleansing-hada-labo-gokujyun -1-.jpg?v=638966647774400000",
+  productUrl: "https://www.epocacosmeticos.com.br/refil-oil-cleansing-hada-labo-gokujyun/p",
+  popularity: 533
+ },
+ {
+  sku: "epoca-163757",
+  name: "Sabonete Líquido de Glicerina Bebê Granado - 500ml",
+  brand: "Granado",
+  unitPrice: 52.45,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis banho",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1079200/17586275988021.jpg?v=638944110267130000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-de-glicerina-bebe-granado---500ml-137381/p",
+  popularity: 534
+ },
+ {
+  sku: "epoca-163603",
+  name: "Mousse John Frieda Frizz Ease Dream Curls 204g",
+  brand: "John Frieda",
+  unitPrice: 36.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores mousse",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1159312/0717226127250-717226127250.jpg?v=638971803119430000",
+  productUrl: "https://www.epocacosmeticos.com.br/mousse-john-frieda-frizz-ease-dream-curls/p",
+  popularity: 535
+ },
+ {
+  sku: "epoca-162167",
+  name: "Mini Máscara para Cílios Vizzela No Panda 3g Cherry",
+  brand: "Vizzela",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1115809/mini-mascara-para-cilios-vizzela-no-panda-3g--4-.jpg?v=638955422119470000",
+  productUrl: "https://www.epocacosmeticos.com.br/mini-mascara-para-cilios-vizzela-no-panda-3g/p",
+  popularity: 536
+ },
+ {
+  sku: "epoca-162144",
+  name: "Eudora Siage Kit Shampoo + Condicionador + Máscara Hair Plastia Kit",
+  brand: "Eudora Siàge",
+  unitPrice: 60.9,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1160868/7891033868933_Imagem-1_3000x3000.jpg?v=638971931772600000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo--condicionador--mascara-eudora-siage-hair-plastia/p",
+  popularity: 537
+ },
+ {
+  sku: "epoca-161122",
+  name: "Leave-in Multibenefícios Redken One United 30ml",
+  brand: "Redken",
+  unitPrice: 70.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1078913/leave-in-multibeneficios-redken-one-united--2-.jpg?v=639256955954570000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-multibeneficios-redken-one-united/p",
+  popularity: 538
+ },
+ {
+  sku: "epoca-158389",
+  name: "Principia Kit - Gel de Limpeza Facial GL-01 + Protetor Solar Facial PS-01 FPS60 Kit",
+  brand: "Principia",
+  unitPrice: 74.48,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1008821/Kit-85-03.png?v=638932207593570000",
+  productUrl: "https://www.epocacosmeticos.com.br/principia-kit-gel-de-limpeza-facial-gl-02-protetor-solar-facial-ps-01-fps60/p",
+  popularity: 539
+ },
+ {
+  sku: "epoca-156614",
+  name: "Creme Antissinais Neutrogena Retinol Boost 30ml",
+  brand: "Neutrogena",
+  unitPrice: 135.74,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375219/creme-antissinais-neutrogena-retinol-boost--1-.jpg?v=639240506357100000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-antissinais-neutrogena-retinol-boost/p",
+  popularity: 540
+ },
+ {
+  sku: "epoca-153377",
+  name: "Blush Multifuncional Too Faced Lip & Cheek Cloud Crush 4ml Milk & Cookies",
+  brand: "Too Faced",
+  unitPrice: 219,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1322801/blush-liquido-multiuso-too-faced-cloud-crush-whipped-lip--cheek-4ml--1-.jpg?v=639005587405070000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-liquido-multiuso-too-faced-cloud-crush-whipped-lip--cheek-4ml/p",
+  popularity: 541
+ },
+ {
+  sku: "epoca-151216",
+  name: "Esponja para Maquiagem Nude - Special Diamond Blend",
+  brand: "Océane",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem esponja",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/955425/07545085884356.jpg?v=638902655440030000",
+  productUrl: "https://www.epocacosmeticos.com.br/esponja-para-maquiagem-nude---special-diamond-blend-125843/p",
+  popularity: 542
+ },
+ {
+  sku: "epoca-151627",
+  name: "Base Líquida Hidratante Too Faced Born This Way 30ml Swan",
+  brand: "Too Faced",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375810/base-liquida-hidratante-too-faced-born-this-way-30ml--2-.jpg?v=639038505782670000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-hidratante-too-faced-born-this-way-30ml/p",
+  popularity: 543
+ },
+ {
+  sku: "epoca-147518",
+  name: "Principia Kit - Sérum AH-2 + Sérum VC-10 + Sérum Rn-0,3 Kit",
+  brand: "Principia",
+  unitPrice: 153.52,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/938833/principia-kit-serum-ah-2-serum-vc-10-serum-rn-03.jpg?v=638894801075900000",
+  productUrl: "https://www.epocacosmeticos.com.br/principia-kit-serum-ah-2-serum-vc-10-serum-rn-03/p",
+  popularity: 544
+ },
+ {
+  sku: "epoca-146473",
+  name: "Perfume Goddess Burberry Feminino Eau de Parfum 100ml",
+  brand: "Burberry",
+  unitPrice: 1069,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/926583/17531832463451.jpg?v=638887845957300000",
+  productUrl: "https://www.epocacosmeticos.com.br/burberry-goddess-eau-de-parfum---perfume-feminino-121122/p",
+  popularity: 545
+ },
+ {
+  sku: "epoca-145972",
+  name: "Máscara Wella Professionals Blondorplex 150ml",
+  brand: "Wella Professionals",
+  unitPrice: 155.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/953999/mascara-wella-professionals-blondorplex--4-.jpg?v=638901903515270000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-wella-professionals-blondorplex/p",
+  popularity: 546
+ },
+ {
+  sku: "epoca-145689",
+  name: "Perfume Vintage Íris Granado Unissex Eau de Toillete 100ml",
+  brand: "Granado",
+  unitPrice: 165.75,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/969717/perfume-vintage-iris-granado-unissex-eau-toillete--1-.jpg?v=638911450224400000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-vintage-iris-granado-unissex-eau-toillete/p",
+  popularity: 547
+ },
+ {
+  sku: "epoca-145610",
+  name: "Perfume Her Secret Pink Absolu Banderas Feminino Eau de Parfum 50ml",
+  brand: "Banderas",
+  unitPrice: 157,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/961816/perfume-ab-her-secret-pink-absolu--1-.jpg?v=639100699139300000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ab-her-secret-pink-absolu/p",
+  popularity: 548
+ },
+ {
+  sku: "epoca-143409",
+  name: "TRUSS Uso Obrigatório - Tratamento Líquido Reconstrutor 260ml",
+  brand: "Truss Professional",
+  unitPrice: 113.75,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1078865/17582401882041.jpg?v=638943842366700000",
+  productUrl: "https://www.epocacosmeticos.com.br/truss-uso-obrigatorio---tratamento-liquido-reconstrutor-260ml-118378/p",
+  popularity: 549
+ },
+ {
+  sku: "epoca-142543",
+  name: "Kit Wella Professionals Nutri-Enrich - Shampoo 1L + Condicionador 1L",
+  brand: "Wella Professionals",
+  unitPrice: 290.9,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2598188/17581865786789.jpg?v=639186141697130000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-com-2-produtos--wella-nutri-enrich-shampoo---condicionador-para-cabelos-sem-brilho-117465/p",
+  popularity: 550
+ },
+ {
+  sku: "epoca-142366",
+  name: "Wella Professionals Invigo Nutri-Enrich - Shampoo 1L",
+  brand: "Wella Professionals",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1047806/17581866405186.jpg?v=639238597954670000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich---shampoo-1l-117290/p",
+  popularity: 551
+ },
+ {
+  sku: "epoca-140915",
+  name: "Sérum Facial Antirrugas e Firmador com Peptídeos de Colágeno Vichy Liftactiv 30ml",
+  brand: "Vichy",
+  unitPrice: 246.32,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/899420/7908785454939--1-.jpg?v=638871727244130000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-vichy-liftactiv-colageno-specialist-16/p",
+  popularity: 552
+ },
+ {
+  sku: "epoca-139865",
+  name: "Creme Rejuvenescedor Facial Mantecorp Skincare Reviline Retinol 40g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 233.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651537/7891142984302_1.jpg?v=639099845331730000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-rejuvenescedor-facial-mantecorp-skincare-reviline-retinol/p",
+  popularity: 553
+ },
+ {
+  sku: "epoca-138712",
+  name: "Base Compacta Tirtir Mask Fit Red Cushion 18g 13N Fair Ivory",
+  brand: "Tirtir",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/904862/8809928134840--1-.jpg?v=638876599783100000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-compacta-tirtir-mask-fit-red-cushion-18g/p",
+  popularity: 554
+ },
+ {
+  sku: "epoca-138683",
+  name: "Mini Base Compacta Tirtir Mask Fit Red Cushion 4.5g 13N Fair Ivory",
+  brand: "Tirtir",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/903787/8809928135601--2-.jpg?v=638875870812800000",
+  productUrl: "https://www.epocacosmeticos.com.br/mini-base-compacta-tirtir-mask-fit-red-cushion-4-5g/p",
+  popularity: 555
+ },
+ {
+  sku: "epoca-136409",
+  name: "Protetor Solar Facial Ultrafluido Bioderma Photoderm XDefense FPS 60 40ml",
+  brand: "Bioderma",
+  unitPrice: 111.85,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/996181/3701129813614_1.jpg?v=638926774966200000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-com-cor-bioderma-photoderm-xdefense-ultra-fluid-fps-50-40ml/p",
+  popularity: 556
+ },
+ {
+  sku: "epoca-136389",
+  name: "Óleo de Limpeza Demaquilante Principia OL-01 200ml",
+  brand: "Principia",
+  unitPrice: 59,
+  unit: "un",
+  category: "skincare limpeza de pele cleansing oil",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/906836/oleo-de-limpeza-demaquilante-principia-ol-01--3-.jpg?v=638877775146000000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-de-limpeza-demaquilante-principia-ol-01/p",
+  popularity: 557
+ },
+ {
+  sku: "epoca-136385",
+  name: "Gel Hidratante Facial Principia GH-01 50g",
+  brand: "Principia",
+  unitPrice: 54,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/906827/gel-hidratante-facial-principia-gh-01--2-.jpg?v=638954655978670000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-hidratante-facial-principia-gh-01/p",
+  popularity: 558
+ },
+ {
+  sku: "epoca-136161",
+  name: "Kérastase Gloss Absolu Glaze Kit – Shampoo + Condicionador + Óleo Capilar + Spray Anti-Frizz Kit",
+  brand: "Kerastase",
+  unitPrice: 1250.93,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/861313/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador-oleo-capilar-spray-anti-frizz--1-.jpg?v=638847323871670000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador-oleo-capilar-spray-anti-frizz/p",
+  popularity: 559
+ },
+ {
+  sku: "epoca-136160",
+  name: "Kérastase Gloss Absolu Glaze Kit – Shampoo + Condicionador + Óleo Capilar Kit",
+  brand: "Kerastase",
+  unitPrice: 857.31,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/861231/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador-oleo-capilar--1-.jpg?v=638847323545200000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-gloss-absolu-glaze-kit-shampoo-condicionador-oleo-capilar/p",
+  popularity: 560
+ },
+ {
+  sku: "epoca-135964",
+  name: "Perfume Valentino Born In Roma Donna Extradose Feminino Le Parfum 30ml",
+  brand: "Valentino",
+  unitPrice: 619.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3187009/3614274351019.01.jpg?v=639253323892070000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-donna-extradose-feminino-le-parfum/p",
+  popularity: 561
+ },
+ {
+  sku: "epoca-135401",
+  name: "Máscara Widi Care Juba Butter Oil Super Hidratante 300g",
+  brand: "Widi Care",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895835/mascara-widi-care-juba-butter-oil-super-hidratante--1-.jpg?v=638870647491870000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-widi-care-juba-butter-oil-super-hidratante/p",
+  popularity: 562
+ },
+ {
+  sku: "epoca-135397",
+  name: "Gelatina Ativadora Ultra Nutritiva Widi Care Phytomanga 300g",
+  brand: "Widi Care",
+  unitPrice: 37.63,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores gel",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895825/gelatina-ativadora-ultra-nutritiva-widi-care-phytomanga--1-.jpg?v=638870645718830000",
+  productUrl: "https://www.epocacosmeticos.com.br/gelatina-ativadora-ultra-nutritiva-widi-care-phytomanga/p",
+  popularity: 563
+ },
+ {
+  sku: "epoca-135395",
+  name: "Gelatina Super Definição Widi Care Estilizando a Juba 300g",
+  brand: "Widi Care",
+  unitPrice: 42.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores gel",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895821/gelatina-super-definicao-widi-care-estilizando-a-juba--1-.jpg?v=638870644913970000",
+  productUrl: "https://www.epocacosmeticos.com.br/gelatina-super-definicao-widi-care-estilizando-a-juba/p",
+  popularity: 564
+ },
+ {
+  sku: "epoca-135389",
+  name: "Gelatina Super Hidratante Widi Care Ativando a Juba 300g",
+  brand: "Widi Care",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores gel",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/895807/gelatina-super-hidratante-widi-care-ativando-a-juba--1-.jpg?v=638870642503230000",
+  productUrl: "https://www.epocacosmeticos.com.br/gelatina-super-hidratante-widi-care-ativando-a-juba/p",
+  popularity: 565
+ },
+ {
+  sku: "epoca-135379",
+  name: "Protetor Solar Facial Dermage Photoage UV Water Color FPS50 Nude",
+  brand: "Dermage",
+  unitPrice: 68.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/899262/7895389160420-7895389160451-7895389160437--1-.jpg?v=638871681782100000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-dermage-photoage-uv-water-color-fps50-1/p",
+  popularity: 566
+ },
+ {
+  sku: "epoca-134913",
+  name: "Shampoo Hidratante Para Cabelos Secos Matrix Food For Soft 300ml",
+  brand: "MATRIX",
+  unitPrice: 42.9,
+  unit: "un",
+  category: "cabelos shampoo seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3097913/3474637141929-1.jpg?v=639243302917600000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-hidratante-matrix-food-for-soft/p",
+  popularity: 567
+ },
+ {
+  sku: "epoca-134795",
+  name: "Leave-In Finalizador L'Oréal Paris Elseve Bond Repair 90ml",
+  brand: "Elseve",
+  unitPrice: 76.43,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/928244/elseve-leave-in-bond-repair--1-.jpg?v=638888160956400000",
+  productUrl: "https://www.epocacosmeticos.com.br/elseve-leave-in-bond-repair/p",
+  popularity: 568
+ },
+ {
+  sku: "epoca-134419",
+  name: "Spray de Tratamento Capilar Tsubaki Premium Water 200ml",
+  brand: "Tsubaki",
+  unitPrice: 167.46,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/856403/tratamento-tsubaki-premium-water--2-.jpg?v=638844628751400000",
+  productUrl: "https://www.epocacosmeticos.com.br/tratamento-tsubaki-premium-water/p",
+  popularity: 569
+ },
+ {
+  sku: "epoca-134417",
+  name: "Máscara Tsubaki Premium Ex Hair Repair Mask 160ml",
+  brand: "Tsubaki",
+  unitPrice: 204.38,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/856413/mascara-tsubaki-premium-ex-hair--1-.jpg?v=638844628919530000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-tsubaki-premium-ex-hair/p",
+  popularity: 570
+ },
+ {
+  sku: "epoca-134412",
+  name: "Condicionador Tsubaki Premium Volume & Repair 450ml",
+  brand: "Tsubaki",
+  unitPrice: 114.9,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/855668/condicionador-tsubaki-premium-volume--repair--1-.jpg?v=638844623602070000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-tsubaki-premium-volume--repair/p",
+  popularity: 571
+ },
+ {
+  sku: "epoca-132884",
+  name: "Hidratante Labial Volumizador Mantecorp Skincare Epidrat Hyalu Lip Oil FPS30 6ml 6ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 71.91,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante labial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651220/7891142984555_1.jpg?v=639099801247100000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-labial-volumizador-mantecorp-skincare-epidrat-hyalu-lip-oil-fps30-6ml/p",
+  popularity: 572
+ },
+ {
+  sku: "epoca-128939",
+  name: "Perfume Good Girl Carolina Herrera Travel Size EDP Feminino 10ml",
+  brand: "Carolina Herrera",
+  unitPrice: 156.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/838631/good-girl-eau-de-parfum-carolina-herrera-perfume-feminino-10ml--1-.jpg.jpg?v=638854242047230000",
+  productUrl: "https://www.epocacosmeticos.com.br/good-girl-eau-de-parfum-carolina-herrera-perfume-feminino-10ml/p",
+  popularity: 573
+ },
+ {
+  sku: "epoca-128107",
+  name: "Kit L’Oréal Professionnel Inforcer Serie Expert Treat",
+  brand: "LOréal Professionnel",
+  unitPrice: 223.18,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/816012/17431062822376.jpg?v=639186074737200000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-l%E2%80%99oreal-professionnel-inforcer-serie-expert-treat-104159/p",
+  popularity: 574
+ },
+ {
+  sku: "epoca-127435",
+  name: "Sérum Nioxin Anti Hair Loss 70ml",
+  brand: "Nioxin",
+  unitPrice: 106.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/824438/serum-nioxin-anti-hair-loss--1-.jpg.jpg?v=638839451854530000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-nioxin-anti-hair-loss/p",
+  popularity: 575
+ },
+ {
+  sku: "epoca-127427",
+  name: "Sabonete Barra Vegetal Phebo Coco da Bahia 100g",
+  brand: "Phebo",
+  unitPrice: 5.9,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/852862/sabonete-barra-vegetal-phebo-coco-da-bahia -2-.jpg?v=638836304302000000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-barra-vegetal-phebo-coco-da-bahia/p",
+  popularity: 576
+ },
+ {
+  sku: "epoca-127375",
+  name: "Loção Fortalecedora Mantecorp Skincare Antiqueda Pielus Forte 120ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 125.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/922378/locao-fortalecedora-mantecorp-skincare-antiqueda-pielus-forte--2-.jpg.jpg?v=638884020628070000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-fortalecedora-mantecorp-skincare-antiqueda-pielus-forte/p",
+  popularity: 577
+ },
+ {
+  sku: "epoca-126704",
+  name: "Perfume My Way Ylang Giorgio Armani Feminino Eau de Parfum 50ml",
+  brand: "Giorgio Armani",
+  unitPrice: 638,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/831408/perfume-my-way-ylang-giorgio-armani-feminino-eau-de-parfum--1-.jpg.jpg?v=638809423784130000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-my-way-ylang-giorgio-armani-feminino-eau-de-parfum/p",
+  popularity: 578
+ },
+ {
+  sku: "epoca-126708",
+  name: "Perfume Stronger With You Emporio Armani Parfum Masculino 50ml",
+  brand: "Giorgio Armani",
+  unitPrice: 523.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/999874/perfume-emporio-armani-stronger-with-you-giorgio-armani-masculino-parfum--1-.jpg.jpg?v=638930515803700000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-emporio-armani-stronger-with-you-giorgio-armani-masculino-parfum/p",
+  popularity: 579
+ },
+ {
+  sku: "epoca-126648",
+  name: "Iluminador Líquido Bauny Soft Glow 5g Sunlight",
+  brand: "BAUNY",
+  unitPrice: 26.9,
+  unit: "un",
+  category: "maquiagem face iluminador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/842483/iluminador-liquido-bauny-soft-glow-5g--1-.jpg.jpg?v=638823945584400000",
+  productUrl: "https://www.epocacosmeticos.com.br/iluminador-liquido-bauny-soft-glow-5g/p",
+  popularity: 580
+ },
+ {
+  sku: "epoca-126141",
+  name: "Sérum Antimanchas Vichy Liftactiv Pigment Specialist B3 30ml",
+  brand: "Vichy",
+  unitPrice: 255.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento creme clareador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/820653/serum-antimanchas-vichy-liftactiv-pigment-specialist-b3--1-.jpg?v=638792047930600000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-antimanchas-vichy-liftactiv-pigment-specialist-b3/p",
+  popularity: 581
+ },
+ {
+  sku: "epoca-124856",
+  name: "Creme Dental Clareador Colgate Lovers",
+  brand: "Colgate",
+  unitPrice: 16.59,
+  unit: "un",
+  category: "cuidados pessoais higiene bucal creme dental",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/801011/17413453823911.jpg?v=638773876630400000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-dental-clareador-colgate-lovers-101143/p",
+  popularity: 582
+ },
+ {
+  sku: "epoca-124855",
+  name: "Creme Dental Colgate Máxima Proteção Anticáries (3 und)",
+  brand: "Colgate",
+  unitPrice: 18.99,
+  unit: "un",
+  category: "cuidados pessoais higiene bucal creme dental",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/801019/17413550406402.jpg?v=638773876631170000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-dental-colgate-maxima-protecao-anticaries--3-und--101142/p",
+  popularity: 583
+ },
+ {
+  sku: "epoca-124767",
+  name: "Desodorante Antitranspirante Aerossol Rexona Powder Dry Feminino 72 Horas 150ml",
+  brand: "Rexona",
+  unitPrice: 16.98,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/800470/17413390387566.jpg?v=638773858722600000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-aerossol-rexona-powder-dry-feminino-72-horas-150ml-101054/p",
+  popularity: 584
+ },
+ {
+  sku: "epoca-124114",
+  name: "Desodorante Antitranspirante Aerossol Dove Original 72 Horas 150ml",
+  brand: "Dove",
+  unitPrice: 16.19,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1048048/17581868848472.jpg?v=638937836963770000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-aerossol-dove-original-72-horas-150ml-100402/p",
+  popularity: 585
+ },
+ {
+  sku: "epoca-118827",
+  name: "Perfume Libre Flowers & Flames Yves Saint Laurent Feminino Eau De Parfum Florale 30ml",
+  brand: "Yves Saint Laurent",
+  unitPrice: 563.64,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1343582/perfume-ibre-flowers--flames-yves-saint-laurent-feminino-eau-de-parfum-florale--1-.jpg?v=639014896684600000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ibre-flowers--flames-yves-saint-laurent-feminino-eau-de-parfum-florale/p",
+  popularity: 586
+ },
+ {
+  sku: "epoca-118334",
+  name: "Avène Cleanance Comedomed Peeling Creme Acelerador 40ml",
+  brand: "Avène",
+  unitPrice: 154.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1092303/creme-acelerador-avene-cleanance-comedomed-peeling--1-.jpg?v=639239517633600000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-acelerador-avene-cleanance-comedomed-peeling/p",
+  popularity: 587
+ },
+ {
+  sku: "epoca-116916",
+  name: "Esmalte OPI Infinite Shine Top Coat 15ml",
+  brand: "OPI",
+  unitPrice: 44.55,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/812951/esmalte-opi-infinite-shine-top-coat -4-.jpg.jpg?v=638785029917470000",
+  productUrl: "https://www.epocacosmeticos.com.br/esmalte-opi-infinite-shine-top-coat/p",
+  popularity: 588
+ },
+ {
+  sku: "epoca-116915",
+  name: "Tratamento OPI Infinite Shine Base Coat 15ml",
+  brand: "OPI",
+  unitPrice: 46.34,
+  unit: "un",
+  category: "unhas base para unhas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/812896/4064665114928_1.jpg.jpg?v=638784504442470000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-opi-infinite-shine-coat/p",
+  popularity: 589
+ },
+ {
+  sku: "epoca-116899",
+  name: "Esmalte OPI Infinite Shine 15ml Funny Bunny",
+  brand: "OPI",
+  unitPrice: 40.8,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/808824/4064665114775_1.jpg.jpg?v=638779292499600000",
+  productUrl: "https://www.epocacosmeticos.com.br/esmalte-opi-infinite-shine-15ml/p",
+  popularity: 590
+ },
+ {
+  sku: "epoca-117046",
+  name: "Loção facial Hidratante CeraVe FPS50 52ml",
+  brand: "CeraVe",
+  unitPrice: 107.67,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/813503/locao-facial-hidratante-cerave-fps50--1-.jpg?v=638785258942100000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hidratante-cerave-fps50/p",
+  popularity: 591
+ },
+ {
+  sku: "epoca-116947",
+  name: "Gel Hidratação Facial Pele Oleosa e Mista Efeito Matte Vichy Minéral 89 Sorbet 48h 50ml",
+  brand: "Vichy",
+  unitPrice: 176.73,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/813338/gel-matte-hidratacao-vichy-mineral-89-sorbet-48h--1-.jpg?v=638785224358830000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-matte-hidratacao-vichy-mineral-89-sorbet-48h/p",
+  popularity: 592
+ },
+ {
+  sku: "epoca-115661",
+  name: "Sérum Leave-in L'Oréal Paris Elseve Liso dos Sonhos 100ml",
+  brand: "Elseve",
+  unitPrice: 44.63,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear liso",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3097769/7908785461555--1-.jpg?v=639243286276770000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-leave-in-elseve-liso-dos-sonhos/p",
+  popularity: 593
+ },
+ {
+  sku: "epoca-110426",
+  name: "Refil Gel Espuma Limpador Facial Sallve Antiacne 240ml",
+  brand: "Sallve",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/762254/gel-espuma-limpador-facial-sallve-antiacne-refil--1-.jpg.jpg?v=638907697959000000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-espuma-limpador-facial-sallve-antiacne-refil/p",
+  popularity: 594
+ },
+ {
+  sku: "epoca-110425",
+  name: "Gel Espuma Limpador Facial Antiacne Sallve 300ml",
+  brand: "Sallve",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/762229/gel-espuma-limpador-facial-antiacne-sallve--1-.jpg.jpg?v=639238830086000000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-espuma-limpador-facial-antiacne-sallve/p",
+  popularity: 595
+ },
+ {
+  sku: "epoca-110064",
+  name: "Perfume 212 VIP Black Elixir Carolina Herrera Masculino Eau de Parfum 100ml",
+  brand: "Carolina Herrera",
+  unitPrice: 768.93,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/766089/perfume-212-black-carolina-herrera-masculino-eau-de-parfum-elixir--1-.jpg.jpg?v=638786968555700000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-212-black-carolina-herrera-masculino-eau-de-parfum-elixir/p",
+  popularity: 596
+ },
+ {
+  sku: "epoca-109816",
+  name: "Máscara de Tratamento L'Oréal Professionnel Absolut Repair Molecular 500ml",
+  brand: "LOréal Professionnel",
+  unitPrice: 265.18,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/736959/17289366494028.jpg?v=638730893953030000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-l-oreal-professionnel-absolut-repair-molecular-500ml-86384/p",
+  popularity: 597
+ },
+ {
+  sku: "epoca-108871",
+  name: "Lattafa Asad Eau de Parfum Perfume Árabe Masculino 100ml",
+  brand: "Lattafa Perfumes",
+  unitPrice: 273,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1292446/17581402186111.jpg?v=638998664977700000",
+  productUrl: "https://www.epocacosmeticos.com.br/lattafa-asad-eau-de-parfum---perfume-masculino-100ml-85609/p",
+  popularity: 598
+ },
+ {
+  sku: "epoca-107645",
+  name: "Perfume The Most Wanted Azzaro Masculino Eau de Parfum Intense 50ml",
+  brand: "Azzaro",
+  unitPrice: 526.51,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186570/3614273521345.01.jpg?v=639253281164200000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-the-most-wanted-azzaro-masculino-eau-de-parfum-intense/p",
+  popularity: 599
+ },
+ {
+  sku: "epoca-108847",
+  name: "Perfume Árabe Lattafa Yara Feminino Eau De Parfum 100ml 100ml",
+  brand: "Lattafa Perfumes",
+  unitPrice: 254,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1285785/17581404894336.jpg?v=638996071570530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lattafa-yara-eau-de-parfum---perfume-feminino-85580/p",
+  popularity: 600
+ },
+ {
+  sku: "epoca-108532",
+  name: "Primer Facial Iluminador Fran By Franciny Ehlke - Franshine Dourado",
+  brand: "Franciny Ehlke",
+  unitPrice: 46.16,
+  unit: "un",
+  category: "maquiagem face iluminador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/726410/7898724572353-01.jpg.jpg?v=638718763406600000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-facial-iluminador-fran-by-franciny-ehlke-franshine/p",
+  popularity: 601
+ },
+ {
+  sku: "epoca-108531",
+  name: "Corretivo Fran By Franciny Ehlke - Stick Cover Rosé",
+  brand: "Franciny Ehlke",
+  unitPrice: 38.48,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/726384/7898724572315-0.jpg.jpg?v=638718755325800000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-fran-by-franciny-ehlke-stick-cover/p",
+  popularity: 602
+ },
+ {
+  sku: "epoca-108265",
+  name: "Protetor Solar Facial Mantecorp Skincare Episol Sec Acqua FPS 60 40ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 88.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/737248/protetor-solar-facial-mantecorp-skincare-episol-sec-acqua-fps-60--2-.jpg.jpg?v=638733292471730000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-mantecorp-skincare-episol-sec-acqua-fps-60/p",
+  popularity: 603
+ },
+ {
+  sku: "epoca-108231",
+  name: "Perfume Uomo Intense Valentino Born In Roma Eau de Parfum Masculino 50ml",
+  brand: "Valentino",
+  unitPrice: 749.78,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3189712/3614273790833.01.jpg?v=639253597387370000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-masculino-eau-de-parfum-intense/p",
+  popularity: 604
+ },
+ {
+  sku: "epoca-108225",
+  name: "Perfume Uomo Valentino Born In Roma Eau de Toilette Masculino 100ml",
+  brand: "Valentino",
+  unitPrice: 838.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3189688/3614272761469.01.jpg?v=639253595727970000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-uomo-masculino-eau-de-tolitte/p",
+  popularity: 605
+ },
+ {
+  sku: "epoca-108222",
+  name: "Perfume Green Valentino Born In Roma Donna Eau de Parfum Feminino 30ml",
+  brand: "Valentino",
+  unitPrice: 526.24,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186963/3614274024753.01.jpg?v=639253322072270000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-green-donna-feminino-eau-de-parfum/p",
+  popularity: 606
+ },
+ {
+  sku: "epoca-108219",
+  name: "Perfume Donna Intense Valentino Born In Roma Eau de Parfum Feminino 30ml",
+  brand: "Valentino",
+  unitPrice: 588.72,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186957/3614273790864.01.jpg?v=639253320765370000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-donna-intense-feminino-eau-de-parfum/p",
+  popularity: 607
+ },
+ {
+  sku: "epoca-108213",
+  name: "Perfume Coral Fantasy Valentino Donna Born In Roma Valentino Eau de Parfum Feminino 30ml",
+  brand: "Valentino",
+  unitPrice: 551.52,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3186929/3614273672481.01.jpg?v=639253317932200000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-valentino-born-in-roma-coral-donna-feminino-eau-de-parfum/p",
+  popularity: 608
+ },
+ {
+  sku: "epoca-108204",
+  name: "Perfume Feminino Prada Paradoxe Virtual Flower Eau de Parfum 50ml",
+  brand: "Prada",
+  unitPrice: 800.31,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2994435/3614274000566.01.jpg?v=639229296878000000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-paradoxe-virtual-floral-prada-feminino-eau-de-parfum/p",
+  popularity: 609
+ },
+ {
+  sku: "epoca-108066",
+  name: "Perfume La Vie Est Belle L'Elixir Lancôme Feminino L'Eau de Parfum 30ml",
+  brand: "Lancôme",
+  unitPrice: 423.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1364168/3614274169720.01.jpg.jpg?v=639032379854000000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-vie-est-belle-elixir-lancome-feminino-eau-de-parfum/p",
+  popularity: 610
+ },
+ {
+  sku: "epoca-108031",
+  name: "Válvula Dosadora Pump para Shampoo e Condicionador Wella 1L",
+  brand: "Wella Professionals",
+  unitPrice: 9.9,
+  unit: "un",
+  category: "cabelos condicionador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/719726/17320222611666.jpg?v=638701430243030000",
+  productUrl: "https://www.epocacosmeticos.com.br/valvula-dosadora-pump-para-shampoo-e-condicionador-wella-1l-84830/p",
+  popularity: 611
+ },
+ {
+  sku: "epoca-107647",
+  name: "Batom Líquido Matte Bruna Tavares BT Lips 4g Bruna",
+  brand: "Bruna Tavares",
+  unitPrice: 38.9,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/768246/batom-liquido-matte-bruna-tavares-bt-lips--2-.jpg.jpg?v=638760947077930000",
+  productUrl: "https://www.epocacosmeticos.com.br/batom-liquido-matte-bruna-tavares-bt-lips/p",
+  popularity: 612
+ },
+ {
+  sku: "epoca-104222",
+  name: "Contorno Facial em Bastão Dior Forever Skin Contour 1",
+  brand: "Dior",
+  unitPrice: 425,
+  unit: "un",
+  category: "maquiagem face contorno",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/702660/contorno-facial-dior-forever-skin-contour--2-.jpg.jpg?v=638671207157200000",
+  productUrl: "https://www.epocacosmeticos.com.br/contorno-facial-dior-forever-skin-contour/p",
+  popularity: 613
+ },
+ {
+  sku: "epoca-104204",
+  name: "Alastin Restorative Neck Complex - Creme para Colo e Pescoço 50ml",
+  brand: "Alastin",
+  unitPrice: 495.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/715562/creme-restaurador-para-pescoco-e-colo-alastin-restorative-neck-complex--2-.jpg.jpg?v=639238836065670000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-restaurador-para-pescoco-e-colo-alastin-restorative-neck-complex/p",
+  popularity: 614
+ },
+ {
+  sku: "epoca-104200",
+  name: "Alastin Transform Body Complex - Creme Firmador Corporal 170g",
+  brand: "Alastin",
+  unitPrice: 621.9,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/702552/creme-firmador-corporal-alastin-skincare-transform-body-complex (1).jpg.jpg?v=638671151568770000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-firmador-corporal-alastin-skincare-transform-body-complex/p",
+  popularity: 615
+ },
+ {
+  sku: "epoca-101302",
+  name: "Kit L'Oréal Professionnel Expert Metal Detox - Máscara 250ml + Shampoo 300ml",
+  brand: "LOréal Professionnel",
+  unitPrice: 343.03,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/677932/17278973920033.jpg?v=638635743055330000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-expert-metal-detox-mascara-250ml-e-shampoo-300ml-78442/p",
+  popularity: 616
+ },
+ {
+  sku: "epoca-98978",
+  name: "Trio de Sombras Nádia Tambasco by Océane - 3 To Go Palette Hazel",
+  brand: "Océane",
+  unitPrice: 51.9,
+  unit: "un",
+  category: "maquiagem olhos sombra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/688885/trio-de-sombras-nadia-tambasco-by-oceane-3-to-go-palette---1-.jpg.jpg?v=638648777077630000",
+  productUrl: "https://www.epocacosmeticos.com.br/trio-de-sombras-nadia-tambasco-by-oceane-3-to-go-palette-/p",
+  popularity: 617
+ },
+ {
+  sku: "epoca-98942",
+  name: "Gel Fixador para Sobrancelhas Océane - Instant Brows Incolor",
+  brand: "Océane",
+  unitPrice: 36.9,
+  unit: "un",
+  category: "maquiagem sobrancelhas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/688716/gel-fixador-para-sobrancelhas-oceane-instant-brows (4).jpg.jpg?v=638648607832270000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-fixador-para-sobrancelhas-oceane-instant-brows/p",
+  popularity: 618
+ },
+ {
+  sku: "epoca-98841",
+  name: "Presilhas de Cabelo Océane 2 Un",
+  brand: "Océane",
+  unitPrice: 21.9,
+  unit: "un",
+  category: "cabelos escovas e acessorios acessorios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/693628/presilhas-de-cabelo-oceane (1).jpg.jpg?v=638658930039800000",
+  productUrl: "https://www.epocacosmeticos.com.br/presilhas-de-cabelo-oceane/p",
+  popularity: 619
+ },
+ {
+  sku: "epoca-98743",
+  name: "Oil Reparador Absolut Repair 90ml - L'Oreal Professionnel",
+  brand: "LOréal Professionnel",
+  unitPrice: 169.99,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669481/17272936471045.jpg?v=639186075870100000",
+  productUrl: "https://www.epocacosmeticos.com.br/oil-reparador-absolut-repair-90ml---l-oreal-professionnel-76097/p",
+  popularity: 620
+ },
+ {
+  sku: "epoca-98727",
+  name: "Leave-in L'oreal Pro Longer Serie Expert - 150ml",
+  brand: "LOréal Professionnel",
+  unitPrice: 114.07,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669401/17272913450688.jpg?v=638629734249900000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-serie-expert-l-oreal-pro-longer---150ml-76081/p",
+  popularity: 621
+ },
+ {
+  sku: "epoca-98719",
+  name: "Máscara Capilar Oil Reflections Luminous 150ml - Wella",
+  brand: "Wella Professionals",
+  unitPrice: 108.97,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/669319/17272913996139.jpg?v=638629731022030000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-oil-reflections-luminous-150ml---wella-76073/p",
+  popularity: 622
+ },
+ {
+  sku: "epoca-100921",
+  name: "Protetor Labial Lip Ice One FPS 15 Maçã Verde",
+  brand: "Lip Ice Cube",
+  unitPrice: 5.49,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/682794/protetor-labial-lip-ice-one-fps-15-20-3-.jpg.jpg?v=638641058481500000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-labial-lip-ice-one-fps-15/p",
+  popularity: 623
+ },
+ {
+  sku: "epoca-96169",
+  name: "Óleo Capilar Wella Professionals Oil Reflections 100ml",
+  brand: "Wella Professionals",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1043266/17581465480898.jpg?v=638937433548400000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections---oleo-capilar-100ml-73525/p",
+  popularity: 624
+ },
+ {
+  sku: "epoca-93387",
+  name: "Óleo Capilar Braé Revival Gorgeous Shine Oil 60ml",
+  brand: "Braé",
+  unitPrice: 72.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1056675/17582306996473.jpg?v=638938275017570000",
+  productUrl: "https://www.epocacosmeticos.com.br/brae-revival-gorgeous-shine-oil-oleo-capilar-60ml-70740/p",
+  popularity: 625
+ },
+ {
+  sku: "epoca-91418",
+  name: "Óleo de Tratamento Cadiveu Professional Açaí Oil 110ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 64.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/634873/17253936482258.jpg?v=638612655302000000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-acai-oil---oleo-de-tratamento-110ml-68801/p",
+  popularity: 626
+ },
+ {
+  sku: "epoca-91074",
+  name: "Océane Nadia Tambasco Hair Makeup - Maquiagem Capilar Castanho Escuro 4g",
+  brand: "Océane",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cabelos coloracao retoque de raiz",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/667802/00117254685920900.jpg?v=638629467010670000",
+  productUrl: "https://www.epocacosmeticos.com.br/oceane-nadia-tambasco-hair-makeup---maquiagem-capilar-castanho-escuro-4g-68493/p",
+  popularity: 627
+ },
+ {
+  sku: "epoca-90684",
+  name: "L'Oréal Professionnel Serie Expert Vitamino Color Resveratrol - Shampoo 750ml",
+  brand: "LOréal Professionnel",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/632008/17253973455591.jpg?v=638609941608630000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-oreal-professionnel-serie-expert-vitamino-color-resveratrol---shampoo-750ml-68109/p",
+  popularity: 628
+ },
+ {
+  sku: "epoca-90239",
+  name: "Protetor Solar Corporal Australian Gold Alta Proteção FPS 50 200g",
+  brand: "Australian Gold",
+  unitPrice: 61.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/671642/protetor-solar-corporal-australian-gold-alta-protecao-fps-50-20-2-.jpg.jpg?v=638633108893130000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-corporal-australian-gold-alta-protecao-fps-50/p",
+  popularity: 629
+ },
+ {
+  sku: "epoca-90183",
+  name: "Pincel Multifuncional Eudora by Niina Secrets 1 Un",
+  brand: "Eudora Niina Secrets",
+  unitPrice: 55.24,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem pincel ou aplicador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/657753/pincel-multifuncional-eudora-by-niina-secrets-20-1-.jpg.jpg?v=638628109666700000",
+  productUrl: "https://www.epocacosmeticos.com.br/pincel-multifuncional-eudora-by-niina-secrets/p",
+  popularity: 630
+ },
+ {
+  sku: "epoca-89977",
+  name: "Kit L'Oréal Professionnel Serie Expert Absolut Repair - Shampoo + Máscara Capilar",
+  brand: "LOréal Professionnel",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/629855/17245026253366.jpg?v=639239427764000000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-l-oreal-professionnel-serie-expert-absolut-repair-shampoo-e-mascara-p--2-produtos--67453/p",
+  popularity: 631
+ },
+ {
+  sku: "epoca-89564",
+  name: "Shampoo Wella Professionals Oil Reflections Luminous Reveal 1L",
+  brand: "Wella Professionals",
+  unitPrice: 186.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628042/17245081333842.jpg?v=638605529183270000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-luminous-reveal---shampoo-1l-67038/p",
+  popularity: 632
+ },
+ {
+  sku: "epoca-88666",
+  name: "Fio Dental Individual Pote - Kess 50Un",
+  brand: "Kess",
+  unitPrice: 14.9,
+  unit: "un",
+  category: "cuidados pessoais higiene bucal fio dental",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/626220/fio-dental-kess-fita-dental-premium-menta-50m.jpg?v=638603670789130000",
+  productUrl: "https://www.epocacosmeticos.com.br/fio-dental-individual-kess-sabor-menta/p",
+  popularity: 633
+ },
+ {
+  sku: "epoca-88591",
+  name: "Pó Solto Facial Ultrafino Dailus Rosa",
+  brand: "Dailus",
+  unitPrice: 30.99,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/637609/po-solto-facial-ultrafino-dailus--3-.jpg?v=638615118132070000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-solto-facial-ultrafino-dailus/p",
+  popularity: 634
+ },
+ {
+  sku: "epoca-88467",
+  name: "EUCERIN Creme Facial Antivermelhidão Anti-Redness Peles Sensíveis FPS30 50ml",
+  brand: "Eucerin",
+  unitPrice: 198.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597211/4006000045832--1-.jpg?v=639186013889400000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-eucerin-antiredness-fps-30/p",
+  popularity: 635
+ },
+ {
+  sku: "epoca-88465",
+  name: "Demaquilante Facial Bioré The Cleanse 190ml",
+  brand: "Bioré",
+  unitPrice: 102.9,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/626279/demaquilante-facial-biore-the-cleanse.jpg?v=638603705939100000",
+  productUrl: "https://www.epocacosmeticos.com.br/demaquilante-facial-biore-the-cleanse/p",
+  popularity: 636
+ },
+ {
+  sku: "epoca-88244",
+  name: "Perfume Ck One Essence Calvin Klein Parfum Intense Unissex 100ml",
+  brand: "Calvin Klein",
+  unitPrice: 441.32,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/621608/perfume-ck-one-essence-calvin-klein-parfum-intense-unissex--1-.jpg?v=638586380474400000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ck-one-essence-calvin-klein-parfum-intense-unissex/p",
+  popularity: 637
+ },
+ {
+  sku: "epoca-88221",
+  name: "Pó Solto Facial Givenchy - Prisme Libre N01",
+  brand: "Givenchy",
+  unitPrice: 356.15,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/620747/po-solto-prisme-libre-givenchy-24--5-.jpg?v=638581333795530000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-solto-prisme-libre-givenchy-24/p",
+  popularity: 638
+ },
+ {
+  sku: "epoca-88156",
+  name: "Creme Facial Shiseido Vital Perfection Uplifting and Firming Advanced Cream 50ml",
+  brand: "Shiseido",
+  unitPrice: 971,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619345/creme-facial-shiseido-vital-perfection-uplifting-and-firming-cream--1-.jpg?v=638574225027500000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-shiseido-vital-perfection-uplifting-and-firming-advanced-cream/p",
+  popularity: 639
+ },
+ {
+  sku: "epoca-88152",
+  name: "Pó Facial Matte Payot 1",
+  brand: "Payot",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/623785/po-facial-payot-matte--3-.jpg?v=638598730772430000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-facial-payot-matte/p",
+  popularity: 640
+ },
+ {
+  sku: "epoca-87866",
+  name: "Vichy Dercos Kit – Shampoo Estimulante + Condicionador Energizante Antiqueda Kit",
+  brand: "Vichy",
+  unitPrice: 264.43,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/617897/vichy-dercos-kit-shampoo-estimulante-condicionador-energizante-antiqueda-ml.jpg?v=638567372282000000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-kit-shampoo-estimulante-condicionador-energizante-antiqueda-ml/p",
+  popularity: 641
+ },
+ {
+  sku: "epoca-87621",
+  name: "Gloss Labial Dailus - Lip Glossy Cookie",
+  brand: "Dailus",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/622357/lip-gloss-dailus-glossy.jpg?v=638590893002400000",
+  productUrl: "https://www.epocacosmeticos.com.br/lip-gloss-dailus-glossy/p",
+  popularity: 642
+ },
+ {
+  sku: "epoca-87611",
+  name: "Creme Corporal Mugler Angel Perfumado 200ml",
+  brand: "Mugler",
+  unitPrice: 566.56,
+  unit: "un",
+  category: "cuidados pessoais pos-banho hidratante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616994/hidratante-corporal-mugler-angel-body-lotion--1-.jpg?v=638556084987600000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-corporal-mugler-angel-body-lotion/p",
+  popularity: 643
+ },
+ {
+  sku: "epoca-87587",
+  name: "Refil Óleo Capilar Sem Enxágue Kérastase Elixir Ultime L'Huile Cicagloss 75 ml",
+  brand: "Kerastase",
+  unitPrice: 372.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/850215/oleo-capilar-kerastase-elixir-ultime-lhuile-originale-refil--1-.jpg?v=638833593562700000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-capilar-kerastase-elixir-ultime-lhuile-originale-refil/p",
+  popularity: 644
+ },
+ {
+  sku: "epoca-87150",
+  name: "Contorno Océane Edition Mini Contour Stick 6g Marrom Claro",
+  brand: "Océane",
+  unitPrice: 46.5,
+  unit: "un",
+  category: "maquiagem face contorno",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/927983/7908725500894-MINI-CONTOUR-STICK-EDITION---LIGHT.jpg?v=638888100350300000",
+  productUrl: "https://www.epocacosmeticos.com.br/contorno-oceane-edition-mini-contour-stick/p",
+  popularity: 645
+ },
+ {
+  sku: "epoca-87149",
+  name: "Iluminador Oceane Edition Mini Highlight Stick Bronze",
+  brand: "Océane",
+  unitPrice: 42.9,
+  unit: "un",
+  category: "maquiagem face iluminador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619480/7908725500887MINI-HIGHLIGHT-STICK-EDITION---BRONZE.jpg?v=638574530821670000",
+  productUrl: "https://www.epocacosmeticos.com.br/iluminador-oceane-edition-mini-highlight-stick/p",
+  popularity: 646
+ },
+ {
+  sku: "epoca-87143",
+  name: "Gloss Labial Oceane Edition Mini Glossy Me Nude",
+  brand: "Océane",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619042/brilho-labial-oceane-edition-mini-glossy-me--1-.jpg?v=638573487514030000",
+  productUrl: "https://www.epocacosmeticos.com.br/brilho-labial-oceane-edition-mini-glossy-me/p",
+  popularity: 647
+ },
+ {
+  sku: "epoca-87138",
+  name: "Blush Cremoso Oceane Edition Mini Cream Blush Caramelo",
+  brand: "Océane",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/618994/blush-cremoso-oceane-edition-mini-cream-blush--1-.jpg?v=638573439232970000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-cremoso-oceane-edition-mini-cream-blush/p",
+  popularity: 648
+ },
+ {
+  sku: "epoca-87136",
+  name: "Primer Facial Océane 4 You - Natural Primer 30g",
+  brand: "Océane",
+  unitPrice: 50.59,
+  unit: "un",
+  category: "maquiagem primer e finalizador aperfeicoador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/622330/primer-facial-suave-oceane-4-you-natural-primer--3-.jpg?v=638590868056570000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-facial-suave-oceane-4-you-natural-primer/p",
+  popularity: 649
+ },
+ {
+  sku: "epoca-87035",
+  name: "Vichy Dercos Energy+ Shampoo Estimulante Kit com 2 unidades Kit",
+  brand: "Vichy",
+  unitPrice: 271.51,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/615404/vichy-dercos-energy-shampoo-estimulante-kit-com-2-unidades-shampoo.jpg?v=638543268873570000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-energy-shampoo-estimulante-kit-com-2-unidades-shampoo/p",
+  popularity: 650
+ },
+ {
+  sku: "epoca-86992",
+  name: "Lápis de Olhos Retrátil em Gel à Prova D'água Ruby Kisses Preto",
+  brand: "Ruby Kisses",
+  unitPrice: 27.51,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/616694/lapis-de-olhos-retratil-em-gel-a-prova-dagua-ruby-kisses--2-.jpg?v=638553472255770000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-olhos-retratil-em-gel-a-prova-dagua-ruby-kisses/p",
+  popularity: 651
+ },
+ {
+  sku: "epoca-86833",
+  name: "La Roche-Posay Cicaplast Baume B5 Plus Kit com 2 unidades Kit",
+  brand: "La Roche-Posay",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614451/la-roche-posay-cicaplast-baume-b5-plus-kit-com-2-unidades-20ml.jpg?v=638537189375870000",
+  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-cicaplast-baume-b5-plus-kit-com-2-unidades-20ml/p",
+  popularity: 652
+ },
+ {
+  sku: "epoca-178309",
+  name: "Espuma de Limpeza Facial Refil Bioré - The Face Oil Control 340ml",
+  brand: "Bioré",
+  unitPrice: 57.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1143574/espuma-de-limpeza-facial-biore-the-face-oil-control-refil--1-.jpg?v=639238838133700000",
+  productUrl: "https://www.epocacosmeticos.com.br/espuma-de-limpeza-facial-biore-the-face-oil-control-refil/p",
+  popularity: 653
+ },
+ {
+  sku: "epoca-86573",
+  name: "Desodorante Aerosol Antitranspirante Futura Biotech - Derm One 150ml",
+  brand: "Futura Biotech",
+  unitPrice: 62.9,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614401/desodorante-antitranspirante-aerosol-futura-biotech-derm-one.jpg?v=638537176197570000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-aerosol-futura-biotech-derm-one/p",
+  popularity: 654
+ },
+ {
+  sku: "epoca-86476",
+  name: "Mantecorp Skincare Episol Color Kit com 2 Protetores Solares com Cor FPS70 Tom 2 Kit",
+  brand: "Mantecorp Skincare",
+  unitPrice: 151.81,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/613387/mantecorp-skincare-episol-color-kit-com-2-protetores-solar-com-cor-fps70-tom-2.jpg?v=638528607925100000",
+  productUrl: "https://www.epocacosmeticos.com.br/mantecorp-skincare-episol-color-kit-com-2-protetores-solar-com-cor-fps70-tom-2/p",
+  popularity: 655
+ },
+ {
+  sku: "epoca-86461",
+  name: "Wella Professionals Invigo Color Brilliance Kit – Shampoo + Condicionador Kit",
+  brand: "Wella Professionals",
+  unitPrice: 169.86,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/613640/wella-professionals-invigo-color-brilliance-kit-shampoo-condicionador-color.jpg?v=638531095229470000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-color-brilliance-kit-shampoo-condicionador-color/p",
+  popularity: 656
+ },
+ {
+  sku: "epoca-86399",
+  name: "Sérum Hidratante Facial Creamy 30ml",
+  brand: "Creamy",
+  unitPrice: 46.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/660988/serum-hidratante-creamy-drops-20-2-.jpg.jpg?v=638625298509500000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-hidratante-creamy-drops/p",
+  popularity: 657
+ },
+ {
+  sku: "epoca-86332",
+  name: "Perfume Million Gold Rabanne Eau de Parfum Feminino 30ml",
+  brand: "Rabanne",
+  unitPrice: 483.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/613180/_3349668630240_0065200301_0.jpg?v=638527519358270000",
+  productUrl: "https://www.epocacosmeticos.com.br/million-gold-for-her-paco-rabanne-perfume-feminino-eau-de-parfum-refillable/p",
+  popularity: 658
+ },
+ {
+  sku: "epoca-86316",
+  name: "Acidificante Widi Care Acidificando a Juba 500ml",
+  brand: "Widi Care",
+  unitPrice: 54.39,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/613480/acidificante-widi-care-acidificando-a-juba--1-.jpg?v=638530284198500000",
+  productUrl: "https://www.epocacosmeticos.com.br/acidificante-widi-care-acidificando-a-juba/p",
+  popularity: 659
+ },
+ {
+  sku: "epoca-86266",
+  name: "Maybelline Kit com 2 Máscara de Cílios The Colossal Volum' Express Lavável Kit",
+  brand: "Maybelline",
+  unitPrice: 103.85,
+  unit: "un",
+  category: "maquiagem estojo completo ou kit de maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2789979/2500000862663-7908785499916_00.jpg?v=639205173842370000",
+  productUrl: "https://www.epocacosmeticos.com.br/maybelline-kit-com-2-mascara-de-cilios-the-colossal-volum-express-lavavel/p",
+  popularity: 660
+ },
+ {
+  sku: "epoca-86066",
+  name: "Wella Professionals Invigo Nutri-Enrich Kit – Shampoo + Condicionador + Máscara + Leave-In + Óleo Capilar Light Kit",
+  brand: "Wella Professionals",
+  unitPrice: 747.05,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/609486/wella-professionals-invigo-nutri-enrich-kit-shampoo-condicionador-mascara-leave-in-oleo-capilar-light.jpg?v=638512025073600000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-nutri-enrich-kit-shampoo-condicionador-mascara-leave-in-oleo-capilar-light/p",
+  popularity: 661
+ },
+ {
+  sku: "epoca-85436",
+  name: "Wella Professionals Oil Reflections Kit - Óleo Capilar Light + Óleo Capilar Smoothening Kit",
+  brand: "Wella Professionals",
+  unitPrice: 146.7,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/605928/wella-professionals-oil-reflections-kit-oleo-capilar-light-oleo-capila-smoothening.jpg?v=638496440800800000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-kit-oleo-capilar-light-oleo-capila-smoothening/p",
+  popularity: 662
+ },
+ {
+  sku: "epoca-85320",
+  name: "Hidratante Facial Eau Thermale Avène Cleanance - Aqua-Gel 30g",
+  brand: "Avène",
+  unitPrice: 113.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/608610/3282770390544_0.jpg?v=638508012289400000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-avene-eau-thermale-cleanance-aqua-gel/p",
+  popularity: 663
+ },
+ {
+  sku: "epoca-85306",
+  name: "Esmalte para Secagem Rápida Essence - Express Dry Top Coat 8ml",
+  brand: "Essence",
+  unitPrice: 24.84,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/609521/4059729466860--fechado.jpg?v=638512061164670000",
+  productUrl: "https://www.epocacosmeticos.com.br/esmalte-para-secagem-rapida-essence-express-dry-top-coat/p",
+  popularity: 664
+ },
+ {
+  sku: "epoca-85173",
+  name: "Esponja Gota Chanfrada para Maquiagem Macrilan EP10 Pink",
+  brand: "Macrilan",
+  unitPrice: 11,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem esponja",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/605734/esponja-gota-chanfrada-para-maquiagem-macrilan-ep10--1-.jpg?v=638495674324030000",
+  productUrl: "https://www.epocacosmeticos.com.br/esponja-gota-chanfrada-para-maquiagem-macrilan-ep10/p",
+  popularity: 665
+ },
+ {
+  sku: "epoca-85145",
+  name: "Gel de Limpeza Facial para Peles Normais a Oleosas com Ácido Hialurônico e Niacinamida CeraVe 340g",
+  brand: "CeraVe",
+  unitPrice: 102,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/607564/7908615086279_1.jpg?v=638504316649430000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-cerave/p",
+  popularity: 666
+ },
+ {
+  sku: "epoca-85143",
+  name: "Mascara de Tratamento Lola Cosmestics Rapunzel 450g",
+  brand: "Lola From Rio",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1402591/7899572813381-7899572813384.jpg?v=639052910644170000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmestics-rapunzel-mascara/p",
+  popularity: 667
+ },
+ {
+  sku: "epoca-84979",
+  name: "Gel Creme Clareador Mantecorp Skincare Blancy TX 30g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 217.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento creme clareador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651131/7891142982834_1.jpg?v=639099789514700000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-creme-clareador-mantecorp-blancy-tx/p",
+  popularity: 668
+ },
+ {
+  sku: "epoca-84956",
+  name: "Vichy Dercos Shampoo Anticaspa DS Tratamento para Cabelos Secos 300g",
+  brand: "Vichy",
+  unitPrice: 115.43,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400327/7908615082493-.01.jpg.jpg?v=639051293643330000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-shampoo-anticaspa-ds-cabelos-secos/p",
+  popularity: 669
+ },
+ {
+  sku: "epoca-84953",
+  name: "Vichy Dercos Shampoo Anticaspa DS - Cabelos Secos Refil 200g",
+  brand: "Vichy",
+  unitPrice: 84.92,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400335/7908615088105-.01.jpg.jpg?v=639051294414170000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-shampoo-anticaspa-ds-cabelos-secos-refil/p",
+  popularity: 670
+ },
+ {
+  sku: "epoca-84681",
+  name: "Contorno em Bastão Vizella Stick Cream Contour 7g 01",
+  brand: "Vizzela",
+  unitPrice: 45.93,
+  unit: "un",
+  category: "maquiagem face contorno",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1079427/contorno-facial-vizella-stick-cream-contour--3-.jpg?v=638944248507230000",
+  productUrl: "https://www.epocacosmeticos.com.br/contorno-facial-vizella-stick-cream-contour/p",
+  popularity: 671
+ },
+ {
+  sku: "epoca-84620",
+  name: "Blush Océane 4 You - Fluffy Rosa",
+  brand: "Océane",
+  unitPrice: 50.14,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/608735/7908725500672-Blush-4you-Tango-Pnk_--3-.jpg?v=638508559086700000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-oceane-4-you-fluffy/p",
+  popularity: 672
+ },
+ {
+  sku: "epoca-84383",
+  name: "Lip Fix Tint Ruby Kisses Bold Orange",
+  brand: "Ruby Kisses",
+  unitPrice: 31.09,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/600534/lip-fix-tint-ruby-kisses--1-.jpg?v=638475955761630000",
+  productUrl: "https://www.epocacosmeticos.com.br/lip-fix-tint-ruby-kisses/p",
+  popularity: 673
+ },
+ {
+  sku: "epoca-84069",
+  name: "Wella Professionals Ultimate Luxe Oil Shampoo 250ml",
+  brand: "Wella Professionals",
+  unitPrice: 138.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/599635/wella-professional-ultimate-luxe-oil-shampoo--7-.jpg?v=638471488549270000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professional-ultimate-luxe-oil-shampoo/p",
+  popularity: 674
+ },
+ {
+  sku: "epoca-83782",
+  name: "Creme Facial Uniformizador Vichy Neovadiol FPS50 50ml",
+  brand: "Vichy",
+  unitPrice: 342.95,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/598340/creme-facial-uniformizador-de-tom-vichy-neovadiol-fps50--1-.jpg?v=638464604291200000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-uniformizador-de-tom-vichy-neovadiol-fps50/p",
+  popularity: 675
+ },
+ {
+  sku: "epoca-83514",
+  name: "Creme Antirrugas para Olhos Shiseido Benefiance Wrinkle Smoothing Eye Cream 15ml",
+  brand: "Shiseido",
+  unitPrice: 647,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/593950/creme-antirrugas-para-o-contorno-dos-olhos-shiseido-benefiance-wrinkle-smoothing-eye-cream--3-.jpg?v=638442087256970000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-antirrugas-para-o-contorno-dos-olhos-shiseido-benefiance-wrinkle-smoothing-eye-cream/p",
+  popularity: 676
+ },
+ {
+  sku: "epoca-83512",
+  name: "Sérum Facial Iluminador Avène Vitamin Activ Cg 30ml",
+  brand: "Avène",
+  unitPrice: 227,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2532187/3282770393477_1.jpg?v=639180796040330000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-iluminador-antioxidante-avene-vitamin-activ-cg/p",
+  popularity: 677
+ },
+ {
+  sku: "epoca-82886",
+  name: "Lip Oil Guerlain - Kiss Kiss Bee Glow 458 Rose Pop",
+  brand: "Guerlain",
+  unitPrice: 275,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/591585/3346470441118_1.jpg?v=638422441514300000",
+  productUrl: "https://www.epocacosmeticos.com.br/lip-oil-guerlain-kiss-kiss-bee-glow/p",
+  popularity: 678
+ },
+ {
+  sku: "epoca-82847",
+  name: "Tratamento Acidificante Ultra Gloss Elseve Glycolic Gloss 200ml",
+  brand: "Elseve",
+  unitPrice: 48.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/590519/acidificante-ultra-gloss-elseve-glycolic-gloss--1-.jpg?v=638416975570130000",
+  productUrl: "https://www.epocacosmeticos.com.br/acidificante-ultra-gloss-elseve-glycolic-gloss/p",
+  popularity: 679
+ },
+ {
+  sku: "epoca-82845",
+  name: "Máscara Capilar Antiporosidade L'Oréal Paris Elseve Glycolic Gloss 300g",
+  brand: "Elseve",
+  unitPrice: 41.39,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1343866/creme-de-tratamento-antiporosidade-elseve-glycolic-gloss--1-.jpg?v=639015061318330000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-de-tratamento-antiporosidade-elseve-glycolic-gloss/p",
+  popularity: 680
+ },
+ {
+  sku: "epoca-82563",
+  name: "Máscara de Cílios Essence - Lash Princess False Lash Effect Marrom",
+  brand: "Essence",
+  unitPrice: 47.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589041/4059729393876---aberto.jpg?v=638406806076830000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-essence-lash-princess-false-lash-effect/p",
+  popularity: 681
+ },
+ {
+  sku: "epoca-82334",
+  name: "Corretivo Dailus Bye Bye Olheira D1 Claro",
+  brand: "Dailus",
+  unitPrice: 36.98,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/587984/corretivo-dailus-bye-bye-olheira--1-.jpg?v=638400722983170000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-dailus-bye-bye-olheira/p",
+  popularity: 682
+ },
+ {
+  sku: "epoca-82163",
+  name: "Iluminador para Corpo e Rosto Niina Secrets by Eudora Luminous 60ml",
+  brand: "Eudora Niina Secrets",
+  unitPrice: 55.99,
+  unit: "un",
+  category: "maquiagem maquiagem bronzeadora face",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589416/7891033574131_NIINA-SECRETS-ILUMINADOR-CORPO-E-ROSTO-LUMINOUS-60-ML-_frontal--1-.jpg?v=638410362838830000",
+  productUrl: "https://www.epocacosmeticos.com.br/iluminador-corpo-e-rosto-niina-secrets-by-eudora-luminous/p",
+  popularity: 683
+ },
+ {
+  sku: "epoca-82036",
+  name: "Neutrogena Protetor Solar Facial Sun Fresh Derm Care FPS70 40g Kit - 2 unidades Kit",
+  brand: "Neutrogena",
+  unitPrice: 119.68,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/580067/neutrogena-protetor-solar-facial-sun-fresh-derm-care-fps70-40g-kit-2-unidades.jpg?v=638355830101770000",
+  productUrl: "https://www.epocacosmeticos.com.br/neutrogena-protetor-solar-facial-sun-fresh-derm-care-fps70-40g-kit-2-unidades/p",
+  popularity: 684
+ },
+ {
+  sku: "epoca-82010",
+  name: "Eudora Siage Hair Plastia Kit Shampoo + Condicionador Kit",
+  brand: "Eudora Siàge",
+  unitPrice: 68,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/581806/eudora-siage-hair-plastia-kit-shampoo-condicionador--1-.jpg?v=638363445462070000",
+  productUrl: "https://www.epocacosmeticos.com.br/eudora-siage-hair-plastia-kit-shampoo-condicionador/p",
+  popularity: 685
+ },
+ {
+  sku: "epoca-81819",
+  name: "Protetor Solar Facial Mantecorp Skincare Epidrat Calm B5 FPS50 50ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/581703/proteror-solar-facial-hidratante-mantecorp-skincare-epidrat-calm-b5-fps50--3-.jpg?v=638362819608970000",
+  productUrl: "https://www.epocacosmeticos.com.br/proteror-solar-facial-hidratante-mantecorp-skincare-epidrat-calm-b5-fps50/p",
+  popularity: 686
+ },
+ {
+  sku: "epoca-81777",
+  name: "Vichy Dercos Psolution Shampoo Queratorregulador 200g",
+  brand: "Vichy",
+  unitPrice: 167.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/583651/vichy-dercos-shampoo--4-.jpg?v=638374038486000000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-shampoo/p",
+  popularity: 687
+ },
+ {
+  sku: "epoca-81241",
+  name: "Sérum Facial Anti-Acne Principia - Mix-01 30ml",
+  brand: "Principia",
+  unitPrice: 74,
+  unit: "un",
+  category: "skincare hidratacao e tratamento acne e oleosidade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743817/serum-facial-anti-acne-principia-mix-01--3-.jpg.jpg?v=639238910672700000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-anti-acne-principia-mix-01/p",
+  popularity: 688
+ },
+ {
+  sku: "epoca-81240",
+  name: "Sérum Facial Anti-idade Principia - Nc-10 30ml",
+  brand: "Principia",
+  unitPrice: 59,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743906/serum-facial-anti-idade-facial-principia-nc-10 -1-.jpg.jpg?v=638742777919600000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-anti-idade-facial-principia-nc-10/p",
+  popularity: 689
+ },
+ {
+  sku: "epoca-81152",
+  name: "Sérum Principia Skin Ácido Hialuronico e Vitamina B5 AH-2 30ml",
+  brand: "Principia",
+  unitPrice: 64,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/743839/EAN-0736532824844.jpg.jpg?v=638742767251930000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-principia-skin-acido-hialuronico-e-vitamina-b5/p",
+  popularity: 690
+ },
+ {
+  sku: "epoca-81119",
+  name: "Máscara de Cílios Lavável com Efeito 3D Maybelline NY The Falsies Surreal 10ml",
+  brand: "Maybelline",
+  unitPrice: 98.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/573847/mascara-de-cilios-lavavel-maybelline-ny-the-falsies-surreal--2-.jpg?v=638331454283430000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-lavavel-maybelline-ny-the-falsies-surreal/p",
+  popularity: 691
+ },
+ {
+  sku: "epoca-81088",
+  name: "Bálsamo Disciplinante Lola Cosmetics Xapadinha 250ml",
+  brand: "Lola From Rio",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras liso",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1366317/7899572813756--7899572813759.jpg?v=639033883187730000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-xapadinha-balsamo-disciplinante/p",
+  popularity: 692
+ },
+ {
+  sku: "epoca-80422",
+  name: "Base Líquida Océane - Skin Foundation 110F",
+  brand: "Océane",
+  unitPrice: 60.72,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/576734/base-liquida-oceane-skin-foundation--5-.jpg?v=638621828075000000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-oceane-skin-foundation/p",
+  popularity: 693
+ },
+ {
+  sku: "epoca-80314",
+  name: "Protetor Solar Facial com Cor Antioleosidade FPS80 La Roche Posay Anthelios Airlicium+ 40g 1.0",
+  brand: "La Roche-Posay",
+  unitPrice: 109.98,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1466932/protetor-solar-facial-com-cor-la-roche-posay-anthelios-airlicium-fps-80--1-.jpg.jpg?v=639071123225300000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-com-cor-la-roche-posay-anthelios-airlicium-fps-80/p",
+  popularity: 694
+ },
+ {
+  sku: "epoca-79883",
+  name: "Leave-in L'Oréal Professionnel Absolut Repair Molecular 100ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 251.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628813/3474637153489_EN_1.jpg?v=638606184851530000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-absolut-repair-molecular-leave-in/p",
+  popularity: 695
+ },
+ {
+  sku: "epoca-79237",
+  name: "L'Oreal Professionnel Absolut Repair Molecular Shampoo 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 195.9,
+  unit: "un",
+  category: "cabelos shampoo danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/628986/l-oreal-professionnel-absolut-repair-molecular-shampoo--1-.jpg?v=638628957985600000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-oreal-professionnel-absolut-repair-molecular-shampoo/p",
+  popularity: 696
+ },
+ {
+  sku: "epoca-79007",
+  name: "Widi Care Curvas Mágicas Creme de Pentear Hidro-Reconstrutor 250ml",
+  brand: "Widi Care",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/562377/widi-care-curvas-magicas-creme-de-pentear-hidro-reconstrutor.jpg?v=638258871834900000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-curvas-magicas-creme-de-pentear-hidro-reconstrutor/p",
+  popularity: 697
+ },
+ {
+  sku: "epoca-78989",
+  name: "Lápis De Olhos Payot Preto",
+  brand: "Payot",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/562353/lapis-de-olhos-payot--1-.jpg?v=638258851042100000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-olhos-payot/p",
+  popularity: 698
+ },
+ {
+  sku: "epoca-78904",
+  name: "Pó Facial Payot Retinol Translucido Iluminador 20g",
+  brand: "Payot",
+  unitPrice: 51.9,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/561741/po-facial-payot-retinol-translucido-iluminador--1-.jpg?v=638254518900270000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-facial-payot-retinol-translucido-iluminador/p",
+  popularity: 699
+ },
+ {
+  sku: "epoca-78900",
+  name: "Caneta Delineadora Payot Silver Preta",
+  brand: "Payot",
+  unitPrice: 44,
+  unit: "un",
+  category: "maquiagem olhos delineador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/561470/caneta-delineadora-payot-silver--1-.jpg?v=638253687676630000",
+  productUrl: "https://www.epocacosmeticos.com.br/caneta-delineadora-payot-silver/p",
+  popularity: 700
+ },
+ {
+  sku: "epoca-78844",
+  name: "Protetor Solar Skin Aqua Super Moisture Milk FPS50 40ml",
+  brand: "SKIN AQUA",
+  unitPrice: 55.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/560960/protetor-solar-skin-aqua-super-moisture-milk-fps50.jpg?v=638248795656300000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-skin-aqua-super-moisture-milk-fps50/p",
+  popularity: 701
+ },
+ {
+  sku: "epoca-78634",
+  name: "Kérastase Nutritive Masquintense Máscara 200ml",
+  brand: "Kerastase",
+  unitPrice: 403.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559259/kerastase-nutritive-masquintense-mascara--1-.jpg?v=638241708385830000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-nutritive-masquintense-mascara/p",
+  popularity: 702
+ },
+ {
+  sku: "epoca-78600",
+  name: "Le Male Elixir Jean Paul Gaultier - Perfume Masculino - Parfum 75ml",
+  brand: "Jean Paul Gaultier",
+  unitPrice: 618.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/559296/le-male-elixir-jean-paul-gaultier-perfume-masculino-parfum--1-.jpg?v=638241718548400000",
+  productUrl: "https://www.epocacosmeticos.com.br/le-male-elixir-jean-paul-gaultier-perfume-masculino-parfum/p",
+  popularity: 703
+ },
+ {
+  sku: "epoca-78536",
+  name: "Base Líquida Guerlain Terracotta Le Teint 35ml 0C",
+  brand: "Guerlain",
+  unitPrice: 420,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/714966/3346470438392.jpg.jpg?v=638688298248000000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-guerlain-terracotta-le-teint/p",
+  popularity: 704
+ },
+ {
+  sku: "epoca-78510",
+  name: "Esthederm Sérum Facial Anti-idade Age Proteom Advanced Serum 30ml",
+  brand: "Esthederm",
+  unitPrice: 350.8,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/558591/serum-facial-esthederm-age-proteom.jpg?v=638641891476300000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-esthederm-age-proteom/p",
+  popularity: 705
+ },
+ {
+  sku: "epoca-78468",
+  name: "Creme Hidratante Corporal Fisiogel 60g",
+  brand: "Fisiogel",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1339795/creme-hidratante-corporal-fisiogel.jpg?v=639011436996170000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-corporal-fisiogel/p",
+  popularity: 706
+ },
+ {
+  sku: "epoca-78326",
+  name: "Sabonete de Limpeza Facial Biore Skincare Wash Acne Care 130g",
+  brand: "Bioré",
+  unitPrice: 44.99,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/557006/sabonete-facial-biore-wash-acne-care.jpg?v=638227828548530000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-facial-biore-wash-acne-care/p",
+  popularity: 707
+ },
+ {
+  sku: "epoca-78323",
+  name: "Sabonete de Limpeza Facial Biore Skincare Wash Moisture 130g",
+  brand: "Bioré",
+  unitPrice: 46.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/556990/sabonete-de-limpeza-facial-biore.jpg?v=638227822817400000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-de-limpeza-facial-biore/p",
+  popularity: 708
+ },
+ {
+  sku: "epoca-78154",
+  name: "Blush em Pó Too Faced Cloud Crush Candy Clouds",
+  brand: "Too Faced",
+  unitPrice: 269,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1368250/blush-too-faced-cloud-crush--1-.jpg?v=639034883596030000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-too-faced-cloud-crush/p",
+  popularity: 709
+ },
+ {
+  sku: "epoca-78141",
+  name: "Haskell Acidificante Redutor De Ph Supermáscara 240g",
+  brand: "Haskell",
+  unitPrice: 74.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/556303/haskell-acidificante-redutor-de-ph-supermascara.jpg?v=638223523942870000",
+  productUrl: "https://www.epocacosmeticos.com.br/haskell-acidificante-redutor-de-ph-supermascara/p",
+  popularity: 710
+ },
+ {
+  sku: "epoca-78114",
+  name: "Kérastase Chroma Absolu Kit - Shampoo + Máscara Kit",
+  brand: "Kerastase",
+  unitPrice: 621.8,
+  unit: "un",
+  category: "cabelos shampoo coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/555701/kerastase-chroma-absolu-kit-shampoo-mascara.jpg?v=638221900651330000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-chroma-absolu-kit-shampoo-mascara/p",
+  popularity: 711
+ },
+ {
+  sku: "epoca-78112",
+  name: "Kérastase Chroma Absolu Kit - Shampoo + Condicionador Kit",
+  brand: "Kerastase",
+  unitPrice: 513.8,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/555691/kerastase-chroma-absolu-kit-shampoo-condicionador.jpg?v=638221898511730000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-chroma-absolu-kit-shampoo-condicionador/p",
+  popularity: 712
+ },
+ {
+  sku: "epoca-78085",
+  name: "Kérastase Densifique Kit – Shampoo + Condicionador Kit",
+  brand: "Kerastase",
+  unitPrice: 493.8,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/555444/kerastase-densifique-kit-shampoo-condicionador.jpg?v=638217632764100000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-densifique-kit-shampoo-condicionador/p",
+  popularity: 713
+ },
+ {
+  sku: "epoca-77905",
+  name: "Wella Professionals Oil Reflections Kit – Shampoo 1L + Máscara 500ml Kit",
+  brand: "Wella Professionals",
+  unitPrice: 460.63,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554269/wella-professionals-oil-reflections-kit-shampoo-mascara.jpg?v=638212214286900000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-oil-reflections-kit-shampoo-mascara/p",
+  popularity: 714
+ },
+ {
+  sku: "epoca-77667",
+  name: "Corretivo Líquido Care Natural Beauty True Clean 5.5ml 001",
+  brand: "Care Natural Beauty",
+  unitPrice: 125,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1337000/corretivo-liquido-care-natural-beauty-true-clean--1-.jpg?v=639009972244030000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-care-natural-beauty-true-clean/p",
+  popularity: 715
+ },
+ {
+  sku: "epoca-77592",
+  name: "Creme Facial Hidratante Fortalecedor e Reparador Vichy Minéral 89 40ml",
+  brand: "Vichy",
+  unitPrice: 122.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/551334/creme-facial-vichy-mineral-89--1-.jpg?v=638203634845370000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-vichy-mineral-89/p",
+  popularity: 716
+ },
+ {
+  sku: "epoca-77468",
+  name: "Lixa para Unhas Macrilan LX12 1un",
+  brand: "Macrilan",
+  unitPrice: 5.93,
+  unit: "un",
+  category: "unhas lixa",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549869/lixa-para-unhas-macrilan-lx12.jpg?v=638198364379530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lixa-para-unhas-macrilan-lx12/p",
+  popularity: 717
+ },
+ {
+  sku: "epoca-77466",
+  name: "Lixa para Unhas com 4 lados Macrilan – Polimento e Brilho LX08 1un",
+  brand: "Macrilan",
+  unitPrice: 7.9,
+  unit: "un",
+  category: "unhas lixa",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549861/lixa-para-unhas-com-4-lados-macrilan-polimento-e-brilho-lx08.jpg?v=638198358145430000",
+  productUrl: "https://www.epocacosmeticos.com.br/lixa-para-unhas-com-4-lados-macrilan-polimento-e-brilho-lx08/p",
+  popularity: 718
+ },
+ {
+  sku: "epoca-77199",
+  name: "Vichy Dercos Oil-Correction Shampoo Purificante para Cabelos Oleosos Refil 200g",
+  brand: "Vichy",
+  unitPrice: 81.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1470066/vichy-dercos-oil-correction-shampoo-purificante-refil-200g -1-.jpg?v=639071846231730000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-oil-correction-shampoo-purificante-refil-200g/p",
+  popularity: 719
+ },
+ {
+  sku: "epoca-77192",
+  name: "Gel de Limpeza Facial Mantecorp Skincare Epidrat Calm 150g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 68.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/548910/gel-de-limpeza-facial-mantecorp-skincare-epidrat-calm.jpg?v=638192568156730000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-facial-mantecorp-skincare-epidrat-calm/p",
+  popularity: 720
+ },
+ {
+  sku: "epoca-77190",
+  name: "Óleo Capilar Inoar Argan Oil Blister 7ml",
+  brand: "Inoar",
+  unitPrice: 9.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1011718/oleo-de-tratamento-capilar-inoar-argan-oil-blister--3-.jpg?v=638932946276670000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-de-tratamento-capilar-inoar-argan-oil-blister/p",
+  popularity: 721
+ },
+ {
+  sku: "epoca-76565",
+  name: "Avène Hyaluron Activ B3 Sérum Concentrado Preenchedor 30ml",
+  brand: "Avène",
+  unitPrice: 248.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1091976/serum-concentrado-avene-hyaluron-activ-b3--6-.jpg?v=639214466524770000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-concentrado-avene-hyaluron-activ-b3/p",
+  popularity: 722
+ },
+ {
+  sku: "epoca-76161",
+  name: "Perfume Code Giorgio Armani Masculino Eau de Toilette 125ml",
+  brand: "Giorgio Armani",
+  unitPrice: 719.53,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1015243/new-code-giorgio-armani-perfume-masculino-eau-de-toilette--1-.jpg?v=638936461107670000",
+  productUrl: "https://www.epocacosmeticos.com.br/new-code-giorgio-armani-perfume-masculino-eau-de-toilette/p",
+  popularity: 723
+ },
+ {
+  sku: "epoca-76066",
+  name: "Desodorante Roll-On Petúnia Eu Sou Leve 55ml",
+  brand: "Petúnia",
+  unitPrice: 8.99,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/541460/desodorante-roll-on-petunia-eu-sou-leve--1-.jpg?v=638145762737070000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-roll-on-petunia-eu-sou-leve/p",
+  popularity: 724
+ },
+ {
+  sku: "epoca-75993",
+  name: "Pó Compacto Facial Vult FPS90 Claro",
+  brand: "Vult",
+  unitPrice: 74.96,
+  unit: "un",
+  category: "maquiagem face po compacto",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/539764/po-compacto-facial-vult-fps90--1-.jpg?v=638139799799830000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-compacto-facial-vult-fps90/p",
+  popularity: 725
+ },
+ {
+  sku: "epoca-75219",
+  name: "Chloé Signature Perfume Feminino Eau de Parfum 100ml",
+  brand: "Chloé",
+  unitPrice: 744.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/534506/signature-chloe-refillable-perfume-feminino-eau-de-parfum--1-.jpg?v=638109439177000000",
+  productUrl: "https://www.epocacosmeticos.com.br/signature-chloe-refillable-perfume-feminino-eau-de-parfum/p",
+  popularity: 726
+ },
+ {
+  sku: "epoca-75091",
+  name: "Elseve Tratamento Reconstrutor - Kit com Dois Óleos Extraordinários Kit",
+  brand: "Elseve",
+  unitPrice: 89.8,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/532335/elseve-tratamento-reconstrutor-kit-com-dois-oleos-extraordinarios.jpg?v=638102544677300000",
+  productUrl: "https://www.epocacosmeticos.com.br/elseve-tratamento-reconstrutor-kit-com-dois-oleos-extraordinarios/p",
+  popularity: 727
+ },
+ {
+  sku: "epoca-74786",
+  name: "Sérum Facial Antioxidante Vichy Liftactiv Supreme Vitamina C 20ml",
+  brand: "Vichy",
+  unitPrice: 251.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/530035/serum-facial-antioxidante-vichy-liftactiv-supreme-vitamina-c--1-.jpg?v=638088730988100000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-antioxidante-vichy-liftactiv-supreme-vitamina-c/p",
+  popularity: 728
+ },
+ {
+  sku: "epoca-74762",
+  name: "Creme Hidratante Facial Anti-Idade Hada Labo Gokujyun Aging Cream 50g",
+  brand: "Hada Labo",
+  unitPrice: 152.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/529681/creme-hidratante-facial-anti-idade-hada-labo-gokujyun-aging-cream--1-.jpg?v=638085343363100000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-facial-anti-idade-hada-labo-gokujyun-aging-cream/p",
+  popularity: 729
+ },
+ {
+  sku: "epoca-74578",
+  name: "Lápis de Boca Ruby Kisses Ultra Easy Red",
+  brand: "Ruby Kisses",
+  unitPrice: 10.5,
+  unit: "un",
+  category: "maquiagem labios contorno labial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/528571/lapis-de-boca-ruby-kisses-ultra-easy--1-.jpg?v=638078442136530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-boca-ruby-kisses-ultra-easy/p",
+  popularity: 730
+ },
+ {
+  sku: "epoca-74441",
+  name: "Darrow Actine Gel de Limpeza Facial Refil 300g",
+  brand: "Darrow",
+  unitPrice: 57.09,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1100359/gel-de-limpeza-darrow-actine-vitamina-c-refil--1-.jpg?v=639197158427200000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-darrow-actine-vitamina-c-refil/p",
+  popularity: 731
+ },
+ {
+  sku: "epoca-69704",
+  name: "Protetor Solar Facial Antioleosidade e Purificante Vichy Capital Soleil Purify 40g",
+  brand: "Vichy",
+  unitPrice: 127.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/494908/protetor-solar-facial-vichy-capital-soleil-purify.jpg?v=637916102844030000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-vichy-capital-soleil-purify-sem-cor/p",
+  popularity: 732
+ },
+ {
+  sku: "epoca-73835",
+  name: "Avène Cleanance Kit – Gel de Limpeza Facial Purificante 150g + 40g Kit",
+  brand: "Avène",
+  unitPrice: 69.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/519779/avene-cleanance-kit-gel-de-limpeza-facial-purificante-150g-40g.jpg?v=638035301974500000",
+  productUrl: "https://www.epocacosmeticos.com.br/avene-cleanance-kit-gel-de-limpeza-facial-purificante-150g-40g/p",
+  popularity: 733
+ },
+ {
+  sku: "epoca-73834",
+  name: "Gel Hidratante Facial Restaurador Cetaphil Water Gel Optimal Hydration 48g",
+  brand: "Cetaphil",
+  unitPrice: 140.66,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3214432/3499320014540_01.jpg?v=639256823971170000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-hidratante-facial-restaurador-cetaphil-water-gel-optimal-hydration/p",
+  popularity: 734
+ },
+ {
+  sku: "epoca-73829",
+  name: "Gel Creme Hidratante Microbioma Equilibrado Dermotivin Benzac Oil Control 50ml",
+  brand: "Benzac",
+  unitPrice: 70.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/558416/gel-creme-hidratante-dermotivin-benzac-oil-control-microbioma-equilibrado--2-.jpg?v=638235523970430000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-creme-hidratante-dermotivin-benzac-oil-control-microbioma-equilibrado/p",
+  popularity: 735
+ },
+ {
+  sku: "epoca-73619",
+  name: "Neostrata Minesol Oil Control Kit com 2 Unidades – Protetor Solar Facial com Cor FPS70 – Médio Claro 40g Kit",
+  brand: "Neostrata",
+  unitPrice: 182.21,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/540547/neostrata-minesol-oil-control-kit-com-2-unidades-protetor-solar-facial-com-cor-fps70-morena-40g--1---1-.jpg?v=638144100956670000",
+  productUrl: "https://www.epocacosmeticos.com.br/neostrata-minesol-oil-control-kit-com-2-unidades-protetor-solar-facial-com-cor-fps70-morena-40g/p",
+  popularity: 736
+ },
+ {
+  sku: "epoca-73618",
+  name: "Neostrata Minesol Oil Control Kit com 2 Unidades – Protetor Solar Facial com Cor FPS70 – Clara 40g Kit",
+  brand: "Neostrata",
+  unitPrice: 165.8,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/518784/neostrata-minesol-oil-control-kit-com-2-unidades-protetor-solar-facial-com-cor-fps70-clara-40g--1-.jpg?v=638031708466000000",
+  productUrl: "https://www.epocacosmeticos.com.br/neostrata-minesol-oil-control-kit-com-2-unidades-protetor-solar-facial-com-cor-fps70-clara-40g/p",
+  popularity: 737
+ },
+ {
+  sku: "epoca-73389",
+  name: "Widi Care Phytomanga Kit Shampoo + Condicionador + Máscara + Finalizador Kit",
+  brand: "Widi Care",
+  unitPrice: 123.17,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/517812/widi-care-phytomanga-kit-shampoo-condicionador-mascara-finalizador.jpg?v=638028358961800000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-phytomanga-kit-shampoo-condicionador-mascara-finalizador/p",
+  popularity: 738
+ },
+ {
+  sku: "epoca-72984",
+  name: "La Roche-Posay Anthelios Ultra Cover Kit com 2 Unidades – Protetor Solar Facial Com Cor FPS60 2.0 – 30g Kit",
+  brand: "La Roche-Posay",
+  unitPrice: 164.86,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/514817/la-roche-posay-anthelios-ultra-cover-kit-com-2-unidades-protetor-solar-facial-com-cor-fps60-20-30g--1-.jpg?v=638013728685200000",
+  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-ultra-cover-kit-com-2-unidades-protetor-solar-facial-com-cor-fps60-20-30g/p",
+  popularity: 739
+ },
+ {
+  sku: "epoca-72982",
+  name: "La Roche-Posay Anthelios Ultra Cover Kit com 2 Unidades – Protetor Solar Facial Com Cor FPS60 3.0 – 30g Kit",
+  brand: "La Roche-Posay",
+  unitPrice: 188.1,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/514811/la-roche-posay-anthelios-ultra-cover-kit-com-2-unidades-protetor-solar-facial-com-cor-fps60-30-30g--1-.jpg?v=638013726097230000",
+  productUrl: "https://www.epocacosmeticos.com.br/la-roche-posay-anthelios-ultra-cover-kit-com-2-unidades-protetor-solar-facial-com-cor-fps60-30-30g/p",
+  popularity: 740
+ },
+ {
+  sku: "epoca-81782",
+  name: "Óleo de Limpeza Hidratante para Banho Pele Normal a Seca CeraVe 236ml",
+  brand: "CeraVe",
+  unitPrice: 95.25,
+  unit: "un",
+  category: "skincare limpeza de pele cleansing oil",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2567736/oleo-de-limpeza-hidratante-cerave7.jpg?v=639184265257000000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-de-limpeza-hidratante-cerave/p",
+  popularity: 741
+ },
+ {
+  sku: "epoca-72839",
+  name: "Spray Fixador de Maquiagem Nádia Tambasco by Océane Perfect Fix 100ml",
+  brand: "Océane",
+  unitPrice: 72.95,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/513420/spray-fixador-de-maquiagem-nadia-tambasco-by-oceane-perfect-fix.jpg?v=638006814586230000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-fixador-de-maquiagem-nadia-tambasco-by-oceane-perfect-fix/p",
+  popularity: 742
+ },
+ {
+  sku: "epoca-72763",
+  name: "Vichy Dercos Oil-Correction Condicionador Reequilibrante para Cabelos Oleosos com Pontas Secas 200ml",
+  brand: "Vichy",
+  unitPrice: 137.91,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/512884/vichy-dercos-oil-correction-condicionador-reequilibrante-200ml--1-.jpg?v=638004245585670000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-oil-correction-condicionador-reequilibrante-200ml/p",
+  popularity: 743
+ },
+ {
+  sku: "epoca-72619",
+  name: "Creme para a Área dos Olhos Océane – Cica Eye Cream 25g",
+  brand: "Océane",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/512028/creme-para-a-area-dos-olhos-oceane-cica-eye-cream--1-.jpg?v=637999762258270000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-para-a-area-dos-olhos-oceane-cica-eye-cream/p",
+  popularity: 744
+ },
+ {
+  sku: "epoca-71715",
+  name: "Cadiveu Professional Nutri Glow Leave-in Fluído 215ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 67.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/505951/cadiveu-professional-nutri-glow-leave-in-fluido--1-.jpg?v=637973931689070000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-professional-nutri-glow-leave-in-fluido/p",
+  popularity: 745
+ },
+ {
+  sku: "epoca-71249",
+  name: "Vichy Dercos Oil-Correction Shampoo Purificante para Cabelos Oleosos 300g",
+  brand: "Vichy",
+  unitPrice: 138.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/503192/vichy-dercos-oil-correction-shampoo-purificante-300g--1-.jpg?v=637959213672530000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-oil-correction-shampoo-purificante-300g/p",
+  popularity: 746
+ },
+ {
+  sku: "epoca-71155",
+  name: "Gloss Labial Clarins Makeup Lip Comfort Oil 01",
+  brand: "Clarins",
+  unitPrice: 259,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3087283/gloss-labial-clarins-makeup-lip-comfort-oil-01.jpg?v=639241639894800000",
+  productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-clarins-makeup-lip-comfort-oil/p",
+  popularity: 747
+ },
+ {
+  sku: "epoca-71130",
+  name: "Máscara de Cílios Too Faced Better Than Sex 1 Un",
+  brand: "Too Faced",
+  unitPrice: 239,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1368119/mascara-de-cilios-too-faced-better-than-sex--8-.jpg?v=639034834681500000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-too-faced-better-than-sex/p",
+  popularity: 748
+ },
+ {
+  sku: "epoca-70781",
+  name: "L’Oréal Professionnel Curl Expression Máscara Rich 250ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 228.06,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/538090/loreal-professionnel-curl-expression-serie-expert-mascara-rich--2---7---1-.jpg?v=638132013764600000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-curl-expression-serie-expert-mascara-rich/p",
+  popularity: 749
+ },
+ {
+  sku: "epoca-69703",
+  name: "Protetor Solar Facial Anti-idade Vichy Capital Soleil UV-Age Daily FPS60 40g",
+  brand: "Vichy",
+  unitPrice: 140.04,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496501/protetor-solar-facial-vichy-uv-age-daily-fps60--1-.jpg?v=637922938607470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-vichy-uv-age-daily-fps60/p",
+  popularity: 750
+ },
+ {
+  sku: "epoca-69232",
+  name: "Amend Expertise Pós Progressiva Máscara 300g",
+  brand: "Amend",
+  unitPrice: 35.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/492403/amend-expertise-pos-progressiva-mascara.jpg?v=637902080575370000",
+  productUrl: "https://www.epocacosmeticos.com.br/amend-expertise-pos-progressiva-mascara/p",
+  popularity: 751
+ },
+ {
+  sku: "epoca-69208",
+  name: "Curvador de Cílios Macrilan CX-01 Pink",
+  brand: "Macrilan",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "maquiagem ferramentas para maquiagem curvador de cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/492457/curvador-de-cilios-macrilan-cx-01-pink.png?v=637902319767900000",
+  productUrl: "https://www.epocacosmeticos.com.br/curvador-de-cilios-macrilan-cx-01/p",
+  popularity: 752
+ },
+ {
+  sku: "epoca-69167",
+  name: "Kérastase Résistance Therapiste Kit - Máscara + Leave-in Kit",
+  brand: "Kerastase",
+  unitPrice: 501.8,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/491879/kerastase-therapiste-kit-shampoo-e-mascara.jpg?v=637898584701630000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-resistance-therapiste-kit-mascara-leave-in/p",
+  popularity: 753
+ },
+ {
+  sku: "epoca-68958",
+  name: "Cetaphil Kit - 2 Loções Hidratantes Kit",
+  brand: "Cetaphil",
+  unitPrice: 243.01,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1397750/cetaphil-kit-2-locoes-hidratantes -2-.jpg?v=639047967529500000",
+  productUrl: "https://www.epocacosmeticos.com.br/cetaphil-kit-2-locoes-hidratantes/p",
+  popularity: 754
+ },
+ {
+  sku: "epoca-68703",
+  name: "Removedor de esmaltes Dailus 90ml",
+  brand: "Dailus",
+  unitPrice: 7.9,
+  unit: "un",
+  category: "unhas removedor de esmaltes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/489067/removedor-de-esmaltes-dailus.jpg?v=637884727220430000",
+  productUrl: "https://www.epocacosmeticos.com.br/removedor-de-esmaltes-dailus/p",
+  popularity: 755
+ },
+ {
+  sku: "epoca-68495",
+  name: "Eucerin Anti-pigment Clareador Sérum Facial Ultraleve 30ml",
+  brand: "Eucerin",
+  unitPrice: 283.44,
+  unit: "un",
+  category: "skincare hidratacao e tratamento creme clareador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/776152/4006000101224_01.jpg.jpg?v=638764374224800000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-eucerin-anti-pigment-ultraleve/p",
+  popularity: 756
+ },
+ {
+  sku: "epoca-68455",
+  name: "Wella Professionals Fusion Kit – Shampoo + Condicionador + Máscara Kit",
+  brand: "Wella Professionals",
+  unitPrice: 341.16,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/486933/wella-professionals-fusion-kit-shampoo-condicionador-mascara.jpg?v=637873500705170000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-fusion-kit-shampoo-condicionador-mascara/p",
+  popularity: 757
+ },
+ {
+  sku: "epoca-68313",
+  name: "Corretivo Líquido Vizzela Satin 01",
+  brand: "Vizzela",
+  unitPrice: 67.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/485537/corretivo-liquido-vizzela-satin-01.jpg?v=637866710735230000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-vizzela-satin/p",
+  popularity: 758
+ },
+ {
+  sku: "epoca-68188",
+  name: "Wella Professionals Fusion Kit Shampoo + Máscara Kit",
+  brand: "Wella Professionals",
+  unitPrice: 233.91,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/485373/kit.jpg?v=637865920345170000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-fusion-kit-shampoo-mascara/p",
+  popularity: 759
+ },
+ {
+  sku: "epoca-68027",
+  name: "Máscara de Cílios Lavável Lash Sensational Sky High Maybelline NY 1un",
+  brand: "Maybelline",
+  unitPrice: 92.19,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/975751/mascara-de-cilios-maybelline-lash-sensational-sky-high.jpg?v=638909782044900000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-maybelline-lash-sensational-sky-high/p",
+  popularity: 760
+ },
+ {
+  sku: "epoca-68011",
+  name: "Lola Cosmetics Meu Cacho Minha Vida Kit Shampoo + Condicionador + Máscara + Creme Kit",
+  brand: "Lola From Rio",
+  unitPrice: 131.6,
+  unit: "un",
+  category: "cabelos kits para cabelos cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/484052/lola-cosmetics-meu-cacho-minha-vida-kit.jpg?v=637855446622100000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-meu-cacho-minha-vida-kit-shampoo-condicionador-mascara-creme/p",
+  popularity: 761
+ },
+ {
+  sku: "epoca-67727",
+  name: "Eudora Siàge Hair-Plastia Máscara Capilar 250g",
+  brand: "Eudora Siàge",
+  unitPrice: 61.09,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/482208/7891033016440_SIAGE_HAIR_PLASTIA_MASCARA_CAPILAR_01644.jpg?v=637841772261800000",
+  productUrl: "https://www.epocacosmeticos.com.br/eudora-siage-hair-plastia-mascara-capilar/p",
+  popularity: 762
+ },
+ {
+  sku: "epoca-67576",
+  name: "Máscara Facial Hidramais Peel Gel 8g",
+  brand: "Hidramais",
+  unitPrice: 3,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481202/mascara-facial-hidramais-peel-gel.jpg?v=637836612217700000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-facial-hidramais-peel-gel/p",
+  popularity: 763
+ },
+ {
+  sku: "epoca-67531",
+  name: "Lip Tint Labial Dailus Tint Balm Frozen de Melancia",
+  brand: "Dailus",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481086/lip-tint-labial-dailus-tint-balm-frozen-de-melancia.jpg?v=637835676704770000",
+  productUrl: "https://www.epocacosmeticos.com.br/lip-tint-labial-dailus-tint-balm/p",
+  popularity: 764
+ },
+ {
+  sku: "epoca-67515",
+  name: "Sombra Líquida e Primer 2x1 Bruna Tavares BT Velvet Tons Coloridos Royal",
+  brand: "Bruna Tavares",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "maquiagem olhos sombra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/480940/sombra-liquida-e-primer-2-1-bruna-tavares-bt-velvet-tons-escuros-royal.jpg?v=637835490723970000",
+  productUrl: "https://www.epocacosmeticos.com.br/sombra-liquida-e-primer-2-1-bruna-tavares-bt-velvet-tons-coloridos/p",
+  popularity: 765
+ },
+ {
+  sku: "epoca-67127",
+  name: "Óleo Labial Bruna Tavares BT Juicy Oil Pineapple",
+  brand: "Bruna Tavares",
+  unitPrice: 43.68,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/478999/oleo-labial-bruna-tavares-bt-huicy-pineapple.jpg?v=637822490289500000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-labial-bruna-tavares-bt-juicy-oil/p",
+  popularity: 766
+ },
+ {
+  sku: "epoca-67026",
+  name: "EUCERIN Sérum Facial Antiacne Dermo Pure Efeito Triplo Antioleosidade 40ml",
+  brand: "Eucerin",
+  unitPrice: 155.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento acne e oleosidade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1851429/serum-efeito-triplo-eucerin-dermo-pure-oil-control.jpg?v=639123262226370000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-efeito-triplo-eucerin-dermo-pure-oil-control/p",
+  popularity: 767
+ },
+ {
+  sku: "epoca-67019",
+  name: "Óleo Corporal Bio Oil Natural 125ml",
+  brand: "Bio-Oil",
+  unitPrice: 112.9,
+  unit: "un",
+  category: "cuidados pessoais pos-banho oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/478926/oleo-corporal-bio-oil-natural--2-.jpg?v=637821086495130000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-corporal-bio-oil-natural/p",
+  popularity: 768
+ },
+ {
+  sku: "epoca-67018",
+  name: "Esfoliante Beleza Brasileira Esfrega Bumbum 50g",
+  brand: "Beleza Brasileira",
+  unitPrice: 17.89,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/816198/esfoliante-the-creams-mini-esfrega-bumbum-50g--1-.jpg?v=638787681383200000",
+  productUrl: "https://www.epocacosmeticos.com.br/esfoliante-beleza-brasileira-mini-esfrega-bumbum-50g/p",
+  popularity: 769
+ },
+ {
+  sku: "epoca-66696",
+  name: "Hidratante Facial Calmante Bioderma Sensibio Defensive 40ml",
+  brand: "Bioderma",
+  unitPrice: 116.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1650407/hidratante-calmante-bioderma-sensibio-defensive.jpg?v=639099711194770000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-calmante-bioderma-sensibio-defensive/p",
+  popularity: 770
+ },
+ {
+  sku: "epoca-66417",
+  name: "Gloss Labial Fran by Franciny Ehlke Glossip Girl",
+  brand: "Franciny Ehlke",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "maquiagem labios gloss",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/472158/gloss-labial-fran-by-franciny-ehlke-glossip-girl.jpg?v=637777681892100000",
+  productUrl: "https://www.epocacosmeticos.com.br/gloss-labial-fran-by-franciny-ehlke/p",
+  popularity: 771
+ },
+ {
+  sku: "epoca-66408",
+  name: "Caneta Delineadora Fran by Franciny Ehlke PullPen Black",
+  brand: "Franciny Ehlke",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "maquiagem olhos delineador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/472111/caneta-delineadora-fran-by-franciny-ehlke-pullpen.jpg?v=637777576500900000",
+  productUrl: "https://www.epocacosmeticos.com.br/caneta-delineadora-fran-by-franciny-ehlke-pullpen/p",
+  popularity: 772
+ },
+ {
+  sku: "epoca-66407",
+  name: "Lapiseira Retrátil Fran by Franciny Ehlke Pull Pencil Black",
+  brand: "Franciny Ehlke",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/472105/lapiseira-retratil-fran-by-franciny-ehlke-pull-pencil.jpg?v=637777572514870000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapiseira-retratil-fran-by-franciny-ehlke-pull-pencil/p",
+  popularity: 773
+ },
+ {
+  sku: "epoca-66406",
+  name: "Máscara de Cílios Fran by Franciny Ehlke Maravicherry 6g",
+  brand: "Franciny Ehlke",
+  unitPrice: 45.8,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/472100/mascara-de-cilios-fran-by-franciny-ehlke-maravicherry.jpg?v=637777568965770000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-fran-by-franciny-ehlke-maravicherry/p",
+  popularity: 774
+ },
+ {
+  sku: "epoca-66344",
+  name: "Wella Professionals Invigo Sun Kit - Shampoo + Condicionador + Leave In Kit",
+  brand: "Wella Professionals",
+  unitPrice: 301.82,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/471471/wella-professionals-invigo-sun-kit-shampoo-condicionador-leave-in.jpg?v=637775156312630000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-sun-kit-shampoo-condicionador-leave-in/p",
+  popularity: 775
+ },
+ {
+  sku: "epoca-66120",
+  name: "Angel Mugler Perfume Feminino Eau de Parfum Refilável 100ml",
+  brand: "Mugler",
+  unitPrice: 1073.82,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/474945/angel-mugler-refil-perfume-feminino-eau-de-parfum.jpg?v=637798407441000000",
+  productUrl: "https://www.epocacosmeticos.com.br/angel-mugler-refil-perfume-feminino-eau-de-parfum/p",
+  popularity: 776
+ },
+ {
+  sku: "epoca-65524",
+  name: "Creme Restaurador para os Pés Cetaphil PRO Ureia 10% 60g",
+  brand: "Cetaphil",
+  unitPrice: 50.9,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/509276/creme-hidradante-para-os-pes-cetaphil-pro-ureia--1-.jpg?v=637986970249000000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidradante-para-os-pes-cetaphil-pro-ureia/p",
+  popularity: 777
+ },
+ {
+  sku: "epoca-64944",
+  name: "212 NYC Carolina Herrera – Body Spray Feminino 250ml",
+  brand: "Carolina Herrera",
+  unitPrice: 181.3,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/532313/212-NYC-Carolina-Herrera-–-Body-Spray-Feminino---250ml.jpg?v=638102487459300000",
+  productUrl: "https://www.epocacosmeticos.com.br/212-nyc-carolina-herrera-body-spray-feminino/p",
+  popularity: 778
+ },
+ {
+  sku: "epoca-64896",
+  name: "Lola Cosmetics Densidade Máscara Capilar 230g",
+  brand: "Lola From Rio",
+  unitPrice: 30.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras fino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/459600/lola-cosmetics-densidade-mascara-capilar-230g.jpg?v=637708736554170000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-densidade-mascara-capilar-230g/p",
+  popularity: 779
+ },
+ {
+  sku: "epoca-64736",
+  name: "Cadiveu Essentials Quartzo Shine Leave-In Fluido Condicionante 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/852465/7898606742881_F.jpg?v=638836124802670000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-quartzo-shine-by-boca-rosa-hair-fluido-condicionante-200ml/p",
+  popularity: 780
+ },
+ {
+  sku: "epoca-64446",
+  name: "Pincel Profissional de Precisão para Olhos Macrilan Linha B - B907 1Un",
+  brand: "Macrilan",
+  unitPrice: 10.9,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem pincel ou aplicador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/456265/pincel-profissional-de-precisao-para-olhos-macrilan-linha-b-b907.jpg?v=637686961693200000",
+  productUrl: "https://www.epocacosmeticos.com.br/pincel-profissional-de-precisao-para-olhos-macrilan-linha-b-b907/p",
+  popularity: 781
+ },
+ {
+  sku: "epoca-64399",
+  name: "Pincel Profissional para Blush Macrilan Linha B - B102 1Un",
+  brand: "Macrilan",
+  unitPrice: 18.29,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem pincel ou aplicador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/455964/pincel-profissional-para-blush-macrilan-linha-b-b102.jpg?v=637685329822500000",
+  productUrl: "https://www.epocacosmeticos.com.br/pincel-profissional-para-blush-macrilan-linha-b-b102/p",
+  popularity: 782
+ },
+ {
+  sku: "epoca-64190",
+  name: "Óleo Capilar Lola Cosmetics Pinga! Patauá e Moringa 50ml",
+  brand: "Lola From Rio",
+  unitPrice: 22.98,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1405699/lola-cosmetics-pataua-e-moringa-oleo.jpg?v=639053982774930000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-novo-pataua-e-moringa-oleo/p",
+  popularity: 783
+ },
+ {
+  sku: "epoca-63695",
+  name: "Perfume Givenchy L'Interdit Rouge Eau de Parfum Feminino 35ml",
+  brand: "Givenchy",
+  unitPrice: 492.15,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3132201/3274872428034--1-.jpg?v=639247257156570000",
+  productUrl: "https://www.epocacosmeticos.com.br/linterdit-rouge-givenchy-perfume-feminino-eau-de-parfum/p",
+  popularity: 784
+ },
+ {
+  sku: "epoca-63366",
+  name: "Leave-in Redken Acidic Perfecting Concentrate 150ml",
+  brand: "Redken",
+  unitPrice: 187.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/450838/redken-acidic-perfecting-concentrate-leave-in-150ml.jpg?v=637660438974930000",
+  productUrl: "https://www.epocacosmeticos.com.br/redken-acidic-perfecting-concentrate-leave-in-150ml/p",
+  popularity: 785
+ },
+ {
+  sku: "epoca-62845",
+  name: "Protetor Solar Hidratante Vichy Capital Soleil Hydra-Matte FPS50 30g",
+  brand: "Vichy",
+  unitPrice: 81.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/480746/protetor-solar-hidratante-vichy-hydra-matte-fps50--2-.jpg?v=637834680759730000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-hidratante-vichy-hydra-matte-fps50/p",
+  popularity: 786
+ },
+ {
+  sku: "epoca-62533",
+  name: "Óleo de Limpeza Hidratante e Anticoceira La Roche-posay - Lipikar Cleansing Oil AP+ 400ml",
+  brand: "La Roche-Posay",
+  unitPrice: 168.9,
+  unit: "un",
+  category: "skincare limpeza de pele cleansing oil",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/445664/Oleo-de-Limpeza-Hidratante-e-Anticoceira-La-Roche-posay---Lipikar-Cleansing-Oil-AP-.jpg?v=637634651078230000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-de-limpeza-hidratante-e-anticoceira-la-roche-posay-lipikar-cleansing-oil-ap/p",
+  popularity: 787
+ },
+ {
+  sku: "epoca-62245",
+  name: "Sérum Facial Noturno Mantecorp – Glycare Night Sérum 30ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 227.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/444720/serum-rejuvenescedor-glycare-mantecorp-2-.jpg?v=637630168665630000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-noturno-mantecorp-glycare-night-serum/p",
+  popularity: 788
+ },
+ {
+  sku: "epoca-62101",
+  name: "Perfume Phantom Rabanne Masculino EDT 100ml",
+  brand: "Rabanne",
+  unitPrice: 730.55,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/494487/paco-rabanne-phantom-100ml-1--1-.jpg?v=637915140258100000",
+  productUrl: "https://www.epocacosmeticos.com.br/phantom-paco-rabanne-perfume-masculino-edt/p",
+  popularity: 789
+ },
+ {
+  sku: "epoca-61247",
+  name: "Hidratante Facial Pele Oleosa Matificante Dermotivin Benzac 50g",
+  brand: "Benzac",
+  unitPrice: 63.14,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3019764/7897930777286_01.jpg?v=639232802425200000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-matificante-dermotivin-benzac-oil-control/p",
+  popularity: 790
+ },
+ {
+  sku: "epoca-61201",
+  name: "Hidratante Facial Neutrogena Face Care Intensive Antissinais Reparador 100g",
+  brand: "Neutrogena",
+  unitPrice: 33.56,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1696507/7891010253806_1.jpg?v=639105690935770000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-neutrogena-face-care-intensive-antissinais-reparador/p",
+  popularity: 791
+ },
+ {
+  sku: "epoca-61200",
+  name: "Hidratante Facial Neutrogena Face Care Antissinais Dia FPS 22 100g",
+  brand: "Neutrogena",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1521059/7891010253790_1.jpg?v=639080736214900000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-neutrogena-face-care-antissinais-dia-fps-22/p",
+  popularity: 792
+ },
+ {
+  sku: "epoca-61197",
+  name: "Hidratante Corporal Neutrogena Body Care Intensive Hidrata&Suaviza 400ml",
+  brand: "Neutrogena",
+  unitPrice: 38.36,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/927913/hidratante-corporal-neutrogena-body-care-intensive-hidrata-suaviza--1-.jpg.jpg?v=638888083238070000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-corporal-neutrogena-body-care-intensive-hidrata-suaviza/p",
+  popularity: 793
+ },
+ {
+  sku: "epoca-61159",
+  name: "Hidratante Corporal Neutrogena - Body Care Intensive Hidrata&Repara 200ml",
+  brand: "Neutrogena",
+  unitPrice: 23.62,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/695396/hidratante-corporal-neutrogena-body-care-intensive-hidrata-repara--2-.jpg.jpg?v=638662352882170000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-corporal-neutrogena-body-care-intensive-hidrata-repara/p",
+  popularity: 794
+ },
+ {
+  sku: "epoca-61057",
+  name: "Bepantol Derma Hidratante Restaurador - Loção Facial Noturna 50ml",
+  brand: "Bepantol",
+  unitPrice: 53.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/684326/hidratante-facial-noturno-bepantol-derma-restaurador--2-.jpg.jpg?v=639239502738300000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-facial-noturno-bepantol-derma-restaurador/p",
+  popularity: 795
+ },
+ {
+  sku: "epoca-61030",
+  name: "Cadiveu Professional Bye Bye Frizz Shampoo 250ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/549098/cadiveu-essentials-bye-bye-frizz-shampoo-250ml--1-.jpg?v=638193259952300000",
+  productUrl: "https://www.epocacosmeticos.com.br/cadiveu-essentials-bye-bye-frizz-shampoo-250ml/p",
+  popularity: 796
+ },
+ {
+  sku: "epoca-60809",
+  name: "Corretivo Líquido Vizzela Cor 01",
+  brand: "Vizzela",
+  unitPrice: 55.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/435350/corretivo-liquido-vizzela-cor-01.jpg?v=637587861647130000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-vizzela-cor/p",
+  popularity: 797
+ },
+ {
+  sku: "epoca-60454",
+  name: "Sérum Skinceuticals Antioxidante e Antioleosidade Silymarin C F 15ml",
+  brand: "Skinceuticals",
+  unitPrice: 383.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/530897/serum-skinceuticals-antioxidante-e-antioleosidade-vitamina-c-silymarin-cf-15ml--1-.jpg?v=638094730671830000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-skinceuticals-antioxidante-e-antioleosidade-vitamina-c-silymarin-cf/p",
+  popularity: 798
+ },
+ {
+  sku: "epoca-59813",
+  name: "Máscara de Cílios BT – Wonderlash Nova Preto",
+  brand: "Bruna Tavares",
+  unitPrice: 67.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/430258/mascara-de-cilios-bt-wonderlash-nova--1-.jpg?v=637550012786270000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-cilios-bt-wonderlash-nova/p",
+  popularity: 799
+ },
+ {
+  sku: "epoca-59707",
+  name: "Base Líquida BT Skin - Tons Médios L20",
+  brand: "Bruna Tavares",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/429996/base-liquida-bt-skin-l20--1-.jpg?v=637549005737000000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-liquida-bt-skin-tons-medios/p",
+  popularity: 800
+ },
+ {
+  sku: "epoca-59168",
+  name: "Darrow Suavié Sabonete Líquido para Pele Sensível 140ml",
+  brand: "Darrow",
+  unitPrice: 72.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/426890/sabonete-liquido-para-pele-sensivel-darrow-suavie.jpg?v=637529073098530000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-para-pele-sensivel-darrow-suavie/p",
+  popularity: 801
+ },
+ {
+  sku: "epoca-59031",
+  name: "Sérum Facial Anti-Idade Firmador Eucerin Hyaluron-Filler Elasticity 3D 30ml",
+  brand: "Eucerin",
+  unitPrice: 296.67,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3134770/4005800269776_01.jpg?v=639247596297300000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-anti-idade-eucerin-hyaluron-filler-elasticity-3d/p",
+  popularity: 802
+ },
+ {
+  sku: "epoca-59030",
+  name: "EUCERIN Creme Facial Anti-Idade Firmador Dia Hyaluron-Filler Elasticity FPS 30 50ml",
+  brand: "Eucerin",
+  unitPrice: 289,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3134886/4005900728807_01.jpg?v=639247602761270000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-anti-idade-eucerin-hyaluron-filler-elasticity-dia-fps30/p",
+  popularity: 803
+ },
+ {
+  sku: "epoca-58597",
+  name: "Keune Vital Nutrition Kit - Shampoo + Máscara Kit",
+  brand: "Keune",
+  unitPrice: 271.41,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/423294/keune-vital-nutrition-kit-shampoo-mascara.jpg?v=637508287619030000",
+  productUrl: "https://www.epocacosmeticos.com.br/keune-vital-nutrition-kit-shampoo-mascara/p",
+  popularity: 804
+ },
+ {
+  sku: "epoca-58404",
+  name: "Lápis Apontável para Olhos Dailus – Ultra Preto 1Un",
+  brand: "Dailus",
+  unitPrice: 19.85,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/421413/lapis-apontavel-para-olhos-dailus-ultra-preto.jpg?v=637493372047930000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-apontavel-para-olhos-dailus-ultra-preto/p",
+  popularity: 805
+ },
+ {
+  sku: "epoca-56627",
+  name: "Protetor Solar Facial Neostrata Minesol Oil Control FPS 70 Claro",
+  brand: "Neostrata",
+  unitPrice: 82.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1317373/protetor-solar-com-cor-neostrata-mineol-oil-control-fps-70--3-.jpg?v=639004523120070000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-com-cor-neostrata-mineol-oil-control-fps-70/p",
+  popularity: 806
+ },
+ {
+  sku: "epoca-56073",
+  name: "Protetor Solar Facial Bioderma Photoderm Cover Touch Mineral FPS 50+ Médio",
+  brand: "Bioderma",
+  unitPrice: 111.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1336937/3701129803431_2--3701129802724--1-.jpg?v=639009964953930000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-bioderma-photoderm-cover-touch-fps-50-cor/p",
+  popularity: 807
+ },
+ {
+  sku: "epoca-55977",
+  name: "Neutrogena Sun Fresh FPS 70 Kit – Protetor Solar Corporal + Protetor Solar Facial Kit",
+  brand: "Neutrogena",
+  unitPrice: 114.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/589979/418867246_1423940334871758_5788475178801925104_n.jpg?v=638412787038700000",
+  productUrl: "https://www.epocacosmeticos.com.br/neutrogena-sun-fresh-fps-70-kit-protetor-solar-corporal-protetor-solar-facial/p",
+  popularity: 808
+ },
+ {
+  sku: "epoca-55453",
+  name: "Eucerin Anti-pigment Clareador Creme Facial Dia FPS 30 50ml",
+  brand: "Eucerin",
+  unitPrice: 253.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento creme clareador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1015298/Creme-Facial-Dia-Eucerin-Anti-Pigment-Dia-FPS-30---50ml-2.jpg?v=638936494452870000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-dia-eucerin-anti-pigment-dia-fps-30/p",
+  popularity: 809
+ },
+ {
+  sku: "epoca-55451",
+  name: "Pomada Reparadora Eucerin Aquaphor Hidratação Intensiva 49g",
+  brand: "Eucerin",
+  unitPrice: 90.61,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597102/4005800223136--1-.jpg?v=639186001918900000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-reparador-intensivo-eucerin-aquaphor/p",
+  popularity: 810
+ },
+ {
+  sku: "epoca-55449",
+  name: "EUCERIN Creme de Olhos Anti-Idade Firmador Hyaluron-Filler + Elasticity FPS20 15ml",
+  brand: "Eucerin",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2597247/4005900650412--1-.jpg?v=639186018729700000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-eucerin-hyaluron-filler-elasticity-olhos-fps-15/p",
+  popularity: 811
+ },
+ {
+  sku: "epoca-55432",
+  name: "Blush em Bastão Pink Cheeks Sport All In One FPS30 Terracota",
+  brand: "Pink Cheeks",
+  unitPrice: 70.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2573322/7898593731998.jpg?v=639184470314130000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-em-bastao-pink-cheeks-blush-all-in-one/p",
+  popularity: 812
+ },
+ {
+  sku: "epoca-55180",
+  name: "Sabonete Facial Clareador Mantecorp Skincare Blancy TX Cleanser 120ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 79.88,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651138/7891142206039_1.jpg?v=639099791392530000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-facial-clareador-mantecorp-blancy-tx-cleanser/p",
+  popularity: 813
+ },
+ {
+  sku: "epoca-54968",
+  name: "L’Oreal Professionnel Pro Longer Condicionador Reparador 200ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 142.49,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537956/loreal-professionnel-pro-longer-condicionador-reparador-200ml---1-.jpg?v=638131903447000000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-pro-longer-condicionador-reparador-200ml/p",
+  popularity: 814
+ },
+ {
+  sku: "epoca-54939",
+  name: "Loção Hidratante Melano CC Lotion 170ml",
+  brand: "MELANO CC",
+  unitPrice: 116.07,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361361/locao-hidratante-melano-cc-lotion--1-.jpg?v=639238790642970000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-hidratante-melano-cc-lotion/p",
+  popularity: 815
+ },
+ {
+  sku: "epoca-54786",
+  name: "Água Micelar Neutrogena – Hydro Boost 7 em 1 200ml",
+  brand: "Neutrogena",
+  unitPrice: 46.99,
+  unit: "un",
+  category: "skincare agua micelar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2795463/7891010251048_3.jpg?v=639206027808600000",
+  productUrl: "https://www.epocacosmeticos.com.br/agua-micelar-neutrogena-hydro-boost-7-em-1/p",
+  popularity: 816
+ },
+ {
+  sku: "epoca-53616",
+  name: "Máscara de Tratamento Fortalecedora Antiqueda Kérastase Genesis 200ml",
+  brand: "Kerastase",
+  unitPrice: 407.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495585/kerastase-reconstituant-mascara-capilar--1-.jpg?v=637919626769770000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-genesis-reconstituant-mascara-capilar/p",
+  popularity: 817
+ },
+ {
+  sku: "epoca-53161",
+  name: "Óleo para Prevenção de Estrias Mustela Maternité 105ml",
+  brand: "Mustela",
+  unitPrice: 134.38,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis cuidado para as maes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/390102/oleo-para-prevencao-de-estrias-mustela-maternite--1-.jpg?v=637260373975500000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-para-prevencao-de-estrias-mustela-maternite/p",
+  popularity: 818
+ },
+ {
+  sku: "epoca-52910",
+  name: "Perfume Givenchy Irresistible Eau de Parfum Feminino 35ml",
+  brand: "Givenchy",
+  unitPrice: 578.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/994868/irresistible-givenchy-perfume-feminino-edp-35ml--1-.jpg?v=638925874418130000",
+  productUrl: "https://www.epocacosmeticos.com.br/irresistible-givenchy-perfume-feminino-edp/p",
+  popularity: 819
+ },
+ {
+  sku: "epoca-52850",
+  name: "Haskell Fluido Engrossador Encorpa Cabelo – Finalizador 120ml",
+  brand: "Haskell",
+  unitPrice: 48.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores texturizador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/506690/haskell-fluido-engrossador-encorpa-cabelo-finalizador.jpg?v=637976528954730000",
+  productUrl: "https://www.epocacosmeticos.com.br/haskell-fluido-engrossador-encorpa-cabelo-finalizador/p",
+  popularity: 820
+ },
+ {
+  sku: "epoca-52431",
+  name: "Água Micelar Efeito Matte L'Oréal Paris - Solução de Limpeza Facial 200ml",
+  brand: "L'Oréal Paris",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "skincare agua micelar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/497082/agua-micelar-loreal-paris-efeito-matte--1-.jpg?v=637926490931830000",
+  productUrl: "https://www.epocacosmeticos.com.br/agua-micelar-loreal-paris-efeito-matte/p",
+  popularity: 821
+ },
+ {
+  sku: "epoca-52278",
+  name: "Sabão Cremoso Higi Mulher Calcinha Original 300ml",
+  brand: "Higi Mulher",
+  unitPrice: 15.9,
+  unit: "un",
+  category: "cuidados pessoais cuidados femininos sabonete intimo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537776/Sabonete-Liquido-Daxx-Higi-Calcinha-Softcare-azul.jpg?v=638131258632900000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-daxx-higi-calcinha/p",
+  popularity: 822
+ },
+ {
+  sku: "epoca-52087",
+  name: "Desodorante Antitranspirante Roll-on Perspirex Comfort 20ml",
+  brand: "Perspirex",
+  unitPrice: 96.9,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1349524/desodorante-roll-on-perspirex-comfort-roll-on.jpg?v=639017504482200000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-roll-on-perspirex-comfort-roll-on/p",
+  popularity: 823
+ },
+ {
+  sku: "epoca-51734",
+  name: "Gel de Limpeza Facial para Peles Normais a Oleosas com Ácido Hialurônico e Niacinamida CeraVe 60g",
+  brand: "CeraVe",
+  unitPrice: 48.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/376008/gel-de-limpeza-cerave-foaming-facial-cleanser-60g.jpg?v=637189473416270000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-cerave-foaming-facial-cleanser/p",
+  popularity: 824
+ },
+ {
+  sku: "epoca-51254",
+  name: "L’oréal Profissionnel Resveratrol Shampoo Vitamino Color 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 113.05,
+  unit: "un",
+  category: "cabelos shampoo coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/455734/loreal-professionnel-resveratrol-serie-expert-vitamino-color-shampoo-300ml.jpg?v=637684525869330000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-profissionnel-resveratrol-serie-expert-vitamino-color-shampoo-300ml/p",
+  popularity: 825
+ },
+ {
+  sku: "epoca-51252",
+  name: "L'oréal Professionnel Resveratrol - Spray Leave In 10 in 1 Vitamino Color 190ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 233.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/455727/loreal-professionnel-revesratrol-serie-expert-vitamino-color-10in1-spray-leavein-190ml.jpg?v=637684507928600000",
+  productUrl: "https://www.epocacosmeticos.com.br/loreal-professionnel-resveratrol-serie-expert-vitamino-color-10-in-1-spray-leave-in/p",
+  popularity: 826
+ },
+ {
+  sku: "epoca-51249",
+  name: "Kérastase Masque Discipline Óleo Relax - Máscara Capilar 200ml",
+  brand: "Kerastase",
+  unitPrice: 352.91,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras rebeldes ou com frizz",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/371721/kerastase-masque-discipline-oleo-relax-mascara-capilar.jpg?v=637165106039500000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-masque-discipline-oleo-relax-mascara-capilar/p",
+  popularity: 827
+ },
+ {
+  sku: "epoca-50767",
+  name: "Loção Facial Hidratante Hada Labo Gokujyun Lotion 170ml",
+  brand: "Hada Labo",
+  unitPrice: 101.87,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/872732/locao-facial-hadalabo-shirojyun-whitening-premium-lotion.jpg?v=638857862434030000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-facial-hadalabo-gokujyun-lotion/p",
+  popularity: 828
+ },
+ {
+  sku: "epoca-3761",
+  name: "Avène Água Termal Spray 50ml",
+  brand: "Avène",
+  unitPrice: 98.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/724175/CARDS-AGUA-TERMAL-50ml-1-3282779035576--1-.jpg.jpg?v=638712571074930000",
+  productUrl: "https://www.epocacosmeticos.com.br/eau-thermale-avene-agua-termal-a/p",
+  popularity: 829
+ },
+ {
+  sku: "epoca-49262",
+  name: "NIVEA Creme Hidratante Lata 29g",
+  brand: "Nivea",
+  unitPrice: 15.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/744222/42277217_1.jpg.jpg?v=638742887189470000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-nivea-creme/p",
+  popularity: 830
+ },
+ {
+  sku: "epoca-49180",
+  name: "NIVEA Protetor Labial Med Repair FPS15 4,8g",
+  brand: "Nivea",
+  unitPrice: 25.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/872799/protetor-labial-nivea-med-repair-fps15--1-.jpg?v=638857875229370000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-labial-nivea-med-repair-fps15/p",
+  popularity: 831
+ },
+ {
+  sku: "epoca-49101",
+  name: "Widi Care Banho de Colágeno Shampoo 1L",
+  brand: "Widi Care",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cabelos shampoo quebradicos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/360408/1190.jpg?v=637073701608500000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-banho-de-colageno-shampoo/p",
+  popularity: 832
+ },
+ {
+  sku: "epoca-49026",
+  name: "Base Solar Compacta Refil Shiseido - Hydro BB Compact For Sports FPS50+ Dark",
+  brand: "Shiseido",
+  unitPrice: 367,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/359986/hydro-bb-dark.jpg?v=638953673734330000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-solar-compacta-shiseido-hydro-bb-compact-for-sports-fps-50/p",
+  popularity: 833
+ },
+ {
+  sku: "epoca-48449",
+  name: "Corretivo Líquido Catharine Hill - Fluid Concealer 3,6ml Light",
+  brand: "Catharine Hill",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/769816/7898600991735-1026_1---Corretivo-Liquido-Light.jpg.jpg?v=638761801173770000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-liquido-catharine-hill-fluid-concealer/p",
+  popularity: 834
+ },
+ {
+  sku: "epoca-47911",
+  name: "Leave-in Renovador de Pontas Antifrizz e Proteção Térmica Vichy Dercos Kera Solutions 50ml",
+  brand: "Vichy",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1345249/vichy-dercos-kera-solution-leave-in--3-.jpg?v=639015966999600000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-kera-solution-leave-in/p",
+  popularity: 835
+ },
+ {
+  sku: "epoca-47335",
+  name: "Protetor Solar Neostrata - Minesol Oil Control FPS 70 40g",
+  brand: "Neostrata",
+  unitPrice: 79.99,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/984470/protetor-solar-neostrata-minesol-oil-control-fps-70 -2-.jpg?v=638914049744800000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-neostrata-minesol-oil-control-fps-70/p",
+  popularity: 836
+ },
+ {
+  sku: "epoca-47161",
+  name: "Protetor Solar Skinceuticals - UV Oil Defense FPS 80 Tinted Universal",
+  brand: "Skinceuticals",
+  unitPrice: 161.89,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/526266/protetor-solar-skinceuticals-uv-oil-defense-fps-80-tinted-3--1-.jpg?v=638067303209600000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-skinceuticals-uv-oil-defense-fps-80-tinted/p",
+  popularity: 837
+ },
+ {
+  sku: "epoca-47066",
+  name: "Escova Interdental Edel White - S 0,60mm Kit",
+  brand: "Edel White",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cuidados pessoais higiene bucal escova de dentes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/524721/EscovaInterdentalEdelWhiteS060mm--2-.jpg?v=638061828930130000",
+  productUrl: "https://www.epocacosmeticos.com.br/escova-interdental-edel-white-s-0-60mm/p",
+  popularity: 838
+ },
+ {
+  sku: "epoca-46705",
+  name: "Keune 1922 Fortifying Tamanho Profissional - Shampoo 1L",
+  brand: "Keune",
+  unitPrice: 264.9,
+  unit: "un",
+  category: "cabelos shampoo fino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/350518/keune-1922-fortifying-tamanho-profissional-shampoo.jpg?v=637012375135570000",
+  productUrl: "https://www.epocacosmeticos.com.br/keune-1922-fortifying-tamanho-profissional-shampoo/p",
+  popularity: 839
+ },
+ {
+  sku: "epoca-46139",
+  name: "Sérum Facial Hidratante e Fortalecedor Bioderma Hydrabio 40ml",
+  brand: "Bioderma",
+  unitPrice: 148.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/476701/serum-concentrado-bioderma-hydrabio-serum--1-.jpg?v=637807171173370000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-concentrado-bioderma-hydrabio-serum/p",
+  popularity: 840
+ },
+ {
+  sku: "epoca-35037",
+  name: "Escova de Cabelo Tangle Teezer - The Wet Detangler 1 Un",
+  brand: "Tangle Teezer",
+  unitPrice: 121.9,
+  unit: "un",
+  category: "cabelos escovas e acessorios escovas e pentes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/741015/pink2--4-.jpg?v=638738385720500000",
+  productUrl: "https://www.epocacosmeticos.com.br/escova-de-cabelo-tangle-teezer-the-wet-detangler-pink/p",
+  popularity: 841
+ },
+ {
+  sku: "epoca-45513",
+  name: "Creme Hidratante Facial Anti-idade L'Oréal Paris Revitalift Hialurônico Cuidado Diurno FPS20 49g",
+  brand: "L'Oréal Paris",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/439421/Creme-Facial-Antiidade-L-Oreal-Paris-Revitalift-Hialuronico-Diurno-2-.jpg?v=637601842226900000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-loreal-paris-revitalift-hialuronico-diurno/p",
+  popularity: 842
+ },
+ {
+  sku: "epoca-45511",
+  name: "Creme para Olhos Hidratante Anti-idade L'Oréal Paris - Revitalift Hialurônico 15g",
+  brand: "L'Oréal Paris",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/439415/Creme-para-Olhos-Anti-idade-L-Oreal-Paris-Revitalift-Hialuronico-2.jpg?v=637601839535070000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-para-olhos-loreal-paris-revitalift-hialuronico/p",
+  popularity: 843
+ },
+ {
+  sku: "epoca-44727",
+  name: "Kérastase Blond Absolu Cicaplasme - Sérum Capilar 150ml",
+  brand: "Kerastase",
+  unitPrice: 284.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores serum",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495532/kerastase-blond-absolu-cicaplasme-serum-capilar--1-.jpg?v=637919619678770000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-blond-absolu-cicaplasme-serum-capilar/p",
+  popularity: 844
+ },
+ {
+  sku: "epoca-44512",
+  name: "Rejuvenescedor Facial La Roche-Posay - Redermic Retinol 30ml",
+  brand: "La Roche-Posay",
+  unitPrice: 406.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/340771/rejuvenescedor-facial-la-roche-posay-redermic-retinol.jpg?v=636959671605030000",
+  productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-facial-la-roche-posay-redermic-retinol/p",
+  popularity: 845
+ },
+ {
+  sku: "epoca-127445",
+  name: "Shampoo Nioxin System 3 300ml",
+  brand: "Nioxin",
+  unitPrice: 74.9,
+  unit: "un",
+  category: "cabelos shampoo fino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/824838/shampoo-nioxin-system-3--1-.jpg.jpg?v=638798171835170000",
+  productUrl: "https://www.epocacosmeticos.com.br/nioxin-scalp-therapy-sistema-3-shampoo-de-limpeza/p",
+  popularity: 846
+ },
+ {
+  sku: "epoca-43523",
+  name: "Luva Aplicadora de Autobronzeador Skelt - Tanning Mitt 1 Un",
+  brand: "Skelt",
+  unitPrice: 33.19,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/335526/luva-aplicadora-de-autobronzeador-skelt-tanning-mitt.jpg?v=636929258642970000",
+  productUrl: "https://www.epocacosmeticos.com.br/luva-aplicadora-de-autobronzeador-skelt-tanning-mitt/p",
+  popularity: 847
+ },
+ {
+  sku: "epoca-42768",
+  name: "Kit Ondulados Lola Cosmetics - Shampoo + Condicionador Kit",
+  brand: "Lola From Rio",
+  unitPrice: 56.81,
+  unit: "un",
+  category: "cabelos kits para cabelos cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/332427/kit8-3.jpg?v=636910256450200000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-ondulados-lola-cosmetics-shampoo-condicionador/p",
+  popularity: 848
+ },
+ {
+  sku: "epoca-42372",
+  name: "Máscara Lash Princess Efeito Cílios Postiços Essence Black",
+  brand: "Essence",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "maquiagem olhos mascara para cilios",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554234/mascara-lash-princess-efeito-cilios-posticos-essence--1-.jpg?v=638212195820030000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-lash-princess-efeito-cilios-posticos-essence/p",
+  popularity: 849
+ },
+ {
+  sku: "epoca-42237",
+  name: "Lápis de Olho de Longa Duração Essence 01",
+  brand: "Essence",
+  unitPrice: 21.9,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/564437/lapis-de-olho-de-longa-duracao-essence--1---1-.jpg?v=638276280955800000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-olho-de-longa-duracao-essence/p",
+  popularity: 850
+ },
+ {
+  sku: "epoca-41398",
+  name: "212 Vip Men Black Carolina Herrera - Body Spray 250ml",
+  brand: "Carolina Herrera",
+  unitPrice: 193.9,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/326606/5858.jpg?v=636875523978000000",
+  productUrl: "https://www.epocacosmeticos.com.br/212-vip-men-black-carolina-herrera-body-spray/p",
+  popularity: 851
+ },
+ {
+  sku: "epoca-40381",
+  name: "Shampoo de Nutrição e Brilho Kérastase Elixir Ultime Le Bain 250ml",
+  brand: "Kerastase",
+  unitPrice: 223.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495480/Bain-Elixir-Ultime-Kerastase---Shampoo-3--1-.jpg?v=637919613262630000",
+  productUrl: "https://www.epocacosmeticos.com.br/bain-elixir-ultime-kerastase-shampoo/p",
+  popularity: 852
+ },
+ {
+  sku: "epoca-39888",
+  name: "Batom Retro Matte M·A·C Dangerous",
+  brand: "MAC",
+  unitPrice: 149,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/322815/8493.jpg?v=637310146083230000",
+  productUrl: "https://www.epocacosmeticos.com.br/batom-retro-matte-m-a-c/p",
+  popularity: 853
+ },
+ {
+  sku: "epoca-37736",
+  name: "Óleo Capilar Alfaparf Milano Sublime Cristalli Liquid 15ml",
+  brand: "Alfaparf Milano",
+  unitPrice: 56.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores oleo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/592684/7899884219805--3-.jpg?v=638430232757330000",
+  productUrl: "https://www.epocacosmeticos.com.br/alfaparf-sublime-cristalli-liquid-oleo-capilar/p",
+  popularity: 854
+ },
+ {
+  sku: "epoca-127346",
+  name: "Condicionador Nioxin System 2 300ml",
+  brand: "Nioxin",
+  unitPrice: 116.9,
+  unit: "un",
+  category: "cabelos condicionador finos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/824673/condicionador-nioxin-system-2--1-.jpg.jpg?v=638798068587330000",
+  productUrl: "https://www.epocacosmeticos.com.br/nioxin-system-2-scalp-revitaliser-condicionador-/p",
+  popularity: 855
+ },
+ {
+  sku: "epoca-127349",
+  name: "Condicionador Nioxin System 4 300ml",
+  brand: "Nioxin",
+  unitPrice: 115.9,
+  unit: "un",
+  category: "cabelos condicionador finos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/825754/condicionador-nioxin-system-4--1-.jpg.jpg?v=638799024710270000",
+  productUrl: "https://www.epocacosmeticos.com.br/nioxin-system-4-scalp-revitaliser-condicionador-/p",
+  popularity: 856
+ },
+ {
+  sku: "epoca-36755",
+  name: "Wella Professionals Invigo Color Brilliance - Condicionador 1L",
+  brand: "Wella Professionals",
+  unitPrice: 182.9,
+  unit: "un",
+  category: "cabelos condicionador coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/746170/WellaProfessionalsInvigoColorBrilliancecondicionador--1-.jpg?v=638744681290400000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-invigo-color-brilliance-condicionador/p",
+  popularity: 857
+ },
+ {
+  sku: "epoca-36678",
+  name: "Máscara de Hidratação Lola Cosmetics Dream Cream 200g",
+  brand: "Lola From Rio",
+  unitPrice: 25.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1378715/7899572810000_1_9_1200_72_SRGB.png?v=639039295133500000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-dream-cream-masscara-de-tratamento-1/p",
+  popularity: 858
+ },
+ {
+  sku: "epoca-36675",
+  name: "Shampoo Lola Cosmetics Ondulados Lola Inc 500ml",
+  brand: "Lola From Rio",
+  unitPrice: 25.9,
+  unit: "un",
+  category: "cabelos shampoo cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1360569/7899572809981.jpg?v=639027887986630000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-ondulados-lola-inc-shampoo/p",
+  popularity: 859
+ },
+ {
+  sku: "epoca-36656",
+  name: "Condicionador Lola Cosmetics Ondulados Inc 500g",
+  brand: "Lola From Rio",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "cabelos condicionador cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1360439/7899572810024.jpg?v=639027851043330000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-ondulados-inc-condicionador/p",
+  popularity: 860
+ },
+ {
+  sku: "epoca-36653",
+  name: "Wella Professionals Cool Blond Recharge Invigo - Shampoo 1L",
+  brand: "Wella Professionals",
+  unitPrice: 152.9,
+  unit: "un",
+  category: "cabelos shampoo loiros e descoloridos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/746229/shampoo-cool-blond-1l--1-.jpg?v=638744687549170000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-cool-blond-recharge-invigo-shampoo/p",
+  popularity: 861
+ },
+ {
+  sku: "epoca-36624",
+  name: "Kit Wella Professionals Fusion - Shampoo + Condicionador - Tamanho Profissional Kit",
+  brand: "Wella Professionals",
+  unitPrice: 408.6,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/283425/kit1-3.jpg?v=638652395575100000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-fusion-tamanho-profissional-shampoo-condicionador/p",
+  popularity: 862
+ },
+ {
+  sku: "epoca-36416",
+  name: "Creme Hidratante Fisiogel A.I. 100g",
+  brand: "Fisiogel",
+  unitPrice: 69,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1339786/7896026171434_0.jpg?v=639011432725000000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-fisiogel-a-i/p",
+  popularity: 863
+ },
+ {
+  sku: "epoca-35736",
+  name: "Kérastase Resistance Bain Extentioniste - Shampoo 250ml",
+  brand: "Kerastase",
+  unitPrice: 224.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495855/Kerastase-Resistance-Bain-Extentioniste---Shampoo---250ml-3--1-.jpg?v=637921057564830000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-bain-extentioniste-shampoo/p",
+  popularity: 864
+ },
+ {
+  sku: "epoca-35661",
+  name: "Wella Professionals Fusion - Shampoo 250ml",
+  brand: "Wella Professionals",
+  unitPrice: 93.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/861273/wella-professionals-shampoo-fusion--1-.jpg?v=638863069477170000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-shampoo-fusion/p",
+  popularity: 865
+ },
+ {
+  sku: "epoca-35643",
+  name: "Sabonete Líquido Johnson’s Baby Recém Nascido 200ml",
+  brand: "Johnson's",
+  unitPrice: 24.14,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1521358/7891010579289_1.jpg?v=639080781283900000",
+  productUrl: "https://www.epocacosmeticos.com.br/sabonete-liquido-johnson-s-baby-recem-nascido/p",
+  popularity: 866
+ },
+ {
+  sku: "epoca-35079",
+  name: "Rejuvenescedor Facial Mantecorp Skincare Glycare Sérum 30ml",
+  brand: "Mantecorp Skincare",
+  unitPrice: 233.91,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/869412/GLYCARE-SERUM-FRASCO-30ml-1000x1000-7891142203762.jpg?v=638854156075430000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-mantecorp-skincare-glycare/p",
+  popularity: 867
+ },
+ {
+  sku: "epoca-35036",
+  name: "Escova de Cabelo Tangle Teezer - The Wet Detangler 1 Un",
+  brand: "Tangle Teezer",
+  unitPrice: 123.42,
+  unit: "un",
+  category: "cabelos escovas e acessorios escovas e pentes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/481808/Escova-de-Cabelo-Tangle-Teezer---The-Wet-Detangler--1-.jpg?v=637840990704500000",
+  productUrl: "https://www.epocacosmeticos.com.br/escova-de-cabelo-tangle-teezer-the-wet-detangler/p",
+  popularity: 868
+ },
+ {
+  sku: "epoca-34928",
+  name: "Eucerin Creme Facial Anti-Idade Firmador Noite Hyaluron-Filler Elasticity 50g",
+  brand: "Eucerin",
+  unitPrice: 318.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3134895/4005900324023_01.jpg?v=639247603597430000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-anti-rugas-eucerin-hyaluron-filler-elasticity-noite/p",
+  popularity: 869
+ },
+ {
+  sku: "epoca-34869",
+  name: "Rejuvenescedor para Contorno dos Olhos Vichy - Liftactiv Supreme 15ml",
+  brand: "Vichy",
+  unitPrice: 252.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/354918/liftactiv-supreme.jpg?v=637038208662570000",
+  productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-para-contorno-dos-olhos-vichy-liftactiv-supreme/p",
+  popularity: 870
+ },
+ {
+  sku: "epoca-34778",
+  name: "Widi Care Juba - Máscara Hidro-Nutriva 500g",
+  brand: "Widi Care",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/333923/3.jpg?v=636918810117200000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-juba-mascara-hidro-nutriva/p",
+  popularity: 871
+ },
+ {
+  sku: "epoca-34747",
+  name: "Protetor Solar Facial Antioleosidade FPS80 SkinCeuticals UV Oil Defense 40g",
+  brand: "Skinceuticals",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3132104/7899706162128-1.jpg?v=639247243919700000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-skinceuticals-uv-oil-defense-fps-80/p",
+  popularity: 872
+ },
+ {
+  sku: "epoca-34596",
+  name: "Creme Para Massagem Localizada Hidramais Profissional 1kg",
+  brand: "Hidramais",
+  unitPrice: 53.9,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/500528/CremeParaMassagemLocalizadaHidramaisProfissional--1-.jpg?v=638622860691370000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-para-massagem-localizada-hidramais-profissional/p",
+  popularity: 873
+ },
+ {
+  sku: "epoca-31361",
+  name: "Cera Nutritiva de Unha Granado Pink 7g",
+  brand: "Granado",
+  unitPrice: 25.9,
+  unit: "un",
+  category: "unhas tratamentos para unhas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/267809/4231-3.jpg?v=636664592399770000",
+  productUrl: "https://www.epocacosmeticos.com.br/cera-nutritiva-de-unha-granado-pink/p",
+  popularity: 874
+ },
+ {
+  sku: "epoca-31230",
+  name: "Ampola Capilar de Tratamento Fortalecedor Antiquebra Vichy Dercos Energizante 40ml",
+  brand: "Vichy",
+  unitPrice: 116.82,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/267361/super-ampola-capilar-vichy-dercos-energizante.jpg?v=636661510565000000",
+  productUrl: "https://www.epocacosmeticos.com.br/super-ampola-capilar-vichy-dercos-energizante/p",
+  popularity: 875
+ },
+ {
+  sku: "epoca-31055",
+  name: "Shampoo L'Oréal Professionnel Serie Expert NutriOil 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 101.9,
+  unit: "un",
+  category: "cabelos shampoo seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/508201/loreal-professionnel-nutrioil-shampoo-300ml--1-.jpg?v=637983361061400000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-oreal-professionnel-nutrifier-shampoo-300ml/p",
+  popularity: 876
+ },
+ {
+  sku: "epoca-30273",
+  name: "Creme Facial La Roche-Posay - Toleriane Sensitive 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 203.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/465622/3337875578486-5.jpg?v=637725888730400000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-prebiotico-la-roche-posay-toleriane-sensitive/p",
+  popularity: 877
+ },
+ {
+  sku: "epoca-29059",
+  name: "L'Oréal Professionnel Magnesium Silver - Shampoo 300ml",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 118.9,
+  unit: "un",
+  category: "cabelos shampoo loiros e descoloridos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/537980/l-oreal-professionnel-magnesium-silver-shampoo--1-.jpg?v=638131911316600000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-oreal-professionnel-magnesium-silver-shampoo/p",
+  popularity: 878
+ },
+ {
+  sku: "epoca-28983",
+  name: "Sérum Multi-Corretor Skinceuticals Discoloration Defense 30ml",
+  brand: "Skinceuticals",
+  unitPrice: 419.9,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/496051/discolorations-30ml--2-.jpg?v=637921233516170000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-multicorretivo-skinceuticals-discoloration-defense/p",
+  popularity: 879
+ },
+ {
+  sku: "epoca-53452",
+  name: "Shampoo Esfoliante Anticaspa e Oleosidade Vichy Dercos Micro Peel Ação Calmante 150ml",
+  brand: "Vichy",
+  unitPrice: 118.9,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1400357/Vichy-Dercos-Micro-Peel---Shampoo-Esfoliante--1-.jpg?v=639051297772930000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-micro-peel-shampoo-esfoliante/p",
+  popularity: 880
+ },
+ {
+  sku: "epoca-27931",
+  name: "Geléia Corporal Lola Cosmetics - Be(m)dita Ghee Praia 200ml",
+  brand: "Lola From Rio",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "cuidados pessoais utilidades diversas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1407329/7899572808724.jpg?v=639056605169230000",
+  productUrl: "https://www.epocacosmeticos.com.br/geleia-corporal-lola-cosmetics-bemdita-ghee-praia/p",
+  popularity: 881
+ },
+ {
+  sku: "epoca-27892",
+  name: "Spray Antifrizz Lola Cosmetics Liso Leve and Solto 200ml",
+  brand: "Lola From Rio",
+  unitPrice: 30.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores spray",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2306090/7899572808694.jpg?v=639161100872830000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-liso-leve-e-solto-spray-antifrizz/p",
+  popularity: 882
+ },
+ {
+  sku: "epoca-27174",
+  name: "Lenços Umedecidos Johnson’s Baby Recém-Nascido Sem Fragrância 48 Un",
+  brand: "Johnson's",
+  unitPrice: 18.9,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis lencos umedecidos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1384018/7891010568771_0.jpg?v=639041171230100000",
+  productUrl: "https://www.epocacosmeticos.com.br/toalhas-umedecidas-johnsons-baby-recem-nascido-/p",
+  popularity: 883
+ },
+ {
+  sku: "epoca-27087",
+  name: "Base Fortalecedora Dermage - Nail Force 1 Un",
+  brand: "Dermage",
+  unitPrice: 54.99,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/457601/dermage-nail-force-base-fortalecedora-2.jpg?v=637695533477030000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-fortalecedora-dermage-nail-force/p",
+  popularity: 884
+ },
+ {
+  sku: "epoca-27081",
+  name: "Hidratante Labial Mantecorp Skincare Epidrat FPS 30 5, 5g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 76.41,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante labial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/848073/7891142207678_EPIDRATLABIOS-STILL.png.jpg.jpg?v=638832503236700000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-labial-epidrat-labios-fps-30/p",
+  popularity: 885
+ },
+ {
+  sku: "epoca-27057",
+  name: "Widi Care Phytomanga - Shampoo Reparador 300ml",
+  brand: "Widi Care",
+  unitPrice: 33.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/333913/0322.jpg?v=636918805022070000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-phytomanga-shampoo-reparador/p",
+  popularity: 886
+ },
+ {
+  sku: "epoca-27056",
+  name: "Widi Care Phytomanga - Condicionador Reparador 300ml",
+  brand: "Widi Care",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "cabelos condicionador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/333911/0339.jpg?v=636918804315600000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-phytomanga-condicionador-reparador/p",
+  popularity: 887
+ },
+ {
+  sku: "epoca-25982",
+  name: "Amend Specialist Blonde - Máscara Matizadora 300g",
+  brand: "Amend",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras loiros e descoloridos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/238069/amend-specialist-blonde-mascara-matizadora.jpg?v=636427282915300000",
+  productUrl: "https://www.epocacosmeticos.com.br/amend-specialist-blonde-mascara-matizadora-/p",
+  popularity: 888
+ },
+ {
+  sku: "epoca-25946",
+  name: "Scandal Jean Paul Gaultier - Perfume Feminino Eau de Parfum 30ml",
+  brand: "Jean Paul Gaultier",
+  unitPrice: 438.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/767274/_8435415059084_0065176520_0.jpg.jpg?v=638760114131230000",
+  productUrl: "https://www.epocacosmeticos.com.br/scandal-jean-paul-gaultier-perfume-feminino-eau-de-parfum/p",
+  popularity: 889
+ },
+ {
+  sku: "epoca-25397",
+  name: "Máscara Capilar Lola Cosmetics Be(m)dita Ghee Papaya e Queratina Vegetal 350g",
+  brand: "Lola From Rio",
+  unitPrice: 56.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1345813/lola-reconstrucao-papaya-queratina.jpg?v=639016596322830000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics-bemdita-ghee-papaya-e-queratina-vegetal-mascara-de-reconstrucao/p",
+  popularity: 890
+ },
+ {
+  sku: "epoca-25356",
+  name: "Sérum Reconstrutor Kérastase Résistance Thérapiste 30ml",
+  brand: "Kerastase",
+  unitPrice: 236.76,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/495835/Kerastase-Resistance-Therapiste---Leave-In-2--1-.jpg?v=637921054789270000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-resistance-therapiste-leave-in/p",
+  popularity: 891
+ },
+ {
+  sku: "epoca-25313",
+  name: "Kérastase Fondant Densifique - Condicionador 200ml",
+  brand: "Kerastase",
+  unitPrice: 271.9,
+  unit: "un",
+  category: "cabelos condicionador finos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/615114/Densifique_3474636404391_1000x1000px-2-.jpg?v=638539749109400000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-fondant-densifique-condicionador/p",
+  popularity: 892
+ },
+ {
+  sku: "epoca-24306",
+  name: "Leave-in de Tratamento Reparação 10 em 1 L'Oréal Paris Elseve Cicatri Renov 50ml",
+  brand: "Elseve",
+  unitPrice: 20.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/519186/elseve-cicatri-renov-leave-in-50ml--2---1-.jpg?v=638034396689600000",
+  productUrl: "https://www.epocacosmeticos.com.br/elseve-cicatri-renov-leave-in/p",
+  popularity: 893
+ },
+ {
+  sku: "epoca-23779",
+  name: "Cola para Cílios First Kiss - I-Envy 48h Incolor 5g",
+  brand: "Kiss NY",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "maquiagem cilios posticos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/223724/cola-para-cilios-i-envy-48h-incolor.jpg?v=636289649280530000",
+  productUrl: "https://www.epocacosmeticos.com.br/cola-para-cilios-i-envy-48h-incolor/p",
+  popularity: 894
+ },
+ {
+  sku: "epoca-23613",
+  name: "Keune Vital Máscara de Nutrition 200ml",
+  brand: "Keune",
+  unitPrice: 182.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/467508/Keune-Vital-Nutrition-Mascara-de-Reparacao---200ml.jpg?v=637739662231800000",
+  productUrl: "https://www.epocacosmeticos.com.br/keune-vital-nutrition-mascara-de-reparacao/p",
+  popularity: 895
+ },
+ {
+  sku: "epoca-22612",
+  name: "Widi Care Sete Óleos - Máscara Nutritiva 1kg",
+  brand: "Widi Care",
+  unitPrice: 82.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/333874/123.jpg?v=636918795102370000",
+  productUrl: "https://www.epocacosmeticos.com.br/widi-care-sete-oleos-mascara-nutritiva/p",
+  popularity: 896
+ },
+ {
+  sku: "epoca-22071",
+  name: "Bepantol Derma Creme Hidratante Multirrestaurador - Pele Extrasseca 20g",
+  brand: "Bepantol",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/683735/bepantol-derma-creme-cuidado-para-areas-especificas--2-.jpg.jpg?v=638642547866930000",
+  productUrl: "https://www.epocacosmeticos.com.br/bepantol-derma-creme-cuidado-para-areas-especificas/p",
+  popularity: 897
+ },
+ {
+  sku: "epoca-22068",
+  name: "Bepantol Baby - Creme Preventivo de Assaduras 120g",
+  brand: "Bepantol",
+  unitPrice: 54,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis assaduras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/724667/7891106910248_0.jpg.jpg?v=638715036978870000",
+  productUrl: "https://www.epocacosmeticos.com.br/bepantol-baby-creme-preventivo-de-assaduras/p",
+  popularity: 898
+ },
+ {
+  sku: "epoca-21956",
+  name: "John Frieda Go Blonder Lightening Conditioner - Condicionador 245ml",
+  brand: "John Frieda",
+  unitPrice: 83.9,
+  unit: "un",
+  category: "cabelos condicionador loiros e descoloridos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/621541/JF_GB_Cond_717226224669.jpg?v=638586321453870000",
+  productUrl: "https://www.epocacosmeticos.com.br/go-blonder-lightening-conditioner-john-frieda-condicionador/p",
+  popularity: 899
+ },
+ {
+  sku: "epoca-21615",
+  name: "Lenço Removedor de Oleosidade Ricca 50 Un",
+  brand: "Ricca",
+  unitPrice: 9.9,
+  unit: "un",
+  category: "maquiagem remocao da maquiagem demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/599743/lenco-removedor-de-oleosidade-ricca--1-.jpg?v=638471592705900000",
+  productUrl: "https://www.epocacosmeticos.com.br/lenco-removedor-de-oleosidade-ricca/p",
+  popularity: 900
+ },
+ {
+  sku: "epoca-21393",
+  name: "Creme Anti-Idade Mantecorp Skincare Ivy C Olhos 15g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 205.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1651405/7891142201348_1.jpg?v=639099828873700000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-anti-idade-ivy-c-rejuvenescedor-para-contorno-dos-olhos/p",
+  popularity: 901
+ },
+ {
+  sku: "epoca-19019",
+  name: "Hidratante Corporal Bioderma Atoderm Intensive Baume 200ml",
+  brand: "Bioderma",
+  unitPrice: 134.9,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/479567/bioderma-atoderm-intensive--baume.jpg?v=637825133998600000",
+  productUrl: "https://www.epocacosmeticos.com.br/atoderm-intensive-baume-bioderma-creme-de-tratamento/p",
+  popularity: 902
+ },
+ {
+  sku: "epoca-18101",
+  name: "Água Micelar Antioleosidade Bioderma Sébium H2O 100ml",
+  brand: "Bioderma",
+  unitPrice: 63.9,
+  unit: "un",
+  category: "skincare agua micelar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/476853/sensibio-h2o-solucao-micellare-nettoyante-purifiante-bioderma-demaquilante-100ml--1-.jpg?v=637807831054530000",
+  productUrl: "https://www.epocacosmeticos.com.br/sebium-h2o-agua-micelar-para-pele-oleosa-bioderma/p",
+  popularity: 903
+ },
+ {
+  sku: "epoca-17205",
+  name: "Traitement Anti-Transpirant 48h Vichy - Desodorante Roll On 50ml",
+  brand: "Vichy",
+  unitPrice: 183.36,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/202566/traitement-anti-transpirant-48h-vichy-desodorante-roll-on.jpg?v=635894883495370000",
+  productUrl: "https://www.epocacosmeticos.com.br/traitement-anti-transpirant-48h-vichy-desodorante-roll-on/p",
+  popularity: 904
+ },
+ {
+  sku: "epoca-16557",
+  name: "Cicaplast Lábios La Roche-Posay - Reparador Labial 7,5ml",
+  brand: "La Roche-Posay",
+  unitPrice: 81.93,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/614163/Cicaplast-Labios-La-Roche-Posay---Reparador-Labial---75ml.jpg?v=638536218920170000",
+  productUrl: "https://www.epocacosmeticos.com.br/cicaplast-labios-la-roche-posay-reparador-labial/p",
+  popularity: 905
+ },
+ {
+  sku: "epoca-16435",
+  name: "Olympéa Rabanne - Perfume Feminino - Eau de Parfum 80ml",
+  brand: "Rabanne",
+  unitPrice: 825.55,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/334833/olympea-eau-de-parfum-paco-rabanne-perfume-feminino-80ml.jpg?v=636924838817470000",
+  productUrl: "https://www.epocacosmeticos.com.br/olympea-eau-de-parfum-paco-rabanne-perfume-feminino/p",
+  popularity: 906
+ },
+ {
+  sku: "epoca-16213",
+  name: "Deva Curl Creme Estilizador Styling Cream - Modelador 250g",
+  brand: "Deva Curl",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores balsamo e creme",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/610519/Styling-Cream-250g_7898536549291_A.jpg?v=638515619804830000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-estilzador-styling-cream-deva-curl-modelador-para-os-cabelos/p",
+  popularity: 907
+ },
+ {
+  sku: "epoca-16193",
+  name: "Deva Curl Shampoo Low-Poo - Shampoo Higienizador Com Pouca Espuma 1L",
+  brand: "Deva Curl",
+  unitPrice: 98.9,
+  unit: "un",
+  category: "cabelos shampoo cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/610573/Low-Poo-Original-1LT_7896000711731_A.jpg?v=638515718170670000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-low-poo-deva-curl-shampoo-hidratante/p",
+  popularity: 908
+ },
+ {
+  sku: "epoca-15386",
+  name: "Espuma de Limpeza Facial para Pele Seca ou Sensibilizada Dermotivin Soft 130ml",
+  brand: "Dermotivin",
+  unitPrice: 68.08,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3019756/7897930762176_01.jpg?v=639232798858500000",
+  productUrl: "https://www.epocacosmeticos.com.br/dermotivin-soft-espuma-de-limpeza-limpeza-facial-para-pele-seca-ou-sensivel/p",
+  popularity: 909
+ },
+ {
+  sku: "epoca-15347",
+  name: "Cetaphil Creme Hidratante 453g",
+  brand: "Cetaphil",
+  unitPrice: 114,
+  unit: "un",
+  category: "skincare cuidados corporais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1344146/cetaphil-creme-hidratante-pele-extremamente-seca-creme-hidratante-corporal -2-.jpg?v=639015168647430000",
+  productUrl: "https://www.epocacosmeticos.com.br/cetaphil-creme-hidratante-pele-extremamente-seca-creme-hidratante-corporal/p",
+  popularity: 910
+ },
+ {
+  sku: "epoca-14827",
+  name: "Leave In Spray Lola Cosmetics Rapunzel Milk 250ml",
+  brand: "Lola From Rio",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1336165/7899572802296--1-.jpg?v=639009885535000000",
+  productUrl: "https://www.epocacosmeticos.com.br/rapunzel-milk-spray-lola-cosmetics-leave-in/p",
+  popularity: 911
+ },
+ {
+  sku: "epoca-14328",
+  name: "Love Story Chloé - Perfume Feminino - Eau de Parfum 30ml",
+  brand: "Chloé",
+  unitPrice: 475.15,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/336564/j0.jpg?v=636935232616900000",
+  productUrl: "https://www.epocacosmeticos.com.br/love-story-eau-de-parfum-chloe-perfume-feminino/p",
+  popularity: 912
+ },
+ {
+  sku: "epoca-13779",
+  name: "Creme Alisante Lola Cosmetics Vintage Girls 100g",
+  brand: "Lola From Rio",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "cabelos escova progressiva e alisamento",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1334319/7899572803095.jpg?v=639009739133270000",
+  productUrl: "https://www.epocacosmeticos.com.br/vintage-girls-lola-cosmetics-creme-alisante/p",
+  popularity: 913
+ },
+ {
+  sku: "epoca-31112",
+  name: "Creme para Pentear Lola Cosmetics Milagre 450g",
+  brand: "Lola From Rio",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear cacheado e crespo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1346334/7899572809844.jpg?v=639016821530930000",
+  productUrl: "https://www.epocacosmeticos.com.br/milagre-lola-cosmetics-creme-para-pentear/p",
+  popularity: 914
+ },
+ {
+  sku: "epoca-13721",
+  name: "Máscara Capilar Lola Cosmetics Dream Cream 450g",
+  brand: "Lola From Rio",
+  unitPrice: 46.35,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1331835/7899572802784_1_3_1200_72_SRGB.jpg?v=639009098691300000",
+  productUrl: "https://www.epocacosmeticos.com.br/dream-cream-lola-cosmetics-mascara-para-cabelos/p",
+  popularity: 915
+ },
+ {
+  sku: "epoca-12977",
+  name: "Cuté Woman La Rive - Perfume Feminino - Eau de Parfum 100ml",
+  brand: "La Rive",
+  unitPrice: 87.46,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375306/cute-woman-eau-de-parfum-la-rive-perfume-feminino -1-.jpg?v=639038249806430000",
+  productUrl: "https://www.epocacosmeticos.com.br/cute-woman-eau-de-parfum-la-rive-perfume-feminino/p",
+  popularity: 916
+ },
+ {
+  sku: "epoca-11144",
+  name: "Ideal Finish Rollon Vichy - Desodorante Feminino 50ml",
+  brand: "Vichy",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/180408/ideal-finish-desodorante-vishy.jpg?v=635446625501470000",
+  productUrl: "https://www.epocacosmeticos.com.br/ideal-finish-rollon-vichy-desodorante-feminino/p",
+  popularity: 917
+ },
+ {
+  sku: "epoca-11123",
+  name: "Neutrogena Deep Clean Esfoliante Energizing 100g",
+  brand: "Neutrogena",
+  unitPrice: 37.7,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1375265/deep-clean-energizing-neutrogena-esfoliante-facial--1-.jpg?v=639238751209230000",
+  productUrl: "https://www.epocacosmeticos.com.br/deep-clean-energizing-neutrogena-esfoliante-facial/p",
+  popularity: 918
+ },
+ {
+  sku: "epoca-10695",
+  name: "Creme Hidratante Facial Anti-idade L'Oréal Paris Revitalift Laser X3 Diurno 50ml",
+  brand: "L'Oréal Paris",
+  unitPrice: 114.96,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2599219/7898587766876--1---1-.jpg?v=639186188740930000",
+  productUrl: "https://www.epocacosmeticos.com.br/revitalift-laser-x3-l-oreal-paris-rejuvenescedor-facial2/p",
+  popularity: 919
+ },
+ {
+  sku: "epoca-9697",
+  name: "Si Giorgio Armani - Perfume Feminino - Eau de Parfum 30ml",
+  brand: "Giorgio Armani",
+  unitPrice: 509.15,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1361387/si-eau-de-parfum-giorgio-armani-perfume-feminino--1-.jpg?v=639029735851700000",
+  productUrl: "https://www.epocacosmeticos.com.br/si-eau-de-parfum-giorgio-armani-perfume-feminino/p",
+  popularity: 920
+ },
+ {
+  sku: "epoca-56002",
+  name: "Joico Moisture Recovery Treatment Balm - Tratamento Hidratante 250ml",
+  brand: "Joico",
+  unitPrice: 243.05,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/405775/joico-moisture-recovery-treatment-hidratante-250ml.jpg?v=637376977275230000",
+  productUrl: "https://www.epocacosmeticos.com.br/moisture-recovery-treatment-balm-joico-tratamento-hidratante/p",
+  popularity: 921
+ },
+ {
+  sku: "epoca-7800",
+  name: "Drip Dry O.P.I - Tratamento Óleo Secante 9ml",
+  brand: "OPI",
+  unitPrice: 51.2,
+  unit: "un",
+  category: "unhas oleo secante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/546404/drip-dry-o-p-i-oleo-secante--1-.jpg?v=638180406235400000",
+  productUrl: "https://www.epocacosmeticos.com.br/drip-dry-o-p-i-oleo-secante/p",
+  popularity: 922
+ },
+ {
+  sku: "epoca-7711",
+  name: "Perfume Náutica Voyage Masculino Eau de Toilette 50 ml",
+  brand: "Náutica",
+  unitPrice: 121.2,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/697847/nautica-voyage-eau-de-toilette-nautica-perfume-masculino--3-.jpg.jpg?v=638665164081200000",
+  productUrl: "https://www.epocacosmeticos.com.br/nautica-voyage-eau-de-toilette-nautica-perfume-masculino/p",
+  popularity: 923
+ },
+ {
+  sku: "epoca-7705",
+  name: "Crystal Noir Versace - Perfume Feminino - Eau de Toilette 30ml",
+  brand: "Versace",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/336118/versace.jpg?v=636933722862800000",
+  productUrl: "https://www.epocacosmeticos.com.br/crystal-noir-eau-de-toilette-versace-perfume-feminino/p",
+  popularity: 924
+ },
+ {
+  sku: "epoca-7575",
+  name: "Super Billion Hair - Disfarce para Calvície 25g Preto",
+  brand: "Super Billion Hair",
+  unitPrice: 150.9,
+  unit: "un",
+  category: "cabelos coloracao disfarce de calvicie",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/229145/Super-Billion-Hair-Fibra-Billion-Hair---Maquiagem-para-Calvicie-25g.jpg?v=636343517495500000",
+  productUrl: "https://www.epocacosmeticos.com.br/super-billion-hair-fibra-billion-hair-disfarce-para-calvicie/p",
+  popularity: 925
+ },
+ {
+  sku: "epoca-6966",
+  name: "Versace Eros Versace - Perfume Masculino - Eau de Toilette 30ml",
+  brand: "Versace",
+  unitPrice: 337.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/170132/versace-eros-edt-versace.jpg?v=638513769189030000",
+  productUrl: "https://www.epocacosmeticos.com.br/versace-eros-eau-de-toilette-versace-perfume-masculino/p",
+  popularity: 926
+ },
+ {
+  sku: "epoca-6927",
+  name: "The One Dolce&Gabbana - Perfume Feminino - Eau de Parfum 30ml",
+  brand: "Dolce&Gabbana",
+  unitPrice: 586.42,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/719100/8057971180479_1.jpg.jpg?v=638699738256800000",
+  productUrl: "https://www.epocacosmeticos.com.br/the-one-eau-de-parfum-dolce-gabbana-perfume-feminino/p",
+  popularity: 927
+ },
+ {
+  sku: "epoca-6765",
+  name: "L'eau D'issey Issey Miyake - Perfume Feminino - Eau de Toilette 50ml",
+  brand: "Issey Miyake",
+  unitPrice: 564.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2805159/leau-dissey-issey-miyake-edt-50ml--3-.gif?v=639207568697200000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-eau-d-issey-eau-de-toilette-issey-miyake-perfume-feminino/p",
+  popularity: 928
+ },
+ {
+  sku: "epoca-3838",
+  name: "Effaclar Mat La Roche-Posay - Hidratante Facial 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 237,
+  unit: "un",
+  category: "skincare hidratacao e tratamento hidratante facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/160312/effaclar-mat-40ml-la-roche-posay.jpg?v=635186629395000000",
+  productUrl: "https://www.epocacosmeticos.com.br/effaclar-mat-la-roche-posay-hidratante-facial/p",
+  popularity: 929
+ },
+ {
+  sku: "epoca-3834",
+  name: "Gel de Limpeza Facial Suave Pele Oleosa e Sensível La Roche-Posay Effaclar Alta Tolerância 150g",
+  brand: "La Roche-Posay",
+  unitPrice: 85.81,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619244/Gel-de-Limpeza-Facial-La-Roche-Posay---Effaclar-Alta-Tolerancia---150g--1-.jpg?v=638573602973570000",
+  productUrl: "https://www.epocacosmeticos.com.br/effaclar-gel-la-roche-posay-limpador-facial/p",
+  popularity: 930
+ },
+ {
+  sku: "epoca-3565",
+  name: "Desodorante 48H Vichy - Desodorante Roll-On para Peles Muito Sensíveis ou Depiladas 50ml",
+  brand: "Vichy",
+  unitPrice: 172.9,
+  unit: "un",
+  category: "skincare desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1689234/3337871320324--01-.jpg?v=639105001542400000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-48h-vichy-desodorante-roll-on-para-peles-muito-sensiveis-ou-depiladas/p",
+  popularity: 931
+ },
+ {
+  sku: "epoca-3220",
+  name: "CH Men Carolina Herrera - Perfume Masculino - Eau de Toilette 50ml",
+  brand: "Carolina Herrera",
+  unitPrice: 597.55,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/264313/ch-men2.jpg?v=636631787138700000",
+  productUrl: "https://www.epocacosmeticos.com.br/ch-men-eau-de-toilette-carolina-herrera-perfume-masculino/p",
+  popularity: 932
+ },
+ {
+  sku: "epoca-3066",
+  name: "Boss Bottled Hugo Boss - Perfume Masculino - Eau de Toilette 30ml",
+  brand: "Hugo Boss",
+  unitPrice: 270.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/619845/Boss-Eau-De-Toilette-Hugo-Boss---Perfume-Masculino-50-ml-1.jpg?v=638576100309500000",
+  productUrl: "https://www.epocacosmeticos.com.br/boss-bottled-eau-de-toilette-hugo-boss-perfume-masculino/p",
+  popularity: 933
+ },
+ {
+  sku: "epoca-2273",
+  name: "Tommy Hilfiger Perfume Masculino Eau de Toilette 30ml",
+  brand: "Tommy Hilfiger",
+  unitPrice: 166.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1387173/22548055373.1-7640496670146.jpg?v=639041760220370000",
+  productUrl: "https://www.epocacosmeticos.com.br/tommy-cologne-eau-de-toilette-tommy-hilfiger-perfume-masculino/p",
+  popularity: 934
+ },
+ {
+  sku: "epoca-1940",
+  name: "John Frieda Sheer Blonde Highlight Activating Enhancing - Shampoo 250ml",
+  brand: "John Frieda",
+  unitPrice: 74.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores spray",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/621545/JF_Highlight-Activating_Shamp_717226505119.jpg?v=638586323462370000",
+  productUrl: "https://www.epocacosmeticos.com.br/sheer-blonde-highlight-activating-enhancing-john-frieda-shampoo-para-cabelos-louros/p",
+  popularity: 935
+ },
+ {
+  sku: "epoca-1724",
+  name: "Rapidry Topcoat O.P.I - Base Finalizadora para as Unhas 15ml",
+  brand: "OPI",
+  unitPrice: 46.45,
+  unit: "un",
+  category: "unhas base para unhas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/168866/rapidry-topcoat-o-p-i.jpg?v=635187394090600000",
+  productUrl: "https://www.epocacosmeticos.com.br/rapidry-topcoat-o-p-i-base-finalizadora-para-as-unhas/p",
+  popularity: 936
+ },
+ {
+  sku: "epoca-1499",
+  name: "Tratamento K-Pro Ph Balancer 230g",
+  brand: "KPro",
+  unitPrice: 100.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras quimicamente tratados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/179408/k.-pro-profissional-ph-balancer-230gr.jpg?v=635418964538600000",
+  productUrl: "https://www.epocacosmeticos.com.br/ph-balancer-k-pro-tratamento-para-cabelos-quimicamente-tratados/p",
+  popularity: 937
+ },
+ {
+  sku: "epoca-1251",
+  name: "Narciso Rodriguez For Her Narciso Rodriguez - Perfume Feminino - Eau de Parfum 100ml",
+  brand: "Narciso Rodriguez",
+  unitPrice: 956.25,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/582330/narciso-rodriguez-for-her-eau-de-parfum-narciso-rodriguez-perfume-feminino.jpg?v=638366956887900000",
+  productUrl: "https://www.epocacosmeticos.com.br/narciso-rodriguez-for-her-eau-de-parfum-narciso-rodriguez-perfume-feminino/p",
+  popularity: 938
+ },
+ {
+  sku: "epoca-514",
+  name: "Hypnotic Poison Dior - Perfume Feminino - Eau de Toilette 50ml",
+  brand: "Dior",
+  unitPrice: 710.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/716139/1.-3348900378551-3348900378575-3348900425309.jpg.jpg?v=638690020272100000",
+  productUrl: "https://www.epocacosmeticos.com.br/hypnotic-poison-eau-de-toilette-dior-perfume-feminino/p",
+  popularity: 939
+ },
+ {
+  sku: "epoca-78034",
+  name: "Cadiveu Glamour - Shampoo 250ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "cabelos shampoo normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554776/glamour-rubi-cadiveu-shampoo-para-cabelos-quimicamente-tratados--1-.jpg?v=638215850952000000",
+  productUrl: "https://www.epocacosmeticos.com.br/glamour-rubi-cadiveu-shampoo-para-cabelos-quimicamente-tratados/p",
+  popularity: 940
+ },
+ {
+  sku: "epoca-78042",
+  name: "Fluido Precioso Cadiveu Glamour 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 46.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores protetor termico",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/554823/glamour-fluido-precioso-cadiveu-fluido-iluminador-para-os-cabelos--1-.jpg?v=638215920564670000",
+  productUrl: "https://www.epocacosmeticos.com.br/glamour-fluido-precioso-cadiveu-fluido-iluminador-para-os-cabelos/p",
+  popularity: 941
+ },
+ {
+  sku: "epoca-205",
+  name: "Perfume Gabriela Sabatini Feminino Eau de Toilette 30ml",
+  brand: "Gabriela Sabatini",
+  unitPrice: 102.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/946830/8005610325538_1.jpg?v=638898259621830000",
+  productUrl: "https://www.epocacosmeticos.com.br/gabriela-sabatini-eau-de-toilette-gabriela-sabatini-perfume-feminino/p",
+  popularity: 942
+ },
+ {
+  sku: "epoca-304667",
+  name: "L'Oréal Paris Elseve Collagen Lifter Leave-in Injeção de Massa 100ml (7908966529333)",
+  brand: "Elseve",
+  unitPrice: 33.05,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3239067/17885305844331.jpg?v=639258744742400000",
+  productUrl: "https://www.epocacosmeticos.com.br/l-oreal-paris-elseve-collagen-lifter-leave-in-injecao-de-massa-100ml--7908966529333--293274/p",
+  popularity: 943
+ },
+ {
+  sku: "epoca-293943",
+  name: "Zencial Envy Skin GHK-CU 30ml",
+  brand: "Zencial Cosméticos",
+  unitPrice: 147.9,
+  unit: "un",
+  category: "tratamentos face",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3112254/17876862022049.jpg?v=639244882525700000",
+  productUrl: "https://www.epocacosmeticos.com.br/zencial-envy-skin-ghk-cu-30ml-282860/p",
+  popularity: 944
+ },
+ {
+  sku: "epoca-293801",
+  name: "Vult Pó Compacto Matte Tradicional Ultra Fino Cor V430 9g (7899852022659)",
+  brand: "Vult",
+  unitPrice: 19.4,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3110927/17885660505883.jpg?v=639244816084800000",
+  productUrl: "https://www.epocacosmeticos.com.br/vult-po-compacto-matte-tradicional-ultra-fino-cor-v430-9g--7899852022659--282726/p",
+  popularity: 945
+ },
+ {
+  sku: "epoca-292197",
+  name: "Olympea Blossom Paco Rabanne Eau De Parfum - Perfume Feminino 50Ml",
+  brand: "Rabanne",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3084933/17878286167881.jpg?v=639241513805530000",
+  productUrl: "https://www.epocacosmeticos.com.br/olympea-blossom-paco-rabanne-eau-de-parfum---perfume-feminino-50ml-281114/p",
+  popularity: 946
+ },
+ {
+  sku: "epoca-286835",
+  name: "Shampoo Pant Antiqueda 200ml",
+  brand: "Ache",
+  unitPrice: 65.1,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2981414/17861020131777.jpg?v=639228357181170000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-pant-antiqueda-200ml-275766/p",
+  popularity: 947
+ },
+ {
+  sku: "epoca-282831",
+  name: "Organza Gel 30g 10 Aplicadores",
+  brand: "Cristalia",
+  unitPrice: 52.93,
+  unit: "un",
+  category: "cuidados pessoais cuidados com o corpo cuidados faciais",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2965330/17799654078254.jpg?v=639227628729070000",
+  productUrl: "https://www.epocacosmeticos.com.br/organza-gel-30g-10-aplicadores-271752/p",
+  popularity: 948
+ },
+ {
+  sku: "epoca-281517",
+  name: "Kit Shampoo e Condicionador Granado Lavanda 180ml",
+  brand: "Granado",
+  unitPrice: 62.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2928246/17858135215575.jpg?v=639222372569630000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-shampoo-e-condicionador-granado-lavanda-180ml-270509/p",
+  popularity: 949
+ },
+ {
+  sku: "epoca-278438",
+  name: "Numbuzim No.9 Nad+ Retinol Volumetox - Creme para os Olhos 10ml 10ml",
+  brand: "numbuzin",
+  unitPrice: 253,
+  unit: "un",
+  category: "cuidados pessoais pos-banho hidratante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2884031/17768439681781.jpg?v=639216997558270000",
+  productUrl: "https://www.epocacosmeticos.com.br/numbuzim-no-9-nad--retinol-volumetox---creme-para-os-olhos-10ml-267524/p",
+  popularity: 950
+ },
+ {
+  sku: "epoca-277011",
+  name: "Condicionador Sebastian Potion 9 200ml",
+  brand: "Sebastian Professional",
+  unitPrice: 167.9,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3014136/4068359105957_1.jpg?v=639231980023600000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-sebastian-potion-9-200ml/p",
+  popularity: 951
+ },
+ {
+  sku: "epoca-276988",
+  name: "Pó Iluminador Compacto Guerlain Météorites 8.5g 01 Translucent",
+  brand: "Guerlain",
+  unitPrice: 489,
+  unit: "un",
+  category: "maquiagem face po compacto",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3060758/3346470624016.jpg?v=639238731752900000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-iluminador-compacto-guerlain-meteorites/p",
+  popularity: 952
+ },
+ {
+  sku: "epoca-276740",
+  name: "Shampoo Ultra Reparação Vichy Dercos Collagen Repair 17 - 200G",
+  brand: "Vichy",
+  unitPrice: 138.17,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2840050/17847394763041.jpg?v=639211247684200000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17---200g-265831/p",
+  popularity: 953
+ },
+ {
+  sku: "epoca-276240",
+  name: "Dercos Condicionador Kera Solutions - 200Ml",
+  brand: "Vichy",
+  unitPrice: 138.17,
+  unit: "un",
+  category: "cabelos condicionador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2838130/17853511407019.jpg?v=639211246168400000",
+  productUrl: "https://www.epocacosmeticos.com.br/dercos-condicionador-kera-solutions----200ml-265330/p",
+  popularity: 954
+ },
+ {
+  sku: "epoca-275802",
+  name: "Removedor de Esmalte Acetona Beira Alta 90ml",
+  brand: "Beira Alta",
+  unitPrice: 5.09,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2836476/17854996803573.jpg?v=639211210043570000",
+  productUrl: "https://www.epocacosmeticos.com.br/removedor-de-esmalte-acetona-beira-alta-90ml-264888/p",
+  popularity: 955
+ },
+ {
+  sku: "epoca-275562",
+  name: "Carolina Herrera 212 VIP Black Eau de Parfum - Perfume Masculino 200ml",
+  brand: "Carolina Herrera",
+  unitPrice: 651.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2835280/17854366615192.jpg?v=639211176968930000",
+  productUrl: "https://www.epocacosmeticos.com.br/carolina-herrera-212-vip-black-eau-de-parfum---perfume-masculino-200ml-264646/p",
+  popularity: 956
+ },
+ {
+  sku: "epoca-273652",
+  name: "Lápis de Olho MAC Kajal Excess Bark",
+  brand: "MAC",
+  unitPrice: 188.9,
+  unit: "un",
+  category: "maquiagem olhos lapis e kajal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2827581/773602792184_1.jpg?v=639210341834000000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-olho-mac-kajal-excess/p",
+  popularity: 957
+ },
+ {
+  sku: "epoca-273363",
+  name: "Perfume La Vie Est Belle L'Elixir Very Cherry Lancôme Feminino Eau de Parfum 50ml",
+  brand: "Lancôme",
+  unitPrice: 704.25,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3120721/perfume-la-vie-est-belle-lelixir-very-cherry-lancome-feminino-eau-de-parfum--1-.jpg?v=639245677889770000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-vie-est-belle-lelixir-very-cherry-lancome-feminino-eau-de-parfum/p",
+  popularity: 958
+ },
+ {
+  sku: "epoca-273215",
+  name: "Condicionador Eudora Siàge Ultra Bond Reset 200ml",
+  brand: "Eudora Siàge",
+  unitPrice: 41.9,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2964445/7891033896790_Imagem-2_1000x1000.jpg?v=639227615724200000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-eudora-siage-ultra-bond-reset/p",
+  popularity: 959
+ },
+ {
+  sku: "epoca-268619",
+  name: "Dercos Condicionador Kera Solutions - 200Ml",
+  brand: "Vichy",
+  unitPrice: 146.15,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2720568/17837051241626.jpg?v=639198171919830000",
+  productUrl: "https://www.epocacosmeticos.com.br/dercos-condicionador-kera-solutions----200ml-257698/p",
+  popularity: 960
+ },
+ {
+  sku: "epoca-267432",
+  name: "Primer Dior Forever Velvet Veil Matte 35ml",
+  brand: "Dior",
+  unitPrice: 410,
+  unit: "un",
+  category: "maquiagem primer e finalizador controle do brilho",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2784349/3348901739733_1.jpg?v=639205046953370000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-dior-forever-velvet-veil-matte/p",
+  popularity: 961
+ },
+ {
+  sku: "epoca-267431",
+  name: "Primer Dior Forever Skin Veil 35ml",
+  brand: "Dior",
+  unitPrice: 410,
+  unit: "un",
+  category: "maquiagem primer e finalizador aperfeicoador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2784329/3348901739627_1.jpg?v=639205033368330000",
+  productUrl: "https://www.epocacosmeticos.com.br/primer-dior-forever-primer-glow/p",
+  popularity: 962
+ },
+ {
+  sku: "epoca-267216",
+  name: "Perfume La Vie Est Belle Lancôme EDP Feminino 100ml",
+  brand: "Lancôme",
+  unitPrice: 644.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2659581/17648568223835.jpg?v=639191363412170000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-la-vie-est-belle-lancome-edp-feminino-100ml-256202/p",
+  popularity: 963
+ },
+ {
+  sku: "epoca-267173",
+  name: "Perfume Animale Gold Perfume Masculino 100Ml",
+  brand: "Animale",
+  unitPrice: 229.99,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2658017/17829220500257.jpg?v=639191190900370000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-animale-gold-perfume-masculino-100ml-256159/p",
+  popularity: 964
+ },
+ {
+  sku: "epoca-265391",
+  name: "Neovadiol Creme Nutritivo Menopausa Vichy 50G",
+  brand: "Vichy",
+  unitPrice: 350.9,
+  unit: "un",
+  category: "skincare limpeza de pele",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2652616/17831059297599.jpg?v=639191099525330000",
+  productUrl: "https://www.epocacosmeticos.com.br/neovadiol-creme-nutritivo-menopausa-vichy-50g-254327/p",
+  popularity: 965
+ },
+ {
+  sku: "epoca-265286",
+  name: "Creme Facial Rejuvenescedor Esthederm Intensive NAD+ 50ml",
+  brand: "Esthederm",
+  unitPrice: 568.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2664123/3461020017800_4.jpg?v=639192039700900000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-facial-rejuvenescedor-esthederm-intensive-nad/p",
+  popularity: 966
+ },
+ {
+  sku: "epoca-265285",
+  name: "Sérum Esthederm Intensive NAD+ 30ml",
+  brand: "Esthederm",
+  unitPrice: 559.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2664043/3461020017831_4.jpg?v=639192028107700000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-avancado-anti-idade-para-o-contorno-dos-olhos-esthederm-intensive-nad/p",
+  popularity: 967
+ },
+ {
+  sku: "epoca-265257",
+  name: "Perfume Idôle Peach N Roses Lâncome Feminino Eau De Parfum 25ml",
+  brand: "Lancôme",
+  unitPrice: 381.75,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3086912/3614274509779.1.jpg?v=639241613491230000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-idole-peach-n-roses-lancome-feminino-eua-de-parfum/p",
+  popularity: 968
+ },
+ {
+  sku: "epoca-265256",
+  name: "Gel Creme Facial La Roche-Posay Effaclar A.Z. 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 285.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2766577/gel-creme-facial-la-roche-posay-effaclar-a-z.jpg?v=639202352740000000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-creme-facial-la-roche-posay-effaclar-a-z/p",
+  popularity: 969
+ },
+ {
+  sku: "epoca-265254",
+  name: "Creme Antimanchas e Antirrugas Área dos Olhos La Roche-Posay Mela B3 Olhos 15ml",
+  brand: "La Roche-Posay",
+  unitPrice: 281.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2663915/creme-antimanchas-e-antirrugas-area-dos-olhos-la-roche-posay-mela-b3-olhos.jpg?v=639192006261400000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-antimanchas-e-antirrugas-area-dos-olhos-la-roche-posay-mela-b3-olhos/p",
+  popularity: 970
+ },
+ {
+  sku: "epoca-262464",
+  name: "Shampoo Ultra Reparação Vichy Dercos Collagen Repair 17 - 200G",
+  brand: "Vichy",
+  unitPrice: 142.84,
+  unit: "un",
+  category: "skincare couro cabeludo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2576117/17824975301318.jpg?v=639184719060470000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17---200g-251380/p",
+  popularity: 971
+ },
+ {
+  sku: "epoca-261014",
+  name: "Spray Secante Para Esmalte Inoar Speed Dry 400ml",
+  brand: "Inoar",
+  unitPrice: 26.9,
+  unit: "un",
+  category: "unhas oleo secante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2557808/17824163900739.jpg?v=639183414606270000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-secante-para-esmalte-inoar--speed-dry-400ml-249895/p",
+  popularity: 972
+ },
+ {
+  sku: "epoca-260455",
+  name: "Vichy Creme Desodorante Anti Transpirante Eficácia Reforçada 30ml",
+  brand: "Vichy",
+  unitPrice: 201.31,
+  unit: "un",
+  category: "skincare limpeza de pele hidratantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2554982/17822271543549.jpg?v=639183376575100000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-creme-desodorante-anti-transpirante-eficacia-reforcada-30ml-249335/p",
+  popularity: 973
+ },
+ {
+  sku: "epoca-260052",
+  name: "Kit Origens Phebo Latinha Limão Kit",
+  brand: "Phebo",
+  unitPrice: 60.9,
+  unit: "un",
+  category: "perfumes kits de perfumes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3032130/7896512995698_Latinha_Limao_A.jpg?v=639234551428670000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-origens-phebo-latinha-limao/p",
+  popularity: 974
+ },
+ {
+  sku: "epoca-260048",
+  name: "Condicionador L'Oréal Professionnel Vitamino Color 1L",
+  brand: "L'Oréal Professionnel",
+  unitPrice: 235.9,
+  unit: "un",
+  category: "cabelos condicionador coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2862611/7908966566673_1.jpg?v=639214669994070000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-loreal-professionnel-vitamino-color/p",
+  popularity: 975
+ },
+ {
+  sku: "epoca-259352",
+  name: "Lilyeve Grow:Turn - Tônico Capilar 100ml 100ml",
+  brand: "Lilyeve",
+  unitPrice: 344,
+  unit: "un",
+  category: "skincare couro cabeludo tonico capilar",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2501178/17817688456849.jpg?v=639177584884530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lilyeve-grow-turn---tonico-capilar-100ml-248332/p",
+  popularity: 976
+ },
+ {
+  sku: "epoca-259239",
+  name: "Proteina Capilar Hidratei Reconstrução Cabelos Danificados",
+  brand: "Hidratei",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2500515/17818034176900.jpg?v=639177574506100000",
+  productUrl: "https://www.epocacosmeticos.com.br/proteina-capilar-hidratei-reconstrucao-cabelos-danificados-248211/p",
+  popularity: 977
+ },
+ {
+  sku: "epoca-258848",
+  name: "Perfume Intense Cosmic Kylie Jenner Feminino Eau de Parfum 30ml",
+  brand: "Cosmic Kylie Jenner",
+  unitPrice: 326.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2818920/perfume-intense-cosmic-kylie-jenner-feminino-eau-de-parfum -1-.jpg?v=639209420473630000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-intense-cosmic-kylie-jenner-feminino-eau-de-parfum/p",
+  popularity: 978
+ },
+ {
+  sku: "epoca-258837",
+  name: "Kit Coffret Polo Ralph Lauren - Perfume Eau de Toilette + Miniatura Kit",
+  brand: "Ralph Lauren",
+  unitPrice: 721.65,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2694931/7908966563764.01.jpg?v=639195657231870000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-polo-ralph-lauren-perfume-eau-de-toilette--miniatura/p",
+  popularity: 979
+ },
+ {
+  sku: "epoca-256334",
+  name: "Blush Bronzeador Too Faced Sun Bunny Sun Bunny",
+  brand: "Too Faced",
+  unitPrice: 245.9,
+  unit: "un",
+  category: "maquiagem face blush",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2516458/651986029167_1-.jpg?v=639179057020030000",
+  productUrl: "https://www.epocacosmeticos.com.br/blush-bronzeador-too-faced-sun-bunny/p",
+  popularity: 980
+ },
+ {
+  sku: "epoca-255253",
+  name: "Esmalte Secante Risqué Express Care 8ml",
+  brand: "Risqué",
+  unitPrice: 13.9,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2378778/17811221560912.jpg?v=639167210334200000",
+  productUrl: "https://www.epocacosmeticos.com.br/esmalte-secante-risque-express-care-8ml-244303/p",
+  popularity: 981
+ },
+ {
+  sku: "epoca-255048",
+  name: "Kit Coffret Marc Jacobs - Perfume Perfect Feminino Eau de Parfum + Body Lotion + Travel Size Kit",
+  brand: "Marc Jacobs",
+  unitPrice: 754.9,
+  unit: "un",
+  category: "perfumes kits de perfumes kits femininos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2695320/3616306131705_1.jpg?v=639195710395430000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-perfume-perfect-marc-jacobs-eau-de-parfum--bl--travel-size/p",
+  popularity: 982
+ },
+ {
+  sku: "epoca-254273",
+  name: "Vichy Dercos Tratamento Pré-Shampoo Collagen Repair 17 150g",
+  brand: "Vichy",
+  unitPrice: 191.59,
+  unit: "un",
+  category: "skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2364348/07806781262415.jpg?v=639166241514370000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-dercos-tratamento-pre-shampoo-collagen-repair-17-150g-243320/p",
+  popularity: 983
+ },
+ {
+  sku: "epoca-252903",
+  name: "Mascavo Problender Esponja de Maquiagem Grande",
+  brand: "Mascavo",
+  unitPrice: 38.9,
+  unit: "un",
+  category: "maquiagem aplicadores para maquiagem esponja",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2357499/17806870365688.jpg?v=639166079883930000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascavo-problender-esponja-de-maquiagem-grande-241913/p",
+  popularity: 984
+ },
+ {
+  sku: "epoca-250367",
+  name: "Máscara Capilar Lola Cosmetics Be(M)dita Ghee Reconstrução 100g",
+  brand: "Lola From Rio",
+  unitPrice: 8.94,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2303258/17797277246988.jpg?v=639160948304570000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-cosmetics---be-m-dita---100g-239337/p",
+  popularity: 985
+ },
+ {
+  sku: "epoca-247954",
+  name: "Eudora Niina Secrets Hidra Glow Base Líquida Natural 05 30ml",
+  brand: "Eudora",
+  unitPrice: 60.9,
+  unit: "un",
+  category: "skincare limpeza de pele base ou corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2235542/17799222320823.jpg?v=639155879043900000",
+  productUrl: "https://www.epocacosmeticos.com.br/eudora-niina-secrets-hidra-glow-base-liquida-natural-05-30ml-236939/p",
+  popularity: 986
+ },
+ {
+  sku: "epoca-247449",
+  name: "Vichy Capital Soleil Uv-Age Daily Fps60 Cor 4.0 Protetor Solar Facial 40g",
+  brand: "Vichy",
+  unitPrice: 130.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2231791/17799174838497.jpg?v=639155730282030000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-capital-soleil-uv-age-daily-fps60-cor-4-0-protetor-solar-facial-40g-236463/p",
+  popularity: 987
+ },
+ {
+  sku: "epoca-247251",
+  name: "Essence Dry Drops Óleo Secante 8ml",
+  brand: "Essence",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "unhas esmalte",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2230781/17799205225112.jpg?v=639155722485570000",
+  productUrl: "https://www.epocacosmeticos.com.br/essence-dry-drops-oleo-secante-8ml-236258/p",
+  popularity: 988
+ },
+ {
+  sku: "epoca-247007",
+  name: "Eudora Niina Secrets Perfect Match Corretivo Líquido Matte Cor 05 10ml",
+  brand: "Eudora",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "skincare limpeza de pele base ou corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2229130/17799209013500.jpg?v=639155691485000000",
+  productUrl: "https://www.epocacosmeticos.com.br/eudora-niina-secrets-perfect-match-corretivo-liquido-matte-cor-05-10ml-235995/p",
+  popularity: 989
+ },
+ {
+  sku: "epoca-246732",
+  name: "Kit Lola Cosmetics Meu Cacho Minha Vida – Shampoo + Condicionador Kit",
+  brand: "Lola From Rio",
+  unitPrice: 62.03,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2222238/Kits-181-03.jpg?v=639155095445700000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-lola-cosmetics-meu-cacho-minha-vida-shampoo-condicionador/p",
+  popularity: 990
+ },
+ {
+  sku: "epoca-244619",
+  name: "Bronzer Essence Soft Touch Butter 10g Bronzer Claro",
+  brand: "Essence",
+  unitPrice: 32.9,
+  unit: "un",
+  category: "maquiagem face iluminador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2534283/4059729542564_01.jpg?v=639181012536200000",
+  productUrl: "https://www.epocacosmeticos.com.br/bronzer-essence-soft-touch-butter-10g/p",
+  popularity: 991
+ },
+ {
+  sku: "epoca-242966",
+  name: "Chloé Eau de Parfum - Perfume Feminino Perfume Chloé Feminino Eau de Parfum 30ml",
+  brand: "Chloé",
+  unitPrice: 360,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2149903/17793484268614.jpg?v=639149741628470000",
+  productUrl: "https://www.epocacosmeticos.com.br/chloe-eau-de-parfum---perfume-feminino-232026/p",
+  popularity: 992
+ },
+ {
+  sku: "epoca-242919",
+  name: "Perfume We Are Tribe Elixir Benetton Masculino Eau de Parfum 90ml",
+  brand: "Benetton",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2694269/_8433982028519_0065228244_0.jpg?v=639195613259670000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-we-are-tribe-elixir-benetton-eau-de-parfum/p",
+  popularity: 993
+ },
+ {
+  sku: "epoca-242074",
+  name: "Kit Wella Professional Ultimate Luxe Oil – Shampoo + Condicionador Kit",
+  brand: "Wella Professionals",
+  unitPrice: 610.66,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2083620/Kit-207-03.jpg?v=639143882878830000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professional-ultimate-luxe-oil-shampoo-condicionador/p",
+  popularity: 994
+ },
+ {
+  sku: "epoca-241732",
+  name: "Perfume Cherry Coach Feminino Eau de Parfum 90ml",
+  brand: "Coach",
+  unitPrice: 853.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2197742/perfume-cherry-coach-feminino-eau-de-parfum.jpg?v=639153976274900000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-cherry-coach-feminino-eau-de-parfum/p",
+  popularity: 995
+ },
+ {
+  sku: "epoca-241265",
+  name: "Kit La Roche Posay – Sérum Antirrugas Pure Vitamin C12 Oil Control + Retinol B3 Kit",
+  brand: "Vichy",
+  unitPrice: 583.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2069847/Kits-177-03.jpg?v=639142740647070000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-la-roche-posay-serum-antirrugas-pure-vitamin-c12-oil-control-retinol-b3/p",
+  popularity: 996
+ },
+ {
+  sku: "epoca-236065",
+  name: "Dove Original Sabonete Em Barra 6 Unidades",
+  brand: "Dove",
+  unitPrice: 39.77,
+  unit: "un",
+  category: "cuidados pessoais sabonetes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1927512/17773063739623.jpg?v=639130648873300000",
+  productUrl: "https://www.epocacosmeticos.com.br/dove-original-sabonete-em-barra-6-unidades-225200/p",
+  popularity: 997
+ },
+ {
+  sku: "epoca-234674",
+  name: "Perfume Sospiro Vibrato Unissex Eau De Parfum 100ml 100 ml",
+  brand: "Sospiro",
+  unitPrice: 2068,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1914670/17769293522090.jpg?v=639186078533500000",
+  productUrl: "https://www.epocacosmeticos.com.br/sospiro-vibrato-eau-de-parfum-unissex-223838/p",
+  popularity: 998
+ },
+ {
+  sku: "epoca-232700",
+  name: "Protetor Solar Adcos Fluid Clareador FPS 70 Ivory",
+  brand: "ADCOS",
+  unitPrice: 169,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2236491/protetor-solar-adcos-fluid-clareador-fps-70--1-.jpg?v=639155894505970000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-adcos-fluid-clareador-fps-70/p",
+  popularity: 999
+ },
+ {
+  sku: "epoca-231884",
+  name: "Leave-in Cond Hydrating Cadiveu Professional Hydra Pro 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 75.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2153397/LEAVE-IN-HYDRA-PRO-250ML-VERSO-7898606745981--2-.jpg?v=639149919822530000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-cond-hydrating-cadiveu-professional-hydra-pro/p",
+  popularity: 1000
+ },
+ {
+  sku: "epoca-231883",
+  name: "Máscara Condicionante Cadiveu Professional Hydra Pro 200ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 68.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2153360/MASCARA-HYDRA-PRO-200ML-FRONTAL-7898606745974.jpg?v=639149914363670000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-condicionante-cadiveu-professional-hydra-pro/p",
+  popularity: 1001
+ },
+ {
+  sku: "epoca-231409",
+  name: "Gel de Limpeza Corporal e Facial Eucerin PH5 400ml",
+  brand: "Eucerin",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1996255/gel-de-limpeza-corporal-e-facial-eucerin-ph5--1-.jpg?v=639238903396770000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-de-limpeza-corporal-e-facial-eucerin-ph5/p",
+  popularity: 1002
+ },
+ {
+  sku: "epoca-231387",
+  name: "Pré Tratamento Redken Acidic Bonding Concentrate 190ml",
+  brand: "Redken",
+  unitPrice: 296.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2153899/3474637248666--1-.jpg?v=639149942588770000",
+  productUrl: "https://www.epocacosmeticos.com.br/pre-tratamento-redken-acidic-bonding-concentrate/p",
+  popularity: 1003
+ },
+ {
+  sku: "epoca-231386",
+  name: "Leave-in Multibenefícios Redken One United - Para todos os tipos de cabelos 200ml",
+  brand: "Redken",
+  unitPrice: 153.9,
+  unit: "un",
+  category: "cabelos leave in e creme para pentear todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2153631/7908966532982--1-.jpg?v=639149933229930000",
+  productUrl: "https://www.epocacosmeticos.com.br/leave-in-multibeneficios-redken-one-united-para-todos-os-tipos-de-cabelos/p",
+  popularity: 1004
+ },
+ {
+  sku: "epoca-230960",
+  name: "Hidratante La Roche Toleriane Sensitive 40ml",
+  brand: "La Roche-Posay",
+  unitPrice: 200.19,
+  unit: "un",
+  category: "skincare limpeza de pele",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1763937/17690135026071.jpg?v=639112695771830000",
+  productUrl: "https://www.epocacosmeticos.com.br/hidratante-la-roche-toleriane-sensitive-40ml-220181/p",
+  popularity: 1005
+ },
+ {
+  sku: "epoca-230636",
+  name: "Kit Darrow Actine 2 Géis de Limpeza Facial Vitamina C - Antiacne e Iluminador Kit",
+  brand: "Darrow",
+  unitPrice: 71.29,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1762085/kit-168-03.jpg?v=639112481326400000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-darrow-actine-2-geis-de-limpeza-facial-vitamina-c-antiacne-e-iluminador/p",
+  popularity: 1006
+ },
+ {
+  sku: "epoca-230272",
+  name: "Shampoo Ultra Reparação Vichy Dercos Collagen Repair 17 200g",
+  brand: "Vichy",
+  unitPrice: 153.04,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1734772/17714335213265.jpg?v=639109282947770000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-ultra-reparacao-vichy-dercos-collagen-repair-17-200g-219519/p",
+  popularity: 1007
+ },
+ {
+  sku: "epoca-229448",
+  name: "Revlon Professional Uniq One All In One Hair Treatment Leave-in / 150ml",
+  brand: "Revlon",
+  unitPrice: 72.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1720505/17701276597819.jpg?v=639107667548370000",
+  productUrl: "https://www.epocacosmeticos.com.br/revlon-professional-uniq-one-all-in-one-hair-treatment-leave-in---150ml-209920/p",
+  popularity: 1008
+ },
+ {
+  sku: "epoca-229021",
+  name: "Dercos Shampoo Vichy Kera Solutions 300ml",
+  brand: "Vichy",
+  unitPrice: 143.81,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1718918/17710835267949.jpg?v=639107644194930000",
+  productUrl: "https://www.epocacosmeticos.com.br/dercos-shampoo-vichy-kera-solutions-300ml-209385/p",
+  popularity: 1009
+ },
+ {
+  sku: "epoca-226166",
+  name: "Spray Uso Obrigatorio Cond 260ml - Truss",
+  brand: "Truss Professional",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1695335/17748973399818.jpg?v=639105588651970000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-uso-obrigatorio-cond-260ml---truss-199879/p",
+  popularity: 1010
+ },
+ {
+  sku: "epoca-225858",
+  name: "Perfume Hawas for Him Rasasi Masculino Eau De Parfum 100ml",
+  brand: "Rasasi",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1688730/17688254384696.jpg?v=639104991702500000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-hawas-for-him-rasasi-edp-masculino-100ml-199572/p",
+  popularity: 1011
+ },
+ {
+  sku: "epoca-225134",
+  name: "Pó Bronzeador Givenchy Prisme Libre Bronzing Powder H001",
+  brand: "Givenchy",
+  unitPrice: 347.65,
+  unit: "un",
+  category: "maquiagem face po facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2019523/po-bronzeador-givenchy-prisme-libre-bronzing-powder--1-.jpg?v=639137577296570000",
+  productUrl: "https://www.epocacosmeticos.com.br/po-bronzeador-givenchy-prisme-libre-bronzing-powder/p",
+  popularity: 1012
+ },
+ {
+  sku: "epoca-225085",
+  name: "Perfume The One Pour Homme Dolce & Gabbana Masculino Eau de Parfum 150ml",
+  brand: "Dolce&Gabbana",
+  unitPrice: 1115.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2082861/perfume-the-one-pour-homme-dolce--gabbana-masculino-eau-de-parfum--1-.jpg?v=639143833505000000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-the-one-pour-homme-dolce--gabbana-masculino-eau-de-parfum/p",
+  popularity: 1013
+ },
+ {
+  sku: "epoca-225039",
+  name: "Kit Coffret Azzaro - Perfume Wanted EDT + Hair and Gel + Travel Size Kit",
+  brand: "Azzaro",
+  unitPrice: 586.9,
+  unit: "un",
+  category: "perfumes kits de perfumes kits masculinos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1803433/kit-coffret-azzaro-perfum-wanted-eau-de-toilette--hair-and-gel--travel-size--1-.jpg?v=639141886814000000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-azzaro-perfum-wanted-eau-de-toilette--hair-and-gel--travel-size/p",
+  popularity: 1014
+ },
+ {
+  sku: "epoca-224874",
+  name: "Escova Secadora Philco PES19SG 1300W Bivolt Prata e Dourado / Bivolt",
+  brand: "Philco",
+  unitPrice: 170.9,
+  unit: "un",
+  category: "eletricos cabelos escova rotativa",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1653206/17631550206825.jpg?v=639100139741330000",
+  productUrl: "https://www.epocacosmeticos.com.br/escova-secadora-philco-pes19sg-1300w-198666/p",
+  popularity: 1015
+ },
+ {
+  sku: "epoca-224680",
+  name: "Malbec magnetic original deo-colônia 100ml para masculino",
+  brand: "BOTICARIO",
+  unitPrice: 369,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1645804/17721666012298.jpg?v=639098889840230000",
+  productUrl: "https://www.epocacosmeticos.com.br/malbec-magnetic-original-deo-colonia-100ml-para-masculino-198488/p",
+  popularity: 1016
+ },
+ {
+  sku: "epoca-224481",
+  name: "Perfume Sospiro Vibrato Unissex 100ml",
+  brand: "Sospiro",
+  unitPrice: 1783.83,
+  unit: "un",
+  category: "perfumes perfume unissex",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2664875/17742046129455.jpg?v=639232555462570000",
+  productUrl: "https://www.epocacosmeticos.com.br/sospiro---vibrato-100ml-198285/p",
+  popularity: 1017
+ },
+ {
+  sku: "epoca-223712",
+  name: "Kit SkinCeuticals Rugas e Volume - P-Tiox + H.A. Intensifier Kit",
+  brand: "Skinceuticals",
+  unitPrice: 728.2,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1618606/Kits-154-03.png?v=639095235198830000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-skinceuticals-rugas-e-volume-p-tiox-ha-intensifier/p",
+  popularity: 1018
+ },
+ {
+  sku: "epoca-223708",
+  name: "Kit SkinCeuticals Firmeza - A.G.E. Interrupter + H.A. Intensifier Kit",
+  brand: "Skinceuticals",
+  unitPrice: 659.9,
+  unit: "un",
+  category: "skincare kits de skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1618912/Kits-156-03.png?v=639095280006600000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-skinceuticals-firmeza-age-interrupter-ha-intensifier/p",
+  popularity: 1019
+ },
+ {
+  sku: "epoca-223266",
+  name: "Espuma de Limpeza Facial Biore Marshmallow Whip Acne Care 150ml",
+  brand: "Bioré",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento acne e oleosidade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1765613/espuma-de-limpeza-facial-biore-marshmallow-whip-acne-care--1-.jpg?v=639190485536870000",
+  productUrl: "https://www.epocacosmeticos.com.br/espuma-de-limpeza-facial-biore-marshmallow-whip-acne-care/p",
+  popularity: 1020
+ },
+ {
+  sku: "epoca-223265",
+  name: "Protetor Solar Biore UV Aqua Rich Extreme Protection 50g",
+  brand: "Bioré",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1765609/protetor-solar-biore-uv-aqua-rich-extreme-protection--1-.jpg?v=639112775658530000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-biore-uv-aqua-rich-extreme-protection/p",
+  popularity: 1021
+ },
+ {
+  sku: "epoca-223187",
+  name: "Perfume Royal Amber Luxury Orientica Feminino Eau De Parfum 80ml",
+  brand: "ORIENTICA",
+  unitPrice: 375.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1607597/17648606301308.jpg?v=639093517647500000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-royal-amber-luxury-edp-orientica-feminino-80ml-196864/p",
+  popularity: 1022
+ },
+ {
+  sku: "epoca-223029",
+  name: "Spray Sebastian Potion 9 150ml",
+  brand: "Sebastian Professional",
+  unitPrice: 124.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1747536/4068359092790_1.jpg?v=639110940160400000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-sebastian-potion-9/p",
+  popularity: 1023
+ },
+ {
+  sku: "epoca-223006",
+  name: "Condicionador Keune Long & Strong 80ml",
+  brand: "Keune",
+  unitPrice: 45.9,
+  unit: "un",
+  category: "cabelos condicionador com queda",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2856414/8719281128922_01.jpg?v=639213722526500000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-keune-long--strong/p",
+  popularity: 1024
+ },
+ {
+  sku: "epoca-222959",
+  name: "Shampoo Keune Color Brillianz 80ml",
+  brand: "Keune",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "cabelos shampoo coloridos e com mechas",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2832523/8719281128120_01.jpg?v=639211034744270000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-keune-color-brillianz/p",
+  popularity: 1025
+ },
+ {
+  sku: "epoca-223016",
+  name: "Máscara de Tratamento Keune Vital Nutrition 50ml",
+  brand: "Keune",
+  unitPrice: 72.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2832497/8719281132561_01.jpg?v=639211030311400000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-de-tratamento-keune-vital-nutrition/p",
+  popularity: 1026
+ },
+ {
+  sku: "epoca-222951",
+  name: "Shampoo Keune Vital Nutrition 80ml",
+  brand: "Keune",
+  unitPrice: 43.84,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2832371/8719281128038_01.jpg?v=639211016866700000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-keune-vital-nutrition/p",
+  popularity: 1027
+ },
+ {
+  sku: "epoca-222931",
+  name: "Protetor Solar Facial MINESOL Pigment Correct FPS 70 40g Cor 2.0",
+  brand: "Neostrata",
+  unitPrice: 103.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1606825/7891010257965--2-.jpg?v=639093482734470000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-minesol-pigment-correct-fps-70-40g/p",
+  popularity: 1028
+ },
+ {
+  sku: "epoca-222914",
+  name: "Perfume Seduction X Banderas Masculino Eau de Parfum 50ml",
+  brand: "Banderas",
+  unitPrice: 156.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2824228/perfume-seduction-x-banderas-masculino-eau-de-parfum--1-.jpg?v=639210157827370000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-seduction-x-banderas-masculino-eau-de-parfum/p",
+  popularity: 1029
+ },
+ {
+  sku: "epoca-222874",
+  name: "Spray Leave In Sebastian No Breaker 100ml",
+  brand: "Sebastian Professional",
+  unitPrice: 190.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1830263/4068359123043_1.jpg?v=639120466940130000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-leave-in-sebastian-no-breaker/p",
+  popularity: 1030
+ },
+ {
+  sku: "epoca-222860",
+  name: "Base Guerlain Terracotta Joli Teint FPS 20 30ml 10 Sunveil",
+  brand: "Guerlain",
+  unitPrice: 349,
+  unit: "un",
+  category: "maquiagem face base",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1613206/3346472000849.jpg?v=639094360695830000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-guerlain-terracotta-joli-teint-fps-20-30ml/p",
+  popularity: 1031
+ },
+ {
+  sku: "epoca-222632",
+  name: "Eryfotona Night Sérum Regenerador Noturno Isdin 50ml",
+  brand: "Isdin",
+  unitPrice: 137.96,
+  unit: "un",
+  category: "bem estar autocuidado",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1600499/17734962474738.jpg?v=639092587981200000",
+  productUrl: "https://www.epocacosmeticos.com.br/eryfotona-night-serum-regenerador-noturno-isdin-50ml-196362/p",
+  popularity: 1032
+ },
+ {
+  sku: "epoca-222217",
+  name: "Aparelho de Barbear Probak II Descartável 7 Unidades",
+  brand: "Probak",
+  unitPrice: 10.19,
+  unit: "un",
+  category: "cuidados pessoais cuidados masculinos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1584530/17635015414589.jpg?v=639089954825330000",
+  productUrl: "https://www.epocacosmeticos.com.br/aparelho-de-barbear-probak-ii-descartavel-7-unidades-195937/p",
+  popularity: 1033
+ },
+ {
+  sku: "epoca-222171",
+  name: "Dove Sérum Hidratante Corporal Niacinamida + Uniformizador 380ml",
+  brand: "Dove",
+  unitPrice: 125.99,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1581361/17720375859824.jpg?v=639089377802670000",
+  productUrl: "https://www.epocacosmeticos.com.br/dove-serum-hidratante-corporal-niacinamida---uniformizador-380ml-195892/p",
+  popularity: 1034
+ },
+ {
+  sku: "epoca-221855",
+  name: "Fixador Maquiagem Bruma Vizzela Real Fix Spray Incolor",
+  brand: "Vizzela",
+  unitPrice: 85.4,
+  unit: "un",
+  category: "maquiagem primer e finalizador fixador da maquiagem",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1577840/17725382070991.jpg?v=639089167306130000",
+  productUrl: "https://www.epocacosmeticos.com.br/fixador-maquiagem-bruma-vizzela-real-fix-spray-incolor-195614/p",
+  popularity: 1035
+ },
+ {
+  sku: "epoca-221397",
+  name: "Lenços Umededecidos Huggies Classic Max Clean",
+  brand: "Huggies",
+  unitPrice: 31.99,
+  unit: "un",
+  category: "cuidados pessoais cuidados infantis lencos umedecidos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1575538/17419524891214.jpg?v=639089146061530000",
+  productUrl: "https://www.epocacosmeticos.com.br/lencos-umededecidos-huggies-classic-max-clean-195113/p",
+  popularity: 1036
+ },
+ {
+  sku: "epoca-219984",
+  name: "Condicionador Vichy Dercos Collagen Repair 17 com 200g",
+  brand: "Vichy",
+  unitPrice: 165.52,
+  unit: "un",
+  category: "cabelos condicionador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1561523/17714278354854.jpg?v=639087653972870000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-vichy-dercos-collagen-repair-17-com-200g-193688/p",
+  popularity: 1037
+ },
+ {
+  sku: "epoca-219395",
+  name: "Liftactiv collagen 16 collagel gel hidratante vichy 50g",
+  brand: "Vichy",
+  unitPrice: 172.12,
+  unit: "un",
+  category: "skincare limpeza de pele",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1552778/17720418617628.jpg?v=639086728452370000",
+  productUrl: "https://www.epocacosmeticos.com.br/liftactiv-collagen-16-collagel-gel-hidratante-vichy-50g-193061/p",
+  popularity: 1038
+ },
+ {
+  sku: "epoca-219237",
+  name: "Kerastase Kit - Sérum Genesis Anti-chute Fortifiant + Sérum Nutritive 8h Magic Night Kit",
+  brand: "Kerastase",
+  unitPrice: 848.15,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1541143/Kits-202-03.jpg?v=639084273059700000",
+  productUrl: "https://www.epocacosmeticos.com.br/kerastase-kit-serum-genesis-anti-chute-fortifiant-serum-nutritive-8h-magic-night/p",
+  popularity: 1039
+ },
+ {
+  sku: "epoca-219159",
+  name: "perfume delilah blanc maison alhambra edp feminino 100ml",
+  brand: "Maison Alhambra",
+  unitPrice: 169.99,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1536237/17683457798872.jpg?v=639083331820430000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-delilah-blanc-maison-alhambra-edp-feminino-100ml-192815/p",
+  popularity: 1040
+ },
+ {
+  sku: "epoca-218968",
+  name: "Perfume Fantasy Britney Spears Feminino Eau de Parfum 100ml",
+  brand: "Britney Spears",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1534909/17679714915235.jpg?v=639083315274500000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-britney-spears-fantasy-eau-de-parfum-feminino-100ml-192616/p",
+  popularity: 1041
+ },
+ {
+  sku: "epoca-218384",
+  name: "Perfume Invictus Elixir Rabanne Masculino Parfum Elixir 50ml",
+  brand: "Rabanne",
+  unitPrice: 656.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1648772/_3349668662678_0065228348_0.jpg?v=639099559379600000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-invictus-elixir-rabanne-masculino-parfum-elixir-1/p",
+  popularity: 1042
+ },
+ {
+  sku: "epoca-218040",
+  name: "Perfume Delilah Maison Alhambra EDP Feminino 100ml",
+  brand: "Maison Alhambra",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1519308/17658146136747.jpg?v=639080568276070000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-delilah-maison-alhambra-edp-feminino-100ml-191679/p",
+  popularity: 1043
+ },
+ {
+  sku: "epoca-217848",
+  name: "Condicionador Sebastian Penetraitt 200ML",
+  brand: "Sebastian Professional",
+  unitPrice: 168.9,
+  unit: "un",
+  category: "cabelos condicionador danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1830390/4068359105872_1.jpg?v=639120478231500000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-sebastian-penetraitt/p",
+  popularity: 1044
+ },
+ {
+  sku: "epoca-217842",
+  name: "Condicionador Sebastian Hydre 200ML",
+  brand: "Sebastian Professional",
+  unitPrice: 141.9,
+  unit: "un",
+  category: "cabelos condicionador seco e ressecados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1757436/4068359105803_1.jpg?v=639111892865370000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-sebastian-hydre/p",
+  popularity: 1045
+ },
+ {
+  sku: "epoca-217839",
+  name: "Spray Capilar Sebastian Dark Oil Silkening 200ml",
+  brand: "Sebastian Professional",
+  unitPrice: 120.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores spray",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1763712/4068359122992_1.jpg?v=639112674824100000",
+  productUrl: "https://www.epocacosmeticos.com.br/spray-silkening-sebastian-dark-oil/p",
+  popularity: 1046
+ },
+ {
+  sku: "epoca-217804",
+  name: "Kit Coffret Aqua Allegoria - Perfume Guerlain Rosa Verde Eau de Toilette + Miniatura + Body Lotion Kit",
+  brand: "Guerlain",
+  unitPrice: 672.6,
+  unit: "un",
+  category: "perfumes kits de perfumes kits femininos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1505742/kit-coffret-aqua-allegoria-perfume-guerlain-rosa-verde-eau-de-toilette -1-.jpg?v=639077967481470000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-coffret-aqua-allegoria-perfume-guerlain-rosa-verde-eau-de-toilette/p",
+  popularity: 1047
+ },
+ {
+  sku: "epoca-217182",
+  name: "Corretivo M·A·C Soft Matte Studio Fix 36HR NC15",
+  brand: "MAC",
+  unitPrice: 277.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1823242/773602734818_1.jpg?v=639119643900200000",
+  productUrl: "https://www.epocacosmeticos.com.br/corretivo-m%C2%B7a%C2%B7c-soft-matte-studio-fix-36hr/p",
+  popularity: 1048
+ },
+ {
+  sku: "epoca-217242",
+  name: "Perfume Libre Berry Crush Yves Saint Laurent Feminino Eau de Parfum 30ml",
+  brand: "Yves Saint Laurent",
+  unitPrice: 597.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1506985/perfume-libre-berry-crush-feminino-eau-de-parfum--1-.jpg?v=639160334920770000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-libre-berry-crush-feminino-eau-de-parfum/p",
+  popularity: 1049
+ },
+ {
+  sku: "epoca-217172",
+  name: "Creme Anti-Rugas Shiseido Vital Perfection WrinkleSpot 20ml",
+  brand: "Shiseido",
+  unitPrice: 788,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1529488/729238222946--1-.jpg?v=639082420967470000",
+  productUrl: "https://www.epocacosmeticos.com.br/tratamento-intensivo-para-rugas-shiseido-vital-perfection-intensive-wrinklespot-a/p",
+  popularity: 1050
+ },
+ {
+  sku: "epoca-216045",
+  name: "Perfume Club De Nuit Armaf Feminino Eau De Parfum 105ml",
+  brand: "Armaf",
+  unitPrice: 233.9,
+  unit: "un",
+  category: "perfumes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1483606/17683172243872.jpg?v=639074732551430000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-armaf-club-de-nuit-edp-feminino-105ml-189785/p",
+  popularity: 1051
+ },
+ {
+  sku: "epoca-215871",
+  name: "Perfume Scuderia Black Ferrari Masculino Eau de Toilette 125ml",
+  brand: "Ferrari",
+  unitPrice: 145.99,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1480957/17690895510316.jpg?v=639074642749930000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-ferrari-black-scuderia-eau-de-toilette-perfume-masculino-125ml-189653/p",
+  popularity: 1052
+ },
+ {
+  sku: "epoca-215755",
+  name: "Damage Repair Mise en Scene Kit - Shampoo + Máscara de Tratamento + Serum Kit",
+  brand: "Mise en Scène",
+  unitPrice: 186.9,
+  unit: "un",
+  category: "cabelos kits para cabelos danificados",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1601996/8800283662740-2.jpg?v=639092703326270000",
+  productUrl: "https://www.epocacosmeticos.com.br/damage-repair-mise-en-scene-kit-shampoo--mascara-de-tratamento--serum/p",
+  popularity: 1053
+ },
+ {
+  sku: "epoca-215146",
+  name: "Body Splash Sweet Tooth Me Espresso Sabrina Carpenter 236ML",
+  brand: "Sabrina Carpenter",
+  unitPrice: 129,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1615402/810023678878.1.jpg?v=639094643293930000",
+  productUrl: "https://www.epocacosmeticos.com.br/body-splash-sweet-tooth-me-espresso-sabrina-carpenter/p",
+  popularity: 1054
+ },
+ {
+  sku: "epoca-215134",
+  name: "Perfume Sweet Tooth Sabrina Carpenter Eau de Parfum 30ML",
+  brand: "Sabrina Carpenter",
+  unitPrice: 299,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1615244/810023672920.1.jpg?v=639094609037330000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-sweet-tooth-sabrina-carpenter-eau-de-parfum/p",
+  popularity: 1055
+ },
+ {
+  sku: "epoca-215130",
+  name: "Body Splash Sweet Tooth Caramel Dream Sabrina Carpenter 236ML",
+  brand: "Sabrina Carpenter",
+  unitPrice: 129,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1615368/810023675723.1.jpg?v=639094638048300000",
+  productUrl: "https://www.epocacosmeticos.com.br/body-splash-sweet-tooth-caramel-dream-sabrina-carpenter/p",
+  popularity: 1056
+ },
+ {
+  sku: "epoca-215127",
+  name: "Body Splash Sweet Tooth Cherry Baby Sabrina Carpenter 236ML",
+  brand: "Sabrina Carpenter",
+  unitPrice: 129,
+  unit: "un",
+  category: "perfumes perfume para o corpo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1615361/810023677482.1.jpg?v=639094632705630000",
+  productUrl: "https://www.epocacosmeticos.com.br/body-splash-sweet-tooth-cherry-baby-sabrina-carpenter/p",
+  popularity: 1057
+ },
+ {
+  sku: "epoca-215116",
+  name: "Sérum Antioxidante Cetaphil Repair 30ml",
+  brand: "Cetaphil",
+  unitPrice: 205.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1541124/FRENTE-3499320018005.jpg?v=639084271889100000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-antioxidante-cetaphil-repair/p",
+  popularity: 1058
+ },
+ {
+  sku: "epoca-215115",
+  name: "Sérum Facial Antioxidante e Hidratante Cetaphil Advanced Defense 30ml",
+  brand: "Cetaphil",
+  unitPrice: 216.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1753889/serum-facial-antioxidante-e-hidratante-cetaphil-advanced-defense2.jpg?v=639111644663730000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-antioxidante-e-hidratante-cetaphil-advanced-defense/p",
+  popularity: 1059
+ },
+ {
+  sku: "epoca-214885",
+  name: "Máscara Capilar Eudora Siàge Volume Imediato 250mg",
+  brand: "Eudora Siàge",
+  unitPrice: 60.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1441789/7891033875597_Imagem-2_3000x3000.jpg?v=639065141873600000",
+  productUrl: "https://www.epocacosmeticos.com.br/mascara-capilar-eudora-siage-volume-imediato/p",
+  popularity: 1060
+ },
+ {
+  sku: "epoca-214551",
+  name: "Kit Biore – Óleo Demaquilante Facial + Protetor Solar Facial Kit",
+  brand: "BIORE",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1431835/Kits-119-03.jpg?v=639063220981530000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-biore-oleo-demaquilante-facial-protetor-solar-facial/p",
+  popularity: 1061
+ },
+ {
+  sku: "epoca-214418",
+  name: "Sérum de Limpeza Garnier Skin 100g",
+  brand: "Garnier Skin",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1484678/serum-de-limpeza-garnier-skin--1-.jpg?v=639240445178800000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-de-limpeza-garnier-skin/p",
+  popularity: 1062
+ },
+ {
+  sku: "epoca-214417",
+  name: "Protetor Solar Creamy Watery Fluid FPS50 40ml",
+  brand: "Creamy",
+  unitPrice: 58.06,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1540162/protetor-solar-creamy-watery-fluid-fps501.jpg?v=639084082639800000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-creamy-watery-fluid-fps50/p",
+  popularity: 1063
+ },
+ {
+  sku: "epoca-213734",
+  name: "Loção Hidratante Corporal Cerave 340ml",
+  brand: "CeraVe",
+  unitPrice: 78.89,
+  unit: "un",
+  category: "cuidados pessoais pos-banho hidratante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1408377/17649367265874.jpg?v=639057226274670000",
+  productUrl: "https://www.epocacosmeticos.com.br/locao-hidratante-corporal-cerave-340ml-187503/p",
+  popularity: 1064
+ },
+ {
+  sku: "epoca-212983",
+  name: "Creme Hidratante Corporal Principia CH-02 250g",
+  brand: "Principia",
+  unitPrice: 39,
+  unit: "un",
+  category: "skincare cuidados corporais hidratante corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1864300/creme-hidratante-corporal-principia-ch-022.jpg?v=639124707852900000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-hidratante-corporal-principia-ch-02/p",
+  popularity: 1065
+ },
+ {
+  sku: "epoca-212627",
+  name: "Perfume Born In Roma Donna Purple Valentino Feminino Eau de Parfum 30ml",
+  brand: "Valentino",
+  unitPrice: 568.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/3189096/3614274626834.01.jpg?v=639253586067130000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-born-in-roma-donna-purple-valentino-feminino-eau-de-parfum/p",
+  popularity: 1066
+ },
+ {
+  sku: "epoca-212617",
+  name: "Shampoo Cadiveu Professional Hair Reset Desviciante 250ml",
+  brand: "Cadiveu Professional",
+  unitPrice: 37.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1432836/7898606745851--1--1.jpg?v=639063410498170000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-cadiveu-professional-hair-reset-desviciante/p",
+  popularity: 1067
+ },
+ {
+  sku: "epoca-211339",
+  name: "Medicube Collagen Lifting Mask - Máscara de Colágeno 27g",
+  brand: "Medicube",
+  unitPrice: 62,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1390612/17610801310647.jpg?v=639045291797800000",
+  productUrl: "https://www.epocacosmeticos.com.br/medicube-collagen-lifting-mask---mascara-de-colageno-185172/p",
+  popularity: 1068
+ },
+ {
+  sku: "epoca-210859",
+  name: "Creme Modelador Lola From Rio Bossa 500g",
+  brand: "Lola From Rio",
+  unitPrice: 41.9,
+  unit: "un",
+  category: "cabelos finalizadores e modeladores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1404444/7899572815791.jpg?v=639053946793300000",
+  productUrl: "https://www.epocacosmeticos.com.br/creme-modelador-lola-from-rio-bossa/p",
+  popularity: 1069
+ },
+ {
+  sku: "epoca-209792",
+  name: "Shampoo Eudora Siàge Volume Imediato 250ml",
+  brand: "Eudora Siàge",
+  unitPrice: 41.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1390139/7891033875573_Imagem-2_3000x3000.jpg?v=639044440637930000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-eudora-siage-volume-imediato/p",
+  popularity: 1070
+ },
+ {
+  sku: "epoca-209791",
+  name: "Condicionador Eudora Siàge Volume Imediato 200ml",
+  brand: "Eudora Siàge",
+  unitPrice: 58.99,
+  unit: "un",
+  category: "cabelos condicionador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1389220/7891033875580_Imagem-5_3000x3000.jpg?v=639044317327370000",
+  productUrl: "https://www.epocacosmeticos.com.br/condicionador-eudora-siage-volume-imediato/p",
+  popularity: 1071
+ },
+ {
+  sku: "epoca-208518",
+  name: "Koleston Poderoso Kit - Tratamento + Óleo Capilar Kit",
+  brand: "Koleston",
+  unitPrice: 82.46,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1407296/koleston-poderoso-kit-tratamento-oleo-capilar2.jpg?v=639056585291570000",
+  productUrl: "https://www.epocacosmeticos.com.br/koleston-poderoso-kit-tratamento-oleo-capilar/p",
+  popularity: 1072
+ },
+ {
+  sku: "epoca-207830",
+  name: "Paleta de Sombras Catrice Disney Alice no País das Maravilhas 1",
+  brand: "Catrice",
+  unitPrice: 85,
+  unit: "un",
+  category: "maquiagem olhos sombra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1364963/paleta-de-sombras-catrice-disney-alice-no-pais-das-maravilhas--2-.jpg?v=639033048870330000",
+  productUrl: "https://www.epocacosmeticos.com.br/paleta-de-sombras-catrice-disney-alice-no-pais-das-maravilhas/p",
+  popularity: 1073
+ },
+ {
+  sku: "epoca-207509",
+  name: "Tratamento Capilar Koleston Poderoso Reparo de Danos 170ml",
+  brand: "Koleston",
+  unitPrice: 38.9,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1368022/7908946100583_Koleston-Tratamento_Bisnaga.jpg?v=639034807076430000",
+  productUrl: "https://www.epocacosmeticos.com.br/tratamento-capilar-koleston-poderoso-reparo-de-danos/p",
+  popularity: 1074
+ },
+ {
+  sku: "epoca-207485",
+  name: "Base Corretivo Multifuncional Matte Mari Maria Makeup Hype Up 20ml Branco",
+  brand: "Mari Maria Makeup",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "maquiagem face corretivo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1399178/base-corretivo-multifuncional-matte-mari-maria-makeup-hype-up--3-.jpg?v=639050443570130000",
+  productUrl: "https://www.epocacosmeticos.com.br/base-corretivo-multifuncional-matte-mari-maria-makeup-hype-up/p",
+  popularity: 1075
+ },
+ {
+  sku: "epoca-206038",
+  name: "Protetor Solar Facial La Roche-Posay Anthelios UVMune 400 Airlicium FPS60 40ml COR 2.0",
+  brand: "La Roche-Posay",
+  unitPrice: 105.59,
+  unit: "un",
+  category: "skincare protetor solar protetor solar com cor",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1355665/protetor-solar-facial-la-roche-posay-anthelios-uvmune-400-airlicium-fps60-40ml--4-.jpg?v=639021806189830000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-facial-la-roche-posay-anthelios-uvmune-400-airlicium-fps60-40ml/p",
+  popularity: 1076
+ },
+ {
+  sku: "epoca-206025",
+  name: "Batom Líquido MAC 2 em 1 Lip + Cheek Mousse Powder Kiss Devoted To Chili",
+  brand: "MAC",
+  unitPrice: 199,
+  unit: "un",
+  category: "maquiagem labios batom",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1505782/773602784189_1.jpg?v=639077980161170000",
+  productUrl: "https://www.epocacosmeticos.com.br/batom-liquido-mac-2-em-1-lip-cheek-mousse-powder-kiss/p",
+  popularity: 1077
+ },
+ {
+  sku: "epoca-205998",
+  name: "Lápis de Contorno Labial MAC Dazzlelips Spaced Out",
+  brand: "MAC",
+  unitPrice: 125.9,
+  unit: "un",
+  category: "maquiagem labios contorno labial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1360220/lapis-de-contorno-labial-mac-dazzlelips--2-.jpg?v=639027806076670000",
+  productUrl: "https://www.epocacosmeticos.com.br/lapis-de-contorno-labial-mac-dazzlelips/p",
+  popularity: 1078
+ },
+ {
+  sku: "epoca-205800",
+  name: "Perfume Daisy Marc Jacobs Feminino Eau So Intense 30ml",
+  brand: "Marc Jacobs",
+  unitPrice: 398.65,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1376410/perfume-daisy-marc-jacobs-feminino-eau-so-intense--1-.jpg?v=639039068112670000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-daisy-marc-jacobs-feminino-eau-so-intense/p",
+  popularity: 1079
+ },
+ {
+  sku: "epoca-205513",
+  name: "Protetor Solar Corporal Australian Gold 50432 Creme FPS 30 200g 200g",
+  brand: "Australian Gold",
+  unitPrice: 20.99,
+  unit: "un",
+  category: "skincare protetor solar protetor solar facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1333330/17628847548343.jpg?v=639009661882170000",
+  productUrl: "https://www.epocacosmeticos.com.br/protetor-solar-corporal-australian-gold-50432-creme-fps-30-200g-179455/p",
+  popularity: 1080
+ },
+ {
+  sku: "epoca-204097",
+  name: "Kit Presentável Lola Cosmetics – Cronograma Capilar + Sacola Presenteável Kit",
+  brand: "Lola From Rio",
+  unitPrice: 67.17,
+  unit: "un",
+  category: "cabelos kits para cabelos normal ou todos os tipos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1330675/kit-de-natal-lola-cosmetics-cronograma-capilar-sacola-presenteavel.jpg?v=639008840959300000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-de-natal-lola-cosmetics-cronograma-capilar-sacola-presenteavel/p",
+  popularity: 1081
+ },
+ {
+  sku: "epoca-203829",
+  name: "Vichy Neovadiol Phytosculpt 50ml",
+  brand: "Vichy",
+  unitPrice: 320.32,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1311831/17632196071656.jpg?v=639002111960430000",
+  productUrl: "https://www.epocacosmeticos.com.br/vichy-neovadiol-phytosculpt-50ml-177729/p",
+  popularity: 1082
+ },
+ {
+  sku: "epoca-202618",
+  name: "Perfume Ralph's Club New York Eau de Parfum Masculino Ralph Lauren 60ml",
+  brand: "Ralph Lauren",
+  unitPrice: 553.9,
+  unit: "un",
+  category: "perfumes perfume masculino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1338858/perfume-new-york-ralphs-club-eau-de-parfum--1-.jpg?v=639010772203830000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-new-york-ralphs-club-eau-de-parfum/p",
+  popularity: 1083
+ },
+ {
+  sku: "epoca-202612",
+  name: "Perfume Prada Paradoxe Radical Essence Parfum 30ml",
+  brand: "Prada",
+  unitPrice: 637.18,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1358811/perfume-prada-paradoxe-radical-essence--1-.jpg?v=639026145535430000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-prada-paradoxe-radical-essence/p",
+  popularity: 1084
+ },
+ {
+  sku: "epoca-201434",
+  name: "Sérum Multicorretor Menopausa Vichy – Meno Neovadiol 30ml",
+  brand: "Vichy",
+  unitPrice: 294.3,
+  unit: "un",
+  category: "skincare cuidados corporais oleo corporal",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1270487/07635799879125.jpg?v=638991768803900000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-multicorretor-menopausa-vichy-%E2%80%93-meno-neovadiol-30ml-175521/p",
+  popularity: 1085
+ },
+ {
+  sku: "epoca-201427",
+  name: "Dercos Shampoo Estimulante Energy+ 400ml",
+  brand: "Vichy",
+  unitPrice: 157.03,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1270440/07635789616892.jpg?v=638991759582700000",
+  productUrl: "https://www.epocacosmeticos.com.br/dercos-shampoo-estimulante-energy--400ml-175514/p",
+  popularity: 1086
+ },
+ {
+  sku: "epoca-200289",
+  name: "Acneblock Sabonete Herbal 85g",
+  brand: "Hertz",
+  unitPrice: 6.99,
+  unit: "un",
+  category: "skincare sabonete em barra",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1257618/17594396130814.jpg?v=638990251537830000",
+  productUrl: "https://www.epocacosmeticos.com.br/acneblock-sabonete-herbal-85g-174253/p",
+  popularity: 1087
+ },
+ {
+  sku: "epoca-199853",
+  name: "Kit Wella Professionals Oil Reflections Shampoo Litro Condicionador e Máscara (3 produtos)",
+  brand: "Wella Professionals",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1255019/17589204629051.jpg?v=638989962929770000",
+  productUrl: "https://www.epocacosmeticos.com.br/kit-wella-professionals-oil-reflections-shampoo-litro-condicionador-e-mascara--3-produtos--173823/p",
+  popularity: 1088
+ },
+ {
+  sku: "epoca-199629",
+  name: "Ampola Absolut Repair Cortex Lipidium Power 10ml - LOréal",
+  brand: "LOréal Professionnel",
+  unitPrice: 29.99,
+  unit: "un",
+  category: "cabelos tratamentos e mascaras",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1253780/17510334533500.jpg?v=638989871115430000",
+  productUrl: "https://www.epocacosmeticos.com.br/ampola-absolut-repair-cortex-lipidium-power-10ml---loreal-173599/p",
+  popularity: 1089
+ },
+ {
+  sku: "epoca-198537",
+  name: "Desodorante Roll-On Vichy - Peles Sensíveis ou Depiladas - 50ml",
+  brand: "Vichy",
+  unitPrice: 201.64,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1245683/17490505208940.jpg?v=638987449392370000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-roll-on-vichy---peles-sensiveis-ou-depiladas---50ml-172509/p",
+  popularity: 1090
+ },
+ {
+  sku: "epoca-198522",
+  name: "Rejuvenescedor para Contorno dos Olhos Vichy - Liftactiv Supreme - 15ml",
+  brand: "Vichy",
+  unitPrice: 262.32,
+  unit: "un",
+  category: "skincare hidratacao e tratamento",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1245591/17490528811694.jpg?v=638987449375900000",
+  productUrl: "https://www.epocacosmeticos.com.br/rejuvenescedor-para-contorno-dos-olhos-vichy---liftactiv-supreme---15ml-172494/p",
+  popularity: 1091
+ },
+ {
+  sku: "epoca-197803",
+  name: "Antitranspirante Aerossol Rexona Clinical Extra Dry 150ml",
+  brand: "Rexona",
+  unitPrice: 17.69,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1242935/07582987224977.jpg?v=638987415298770000",
+  productUrl: "https://www.epocacosmeticos.com.br/antitranspirante-aerossol-rexona-clinical-extra-dry-150ml-171322/p",
+  popularity: 1092
+ },
+ {
+  sku: "epoca-196301",
+  name: "Gel Facial Zella 150mg Ácido Azelaico 30g",
+  brand: "Mantecorp Skincare",
+  unitPrice: 71.99,
+  unit: "un",
+  category: "skincare",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1233979/17589263994714.jpg?v=638986347231300000",
+  productUrl: "https://www.epocacosmeticos.com.br/gel-facial-zella-150mg-acido-azelaico-30g-169655/p",
+  popularity: 1093
+ },
+ {
+  sku: "epoca-196032",
+  name: "Desodorante Antitranspirante Aerossol Derma Control Sensitive Nivea Men 150ml",
+  brand: "Nivea",
+  unitPrice: 17.59,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1231745/17585724955854.jpg?v=638985774058200000",
+  productUrl: "https://www.epocacosmeticos.com.br/desodorante-antitranspirante-aerossol-derma-control-sensitive-nivea-men-150ml-169386/p",
+  popularity: 1094
+ },
+ {
+  sku: "epoca-195683",
+  name: "Body Cream Skelt Ceramide 400ml",
+  brand: "Creamy",
+  unitPrice: 45.9,
+  unit: "un",
+  category: "skincare hidratacao e tratamento anti idade",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1314255/body-cream-skelt-ceramide--1-.jpg?v=639240516124830000",
+  productUrl: "https://www.epocacosmeticos.com.br/body-cream-skelt-ceramide/p",
+  popularity: 1095
+ },
+ {
+  sku: "epoca-195682",
+  name: "Autobronzeador Bifásico Skelt 120ml",
+  brand: "Skelt",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "skincare protetor solar bronzeadores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1379897/autobronzeador-bifasico-skelt--1-.jpg?v=639239538139800000",
+  productUrl: "https://www.epocacosmeticos.com.br/autobronzeador-bifasico-skelt/p",
+  popularity: 1096
+ },
+ {
+  sku: "epoca-195673",
+  name: "Autobronzeadores Skelt Agua Dark 150ml",
+  brand: "Skelt",
+  unitPrice: 92.9,
+  unit: "un",
+  category: "skincare limpeza de pele sabonete facial",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1339782/autobronzeadores-skelt-agua-dark--1-.png?v=639238762610470000",
+  productUrl: "https://www.epocacosmeticos.com.br/autobronzeadores-skelt-agua-dark/p",
+  popularity: 1097
+ },
+ {
+  sku: "epoca-195123",
+  name: "Wella Professionals Illumina Color - Louros - 60ml 10/38 - Louro Claríssimo Dourado Pérola",
+  brand: "Wella Professionals",
+  unitPrice: 47.1,
+  unit: "un",
+  category: "cabelos coloracao permanente",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1221035/17594301404249.jpg?v=638984905066070000",
+  productUrl: "https://www.epocacosmeticos.com.br/wella-professionals-illumina-color---louros---60ml-168698/p",
+  popularity: 1098
+ },
+ {
+  sku: "epoca-194403",
+  name: "ÓLEO CORPORAL DESODORANTE PAIXÃO AMÊNDOAS COM AVELÃ 100ML",
+  brand: "Paixão",
+  unitPrice: 17.03,
+  unit: "un",
+  category: "cuidados pessoais desodorantes",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1214533/17628264400673.jpg?v=638984687084670000",
+  productUrl: "https://www.epocacosmeticos.com.br/oleo-corporal-desodorante-paixao-amendoas-com-avela-100ml-168285/p",
+  popularity: 1099
+ },
+ {
+  sku: "epoca-193887",
+  name: "Shampoo Dove Cachos Ativos + Biotina 370ml",
+  brand: "Dove",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1211933/07624483252926.jpg?v=638984616145900000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-dove-cachos-ativos---biotina-370ml-167767/p",
+  popularity: 1100
+ },
+ {
+  sku: "epoca-192093",
+  name: "Sérum Facial Iluminador Avène Vitamin Activ Cg 30ml",
+  brand: "Avene",
+  unitPrice: 214.6,
+  unit: "un",
+  category: "skincare limpeza de pele demaquilante",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1201599/17585499151772.jpg?v=638981420565800000",
+  productUrl: "https://www.epocacosmeticos.com.br/serum-facial-iluminador-avene-vitamin-activ-cg-30ml-166017/p",
+  popularity: 1101
+ },
+ {
+  sku: "epoca-192079",
+  name: "Lola From Rio Kit – Shampoo + Máscara + Leave-In + Tônico do Crescimento Kit",
+  brand: "Lola From Rio",
+  unitPrice: 126.6,
+  unit: "un",
+  category: "cabelos kits para cabelos",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1204683/lola-from-rio-kit-shampoo-mascara-leave-in-tonico-do-crescimento--1-.jpg?v=638983861514570000",
+  productUrl: "https://www.epocacosmeticos.com.br/lola-from-rio-kit-shampoo-mascara-leave-in-tonico-do-crescimento/p",
+  popularity: 1102
+ },
+ {
+  sku: "epoca-192029",
+  name: "Shampoo Fortalecedor Pielus Forte 400ml",
+  brand: "Mantecorp",
+  unitPrice: 130.89,
+  unit: "un",
+  category: "cabelos shampoo",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1200412/17585816954350.jpg?v=638981155187630000",
+  productUrl: "https://www.epocacosmeticos.com.br/shampoo-fortalecedor-pielus-forte-400ml-165952/p",
+  popularity: 1103
+ },
+ {
+  sku: "epoca-191903",
+  name: "Perfume Fame In Love Rabanne Feminino Parfum Elixir 30ml",
+  brand: "Rabanne",
+  unitPrice: 467.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/2091740/perfume-fame-in-love-parfum-elixir-rabanne-feminino.jpg?v=639144676009370000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-fame-in-love-parfum-elixir-rabanne-feminino/p",
+  popularity: 1104
+ },
+ {
+  sku: "epoca-191888",
+  name: "Perfume Vénus de Nina Ricci Feminino Eau de Parfum Intense 30ml",
+  brand: "Nina Ricci",
+  unitPrice: 494.9,
+  unit: "un",
+  category: "perfumes perfume feminino",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1367819/perfume-venus-de-nina-ricci-feminino-eau-de-parfum-intense--5-.jpg?v=639034757911300000",
+  productUrl: "https://www.epocacosmeticos.com.br/perfume-venus-de-nina-ricci-feminino-eau-de-parfum-intense/p",
+  popularity: 1105
+ },
+ {
+  sku: "epoca-190068",
+  name: "Iluminador em Stick Cremoso Vizzela Shine & Glow 1",
+  brand: "Vizzela",
+  unitPrice: 55.9,
+  unit: "un",
+  category: "maquiagem face iluminador",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1316295/iluminador-em-stick-cremoso-vizzelas-hine--glow--4-.jpg?v=639003911224430000",
+  productUrl: "https://www.epocacosmeticos.com.br/iluminador-em-stick-cremoso-vizzelas-hine--glow/p",
+  popularity: 1106
+ },
+ {
+  sku: "epoca-189125",
+  name: "Absorvente Geriátrico MasterSoft 20 Unidades",
+  brand: "DRY ECONOMICS",
+  unitPrice: 19.84,
+  unit: "un",
+  category: "cuidados pessoais cuidados femininos absorventes e protetores",
+  imageUrl: "https://epocacosmeticos.vteximg.com.br/arquivos/ids/1186527/17611308908450.jpg?v=638977953643000000",
+  productUrl: "https://www.epocacosmeticos.com.br/absorvente-geriatrico-mastersoft-20-unidades-163027/p",
+  popularity: 1107
  }
 ];

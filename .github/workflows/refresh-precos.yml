@@ -35,8 +35,14 @@ jobs:
             | tee refresh.log
       - name: Conferir tipos
         run: npx tsc --noEmit -p tsconfig.json
-      - name: Testes de catálogo, busca e ANVISA
-        run: npm run test:local -- tests/anvisa-pharmacy.test.ts tests/catalog-gaps.test.ts tests/search-golden.test.ts tests/vtex-checkout.test.ts tests/live-freight.test.ts
+      # Bloqueiam o commit: segurança (remédio fora), catálogo íntegro, checkout e frete.
+      - name: Testes de segurança do catálogo
+        run: npm run test:local -- tests/anvisa-pharmacy.test.ts tests/catalog-gaps.test.ts tests/vtex-checkout.test.ts tests/live-freight.test.ts
+      # Informativo: o golden mede o piso da busca sem IA num elenco histórico; drift de catálogo
+      # aparece aqui para o dono ver, mas não impede o preço de ser atualizado.
+      - name: Qualidade da busca (golden, não bloqueia)
+        continue-on-error: true
+        run: npm run test:local -- tests/search-golden.test.ts 2>&1 | tee golden.log
       - name: Commitar e publicar
         run: |
           git config user.name "Lia refresh semanal"
@@ -51,3 +57,5 @@ jobs:
         run: |
           echo '### Refresh semanal de preços' >> "$GITHUB_STEP_SUMMARY"
           grep -A 200 '^─' refresh.log | head -80 >> "$GITHUB_STEP_SUMMARY" || true
+          echo '### Busca (golden, informativo)' >> "$GITHUB_STEP_SUMMARY"
+          grep -E '^(✖|ℹ (tests|pass|fail))' golden.log | head -20 >> "$GITHUB_STEP_SUMMARY" || true

@@ -56,7 +56,8 @@ export const GOLDEN_CASES: GoldenCase[] = [
   {
     name: "carregador veicular continua achável (o inverso não pode quebrar)",
     query: "carregador veicular",
-    top1Include: /veicular/,
+    // 27/09: a Drogal chama o mesmo produto de "Carregador Carro" (sinônimo no matcher).
+    top1Include: /veicular|carro/,
     deterministic: true
   },
 
@@ -136,14 +137,16 @@ export const GOLDEN_CASES: GoldenCase[] = [
 
   // ---- honestidade: fora de catálogo → nenhuma opção (linha livre) ----
   {
-    name: "cabo usb-c não vira carregador (carregador não é cabo)",
+    name: "cabo usb-c é cabo USB-C — nunca carregador, nunca cabo elétrico de obra",
     query: "cabo usb c 2 metros",
-    none: true,
+    top1Include: /^cabo .*(usb|tipo.?c)/,
+    allExclude: /carregador|flexivel|porteiro|extensor/,
     deterministic: true,
-    note: "4º ciclo 15/08: o catálogo não tem cabo USB-C e o rerank servia carregador de parede"
+    note: "4º ciclo 15/08: o catálogo não tinha cabo USB-C e o rerank servia carregador de parede. 27/09: Drogal/Casa & Vídeo têm cabo USB-C; a Obramax/Telhanorte têm cabo elétrico 'por metro' que empatava — especificação técnica pedida (usb) agora é obrigatória"
   },
   { name: "conserto de torneira não vira espumante", query: "conserto de torneira", none: true, deterministic: true, note: "fuzzy conserto≈concerto; caso real do piso do concierge" },
-  { name: "parafusadeira fora de catálogo é linha livre", query: "parafusadeira", none: true, deterministic: true },
+  // 27/09: Mondial e Philco entraram na vitrine e VENDEM parafusadeira — o caso virou "achável".
+  { name: "parafusadeira (Mondial/Philco) é achável", query: "parafusadeira", top1Include: /parafusadeira/, deterministic: true },
 
   // ---- casos que SÓ a camada de IA resolve (sinônimo/julgamento) ----
   {

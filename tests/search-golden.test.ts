@@ -80,9 +80,19 @@ test("golden: sku é único em TODAS as vitrines (o rerank resolve a escolha por
   );
 });
 
-test("golden: pedir uma COR específica desliga a diversificação", async () => {
-  const candidates = await gatherCrossStoreCandidates("carregador veicular rosa", 12);
-  const top3 = diversifyOptions("carregador veicular rosa", candidates.map((c) => c.item), 3);
-  assert.ok(top3.length > 0, "nenhuma opção para cor específica");
-  assert.match(normalizeText(top3[0].name), /rosa/, `1ª opção: ${top3[0].name}`);
+test("golden: pedir uma COR específica desliga a diversificação", () => {
+  // 27/09: o elenco de produção não tem mais o carregador em 3 cores; o comportamento é
+  // provado com itens sintéticos (a regra é do diversificador, não do catálogo).
+  const items = [
+    { sku: "a", name: "Carregador Veicular I2GO 2 Saídas USB Branco", unitPrice: 30 },
+    { sku: "b", name: "Carregador Veicular I2GO 2 Saídas USB Preto", unitPrice: 30 },
+    { sku: "c", name: "Carregador Veicular I2GO 2 Saídas USB Rosa", unitPrice: 30 },
+  ] as CatalogItem[];
+  const colorAsked = diversifyOptions("carregador veicular rosa", [items[2], items[0], items[1]], 3);
+  assert.match(normalizeText(colorAsked[0].name), /rosa/);
+  assert.equal(colorAsked.length, 3, "pedindo cor, as variantes de cor continuam na lista");
+  // Sem cor pedida, um produto DIFERENTE ganha a 2ª vaga antes da 2ª cor do mesmo.
+  const other = { sku: "d", name: "Carregador de Tomada Leve-Me PD", unitPrice: 25 } as CatalogItem;
+  const generic = diversifyOptions("carregador veicular", [...items, other], 3);
+  assert.equal(generic[1].sku, "d", `sem cor pedida: ${generic.map((i) => i.name).join(" | ")}`);
 });

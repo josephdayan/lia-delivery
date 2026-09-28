@@ -32,6 +32,8 @@ type Source = {
   ft?: string;
   /** Loja que devolve links no host técnico da VTEX (…vtexcommercestable): troca pelo site público. */
   rewriteHost?: string;
+  /** Prefixo de SKU do catálogo quando difere da chave (drogariasp → "dsp", epocacosmeticos → "epoca"). */
+  skuPrefix?: string;
 };
 
 // O deny-regex de medicamento é o mesmo das duas farmácias. A terceira guarda
@@ -61,7 +63,7 @@ const SOURCES: Source[] = [
   },
   // 25–27/09: lojas da compra por API (sem operador). Mesmos parâmetros da colheita original.
   { key: "mambo", origin: "https://www.mambo.com.br", max: 6000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
-  { key: "epocacosmeticos", origin: "https://www.epocacosmeticos.com.br", max: 1200, rewriteHost: "www.epocacosmeticos.com.br" },
+  { key: "epocacosmeticos", origin: "https://www.epocacosmeticos.com.br", max: 1200, rewriteHost: "www.epocacosmeticos.com.br", skuPrefix: "epoca" },
   {
     key: "drogal", origin: "https://www.drogal.com.br", max: 1500,
     categories: "1,3,5,7,30,38,52,62,77,90,94,121,195,372,382,329,456,258",
@@ -80,6 +82,7 @@ const SOURCES: Source[] = [
   { key: "obramax", origin: "https://www.obramax.com.br", max: 2500, ft: "tinta;lampada;torneira;chuveiro;fechadura;parafuso;furadeira;extensao;tomada;interruptor;cola;fita;pincel;rolo;silicone;registro;ralo;vaso sanitario;prateleira;escada;mangueira;ferramenta;piso;argamassa;cimento" },
   {
     key: "drogariasp",
+    skuPrefix: "dsp",
     origin: "https://www.drogariasaopaulo.com.br",
     max: 200,
     categories:
@@ -180,6 +183,11 @@ const work = mkdtempSync(join(tmpdir(), "lia-catalog-"));
 const scratch = dryRun ? work : null;
 const MIN_KEEP = Number(process.env.LIA_CATALOG_MIN_KEEP ?? 0.6);
 function accept(key: string, tempFile: string, target: string, before: Map<string, number>, after: Map<string, number>, rewriteHost?: string): boolean {
+  const prefixOf = (m: Map<string, number>) => [...m.keys()][0]?.replace(/\d+$/, "");
+  if (before.size && after.size && prefixOf(before) !== prefixOf(after)) {
+    console.error(`   ✖ prefixo de SKU mudou (${prefixOf(before)} → ${prefixOf(after)}) — catálogo anterior preservado`);
+    return false;
+  }
   if (after.size === 0 || (before.size > 0 && after.size < before.size * MIN_KEEP)) {
     console.error(`   ✖ colheita encolheu (${before.size} → ${after.size}) — catálogo anterior preservado`);
     return false;
@@ -198,7 +206,9 @@ for (const source of SOURCES) {
   const out = join(work, `${source.key}.ts`);
   const before = readPrices(target);
   process.stdout.write(`→ ${source.key.padEnd(16)}`);
-  const args = [source.origin, source.key, out, String(source.max)];
+  // O 2º argumento do coletor vira o prefixo do SKU: tem de ser o MESMO do catálogo em uso,
+  // senão todos os SKUs mudam (27/09: drogariasp virou "drogariasp-" e quebraria a busca/compra).
+  const args = [source.origin, source.skuPrefix ?? source.key, out, String(source.max)];
   if (source.categories) args.push(`--categories=${source.categories}`);
   if (source.deny) args.push(`--deny=${source.deny}`);
   if (source.ft) args.push(`--ft=${source.ft}`);

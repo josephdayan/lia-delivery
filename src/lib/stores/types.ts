@@ -152,8 +152,11 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
   // "miojo" ≈ "lámen": o cliente fala miojo; o catálogo esconde "Miojo"/"Lámen" no
   // meio do nome ("Pack Macarrão Instantâneo Lámen … Nissin Miojo 510g").
   if ((token === "miojo" || token === "miojos" || token === "lamen") && (word === "lamen" || word === "miojo")) return true;
+  // 27/09 (golden "carregador veicular"): a Drogal chama o mesmo produto de "Carregador Carro".
+  if (VEHICLE_WORDS.has(token) && VEHICLE_WORDS.has(word)) return true;
   return false;
 }
+const VEHICLE_WORDS = new Set(["veicular", "veiculares", "carro", "carros", "automotivo", "automotiva", "automotivos"]);
 
 // Word-boundary match: avoids "bom"(3) hitting "bombril". Short tokens must match a
 // whole word; tokens >=4 may match as a substring of a word ("colgate" in "colgate").
@@ -239,7 +242,7 @@ const PET_SPECIES_RE = /\b(caes|cao|cachorros?|gatos?|felinos?|caninos?|aquario|
 // "agua" — mesma classe da sanitária/oxigenada (água que não é água de beber).
 // "saborizada" entrou em 17/08: a varredura fit da colheita trouxe águas saborizadas
 // zero pro catálogo e "água" seca passou a devolver maracujá em vez de mineral (golden).
-const PROCESSED_VARIANTS = new Set(["condensado", "condensada", "soluvel", "sache", "saches", "capsula", "capsulas", "fermentado", "fermentada", "vegetal", "sanitaria", "oxigenada", "tonica", "micelar", "termal", "saborizada", "saborizado"]);
+const PROCESSED_VARIANTS = new Set(["soy", "condensado", "condensada", "soluvel", "sache", "saches", "capsula", "capsulas", "fermentado", "fermentada", "vegetal", "sanitaria", "oxigenada", "tonica", "micelar", "termal", "saborizada", "saborizado"]);
 // "Leite DE COCO" é tão pouco "leite" quanto o de soja: quem pede leite quer o de vaca.
 // A lista existia mas estava incompleta, e o coco (barato, 200ml) vencia o desempate de
 // preço — pedir "leite" devolvia leite de coco.
@@ -409,6 +412,13 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
   // Piso de relevância: sem pelo menos UM token forte, é ruído conversacional —
   // devolver vazio honesto em vez de "Esponja Não Risca".
   if (!strongHit) return 0;
+  // Especificação técnica pedida (usb, usb-c, hdmi, bluetooth…) é identidade: item sem ela
+  // não é o produto (27/09: "cabo usb c" trazia "Cabo Flexível 6mm² por metro" da Obramax).
+  const specAsked = effTokens.filter((t) => SPEC_TOKENS.has(t));
+  if (specAsked.length) {
+    const nameCompounds = new Set(queryTokens(item.name));
+    if (specAsked.some((t) => !nameCompounds.has(t) && !nameWords.some((w) => tokenMatchesWordSyn(t, w)) && !categoryWords.some((w) => tokenMatchesWord(t, w)))) return 0;
+  }
 
   // Tamanho pedido ("coca 2 litros", "arroz 5kg") é sinal forte: item com o tamanho
   // certo sobe; item com OUTRO tamanho explícito perde força.
@@ -509,6 +519,23 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
     // "Leite de Rosas" é loção de pele, "Leite de Coco" é ingrediente, "Ovos de Codorna"
     // é outro ovo. Isto generaliza a lista fixa acima (que só tinha soja/amêndoas) — sem
     // ela, quem pedia "leite" recebia loção, porque o desempate caía no preço.
+    // 27/09 (golden "leite"): a palavra pedida que só aparece DEPOIS de "de/com" é
+    // ingrediente de outro produto — "Sorvete Doce de Leite", "Creme de Leite", "Pão de
+    // Queijo" — e perde para o produto que É aquilo. Penalidade (reordena), não exclusão.
+    if (effTokens.length === 1 && !headHit) {
+      const requested = effTokens[0];
+      const asIngredient = nameWords.some((w, i) => i > 0 && isSameNoun(requested, w) && (nameWords[i - 1] === "de" || nameWords[i - 1] === "com"));
+      const asProduct = nameWords.some((w, i) => isSameNoun(requested, w) && (i === 0 || (nameWords[i - 1] !== "de" && nameWords[i - 1] !== "com")));
+      if (asIngredient && !asProduct) score -= 3;
+    }
+    // "Leiteira" não é leite: casou só por prefixo com palavra MAIS LONGA (derivada), sem ser
+    // o mesmo substantivo nem abreviação conhecida. Penaliza quando o pedido é a palavra inteira.
+    if (effTokens.length === 1 && effTokens[0].length >= 5) {
+      const requested = effTokens[0];
+      const exactSomewhere = nameWords.some((w) => isSameNoun(requested, w));
+      const derived = nameWords.some((w) => w.startsWith(requested) && w.length - requested.length >= 3 && !isSameNoun(requested, w));
+      if (derived && !exactSomewhere) score -= 2;
+    }
     if (effTokens.length === 1) {
       const asked = new Set(effTokens);
       const unrequested = [...nameNorm.matchAll(/\bde\s+([a-z]{3,})\b/g)].filter(
@@ -550,16 +577,26 @@ export function conciergeMatchIsStrong(query: string, item: CatalogItem): boolea
   const nameWords = words(item.name);
   const brandWords = words(item.brand ?? "");
   const categoryWords = words(item.category ?? "");
+  const nameCompounds = new Set(queryTokens(item.name));
   const covered = wordTokens.filter(
     (token) =>
+      nameCompounds.has(token) ||
       nameWords.some((word) => tokenMatchesWordSyn(token, word)) ||
       brandWords.some((word) => tokenMatchesWord(token, word)) ||
       categoryWords.some((word) => tokenMatchesWord(token, word))
   ).length;
 
   const missing = wordTokens.length - covered;
+  // 27/09 (golden "cabo usb c 2 metros"): especificação técnica pedida é identidade do
+  // produto, nunca qualificador tolerável — "cabo usb" não pode virar cabo elétrico de obra.
+  // O nome também passa pelos compostos: "Cabo Tipo C" vira "usbc", como o pedido.
+  const nameTokens = new Set(queryTokens(item.name));
+  const specMissing = wordTokens.some((token) => SPEC_TOKENS.has(token) && !nameTokens.has(token) &&
+    !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
+  if (specMissing) return false;
   return wordTokens.length <= 2 ? missing === 0 : missing <= 1;
 }
+const SPEC_TOKENS = new Set(["usb", "usbc", "usba", "microusb", "hdmi", "bluetooth", "lightning", "wifi", "vga", "ethernet", "rj45"]);
 
 // Cores/acabamentos que distinguem variantes do MESMO produto. Usadas para não gastar
 // as 3 vagas de opção com "Branco/Preto/Rosa" do mesmo item (caso real: 3 carregadores

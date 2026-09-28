@@ -88,11 +88,22 @@ after(async () => {
   await prisma.$disconnect();
 });
 
+// Os preços se atualizam toda semana (refresh 27/09): a opção do Carrefour nem sempre é a 1ª.
+// O teste é sobre o MÍNIMO do Carrefour, então escolhe a opção dele pela loja no contexto.
+async function carrefourPick(userId: string): Promise<string> {
+  const convo = await prisma.conversation.findFirst({ where: { userId }, orderBy: { createdAt: "desc" } });
+  const ctx = JSON.parse(convo?.context ?? "{}") as { pending?: Array<{ options?: Array<{ storeKey?: string }> }> };
+  const options = ctx.pending?.[0]?.options ?? [];
+  const idx = options.findIndex((o) => o.storeKey === "carrefour");
+  assert.ok(idx >= 0, `nenhuma opção do Carrefour entre ${options.map((o) => o.storeKey).join(",")}`);
+  return String(idx + 1);
+}
+
 test("pedido mínimo oferece TROCA DE LOJA e o aceite fecha na hora (2º testador, 24/08)", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   await c.send("quero creme dental colgate máxima proteção do carrefour");
-  const afterChoice = await c.send("1");
+  const afterChoice = await c.send(await carrefourPick(c.userId));
   if (/quantas unidades/i.test(afterChoice)) await c.send("1");
   const wall = await c.send("pagar");
   assert.match(wall, /pedido mínimo/i, wall.slice(0, 300));
@@ -119,7 +130,7 @@ test("'Deixar como está' (minswap:no) mantém a cesta intacta", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   await c.send("quero creme dental colgate máxima proteção do carrefour");
-  const afterChoice = await c.send("1");
+  const afterChoice = await c.send(await carrefourPick(c.userId));
   if (/quantas unidades/i.test(afterChoice)) await c.send("1");
   await c.send("pagar");
   const declined = await c.send("minswap:no");

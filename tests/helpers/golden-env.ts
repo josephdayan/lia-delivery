@@ -9,12 +9,13 @@ process.env.OPENAI_API_KEY = "";
 process.env.WHATSAPP_PROVIDER = "mock";
 process.env.LIA_RETAILER_TEST_SEED = "true";
 process.env.LIA_SEND_PHOTOS = "false";
-// 25/09/2026: em produção só as lojas que fecham por API ficam ligadas por padrão. O golden
-// mede o BUSCADOR sobre o roster HISTÓRICO de 18 vitrines, então liga essas explicitamente aqui.
-// As lojas somadas em 25/09 (Mambo, Época, Drogal) ficam FORA do golden: com elas, "agua" cai em
-// "água perfumada para tecidos" no piso determinístico e "cabo usb-c" passa a existir (Drogal).
-// Caso registrado em PENDENCIAS 25/09 para regra principial no scorer antes de incluí-las.
-for (const store of ["CARREFOUR", "OBA", "PETZ", "BOTICARIO", "DECATHLON", "SWIFT", "KALUNGA", "RIHAPPY", "CACAUSHOW", "KOPENHAGEN", "DROGARAIA", "DROGARIASP", "PAGUEMENOS", "DIVVINO", "IMIGRANTES", "NATURALDATERRA", "COBASI", "GIULIANAFLORES"]) {
+// 27/09/2026: o golden mede a busca no ELENCO DE PRODUÇÃO — as lojas com compra por API (as
+// opt-in ficam desligadas, como na Vercel). Antes media um elenco histórico de 18 lojas que
+// já não existe em produção (sem Mambo, com Carrefour), e o drift semanal de catálogo o
+// derrubava sem dizer nada sobre o que o cliente vê.
+for (const store of ["CARREFOUR", "OBA", "PETZ", "BOTICARIO", "DECATHLON", "KALUNGA", "CACAUSHOW", "DROGARAIA", "DIVVINO", "IMIGRANTES", "NATURALDATERRA", "GIULIANAFLORES"]) {
+  process.env[`LIA_ENABLE_${store}`] = "false";
+}
+for (const store of ["DROGARIASP", "COBASI", "PAGUEMENOS", "SWIFT", "KOPENHAGEN", "RIHAPPY", "MAMBO", "EPOCACOSMETICOS", "DROGAL", "MARTINSFONTES", "BRINOX", "CREAMY", "CASAEVIDEO", "TELHANORTE", "ZONACRIATIVA", "PHILCO", "MONDIAL", "OXFORD", "POLISHOP", "OBRAMAX"]) {
   process.env[`LIA_ENABLE_${store}`] = "true";
 }
-for (const store of ["MAMBO", "EPOCACOSMETICOS", "DROGAL", "MARTINSFONTES", "BRINOX", "CREAMY", "CASAEVIDEO", "TELHANORTE", "ZONACRIATIVA", "PHILCO", "MONDIAL", "OXFORD", "POLISHOP", "OBRAMAX"]) process.env[`LIA_ENABLE_${store}`] = "false";
