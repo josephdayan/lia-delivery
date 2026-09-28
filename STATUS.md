@@ -27,8 +27,13 @@ se existem menos, mostra as que existem; nunca completa com outra coisa. O promp
 completa primeiro com produtos distintos e depois com variantes (a água de coco passa a
 incluir os sabores). Também proíbe quebrar a marca pedida só para preencher vaga: "ração
 golden" completava a 5ª vaga com Dog Chow e agora sai com 4 Golden. Golden set 33/38 contra
-32/38 do prompt anterior, com as mesmas falhas antigas. A IA ainda varia: água de coco saiu
-com 5 numa rodada e 3 na outra.
+32/38 do prompt anterior, com as mesmas falhas antigas. A variação foi resolvida em seguida. O prompt pedia "escolha até N", e com isso a IA
+decidia o tamanho da vitrine. Agora ela lista todos os candidatos que são o produto pedido
+e o código monta os até 5 (`diversifyOptions`: distintos primeiro, variantes depois). A
+segurança continua com a IA, porque item reprovado nunca volta. Medido 3 vezes por busca:
+lenço, shampoo e leite sem lactose 5/5/5 (todos sem lactose); ração golden 4/4/4, só Golden;
+água de coco 3/3/3, porque a IA julga de forma estável que a Sococo saborizada não é água
+de coco pura. Golden set 33/38, igual ao anterior.
 
 ## 28/09/2026 (madrugada) — 1ª compra na Mambo: pedido criado, Pix da loja não pago, cliente estornado sozinho
 
