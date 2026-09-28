@@ -82,18 +82,21 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_EPOCACOSMETICOS !== "false" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}),
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
   // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.
-  ...(process.env.LIA_ENABLE_MARTINSFONTES !== "false" ? { [martinsfontesStore.key]: martinsfontesStore } : {}),
+  // 28/09: teste de Pix loja a loja. Martins Fontes e Mondial recusam criar o pedido (ORD062
+  // "Acesso negado"); Obramax e Telhanorte recusam autorizar o Pix (CHK0223). Sem operador,
+  // loja que não fecha sozinha sai da vitrine (regra do dono 25/09). LIA_ENABLE_<LOJA>=true religa.
+  ...(process.env.LIA_ENABLE_MARTINSFONTES === "true" ? { [martinsfontesStore.key]: martinsfontesStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_BRINOX !== "false" ? { [brinoxStore.key]: brinoxStore } : {}),
   ...(process.env.LIA_ENABLE_CREAMY !== "false" ? { [creamyStore.key]: creamyStore } : {}),
   ...(process.env.LIA_ENABLE_CASAEVIDEO !== "false" ? { [casaevideoStore.key]: casaevideoStore } : {}),
-  ...(process.env.LIA_ENABLE_TELHANORTE !== "false" ? { [telhanorteStore.key]: telhanorteStore } : {}),
+  ...(process.env.LIA_ENABLE_TELHANORTE === "true" ? { [telhanorteStore.key]: telhanorteStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_ZONACRIATIVA !== "false" ? { [zonacriativaStore.key]: zonacriativaStore } : {}),
   // 27/09 (2ª leva): eletro e casa — Philco, Mondial, Oxford, Polishop, Obramax.
   ...(process.env.LIA_ENABLE_PHILCO !== "false" ? { [philcoStore.key]: philcoStore } : {}),
-  ...(process.env.LIA_ENABLE_MONDIAL !== "false" ? { [mondialStore.key]: mondialStore } : {}),
+  ...(process.env.LIA_ENABLE_MONDIAL === "true" ? { [mondialStore.key]: mondialStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_OXFORD !== "false" ? { [oxfordStore.key]: oxfordStore } : {}),
   ...(process.env.LIA_ENABLE_POLISHOP !== "false" ? { [polishopStore.key]: polishopStore } : {}),
-  ...(process.env.LIA_ENABLE_OBRAMAX !== "false" ? { [obramaxStore.key]: obramaxStore } : {}),
+  ...(process.env.LIA_ENABLE_OBRAMAX === "true" ? { [obramaxStore.key]: obramaxStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   // Mercado Livre: vitrine de CAUDA LONGA, ao vivo (decisão do dono 16/08). Fica por
   // ÚLTIMO no registry de propósito: as lojas locais decidem o "hoje"; o ML entra pra
   // resolver o que ninguém tem. Desligado por padrão — LIA_ENABLE_MERCADOLIVRE=true.

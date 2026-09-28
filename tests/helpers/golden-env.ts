@@ -16,6 +16,10 @@ process.env.LIA_SEND_PHOTOS = "false";
 for (const store of ["CARREFOUR", "OBA", "PETZ", "BOTICARIO", "DECATHLON", "KALUNGA", "CACAUSHOW", "DROGARAIA", "DIVVINO", "IMIGRANTES", "NATURALDATERRA", "GIULIANAFLORES"]) {
   process.env[`LIA_ENABLE_${store}`] = "false";
 }
-for (const store of ["DROGARIASP", "COBASI", "PAGUEMENOS", "SWIFT", "KOPENHAGEN", "RIHAPPY", "MAMBO", "EPOCACOSMETICOS", "DROGAL", "MARTINSFONTES", "BRINOX", "CREAMY", "CASAEVIDEO", "TELHANORTE", "ZONACRIATIVA", "PHILCO", "MONDIAL", "OXFORD", "POLISHOP", "OBRAMAX"]) {
+for (const store of ["DROGARIASP", "COBASI", "PAGUEMENOS", "SWIFT", "KOPENHAGEN", "RIHAPPY", "MAMBO", "EPOCACOSMETICOS", "DROGAL", "BRINOX", "CREAMY", "CASAEVIDEO", "ZONACRIATIVA", "PHILCO", "OXFORD", "POLISHOP"]) {
   process.env[`LIA_ENABLE_${store}`] = "true";
+}
+// 28/09: desligadas em produção (o fechamento por API falhou no teste de Pix loja a loja).
+for (const store of ["MARTINSFONTES", "TELHANORTE", "MONDIAL", "OBRAMAX"]) {
+  process.env[`LIA_ENABLE_${store}`] = "false";
 }

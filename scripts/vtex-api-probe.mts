@@ -135,6 +135,16 @@ function step(name: string, status: number, detail: unknown) {
   steps.push({ name, status, detail });
   console.log(`[${name}] HTTP ${status} ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
 }
+// Erro inesperado (rede, JSON, exceção) também grava o que já se viu: sem isso a sondagem
+// sumia sem arquivo (28/09: 6 lojas em --buy saíram sem rastro).
+for (const ev of ["uncaughtException", "unhandledRejection"] as const) {
+  process.on(ev, (error: unknown) => {
+    step("erro inesperado", 0, error instanceof Error ? `${error.name}: ${error.message}` : String(error));
+    try { save(); } catch { /* segue */ }
+    console.error(`✗ erro inesperado: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  });
+}
 function fail(msg: string): never {
   save();
   console.error(`✗ ${msg}`);
