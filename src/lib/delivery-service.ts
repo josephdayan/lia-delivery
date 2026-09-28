@@ -1079,7 +1079,7 @@ async function handleDeliveryTurn(
     last.qty = Number(qtyTap[1]);
     last.lineTotal = Math.round(last.unitPrice * last.qty * 100) / 100;
     await writeCtx(convo.id, ctx);
-    await reply(phone, copy.qtyAdjusted(last.qty, last.name));
+    await replyBasketAdjusted(phone, copy.qtyAdjustedShort(last.qty, last.name), copy.qtyAdjusted(last.qty, last.name));
     return;
   }
   if (normalizeMsg(text) === "qty:other" && ctx.basket?.length) {
@@ -1394,7 +1394,7 @@ async function handleDeliveryTurn(
       last.qty = Math.min(50, last.qty + intent.qty);
       last.lineTotal = Math.round(last.unitPrice * last.qty * 100) / 100;
       await writeCtx(convo.id, ctx);
-      await reply(phone, copy.moreOfSameAdded(intent.qty, last.name, last.qty));
+      await replyBasketAdjusted(phone, copy.moreOfSameAddedShort(last.qty, last.name), copy.moreOfSameAdded(intent.qty, last.name, last.qty));
       return;
     }
     await reply(phone, copy.askWhatYouWant());
@@ -2178,7 +2178,7 @@ async function handleDeliveryTurn(
             existing.qty = Math.max(1, single.qty);
             existing.lineTotal = Math.round(existing.unitPrice * existing.qty * 100) / 100;
             await writeCtx(convo.id, ctx);
-            await reply(phone, copy.qtyAdjusted(existing.qty, existing.name));
+            await replyBasketAdjusted(phone, copy.qtyAdjustedShort(existing.qty, existing.name), copy.qtyAdjusted(existing.qty, existing.name));
           }
         }
         for (const part of swaps) {
@@ -2302,7 +2302,7 @@ async function handleDeliveryTurn(
       last.qty = intent.value;
       last.lineTotal = Math.round(last.unitPrice * last.qty * 100) / 100;
       await writeCtx(convo.id, ctx);
-      await reply(phone, copy.qtyAdjusted(last.qty, last.name));
+      await replyBasketAdjusted(phone, copy.qtyAdjustedShort(last.qty, last.name), copy.qtyAdjusted(last.qty, last.name));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -2968,6 +2968,19 @@ async function confirmChosenOption(
   }
   // Quantidade assumida → o follow-up troca "Cancelar" por "Mudar quantidade".
   await advancePending(phone, convoId, ctx, userCep, confirmed, { qtyButton: assumedOne });
+}
+
+// Confirmação de ajuste na cesta com os botões pós-escolha (Pagar / Adicionar mais /
+// Cancelar) — o "diz *só isso*" virou botão (dono, 28/09). Sem Meta, o texto de sempre.
+async function replyBasketAdjusted(phone: string, shortBody: string, fallbackText: string) {
+  try {
+    markTurnReplied();
+    const interactive = await whatsappAdapter.sendChoiceFollowUp(phone, shortBody);
+    if (interactive) return;
+  } catch (error) {
+    console.warn("[whatsapp:basket-adjusted:fallback-text]", error instanceof Error ? error.message : error);
+  }
+  await reply(phone, fallbackText);
 }
 
 async function handleChoosing(
@@ -3877,7 +3890,7 @@ async function handleConciergeRequest(
         target.qty = Math.min(50, target.qty + add);
         target.lineTotal = Math.round(target.unitPrice * target.qty * 100) / 100;
         await writeCtx(convoId, ctx);
-        await reply(phone, copy.moreOfSameAdded(add, target.name, target.qty));
+        await replyBasketAdjusted(phone, copy.moreOfSameAddedShort(target.qty, target.name), copy.moreOfSameAdded(add, target.name, target.qty));
         return;
       }
     }

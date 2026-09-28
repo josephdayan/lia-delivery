@@ -35,7 +35,7 @@ async function paidOrder(overrides: Record<string, unknown> = {}) {
       paidAt: new Date(Date.now() - 60_000), courierKey: "retailer_delivery", ...overrides,
     },
   });
-  await recordPayment({ deliveryOrderId: order.id, provider: "mercadopago", providerPaymentId: `vtexrun-${process.pid}-${sequence}`, amountCents: 1483, status: "approved", method: "pix" });
+  await recordPayment({ deliveryOrderId: order.id, provider: "mercadopago", providerPaymentId: `9${process.pid}${String(sequence).padStart(4, "0")}${Date.now() % 100000}`, amountCents: 1483, status: "approved", method: "pix" });
   return order;
 }
 const oldStores = process.env.LIA_AUTO_PURCHASE_STORES;
@@ -111,8 +111,10 @@ test("recebedor já memorizado: compra inteira sem nenhum toque; 403 no fechamen
   assert.equal(r2.runs[0]?.status, "needs_review", JSON.stringify(r2.runs));
   assert.equal(mockPixOutCalls.pay, before + 1, "recusa não paga nada");
   const job = await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: blocked.id } });
-  assert.equal(job.status, "needs_review");
+  // Recusa ANTES do pedido = estorno na mesma passada (regra 25/09): job cancelado, cliente estornado.
+  assert.equal(job.status, "canceled");
   assert.equal(job.lastErrorCode, "VTEX_RECAPTCHA_REQUIRED");
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: blocked.id } })).status, "refunded");
   assert.equal((await prisma.purchaseSpend.findFirstOrThrow({ where: { purchaseJobId: job.id } })).status, "released");
   assert.ok(captcha.calls.some((c) => c.url.endsWith("/items/removeAll")));
   // Recusa antes do pedido = estorno automático no mesmo tick (pagamento mockado sem provedor
@@ -145,4 +147,26 @@ test("recebedor já memorizado: compra inteira sem nenhum toque; 403 no fechamen
   process.env.LIA_SERVER_BUYER_OFF = "true";
   assert.equal((await runVtexApiPurchases({ maxJobs: 1 })).enabled, false);
   delete process.env.LIA_SERVER_BUYER_OFF;
+});
+
+test("Pix da loja recusado na conferência: motivo gravado, nenhum pagamento sai e o cliente é estornado na passada seguinte", async () => {
+  await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
+  const order = await paidOrder();
+  const before = mockPixOutCalls.pay;
+  // Loja emite Pix com valor diferente do conferido: a conferência recusa antes de pagar.
+  const r1 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fakeVtex({ orderGroup: `v${process.pid}00007dgsp`, pixAmount: "99.99" }).fetchImpl });
+  assert.equal(r1.runs[0]?.status, "outcome_unknown", JSON.stringify(r1.runs));
+  assert.match(r1.runs[0]?.detail ?? "", /Valor do Pix/);
+  const job = await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: order.id } });
+  const refused = await prisma.purchaseAttempt.findFirstOrThrow({ where: { purchaseJobId: job.id, step: "pix_capture", status: "refused" } });
+  assert.match(refused.errorMessage ?? "", /Valor do Pix/);
+  assert.equal(mockPixOutCalls.pay, before, "nada pago à loja");
+  assert.equal(await prisma.pixPayout.count({ where: { purchaseJobId: job.id } }), 0);
+  // Próxima passada do cron: job cancelado, orçamento liberado, cliente estornado.
+  const r2 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fakeVtex().fetchImpl });
+  assert.deepEqual(r2.errors, []);
+  const after = await prisma.purchaseJob.findUniqueOrThrow({ where: { id: job.id } });
+  assert.equal(after.status, "canceled");
+  assert.equal((await prisma.purchaseSpend.findFirstOrThrow({ where: { purchaseJobId: job.id } })).status, "released");
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).status, "refunded");
 });

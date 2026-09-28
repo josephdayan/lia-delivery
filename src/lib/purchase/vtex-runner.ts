@@ -31,6 +31,7 @@ export function refundableServerFailure(code: string | null | undefined): boolea
 }
 function customerReason(code: string): string {
   if (/^VTEX_(ITEMS|SLA|SHIPPINGDATA|SELLER)/.test(code)) return "a loja não tem esse item para entrega no seu endereço agora";
+  if (code === "PIX_CAPTURE_REFUSED" || code === "VTEX_ORDER_WITHOUT_PAYMENT") return "não consegui concluir o pagamento na loja";
   return "a loja não confirmou a compra agora";
 }
 export async function refundServerFailure(orderId: string, code: string, detail: string) {
@@ -50,6 +51,27 @@ export async function refundRejectedServerJobs(limit = 10) {
   });
   let refunded = 0;
   const errors: string[] = [];
+  // Pedido criado na loja, mas a Lia NUNCA pagou o Pix dela (conferência recusou antes de
+  // qualquer PixPayout; 28/09, 1º pedido real do Mambo): nenhum dinheiro saiu, o pedido da
+  // loja vence sem pagamento — o cliente é estornado já, sem esperar a loja cancelar.
+  const unpaidPlaced = await prisma.purchaseJob.findMany({
+    where: { status: "outcome_unknown", lastErrorCode: { in: ["PIX_CAPTURE_REFUSED", "VTEX_ORDER_WITHOUT_PAYMENT"] }, storeKey: { in: VTEX_API_STORE_KEYS }, updatedAt: { gte: new Date(Date.now() - 48 * 3_600_000) }, deliveryOrder: { status: "paid", storeOrderNumber: null } },
+    select: { id: true, deliveryOrderId: true, lastErrorCode: true, submissionId: true }, take: limit,
+  });
+  for (const job of unpaidPlaced) {
+    const payout = await prisma.pixPayout.findFirst({ where: { purchaseJobId: job.id }, select: { id: true } });
+    if (payout) continue; // dinheiro pode ter saído: humano
+    const refusal = await prisma.purchaseAttempt.findFirst({ where: { purchaseJobId: job.id, step: { in: ["pix_capture", "vtex_order"] } }, orderBy: { createdAt: "desc" } });
+    const why = refusal?.errorMessage ?? "a Lia não conseguiu pagar o Pix da loja";
+    try {
+      await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "canceled", lockedAt: null, claimToken: null, lastErrorMessage: `Pedido criado na loja e NÃO pago pela Lia (${why}); vence sem pagamento. Cliente estornado.`.slice(0, 500) } });
+      if (job.submissionId) await prisma.purchaseSpend.updateMany({ where: { submissionId: job.submissionId, status: "reserved" }, data: { status: "released", releasedAt: new Date(), releaseNote: "Pix da loja não pago; pedido vence sozinho" } });
+      await refundServerFailure(job.deliveryOrderId, job.lastErrorCode ?? "PIX_CAPTURE_REFUSED", why);
+      refunded += 1;
+    } catch (error) {
+      errors.push(`${job.deliveryOrderId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
   for (const job of jobs) {
     if (!refundableServerFailure(job.lastErrorCode)) continue;
     // Tentativa de pedido que chegou a existir na loja nunca estorna sozinha.
@@ -171,10 +193,14 @@ export async function executeVtexJob(
   // ---- Pix da loja pago pela Lia ----
   let captured;
   try { captured = await capturePix(...ids, submissionId, pix.code); } catch (error) {
-    // Pedido criado e Pix em mãos, mas a conferência do Pix falhou (valor, dinâmico, banco):
-    // humano decide; o pedido vence sozinho na loja se ninguém pagar.
+    // Pedido criado e Pix em mãos, mas a conferência do Pix falhou (valor, dinâmico, banco).
+    // Nenhum dinheiro saiu (o PixPayout nasce só depois da conferência): o motivo fica gravado
+    // e a varredura estorna o cliente; o pedido na loja vence sozinho sem pagamento.
+    const reason = error instanceof Error ? error.message : String(error);
+    console.error("[vtex-runner:pix-capture-refused]", payload.jobId, payload.storeKey, reason);
+    await prisma.purchaseAttempt.create({ data: { purchaseJobId: payload.jobId, step: "pix_capture", status: "refused", idempotencyKey: `pix-capture-refused:${submissionId}`, errorCode: "PIX_CAPTURE_REFUSED", errorMessage: reason.slice(0, 500), details: { orderGroup: pix.orderGroup, pixExpiresAt: pix.expiresAt ?? null } } }).catch(() => undefined);
     await executionUnknown(...ids, "PIX_CAPTURE_REFUSED").catch(() => undefined);
-    return { ...base, status: "outcome_unknown", detail: error instanceof Error ? error.message : String(error) };
+    return { ...base, status: "outcome_unknown", detail: reason };
   }
   if (captured.status === "awaiting_receiver") {
     await rememberPixCodeForOwnerApproval(payload.jobId, submissionId, pix.code);

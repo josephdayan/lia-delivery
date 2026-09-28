@@ -15,6 +15,20 @@
 // A Meta exige proporção de palavras fixas por variável ("Params Words Ratio Exceeds
 // Limit", 1ª tentativa 07/09): o card precisa de rótulos, não só as 3 variáveis.
 export const CAROUSEL_CARD_BODY = "Produto: {{1}}\nPreço do item: *{{2}}*\nPrazo de entrega da loja: {{3}} (contado da compra)";
+// v4 (28/09, dono: "esse contado da compra pode tirar"): o texto não pode terminar em variável,
+// então fecha com uma instrução útil. Criado e ativado sozinho quando a Meta aprovar
+// (src/lib/meta-setup.ts ensureCarouselV4 + activeCarouselPrefix).
+export const CAROUSEL_CARD_BODY_V4 = "Produto: {{1}}\nPreço: *{{2}}*\nEntrega pela loja: {{3}}\nToque abaixo para adicionar.";
+export function carouselCardBodyFor(prefix: string): string {
+  return /_v4$/.test(prefix) ? CAROUSEL_CARD_BODY_V4 : CAROUSEL_CARD_BODY;
+}
+// Prazo no card, curto: janela agendada vira só a janela ("amanhã, 12h–15h"); o resto sem o
+// rótulo "prazo da loja:" (o template já tem o rótulo).
+export function compactCardDelivery(text: string): string {
+  const t = text.replace(/^prazo da loja:\s*/i, "").trim();
+  const windowed = /^em até \d+h \((.+)\)$/.exec(t);
+  return windowed ? windowed[1] : t;
+}
 
 // Limite da Meta para o corpo hidratado de um card.
 export const CAROUSEL_CARD_BODY_LIMIT = 160;
@@ -22,6 +36,9 @@ export const CAROUSEL_CARD_BODY_LIMIT = 160;
 // Quanto o texto FIXO do template consome — derivado do próprio texto, para o dia em que
 // alguém reescrever os rótulos e o orçamento mudar junto.
 export const CAROUSEL_CARD_FIXED_LENGTH = CAROUSEL_CARD_BODY.replace(/\{\{\d+\}\}/g, "").length;
+function fixedLengthOf(body: string): number {
+  return body.replace(/\{\{\d+\}\}/g, "").length;
+}
 
 // O prazo é curto por natureza ("1 dia útil", "até 3 dias úteis"); o nome é a identidade do
 // produto e fica com o que sobrar. Quando o orçamento aperta, encurta o prazo primeiro.
@@ -44,11 +61,13 @@ function truncate(text: string, max: number): string {
 // nunca é truncado: preço cortado é preço errado.
 export function fitCarouselCardParams(
   input: { name: string; price: string; delivery: string },
-  limit = CAROUSEL_CARD_BODY_LIMIT
+  limit = CAROUSEL_CARD_BODY_LIMIT,
+  body = CAROUSEL_CARD_BODY
 ): { name: string; price: string; delivery: string } {
   const price = input.price;
-  const budget = limit - CAROUSEL_CARD_FIXED_LENGTH - price.length;
-  if (budget <= 0) return { name: truncate(input.name, Math.max(0, limit - CAROUSEL_CARD_FIXED_LENGTH)), price, delivery: "" };
+  const fixed = fixedLengthOf(body);
+  const budget = limit - fixed - price.length;
+  if (budget <= 0) return { name: truncate(input.name, Math.max(0, limit - fixed)), price, delivery: "" };
 
   let delivery = truncate(input.delivery, Math.min(DELIVERY_CAP, budget));
   let nameBudget = budget - delivery.length;
@@ -61,6 +80,6 @@ export function fitCarouselCardParams(
 }
 
 // O corpo como a Meta vai medir: usado pelos testes e pelo diagnóstico.
-export function hydrateCarouselCardBody(params: { name: string; price: string; delivery: string }): string {
-  return CAROUSEL_CARD_BODY.replace("{{1}}", params.name).replace("{{2}}", params.price).replace("{{3}}", params.delivery);
+export function hydrateCarouselCardBody(params: { name: string; price: string; delivery: string }, body = CAROUSEL_CARD_BODY): string {
+  return body.replace("{{1}}", params.name).replace("{{2}}", params.price).replace("{{3}}", params.delivery);
 }

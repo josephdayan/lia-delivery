@@ -87,3 +87,17 @@ test("o payload enviado à Meta respeita o limite em todos os cards", () => {
     assert.ok(hydrated.length <= CAROUSEL_CARD_BODY_LIMIT, `card_index ${card.card_index}: ${hydrated.length}`);
   }
 });
+
+test("28/09: prazo agendado vai compacto no card e o template v4 não diz 'contado da compra'", async () => {
+  const { compactCardDelivery, carouselCardBodyFor, CAROUSEL_CARD_BODY_V4, fitCarouselCardParams, hydrateCarouselCardBody } = await import("../src/lib/meta-carousel-card");
+  assert.equal(compactCardDelivery("prazo da loja: em até 16h (amanhã, 12h–15h)"), "amanhã, 12h–15h");
+  assert.equal(compactCardDelivery("prazo da loja: 2 dias úteis"), "2 dias úteis");
+  assert.equal(carouselCardBodyFor("vitrine_carrossel_v4"), CAROUSEL_CARD_BODY_V4);
+  assert.doesNotMatch(CAROUSEL_CARD_BODY_V4, /contado da compra/);
+  assert.doesNotMatch(CAROUSEL_CARD_BODY_V4, /\{\{3\}\}$/, "a Meta recusa corpo terminando em variável");
+  const params = fitCarouselCardParams({ name: "Lenço Umedecido Turma da Mônica Huggies com 48 unidades", price: "R$ 15,29", delivery: "amanhã, 12h–15h" }, 160, CAROUSEL_CARD_BODY_V4);
+  const hydrated = hydrateCarouselCardBody(params, CAROUSEL_CARD_BODY_V4);
+  assert.ok(hydrated.length <= 160, `${hydrated.length}`);
+  assert.match(hydrated, /Entrega pela loja: amanhã, 12h–15h/);
+  assert.match(hydrated, /Lenço Umedecido Turma da Mônica Huggies com 48 unidades/, "com o v4 o nome inteiro cabe");
+});

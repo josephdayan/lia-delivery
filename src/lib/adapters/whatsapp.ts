@@ -1,4 +1,4 @@
-import { fitCarouselCardParams } from "@/lib/meta-carousel-card";
+import { carouselCardBodyFor, compactCardDelivery, fitCarouselCardParams } from "@/lib/meta-carousel-card";
 import { metaReferralAcquisition } from "@/lib/acquisition";
 
 
@@ -299,18 +299,19 @@ function templateParam(text: string, max = 1024) {
 }
 
 // Os 3 parâmetros do corpo do card, já ajustados ao limite hidratado da Meta.
-function cardBodyParams(option: WhatsAppDeliveryChoice): [string, string, string] {
+function cardBodyParams(option: WhatsAppDeliveryChoice, body?: string): [string, string, string] {
   const fitted = fitCarouselCardParams({
     name: templateParam(option.badge ? `⭐ ${option.badge} · ${option.name}` : option.name),
     price: formatBRL(option.displayPrice),
-    // O rótulo "Prazo de entrega da loja:" já está no template; tira o prefixo do texto.
-    delivery: templateParam((option.delivery ?? "confirmo na cotação").replace(/^prazo da loja:\s*/i, ""))
-  });
+    // O rótulo do prazo já está no template; o texto vai compacto (janela agendada = só a janela).
+    delivery: templateParam(compactCardDelivery(option.delivery ?? "confirmo na cotação"))
+  }, undefined, body);
   // Variável vazia é recusada pelo template: prazo sem espaço vira um traço.
   return [fitted.name || "-", fitted.price, fitted.delivery || "-"];
 }
 
 export function buildCarouselPayload(to: string, templateName: string, header: string, options: WhatsAppDeliveryChoice[]) {
+  const cardBody = carouselCardBodyFor(templateName.replace(/_\d+$/, ""));
   return {
     messaging_product: "whatsapp",
     recipient_type: "individual",
@@ -333,7 +334,7 @@ export function buildCarouselPayload(to: string, templateName: string, header: s
                 // 160 e recusa a mensagem inteira (#132018) — era o que derrubava o
                 // carrossel em toda busca (produção, 15/09). `fitCarouselCardParams` divide
                 // o orçamento real entre nome e prazo, sem nunca truncar o preço.
-                parameters: cardBodyParams(option).map((text) => ({ type: "text", text }))
+                parameters: cardBodyParams(option, cardBody).map((text) => ({ type: "text", text }))
               },
               { type: "button", sub_type: "quick_reply", index: "0", parameters: [{ type: "payload", payload: option.id.slice(0, 128) }] },
               // "Outras opções" em todo card (Meta: botões iguais em todos): volta como opt:outras.
@@ -624,9 +625,10 @@ export const whatsappAdapter = {
     if (!token || !phoneNumberId) throw new Error("Missing WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID");
     const alive = await Promise.all(cards.map((option) => mediaLinkAlive(safeMediaLink(option.imageUrl ?? ""))));
     if (alive.some((ok) => !ok)) return null;
-    const { carouselTemplateName } = await import("@/lib/meta-setup");
+    const { carouselTemplateName, activeCarouselPrefix } = await import("@/lib/meta-setup");
     try {
-      const message = (await sendMetaPayload(phoneNumberId, token, buildCarouselPayload(to, carouselTemplateName(cards.length), header, cards))) as { messages?: Array<{ id?: string }> };
+      const prefix = await activeCarouselPrefix(cards.length);
+      const message = (await sendMetaPayload(phoneNumberId, token, buildCarouselPayload(to, carouselTemplateName(cards.length, prefix), header, cards))) as { messages?: Array<{ id?: string }> };
       // O wamid é a chave da rede de segurança: a Meta aceita (2xx) e pode descartar
       // DEPOIS (status "failed" no webhook, ex.: 131042 conta sem moeda, 08/09) — aí o
       // cérebro reenvia os cards soltos pelo id.

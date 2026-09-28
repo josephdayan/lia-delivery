@@ -1424,6 +1424,13 @@ export function operatorAddressChangedAlert(shortId: string, address: string): s
 export function moreOfSameAdded(added: number, name: string, totalQty: number): string {
   return `✅ Agora são ${totalQty}x ${name}. Quer mais alguma coisa? Quando fechar, diz *"só isso"*.`;
 }
+// Versão com botões (28/09, dono): Pagar / Adicionar mais / Cancelar fazem o papel do "só isso".
+export function moreOfSameAddedShort(totalQty: number, name: string): string {
+  return `✅ Agora são ${totalQty}x ${name}. Quer mais alguma coisa?`;
+}
+export function qtyAdjustedShort(qty: number, name: string): string {
+  return `✅ Ajustei: ${qty}x ${name}. Quer mais alguma coisa?`;
+}
 
 // Número solto logo após um item entrar na cesta = ajuste de quantidade do último item.
 // O "Ajustei" fica: sem ele a mensagem vira sósia do `choiceConfirmed` ("✅ 5x Bombom") e o

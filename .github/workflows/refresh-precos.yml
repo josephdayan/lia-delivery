@@ -51,6 +51,8 @@ jobs:
           if git diff --cached --quiet; then echo "Nada mudou."; exit 0; fi
           SUMMARY=$(grep '^REFRESH_SUMMARY' refresh.log | sed 's/^REFRESH_SUMMARY //')
           git commit -m "Refresh semanal de preços ($(date -u +%F))" -m "$SUMMARY"
+          # O main pode ter andado durante a colheita (~30 min): rebase antes de publicar.
+          git pull --rebase origin main
           git push
       - name: Resumo
         if: always()
