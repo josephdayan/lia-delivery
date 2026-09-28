@@ -1,3 +1,15 @@
+## 28/09/2026 — Refresh semanal provado no GitHub; busca medida no elenco de produção
+
+1º run do `refresh-precos.yml` recolheu 19/20 lojas (~35,8 mil itens, ~2 mil preços mudaram)
+e os testes BARRARAM o commit: Drogaria SP e Época seriam regravadas com o prefixo de SKU
+errado (o script passava a chave como prefixo). Corrigido (prefixo por loja + recusa se o
+prefixo mudar). Casa & Vídeo voltou vazia no runner do GitHub; a guarda manteve o catálogo.
+O golden de busca passou a medir o elenco REAL de produção (20 lojas por API) e ganhou 4
+regras com caso (sinônimo veicular↔carro; "doce de leite"/"creme de leite" não são leite;
+"leiteira" não é leite; especificação técnica pedida — usb, usb-c, hdmi, bluetooth — é
+obrigatória). Na rotina ele é informativo (drift de catálogo não trava preço); os testes de
+segurança (ANVISA, catálogo, checkout, frete) bloqueiam. Suíte 681/681.
+
 ## 27/09/2026 (noite) — Sem operador de verdade: "não tem" na hora, entrega precisa, preço vivo, refresh semanal, mínimo levantado
 
 Pedido do dono: (3) sem operador, o que não tem é dito na hora; (4) preço revisado toda

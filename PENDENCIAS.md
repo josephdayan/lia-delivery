@@ -1,3 +1,10 @@
+## 28/09/2026 — Rotina de preços
+
+- [ ] Casa & Vídeo volta vazia na colheita do runner do GitHub (provável bloqueio de IP de
+  datacenter); o catálogo fica o do Mac até investigar (recolher local com `npm run
+  catalog:refresh -- casaevideo`).
+- [ ] Ler o resumo semanal do Actions (golden informativo): caso novo que quebrar vira regra.
+
 ## 27/09/2026 — 6 lojas novas
 
 - [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 20 lojas (comando no chat de 27/09) + redeploy.
