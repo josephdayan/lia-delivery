@@ -7,7 +7,7 @@ import {
   purchaseCartHash,
   workerPayload,
 } from "./purchase-worker";
-import { notifyOperator } from "./turn-runtime";
+import { notifyOperator, notifyOwner } from "./turn-runtime";
 import { recordDeliveryEvent } from "./delivery-events";
 import { Prisma } from "@prisma/client";
 import { automaticPurchaseDecision, automaticPurchaseStores, AUTO_PURCHASE_POLICY, purchaseBudgetDay, MERCADO_LIVRE_STORE_KEY } from "./purchase-policy";
@@ -859,17 +859,27 @@ export async function capturePix(jobId: string, workerId: string, token: string,
     } });
     await tx.purchaseJob.update({ where: { id: job.id }, data: { status: "pix_captured", lockedAt: new Date() } });
     await tx.purchaseAttempt.create({ data: { purchaseJobId: job.id, step: "pix_capture", status: "captured", idempotencyKey: `pix-capture:${submissionId}`, details: { receiverDoc: decoded.receiverDoc, txid: emv.txid } } });
-    if (receiver.status !== "approved") {
+    // Recebedor novo de um Pix emitido pela API de checkout da própria loja, com CNPJ: entra na
+    // allowlist sozinho (dono aprovou em 28/09: "quero comprar automático"). O dono é avisado e
+    // pode bloquear. Pix raspado de tela (worker) ou recebedor pessoa física pedem o toque.
+    let autoApproved = false;
+    if (receiver.status === "pending" && opts.issuedByStoreApi && /^\d{14}$/.test(decoded.receiverDoc)) {
+      await tx.purchaseReceiver.update({ where: { id: receiver.id }, data: { status: "approved", approvedBy: "auto:store-api", approvedAt: new Date() } });
+      autoApproved = true;
+    }
+    if (receiver.status !== "approved" && !autoApproved) {
       const action = await createOpsAction(tx, { kind: "receiver_new", purchaseJobId: job.id, deliveryOrderId: job.deliveryOrderId, payload: { receiverName: receiver.receiverName, receiverDoc: decoded.receiverDoc, amountCents: e.totalCents } });
       return { kind: "receiver_new" as const, action, receiver, payout };
     }
-    return { kind: "pay" as const, payout };
+    return { kind: "pay" as const, payout, autoApproved, receiverName: receiver.receiverName, receiverDoc: decoded.receiverDoc };
   });
   if (outcome.kind === "blocked") return { status: "blocked" as const };
   if (outcome.kind === "receiver_new") {
     await sendOperatorButtons(outcome.action, copy.operatorReceiverNew(shortId, outcome.receiver.receiverName, outcome.receiver.receiverDoc, outcome.payout.amountCents), [{ choice: "pay", title: "Pagar e memorizar" }, { choice: "refuse", title: "Recusar" }]);
     return { status: "awaiting_receiver" as const, payoutId: outcome.payout.id };
   }
+  if (outcome.autoApproved)
+    await notifyOwner(`🤖 Recebedor novo aprovado sozinho (#${shortId}, ${base.storeKey}): ${outcome.receiverName} · CNPJ ${outcome.receiverDoc}. Pix emitido pela API da loja; para bloquear, use o /ops.`).catch(() => undefined);
   return executePixPayout(outcome.payout.id, code);
 }
 

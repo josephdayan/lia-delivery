@@ -1,3 +1,14 @@
+## 28/09/2026 (manhã) — Pix da loja: formato Mercado Pago liberado e recebedor novo sem toque
+
+2ª compra na Mambo (#E0RH3W, R$35,68) também foi estornada sozinha, agora com o motivo gravado:
+a recusa era da nossa guarda de "Pix dinâmico". A Mambo cobra pelo Mercado Pago
+(`acquirer: MercadoPagoV2`), que emite o Pix do pedido com chave + valor + txid, sem URL.
+Com o OK do dono: (1) esse formato vale quando o código vem da API de checkout da loja, com
+valor embutido igual ao conferido e txid real (c0f578a); (2) recebedor novo com CNPJ nesse
+caminho entra sozinho na allowlist e o dono recebe um aviso, podendo bloquear no /ops. CPF ou
+Pix lido de tela continuam pedindo "Pagar e memorizar". O Asaas já pagou um Pix de loja de
+verdade (Cobasi, 15/09). Testes de pagamento 17/17.
+
 ## 28/09/2026 — Carrossel volta a mostrar 5 opções; sai o "Preço garantido por N min"
 
 O dono perguntou por que os cards traziam só 3 opções. Os dados mostraram que o carrossel

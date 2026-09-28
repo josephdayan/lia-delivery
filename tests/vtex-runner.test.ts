@@ -50,13 +50,15 @@ after(async () => {
   await prisma.$disconnect();
 });
 
-test("pedido pago → comprador no servidor fecha na loja, guarda o Pix para o toque do dono, dono toca, paga, compra registrada", async () => {
+test("recebedor novo pessoa física → comprador no servidor fecha na loja, guarda o Pix para o toque do dono, dono toca, paga, compra registrada", async () => {
   await savePurchaseAccount({ storeKey: STORE, email: "compras@example.test", loginReady: true, paymentReady: true, enabled: true, paymentKind: "pix_out" });
   await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
   const order = await paidOrder();
   const fake = fakeVtex({ orderGroup: `v${process.pid}00001dgsp` });
   const before = mockPixOutCalls.pay;
-  const report = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fake.fetchImpl });
+  // CPF no recebedor: nunca entra sozinho na allowlist (só CNPJ de Pix emitido pela loja).
+  process.env.LIA_PIX_OUT_MOCK_RECEIVER_DOC = "12345678909";
+  const report = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fake.fetchImpl }).finally(() => { delete process.env.LIA_PIX_OUT_MOCK_RECEIVER_DOC; });
   assert.deepEqual(report.errors, []);
   assert.equal(report.runs.length, 1);
   assert.equal(report.runs[0].status, "awaiting_receiver", JSON.stringify(report.runs[0]));
@@ -90,6 +92,25 @@ test("pedido pago → comprador no servidor fecha na loja, guarda o Pix para o t
   const again = await readStoreMailOnce(reader as never);
   assert.equal(again.checked, 0, "mensagem vista não é reportada de novo");
   assert.match((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).notes ?? "", /📧 paid/);
+});
+
+test("recebedor novo com CNPJ num Pix emitido pela API da loja: aprovado sozinho, paga sem toque e avisa o dono", async () => {
+  await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
+  const NEW_DOC = "98765432000110";
+  await prisma.purchaseReceiver.deleteMany({ where: { storeKey: STORE, receiverDoc: NEW_DOC } });
+  const order = await paidOrder();
+  const before = mockPixOutCalls.pay;
+  process.env.LIA_PIX_OUT_MOCK_RECEIVER_DOC = NEW_DOC;
+  const report = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fakeVtex({ orderGroup: `v${process.pid}00009dgsp` }).fetchImpl }).finally(() => { delete process.env.LIA_PIX_OUT_MOCK_RECEIVER_DOC; });
+  assert.deepEqual(report.errors, []);
+  assert.equal(report.runs[0]?.status, "completed", JSON.stringify(report.runs[0]));
+  assert.equal(mockPixOutCalls.pay, before + 1, "paga uma vez, sem toque");
+  const receiver = await prisma.purchaseReceiver.findUniqueOrThrow({ where: { storeKey_receiverDoc: { storeKey: STORE, receiverDoc: NEW_DOC } } });
+  assert.equal(receiver.status, "approved");
+  assert.equal(receiver.approvedBy, "auto:store-api");
+  const job = await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: order.id } });
+  assert.equal(await prisma.opsAction.count({ where: { purchaseJobId: job.id, kind: "receiver_new" } }), 0);
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).status, "retailer_preparing");
 });
 
 test("recebedor já memorizado: compra inteira sem nenhum toque; 403 no fechamento devolve para revisão e libera o orçamento", async () => {
