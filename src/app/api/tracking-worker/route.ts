@@ -21,7 +21,7 @@ const schema = z.discriminatedUnion("action", [
       storeKey: z.string().min(1).max(80),
       // delivery_code (Cobasi) vem sem número; os demais exigem número.
       storeOrderNumber: z.string().max(120),
-      kind: z.enum(["created", "paid", "invoiced", "out_for_delivery", "delivered", "canceled", "delivery_code"]),
+      kind: z.enum(["created", "paid", "invoiced", "shipped", "out_for_delivery", "delivered", "canceled", "delivery_code"]),
       messageId: z.string().min(1).max(200),
       receivedAt: z.string().datetime(),
       trackingUrl: z.string().url().optional(),

@@ -151,7 +151,7 @@ export async function claimTracking(workerId: string, stores: string[]) {
 export async function reportMail(input: {
   storeKey: string;
   storeOrderNumber: string;
-  kind: "created" | "paid" | "invoiced" | "out_for_delivery" | "delivered" | "canceled" | "delivery_code";
+  kind: "created" | "paid" | "invoiced" | "shipped" | "out_for_delivery" | "delivered" | "canceled" | "delivery_code";
   messageId: string;
   receivedAt: string;
   trackingUrl?: string;
@@ -209,7 +209,7 @@ export async function reportMail(input: {
   const job = order ? null : await prisma.purchaseJob.findFirst({ where: { storeKey: input.storeKey, storeOrderNumber: number } });
   const receivedAt = new Date(input.receivedAt);
   if (!Number.isFinite(receivedAt.getTime())) throw new Error("Data do e-mail inválida.");
-  if (input.kind === "out_for_delivery" || input.kind === "delivered") {
+  if (input.kind === "shipped" || input.kind === "out_for_delivery" || input.kind === "delivered") {
     if (!order) return { matched: false as const, reason: "pedido não encontrado" };
     const stores = new Set((Array.isArray(order.items) ? order.items : []).flatMap((i) =>
       i && typeof i === "object" && !Array.isArray(i) && typeof (i as { storeKey?: unknown }).storeKey === "string" ? [(i as { storeKey: string }).storeKey] : []));

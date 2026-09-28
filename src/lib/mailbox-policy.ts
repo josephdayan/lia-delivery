@@ -3,7 +3,7 @@
 // nada de inferência. O corpo do e-mail nunca é gravado; só o veredito.
 // delivery_code (14/09): a Cobasi manda o código que o entregador pede na porta num e-mail
 // SEM número do pedido ("Seu pedido já está a caminho … 6065 … Informe apenas após receber").
-export type StoreMailKind = "created" | "paid" | "invoiced" | "out_for_delivery" | "delivered" | "canceled" | "delivery_code";
+export type StoreMailKind = "created" | "paid" | "invoiced" | "shipped" | "out_for_delivery" | "delivered" | "canceled" | "delivery_code";
 export type StoreMailVerdict = { kind: StoreMailKind; storeOrderNumber: string; trackingUrl?: string; deliveryCode?: string };
 
 // `senders`: domínio de plataforma compartilhada (VTEX) aceito só com o nome de exibição exato da loja.
@@ -17,8 +17,11 @@ type Rule = {
 };
 const VTEX_KINDS: Rule["kinds"] = [
   { kind: "delivered", subject: /(pedido|compra) (foi )?entregu[eo]|entrega (conclu[ií]da|realizada)/i },
-  { kind: "out_for_delivery", subject: /saiu para entrega|a caminho|em rota de entrega/i },
+  // 27/09: só a ÚLTIMA MILHA vira "saiu pra entrega". "A caminho"/"enviado"/"transportadora"
+  // numa loja de dias quer dizer "despachado" — vira "shipped" (mensagem de envio, sem hora).
+  { kind: "out_for_delivery", subject: /sa[ií]u para (a )?entrega|em rota de entrega|saiu com o entregador|est[aá] com o entregador/i },
   { kind: "invoiced", subject: /nota fiscal|faturad[oa]/i },
+  { kind: "shipped", subject: /a caminho|enviad[oa]|despachad[oa]|transportadora|postad[oa]|em tr[aâ]nsito|em transporte/i },
   { kind: "canceled", subject: /cancelad[oa]/i },
   { kind: "paid", subject: /pagamento (foi )?(aprovado|confirmado)/i },
   { kind: "created", subject: /pedido (recebido|realizado|confirmado|criado)|recebemos seu pedido/i },

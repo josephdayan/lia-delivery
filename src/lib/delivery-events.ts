@@ -5,7 +5,9 @@ import { whatsappAdapter } from "./adapters/whatsapp";
 import { outsideServiceWindow } from "./turn-runtime";
 import * as copy from "./lia-copy";
 
-export type DeliveryEventKind = "bought" | "out_for_delivery" | "delivered";
+// 27/09: "shipped" = a loja despachou (transportadora/rota longa) — NÃO é "saiu pra entrega".
+// "out_for_delivery" fica reservado para a última milha (entregador a caminho da casa).
+export type DeliveryEventKind = "bought" | "shipped" | "out_for_delivery" | "delivered";
 export type DeliveryEvidence = {
   kind: DeliveryEventKind;
   // mailbox_reader (11/09): e-mail transacional da loja lido na caixa operacional; vale
@@ -20,9 +22,11 @@ export type DeliveryEvidence = {
   // recebimento"). Vai junto do aviso "saiu pra entrega"; nunca fica nas notas do pedido.
   deliveryCode?: string;
   purchaseExecution?: { jobId: string; submissionId: string; actualTotal: number };
+  // Previsão que a PRÓPRIA loja informa ("até seg., 29/09"), só para o aviso de envio.
+  etaText?: string;
 };
 const TARGET: Record<DeliveryEventKind, string> = {
-  bought: "retailer_preparing", out_for_delivery: "retailer_out_for_delivery", delivered: "delivered"
+  bought: "retailer_preparing", shipped: "retailer_out_for_delivery", out_for_delivery: "retailer_out_for_delivery", delivered: "delivered"
 };
 
 export function validateTrackingUrl(value?: string): string | undefined {
@@ -73,9 +77,15 @@ export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvi
       if(tracking && !order.courierTrackingUrl) await tx.trackingSubscription.updateMany({where:{deliveryOrderId:order.id},data:{trackingUrl:tracking}});
       return { order: reconciled, eventId: existing.id };
     }
-    if (order.status === TARGET[evidence.kind]) return { order, eventId: null };
-    const allowed = evidence.kind === "bought" ? ["paid"] : evidence.kind === "out_for_delivery"
+    // Última milha depois de um "enviado": o status já é retailer_out_for_delivery, mas o
+    // cliente ainda não ouviu "saiu pra entrega" — esse aviso precisa sair.
+    const lastMileAfterShipped = evidence.kind === "out_for_delivery" && order.status === "retailer_out_for_delivery" &&
+      Boolean(await tx.deliveryEvent.findUnique({ where: { dedupeKey: `${order.id}:shipped` } }));
+    if (order.status === TARGET[evidence.kind] && !lastMileAfterShipped) return { order, eventId: null };
+    const allowed = evidence.kind === "bought" ? ["paid"] : evidence.kind === "shipped"
       ? ["retailer_preparing", "operator_buying"]
+      : evidence.kind === "out_for_delivery"
+      ? ["retailer_preparing", "operator_buying", ...(lastMileAfterShipped ? ["retailer_out_for_delivery"] : [])]
       : evidence.source !== "operator" ? ["retailer_preparing", "retailer_out_for_delivery"] : ["retailer_out_for_delivery", "dispatched"];
     if (!allowed.includes(order.status)) throw new Error("Etapa incompatível com o estado atual do pedido.");
     if (order.paidAt && occurredAt < order.paidAt) throw new Error("Evidência anterior ao pagamento do pedido.");
@@ -87,7 +97,7 @@ export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvi
       status: TARGET[evidence.kind],
       ...(evidence.kind === "bought" ? { storeOrderNumber: number } : {}),
       ...(tracking ? { courierTrackingUrl: tracking } : {}),
-      ...(evidence.kind === "out_for_delivery" ? { courierDispatchedAt: occurredAt } : {}),
+      ...((evidence.kind === "out_for_delivery" || evidence.kind === "shipped") && !order.courierDispatchedAt ? { courierDispatchedAt: occurredAt } : {}),
       ...(evidence.kind === "delivered" ? { deliveredAt: occurredAt } : {}),
       notes: appendOrderNote(order.notes, `🧾 ${evidence.kind} — ${evidence.source}: ${reference.replace(/[\r\n]/g, " ")} (${occurredAt.toISOString()}).`)
     } });
@@ -108,6 +118,8 @@ export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvi
     if (evidence.kind === "delivered") await tx.trackingSubscription.updateMany({ where: { deliveryOrderId: order.id }, data: { completedAt: new Date(), lockedAt: null } });
     const shortId = order.id.slice(-6).toUpperCase();
     const text = evidence.kind === "bought" ? copy.orderStatusLine({ shortId, status: updated.status, trackingUrl: updated.courierTrackingUrl })
+      : evidence.kind === "shipped"
+        ? copy.retailerShipped(updated.courierTrackingUrl, evidence.etaText)
       : evidence.kind === "out_for_delivery"
         ? `${copy.retailerOutForDelivery(updated.courierTrackingUrl)}${evidence.deliveryCode ? `\n${copy.deliveryCode(evidence.deliveryCode)}` : ""}`
         : copy.delivered();

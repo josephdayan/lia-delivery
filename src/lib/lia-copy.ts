@@ -700,8 +700,9 @@ export function orderStatusLine(input: {
       return input.trackingUrl
         ? `${id} comprado, a loja está preparando 📦\nAcompanha: ${input.trackingUrl}`
         : `${id} comprado, a loja está preparando. Te aviso quando sair pra entrega.`;
+    // "a caminho" vale para os dois estágios (enviado pela transportadora OU entregador na rua).
     case "retailer_out_for_delivery":
-      return `${id} saiu pra entrega pela loja 🚚${input.trackingUrl ? `\nAcompanha: ${input.trackingUrl}` : ""}`;
+      return `${id} a caminho, enviado pela loja 🚚${input.trackingUrl ? `\nAcompanha: ${input.trackingUrl}` : ""}`;
     case "operator_buying":
       return input.trackingUrl
         ? `${id} comprado e em preparação 📦\nAcompanha: ${input.trackingUrl}`
@@ -1055,6 +1056,16 @@ export function retailerOutForDelivery(trackingUrl?: string | null): string {
 }
 
 // Cobasi (14/09): o entregador pede um código na porta; a loja manda por e-mail para a conta da Lia.
+// 27/09: loja despachou (transportadora). Não promete "saiu pra entrega" nem hora.
+export function retailerShipped(trackingUrl?: string | null, etaText?: string): string {
+  return `📦 A loja enviou seu pedido${etaText ? ` — previsão de entrega: ${etaText}` : ""}. Te aviso quando sair pra entrega.${trackingUrl ? `\nAcompanha: ${trackingUrl}` : ""}`;
+}
+
+// 27/09: a loja emitiu a nota (status "faturado" no pedido dela). Ainda não saiu.
+export function retailerInvoiced(storeLabel: string, etaText?: string): string {
+  return `🧾 A ${storeLabel} emitiu a nota do seu pedido e está preparando o envio${etaText ? ` — previsão de entrega: ${etaText}` : ""}.`;
+}
+
 export function deliveryCode(code: string): string {
   return `🔐 Código de recebimento: *${code}*. Fale ele pro entregador só depois de receber o pedido.`;
 }
