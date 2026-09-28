@@ -4,6 +4,7 @@
 - "Saiu pra entrega" só com última milha explícita; "a caminho/enviado/transportadora" = envio.
 - O total usa o preço da loja ao vivo; o catálogo é vitrine e se atualiza toda segunda (GitHub Actions).
 - Pedido mínimo: 0 em todas as lojas por API até alguma recusar por valor.
+- Pix da loja que a Lia não consegue pagar (captura/decodificação recusada) → motivo gravado no PurchaseAttempt, pedido da loja vence sem pagamento e o cliente é estornado sozinho (28/09).
 
 ## 25/09/2026 (noite) — RESOLVIDO: nome público do WhatsApp agora é "Lia Delivery"
 

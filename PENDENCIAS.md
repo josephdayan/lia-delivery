@@ -1,3 +1,10 @@
+## 28/09/2026 — Pix da loja pago pelo Asaas (bloqueia compra sozinha)
+
+- [ ] Próxima compra real: ler `errorMessage` do PurchaseAttempt `pix_capture` e corrigir a
+  causa (decode do QR dinâmico no Asaas, documento/valor/expiração). Até provar 1 Pix de loja
+  pago pelo Asaas, toda compra termina em estorno automático.
+- [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta.
+
 ## 28/09/2026 — Rotina de preços
 
 - [ ] Casa & Vídeo volta vazia na colheita do runner do GitHub (provável bloqueio de IP de

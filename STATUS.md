@@ -1,3 +1,20 @@
+## 28/09/2026 (madrugada) — 1ª compra na Mambo: pedido criado, Pix da loja não pago, cliente estornado sozinho
+
+Pedido #YYHUGW (2x lenço Huggies, R$48,92 no cartão Pagar.me). A Lia criou o pedido na
+Mambo (1664831370279-01, janela amanhã 12h–15h), mas a captura do Pix da loja falhou antes
+de qualquer pagamento: nenhum PixPayout, nenhum real saiu do Asaas. O motivo não era gravado
+e o código da loja não é mais recuperável (callback agora devolve 204). Corrigido em af84adc:
+a recusa grava `PIX_CAPTURE_REFUSED` + mensagem no PurchaseAttempt e loga
+`[vtex-runner:pix-capture-refused]`; a varredura cancela o job, solta a reserva de gasto e
+estorna o cliente. Provado em produção: cron das 02:58 `refunded: 1`, pedido `refunded`,
+Pagar.me estornado R$48,92. Hipótese principal: o decode do Asaas no QR dinâmico da loja
+(nunca pago de ponta a ponta por Asaas ainda). A próxima compra real mostra o motivo.
+
+Também em af84adc: "✅ Ajustei: 2x …" virou mensagem com botões (Pagar / Adicionar mais /
+Cancelar, texto como fallback); card do carrossel no modelo v4 sem "(contado da compra)" e
+com prazo compacto ("em até 16h (amanhã,…" saía cortado). O v4 é criado pelo cron horário
+de templates e só entra quando a Meta aprovar.
+
 ## 28/09/2026 — Refresh semanal provado no GitHub; busca medida no elenco de produção
 
 1º run do `refresh-precos.yml` recolheu 19/20 lojas (~35,8 mil itens, ~2 mil preços mudaram)
