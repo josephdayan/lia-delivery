@@ -12,7 +12,8 @@
 - [ ] Cartão Pagar.me recusado 2x hoje (#E0RH3W, #LYAWQ8) com mensagem "Transação aprovada com
   sucesso": provável antifraude depois da autorização. O motivo inteiro agora é gravado na
   PaymentAttempt; na próxima recusa, ler e decidir (ajuste de antifraude no Pagar.me é do dono).
-- [ ] Conferir o frete: o cliente viu R$15,90 de frete e a Mambo cobrou R$3,00 (janela de hoje).
+- [ ] Conferir o frete de #LYAWQ8: o pedido grava frete R$15,90, mas o total pago foi R$31,19 e a
+  Mambo cobrou R$3,00 de frete (total da loja R$29,80). Ver se o campo ficou velho após o preço vivo.
 - [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta.
 
 ## 28/09/2026 — Rotina de preços
