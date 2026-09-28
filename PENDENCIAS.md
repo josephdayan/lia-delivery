@@ -8,8 +8,11 @@
   Pago emite chave + valor + txid. Liberado pelo dono e publicado em 28/09 (c0f578a), só para
   código vindo da API da loja, com valor igual ao conferido e txid real.
 - [x] Recebedor novo com CNPJ em Pix da API da loja aprovado sozinho, com aviso ao dono (28/09).
-- [ ] Próxima compra real: confirmar que o Asaas paga o Pix do Mercado Pago (formato estático
-  com valor) e que a loja dá o pedido como pago.
+- [x] Asaas paga o Pix do Mercado Pago e a loja dá o pedido como pago: provado em #LYAWQ8.
+- [ ] Cartão Pagar.me recusado 2x hoje (#E0RH3W, #LYAWQ8) com mensagem "Transação aprovada com
+  sucesso": provável antifraude depois da autorização. O motivo inteiro agora é gravado na
+  PaymentAttempt; na próxima recusa, ler e decidir (ajuste de antifraude no Pagar.me é do dono).
+- [ ] Conferir o frete: o cliente viu R$15,90 de frete e a Mambo cobrou R$3,00 (janela de hoje).
 - [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta.
 
 ## 28/09/2026 — Rotina de preços

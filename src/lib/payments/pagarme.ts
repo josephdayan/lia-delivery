@@ -38,9 +38,30 @@ type PagarmeOrder = {
   charges?: Array<{
     id?: string;
     status?: string;
-    last_transaction?: { id?: string; status?: string; success?: boolean; acquirer_message?: string };
+    last_transaction?: {
+      id?: string; status?: string; success?: boolean; acquirer_message?: string; acquirer_return_code?: string;
+      antifraud_response?: { status?: string; return_message?: string };
+      gateway_response?: { code?: string; errors?: { message?: string }[] };
+    };
   }>;
 };
+
+// Motivo legível de uma cobrança não aprovada. A mensagem do adquirente pode dizer
+// "Transação aprovada com sucesso" mesmo quando o antifraude reprova depois (28/09: duas
+// recusas assim); por isso grava o veredito inteiro, não só essa frase.
+export function chargeFailureDetail(order: PagarmeOrder): string | undefined {
+  const charge = order.charges?.[0];
+  const tx = charge?.last_transaction;
+  if (!charge && !tx) return undefined;
+  const parts = [
+    tx?.acquirer_message,
+    `pedido ${order.status ?? "?"} · cobrança ${charge?.status ?? "?"} · transação ${tx?.status ?? "?"}`,
+    tx?.acquirer_return_code ? `código ${tx.acquirer_return_code}` : undefined,
+    tx?.antifraud_response?.status ? `antifraude ${tx.antifraud_response.status}${tx.antifraud_response.return_message ? ` (${tx.antifraud_response.return_message})` : ""}` : undefined,
+    tx?.gateway_response?.errors?.length ? `gateway ${tx.gateway_response.errors.map((e) => e.message).filter(Boolean).join("; ")}` : undefined,
+  ].filter(Boolean);
+  return parts.join(" · ").slice(0, 500);
+}
 
 export class PagarmeApiError extends Error {
   constructor(message: string, readonly status?: number) {
@@ -215,7 +236,7 @@ export const pagarmeAdapter = {
         status: statusFromOrder(order),
         providerOrderId: order.id,
         providerChargeId: charge?.id ?? charge?.last_transaction?.id,
-        error: charge?.last_transaction?.acquirer_message,
+        error: statusFromOrder(order) === "captured" ? charge?.last_transaction?.acquirer_message : chargeFailureDetail(order),
         mock: false
       };
     } catch (error) {
@@ -251,7 +272,7 @@ export const pagarmeAdapter = {
       status: statusFromOrder(order),
       providerOrderId: order.id,
       providerChargeId: charge?.id ?? charge?.last_transaction?.id,
-      error: charge?.last_transaction?.acquirer_message,
+      error: statusFromOrder(order) === "captured" ? charge?.last_transaction?.acquirer_message : chargeFailureDetail(order),
       mock: false
     };
   }

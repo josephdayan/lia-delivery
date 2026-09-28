@@ -216,3 +216,13 @@ test("One-Click: Pagar.me envia card_id e preserva resultado ambíguo para retry
     global.fetch = previous.fetch;
   }
 });
+
+test("cartão não aprovado grava o veredito inteiro do Pagar.me, não só 'Transação aprovada com sucesso'", async () => {
+  const { chargeFailureDetail } = await import("../src/lib/payments/pagarme");
+  const detail = chargeFailureDetail({
+    id: "or_1", status: "failed",
+    charges: [{ id: "ch_1", status: "failed", last_transaction: { status: "voided", success: false, acquirer_message: "Transação aprovada com sucesso", antifraud_response: { status: "reproved", return_message: "score alto" } } }],
+  });
+  assert.match(detail ?? "", /antifraude reproved \(score alto\)/);
+  assert.match(detail ?? "", /cobrança failed · transação voided/);
+});

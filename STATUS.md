@@ -1,3 +1,15 @@
+## 28/09/2026 (tarde) — PROVADO: primeira compra 100% automática, sem nenhum toque humano
+
+#LYAWQ8 (lenço Huggies na Mambo, R$31,19 no Pix Mercado Pago do cliente). 13:41:30 pago →
+13:41:47 pedido 1664941370430-01 criado na Mambo → 13:41:50 Pix da loja (formato Mercado
+Pago) conferido, recebedor SUPERMERCADOS MAMBO LTDA aprovado sozinho → Asaas pagou R$29,80 →
+Mambo: `payment-approved`, entrega hoje 15h–18h → 13:44:38 Lia registrou a compra
+(`retailer_preparing`). Ninguém tocou em nada.
+
+O cartão do cliente foi recusado antes (e em #E0RH3W também) com a mensagem "Transação
+aprovada com sucesso". O registro só guardava essa frase; agora grava o veredito inteiro do
+Pagar.me (status do pedido, da cobrança, da transação, antifraude e gateway).
+
 ## 28/09/2026 (manhã) — Pix da loja: formato Mercado Pago liberado e recebedor novo sem toque
 
 2ª compra na Mambo (#E0RH3W, R$35,68) também foi estornada sozinha, agora com o motivo gravado:
