@@ -11,6 +11,14 @@ com as lojas de produção: lenço, shampoo e ração saem com 5; água de coco 
 solto também (3: Adicionar / Ver detalhes / Outras opções). A mensagem "Preço garantido por
 N min…" depois da cotação foi removida a pedido do dono.
 
+Regra fechada com o dono no mesmo dia: se existem 5 opções do que foi pedido, mostra as 5;
+se existem menos, mostra as que existem; nunca completa com outra coisa. O prompt agora
+completa primeiro com produtos distintos e depois com variantes (a água de coco passa a
+incluir os sabores). Também proíbe quebrar a marca pedida só para preencher vaga: "ração
+golden" completava a 5ª vaga com Dog Chow e agora sai com 4 Golden. Golden set 33/38 contra
+32/38 do prompt anterior, com as mesmas falhas antigas. A IA ainda varia: água de coco saiu
+com 5 numa rodada e 3 na outra.
+
 ## 28/09/2026 (madrugada) — 1ª compra na Mambo: pedido criado, Pix da loja não pago, cliente estornado sozinho
 
 Pedido #YYHUGW (2x lenço Huggies, R$48,92 no cartão Pagar.me). A Lia criou o pedido na
