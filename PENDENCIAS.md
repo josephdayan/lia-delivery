@@ -1,8 +1,14 @@
 ## 28/09/2026 — Pix da loja pago pelo Asaas (bloqueia compra sozinha)
 
-- [ ] Próxima compra real: ler `errorMessage` do PurchaseAttempt `pix_capture` e corrigir a
-  causa (decode do QR dinâmico no Asaas, documento/valor/expiração). Até provar 1 Pix de loja
-  pago pelo Asaas, toda compra termina em estorno automático.
+- [ ] CAUSA ACHADA (#E0RH3W, 28/09 12:10): a recusa é da NOSSA guarda, não do Asaas.
+  `capturePix` (src/lib/purchase-execution.ts) só aceita Pix com URL do PSP (campo 26-25).
+  A Mambo usa Mercado Pago como adquirente (order-group: `acquirer: MercadoPagoV2`), que emite
+  o Pix de cada pedido no formato chave + valor + txid, sem URL. Mensagem gravada: "Só pagamos
+  cobrança Pix dinâmica gerada pelo checkout." Nenhum dinheiro saiu; cliente estornado sozinho.
+  Correção proposta: aceitar esse formato só quando o código vem da API de checkout da loja
+  para o próprio pedido, com valor embutido igual ao conferido e txid real; recebedor segue na
+  allowlist. É afrouxar uma trava de pagamento: precisa do OK explícito do dono.
+  Lojas com Adyen (Drogaria SP) já emitem com URL e passam hoje.
 - [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta.
 
 ## 28/09/2026 — Rotina de preços
