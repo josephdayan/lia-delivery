@@ -1,7 +1,7 @@
 // GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.paguemenos.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.paguemenos.com.br paguemenos /var/folders/7r/7hym0mvj1_l51n6b8pm8ym9h0000gn/T/lia-catalog-ojnVnD/paguemenos.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.paguemenos.com.br paguemenos /tmp/lia-catalog-HaGx92/paguemenos.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -4538,17 +4538,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 412
  },
  {
-  sku: "paguemenos-56788",
-  name: "Kit Shampoo Pantene Pro-V Bambu 400ml 1 Unidade + Condicionador Pantene Pro-V Bambu 175ml 1 Unidade",
-  brand: "Pantene",
-  unitPrice: 19.49,
-  unit: "un",
-  category: "dermo e beleza cabelos kit shampoo e condicionador",
-  imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116721/7500435188227_1.jpg?v=639017475323500000",
-  productUrl: "https://www.paguemenos.com.br/kit-shampoo-pantene-bambu-400ml-mais-condicionador-pantene-bambu-175ml-preco-especial/p",
-  popularity: 413
- },
- {
   sku: "paguemenos-54707",
   name: "Protetor Solar Nivea Ph Fps50 200ml Gratis Protetor Solar Nivea Ph Fps50 100ml",
   brand: "Nivea",
@@ -4557,7 +4546,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/964536/protetor-solar-nivea-ph-fps50-200ml-gratis-protetor-solar-nivea-ph-fps50-100ml-principal.jpg?v=638700545430400000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-ph-fps50-200ml-gratis-protetor-solar-nivea-ph-fps50-100ml/p",
-  popularity: 414
+  popularity: 413
  },
  {
   sku: "paguemenos-51892",
@@ -4568,7 +4557,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/667658/shampoo-clear-men-2x1-limpdial400p330ml_7891150060975_1.jpg?v=638096476677870000",
   productUrl: "https://www.paguemenos.com.br/shampoo-clear-men-2x1-limpdial400p330ml/p",
-  popularity: 415
+  popularity: 414
  },
  {
   sku: "paguemenos-51878",
@@ -4579,7 +4568,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/820010/shampoo-clear-men-ice-cool-menthol-leve-400ml-pague-330ml-principal.jpg?v=638449228867300000",
   productUrl: "https://www.paguemenos.com.br/shampoo-clear-men-ice-cool-menthol-leve-400ml-pague-330ml/p",
-  popularity: 416
+  popularity: 415
  },
  {
   sku: "paguemenos-51455",
@@ -4590,7 +4579,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1172944/00_Selo Derm e Textura.jpg?v=639148095377830000",
   productUrl: "https://www.paguemenos.com.br/cerave-locao-hidratante-473ml/p",
-  popularity: 417
+  popularity: 416
  },
  {
   sku: "paguemenos-51020",
@@ -4601,7 +4590,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1015780/4005900453259-NIVEAHidratanteLabialAmoraShine48g-1.jpg?v=638823972923200000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-amora-shine-4-8g/p",
-  popularity: 418
+  popularity: 417
  },
  {
   sku: "paguemenos-23336",
@@ -4612,7 +4601,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/826903/4005808850617_1.jpg?v=638469859063130000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-lip-care-essential/p",
-  popularity: 419
+  popularity: 418
  },
  {
   sku: "paguemenos-1639805",
@@ -4623,7 +4612,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1175234/2.jpg?v=639150556560830000",
   productUrl: "https://www.paguemenos.com.br/hidratante-corporal-dove-serum-glicolico-mais-reparador-de-textura-380ml/p",
-  popularity: 420
+  popularity: 419
  },
  {
   sku: "paguemenos-1640163",
@@ -4634,7 +4623,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1198708/kit-elseve-shampoo-385ml---condicionador-collagen-lifter-170ml-secundaria1.png.png?v=639184250353800000",
   productUrl: "https://www.paguemenos.com.br/kit-elseve-shampoo-385ml-mais-condicionador-collagen-lifter-170ml/p",
-  popularity: 421
+  popularity: 420
  },
  {
   sku: "paguemenos-1633330",
@@ -4645,7 +4634,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127839/protetor-solar-facial-principia-ps-05-cor-2-0-fps60-30ml-principal.png?v=639053001841470000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-ps-05-cor-2-0-fps60-30ml/p",
-  popularity: 422
+  popularity: 421
  },
  {
   sku: "paguemenos-179648",
@@ -4656,7 +4645,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170563/7500435261227_1.jpg?v=639136150258230000",
   productUrl: "https://www.paguemenos.com.br/kit-pantene-shampoo-300ml-mais-condicionador-150ml-molecular-bond-repair/p",
-  popularity: 423
+  popularity: 422
  },
  {
   sku: "paguemenos-179574",
@@ -4667,7 +4656,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097793/7500435260312_1.jpg?v=638981129802330000",
   productUrl: "https://www.paguemenos.com.br/shampoo-reparador-pantene-molecular-bond-repair-510ml/p",
-  popularity: 424
+  popularity: 423
  },
  {
   sku: "paguemenos-179118",
@@ -4678,7 +4667,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223782/7891010257590_1.jpg?v=639246388621900000",
   productUrl: "https://www.paguemenos.com.br/kit-protetor-solar-fps50-sundown-praia-e-piscina-200ml-gratis-protetor-solar-fps50-100ml/p",
-  popularity: 425
+  popularity: 424
  },
  {
   sku: "paguemenos-180625",
@@ -4689,7 +4678,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1090128/gel-de-limpeza-facial-principia-skincare-gl-02-200ml-principal.png?v=638971793047200000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-principia-skincare-gl-02-200ml/p",
-  popularity: 426
+  popularity: 425
  },
  {
   sku: "paguemenos-176410",
@@ -4700,7 +4689,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto niacinamida",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1115439/1.jpg?v=639014127592500000",
   productUrl: "https://www.paguemenos.com.br/creme-hidratante-5porcento-manteiga-de-karite-mais-5porcento-glicerina-mais-2porcento-niacinamida-principia-skincare-ch-01-50g/p",
-  popularity: 427
+  popularity: 426
  },
  {
   sku: "paguemenos-175567",
@@ -4711,7 +4700,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1057148/kit-dove-shampoo-350ml---condicionador-150ml-uv-repair-glow---ferulico-principal.png?v=638911368304130000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-shampoo-350ml-mais-condicionador-150ml-uv-repair-glow-mais-ferulico/p",
-  popularity: 428
+  popularity: 427
  },
  {
   sku: "paguemenos-164690",
@@ -4722,7 +4711,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1181397/7500435248068_1.JPG.jpg?v=639155815135030000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-pro-v-miracles-biotinamina-b3-antiqueda-510ml/p",
-  popularity: 429
+  popularity: 428
  },
  {
   sku: "paguemenos-157671",
@@ -4733,7 +4722,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/987690/hidratante-bepantol-derma-multirrestaurador-com-rosa-mosqueta-20g_7891106916578_1.png?v=638768624900770000",
   productUrl: "https://www.paguemenos.com.br/hidratante-bepantol-derma-multirrestaurador-com-rosa-mosqueta-20g/p",
-  popularity: 430
+  popularity: 429
  },
  {
   sku: "paguemenos-153249",
@@ -4744,7 +4733,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/948411/curativo-hidrocoloide-dauf-para-acnes-e-espinhas-24-unidades-principal.png?v=638660008034570000",
   productUrl: "https://www.paguemenos.com.br/curativo-hidrocoloide-dauf-para-acnes-e-espinhas-24-unidades/p",
-  popularity: 431
+  popularity: 430
  },
  {
   sku: "paguemenos-148774",
@@ -4755,7 +4744,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/925707/gel-de-limpeza-principia-gl-02-350g-principal.png?v=638609825318970000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-principia-gl-02-350g/p",
-  popularity: 432
+  popularity: 431
  },
  {
   sku: "paguemenos-131283",
@@ -4766,7 +4755,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097931/7891150095793_2.jpg?v=638981143388800000",
   productUrl: "https://www.paguemenos.com.br/serum-hidratante-corporal-dove-sem-perfume-pantenol-mais-dermo-reparador-380ml/p",
-  popularity: 433
+  popularity: 432
  },
  {
   sku: "paguemenos-107043",
@@ -4777,7 +4766,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/852650/protetor-labial-dauf-manteiga-de-cacau-fps-15-com-3-3-g-principal.jpg?v=638512253607400000",
   productUrl: "https://www.paguemenos.com.br/protetor-labial-dauf-manteiga-de-cacau-fps-15-com-3-3-g/p",
-  popularity: 434
+  popularity: 433
  },
  {
   sku: "paguemenos-99206",
@@ -4788,7 +4777,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/956333/7500435209748_1.jpg?v=638672675972270000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-pro-v-miracles-equilibrio-raiz-e-pontas-com-510ml/p",
-  popularity: 435
+  popularity: 434
  },
  {
   sku: "paguemenos-97451",
@@ -4799,7 +4788,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1146646/4005900980397--1-.jpg?v=639096256367500000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-sun-facial-toque-seco-fps70-40ml/p",
-  popularity: 436
+  popularity: 435
  },
  {
   sku: "paguemenos-96709",
@@ -4810,7 +4799,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/909584/7500435200301_1.jpg?v=638569027918430000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-colageno-300ml-mais-condicionador-150ml/p",
-  popularity: 437
+  popularity: 436
  },
  {
   sku: "paguemenos-95489",
@@ -4821,7 +4810,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/662630/cetaphil-gel-creme-calmante-hidratante-rapida-absorcao-226g_3499320014274_1.jpg?v=638058454100230000",
   productUrl: "https://www.paguemenos.com.br/cetaphil-gel-creme-calmante-hidratante-rapida-absorcao-226g/p",
-  popularity: 438
+  popularity: 437
  },
  {
   sku: "paguemenos-60472",
@@ -4832,7 +4821,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/789332/protetor-solar-neutrogena-sun-fresh-fps70-200ml-ganhe-protetor-solar-neutrogena-sun-fresh-facial-fps70-40g-principal.png?v=638399303219070000",
   productUrl: "https://www.paguemenos.com.br/kit-protetor-solar-fps-70-neutrogena-sun-fresh-200ml-gratis-protetor-solar-facial-fps-70-40g/p",
-  popularity: 439
+  popularity: 438
  },
  {
   sku: "paguemenos-60482",
@@ -4843,7 +4832,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/648245/protetor-solar-neutrogena-sun-fresh-derm-care-fps70-sem-cor-ganhe-gel-de-limpeza-neutrogena-purified-skin-60g-principal.jpg?v=638008121649100000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-neutrogena-sun-fresh-derm-care-fps70-sem-cor-ganhe-gel-de-limpeza-neutrogena-purified-skin-60g/p",
-  popularity: 440
+  popularity: 439
  },
  {
   sku: "paguemenos-59358",
@@ -4854,7 +4843,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/972186/hidratante-neutrogena-bodycare-hidrata-e-suaviza-400ml_7891010253936_1.jpg?v=638827476952800000",
   productUrl: "https://www.paguemenos.com.br/hidratante-neutrogena-bodycare-hidrata-e-suaviza-400ml/p",
-  popularity: 441
+  popularity: 440
  },
  {
   sku: "paguemenos-59363",
@@ -4865,7 +4854,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042354/hidratante-corporal-neutrogenabody-care-intensive-hidrata-repara-400ml_7891010253905_1.jpg?v=638887871259270000",
   productUrl: "https://www.paguemenos.com.br/hidratante-neutrogena-bodycare-hidrata-e-repara-400ml/p",
-  popularity: 442
+  popularity: 441
  },
  {
   sku: "paguemenos-59158",
@@ -4876,7 +4865,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1152353/3282770146172_1.jpg?v=639099587695900000",
   productUrl: "https://www.paguemenos.com.br/avene-cicalfatemais-creme-reparador-protetor-20ml/p",
-  popularity: 443
+  popularity: 442
  },
  {
   sku: "paguemenos-58899",
@@ -4887,7 +4876,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/647332/shpampoo-clear-anticaspa-hidratacao-intensa-400ml-pague-330ml-leve-400ml-principal.jpg?v=638008109506800000",
   productUrl: "https://www.paguemenos.com.br/shpampoo-clear-anticaspa-hidratacao-intensa-400ml-pague-330ml-leve-400ml/p",
-  popularity: 444
+  popularity: 443
  },
  {
   sku: "paguemenos-57347",
@@ -4898,7 +4887,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116582/7500435169370_1.jpg?v=639017470930200000",
   productUrl: "https://www.paguemenos.com.br/kit-pantene-hidratacao-shampoo-com-350ml-mais-condicionador-com-175ml/p",
-  popularity: 445
+  popularity: 444
  },
  {
   sku: "paguemenos-57343",
@@ -4909,7 +4898,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116574/7500435169363_1.jpg?v=639017470595930000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-liso-extremo-cabelo-longo-e-forte-ate-as-pontas-350ml-mais-condiconador-liso-extremo-cabelo-longo-e-forte-ate-as-pontas-175ml/p",
-  popularity: 446
+  popularity: 445
  },
  {
   sku: "paguemenos-57120",
@@ -4920,7 +4909,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225805/7891106914277_1.jpg?v=639252434089870000",
   productUrl: "https://www.paguemenos.com.br/bepantol-derma-protetor-labial-diario-fps-50-4-5g/p",
-  popularity: 447
+  popularity: 446
  },
  {
   sku: "paguemenos-56626",
@@ -4931,7 +4920,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/646142/creme-relaxante-dauf-para-pernas-200g-principal.jpg?v=638008094582300000",
   productUrl: "https://www.paguemenos.com.br/creme-relaxante-dauf-para-pernas-200g/p",
-  popularity: 448
+  popularity: 447
  },
  {
   sku: "paguemenos-54696",
@@ -4942,7 +4931,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002426/4005900663993-NIVEAHidratanteLabialCerejaShine48g-1.jpg?v=638791090775900000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-cereja-shine-4-8g/p",
-  popularity: 449
+  popularity: 448
  },
  {
   sku: "paguemenos-54646",
@@ -4953,7 +4942,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/955345/4005900646491-NIVEASUNProtetorSolarFacialBeautyExpertPeleNormalaSecaFPS6050g-1.jpg?v=638671255582370000",
   productUrl: "https://www.paguemenos.com.br/prot-sol-nivea-beautfacsecfps50-60-50g/p",
-  popularity: 450
+  popularity: 449
  },
  {
   sku: "paguemenos-54050",
@@ -4964,7 +4953,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225798/7891106913522_1.jpg?v=639252433428000000",
   productUrl: "https://www.paguemenos.com.br/bepantol-derma-creme-hidratante-toque-seco-oil-free-para-pele-normal-a-seca-com-30g/p",
-  popularity: 451
+  popularity: 450
  },
  {
   sku: "paguemenos-51460",
@@ -4975,7 +4964,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1173552/01_Pack Fundo Branco.jpg?v=639149034777500000",
   productUrl: "https://www.paguemenos.com.br/cerave-creme-hidratante-453g/p",
-  popularity: 452
+  popularity: 451
  },
  {
   sku: "paguemenos-51062",
@@ -4986,7 +4975,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1122812/Mockup---DAUF-Locao-Ureia-10---500g.webp?v=639189571039200000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-ureia-10porcento-dauf-500g/p",
-  popularity: 453
+  popularity: 452
  },
  {
   sku: "paguemenos-50938",
@@ -4997,7 +4986,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223090/7896658030451-Profuse_Nutrel_Balm_Gel_Creme_Hidratante_Peles_Sens_veis_50g-Cuidado_com_a_Pele-Profuse--2-.jpg?v=639240356539930000",
   productUrl: "https://www.paguemenos.com.br/profuse-nutrel-suavizante-balm-50g/p",
-  popularity: 454
+  popularity: 453
  },
  {
   sku: "paguemenos-45537",
@@ -5008,7 +4997,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223311/-e-p-i-d-r-a-t---c-a-l-m---b-g---4-0-g-_7891142200235_2.jpg?v=639241293089070000",
   productUrl: "https://www.paguemenos.com.br/epidrat-calm-40g/p",
-  popularity: 455
+  popularity: 454
  },
  {
   sku: "paguemenos-44586",
@@ -5019,7 +5008,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640835/fletop-locao-200ml-principal.jpg?v=638008022077200000",
   productUrl: "https://www.paguemenos.com.br/fletop-locao-200ml/p",
-  popularity: 456
+  popularity: 455
  },
  {
   sku: "paguemenos-44531",
@@ -5030,7 +5019,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002240/42277217-NIVEACremeHidratanteLata29g-1.jpg?v=638791089357800000",
   productUrl: "https://www.paguemenos.com.br/creme-nivea-29g/p",
-  popularity: 457
+  popularity: 456
  },
  {
   sku: "paguemenos-42796",
@@ -5041,7 +5030,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1202282/7506309865409_1.jpg?v=639199751832130000",
   productUrl: "https://www.paguemenos.com.br/shampoo-anticaspa-head-shoulders-men-3em1-400ml/p",
-  popularity: 458
+  popularity: 457
  },
  {
   sku: "paguemenos-41863",
@@ -5052,7 +5041,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1057027/hidratante-vasenol-original-geleia-de-vaselina-100g-principal.jpg?v=638911349326630000",
   productUrl: "https://www.paguemenos.com.br/hidratante-vasenol-original-geleia-de-vaselina-100g/p",
-  popularity: 459
+  popularity: 458
  },
  {
   sku: "paguemenos-39897",
@@ -5063,7 +5052,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1144050/4005900441942_1.jpg?v=639088555280870000",
   productUrl: "https://www.paguemenos.com.br/kit-com-02-hidratantes-nivea-body-milk-400ml-com-40porcento-desconto-na-segunda-embalagem/p",
-  popularity: 460
+  popularity: 459
  },
  {
   sku: "paguemenos-36629",
@@ -5074,7 +5063,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/850254/algodao-dauf-disco-com-50-unidades-principal.jpg?v=638512106568000000",
   productUrl: "https://www.paguemenos.com.br/algodao-dauf-disco-com-50-unidades/p",
-  popularity: 461
+  popularity: 460
  },
  {
   sku: "paguemenos-35356",
@@ -5085,7 +5074,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096443/7506195142042_1.jpg?v=638979351328800000",
   productUrl: "https://www.paguemenos.com.br/shampoo-de-cuidados-com-a-raiz-head-shoulders-anticoceira-400ml/p",
-  popularity: 462
+  popularity: 461
  },
  {
   sku: "paguemenos-33623",
@@ -5096,7 +5085,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/651049/7897930777743--1-.png?v=638012033555770000",
   productUrl: "https://www.paguemenos.com.br/cetaphil-hidratante-locao-473ml/p",
-  popularity: 463
+  popularity: 462
  },
  {
   sku: "paguemenos-29639",
@@ -5107,7 +5096,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1224897/imagem padrao -51-.jpg?v=639250709782900000",
   productUrl: "https://www.paguemenos.com.br/acnezil-gel-20g/p",
-  popularity: 464
+  popularity: 463
  },
  {
   sku: "paguemenos-29238",
@@ -5118,7 +5107,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154569/4005808315697-NIVEA_Lo_o_Hidratante_Milk_Pele_Seca_a_Extrasseca_400ml-Body__Hand-NIVEA--1-.jpg?v=639104870037630000",
   productUrl: "https://www.paguemenos.com.br/hidratante-nivea-milk-pele-seca-a-extra-seca-400ml/p",
-  popularity: 465
+  popularity: 464
  },
  {
   sku: "paguemenos-23338",
@@ -5129,7 +5118,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002360/4005808850839-NIVEAHidratanteLabialMorangoShine48g-1.jpg?v=638791090247630000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-lip-care-morango/p",
-  popularity: 466
+  popularity: 465
  },
  {
   sku: "paguemenos-10136",
@@ -5140,7 +5129,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1052275/78906617-NIVEACremeHidratanteLata56g-1.jpg?v=638900167057230000",
   productUrl: "https://www.paguemenos.com.br/creme-nivea-56g/p",
-  popularity: 467
+  popularity: 466
  },
  {
   sku: "paguemenos-1643702",
@@ -5151,7 +5140,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto creme area dos olhos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1197246/creme-para-os-olhos-principia-co-01-15g-principal.png.png?v=639180817730130000",
   productUrl: "https://www.paguemenos.com.br/creme-para-os-olhos-principia-co-01-15g/p",
-  popularity: 468
+  popularity: 467
  },
  {
   sku: "paguemenos-1638521",
@@ -5162,7 +5151,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154413/serum-finalizador-pantene-leave-in-forca-e-nutricao-bambu-95ml-principal.png.png?v=639104729844570000",
   productUrl: "https://www.paguemenos.com.br/serum-finalizador-pantene-leave-in-forca-e-nutricao-bambu-95ml/p",
-  popularity: 469
+  popularity: 468
  },
  {
   sku: "paguemenos-1634688",
@@ -5173,7 +5162,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138158/creme-hidratante-corporal-principia-ch-02-454g-principal.png?v=639077200328530000",
   productUrl: "https://www.paguemenos.com.br/creme-hidratante-corporal-principia-ch-02-454g/p",
-  popularity: 470
+  popularity: 469
  },
  {
   sku: "paguemenos-1631995",
@@ -5184,7 +5173,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203877/3.jpg?v=639207515599430000",
   productUrl: "https://www.paguemenos.com.br/serum-capilar-elseve-colageno-lifter-100ml/p",
-  popularity: 471
+  popularity: 470
  },
  {
   sku: "paguemenos-1631992",
@@ -5195,7 +5184,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120177/Design-sem-nome--4-.jpg?v=639034105626330000",
   productUrl: "https://www.paguemenos.com.br/mascara-capilar-elseve-colageno-lifter-300g/p",
-  popularity: 472
+  popularity: 471
  },
  {
   sku: "paguemenos-1630938",
@@ -5206,7 +5195,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097904/7500435260282_1.jpg?v=638981138022900000",
   productUrl: "https://www.paguemenos.com.br/condicionador-pantene-pro-v-science-molecular-bond-repair-510ml/p",
-  popularity: 473
+  popularity: 472
  },
  {
   sku: "paguemenos-180269",
@@ -5217,7 +5206,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1085873/condicionador-dove-bond-repair---peptideo-600ml-principal.png?v=638966614860700000",
   productUrl: "https://www.paguemenos.com.br/condicionador-dove-bond-repair-mais-peptideo-600ml/p",
-  popularity: 474
+  popularity: 473
  },
  {
   sku: "paguemenos-1633331",
@@ -5228,7 +5217,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127840/protetor-solar-facial-principia-ps-05-cor-3-0-fps60-30ml-principal.png?v=639053002145870000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-ps-05-cor-3-0-fps60-30ml/p",
-  popularity: 475
+  popularity: 474
  },
  {
   sku: "paguemenos-1633332",
@@ -5239,7 +5228,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127841/protetor-solar-facial-principia-ps-05-cor-4-0-fps60-30ml-principal.png?v=639053002529000000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-ps-05-cor-4-0-fps60-30ml/p",
-  popularity: 476
+  popularity: 475
  },
  {
   sku: "paguemenos-179728",
@@ -5250,7 +5239,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1079998/shampoo-dove-bond-repair---peptideo-600ml-principal.png?v=638955397971070000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-bond-repair-mais-peptideo-600ml/p",
-  popularity: 477
+  popularity: 476
  },
  {
   sku: "paguemenos-179623",
@@ -5261,7 +5250,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170571/7500435259132_1.jpg?v=639136151445200000",
   productUrl: "https://www.paguemenos.com.br/mascara-intensiva-pantene-reconstrucao-molecular-270ml/p",
-  popularity: 478
+  popularity: 477
  },
  {
   sku: "paguemenos-173008",
@@ -5272,7 +5261,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1046589/kit-dove-nutricao---tri-oleos-shampoo-350ml---condicionador-175ml-principal.png?v=638893143414800000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-nutricao-mais-tri-oleos-shampoo-350ml-mais-condicionador-175ml/p",
-  popularity: 479
+  popularity: 478
  },
  {
   sku: "paguemenos-172439",
@@ -5283,7 +5272,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044537/kit-protetor-solar-dauf-protetor-facial-fps80-60g---protetor-solar-fps80-200g-principal.png?v=638888796101800000",
   productUrl: "https://www.paguemenos.com.br/kit-protetor-solar-dauf-protetor-facial-fps80-60g-mais-protetor-solar-fps80-200g/p",
-  popularity: 480
+  popularity: 479
  },
  {
   sku: "paguemenos-168357",
@@ -5294,7 +5283,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195733/colonia-granado-cardamomo---gengibre-230ml-principal.png?v=639179876555170000",
   productUrl: "https://www.paguemenos.com.br/colonia-granado-cardamomo-gengibre-230ml/p",
-  popularity: 481
+  popularity: 480
  },
  {
   sku: "paguemenos-163979",
@@ -5305,7 +5294,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/996699/shampoo-condicionador-elseve-liso-dos-sonhos-375ml-170ml-principal.png?v=638778996524570000",
   productUrl: "https://www.paguemenos.com.br/shampoomaiscondicionador-elseve-liso-dos-sonhos-375mlmais170ml/p",
-  popularity: 482
+  popularity: 481
  },
  {
   sku: "paguemenos-161140",
@@ -5316,7 +5305,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1181386/7500435247917_1.jpg?v=639155814902570000",
   productUrl: "https://www.paguemenos.com.br/tonico-capilar-pantene-biotinamina-b3-antiqueda-52ml/p",
-  popularity: 483
+  popularity: 482
  },
  {
   sku: "paguemenos-153229",
@@ -5327,7 +5316,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130676/698a558d68fc2900193d92e2_0.jpg?v=639063437568300000",
   productUrl: "https://www.paguemenos.com.br/creme-corporal-intenso-eucerin-anti-pigment-200ml/p",
-  popularity: 484
+  popularity: 483
  },
  {
   sku: "paguemenos-153341",
@@ -5338,7 +5327,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/948765/hidratante-facial-creamy-calming-cream-40g-principal.png?v=638663218789100000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-creamy-calming-cream-40g/p",
-  popularity: 485
+  popularity: 484
  },
  {
   sku: "paguemenos-149534",
@@ -5349,7 +5338,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/930174/kit-dove-bond-intense-repair-shampoo-350ml---condicionador-150ml-principal.png?v=638617752660900000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-bond-intense-repair-shampoo-350ml-mais-condicionador-150ml/p",
-  popularity: 486
+  popularity: 485
  },
  {
   sku: "paguemenos-149170",
@@ -5360,7 +5349,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos oleo para cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/998364/1.jpg.jpg?v=638784189393170000",
   productUrl: "https://www.paguemenos.com.br/oleo-ox-nutre-120ml/p",
-  popularity: 487
+  popularity: 486
  },
  {
   sku: "paguemenos-148772",
@@ -5371,7 +5360,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/925705/creme-calmante-multirreparador-principia-cm-01-40g-principal.png?v=638609825120570000",
   productUrl: "https://www.paguemenos.com.br/creme-calmante-multirreparador-principia-cm-01-40g/p",
-  popularity: 488
+  popularity: 487
  },
  {
   sku: "paguemenos-146471",
@@ -5382,7 +5371,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos protetor termico",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138250/7500435240529_1.jpg?v=639077268513200000",
   productUrl: "https://www.paguemenos.com.br/queratina-e-pro-vitamina-b5-pantene-pro-v-miracles-preenche-blinda-frasco-160ml-spray/p",
-  popularity: 489
+  popularity: 488
  },
  {
   sku: "paguemenos-144394",
@@ -5393,7 +5382,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/900831/1---principia-skincare-cosmeticos-gl-01-gel-limpeza-acido-salicilico-glicerina-1.jpg?v=638545714273030000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-principia-350g/p",
-  popularity: 490
+  popularity: 489
  },
  {
   sku: "paguemenos-144395",
@@ -5404,7 +5393,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/911167/0602883706309.jpg?v=638574315915230000",
   productUrl: "https://www.paguemenos.com.br/serum-principia-10porcento-niacinamida-mais-1porcento-zinco-pca-30ml/p",
-  popularity: 491
+  popularity: 490
  },
  {
   sku: "paguemenos-144494",
@@ -5415,7 +5404,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/996963/Design-sem-nome.jpg?v=638779197605470000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-biore-perfect-milk-fps50-40ml/p",
-  popularity: 492
+  popularity: 491
  },
  {
   sku: "paguemenos-139518",
@@ -5426,7 +5415,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo body splash",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/880690/desodorante-body-splash-classic-giovanna-baby-frasco-260ml-principal.png?v=638524959578570000",
   productUrl: "https://www.paguemenos.com.br/desodorante-body-splash-classic-giovanna-baby-frasco-260ml/p",
-  popularity: 493
+  popularity: 492
  },
  {
   sku: "paguemenos-131280",
@@ -5437,7 +5426,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1055601/7891150095830_1.jpg?v=638905271566370000",
   productUrl: "https://www.paguemenos.com.br/serum-hidratante-corporal-dove-hialuronico-mais-dermo-renovador-380ml/p",
-  popularity: 494
+  popularity: 493
  },
  {
   sku: "paguemenos-127434",
@@ -5448,7 +5437,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/832556/zella-150mg-g-gel-dermatologico-30g-principal.png?v=638480950753730000",
   productUrl: "https://www.paguemenos.com.br/zella-150mg-g-gel-dermatologico-30g/p",
-  popularity: 495
+  popularity: 494
  },
  {
   sku: "paguemenos-127285",
@@ -5459,7 +5448,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto esfoliante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1144743/7891150095540_0.jpg?v=639093533874230000",
   productUrl: "https://www.paguemenos.com.br/oleo-e-serum-bifasico-7porcento-peptideo-complex-dove-bond-intense-repair-frasco-110ml-spray/p",
-  popularity: 496
+  popularity: 495
  },
  {
   sku: "paguemenos-126625",
@@ -5470,7 +5459,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/825588/promopack-loreal-paris-shampoo-375ml---condicionador-170ml-elseve-glycolic-gloss--principal.png?v=638469821180830000",
   productUrl: "https://www.paguemenos.com.br/promopack-loreal-paris-shampoo-375ml-mais-condicionador-170ml-elseve-glycolic-gloss/p",
-  popularity: 497
+  popularity: 496
  },
  {
   sku: "paguemenos-126523",
@@ -5481,7 +5470,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138417/7500435232821_1.jpg?v=639077275174030000",
   productUrl: "https://www.paguemenos.com.br/condicionador-queratina-e-pro-vitamina-b5-pantene-pro-v-miracles-queratina-preenche-blinda-frasco-510ml/p",
-  popularity: 498
+  popularity: 497
  },
  {
   sku: "paguemenos-124492",
@@ -5492,7 +5481,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/819643/creme-clareador-dauf-para-virilha-e-axilas-50g-principal.png?v=638449022045100000",
   productUrl: "https://www.paguemenos.com.br/creme-clareador-dauf-para-virilha-e-axilas-50g/p",
-  popularity: 499
+  popularity: 498
  },
  {
   sku: "paguemenos-108124",
@@ -5503,7 +5492,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo body splash",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/852665/body-desodorante-corporal-splash-giovanna-baby-blue-260ml-principal.jpg?v=638512253986470000",
   productUrl: "https://www.paguemenos.com.br/body-desodorante-corporal-splash-giovanna-baby-blue-260ml/p",
-  popularity: 500
+  popularity: 499
  },
  {
   sku: "paguemenos-100142",
@@ -5514,7 +5503,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/824240/creme-dauf-10porcento-ureia-hidratacao-intensa-100g-principal.jpg?v=638461241157570000",
   productUrl: "https://www.paguemenos.com.br/creme-dauf-10porcento-ureia-hidratacao-intensa-100g/p",
-  popularity: 501
+  popularity: 500
  },
  {
   sku: "paguemenos-100021",
@@ -5525,7 +5514,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/682313/shampoo-anticaspa-pielus-di-400ml-principal.jpg?v=638190288633670000",
   productUrl: "https://www.paguemenos.com.br/shampoo-anticaspa-pielus-di-400ml/p",
-  popularity: 502
+  popularity: 501
  },
  {
   sku: "paguemenos-99761",
@@ -5536,7 +5525,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/945842/Custom-dimensions-1000x1000-px.jpg?v=638654823677130000",
   productUrl: "https://www.paguemenos.com.br/dercos-vichy-energymais-shampoo-estimulante-400g/p",
-  popularity: 503
+  popularity: 502
  },
  {
   sku: "paguemenos-99926",
@@ -5547,7 +5536,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/682141/shampoo-anticaspa-darrow-doctar-plus-120ml-com-25porcento-off-principal.jpg?v=638189425287500000",
   productUrl: "https://www.paguemenos.com.br/shampoo-anticaspa-darrow-doctar-plus-120ml-com-25porcento-off/p",
-  popularity: 504
+  popularity: 503
  },
  {
   sku: "paguemenos-99207",
@@ -5558,7 +5547,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/960727/7500435209755_1.jpg?v=638689319969800000",
   productUrl: "https://www.paguemenos.com.br/condicionador-hidratante-pantene-pro-v-miracles-equilibrio-raiz-e-pontas-com-510ml/p",
-  popularity: 505
+  popularity: 504
  },
  {
   sku: "paguemenos-97852",
@@ -5569,7 +5558,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares corporais creme",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1023980/1.jpg?v=638850920976270000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-helioderm-corporal-fps70-200ml/p",
-  popularity: 506
+  popularity: 505
  },
  {
   sku: "paguemenos-97841",
@@ -5580,7 +5569,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1023945/1.jpg?v=638850888574030000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-helioderm-facial-fps70-sem-cor-50g/p",
-  popularity: 507
+  popularity: 506
  },
  {
   sku: "paguemenos-97589",
@@ -5591,7 +5580,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178395/7500435209304_1.jpg?v=639154896045330000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-pro-v-miracles-equilibrio-raiz-e-pontas-com-300ml/p",
-  popularity: 508
+  popularity: 507
  },
  {
   sku: "paguemenos-97111",
@@ -5602,7 +5591,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042344/hidratante-corporal-intensivo-neutrogenanorwegian-sem-fragrancia-400ml_7891010254995_1.jpg?v=638887871230400000",
   productUrl: "https://www.paguemenos.com.br/locao-intensiva-hidratante-neutrogena-nwg-400ml/p",
-  popularity: 509
+  popularity: 508
  },
  {
   sku: "paguemenos-97008",
@@ -5613,7 +5602,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/890658/7899706185844-LaRoche-PosayProtetorSolarAntheliosUltraCoverFPS60Cor3.jpg?v=638533511237930000",
   productUrl: "https://www.paguemenos.com.br/anthelios-ultra-cover-cor-3-0-fps60-30g/p",
-  popularity: 510
+  popularity: 509
  },
  {
   sku: "paguemenos-97013",
@@ -5624,7 +5613,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/788397/7899706186179_1.jpg?v=638399072082000000",
   productUrl: "https://www.paguemenos.com.br/anthelios-ultra-cover-cor-2-0-fps60-30g/p",
-  popularity: 511
+  popularity: 510
  },
  {
   sku: "paguemenos-96517",
@@ -5635,7 +5624,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/937631/Custom-dimensions-1000x1000-px--22-.jpg?v=638638329380900000",
   productUrl: "https://www.paguemenos.com.br/anthelios-airliciummais-fps80-40g/p",
-  popularity: 512
+  popularity: 511
  },
  {
   sku: "paguemenos-68241",
@@ -5646,7 +5635,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/852159/kit-cuidados-essenciais-dauf-c-3-principal.jpg?v=638512204494270000",
   productUrl: "https://www.paguemenos.com.br/kit-cuidados-essenciais-dauf-c-3/p",
-  popularity: 513
+  popularity: 512
  },
  {
   sku: "paguemenos-67470",
@@ -5657,7 +5646,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223053/imagem padrao - 2026-09-03T092518.734.jpg?v=639240351294600000",
   productUrl: "https://www.paguemenos.com.br/dermovance-calm-creme-facial-40g/p",
-  popularity: 514
+  popularity: 513
  },
  {
   sku: "paguemenos-60532",
@@ -5668,7 +5657,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas alicate de unha",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/648263/alicate-dauf-profissional-inox-com-1-unidade-principal.jpg?v=638008121869830000",
   productUrl: "https://www.paguemenos.com.br/alicate-dauf-profissional-inox-com-1-unidade/p",
-  popularity: 515
+  popularity: 514
  },
  {
   sku: "paguemenos-60259",
@@ -5679,7 +5668,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1033092/1.jpg?v=638864613769100000",
   productUrl: "https://www.paguemenos.com.br/amilia-repair-locao-prebiotica-60g/p",
-  popularity: 516
+  popularity: 515
  },
  {
   sku: "paguemenos-60229",
@@ -5690,7 +5679,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1160255/7893300521169_1.jpg?v=639112529782330000",
   productUrl: "https://www.paguemenos.com.br/fixador-capilar-karina-controle-volume-extra-forte-spray-400ml/p",
-  popularity: 517
+  popularity: 516
  },
  {
   sku: "paguemenos-60077",
@@ -5701,7 +5690,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1202353/4005800220012-EUCERIN_Pomada_Reparadora_Aquaphor_Duopack_10ml_Hidrata_o_Intensiva_Hidratante_Labial-Body-Eucerin__1.jpg?v=639199758999530000",
   productUrl: "https://www.paguemenos.com.br/eucerin-aquaphor-pomada-reparadora-duo-pack-2-bisnagas-de-9g-cada/p",
-  popularity: 518
+  popularity: 517
  },
  {
   sku: "paguemenos-59474",
@@ -5712,7 +5701,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127111/7891010253813_1.jpg?v=639051299855730000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-neutrogena-face-care-intensive-matte-3-em-1-100g/p",
-  popularity: 519
+  popularity: 518
  },
  {
   sku: "paguemenos-59326",
@@ -5723,7 +5712,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/639294/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-liso-pleno-principal.jpg?v=638008001341570000",
   productUrl: "https://www.paguemenos.com.br/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-liso-pleno/p",
-  popularity: 520
+  popularity: 519
  },
  {
   sku: "paguemenos-59262",
@@ -5734,7 +5723,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195741/colonia-granado-terrapeutics-bergamota-flor-de-laranjeira-230ml-principal.jpg?v=639179877180370000",
   productUrl: "https://www.paguemenos.com.br/colonia-granado-terrapeutics-bergamota-flor-de-laranjeira-230ml/p",
-  popularity: 521
+  popularity: 520
  },
  {
   sku: "paguemenos-59124",
@@ -5745,7 +5734,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1081332/7899706254373--2-.JPG--1-.webp?v=639172155201630000",
   productUrl: "https://www.paguemenos.com.br/dercos-energizante-shampoo-antiqueda-refil-200ml/p",
-  popularity: 522
+  popularity: 521
  },
  {
   sku: "paguemenos-58077",
@@ -5756,7 +5745,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1229463/02_ECOMM_SUAVIE_SAB_LIQ_400g_3282770144369_SELO.jpg?v=639259570343930000",
   productUrl: "https://www.paguemenos.com.br/suavie-sabonete-dermatologico-para-pele-sensivel-400ml/p",
-  popularity: 523
+  popularity: 522
  },
  {
   sku: "paguemenos-57806",
@@ -5767,7 +5756,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/672391/dermotivin-hidratante-matificante-benzac-oil-control-pele-oleosa-a-acneica-50ml_7897930777286_1.jpg?v=638115609250800000",
   productUrl: "https://www.paguemenos.com.br/dermotivin-hidratante-matificante-benzac-oil-control-pele-oleosa-a-acneica-50ml/p",
-  popularity: 524
+  popularity: 523
  },
  {
   sku: "paguemenos-57278",
@@ -5778,7 +5767,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042897/protetor-solar-facial-neostrata-minesol-oil-control-medio-claro-fps-70-40g_7891010250799_1.jpg?v=639101414159330000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-facial-oil-control-fps70-medio-claro-40g/p",
-  popularity: 525
+  popularity: 524
  },
  {
   sku: "paguemenos-57277",
@@ -5789,7 +5778,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051024/protetor-solar-facial-neostrata-minesol-oil-control-claro-fps-70-40g_7891010250782_1.jpg?v=638900117064500000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-facial-oil-control-fps70-pele-clara-40g/p",
-  popularity: 526
+  popularity: 525
  },
  {
   sku: "paguemenos-57053",
@@ -5800,7 +5789,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1052166/8429420197985-ISDINProtetorSolarFacialFusionWater5StarsSemCorFPS60-50ml-1.jpg?v=638900162457530000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-isdin-fusion-water-fps-60-sem-cor-50ml/p",
-  popularity: 527
+  popularity: 526
  },
  {
   sku: "paguemenos-55940",
@@ -5811,7 +5800,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/851593/kelus-gel-de-silicone-para-reducao-de-cicatrizes-15g-principal.jpg?v=638512186650100000",
   productUrl: "https://www.paguemenos.com.br/kelus-gel-de-silicone-para-reducao-de-cicatrizes-15g/p",
-  popularity: 528
+  popularity: 527
  },
  {
   sku: "paguemenos-55416",
@@ -5822,7 +5811,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/645524/locao-hidratante-dauf-hidroxietil-ureia-20pc-150g-principal.jpg?v=638008086746630000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-dauf-hidroxietil-ureia-20pc-150g/p",
-  popularity: 529
+  popularity: 528
  },
  {
   sku: "paguemenos-54934",
@@ -5833,7 +5822,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/909053/7500435142229_1.jpg?v=638567540261530000",
   productUrl: "https://www.paguemenos.com.br/creme-para-tratamento-pantene-hidratacao-270ml/p",
-  popularity: 530
+  popularity: 529
  },
  {
   sku: "paguemenos-54824",
@@ -5844,7 +5833,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225772/imagem padrao -39-.jpg?v=639252429331770000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-oil-control-fps70-50porcento-desconto-na-2-unidade/p",
-  popularity: 531
+  popularity: 530
  },
  {
   sku: "paguemenos-54611",
@@ -5855,7 +5844,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto com manchas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1062302/3701129800096_1.jpg?v=638924349257270000",
   productUrl: "https://www.paguemenos.com.br/bioderma-pigment-bio-sensitive-areas-creme-clareador-corporal-75ml/p",
-  popularity: 532
+  popularity: 531
  },
  {
   sku: "paguemenos-54494",
@@ -5866,7 +5855,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042919/protetor-solar-facial-neostrata-minesol-oil-control-sem-cor-fps-70-40g_7891010248178_1.jpg?v=638887876982500000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-facial-oil-control-fps70-toque-seco-40g/p",
-  popularity: 533
+  popularity: 532
  },
  {
   sku: "paguemenos-54486",
@@ -5877,7 +5866,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042727/protetor-solar-corpo-e-rosto-antioxidante-neostrata®-minesol®-fps-99-200ml_7891010248130_1.jpg?v=639101413290000000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-rosto-e-corpo-fps99-200ml/p",
-  popularity: 534
+  popularity: 533
  },
  {
   sku: "paguemenos-54201",
@@ -5888,7 +5877,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/644565/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-hidratacao-milagrosa-principal.jpg?v=638008073798870000",
   productUrl: "https://www.paguemenos.com.br/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-hidratacao-milagrosa/p",
-  popularity: 535
+  popularity: 534
  },
  {
   sku: "paguemenos-53293",
@@ -5899,7 +5888,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/658928/-h-y-d-r-a-p-o-r-i-n---a-i---l-o-c-a-o---h-i-d-r-a-t-a-n-t-e---r-e-p-a-r-a-d-o-r-a---4-5-0-g-_7891142204554_1.jpg?v=638035128791500000",
   productUrl: "https://www.paguemenos.com.br/hydraporin-ai-locao-hidratante-peles-secas-e-extrasecas-450g/p",
-  popularity: 536
+  popularity: 535
  },
  {
   sku: "paguemenos-52175",
@@ -5910,7 +5899,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/659169/-p-r-o-t-e-t-o-r---s-o-l-a-r---e-p-i-s-o-l---p-o---t-o-m---3---m-e-d-i-o---f-p-s-5-0---1-0-g-_7891142204141_1.jpg?v=639256818706830000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-episol-coor-fps50-pele-morena-po-compacto-10g/p",
-  popularity: 537
+  popularity: 536
  },
  {
   sku: "paguemenos-52173",
@@ -5921,7 +5910,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/676856/protetor-solar-episol-color-fps50-pele-clara-po-compacto-10g_7891142204127_1.jpg?v=638699517785200000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-episol-color-fps50-pele-clara-po-compacto-10g/p",
-  popularity: 538
+  popularity: 537
  },
  {
   sku: "paguemenos-51904",
@@ -5932,7 +5921,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1094689/7896026171380_0.png?v=638977876551170000",
   productUrl: "https://www.paguemenos.com.br/fisiogel-ai-locao-cremosa-400ml/p",
-  popularity: 539
+  popularity: 538
  },
  {
   sku: "paguemenos-50984",
@@ -5943,7 +5932,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154622/4005900408891-NIVEA_Creme_Hidratante_Lata_145g-Universal_Cream-NIVEA--1-.jpg?v=639104872478200000",
   productUrl: "https://www.paguemenos.com.br/creme-nivea-145g/p",
-  popularity: 540
+  popularity: 539
  },
  {
   sku: "paguemenos-50838",
@@ -5954,7 +5943,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/642882/protetor-solar-dauf-fps60-500ml-principal.jpg?v=638008049517900000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-dauf-fps60-500ml/p",
-  popularity: 541
+  popularity: 540
  },
  {
   sku: "paguemenos-50726",
@@ -5965,7 +5954,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/642853/dermon-creme-20g-principal.jpg?v=638008049175370000",
   productUrl: "https://www.paguemenos.com.br/dermon-creme-20g/p",
-  popularity: 542
+  popularity: 541
  },
  {
   sku: "paguemenos-50041",
@@ -5976,7 +5965,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/786985/7898919411931_1.jpg?v=638399017222930000",
   productUrl: "https://www.paguemenos.com.br/oleo-amendoa-paixao-tentadora-100ml/p",
-  popularity: 543
+  popularity: 542
  },
  {
   sku: "paguemenos-49876",
@@ -5987,7 +5976,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/642454/algodao-dauf-quadrado-300-unidades-principal.jpg?v=638008044015200000",
   productUrl: "https://www.paguemenos.com.br/algodao-dauf-quadrado-300-unidades/p",
-  popularity: 544
+  popularity: 543
  },
  {
   sku: "paguemenos-49591",
@@ -5998,7 +5987,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223014/imagem padrao -87-.jpg?v=639240327905770000",
   productUrl: "https://www.paguemenos.com.br/cedraflon-150ml/p",
-  popularity: 545
+  popularity: 544
  },
  {
   sku: "paguemenos-47087",
@@ -6009,7 +5998,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto agua micelar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1220692/7899706126335 -Asset 1-.jpg?v=639236022698100000",
   productUrl: "https://www.paguemenos.com.br/agua-micelar-5-em-1-de-loreal-paris-200ml/p",
-  popularity: 546
+  popularity: 545
  },
  {
   sku: "paguemenos-46850",
@@ -6020,7 +6009,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/641401/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-nutricao-magica-principal.jpg?v=638008029663430000",
   productUrl: "https://www.paguemenos.com.br/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-nutricao-magica/p",
-  popularity: 547
+  popularity: 546
  },
  {
   sku: "paguemenos-46530",
@@ -6031,7 +6020,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/622593/agua-oxigenada-40.jpg?v=637865150531030000",
   productUrl: "https://www.paguemenos.com.br/agua-oxigenada-dauf-40-volume-cremosa-90ml-nv/p",
-  popularity: 548
+  popularity: 547
  },
  {
   sku: "paguemenos-46086",
@@ -6042,7 +6031,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1137429/4005900183125_1.jpg?v=639076406944170000",
   productUrl: "https://www.paguemenos.com.br/eucerin-proteor-solar-facial-fps-60-oil-control-creme-gel-52g/p",
-  popularity: 549
+  popularity: 548
  },
  {
   sku: "paguemenos-44624",
@@ -6053,7 +6042,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/850565/algodao-choices-beauty-disco-leve-100-pague-80-unidades-principal.jpg?v=638512157365400000",
   productUrl: "https://www.paguemenos.com.br/algodao-choices-beauty-disco-leve-100-pague-80-unidades/p",
-  popularity: 550
+  popularity: 549
  },
  {
   sku: "paguemenos-43947",
@@ -6064,7 +6053,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002341/4005808934980-NIVEAHidratanteLabialMelanciaShine48g-1.jpg?v=638791090182470000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-fruty-shine-melancia-4-8g/p",
-  popularity: 551
+  popularity: 550
  },
  {
   sku: "paguemenos-39571",
@@ -6075,7 +6064,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640054/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-pos-quimica-principal.jpg?v=638008012130730000",
   productUrl: "https://www.paguemenos.com.br/kit-shampoo-275ml-mais-condicionador-175ml-niely-gold-pos-quimica/p",
-  popularity: 552
+  popularity: 551
  },
  {
   sku: "paguemenos-33792",
@@ -6086,7 +6075,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1135958/TARJA VERMELHA.jpg?v=639074501591130000",
   productUrl: "https://www.paguemenos.com.br/epiduo-gel-antiacne-bisnaga-30g/p",
-  popularity: 553
+  popularity: 552
  },
  {
   sku: "paguemenos-33624",
@@ -6097,7 +6086,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1194399/cetaphil-hidratante-creme-453g-principal.png?v=639177336384500000",
   productUrl: "https://www.paguemenos.com.br/cetaphil-hidratante-creme-453g/p",
-  popularity: 554
+  popularity: 553
  },
  {
   sku: "paguemenos-30415",
@@ -6108,7 +6097,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1077795/1.jpg?v=638950042526600000",
   productUrl: "https://www.paguemenos.com.br/tinta-de-cabelo-casting-creme-gloss-de-l%E2%80%99oreal-paris-400-castanho-natural-246g/p",
-  popularity: 555
+  popularity: 554
  },
  {
   sku: "paguemenos-29940",
@@ -6119,7 +6108,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1224890/imagem padrao -50-.jpg?v=639250708687730000",
   productUrl: "https://www.paguemenos.com.br/kelo-cote-gel-15g/p",
-  popularity: 556
+  popularity: 555
  },
  {
   sku: "paguemenos-20362",
@@ -6130,7 +6119,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas removedor de esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/689102/acetona-alyne-100ml-principal.jpg?v=638210672774070000",
   productUrl: "https://www.paguemenos.com.br/acetona-alyne-100ml/p",
-  popularity: 557
+  popularity: 556
  },
  {
   sku: "paguemenos-16799",
@@ -6141,7 +6130,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154554/4005808309436-NIVEA_Lo_o_Hidratante_Milk_Pele_Seca_a_Extrasseca_200ml-Body__Hand-NIVEA--1-.jpg?v=639104869477400000",
   productUrl: "https://www.paguemenos.com.br/hidratante-nivea-milk-pele-seca-a-extra-seca-200ml/p",
-  popularity: 558
+  popularity: 557
  },
  {
   sku: "paguemenos-6841",
@@ -6152,7 +6141,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/981861/seiva-de-colonia-alfazema-lavanda-118ml-principal.jpg?v=638744688129600000",
   productUrl: "https://www.paguemenos.com.br/seiva-de-colonia-alfazema-lavanda-118ml/p",
-  popularity: 559
+  popularity: 558
  },
  {
   sku: "paguemenos-1644295",
@@ -6163,7 +6152,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1206322/hidratante-facial-creamy-hydragel-oil-control-50g-principal.png.png?v=639214415583230000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-creamy-hydragel-oil-control-50g/p",
-  popularity: 560
+  popularity: 559
  },
  {
   sku: "paguemenos-1643696",
@@ -6174,7 +6163,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1197044/colonia-granado-terrapeutics-rosa---fava-tonka-230ml-principal.png.png?v=639180796268870000",
   productUrl: "https://www.paguemenos.com.br/colonia-granado-terrapeutics-rosa-fava-tonka-230ml/p",
-  popularity: 561
+  popularity: 560
  },
  {
   sku: "paguemenos-1643559",
@@ -6185,7 +6174,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1194895/disco-redutor-de-poros-faciais-ricca-35-unidades-principal.png.png?v=639177520027470000",
   productUrl: "https://www.paguemenos.com.br/disco-redutor-de-poros-faciais-ricca-35-unidades/p",
-  popularity: 562
+  popularity: 561
  },
  {
   sku: "paguemenos-1643085",
@@ -6196,7 +6185,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1187457/Kit-Virtual---Oleo-e-Serum.png?v=639165480715630000",
   productUrl: "https://www.paguemenos.com.br/kit-pantene-leave-in-serum-forca-e-nutricao-bambu-95ml---oleo-milagroso-queratina-95ml/p",
-  popularity: 563
+  popularity: 562
  },
  {
   sku: "paguemenos-1639803",
@@ -6207,7 +6196,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1175227/7.jpg?v=639150551497170000",
   productUrl: "https://www.paguemenos.com.br/hidratante-corporal-dove-serum-glicolico-mais-reparador-de-textura-180ml/p",
-  popularity: 564
+  popularity: 563
  },
  {
   sku: "paguemenos-1638456",
@@ -6218,7 +6207,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1153166/creme-para-pentear-dove-bond-repair---peptideo-bio-p-240ml-principal.png.png?v=639100694773200000",
   productUrl: "https://www.paguemenos.com.br/creme-para-pentear-dove-bond-repair-mais-peptideo-bio-p-240ml/p",
-  popularity: 565
+  popularity: 564
  },
  {
   sku: "paguemenos-1635458",
@@ -6229,7 +6218,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1146109/kit-hidratacao-corporal-cetaphil-locao-hidratante-473ml---locao-de-limpeza-100ml-principal.png.png?v=639095292363900000",
   productUrl: "https://www.paguemenos.com.br/kit-hidratacao-corporal-cetaphil-locao-hidratante-473ml-mais-locao-de-limpeza-100ml/p",
-  popularity: 566
+  popularity: 565
  },
  {
   sku: "paguemenos-1635455",
@@ -6240,7 +6229,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145795/kit-hidratacao-corporal-cetaphil-creme-hidratante-453g---locao-de-limpeza-100ml-principal.png.png?v=639094572435730000",
   productUrl: "https://www.paguemenos.com.br/kit-hidratacao-corporal-cetaphil-creme-hidratante-453g-mais-locao-de-limpeza-100ml/p",
-  popularity: 567
+  popularity: 566
  },
  {
   sku: "paguemenos-1633335",
@@ -6251,7 +6240,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127844/hidratante-labial-nivea-torta-de-amora-bridgerton-4-8g-principal.png?v=639053028128400000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-torta-de-amora-bridgerton-4-8g/p",
-  popularity: 568
+  popularity: 567
  },
  {
   sku: "paguemenos-1632514",
@@ -6262,7 +6251,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116767/creme-para-pentear-salon-line-condicionador-definicao-natural-antifrizz-1kg-principal.png?v=639017676151730000",
   productUrl: "https://www.paguemenos.com.br/creme-para-pentear-salon-line-condicionador-definicao-natural-antifrizz-1kg/p",
-  popularity: 569
+  popularity: 568
  },
  {
   sku: "paguemenos-1632479",
@@ -6273,7 +6262,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1159234/adesivo-para-acnes-ricca-secativos-fase-inicial-principal.png.png?v=639107308529530000",
   productUrl: "https://www.paguemenos.com.br/adesivo-para-acnes-ricca-secativos-fase-inicial/p",
-  popularity: 570
+  popularity: 569
  },
  {
   sku: "paguemenos-1634686",
@@ -6284,7 +6273,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138149/principia-locao-hidratante-lh-02-500ml-principal.png?v=639077199876170000",
   productUrl: "https://www.paguemenos.com.br/principia-locao-hidratante-lh-02-500ml/p",
-  popularity: 571
+  popularity: 570
  },
  {
   sku: "paguemenos-1632304",
@@ -6295,7 +6284,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120176/Design-sem-nome--3-.jpg?v=639034105070600000",
   productUrl: "https://www.paguemenos.com.br/condicionador-elseve-colageno-lifter-400ml/p",
-  popularity: 572
+  popularity: 571
  },
  {
   sku: "paguemenos-1631380",
@@ -6306,7 +6295,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1104340/shampoo-peptideos-de-colageno-loreal-paris-elseve-collagen-lifter-400ml-principal.png?v=638993412122000000",
   productUrl: "https://www.paguemenos.com.br/shampoo-peptideos-de-colageno-loreal-paris-elseve-collagen-lifter-400ml/p",
-  popularity: 573
+  popularity: 572
  },
  {
   sku: "paguemenos-1630939",
@@ -6317,7 +6306,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097857/7500435259095_1.jpg?v=638981134969830000",
   productUrl: "https://www.paguemenos.com.br/finalizador-leave-in-pantene-regeneracao-molecular-bond-repair-150ml/p",
-  popularity: 574
+  popularity: 573
  },
  {
   sku: "paguemenos-1630827",
@@ -6328,7 +6317,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096623/gel-de-limpeza-principia peles-sensiveis-e-secas-gl-03 200ml-principal.png?v=638979553707900000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-principia%C2%A0peles-sensiveis-e-secas-gl-03%C2%A0200ml/p",
-  popularity: 575
+  popularity: 574
  },
  {
   sku: "paguemenos-179573",
@@ -6339,7 +6328,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097833/7500435260251_1.jpg?v=638981134012400000",
   productUrl: "https://www.paguemenos.com.br/shampoo-reparador-pantene-molecular-bond-repair-300ml/p",
-  popularity: 576
+  popularity: 575
  },
  {
   sku: "paguemenos-179115",
@@ -6350,7 +6339,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1075193/kit-clareador-yama-camomila-po-descolorante-20g---oxicreme-40-volumes-60ml-principal.png?v=638945175111500000",
   productUrl: "https://www.paguemenos.com.br/kit-clareador-yama-camomila-po-descolorante-20g-mais-oxicreme-40-volumes-60ml/p",
-  popularity: 577
+  popularity: 576
  },
  {
   sku: "paguemenos-180623",
@@ -6361,7 +6350,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1090126/gel-de-limpeza-facial-principia-skincare-gl-02-500ml-principal.png?v=638971792636830000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-principia-skincare-gl-02-500ml/p",
-  popularity: 578
+  popularity: 577
  },
  {
   sku: "paguemenos-180627",
@@ -6372,7 +6361,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1090130/gel-de-limpeza-facial-principia-skincare-gl-01-200ml-principal.png?v=638971793377030000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-principia-skincare-gl-01-200ml/p",
-  popularity: 579
+  popularity: 578
  },
  {
   sku: "paguemenos-178114",
@@ -6383,7 +6372,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1070303/kit-cetaphil-creme-hidratante-453g---creme-hidratante-250g-principal.png?v=638937972364570000",
   productUrl: "https://www.paguemenos.com.br/kit-cetaphil-creme-hidratante-453g-mais-creme-hidratante-250g/p",
-  popularity: 580
+  popularity: 579
  },
  {
   sku: "paguemenos-176423",
@@ -6394,7 +6383,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1066406/80693 - IF01-3D-DAUF-Vaselina-Solida.jpg?v=638932742448300000",
   productUrl: "https://www.paguemenos.com.br/vaselina-solida-dauf-15g/p",
-  popularity: 581
+  popularity: 580
  },
  {
   sku: "paguemenos-175744",
@@ -6405,7 +6394,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120329/4006000175058_1.jpg?v=639035575426530000",
   productUrl: "https://www.paguemenos.com.br/serum-facial-nivea-luminous-630-skin-glow-15ml/p",
-  popularity: 582
+  popularity: 581
  },
  {
   sku: "paguemenos-175674",
@@ -6416,7 +6405,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1057548/kit-dauf-protetor-solar-facial-fps80-60g-gratis-dauf-sabonete-gel-uso-diario-120g-principal.png?v=638913781020430000",
   productUrl: "https://www.paguemenos.com.br/kit-dauf-protetor-solar-facial-fps80-60g-gratis-dauf-sabonete-gel-uso-diario-120g/p",
-  popularity: 583
+  popularity: 582
  },
  {
   sku: "paguemenos-175541",
@@ -6427,7 +6416,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto esfoliante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1117158/7891150102798_1.jpg?v=639021099017900000",
   productUrl: "https://www.paguemenos.com.br/oleo-e-serum-bifasico-dove-12porcento-serum-ferulico-uv-repair-glow-mais-ferulico-spray-110ml/p",
-  popularity: 584
+  popularity: 583
  },
  {
   sku: "paguemenos-175071",
@@ -6438,7 +6427,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo body splash",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1055420/body-splash-giovanna-baby-cherry-260ml-principal.png?v=638905247744530000",
   productUrl: "https://www.paguemenos.com.br/body-splash-giovanna-baby-cherry-260ml/p",
-  popularity: 585
+  popularity: 584
  },
  {
   sku: "paguemenos-174007",
@@ -6449,7 +6438,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1050636/cera-fixadora-em-bastao-ricca-15g-principal.png?v=638899196032200000",
   productUrl: "https://www.paguemenos.com.br/cera-fixadora-em-bastao-ricca-15g/p",
-  popularity: 586
+  popularity: 585
  },
  {
   sku: "paguemenos-173002",
@@ -6460,7 +6449,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1046554/kit-dove-reconstrucao---aminoacido-shampoo-350ml---condicionador-175ml-principal.png?v=638893141853800000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-reconstrucao-mais-aminoacido-shampoo-350ml-mais-condicionador-175ml/p",
-  popularity: 587
+  popularity: 586
  },
  {
   sku: "paguemenos-168612",
@@ -6471,7 +6460,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1020214/gel-de-limpeza-actine-oil-control-400g-principal.png?v=638844805006470000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-actine-oil-control-400g/p",
-  popularity: 588
+  popularity: 587
  },
  {
   sku: "paguemenos-171123",
@@ -6482,7 +6471,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130421/0070341368725_1.png?v=639063364425630000",
   productUrl: "https://www.paguemenos.com.br/gel-hidratante-principia-skincare-gh-01-50g/p",
-  popularity: 589
+  popularity: 588
  },
  {
   sku: "paguemenos-166006",
@@ -6493,7 +6482,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1227678/imagem padrao - 2026-09-23T111909.876.jpg?v=639257699558700000",
   productUrl: "https://www.paguemenos.com.br/oleo-de-limpeza-demaquilante-principia-skincare-ol-01-200ml/p",
-  popularity: 590
+  popularity: 589
  },
  {
   sku: "paguemenos-162230",
@@ -6504,7 +6493,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais bastao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/986921/protetor-solar-em-bastao-ollie-cor-30-fps95-15g-principal.png?v=638753889482900000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-em-bastao-ollie-cor-30-fps95-15g/p",
-  popularity: 591
+  popularity: 590
  },
  {
   sku: "paguemenos-1632652",
@@ -6515,7 +6504,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1117938/protetor-solar-facial-principia-fps99-40ml-principal.png?v=639026254633230000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-fps99-40ml/p",
-  popularity: 592
+  popularity: 591
  },
  {
   sku: "paguemenos-154915",
@@ -6526,7 +6515,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais bastao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170038/7908335406890 -1-.jpg?v=639136120963170000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-sallve-bastao-antimanchas-cor-3-fps90-15/p",
-  popularity: 593
+  popularity: 592
  },
  {
   sku: "paguemenos-153892",
@@ -6537,7 +6526,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/952005/KIT-3.jpg?v=638669396306900000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-bond-repair-1/p",
-  popularity: 594
+  popularity: 593
  },
  {
   sku: "paguemenos-153321",
@@ -6548,7 +6537,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1135820/Estagiario Digital -2-.jpg?v=639072170378230000",
   productUrl: "https://www.paguemenos.com.br/locao-facial-cerave-oil-control-pele-oleosa-52g/p",
-  popularity: 595
+  popularity: 594
  },
  {
   sku: "paguemenos-152278",
@@ -6559,7 +6548,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos oleo para cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1218140/7908324408256.jpg?v=639228227001430000",
   productUrl: "https://www.paguemenos.com.br/oleo-reparador-neutrox-nutre-oleos-45ml/p",
-  popularity: 596
+  popularity: 595
  },
  {
   sku: "paguemenos-150372",
@@ -6570,7 +6559,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123179/4006000014401-EUCERIN_S_rum_Corporal_Antimanchas_reas_Sens_veis_75ml_Anti_Pigment_Clareador_Axilas_e_Virilha_Thiamidol-Body-Eucerin_--1-.jpg?v=639040191335300000",
   productUrl: "https://www.paguemenos.com.br/serum-corporal-eucerin-anti-pigment-areas-sensiveis-75ml/p",
-  popularity: 597
+  popularity: 596
  },
  {
   sku: "paguemenos-150293",
@@ -6581,7 +6570,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos oleo para cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/934667/oleo-corporal-farmax--rosa-mosqueta-100ml-principal.png?v=638628048526400000",
   productUrl: "https://www.paguemenos.com.br/oleo-corporal-farmax-rosa-mosqueta-100ml/p",
-  popularity: 598
+  popularity: 597
  },
  {
   sku: "paguemenos-148866",
@@ -6592,7 +6581,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/926304/kit-darrow-hidratante-intensivo-nutriol-med-anticoceira-390g-gratis-hidratante-intensivo-nutriol-med-100g-principal.png?v=638610804205600000",
   productUrl: "https://www.paguemenos.com.br/kit-darrow-hidratante-intensivo-nutriol-med-anticoceira-390g-gratis-hidratante-intensivo-nutriol-med-100g/p",
-  popularity: 599
+  popularity: 598
  },
  {
   sku: "paguemenos-148776",
@@ -6603,7 +6592,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares corporais creme",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/925709/protetor-solar-corporal-principia-ps-03-fps60-200ml-principal.png?v=638609825555130000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-corporal-principia-ps-03-fps60-200ml/p",
-  popularity: 600
+  popularity: 599
  },
  {
   sku: "paguemenos-148770",
@@ -6614,7 +6603,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/925703/shampoo-dermatologico-anticaspa-principia-ac-01-250ml-principal.png?v=638609824871370000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dermatologico-anticaspa-principia-ac-01-250ml/p",
-  popularity: 601
+  popularity: 600
  },
  {
   sku: "paguemenos-147607",
@@ -6625,7 +6614,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/917792/vichy-dercos-shampoo-anticaspa-ds-cabelos-normais-a-oleosos-300g-principal.png?v=638592380900800000",
   productUrl: "https://www.paguemenos.com.br/vichy-dercos-shampoo-anticaspa-ds-cabelos-normais-a-oleosos-300g/p",
-  popularity: 602
+  popularity: 601
  },
  {
   sku: "paguemenos-147602",
@@ -6636,7 +6625,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1172907/01.jpg?v=639148082393500000",
   productUrl: "https://www.paguemenos.com.br/cerave-locao-hidratante-340ml/p",
-  popularity: 603
+  popularity: 602
  },
  {
   sku: "paguemenos-147591",
@@ -6647,7 +6636,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/917767/vichy-dercos-refil-shampoo-anticaspa-ds-cabelos-normais-a-oleosos-125g-principal.png?v=638592376176400000",
   productUrl: "https://www.paguemenos.com.br/vichy-dercos-refil-shampoo-anticaspa-ds-cabelos-normais-a-oleosos-200g/p",
-  popularity: 604
+  popularity: 603
  },
  {
   sku: "paguemenos-146711",
@@ -6658,7 +6647,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1126617/3282770397406_1.png?v=639046954087900000",
   productUrl: "https://www.paguemenos.com.br/creme-reparador-protetor-avene-cicalfate-40ml-com-rs20-00-de-desconto/p",
-  popularity: 605
+  popularity: 604
  },
  {
   sku: "paguemenos-144396",
@@ -6669,7 +6658,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/900835/1---principia-skincare-cosmeticos-niacinamida-acido-glicolico-salicilico-tranexamico-n-1.jpg?v=638545714729900000",
   productUrl: "https://www.paguemenos.com.br/serum-principia-mix-5porcento-niacinamida-mais-4porcento-glicolico-mais-3porcento-tranexamico-mais-2porcento-salicilico-30ml/p",
-  popularity: 606
+  popularity: 605
  },
  {
   sku: "paguemenos-140332",
@@ -6680,7 +6669,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138265/7500435242622_1.jpg?v=639077269124600000",
   productUrl: "https://www.paguemenos.com.br/shampoo-anticaspa-head-shoulders-limpeza-eficaz-frasco-400ml/p",
-  popularity: 607
+  popularity: 606
  },
  {
   sku: "paguemenos-131451",
@@ -6691,7 +6680,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/877193/nivea-kit-hidratante-desodorante-beleza-radiante-cuidado-intenso-400ml-principal.png?v=638524405583670000",
   productUrl: "https://www.paguemenos.com.br/nivea-kit-hidratante-desodorante-beleza-radiante-cuidado-intenso-400ml/p",
-  popularity: 608
+  popularity: 607
  },
  {
   sku: "paguemenos-131290",
@@ -6702,7 +6691,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1104047/7891150095878_2.jpg?v=638991759340700000",
   productUrl: "https://www.paguemenos.com.br/serum-hidratante-corporal-dove-pro-ceramidas-mais-dermo-hidratante-380ml/p",
-  popularity: 609
+  popularity: 608
  },
  {
   sku: "paguemenos-131289",
@@ -6713,7 +6702,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1182825/7891150095816_1.jpg?v=639156736663400000",
   productUrl: "https://www.paguemenos.com.br/serum-hidratante-corporal-dove-niacinamida-mais-uniformizador-180ml/p",
-  popularity: 610
+  popularity: 609
  },
  {
   sku: "paguemenos-127474",
@@ -6724,7 +6713,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/933293/7896235354369_1.jpg?v=638626857898700000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-suave-e-profunda-antioleosidade-efeito-matte-com-acido-hialuronico-mais-extrato-de-salgueiro-branco-monange-bisnaga-120g/p",
-  popularity: 611
+  popularity: 610
  },
  {
   sku: "paguemenos-127470",
@@ -6735,7 +6724,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto agua micelar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/954956/7896235354345_1.jpg?v=638671248854500000",
   productUrl: "https://www.paguemenos.com.br/agua-micelar-demaquilante-com-acido-hialuronico-monange-frasco-200ml/p",
-  popularity: 612
+  popularity: 611
  },
  {
   sku: "paguemenos-127433",
@@ -6746,7 +6735,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1016976/mascara-de-tratamento-dove-bond-intense-repair-250-g_7891150095557_1.png?v=638911342839770000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-tratamento-10-em-1-12porcento-peptideo-complex-dove-bond-intense-repair-caixa-250g/p",
-  popularity: 613
+  popularity: 612
  },
  {
   sku: "paguemenos-110968",
@@ -6757,7 +6746,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/820080/kit-tresemme--shampoo-350ml---condicionador-175ml-pantenol-e-niacinamida--hidratacao-profunda-preco-especial-principal.png?v=638449229958530000",
   productUrl: "https://www.paguemenos.com.br/kit-tresemme-shampoo-350ml-mais-condicionador-175ml-pantenol-e-niacinamida-hidratacao-profunda-preco-especial/p",
-  popularity: 614
+  popularity: 613
  },
  {
   sku: "paguemenos-108082",
@@ -6768,7 +6757,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1066618/7500435232807_1.jpg?v=638932783379770000",
   productUrl: "https://www.paguemenos.com.br/condicionador-pantene-prov-miracles-queratina-250ml/p",
-  popularity: 615
+  popularity: 614
  },
  {
   sku: "paguemenos-108080",
@@ -6779,7 +6768,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170555/7500435232814_1.jpg?v=639136149978570000",
   productUrl: "https://www.paguemenos.com.br/shampoo-queratina-e-pro-vitamina-b5-pantene-pro-v-miracles-queratina-blinda-frasco-300ml/p",
-  popularity: 616
+  popularity: 615
  },
  {
   sku: "paguemenos-107946",
@@ -6790,7 +6779,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto creme area dos olhos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123137/4006000101972-EUCERIN_Creme_de_Olhos_Clareador_de_Olheiras_15ml_Anti_Pigment_Antimanchas_Thiamidol-Face-Eucerin_--1-.jpg?v=639040163628230000",
   productUrl: "https://www.paguemenos.com.br/eucerin-anti-pigment-clareador-de-olheiras-area-dos-olhos-15ml/p",
-  popularity: 617
+  popularity: 616
  },
  {
   sku: "paguemenos-104550",
@@ -6801,7 +6790,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170541/7500435154291_1.jpg?v=639136149307400000",
   productUrl: "https://www.paguemenos.com.br/mascara-para-tratamento-pantene-bambu-600ml/p",
-  popularity: 618
+  popularity: 617
  },
  {
   sku: "paguemenos-103751",
@@ -6812,7 +6801,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/948584/Custom-dimensions-1000x1000-px--6-.jpg?v=638661673816430000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-effaclar-concentrado-la-roche-posay-300g-com-20porcento-de-desconto/p",
-  popularity: 619
+  popularity: 618
  },
  {
   sku: "paguemenos-103052",
@@ -6823,7 +6812,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043037/refil-neutrogena-hb-water-gel-50g_7891010255725_1.jpg?v=639239503151700000",
   productUrl: "https://www.paguemenos.com.br/neutrogena-hydro-boost-water-gel-hidratante-facial-refil-50g/p",
-  popularity: 620
+  popularity: 619
  },
  {
   sku: "paguemenos-102905",
@@ -6834,7 +6823,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/951317/neutrogenia.jpg?v=638666049701100000",
   productUrl: "https://www.paguemenos.com.br/kit-protetor-solar-neutrogena-sun-fresh-fps50-200ml-com-80porcento-de-desconto-no-neutrogena-sun-fresh-fps50-120ml/p",
-  popularity: 621
+  popularity: 620
  },
  {
   sku: "paguemenos-102899",
@@ -6845,7 +6834,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/916455/71XIHu8QjEL._AC_SL1500_.jpg?v=638589759006500000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-anthelios-airliciummais-la-roche-posay-fps-80-cor-2-0-com-40g/p",
-  popularity: 622
+  popularity: 621
  },
  {
   sku: "paguemenos-98141",
@@ -6856,7 +6845,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/670001/protetor-labial-hidratante-morango-dauf-3-6g-principal.jpg?v=638105617586770000",
   productUrl: "https://www.paguemenos.com.br/protetor-labial-hidratante-morango-dauf-3-6g/p",
-  popularity: 623
+  popularity: 622
  },
  {
   sku: "paguemenos-98121",
@@ -6867,7 +6856,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/670000/protetor-labial-hidratante-dauf-karite-3-6g-principal.jpg?v=638105617567800000",
   productUrl: "https://www.paguemenos.com.br/protetor-labial-hidratante-dauf-karite-3-6g/p",
-  popularity: 624
+  popularity: 623
  },
  {
   sku: "paguemenos-97853",
@@ -6878,7 +6867,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1144019/3499320014144_1.jpg?v=639088545113870000",
   productUrl: "https://www.paguemenos.com.br/dermotivin-benzac-oil-control-microbioma-equilibrado-50ml/p",
-  popularity: 625
+  popularity: 624
  },
  {
   sku: "paguemenos-97594",
@@ -6889,7 +6878,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116683/7500435209311_1.jpg?v=639017474187170000",
   productUrl: "https://www.paguemenos.com.br/condicionador-hidratante-pantene-pro-v-miracles-equilibrio-raiz-e-pontas-com-250ml/p",
-  popularity: 626
+  popularity: 625
  },
  {
   sku: "paguemenos-97517",
@@ -6900,7 +6889,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1152068/3282770388497_1.jpg?v=639099566906870000",
   productUrl: "https://www.paguemenos.com.br/nutriol-med-hidratante-anticoceira-390g/p",
-  popularity: 627
+  popularity: 626
  },
  {
   sku: "paguemenos-97521",
@@ -6911,7 +6900,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1152262/3282779340847_1.jpg?v=639099581737030000",
   productUrl: "https://www.paguemenos.com.br/actine-gel-de-limpeza-140g-gratis-gel-de-limpeza-40g/p",
-  popularity: 628
+  popularity: 627
  },
  {
   sku: "paguemenos-97011",
@@ -6922,7 +6911,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/890700/7899706185868-LaRoche-PosayProtetorSolarAntheliosUltraCoverFPS60Cor4.jpg?v=638533511355230000",
   productUrl: "https://www.paguemenos.com.br/anthelios-ultra-cover-cor-4-0-fps60-30g/p",
-  popularity: 629
+  popularity: 628
  },
  {
   sku: "paguemenos-96596",
@@ -6933,7 +6922,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/926912/7899706197984-ProtetorSolarFacialL-OrealParisSolarExpertiseAntioleosidadeFPS6040g-1.jpg?v=638612248503100000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-l-oreal-paris-solar-expertise-antioleosidade-fps60-40g/p",
-  popularity: 630
+  popularity: 629
  },
  {
   sku: "paguemenos-96569",
@@ -6944,7 +6933,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/909543/7500435188340_1.jpg?v=638569002118200000",
   productUrl: "https://www.paguemenos.com.br/shampoo-aussie-mega-moist-360ml-mais-condicionador-180ml/p",
-  popularity: 631
+  popularity: 630
  },
  {
   sku: "paguemenos-95384",
@@ -6955,7 +6944,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1018386/Padrao-1200.jpg?v=638862983476600000",
   productUrl: "https://www.paguemenos.com.br/doctar-salic-shampoo-de-tratamento-anticaspa-140ml/p",
-  popularity: 632
+  popularity: 631
  },
  {
   sku: "paguemenos-95365",
@@ -6966,7 +6955,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1142927/7891142982087_1.png?v=639086839345630000",
   productUrl: "https://www.paguemenos.com.br/epidrat-calm-120ml/p",
-  popularity: 633
+  popularity: 632
  },
  {
   sku: "paguemenos-95287",
@@ -6977,7 +6966,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas removedor de esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1160283/7894222030968_1.png?v=639112535065500000",
   productUrl: "https://www.paguemenos.com.br/removedor-de-esmalte-dailus-90ml/p",
-  popularity: 634
+  popularity: 633
  },
  {
   sku: "paguemenos-95262",
@@ -6988,7 +6977,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002334/4005900919625-NIVEAHidratanteDesodoranteBelezaRadianteCuidadoIntenso400ml-1.jpg?v=638791090160700000",
   productUrl: "https://www.paguemenos.com.br/hidratante-nivea-beleza-radiante-cuidado-intenso-pele-negra-400ml/p",
-  popularity: 635
+  popularity: 634
  },
  {
   sku: "paguemenos-94931",
@@ -6999,7 +6988,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto secas e sensiveis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/672545/rozex-gel-30-g-7897930760172-1.jpg?v=638718677651730000",
   productUrl: "https://www.paguemenos.com.br/rozex-gel-30g-novo/p",
-  popularity: 636
+  popularity: 635
  },
  {
   sku: "paguemenos-70848",
@@ -7010,7 +6999,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1152182/3282770153507_1.jpg?v=639099577661930000",
   productUrl: "https://www.paguemenos.com.br/actine-gel-de-limpeza-facial-400g/p",
-  popularity: 637
+  popularity: 636
  },
  {
   sku: "paguemenos-70846",
@@ -7021,7 +7010,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1151225/02.CARDS-ECOMM-ACTINE-GEL_140G_3282770153477_SELO.jpg?v=639098829698670000",
   productUrl: "https://www.paguemenos.com.br/actine-gel-de-limpeza-facial-140g/p",
-  popularity: 638
+  popularity: 637
  },
  {
   sku: "paguemenos-67604",
@@ -7032,7 +7021,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/649324/oleo-paixao-framboesa-negra-100ml-principal.jpg?v=638008135870370000",
   productUrl: "https://www.paguemenos.com.br/oleo-paixao-framboesa-negra-100ml/p",
-  popularity: 639
+  popularity: 638
  },
  {
   sku: "paguemenos-67603",
@@ -7043,7 +7032,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/649320/oleo-paixao-flor-de-baunilha-100ml-principal.jpg?v=638008135807970000",
   productUrl: "https://www.paguemenos.com.br/oleo-paixao-flor-de-baunilha-100ml/p",
-  popularity: 640
+  popularity: 639
  },
  {
   sku: "paguemenos-66418",
@@ -7054,7 +7043,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/820054/shampoo-clear-anticoceira-jojoba-melaleuca-400ml-preco-especial-principal.jpg?v=638449229557430000",
   productUrl: "https://www.paguemenos.com.br/shampoo-clear-anticoceira-jojoba-melaleuca-400ml-preco-especial/p",
-  popularity: 641
+  popularity: 640
  },
  {
   sku: "paguemenos-64925",
@@ -7065,7 +7054,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/689965/7500435197014.jpg?v=638212859005500000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-tratamento-pantene-colageno-550ml/p",
-  popularity: 642
+  popularity: 641
  },
  {
   sku: "paguemenos-60536",
@@ -7076,7 +7065,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/659100/-p-r-o-t-e-t-o-r---s-o-l-a-r---e-p-i-s-o-l---c-o-l-o-r---t-o-m---3---m-e-d-i-o---f-p-s-7-0---4-0-m-l-_7891142205704_1.jpg?v=638791218245500000",
   productUrl: "https://www.paguemenos.com.br/episol-color-fps70-tom-3-medio-40ml/p",
-  popularity: 643
+  popularity: 642
  },
  {
   sku: "paguemenos-60487",
@@ -7087,7 +7076,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225164/7891142205544.jpg?v=639251593256170000",
   productUrl: "https://www.paguemenos.com.br/epidrat-calm-b5-50ml/p",
-  popularity: 644
+  popularity: 643
  },
  {
   sku: "paguemenos-60494",
@@ -7098,7 +7087,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/659093/-p-r-o-t-e-t-o-r---s-o-l-a-r---e-p-i-s-o-l---c-o-l-o-r---t-o-m---2---c-l-a-r-o---f-p-s-7-0---4-0-m-l-_7891142205643_1.jpg?v=638802455713600000",
   productUrl: "https://www.paguemenos.com.br/episol-color-fps70-tom-2-claro-40ml/p",
-  popularity: 645
+  popularity: 644
  },
  {
   sku: "paguemenos-60470",
@@ -7109,7 +7098,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042760/protetor-solar-corpo-e-rosto-antioxidante-neostrata-minesol-fps-70-200ml_7891010254032_1.jpg?v=639101424134970000",
   productUrl: "https://www.paguemenos.com.br/neostrata-minesol-protetor-solar-rosto-e-corpo-fps70-200ml/p",
-  popularity: 646
+  popularity: 645
  },
  {
   sku: "paguemenos-60299",
@@ -7120,7 +7109,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/648068/protetor-solar-dauf-fps60-200ml-gratis-protetor-solar-facial-fps60-60ml-principal.jpg?v=638008119265600000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-dauf-fps60-200ml-gratis-protetor-solar-facial-fps60-60ml/p",
-  popularity: 647
+  popularity: 646
  },
  {
   sku: "paguemenos-60164",
@@ -7131,7 +7120,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/647989/effaclar-gel-de-limpeza-alta-tolerancia-refil-240g-principal.jpg?v=638008118115100000",
   productUrl: "https://www.paguemenos.com.br/effaclar-gel-de-limpeza-alta-tolerancia-refil-240g/p",
-  popularity: 648
+  popularity: 647
  },
  {
   sku: "paguemenos-60074",
@@ -7142,7 +7131,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/748630/eucerin-dermo-pure-oil-control-gel-de-limpeza-facial-200ml_4005900436986_1.jpg?v=638367780501500000",
   productUrl: "https://www.paguemenos.com.br/eucerin-dermopure-oil-control-gel-de-limpeza-facial-200ml/p",
-  popularity: 649
+  popularity: 648
  },
  {
   sku: "paguemenos-60012",
@@ -7153,7 +7142,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123610/4005800241901-EUCERIN_Protetor_Solar_Facial_Antimanchas_FPS_60_50ml_Pigment_Control_Clareador_Prote_o_UVA_UVB_e_Luz_Vis_vel_Thiamidol-Sun-Eucerin_--1-.jpg?v=639041016805070000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-eucerin-sun-fluido-pigment-control-fps60-50ml/p",
-  popularity: 650
+  popularity: 649
  },
  {
   sku: "paguemenos-59830",
@@ -7164,7 +7153,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1094677/7896026171267_0.png?v=638977872349170000",
   productUrl: "https://www.paguemenos.com.br/umbrella-perfect-skin-tom-claro-fps50-50g/p",
-  popularity: 651
+  popularity: 650
  },
  {
   sku: "paguemenos-59354",
@@ -7175,7 +7164,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145307/7891010253790_1.jpg?v=639093567759900000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-neutrogena-face-care-intensive-antissinais-fps22-100g/p",
-  popularity: 652
+  popularity: 651
  },
  {
   sku: "paguemenos-59337",
@@ -7186,7 +7175,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1118385/3701129811627-Bioderma_Higiene_Hidratante_Di_ria_Atoderm_leo_De_Banho_1L-Higiene_e_Beleza-Bioderma--1-.jpg?v=639029702764770000",
   productUrl: "https://www.paguemenos.com.br/bioderma-atoderm-huile-de-douche-1l/p",
-  popularity: 653
+  popularity: 652
  },
  {
   sku: "paguemenos-59256",
@@ -7197,7 +7186,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195737/colonia-granado-terrapeutics-mandarina-sandalo-230ml-principal.jpg?v=639179876882670000",
   productUrl: "https://www.paguemenos.com.br/colonia-granado-terrapeutics-mandarina-sandalo-230ml/p",
-  popularity: 654
+  popularity: 653
  },
  {
   sku: "paguemenos-59255",
@@ -7208,7 +7197,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195683/colonia-granado-terrapeutics-lavanda-cedro-230ml-principal.jpg?v=639179865071230000",
   productUrl: "https://www.paguemenos.com.br/colonia-granado-terrapeutics-lavanda-cedro-230ml/p",
-  popularity: 655
+  popularity: 654
  },
  {
   sku: "paguemenos-58379",
@@ -7219,7 +7208,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1151092/02_DOCTAR PLUS_240ML_3282770143942_SELO.jpg?v=639098821276800000",
   productUrl: "https://www.paguemenos.com.br/doctar-plus-shampoo-anticaspa-intensivo-240ml/p",
-  popularity: 656
+  popularity: 655
  },
  {
   sku: "paguemenos-58175",
@@ -7230,7 +7219,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/851772/manteiga-de-cacau-dauf-fps15-rollon-10ml-principal.jpg?v=638512192086500000",
   productUrl: "https://www.paguemenos.com.br/manteiga-de-cacau-dauf-fps15-rollon-10ml/p",
-  popularity: 657
+  popularity: 656
  },
  {
   sku: "paguemenos-57294",
@@ -7241,7 +7230,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1058172/protetor-solar-facial-para-pele-oleosa-neutrogena-sun-fresh-derm-care-pele-morena-fps-70-40g_7891010253219_1.jpg?v=638918205287500000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-neutrogena-sun-fresh-derm-care-fps70-pele-mista-a-oleosa-pele-morena-40g/p",
-  popularity: 658
+  popularity: 657
  },
  {
   sku: "paguemenos-57285",
@@ -7252,7 +7241,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042990/protetor-solar-facial-para-pele-oleosa-neutrogena-sun-fresh-derm-care-sem-cor-fps-70-40g_7891010253196_1.jpg?v=638887877497100000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-neutrogena-sun-fresh-oily-skin-sem-cor-fps70-40g/p",
-  popularity: 659
+  popularity: 658
  },
  {
   sku: "paguemenos-57284",
@@ -7263,7 +7252,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1058181/protetor-solar-facial-para-pele-oleosa-neutrogena-sun-fresh-derm-care-pele-clara-fps-70-40g_7891010253202_1.jpg?v=638918206115870000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-neutrogena-sun-fresh-derm-care-fps70-pele-mista-a-oleosa-pele-clara-40g/p",
-  popularity: 660
+  popularity: 659
  },
  {
   sku: "paguemenos-57231",
@@ -7274,7 +7263,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130509/68cc695ed2e5180014c0f37e_2.jpg?v=639063404239670000",
   productUrl: "https://www.paguemenos.com.br/creme-facial-nivea-fresh-gel-100ml/p",
-  popularity: 661
+  popularity: 660
  },
  {
   sku: "paguemenos-56974",
@@ -7285,7 +7274,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1003255/01.jpg.jpg?v=638792764263800000",
   productUrl: "https://www.paguemenos.com.br/cerave-creme-hidratante-50g/p",
-  popularity: 662
+  popularity: 661
  },
  {
   sku: "paguemenos-56942",
@@ -7296,7 +7285,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/658746/-b-l-a-n-c-y---t-x---c-l-a-r-e-a-d-o-r---f-r---1-2-0-m-l-_7891142206039_1.jpg?v=638035125709430000",
   productUrl: "https://www.paguemenos.com.br/blancy-tx-sabonete-clareador-120ml/p",
-  popularity: 663
+  popularity: 662
  },
  {
   sku: "paguemenos-56330",
@@ -7307,7 +7296,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/645989/protetor-solar-facial-dauf-fps80-cor-bege-claro-60ml-principal.jpg?v=638008092637030000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-dauf-fps80-cor-bege-claro-60ml/p",
-  popularity: 664
+  popularity: 663
  },
  {
   sku: "paguemenos-55967",
@@ -7318,7 +7307,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/645781/shampoo-pantene-bambu-200ml-principal.jpg?v=638008090117430000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-bambu-200ml/p",
-  popularity: 665
+  popularity: 664
  },
  {
   sku: "paguemenos-55323",
@@ -7329,7 +7318,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/851533/protetor-labial-dauf-fps30-4-5g-principal.jpg?v=638512185216830000",
   productUrl: "https://www.paguemenos.com.br/protetor-labial-dauf-fps30-4-5g/p",
-  popularity: 666
+  popularity: 665
  },
  {
   sku: "paguemenos-55292",
@@ -7340,7 +7329,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto agua micelar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/645462/agua-micelar-dauf-210ml-principal.jpg?v=638008085917030000",
   productUrl: "https://www.paguemenos.com.br/agua-micelar-dauf-210ml/p",
-  popularity: 667
+  popularity: 666
  },
  {
   sku: "paguemenos-54947",
@@ -7351,7 +7340,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1118554/7500435142243_1.jpg?v=639029748316400000",
   productUrl: "https://www.paguemenos.com.br/mascara-intensiva-pantene-restauracao-270ml/p",
-  popularity: 668
+  popularity: 667
  },
  {
   sku: "paguemenos-54932",
@@ -7362,7 +7351,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/694452/7500435142236_80739700_1_ECOMMERCE_POWER_IMAGE.jpg?v=638252252052170000",
   productUrl: "https://www.paguemenos.com.br/mascara-capilar-intensiva-pantene-pro-v-nutricao-270-ml/p",
-  popularity: 669
+  popularity: 668
  },
  {
   sku: "paguemenos-54827",
@@ -7373,7 +7362,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares corporais creme",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042845/protetor-solar-corporal-neutrogena-sun-fresh-fps-90-200ml_7891010249106_1.jpg?v=638954430628630000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-neutrogena-sun-fresh-fps90-200ml/p",
-  popularity: 670
+  popularity: 669
  },
  {
   sku: "paguemenos-54704",
@@ -7384,7 +7373,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/644965/protetor-solar-nivea-ph-fps30-200ml-gratis-protetor-solar-nivea-ph-fps30-100ml-principal.jpg?v=638008079288270000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-ph-fps30-200ml-gratis-protetor-solar-nivea-ph-fps30-100ml/p",
-  popularity: 671
+  popularity: 670
  },
  {
   sku: "paguemenos-54702",
@@ -7395,7 +7384,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto agua micelar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123674/4005900662019-NIVEA_gua_Micelar_Solu_o_de_Limpeza_7_em_1_Efeito_Matte_200ml-Face-NIVEA--1-.jpg?v=639041056698100000",
   productUrl: "https://www.paguemenos.com.br/agua-micelar-nivea-air-mat-7-em-1-200ml/p",
-  popularity: 672
+  popularity: 671
  },
  {
   sku: "paguemenos-54692",
@@ -7406,7 +7395,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130611/686c14851852a30012885a7b_0.jpg?v=639063423643130000",
   productUrl: "https://www.paguemenos.com.br/cr-facial-nivea-noturno-100g/p",
-  popularity: 673
+  popularity: 672
  },
  {
   sku: "paguemenos-54652",
@@ -7417,7 +7406,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/644913/hidratante-geleia-de-vaselina-vasemax-25g-principal.jpg?v=638008078679570000",
   productUrl: "https://www.paguemenos.com.br/hidratante-geleia-de-vaselina-vasemax-25g/p",
-  popularity: 674
+  popularity: 673
  },
  {
   sku: "paguemenos-54263",
@@ -7428,7 +7417,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/948470/8429420142916-_1-tag-.jpg?v=638660179753870000",
   productUrl: "https://www.paguemenos.com.br/creme-hidratante-corporal-isdin-woman-antiestrias-com-245g/p",
-  popularity: 675
+  popularity: 674
  },
  {
   sku: "paguemenos-54237",
@@ -7439,7 +7428,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225162/7891142204745.jpg?v=639251593131600000",
   productUrl: "https://www.paguemenos.com.br/ivy-c-corpo-e-colo-serum-rejuvenescente-e-hidratante-200ml/p",
-  popularity: 676
+  popularity: 675
  },
  {
   sku: "paguemenos-52214",
@@ -7450,7 +7439,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130516/686c14851852a30012885a7a_0.jpg?v=639063405406100000",
   productUrl: "https://www.paguemenos.com.br/creme-facial-nivea-nutritivo-100g/p",
-  popularity: 677
+  popularity: 676
  },
  {
   sku: "paguemenos-51713",
@@ -7461,7 +7450,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/908578/61sXghiG0NL._AC_SL1000_.jpg?v=638567255691870000",
   productUrl: "https://www.paguemenos.com.br/bepantriz-derma-creme-labial-7-5ml/p",
-  popularity: 678
+  popularity: 677
  },
  {
   sku: "paguemenos-51310",
@@ -7472,7 +7461,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1128069/6001159111788_1.png?v=639053160259770000",
   productUrl: "https://www.paguemenos.com.br/bio-oil-200ml/p",
-  popularity: 679
+  popularity: 678
  },
  {
   sku: "paguemenos-50933",
@@ -7483,7 +7472,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/642919/sabonete-facial-dauf-para-pele-oleosa-ou-acneica-120g-principal.jpg?v=638008050119900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-facial-dauf-para-pele-oleosa-ou-acneica-120g/p",
-  popularity: 680
+  popularity: 679
  },
  {
   sku: "paguemenos-50518",
@@ -7494,7 +7483,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/755022/bioderma-atoderm-intensive-baume-para-peles-com-ressecamento-intenso-e-coceira-500ml_3701129802076_6.jpg?v=638372974003970000",
   productUrl: "https://www.paguemenos.com.br/bioderma-atoderm-intensive-baume-500ml/p",
-  popularity: 681
+  popularity: 680
  },
  {
   sku: "paguemenos-50043",
@@ -7505,7 +7494,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/862581/7898919411917_1.jpg?v=638518081408000000",
   productUrl: "https://www.paguemenos.com.br/oleo-amendoa-paixao-avela-100ml/p",
-  popularity: 682
+  popularity: 681
  },
  {
   sku: "paguemenos-49588",
@@ -7516,7 +7505,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos protetor termico",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/752876/leave-in-de-tratamento-l-oreal-paris-elseve-cicatri-renov-com-50ml-principal.jpg?v=638369856048800000",
   productUrl: "https://www.paguemenos.com.br/leave-in-de-tratamento-l-oreal-paris-elseve-cicatri-renov-com-50ml/p",
-  popularity: 683
+  popularity: 682
  },
  {
   sku: "paguemenos-49039",
@@ -7527,7 +7516,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1181406/7500435116305_1.jpg?v=639155815387600000",
   productUrl: "https://www.paguemenos.com.br/condicionador-diario-pantene-perolas-pro-vitaminas-3-minutos-milagrosos-hidratacao-170-ml/p",
-  popularity: 684
+  popularity: 683
  },
  {
   sku: "paguemenos-48341",
@@ -7538,7 +7527,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/958671/7891182016315.jpg?v=638682423466100000",
   productUrl: "https://www.paguemenos.com.br/tintura-koleston-louro-clarissimo-acinzentado-121/p",
-  popularity: 685
+  popularity: 684
  },
  {
   sku: "paguemenos-48158",
@@ -7549,7 +7538,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042388/hidratante-facial-neutrogenahydro-boost-water-gel-50g_7891010882983_1.jpg?v=638887871474770000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-neutrogena-hydro-boost-water-gel-50g/p",
-  popularity: 686
+  popularity: 685
  },
  {
   sku: "paguemenos-48103",
@@ -7560,7 +7549,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares corporais creme",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1146612/4005900308719--1-.jpg?v=639096255337000000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-sun-protect-hidrata-fps-70-200ml/p",
-  popularity: 687
+  popularity: 686
  },
  {
   sku: "paguemenos-47535",
@@ -7571,7 +7560,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto serum facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1194312/7897947607392_1.png?v=639177332942100000",
   productUrl: "https://www.paguemenos.com.br/acnezil-gel-secativo-10g/p",
-  popularity: 688
+  popularity: 687
  },
  {
   sku: "paguemenos-46529",
@@ -7582,7 +7571,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/641330/agua-oxigenada-dauf-30-volume-cremosa-90ml-nv-principal.jpg?v=638008028790370000",
   productUrl: "https://www.paguemenos.com.br/agua-oxigenada-dauf-30-volume-cremosa-90ml-nv/p",
-  popularity: 689
+  popularity: 688
  },
  {
   sku: "paguemenos-46397",
@@ -7593,7 +7582,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043828/shampoo-seda-cha-verde-e-citricos-325ml_7891150037564_1.jpg?v=638887886907830000",
   productUrl: "https://www.paguemenos.com.br/shampoo-seda-pureza-refrescante-325-ml/p",
-  popularity: 690
+  popularity: 689
  },
  {
   sku: "paguemenos-45872",
@@ -7604,7 +7593,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/624557/PROT-SOL-DAUF-FACIAL-FPS60-60ML.jpg?v=638902728703230000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-dauf-facial-fps60-60ml/p",
-  popularity: 691
+  popularity: 690
  },
  {
   sku: "paguemenos-45018",
@@ -7615,7 +7604,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1032271/1.jpg?v=638863754194000000",
   productUrl: "https://www.paguemenos.com.br/papuless-gel-antiacne-25g/p",
-  popularity: 692
+  popularity: 691
  },
  {
   sku: "paguemenos-44897",
@@ -7626,7 +7615,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/786856/7898919412259_1.jpg?v=638399016157600000",
   productUrl: "https://www.paguemenos.com.br/hidratante-paixao-inspiradora-400ml/p",
-  popularity: 693
+  popularity: 692
  },
  {
   sku: "paguemenos-43105",
@@ -7637,7 +7626,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640528/algodao-dauf-quadrado-com-50-unidades-principal.jpg?v=638008018183830000",
   productUrl: "https://www.paguemenos.com.br/algodao-dauf-quadrado-com-50-unidades/p",
-  popularity: 694
+  popularity: 693
  },
  {
   sku: "paguemenos-42701",
@@ -7648,7 +7637,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas removedor de esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/623696/42701-2-REMOV-ESMALTE-DAUF-CACET-100ML-7896902200470.jpg?v=638914688776900000",
   productUrl: "https://www.paguemenos.com.br/removedor-de-esmalte-dauf-com-acetona-100ml/p",
-  popularity: 695
+  popularity: 694
  },
  {
   sku: "paguemenos-41860",
@@ -7659,7 +7648,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/657113/-l-o-c-a-o---d-e-s-o-d-o-r-a-n-t-e---h-i-d-r-a-t-a-n-t-e---v-a-s-e-n-o-l---r-e-c-u-p-e-r-a-c-a-o---i-n-t-e-n-s-i-v-a---r-e-p-a-r-a-d-o-r-a---2-0-0-m-l-_7891150028470_1.jpg?v=638034412201800000",
   productUrl: "https://www.paguemenos.com.br/hidratante-vasenol-recuperacao-intensiva-reparador-200ml/p",
-  popularity: 696
+  popularity: 695
  },
  {
   sku: "paguemenos-41080",
@@ -7670,7 +7659,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas removedor de esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640239/removedor-esmalte-dauf-sem-acetona-100ml-principal.jpg?v=638008014592170000",
   productUrl: "https://www.paguemenos.com.br/removedor-esmalte-dauf-sem-acetona-100ml/p",
-  popularity: 697
+  popularity: 696
  },
  {
   sku: "paguemenos-40701",
@@ -7681,7 +7670,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos anticaspa",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/988105/shampoo-anticaspa-clear-men-sports-cristiano-ronaldo-limpeza-profunda-400-ml_7891150019416_1.jpg?v=638757349610800000",
   productUrl: "https://www.paguemenos.com.br/shampoo-anticaspa-clear-men-limpeza-profunda-400-ml/p",
-  popularity: 698
+  popularity: 697
  },
  {
   sku: "paguemenos-40609",
@@ -7692,7 +7681,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1197261/7898949409625_1.jpg?v=639180941141930000",
   productUrl: "https://www.paguemenos.com.br/cicatricure-gel-para-cicatrizes-rosto-e-corpo-com-30g/p",
-  popularity: 699
+  popularity: 698
  },
  {
   sku: "paguemenos-40156",
@@ -7703,7 +7692,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1160196/7891800375282_1.png?v=639112525555800000",
   productUrl: "https://www.paguemenos.com.br/curativo-cremer-advanced-hidrocoloide-para-acnes-e-espinhas-com-24-unidades/p",
-  popularity: 700
+  popularity: 699
  },
  {
   sku: "paguemenos-39954",
@@ -7714,7 +7703,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza perfumes e colonias perfumes femininos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640098/deo-colonia-dauf-lavanda-inglesa-200ml-principal.jpg?v=638008012739530000",
   productUrl: "https://www.paguemenos.com.br/deo-colonia-dauf-lavanda-inglesa-200ml/p",
-  popularity: 701
+  popularity: 700
  },
  {
   sku: "paguemenos-39322",
@@ -7725,7 +7714,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/850340/descolorante-dauf-po-20g-principal.jpg?v=638512108962700000",
   productUrl: "https://www.paguemenos.com.br/descolorante-dauf-po-20g/p",
-  popularity: 702
+  popularity: 701
  },
  {
   sku: "paguemenos-38040",
@@ -7736,7 +7725,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225690/7891106907286_1.jpg?v=639252424399830000",
   productUrl: "https://www.paguemenos.com.br/bepantol-derma-creme-20g/p",
-  popularity: 703
+  popularity: 702
  },
  {
   sku: "paguemenos-36977",
@@ -7747,7 +7736,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem demaquilante",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/654674/-n-i-v-e-a---d-e-m-a-q-u-i-l-a-n-t-e---b-i-f-a-s-i-c-o---1-2-5-m-l-_4005808571147_2.jpg?v=638743732840200000",
   productUrl: "https://www.paguemenos.com.br/locao-demaquilante-nivea-visage-rosto-e-olhos-125ml/p",
-  popularity: 704
+  popularity: 703
  },
  {
   sku: "paguemenos-36223",
@@ -7758,7 +7747,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/786737/78922693_1.jpg?v=638399015311830000",
   productUrl: "https://www.paguemenos.com.br/oleo-de-amendoas-paixao-tentadora-200ml/p",
-  popularity: 705
+  popularity: 704
  },
  {
   sku: "paguemenos-34140",
@@ -7769,7 +7758,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/984288/dermotivin-soft-sabonete-espuma-130ml-principal.jpg?v=638749008991570000",
   productUrl: "https://www.paguemenos.com.br/dermotivin-soft-sabonete-espuma-130ml/p",
-  popularity: 706
+  popularity: 705
  },
  {
   sku: "paguemenos-34000",
@@ -7780,7 +7769,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1226201/imagem padrao -84-.jpg?v=639252497084930000",
   productUrl: "https://www.paguemenos.com.br/hidratante-nivea-body-soft-milk-locao-400ml/p",
-  popularity: 707
+  popularity: 706
  },
  {
   sku: "paguemenos-32086",
@@ -7791,7 +7780,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/675619/dermotivin-original-sabonete-l-quido-300ml_7897930761629_1.jpg?v=638141511101800000",
   productUrl: "https://www.paguemenos.com.br/dermotivin-original-sabonete-liquido-300ml/p",
-  popularity: 708
+  popularity: 707
  },
  {
   sku: "paguemenos-30417",
@@ -7802,7 +7791,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1077825/1.jpg?v=638950048860200000",
   productUrl: "https://www.paguemenos.com.br/tinta-de-cabelo-casting-creme-gloss-de-l%E2%80%99oreal-paris-500-castanho-claro-246g/p",
-  popularity: 709
+  popularity: 708
  },
  {
   sku: "paguemenos-30416",
@@ -7813,7 +7802,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1077775/1.jpg?v=638950038739870000",
   productUrl: "https://www.paguemenos.com.br/coloracao-casting-creme-gloss-300-castanho-escuro/p",
-  popularity: 710
+  popularity: 709
  },
  {
   sku: "paguemenos-30411",
@@ -7824,7 +7813,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1077845/1.jpg?v=638950052496900000",
   productUrl: "https://www.paguemenos.com.br/coloracao-casting-creme-gloss-600-louro-escuro/p",
-  popularity: 711
+  popularity: 710
  },
  {
   sku: "paguemenos-30408",
@@ -7835,7 +7824,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1077749/7896014183043_00.jpg?v=638950027327200000",
   productUrl: "https://www.paguemenos.com.br/tinta-de-cabelo-casting-creme-gloss-de-l%E2%80%99oreal-paris-200-preto-246g/p",
-  popularity: 712
+  popularity: 711
  },
  {
   sku: "paguemenos-29371",
@@ -7846,7 +7835,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1152206/3282770144437_1.jpg?v=639099579032570000",
   productUrl: "https://www.paguemenos.com.br/suavie-sabonete-liquido-140ml/p",
-  popularity: 713
+  popularity: 712
  },
  {
   sku: "paguemenos-18735",
@@ -7857,7 +7846,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas cuticulas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1172720/7891060679724_1.jpg?v=639147893349100000",
   productUrl: "https://www.paguemenos.com.br/alicate-mundial-522/p",
-  popularity: 714
+  popularity: 713
  },
  {
   sku: "paguemenos-17261",
@@ -7868,7 +7857,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123707/4005808812899-NIVEA_Creme_Facial_Antissinais_Q10_Power_Noite_49g-Face-NIVEA--1-.jpg?v=639041068849430000",
   productUrl: "https://www.paguemenos.com.br/creme-antissinais-nivea-v-q10-noturno-49g/p",
-  popularity: 715
+  popularity: 714
  },
  {
   sku: "paguemenos-15878",
@@ -7879,7 +7868,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/846832/kit-clareador-biocolor-pessego-camomila-principal.jpg?v=638508734238500000",
   productUrl: "https://www.paguemenos.com.br/kit-clareador-biocolor-pessego-camomila/p",
-  popularity: 716
+  popularity: 715
  },
  {
   sku: "paguemenos-13835",
@@ -7890,7 +7879,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/955589/4005808812875-NIVEACremeFacialAntissinaisQ10PowerDiaFPS3050g-1.jpg?v=638671256286170000",
   productUrl: "https://www.paguemenos.com.br/nivea-creme-facial-antissinais-q10-power-dia-fps-30-50g/p",
-  popularity: 717
+  popularity: 716
  },
  {
   sku: "paguemenos-12000",
@@ -7901,7 +7890,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao tinta de cabelo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/984185/tintura-soft-color-louro-escuro-60-principal.jpg?v=638748972317270000",
   productUrl: "https://www.paguemenos.com.br/tintura-soft-color-louro-escuro-60/p",
-  popularity: 718
+  popularity: 717
  },
  {
   sku: "paguemenos-3729",
@@ -7912,7 +7901,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/675635/soapex-sabonete-80g_7897930750043_1.jpg?v=638141511272770000",
   productUrl: "https://www.paguemenos.com.br/soapex-sabonete-80g/p",
-  popularity: 719
+  popularity: 718
  },
  {
   sku: "paguemenos-2844",
@@ -7923,7 +7912,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1197918/7896046700300_1.jpg?v=639183368942770000",
   productUrl: "https://www.paguemenos.com.br/descolorante-lightner-germen-de-trigo-po-20g/p",
-  popularity: 720
+  popularity: 719
  },
  {
   sku: "paguemenos-1644754",
@@ -7934,7 +7923,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1216668/a04ec5ca-8b49-4c5d-a5a4-7a0f9fabcb6d.png?v=639223263425300000",
   productUrl: "https://www.paguemenos.com.br/kit-la-roche-posay-cicaplast-baume-b5--creme-multirreparador-40ml---cicaplast-baume-b5--20ml-y7cz/p",
-  popularity: 721
+  popularity: 720
  },
  {
   sku: "paguemenos-1644456",
@@ -7945,7 +7934,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1211996/esmalte-impala-cacau-show-cremoso-vale-cada-mordida-7-5ml-principal.png.png?v=639222393696330000",
   productUrl: "https://www.paguemenos.com.br/esmalte-impala-cacau-show-cremoso-vale-cada-mordida-7-5ml/p",
-  popularity: 722
+  popularity: 721
  },
  {
   sku: "paguemenos-1644403",
@@ -7956,7 +7945,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo esfoliante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209618/sabonete-liquido-esfoliante-hidraderm-melancia-150ml-principal.png.png?v=639217086061600000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-esfoliante-hidraderm-melancia-150ml/p",
-  popularity: 723
+  popularity: 722
  },
  {
   sku: "paguemenos-1644212",
@@ -7967,7 +7956,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1205561/mascara-regeneradora-eudora-siage-ultra-bond-reset-250g-principal.png.png?v=639213604641830000",
   productUrl: "https://www.paguemenos.com.br/mascara-regeneradora-eudora-siage-ultra-bond-reset-250g/p",
-  popularity: 724
+  popularity: 723
  },
  {
   sku: "paguemenos-1643920",
@@ -7978,7 +7967,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante facial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1200962/hidratante-facial-la-roche-posay-effaclar-supra-molecular-40ml-principal.png.png?v=639195443894070000",
   productUrl: "https://www.paguemenos.com.br/hidratante-facial-la-roche-posay-effaclar-supra-molecular-40ml/p",
-  popularity: 725
+  popularity: 724
  },
  {
   sku: "paguemenos-1643561",
@@ -7989,7 +7978,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1194904/protetor-solar-nivea-sun-babies---kids-fps60-125ml-principal.png.png?v=639177522231230000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-sun-babies-kids-fps60-125ml/p",
-  popularity: 726
+  popularity: 725
  },
  {
   sku: "paguemenos-1643558",
@@ -8000,7 +7989,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1194889/desobstrutor-de-poros-faciais-ricca-150ml-principal.png.png?v=639177516400570000",
   productUrl: "https://www.paguemenos.com.br/desobstrutor-de-poros-faciais-ricca-150ml/p",
-  popularity: 727
+  popularity: 726
  },
  {
   sku: "paguemenos-1639982",
@@ -8011,7 +8000,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171423/KIT-PS-01-60-FPS-40-ML.png?v=639142946984530000",
   productUrl: "https://www.paguemenos.com.br/kit-principia-protetor-solar-ps-01-fps60-40ml-2-unidades/p",
-  popularity: 728
+  popularity: 727
  },
  {
   sku: "paguemenos-1639799",
@@ -8022,7 +8011,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169647/hidratante-preenchedor-garnier-hialuronico-toque-seco-85g-principal.png.png?v=639129818247670000",
   productUrl: "https://www.paguemenos.com.br/hidratante-preenchedor-garnier-hialuronico-toque-seco-85g/p",
-  popularity: 729
+  popularity: 728
  },
  {
   sku: "paguemenos-1639775",
@@ -8033,7 +8022,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1190494/7891150106420_1.jpg?v=639172106080530000",
   productUrl: "https://www.paguemenos.com.br/kit-seda-mega-crescimento-shampoo-300ml-mais-condicionador-190ml/p",
-  popularity: 730
+  popularity: 729
  },
  {
   sku: "paguemenos-1638548",
@@ -8044,7 +8033,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1159020/kit-ox-glow-duo-torta-de-limao-oleo-capilar-15ml---gloss-labial-4ml-principal.png.png?v=639107270730930000",
   productUrl: "https://www.paguemenos.com.br/kit-ox-glow-duo-torta-de-limao-oleo-capilar-15ml-mais-gloss-labial-4ml/p",
-  popularity: 731
+  popularity: 730
  },
  {
   sku: "paguemenos-1638463",
@@ -8055,7 +8044,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171212/mascara-de-tratamento-capilar-dove-nutricao---tri-oleos-320g-secundaria1.png.png?v=639141008592700000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-tratamento-capilar-dove-nutricao-mais-tri-oleos-320g/p",
-  popularity: 732
+  popularity: 731
  },
  {
   sku: "paguemenos-1638465",
@@ -8066,7 +8055,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1199186/creme-para-pentear-dove-uv-repair---glow---ferulico-240ml-principal.png.png?v=639189504194900000",
   productUrl: "https://www.paguemenos.com.br/creme-para-pentear-dove-uv-repair-glow-mais-ferulico-240ml/p",
-  popularity: 733
+  popularity: 732
  },
  {
   sku: "paguemenos-1638457",
@@ -8077,7 +8066,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1153173/mascara-de-tratamento-capilar-dove-hidratacao---hialuron-vit-320g-principal.png.png?v=639100728184170000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-tratamento-capilar-dove-hidratacao-mais-hialuron-vit-320g/p",
-  popularity: 734
+  popularity: 733
  },
  {
   sku: "paguemenos-1635457",
@@ -8088,7 +8077,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1146107/creme-hidratante-cetaphil-50g-principal.png.png?v=639095292322100000",
   productUrl: "https://www.paguemenos.com.br/creme-hidratante-cetaphil-50g/p",
-  popularity: 735
+  popularity: 734
  },
  {
   sku: "paguemenos-1633444",
@@ -8099,7 +8088,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1128508/KIT-ANTISSINAIS-ESSENCIAL-RN.png?v=639056491389700000",
   productUrl: "https://www.paguemenos.com.br/nome-do-kit-em-minusculo-kit-principia-creme-hidratante-ch-01-50g-serum-30ml-gel-de-limpeza-facial-350g-protetor-solar-fps60-40ml-1/p",
-  popularity: 736
+  popularity: 735
  },
  {
   sku: "paguemenos-1633381",
@@ -8110,7 +8099,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1129955/hidratante-labial-nivea-cha-de-pessego-bridgerton-4-8g-principal.png?v=639062337880070000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-cha-de-pessego-bridgerton-4-8g/p",
-  popularity: 737
+  popularity: 736
  },
  {
   sku: "paguemenos-1633287",
@@ -8121,7 +8110,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127537/gel-de-limpeza-facial-simple-organic-350g-principal.png?v=639052164379100000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-simple-organic-350g/p",
-  popularity: 738
+  popularity: 737
  },
  {
   sku: "paguemenos-1633383",
@@ -8132,7 +8121,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171355/70341368602.jpg?v=639142855394330000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-ps-05-5-0-fps60-30ml/p",
-  popularity: 739
+  popularity: 738
  },
  {
   sku: "paguemenos-1633704",
@@ -8143,7 +8132,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130817/limpador-facial-creamy-antioleosidade-300ml-principal.png?v=639064098534200000",
   productUrl: "https://www.paguemenos.com.br/limpador-facial-creamy-antioleosidade-300ml/p",
-  popularity: 740
+  popularity: 739
  },
  {
   sku: "paguemenos-1632558",
@@ -8154,7 +8143,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116988/mascara-de-tratamento-dove-reconstrucao---aminoacido-320g-principal.png?v=639020952100070000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-tratamento-dove-reconstrucao-mais-aminoacido-320g/p",
-  popularity: 741
+  popularity: 740
  },
  {
   sku: "paguemenos-1632478",
@@ -8165,7 +8154,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto oleosas e acneicas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1115793/adesivos-secativos-para-acnes-fase-critica-ricca-principal.png?v=639015912078770000",
   productUrl: "https://www.paguemenos.com.br/adesivos-secativos-para-acnes-fase-critica-ricca/p",
-  popularity: 742
+  popularity: 741
  },
  {
   sku: "paguemenos-1632124",
@@ -8176,7 +8165,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120178/1.jpg?v=639034098029900000",
   productUrl: "https://www.paguemenos.com.br/shampoo-encorpador-elseve-collagem-lifter-200-ml/p",
-  popularity: 743
+  popularity: 742
  },
  {
   sku: "paguemenos-1631501",
@@ -8187,7 +8176,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1106330/NIVEA-Sabonete-Liquido-Oleo-de-Banho-200ml---Esfoliante-Corporal-Nivea-para-Banho-204g.png?v=638997716447630000",
   productUrl: "https://www.paguemenos.com.br/kit-nivea-sabonete-liquido-oleo-de-banho-200ml---esfoliante-corporal-para-banho-200g/p",
-  popularity: 744
+  popularity: 743
  },
  {
   sku: "paguemenos-1631479",
@@ -8198,7 +8187,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1106279/NIVEA-Sabonete-Liquido-Oleo-de-Banho-200ml---NIVEA-Locao-Deo-Hidratante-Milk-400ml.png?v=638996761937030000",
   productUrl: "https://www.paguemenos.com.br/kit-nivea-sabonete-liquido-oleo-de-banho-200ml---locao-deo-hidratante-milk-400ml/p",
-  popularity: 745
+  popularity: 744
  },
  {
   sku: "paguemenos-1631379",
@@ -8209,7 +8198,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120292/2.jpg?v=639035016268530000",
   productUrl: "https://www.paguemenos.com.br/condicionador-peptideos-de-colageno-loreal-paris-elseve-collagen-lifter-200ml/p",
-  popularity: 746
+  popularity: 745
  },
  {
   sku: "paguemenos-1630940",
@@ -8220,7 +8209,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097845/7500435259125_1.jpg?v=638981134473430000",
   productUrl: "https://www.paguemenos.com.br/finalizador-pantene-protecao-molecular-protetor-termico-spray-170ml/p",
-  popularity: 747
+  popularity: 746
  },
  {
   sku: "paguemenos-180138",
@@ -8231,7 +8220,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1084326/espuma-de-limpeza-diaria-hiluropt-clean-frasco-80ml-principal.png?v=638963100070400000",
   productUrl: "https://www.paguemenos.com.br/espuma-de-limpeza-diaria-hiluropt-clean-frasco-80ml/p",
-  popularity: 748
+  popularity: 747
  },
  {
   sku: "paguemenos-1630839",
@@ -8242,7 +8231,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096664/hidratante-fortilon-pernas-cansadas-120g-principal.png?v=638979566730670000",
   productUrl: "https://www.paguemenos.com.br/hidratante-fortilon-pernas-cansadas-120g/p",
-  popularity: 749
+  popularity: 748
  },
  {
   sku: "paguemenos-179987",
@@ -8253,7 +8242,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1082930/oleo-de-banho-bioderma-atoderm-huile-de-douche-refil-1l-principal.png?v=638959824760400000",
   productUrl: "https://www.paguemenos.com.br/oleo-de-banho-bioderma-atoderm-huile-de-douche-refil-1l/p",
-  popularity: 750
+  popularity: 749
  },
  {
   sku: "paguemenos-1633329",
@@ -8264,7 +8253,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127837/protetor-solar-facial-principia-ps-05-cor-1-0-fps60-30ml-principal.png?v=639053001326670000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-principia-ps-05-cor-1-0-fps60-30ml/p",
-  popularity: 751
+  popularity: 750
  },
  {
   sku: "paguemenos-1630828",
@@ -8275,7 +8264,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096629/gel-de-limpeza-principia-peles-sensiveis-e-secas-gl-03 350ml-principal.png?v=638979554171230000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-principia-peles-sensiveis-e-secas-gl-03%C2%A0350ml/p",
-  popularity: 752
+  popularity: 751
  },
  {
   sku: "paguemenos-179857",
@@ -8286,7 +8275,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais com cor",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1080805/protetor-solar-facial-anthelios-ultra-cover-com-cor-2-5-fps60-30g-principal.png?v=638956908286570000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-anthelios-ultra-cover-com-cor-2-5-fps60-30g/p",
-  popularity: 753
+  popularity: 752
  },
  {
   sku: "paguemenos-179787",
@@ -8297,7 +8286,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1080423/condicionador-dove-hidratacao---hialuron-vit-600ml-principal.png?v=638955439975600000",
   productUrl: "https://www.paguemenos.com.br/condicionador-dove-hidratacao-mais-hialuron-vit-600ml/p",
-  popularity: 754
+  popularity: 753
  },
  {
   sku: "paguemenos-179738",
@@ -8308,7 +8297,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1080011/shampoo-dove-hidratacao---hialuron-vit-600ml-principal.png?v=638955400165870000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-hidratacao-mais-hialuron-vit-600ml/p",
-  popularity: 755
+  popularity: 754
  },
  {
   sku: "paguemenos-179615",
@@ -8319,7 +8308,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097821/7500435260268_1.jpg?v=638981133557430000",
   productUrl: "https://www.paguemenos.com.br/condicionador-pantene-pro-v-science-molecular-bond-repair-250ml/p",
-  popularity: 756
+  popularity: 755
  },
  {
   sku: "paguemenos-179577",
@@ -8330,7 +8319,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097876/7500435260367_1.jpg?v=638981135881870000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pantene-bambu-nutre-cresce-510ml/p",
-  popularity: 757
+  popularity: 756
  },
  {
   sku: "paguemenos-179117",
@@ -8341,7 +8330,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1075195/kit-clareador-yama-acido-hialuronico-po-descolorante-20g---oxicreme-40-volumes-60ml-principal.png?v=638945175179130000",
   productUrl: "https://www.paguemenos.com.br/kit-clareador-yama-acido-hialuronico-po-descolorante-20g-mais-oxicreme-40-volumes-60ml/p",
-  popularity: 758
+  popularity: 757
  },
  {
   sku: "paguemenos-179116",
@@ -8352,7 +8341,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza coloracao descolorantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1075194/kit-clareador-yama-po-descolorante-20g---oxicreme-40-volumes-60ml-principal.png?v=638945175149600000",
   productUrl: "https://www.paguemenos.com.br/kit-clareador-yama-po-descolorante-20g-mais-oxicreme-40-volumes-60ml/p",
-  popularity: 759
+  popularity: 758
  },
  {
   sku: "paguemenos-179111",
@@ -8363,7 +8352,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1075177/cera-finalizadora-capilar-charming-extraforte-50g-principal.png?v=638945136164630000",
   productUrl: "https://www.paguemenos.com.br/cera-finalizadora-capilar-charming-extraforte-50g/p",
-  popularity: 760
+  popularity: 759
  },
  {
   sku: "paguemenos-178988",
@@ -8374,7 +8363,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza maquiagem kits",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1074412/kit-ox-oleo-capilar-15ml---gloss-liquido-labial-4ml-chocolate-mari-maria-glow-duo-edicao-limitada-principal.png?v=638944203407670000",
   productUrl: "https://www.paguemenos.com.br/kit-ox-oleo-capilar-15ml-mais-gloss-liquido-labial-4ml-chocolate-mari-maria-glow-duo-edicao-limitada/p",
-  popularity: 761
+  popularity: 760
  },
  {
   sku: "paguemenos-180624",
@@ -8385,7 +8374,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1090127/gel-de-limpeza-facial-principia-skincare-gl-01-500ml-principal.png?v=638971792850030000",
   productUrl: "https://www.paguemenos.com.br/gel-de-limpeza-facial-principia-skincare-gl-01-500ml/p",
-  popularity: 762
+  popularity: 761
  },
  {
   sku: "paguemenos-177980",
@@ -8396,7 +8385,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza kit protetor solar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1069635/kit-sunless-protetor-solar-toque-seco-fps60-120g---protetor-kids-fps50-120g-preco-especial-principal.png?v=638936281332330000",
   productUrl: "https://www.paguemenos.com.br/kit-sunless-protetor-solar-toque-seco-fps60-120g-mais-protetor-kids-fps50-120g-preco-especial/p",
-  popularity: 763
+  popularity: 762
  },
  {
   sku: "paguemenos-175688",
@@ -8407,7 +8396,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares corporais spray",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1202344/4005800268731-Eucerin_Aquaphor_Reparador_Labial_10ml-Hidratante_Labial-Eucerin__2.jpg?v=639199758699900000",
   productUrl: "https://www.paguemenos.com.br/reparador-labial-eucerin-aquaphor-10ml/p",
-  popularity: 764
+  popularity: 763
  },
  {
   sku: "paguemenos-177889",
@@ -8418,7 +8407,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto agua micelar",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1069087/agua-micelar-principia-skincare-am-01-200ml-principal.png?v=638935483397470000",
   productUrl: "https://www.paguemenos.com.br/agua-micelar-principia-skincare-am-01-200ml/p",
-  popularity: 765
+  popularity: 764
  },
  {
   sku: "paguemenos-175649",
@@ -8429,7 +8418,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo oleo corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1078837/oleo-corporal-dove-serum-deo-pro-colageno-e-oleo-de-semente-de-uva-firmador-spray150ml-principal.png?v=638954591972530000",
   productUrl: "https://www.paguemenos.com.br/oleo-corporal-dove-serum-deo-pro-colageno-e-oleo-de-semente-de-uva-firmador-spray150ml/p",
-  popularity: 766
+  popularity: 765
  },
  {
   sku: "paguemenos-175539",
@@ -8440,7 +8429,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1144784/7891150102774_1.jpg?v=639093536153470000",
   productUrl: "https://www.paguemenos.com.br/mascara-de-resgate-intenso-dove-10-em-1-10porcento-serum-ferulico-uv-repair-glow-mais-ferulico-250g/p",
-  popularity: 767
+  popularity: 766
  },
  {
   sku: "paguemenos-174070",
@@ -8451,7 +8440,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais toque seco",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1106483/7891010256999_0.jpg?v=638998686512100000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-neutrogena-toque-seco-sun-fresh-fps80-40ml/p",
-  popularity: 768
+  popularity: 767
  },
  {
   sku: "paguemenos-177878",
@@ -8462,7 +8451,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza unhas esmalte",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1069073/esmalte-base-para-unhas-concreto-sos-unhas-top-beauty-7ml-principal.png?v=638935480638200000",
   productUrl: "https://www.paguemenos.com.br/esmalte-base-para-unhas-concreto-sos-unhas-top-beauty-7ml/p",
-  popularity: 769
+  popularity: 768
  },
  {
   sku: "paguemenos-174051",
@@ -8473,7 +8462,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais bastao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1120315/4006000129969_1.jpg?v=639035575390570000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-serum-primer-daily-uv-2-em-1-sem-perfume-fps-70-nivea-sun-30ml/p",
-  popularity: 770
+  popularity: 769
  },
  {
   sku: "paguemenos-176261",
@@ -8484,7 +8473,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto com manchas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1061942/tonico-clareador-creamy-skincare-acido-tranexamico-90ml-principal.png?v=638923386682500000",
   productUrl: "https://www.paguemenos.com.br/tonico-clareador-creamy-skincare-acido-tranexamico-90ml/p",
-  popularity: 771
+  popularity: 770
  },
  {
   sku: "paguemenos-173017",
@@ -8495,7 +8484,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos acessorios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1046610/pente-piolho-de-aco-dauf-1-unidade-principal.png?v=638893188148700000",
   productUrl: "https://www.paguemenos.com.br/pente-piolho-de-aco-dauf-1-unidade/p",
-  popularity: 772
+  popularity: 771
  },
  {
   sku: "paguemenos-172998",
@@ -8506,7 +8495,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1046547/kit-dove-hidratacao---hialuron-vit-shampoo-350ml---condicionador-190ml-principal.png?v=638893140192900000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-hidratacao-mais-hialuron-vit-shampoo-350ml-mais-condicionador-190ml/p",
-  popularity: 773
+  popularity: 772
  },
  {
   sku: "paguemenos-173998",
@@ -8517,7 +8506,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225846/imagem padrao -42-.jpg?v=639252436610370000",
   productUrl: "https://www.paguemenos.com.br/kit-carmed-sos-labios-1-esfoliante-mais-1-ultra-gloss-algodao-doce-10g-cada/p",
-  popularity: 774
+  popularity: 773
  },
  {
   sku: "paguemenos-171697",
@@ -8528,7 +8517,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza protetores solares faciais",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1059757/7908785491958-_1--1-.jpg?v=638920651896130000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-facial-loreal-paris-solar-expertise-com-cor-2-0-fps70-30g/p",
-  popularity: 775
+  popularity: 774
  },
  {
   sku: "paguemenos-167990",
@@ -8539,7 +8528,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1039090/30396 -14-.jpg?v=638878327900700000",
   productUrl: "https://www.paguemenos.com.br/dauf-glicerina-100ml/p",
-  popularity: 776
+  popularity: 775
  },
  {
   sku: "paguemenos-167986",
@@ -8550,7 +8539,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto hidratante labial",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1052412/4006000159171_1.jpg?v=638900168714300000",
   productUrl: "https://www.paguemenos.com.br/hidratante-labial-nivea-morango-silvestre-princesa-rapunzel-4-8g-edicao-limitada-disney/p",
-  popularity: 777
+  popularity: 776
  },
  {
   sku: "paguemenos-171122",
@@ -8561,7 +8550,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza corpo hidratante corporal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1034963/locao-hidratante-principia-lh-01-500ml-principal.png?v=638869038104330000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-principia-lh-01-500ml/p",
-  popularity: 778
+  popularity: 777
  },
  {
   sku: "paguemenos-166992",
@@ -8572,7 +8561,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos kit shampoo e condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1008607/kit-shampoo-300ml---condicionador-190ml-seda-toque-de-seda-amino-silk-complex-principal.png?v=638811108057500000",
   productUrl: "https://www.paguemenos.com.br/kit-shampoo-300ml-mais-condicionador-190ml-seda-toque-de-seda-amino-silk-complex/p",
-  popularity: 779
+  popularity: 778
  },
  {
   sku: "paguemenos-166491",
@@ -8583,7 +8572,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos mascara de hidratacao",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1035419/1.jpg?v=638870591971500000",
   productUrl: "https://www.paguemenos.com.br/creme-de-tratamento-intensivo-loreal-paris-elseve-bond-repair-200g/p",
-  popularity: 780
+  popularity: 779
  },
  {
   sku: "paguemenos-166397",
@@ -8594,7 +8583,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos modeladores",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1035411/1.jpg?v=638870588838130000",
   productUrl: "https://www.paguemenos.com.br/pre-shampoo-loreal-paris-elseve-bond-repair-200ml/p",
-  popularity: 781
+  popularity: 780
  },
  {
   sku: "paguemenos-166239",
@@ -8605,7 +8594,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza rosto sabonetes e geis de limpeza",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1005724/sabonete-liquido-cetaphil-pro-ad-restoraderm-236ml-principal.png?v=638803188073130000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-cetaphil-pro-ad-restoraderm-236ml/p",
-  popularity: 782
+  popularity: 781
  },
  {
   sku: "paguemenos-165939",
@@ -8616,7 +8605,7 @@ export const CATALOG: CatalogItem[] = [
   category: "dermo e beleza cabelos protetor termico",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1198403/7891150100343_1.jpg?v=639184187426900000",
   productUrl: "https://www.paguemenos.com.br/protetor-termico-tresemme-spray-110ml/p",
-  popularity: 783
+  popularity: 782
  },
  {
   sku: "paguemenos-1638663",
@@ -8627,7 +8616,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178082/7500435265362_1.jpg?v=639154806039870000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-xg-82-unidades-pacote-economico/p",
-  popularity: 784
+  popularity: 783
  },
  {
   sku: "paguemenos-1638955",
@@ -8638,7 +8627,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178093/7500435265393_1.jpg?v=639154808296830000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-g-90-unidades/p",
-  popularity: 785
+  popularity: 784
  },
  {
   sku: "paguemenos-1638662",
@@ -8649,7 +8638,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178072/7500435265386_1.jpg?v=639154804568300000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-xxg-74-unidades-pacote-economico/p",
-  popularity: 786
+  popularity: 785
  },
  {
   sku: "paguemenos-1633731",
@@ -8660,7 +8649,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1131422/toalhas-umedecidas-suncare-baby-bob-esponja-90-unidades-principal.png?v=639065278351200000",
   productUrl: "https://www.paguemenos.com.br/toalhas-umedecidas-sancare-baby-bob-esponja-90-unidades/p",
-  popularity: 787
+  popularity: 786
  },
  {
   sku: "paguemenos-149262",
@@ -8671,7 +8660,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044821/7896007553655_1.jpg?v=638888928414170000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-supreme-care-xxg-72-unidades/p",
-  popularity: 788
+  popularity: 787
  },
  {
   sku: "paguemenos-149261",
@@ -8682,7 +8671,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1048454/fralda-pants-huggies-protecao-acolchoada-tamanho-xg-80-unidades-–-fralda-estilo-roupinha-que-veste-como-shortinho-e-com-cintura-acolchoada-super-macia-que-previne-marquinhas-facil-de-colocar-e-tirar_7896007553648_1.jpg?v=639046123437530000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-supreme-care-xg-80-unidades/p",
-  popularity: 789
+  popularity: 788
  },
  {
   sku: "paguemenos-51271",
@@ -8693,7 +8682,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1064480/7891000255544-FormulaInfantilNestonutri1-800g-1.jpg?v=638930348699270000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestonutri-1mais-800g/p",
-  popularity: 790
+  popularity: 789
  },
  {
   sku: "paguemenos-45941",
@@ -8704,7 +8693,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/902828/7891000109908_01.jpg?v=638551188805430000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-ninho-fortimais-zero-lactose-380g/p",
-  popularity: 791
+  popularity: 790
  },
  {
   sku: "paguemenos-39500",
@@ -8715,7 +8704,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203225/7891025111825_1.png?v=639202586049200000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-premium-1-800g/p",
-  popularity: 792
+  popularity: 791
  },
  {
   sku: "paguemenos-38065",
@@ -8726,7 +8715,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1122842/38065-2_1.jpg?v=639040058849100000",
   productUrl: "https://www.paguemenos.com.br/aptanutri-3-premium-800g/p",
-  popularity: 793
+  popularity: 792
  },
  {
   sku: "paguemenos-35451",
@@ -8737,7 +8726,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1155787/7891000062661-NINHO_Primeira_Inf_ncia_F_rmula_Infantil_de_Primeira_Inf_ncia_Lata_800g-F_rmula_Infantil-Ninho--1-.jpg?v=639104965604200000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-ninho-fases-1mais-800g/p",
-  popularity: 794
+  popularity: 793
  },
  {
   sku: "paguemenos-1638958",
@@ -8748,7 +8737,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178054/7500435265379_1.jpg?v=639154801872000000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-m-108-unidades/p",
-  popularity: 795
+  popularity: 794
  },
  {
   sku: "paguemenos-1638661",
@@ -8759,7 +8748,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178062/7500435265355_1.jpg?v=639154802784730000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-xxxg-66-unidades-pacote-economico/p",
-  popularity: 796
+  popularity: 795
  },
  {
   sku: "paguemenos-162426",
@@ -8770,7 +8759,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/989140/lenco-umedecido-joao-e-maria-glicerina-45-unidades-principal.png?v=638760007738230000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-joao-e-maria-glicerina-45-unidades/p",
-  popularity: 797
+  popularity: 796
  },
  {
   sku: "paguemenos-149259",
@@ -8781,7 +8770,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1048463/fralda-pants-huggies-protecao-acolchoada-tamanho-g-88-unidades-–-fralda-estilo-roupinha-que-veste-como-shortinho-e-com-cintura-acolchoada-super-macia-que-previne-marquinhas-facil-de-colocar-e-tirar_7896007553624_1.jpg?v=639046121473770000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-supreme-care-g-88-unidades/p",
-  popularity: 798
+  popularity: 797
  },
  {
   sku: "paguemenos-99654",
@@ -8792,7 +8781,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/970508/algodao-amoravel-baby-quadrado-com-100-unidades-principal.jpg?v=638718768115570000",
   productUrl: "https://www.paguemenos.com.br/algodao-amoravel-baby-quadrado-com-100-unidades/p",
-  popularity: 799
+  popularity: 798
  },
  {
   sku: "paguemenos-94888",
@@ -8803,7 +8792,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/649660/sabonete-protex-baby-glicerina-barra-85g-principal.jpg?v=638008140761000000",
   productUrl: "https://www.paguemenos.com.br/sabonete-protex-baby-glicerina-barra-85g/p",
-  popularity: 800
+  popularity: 799
  },
  {
   sku: "paguemenos-57226",
@@ -8814,7 +8803,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1122876/57226-8_1.jpg?v=639040060251900000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptanutri-profutura-3-800g/p",
-  popularity: 801
+  popularity: 800
  },
  {
   sku: "paguemenos-54706",
@@ -8825,7 +8814,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1045744/7500435145992_1.jpg?v=638889816138600000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-premium-care-xg-64-unidades/p",
-  popularity: 802
+  popularity: 801
  },
  {
   sku: "paguemenos-54677",
@@ -8836,7 +8825,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170517/7500435146005_1.jpg?v=639136148748030000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-premium-care-tamanho-xxg-com-60-unidades/p",
-  popularity: 803
+  popularity: 802
  },
  {
   sku: "paguemenos-51868",
@@ -8847,7 +8836,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223685/7896018704015_1.jpg?v=639246378912170000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-huggies-one-done-leve-mais-por-menos-com-192-unidades/p",
-  popularity: 804
+  popularity: 803
  },
  {
   sku: "paguemenos-44921",
@@ -8858,7 +8847,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892117/7613034968364-01.jpg?v=638699720610900000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-supreme-1-800g/p",
-  popularity: 805
+  popularity: 804
  },
  {
   sku: "paguemenos-44361",
@@ -8869,7 +8858,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/657142/-r-e-f-i-l---s-a-b-o-n-e-t-e---l-i-q-u-i-d-o---b-a-b-y---d-o-v-e---h-i-d-r-a-t-a-c-a-o---e-n-r-i-q-u-e-c-i-d-a---1-8-0-m-l-_7891150035874_1.jpg?v=638034412414170000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-baby-dove-hidratacao-enriquecida-refil-180-ml/p",
-  popularity: 806
+  popularity: 805
  },
  {
   sku: "paguemenos-44346",
@@ -8880,7 +8869,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/927562/sabonete-l-quido-da-cabe-a-aos-p-s-baby-dove-hidrata-o-enriquecida-400ml_7891150036369_1.jpg?v=638612254795330000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-baby-dove-hidratacao-enriquecida-400-ml/p",
-  popularity: 807
+  popularity: 806
  },
  {
   sku: "paguemenos-42186",
@@ -8891,7 +8880,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/955319/7891000097649-FormulaInfantilNanlacComfor800g-1.jpg?v=638671255476200000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nanlac-comfor-3-800g/p",
-  popularity: 808
+  popularity: 807
  },
  {
   sku: "paguemenos-40961",
@@ -8902,7 +8891,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171415/7896094905627-1.jpg?v=639142901272370000",
   productUrl: "https://www.paguemenos.com.br/sabonete-pompom-glicerinado-infantil-80g/p",
-  popularity: 809
+  popularity: 808
  },
  {
   sku: "paguemenos-39501",
@@ -8913,7 +8902,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203208/7891025107897_1.png?v=639202584512730000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-premium-2-800g/p",
-  popularity: 810
+  popularity: 809
  },
  {
   sku: "paguemenos-32834",
@@ -8924,7 +8913,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051960/7891000062722-FormulaInfantilNestogeno1800g-1.jpg?v=638900158759130000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestogeno-1-800g/p",
-  popularity: 811
+  popularity: 810
  },
  {
   sku: "paguemenos-31623",
@@ -8935,7 +8924,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105484/7891010800048_1.jpg?v=638996655534370000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-baby-regular-400ml/p",
-  popularity: 812
+  popularity: 811
  },
  {
   sku: "paguemenos-4540",
@@ -8946,7 +8935,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195893/7896004814162_1.png?v=639179908694600000",
   productUrl: "https://www.paguemenos.com.br/bastonete-topz-com-75-unidades/p",
-  popularity: 813
+  popularity: 812
  },
  {
   sku: "paguemenos-1634698",
@@ -8957,7 +8946,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138915/fraldas-huggies-pants-protecao-acolchoada-mx-xxxg-principal.png?v=639077400070200000",
   productUrl: "https://www.paguemenos.com.br/fraldas-huggies-pants-protecao-acolchoada-mx-xxxg/p",
-  popularity: 814
+  popularity: 813
  },
  {
   sku: "paguemenos-1631278",
@@ -8968,7 +8957,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1103844/kit-lenco-umedecido-joao-e-maria-recem-nascido-com-glicerina-e-aloe-vera-4-un-com-45-folhas-cada-leve-4-pague-3-unidades-principal.png?v=638990802240230000",
   productUrl: "https://www.paguemenos.com.br/kit-lenco-umedecido-joao-e-maria-recem-nascido-com-glicerina-e-aloe-vera-4-un-com-45-folhas-cada-leve-4-pague-3-unidades/p",
-  popularity: 815
+  popularity: 814
  },
  {
   sku: "paguemenos-1631279",
@@ -8979,7 +8968,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1103845/kit-lenco-umedecido-joao-e-maria-com-glicerina-bebe-pacote-4-und-com--45-folhas-cada-leve-4-pague-3-principal.png?v=638990802413800000",
   productUrl: "https://www.paguemenos.com.br/kit-lenco-umedecido-joao-e-maria-com-glicerina-bebe-pacote-4-und-com-45-folhas-cada-leve-4-pague-3/p",
-  popularity: 816
+  popularity: 815
  },
  {
   sku: "paguemenos-174067",
@@ -8990,7 +8979,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1074207/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xg--24-unidades-principal.png?v=638944170416930000",
   productUrl: "https://www.paguemenos.com.br/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xg-24-unidades/p",
-  popularity: 817
+  popularity: 816
  },
  {
   sku: "paguemenos-158371",
@@ -9001,7 +8990,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971439/fralda-amoravel-basic-g-60-unidades-principal.png?v=638724024544200000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-basic-g-60-unidades/p",
-  popularity: 818
+  popularity: 817
  },
  {
   sku: "paguemenos-150664",
@@ -9012,7 +9001,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051108/7896007553587_1.jpg?v=638900128120400000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-g-92-unidades/p",
-  popularity: 819
+  popularity: 818
  },
  {
   sku: "paguemenos-150108",
@@ -9023,7 +9012,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116376/7500435246644_1.jpg?v=639017463369100000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-premium-care-xxxg-54-unidades/p",
-  popularity: 820
+  popularity: 819
  },
  {
   sku: "paguemenos-149524",
@@ -9034,7 +9023,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051115/7896007553631_1.jpg?v=638900128999400000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-xxg-80-unidades/p",
-  popularity: 821
+  popularity: 820
  },
  {
   sku: "paguemenos-149523",
@@ -9045,7 +9034,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1048472/fralda-descartavel-huggies-maxima-protecao-tamanho-xg-82-unidades-–-fralda-aberta-com-tecnologia-xtra-flex-canais-em-x-que-se-adaptam-aos-movimentos-e-maxima-protecao-sem-fralda-caida_7896007553594_1.jpg?v=639046119540570000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-xg-82-unidades/p",
-  popularity: 822
+  popularity: 821
  },
  {
   sku: "paguemenos-149260",
@@ -9056,7 +9045,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044837/7896007553617_1.jpg?v=638888929720370000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-supreme-care-m-100-unidades/p",
-  popularity: 823
+  popularity: 822
  },
  {
   sku: "paguemenos-108024",
@@ -9067,7 +9056,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149361/7896018704916_1.jpg?v=639098638815200000",
   productUrl: "https://www.paguemenos.com.br/creme-preventivo-de-assaduras-huggies-supreme-care-oleo-de-amendoas-30g/p",
-  popularity: 824
+  popularity: 823
  },
  {
   sku: "paguemenos-103242",
@@ -9078,7 +9067,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042410/hipoglos-creme-preventivo-de-assaduras-40g_7891010255763_1.jpg?v=639094636721830000",
   productUrl: "https://www.paguemenos.com.br/hipoglos-original-pomada-40g/p",
-  popularity: 825
+  popularity: 824
  },
  {
   sku: "paguemenos-101283",
@@ -9089,7 +9078,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/702548/01_produto.jpg?v=638288169126230000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-derma-protect-200ml/p",
-  popularity: 826
+  popularity: 825
  },
  {
   sku: "paguemenos-98125",
@@ -9100,7 +9089,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203182/7891025123507_2.jpg?v=639219780262500000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-profutura-gold-2-800g/p",
-  popularity: 827
+  popularity: 826
  },
  {
   sku: "paguemenos-98126",
@@ -9111,7 +9100,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203173/Padrao 1200 - 2026-07-21T161719.794.jpg?v=639202582451600000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-profutura-gold-1-800g/p",
-  popularity: 828
+  popularity: 827
  },
  {
   sku: "paguemenos-64418",
@@ -9122,7 +9111,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1119578/7891000325896-Leite_em_P_Ninho_Integral_Sachet_750g-Leite_em_P_-Ninho--1-.jpg?v=639032310969770000",
   productUrl: "https://www.paguemenos.com.br/leite-ninho-fortimais-integral-750g/p",
-  popularity: 829
+  popularity: 828
  },
  {
   sku: "paguemenos-60204",
@@ -9133,7 +9122,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1017647/7896020162810-500x500-0-clientebaruel-phprXHuk0_1.jpg?v=638838778370170000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-baruel-baby-sono-tranquilo-400ml/p",
-  popularity: 830
+  popularity: 829
  },
  {
   sku: "paguemenos-60194",
@@ -9144,7 +9133,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1017659/7896020162803-500x500-0-clientebaruel-phpcAmCi4_1.jpg?v=638838782521570000",
   productUrl: "https://www.paguemenos.com.br/sabonete-baruel-baby-glicerina-liquido-400ml/p",
-  popularity: 831
+  popularity: 830
  },
  {
   sku: "paguemenos-59537",
@@ -9155,7 +9144,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas rn",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149232/huggies-fralda-descartavel-premium-natural-care-rn-34-un_7896007552016_1.jpg?v=639098630533530000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-natural-care-mega-recem-nascido-com-34-unidades/p",
-  popularity: 832
+  popularity: 831
  },
  {
   sku: "paguemenos-58356",
@@ -9166,7 +9155,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1153972/7891000282458_1.png?v=639102310099830000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestogeno-2-1-2kg/p",
-  popularity: 833
+  popularity: 832
  },
  {
   sku: "paguemenos-57551",
@@ -9177,7 +9166,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/777510/shampoo-tralala-sem-embaraco-480ml-mais-condicionador-tralala-sem-embaraco-250ml-principal.jpg?v=638385620209000000",
   productUrl: "https://www.paguemenos.com.br/shampoo-tralala-sem-embaraco-480ml-mais-condicionador-tralala-sem-embaraco-250ml/p",
-  popularity: 834
+  popularity: 833
  },
  {
   sku: "paguemenos-57368",
@@ -9188,7 +9177,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1126502/7894650005712_1.jpg?v=639046194236200000",
   productUrl: "https://www.paguemenos.com.br/repelente-off-kids-locao-200ml/p",
-  popularity: 835
+  popularity: 834
  },
  {
   sku: "paguemenos-57216",
@@ -9199,7 +9188,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/646467/sabonete-protex-baby-protecao-delicada-85g-principal.jpg?v=638008098687300000",
   productUrl: "https://www.paguemenos.com.br/sabonete-em-barra-para-bebe-protex-baby-delicate-care-85g/p",
-  popularity: 836
+  popularity: 835
  },
  {
   sku: "paguemenos-57080",
@@ -9210,7 +9199,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/646405/babymed-amendoas-creme-dermatologico-protecao-contra-assadura-40g-principal.jpg?v=638008097874370000",
   productUrl: "https://www.paguemenos.com.br/babymed-amendoas-creme-dermatologico-protecao-contra-assadura-40g/p",
-  popularity: 837
+  popularity: 836
  },
  {
   sku: "paguemenos-54695",
@@ -9221,7 +9210,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1045736/7500435145985_1.jpg?v=638889815851930000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-premium-care-g-68-unidades/p",
-  popularity: 838
+  popularity: 837
  },
  {
   sku: "paguemenos-54043",
@@ -9232,7 +9221,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1155822/7891000282809-Composto_L_cteo_NINHO_FASES_3_800g-Leite_de_Crescimento-Ninho--1-.jpg?v=639104966591830000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-ninho-fases-3mais-800g/p",
-  popularity: 839
+  popularity: 838
  },
  {
   sku: "paguemenos-51870",
@@ -9243,7 +9232,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223694/7896018704022_1.jpg?v=639246379965970000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-huggies-pure-care-com-192-unidades/p",
-  popularity: 840
+  popularity: 839
  },
  {
   sku: "paguemenos-51853",
@@ -9254,7 +9243,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044735/7896007549719_1.jpg?v=638888914597400000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-hiper-roupinha-tamanho-g-com-60-unidades/p",
-  popularity: 841
+  popularity: 840
  },
  {
   sku: "paguemenos-49875",
@@ -9265,7 +9254,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes mamaes e gestantes absorventes e protetores de seios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/850984/absorvente-para-seios-amoravel-leve-30-pague-24-unidades-principal.jpg?v=638512169392670000",
   productUrl: "https://www.paguemenos.com.br/absorvente-para-seios-amoravel-leve-30-pague-24-unidades/p",
-  popularity: 842
+  popularity: 841
  },
  {
   sku: "paguemenos-48292",
@@ -9276,7 +9265,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105501/7891010870744_1.jpg?v=638996658011030000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-glicerina-da-cabeca-aos-pes-johnson-s-baby-400ml/p",
-  popularity: 843
+  popularity: 842
  },
  {
   sku: "paguemenos-44925",
@@ -9287,7 +9276,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892140/7613034968388_01.jpg?v=638534459992330000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-supreme-2-800g/p",
-  popularity: 844
+  popularity: 843
  },
  {
   sku: "paguemenos-44351",
@@ -9298,7 +9287,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/660556/-s-a-b-o-n-e-t-e---e-m---b-a-r-r-a---b-a-b-y---d-o-v-e---h-i-d-r-a-t-a-c-a-o---e-n-r-i-q-u-e-c-i-d-a---7-5-g-r-_7891150026025_1.jpg?v=638042071081100000",
   productUrl: "https://www.paguemenos.com.br/sabonete-em-barra-baby-dove-hidratacao-enriquecida-75-gr/p",
-  popularity: 845
+  popularity: 844
  },
  {
   sku: "paguemenos-43652",
@@ -9309,7 +9298,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096507/43652_01.jpg?v=638979373499630000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-proexpert-active-800g/p",
-  popularity: 846
+  popularity: 845
  },
  {
   sku: "paguemenos-40963",
@@ -9320,7 +9309,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171358/7896094905641-1.jpg?v=639142893608700000",
   productUrl: "https://www.paguemenos.com.br/sabonete-pompom-oleo-de-amendoas-infantil-80g/p",
-  popularity: 847
+  popularity: 846
  },
  {
   sku: "paguemenos-40962",
@@ -9331,7 +9320,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171408/7896094905634-1.jpg?v=639142900863900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-pompom-locao-hidratante-infantil-80g/p",
-  popularity: 848
+  popularity: 847
  },
  {
   sku: "paguemenos-40718",
@@ -9342,7 +9331,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1143355/7896512922373_1.jpg?v=639087682299000000",
   productUrl: "https://www.paguemenos.com.br/sabonete-granado-bebe-glicerina-tradicional-refil-250ml/p",
-  popularity: 849
+  popularity: 848
  },
  {
   sku: "paguemenos-36622",
@@ -9353,7 +9342,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/639754/hastes-flexivel-amoravel-especial-baby-com-50-unidades-principal.jpg?v=638008007726400000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexivel-amoravel-especial-baby-com-50-unidades/p",
-  popularity: 850
+  popularity: 849
  },
  {
   sku: "paguemenos-35585",
@@ -9364,7 +9353,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892226/7891000079515-FormulaInfantilparalactentesNANComforHMOde6a12meses800g-1.jpg?v=638534460651800000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-comfor-2-800g/p",
-  popularity: 851
+  popularity: 850
  },
  {
   sku: "paguemenos-33881",
@@ -9375,7 +9364,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892089/7891000071625_01.jpg?v=638534459393170000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-comfor-1-800g/p",
-  popularity: 852
+  popularity: 851
  },
  {
   sku: "paguemenos-29310",
@@ -9386,7 +9375,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1143315/7896512904621_1.jpg?v=639087679943000000",
   productUrl: "https://www.paguemenos.com.br/sabonete-granado-bebe-glicerina-tradicional-250ml/p",
-  popularity: 853
+  popularity: 852
  },
  {
   sku: "paguemenos-3058",
@@ -9397,7 +9386,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/662056/hastes-flexiveis-cotonetes®-150-unidades_7891010560812_1.jpg?v=638054079322100000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexiveis-cotonetes-150-unidades/p",
-  popularity: 854
+  popularity: 853
  },
  {
   sku: "paguemenos-1638967",
@@ -9408,7 +9397,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165300/HIDRATACAO-ENRIQUECIDA-BABY-HAIR.png?v=639123025809800000",
   productUrl: "https://www.paguemenos.com.br/kit-infantil-dove-hidratacao-sabonete-liquido-200ml---shampoo-200ml---condicionador-200ml/p",
-  popularity: 855
+  popularity: 854
  },
  {
   sku: "paguemenos-1638965",
@@ -9419,7 +9408,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165298/HIDRATACAO-ENRIQUECIDA.png?v=639123014582370000",
   productUrl: "https://www.paguemenos.com.br/kit-infantil-dove-hidratacao-sabonete-liquido-200ml---refil-sabonete-liquido-180ml---sabonete-em-barra-75g/p",
-  popularity: 856
+  popularity: 855
  },
  {
   sku: "paguemenos-1638655",
@@ -9430,7 +9419,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225214/imagem padrao -17-.jpg?v=639251594588130000",
   productUrl: "https://www.paguemenos.com.br/kit-baruel-baby-shampoo-de-glicerina-suave-400ml-mais-condicionador-suave-210ml-oferta-especial-45-anos/p",
-  popularity: 857
+  popularity: 856
  },
  {
   sku: "paguemenos-1632382",
@@ -9441,7 +9430,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1115423/sabonete-em-barra-infantil-pom-pom-camomila-e-erva-cidreira-70g-principal.png?v=639014004139470000",
   productUrl: "https://www.paguemenos.com.br/sabonete-em-barra-infantil-pom-pom-camomila-e-erva-cidreira-70g/p",
-  popularity: 858
+  popularity: 857
  },
  {
   sku: "paguemenos-174068",
@@ -9452,7 +9441,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1074193/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xxg--22-unidades-principal.png?v=638944168585330000",
   productUrl: "https://www.paguemenos.com.br/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xxg-22-unidades/p",
-  popularity: 859
+  popularity: 858
  },
  {
   sku: "paguemenos-174066",
@@ -9463,7 +9452,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1074200/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-g--26-unidades-principal.png?v=638944170171930000",
   productUrl: "https://www.paguemenos.com.br/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-g-26-unidades/p",
-  popularity: 860
+  popularity: 859
  },
  {
   sku: "paguemenos-162427",
@@ -9474,7 +9463,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/989141/lenco-umedecido-joao-e-maria-glicerina-90-unidades-principal.png?v=638760008231930000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-joao-e-maria-glicerina-90-unidades/p",
-  popularity: 861
+  popularity: 860
  },
  {
   sku: "paguemenos-162421",
@@ -9485,7 +9474,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1122603/lenco-umedecido-joao-e-maria-sem-fragancia-45-unidades-principal.png?v=639039240328370000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-joao-e-maria-sem-fragancia-45-unidades/p",
-  popularity: 862
+  popularity: 861
  },
  {
   sku: "paguemenos-161490",
@@ -9496,7 +9485,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas p",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/983042/fralda-amoravel-basic-jumbinho-p-24-principal.png?v=638747931872930000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-basic-jumbinho-p-24/p",
-  popularity: 863
+  popularity: 862
  },
  {
   sku: "paguemenos-159617",
@@ -9507,7 +9496,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145131/7896018750937_1.jpg?v=639093554606600000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-de-glicerina-huggies-baby-extra-suave-refil-400ml/p",
-  popularity: 864
+  popularity: 863
  },
  {
   sku: "paguemenos-158379",
@@ -9518,7 +9507,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971482/fralda-amoravel-basic-hiper-xg-50-unidades-principal.png?v=638724672115400000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-basic-hiper-xg-50-unidades/p",
-  popularity: 865
+  popularity: 864
  },
  {
   sku: "paguemenos-158370",
@@ -9529,7 +9518,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971438/fralda-amoravel-basic-m-70-unidades-principal.png?v=638724024529130000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-basic-m-70-unidades/p",
-  popularity: 866
+  popularity: 865
  },
  {
   sku: "paguemenos-158367",
@@ -9540,7 +9529,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971430/fralda-amoravel-pants-xg-52-unidades-principal.png?v=638723881418100000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-pants-xg-52-unidades/p",
-  popularity: 867
+  popularity: 866
  },
  {
   sku: "paguemenos-158366",
@@ -9551,7 +9540,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971429/fralda-amoravel-pants-infantil-g-60-unidades-principal.png?v=638723881398970000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-pants-infantil-g-60-unidades/p",
-  popularity: 868
+  popularity: 867
  },
  {
   sku: "paguemenos-150447",
@@ -9562,7 +9551,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965056/78195.jpg.jpg?v=638702258977100000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-premium-xxg-54-unidades/p",
-  popularity: 869
+  popularity: 868
  },
  {
   sku: "paguemenos-150405",
@@ -9573,7 +9562,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965055/78190.jpg.jpg?v=638702258814070000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-premium-xg-58-unidades/p",
-  popularity: 870
+  popularity: 869
  },
  {
   sku: "paguemenos-150404",
@@ -9584,7 +9573,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas p",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965054/78189.jpg.jpg?v=638702258644330000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-premium-p-74-unidades/p",
-  popularity: 871
+  popularity: 870
  },
  {
   sku: "paguemenos-150402",
@@ -9595,7 +9584,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965052/78187.jpg.jpg?v=638702257654200000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-premium-g-60-unidades/p",
-  popularity: 872
+  popularity: 871
  },
  {
   sku: "paguemenos-150654",
@@ -9606,7 +9595,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1196610/sabonete-l-quido-de-glicerina-dove-baby-hidrata-o-relaxante-refil-400ml_7891150097971_1.png?v=639180111734530000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-de-glicerina-dove-baby-hidratacao-relaxante-refil-400ml/p",
-  popularity: 873
+  popularity: 872
  },
  {
   sku: "paguemenos-152458",
@@ -9617,7 +9606,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043764/sabonete-liquido-dove-hidratacao-glicerinada-400-ml-refil_7891150097964_1.jpg?v=638887886425530000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-dove-baby-hidratacao-glicerinada-refil-400ml/p",
-  popularity: 874
+  popularity: 873
  },
  {
   sku: "paguemenos-149271",
@@ -9628,7 +9617,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/964072/Mustela Refil Gel Lavante 400ml 1.jpg.jpg?v=638699654295000000",
   productUrl: "https://www.paguemenos.com.br/gel-lavante-mustela-suave-refil-400ml/p",
-  popularity: 875
+  popularity: 874
  },
  {
   sku: "paguemenos-149264",
@@ -9639,7 +9628,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051039/7896007553761_1.jpg?v=638900121143530000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-xxxg-70-unidades/p",
-  popularity: 876
+  popularity: 875
  },
  {
   sku: "paguemenos-120418",
@@ -9650,7 +9639,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/945000/HERO_BaruelBaby_Glicerina_Refil-Sab-Liq_A.png?v=638653713304800000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-baby-baruel-com-glicerina-da-cabeca-aos-pes-refil-210ml/p",
-  popularity: 877
+  popularity: 876
  },
  {
   sku: "paguemenos-103756",
@@ -9661,7 +9650,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/725790/75760.jpg?v=638338536343430000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-para-bebes-protex-baby-lavanda-380ml-refil/p",
-  popularity: 878
+  popularity: 877
  },
  {
   sku: "paguemenos-103252",
@@ -9672,7 +9661,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042404/hipoglos-creme-preventivo-de-assaduras-120g_7891010255770_1.jpg?v=639094636336070000",
   productUrl: "https://www.paguemenos.com.br/hipoglos-original-pomada-120g/p",
-  popularity: 879
+  popularity: 878
  },
  {
   sku: "paguemenos-101268",
@@ -9683,7 +9672,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/702554/01_produto.jpg?v=638288170363270000",
   productUrl: "https://www.paguemenos.com.br/hidratante-corporal-nutritivo-johnsons-baby-derma-protect-200ml/p",
-  popularity: 880
+  popularity: 879
  },
  {
   sku: "paguemenos-64513",
@@ -9694,7 +9683,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/927056/7891000325858-LEITEEMPONINHOINTEGRALLATA380g-1.jpg?v=638612248688370000",
   productUrl: "https://www.paguemenos.com.br/leite-ninho-fortimais-integral-380g/p",
-  popularity: 881
+  popularity: 880
  },
  {
   sku: "paguemenos-60671",
@@ -9705,7 +9694,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1076731/55019---AMORAVEL-LENCO-UMEDECIDO-ALOE-VERA-48UN.png?v=639191126543770000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-amoravel-baby-aloe-vera-com-48-unidades/p",
-  popularity: 882
+  popularity: 881
  },
  {
   sku: "paguemenos-60188",
@@ -9716,7 +9705,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1017675/7896020162858-500x500-0-clientebaruel-phplTZcDi_1.jpg?v=638838788850830000",
   productUrl: "https://www.paguemenos.com.br/creme-para-prevencao-de-assaduras-baruel-baby-90g/p",
-  popularity: 883
+  popularity: 882
  },
  {
   sku: "paguemenos-59859",
@@ -9727,7 +9716,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda talcos para bebes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171380/7896012800874-1.jpg?v=639142896006400000",
   productUrl: "https://www.paguemenos.com.br/talco-pompom-infantil-200g/p",
-  popularity: 884
+  popularity: 883
  },
  {
   sku: "paguemenos-59699",
@@ -9738,7 +9727,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/840691/7891000342770_01.jpg?v=638497642871000000",
   productUrl: "https://www.paguemenos.com.br/nanlac-supreme-800g/p",
-  popularity: 885
+  popularity: 884
  },
  {
   sku: "paguemenos-59543",
@@ -9749,7 +9738,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas p",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1115717/fralda-huggies-natural-care-p-36-unidades_7896007552023_1.jpg?v=639015162024970000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-natural-care-mega-tamanho-p-com-36-unidades-nova-embalagem/p",
-  popularity: 886
+  popularity: 885
  },
  {
   sku: "paguemenos-59334",
@@ -9760,7 +9749,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas p",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/910558/7500435181297_1.jpg?v=638572535266900000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-confort-sec-p-72-unidades/p",
-  popularity: 887
+  popularity: 886
  },
  {
   sku: "paguemenos-58355",
@@ -9771,7 +9760,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/851798/formula-infantil-nestogeno-1-1-2kg-principal.jpg?v=638512192894400000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestogeno-1-1-2kg/p",
-  popularity: 888
+  popularity: 887
  },
  {
   sku: "paguemenos-58118",
@@ -9782,7 +9771,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1032293/THS_Cetrilan120g_2000x2000px.jpg?v=638863784805730000",
   productUrl: "https://www.paguemenos.com.br/cetrilan-creme-protetor-120g/p",
-  popularity: 889
+  popularity: 888
  },
  {
   sku: "paguemenos-57778",
@@ -9793,7 +9782,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/951114/7898064036447-1.png?v=638665967584070000",
   productUrl: "https://www.paguemenos.com.br/fralda-cremer-baby-hiper-protecao-ate-noite-e-dia-tamanho-g-com-60-unidades/p",
-  popularity: 890
+  popularity: 889
  },
  {
   sku: "paguemenos-57336",
@@ -9804,7 +9793,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145104/7896018704206_1.jpg?v=639093553369300000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-huggies-da-cabeca-aos-pes-extra-suave-refil-200ml/p",
-  popularity: 891
+  popularity: 890
  },
  {
   sku: "paguemenos-57190",
@@ -9815,7 +9804,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044805/7896007551279_1.jpg?v=638888923567970000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-hiper-roupinha-tamanho-xxg-com-48-unidades/p",
-  popularity: 892
+  popularity: 891
  },
  {
   sku: "paguemenos-57189",
@@ -9826,7 +9815,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044813/7896007551262_1.jpg?v=638888926562230000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-hiper-roupinha-tamanho-m-com-72-unidades/p",
-  popularity: 893
+  popularity: 892
  },
  {
   sku: "paguemenos-56964",
@@ -9837,7 +9826,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127016/3504105033330_1 -1-.jpg?v=639051189842830000",
   productUrl: "https://www.paguemenos.com.br/mustela-cicastela-creme-reparador-hidratante-40ml/p",
-  popularity: 894
+  popularity: 893
  },
  {
   sku: "paguemenos-55575",
@@ -9848,7 +9837,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127134/7894650013380_1.jpg?v=639051302462570000",
   productUrl: "https://www.paguemenos.com.br/repelente-off-baby-117g/p",
-  popularity: 895
+  popularity: 894
  },
  {
   sku: "paguemenos-55339",
@@ -9859,7 +9848,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1170485/7500435145251_1.jpg?v=639136147792930000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-pampers-aroma-de-aloe-vera-192-unidades/p",
-  popularity: 896
+  popularity: 895
  },
  {
   sku: "paguemenos-54680",
@@ -9870,7 +9859,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1045728/7500435145978_1.jpg?v=638889815502870000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-premium-care-m-78-unidades/p",
-  popularity: 897
+  popularity: 896
  },
  {
   sku: "paguemenos-54547",
@@ -9881,7 +9870,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1055529/sabonete-liquido-glicerina-baby-dove-hidratacao-glicerinada-180ml-refil_7891150065338_17.jpg?v=638905268143500000",
   productUrl: "https://www.paguemenos.com.br/sabonete-dove-baby-hidratacao-glicerinada-refil-180ml/p",
-  popularity: 898
+  popularity: 897
  },
  {
   sku: "paguemenos-54544",
@@ -9892,7 +9881,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1196603/7891150065390_1.jpg?v=639180111516500000",
   productUrl: "https://www.paguemenos.com.br/sabonete-dove-baby-hidratacao-glicerinada-liquido-400ml/p",
-  popularity: 899
+  popularity: 898
  },
  {
   sku: "paguemenos-54044",
@@ -9903,7 +9892,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892216/7613036671927-FormulaInfantilNANSensitive800g.jpg?v=638534460572970000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-sensitive-800g/p",
-  popularity: 900
+  popularity: 899
  },
  {
   sku: "paguemenos-53584",
@@ -9914,7 +9903,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/902891/7891000261965_01.jpg?v=638551188953300000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-ninho-fortmais-zero-lactose-lata-700g/p",
-  popularity: 901
+  popularity: 900
  },
  {
   sku: "paguemenos-52044",
@@ -9925,7 +9914,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas rn",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1177845/7500435132534_1.jpg?v=639154795942370000",
   productUrl: "https://www.paguemenos.com.br/fraldas-pampers-premium-care-recem-nascido-rnmais-36-unidades/p",
-  popularity: 902
+  popularity: 901
  },
  {
   sku: "paguemenos-52037",
@@ -9936,7 +9925,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/834846/mustela-dermo-lavante-pele-normal-750ml-principal.jpg?v=638487900269400000",
   productUrl: "https://www.paguemenos.com.br/mustela-dermo-lavante-pele-normal-750ml/p",
-  popularity: 903
+  popularity: 902
  },
  {
   sku: "paguemenos-51869",
@@ -9947,7 +9936,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223662/7896018704008_1.jpg?v=639246375081970000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-huggies-supreme-care-leve-mais-por-menos-com-192-unidades/p",
-  popularity: 904
+  popularity: 903
  },
  {
   sku: "paguemenos-51852",
@@ -9958,7 +9947,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1044743/7896007549726_1.jpg?v=638888914950500000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-hiper-roupinha-tamanho-xg-com-48-unidades/p",
-  popularity: 905
+  popularity: 904
  },
  {
   sku: "paguemenos-48584",
@@ -9969,7 +9958,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203117/7891025112686_1.png?v=639202579317430000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-profutura-1-800g/p",
-  popularity: 906
+  popularity: 905
  },
  {
   sku: "paguemenos-47734",
@@ -9980,7 +9969,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105493/7891010870713_1.jpg?v=638996656435870000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-hora-do-sono-400-ml/p",
-  popularity: 907
+  popularity: 906
  },
  {
   sku: "paguemenos-47090",
@@ -9991,7 +9980,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223647/7896018703629_1.jpg?v=639246374082600000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-huggies-max-clean-leve-mais-por-menos-com-192-unidades/p",
-  popularity: 908
+  popularity: 907
  },
  {
   sku: "paguemenos-44417",
@@ -10002,7 +9991,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/680558/sabonete-liquido-dove-baby-hidrata-ao-enriquecida-200ml_7891150025981_1.jpg?v=638175884774530000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-dove-baby-hidratacao-enriquecida-200ml/p",
-  popularity: 909
+  popularity: 908
  },
  {
   sku: "paguemenos-44212",
@@ -10013,7 +10002,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892116/7891000106099-CompostolacteoNESLACcomfor800g.jpg?v=638534459876000000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-neslac-comfor-800g/p",
-  popularity: 910
+  popularity: 909
  },
  {
   sku: "paguemenos-40715",
@@ -10024,7 +10013,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195757/lencos-umedecidos-granado-bebe-com-50-unidades-principal.jpg?v=639179879613570000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-granado-bebe-com-50-unidades/p",
-  popularity: 911
+  popularity: 910
  },
  {
   sku: "paguemenos-35431",
@@ -10035,7 +10024,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/928330/61ylwLRoriL._AC_SL1000_.jpg?v=638613152311800000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-ar-proexpert-800g/p",
-  popularity: 912
+  popularity: 911
  },
  {
   sku: "paguemenos-32835",
@@ -10046,7 +10035,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051950/7891000062760-FormulaInfantilNestogeno2800g-1.jpg?v=638900158677400000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestogeno-2-800g/p",
-  popularity: 913
+  popularity: 912
  },
  {
   sku: "paguemenos-31624",
@@ -10057,7 +10046,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169331/7891010875640_1.jpg?v=639128878806470000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-baby-cabelos-claros-400-ml/p",
-  popularity: 914
+  popularity: 913
  },
  {
   sku: "paguemenos-29402",
@@ -10068,7 +10057,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203134/7891025111832_1.png?v=639202580348500000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-premium-1-400g/p",
-  popularity: 915
+  popularity: 914
  },
  {
   sku: "paguemenos-28975",
@@ -10079,7 +10068,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149250/7896018700383_1.jpg?v=639098632690470000",
   productUrl: "https://www.paguemenos.com.br/colonia-huggies-infantil-100ml/p",
-  popularity: 916
+  popularity: 915
  },
  {
   sku: "paguemenos-17249",
@@ -10090,7 +10079,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/637687/sabonete-granado-bebe-glicerina-tradicional-90g-principal.jpg?v=638001074456730000",
   productUrl: "https://www.paguemenos.com.br/sabonete-granado-bebe-glicerina-tradicional-90g/p",
-  popularity: 917
+  popularity: 916
  },
  {
   sku: "paguemenos-13419",
@@ -10101,7 +10090,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145264/7891010005757_1.jpg?v=639093561740730000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-de-glicerina-johnsons-baby-da-cabeca-aos-pes-200-ml/p",
-  popularity: 918
+  popularity: 917
  },
  {
   sku: "paguemenos-4745",
@@ -10112,7 +10101,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105695/7891010030094_1.jpg?v=638996674910730000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-baby-regular-200-ml/p",
-  popularity: 919
+  popularity: 918
  },
  {
   sku: "paguemenos-1643891",
@@ -10123,7 +10112,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1200049/kit-pomada-para-assadura-neopantol-baby-30g-2-unidades-principal.png.png?v=639195426524570000",
   productUrl: "https://www.paguemenos.com.br/kit-pomada-para-assadura-neopantol-baby-30g-2-unidades/p",
-  popularity: 920
+  popularity: 919
  },
  {
   sku: "paguemenos-1639989",
@@ -10134,7 +10123,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1186556/Padrao 1200 -10-.jpg?v=639161114738170000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-confort-sec-xxg-82-unidades/p",
-  popularity: 921
+  popularity: 920
  },
  {
   sku: "paguemenos-1639988",
@@ -10145,7 +10134,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1177697/7500435264693_1.jpg?v=639154793865630000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-confort-sec-xg-86-unidades/p",
-  popularity: 922
+  popularity: 921
  },
  {
   sku: "paguemenos-1639987",
@@ -10156,7 +10145,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1177753/7500435264716_1.jpg?v=639154794626230000",
   productUrl: "https://www.paguemenos.com.br/fralda-descartavel-infantil-pampers-confort-sec-g-92-unidades/p",
-  popularity: 923
+  popularity: 922
  },
  {
   sku: "paguemenos-1639986",
@@ -10167,7 +10156,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171669/fralda-pampers-confort-sec-m-108-unidades-principal.png.png?v=639144399759230000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-confort-sec-m-108-unidades/p",
-  popularity: 924
+  popularity: 923
  },
  {
   sku: "paguemenos-1639744",
@@ -10178,7 +10167,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169227/kit-2-banho-premium.png?v=639126301945800000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-banho-sabonete-esfoliante-beauty-scrub-280g-sabonete-liquido-oleo-de-banho-240ml-sabonete-liquido-nutricao-profunda-250ml/p",
-  popularity: 925
+  popularity: 924
  },
  {
   sku: "paguemenos-1638968",
@@ -10189,7 +10178,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165301/HIDRATACAO-GLICERINADA-BABY-HAIR.png?v=639123036765030000",
   productUrl: "https://www.paguemenos.com.br/kit-infantil-dove-hidratacao-glicerinada-sabonete-liquido-200ml---shampoo-200ml---condicionador-200ml/p",
-  popularity: 926
+  popularity: 925
  },
  {
   sku: "paguemenos-1638966",
@@ -10200,7 +10189,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165299/HIDRATACAO-GLICERINADA.png?v=639123020365900000",
   productUrl: "https://www.paguemenos.com.br/kit-infantil-dove-hidratacao-glicerinada-sabonete-liquido-200ml---refil-sabonete-liquido-180ml---sabonete-em-barra-75g/p",
-  popularity: 927
+  popularity: 926
  },
  {
   sku: "paguemenos-1638696",
@@ -10211,7 +10200,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1159802/fralda-cremer-shortinho-xg-40-unidades-principal.png.png?v=639111961495570000",
   productUrl: "https://www.paguemenos.com.br/fralda-cremer-shortinho-xg-40-unidades/p",
-  popularity: 928
+  popularity: 927
  },
  {
   sku: "paguemenos-1639911",
@@ -10222,7 +10211,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1225922/7891106916820_02.png?v=639252441076370000",
   productUrl: "https://www.paguemenos.com.br/creme-para-assaduras-bepantol-baby-disney-toy-story-120g/p",
-  popularity: 929
+  popularity: 928
  },
  {
   sku: "paguemenos-1635138",
@@ -10233,7 +10222,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1141584/algodao-quadrado-amoravel-200-unidades-principal.png?v=639080604635430000",
   productUrl: "https://www.paguemenos.com.br/algodao-quadrado-amoravel-200-unidades/p",
-  popularity: 930
+  popularity: 929
  },
  {
   sku: "paguemenos-1633275",
@@ -10244,7 +10233,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127475/sabonete-liquido-johnsons-baby-de-glicerina-da-cabeca-aos-pes-frutas-vermelhas-400ml-edicao-limitada-principal.png?v=639052056126270000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-de-glicerina-da-cabeca-aos-pes-frutas-vermelhas-400ml-edicao-limitada/p",
-  popularity: 931
+  popularity: 930
  },
  {
   sku: "paguemenos-1638562",
@@ -10255,7 +10244,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1159116/cereal-infantil-papapa-multicereais-sem-acucar-170g-principal.png.png?v=639107277865030000",
   productUrl: "https://www.paguemenos.com.br/cereal-infantil-papapa-multicereais-sem-acucar-170g/p",
-  popularity: 932
+  popularity: 931
  },
  {
   sku: "paguemenos-1630950",
@@ -10266,7 +10255,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1097997/algodao-quadrado-sem-perfume-johnsons-baby-100-unidades-leve-mais-pague-menos-principal.png?v=638981244587770000",
   productUrl: "https://www.paguemenos.com.br/algodao-quadrado-sem-perfume-johnsons-baby-100-unidades-leve-mais-pague-menos/p",
-  popularity: 933
+  popularity: 932
  },
  {
   sku: "paguemenos-180076",
@@ -10277,7 +10266,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1084180/sabonete-liquido-de-glicerina-baruel-baby-pele-delicada-da-cabeca-aos-pes-sache-refil-210ml-principal.png?v=638962308289600000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-de-glicerina-baruel-baby-pele-delicada-da-cabeca-aos-pes-sache-refil-210ml/p",
-  popularity: 934
+  popularity: 933
  },
  {
   sku: "paguemenos-176398",
@@ -10288,7 +10277,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1138168/171208- IF01-3D-AMORAVEL-Lenco-Umedecido-Basic.jpg?v=639077207737770000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-amoravel-suave-48-unidades/p",
-  popularity: 935
+  popularity: 934
  },
  {
   sku: "paguemenos-174078",
@@ -10299,7 +10288,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1050931/repelente-de-insetos-gel-com-icaridina-6h-off--baby-squeeze-200g-principal.png?v=638900037027830000",
   productUrl: "https://www.paguemenos.com.br/repelente-de-insetos-gel-com-icaridina-6h-off-baby-squeeze-200g/p",
-  popularity: 936
+  popularity: 935
  },
  {
   sku: "paguemenos-174069",
@@ -10310,7 +10299,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1050893/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xxxg--22-unidades-principal.png?v=638899956390530000",
   productUrl: "https://www.paguemenos.com.br/fralda-descartavel-infantil-pants-huggies-soninho-perfeito-xxxg-22-unidades/p",
-  popularity: 937
+  popularity: 936
  },
  {
   sku: "paguemenos-167901",
@@ -10321,7 +10310,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193136/7898656391527_2.png?v=639173210724870000",
   productUrl: "https://www.paguemenos.com.br/fralda-infantil-calca-mamypoko-dia-noite-giga-g-60-unidades/p",
-  popularity: 938
+  popularity: 937
  },
  {
   sku: "paguemenos-167900",
@@ -10332,7 +10321,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193134/7898656391534_2.png?v=639173210545170000",
   productUrl: "https://www.paguemenos.com.br/fralda-infantil-calca-mamypoko-dia-noite-giga-xg-52-unidades/p",
-  popularity: 939
+  popularity: 938
  },
  {
   sku: "paguemenos-163335",
@@ -10343,7 +10332,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1041967/2-em-1-shampoo-e-condicionador-infantil-johnson’s®-400ml_7891010257101_1.jpg?v=639102087917800000",
   productUrl: "https://www.paguemenos.com.br/shampoo-e-condicionador-johnsons-kids-2-em-1-400ml/p",
-  popularity: 940
+  popularity: 939
  },
  {
   sku: "paguemenos-162493",
@@ -10354,7 +10343,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1015585/7897947619500_1.jpg?v=638823971360630000",
   productUrl: "https://www.paguemenos.com.br/creme-preventivo-de-assaduras-joao-e-maria-40g/p",
-  popularity: 941
+  popularity: 940
  },
  {
   sku: "paguemenos-161115",
@@ -10365,7 +10354,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/981788/kit-pomada-bepantriz-50mg-3-unidades-30g-principal.png?v=638744616537230000",
   productUrl: "https://www.paguemenos.com.br/kit-pomada-bepantriz-50mg-3-unidades-30g/p",
-  popularity: 942
+  popularity: 941
  },
  {
   sku: "paguemenos-158378",
@@ -10376,7 +10365,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971481/fralda-amoravel-basic-hiper-xxg-40-unidades-principal.png?v=638724636360570000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-basic-hiper-xxg-40-unidades/p",
-  popularity: 943
+  popularity: 942
  },
  {
   sku: "paguemenos-157529",
@@ -10387,7 +10376,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/967637/gel-dental-infantil-carmed-fini-dentaduras-anticaries-com-fluor-70g-principal.png?v=638714167278470000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-infantil-carmed-fini-dentaduras-anticaries-com-fluor-70g/p",
-  popularity: 944
+  popularity: 943
  },
  {
   sku: "paguemenos-155896",
@@ -10398,7 +10387,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/962244/gel-dental-infantil-carmed-fini-beijos-anticaries-com-fluor-70g-principal.png?v=638694297105630000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-infantil-carmed-fini-beijos-anticaries-com-fluor-70g/p",
-  popularity: 945
+  popularity: 944
  },
  {
   sku: "paguemenos-154901",
@@ -10409,7 +10398,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193127/7898656391572_2.png?v=639173209985530000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-superprotecao-calca-xxg-22-unidades/p",
-  popularity: 946
+  popularity: 945
  },
  {
   sku: "paguemenos-154900",
@@ -10420,7 +10409,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/958541/fralda-mamypoko-superprotecao-calca-m-34-unidades-principal.png?v=638682300119900000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-superprotecao-calca-m-34-unidades/p",
-  popularity: 947
+  popularity: 946
  },
  {
   sku: "paguemenos-153846",
@@ -10431,7 +10420,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/951857/toalha-umedecida-piquitucho-premium-120-unidades-principal.png?v=638669187595770000",
   productUrl: "https://www.paguemenos.com.br/toalha-umedecida-piquitucho-premium-120-unidades/p",
-  popularity: 948
+  popularity: 947
  },
  {
   sku: "paguemenos-150403",
@@ -10442,7 +10431,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965053/78188.jpg.jpg?v=638702258448030000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-premium-m-68-unidades/p",
-  popularity: 949
+  popularity: 948
  },
  {
   sku: "paguemenos-149522",
@@ -10453,7 +10442,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051101/7896007553570_1.jpg?v=638900127514300000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-supreme-care-m-104-unidades/p",
-  popularity: 950
+  popularity: 949
  },
  {
   sku: "paguemenos-146458",
@@ -10464,7 +10453,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/911106/7898585292360.jpg?v=638573465128100000",
   productUrl: "https://www.paguemenos.com.br/escova-de-dentes-infantil-powerdent-ocean-kids-2-unidades/p",
-  popularity: 951
+  popularity: 950
  },
  {
   sku: "paguemenos-145434",
@@ -10475,7 +10464,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/991650/7891000397077-LeiteemPoNinhoAdultoLata350g-1.jpg?v=638764263895500000",
   productUrl: "https://www.paguemenos.com.br/leite-po-semidesnatado-ninho-adulto-lata-350g/p",
-  popularity: 952
+  popularity: 951
  },
  {
   sku: "paguemenos-128709",
@@ -10486,7 +10475,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/836045/sabonete-liquido-protex-baby-glicerina--800ml-refil-principal.png?v=638488734206170000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-protex-baby-glicerina-800ml-refil/p",
-  popularity: 953
+  popularity: 952
  },
  {
   sku: "paguemenos-103755",
@@ -10497,7 +10486,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1155546/7509546687896-Sabonete_L_quido_para_beb_s_Protex_Baby_Lavanda_400ml-Personal_Care-Protex--1-.jpg?v=639104957563030000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-para-bebes-protex-baby-lavanda-400ml/p",
-  popularity: 954
+  popularity: 953
  },
  {
   sku: "paguemenos-103752",
@@ -10508,7 +10497,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1094536/7896026172134_0.png?v=638977844635270000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-infantil-malvatrikids-morango-70g/p",
-  popularity: 955
+  popularity: 954
  },
  {
   sku: "paguemenos-103548",
@@ -10519,7 +10508,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/725739/75749.png?v=638338488274370000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-para-bebes-protex-baby-lavanda-180ml-refil/p",
-  popularity: 956
+  popularity: 955
  },
  {
   sku: "paguemenos-100883",
@@ -10530,7 +10519,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1125851/Estagiario Digital.jpg?v=639046067174000000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-com-fluor-patrulha-canina-gum-sabor-chiclete-50g/p",
-  popularity: 957
+  popularity: 956
  },
  {
   sku: "paguemenos-99686",
@@ -10541,7 +10530,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/824789/gel-dental-infantil-amoravel-tutti-frutti-sem-fluor-com-100g-principal.png?v=638463906583730000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-infantil-amoravel-tutti-frutti-sem-fluor-com-100g/p",
-  popularity: 958
+  popularity: 957
  },
  {
   sku: "paguemenos-99372",
@@ -10552,7 +10541,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1076736/74647---IF02-3D-AMO-Lencos-Umed-PROMO-ALOE-VERA.jpg?v=639190471794770000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-amoravel-aloe-e-vera-com-192-unidades-leve-4-pague-3/p",
-  popularity: 959
+  popularity: 958
  },
  {
   sku: "paguemenos-99378",
@@ -10563,7 +10552,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1076738/74659---IF02-3D-AMO-Lencos-Umed-PROMO-NEUTRO.png?v=639189636327100000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-amoravel-sem-fragrancia-com-192-unidades/p",
-  popularity: 960
+  popularity: 959
  },
  {
   sku: "paguemenos-99271",
@@ -10574,7 +10563,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105842/huggies-fralda-pants-premium-natural-care-xxg-52-un_7896007552733_1.jpg?v=638996702706930000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-natural-care-hiper-tamanho-xxg-com-52-unidades/p",
-  popularity: 961
+  popularity: 960
  },
  {
   sku: "paguemenos-99270",
@@ -10585,7 +10574,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105833/huggies-fralda-pants-premium-natural-care-xg-56-un_7896007552719_1.jpg?v=638996701131330000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-natural-care-hiper-tamanho-xg-com-56-unidades/p",
-  popularity: 962
+  popularity: 961
  },
  {
   sku: "paguemenos-96642",
@@ -10596,7 +10585,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/928361/81LbIKRgAqL._AC_SL1500_.jpg?v=638613191300300000",
   productUrl: "https://www.paguemenos.com.br/toalha-umedecida-mamypoko-dia-noite-com-200-unidades-preco-especial/p",
-  popularity: 963
+  popularity: 962
  },
  {
   sku: "paguemenos-95130",
@@ -10607,7 +10596,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1001976/7891000319505-CerealInfantilMucilonMulticereais180g-1.jpg?v=638791086516100000",
   productUrl: "https://www.paguemenos.com.br/mucilon-multicereais-180g/p",
-  popularity: 964
+  popularity: 963
  },
  {
   sku: "paguemenos-94889",
@@ -10618,7 +10607,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/649663/sabonete-protex-baby-glicerina-refil-liquido-180ml-principal.jpg?v=638008140803400000",
   productUrl: "https://www.paguemenos.com.br/sabonete-protex-baby-glicerina-refil-liquido-180ml/p",
-  popularity: 965
+  popularity: 964
  },
  {
   sku: "paguemenos-60643",
@@ -10629,7 +10618,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene piolho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1158013/7896094920248-Antiparasit_rio_Escabin_PRO_4_Emuls_o_Capilar_100ml-Antiparasit_rio-Escabin--1-.jpg?v=639105040097970000",
   productUrl: "https://www.paguemenos.com.br/escabin-pro-tratamento-de-infestacao-por-piolhos-e-lendeas-100ml/p",
-  popularity: 966
+  popularity: 965
  },
  {
   sku: "paguemenos-59860",
@@ -10640,7 +10629,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171400/7896012877807-1.jpg?v=639142900561170000",
   productUrl: "https://www.paguemenos.com.br/sabonete-pompom-locao-hidratante-infantil-80g-leve-5-pague-4/p",
-  popularity: 967
+  popularity: 966
  },
  {
   sku: "paguemenos-59810",
@@ -10651,7 +10640,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/975192/sabonete-dove-baby-hora-de-dormir-hidrata-o-relaxante-l-quido-400ml_7891150079236_17.jpg?v=638730771317770000",
   productUrl: "https://www.paguemenos.com.br/sabonete-dove-baby-hora-de-dormir-hidratacao-relaxante-liquido-400ml/p",
-  popularity: 968
+  popularity: 967
  },
  {
   sku: "paguemenos-59811",
@@ -10662,7 +10651,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/647796/locao-hidratante-dove-baby-hora-de-dormir-hidratacao-relaxante-200ml-principal.jpg?v=638008115121500000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-dove-baby-hora-de-dormir-hidratacao-relaxante-200ml/p",
-  popularity: 969
+  popularity: 968
  },
  {
   sku: "paguemenos-58004",
@@ -10673,7 +10662,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/786492/7896114312879_1.jpg?v=638399012987130000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-bitufo-cocorico-1-dentinho-de-4-24-meses/p",
-  popularity: 970
+  popularity: 969
  },
  {
   sku: "paguemenos-57798",
@@ -10684,7 +10673,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1157615/7891035000898-Repelente_para_Beb_SBP_Baby_Lo_o_Corporal_com_Icaridina_100ml-Repelente-SBP--1-.jpg?v=639105027932000000",
   productUrl: "https://www.paguemenos.com.br/repelente-sbp-baby-a-partir-de-2-meses-locao-100ml/p",
-  popularity: 971
+  popularity: 970
  },
  {
   sku: "paguemenos-57485",
@@ -10695,7 +10684,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1143330/7896512949417_1.jpg?v=639087681135100000",
   productUrl: "https://www.paguemenos.com.br/sabonete-granado-bebe-glicerina-tradicional-500ml/p",
-  popularity: 972
+  popularity: 971
  },
  {
   sku: "paguemenos-57357",
@@ -10706,7 +10695,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/833411/fralda-pampers-splashers-baby-shark-tamanho-g-xg-com-10-unidades-principal.jpg?v=638486388234030000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-splashers-baby-shark-tamanho-g-xg-com-10-unidades/p",
-  popularity: 973
+  popularity: 972
  },
  {
   sku: "paguemenos-57337",
@@ -10717,7 +10706,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145160/7896007550944_1.jpg?v=639093556189000000",
   productUrl: "https://www.paguemenos.com.br/sabonete-huggies-extra-suave-liquido-600ml/p",
-  popularity: 974
+  popularity: 973
  },
  {
   sku: "paguemenos-57274",
@@ -10728,7 +10717,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/646498/sabonete-protex-baby-protecao-delicada-refil-380ml-principal.jpg?v=638008099128400000",
   productUrl: "https://www.paguemenos.com.br/sabonete-protex-baby-protecao-delicada-refil-380ml/p",
-  popularity: 975
+  popularity: 974
  },
  {
   sku: "paguemenos-57012",
@@ -10739,7 +10728,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051973/7891000303115-FormulaInfantilNESTOGENOEspessar800g-1.jpg?v=638900159287870000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nestogeno-espessar-800g/p",
-  popularity: 976
+  popularity: 975
  },
  {
   sku: "paguemenos-56118",
@@ -10750,7 +10739,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1228770/7891106914482_0.jpg?v=639258472285900000",
   productUrl: "https://www.paguemenos.com.br/bepantol-baby-120g-30porcento-desconto-2-unidade/p",
-  popularity: 977
+  popularity: 976
  },
  {
   sku: "paguemenos-55816",
@@ -10761,7 +10750,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042417/hipoglos-transparente-creme-preventivo-de-assaduras-30g_7891010249939_1.jpg?v=639094636966830000",
   productUrl: "https://www.paguemenos.com.br/hipoglos-transparente-30g/p",
-  popularity: 978
+  popularity: 977
  },
  {
   sku: "paguemenos-55815",
@@ -10772,7 +10761,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/992012/hipoglos-transparente-sem-fragancia-lanolina-leve-120g-e-pague-80g_7891010249946_1.jpg?v=639101410454030000",
   productUrl: "https://www.paguemenos.com.br/hipoglos-transparente-sem-fragancia-mais-lanolina-leve-120g-e-pague-80g/p",
-  popularity: 979
+  popularity: 978
  },
  {
   sku: "paguemenos-55266",
@@ -10783,7 +10772,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1128565/7500435145152_1.png?v=639056610490630000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-oral-b-spiderman-kids-50g/p",
-  popularity: 980
+  popularity: 979
  },
  {
   sku: "paguemenos-54962",
@@ -10794,7 +10783,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1155820/7891000282236-F_rmula_Infantil_Ninho_Fases_1_800g__20_de_desconto_na_2_lata-Leite_de_Crescimento-Ninho--1-.jpg?v=639104966463900000",
   productUrl: "https://www.paguemenos.com.br/kit-formula-infantil-ninho-fases-1mais-com-2-unidades-de-800g/p",
-  popularity: 981
+  popularity: 980
  },
  {
   sku: "paguemenos-54546",
@@ -10805,7 +10794,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/644865/sabonete-dove-baby-hidratacao-balanceada-75g-principal.jpg?v=638008078077070000",
   productUrl: "https://www.paguemenos.com.br/sabonete-dove-baby-hidratacao-balanceada-75g/p",
-  popularity: 982
+  popularity: 981
  },
  {
   sku: "paguemenos-54525",
@@ -10816,7 +10805,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/660540/sabonete-dove-baby-hidratacao-glicerinada-liquido-200ml_7891150065291_1.jpg?v=638042071003900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-dove-baby-hidratacao-glicerinada-liquido-200ml/p",
-  popularity: 983
+  popularity: 982
  },
  {
   sku: "paguemenos-54183",
@@ -10827,7 +10816,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/708588/desitin-maxima-duracao-creme-preventivo-de-assaduras-57g_7702031694908_1.jpg?v=639094633363800000",
   productUrl: "https://www.paguemenos.com.br/desitin-maxima-duracao-57g/p",
-  popularity: 984
+  popularity: 983
  },
  {
   sku: "paguemenos-54140",
@@ -10838,7 +10827,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/840641/mustela-gel-lavante-calmante-pele-muito-sensivel-300ml-principal.jpg?v=638497620502630000",
   productUrl: "https://www.paguemenos.com.br/mustela-gel-lavante-calmante-pele-muito-sensivel-300ml/p",
-  popularity: 985
+  popularity: 984
  },
  {
   sku: "paguemenos-54046",
@@ -10849,7 +10838,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/644466/algodao-amoravel-infantil-quadrado-com-50-unidades-principal.jpg?v=638008072303000000",
   productUrl: "https://www.paguemenos.com.br/algodao-amoravel-infantil-quadrado-com-50-unidades/p",
-  popularity: 986
+  popularity: 985
  },
  {
   sku: "paguemenos-53924",
@@ -10860,7 +10849,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130451/0070942003322_1.jpg?v=639063386277070000",
   productUrl: "https://www.paguemenos.com.br/flosser-gum-patrulha-canina-40-unidades/p",
-  popularity: 987
+  popularity: 986
  },
  {
   sku: "paguemenos-53242",
@@ -10871,7 +10860,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/909457/7500435137737_1.jpg?v=638568969955830000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-oral-b-kids-princesas-50g/p",
-  popularity: 988
+  popularity: 987
  },
  {
   sku: "paguemenos-52046",
@@ -10882,7 +10871,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas rn",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116251/7500435132503_1.jpg?v=639017459830930000",
   productUrl: "https://www.paguemenos.com.br/fraldas-pampers-recem-nascido-premium-care-rn-20-unidades/p",
-  popularity: 989
+  popularity: 988
  },
  {
   sku: "paguemenos-52038",
@@ -10893,7 +10882,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/834851/mustela-hydra-bebe-corpo-pele-normal-500ml-principal.jpg?v=638487900321770000",
   productUrl: "https://www.paguemenos.com.br/mustela-hydra-bebe-corpo-pele-normal-500ml/p",
-  popularity: 990
+  popularity: 989
  },
  {
   sku: "paguemenos-50614",
@@ -10904,7 +10893,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/851011/pomada-lanolina-hpa-lansinoh-30g-principal.jpg?v=638512170109200000",
   productUrl: "https://www.paguemenos.com.br/pomada-lanolina-hpa-lansinoh-30g/p",
-  popularity: 991
+  popularity: 990
  },
  {
   sku: "paguemenos-48583",
@@ -10915,7 +10904,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203151/7891025112709_1.png?v=639202581130430000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-profutura-2-800g/p",
-  popularity: 992
+  popularity: 991
  },
  {
   sku: "paguemenos-48566",
@@ -10926,7 +10915,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149309/lencos-umedecidos-huggies-rosto-e-corpo-hipoalergenico-48-un_7896018703636_1.jpg?v=639098637209670000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-huggies-one-done-48-unidades/p",
-  popularity: 993
+  popularity: 992
  },
  {
   sku: "paguemenos-48517",
@@ -10937,7 +10926,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209747/7891010871031_1.jpg?v=639217237410830000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-de-glicerina-johnsons-baby-da-cabeca-aos-pes-refil-180-ml/p",
-  popularity: 994
+  popularity: 993
  },
  {
   sku: "paguemenos-47361",
@@ -10948,7 +10937,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1117096/7898392800277_1.jpg?v=639021090601500000",
   productUrl: "https://www.paguemenos.com.br/repelente-exposis-infantil-gel-100ml/p",
-  popularity: 995
+  popularity: 994
  },
  {
   sku: "paguemenos-47242",
@@ -10959,7 +10948,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1223607/7896007547913_1.jpg?v=639246368917170000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-puro-e-natural-com-48-unidades/p",
-  popularity: 996
+  popularity: 995
  },
  {
   sku: "paguemenos-45068",
@@ -10970,7 +10959,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171370/7896012800669-1.jpg?v=639142895301870000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pompom-suave-200ml/p",
-  popularity: 997
+  popularity: 996
  },
  {
   sku: "paguemenos-44350",
@@ -10981,7 +10970,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640782/locao-hidratante-dove-baby-hidratacao-enriquecida-200ml-principal.jpg?v=638008021410600000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-dove-baby-hidratacao-enriquecida-200ml/p",
-  popularity: 998
+  popularity: 997
  },
  {
   sku: "paguemenos-44313",
@@ -10992,7 +10981,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640774/colonia-giovanna-baby-giby-0-a-5-anos-100ml-principal.jpg?v=638008021314900000",
   productUrl: "https://www.paguemenos.com.br/colonia-giovanna-baby-giby-0-a-5-anos-100ml/p",
-  popularity: 999
+  popularity: 998
  },
  {
   sku: "paguemenos-44201",
@@ -11003,7 +10992,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043155/shampoo-infantil-johnson-s-gotas-de-brilho-400ml_7891010601171_1.jpg?v=639102083838530000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-gotas-de-brilho-400-ml/p",
-  popularity: 1000
+  popularity: 999
  },
  {
   sku: "paguemenos-44152",
@@ -11014,7 +11003,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1206597/7702031610823_1.jpg?v=639214707731030000",
   productUrl: "https://www.paguemenos.com.br/creme-preventivo-de-assaduras-desitin-creamy-aloe-57g/p",
-  popularity: 1001
+  popularity: 1000
  },
  {
   sku: "paguemenos-44151",
@@ -11025,7 +11014,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1206606/7702031610830_1.jpg?v=639214708116500000",
   productUrl: "https://www.paguemenos.com.br/creme-preventivo-de-assaduras-desitin-creamy-113g/p",
-  popularity: 1002
+  popularity: 1001
  },
  {
   sku: "paguemenos-43653",
@@ -11036,7 +11025,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203234/7891025119982_1.png?v=639202586354200000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-pepti-800g/p",
-  popularity: 1003
+  popularity: 1002
  },
  {
   sku: "paguemenos-43445",
@@ -11047,7 +11036,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209098/7891010579289_1.jpg?v=639215572305230000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-recem-nascido-200-ml/p",
-  popularity: 1004
+  popularity: 1003
  },
  {
   sku: "paguemenos-43347",
@@ -11058,7 +11047,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/933488/5016533657838-NeocateLCP400G-1.jpg?v=638626858120000000",
   productUrl: "https://www.paguemenos.com.br/neocate-lcp-upgrade-400g/p",
-  popularity: 1005
+  popularity: 1004
  },
  {
   sku: "paguemenos-41218",
@@ -11069,7 +11058,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145290/7891010047764_1.jpg?v=639093566939630000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexiveis-cotonetes-300-unidades/p",
-  popularity: 1006
+  popularity: 1005
  },
  {
   sku: "paguemenos-35583",
@@ -11080,7 +11069,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/892154/7891000079393-FormulaInfantilNanEspessAR800g-1.jpg?v=638534460064800000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-a-r-espessar-800g/p",
-  popularity: 1007
+  popularity: 1006
  },
  {
   sku: "paguemenos-34551",
@@ -11091,7 +11080,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda talcos para bebes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/637273/talco-granado-bebe-100g-principal.jpg?v=637991568923000000",
   productUrl: "https://www.paguemenos.com.br/talco-granado-bebe-100g/p",
-  popularity: 1008
+  popularity: 1007
  },
  {
   sku: "paguemenos-32893",
@@ -11102,7 +11091,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002192/7896523210797_1.jpg?v=638791088869000000",
   productUrl: "https://www.paguemenos.com.br/bepantriz-pomada-30g/p",
-  popularity: 1009
+  popularity: 1008
  },
  {
   sku: "paguemenos-31883",
@@ -11113,7 +11102,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho oleos de bebe",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1227674/7891010877613_1.jpg?v=639257698856170000",
   productUrl: "https://www.paguemenos.com.br/oleo-johnsons-baby-regular-200-ml/p",
-  popularity: 1010
+  popularity: 1009
  },
  {
   sku: "paguemenos-30925",
@@ -11124,7 +11113,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165307/Estagiario-Digital--34-.jpg?v=639126230193930000",
   productUrl: "https://www.paguemenos.com.br/creme-para-assaduras-amoravel-45g/p",
-  popularity: 1011
+  popularity: 1010
  },
  {
   sku: "paguemenos-30402",
@@ -11135,7 +11124,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda talcos para bebes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/731026/amilia-talco-liquido-80g-principal.jpg?v=638344476115670000",
   productUrl: "https://www.paguemenos.com.br/amilia-talco-liquido-80g/p",
-  popularity: 1012
+  popularity: 1011
  },
  {
   sku: "paguemenos-29403",
@@ -11146,7 +11135,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203109/7891025107880_1.png?v=639202578885470000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-premium-2-400g/p",
-  popularity: 1013
+  popularity: 1012
  },
  {
   sku: "paguemenos-28978",
@@ -11157,7 +11146,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1153185/7896018700338_1.jpg?v=639101167853900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-huggies-extra-suave-200ml/p",
-  popularity: 1014
+  popularity: 1013
  },
  {
   sku: "paguemenos-25377",
@@ -11168,7 +11157,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1094519/7896026170390_0.png?v=638977841520000000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-malvatrikids-f-infantil-70g/p",
-  popularity: 1015
+  popularity: 1014
  },
  {
   sku: "paguemenos-17690",
@@ -11179,7 +11168,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127098/7891010042950_1.jpg?v=639051297350370000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-hora-do-sono-200-ml/p",
-  popularity: 1016
+  popularity: 1015
  },
  {
   sku: "paguemenos-16789",
@@ -11190,7 +11179,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1158632/8445290273758-F_rmula_Infantil_Nan_Sem_Lactose_400g-F_rmula_Infantil-Nan--2-.jpg?v=639105065277400000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nan-sem-lactose-400g/p",
-  popularity: 1017
+  popularity: 1016
  },
  {
   sku: "paguemenos-16330",
@@ -11201,7 +11190,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1188528/7897129303890_1.png?v=639171322708200000",
   productUrl: "https://www.paguemenos.com.br/cetrilan-creme-40g/p",
-  popularity: 1018
+  popularity: 1017
  },
  {
   sku: "paguemenos-14853",
@@ -11212,7 +11201,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/662042/hastes-flexiveis-cotonetes®-pote-150-unidades_7891010032937_1.jpg?v=638054079229100000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexiveis-cotonetes-pote-150-unidades/p",
-  popularity: 1019
+  popularity: 1018
  },
  {
   sku: "paguemenos-12528",
@@ -11223,7 +11212,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1226080/7891010032906_1.jpg?v=639252476211330000",
   productUrl: "https://www.paguemenos.com.br/sabonete-em-barra-johnsons-baby-original-80-g/p",
-  popularity: 1020
+  popularity: 1019
  },
  {
   sku: "paguemenos-10575",
@@ -11234,7 +11223,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169299/7891010030476_1.jpg?v=639128877065270000",
   productUrl: "https://www.paguemenos.com.br/condicionador-johnsons-baby-cabelos-claros-200-ml/p",
-  popularity: 1021
+  popularity: 1020
  },
  {
   sku: "paguemenos-10412",
@@ -11245,7 +11234,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1196626/7891528038827-Creme_Dental_Infantil_com_Fl_or_Colgate_Tandy_Tutti_Frutti_50g-Oral_Care-Colgate_1.jpg?v=639180121578100000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-infantil-colgate-tandy-tutti-frutti-gel-50g/p",
-  popularity: 1022
+  popularity: 1021
  },
  {
   sku: "paguemenos-10410",
@@ -11256,7 +11245,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1186962/7891528038810-Creme_Dental_Infantil_com_Fl_or_Colgate_Tandy_Morango_50g-Oral_Care-Colgate--17-.jpg?v=639162834343070000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-colgate-tandy-morangostoso-50g/p",
-  popularity: 1023
+  popularity: 1022
  },
  {
   sku: "paguemenos-4754",
@@ -11267,7 +11256,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042110/colonia-refrescante-lavanda-para-bebes-johnson-s-baby-200ml_7891010031350_1.jpg?v=638887869673970000",
   productUrl: "https://www.paguemenos.com.br/colonia-johnsons-baby-lavanda-200-ml/p",
-  popularity: 1024
+  popularity: 1023
  },
  {
   sku: "paguemenos-2498",
@@ -11278,7 +11267,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/886456/7896016800917---Pomada-para-Tratamento-de-Assaduras-Dermodex-Tratamento-60g---1.jpg?v=638532179296130000",
   productUrl: "https://www.paguemenos.com.br/dermodex-creme-60g/p",
-  popularity: 1025
+  popularity: 1024
  },
  {
   sku: "paguemenos-1640035",
@@ -11289,7 +11278,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193508/Padrao-1200--13-.jpg?v=639184335287330000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-pants-ultrabag-xxxg-54-unidades/p",
-  popularity: 1026
+  popularity: 1025
  },
  {
   sku: "paguemenos-1639990",
@@ -11300,7 +11289,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1186563/Estagiario Digital -18-.jpg?v=639161151083230000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-confort-sec-xxxg-70-unidades/p",
-  popularity: 1027
+  popularity: 1026
  },
  {
   sku: "paguemenos-1639951",
@@ -11311,7 +11300,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193552/Padrao-1200--16-.jpg?v=639184334710900000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-pants-ultrabag-xg-66-unidades/p",
-  popularity: 1028
+  popularity: 1027
  },
  {
   sku: "paguemenos-1639746",
@@ -11322,7 +11311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169229/kit-5-banho-premium.png?v=639126309235270000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-banho-sabonete-barra-uniform-skin-135g-sabonete-liquido-uniform-skin-547ml-sabonete-liquido-oleo-de-banho-240ml/p",
-  popularity: 1029
+  popularity: 1028
  },
  {
   sku: "paguemenos-1639745",
@@ -11333,7 +11322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169228/kit-3-banho-premium.png?v=639126304744830000",
   productUrl: "https://www.paguemenos.com.br/kit-dove-banho-sabonete-esfoliante-coco-beauty-scrub-280g-sabonete-liquido-oleo-de-banho-240ml-sabonete-liquido-nutricao-250ml/p",
-  popularity: 1030
+  popularity: 1029
  },
  {
   sku: "paguemenos-1638970",
@@ -11344,7 +11333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1165303/HORA-DE-DORMIR.png?v=639123060926330000",
   productUrl: "https://www.paguemenos.com.br/kit-infantil-dove-hidratacao-relaxante-sabonete-liquido-refil-400ml---locao-hidratante-200ml/p",
-  popularity: 1031
+  popularity: 1030
  },
  {
   sku: "paguemenos-1638624",
@@ -11355,7 +11344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1159284/sabonete-liquido-infantil-cetrilan-500ml-principal.png.png?v=639107328183300000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-cetrilan-500ml/p",
-  popularity: 1032
+  popularity: 1031
  },
  {
   sku: "paguemenos-1635451",
@@ -11366,7 +11355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145730/formula-infantil-aptanutri-profutura-gold-3-1-a-3-anos-800g-principal.png?v=639094359547900000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptanutri-profutura-gold-3-1-a-3-anos-800g/p",
-  popularity: 1033
+  popularity: 1032
  },
  {
   sku: "paguemenos-1633291",
@@ -11377,7 +11366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127608/sabonete-liquido-johnsons-baby-de-glicerina-frutas-vermelhas-200ml-principal.png?v=639052209049300000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-de-glicerina-frutas-vermelhas-200ml/p",
-  popularity: 1034
+  popularity: 1033
  },
  {
   sku: "paguemenos-1633276",
@@ -11388,7 +11377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127476/sabonete-liquido-infantil-johnsons-baby-glicerina-baunilha-200ml-principal.png?v=639052056146100000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-johnsons-baby-glicerina-baunilha-200ml/p",
-  popularity: 1035
+  popularity: 1034
  },
  {
   sku: "paguemenos-1633274",
@@ -11399,7 +11388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1127474/sabonete-liquido-johnsons-baby-de-glicerina-baunilha-400ml-principal.png?v=639052029027600000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-de-glicerina-baunilha-400ml/p",
-  popularity: 1036
+  popularity: 1035
  },
  {
   sku: "paguemenos-1632465",
@@ -11410,7 +11399,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1115773/kit-gel-dental-infantil-carmed-fini-minhocas-azedinhas-maca-verde---dentaduras-framboesa-e-morango---beijos-morango-e-nata-anticaries-com-fluor-70g-principal.png?v=639015829649270000",
   productUrl: "https://www.paguemenos.com.br/kit-gel-dental-infantil-carmed-fini-minhocas-azedinhas-maca-verde-mais-dentaduras-framboesa-e-morango-mais-beijos-morango-e-nata-anticaries-com-fluor-/p",
-  popularity: 1037
+  popularity: 1036
  },
  {
   sku: "paguemenos-1630951",
@@ -11421,7 +11410,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1121660/7891010258429_1.jpg?v=639038408919530000",
   productUrl: "https://www.paguemenos.com.br/algodao-quadrado-sem-perfume-johnsons-baby-50-unidades/p",
-  popularity: 1038
+  popularity: 1037
  },
  {
   sku: "paguemenos-1630429",
@@ -11432,7 +11421,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1123723/11803291.png?v=639041078132930000",
   productUrl: "https://www.paguemenos.com.br/sabonete-de-glicerina-baruel-baby-pele-delicada-400ml/p",
-  popularity: 1039
+  popularity: 1038
  },
  {
   sku: "paguemenos-180147",
@@ -11443,7 +11432,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149731/7509546702506--1-.jpg?v=639098678809230000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-infantil-colgate-tandy-com-fluor-melancia-50g/p",
-  popularity: 1040
+  popularity: 1039
  },
  {
   sku: "paguemenos-175563",
@@ -11454,7 +11443,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1056944/shampoo-kolene-baby-suave-lavanda-oleo-de-baoba-hidratacao-desembaraco-frasco-300ml-principal.png?v=638911260215000000",
   productUrl: "https://www.paguemenos.com.br/shampoo-kolene-baby-suave-lavanda-oleo-de-baoba-hidratacao-desembaraco-frasco-300ml/p",
-  popularity: 1041
+  popularity: 1040
  },
  {
   sku: "paguemenos-167899",
@@ -11465,7 +11454,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193132/7898656391541_2.png?v=639173210406300000",
   productUrl: "https://www.paguemenos.com.br/fralda-infantil-calca-mamypoko-dia-noite-giga-xxg-44-unidades/p",
-  popularity: 1042
+  popularity: 1041
  },
  {
   sku: "paguemenos-164872",
@@ -11476,7 +11465,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1001220/kit-viagem-escova-bob-esponja-gum-dental-macia---fio-dental-encerado-menta-20m---gel-dental-com-fluor-menta-50g-principal.png?v=638790372121400000",
   productUrl: "https://www.paguemenos.com.br/kit-viagem-escova-bob-esponja-gum-dental-macia-mais-fio-dental-encerado-menta-20m-mais-gel-dental-com-fluor-menta-50g/p",
-  popularity: 1043
+  popularity: 1042
  },
  {
   sku: "paguemenos-163491",
@@ -11487,7 +11476,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1041951/2-em-1-shampoo-e-condicionador-infantil-johnson’s®-180ml_7891010257125_1.jpg?v=639102086348070000",
   productUrl: "https://www.paguemenos.com.br/shampoo-e-condicionador-johnsons-kids-2-em-1-sache-180ml/p",
-  popularity: 1044
+  popularity: 1043
  },
  {
   sku: "paguemenos-163348",
@@ -11498,7 +11487,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1041960/2-em-1-shampoo-e-condicionador-infantil-johnson’s®-200ml_7891010257118_1.jpg?v=639102087280670000",
   productUrl: "https://www.paguemenos.com.br/shampoo-e-condicionador-johnsons-kids-2-em-1-200ml/p",
-  popularity: 1045
+  popularity: 1044
  },
  {
   sku: "paguemenos-165012",
@@ -11509,7 +11498,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1001529/gel-dental-carmed-fini-minho-com-fluor-70g-principal.png?v=638790520361500000",
   productUrl: "https://www.paguemenos.com.br/gel-dental-carmed-fini-minho-com-fluor-70g/p",
-  popularity: 1046
+  popularity: 1045
  },
  {
   sku: "paguemenos-159618",
@@ -11520,7 +11509,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145141/7896018750944_1.jpg?v=639093554909630000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-glicerina-huggies-baby-camomila-natural-refil-200ml/p",
-  popularity: 1047
+  popularity: 1046
  },
  {
   sku: "paguemenos-158349",
@@ -11531,7 +11520,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/971405/fralda-amoravel-pants-xxg-44-unidades-principal.png?v=638723808264400000",
   productUrl: "https://www.paguemenos.com.br/fralda-amoravel-pants-xxg-44-unidades/p",
-  popularity: 1048
+  popularity: 1047
  },
  {
   sku: "paguemenos-156257",
@@ -11542,7 +11531,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes aparelhos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1224593/Padrao 1200 - 2026-09-14T133045.251.jpg?v=639250002495130000",
   productUrl: "https://www.paguemenos.com.br/dispositivo-lavagem-nasal-amoravel-verde-10ml/p",
-  popularity: 1049
+  popularity: 1048
  },
  {
   sku: "paguemenos-154897",
@@ -11553,7 +11542,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193129/7898656391565_1.png?v=639173210158830000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-superprotecao-calca-xg-24-unidades/p",
-  popularity: 1050
+  popularity: 1049
  },
  {
   sku: "paguemenos-154896",
@@ -11564,7 +11553,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/958591/fralda-mamypoko-superprotecao-calca-g-28-unidades-principal.png?v=638682372084700000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-superprotecao-calca-g-28-unidades/p",
-  popularity: 1051
+  popularity: 1050
  },
  {
   sku: "paguemenos-155909",
@@ -11575,7 +11564,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/962262/biscoitinho-papapa-abobora-e-maca-36g-principal.png?v=638694304200930000",
   productUrl: "https://www.paguemenos.com.br/biscoitinho-papapa-abobora-e-maca-36g/p",
-  popularity: 1052
+  popularity: 1051
  },
  {
   sku: "paguemenos-155913",
@@ -11586,7 +11575,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/962267/biscoito-papapa-biscotti-banana-e-cacau-60g-principal.png?v=638694304809300000",
   productUrl: "https://www.paguemenos.com.br/biscoito-papapa-biscotti-banana-e-cacau-60g/p",
-  popularity: 1053
+  popularity: 1052
  },
  {
   sku: "paguemenos-155915",
@@ -11597,7 +11586,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/962269/papinha-papapa-organica-morango-e-maca-100g-principal.png?v=638694305327370000",
   productUrl: "https://www.paguemenos.com.br/papinha-papapa-organica-morango-e-maca-100g/p",
-  popularity: 1054
+  popularity: 1053
  },
  {
   sku: "paguemenos-155919",
@@ -11608,7 +11597,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/962273/papinha-papapa-organica-banana-mirtilo-e-quinoa-100g-principal.png?v=638694305819100000",
   productUrl: "https://www.paguemenos.com.br/papinha-papapa-organica-banana-mirtilo-e-quinoa-100g/p",
-  popularity: 1055
+  popularity: 1054
  },
  {
   sku: "paguemenos-148738",
@@ -11619,7 +11608,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209025/7891010256487_1.jpg?v=639215565732630000",
   productUrl: "https://www.paguemenos.com.br/shampoo-de-glicerina-johnsons-baby-sache-180ml-embalagem-economica/p",
-  popularity: 1056
+  popularity: 1055
  },
  {
   sku: "paguemenos-148292",
@@ -11630,7 +11619,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/922509/shampoo-granado-bebe-tradicional-refil-250ml-principal.png?v=638602956117570000",
   productUrl: "https://www.paguemenos.com.br/shampoo-granado-bebe-tradicional-refil-250ml/p",
-  popularity: 1057
+  popularity: 1056
  },
  {
   sku: "paguemenos-147943",
@@ -11641,7 +11630,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209732/7891010256814_1.jpg?v=639217236673930000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-glicerina-johnsons-baby-camomila-400ml/p",
-  popularity: 1058
+  popularity: 1057
  },
  {
   sku: "paguemenos-147942",
@@ -11652,7 +11641,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209072/7891010256807_1.jpg?v=639215569972330000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-glicerina-johnsons-baby-camomila-200ml/p",
-  popularity: 1059
+  popularity: 1058
  },
  {
   sku: "paguemenos-147608",
@@ -11663,7 +11652,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1218207/7896018750814_1.jpg?v=639228439986070000",
   productUrl: "https://www.paguemenos.com.br/condicionador-huggies-kids-cachinhos-poderosos-frasco-360ml/p",
-  popularity: 1060
+  popularity: 1059
  },
  {
   sku: "paguemenos-147592",
@@ -11674,7 +11663,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1218216/7896018750821_1.jpg?v=639228440297770000",
   productUrl: "https://www.paguemenos.com.br/creme-para-pentear-huggies-kids-cachinhos-poderosos-frasco-360ml/p",
-  popularity: 1061
+  popularity: 1060
  },
  {
   sku: "paguemenos-144990",
@@ -11685,7 +11674,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/902038/7795323776116_1.jpg?v=638549194051470000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-danone-aptanutri-soja-1-a-3-anos-800g/p",
-  popularity: 1062
+  popularity: 1061
  },
  {
   sku: "paguemenos-144502",
@@ -11696,7 +11685,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1032289/7897129304842_0.jpg?v=638863782857100000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-cetrilan-250ml/p",
-  popularity: 1063
+  popularity: 1062
  },
  {
   sku: "paguemenos-127279",
@@ -11707,7 +11696,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043139/shampoo-infantil-johnson-s®-gotas-de-brilho-200ml_7891010256517_1.jpg?v=638918210420100000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-kids-gotas-de-brilho-200ml/p",
-  popularity: 1064
+  popularity: 1063
  },
  {
   sku: "paguemenos-120417",
@@ -11718,7 +11707,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/945073/HERO_Baruel-Baby_Sono-Tranq_Refil-210ml_A.png?v=638653919876100000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-da-cabeca-aos-pes-baruel-baby-sono-tranquilo-210ml-refil/p",
-  popularity: 1065
+  popularity: 1064
  },
  {
   sku: "paguemenos-103853",
@@ -11729,7 +11718,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/932319/Custom-dimensions-1000x1000-px.jpg?v=638623565477200000",
   productUrl: "https://www.paguemenos.com.br/pack-lenco-umedecido-cuidado-de-bebe-pampers-pacote-leve-4-pague-3-unidades-de-48-lencos-cada/p",
-  popularity: 1066
+  popularity: 1065
  },
  {
   sku: "paguemenos-101011",
@@ -11740,7 +11729,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1051986/7891000379479-ForumulaInfantilNESTONUTRILata2Unidades16kg-1.jpg?v=638900159654630000",
   productUrl: "https://www.paguemenos.com.br/kit-formula-nestle-nestonutri-1-a-3-anos-2-latas-de-800g-cada-ganhe-20porcento-de-desconto-na-segunda-lata/p",
-  popularity: 1067
+  popularity: 1066
  },
  {
   sku: "paguemenos-99980",
@@ -11751,7 +11740,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203159/7891025123934_1.jpg?v=639202581495330000",
   productUrl: "https://www.paguemenos.com.br/aptanutri-premium-2-unidades-de-800g-cada-30porcento-de-desconto-na-2-unidade/p",
-  popularity: 1068
+  popularity: 1067
  },
  {
   sku: "paguemenos-99683",
@@ -11762,7 +11751,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1186642/7891800652260_1.png?v=639162569425100000",
   productUrl: "https://www.paguemenos.com.br/algodao-cremer-quadrado-com-100-unidades/p",
-  popularity: 1069
+  popularity: 1068
  },
  {
   sku: "paguemenos-99399",
@@ -11773,7 +11762,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1106451/Haste Flexiveis 300un DAUF.jpg?v=638998662528630000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexiveis-pague-menos-eco-com-300-unidades/p",
-  popularity: 1070
+  popularity: 1069
  },
  {
   sku: "paguemenos-99377",
@@ -11784,7 +11773,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1076737/74658---IF02-3D-AMO-Lencos-Umed-PROMO-CAMOMILA.jpg?v=639189636171500000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-amoravel-com-192-unidades/p",
-  popularity: 1071
+  popularity: 1070
  },
  {
   sku: "paguemenos-99269",
@@ -11795,7 +11784,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149241/huggies-fralda-pants-premium-natural-care-g-60-un_7896007552696_1.jpg?v=639098632304800000",
   productUrl: "https://www.paguemenos.com.br/fralda-roupinha-huggies-natural-care-hiper-tamanho-g-com-60-unidades/p",
-  popularity: 1072
+  popularity: 1071
  },
  {
   sku: "paguemenos-99132",
@@ -11806,7 +11795,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1145181/7896007552214_1.jpg?v=639093557178600000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-little-swimmers-tamanho-g-xg-com-10-unidades/p",
-  popularity: 1073
+  popularity: 1072
  },
  {
   sku: "paguemenos-99103",
@@ -11817,7 +11806,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas g",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1048481/fralda-descartavel-huggies-maxima-protecao-tamanho-g-66-unidades-–-fralda-aberta-com-tecnologia-xtra-flex-canais-em-x-que-se-adaptam-aos-movimentos-e-maxima-protecao-sem-fralda-caida_7896007552795_1.jpg?v=639046110505500000",
   productUrl: "https://www.paguemenos.com.br/fralda-huggies-suprecare-hiper-tamanho-g-com-66-unidades/p",
-  popularity: 1074
+  popularity: 1073
  },
  {
   sku: "paguemenos-98161",
@@ -11828,7 +11817,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/991591/7891000369159-SnackMucilonMorangoeBanana35g-1.jpg?v=638764263418800000",
   productUrl: "https://www.paguemenos.com.br/mucilon-snack-meu-primeiro-lanchinho-morango-e-banana-35g/p",
-  popularity: 1075
+  popularity: 1074
  },
  {
   sku: "paguemenos-98162",
@@ -11839,7 +11828,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/991483/7891000369203-SnackMucilonLaranjaeBanana35g-1.jpg?v=638764262658000000",
   productUrl: "https://www.paguemenos.com.br/mucilon-snack-meu-primeiro-lanchinho-laranja-e-banana-35g/p",
-  popularity: 1076
+  popularity: 1075
  },
  {
   sku: "paguemenos-97415",
@@ -11850,7 +11839,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193145/7898656390704_3.png?v=639173211188500000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-calca-super-seca-bag-tamanho-xg-com-56-unidades/p",
-  popularity: 1077
+  popularity: 1076
  },
  {
   sku: "paguemenos-97296",
@@ -11861,7 +11850,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas xxg",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1193142/7898656390711_3.png?v=639173211036170000",
   productUrl: "https://www.paguemenos.com.br/fralda-mamypoko-super-seca-calca-bag-tamanho-xxg-com-48-unidades/p",
-  popularity: 1078
+  popularity: 1077
  },
  {
   sku: "paguemenos-97260",
@@ -11872,7 +11861,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178194/7500435205771_1.jpg?v=639154829096730000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-pants-ajuste-total-tamanho-m-com-112-unidades/p",
-  popularity: 1079
+  popularity: 1078
  },
  {
   sku: "paguemenos-97219",
@@ -11883,7 +11872,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/909103/41pP5zwrgbL._AC_SL1000_.jpg?v=638567602684370000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-mam-babys-brush-azul/p",
-  popularity: 1080
+  popularity: 1079
  },
  {
   sku: "paguemenos-95116",
@@ -11894,7 +11883,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1002002/7891000319543-CerealInfantilMucilonArrozeAveiaIntegral180g-1.jpg?v=638791086791070000",
   productUrl: "https://www.paguemenos.com.br/mucilon-arroz-aveia-integral-180g/p",
-  popularity: 1081
+  popularity: 1080
  },
  {
   sku: "paguemenos-94975",
@@ -11905,7 +11894,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1042125/condicionador-infantil-johnson-s-gotas-de-brilho-200ml_7891010601188_1.jpg?v=639101213190400000",
   productUrl: "https://www.paguemenos.com.br/condicionador-j-j-baby-gotas-brilho-200ml-novo/p",
-  popularity: 1082
+  popularity: 1081
  },
  {
   sku: "paguemenos-94890",
@@ -11916,7 +11905,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/649664/sabonete-protex-baby-glicerina-refil-liquido-380ml-principal.jpg?v=638008140815800000",
   productUrl: "https://www.paguemenos.com.br/sabonete-protex-baby-glicerina-refil-liquido-380ml/p",
-  popularity: 1083
+  popularity: 1082
  },
  {
   sku: "paguemenos-94891",
@@ -11927,7 +11916,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1155212/7509546673196-Sabonete_L_quido_Para_Beb_Protex_Baby_Glicerina_Natural_400ml-Personal_Care-Protex--1-.jpg?v=639104950202900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-protex-baby-glicerina-liquido-400ml/p",
-  popularity: 1084
+  popularity: 1083
  },
  {
   sku: "paguemenos-61069",
@@ -11938,7 +11927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/648656/hastes-baby-patrulha-canina-50-unidades-principal.jpg?v=638008126940430000",
   productUrl: "https://www.paguemenos.com.br/hastes-baby-patrulha-canina-50-unidades/p",
-  popularity: 1085
+  popularity: 1084
  },
  {
   sku: "paguemenos-60896",
@@ -11949,7 +11938,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/926727/7891000349397-FormulaInfantilNANLACComfor2Latas800gcadaeGanhe20-DescontonaSegundaLata-1.jpg?v=638612248099400000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-nanlac-comfor-800gx2-ganhe-20porcento-na-segunda-unidade/p",
-  popularity: 1086
+  popularity: 1085
  },
  {
   sku: "paguemenos-60781",
@@ -11960,7 +11949,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/697539/creme-para-pentear-seda-juntinhos-moana-cachos-encantados-infantil-300ml_7891150083646_1.jpg?v=638265838312600000",
   productUrl: "https://www.paguemenos.com.br/creme-para-pentear-seda-juntinhos-moana-cachos-encantados-infantil-300ml/p",
-  popularity: 1087
+  popularity: 1086
  },
  {
   sku: "paguemenos-60743",
@@ -11971,7 +11960,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/657528/-s-h-a-m-p-o-o---s-e-d-a---j-u-n-t-i-n-h-o-s---c-a-c-h-o-s---e-n-c-a-n-t-a-d-o-s---3-0-0-m-l-_7891150083585_1.jpg?v=638034416862770000",
   productUrl: "https://www.paguemenos.com.br/shampoo-seda-juntinhos-moana-cachos-encantados-infantil-300ml/p",
-  popularity: 1088
+  popularity: 1087
  },
  {
   sku: "paguemenos-60422",
@@ -11982,7 +11971,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1130442/0070942003308_1.jpg?v=639063381512370000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-gum-patrulha-canina-manual-c-2/p",
-  popularity: 1089
+  popularity: 1088
  },
  {
   sku: "paguemenos-60400",
@@ -11993,7 +11982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios chupetas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1164615/Estagiario-Digital--8-.jpg?v=639171534637700000",
   productUrl: "https://www.paguemenos.com.br/chupeta-avent-ultra-air-decorada-pinguim-de-0-a-6-meses/p",
-  popularity: 1090
+  popularity: 1089
  },
  {
   sku: "paguemenos-60291",
@@ -12004,7 +11993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele protetores solares",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/648069/protetor-solar-dauf-kids-fps60-200ml-gratis-protetor-solar-facial-fps60-60ml-principal.jpg?v=638008119276400000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-dauf-kids-fps60-200ml-gratis-protetor-solar-facial-fps60-60ml/p",
-  popularity: 1091
+  popularity: 1090
  },
  {
   sku: "paguemenos-60167",
@@ -12015,7 +12004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios chupetas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/905403/avent1.png?v=638559545709570000",
   productUrl: "https://www.paguemenos.com.br/chupeta-avent-ultra-air-decorada-de-6-a-18-meses-com-2-unidades/p",
-  popularity: 1092
+  popularity: 1091
  },
  {
   sku: "paguemenos-59801",
@@ -12026,7 +12015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/677460/sabonete-liquido-de-glicerina-baby-dove-hora-de-dormir-180ml-refil_7891150079229_1.jpg?v=638151722324570000",
   productUrl: "https://www.paguemenos.com.br/dove-baby-sabonete-liquido-hora-de-dormir-hipoalergenico-hidratacao-relaxante-180ml/p",
-  popularity: 1093
+  popularity: 1092
  },
  {
   sku: "paguemenos-59288",
@@ -12037,7 +12026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/991428/7891000320280-SnackMucilonTomate35g-1.jpg?v=638764262245070000",
   productUrl: "https://www.paguemenos.com.br/mucilon-snack-tomate-35g/p",
-  popularity: 1094
+  popularity: 1093
  },
  {
   sku: "paguemenos-58003",
@@ -12048,7 +12037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/786888/7896114312886_1.jpg?v=638399016472030000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-bitufo-cocorico-de-2-a-5-anos/p",
-  popularity: 1095
+  popularity: 1094
  },
  {
   sku: "paguemenos-57779",
@@ -12059,7 +12048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/953433/7898133019579-1.png?v=638670250467670000",
   productUrl: "https://www.paguemenos.com.br/fralda-cremer-baby-hiper-protecao-ate-noite-e-dia-tamanho-m-com-68-unidades/p",
-  popularity: 1096
+  popularity: 1095
  },
  {
   sku: "paguemenos-57539",
@@ -12070,7 +12059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/646699/sabonete-liquido-infantil-para-bebes-protex-baby-delicate-care-180ml-refil-principal.jpg?v=638008101637700000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-para-bebes-protex-baby-delicate-care-180ml-refil/p",
-  popularity: 1097
+  popularity: 1096
  },
  {
   sku: "paguemenos-57538",
@@ -12081,7 +12070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154789/7509546656670-Sabonete_L_quido_Infantil_Para_beb_s_Protex_Baby_Delicate_Care_200ml-Personal_Care-Protex--1-.jpg?v=639104878125530000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-para-bebes-protex-baby-delicate-care-200ml/p",
-  popularity: 1098
+  popularity: 1097
  },
  {
   sku: "paguemenos-57514",
@@ -12092,7 +12081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/678173/escova-dental-powerdent-mundo-bita-1-dentinho-ultra-macia-de-6-a-24-meses-principal.jpg?v=638155729107200000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-powerdent-mundo-bita-1-dentinho-ultra-macia-de-6-a-24-meses/p",
-  popularity: 1099
+  popularity: 1098
  },
  {
   sku: "paguemenos-57358",
@@ -12103,7 +12092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/833416/fralda-pampers-splashers-baby-shark-tamanho-m-g-com-11-unidades-principal.jpg?v=638486388284100000",
   productUrl: "https://www.paguemenos.com.br/fralda-pampers-splashers-baby-shark-tamanho-m-g-com-11-unidades/p",
-  popularity: 1100
+  popularity: 1099
  },
  {
   sku: "paguemenos-57349",
@@ -12114,7 +12103,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1116424/7500435169943_1.jpg?v=639017465253530000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-pampers-splash-com-192-unidades-preco-especial/p",
-  popularity: 1101
+  popularity: 1100
  },
  {
   sku: "paguemenos-57287",
@@ -12125,7 +12114,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1043107/sabonete-l-quido-johnsons-super-poderosa-kids-400ml_7891010253707_1.jpg?v=638918207037070000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-super-poderosa-kids-400ml/p",
-  popularity: 1102
+  popularity: 1101
  },
  {
   sku: "paguemenos-57218",
@@ -12136,7 +12125,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154774/7509546656465-Sabonete_L_quido_Infantil_Para_beb_s_Protex_Baby_Delicate_Care_400ml-Personal_Care-Protex--1-.jpg?v=639104877776270000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-infantil-para-bebes-protex-baby-delicate-care-400ml/p",
-  popularity: 1103
+  popularity: 1102
  },
  {
   sku: "paguemenos-57009",
@@ -12147,7 +12136,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/955496/7891000309711-CompostoLacteoNeslacComforZeroLactose700g-1.jpg?v=638671256004500000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-neslac-comfor-zero-lactose-700g/p",
-  popularity: 1104
+  popularity: 1103
  },
  {
   sku: "paguemenos-56176",
@@ -12158,7 +12147,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1117082/7894650938898_1.jpg?v=639021089410200000",
   productUrl: "https://www.paguemenos.com.br/repelente-exposis-bebe-gel-117ml/p",
-  popularity: 1105
+  popularity: 1104
  },
  {
   sku: "paguemenos-55927",
@@ -12169,7 +12158,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios chupetas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1189582/9001616712074_1.png?v=639171451348330000",
   productUrl: "https://www.paguemenos.com.br/chupeta-mam-start-cor-rosa-de-0-a-2-meses/p",
-  popularity: 1106
+  popularity: 1105
  },
  {
   sku: "paguemenos-55923",
@@ -12180,7 +12169,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios chupetas",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1189585/9001616712067_1.png?v=639171451511470000",
   productUrl: "https://www.paguemenos.com.br/chupeta-mam-start-cor-azul-de-0-a-2-meses/p",
-  popularity: 1107
+  popularity: 1106
  },
  {
   sku: "paguemenos-55921",
@@ -12191,7 +12180,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios bicos de mamadeira",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1189793/9001616244094_4.png?v=639171478366330000",
   productUrl: "https://www.paguemenos.com.br/bico-para-mamadeira-mam-fluxo-super-rapido-6mais-meses/p",
-  popularity: 1108
+  popularity: 1107
  },
  {
   sku: "paguemenos-55877",
@@ -12202,7 +12191,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho creme de pentear",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1224887/imagem padrao -47-.jpg?v=639250701122200000",
   productUrl: "https://www.paguemenos.com.br/fixador-capilar-tralala-kids-gel-modela-e-condiciona-brilho-molhado-250g/p",
-  popularity: 1109
+  popularity: 1108
  },
  {
   sku: "paguemenos-55602",
@@ -12213,7 +12202,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1206615/7891010250935_1.jpg?v=639214715859900000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-j-j-baby-da-cabeca-aos-pes/p",
-  popularity: 1110
+  popularity: 1109
  },
  {
   sku: "paguemenos-55479",
@@ -12224,7 +12213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1057767/7891010249953_0.jpg?v=638917411580400000",
   productUrl: "https://www.paguemenos.com.br/hipoglos-amendoas-creme-40g/p",
-  popularity: 1111
+  popularity: 1110
  },
  {
   sku: "paguemenos-55165",
@@ -12235,7 +12224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios mamadeiras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/961054/1.jpg?v=638689940524600000",
   productUrl: "https://www.paguemenos.com.br/mamadeira-avent-transparente-125ml/p",
-  popularity: 1112
+  popularity: 1111
  },
  {
   sku: "paguemenos-55021",
@@ -12246,7 +12235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1076733/55021---IF01-3D-AMO-Lencos-Umed-48UN-NEUTRO.png?v=639189570656230000",
   productUrl: "https://www.paguemenos.com.br/lenco-umedecido-amoravel-baby-sem-fragrancia-com-48-unidades/p",
-  popularity: 1113
+  popularity: 1112
  },
  {
   sku: "paguemenos-54961",
@@ -12257,7 +12246,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos papinhas e lanches infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/991294/7891000275740-CerealMucilonMucilon5Cereais180g-1.jpg?v=638764261476470000",
   productUrl: "https://www.paguemenos.com.br/mucilon-cereais-e-quinoa-zero-180g/p",
-  popularity: 1114
+  popularity: 1113
  },
  {
   sku: "paguemenos-54909",
@@ -12268,7 +12257,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/645159/sabonete-granado-bebe-camomila-90g-principal.jpg?v=638008081714400000",
   productUrl: "https://www.paguemenos.com.br/sabonete-em-barra-granado-bebe-camomila-90g/p",
-  popularity: 1115
+  popularity: 1114
  },
  {
   sku: "paguemenos-54908",
@@ -12279,7 +12268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1143304/7896512941923_1.jpg?v=639087679294230000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-granado-bebe-camomila-250ml/p",
-  popularity: 1116
+  popularity: 1115
  },
  {
   sku: "paguemenos-54905",
@@ -12290,7 +12279,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195728/creme-contra-assaduras-granado-bebe-pele-sensivel-300g-principal.jpg?v=639179876043430000",
   productUrl: "https://www.paguemenos.com.br/creme-contra-assaduras-granado-bebe-pele-sensivel-300g/p",
-  popularity: 1117
+  popularity: 1116
  },
  {
   sku: "paguemenos-54640",
@@ -12301,7 +12290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda pomadas para assaduras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1149351/7896018704152_1.jpg?v=639098638590470000",
   productUrl: "https://www.paguemenos.com.br/creme-de-assaduras-huggies-supreme-care-80g/p",
-  popularity: 1118
+  popularity: 1117
  },
  {
   sku: "paguemenos-54545",
@@ -12312,7 +12301,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/660565/shampoo-dove-baby-hidratacao-glicerinada-200ml_7891150065307_1.jpg?v=638042071127470000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-baby-hidratacao-glicerinada-200ml/p",
-  popularity: 1119
+  popularity: 1118
  },
  {
   sku: "paguemenos-54524",
@@ -12323,7 +12312,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1175416/-c-o-n-d-i-c-i-o-n-a-d-o-r---d-e---g-l-i-c-e-r-i-n-a---b-a-b-y---d-o-v-e---h-i-d-r-a-t-a-c-a-o---g-l-i-c-e-r-i-n-a-d-a---2-0-0-m-l-_7891150065314_1.jpg?v=639153103079930000",
   productUrl: "https://www.paguemenos.com.br/condicionador-dove-baby-hidratacao-glicerinada-200ml/p",
-  popularity: 1120
+  popularity: 1119
  },
  {
   sku: "paguemenos-54240",
@@ -12334,7 +12323,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes acessorios mamadeiras",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1189712/9001616667756_1.png?v=639171458091730000",
   productUrl: "https://www.paguemenos.com.br/mamadeira-mam-easy-start-130ml/p",
-  popularity: 1121
+  popularity: 1120
  },
  {
   sku: "paguemenos-54139",
@@ -12345,7 +12334,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/965487/Mustela-Hidratante-Calmante-200ml-PTBR-1.jpg.jpg?v=638706450070200000",
   productUrl: "https://www.paguemenos.com.br/mustela-hidratante-calmante-pele-muito-sensivel-200ml/p",
-  popularity: 1122
+  popularity: 1121
  },
  {
   sku: "paguemenos-53245",
@@ -12356,7 +12345,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/725211/7500435127417_1.jpg?v=638338136651000000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-oral-b-mickey-minnie-com-2-preco-especial/p",
-  popularity: 1123
+  popularity: 1122
  },
  {
   sku: "paguemenos-52227",
@@ -12367,7 +12356,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas m",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1096251/7500435132435_1.jpg?v=638979340528830000",
   productUrl: "https://www.paguemenos.com.br/fraldas-pampers-premium-care-m-80-unidades/p",
-  popularity: 1124
+  popularity: 1123
  },
  {
   sku: "paguemenos-52047",
@@ -12378,7 +12367,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes fraldas fraldas rn",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1178264/7500435132527_1.jpg?v=639154861179030000",
   productUrl: "https://www.paguemenos.com.br/fraldas-pampers-recem-nascido-premium-care-rnmais-20-unidades/p",
-  popularity: 1125
+  popularity: 1124
  },
  {
   sku: "paguemenos-51335",
@@ -12389,7 +12378,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/643215/sabonete-granado-bebe-pele-sensivel-dermocalmante-90g-principal.jpg?v=638008053886700000",
   productUrl: "https://www.paguemenos.com.br/sabonete-barra-granado-bebe-pele-sensivel-90g/p",
-  popularity: 1126
+  popularity: 1125
  },
  {
   sku: "paguemenos-51334",
@@ -12400,7 +12389,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1195714/imagem padrao -8-.jpg?v=639179872209170000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-granado-bebe-pele-sensivel-com-50-unidades/p",
-  popularity: 1127
+  popularity: 1126
  },
  {
   sku: "paguemenos-51192",
@@ -12411,7 +12400,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes mamaes e gestantes absorventes e protetores de seios",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1188533/7897211100246_1.png?v=639171323163300000",
   productUrl: "https://www.paguemenos.com.br/absorvente-de-seio-amamente-descartavel-leve-30-pague-24-unidades/p",
-  popularity: 1128
+  popularity: 1127
  },
  {
   sku: "paguemenos-50913",
@@ -12422,7 +12411,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1128545/7500435127363_1.png?v=639056579104170000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-oral-b-kids-mickey-50g/p",
-  popularity: 1129
+  popularity: 1128
  },
  {
   sku: "paguemenos-50233",
@@ -12433,7 +12422,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/642598/escova-dental-infantil-colgate-tandy-macia-2un-promo-c-desconto-principal.jpg?v=638008045847770000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-infantil-colgate-tandy-macia-2un-promo-c-desconto/p",
-  popularity: 1130
+  popularity: 1129
  },
  {
   sku: "paguemenos-49989",
@@ -12444,7 +12433,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1175153/7891150044562_3.jpg?v=639150483109930000",
   productUrl: "https://www.paguemenos.com.br/condicionador-dove-baby-hidratacao-enriquecida-cabelos-cacheados-200ml/p",
-  popularity: 1131
+  popularity: 1130
  },
  {
   sku: "paguemenos-49987",
@@ -12455,7 +12444,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/688522/shampoo-dove-baby-hidratacao-enriquecida-cabelos-cacheados-200ml-principal.jpg?v=638210666788200000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-baby-hidratacao-enriquecida-cabelos-cacheados-200ml/p",
-  popularity: 1132
+  popularity: 1131
  },
  {
   sku: "paguemenos-49985",
@@ -12466,7 +12455,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/815467/Captura-de-tela-2024-02-16-164609.png?v=638437095842970000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-baby-hydratacao-enriquecida-cabelos-claros-200ml/p",
-  popularity: 1133
+  popularity: 1132
  },
  {
   sku: "paguemenos-48996",
@@ -12477,7 +12466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos compostos lacteos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/881670/composto-lacteo-neslac-supreme-800g-principal.png?v=638525881949800000",
   productUrl: "https://www.paguemenos.com.br/composto-lacteo-neslac-supreme-800g/p",
-  popularity: 1134
+  popularity: 1133
  },
  {
   sku: "paguemenos-48585",
@@ -12488,7 +12477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1203143/7891025112679_1.png?v=639202580703800000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-profutura-1-400g/p",
-  popularity: 1135
+  popularity: 1134
  },
  {
   sku: "paguemenos-48516",
@@ -12499,7 +12488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1228778/7891010871024_1.jpg?v=639258474803630000",
   productUrl: "https://www.paguemenos.com.br/sabonete-liquido-johnsons-baby-hora-do-sono-180ml/p",
-  popularity: 1136
+  popularity: 1135
  },
  {
   sku: "paguemenos-47026",
@@ -12510,7 +12499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal pastas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1129237/7506339398434_1.jpg?v=639057380153700000",
   productUrl: "https://www.paguemenos.com.br/creme-dental-oral-b-stages-frozen-100g/p",
-  popularity: 1137
+  popularity: 1136
  },
  {
   sku: "paguemenos-46466",
@@ -12521,7 +12510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes alimentos formulas infantis",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/906346/7891025107323-FormulaInfantilAptamilSLProExpert800g-1.jpg?v=638563301556670000",
   productUrl: "https://www.paguemenos.com.br/formula-infantil-aptamil-sl-proexpert-800g/p",
-  popularity: 1138
+  popularity: 1137
  },
  {
   sku: "paguemenos-45074",
@@ -12532,7 +12521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171390/7896012800706-1.jpg?v=639142899351800000",
   productUrl: "https://www.paguemenos.com.br/condicionador-pompom-camomila-200ml/p",
-  popularity: 1139
+  popularity: 1138
  },
  {
   sku: "paguemenos-45073",
@@ -12543,7 +12532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171395/7896012877715-1.jpg?v=639142899640670000",
   productUrl: "https://www.paguemenos.com.br/condicionador-pompom-suave-200ml/p",
-  popularity: 1140
+  popularity: 1139
  },
  {
   sku: "paguemenos-45069",
@@ -12554,7 +12543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1171365/7896012877722-1.jpg?v=639142894223730000",
   productUrl: "https://www.paguemenos.com.br/shampoo-pompom-camomila-200ml/p",
-  popularity: 1141
+  popularity: 1140
  },
  {
   sku: "paguemenos-44416",
@@ -12565,7 +12554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1142938/7891150025929_1.jpg?v=639086861422370000",
   productUrl: "https://www.paguemenos.com.br/shampoo-dove-baby-hidratacao-enriquecida-200ml/p",
-  popularity: 1142
+  popularity: 1141
  },
  {
   sku: "paguemenos-44343",
@@ -12576,7 +12565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho condicionador",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/693998/condicionador-baby-dove-hidratacao-enriquecida-200ml_7891150036390_1.jpg?v=638248458851830000",
   productUrl: "https://www.paguemenos.com.br/condicionador-dove-baby-hydratacao-enriquecida-200ml/p",
-  popularity: 1143
+  popularity: 1142
  },
  {
   sku: "paguemenos-44314",
@@ -12587,7 +12576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho perfumes e colonias",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640775/colonia-giovanna-baby-0-a-5-anos-200ml-principal.jpg?v=638008021326300000",
   productUrl: "https://www.paguemenos.com.br/colonia-giovanna-baby-0-a-5-anos-200ml/p",
-  popularity: 1144
+  popularity: 1143
  },
  {
   sku: "paguemenos-43651",
@@ -12598,7 +12587,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/640642/shampoo-amoravel-soft-baby-400ml-principal.jpg?v=638008019616430000",
   productUrl: "https://www.paguemenos.com.br/shampoo-amoravel-soft-baby-400ml/p",
-  popularity: 1145
+  popularity: 1144
  },
  {
   sku: "paguemenos-43454",
@@ -12609,7 +12598,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/662541/lencos-umedecidos-johnson-s®-baby-recem-nascido-96-unidades_7891010589639_2.jpg?v=638058451694930000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecidos-johnsons-baby-recem-nascido-sem-fragrancia-96-unidades/p",
-  popularity: 1146
+  popularity: 1145
  },
  {
   sku: "paguemenos-43448",
@@ -12620,7 +12609,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele hidratantes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1209743/7891010579265_1.jpg?v=639217237151800000",
   productUrl: "https://www.paguemenos.com.br/locao-hidratante-johnsons-baby-recem-nascido-200-ml/p",
-  popularity: 1147
+  popularity: 1146
  },
  {
   sku: "paguemenos-42618",
@@ -12631,7 +12620,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene bucal escovas de dente",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/680460/escova-dental-infantil-oral-b-mickey-1-unidade-principal.jpg?v=638175600673930000",
   productUrl: "https://www.paguemenos.com.br/escova-dental-infantil-oral-b-mickey-1-unidade/p",
-  popularity: 1148
+  popularity: 1147
  },
  {
   sku: "paguemenos-42017",
@@ -12642,7 +12631,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele protetores solares",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1154591/4005808838899-NIVEA_SUN_Protetor_Solar_Kids__Babies_Pele_Sens_vel_FPS_60_125ml-Sun-NIVEA--1-.jpg?v=639104871057370000",
   productUrl: "https://www.paguemenos.com.br/protetor-solar-nivea-sun-kids-sensitive-fps60-125ml/p",
-  popularity: 1149
+  popularity: 1148
  },
  {
   sku: "paguemenos-41789",
@@ -12653,7 +12642,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1169325/7891010521448_1.jpg?v=639128878601000000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-cheirinho-prolongado-400-ml/p",
-  popularity: 1150
+  popularity: 1149
  },
  {
   sku: "paguemenos-41007",
@@ -12664,7 +12653,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho shampoo",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1105686/7891010027858_1.jpg?v=638996674425400000",
   productUrl: "https://www.paguemenos.com.br/shampoo-johnsons-baby-regular-750-ml/p",
-  popularity: 1151
+  popularity: 1150
  },
  {
   sku: "paguemenos-40717",
@@ -12675,7 +12664,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1143345/7896512922472_1.jpg?v=639087682103970000",
   productUrl: "https://www.paguemenos.com.br/refil-sabonete-liquido-granado-bebe-lavanda-250ml/p",
-  popularity: 1152
+  popularity: 1151
  },
  {
   sku: "paguemenos-38997",
@@ -12686,7 +12675,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho oleos de bebe",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/639943/oleo-amendoas-doces-amoravel-baby-110ml-principal.jpg?v=638008010738370000",
   productUrl: "https://www.paguemenos.com.br/oleo-amendoas-doces-amoravel-baby-110ml/p",
-  popularity: 1153
+  popularity: 1152
  },
  {
   sku: "paguemenos-38996",
@@ -12697,7 +12686,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes pos-banho oleos de bebe",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/639942/oleo-mineral-puro-amoravel-110ml-principal.jpg?v=638008010727600000",
   productUrl: "https://www.paguemenos.com.br/oleo-mineral-puro-amoravel-110ml/p",
-  popularity: 1154
+  popularity: 1153
  },
  {
   sku: "paguemenos-37989",
@@ -12708,7 +12697,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes cuidados com a pele repelentes",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1126537/7898392800055_1.jpg?v=639046195768530000",
   productUrl: "https://www.paguemenos.com.br/repelente-exposis-infantil-sem-perfume-spray-100ml/p",
-  popularity: 1155
+  popularity: 1154
  },
  {
   sku: "paguemenos-37499",
@@ -12719,7 +12708,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes banho sabonete",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/834828/mustela-dermo-lavante-gel-espumoso-cabelo-e-corpo-500ml-principal.jpg?v=638487900082000000",
   productUrl: "https://www.paguemenos.com.br/mustela-dermo-lavante-gel-espumoso-cabelo-e-corpo-500ml/p",
-  popularity: 1156
+  popularity: 1155
  },
  {
   sku: "paguemenos-36987",
@@ -12730,7 +12719,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes troca de fralda lencos umedecidos",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/1224651/19705473.webp?v=639250030527000000",
   productUrl: "https://www.paguemenos.com.br/lencos-umedecida-huggies-classic-96-toalhas/p",
-  popularity: 1157
+  popularity: 1156
  },
  {
   sku: "paguemenos-36618",
@@ -12741,6 +12730,17 @@ export const CATALOG: CatalogItem[] = [
   category: "mamaes e bebes higiene",
   imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/639752/hastes-flexivel-dauf-com-75-unidades-principal.jpg?v=638008007695900000",
   productUrl: "https://www.paguemenos.com.br/hastes-flexivel-dauf-com-75-unidades/p",
+  popularity: 1157
+ },
+ {
+  sku: "paguemenos-34681",
+  name: "Fórmula Infantil Pregomin Pepti Hipoalergênica 400g",
+  brand: "Pregomin",
+  unitPrice: 261.99,
+  unit: "un",
+  category: "mamaes e bebes alimentos formulas infantis",
+  imageUrl: "https://paguemenos.vteximg.com.br/arquivos/ids/885556/7891025119876---Formula-Infantil-Pregomin-Pepti-Danone-400g---1.jpg?v=638532175740400000",
+  productUrl: "https://www.paguemenos.com.br/formula-infantil-pregomin-400g/p",
   popularity: 1158
  },
  {

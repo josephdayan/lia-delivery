@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.creamy.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.creamy.com.br creamy src/lib/stores/creamy-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.creamy.com.br creamy /tmp/lia-catalog-HaGx92/creamy.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -20,7 +20,7 @@ export const CATALOG: CatalogItem[] = [
   sku: "creamy-283",
   name: "Clareador - Intense TX",
   brand: "Creamy",
-  unitPrice: 134.99,
+  unitPrice: 149.99,
   unit: "un",
   category: "produtos clareadores",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158464/clareador-intenseTX-creamy-skincare-antimanchas-manchas-melasma-01.jpg?v=639227586107930000",
@@ -83,17 +83,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 7
  },
  {
-  sku: "creamy-217",
-  name: "Emulsão de Limpeza",
-  brand: "Creamy",
-  unitPrice: 64.99,
-  unit: "un",
-  category: "produtos limpeza facial",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158242/emulsao-de-limpeza-rosinha-sabonete-creamy-1.jpg?v=639072125614000000",
-  productUrl: "https://www.creamy.com.br/emulsao-de-limpeza/p",
-  popularity: 8
- },
- {
   sku: "creamy-213",
   name: "Gel de Limpeza",
   brand: "Creamy",
@@ -102,7 +91,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos limpeza facial",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158253/gel-de-limpeza-verdinho-sabonete-pele-oleosa-creamy-1--1-.jpg?v=639072130527100000",
   productUrl: "https://www.creamy.com.br/gel-de-limpeza/p",
-  popularity: 9
+  popularity: 8
  },
  {
   sku: "creamy-170",
@@ -113,7 +102,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antioxidante",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158359/acido-mandelico-creamy-rosinha-1--1-.jpg?v=639096260293330000",
   productUrl: "https://www.creamy.com.br/vitamina-c-gold/p",
-  popularity: 10
+  popularity: 9
  },
  {
   sku: "creamy-121",
@@ -124,7 +113,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos anti-aging",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158325/retinal-retinaldeido-acido-retinoico-clareador-anti-aging-vermelho-creamy-1.jpg?v=639096221799700000",
   productUrl: "https://www.creamy.com.br/serum-facial-anti-aging-retinal-30-g/p",
-  popularity: 11
+  popularity: 10
  },
  {
   sku: "creamy-49",
@@ -135,7 +124,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos protecao solar",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158365/protetor-solar-watery-lotion-aquoso-fps60-creamy-1.jpg?v=639096261230500000",
   productUrl: "https://www.creamy.com.br/protetor-solar-fps60-watery-lotion/p",
-  popularity: 12
+  popularity: 11
  },
  {
   sku: "creamy-39",
@@ -146,7 +135,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos area dos olhos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158247/eye-cream-area-dos-olhos-olheiras-cinzinha-creamy-1.jpg?v=639072126867530000",
   productUrl: "https://www.creamy.com.br/eye-cream/p",
-  popularity: 13
+  popularity: 12
  },
  {
   sku: "creamy-6",
@@ -157,7 +146,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antioxidante",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158355/vitamina-c-creamy-antioxidante-1.jpg?v=639096247605930000",
   productUrl: "https://www.creamy.com.br/vitamina-c/p",
-  popularity: 14
+  popularity: 13
  },
  {
   sku: "creamy-2",
@@ -168,18 +157,18 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antiacne",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158304/acido-mandelico-creamy-rosinha-1.jpg?v=639096217758800000",
   productUrl: "https://www.creamy.com.br/acido-mandelico/p",
-  popularity: 15
+  popularity: 14
  },
  {
   sku: "creamy-276",
   name: "Hydragel Oil Control",
   brand: "Creamy",
-  unitPrice: 53.99,
+  unitPrice: 59.99,
   unit: "un",
   category: "produtos hidratacao",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158437/hidratante-antioleosidade-hydragel-oil-control-creamy-01.png?v=639168689980800000",
   productUrl: "https://www.creamy.com.br/hydragel-oil-control/p",
-  popularity: 16
+  popularity: 15
  },
  {
   sku: "creamy-272",
@@ -190,17 +179,28 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos area dos olhos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158394/antirrugas-para-olhos-retinal-eye-cream-01.png?v=639136068621700000",
   productUrl: "https://www.creamy.com.br/retinal-eye-cream/p",
-  popularity: 17
+  popularity: 16
  },
  {
   sku: "creamy-267",
   name: "Sérum Antiacne Acne Defense 5D",
   brand: "Creamy",
-  unitPrice: 71.99,
+  unitPrice: 79.99,
   unit: "un",
   category: "produtos antiacne",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158195/serum-antiacne-acne-defense-5d-cramy-1.jpg?v=639038163664870000",
   productUrl: "https://www.creamy.com.br/serum-antiacne-acne-defense-5d/p",
+  popularity: 17
+ },
+ {
+  sku: "creamy-217",
+  name: "Emulsão de Limpeza",
+  brand: "Creamy",
+  unitPrice: 64.99,
+  unit: "un",
+  category: "produtos limpeza facial",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158242/emulsao-de-limpeza-rosinha-sabonete-creamy-1.jpg?v=639072125614000000",
+  productUrl: "https://www.creamy.com.br/emulsao-de-limpeza/p",
   popularity: 18
  },
  {
@@ -303,17 +303,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 27
  },
  {
-  sku: "creamy-275",
-  name: "Duo Retinal - Rosto & Olhos",
-  brand: "Creamy",
-  unitPrice: 272.48,
-  unit: "un",
-  category: "produtos combos",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158402/Duo-Retinal-Serum-Anti-Idade-e-Creme-Antirrugas-01.png?v=639137147920670000",
-  productUrl: "https://www.creamy.com.br/duo-retinal/p",
-  popularity: 28
- },
- {
   sku: "creamy-270",
   name: "Duo Hidratante - Acalma & Repara",
   brand: "Creamy",
@@ -322,7 +311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158380/duo-ceramide-repair-calming-cream-01.png?v=639099575222100000",
   productUrl: "https://www.creamy.com.br/duo-hidratante-acalma-e-repara/p",
-  popularity: 29
+  popularity: 28
  },
  {
   sku: "creamy-239",
@@ -333,7 +322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos hidratacao",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158119/lip-balm-sem-cor-sem-aroma-hidratante-labial-creamy-1--1-.jpg?v=638949372454530000",
   productUrl: "https://www.creamy.com.br/lip-balm-incolor-1/p",
-  popularity: 30
+  popularity: 29
  },
  {
   sku: "creamy-168",
@@ -344,7 +333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos hidratacao corporal",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158237/400ml-ceramide-body-cream-ceramida-reparador-hidratante-creamy-1.jpg?v=639072076482400000",
   productUrl: "https://www.creamy.com.br/hidratante-corporal-ceramide-400ml/p",
-  popularity: 31
+  popularity: 30
  },
  {
   sku: "creamy-151",
@@ -355,18 +344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antiacne",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158218/serum-adapalenato-adapaleno-antiacne-antioleosidade-lilas-creamy-1.jpg?v=639072063365300000",
   productUrl: "https://www.creamy.com.br/serum-facial-adapalenato/p",
-  popularity: 32
- },
- {
-  sku: "creamy-135",
-  name: "Creme Hidratante Labial - Lip Balm Chai",
-  brand: "Creamy",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "produtos hidratacao",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158059/chai-hidratante-labial-lip-balm-volumizador-boca-creamy-1.jpg?v=638902592639230000",
-  productUrl: "https://www.creamy.com.br/lip-balm-chai-10g/p",
-  popularity: 33
+  popularity: 31
  },
  {
   sku: "creamy-134",
@@ -377,7 +355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos hidratacao",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/157866/latte-hidratante-labial-lip-balm-volumizador-boca-creamy-1.jpg?v=638901990744100000",
   productUrl: "https://www.creamy.com.br/lip-balm-latte/p",
-  popularity: 34
+  popularity: 32
  },
  {
   sku: "creamy-111",
@@ -388,7 +366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158088/Duo-Protetor-Solar---Calming-Cream.jpg?v=638961286133470000",
   productUrl: "https://www.creamy.com.br/duo-protetor-solar-e-calming-cream/p",
-  popularity: 35
+  popularity: 33
  },
  {
   sku: "creamy-85",
@@ -399,7 +377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antiacne",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158263/glicointense-peel-glicolico-salicilico-niacinamida-antiacne-acido-verdinho-creamy-1.jpg?v=639072134144870000",
   productUrl: "https://www.creamy.com.br/glicointense-peel-30-g/p",
-  popularity: 36
+  popularity: 34
  },
  {
   sku: "creamy-38",
@@ -410,7 +388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos anti-aging",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158339/serum-anti-aging-linhas-finas-rugas-preventivo-creamy-1.jpg?v=639096225956330000",
   productUrl: "https://www.creamy.com.br/drops-serum-antiaging/p",
-  popularity: 37
+  popularity: 35
  },
  {
   sku: "creamy-5",
@@ -421,7 +399,18 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos antiacne",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158293/acido-latico-creamy-amarelinho-acne-1.jpg?v=639072139873670000",
   productUrl: "https://www.creamy.com.br/acido-latico/p",
-  popularity: 38
+  popularity: 36
+ },
+ {
+  sku: "creamy-286",
+  name: "Duo Intense TX + Vitamina C Gold",
+  brand: "Creamy",
+  unitPrice: 251.98,
+  unit: "un",
+  category: "produtos combos",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158476/Duo-Intense-TX---Vitamina-C-Gold---1.png?v=639245736868370000",
+  productUrl: "https://www.creamy.com.br/intensetx-vitaminacgold/p",
+  popularity: 37
  },
  {
   sku: "creamy-285",
@@ -432,7 +421,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158472/Duo-Intense-TX---Ceramide-Skin-Repair---1.png?v=639245711263730000",
   productUrl: "https://www.creamy.com.br/intensetx-ceramideskinrepair/p",
-  popularity: 39
+  popularity: 38
  },
  {
   sku: "creamy-280",
@@ -443,6 +432,17 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158449/Duo-Hydragel---Acne-Defense---1.png?v=639171477733230000",
   productUrl: "https://www.creamy.com.br/duo-antiacne-hidrata-controla/p",
+  popularity: 39
+ },
+ {
+  sku: "creamy-275",
+  name: "Duo Retinal - Rosto & Olhos",
+  brand: "Creamy",
+  unitPrice: 272.48,
+  unit: "un",
+  category: "produtos combos",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158402/Duo-Retinal-Serum-Anti-Idade-e-Creme-Antirrugas-01.png?v=639137147920670000",
+  productUrl: "https://www.creamy.com.br/duo-retinal/p",
   popularity: 40
  },
  {
@@ -479,6 +479,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 43
  },
  {
+  sku: "creamy-135",
+  name: "Creme Hidratante Labial - Lip Balm Chai",
+  brand: "Creamy",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "produtos hidratacao",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158059/chai-hidratante-labial-lip-balm-volumizador-boca-creamy-1.jpg?v=638902592639230000",
+  productUrl: "https://www.creamy.com.br/lip-balm-chai-10g/p",
+  popularity: 44
+ },
+ {
   sku: "creamy-125",
   name: "Duo Antimanchas - Ácido Mandélico + Ácido Tranexâmico",
   brand: "Creamy",
@@ -487,17 +498,6 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158071/dupla-skincare-antimanchas-mandelico-tranexamico-creamy-1.jpg?v=638905272499900000",
   productUrl: "https://www.creamy.com.br/duo-mandelico-tranexamico/p",
-  popularity: 44
- },
- {
-  sku: "creamy-112",
-  name: "Creme de Reconstrução Capilar Sem Enxágue 50G",
-  brand: "Creamy",
-  unitPrice: 74.99,
-  unit: "un",
-  category: "produtos haircare",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158275/01.jpg?v=639072137342030000",
-  productUrl: "https://www.creamy.com.br/creme-de-reconstrucao-capilar-sem-enxague/p",
   popularity: 45
  },
  {
@@ -567,17 +567,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 51
  },
  {
-  sku: "creamy-286",
-  name: "Duo Intense TX + Vitamina C Gold",
-  brand: "Creamy",
-  unitPrice: 251.98,
-  unit: "un",
-  category: "produtos combos",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158476/Duo-Intense-TX---Vitamina-C-Gold---1.png?v=639245736868370000",
-  productUrl: "https://www.creamy.com.br/intensetx-vitaminacgold/p",
-  popularity: 52
- },
- {
   sku: "creamy-284",
   name: "Duo Intense TX + Peptide Cream",
   brand: "Creamy",
@@ -586,7 +575,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158469/Duo-Intense-TX---Peptide-Cream---1.png?v=639245697743800000",
   productUrl: "https://www.creamy.com.br/intensetx-peptide/p",
-  popularity: 53
+  popularity: 52
  },
  {
   sku: "creamy-282",
@@ -597,7 +586,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158457/rotina-skincare-jade-picon-creamy-01.jpg?v=639219795795130000",
   productUrl: "https://www.creamy.com.br/rotina-da-jade/p",
-  popularity: 54
+  popularity: 53
  },
  {
   sku: "creamy-279",
@@ -608,7 +597,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158446/Duo-Hydragel---Protetor-Solar---1.png?v=639171462426830000",
   productUrl: "https://www.creamy.com.br/duo-essencial-pele-oleosa/p",
-  popularity: 55
+  popularity: 54
  },
  {
   sku: "creamy-268",
@@ -619,7 +608,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158205/rotina-favoritos-creamy-ana-castela-1.jpg?v=639052027539800000",
   productUrl: "https://www.creamy.com.br/rotina-antiacne-creamy/p",
-  popularity: 56
+  popularity: 55
  },
  {
   sku: "creamy-233",
@@ -630,7 +619,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158486/Kit-Antimanchas---1.png?v=639245938114730000",
   productUrl: "https://www.creamy.com.br/kit-anti-manchas-1/p",
-  popularity: 57
+  popularity: 56
  },
  {
   sku: "creamy-226",
@@ -641,7 +630,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/157906/rotina-skincare-pele-oleosa-creamy-1.png?v=638902043882370000",
   productUrl: "https://www.creamy.com.br/rotina-para-pele-oleosa-1/p",
-  popularity: 58
+  popularity: 57
  },
  {
   sku: "creamy-129",
@@ -652,6 +641,17 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158098/Duo-Limpador-Glicerinado---Calming-Cream.jpg?v=639084019118300000",
   productUrl: "https://www.creamy.com.br/duo-limpador-glicerinado-calming-cream/p",
+  popularity: 58
+ },
+ {
+  sku: "creamy-112",
+  name: "Creme de Reconstrução Capilar Sem Enxágue 50G",
+  brand: "Creamy",
+  unitPrice: 74.99,
+  unit: "un",
+  category: "produtos haircare",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158275/01.jpg?v=639072137342030000",
+  productUrl: "https://www.creamy.com.br/creme-de-reconstrucao-capilar-sem-enxague/p",
   popularity: 59
  },
  {
@@ -974,17 +974,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 88
  },
  {
-  sku: "creamy-122",
-  name: "Duo para Acne - Glicointense Peel + Niacinamide B Complex 20%",
-  brand: "Creamy",
-  unitPrice: 189.98,
-  unit: "un",
-  category: "produtos combos",
-  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158074/dupla-skincare-acne-glicointense-peel-niacinamida-creamy-1.jpg?v=638905276481800000",
-  productUrl: "https://www.creamy.com.br/duo-glicointense-niacinamide/p",
-  popularity: 89
- },
- {
   sku: "creamy-109",
   name: "Duo Protetor Solar + Niacinamide",
   brand: "Creamy",
@@ -993,7 +982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158087/Duo-Protetor-Solar---Niacinamide.jpg?v=639084017609530000",
   productUrl: "https://www.creamy.com.br/duo-protetor-solar-e-niacinamide/p",
-  popularity: 90
+  popularity: 89
  },
  {
   sku: "creamy-96",
@@ -1004,7 +993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158092/Duo-Mandelico---Vitamina-C.jpg?v=639084016958430000",
   productUrl: "https://www.creamy.com.br/duo-mandelico-e-vita-c/p",
-  popularity: 91
+  popularity: 90
  },
  {
   sku: "creamy-89",
@@ -1015,7 +1004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158109/Duo-Calming-Cream---Calming-Body-Cream.jpg?v=639084015464200000",
   productUrl: "https://www.creamy.com.br/duo-calming-cream-e-calming-body-cream/p",
-  popularity: 92
+  popularity: 91
  },
  {
   sku: "creamy-56",
@@ -1026,7 +1015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/157655/1--2-.png?v=638834544361230000",
   productUrl: "https://www.creamy.com.br/rotina-antimanchas-seca/p",
-  popularity: 93
+  popularity: 92
  },
  {
   sku: "creamy-192",
@@ -1037,7 +1026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/157434/01-cadastro-essential.png?v=638681640202400000",
   productUrl: "https://www.creamy.com.br/kit-rotina-essencial/p",
-  popularity: 94
+  popularity: 93
  },
  {
   sku: "creamy-190",
@@ -1048,7 +1037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/157954/top-sellers-mandelico-calming-protetor-creamy-2.jpg?v=638902093174800000",
   productUrl: "https://www.creamy.com.br/kit-top-sellers/p",
-  popularity: 95
+  popularity: 94
  },
  {
   sku: "creamy-140",
@@ -1059,7 +1048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158084/Duo-Vitamina-C---Acido-Tranexamico.jpg?v=639084020194570000",
   productUrl: "https://www.creamy.com.br/duo-vitamina-c-acido-tranexanico/p",
-  popularity: 96
+  popularity: 95
  },
  {
   sku: "creamy-133",
@@ -1070,7 +1059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158097/Duo-Limpador-Glicerinado---Glicolico.jpg?v=639084019898670000",
   productUrl: "https://www.creamy.com.br/duo-limpador-glicerinado-glicolico/p",
-  popularity: 97
+  popularity: 96
  },
  {
   sku: "creamy-132",
@@ -1081,6 +1070,17 @@ export const CATALOG: CatalogItem[] = [
   category: "produtos combos",
   imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158096/Duo-Limpador-Glicerinado---Niacinamide.jpg?v=639084019692630000",
   productUrl: "https://www.creamy.com.br/duo-limpador-glicerinado-niacinamide/p",
+  popularity: 97
+ },
+ {
+  sku: "creamy-122",
+  name: "Duo para Acne - Glicointense Peel + Niacinamide B Complex 20%",
+  brand: "Creamy",
+  unitPrice: 189.98,
+  unit: "un",
+  category: "produtos combos",
+  imageUrl: "https://creamy.vteximg.com.br/arquivos/ids/158074/dupla-skincare-acne-glicointense-peel-niacinamida-creamy-1.jpg?v=638905276481800000",
+  productUrl: "https://www.creamy.com.br/duo-glicointense-niacinamide/p",
   popularity: 98
  },
  {

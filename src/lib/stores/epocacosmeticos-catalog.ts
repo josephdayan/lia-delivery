@@ -1,7 +1,7 @@
 // GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.epocacosmeticos.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.epocacosmeticos.com.br epoca /var/folders/7r/7hym0mvj1_l51n6b8pm8ym9h0000gn/T/lia-catalog-ojnVnD/epocacosmeticos.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.epocacosmeticos.com.br epoca /tmp/lia-catalog-HaGx92/epocacosmeticos.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [

@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.polishop.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.polishop.com.br polishop src/lib/stores/polishop-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.polishop.com.br polishop /tmp/lia-catalog-HaGx92/polishop.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -336,6 +336,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 30
  },
  {
+  sku: "polishop-126913",
+  name: "Panela Polishop Sauce Vermelha 20cm | 20cm Vermelha",
+  brand: "Polishop",
+  unitPrice: 349.92,
+  unit: "un",
+  category: "cozinha e eletroportateis panelas e frigideiras panelas",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/566993/flavorstone-sauce-20-showcase-horizontal.jpg?v=636535391957730000",
+  productUrl: "https://www.polishop.com.br/panela-sauce-20cm-polishop/p",
+  popularity: 31
+ },
+ {
   sku: "polishop-154926",
   name: "Tábua de Passar Polishop - Easy Pass | Polishop",
   brand: "Polishop",
@@ -344,7 +355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa ferros de passar tabua convencional",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/674455/01-1000x1000_ABUA-DE-PASSAR-POLISHOP-J64498_.jpg?v=637596279942830000",
   productUrl: "https://www.polishop.com.br/tabua-de-passar-easy-pass-polishop/p",
-  popularity: 31
+  popularity: 32
  },
  {
   sku: "polishop-139365",
@@ -355,7 +366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras tampas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/649941/_S1B3461.jpg?v=637208342437670000",
   productUrl: "https://www.polishop.com.br/tampa-shark-series-28cm-ichef-polishop/p",
-  popularity: 32
+  popularity: 33
  },
  {
   sku: "polishop-181905",
@@ -366,7 +377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais modeladores de cachos",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2785329/ImagemSite_DuoStyler_3000x3000px_01.jpg?v=639105858780900000",
   productUrl: "https://www.polishop.com.br/prancha-modelador-2-em-1-duo-styler-be-emotion/p",
-  popularity: 33
+  popularity: 34
  },
  {
   sku: "polishop-181685",
@@ -377,7 +388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po aspirador de po",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2786074/ImagemSite_PowerFlex_3000x3000px_01.jpg?v=639142175795330000",
   productUrl: "https://www.polishop.com.br/aspirador-de-po-vertical-sem-fio-2-em-1-power-flex-polishop/p",
-  popularity: 34
+  popularity: 35
  },
  {
   sku: "polishop-181683",
@@ -388,7 +399,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po robo aspirador",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2781031/Robo-Aspirador-S40C-Branco-3000x3000-01.jpg?v=638938922139300000",
   productUrl: "https://www.polishop.com.br/xiaomi-robo-aspirador-po-inteligente-s40c/p",
-  popularity: 35
+  popularity: 36
  },
  {
   sku: "polishop-181588",
@@ -399,7 +410,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po aspirador de po",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2784154/Aspirador-UltraClean-3000x3000-01.jpg?v=639050549465030000",
   productUrl: "https://www.polishop.com.br/aspirador-de-po-vertical-sem-fio-2-em-1-ultra-clean-polishop/p",
-  popularity: 36
+  popularity: 37
  },
  {
   sku: "polishop-181072",
@@ -410,7 +421,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais chapinhas e pranchas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2782985/Airliss_3000x3000_01.jpg?v=638963277894930000",
   productUrl: "https://www.polishop.com.br/prancha-secadora-airliss-be-emotion-polishop/p",
-  popularity: 37
+  popularity: 38
  },
  {
   sku: "polishop-181010",
@@ -421,7 +432,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2782969/01_3000x3000px-TabuaDualCut.jpg?v=638962269334900000",
   productUrl: "https://www.polishop.com.br/tabua-corte-dupla-face-ichef-dual-cut/p",
-  popularity: 38
+  popularity: 39
  },
  {
   sku: "polishop-179643",
@@ -432,7 +443,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa ventiladores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2739300/01_3000pxx3000px-Ventilador_MesaParede_PolishopWap.jpg?v=638754145615470000",
   productUrl: "https://www.polishop.com.br/ventilador-2-em-1-mesa-parede-polishop-50cm/p",
-  popularity: 39
+  popularity: 40
  },
  {
   sku: "polishop-178927",
@@ -443,7 +454,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais escovas escova alisadora",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2754756/Escova-alisadora-Be-Emotion-3000x3000-01.jpg?v=638711621672900000",
   productUrl: "https://www.polishop.com.br/escova-alisadora-brush-liss-infusion-be-emotion/p",
-  popularity: 40
+  popularity: 41
  },
  {
   sku: "polishop-178849",
@@ -454,7 +465,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis liquidificadores e processadores processador",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2754031/01_3000pxx3000px-PowerNutriNOVAS.jpg?v=638748216211930000",
   productUrl: "https://www.polishop.com.br/multiprocessador-power-nutri-revolution-ichef/p",
-  popularity: 41
+  popularity: 42
  },
  {
   sku: "polishop-176549",
@@ -465,7 +476,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras combos",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/804214/Combos-Panelas-Ichef-Home-3000x3000-01.jpg?v=638098367647200000",
   productUrl: "https://www.polishop.com.br/panelas-ichef-home-saute-grand-family-size-tampa-vidro-24cm-azul/p",
-  popularity: 42
+  popularity: 43
  },
  {
   sku: "polishop-154928",
@@ -476,7 +487,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa utensilios de casa e limpeza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/674459/01-1000x1000_FORRO-TABUA-DE-PASSAR-POLISHOP-J80277.jpg?v=637596297972100000",
   productUrl: "https://www.polishop.com.br/forro-termico-easy-pass-polishop/p",
-  popularity: 43
+  popularity: 44
  },
  {
   sku: "polishop-107851",
@@ -487,7 +498,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/670488/Panela_Polishop_DaybyDay_28_Vermelha-troca.jpg?v=637473573095200000",
   productUrl: "https://www.polishop.com.br/panela-day-by-day-28cm-polishop/p",
-  popularity: 44
+  popularity: 45
  },
  {
   sku: "polishop-166447",
@@ -498,7 +509,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2786434/ULTRA AZUL FAMILY SIZE 24CM S TAMPA 1 -1-.png?v=639153951383900000",
   productUrl: "https://www.polishop.com.br/panela-ichef-polishop-ultra-family-size-blue-28cm/p",
-  popularity: 45
+  popularity: 46
  },
  {
   sku: "polishop-150729",
@@ -509,17 +520,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras tampas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/769937/ichef-vermelho-complemento-J20060-12.jpg?v=637950478022670000",
   productUrl: "https://www.polishop.com.br/tampa-ichef-polishop-shark-series-16-cm/p",
-  popularity: 46
- },
- {
-  sku: "polishop-126913",
-  name: "Panela Polishop Sauce Vermelha 20cm | 20cm Vermelha",
-  brand: "Polishop",
-  unitPrice: 349.92,
-  unit: "un",
-  category: "cozinha e eletroportateis panelas e frigideiras panelas",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/566993/flavorstone-sauce-20-showcase-horizontal.jpg?v=636535391957730000",
-  productUrl: "https://www.polishop.com.br/panela-sauce-20cm-polishop/p",
   popularity: 47
  },
  {
@@ -699,17 +699,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 63
  },
  {
-  sku: "polishop-156034",
-  name: "Esteira Ergométrica Dobrável GT 2500 Genis Polishop | 127V",
-  brand: "Genis",
-  unitPrice: 5999.9,
-  unit: "un",
-  category: "fitness esteira ergometrica",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/678471/gt2500-J07419-01.jpg?v=638754812544470000",
-  productUrl: "https://www.polishop.com.br/esteira-ergometrica-dobravel-genis-gt2500/p",
-  popularity: 64
- },
- {
   sku: "polishop-139351",
   name: "Tampa de Vidro Ichef Polishop Shark Series 16cm Azul | Ichef 16cm",
   brand: "Ichef",
@@ -718,7 +707,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras tampas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/665130/_S1B3461--2-.jpg?v=637345824642300000",
   productUrl: "https://www.polishop.com.br/tampa-ichef-polishop-shark-series-16cm/p",
-  popularity: 65
+  popularity: 64
  },
  {
   sku: "polishop-183421",
@@ -729,7 +718,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788071/01_3000x3000px-023265.jpg?v=639238823898200000",
   productUrl: "https://www.polishop.com.br/conjunto-facas-polishop-professional-cut-inox-tabua-corte-dupla-face-ichef-dual-cut/p",
-  popularity: 66
+  popularity: 65
  },
  {
   sku: "polishop-182324",
@@ -740,7 +729,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2784454/02_3000x3000px_PRO-023072.jpg?v=639074585375030000",
   productUrl: "https://www.polishop.com.br/panela-ichef-home-saute-grand-vermelha-24-cm-tampa-de-vidro-24-cm-vermelha/p",
-  popularity: 67
+  popularity: 66
  },
  {
   sku: "polishop-182322",
@@ -751,7 +740,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2784445/01_3000x3000px_PRO-023071.jpg?v=639074584109870000",
   productUrl: "https://www.polishop.com.br/panelas-ichef-home-saute-grand-vermelha-24-cm-ichef-home-saute-petit-vermelha-20-cm/p",
-  popularity: 68
+  popularity: 67
  },
  {
   sku: "polishop-182227",
@@ -762,7 +751,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po aspirador de po",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2787449/02_3000x3000px-HANDVAC.jpg?v=639225687697370000",
   productUrl: "https://www.polishop.com.br/aspirador-de-mao-handvac-polishop/p",
-  popularity: 69
+  popularity: 68
  },
  {
   sku: "polishop-181434",
@@ -773,7 +762,29 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais escovas escova secadora",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2785006/HotBrush-3000x3000-01.jpg?v=639095277633000000",
   productUrl: "https://www.polishop.com.br/escova-hot-brush-4-em-1-be-emotion-polishop1/p",
+  popularity: 69
+ },
+ {
+  sku: "polishop-181046",
+  name: "Escova Rotating Nutrah be emotion | Bivolt",
+  brand: "Be Emotion",
+  unitPrice: 666.5,
+  unit: "un",
+  category: "beleza e cuidados pessoais escovas escova secadora",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2783661/Rotating-Nutrah-3000x3000-01.jpg?v=639002079192800000",
+  productUrl: "https://www.polishop.com.br/escova-rotating-nutrah-be-emotion/p",
   popularity: 70
+ },
+ {
+  sku: "polishop-181027",
+  name: "Fritadeira Elétrica Airfryer Ichef Smart Vision 6L - Outlet | 127V",
+  brand: "Ichef",
+  unitPrice: 444.4,
+  unit: "un",
+  category: "cozinha e eletroportateis airfryer airfryer digital",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2779724/BDFAA4EB5A.jpg?v=638913006179700000",
+  productUrl: "https://www.polishop.com.br/fritadeira-eletrica-airfryer-ichef-smart-vision-6l-outlet/p",
+  popularity: 71
  },
  {
   sku: "polishop-177954",
@@ -784,7 +795,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa climatizadores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/1904216/01-IMAGEM-3000x3000---Climatizador-Duet-Symphony.jpg?v=638755943175870000",
   productUrl: "https://www.polishop.com.br/climatizador-de-ar-symphony-duet-/p",
-  popularity: 71
+  popularity: 72
  },
  {
   sku: "polishop-148702",
@@ -795,7 +806,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/668594/utensilios-ichef-blue-02-01.jpg?v=637423574060670000",
   productUrl: "https://www.polishop.com.br/espatula-pao-duro-de-silicone-blue-ichef/p",
-  popularity: 72
+  popularity: 73
  },
  {
   sku: "polishop-146104",
@@ -806,7 +817,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2779625/ichef-conjunto-de-facas-6pcs-special-cut-cinza-01.jpg?v=638902590777070000",
   productUrl: "https://www.polishop.com.br/conjunto-de-facas-professional-cut-inox-ichef/p",
-  popularity: 73
+  popularity: 74
  },
  {
   sku: "polishop-144633",
@@ -817,7 +828,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais cosmeticos tratamento facial",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/685352/luxskin-01--1-.jpg?v=637831471744270000",
   productUrl: "https://www.polishop.com.br/mascara-facial-luxskin-cosmedical-outlet/p",
-  popularity: 74
+  popularity: 75
  },
  {
   sku: "polishop-125938",
@@ -828,7 +839,7 @@ export const CATALOG: CatalogItem[] = [
   category: "modeladores corporais regatas modeladoras",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/685194/fitnow-t-shirt-feminino-cinza-showcase-horizontal.jpg?v=638854462278700000",
   productUrl: "https://www.polishop.com.br/fitnow-t-shirt-polishop-feminino-outlet/p",
-  popularity: 75
+  popularity: 76
  },
  {
   sku: "polishop-181318",
@@ -839,7 +850,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2774525/01_3000x3000px-PRO-022815_2HomeSauteVermTampa.jpg?v=638858608928330000",
   productUrl: "https://www.polishop.com.br/panelas-ichef-home-vermelha-saute-grand-24cm-saute-petit-20cm-tampa-24cm/p",
-  popularity: 76
+  popularity: 77
  },
  {
   sku: "polishop-176475",
@@ -850,7 +861,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/844635/IMAGEM--LANCAMENTO---Panelas-Home-SAUTE-GRAND-24CM-J99552_blue_1-1-.jpg?v=638179565481570000",
   productUrl: "https://www.polishop.com.br/panela-polishop-ichef-home-saute-grand-shark-series-azul-24cm-outlet/p",
-  popularity: 77
+  popularity: 78
  },
  {
   sku: "polishop-155690",
@@ -861,7 +872,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/680464/1---facas-kit-de-6-facas-ichef-red-J34745--1-.jpg?v=637795142917670000",
   productUrl: "https://www.polishop.com.br/conjunto-de-facas-special-cut-red-ichef-polishop-shark-series/p",
-  popularity: 78
+  popularity: 79
+ },
+ {
+  sku: "polishop-156034",
+  name: "Esteira Ergométrica Dobrável GT 2500 Genis Polishop | 127V",
+  brand: "Genis",
+  unitPrice: 5999.9,
+  unit: "un",
+  category: "fitness esteira ergometrica",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/678471/gt2500-J07419-01.jpg?v=638754812544470000",
+  productUrl: "https://www.polishop.com.br/esteira-ergometrica-dobravel-genis-gt2500/p",
+  popularity: 80
  },
  {
   sku: "polishop-150772",
@@ -872,7 +894,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/672483/professional-cut-Inox-duo-ichef-04.jpg?v=637529109636430000",
   productUrl: "https://www.polishop.com.br/conjunto-de-facas-professional-cut-inox-duo-ichef-polishop/p",
-  popularity: 79
+  popularity: 81
  },
  {
   sku: "polishop-149570",
@@ -883,18 +905,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/805259/utensilios-ichef-red-06-01.jpg?v=638103613002500000",
   productUrl: "https://www.polishop.com.br/concha-de-silicone-red-ichef/p",
-  popularity: 80
- },
- {
-  sku: "polishop-149674",
-  name: "Descascador Ichef Polishop - Blue | Blue Ichef",
-  brand: "Ichef",
-  unitPrice: 59.9,
-  unit: "un",
-  category: "cozinha e eletroportateis utensilios de cozinha",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/668521/utensilios-ichef-blue-11-01.jpg?v=637421102995230000",
-  productUrl: "https://www.polishop.com.br/descascador--blue--ichef/p",
-  popularity: 81
+  popularity: 82
  },
  {
   sku: "polishop-183429",
@@ -905,7 +916,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788109/01_3000pxx3000px-023269.jpg?v=639238826243900000",
   productUrl: "https://www.polishop.com.br/dois-copos-termico-com-tampa-ichef-smart-cup-350-ml/p",
-  popularity: 82
+  popularity: 83
  },
  {
   sku: "polishop-183419",
@@ -916,7 +927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788041/01_3000x3000px-023264.jpg?v=639238823206730000",
   productUrl: "https://www.polishop.com.br/centrifuga-salada-6-l-salad-spinner-tabua-corte-dupla-face-ichef-dual-cut/p",
-  popularity: 83
+  popularity: 84
  },
  {
   sku: "polishop-183021",
@@ -927,17 +938,6 @@ export const CATALOG: CatalogItem[] = [
   category: "casa limpeza produtos de limpeza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2787758/ImagemSite_EasyClean_3000x3000px_01.jpg?v=639228487940800000",
   productUrl: "https://www.polishop.com.br/easy-clean-limpeza-multiuso-polishop/p",
-  popularity: 84
- },
- {
-  sku: "polishop-182975",
-  name: "Filtro de Espuma Original para Smart Floor Polishop | Acessório Smart Floor",
-  brand: "Polishop",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "limpeza aspiradores de po",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2787002/Smart-Floor-Filtro-3000x3000-01.jpg?v=639203439066100000",
-  productUrl: "https://www.polishop.com.br/filtro-de-espuma-original-smart-floor-polishop/p",
   popularity: 85
  },
  {
@@ -963,17 +963,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 87
  },
  {
-  sku: "polishop-181027",
-  name: "Fritadeira Elétrica Airfryer Ichef Smart Vision 6L - Outlet | 127V",
-  brand: "Ichef",
-  unitPrice: 444.4,
-  unit: "un",
-  category: "cozinha e eletroportateis airfryer airfryer digital",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2779724/BDFAA4EB5A.jpg?v=638913006179700000",
-  productUrl: "https://www.polishop.com.br/fritadeira-eletrica-airfryer-ichef-smart-vision-6l-outlet/p",
-  popularity: 88
- },
- {
   sku: "polishop-180963",
   name: "Centrífuga de Salada 6L - ichef Salad Spinner | Centrifuga",
   brand: "Ichef",
@@ -982,7 +971,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2780157/01_3000x3000px-CentrifugaSalada.jpg?v=638929355406500000",
   productUrl: "https://www.polishop.com.br/centrifuga-salada-6-l-ichef-salad-spinner/p",
-  popularity: 89
+  popularity: 88
  },
  {
   sku: "polishop-180356",
@@ -993,7 +982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais aparadores e barbeadores barbeador",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2759537/Barbeador_AquaPro_bemen_01.jpg.jpg?v=638793792934430000",
   productUrl: "https://www.polishop.com.br/barbeador-eletrico-shaver-aqua-pro-be-emotion-men/p",
-  popularity: 90
+  popularity: 89
  },
  {
   sku: "polishop-178985",
@@ -1004,7 +993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "massagem e bem-estar massageadores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2755049/Genis-Relax-3000x3000-01.jpg?v=638717717396870000",
   productUrl: "https://www.polishop.com.br/genis-relax-massageador-de-pescoco-neck-spa/p",
-  popularity: 91
+  popularity: 90
  },
  {
   sku: "polishop-179966",
@@ -1015,7 +1004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "massagem e bem-estar massageadores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2758245/Cadeira-Genis-Relax-3000x3000-01.jpg.jpg?v=638761843428430000",
   productUrl: "https://www.polishop.com.br/poltrona-massagem-flex-com-aquecimento-genis-relax/p",
-  popularity: 92
+  popularity: 91
  },
  {
   sku: "polishop-178892",
@@ -1026,7 +1015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa acessorios e pecas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2756184/1_3000x3000-economizador--1_aqua--1-.jpg?v=638729979225030000",
   productUrl: "https://www.polishop.com.br/bloqueador-eliminador-de-ar-aquasaver-pro-polishop/p",
-  popularity: 93
+  popularity: 92
  },
  {
   sku: "polishop-178800",
@@ -1037,7 +1026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "massagem e bem-estar massageadores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2755022/ImagemSite_Pistola_TheraPulse_3000x3000px_01.jpg?v=638715276275200000",
   productUrl: "https://www.polishop.com.br/genis-relax-pistola-de-massagem-therapulse/p",
-  popularity: 94
+  popularity: 93
  },
  {
   sku: "polishop-177976",
@@ -1048,18 +1037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "massagem e bem-estar massageadores",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2675432/Imagem-de-lancamento-poltrona-1.jpg?v=638508669904430000",
   productUrl: "https://www.polishop.com.br/poltrona-massageadora-genis-relax-polishop/p",
-  popularity: 95
- },
- {
-  sku: "polishop-162135",
-  name: "Esteira Ergométrica Conectada GT 4000 Genis Polishop | 127V",
-  brand: "Genis",
-  unitPrice: 10999.9,
-  unit: "un",
-  category: "fitness esteira ergometrica",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/756907/GT4000-J30198-01.jpg?v=638760236499800000",
-  productUrl: "https://www.polishop.com.br/esteira-ergoetrica-conectada-genis-gt4000/p",
-  popularity: 96
+  popularity: 94
  },
  {
   sku: "polishop-159041",
@@ -1070,7 +1048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/685112/adaptador-zip-bag-horizontal.jpg?v=637831471140600000",
   productUrl: "https://www.polishop.com.br/adaptador-zip-bag-foodsaver-oster-outlet/p",
-  popularity: 97
+  popularity: 95
  },
  {
   sku: "polishop-153338",
@@ -1081,7 +1059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "fitness esteira ergometrica",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/802214/SEO-3000x3000-GT500-J68443-01.jpg?v=638092171168500000",
   productUrl: "https://www.polishop.com.br/esteira-ergometrica-genis-gt-500-outlet/p",
-  popularity: 98
+  popularity: 96
  },
  {
   sku: "polishop-148700",
@@ -1092,7 +1070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/668523/utensilios-ichef-blue-07-01.jpg?v=637421111415530000",
   productUrl: "https://www.polishop.com.br/escumadeira-de-silicone-blue-ichef/p",
-  popularity: 99
+  popularity: 97
  },
  {
   sku: "polishop-112788",
@@ -1103,7 +1081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/805799/01-SEO-3000x3000-SauteGrand24cm--1-.jpg?v=638107033377800000",
   productUrl: "https://www.polishop.com.br/panela-saute-grand-24cm-polishop-outlet/p",
-  popularity: 100
+  popularity: 98
  },
  {
   sku: "polishop-112189",
@@ -1114,7 +1092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/383570/emb-zip-bag-12unidades-horizontal.jpg?v=635830055492800000",
   productUrl: "https://www.polishop.com.br/embalagens-zip-bag-12-foodsaver-oster/p",
-  popularity: 101
+  popularity: 99
  },
  {
   sku: "polishop-112164",
@@ -1125,7 +1103,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa acessorios e pecas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/383419/adaptador-zip-bag-horizontal.jpg?v=635829259049100000",
   productUrl: "https://www.polishop.com.br/adaptador-zip-bag-foodsaver--oster/p",
-  popularity: 102
+  popularity: 100
  },
  {
   sku: "polishop-183423",
@@ -1136,7 +1114,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788272/01_3000x3000px-0232266.jpg?v=639239613470730000",
   productUrl: "https://www.polishop.com.br/conjunto-facas-ichef-polishop-professional-cut-inox-duo-tabua-corte-dupla-face-ichef-dual-cut/p",
-  popularity: 103
+  popularity: 101
  },
  {
   sku: "polishop-182424",
@@ -1147,7 +1125,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2784955/01_3000x3000px_PRO-023112.jpg?v=639094535784700000",
   productUrl: "https://www.polishop.com.br/2-unidades-panelas-polishop-ichef-home-saute-grand-vermelho-24-cm/p",
-  popularity: 104
+  popularity: 102
  },
  {
   sku: "polishop-182420",
@@ -1158,7 +1136,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2784961/01_3000x3000px_PRO-02319.jpg?v=639094556050970000",
   productUrl: "https://www.polishop.com.br/2-unidades-panelas-polishop-ichef-home-saute-grand-azul-24-cm/p",
-  popularity: 105
+  popularity: 103
  },
  {
   sku: "polishop-166457",
@@ -1169,7 +1147,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras panelas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2786402/DAY-BY-DAY-DEEP-24CM-VERMELHO-01--1-.png?v=639154243189570000",
   productUrl: "https://www.polishop.com.br/panela-ichef-polishop-ultra-day-by-day-red-24cm/p",
-  popularity: 106
+  popularity: 104
+ },
+ {
+  sku: "polishop-151058",
+  name: "Cabo Removível Curto Ichef Shark Series Vermelho | Vermelho",
+  brand: "Ichef",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "cozinha e eletroportateis panelas e frigideiras cabos e acessorios",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/677020/ichef-vermelho-complemento-J15741-05.jpg?v=637699296282830000",
+  productUrl: "https://www.polishop.com.br/cabo-removivel-curto-ichef-polishop-shark--series/p",
+  popularity: 105
  },
  {
   sku: "polishop-183433",
@@ -1180,6 +1169,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788139/01_3000pxx3000px-023271.jpg?v=639238827310830000",
   productUrl: "https://www.polishop.com.br/duas-canecas-termica-chopp-tampa-smart-cup-ichef-710-ml/p",
+  popularity: 106
+ },
+ {
+  sku: "polishop-182975",
+  name: "Filtro de Espuma Original para Smart Floor Polishop | Acessório Smart Floor",
+  brand: "Polishop",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "limpeza aspiradores de po",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2787002/Smart-Floor-Filtro-3000x3000-01.jpg?v=639203439066100000",
+  productUrl: "https://www.polishop.com.br/filtro-de-espuma-original-smart-floor-polishop/p",
   popularity: 107
  },
  {
@@ -1271,6 +1271,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 115
  },
  {
+  sku: "polishop-162135",
+  name: "Esteira Ergométrica Conectada GT 4000 Genis Polishop | 127V",
+  brand: "Genis",
+  unitPrice: 10999.9,
+  unit: "un",
+  category: "fitness esteira ergometrica",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/756907/GT4000-J30198-01.jpg?v=638760236499800000",
+  productUrl: "https://www.polishop.com.br/esteira-ergoetrica-conectada-genis-gt4000/p",
+  popularity: 116
+ },
+ {
   sku: "polishop-146589",
   name: "Conjunto de Acessórios Energym Genis - 3 Peças | Kit de Acessórios Genis",
   brand: "Genis",
@@ -1279,7 +1290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "fitness plataforma vibratoria",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/648027/plataforma-energym-pro-09.jpg?v=637170514155370000",
   productUrl: "https://www.polishop.com.br/kit-de-acessorios-energym-set/p",
-  popularity: 116
+  popularity: 117
  },
  {
   sku: "polishop-146179",
@@ -1290,7 +1301,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis facas e faqueiros faca",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/673033/special_cut_blue-06.jpg?v=637544359691670000",
   productUrl: "https://www.polishop.com.br/conjunto-de-facas-special-cut-blue-ichef/p",
-  popularity: 117
+  popularity: 118
  },
  {
   sku: "polishop-146106",
@@ -1301,7 +1312,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis panelas e frigideiras cabos e acessorios",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/673463/ICHEF-CABOS-03.jpg?v=637558290720970000",
   productUrl: "https://www.polishop.com.br/cabo-removivel-curto-ichef-polishop-shark-series/p",
-  popularity: 118
+  popularity: 119
  },
  {
   sku: "polishop-141738",
@@ -1312,7 +1323,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais acessorios de beleza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/766141/secret-extension-main-01-02.jpg?v=639142972476230000",
   productUrl: "https://www.polishop.com.br/aplique-de-cabelo-secret-extensions-outlet/p",
-  popularity: 119
+  popularity: 120
  },
  {
   sku: "polishop-126823",
@@ -1323,7 +1334,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais acessorios de beleza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2780588/secret-extension-main-01-02.jpg?v=638935577334400000",
   productUrl: "https://www.polishop.com.br/aplique-de-cabelo-secret-extensions/p",
-  popularity: 120
+  popularity: 121
  },
  {
   sku: "polishop-96590",
@@ -1334,7 +1345,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais acessorios de beleza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/589192/mktplace-pincel-base.jpg?v=636676990486830000",
   productUrl: "https://www.polishop.com.br/pincel-para-base-be-emotion-make-up/p",
-  popularity: 121
+  popularity: 122
  },
  {
   sku: "polishop-182398",
@@ -1345,7 +1356,7 @@ export const CATALOG: CatalogItem[] = [
   category: "nutricao suplementos",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2786979/ImagemSite_Beauty-_GummyHair_01.jpg?v=639201771013800000",
   productUrl: "https://www.polishop.com.br/beauty-gummy-hair-the-one-life-sabor-morango-30-gomas/p",
-  popularity: 122
+  popularity: 123
  },
  {
   sku: "polishop-182548",
@@ -1356,17 +1367,6 @@ export const CATALOG: CatalogItem[] = [
   category: "nutricao suplementos",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2786970/Icoffee-The-One-Life-3000x3000-01.jpg?v=639199146558430000",
   productUrl: "https://www.polishop.com.br/cafe-funcional-premium-icoffee/p",
-  popularity: 123
- },
- {
-  sku: "polishop-151058",
-  name: "Cabo Removível Curto Ichef Shark Series Vermelho | Vermelho",
-  brand: "Ichef",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "cozinha e eletroportateis panelas e frigideiras cabos e acessorios",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/677020/ichef-vermelho-complemento-J15741-05.jpg?v=637699296282830000",
-  productUrl: "https://www.polishop.com.br/cabo-removivel-curto-ichef-polishop-shark--series/p",
   popularity: 124
  },
  {
@@ -1436,6 +1436,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 130
  },
  {
+  sku: "polishop-59636",
+  name: "Derma Soft Refis Esfoliantes | Polishop",
+  brand: "Polishop",
+  unitPrice: 28.9,
+  unit: "un",
+  category: "beleza e cuidados pessoais depiladores",
+  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/135137/DermaSoftRefil-gd1.jpg?v=635405200047430000",
+  productUrl: "https://www.polishop.com.br/derma-soft-refis-esfoliantes/p",
+  popularity: 131
+ },
+ {
   sku: "polishop-183445",
   name: "Torradeira Elétrica Ichef Breakfast mais Copos Térmico Com Tampa iChef Smart Cup 350 ml Preto | 127V",
   brand: "Ichef",
@@ -1444,7 +1455,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis torradeira",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788141/01_3000pxx3000px-023277.jpg?v=639238828184530000",
   productUrl: "https://www.polishop.com.br/torradeira-eletrica-ichef-breakfast-copos-termico-com-tampa-ichef-smart-cup-350-ml-preto/p",
-  popularity: 131
+  popularity: 132
  },
  {
   sku: "polishop-158911",
@@ -1455,7 +1466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/799222/utensilios-ichef-blue-05-01-1-.jpg?v=638083477212530000",
   productUrl: "https://www.polishop.com.br/suporte-para-utensilios-de-silicone-ichef-polishop-blue-outlet/p",
-  popularity: 132
+  popularity: 133
  },
  {
   sku: "polishop-149841",
@@ -1466,7 +1477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/668584/utensilios-ichef-red-08-01.jpg?v=637423538803570000",
   productUrl: "https://www.polishop.com.br/suporte-para-utensilios-de-silicone-red-ichef/p",
-  popularity: 133
+  popularity: 134
  },
  {
   sku: "polishop-145160",
@@ -1477,7 +1488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "livros joao appolinario",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/660305/livro-joao-appolinario.jpg?v=637284430030770000",
   productUrl: "https://www.polishop.com.br/livro-joao-appolinario/p",
-  popularity: 134
+  popularity: 135
  },
  {
   sku: "polishop-183425",
@@ -1488,7 +1499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/2788075/01_3000x3000px-023267.jpg?v=639238825273430000",
   productUrl: "https://www.polishop.com.br/dois-copos-termico-polishop-ichef-tampa-smart-cup-600-ml/p",
-  popularity: 135
+  popularity: 136
  },
  {
   sku: "polishop-176338",
@@ -1499,7 +1510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/989168/Copo-Pequeno-Ichef-preto-3000x3000-01.jpg?v=638278899168530000",
   productUrl: "https://www.polishop.com.br/copo-termico-com-tampa-ichef-smart-cup-350-ml/p",
-  popularity: 136
+  popularity: 137
  },
  {
   sku: "polishop-176316",
@@ -1510,7 +1521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha e eletroportateis utensilios de cozinha",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/989260/Copo-grande-Ichef-preto-3000x3000-01.jpg?v=638278908573030000",
   productUrl: "https://www.polishop.com.br/copo-termico-com-tampa-smart-cup-ichef-600-ml/p",
-  popularity: 137
+  popularity: 138
  },
  {
   sku: "polishop-146454",
@@ -1521,7 +1532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais acessorios de beleza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/766055/refil-naked-nails-beemotion-showcase-horizontal.jpg?v=637933218252230000",
   productUrl: "https://www.polishop.com.br/refil-para-lixa-eletrica-naked-nails-be-emotion-outlet/p",
-  popularity: 138
+  popularity: 139
  },
  {
   sku: "polishop-133549",
@@ -1532,7 +1543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "hobby e lazer",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/600109/videoke-party-now-main-01.jpg?v=636748725756200000",
   productUrl: "https://www.polishop.com.br/videoke-portatil-party-now-bluetooth/p",
-  popularity: 139
+  popularity: 140
  },
  {
   sku: "polishop-128287",
@@ -1543,7 +1554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lifestyle camisetas",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/568474/polo-fem-preta-showcase.jpg?v=638931231684400000",
   productUrl: "https://www.polishop.com.br/camisa-polo-feminina-preta/p",
-  popularity: 140
+  popularity: 141
  },
  {
   sku: "polishop-120264",
@@ -1554,7 +1565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "hobby e lazer praia e piscina",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/479983/guarda-sol-polishop-showcase-horizontal.jpg?v=636201755526370000",
   productUrl: "https://www.polishop.com.br/guarda-sol-colecao-lifestyle-polishop/p",
-  popularity: 141
+  popularity: 142
  },
  {
   sku: "polishop-119404",
@@ -1565,7 +1576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais acessorios de beleza",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/482172/refil-naked-nails-beemotion-showcase-horizontal.jpg?v=636208501062730000",
   productUrl: "https://www.polishop.com.br/refil-lixa-eletrica-naked-nails-be-emotion/p",
-  popularity: 142
+  popularity: 143
  },
  {
   sku: "polishop-96594",
@@ -1576,17 +1587,6 @@ export const CATALOG: CatalogItem[] = [
   category: "beleza e cuidados pessoais",
   imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/589190/mktplace-pincel-blush.jpg?v=636676986627100000",
   productUrl: "https://www.polishop.com.br/pincel-para-po-facial-ou-blush-bioemotion-make-up/p",
-  popularity: 143
- },
- {
-  sku: "polishop-59636",
-  name: "Derma Soft Refis Esfoliantes | Polishop",
-  brand: "Polishop",
-  unitPrice: 28.9,
-  unit: "un",
-  category: "beleza e cuidados pessoais depiladores",
-  imageUrl: "https://polishop.vteximg.com.br/arquivos/ids/135137/DermaSoftRefil-gd1.jpg?v=635405200047430000",
-  productUrl: "https://www.polishop.com.br/derma-soft-refis-esfoliantes/p",
   popularity: 144
  }
 ];

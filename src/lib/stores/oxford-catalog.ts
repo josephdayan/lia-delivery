@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.oxfordporcelanas.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.oxfordporcelanas.com.br oxford src/lib/stores/oxford-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.oxfordporcelanas.com.br oxford /tmp/lia-catalog-HaGx92/oxford.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -61,6 +61,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 5
  },
  {
+  sku: "oxford-60606344",
+  name: "Tigela Conic 500 Ml Colb",
+  brand: "Biona",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184271/Donna_Colb_Tigela.jpg?v=638447478275330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-colb/p",
+  popularity: 6
+ },
+ {
   sku: "oxford-60605896",
   name: "Boleira Flat 26 Cm Chuvisco",
   brand: "Cerâmicas",
@@ -69,17 +80,6 @@ export const CATALOG: CatalogItem[] = [
   category: "servir prato bolo",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194574/Flat_Chuvisco_Prato_Bolo_01.jpg?v=638836281562070000",
   productUrl: "https://www.oxfordporcelanas.com.br/boleira-flat-chuvisco/p",
-  popularity: 6
- },
- {
-  sku: "oxford-60608246",
-  name: "Jogo de Panelas Antiaderentes 5 Peças Cooking Daily",
-  brand: "Cookware",
-  unitPrice: 1499.9,
-  unit: "un",
-  category: "panelas jogos de panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207877/CookingDaily-Conjunto-otimizada.webp?v=639238800590470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-panelas-antiaderentes-5-pecas-cooking-daily/p",
   popularity: 7
  },
  {
@@ -105,14 +105,14 @@ export const CATALOG: CatalogItem[] = [
   popularity: 9
  },
  {
-  sku: "oxford-60606344",
-  name: "Tigela Conic 500 Ml Colb",
-  brand: "Biona",
-  unitPrice: 22.9,
+  sku: "oxford-60608246",
+  name: "Jogo de Panelas Antiaderentes 5 Peças Cooking Daily",
+  brand: "Cookware",
+  unitPrice: 1499.9,
   unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184271/Donna_Colb_Tigela.jpg?v=638447478275330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-colb/p",
+  category: "panelas jogos de panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207877/CookingDaily-Conjunto-otimizada.webp?v=639238800590470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-panelas-antiaderentes-5-pecas-cooking-daily/p",
   popularity: 10
  },
  {
@@ -204,17 +204,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 18
  },
  {
-  sku: "oxford-60603112",
-  name: "Faqueiro Com 16 Peças Vermelho Intenso",
-  brand: "Biona",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173468/Faqueiro-16p.jpg?v=637606505524300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-servir-talheres-polip-vermelhointenso/p",
-  popularity: 19
- },
- {
   sku: "oxford-60602983",
   name: "Jogo de 6 Canecas 260 Ml Ryo Maresia",
   brand: "Cerâmicas",
@@ -223,7 +212,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197001/1-Cj.-C---06-Canecas-Ryo-260Ml---Mail-Order---Maresia---Rm13-9515.jpg?v=638918289273870000",
   productUrl: "https://www.oxfordporcelanas.com.br/reagente-ryo-maresia-caneca260/p",
-  popularity: 20
+  popularity: 19
  },
  {
   sku: "oxford-60602981",
@@ -234,7 +223,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir baixelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202033/1-Cj.-De-Baixelas-02Pcs---Mail-Order---Maresia---Rm10-9515.jpg?v=639084178740300000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-baixela/p",
-  popularity: 21
+  popularity: 20
  },
  {
   sku: "oxford-60602979",
@@ -245,7 +234,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cafe",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196941/1-Cj.-C---06-Xicaras-De-Cafezinho-75Ml-Com-Pires---Mail-Order---Maresia---Rm05-9515.jpg?v=638918284091300000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-xicarapq/p",
-  popularity: 22
+  popularity: 21
  },
  {
   sku: "oxford-60602977",
@@ -256,7 +245,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197027/1-Cj.-C---06-Pratos-Sobremesa-215Cm---Mail-Order---Maresia---Rm03-9515.jpg?v=638918297139100000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-sobremesa21/p",
-  popularity: 23
+  popularity: 22
  },
  {
   sku: "oxford-60608289",
@@ -267,7 +256,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206175/standard_resolution - 2026-07-24T151902.941.jpg?v=639205145579000000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-conic-500-ml-cena-inglesa/p",
-  popularity: 24
+  popularity: 23
  },
  {
   sku: "oxford-60608197",
@@ -278,7 +267,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207971/Friss-Conj-6_0004_Raso-otimizada.webp?v=639245476923600000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-friss-white/p",
-  popularity: 25
+  popularity: 24
  },
  {
   sku: "oxford-60608193",
@@ -289,7 +278,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207984/Friss-Conj-6_0001_Tigela-otimizada.webp?v=639245477560300000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tigelas-750-ml-e-15-cm-friss-white/p",
-  popularity: 26
+  popularity: 25
  },
  {
   sku: "oxford-60607997",
@@ -300,7 +289,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200449/Ecommerce_0162_Bazar-Tigela_300_ml-Marrom_Toffee.jpg?v=639052915051700000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-marrom-toffee/p",
-  popularity: 27
+  popularity: 26
  },
  {
   sku: "oxford-60607978",
@@ -311,7 +300,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204835/conjunto-de-talheres-sao-paulo-alta-otimizada.webp?v=639189539640830000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-42-pecas-sao-paulo/p",
-  popularity: 28
+  popularity: 27
  },
  {
   sku: "oxford-60607883",
@@ -322,7 +311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206782/Ecommerce_0014_Unni_Mare_Conjunto.jpg?v=639217041334630000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-unni-mare/p",
-  popularity: 29
+  popularity: 28
  },
  {
   sku: "oxford-60607876",
@@ -333,7 +322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar outras composicoes",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202354/Riacho---8-pecas-Pratos.jpg?v=639099603755170000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-pratos-8-pecas-unni-riacho/p",
-  popularity: 30
+  popularity: 29
  },
  {
   sku: "oxford-60607394",
@@ -344,7 +333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196140/1-Cj.-C---06-Pratos-Sobremesa-19Cm---Mail-Order---Donna-Colb---Am18-5120.jpg?v=638895647577470000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-sobremesa-18-cm-donna-colb/p",
-  popularity: 31
+  popularity: 30
  },
  {
   sku: "oxford-60607393",
@@ -355,7 +344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196136/1-Cj.-C---06-Pratos-Rasos-26Cm---Mail-Order---Donna-Colb---Am10-5120.jpg?v=638895646652400000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-rasos-26-cm-donna-colb/p",
-  popularity: 32
+  popularity: 31
  },
  {
   sku: "oxford-60607390",
@@ -366,7 +355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195871/1-Cj.-C---06-Pratos-Sobremesa-19Cm---Mail-Order---Donna-Cena-Inglesa---Am18-5131.jpg?v=638893267382300000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-sobremesa-18-cm-donna-cena-inglesa/p",
-  popularity: 33
+  popularity: 32
  },
  {
   sku: "oxford-60607368",
@@ -377,7 +366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196171/6-Tigelas-Flat-Chuvisco.png?v=639160236644500000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-chuvisco/p",
-  popularity: 34
+  popularity: 33
  },
  {
   sku: "oxford-60607321",
@@ -388,7 +377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197188/Ryo_Maresia_20_30pcs-brinde-travessa-1200x1200.jpg?v=638918310274170000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-30-pecas-ryo-maresia-travessa-de-brinde/p",
-  popularity: 35
+  popularity: 34
  },
  {
   sku: "oxford-60607309",
@@ -399,7 +388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 10 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196900/Maresia-10pcs.png.png?v=638918277063970000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-10-pecas-ryo-maresia/p",
-  popularity: 36
+  popularity: 35
  },
  {
   sku: "oxford-60606821",
@@ -410,7 +399,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199124/1a08-flat-duna-conjunto.jpg?v=638996757169130000",
   productUrl: "https://www.oxfordporcelanas.com.br/duna-jantar-30pcs/p",
-  popularity: 37
+  popularity: 36
  },
  {
   sku: "oxford-60606789",
@@ -421,7 +410,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189734/Conjunto_Flat_Duna_Raso_06.jpg?v=638815268592400000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-unni-duna/p",
-  popularity: 38
+  popularity: 37
  },
  {
   sku: "oxford-60606786",
@@ -432,7 +421,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196678/Conjunto_Tropicano.jpg?v=638918234145930000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-tropicano/p",
-  popularity: 39
+  popularity: 38
  },
  {
   sku: "oxford-60606027",
@@ -443,7 +432,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196745/139732_Aparelho_De_Jantar_E_Cha_20_Pecas_Mendi_.jpg?v=638918248229770000",
   productUrl: "https://www.oxfordporcelanas.com.br/mendi-malaquita-20pcs/p",
-  popularity: 40
+  popularity: 39
  },
  {
   sku: "oxford-60606216",
@@ -454,7 +443,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir tematicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205861/141696_Conjunto_De_Churrasco_6_Pecas_Menu_Do_Ch.jpg?v=639201645762470000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-churrasco-6pcs-menu-churrasqueiro/p",
-  popularity: 41
+  popularity: 40
  },
  {
   sku: "oxford-60606053",
@@ -465,7 +454,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197097/132996_Aparelho_De_Jantar_E_Cha_30_Pecas_Unni_Brisa.jpg?v=638918302814630000",
   productUrl: "https://www.oxfordporcelanas.com.br/unni-brisa/p",
-  popularity: 42
+  popularity: 41
  },
  {
   sku: "oxford-60606049",
@@ -476,18 +465,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196753/139733_Aparelho_De_Jantar_E_Cha_30_Pecas_Mendi_.jpg?v=638918248653730000",
   productUrl: "https://www.oxfordporcelanas.com.br/mendi-malaquita/p",
-  popularity: 43
- },
- {
-  sku: "oxford-60605453",
-  name: "Aparelho de Jantar E Lanche 16 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197154/Maresia_16pecas.jpg?v=638918307514170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16ryo-maresia/p",
-  popularity: 44
+  popularity: 42
  },
  {
   sku: "oxford-60605421",
@@ -498,7 +476,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183206/126795_Travessaa_Refrataria_Branca_Tango_M.jpg?v=638350469862000000",
   productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-media-branco/p",
-  popularity: 45
+  popularity: 43
  },
  {
   sku: "oxford-60603886",
@@ -509,7 +487,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203661/113350_Frigideira_Reta_28cm_01.jpg?v=639167059329500000",
   productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-28cm/p",
-  popularity: 46
+  popularity: 44
  },
  {
   sku: "oxford-60603885",
@@ -520,7 +498,18 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203701/113347_Frigideira_32cm_01.jpg?v=639167064235770000",
   productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-32cm/p",
-  popularity: 47
+  popularity: 45
+ },
+ {
+  sku: "oxford-60603733",
+  name: "Caneca Ryo 380 Ml Maresia",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209493/Ryo_Caneca_Grande_380ml_Maresia-otimizada.webp?v=639259305820400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-maresia-380ml/p",
+  popularity: 46
  },
  {
   sku: "oxford-60603732",
@@ -531,7 +520,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209495/Ryo_Caneca_Pequena_260ml_Maresia-otimizada.webp?v=639259306001500000",
   productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-maresia-260ml/p",
-  popularity: 48
+  popularity: 47
  },
  {
   sku: "oxford-60603524",
@@ -542,7 +531,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir petisqueiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174304/Petisqueira-2.jpg?v=637635226765830000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxfordporcelanas-petisqueira28/p",
-  popularity: 49
+  popularity: 48
  },
  {
   sku: "oxford-60603270",
@@ -553,7 +542,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203720/1-Frigideira-Em-Aco-Inox-26Cm---Mail-Order---Hive---Hive-4677.jpg?v=639167065458300000",
   productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-grande/p",
-  popularity: 50
+  popularity: 49
  },
  {
   sku: "oxford-60603269",
@@ -564,6 +553,17 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203727/1-Frigideira-Em-Aco-Inox-20Cm---Mail-Order---Hive---Hive-4679.jpg?v=639167065973670000",
   productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-media/p",
+  popularity: 50
+ },
+ {
+  sku: "oxford-60603112",
+  name: "Faqueiro Com 16 Peças Vermelho Intenso",
+  brand: "Biona",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173468/Faqueiro-16p.jpg?v=637606505524300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-servir-talheres-polip-vermelhointenso/p",
   popularity: 51
  },
  {
@@ -622,6 +622,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 56
  },
  {
+  sku: "oxford-29701303",
+  name: "Pote Hermético de Vidro Retangular 1,5 L",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176273/058986-1.jpg?v=637830494948130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-1-5l/p",
+  popularity: 57
+ },
+ {
   sku: "oxford-60608341",
   name: "Assadeira Refratária Tango Mini Maresia – 350 ml",
   brand: "Cookware",
@@ -630,18 +641,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207259/Refratarias_PP_maresia-otimizada.webp?v=639222290822400000",
   productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-mini-maresia-350-ml/p",
-  popularity: 57
+  popularity: 58
  },
  {
-  sku: "oxford-60608261",
-  name: "Jogo de 4 canecas 350ml Flat Chuvisco Jogo de 4 canecas 350ml Oxford Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 98,
+  sku: "oxford-60608254",
+  name: "Jogo de 2 Travessas 28 Cm Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 98.9,
   unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205322/standard_resolution---2026-07-14T131545.335.jpg?v=639196426100170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-350ml-flat-chuvisco/p",
-  popularity: 58
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205279/2-TRAVESSAS.png?v=639202547738870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-travessas-28-cm-ryo-maresia/p",
+  popularity: 59
  },
  {
   sku: "oxford-60608253",
@@ -652,7 +663,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205055/standard_resolution---2026-07-09T090217.694.jpg?v=639191955545800000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-27-5-cm-ryo-maresia/p",
-  popularity: 59
+  popularity: 60
  },
  {
   sku: "oxford-60608245",
@@ -663,7 +674,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204726/Design-sem-nome---2026-07-03T152648.443.png?v=639187003478900000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-18-pecas-ryo-maresia/p",
-  popularity: 60
+  popularity: 61
  },
  {
   sku: "oxford-60608244",
@@ -674,7 +685,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204709/standard_resolution---2026-07-03T150307.878-otimizada.webp?v=639186989089430000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-22-5-cm-ryo-maresia/p",
-  popularity: 61
+  popularity: 62
  },
  {
   sku: "oxford-60608243",
@@ -685,7 +696,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 42 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204693/9515_Ryo_Maresia_20_30.jpg?v=639186968299600000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-ryo-maresia/p",
-  popularity: 62
+  popularity: 63
  },
  {
   sku: "oxford-60608242",
@@ -696,7 +707,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204676/standard_resolution---2026-07-03T141944.269-otimizada.webp?v=639186962731870000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-27-5-cm-ryo-maresia/p",
-  popularity: 63
+  popularity: 64
  },
  {
   sku: "oxford-60608235",
@@ -707,7 +718,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204623/standard_resolution---2026-07-02T145200.443.jpg?v=639186118632170000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-260ml-ryo-maresia/p",
-  popularity: 64
+  popularity: 65
  },
  {
   sku: "oxford-60608200",
@@ -718,7 +729,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208023/Friss-Conjunto-Jantar-e-Lanche-otimizada.webp?v=639245479712200000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-24-pecas-friss-white/p",
-  popularity: 65
+  popularity: 66
  },
  {
   sku: "oxford-60608198",
@@ -729,7 +740,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 18 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207993/Friss-Conjunto-Pratos-otimizada.webp?v=639245478305170000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-friss-white/p",
-  popularity: 66
+  popularity: 67
  },
  {
   sku: "oxford-60608196",
@@ -740,7 +751,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207958/Friss-Conj-6_0003_Fundo-otimizada.webp?v=639245476334200000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-22-cm-friss-white/p",
-  popularity: 67
+  popularity: 68
  },
  {
   sku: "oxford-60608194",
@@ -751,7 +762,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204569/Friss-Conj-6_0000_Caneca-otimizada.webp?v=639180072463830000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-340-ml-friss-white/p",
-  popularity: 68
+  popularity: 69
  },
  {
   sku: "oxford-60608151",
@@ -762,7 +773,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201388/Ecommerce_Conj_6_0011_Unni_Mare_Prato_Raso-copy-2.jpg?v=639062517335000000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-mare-1/p",
-  popularity: 69
+  popularity: 70
  },
  {
   sku: "oxford-60608001",
@@ -773,7 +784,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200451/Ecommerce_0168_Caneca-Tulipa-Marrom-Toffee.jpg?v=639161046441900000",
   productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-330-ml-marrom-toffee/p",
-  popularity: 70
+  popularity: 71
  },
  {
   sku: "oxford-60607972",
@@ -784,7 +795,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203866/Noronha-42.jpg?v=639167907730970000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-42-pecas-noronha/p",
-  popularity: 71
+  popularity: 72
  },
  {
   sku: "oxford-60607969",
@@ -795,7 +806,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203904/Olinda---30-pecas.jpg?v=639167913148330000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-42-pecas-olinda/p",
-  popularity: 72
+  popularity: 73
  },
  {
   sku: "oxford-60607959",
@@ -806,7 +817,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200619/Slim---garfo-de-sobremesa-x-6.jpg?v=639056299082230000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-garfos-de-sobremesa-165-cm-slim/p",
-  popularity: 73
+  popularity: 74
  },
  {
   sku: "oxford-60607884",
@@ -817,7 +828,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201400/Ecommerce_0014_Unni_Mare_Conjunto.jpg?v=639062518128400000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-unni-mare/p",
-  popularity: 74
+  popularity: 75
  },
  {
   sku: "oxford-60607877",
@@ -828,7 +839,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar outras composicoes",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202348/Riacho---8-pecas-Lanche.jpg?v=639099603097000000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-lanche-8-pecas-unni-riacho/p",
-  popularity: 75
+  popularity: 76
  },
  {
   sku: "oxford-60607400",
@@ -839,17 +850,6 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos relevo",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195900/oxford-daily-prato-fundo-mendi-marfim-6-pecas-01.jpg?v=638893268530730000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-23-cm-mendi-marfim/p",
-  popularity: 76
- },
- {
-  sku: "oxford-60607396",
-  name: "Jogo de 6 Pratos Fundos 23 Cm Mendi Malaquita",
-  brand: "Cerâmicas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195888/139727_Conjunto_De_6_Pratos_Fundos_23_Cm_Mendi_.jpg?v=638893267991500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-23-cm-mendi-malaquita/p",
   popularity: 77
  },
  {
@@ -908,17 +908,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 82
  },
  {
-  sku: "oxford-60607057",
-  name: "Jogo de 6 Xícaras de Chá 220 ml com pires Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192429/Conjunto_6_Flora_dalia_Xicara.jpg.jpg?v=638816171146230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-xicaras-cha/p",
-  popularity: 83
- },
- {
   sku: "oxford-60607001",
   name: "Jogo de 6 Pratos Sobremesa 22 cm Flora Camélia",
   brand: "Oxford Porcelanas",
@@ -927,7 +916,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190929/porcelanas-conj-6-Flora_Camelia_Prato-Sobremesa.jpg.jpg?v=638815518677900000",
   productUrl: "https://www.oxfordporcelanas.com.br/camelia-pratos-sobremesa/p",
-  popularity: 84
+  popularity: 83
  },
  {
   sku: "oxford-60606985",
@@ -938,7 +927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192821/Conj_6_Pecas_Ryo_Volcano_Raso.jpg.jpg?v=638816943010170000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-pratos-rasos/p",
-  popularity: 85
+  popularity: 84
  },
  {
   sku: "oxford-60606981",
@@ -949,7 +938,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207589/porcelanas-conj-6-Flora_Camelia_Prato-Raso.jpg.jpg?v=639227530293230000",
   productUrl: "https://www.oxfordporcelanas.com.br/camelia-pratos-raso/p",
-  popularity: 86
+  popularity: 85
  },
  {
   sku: "oxford-60606897",
@@ -960,7 +949,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203837/150443-1-FAQUEIRO-EM-ACO-INOX-42PCS-FORTALEZA.jpg?v=639167906307800000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-inox-fortaleza/p",
-  popularity: 87
+  popularity: 86
  },
  {
   sku: "oxford-60606841",
@@ -971,6 +960,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe bule",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195144/072491-bule-p-cha-em-vidro-e-aco-inox-c-infusor-700ml.jpg?v=638859597190400000",
   productUrl: "https://www.oxfordporcelanas.com.br/bule-cha-icon/p",
+  popularity: 87
+ },
+ {
+  sku: "oxford-60606832",
+  name: "Aparelho de Jantar e Chá 30 peças Ryo Volcano",
+  brand: "Oxford Porcelanas",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197283/Ryo_Volcano_Conjunto.jpg.jpg?v=638918342854230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-jantar-volcano-2/p",
   popularity: 88
  },
  {
@@ -1183,6 +1183,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 107
  },
  {
+  sku: "oxford-60605453",
+  name: "Aparelho de Jantar E Lanche 16 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197154/Maresia_16pecas.jpg?v=638918307514170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16ryo-maresia/p",
+  popularity: 108
+ },
+ {
   sku: "oxford-60604115",
   name: "Espátula de Silicone 33,5 Cm Cool Grey",
   brand: "Oxford",
@@ -1191,7 +1202,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178319/069960_Espatula_Cool_Grey_335cm.jpg?v=638007500410930000",
   productUrl: "https://www.oxfordporcelanas.com.br/espatula-silicone-cool-grey-33-cm/p",
-  popularity: 108
+  popularity: 109
  },
  {
   sku: "oxford-60603978",
@@ -1202,7 +1213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe cafeteria",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177367/117022-1.jpg?v=637889933985700000",
   productUrl: "https://www.oxfordporcelanas.com.br/copo-parede-dupla-250ml/p",
-  popularity: 109
+  popularity: 110
  },
  {
   sku: "oxford-60603872",
@@ -1213,7 +1224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209481/Ryo_Tigela_18cm_500ml_Maresia-otimizada.webp?v=639259305017570000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-maresia-500ml/p",
-  popularity: 110
+  popularity: 111
  },
  {
   sku: "oxford-60603871",
@@ -1224,7 +1235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir saladeira",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201896/Saladeira.jpg?v=639077863062100000",
   productUrl: "https://www.oxfordporcelanas.com.br/saladeira-maresia-26cm-1l/p",
-  popularity: 111
+  popularity: 112
  },
  {
   sku: "oxford-60603758",
@@ -1235,18 +1246,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184851/Pote_de_Vidro_02.jpg?v=638536219954800000",
   productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-com-tampa-900ml/p",
-  popularity: 112
+  popularity: 113
  },
  {
-  sku: "oxford-60603733",
-  name: "Caneca Ryo 380 Ml Maresia",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
+  sku: "oxford-60603271",
+  name: "Caçarola Wok Antiaderente Corpo Triplo Indução CookingPro 34 cm",
+  brand: "Cookware",
+  unitPrice: 999.9,
   unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209493/Ryo_Caneca_Grande_380ml_Maresia-otimizada.webp?v=639259305820400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-maresia-380ml/p",
-  popularity: 113
+  category: "panelas woks",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203691/1-Panela-Wok-Em-Aco-Inox-34Cm-5L---Mail-Order---Hive---Hive-4666.jpg?v=639167063077700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-panela-wok/p",
+  popularity: 114
  },
  {
   sku: "oxford-60603166",
@@ -1257,7 +1268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203986/Faca-de-mesa.jpg?v=639168013036770000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza9/p",
-  popularity: 114
+  popularity: 115
  },
  {
   sku: "oxford-60603135",
@@ -1268,7 +1279,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192815/Utensilios-de-madeira.jpg?v=638816923726000000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-cozinha-utens-oxford-waterblue/p",
-  popularity: 115
+  popularity: 116
  },
  {
   sku: "oxford-60603132",
@@ -1279,7 +1290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173532/Garfo-de-Mesa-Basis-individual.jpg?v=637606541812300000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis3/p",
-  popularity: 116
+  popularity: 117
  },
  {
   sku: "oxford-60603076",
@@ -1290,7 +1301,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos copos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190568/Copo-long-drink.jpg?v=638815417959130000",
   productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-longdrink-490/p",
-  popularity: 117
+  popularity: 118
  },
  {
   sku: "oxford-60602973",
@@ -1301,7 +1312,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196821/9515_Ryo_Maresia_20_30.jpg?v=638918268883470000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia/p",
-  popularity: 118
+  popularity: 119
  },
  {
   sku: "oxford-60601669",
@@ -1312,7 +1323,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208296/Oxford_Talheres_Selva.jpg?v=639247502082800000",
   productUrl: "https://www.oxfordporcelanas.com.br/selva-faqueiro/p",
-  popularity: 119
+  popularity: 120
  },
  {
   sku: "oxford-60600556",
@@ -1323,7 +1334,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180993/9504_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211320346430000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-white/p",
-  popularity: 120
+  popularity: 121
  },
  {
   sku: "oxford-60600514",
@@ -1334,7 +1345,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207490/Athenas_Classic_Taca_Bourdeaux_920ml-02.jpg?v=639227451238270000",
   productUrl: "https://www.oxfordporcelanas.com.br/athenas-920-bordeaux/p",
-  popularity: 121
+  popularity: 122
  },
  {
   sku: "oxford-50300103",
@@ -1345,17 +1356,6 @@ export const CATALOG: CatalogItem[] = [
   category: "gourmet conjuntos de xicaras com pires",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192697/oxford-porcelanas-gourmet-xicara-cha-empilhavel-com-pires-pro-M07B-E06D-01.jpg?v=638816338286100000",
   productUrl: "https://www.oxfordporcelanas.com.br/gourmet-xicara-cha-empilhavel-220ml-conjunto/p",
-  popularity: 122
- },
- {
-  sku: "oxford-30300103",
-  name: "Assadeira Refratária Bake Media 26x18x5,6 Cm Branca",
-  brand: "Cookware",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/161608/oxford-cookware-travessa-refrataria-bake-branca-media.jpg?v=636487677551770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-bake-branca-media/p",
   popularity: 123
  },
  {
@@ -1403,17 +1403,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 127
  },
  {
-  sku: "oxford-29701303",
-  name: "Pote Hermético de Vidro Retangular 1,5 L",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176273/058986-1.jpg?v=637830494948130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-1-5l/p",
-  popularity: 128
- },
- {
   sku: "oxford-29701302",
   name: "Pote Hermético de Vidro Retangular 1,04 L",
   brand: "Oxford",
@@ -1422,7 +1411,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes retangulares",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176272/058985-1.jpg?v=637830494943770000",
   productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-1-04l/p",
-  popularity: 129
+  popularity: 128
  },
  {
   sku: "oxford-19903301",
@@ -1433,18 +1422,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos chef",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159041/oxford-porcelanas-prato-entrada-00.jpg?v=636241292434900000",
   productUrl: "https://www.oxfordporcelanas.com.br/prato-entrada-30cm/p",
-  popularity: 130
- },
- {
-  sku: "oxford-10701291",
-  name: "Jogo de 6 Pratos Rasos 29 Cm Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191563/oxford-porcelanas-pratos-rasos-soleil-white-02.jpg?v=638816120158800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-rasos/p",
-  popularity: 131
+  popularity: 129
  },
  {
   sku: "oxford-10201305",
@@ -1455,7 +1433,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191083/oxford-porcelanas-pratos-sobremesa-flamingo-white-02.jpg?v=638815534816100000",
   productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-pratos-sobremesa/p",
-  popularity: 132
+  popularity: 130
  },
  {
   sku: "oxford-10201303",
@@ -1466,7 +1444,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191089/oxford-porcelanas-pratos-rasos-flamingo-white-02.jpg?v=638815535054330000",
   productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-pratos-rasos/p",
-  popularity: 133
+  popularity: 131
  },
  {
   sku: "oxford-20200102",
@@ -1477,7 +1455,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196713/oxford-daily-mendi-marfim-30-pecas-00.jpg?v=638918243800070000",
   productUrl: "https://www.oxfordporcelanas.com.br/mendi-marfim/p",
-  popularity: 134
+  popularity: 132
  },
  {
   sku: "oxford-60608414",
@@ -1488,7 +1466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208112/standard_resolution---2026-09-10T163808.757.jpg?v=639251000472500000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-unni-tropicano/p",
-  popularity: 135
+  popularity: 133
  },
  {
   sku: "oxford-60608413",
@@ -1499,7 +1477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208103/standard_resolution---2026-09-10T162917.697.jpg?v=639246654671370000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-unni-tropicano/p",
-  popularity: 136
+  popularity: 134
  },
  {
   sku: "oxford-60608412",
@@ -1510,7 +1488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208094/standard_resolution---2026-09-10T161820.327.jpg?v=639246647843670000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-tropicano/p",
-  popularity: 137
+  popularity: 135
  },
  {
   sku: "oxford-60608411",
@@ -1521,7 +1499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208084/4-RASOS-TROPICANO.jpg?v=639246641078670000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-tropicano/p",
-  popularity: 138
+  popularity: 136
  },
  {
   sku: "oxford-60608410",
@@ -1532,7 +1510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208888/Cepo_Wood_2-otimizada.webp?v=639255956931300000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-5-facas-com-cepo-de-madeira-wood/p",
-  popularity: 139
+  popularity: 137
  },
  {
   sku: "oxford-60608409",
@@ -1543,7 +1521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208901/Cepo_Black_2-otimizada.webp?v=639255957179000000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-com-cepo-de-madeira-black/p",
-  popularity: 140
+  popularity: 138
  },
  {
   sku: "oxford-60608394",
@@ -1554,7 +1532,18 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208915/Embalagem_Generative-Fill-otimizada.webp?v=639255978322800000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-talheres-para-churrasco-aco-inox-12-pecas-sao-paulo/p",
-  popularity: 141
+  popularity: 139
+ },
+ {
+  sku: "oxford-60608342",
+  name: "Assadeira Refratária Samba Grande Marrom - 3,7 l",
+  brand: "Cookware",
+  unitPrice: 134.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207251/Travessas_Refratarias_Samba_G_37L_Marrom.webp?v=639222289540830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-grande-marrom-3-7-l/p",
+  popularity: 140
  },
  {
   sku: "oxford-60608330",
@@ -1565,7 +1554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogos de panelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206669/TheCook_Panela_20cm-otimizada.webp?v=639216380983170000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-panelas-para-inducao-5-pecas-the-cook/p",
-  popularity: 142
+  popularity: 141
  },
  {
   sku: "oxford-60608290",
@@ -1576,7 +1565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206179/3-tigelas-cena-inglesa.png?v=639210093498630000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-tigelas-conic-500-ml-cena-inglesa-1/p",
-  popularity: 143
+  popularity: 142
  },
  {
   sku: "oxford-60608277",
@@ -1587,7 +1576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206072/standard_resolution - 2026-07-23T084944.351.jpg?v=639204044768270000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-21-5-cm-ryo-maresia/p",
-  popularity: 144
+  popularity: 143
  },
  {
   sku: "oxford-60608267",
@@ -1598,18 +1587,18 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205374/standard_resolution---2026-07-14T153040.172.jpg?v=639196508985100000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-21-5-cm-ryo-maresia/p",
-  popularity: 145
+  popularity: 144
  },
  {
-  sku: "oxford-60608254",
-  name: "Jogo de 2 Travessas 28 Cm Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 98.9,
+  sku: "oxford-60608261",
+  name: "Jogo de 4 canecas 350ml Flat Chuvisco Jogo de 4 canecas 350ml Oxford Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 98,
   unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205279/2-TRAVESSAS.png?v=639202547738870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-travessas-28-cm-ryo-maresia/p",
-  popularity: 146
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205322/standard_resolution---2026-07-14T131545.335.jpg?v=639196426100170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-350ml-flat-chuvisco/p",
+  popularity: 145
  },
  {
   sku: "oxford-60608252",
@@ -1620,7 +1609,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir tematicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205046/standard_resolution---2026-07-09T084113.000.jpg?v=639191948264600000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-massa/p",
-  popularity: 147
+  popularity: 146
  },
  {
   sku: "oxford-60608251",
@@ -1631,7 +1620,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205026/standard_resolution---2026-07-08T172109.471.jpg?v=639191972404930000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-flat-600-ml-chuvisco/p",
-  popularity: 148
+  popularity: 147
  },
  {
   sku: "oxford-60608250",
@@ -1642,7 +1631,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205019/standard_resolution---2026-07-08T163452.228.jpg?v=639191377031400000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-oxford-flat-chuvisco/p",
-  popularity: 149
+  popularity: 148
  },
  {
   sku: "oxford-60608249",
@@ -1653,7 +1642,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205011/standard_resolution---2026-07-08T160223.636.jpg?v=639191349027430000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-servir-6-pecas-unni-brisa/p",
-  popularity: 150
+  popularity: 149
  },
  {
   sku: "oxford-60608239",
@@ -1664,7 +1653,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209354/Design sem nome -50-.jpg?v=639258584528830000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-380-ml-ryo-maresia/p",
-  popularity: 151
+  popularity: 150
  },
  {
   sku: "oxford-60608237",
@@ -1675,7 +1664,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204638/standard_resolution---2026-07-02T164028.466.jpg?v=639258534751570000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-tigelas-600ml-flat-chuvisco/p",
-  popularity: 152
+  popularity: 151
  },
  {
   sku: "oxford-60608234",
@@ -1686,7 +1675,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogos de panelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207097/Everyday-Maresia-otimizada.webp?v=639221582415400000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-panelas-antiaderentes-para-inducao-5-pecas-everyday-maresia/p",
-  popularity: 153
+  popularity: 152
  },
  {
   sku: "oxford-60608226",
@@ -1697,7 +1686,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205150/Oxford_4_0010_Oxford_Prato_Sobremesa_Seda-otimizada.webp?v=639192168293530000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-luna-seda/p",
-  popularity: 154
+  popularity: 153
  },
  {
   sku: "oxford-60608209",
@@ -1708,7 +1697,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204123/standard_resolution---2026-06-12T151143.175.jpg?v=639198894823130000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-tigelas-500-ml-ryo-maresia/p",
-  popularity: 155
+  popularity: 154
  },
  {
   sku: "oxford-60608208",
@@ -1719,7 +1708,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 18 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204110/Design-sem-nome---2026-06-12T144150.538.png?v=639168835620200000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-ryo-maresia/p",
-  popularity: 156
+  popularity: 155
  },
  {
   sku: "oxford-60608205",
@@ -1730,7 +1719,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204053/Design-sem-nome---2026-06-12T132120.404.png?v=639168784868630000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-500-ml-ryo-maresia/p",
-  popularity: 157
+  popularity: 156
  },
  {
   sku: "oxford-60608195",
@@ -1741,7 +1730,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204559/Friss-Conj-6_0002_Sobremesa-otimizada.webp?v=639180072216600000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-18-cm-friss-white/p",
-  popularity: 158
+  popularity: 157
  },
  {
   sku: "oxford-60608178",
@@ -1752,7 +1741,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202187/Jogo-6-tigelas-ryo-volcano.jpg?v=639089283337030000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tigelas-ryo-500ml-ryo-volcano/p",
-  popularity: 159
+  popularity: 158
  },
  {
   sku: "oxford-60608145",
@@ -1763,6 +1752,17 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202243/Ecommerce-Conj-6_0002_Unni_Cafe_Coado_Prato_Sobremesa.jpg?v=639099583955570000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-cafe-coado-1/p",
+  popularity: 159
+ },
+ {
+  sku: "oxford-60608144",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Café Coado",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202249/Ecommerce-Conj-6_0003_Unni_Cafe_Coado_Prato_Fundo_Top.jpg?v=639099584397370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-cafe-coado-1/p",
   popularity: 160
  },
  {
@@ -1986,6 +1986,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 180
  },
  {
+  sku: "oxford-60607396",
+  name: "Jogo de 6 Pratos Fundos 23 Cm Mendi Malaquita",
+  brand: "Cerâmicas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195888/139727_Conjunto_De_6_Pratos_Fundos_23_Cm_Mendi_.jpg?v=638893267991500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-23-cm-mendi-malaquita/p",
+  popularity: 181
+ },
+ {
   sku: "oxford-60607395",
   name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Colb",
   brand: "Biona",
@@ -1994,7 +2005,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195885/biona-xicara-de-cha-com-pires-actual-colb-03.jpg?v=638893267862970000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-xicaras-grandes-200-ml-com-pires-donna-colb/p",
-  popularity: 181
+  popularity: 182
  },
  {
   sku: "oxford-60607388",
@@ -2005,7 +2016,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195865/1-Cj.-C---06-Pratos-Fundos-22Cm---Mail-Order---Donna-Cena-Inglesa---Am14-5131.jpg?v=638893267183570000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-21-5-cm-donna-cena-inglesa/p",
-  popularity: 182
+  popularity: 183
  },
  {
   sku: "oxford-60607379",
@@ -2016,7 +2027,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196190/6 Canecas Flat Verde.png?v=638896534763470000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-verde/p",
-  popularity: 183
+  popularity: 184
  },
  {
   sku: "oxford-60607361",
@@ -2027,7 +2038,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196153/6-Tigelas-Flat-Gray.png?v=639160232946000000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-gray/p",
-  popularity: 184
+  popularity: 185
  },
  {
   sku: "oxford-60607360",
@@ -2038,7 +2049,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196132/6-Tigelas-Flat-Pacifico.png?v=639160250426200000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-pacifico/p",
-  popularity: 185
+  popularity: 186
  },
  {
   sku: "oxford-60607318",
@@ -2049,7 +2060,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197227/Ryo_Maresia_20_30pcs-brinde-saladeira-1200x1200.jpg?v=638918311203100000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-ryo-maresia-saladeira/p",
-  popularity: 186
+  popularity: 187
  },
  {
   sku: "oxford-60607307",
@@ -2060,17 +2071,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191766/Oxford_Porcelanas_Ryo_White_Caneca_Grande.jpg?v=638816134287900000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-380-ml-ryo-white1/p",
-  popularity: 187
- },
- {
-  sku: "oxford-60607171",
-  name: "Jogo de 6 Tigelas 500 ml Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190197/Tigelas-Ryo-white--1-.png.png?v=638815349802530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-tigela-ryo-500ml-white/p",
   popularity: 188
  },
  {
@@ -2151,6 +2151,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 195
  },
  {
+  sku: "oxford-60607057",
+  name: "Jogo de 6 Xícaras de Chá 220 ml com pires Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192429/Conjunto_6_Flora_dalia_Xicara.jpg.jpg?v=638816171146230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-xicaras-cha/p",
+  popularity: 196
+ },
+ {
   sku: "oxford-60607056",
   name: "Jogo de 6 Xícaras de Chá 220 ml com pires Flora Camélia",
   brand: "Oxford Porcelanas",
@@ -2159,7 +2170,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207594/Conjunto_6_Flora_camelia_Xicara.jpg.jpg?v=639227537328830000",
   productUrl: "https://www.oxfordporcelanas.com.br/camelia-xicaras-cha/p",
-  popularity: 196
+  popularity: 197
  },
  {
   sku: "oxford-60607045",
@@ -2170,7 +2181,18 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192021/Conjunto_6_Flora_camelia_Bowl.jpg.jpg?v=638816147019670000",
   productUrl: "https://www.oxfordporcelanas.com.br/camelia-tigelas-sobremesa/p",
-  popularity: 197
+  popularity: 198
+ },
+ {
+  sku: "oxford-60607042",
+  name: "Jogo de 6 Tigelas de Sobremesa 12 cm Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207565/Conjunto_6_Flora_AmorPerfeito_Bowl.jpg.jpg?v=639227479532530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-tigela/p",
+  popularity: 199
  },
  {
   sku: "oxford-60607002",
@@ -2181,7 +2203,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207598/porcelanas-conj-6-Flora_Dalia_Prato-Sobremesa.jpg.jpg?v=639227538870430000",
   productUrl: "https://www.oxfordporcelanas.com.br/dalia-pratos-sobremesa/p",
-  popularity: 198
+  popularity: 200
  },
  {
   sku: "oxford-60606997",
@@ -2192,7 +2214,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191019/porcelanas-conj-6-Flamingo_Lafayette_Prato-sobremesa.jpg.jpg?v=638815529630430000",
   productUrl: "https://www.oxfordporcelanas.com.br/lafayette-pratos-sobremesa/p",
-  popularity: 199
+  popularity: 201
  },
  {
   sku: "oxford-60606994",
@@ -2203,7 +2225,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197303/Conj_6_Pecas_Ryo_Volcano_Sobremesa.jpg.jpg?v=638918344044870000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-pratos-sobremesa/p",
-  popularity: 200
+  popularity: 202
  },
  {
   sku: "oxford-60606988",
@@ -2214,7 +2236,18 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196411/porcelanas-conj-6-Flamingo_Lafayette_Prato-Raso.jpg.jpg?v=638903533048400000",
   productUrl: "https://www.oxfordporcelanas.com.br/lafayette-pratos-rasos/p",
-  popularity: 201
+  popularity: 203
+ },
+ {
+  sku: "oxford-60606984",
+  name: "Jogo de 6 Pratos Rasos 27,5cm Ryo Galápagos Jogo de 6 Pratos Rasos 27,5 cm Ryo Galápagos",
+  brand: "Oxford Porcelanas",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207285/porcelanas-conj-6-Ryo_Galapagos_Prato-Raso.jpg.jpg?v=639227406176130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-rasos/p",
+  popularity: 204
  },
  {
   sku: "oxford-60606963",
@@ -2225,7 +2258,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190934/porcelanas-conj-6-Flora_Dalia_Prato-Fundo.jpg.jpg?v=638815518966330000",
   productUrl: "https://www.oxfordporcelanas.com.br/dalia-pratos-fundo/p",
-  popularity: 202
+  popularity: 205
  },
  {
   sku: "oxford-60606924",
@@ -2236,7 +2269,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194870/Conj-4-pecas-151064-caneca-chubby-chia-330-ml.jpg.jpg?v=638853236875300000",
   productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-chia/p",
-  popularity: 203
+  popularity: 206
  },
  {
   sku: "oxford-60606923",
@@ -2247,7 +2280,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186149/150757_Conjunto_Tabuas_de_Corte_c_suporte_23.8cm.jpg?v=638750480071870000",
   productUrl: "https://www.oxfordporcelanas.com.br/tabuas-corte-sortido/p",
-  popularity: 204
+  popularity: 207
  },
  {
   sku: "oxford-60606902",
@@ -2258,7 +2291,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207137/Oxford_Frigideira_Linha_Gourmet_22cm_Angulo_02.jpg?v=639221599159630000",
   productUrl: "https://www.oxfordporcelanas.com.br/frigideira-aluminio-22cm/p",
-  popularity: 205
+  popularity: 208
  },
  {
   sku: "oxford-60606900",
@@ -2269,7 +2302,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208347/151026-1-FAQUEIRO-EM-ACO-INOX-96-PCS-SALVADOR.jpg?v=639249809788700000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-salvador-96pcs/p",
-  popularity: 206
+  popularity: 209
  },
  {
   sku: "oxford-60606899",
@@ -2280,7 +2313,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201016/faqueiro-Noronha-Separadas-65pecas-1200.jpg?v=639057275112430000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-noronha-65pcs/p",
-  popularity: 207
+  popularity: 210
  },
  {
   sku: "oxford-60606898",
@@ -2291,18 +2324,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208360/150444-1-FAQUEIRO-EM-ACO-INOX-42PCS-SALVADOR.jpg?v=639249810313800000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-salvador-42pcs/p",
-  popularity: 208
- },
- {
-  sku: "oxford-60606896",
-  name: "Faqueiro em Aço Inox 30 Peças Olinda",
-  brand: "Oxford",
-  unitPrice: 369.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208381/150450-faqueiro-em-aco-inox-30-pecas-olinda-media--3-.jpg?v=639249811169530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-olinda-30pcs/p",
-  popularity: 209
+  popularity: 211
  },
  {
   sku: "oxford-60606895",
@@ -2313,7 +2335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186488/150457-FAQUEIRO-EM-ACO-INOX-30PCS-CLASS.jpg?v=638750485690000000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-inox-30pcs/p",
-  popularity: 210
+  popularity: 212
  },
  {
   sku: "oxford-60606894",
@@ -2324,7 +2346,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208329/153215_Conjunto_Profissionais_Talheres_Salvador_24.jpg?v=639249808871300000",
   productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-salvador-24pcs/p",
-  popularity: 211
+  popularity: 213
  },
  {
   sku: "oxford-60606881",
@@ -2335,7 +2357,7 @@ export const CATALOG: CatalogItem[] = [
   category: "complementos utensilios",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186129/149374_Talher_Para_Servir_Concha_21cm.jpg?v=638750479786930000",
   productUrl: "https://www.oxfordporcelanas.com.br/concha-ouro-preto/p",
-  popularity: 212
+  popularity: 214
  },
  {
   sku: "oxford-60606880",
@@ -2346,7 +2368,7 @@ export const CATALOG: CatalogItem[] = [
   category: "complementos utensilios",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186124/149368_Talher_Para_Servir_Colher_Vazada_25.5cm.jpg?v=638750479716470000",
   productUrl: "https://www.oxfordporcelanas.com.br/colher-vazada-ouro/p",
-  popularity: 213
+  popularity: 215
  },
  {
   sku: "oxford-60606857",
@@ -2357,18 +2379,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas cacarolas e panelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207726/152787_Linha_Feijoada_Cacarola_23-5cm.jpg?v=639228270328730000",
   productUrl: "https://www.oxfordporcelanas.com.br/cacarola-feijoada-235cm/p",
-  popularity: 214
- },
- {
-  sku: "oxford-60606832",
-  name: "Aparelho de Jantar e Chá 30 peças Ryo Volcano",
-  brand: "Oxford Porcelanas",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197283/Ryo_Volcano_Conjunto.jpg.jpg?v=638918342854230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-jantar-volcano-2/p",
-  popularity: 215
+  popularity: 216
  },
  {
   sku: "oxford-60606828",
@@ -2379,7 +2390,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207571/Flora_Conjunto_20_30_Camelia.jpg?v=639227483196770000",
   productUrl: "https://www.oxfordporcelanas.com.br/camelia-jantar-30pcs/p",
-  popularity: 216
+  popularity: 217
  },
  {
   sku: "oxford-60606794",
@@ -2390,17 +2401,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196222/Conjunto_Tropicano_Xicara_Pires_06.jpg?v=638900180294700000",
   productUrl: "https://www.oxfordporcelanas.com.br/xicaras-unni-tropicano/p",
-  popularity: 217
- },
- {
-  sku: "oxford-60606779",
-  name: "Jogo de 6 Pratos Sobremesa 20 cm Páscoa",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199361/Conjunto_Pascoa_Sobremesa_06.jpg?v=639041780916830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-unni-pascoa/p",
   popularity: 218
  },
  {
@@ -2470,17 +2470,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 224
  },
  {
-  sku: "oxford-60605057",
-  name: "Aparelho de Jantar 20 peças Donna Lírios",
-  brand: "Biona",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180297/Conjunto_donna_lirios.jpg?v=638131019525430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-lirios-20pcs/p",
-  popularity: 225
- },
- {
   sku: "oxford-60603022",
   name: "Aparelho de Jantar e Chá 20 Peças Unni Merengue",
   brand: "Cerâmicas",
@@ -2489,7 +2478,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177833/5507_Unni_Merengue_20_30pcs_1104x1104px.jpg?v=637949683618100000",
   productUrl: "https://www.oxfordporcelanas.com.br/unni-merengue-20pcs/p",
-  popularity: 226
+  popularity: 225
  },
  {
   sku: "oxford-20200101",
@@ -2500,7 +2489,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196691/oxford-daily-mendi-marfim-20-pecas-00.jpg?v=638918242226470000",
   productUrl: "https://www.oxfordporcelanas.com.br/mendi-marfim-20pcs/p",
-  popularity: 227
+  popularity: 226
  },
  {
   sku: "oxford-60606460",
@@ -2511,7 +2500,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190287/Bordeaux.jpg?v=638815402160730000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-bordeaux-670ml-petra-classic/p",
-  popularity: 228
+  popularity: 227
  },
  {
   sku: "oxford-60606345",
@@ -2522,6 +2511,17 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184272/5118_Donna_Folk_Tigela.jpg?v=638447478825000000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-folk/p",
+  popularity: 228
+ },
+ {
+  sku: "oxford-60606325",
+  name: "Jogo de 6 Taças de Cristal Para Cerveja 423 Ml Classic",
+  brand: "Biona",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195725/142365_Taca_De_Cristal_Para_Cerveja_423_ml_Classic_06.jpg?v=638884381189600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-cerveja-423ml-classic/p",
   popularity: 229
  },
  {
@@ -2569,2525 +2569,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 233
  },
  {
-  sku: "oxford-60606099",
-  name: "Concha 25,5 Cm Em Aço Inox Noronha",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184071/141889_Concha_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638445515635370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/concha-25-5cm-noronha/p",
-  popularity: 234
- },
- {
-  sku: "oxford-60606098",
-  name: "Colher de Servir Vazada 25,5 Cm em Aço Inox Noronha",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184070/141887_Colher_De_Servir_Vazada_255_Cm_em_Aco_Inox_Noronha.jpg?v=638445514949170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-vazada-25-5cm-noronha/p",
-  popularity: 235
- },
- {
-  sku: "oxford-60606097",
-  name: "Colher de Servir 25,5 Cm Em Aço Inox Noronha",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184069/141885_Colher_De_Servir_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638445513854600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-25-5cm-noronha/p",
-  popularity: 236
- },
- {
-  sku: "oxford-60605931",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190271/139115_Conjunto-de-6-Pratos-Sobremesa-20-Cm-Unni-Stripes-And-Dots.jpg?v=638815399085500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-stripes-and-dots/p",
-  popularity: 237
- },
- {
-  sku: "oxford-60605763",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Pacífico",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190057/Prato-Sobremesa---Pacifico---6-pecas.jpg?v=638815325045530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-sobremesa/p",
-  popularity: 238
- },
- {
-  sku: "oxford-60605754",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Pacífico",
-  brand: "Cerâmicas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190087/Prato-Raso---Pacifico---6-pecas.jpg?v=638815327595570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-rasos/p",
-  popularity: 239
- },
- {
-  sku: "oxford-60605749",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194569/136751_Flat_Chuvisco_Prato_Raso_26cm_06.jpg?v=638836281225600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-rasos/p",
-  popularity: 240
- },
- {
-  sku: "oxford-60605737",
-  name: "Aparelho de Jantar e Lanche 16 Peças Flat Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 479.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182319/136242_Flat_Samambaia_Conjunto_16.jpg?v=638300558666270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-samambaia/p",
-  popularity: 241
- },
- {
-  sku: "oxford-60605732",
-  name: "Aparelho de Jantar e Lanche 16 Peças Flat Gray",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182134/136454_Flat_Gray_Conjunto_16.jpg?v=638296870975400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcsflatgray/p",
-  popularity: 242
- },
- {
-  sku: "oxford-60605726",
-  name: "Aparelho de Jantar e Chá 30 Peças Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 969.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182255/136399_Flat_Onix_Conjunto_30.jpg?v=638300537130400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix/p",
-  popularity: 243
- },
- {
-  sku: "oxford-60605722",
-  name: "Aparelho de Jantar e Chá 30 Peças Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182174/136753_Flat_Chuvisco_Conjunto_30.jpg?v=638296881318670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco/p",
-  popularity: 244
- },
- {
-  sku: "oxford-60605368",
-  name: "Tigela 600 Ml Verde Escuro",
-  brand: "Cerâmicas",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180251/126620_Tigela_Verde_Escuro.jpg?v=638130994848300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-verde-escuro/p",
-  popularity: 245
- },
- {
-  sku: "oxford-60605350",
-  name: "Tigela 300 Ml Verde Escuro",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180250/126464_Tigela_300Ml_Verde_Escuro.jpg?v=638130994403230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-verde-escuro-300ml/p",
-  popularity: 246
- },
- {
-  sku: "oxford-60604765",
-  name: "Tigela Ramequin 100 Ml Branco",
-  brand: "Cookware",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179143/004727_9001_Ramequin_100ml_branco.jpg?v=638035336068700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-100ml/p",
-  popularity: 247
- },
- {
-  sku: "oxford-60604240",
-  name: "Colher de Silicone 33,5 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177923/069969_Colher_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958327749200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-cool-grey-33-5-cm/p",
-  popularity: 248
- },
- {
-  sku: "oxford-60604182",
-  name: "Jogo de 6 Copos de Cristal 390 Ml Flat Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207437/093153_Conjunto_Alumina_Flat_Copo_Agua_300ml.jpg?v=639227438118600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-copos-cerveja-flat-classic-300-ml/p",
-  popularity: 249
- },
- {
-  sku: "oxford-60604158",
-  name: "Saleiro Duplo Em Madeira Com Tampa Giratória Natural",
-  brand: "Oxford",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178094/115288_Saleiro_duplo_com_tampa_giratoria_10x10_H102cm.jpg?v=637974747475330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/saleiro-duplo-madeira-tampa-giratoria-natural/p",
-  popularity: 250
- },
- {
-  sku: "oxford-60604104",
-  name: "Descascador de Legumes Cool Grey",
-  brand: "Oxford",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178014/070320_Descascadores_De_Legumes_Cool-Grey.jpg?v=637970489232300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/descascador-legumes-cool-grey/p",
-  popularity: 251
- },
- {
-  sku: "oxford-60604078",
-  name: "Colher de Silicone Reta 33,5 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177930/069972_Utensilios_Colher_Reta_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958330828170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-reta-cool-grey-33-cm/p",
-  popularity: 252
- },
- {
-  sku: "oxford-60604036",
-  name: "Taça de Cristal Bourgogne 720 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187164/Forever_Classic_Taca_Bourgogne_720ml-00.jpg.jpg?v=638755918176200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-bourgogne-720-ml-forever-classic/p",
-  popularity: 253
- },
- {
-  sku: "oxford-60603988",
-  name: "Moedor Manual de Grãos em Aço Inox com Regulagem",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177377/117068-1.jpg?v=637889953891270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/moedor-manual-graos-regulagem/p",
-  popularity: 254
- },
- {
-  sku: "oxford-60603986",
-  name: "Moedor Manual de Grãos em Aço Inox",
-  brand: "Oxford",
-  unitPrice: 59.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177375/117050-1.jpg?v=637889952677000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/moedor-manual-graos-inox/p",
-  popularity: 255
- },
- {
-  sku: "oxford-60603983",
-  name: "Suporte com Base de Madeira para Filtro de Café Hario",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177372/117041-1.jpg?v=637889950518400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/suporte-madeira-filtro-hario/p",
-  popularity: 256
- },
- {
-  sku: "oxford-60603979",
-  name: "Copo de Vidro com Parede Dupla 350 ml",
-  brand: "Oxford",
-  unitPrice: 71.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189343/117025-1.jpg?v=638802279852300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copo-parede-dupla-350ml/p",
-  popularity: 257
- },
- {
-  sku: "oxford-60603976",
-  name: "Prensa Francesa Para Viagem 500 Ml",
-  brand: "Oxford",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177366/117019-1.jpg?v=637889932273530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/prensa-francesa-500ml/p",
-  popularity: 258
- },
- {
-  sku: "oxford-60603889",
-  name: "Panela Wok Antiaderente Corpo Triplo Indução CookingPro 34 cm",
-  brand: "Cookware",
-  unitPrice: 1069.9,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203712/113357_Panela_Wok_34cm_75l_01.jpg?v=639167064856730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-wok-34cm/p",
-  popularity: 259
- },
- {
-  sku: "oxford-60603888",
-  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 28 cm",
-  brand: "Cookware",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203672/113355_Cacarola_28cm_01.jpg?v=639167061784500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-28cm/p",
-  popularity: 260
- },
- {
-  sku: "oxford-60603887",
-  name: "Frigideira Reta Antiaderente Corpo Triplo Indução CookingPro 26 cm",
-  brand: "Cookware",
-  unitPrice: 729.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203655/113353_Frigideira_reta_multiuso_26cm_01.jpg?v=639167059069170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-26cm/p",
-  popularity: 261
- },
- {
-  sku: "oxford-60603729",
-  name: "Caneca Ryo 380 Ml Blue Bay",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209471/Ryo_Caneca_Grande_380ml_Blue_Bay-otimizada.webp?v=639259302463270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-blue-bay-380ml/p",
-  popularity: 262
- },
- {
-  sku: "oxford-60603274",
-  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 24 cm",
-  brand: "Cookware",
-  unitPrice: 829.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203685/1-Cacarola-Em-Aco-Inox-24Cm-47L---Mail-Order---Hive---Hive-4669.jpg?v=639167062395970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-grande/p",
-  popularity: 263
- },
- {
-  sku: "oxford-60603273",
-  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 20 cm",
-  brand: "Cookware",
-  unitPrice: 639.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203706/1-Cacarola-Em-Aco-Inox-20Cm-25L---Mail-Order---Hive---Hive-4672.jpg?v=639167064543270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-media/p",
-  popularity: 264
- },
- {
-  sku: "oxford-60603271",
-  name: "Caçarola Wok Antiaderente Corpo Triplo Indução CookingPro 34 cm",
-  brand: "Cookware",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203691/1-Panela-Wok-Em-Aco-Inox-34Cm-5L---Mail-Order---Hive---Hive-4666.jpg?v=639167063077700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-panela-wok/p",
-  popularity: 265
- },
- {
-  sku: "oxford-60603174",
-  name: "Jogo de 12 Colheres de Café 12,5 Cm Fortaleza",
-  brand: "Oxford",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204009/Design sem nome -99-.png?v=639168037225430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza4/p",
-  popularity: 266
- },
- {
-  sku: "oxford-60603172",
-  name: "Jogo de 12 Colheres Para Sobremesa 16,5 Cm Fortaleza",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203983/Design sem nome -92-.png?v=639168011063130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza1/p",
-  popularity: 267
- },
- {
-  sku: "oxford-60603170",
-  name: "Jogo de 12 Garfos Para Sobremesa 16,5 Cm Fortaleza",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204001/Design sem nome -96-.png?v=639168022770430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza2/p",
-  popularity: 268
- },
- {
-  sku: "oxford-60603169",
-  name: "Jogo de 12 Garfos de Mesa 19 Cm Fortaleza",
-  brand: "Oxford",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203998/Design sem nome -95-.png?v=639168019695970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza8/p",
-  popularity: 269
- },
- {
-  sku: "oxford-60603134",
-  name: "Jogo de 12 Colheres de Chá Basis",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173538/Colher-de-Cha-Basis-individual.jpg?v=637606544157470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis2/p",
-  popularity: 270
- },
- {
-  sku: "oxford-60603133",
-  name: "Jogo de 12 Colheres de Mesa Basis",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173536/Colher-de-Mesa-Basis-individual.jpg?v=637606543305900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis1/p",
-  popularity: 271
- },
- {
-  sku: "oxford-60603130",
-  name: "Jogo de 12 Facas de Mesa Basis",
-  brand: "Biona",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173526/Faca-de-Carne-individual.jpg?v=637606537332230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis5/p",
-  popularity: 272
- },
- {
-  sku: "oxford-60603128",
-  name: "Jogo de 6 Colheres de Sobremesa 16,7 cm Class",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173520/Colher-de-Sobremesa-Class-individual.jpg?v=637606533001570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class1/p",
-  popularity: 273
- },
- {
-  sku: "oxford-60602856",
-  name: "Faqueiro 24 Peças Biona Cinza Neutro",
-  brand: "Biona",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/171187/1-Faqueiro-24Pcs---Mail-Order---Cinza-Neutro.jpg?v=637504847909000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/talheres-biona-cinza-neutro/p",
-  popularity: 274
- },
- {
-  sku: "oxford-60600957",
-  name: "Jogo de 6 Taças de Sobremesa Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "servir sobremesa",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191993/oxford-porcelanas-tacas-taca-de-sobremesa-soleil-white-6-pecas-04.jpg?v=638816146111230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-sobremesa-soleil-white/p",
-  popularity: 275
- },
- {
-  sku: "oxford-60600937",
-  name: "Jogo de Café 14 Peças Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/165565/oxford-porcelanas--pecas-ocas-bule-acucareiro-xicara-cha-c-pires-soleil-14-pecas-white-00.jpg?v=637039050088930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-cafezinho-soleil-white/p",
-  popularity: 276
- },
- {
-  sku: "oxford-60600906",
-  name: "Conjunto Lanche de 3 Peças Mendi Marfim",
-  brand: "Oxford Porcelanas",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/170329/Conjunto-de-Lanche-Marfim.jpg?v=637474402955430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-lanche-mendi-marfim/p",
-  popularity: 277
- },
- {
-  sku: "oxford-60600838",
-  name: "Conjunto Refeição Infantil 5 Peças Bebê Panda",
-  brand: "Oxford",
-  unitPrice: 59.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/164953/completo.png?v=636931018505370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-bebe-panda/p",
-  popularity: 278
- },
- {
-  sku: "oxford-60600802",
-  name: "Jogo de 3 Potes Herméticos de Vidro Retangular",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193905/P13T_P14T_P15T_Pote-Hermetico-Borosilicato_Retangular_..00.jpg?v=638826775519570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/potes-hermetico-retangular/p",
-  popularity: 279
- },
- {
-  sku: "oxford-60600703",
-  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192332/oxford-porcelanas-xicara-de-cha-com-pires-ryo-white-6-pecas-01.jpg?v=638816163972270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-white/p",
-  popularity: 280
- },
- {
-  sku: "oxford-60600655",
-  name: "Jogo de 6 Pratos Sobremesa 21,5m Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191747/oxford-porcelanas-prato-sobremesa-ryo-white-6-pecas-01.jpg?v=638816130317930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-white/p",
-  popularity: 281
- },
- {
-  sku: "oxford-60600638",
-  name: "Aparelho de Jantar e Chá 30 Peças Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181022/9604_Porcelanas_Ryo_Bambu_Conjuntos_20_30.jpg?v=638211335391800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bambu/p",
-  popularity: 282
- },
- {
-  sku: "oxford-60600517",
-  name: "Jogo de 2 Taças de Cristal 580 Ml Athenas Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 139.8,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190583/Athenas_Classic_Taca_580ml-02.jpg?v=638815418533570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/athenas-580-agua/p",
-  popularity: 283
- },
- {
-  sku: "oxford-50300201",
-  name: "Jogo de 6 Xícaras Pequenas 75 Ml Empilháveis Com Pires",
-  brand: "Oxford Porcelanas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "gourmet conjuntos de xicaras com pires",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192695/oxford-porcelanas-gourmet-xicara-cafe-empilhavel-com-pires-pro-M07A-E0EW-01.jpg?v=638816338193700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-xicara-cafe-empilhavel-75ml-conjunto/p",
-  popularity: 284
- },
- {
-  sku: "oxford-50100201",
-  name: "Jogo de 6 Pratos Fundos Pró 23 Cm",
-  brand: "Oxford Porcelanas",
-  unitPrice: 154.9,
-  unit: "un",
-  category: "gourmet pratos restaurante prato pro",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192712/oxford-porcelanas-gourmet-pro-prato-fundo-M01C-02.jpg?v=638816339422570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-prato-fundo-pro-23cm-conjunto/p",
-  popularity: 285
- },
- {
-  sku: "oxford-30200101",
-  name: "Jogo de 6 Ramequins 10x5 Cm 180 Ml Branco",
-  brand: "Cookware",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192129/oxford-cookware-ramequin-branco-grande-6-pecas-04.jpg?v=638816151799570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ramequin-180ml-branco/p",
-  popularity: 286
- },
- {
-  sku: "oxford-29900505",
-  name: "Caneca Mini Quartier 220 Ml Azul",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159202/oxford-daily-caneca-quartier-mini-0684.jpg?v=636243922039300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-azul/p",
-  popularity: 287
- },
- {
-  sku: "oxford-29701402",
-  name: "Pote Hermético de Vidro Retangular Com Divisórias 580 ML",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "cozinha potes com divisorias",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176276/058920-1.jpg?v=637830494962070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-divisorias-580ml/p",
-  popularity: 288
- },
- {
-  sku: "oxford-19903101",
-  name: "Travessa 42x30 Cm Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159037/oxford-porcelanas-travessa-soleil-00.jpg?v=636241283336200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-soleil-420-300/p",
-  popularity: 289
- },
- {
-  sku: "oxford-10701293",
-  name: "Jogo de 6 Pratos Sobremesa 23 Cm Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191552/oxford-porcelanas-pratos-sobremesa-soleil-white-03.jpg?v=638816119886170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-sobremesa/p",
-  popularity: 290
- },
- {
-  sku: "oxford-10700706",
-  name: "Leiteira Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cha e cafe leiteira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160118/oxford-porcelanas-conjunto-pecas-ocas-leiteira-soleil-white-00.jpg?v=636342607139800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-leiteira/p",
-  popularity: 291
- },
- {
-  sku: "oxford-10201112",
-  name: "Jogo de 6 Xicaras Grandes 240 Ml Com Pires Flamingo Sofia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 379.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192408/9209_Flamingo_Sofia_xicara-cha_conjunto-de-6.jpg?v=638816168063230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-xicaras-cha/p",
-  popularity: 292
- },
- {
-  sku: "oxford-10201109",
-  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Sofia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 439.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191594/9209_Flamingo_Sofia_prato-raso_Conjunto-de-6.jpg?v=638816121194500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-pratos-rasos/p",
-  popularity: 293
- },
- {
-  sku: "oxford-10100914",
-  name: "Travessa Coup White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160124/oxford-porcelanas-conjunto-pecas-ocas-travessa-flamingo-white-00.jpg?v=636342613427870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-travessa/p",
-  popularity: 294
- },
- {
-  sku: "oxford-10700702",
-  name: "Aparelho de Jantar e Chá 30 Peças Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 969.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156848/oxford-porcelanas-aparelho-de-jantar-soleil-white-30-pecas-00.jpg?v=636213931471170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white/p",
-  popularity: 295
- },
- {
-  sku: "oxford-10201301",
-  name: "Aparelho de Jantar e Chá 30 Peças Flamingo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 969.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156148/oxford-porcelanas-aparelho-de-jantar-flamingo-white-30-pecas-00.jpg?v=636213695057900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white/p",
-  popularity: 296
- },
- {
-  sku: "oxford-10201101",
-  name: "Aparelho de Jantar e Chá 30 Peças Flamingo Sofia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1379.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174359/9209_Flamingo_Sofia_30pcs.jpg?v=637641084784400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia/p",
-  popularity: 297
- },
- {
-  sku: "oxford-60608457",
-  name: "Jogo de 2 Taças de Cristal 780 ml Titanium Max",
-  brand: "Oxford",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209499/Titanium_Conj_2_780-ml-otimizada.webp?v=639259449973830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-780-ml-titanium-max/p",
-  popularity: 298
- },
- {
-  sku: "oxford-60608397",
-  name: "Jogo de 5 Potes Herméticos Empilháveis Grey",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208753/Pote_Conjunto-Cinza_2-otimizada.webp?v=639251638584200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-5-potes-hermeticos-cristal--pp-pet--retangular-grey/p",
-  popularity: 299
- },
- {
-  sku: "oxford-60608396",
-  name: "Jogo de 5 Potes Herméticos Empilháveis White",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208781/Potes_Conjunto-Branco-otimizada.webp?v=639251641510770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-5-potes-hermeticos-cristal--pp-pet--retangular-white/p",
-  popularity: 300
- },
- {
-  sku: "oxford-60608343",
-  name: "Assadeira Refratária Samba Grande Branco - 3,7 l",
-  brand: "Cookware",
-  unitPrice: 134.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207239/Travessas_Refratarias_Samba_G_37L_Branco.webp?v=639222292772500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-grande-branco-3-7-l/p",
-  popularity: 301
- },
- {
-  sku: "oxford-60608342",
-  name: "Assadeira Refratária Samba Grande Marrom - 3,7 l",
-  brand: "Cookware",
-  unitPrice: 134.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207251/Travessas_Refratarias_Samba_G_37L_Marrom.webp?v=639222289540830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-grande-marrom-3-7-l/p",
-  popularity: 302
- },
- {
-  sku: "oxford-60608340",
-  name: "Assadeira Refratária Samba Pequena Marrom - 1,2 l",
-  brand: "Cookware",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207243/Travessas_Refratarias_Samba_-P_12L_Marrom.webp?v=639222291890800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-pequena-marrom-1-2-l/p",
-  popularity: 303
- },
- {
-  sku: "oxford-60608338",
-  name: "Assadeira Refratária Samba Média Marrom - 2,1 l",
-  brand: "Cookware",
-  unitPrice: 94.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207247/Travessas_Refratarias_Samba_M_21L_Marrom.webp?v=639222288491270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-media-marrom--2-1-l/p",
-  popularity: 304
- },
- {
-  sku: "oxford-60608337",
-  name: "Assadeira Refratária Tango Mini Branco – 350 ml",
-  brand: "Cookware",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207255/Refratarias_PP_2-otimizada.webp?v=639222290125670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-mini-branco-350-ml/p",
-  popularity: 305
- },
- {
-  sku: "oxford-60608336",
-  name: "Frigideira Antiaderente Corpo Triplo Indução The Cook 24 cm",
-  brand: "Cookware",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206706/TheCook_Frigideira_24cm_3-otimizada.webp?v=639216382583630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-antiaderente-corpo-triplo-inducao-the-cook-24-cm/p",
-  popularity: 306
- },
- {
-  sku: "oxford-60608329",
-  name: "Panela Wok Corpo Triplo Indução The Cook 32cm",
-  brand: "Cookware",
-  unitPrice: 549.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206686/TheCook_Wok_2-otimizada.webp?v=639216381445330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-corpo-triplo-inducao-the-cook-32cm/p",
-  popularity: 307
- },
- {
-  sku: "oxford-60608328",
-  name: "Caçarola Corpo Triplo Indução The Cook 28cm",
-  brand: "Cookware",
-  unitPrice: 629.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206762/TheCook_Cacarola_28cm_3-otimizada.webp?v=639216384852000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-28cm/p",
-  popularity: 308
- },
- {
-  sku: "oxford-60608327",
-  name: "Jogo Espagueteira Cozi-pasta para Indução 2 peças The Cook",
-  brand: "Cookware",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207935/TheCook_Cozi-Pasta_0-otimizada.webp?v=639240309735500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-cozi-pasta-para-inducao-2-pecas-the-cook/p",
-  popularity: 309
- },
- {
-  sku: "oxford-60608305",
-  name: "Jogo Lanche De 8 Peças Oxford Ryo Maresia",
-  brand: "Cerâmicas",
-  unitPrice: 292,
-  unit: "un",
-  category: "conjuntos de cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206314/standard_resolution---2026-07-28T094925.218-otimizada.jpg?v=639258498895900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-oxford-ryo-maresia-1/p",
-  popularity: 310
- },
- {
-  sku: "oxford-60608300",
-  name: "Jogo de 4 Pratos Sobremesa 20x20 Cm Quartier White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 154,
-  unit: "un",
-  category: "pratos quadrados",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206264/standard_resolution - 2026-07-28T084926.180-otimizada.webp?v=639208362025930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20x20-cm-quartier-white/p",
-  popularity: 311
- },
- {
-  sku: "oxford-60608287",
-  name: "Jogo de 4 Pratos Fundos 21,5 Cm Donna Cena Inglesa",
-  brand: "Biona",
-  unitPrice: 89,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206141/standard_resolution---2026-07-23T172324.436.jpg?v=639204351864300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-21-5-cm-donna-cena-inglesa/p",
-  popularity: 312
- },
- {
-  sku: "oxford-60608285",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Donna Cena Inglesa",
-  brand: "Biona",
-  unitPrice: 101,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206131/standard_resolution---2026-07-23T165517.393.jpg?v=639204334502230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-donna-cena-inglesa/p",
-  popularity: 313
- },
- {
-  sku: "oxford-60608269",
-  name: "Jogo Lanche 3 Peças Oxford Flat Pacífico",
-  brand: "Cerâmicas",
-  unitPrice: 114.25,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205385/Design-sem-nome---2026-07-14T161723.520.png?v=639196537994400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-3-pecas-oxford-flat-pacifico/p",
-  popularity: 314
- },
- {
-  sku: "oxford-60608266",
-  name: "Jogo de 12 Pratos Fundos 22,5 Cm Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 398,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205363/standard_resolution - 2026-07-14T150015.102.jpg?v=639196502161300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-22-5-cm-ryo-maresia-1/p",
-  popularity: 315
- },
- {
-  sku: "oxford-60608248",
-  name: "Jogo De 1 Saladeira E 6 Tigelas Oxford Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 325.9,
-  unit: "un",
-  category: "servir lanche",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209344/standard_resolution---2026-07-08T154200.683.jpg?v=639258582577770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-1-saladeira-e-6-tigelas-oxford-ryo-maresia-/p",
-  popularity: 316
- },
- {
-  sku: "oxford-60608240",
-  name: "Aparelho de Jantar e Chá 40 Peças Donna Colb",
-  brand: "Biona",
-  unitPrice: 599,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204655/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Donna-Colb---Amb2-5120.jpg?v=639186942766870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-donna-colb/p",
-  popularity: 317
- },
- {
-  sku: "oxford-60608238",
-  name: "Aparelho de Jantar e Chá 40 Peças Donna Cena Inglesa",
-  brand: "Biona",
-  unitPrice: 589.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204642/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Donna-Cena-Inglesa---Amb2-5131.jpg?v=639186932240730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-donna-cena-inglesa-1/p",
-  popularity: 318
- },
- {
-  sku: "oxford-60608224",
-  name: "Aparelho De Jantar E Lanche 16 Peças Luna Corfu - Caneca 360 ml Aparelho De Jantar E Lanche 16 Peças Luna Corfu",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205098/Oxford_0002_7101-Luna-Corfu-Conjunto-16-pecas-otimizada.webp?v=639192160542100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-corfu/p",
-  popularity: 319
- },
- {
-  sku: "oxford-60608219",
-  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Vanilla",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205422/Design-sem-nome---2026-07-03T161515.550.png?v=639197168476130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-luna-vanilla/p",
-  popularity: 320
- },
- {
-  sku: "oxford-60608217",
-  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Vanilla",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204959/Oxford_4_0013_Oxford_Prato_Sobremesa_Vanilla.jpg?v=639191304229330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-luna-vanilla/p",
-  popularity: 321
- },
- {
-  sku: "oxford-60608213",
-  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Sand",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205215/Oxford_4_0004_Oxford_Prato_Sobremesa_Sand-otimizada.webp?v=639192205977500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-cm-luna-sand/p",
-  popularity: 322
- },
- {
-  sku: "oxford-60608192",
-  name: "Conjunto 4 Canecas Tulipa - 330 ml - Prêmio Oxford de Design",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202992/Canecas-POD_0000_Conjunto.jpg?v=639131695151900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-4-canecas-tulipa-330-ml-premio-oxford/p",
-  popularity: 323
- },
- {
-  sku: "oxford-60608187",
-  name: "Jogo de 6 Copos e Jarra de Cristal Easy Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 589.9,
-  unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202662/Jogo-de-6-Copos-e-Jarra-de-Cristal-Easy-Classic.jpg?v=639107489533700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-e-jarra-de-cristal-easy-classic/p",
-  popularity: 324
- },
- {
-  sku: "oxford-60608181",
-  name: "Jogo de 18 Taças de Cristal Flavour",
-  brand: "Alumina Crystal",
-  unitPrice: 929.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202539/Jogo-de-18-Tacas-de-Cristal-Flavour.jpg?v=639107348942500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-flavour/p",
-  popularity: 325
- },
- {
-  sku: "oxford-60608180",
-  name: "Jogo de 24 Taças de Cristal Proper Effect",
-  brand: "Alumina Crystal",
-  unitPrice: 1049.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202519/Jogo-de-24-Tacas-de-Cristal-Proper-Effect.jpg?v=639107329822870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-24-tacas-de-cristal-proper-effect/p",
-  popularity: 326
- },
- {
-  sku: "oxford-60608166",
-  name: "Jogo de 6 Pratos Sobremesa 20x20 Cm Quartier White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "pratos quadrados",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202010/oxford-porcelanas-prato-sobremesa-quartier-white-04.jpg?v=639083340448530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20x20-cm-quartier-white-1/p",
-  popularity: 327
- },
- {
-  sku: "oxford-60608152",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Maré",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201382/Ecommerce_Conj_6_0010_Unni_Mare_Prato_Fundo_Top-copy-2.jpg?v=639062517092770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-mare-1/p",
-  popularity: 328
- },
- {
-  sku: "oxford-60608149",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Riacho",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202466/Ecommerce-Conj-6_0005_Unni_Riacho_Prato_Sobremesa.jpg?v=639102335893070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-riacho-1/p",
-  popularity: 329
- },
- {
-  sku: "oxford-60608148",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Riacho",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202459/Ecommerce-Conj-6_0006_Unni_Riacho_Prato_Fundo_Top.jpg?v=639102335830570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-riacho-1/p",
-  popularity: 330
- },
- {
-  sku: "oxford-60608147",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Riacho",
-  brand: "Cerâmicas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202451/Ecommerce-Conj-6_0007_Unni_Riacho_Prato_Raso.jpg?v=639102335799900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-riacho-1/p",
-  popularity: 331
- },
- {
-  sku: "oxford-60608144",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Café Coado",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202249/Ecommerce-Conj-6_0003_Unni_Cafe_Coado_Prato_Fundo_Top.jpg?v=639099584397370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-cafe-coado-1/p",
-  popularity: 332
- },
- {
-  sku: "oxford-60608136",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Belle Bleu",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202821/Ecommerce_Conj_6_0007_Flat_Belle_Bleu_Prato_Fundo_Top.jpg?v=639118668765500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-flat-belle-bleu-1/p",
-  popularity: 333
- },
- {
-  sku: "oxford-60607936",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199806/Ecommerce_0061_Unni-Nuray_Conjunto.jpg?v=639052082837700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-unni-nuray/p",
-  popularity: 334
- },
- {
-  sku: "oxford-60608027",
-  name: "Jogo de 6 Taças de Cristal Para Cerveja 300 Ml Touch Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205816/6-Tacas-Cerveja-300-ml-.jpg?v=639199104899870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-cerveja-300-ml-touch-classic/p",
-  popularity: 335
- },
- {
-  sku: "oxford-60608025",
-  name: "Jogo de 6 Copos de Cristal 440 Ml Flat Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207411/A00270542C20A230B698126C59F2CC09_13978f72-1c55-4ced-9f6d-efcd131af04f_Flat_Classic_Copo_440ml-02.jpg?v=639227434683000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-440-ml-flat-classic/p",
-  popularity: 336
- },
- {
-  sku: "oxford-60608022",
-  name: "Jogo de 4 Taças de Cristal Para Espumante 210 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 209.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205693/4-Tacas-de-Cristal-Para-Vinho-Branco-360-Ml-Forever-Classic.jpg?v=639199075423200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-espumante-210-ml-forever-classic/p",
-  popularity: 337
- },
- {
-  sku: "oxford-60608020",
-  name: "Jogo de 4 Taças de Cristal Para Bordeaux 660 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205668/4-4-Tacas-de-Cristal-Para-Bordeaux-660-Ml-Forever-Classic--1-.jpg?v=639199072836870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-bordeaux-660-ml-forever-classic/p",
-  popularity: 338
- },
- {
-  sku: "oxford-60608016",
-  name: "Jogo de 6 Copos de Cristal 340 Ml Ginga Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205846/354542431CCFBFEC113ADFCD1FE3E99C_11dbd172-3ee7-49a7-9f69-232ae9fd8b54_114610_Copo_Ginga_Suco_340ml_P.jpg?v=639199129496900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-340-ml-ginga-classic/p",
-  popularity: 339
- },
- {
-  sku: "oxford-60608012",
-  name: "Jogo de 6 Taças de Cristal Para Vinho Bordeaux 670 Ml Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 369.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205754/82FB7CD9ADDDFC918829A4C723D67797_b2337a0a-6f31-4ada-85b1-3eb1a8e0531c_Bordeaux.jpg?v=639199094321230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-bordeaux-670-ml-petra-classic/p",
-  popularity: 340
- },
- {
-  sku: "oxford-60608007",
-  name: "Caneca Mini Quartier 220 Ml Rosa Buquê",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200453/Ecommerce_0225_Caneca_Mini_Quartier_Rosa_Buque.jpg?v=639052916452070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-rosa-buque/p",
-  popularity: 341
- },
- {
-  sku: "oxford-60608002",
-  name: "Caneca Tulipa 330 Ml Vermelho Canela",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200457/Ecommerce_0169_Caneca-Tulipa-Vermelho-Canela.jpg?v=639161046026530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-330-ml-vermelho-canela/p",
-  popularity: 342
- },
- {
-  sku: "oxford-60607999",
-  name: "Tigela 300 Ml Rosa Buquê",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200452/Ecommerce_0161_Bazar-Tigela_300_ml-Rosa_Buque.jpg?v=639052916266930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-rosa-buque/p",
-  popularity: 343
- },
- {
-  sku: "oxford-60607998",
-  name: "Tigela 300 Ml Vermelho Canela",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200455/Ecommerce_0163_Bazar-Tigela_300_ml-Vermelho_Canela.jpg?v=639052917083570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-vermelho-canela/p",
-  popularity: 344
- },
- {
-  sku: "oxford-60607995",
-  name: "Tigela 600 Ml Azul Nuvem",
-  brand: "Cerâmicas",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200446/Ecommerce_0158_Bazar-Tigelas_600_ml-Azul Nuvem.jpg?v=639052913666530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-azul-nuvem/p",
-  popularity: 345
- },
- {
-  sku: "oxford-60607992",
-  name: "Tigela 600 Ml Marrom Toffee",
-  brand: "Cerâmicas",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200442/Ecommerce_0156_Bazar-Tigelas_600_ml-Marrom Toffee.jpg?v=639052911429400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-marrom-toffee/p",
-  popularity: 346
- },
- {
-  sku: "oxford-60607980",
-  name: "Faqueiro em Aço Inox 30 Peças Fortaleza",
-  brand: "Oxford",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203849/160653_Conjunto_Fortaleza-30-pecas.jpg?v=639167906598330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-fortaleza/p",
-  popularity: 347
- },
- {
-  sku: "oxford-60607977",
-  name: "Faqueiro em Aço Inox 30 Peças São Paulo",
-  brand: "Oxford",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203925/Sao-paulo-30.jpg?v=639167993336470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-sao-paulo/p",
-  popularity: 348
- },
- {
-  sku: "oxford-60607976",
-  name: "Faqueiro em Aço Inox 24 Peças São Paulo",
-  brand: "Oxford",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203934/Sao-paulo-24.jpg?v=639167993530200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-sao-paulo/p",
-  popularity: 349
- },
- {
-  sku: "oxford-60607971",
-  name: "Faqueiro em Aço Inox 30 Peças Noronha",
-  brand: "Oxford",
-  unitPrice: 389.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203877/Noronha-30.jpg?v=639167908158470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-noronha/p",
-  popularity: 350
- },
- {
-  sku: "oxford-60607954",
-  name: "Jogo de 6 Colheres de Café 10,8 Cm Class",
-  brand: "Biona",
-  unitPrice: 23.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200601/class cafe x 6.jpg?v=639053122963800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cafe-108-cm-class/p",
-  popularity: 351
- },
- {
-  sku: "oxford-60607953",
-  name: "Jogo de 6 Facas de Sobremesa 19 Cm Class",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200924/Jogo de 6 Facas de Sobremesa 19 Cm Class.jpg?v=639056591557900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-sobremesa-19-cm-class/p",
-  popularity: 352
- },
- {
-  sku: "oxford-60607949",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199976/Ecommerce_0180_Unni_Solara_Conjunto.jpg?v=639052204946900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-unni-solara/p",
-  popularity: 353
- },
- {
-  sku: "oxford-60607947",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200036/Ecommerce_Conj_6__0008_Unni_Solara_Xicara_de_Cha_com_Pires.jpg?v=639052210271400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-solara/p",
-  popularity: 354
- },
- {
-  sku: "oxford-60607941",
-  name: "Aparelho de Jantar 18 Peças Unni Lira",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200065/Ecommerce_0067_Unni-Lira_Conjunto_18_Pecas.jpg?v=639052212421800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-lira/p",
-  popularity: 355
- },
- {
-  sku: "oxford-60607933",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199962/Ecommerce_Conj_6__0009_Unni_Nuray_Xicara_de_Cha_com_Pires.jpg?v=639052196073300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-nuray/p",
-  popularity: 356
- },
- {
-  sku: "oxford-60607932",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199955/Ecommerce_Conj_6__0028_Unni_Nuray_Prato_Sobremesa.jpg?v=639052195758470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-nuray/p",
-  popularity: 357
- },
- {
-  sku: "oxford-60607922",
-  name: "Aparelho de Jantar e Chá 30 peças - Flat Málaga",
-  brand: "Cerâmicas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199539/Ecommerce_0082_Flat-Magala_Conjunto.jpg?v=639051998535230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-30-pecas-flat-malaga/p",
-  popularity: 358
- },
- {
-  sku: "oxford-60607920",
-  name: "Aparelho de Jantar 18 peças - Flat Málaga",
-  brand: "Cerâmicas",
-  unitPrice: 579.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199527/Ecommerce_0081_Flat-Magala_Conjunto_18_Pecas.jpg?v=639051997235330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-malaga/p",
-  popularity: 359
- },
- {
-  sku: "oxford-60607918",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Málaga",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200138/Ecommerce_Conj_6__0047_Flat_Magala_Prato_Sobremesa.jpg?v=639052218823370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-malaga/p",
-  popularity: 360
- },
- {
-  sku: "oxford-60607917",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Málaga",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200130/Ecommerce_Conj_6__0048_Flat_Magala_Prato_Fundo_Top.jpg?v=639052218551730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-malaga/p",
-  popularity: 361
- },
- {
-  sku: "oxford-60607916",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Málaga",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200144/Ecommerce_Conj_6__0049_Flat_Magala_Prato_Raso.jpg?v=639052219198270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-malaga/p",
-  popularity: 362
- },
- {
-  sku: "oxford-60607914",
-  name: "Aparelho de Jantar e Chá 20 Peças Flat Sevilha",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200254/Ecommerce_0075_Flat-Sevilha_Conjunto.jpg?v=639052226586200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-sevilha/p",
-  popularity: 363
- },
- {
-  sku: "oxford-60607911",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Sevilha",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200172/Ecommerce_Conj_6__0044_Flat_Sevilha_Prato_Sobremesa.jpg?v=639052221299400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-sevilha/p",
-  popularity: 364
- },
- {
-  sku: "oxford-60607899",
-  name: "Jogo de 6 Canecas 360 Ml Luna Pétala",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203019/Luna-petala.jpg?v=639136016576700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-petala/p",
-  popularity: 365
- },
- {
-  sku: "oxford-60607897",
-  name: "Jogo de 6 Canecas 360 Ml Luna Salvia",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203027/Luna-salvia.jpg?v=639136016748430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-salvia/p",
-  popularity: 366
- },
- {
-  sku: "oxford-60607894",
-  name: "Aparelho de Jantar e Lanche 16 peças Luna Vanilla - Caneca 260 ml",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202202/Extranet_16_0003_Luna_Vanilla_Conjunto.jpg?v=639089359052270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-16-pecas-luna-vanilla/p",
-  popularity: 367
- },
- {
-  sku: "oxford-60607892",
-  name: "Aparelho de Jantar e Lanche 16 peças Luna Corfu - Caneca 260 ml",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205128/Extranet_16_0001_Luna_Corfu_Conjunto.jpg?v=639192161353000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-16-pecas-luna-corfu/p",
-  popularity: 368
- },
- {
-  sku: "oxford-60607885",
-  name: "Jogo de 6 Canecas 360 Ml Flora Camélia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200462/flora-camelia.jpg?v=639070071998630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-camelia/p",
-  popularity: 369
- },
- {
-  sku: "oxford-60607869",
-  name: "Conjunto de Pratos 8 Peças Unni Café Coado",
-  brand: "Cerâmicas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "aparelhos de jantar outras composicoes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202286/Cafe-Coado---8-pecas-pratos--1-.jpg?v=639099589386530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-pratos-8-pecas-unni-cafe-coado/p",
-  popularity: 370
- },
- {
-  sku: "oxford-60607857",
-  name: "Aparelho de Jantar e Chá 20 Peças Flat Belle Bleu",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202840/Ecommerce_0000_Flat_Belle_Bleu_Cunjunto.jpg?v=639118671804230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jantar-20pcs-flat-belle-bleu/p",
-  popularity: 371
- },
- {
-  sku: "oxford-60607845",
-  name: "Aparelho de Jantar e Lanche 12pcs Donna Folk",
-  brand: "Biona",
-  unitPrice: 199,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198828/Donna-Folk.jpg?v=638963228693800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-folk/p",
-  popularity: 372
- },
- {
-  sku: "oxford-60607843",
-  name: "Aparelho de Jantar e Lanche 12pcs Donna Campestre",
-  brand: "Biona",
-  unitPrice: 199,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198820/Donna-Campestre.jpg?v=638966715320500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-campestre/p",
-  popularity: 373
- },
- {
-  sku: "oxford-60607842",
-  name: "Aparelho de Jantar e Lanche 12pcs Donna Branco",
-  brand: "Biona",
-  unitPrice: 199,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198832/5002_Donna_Branco_18_a03315981d31464f8ce65d2a069a46e7.jpg?v=638966739890570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-branco/p",
-  popularity: 374
- },
- {
-  sku: "oxford-60607805",
-  name: "Jogo de Panelas Antiaderentes para Indução 5 peças Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "panelas jogos de panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206819/Ecommerce_Everyday-vermelho-5-pecas-media.jpg?v=639221501624430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-de-panelas-everyday-5pcs-everyday-vermelho/p",
-  popularity: 375
- },
- {
-  sku: "oxford-60607797",
-  name: "Jogo de 6 Pratos de Sobremesa 20 cm Unni Boho",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198025/Conj_6_Boho_Sobremesa.jpg?v=638926872651870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-sobremesa-unni-boho/p",
-  popularity: 376
- },
- {
-  sku: "oxford-60607779",
-  name: "Aparelho de Jantar 30 peças Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198107/Ecommerce_Nisa_Conjunto.jpg?v=638926877053270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-30pcs/p",
-  popularity: 377
- },
- {
-  sku: "oxford-60607778",
-  name: "Aparelho de Jantar 30 Peças Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198137/Ecommerce_Caminho-da-Selva-Conjunto.jpg?v=638926879909230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-30-pcs-unni-selva/p",
-  popularity: 378
- },
- {
-  sku: "oxford-60607429",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196004/Oxford_Ceramicas_Unni_White_Xicara-6.jpg?v=638893271681970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-xicaras-grandes-200-ml-com-pires-unni-white/p",
-  popularity: 379
- },
- {
-  sku: "oxford-60607428",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196002/Oxford_Ceramicas_Unni_White_Prato_Sobremesa-6.jpg?v=638893271595130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-sobremesa-20-cm-unni-white/p",
-  popularity: 380
- },
- {
-  sku: "oxford-60607427",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196000/Oxford_Ceramicas_Unni_White_Prato_Raso-6.jpg?v=638893271520530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-rasos-26-cm-unni-white/p",
-  popularity: 381
- },
- {
-  sku: "oxford-60607376",
-  name: "Jogo de 6 Canecas Flat 350 Ml Preto Acetinado",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196184/6 Canecas Flat Onix.png?v=638896523389070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-preto-acetinado/p",
-  popularity: 382
- },
- {
-  sku: "oxford-60607375",
-  name: "Jogo de 6 Canecas Flat 350 Ml Chumbo Acetinado",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196182/6 Canecas Flat Gray.png?v=638896521620970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-chumbo-acetinado/p",
-  popularity: 383
- },
- {
-  sku: "oxford-60607362",
-  name: "Jogo de 6 Tigelas Flat 600 Ml Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196155/6-Tigelas-Flat-Onix.png?v=639160254611500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-onix/p",
-  popularity: 384
- },
- {
-  sku: "oxford-60607328",
-  name: "Jogo de 6 Canecas Az12 330 Ml Roxo",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196063/6-AZ12-Roxa.png?v=638894134252970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-roxo/p",
-  popularity: 385
- },
- {
-  sku: "oxford-60607305",
-  name: "Jogo de 6 Canecas 260 Ml Ryo White",
-  brand: "Cerâmicas",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190213/Oxford_Porcelanas_Ryo_White_Caneca_Pequena.jpg?v=638815350689600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-260-ml-ryo-white1/p",
-  popularity: 386
- },
- {
-  sku: "oxford-60607300",
-  name: "Jogo de 6 Canecas 380 Ml Ryo Blue Bay",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190203/Oxford_Porcelanas_Ryo_Blue_Bay_Caneca_Grande.jpg?v=638815350173130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-380-ml-ryo-blue-bay1/p",
-  popularity: 387
- },
- {
-  sku: "oxford-60607295",
-  name: "Jogo de 6 Tigelas 500 ml Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189713/Tigelas-Ryo-bambu.png.png?v=638815265716730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-tigelas-ryo-500-ml-bambu/p",
-  popularity: 388
- },
- {
-  sku: "oxford-60607255",
-  name: "Jogo de 6 Pratos Sobremesa 22 Cm Flamingo Blue Willow",
-  brand: "Oxford Porcelanas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189715/oxford-porcelanas-prato-sobremesa-flamingo-blue-willow-6-pecas-02.jpg?v=638815266235300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-sobremesa-22-cm-flamingo-blue-willow1/p",
-  popularity: 389
- },
- {
-  sku: "oxford-60607189",
-  name: "Travessa para Feijoada em Cerâmica Retangular 430 ml",
-  brand: "Cookware",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207662/152800_Linha_Feijoada_TravessaRetangular_21cm.jpg?v=639227560162700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-feijoada-retangular/p",
-  popularity: 390
- },
- {
-  sku: "oxford-60607187",
-  name: "Travessa para Feijoada em Cerâmica Oval 300 ml",
-  brand: "Cookware",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198609/152804_Linha_Feijoada_TravessaOval_205cm.jpg?v=638943102751200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-feijoada-oval/p",
-  popularity: 391
- },
- {
-  sku: "oxford-60607182",
-  name: "Travessa Flora 42 cm Flora Camélia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186264/2900_Flora_Camelia_Bandeja.jpg?v=638750481864530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/camelia-travessa/p",
-  popularity: 392
- },
- {
-  sku: "oxford-60607173",
-  name: "Assadeira Refratária Fall para Lasanha 25,5x19,5x6,5cm Branca",
-  brand: "Cookware",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186717/oxford-cookware-travessa-refrataria-fall-lasanha-00.jpg.jpg?v=638877694090370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-lasanha-fall/p",
-  popularity: 393
- },
- {
-  sku: "oxford-60607297",
-  name: "Tigela Ryo 500ml White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209476/Ryo_Tigela_18cm_500ml_White-otimizada.webp?v=639259303324600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-white/p",
-  popularity: 394
- },
- {
-  sku: "oxford-60607168",
-  name: "Tigela Ryo 500ml Blue Bay",
-  brand: "Oxford Porcelanas",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209469/Ryo_Tigela_18cm_500ml_Blue_Bay-otimizada.webp?v=639259302203800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-blue/p",
-  popularity: 395
- },
- {
-  sku: "oxford-60607166",
-  name: "Tigela Ramequin 8x4cm 100ml Branco/Vermelho",
-  brand: "Cookware",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186059/0207_Ramequin_100ml_bic_vermelho.jpg?v=638750478790570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequin-vermelho/p",
-  popularity: 396
- },
- {
-  sku: "oxford-60607152",
-  name: "Tigela com cabo em Melamina para Molho 21,5cm Ocean",
-  brand: "Oxford",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185984/086649_Melamina_Belisco_Tigela_Ocean_P_Molho-1.jpg?v=639154230957930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-molho-ocean/p",
-  popularity: 397
- },
- {
-  sku: "oxford-60607078",
-  name: "Pote Hermético de Vidro Retrô 2 L com tampa de Bambu Pote Hermético de Vidro 2L com Tampa de Bambu Retrô",
-  brand: "Oxford",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193887/150620_Pote_Hermetico_c_Tampa_Bambu_2000ml.jpg?v=638826765711770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-2l/p",
-  popularity: 398
- },
- {
-  sku: "oxford-60607076",
-  name: "Pote Hermético de Vidro Retrô 1,2 L com tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 71.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193881/150614_Pote_Hermetico_c_Tampa_Bambu_1200ml.jpg?v=638826756089430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-12l/p",
-  popularity: 399
- },
- {
-  sku: "oxford-60607074",
-  name: "Peneira de Aço Inox 39,5cm com Cabo Water Blue",
-  brand: "Oxford",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186151/150761_Peneira_Aco_Inox_39.5cm.jpg?v=638750480114930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/peneira-water-blue-2/p",
-  popularity: 400
- },
- {
-  sku: "oxford-60607073",
-  name: "Peneira de Aço Inox 26cm com Cabo Water Blue",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186150/150759_Peneira_Aco_Inox_26cm.jpg?v=638750480093930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/peneira-water-blue/p",
-  popularity: 401
- },
- {
-  sku: "oxford-60607069",
-  name: "Panela Antiaderente para indução 20 Cm Gourmet Preta Panela em Alumínio Forjado Gourmet 20cm Gourmet Martelado",
-  brand: "Cookware",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207130/Oxford_Panela_Linha_Gourmet_20cm_Angulo_02.jpg?v=639221597826300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-20cm/p",
-  popularity: 402
- },
- {
-  sku: "oxford-60607068",
-  name: "Panela Antiaderente para indução 18 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207122/Oxford_Panela_Linha_Gourmet_18cm_Angulo_02.jpg?v=639221593260600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-18cm/p",
-  popularity: 403
- },
- {
-  sku: "oxford-60607042",
-  name: "Jogo de 6 Tigelas de Sobremesa 12 cm Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207565/Conjunto_6_Flora_AmorPerfeito_Bowl.jpg.jpg?v=639227479532530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-tigela/p",
-  popularity: 404
- },
- {
-  sku: "oxford-60607014",
-  name: "Jogo de 6 Taças de Cristal para Cerveja 460 ml Beer Glass",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206008/140480_Conjunto_Alumina_Cerveja_Beer_Glass_460ml.jpg.jpg?v=639203236954030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-cerveja-beer/p",
-  popularity: 405
- },
- {
-  sku: "oxford-60607013",
-  name: "Jogo de 6 Taças de Cristal para Cerveja 420 ml Pilsner",
-  brand: "Alumina Crystal",
-  unitPrice: 369.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192471/140480_Alumina_Cerveja_Taca_Pilsner-380ml.jpg.jpg?v=638816278564030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-cerveja-pilsner/p",
-  popularity: 406
- },
- {
-  sku: "oxford-60606993",
-  name: "Jogo de 6 Pratos Sobremesa 21,5 cm Ryo Galápagos",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191031/porcelanas-conj-6-Ryo_Galapagos_Prato-Sobremesa.jpg.jpg?v=638815530353370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-sobremesa/p",
-  popularity: 407
- },
- {
-  sku: "oxford-60606984",
-  name: "Jogo de 6 Pratos Rasos 27,5cm Ryo Galápagos Jogo de 6 Pratos Rasos 27,5 cm Ryo Galápagos",
-  brand: "Oxford Porcelanas",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207285/porcelanas-conj-6-Ryo_Galapagos_Prato-Raso.jpg.jpg?v=639227406176130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-rasos/p",
-  popularity: 408
- },
- {
-  sku: "oxford-60606980",
-  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190952/porcelanas-conj-6-Flora_Aster_Prato-Raso.jpg.jpg?v=638815520607430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-pratos-raso/p",
-  popularity: 409
- },
- {
-  sku: "oxford-60606970",
-  name: "Jogo de 6 Pratos Fundos 22,5 cm Ryo Volcano",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192830/Conj_6_Pecas_Ryo_Volcano_Fundo.jpg.jpg?v=638816949758770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pratos-fundos/p",
-  popularity: 410
- },
- {
-  sku: "oxford-60606962",
-  name: "Jogo de 6 Pratos Fundos 20 cm Flora Camélia Jogo de 6 Pratos Fundo 20cm Flora Camélia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190932/porcelanas-conj-6-Flora_Camelia_Prato-Fundo.jpg.jpg?v=638815518818700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/camelia-pratos-fundo/p",
-  popularity: 411
- },
- {
-  sku: "oxford-60606957",
-  name: "Jogo de 6 Potes de vidro para Condimento com tampa de Bambu - 200 ml",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192583/Conj-6-pecas-150626-porta-p-condimento-200-ml-c-tampa-de-bambu.jpg.jpg?v=638816301252130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/potes-condimento-200ml/p",
-  popularity: 412
- },
- {
-  sku: "oxford-60606955",
-  name: "Jogo de 6 Copos de Cristal Vinho Branco 440 ml Easy",
-  brand: "Alumina Crystal",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207399/139209_Copo_De_Cristal_Vinho_Branco_440ml_Easy_Classic.jpg.jpg?v=639227431089100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copos-vinho-easy/p",
-  popularity: 413
- },
- {
-  sku: "oxford-60606949",
-  name: "Jogo de 6 Copos de Cristal para Água 445 ml Ginga",
-  brand: "Alumina Crystal",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207449/114607_Copo_Ginga_Agua_445ml_M.jpg.jpg?v=639227440839600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copos-agua-ginga/p",
-  popularity: 414
- },
- {
-  sku: "oxford-60606948",
-  name: "Jogo de 6 Copos de Cristal Espumante 230 ml Easy",
-  brand: "Alumina Crystal",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207388/139212_Copo_De_Cristal_Espumante_230ml_Easy_Classic.jpg.jpg?v=639227428229870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copos-espumante-easy/p",
-  popularity: 415
- },
- {
-  sku: "oxford-60606945",
-  name: "Jogo de 4 Xícaras de Cafezinho Expresso 75ml Com Pires Branco",
-  brand: "Oxford Porcelanas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194156/142748_Xicara_cafe_expreso_longo_75ml_e_pires.jpg.jpg?v=638828264089630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafezinho-expresso-branco/p",
-  popularity: 416
- },
- {
-  sku: "oxford-60606913",
-  name: "Jogo de 12 Garfos para Sobremesa 17,5cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202410/Conj_12_pecas_ouro_preto_Garfo Sobremesa.jpg?v=639101250013330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/garfos-sobremesa-ouro/p",
-  popularity: 417
- },
- {
-  sku: "oxford-60606907",
-  name: "Jarra de Vidro 1,3 L com tampa Classic",
-  brand: "Oxford",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186144/150629_Jarra_com_Tampa_1300ml.jpg?v=638750480003870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jarra-vidro-classic/p",
-  popularity: 418
- },
- {
-  sku: "oxford-60606903",
-  name: "Garfo de Servir 26cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186128/149372_Talher_Para_Servir_Garfo_26cm.jpg?v=638750479770930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/garfo-servir-ouro/p",
-  popularity: 419
- },
- {
-  sku: "oxford-60606892",
-  name: "Faqueiro em Aço Inox 24 Peças Class",
-  brand: "Biona",
-  unitPrice: 144.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186487/150454-FAQUEIRO-EM-ACO-INOX-24PCS-CLASS.jpg?v=638750485672870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-inox-24pcs/p",
-  popularity: 420
- },
- {
-  sku: "oxford-60606883",
-  name: "Jogo de Servir 4 Peças Domus Branco",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189495/152551_Conjunto_Servir_Domus_Branco.jpg?v=638804987091630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/servir-4pcs-branco/p",
-  popularity: 421
- },
- {
-  sku: "oxford-60606875",
-  name: "Colher de Servir 25,5cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186125/149370_Talher_Para_Servir_Colher_25.5cm.jpg?v=638750479728700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-ouro/p",
-  popularity: 422
- },
- {
-  sku: "oxford-60606862",
-  name: "Prensa Francesa em Vidro Parede Dupla 1L Prateada",
-  brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199475/150639_Cafeteira_Francesa_1000ml.jpg?v=639048930817800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-prateada/p",
-  popularity: 423
- },
- {
-  sku: "oxford-60606856",
-  name: "Caçarola para Feijoada em Cerâmica 19,5 cm 1,150 L com tampa Caçarola para Feijoada em Cerâmica 19,5 cm 1,150l com tampa",
-  brand: "Cookware",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207719/152790_Linha_Feijoada_Cacarola_19-5cm.jpg?v=639228269487570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-feijoada-195cm/p",
-  popularity: 424
- },
- {
-  sku: "oxford-60606855",
-  name: "Caçarola Antiaderente para indução 22 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207168/Oxford_Cacarola_Linha_Gourmet_22cm_Vista_02.jpg?v=639221602231270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aluminio-22cm/p",
-  popularity: 425
- },
- {
-  sku: "oxford-60606851",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Vermelho",
-  brand: "Cookware",
-  unitPrice: 779.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207302/Panela-Aroma-Grande-Angulo-Vermelho.jpg.jpg?v=639227417427830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-vermelho-3/p",
-  popularity: 426
- },
- {
-  sku: "oxford-60606849",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Cinza",
-  brand: "Cookware",
-  unitPrice: 779.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204165/Panela-Aroma-Grande-Angulo-Cinza.jpg.jpg?v=639177323280100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma-3/p",
-  popularity: 427
- },
- {
-  sku: "oxford-60606843",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 18 cm Cinza",
-  brand: "Cookware",
-  unitPrice: 529.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194223/Panela-Aroma-Pequena-Angulo-Cinza.jpg.jpg?v=638829060461130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma/p",
-  popularity: 428
- },
- {
-  sku: "oxford-60606835",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186062/5500_Unni_White_Conjuntos_20_30.jpg?v=638750478847030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-white/p",
-  popularity: 429
- },
- {
-  sku: "oxford-60606831",
-  name: "Aparelho de Jantar e Chá 30 peças Ryo Galápagos",
-  brand: "Oxford Porcelanas",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188094/9620_Ryo_Galapagos_Conjunto.jpg.jpg?v=638935549041300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-jantar-30pcs/p",
-  popularity: 430
- },
- {
-  sku: "oxford-60606817",
-  name: "Aparelho de Jantar e Chá 20 peças Ryo Volcano",
-  brand: "Oxford Porcelanas",
-  unitPrice: 679.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197293/Ryo_Volcano_Conjunto.jpg.jpg?v=638918343308370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-jantar-volcano/p",
-  popularity: 431
- },
- {
-  sku: "oxford-60606813",
-  name: "Aparelho de Jantar e Chá 20 peças Flora Camélia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 659.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207580/Flora_Conjunto_20_30_Camelia.jpg?v=639227527141500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/camelia-jantar-20pcs/p",
-  popularity: 432
- },
- {
-  sku: "oxford-60606792",
-  name: "Jogo de 6 Pratos Sobremesa 20 cm Unni Tropicano",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196267/Conjunto_Tropicano_Sobremesa_06.jpg?v=638900186752870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-unni-tropicano/p",
-  popularity: 433
- },
- {
-  sku: "oxford-60606778",
-  name: "Jogo de 6 Pratos Rasos 26 cm Páscoa",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199357/Conjunto_Pascoa_Raso_06.jpg?v=639041780426130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-unni-pascoa/p",
-  popularity: 434
- },
- {
-  sku: "oxford-60606756",
-  name: "Frigideira Antiaderente para Indução 22 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206968/138741_Frigideira_01.jpg?v=639221547017530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-aluminio-forjado-everyday-22cm/p",
-  popularity: 435
- },
- {
-  sku: "oxford-60606749",
-  name: "Aparelho de Jantar Chá 30 peças Donna Caribe",
-  brand: "Biona",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193929/149791_Conjunto_Donna_Caribe_30.jpg?v=638826806395530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-caribe/p",
-  popularity: 436
- },
- {
-  sku: "oxford-60606743",
-  name: "Aparelho de Jantar Chá 30 peças Donna Margaridas",
-  brand: "Biona",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185515/149862_Conjunto_Donna_Margaridas_30.jpg?v=638623605456030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-margaridas/p",
-  popularity: 437
- },
- {
-  sku: "oxford-60606737",
-  name: "Aparelho de Jantar Chá 30 peças Donna Jardim de Cerejas",
-  brand: "Biona",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185522/149898_Conjunto_Donna_Cereja_30.jpg?v=638623637051100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-jardim-de-cerejas/p",
-  popularity: 438
- },
- {
-  sku: "oxford-60606732",
-  name: "Aparelho de Jantar Chá 30 peças Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185729/Conjunto_Orquidea.jpg?v=638635560015700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-orquidea/p",
-  popularity: 439
- },
- {
-  sku: "oxford-60606730",
-  name: "Jogo de 6 Xícaras de Chá 200 ml com pires Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191780/Xicara_Pires_06.jpg?v=638816135808400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-xicaras-de-cha-200ml-com-pires-orquidea/p",
-  popularity: 440
- },
- {
-  sku: "oxford-60606720",
-  name: "Jogo de 6 Pratos Rasos 26 cm Unni Damas",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189765/149721_Raso_Damas_Unni_26cm.jpg?v=638815271075870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-rasos-26cm-damas/p",
-  popularity: 441
- },
- {
-  sku: "oxford-60606030",
-  name: "Aparelho de Jantar e Chá 20 Peças Soleil Limoni",
-  brand: "Oxford Porcelanas",
-  unitPrice: 849.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207765/140129_Aparelho_De_Jantar_E_Cha_20_Pecas_Soleil_Limoni.jpg?v=639228406390830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-limoni-20pcs/p",
-  popularity: 442
- },
- {
-  sku: "oxford-60605068",
-  name: "Aparelho de Jantar 20 peças Unni Buquê Tropical",
-  brand: "Cerâmicas",
-  unitPrice: 409.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179880/Aparelho_Jantar_Cha_20.30Pecas_Unni_Buque_Tropical.jpg?v=638126933700900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-buque-tropical-20pcs/p",
-  popularity: 443
- },
- {
-  sku: "oxford-60605055",
-  name: "Aparelho de Jantar 20 peças Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180265/Conjunto_donna_bem_te_vi.jpg?v=638131006300530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-bem-te-vi-20pcs/p",
-  popularity: 444
- },
- {
-  sku: "oxford-60603472",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni Lilac",
-  brand: "Cerâmicas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207733/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Lilac---Ama2-5625.jpg?v=639228277963170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-lilac-jantar-20pcs/p",
-  popularity: 445
- },
- {
-  sku: "oxford-60603443",
-  name: "Aparelho de Jantar e Chá 20 Peças Donna Bloom",
-  brand: "Biona",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180519/Conjunto_Bloom.jpg?v=638138711573770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-bloom-jantar-20pcs/p",
-  popularity: 446
- },
- {
-  sku: "oxford-60602972",
-  name: "Aparelho de Jantar e Chá 20 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197068/9515_Ryo_Maresia_20_30.jpg?v=638918299190570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-20pcs/p",
-  popularity: 447
- },
- {
-  sku: "oxford-60600784",
-  name: "Aparelho de Jantar e Chá 20 Peças Donna Lola",
-  brand: "Biona",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180532/Conjunto_Lola.jpg?v=638138716530670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-lola-20pcs/p",
-  popularity: 448
- },
- {
-  sku: "oxford-10700703",
-  name: "Aparelho de Jantar Chá e Café 42 Peças Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1159.9,
-  unit: "un",
-  category: "aparelhos de jantar 42 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156855/oxford-porcelanas-aparelho-de-jantar-soleil-white-42-pecas-00.jpg?v=636213932637200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-42pcs/p",
-  popularity: 449
- },
- {
-  sku: "oxford-10700701",
-  name: "Aparelho de Jantar e Chá 20 Peças Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 649.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156841/oxford-porcelanas-aparelho-de-jantar-soleil-white-20-pecas-00.jpg?v=636213930258830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-20pcs/p",
-  popularity: 450
- },
- {
-  sku: "oxford-10201302",
-  name: "Aparelho de Jantar Chá e Café 42 Peças Flamingo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1149.9,
-  unit: "un",
-  category: "aparelhos de jantar 42 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156154/oxford-porcelanas-aparelho-de-jantar-flamingo-white-30-pecas-00.jpg?v=636213696442170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-42pcs/p",
-  popularity: 451
- },
- {
-  sku: "oxford-60606471",
-  name: "Tigela 500 ml Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209462/Ryo_Tigela_18cm_500ml_Bambu-otimizada.webp?v=639259300820700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-500ml-bambu/p",
-  popularity: 452
- },
- {
-  sku: "oxford-60606458",
-  name: "Jogo de 6 Taças de Cristal Para Água 420 ML Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 309.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197382/Agua.jpg?v=638920671944070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-agua-420ml-petra-classic/p",
-  popularity: 453
- },
- {
-  sku: "oxford-60606457",
-  name: "Jogo de 6 Taças de Cristal Espumante 340 ML Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197389/139223_Taca_Espumante_Petra_340ml_06.jpg?v=638920672195200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-espumante-340ml-petra-classic/p",
-  popularity: 454
- },
- {
-  sku: "oxford-60606332",
-  name: "Jogo de 6 Taças de Cristal Para Vinho Tinto 518 Ml Classic",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193953/142341_Taca_De_Cristal_Para_Vinho_Tinto_518ml_Classic_06.jpg?v=638826814483870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-vinho-tinto-518ml-classic/p",
-  popularity: 455
- },
- {
-  sku: "oxford-60606331",
-  name: "Jogo de 6 taças de Cristal Para Vinho Branco 388 Ml Classic",
-  brand: "Biona",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192725/142344_Taca_De_Cristal_Para_Vinho_Branco_388ml_Classic_06.jpg?v=638816389754970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-vinho-branco-388ml-classic/p",
-  popularity: 456
- },
- {
-  sku: "oxford-60606325",
-  name: "Jogo de 6 Taças de Cristal Para Cerveja 423 Ml Classic",
-  brand: "Biona",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195725/142365_Taca_De_Cristal_Para_Cerveja_423_ml_Classic_06.jpg?v=638884381189600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-cerveja-423ml-classic/p",
-  popularity: 457
- },
- {
-  sku: "oxford-60606243",
-  name: "Panela Wok Antiaderente para indução 28 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207152/141760_Panela_Wok_28_Cm_--2-.jpg?v=639221599892700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-gourmet/p",
-  popularity: 458
- },
- {
-  sku: "oxford-60606237",
-  name: "Frigideira Antiaderente para Indução 28 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207027/138741_Frigideira_01.jpg?v=639221576756830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-everyday-azul/p",
-  popularity: 459
- },
- {
-  sku: "oxford-60606231",
-  name: "Frigideira Antiaderente para indução 24 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207199/141748_Frigideira_24_.jpg?v=639221608919330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-gourmet/p",
-  popularity: 460
- },
- {
-  sku: "oxford-60606229",
-  name: "Espátula Para Bolo 25,5 Cm Em Aço Inox Noronha",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183835/141883_Espatula_Para_Bolo_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638442860730830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/espatula-bolo-25-5cm-noronha/p",
-  popularity: 461
- },
- {
-  sku: "oxford-60606203",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197247/143004_Conjunto_De_6_Xicaras_Grandes_200_Ml_Com_Pire.jpg?v=638918316899900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-brisa/p",
-  popularity: 462
- },
- {
   sku: "oxford-60606123",
   name: "Jogo de 12 Garfos de Sobremesa 18 Cm São Paulo",
   brand: "Oxford",
@@ -5096,7 +2577,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202418/141907_Conjunto_De_12_Garfos_De_Sobremesa_18_Cm_Sao_12.jpg?v=639101251765400000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-sobremesa-sao-paulo/p",
-  popularity: 463
+  popularity: 234
  },
  {
   sku: "oxford-60606110",
@@ -5107,40 +2588,51 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204043/141911_Conjunto_De_12_Colheres_De_Sobremesa_17_Cm_Sao_12.jpg?v=639168631905330000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-sobremesa-sao-paulo/p",
-  popularity: 464
+  popularity: 235
  },
  {
-  sku: "oxford-60606103",
-  name: "Jogo de 12 Colheres de Chá 14 Cm São Paulo",
+  sku: "oxford-60606099",
+  name: "Concha 25,5 Cm Em Aço Inox Noronha",
   brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184071/141889_Concha_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638445515635370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/concha-25-5cm-noronha/p",
+  popularity: 236
+ },
+ {
+  sku: "oxford-60606098",
+  name: "Colher de Servir Vazada 25,5 Cm em Aço Inox Noronha",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184070/141887_Colher_De_Servir_Vazada_255_Cm_em_Aco_Inox_Noronha.jpg?v=638445514949170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-vazada-25-5cm-noronha/p",
+  popularity: 237
+ },
+ {
+  sku: "oxford-60606097",
+  name: "Colher de Servir 25,5 Cm Em Aço Inox Noronha",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184069/141885_Colher_De_Servir_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638445513854600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-25-5cm-noronha/p",
+  popularity: 238
+ },
+ {
+  sku: "oxford-60605931",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Stripes And Dots",
+  brand: "Cerâmicas",
   unitPrice: 159.9,
   unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204047/141913_Conjunto_De_12_Colheres_De_Cha_14_Cm_Sao_Paulo_12.jpg?v=639168632102170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-sao-paulo/p",
-  popularity: 465
- },
- {
-  sku: "oxford-60606039",
-  name: "Aparelho de Jantar e Chá 30 Peças Donna Chá Das 5",
-  brand: "Biona",
-  unitPrice: 539.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184202/Donna_Cha_das_5_Conjunto.jpg?v=638447382237430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-cha-das-5/p",
-  popularity: 466
- },
- {
-  sku: "oxford-60605929",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189963/139121_Conjunto-de-6-Pratos-Rasos-26-Cm-Unni-Stripes-And-Dots.jpg?v=638815315865830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-stripes-and-dots/p",
-  popularity: 467
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190271/139115_Conjunto-de-6-Pratos-Sobremesa-20-Cm-Unni-Stripes-And-Dots.jpg?v=638815399085500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-stripes-and-dots/p",
+  popularity: 239
  },
  {
   sku: "oxford-60605922",
@@ -5151,315 +2643,194 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196668/E-commerce_5950_Strips_an_dots_Conjunto.jpg?v=638918229420600000",
   productUrl: "https://www.oxfordporcelanas.com.br/unni-stripes-and-dots/p",
-  popularity: 468
+  popularity: 240
  },
  {
-  sku: "oxford-60605917",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182973/E-commerce_5949_Balance_Conjunto.jpg?v=638320354191970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-balance/p",
-  popularity: 469
- },
- {
-  sku: "oxford-60605895",
-  name: "Boleira Flat 26cm Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "servir prato bolo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182711/Flat_Samambaia_Prato_Bolo_01.jpg?v=638308099269000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/boleira-flat-samambaia/p",
-  popularity: 470
- },
- {
-  sku: "oxford-60605771",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml com pires Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191913/136395_Flat_Onix_Xicara_Pires_200ml_06.jpg?v=638816141828570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-xicaras-cha/p",
-  popularity: 471
- },
- {
-  sku: "oxford-60605767",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml com pires Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191921/136749_Flat_Chuvisco_Xicara_Pires_200ml_06.jpg?v=638816142630300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-xicaras-cha/p",
-  popularity: 472
- },
- {
-  sku: "oxford-60605758",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190073/136750_Flat_Chuvisco_Prato_Sobremesa_20cm_06.jpg?v=638815326048570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-sobremesa/p",
-  popularity: 473
- },
- {
-  sku: "oxford-60605753",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190091/136397_Flat_Onix_Prato_Raso_26cm_06.jpg?v=638815327792630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-rasos/p",
-  popularity: 474
- },
- {
-  sku: "oxford-60605745",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Pacífico",
-  brand: "Cerâmicas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190115/Prato-Fundo---Pacifico---6-pecas.jpg?v=638815330105000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-fundos/p",
-  popularity: 475
- },
- {
-  sku: "oxford-60605740",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Chuvisco",
+  sku: "oxford-60605763",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Pacífico",
   brand: "Cerâmicas",
   unitPrice: 199.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207543/136752_Flat_Chuvisco_Prato_Fundo_205cm_06.jpg?v=639227464391770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-fundos/p",
-  popularity: 476
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190057/Prato-Sobremesa---Pacifico---6-pecas.jpg?v=638815325045530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-sobremesa/p",
+  popularity: 241
  },
  {
-  sku: "oxford-60605731",
-  name: "Aparelho de Jantar e Lanche 16 Peças Flat Chuvisco",
+  sku: "oxford-60605754",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Pacífico",
   brand: "Cerâmicas",
-  unitPrice: 539.9,
+  unitPrice: 299.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190087/Prato-Raso---Pacifico---6-pecas.jpg?v=638815327595570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-rasos/p",
+  popularity: 242
+ },
+ {
+  sku: "oxford-60605749",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194569/136751_Flat_Chuvisco_Prato_Raso_26cm_06.jpg?v=638836281225600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-rasos/p",
+  popularity: 243
+ },
+ {
+  sku: "oxford-60605737",
+  name: "Aparelho de Jantar e Lanche 16 Peças Flat Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 479.9,
   unit: "un",
   category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182179/136755_Flat_Chuvisco_Conjunto_16.jpg?v=638296882170430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-chuvisco/p",
-  popularity: 477
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182319/136242_Flat_Samambaia_Conjunto_16.jpg?v=638300558666270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-samambaia/p",
+  popularity: 244
  },
  {
-  sku: "oxford-60605727",
-  name: "Aparelho de Jantar e Chá 30 Peças Flat Pacífico",
+  sku: "oxford-60605732",
+  name: "Aparelho de Jantar e Lanche 16 Peças Flat Gray",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182134/136454_Flat_Gray_Conjunto_16.jpg?v=638296870975400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcsflatgray/p",
+  popularity: 245
+ },
+ {
+  sku: "oxford-60605726",
+  name: "Aparelho de Jantar e Chá 30 Peças Flat Ônix",
   brand: "Cerâmicas",
   unitPrice: 969.9,
   unit: "un",
   category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183240/Conjunto-30-pecas---Pacifico.jpg?v=638355775659800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico/p",
-  popularity: 478
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182255/136399_Flat_Onix_Conjunto_30.jpg?v=638300537130400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix/p",
+  popularity: 246
  },
  {
-  sku: "oxford-60605723",
-  name: "Aparelho de Jantar e Chá 30 Peças Flat Gray",
+  sku: "oxford-60605722",
+  name: "Aparelho de Jantar e Chá 30 Peças Flat Chuvisco",
   brand: "Cerâmicas",
-  unitPrice: 969.9,
+  unitPrice: 799.9,
   unit: "un",
   category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182129/136452_Flat_Gray_Conjunto_30.jpg?v=638296870426270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-gray/p",
-  popularity: 479
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182174/136753_Flat_Chuvisco_Conjunto_30.jpg?v=638296881318670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco/p",
+  popularity: 247
  },
  {
-  sku: "oxford-60605709",
-  name: "Aparelho de Jantar 18 Peças Flat Pacífico",
+  sku: "oxford-60605368",
+  name: "Tigela 600 Ml Verde Escuro",
   brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183225/Conjunto-18-pecas---Pacifico.jpg?v=638355771596870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-pacifico/p",
-  popularity: 480
- },
- {
-  sku: "oxford-60605704",
-  name: "Aparelho de Jantar 18 Peças Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 579.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182162/136756_Flat_Chuvisco_Conjunto_18.jpg?v=638296879684300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-chuvisco/p",
-  popularity: 481
- },
- {
-  sku: "oxford-60605420",
-  name: "Assadeira Refratária Tango Grande 40x24x7 Cm Marrom",
-  brand: "Cookware",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180619/126810_Travessaa_Refrataria_Marrom_Tango_G.jpg?v=638150793044070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-grande-marrom/p",
-  popularity: 482
- },
- {
-  sku: "oxford-60605376",
-  name: "Assadeira Refratária Tango Pequena 28x18x5,5 Cm Branco",
-  brand: "Cookware",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183207/126818_Travessaa_Refrataria_Branca_Tango_P.jpg?v=638350470223530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-pequena-branco/p",
-  popularity: 483
- },
- {
-  sku: "oxford-60605254",
-  name: "Garrafa de Cristal Dandy 2280 Ml",
-  brand: "Alumina Crystal",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180607/111441_Alumina_Wine_Garrafa_Dandy_2280ml.jpg?v=638150075419630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/garrafa-dandy-2280ml-classic/p",
-  popularity: 484
- },
- {
-  sku: "oxford-60605248",
-  name: "Decanter de Cristal Baco 1230 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188656/111438_Alumina_Wine_Decanter_Baco_1230ml.jpg?v=638796505061330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/decanter-baco-1230ml-classic/p",
-  popularity: 485
- },
- {
-  sku: "oxford-60605185",
-  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Lírios",
-  brand: "Biona",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190415/126283_Conjunto_6_Pratos_Rasos_24Cm_Donna_Lirios.jpg?v=638815407241170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-lirios/p",
-  popularity: 486
- },
- {
-  sku: "oxford-60605176",
-  name: "Jogo de 6 Pratos Fundos 21,5 Cm Donna Lírios",
-  brand: "Biona",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190565/126284_Conjunto_6_Pratos_Fundos_215Cm_Donna_Lirios.jpg?v=638815417885830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-donna-lirios/p",
-  popularity: 487
- },
- {
-  sku: "oxford-60605079",
-  name: "Aparelho de Jantar 30 peças Donna Lirios",
-  brand: "Biona",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180304/Conjunto_donna_lirios.jpg?v=638131020536530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-lirios/p",
-  popularity: 488
- },
- {
-  sku: "oxford-60604769",
-  name: "Tigela Ramequin 180 Ml Branco/Amarelo",
-  brand: "Cookware",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179123/004749_0209_Ramequin_180ml_bic_amarelo.jpg?v=638035255900770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-amarelo-180ml/p",
-  popularity: 489
- },
- {
-  sku: "oxford-60604169",
-  name: "Taça de Cristal Para Vinho Branco 360 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178359/064458_Alumina_Forever_Vinho_Branco_360ml.jpg?v=638010057939900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-vinho-branco-forever-classic-360-ml/p",
-  popularity: 490
- },
- {
-  sku: "oxford-60604137",
-  name: "Pincel Culinário de Silicone Redondo Cool Grey",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178329/069954_Pincel_Culinario_Redondo_Cool_Grey_265cm.jpg?v=638007507999100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pincel-silicone-redondo-cool-grey/p",
-  popularity: 491
- },
- {
-  sku: "oxford-60604133",
-  name: "Pegador Multiuso 27 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178011/069923_Utensilios_Em_Silicone_Cabo_Inox_Cool-Grey_pegador.jpg?v=637970480148470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pegador-multiuso-cool-grey-27-cm/p",
-  popularity: 492
- },
- {
-  sku: "oxford-60604103",
-  name: "Descascador de Batata Com Zester Cool Grey",
-  brand: "Oxford",
   unitPrice: 40.9,
   unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178308/070317_Descascador_de_Batata_com_Zesper_Cool_Grey_196x32x23cm.jpg?v=638007495506470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/descascador-batata-zester-cool-grey/p",
-  popularity: 493
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180251/126620_Tigela_Verde_Escuro.jpg?v=638130994848300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-verde-escuro/p",
+  popularity: 248
  },
  {
-  sku: "oxford-60604100",
-  name: "Cortador de Pizza Cool Grey",
-  brand: "Oxford",
-  unitPrice: 43.9,
+  sku: "oxford-60605350",
+  name: "Tigela 300 Ml Verde Escuro",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
   unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178016/070314_Utensilios_Silicone_Mail_Order_Cool_Grey_pizza.jpg?v=637970492766800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cortador-pizza-cool-grey/p",
-  popularity: 494
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180250/126464_Tigela_300Ml_Verde_Escuro.jpg?v=638130994403230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-verde-escuro-300ml/p",
+  popularity: 249
  },
  {
-  sku: "oxford-60604081",
-  name: "Colher de Silicone Vazada 33,5 Cm Cool Grey",
+  sku: "oxford-60604765",
+  name: "Tigela Ramequin 100 Ml Branco",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179143/004727_9001_Ramequin_100ml_branco.jpg?v=638035336068700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-100ml/p",
+  popularity: 250
+ },
+ {
+  sku: "oxford-60604240",
+  name: "Colher de Silicone 33,5 Cm Cool Grey",
   brand: "Oxford",
   unitPrice: 65.9,
   unit: "un",
   category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177927/069963_Colher_Vazada_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958329574600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-vazada-cool-grey-33-cm/p",
-  popularity: 495
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177923/069969_Colher_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958327749200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-cool-grey-33-5-cm/p",
+  popularity: 251
  },
  {
-  sku: "oxford-60603990",
-  name: "Copo de Vidro Parede Dupla com Tampa 400 ml",
+  sku: "oxford-60604182",
+  name: "Jogo de 6 Copos de Cristal 390 Ml Flat Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207437/093153_Conjunto_Alumina_Flat_Copo_Agua_300ml.jpg?v=639227438118600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-copos-cerveja-flat-classic-300-ml/p",
+  popularity: 252
+ },
+ {
+  sku: "oxford-60604158",
+  name: "Saleiro Duplo Em Madeira Com Tampa Giratória Natural",
   brand: "Oxford",
-  unitPrice: 59.9,
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178094/115288_Saleiro_duplo_com_tampa_giratoria_10x10_H102cm.jpg?v=637974747475330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/saleiro-duplo-madeira-tampa-giratoria-natural/p",
+  popularity: 253
+ },
+ {
+  sku: "oxford-60604104",
+  name: "Descascador de Legumes Cool Grey",
+  brand: "Oxford",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178014/070320_Descascadores_De_Legumes_Cool-Grey.jpg?v=637970489232300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/descascador-legumes-cool-grey/p",
+  popularity: 254
+ },
+ {
+  sku: "oxford-60604078",
+  name: "Colher de Silicone Reta 33,5 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177930/069972_Utensilios_Colher_Reta_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958330828170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-reta-cool-grey-33-cm/p",
+  popularity: 255
+ },
+ {
+  sku: "oxford-60604036",
+  name: "Taça de Cristal Bourgogne 720 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187164/Forever_Classic_Taca_Bourgogne_720ml-00.jpg.jpg?v=638755918176200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-bourgogne-720-ml-forever-classic/p",
+  popularity: 256
+ },
+ {
+  sku: "oxford-60603988",
+  name: "Moedor Manual de Grãos em Aço Inox com Regulagem",
+  brand: "Oxford",
+  unitPrice: 139.9,
   unit: "un",
   category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177379/117060_Cafe_Gourmet_Copo_Silicone_400ml.jpg?v=637889956637830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copo-parede-dupla-400ml/p",
-  popularity: 496
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177377/117068-1.jpg?v=637889953891270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/moedor-manual-graos-regulagem/p",
+  popularity: 257
  },
  {
   sku: "oxford-60603987",
@@ -5470,436 +2841,293 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe cafeteria",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188433/117053-1.jpg?v=638793902481630000",
   productUrl: "https://www.oxfordporcelanas.com.br/espumador-manual-400ml/p",
-  popularity: 497
+  popularity: 258
  },
  {
-  sku: "oxford-60603968",
-  name: "Tigela para Servir 26 cm Massa",
-  brand: "Cerâmicas",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "servir tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185116/Oxford_Ceramicas_Conjunto_Massa_Travessa.jpg?v=638590801776900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-massa-26cm/p",
-  popularity: 498
- },
- {
-  sku: "oxford-60603791",
-  name: "Queijeira Em Madeira Com Tampa de Vidro 25,4 Cm",
+  sku: "oxford-60603986",
+  name: "Moedor Manual de Grãos em Aço Inox",
   brand: "Oxford",
-  unitPrice: 219.9,
+  unitPrice: 59.9,
   unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195108/115280-1.jpg?v=638859586491530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/queijeira-madeira-vidro/p",
-  popularity: 499
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177375/117050-1.jpg?v=637889952677000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/moedor-manual-graos-inox/p",
+  popularity: 259
  },
  {
-  sku: "oxford-60603790",
-  name: "Porta Utensílios Em Madeira Porta-utensílios Em Madeira",
+  sku: "oxford-60603983",
+  name: "Suporte com Base de Madeira para Filtro de Café Hario",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177372/117041-1.jpg?v=637889950518400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/suporte-madeira-filtro-hario/p",
+  popularity: 260
+ },
+ {
+  sku: "oxford-60603976",
+  name: "Prensa Francesa Para Viagem 500 Ml",
+  brand: "Oxford",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177366/117019-1.jpg?v=637889932273530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/prensa-francesa-500ml/p",
+  popularity: 261
+ },
+ {
+  sku: "oxford-60603889",
+  name: "Panela Wok Antiaderente Corpo Triplo Indução CookingPro 34 cm",
+  brand: "Cookware",
+  unitPrice: 1069.9,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203712/113357_Panela_Wok_34cm_75l_01.jpg?v=639167064856730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-wok-34cm/p",
+  popularity: 262
+ },
+ {
+  sku: "oxford-60603888",
+  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 28 cm",
+  brand: "Cookware",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203672/113355_Cacarola_28cm_01.jpg?v=639167061784500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-28cm/p",
+  popularity: 263
+ },
+ {
+  sku: "oxford-60603887",
+  name: "Frigideira Reta Antiaderente Corpo Triplo Indução CookingPro 26 cm",
+  brand: "Cookware",
+  unitPrice: 729.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203655/113353_Frigideira_reta_multiuso_26cm_01.jpg?v=639167059069170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-frigideira-26cm/p",
+  popularity: 264
+ },
+ {
+  sku: "oxford-60603729",
+  name: "Caneca Ryo 380 Ml Blue Bay",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209471/Ryo_Caneca_Grande_380ml_Blue_Bay-otimizada.webp?v=639259302463270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-blue-bay-380ml/p",
+  popularity: 265
+ },
+ {
+  sku: "oxford-60603274",
+  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 24 cm",
+  brand: "Cookware",
+  unitPrice: 829.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203685/1-Cacarola-Em-Aco-Inox-24Cm-47L---Mail-Order---Hive---Hive-4669.jpg?v=639167062395970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-grande/p",
+  popularity: 266
+ },
+ {
+  sku: "oxford-60603273",
+  name: "Caçarola Antiaderente Corpo Triplo Indução CookingPro 20 cm",
+  brand: "Cookware",
+  unitPrice: 639.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203706/1-Cacarola-Em-Aco-Inox-20Cm-25L---Mail-Order---Hive---Hive-4672.jpg?v=639167064543270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-cacarola-media/p",
+  popularity: 267
+ },
+ {
+  sku: "oxford-60603174",
+  name: "Jogo de 12 Colheres de Café 12,5 Cm Fortaleza",
+  brand: "Oxford",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204009/Design sem nome -99-.png?v=639168037225430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza4/p",
+  popularity: 268
+ },
+ {
+  sku: "oxford-60603172",
+  name: "Jogo de 12 Colheres Para Sobremesa 16,5 Cm Fortaleza",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203983/Design sem nome -92-.png?v=639168011063130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza1/p",
+  popularity: 269
+ },
+ {
+  sku: "oxford-60603170",
+  name: "Jogo de 12 Garfos Para Sobremesa 16,5 Cm Fortaleza",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204001/Design sem nome -96-.png?v=639168022770430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza2/p",
+  popularity: 270
+ },
+ {
+  sku: "oxford-60603169",
+  name: "Jogo de 12 Garfos de Mesa 19 Cm Fortaleza",
+  brand: "Oxford",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203998/Design sem nome -95-.png?v=639168019695970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza8/p",
+  popularity: 271
+ },
+ {
+  sku: "oxford-60603134",
+  name: "Jogo de 12 Colheres de Chá Basis",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173538/Colher-de-Cha-Basis-individual.jpg?v=637606544157470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis2/p",
+  popularity: 272
+ },
+ {
+  sku: "oxford-60603133",
+  name: "Jogo de 12 Colheres de Mesa Basis",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173536/Colher-de-Mesa-Basis-individual.jpg?v=637606543305900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis1/p",
+  popularity: 273
+ },
+ {
+  sku: "oxford-60603130",
+  name: "Jogo de 12 Facas de Mesa Basis",
+  brand: "Biona",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173526/Faca-de-Carne-individual.jpg?v=637606537332230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-basis5/p",
+  popularity: 274
+ },
+ {
+  sku: "oxford-60603128",
+  name: "Jogo de 6 Colheres de Sobremesa 16,7 cm Class",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173520/Colher-de-Sobremesa-Class-individual.jpg?v=637606533001570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class1/p",
+  popularity: 275
+ },
+ {
+  sku: "oxford-60602856",
+  name: "Faqueiro 24 Peças Biona Cinza Neutro",
+  brand: "Biona",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/171187/1-Faqueiro-24Pcs---Mail-Order---Cinza-Neutro.jpg?v=637504847909000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/talheres-biona-cinza-neutro/p",
+  popularity: 276
+ },
+ {
+  sku: "oxford-60600957",
+  name: "Jogo de 6 Taças de Sobremesa Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "servir sobremesa",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191993/oxford-porcelanas-tacas-taca-de-sobremesa-soleil-white-6-pecas-04.jpg?v=638816146111230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-sobremesa-soleil-white/p",
+  popularity: 277
+ },
+ {
+  sku: "oxford-60600937",
+  name: "Jogo de Café 14 Peças Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/165565/oxford-porcelanas--pecas-ocas-bule-acucareiro-xicara-cha-c-pires-soleil-14-pecas-white-00.jpg?v=637039050088930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-cafezinho-soleil-white/p",
+  popularity: 278
+ },
+ {
+  sku: "oxford-60600906",
+  name: "Conjunto Lanche de 3 Peças Mendi Marfim",
+  brand: "Oxford Porcelanas",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/170329/Conjunto-de-Lanche-Marfim.jpg?v=637474402955430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-lanche-mendi-marfim/p",
+  popularity: 279
+ },
+ {
+  sku: "oxford-60600838",
+  name: "Conjunto Refeição Infantil 5 Peças Bebê Panda",
+  brand: "Oxford",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/164953/completo.png?v=636931018505370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-bebe-panda/p",
+  popularity: 280
+ },
+ {
+  sku: "oxford-60600802",
+  name: "Jogo de 3 Potes Herméticos de Vidro Retangular",
   brand: "Oxford",
   unitPrice: 139.9,
   unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176641/115277-1.jpg?v=637852705361870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/porta-utensilios-madeira/p",
-  popularity: 500
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193905/P13T_P14T_P15T_Pote-Hermetico-Borosilicato_Retangular_..00.jpg?v=638826775519570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/potes-hermetico-retangular/p",
+  popularity: 281
  },
  {
-  sku: "oxford-60603789",
-  name: "Tábua Em Madeira Para Corte de Pão Baguete 52 Cm",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176640/115275-1.jpg?v=637852704972930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tabua-madeira-pao-baguete/p",
-  popularity: 501
- },
- {
-  sku: "oxford-60603741",
-  name: "Caneca Ryo 380 Ml White",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209474/Ryo_Caneca_Grande_380ml_White-otimizada.webp?v=639259303131500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-white-380ml/p",
-  popularity: 502
- },
- {
-  sku: "oxford-60603737",
-  name: "Caneca Ryo 380 Ml Pink Sand",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178282/087361_Ryo_Pink_Sand_Caneca_Pequena_380ml_1.jpg?v=638005021118700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-pink-sand-380ml/p",
-  popularity: 503
- },
- {
-  sku: "oxford-60603674",
-  name: "Assadeira Funda de Vidro Retangular Com Alça 2,9 L",
-  brand: "Biona",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176512/068403-1.jpg?v=637842594279530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-funda-vidro-alca-2-9l/p",
-  popularity: 504
- },
- {
-  sku: "oxford-60603668",
-  name: "Assadeira de Vidro Retangular 3 L",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176499/085843-1.jpg?v=637842594221170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-retangular-3l/p",
-  popularity: 505
- },
- {
-  sku: "oxford-60603667",
-  name: "Assadeira de Vidro Retangular 2,5 L",
-  brand: "Biona",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176498/085841-1.jpg?v=637842594216300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-retangular-2-5l/p",
-  popularity: 506
- },
- {
-  sku: "oxford-60603655",
-  name: "Conjunto Com 2 Talheres Infantil de Silicone Verde",
-  brand: "Oxford",
-  unitPrice: 19.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176286/113360-1.jpg?v=637830495007600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/talher-infantil-silicone-verde/p",
-  popularity: 507
- },
- {
-  sku: "oxford-60603471",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Lilac",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207742/1-Ap.-De-Jantar---Cha-30Pcs---Mail-Order---Lilac---Ama3-5625.jpg?v=639228283477930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-lilac-jantar/p",
-  popularity: 508
- },
- {
-  sku: "oxford-60603272",
-  name: "Panela Antiaderente Corpo Triplo Indução CookingPro 18 cm",
-  brand: "Cookware",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203678/1-Panela-Em-Aco-Inox-18Cm-2L---Mail-Order---Hive---Hive-4675.jpg?v=639167062111300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-panela/p",
-  popularity: 509
- },
- {
-  sku: "oxford-60603266",
-  name: "Tigela de Silicone Com Base de Sucção E Tampa Orange",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174334/Linha---Baby---tigela---orange.jpg?v=637637884018700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-tigela/p",
-  popularity: 510
- },
- {
-  sku: "oxford-60603211",
-  name: "Jogo de 6 Copos de Cristal Para On The Rocks 300 Ml Flat Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207442/Copo-OTR-classic.jpg?v=639227439798300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-flat-classic1/p",
-  popularity: 511
- },
- {
-  sku: "oxford-60603210",
-  name: "Jogo de 6 Copos de Cristal 440 Ml Flat Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207432/Copo-de-cristal.jpg?v=639227437522700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-flat-classic2/p",
-  popularity: 512
- },
- {
-  sku: "oxford-60603185",
-  name: "Jogo de 12 Garfos Para Peixe 20 Cm Salvador",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203782/Design-sem-nome--90-.png?v=639168641010030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador7/p",
-  popularity: 513
- },
- {
-  sku: "oxford-60603179",
-  name: "Jogo de 12 Garfos de Mesa 20 Cm Salvador",
-  brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203754/Garfo-de-mesa.jpg?v=639167804055170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador11/p",
-  popularity: 514
- },
- {
-  sku: "oxford-60603176",
-  name: "Jogo de 12 Facas Para Carne 22,5 Cm Salvador",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203739/Faca-de-carne.jpg?v=639167801867670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador4/p",
-  popularity: 515
- },
- {
-  sku: "oxford-60603164",
-  name: "Jogo de 12 Colheres de Chá 14,5 Cm Farol",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173581/Colher-de-Cha-individual.jpg?v=637606569169870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol6/p",
-  popularity: 516
- },
- {
-  sku: "oxford-60603127",
-  name: "Jogo de 6 Colheres de Mesa 19 cm Class",
-  brand: "Biona",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173517/Colher-de-Mesa-Class-individual.jpg?v=637606532099300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class3/p",
-  popularity: 517
- },
- {
-  sku: "oxford-60603126",
-  name: "Jogo de 6 Garfos de Sobremesa Class",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174350/class-individual.jpg?v=637637907770070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class2/p",
-  popularity: 518
- },
- {
-  sku: "oxford-60603125",
-  name: "Jogo de 6 Garfos de Mesa Class",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173513/Garfo-de-Mesa-Class-individual.jpg?v=637606528152600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class6/p",
-  popularity: 519
- },
- {
-  sku: "oxford-60603124",
-  name: "Jogo de 6 Facas de Carne 21,4 cm Class",
-  brand: "Biona",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173515/Faca-Class-individual.jpg?v=637606531238400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class5/p",
-  popularity: 520
- },
- {
-  sku: "oxford-60603120",
-  name: "Jogo de 6 Colheres de Mesa Cinza Neutro",
-  brand: "Biona",
-  unitPrice: 19.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173498/Colher-de-Mesa-Cinza-Neutro-individual.jpg?v=637606518218830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro1/p",
-  popularity: 521
- },
- {
-  sku: "oxford-60603119",
-  name: "Jogo de 6 Garfos de Mesa Cinza Neutro",
-  brand: "Biona",
-  unitPrice: 19.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173495/Garfo-Cinza-Neutro-individual.jpg?v=637606517006970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro4/p",
-  popularity: 522
- },
- {
-  sku: "oxford-60603118",
-  name: "Jogo de 6 Facas de Carne Cinza Neutro",
-  brand: "Biona",
-  unitPrice: 23.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173492/Faca-Cinza-Neutro-Individual.jpg?v=637606513126600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro3/p",
-  popularity: 523
- },
- {
-  sku: "oxford-60603108",
-  name: "Jogo de 6 Facas de Carne Vermelho Intenso",
-  brand: "Biona",
-  unitPrice: 14.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173456/Faca-Vermelho-Intenso-individual.jpg?v=637606501581500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-vermelhointenso3/p",
-  popularity: 524
- },
- {
-  sku: "oxford-60603099",
-  name: "Jogo de 6 Taças de Cristal Para Degustação 210 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190445/Taca-p-degustacao.jpg?v=638815408381330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic1/p",
-  popularity: 525
- },
- {
-  sku: "oxford-60603098",
-  name: "Jogo de 6 Taças de Cristal Para Prosecco 230 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190455/Taca-de-prosecco.jpg?v=638815408633700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-complementoswine-classic1/p",
-  popularity: 526
- },
- {
-  sku: "oxford-60603075",
-  name: "Jogo de 6 Copos de Cristal On The Rocks 460 Ml Proper Effect",
-  brand: "Alumina Crystal",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190576/Alumina-Effect-1104x1104-460ml_6pc.jpg?v=638815418159300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-ontherocks-460/p",
-  popularity: 527
- },
- {
-  sku: "oxford-60602984",
-  name: "Jogo de Lanche 3 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "servir lanche",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209308/1-Cj.-Lanche-03Pcs---Mail-Order---Maresia---Rm12-9515.jpg?v=639258579731900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-conjunto-lanche/p",
-  popularity: 528
- },
- {
-  sku: "oxford-60600834",
-  name: "Conjunto Refeição Infantil 5 Peças Me Lhama",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/164915/Completo.png?v=636931002407600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-me-lhama/p",
-  popularity: 529
- },
- {
-  sku: "oxford-60600719",
-  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo Blue Bay",
+  sku: "oxford-60600703",
+  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo White",
   brand: "Oxford Porcelanas",
   unitPrice: 229.9,
   unit: "un",
   category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195138/oxford-porcelanas-xicara-de-cha-com-pires-ryo-blue-bay-6-pecas-01.jpg?v=638859595164930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-blue-bay/p",
-  popularity: 530
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192332/oxford-porcelanas-xicara-de-cha-com-pires-ryo-white-6-pecas-01.jpg?v=638816163972270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-white/p",
+  popularity: 282
  },
  {
-  sku: "oxford-60600713",
-  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192325/Oxford_Porcelanas_Ryo_Bambu_Xicara_Cha_06.jpg?v=638816163592330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-bambu/p",
-  popularity: 531
- },
- {
-  sku: "oxford-60600670",
-  name: "Jogo de 6 Pratos Sobremesa 21,5 Cm Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191727/Oxford_Porcelanas_Ryo_Bambu_Prato_Sobremesa_06.jpg?v=638816129616730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-bambu/p",
-  popularity: 532
- },
- {
-  sku: "oxford-60600669",
-  name: "Jogo de 6 Pratos Fundos 22,5 Cm Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191733/Oxford_Porcelanas_Ryo_Bambu_Prato_Fundo_06.jpg?v=638816129936800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-bambu/p",
-  popularity: 533
- },
- {
-  sku: "oxford-60600668",
-  name: "Jogo de 6 Pratos Rasos 27 Cm Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191737/Oxford_Porcelanas_Ryo_Bambu_Prato_Raso_06.jpg?v=638816130075770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-bambu/p",
-  popularity: 534
- },
- {
-  sku: "oxford-60600679",
-  name: "Jogo de 6 Pratos Sobremesa 21,5 Cm Ryo Blue Bay",
+  sku: "oxford-60600655",
+  name: "Jogo de 6 Pratos Sobremesa 21,5m Ryo White",
   brand: "Oxford Porcelanas",
   unitPrice: 179.9,
   unit: "un",
   category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191742/oxford-porcelanas-prato-sobremesa-ryo-blue-bay-6-pecas-01.jpg?v=638816130167630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-blue-bay/p",
-  popularity: 535
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191747/oxford-porcelanas-prato-sobremesa-ryo-white-6-pecas-01.jpg?v=638816130317930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-white/p",
+  popularity: 283
  },
  {
-  sku: "oxford-60600640",
-  name: "Aparelho de Jantar e Chá 30 Peças Ryo Pink Sand",
+  sku: "oxford-60600638",
+  name: "Aparelho de Jantar e Chá 30 Peças Ryo Bambu",
   brand: "Oxford Porcelanas",
-  unitPrice: 839.9,
+  unitPrice: 999.9,
   unit: "un",
   category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181011/9508_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211331261570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pinksand/p",
-  popularity: 536
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181022/9604_Porcelanas_Ryo_Bambu_Conjuntos_20_30.jpg?v=638211335391800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bambu/p",
+  popularity: 284
  },
  {
   sku: "oxford-60600558",
@@ -5910,183 +3138,106 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191480/oxford-porcelanas-prato-raso-ryo-white-6-pecas-01.jpg?v=638816117106000000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-white/p",
-  popularity: 537
+  popularity: 285
  },
  {
-  sku: "oxford-60600525",
-  name: "Decanter de Cristal 1,5L Casablanca Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 229.9,
+  sku: "oxford-50100201",
+  name: "Jogo de 6 Pratos Fundos Pró 23 Cm",
+  brand: "Oxford Porcelanas",
+  unitPrice: 154.9,
   unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207483/Decanter_Classic_Casablanca_1500ml-00.jpg?v=639227449236100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/decanter-casablanca-alumina/p",
-  popularity: 538
+  category: "gourmet pratos restaurante prato pro",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192712/oxford-porcelanas-gourmet-pro-prato-fundo-M01C-02.jpg?v=638816339422570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-prato-fundo-pro-23cm-conjunto/p",
+  popularity: 286
  },
  {
-  sku: "oxford-60600301",
-  name: "Assadeira de Vidro Borosilicato Canelada Redonda 1.600 Ml",
-  brand: "Biona",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180937/Biona-assadeira-borosilicato-canelada-00.jpg?v=638200939361330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-temperado-canelada-redonda-1600ml/p",
-  popularity: 539
- },
- {
-  sku: "oxford-60201306",
-  name: "Jogo de 6 Xícaras Grandes 180 Ml Com Pires Donna Folk",
-  brand: "Biona",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192683/5118_Donna-Folk_Xicara_Pires_6.jpg?v=638816337122200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-donna-folk/p",
-  popularity: 540
- },
- {
-  sku: "oxford-29701401",
-  name: "Pote Hermético de Vidro Redondo Com Divisória 833 ML",
-  brand: "Oxford",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "cozinha potes com divisorias",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202433/058919-1.jpg?v=639101270320000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-redondo-divisorias/p",
-  popularity: 541
- },
- {
-  sku: "oxford-29701301",
-  name: "Pote Hermético de Vidro Retangular 370 ML",
-  brand: "Oxford",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176271/058984-1.jpg?v=637830494936900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-370ml/p",
-  popularity: 542
- },
- {
-  sku: "oxford-29701101",
-  name: "Pote Hermético de Vidro Quadrado 520 ML",
-  brand: "Oxford",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cozinha potes quadrados",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176266/058982-1.jpg?v=637830494912170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-quadrado-520ml/p",
-  popularity: 543
- },
- {
-  sku: "oxford-30400105",
-  name: "Assadeira Refratária Fall Funda 4.400 Ml",
+  sku: "oxford-30200101",
+  name: "Jogo de 6 Ramequins 10x5 Cm 180 Ml Branco",
   brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158054/oxford-cookware-travessa-refrataria-fall-retangular-funda-4400ml-00.jpg?v=636219980116670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-funda-4400ml/p",
-  popularity: 544
- },
- {
-  sku: "oxford-30400101",
-  name: "Assadeira Refratária Fall Rasa 2.600 Ml",
-  brand: "Cookware",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158039/oxford-cookware-travessa-refrataria-fall-retangular-rasa-2600ml-00.jpg?v=636219966144330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-rasa-2600ml/p",
-  popularity: 545
- },
- {
-  sku: "oxford-20100607",
-  name: "Jogo de 6 Xícaras Pequenas 65 Ml Com Pires Floreal Luiza",
-  brand: "Cerâmicas",
   unitPrice: 139.9,
   unit: "un",
-  category: "cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192366/oxford-daily-xicara-de-cafe-com-pires-floreal-luiza-02.jpg?v=638816166184300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/floreal-luiza-xicaras-cafe/p",
-  popularity: 546
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192129/oxford-cookware-ramequin-branco-grande-6-pecas-04.jpg?v=638816151799570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ramequin-180ml-branco/p",
+  popularity: 287
  },
  {
-  sku: "oxford-19902010",
-  name: "Jogo de 6 Tigelas Manteigueira 8 Cm 85 Ml",
-  brand: "Oxford Porcelanas",
-  unitPrice: 49.9,
+  sku: "oxford-29900505",
+  name: "Caneca Mini Quartier 220 Ml Azul",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
   unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/162831/oxford-porcelanas-C20C-mantegueira-gourmet-00.jpg?v=636598313090730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-manteigueira-8cm/p",
-  popularity: 547
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159202/oxford-daily-caneca-quartier-mini-0684.jpg?v=636243922039300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-azul/p",
+  popularity: 288
  },
  {
-  sku: "oxford-10701294",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
+  sku: "oxford-29701402",
+  name: "Pote Hermético de Vidro Retangular Com Divisórias 580 ML",
+  brand: "Oxford",
+  unitPrice: 43.9,
   unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192382/oxford-porcelanas-xicaras-cha-soleil-white-01.jpg?v=638816167090470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-xicaras-cha/p",
-  popularity: 548
+  category: "cozinha potes com divisorias",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176276/058920-1.jpg?v=637830494962070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-divisorias-580ml/p",
+  popularity: 289
  },
  {
-  sku: "oxford-10701292",
-  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil White",
+  sku: "oxford-19903101",
+  name: "Travessa 42x30 Cm Soleil White",
   brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159037/oxford-porcelanas-travessa-soleil-00.jpg?v=636241283336200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-soleil-420-300/p",
+  popularity: 290
+ },
+ {
+  sku: "oxford-10701293",
+  name: "Jogo de 6 Pratos Sobremesa 23 Cm Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 199.9,
   unit: "un",
   category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191558/oxford-porcelanas-pratos-fundos-soleil-white-02.jpg?v=638816120049200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-fundos/p",
-  popularity: 549
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191552/oxford-porcelanas-pratos-sobremesa-soleil-white-03.jpg?v=638816119886170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-sobremesa/p",
+  popularity: 291
  },
  {
-  sku: "oxford-10700708",
-  name: "Sopeira 4 Litros Com Tampa Soleil White",
+  sku: "oxford-10701291",
+  name: "Jogo de 6 Pratos Rasos 29 Cm Soleil White",
   brand: "Oxford Porcelanas",
-  unitPrice: 289.9,
+  unitPrice: 299.9,
   unit: "un",
-  category: "servir sopeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160122/oxford-porcelanas-conjunto-pecas-ocas-sopeira-soleil-white-00.jpg?v=636342608102600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-sopeira/p",
-  popularity: 550
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191563/oxford-porcelanas-pratos-rasos-soleil-white-02.jpg?v=638816120158800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-rasos/p",
+  popularity: 292
  },
  {
-  sku: "oxford-10700707",
-  name: "Saladeira 30cm 2 Litros Soleil White",
+  sku: "oxford-10700706",
+  name: "Leiteira Soleil White",
   brand: "Oxford Porcelanas",
-  unitPrice: 169.9,
+  unitPrice: 109.9,
   unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160119/oxford-porcelanas-conjunto-pecas-ocas-saladeira-soleil-white-00.jpg?v=636342607520670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-saladeira/p",
-  popularity: 551
+  category: "cha e cafe leiteira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160118/oxford-porcelanas-conjunto-pecas-ocas-leiteira-soleil-white-00.jpg?v=636342607139800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-leiteira/p",
+  popularity: 293
  },
  {
-  sku: "oxford-10700607",
-  name: "Sopeira 4 Litros Com Tampa Soleil Victória",
+  sku: "oxford-10201112",
+  name: "Jogo de 6 Xicaras Grandes 240 Ml Com Pires Flamingo Sofia",
   brand: "Oxford Porcelanas",
-  unitPrice: 349.9,
+  unitPrice: 379.9,
   unit: "un",
-  category: "servir sopeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182744/9812-soleil-victoria-sopeira-media.jpg?v=638309105272800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-victoria-sopeira/p",
-  popularity: 552
- },
- {
-  sku: "oxford-10201304",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191086/oxford-porcelanas-pratos-fundos-flamingo-white-02.jpg?v=638815534935500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-pratos-fundos/p",
-  popularity: 553
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192408/9209_Flamingo_Sofia_xicara-cha_conjunto-de-6.jpg?v=638816168063230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-xicaras-cha/p",
+  popularity: 294
  },
  {
   sku: "oxford-10201111",
@@ -6097,40 +3248,73 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191582/9209_Flamingo_Sofia_prato-sobremesa_conjunto-de-6.jpg?v=638816120760500000",
   productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-pratos-sobremesa/p",
-  popularity: 554
+  popularity: 295
  },
  {
-  sku: "oxford-10201110",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Sofia",
+  sku: "oxford-10201109",
+  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Sofia",
   brand: "Oxford Porcelanas",
-  unitPrice: 319.9,
+  unitPrice: 439.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191590/9209_Flamingo_Sofia_prato-fundo_conjunto-de-6.jpg?v=638816121080430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-pratos-fundos/p",
-  popularity: 555
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191594/9209_Flamingo_Sofia_prato-raso_Conjunto-de-6.jpg?v=638816121194500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-pratos-rasos/p",
+  popularity: 296
  },
  {
-  sku: "oxford-10100913",
-  name: "Sopeira 2 Litros Com Tampa Coup White",
+  sku: "oxford-10100914",
+  name: "Travessa Coup White",
   brand: "Oxford Porcelanas",
-  unitPrice: 259.9,
+  unitPrice: 76.9,
   unit: "un",
-  category: "servir sopeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160031/oxford-porcelanas-conjunto-pecas-ocas-sopeira-flamingo-white-00.jpg?v=636342469340470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-sopeira/p",
-  popularity: 556
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160124/oxford-porcelanas-conjunto-pecas-ocas-travessa-flamingo-white-00.jpg?v=636342613427870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-travessa/p",
+  popularity: 297
  },
  {
-  sku: "oxford-10100912",
-  name: "Saladeira Coup White",
+  sku: "oxford-10700702",
+  name: "Aparelho de Jantar e Chá 30 Peças Soleil White",
   brand: "Oxford Porcelanas",
-  unitPrice: 89.9,
+  unitPrice: 969.9,
   unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160030/oxford-porcelanas-conjunto-pecas-ocas-saladeira-flamingo-white-00.jpg?v=636342468802170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-saladeira/p",
-  popularity: 557
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156848/oxford-porcelanas-aparelho-de-jantar-soleil-white-30-pecas-00.jpg?v=636213931471170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white/p",
+  popularity: 298
+ },
+ {
+  sku: "oxford-10201301",
+  name: "Aparelho de Jantar e Chá 30 Peças Flamingo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 969.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156148/oxford-porcelanas-aparelho-de-jantar-flamingo-white-30-pecas-00.jpg?v=636213695057900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white/p",
+  popularity: 299
+ },
+ {
+  sku: "oxford-10201101",
+  name: "Aparelho de Jantar e Chá 30 Peças Flamingo Sofia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1379.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174359/9209_Flamingo_Sofia_30pcs.jpg?v=637641084784400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia/p",
+  popularity: 300
+ },
+ {
+  sku: "oxford-60608457",
+  name: "Jogo de 2 Taças de Cristal 780 ml Titanium Max",
+  brand: "Oxford",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209499/Titanium_Conj_2_780-ml-otimizada.webp?v=639259449973830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-780-ml-titanium-max/p",
+  popularity: 301
  },
  {
   sku: "oxford-60608453",
@@ -6141,51 +3325,139 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209511/Titanium_Conj_12_7-otimizada.webp?v=639259450334430000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-tacas-e-copos-de-cristal-titanium-max/p",
-  popularity: 558
+  popularity: 302
  },
  {
-  sku: "oxford-60608320",
-  name: "Aparelho De Jantar 18 Peças Unni Stripes and Dots",
-  brand: "Cerâmicas",
-  unitPrice: 537,
+  sku: "oxford-60608397",
+  name: "Jogo de 5 Potes Herméticos Empilháveis Grey",
+  brand: "Oxford",
+  unitPrice: 199.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206435/18-pecas-stripes-and-dots.jpg?v=639210058368030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-stripes-and-dots/p",
-  popularity: 559
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208753/Pote_Conjunto-Cinza_2-otimizada.webp?v=639251638584200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-5-potes-hermeticos-cristal--pp-pet--retangular-grey/p",
+  popularity: 303
  },
  {
-  sku: "oxford-60608318",
-  name: "Jogo de 4 Pratos Sobremesa 20 Cm Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 108,
+  sku: "oxford-60608396",
+  name: "Jogo de 5 Potes Herméticos Empilháveis White",
+  brand: "Oxford",
+  unitPrice: 199.9,
   unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206414/4-sobremesa-stripes-and-dots-otimizada.jpg?v=639209485434700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-stripes-and-dots/p",
-  popularity: 560
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208781/Potes_Conjunto-Branco-otimizada.webp?v=639251641510770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-5-potes-hermeticos-cristal--pp-pet--retangular-white/p",
+  popularity: 304
  },
  {
-  sku: "oxford-60608302",
-  name: "Jogo Lanche e Chá 12 peças Ryo Maresia",
+  sku: "oxford-60608343",
+  name: "Assadeira Refratária Samba Grande Branco - 3,7 l",
+  brand: "Cookware",
+  unitPrice: 134.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207239/Travessas_Refratarias_Samba_G_37L_Branco.webp?v=639222292772500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-grande-branco-3-7-l/p",
+  popularity: 305
+ },
+ {
+  sku: "oxford-60608340",
+  name: "Assadeira Refratária Samba Pequena Marrom - 1,2 l",
+  brand: "Cookware",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207243/Travessas_Refratarias_Samba_-P_12L_Marrom.webp?v=639222291890800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-pequena-marrom-1-2-l/p",
+  popularity: 306
+ },
+ {
+  sku: "oxford-60608338",
+  name: "Assadeira Refratária Samba Média Marrom - 2,1 l",
+  brand: "Cookware",
+  unitPrice: 94.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207247/Travessas_Refratarias_Samba_M_21L_Marrom.webp?v=639222288491270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-media-marrom--2-1-l/p",
+  popularity: 307
+ },
+ {
+  sku: "oxford-60608337",
+  name: "Assadeira Refratária Tango Mini Branco – 350 ml",
+  brand: "Cookware",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207255/Refratarias_PP_2-otimizada.webp?v=639222290125670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-mini-branco-350-ml/p",
+  popularity: 308
+ },
+ {
+  sku: "oxford-60608336",
+  name: "Frigideira Antiaderente Corpo Triplo Indução The Cook 24 cm",
+  brand: "Cookware",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206706/TheCook_Frigideira_24cm_3-otimizada.webp?v=639216382583630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-antiaderente-corpo-triplo-inducao-the-cook-24-cm/p",
+  popularity: 309
+ },
+ {
+  sku: "oxford-60608329",
+  name: "Panela Wok Corpo Triplo Indução The Cook 32cm",
+  brand: "Cookware",
+  unitPrice: 549.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206686/TheCook_Wok_2-otimizada.webp?v=639216381445330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-corpo-triplo-inducao-the-cook-32cm/p",
+  popularity: 310
+ },
+ {
+  sku: "oxford-60608328",
+  name: "Caçarola Corpo Triplo Indução The Cook 28cm",
+  brand: "Cookware",
+  unitPrice: 629.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206762/TheCook_Cacarola_28cm_3-otimizada.webp?v=639216384852000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-28cm/p",
+  popularity: 311
+ },
+ {
+  sku: "oxford-60608327",
+  name: "Jogo Espagueteira Cozi-pasta para Indução 2 peças The Cook",
+  brand: "Cookware",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207935/TheCook_Cozi-Pasta_0-otimizada.webp?v=639240309735500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-cozi-pasta-para-inducao-2-pecas-the-cook/p",
+  popularity: 312
+ },
+ {
+  sku: "oxford-60608305",
+  name: "Jogo Lanche De 8 Peças Oxford Ryo Maresia",
+  brand: "Cerâmicas",
+  unitPrice: 292,
+  unit: "un",
+  category: "conjuntos de cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206314/standard_resolution---2026-07-28T094925.218-otimizada.jpg?v=639258498895900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-oxford-ryo-maresia-1/p",
+  popularity: 313
+ },
+ {
+  sku: "oxford-60608300",
+  name: "Jogo de 4 Pratos Sobremesa 20x20 Cm Quartier White",
   brand: "Oxford Porcelanas",
-  unitPrice: 275,
+  unitPrice: 154,
   unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206282/12-pecas-lanche-e-cha-maresia-otimizada.webp?v=639210096250830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-12-pecas-ryo-maresia/p",
-  popularity: 561
- },
- {
-  sku: "oxford-60608296",
-  name: "Jogo de 12 Pratos Rasos 26 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 476,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206233/12-rasos-chuvisco-otimizada.webp?v=639208336833830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-flat-chuvisco/p",
-  popularity: 562
+  category: "pratos quadrados",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206264/standard_resolution - 2026-07-28T084926.180-otimizada.webp?v=639208362025930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20x20-cm-quartier-white/p",
+  popularity: 314
  },
  {
   sku: "oxford-60608293",
@@ -6196,117 +3468,370 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206209/4-Sobremesa-chuvisco.jpg?v=639207777817900000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-flat-chuvisco/p",
-  popularity: 563
+  popularity: 315
  },
  {
-  sku: "oxford-60608286",
-  name: "Jogo de 4 Pratos Sobremesa 18 Cm Donna Cena Inglesa",
+  sku: "oxford-60608287",
+  name: "Jogo de 4 Pratos Fundos 21,5 Cm Donna Cena Inglesa",
   brand: "Biona",
-  unitPrice: 72,
+  unitPrice: 89,
   unit: "un",
   category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206136/standard_resolution---2026-07-23T170447.574.jpg?v=639210092905670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-18-cm-donna-cena-inglesa/p",
-  popularity: 564
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206141/standard_resolution---2026-07-23T172324.436.jpg?v=639204351864300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-21-5-cm-donna-cena-inglesa/p",
+  popularity: 316
  },
  {
-  sku: "oxford-60608264",
-  name: "Jogo De Baixelas 2 peças Unni Brisa",
+  sku: "oxford-60608285",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Donna Cena Inglesa",
+  brand: "Biona",
+  unitPrice: 101,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206131/standard_resolution---2026-07-23T165517.393.jpg?v=639204334502230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-donna-cena-inglesa/p",
+  popularity: 317
+ },
+ {
+  sku: "oxford-60608269",
+  name: "Jogo Lanche 3 Peças Oxford Flat Pacífico",
   brand: "Cerâmicas",
-  unitPrice: 110,
+  unitPrice: 114.25,
   unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205346/standard_resolution - 2026-07-14T143003.464.jpg?v=639196470400430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-baixelas-2-pecas-unni-brisa/p",
-  popularity: 565
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205385/Design-sem-nome---2026-07-14T161723.520.png?v=639196537994400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-3-pecas-oxford-flat-pacifico/p",
+  popularity: 318
  },
  {
-  sku: "oxford-60608255",
-  name: "Jogo de 4 Travessas 28 Cm Ryo Maresia",
+  sku: "oxford-60608266",
+  name: "Jogo de 12 Pratos Fundos 22,5 Cm Ryo Maresia",
   brand: "Oxford Porcelanas",
-  unitPrice: 198.9,
+  unitPrice: 398,
   unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205285/4-TRAVESSAS.png?v=639196330709930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-travessas-28-cm-ryo-maresia/p",
-  popularity: 566
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205363/standard_resolution - 2026-07-14T150015.102.jpg?v=639196502161300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-22-5-cm-ryo-maresia-1/p",
+  popularity: 319
  },
  {
-  sku: "oxford-60608225",
-  name: "Aparelho De Jantar E Lanche 16 Peças Luna Vanilla - Caneca 360 ml",
+  sku: "oxford-60608248",
+  name: "Jogo De 1 Saladeira E 6 Tigelas Oxford Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 325.9,
+  unit: "un",
+  category: "servir lanche",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209344/standard_resolution---2026-07-08T154200.683.jpg?v=639258582577770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-1-saladeira-e-6-tigelas-oxford-ryo-maresia-/p",
+  popularity: 320
+ },
+ {
+  sku: "oxford-60608240",
+  name: "Aparelho de Jantar e Chá 40 Peças Donna Colb",
+  brand: "Biona",
+  unitPrice: 599,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204655/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Donna-Colb---Amb2-5120.jpg?v=639186942766870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-donna-colb/p",
+  popularity: 321
+ },
+ {
+  sku: "oxford-60608238",
+  name: "Aparelho de Jantar e Chá 40 Peças Donna Cena Inglesa",
+  brand: "Biona",
+  unitPrice: 589.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204642/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Donna-Cena-Inglesa---Amb2-5131.jpg?v=639186932240730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-donna-cena-inglesa-1/p",
+  popularity: 322
+ },
+ {
+  sku: "oxford-60608224",
+  name: "Aparelho De Jantar E Lanche 16 Peças Luna Corfu - Caneca 360 ml Aparelho De Jantar E Lanche 16 Peças Luna Corfu",
   brand: "Cerâmicas",
   unitPrice: 599.9,
   unit: "un",
   category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204943/Oxford_0001_7102-Luna-Vanilla-Conjunto-16-pecas-otimizada.webp?v=639191302048130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-vanilla/p",
-  popularity: 567
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205098/Oxford_0002_7101-Luna-Corfu-Conjunto-16-pecas-otimizada.webp?v=639192160542100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-corfu/p",
+  popularity: 323
  },
  {
-  sku: "oxford-60608210",
-  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Corfu",
+  sku: "oxford-60608219",
+  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Vanilla",
   brand: "Cerâmicas",
   unitPrice: 159.9,
   unit: "un",
   category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205112/Design-sem-nome---2026-07-03T161107.248.png?v=639192160849530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-cm-luna-corfu/p",
-  popularity: 568
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205422/Design-sem-nome---2026-07-03T161515.550.png?v=639197168476130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-luna-vanilla/p",
+  popularity: 324
  },
  {
-  sku: "oxford-60608199",
-  name: "Jogo de Lanche 18 Peças Friss White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 529.9,
+  sku: "oxford-60608217",
+  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Vanilla",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208008/Friss-Conjunto-Lanche-otimizada.webp?v=639245479232530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-18-pecas-friss-white-1/p",
-  popularity: 569
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204959/Oxford_4_0013_Oxford_Prato_Sobremesa_Vanilla.jpg?v=639191304229330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-luna-vanilla/p",
+  popularity: 325
  },
  {
-  sku: "oxford-60608179",
-  name: "Jogo de 18 Taças de Cristal Proper Effect",
+  sku: "oxford-60608213",
+  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Sand",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205215/Oxford_4_0004_Oxford_Prato_Sobremesa_Sand-otimizada.webp?v=639192205977500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-cm-luna-sand/p",
+  popularity: 326
+ },
+ {
+  sku: "oxford-60608192",
+  name: "Conjunto 4 Canecas Tulipa - 330 ml - Prêmio Oxford de Design",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202992/Canecas-POD_0000_Conjunto.jpg?v=639131695151900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-4-canecas-tulipa-330-ml-premio-oxford/p",
+  popularity: 327
+ },
+ {
+  sku: "oxford-60608187",
+  name: "Jogo de 6 Copos e Jarra de Cristal Easy Classic",
   brand: "Alumina Crystal",
-  unitPrice: 789.9,
+  unitPrice: 589.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202662/Jogo-de-6-Copos-e-Jarra-de-Cristal-Easy-Classic.jpg?v=639107489533700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-e-jarra-de-cristal-easy-classic/p",
+  popularity: 328
+ },
+ {
+  sku: "oxford-60608181",
+  name: "Jogo de 18 Taças de Cristal Flavour",
+  brand: "Alumina Crystal",
+  unitPrice: 929.9,
   unit: "un",
   category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202493/Jogo-de-18-Tacas-de-Cristal-Proper-Effect.jpg?v=639107313618070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-proper-effect/p",
-  popularity: 570
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202539/Jogo-de-18-Tacas-de-Cristal-Flavour.jpg?v=639107348942500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-flavour/p",
+  popularity: 329
  },
  {
-  sku: "oxford-60608138",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Belle Bleu",
+  sku: "oxford-60608180",
+  name: "Jogo de 24 Taças de Cristal Proper Effect",
+  brand: "Alumina Crystal",
+  unitPrice: 1049.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202519/Jogo-de-24-Tacas-de-Cristal-Proper-Effect.jpg?v=639107329822870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-24-tacas-de-cristal-proper-effect/p",
+  popularity: 330
+ },
+ {
+  sku: "oxford-60608166",
+  name: "Jogo de 6 Pratos Sobremesa 20x20 Cm Quartier White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "pratos quadrados",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202010/oxford-porcelanas-prato-sobremesa-quartier-white-04.jpg?v=639083340448530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20x20-cm-quartier-white-1/p",
+  popularity: 331
+ },
+ {
+  sku: "oxford-60608152",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Maré",
   brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201382/Ecommerce_Conj_6_0010_Unni_Mare_Prato_Fundo_Top-copy-2.jpg?v=639062517092770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-mare-1/p",
+  popularity: 332
+ },
+ {
+  sku: "oxford-60608149",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Riacho",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202466/Ecommerce-Conj-6_0005_Unni_Riacho_Prato_Sobremesa.jpg?v=639102335893070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-riacho-1/p",
+  popularity: 333
+ },
+ {
+  sku: "oxford-60608148",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Riacho",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202459/Ecommerce-Conj-6_0006_Unni_Riacho_Prato_Fundo_Top.jpg?v=639102335830570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-unni-riacho-1/p",
+  popularity: 334
+ },
+ {
+  sku: "oxford-60608147",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Riacho",
+  brand: "Cerâmicas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202451/Ecommerce-Conj-6_0007_Unni_Riacho_Prato_Raso.jpg?v=639102335799900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-riacho-1/p",
+  popularity: 335
+ },
+ {
+  sku: "oxford-60608136",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Belle Bleu",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202821/Ecommerce_Conj_6_0007_Flat_Belle_Bleu_Prato_Fundo_Top.jpg?v=639118668765500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-flat-belle-bleu-1/p",
+  popularity: 336
+ },
+ {
+  sku: "oxford-60607936",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199806/Ecommerce_0061_Unni-Nuray_Conjunto.jpg?v=639052082837700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-unni-nuray/p",
+  popularity: 337
+ },
+ {
+  sku: "oxford-60608027",
+  name: "Jogo de 6 Taças de Cristal Para Cerveja 300 Ml Touch Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205816/6-Tacas-Cerveja-300-ml-.jpg?v=639199104899870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-cerveja-300-ml-touch-classic/p",
+  popularity: 338
+ },
+ {
+  sku: "oxford-60608025",
+  name: "Jogo de 6 Copos de Cristal 440 Ml Flat Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207411/A00270542C20A230B698126C59F2CC09_13978f72-1c55-4ced-9f6d-efcd131af04f_Flat_Classic_Copo_440ml-02.jpg?v=639227434683000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-440-ml-flat-classic/p",
+  popularity: 339
+ },
+ {
+  sku: "oxford-60608022",
+  name: "Jogo de 4 Taças de Cristal Para Espumante 210 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 209.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205693/4-Tacas-de-Cristal-Para-Vinho-Branco-360-Ml-Forever-Classic.jpg?v=639199075423200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-espumante-210-ml-forever-classic/p",
+  popularity: 340
+ },
+ {
+  sku: "oxford-60608020",
+  name: "Jogo de 4 Taças de Cristal Para Bordeaux 660 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205668/4-4-Tacas-de-Cristal-Para-Bordeaux-660-Ml-Forever-Classic--1-.jpg?v=639199072836870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-bordeaux-660-ml-forever-classic/p",
+  popularity: 341
+ },
+ {
+  sku: "oxford-60608016",
+  name: "Jogo de 6 Copos de Cristal 340 Ml Ginga Classic",
+  brand: "Alumina Crystal",
   unitPrice: 219.9,
   unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202808/Ecommerce_Conj_6_0001_Flat_Belle_Bleu_Xicara_de_Cha_Com_Pires.jpg?v=639118555092170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-belle-bleu-1/p",
-  popularity: 571
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205846/354542431CCFBFEC113ADFCD1FE3E99C_11dbd172-3ee7-49a7-9f69-232ae9fd8b54_114610_Copo_Ginga_Suco_340ml_P.jpg?v=639199129496900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-340-ml-ginga-classic/p",
+  popularity: 342
  },
  {
-  sku: "oxford-60608052",
-  name: "Aparelho de Jantar 12 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 418.9,
+  sku: "oxford-60608012",
+  name: "Jogo de 6 Taças de Cristal Para Vinho Bordeaux 670 Ml Petra Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 369.9,
   unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199392/standard_resolution.jpg?v=639041863366500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-ryo-maresia/p",
-  popularity: 572
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205754/82FB7CD9ADDDFC918829A4C723D67797_b2337a0a-6f31-4ada-85b1-3eb1a8e0531c_Bordeaux.jpg?v=639199094321230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-bordeaux-670-ml-petra-classic/p",
+  popularity: 343
  },
  {
-  sku: "oxford-60608006",
-  name: "Caneca Mini Quartier 220 Ml Vermelho Canela",
+  sku: "oxford-60608007",
+  name: "Caneca Mini Quartier 220 Ml Rosa Buquê",
   brand: "Cerâmicas",
   unitPrice: 27.9,
   unit: "un",
   category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200456/Ecommerce_0223_Caneca_Mini_Quartier_Vermelho-Canela.jpg?v=639161041998900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-vermelho-canela/p",
-  popularity: 573
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200453/Ecommerce_0225_Caneca_Mini_Quartier_Rosa_Buque.jpg?v=639052916452070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-rosa-buque/p",
+  popularity: 344
+ },
+ {
+  sku: "oxford-60608002",
+  name: "Caneca Tulipa 330 Ml Vermelho Canela",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200457/Ecommerce_0169_Caneca-Tulipa-Vermelho-Canela.jpg?v=639161046026530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-330-ml-vermelho-canela/p",
+  popularity: 345
+ },
+ {
+  sku: "oxford-60607999",
+  name: "Tigela 300 Ml Rosa Buquê",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200452/Ecommerce_0161_Bazar-Tigela_300_ml-Rosa_Buque.jpg?v=639052916266930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-rosa-buque/p",
+  popularity: 346
+ },
+ {
+  sku: "oxford-60607998",
+  name: "Tigela 300 Ml Vermelho Canela",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200455/Ecommerce_0163_Bazar-Tigela_300_ml-Vermelho_Canela.jpg?v=639052917083570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-vermelho-canela/p",
+  popularity: 347
+ },
+ {
+  sku: "oxford-60607995",
+  name: "Tigela 600 Ml Azul Nuvem",
+  brand: "Cerâmicas",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200446/Ecommerce_0158_Bazar-Tigelas_600_ml-Azul Nuvem.jpg?v=639052913666530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-azul-nuvem/p",
+  popularity: 348
  },
  {
   sku: "oxford-60607994",
@@ -6317,6 +3842,2481 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200444/Ecommerce_0155_Bazar-Tigelas_600_ml-Rosa Buque.jpg?v=639052912467670000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-rosa-buque/p",
+  popularity: 349
+ },
+ {
+  sku: "oxford-60607992",
+  name: "Tigela 600 Ml Marrom Toffee",
+  brand: "Cerâmicas",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200442/Ecommerce_0156_Bazar-Tigelas_600_ml-Marrom Toffee.jpg?v=639052911429400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-marrom-toffee/p",
+  popularity: 350
+ },
+ {
+  sku: "oxford-60607980",
+  name: "Faqueiro em Aço Inox 30 Peças Fortaleza",
+  brand: "Oxford",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203849/160653_Conjunto_Fortaleza-30-pecas.jpg?v=639167906598330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-fortaleza/p",
+  popularity: 351
+ },
+ {
+  sku: "oxford-60607977",
+  name: "Faqueiro em Aço Inox 30 Peças São Paulo",
+  brand: "Oxford",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203925/Sao-paulo-30.jpg?v=639167993336470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-sao-paulo/p",
+  popularity: 352
+ },
+ {
+  sku: "oxford-60607976",
+  name: "Faqueiro em Aço Inox 24 Peças São Paulo",
+  brand: "Oxford",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203934/Sao-paulo-24.jpg?v=639167993530200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-sao-paulo/p",
+  popularity: 353
+ },
+ {
+  sku: "oxford-60607954",
+  name: "Jogo de 6 Colheres de Café 10,8 Cm Class",
+  brand: "Biona",
+  unitPrice: 23.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200601/class cafe x 6.jpg?v=639053122963800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cafe-108-cm-class/p",
+  popularity: 354
+ },
+ {
+  sku: "oxford-60607953",
+  name: "Jogo de 6 Facas de Sobremesa 19 Cm Class",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200924/Jogo de 6 Facas de Sobremesa 19 Cm Class.jpg?v=639056591557900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-sobremesa-19-cm-class/p",
+  popularity: 355
+ },
+ {
+  sku: "oxford-60607949",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199976/Ecommerce_0180_Unni_Solara_Conjunto.jpg?v=639052204946900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-unni-solara/p",
+  popularity: 356
+ },
+ {
+  sku: "oxford-60607947",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200036/Ecommerce_Conj_6__0008_Unni_Solara_Xicara_de_Cha_com_Pires.jpg?v=639052210271400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-solara/p",
+  popularity: 357
+ },
+ {
+  sku: "oxford-60607944",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200015/Ecommerce_Conj_6__0034_Unni_Solara_Prato_Raso.jpg?v=639052207929730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-solara/p",
+  popularity: 358
+ },
+ {
+  sku: "oxford-60607941",
+  name: "Aparelho de Jantar 18 Peças Unni Lira",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200065/Ecommerce_0067_Unni-Lira_Conjunto_18_Pecas.jpg?v=639052212421800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-lira/p",
+  popularity: 359
+ },
+ {
+  sku: "oxford-60607933",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199962/Ecommerce_Conj_6__0009_Unni_Nuray_Xicara_de_Cha_com_Pires.jpg?v=639052196073300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-nuray/p",
+  popularity: 360
+ },
+ {
+  sku: "oxford-60607932",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199955/Ecommerce_Conj_6__0028_Unni_Nuray_Prato_Sobremesa.jpg?v=639052195758470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-nuray/p",
+  popularity: 361
+ },
+ {
+  sku: "oxford-60607922",
+  name: "Aparelho de Jantar e Chá 30 peças - Flat Málaga",
+  brand: "Cerâmicas",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199539/Ecommerce_0082_Flat-Magala_Conjunto.jpg?v=639051998535230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-30-pecas-flat-malaga/p",
+  popularity: 362
+ },
+ {
+  sku: "oxford-60607920",
+  name: "Aparelho de Jantar 18 peças - Flat Málaga",
+  brand: "Cerâmicas",
+  unitPrice: 579.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199527/Ecommerce_0081_Flat-Magala_Conjunto_18_Pecas.jpg?v=639051997235330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-malaga/p",
+  popularity: 363
+ },
+ {
+  sku: "oxford-60607918",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Málaga",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200138/Ecommerce_Conj_6__0047_Flat_Magala_Prato_Sobremesa.jpg?v=639052218823370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-malaga/p",
+  popularity: 364
+ },
+ {
+  sku: "oxford-60607917",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Málaga",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200130/Ecommerce_Conj_6__0048_Flat_Magala_Prato_Fundo_Top.jpg?v=639052218551730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-malaga/p",
+  popularity: 365
+ },
+ {
+  sku: "oxford-60607916",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Málaga",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200144/Ecommerce_Conj_6__0049_Flat_Magala_Prato_Raso.jpg?v=639052219198270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-malaga/p",
+  popularity: 366
+ },
+ {
+  sku: "oxford-60607914",
+  name: "Aparelho de Jantar e Chá 20 Peças Flat Sevilha",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200254/Ecommerce_0075_Flat-Sevilha_Conjunto.jpg?v=639052226586200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-sevilha/p",
+  popularity: 367
+ },
+ {
+  sku: "oxford-60607911",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Sevilha",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200172/Ecommerce_Conj_6__0044_Flat_Sevilha_Prato_Sobremesa.jpg?v=639052221299400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-sevilha/p",
+  popularity: 368
+ },
+ {
+  sku: "oxford-60607899",
+  name: "Jogo de 6 Canecas 360 Ml Luna Pétala",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203019/Luna-petala.jpg?v=639136016576700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-petala/p",
+  popularity: 369
+ },
+ {
+  sku: "oxford-60607897",
+  name: "Jogo de 6 Canecas 360 Ml Luna Salvia",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203027/Luna-salvia.jpg?v=639136016748430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-salvia/p",
+  popularity: 370
+ },
+ {
+  sku: "oxford-60607894",
+  name: "Aparelho de Jantar e Lanche 16 peças Luna Vanilla - Caneca 260 ml",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202202/Extranet_16_0003_Luna_Vanilla_Conjunto.jpg?v=639089359052270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-16-pecas-luna-vanilla/p",
+  popularity: 371
+ },
+ {
+  sku: "oxford-60607892",
+  name: "Aparelho de Jantar e Lanche 16 peças Luna Corfu - Caneca 260 ml",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205128/Extranet_16_0001_Luna_Corfu_Conjunto.jpg?v=639192161353000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-16-pecas-luna-corfu/p",
+  popularity: 372
+ },
+ {
+  sku: "oxford-60607885",
+  name: "Jogo de 6 Canecas 360 Ml Flora Camélia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200462/flora-camelia.jpg?v=639070071998630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-camelia/p",
+  popularity: 373
+ },
+ {
+  sku: "oxford-60607869",
+  name: "Conjunto de Pratos 8 Peças Unni Café Coado",
+  brand: "Cerâmicas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "aparelhos de jantar outras composicoes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202286/Cafe-Coado---8-pecas-pratos--1-.jpg?v=639099589386530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-pratos-8-pecas-unni-cafe-coado/p",
+  popularity: 374
+ },
+ {
+  sku: "oxford-60607845",
+  name: "Aparelho de Jantar e Lanche 12pcs Donna Folk",
+  brand: "Biona",
+  unitPrice: 199,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198828/Donna-Folk.jpg?v=638963228693800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-folk/p",
+  popularity: 375
+ },
+ {
+  sku: "oxford-60607843",
+  name: "Aparelho de Jantar e Lanche 12pcs Donna Campestre",
+  brand: "Biona",
+  unitPrice: 199,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198820/Donna-Campestre.jpg?v=638966715320500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-campestre/p",
+  popularity: 376
+ },
+ {
+  sku: "oxford-60607842",
+  name: "Aparelho de Jantar e Lanche 12pcs Donna Branco",
+  brand: "Biona",
+  unitPrice: 199,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198832/5002_Donna_Branco_18_a03315981d31464f8ce65d2a069a46e7.jpg?v=638966739890570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-branco/p",
+  popularity: 377
+ },
+ {
+  sku: "oxford-60607805",
+  name: "Jogo de Panelas Antiaderentes para Indução 5 peças Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "panelas jogos de panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206819/Ecommerce_Everyday-vermelho-5-pecas-media.jpg?v=639221501624430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-de-panelas-everyday-5pcs-everyday-vermelho/p",
+  popularity: 378
+ },
+ {
+  sku: "oxford-60607797",
+  name: "Jogo de 6 Pratos de Sobremesa 20 cm Unni Boho",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198025/Conj_6_Boho_Sobremesa.jpg?v=638926872651870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-sobremesa-unni-boho/p",
+  popularity: 379
+ },
+ {
+  sku: "oxford-60607791",
+  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Boho Jogo de 6 Pratos Fundos 20 cm Unni Boho",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200193/Conj_6_Boho_Fundo.jpg?v=639052222667400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-fundos-unni-boho/p",
+  popularity: 380
+ },
+ {
+  sku: "oxford-60607779",
+  name: "Aparelho de Jantar 30 peças Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198107/Ecommerce_Nisa_Conjunto.jpg?v=638926877053270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-30pcs/p",
+  popularity: 381
+ },
+ {
+  sku: "oxford-60607778",
+  name: "Aparelho de Jantar 30 Peças Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198137/Ecommerce_Caminho-da-Selva-Conjunto.jpg?v=638926879909230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-30-pcs-unni-selva/p",
+  popularity: 382
+ },
+ {
+  sku: "oxford-60607429",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196004/Oxford_Ceramicas_Unni_White_Xicara-6.jpg?v=638893271681970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-xicaras-grandes-200-ml-com-pires-unni-white/p",
+  popularity: 383
+ },
+ {
+  sku: "oxford-60607428",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196002/Oxford_Ceramicas_Unni_White_Prato_Sobremesa-6.jpg?v=638893271595130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-sobremesa-20-cm-unni-white/p",
+  popularity: 384
+ },
+ {
+  sku: "oxford-60607427",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196000/Oxford_Ceramicas_Unni_White_Prato_Raso-6.jpg?v=638893271520530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-rasos-26-cm-unni-white/p",
+  popularity: 385
+ },
+ {
+  sku: "oxford-60607376",
+  name: "Jogo de 6 Canecas Flat 350 Ml Preto Acetinado",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196184/6 Canecas Flat Onix.png?v=638896523389070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-preto-acetinado/p",
+  popularity: 386
+ },
+ {
+  sku: "oxford-60607375",
+  name: "Jogo de 6 Canecas Flat 350 Ml Chumbo Acetinado",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196182/6 Canecas Flat Gray.png?v=638896521620970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-chumbo-acetinado/p",
+  popularity: 387
+ },
+ {
+  sku: "oxford-60607362",
+  name: "Jogo de 6 Tigelas Flat 600 Ml Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196155/6-Tigelas-Flat-Onix.png?v=639160254611500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-onix/p",
+  popularity: 388
+ },
+ {
+  sku: "oxford-60607328",
+  name: "Jogo de 6 Canecas Az12 330 Ml Roxo",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196063/6-AZ12-Roxa.png?v=638894134252970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-roxo/p",
+  popularity: 389
+ },
+ {
+  sku: "oxford-60607305",
+  name: "Jogo de 6 Canecas 260 Ml Ryo White",
+  brand: "Cerâmicas",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190213/Oxford_Porcelanas_Ryo_White_Caneca_Pequena.jpg?v=638815350689600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-260-ml-ryo-white1/p",
+  popularity: 390
+ },
+ {
+  sku: "oxford-60607300",
+  name: "Jogo de 6 Canecas 380 Ml Ryo Blue Bay",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190203/Oxford_Porcelanas_Ryo_Blue_Bay_Caneca_Grande.jpg?v=638815350173130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-380-ml-ryo-blue-bay1/p",
+  popularity: 391
+ },
+ {
+  sku: "oxford-60607171",
+  name: "Jogo de 6 Tigelas 500 ml Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190197/Tigelas-Ryo-white--1-.png.png?v=638815349802530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-tigela-ryo-500ml-white/p",
+  popularity: 392
+ },
+ {
+  sku: "oxford-60607295",
+  name: "Jogo de 6 Tigelas 500 ml Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189713/Tigelas-Ryo-bambu.png.png?v=638815265716730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-tigelas-ryo-500-ml-bambu/p",
+  popularity: 393
+ },
+ {
+  sku: "oxford-60607265",
+  name: "Jogo de 6 Taças de Cristal Vinho/Água 340 Ml Slim Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190630/1000-x-1000-Alumina---Slim-340-6.jpg?v=638815421899200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-vinho-agua-340-ml-slim-classic1/p",
+  popularity: 394
+ },
+ {
+  sku: "oxford-60607255",
+  name: "Jogo de 6 Pratos Sobremesa 22 Cm Flamingo Blue Willow",
+  brand: "Oxford Porcelanas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189715/oxford-porcelanas-prato-sobremesa-flamingo-blue-willow-6-pecas-02.jpg?v=638815266235300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-sobremesa-22-cm-flamingo-blue-willow1/p",
+  popularity: 395
+ },
+ {
+  sku: "oxford-60607189",
+  name: "Travessa para Feijoada em Cerâmica Retangular 430 ml",
+  brand: "Cookware",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207662/152800_Linha_Feijoada_TravessaRetangular_21cm.jpg?v=639227560162700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-feijoada-retangular/p",
+  popularity: 396
+ },
+ {
+  sku: "oxford-60607187",
+  name: "Travessa para Feijoada em Cerâmica Oval 300 ml",
+  brand: "Cookware",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198609/152804_Linha_Feijoada_TravessaOval_205cm.jpg?v=638943102751200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-feijoada-oval/p",
+  popularity: 397
+ },
+ {
+  sku: "oxford-60607182",
+  name: "Travessa Flora 42 cm Flora Camélia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186264/2900_Flora_Camelia_Bandeja.jpg?v=638750481864530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/camelia-travessa/p",
+  popularity: 398
+ },
+ {
+  sku: "oxford-60607173",
+  name: "Assadeira Refratária Fall para Lasanha 25,5x19,5x6,5cm Branca",
+  brand: "Cookware",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186717/oxford-cookware-travessa-refrataria-fall-lasanha-00.jpg.jpg?v=638877694090370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-lasanha-fall/p",
+  popularity: 399
+ },
+ {
+  sku: "oxford-60607297",
+  name: "Tigela Ryo 500ml White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209476/Ryo_Tigela_18cm_500ml_White-otimizada.webp?v=639259303324600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-white/p",
+  popularity: 400
+ },
+ {
+  sku: "oxford-60607168",
+  name: "Tigela Ryo 500ml Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209469/Ryo_Tigela_18cm_500ml_Blue_Bay-otimizada.webp?v=639259302203800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-blue/p",
+  popularity: 401
+ },
+ {
+  sku: "oxford-60607166",
+  name: "Tigela Ramequin 8x4cm 100ml Branco/Vermelho",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186059/0207_Ramequin_100ml_bic_vermelho.jpg?v=638750478790570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequin-vermelho/p",
+  popularity: 402
+ },
+ {
+  sku: "oxford-60607152",
+  name: "Tigela com cabo em Melamina para Molho 21,5cm Ocean",
+  brand: "Oxford",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185984/086649_Melamina_Belisco_Tigela_Ocean_P_Molho-1.jpg?v=639154230957930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-molho-ocean/p",
+  popularity: 403
+ },
+ {
+  sku: "oxford-60607078",
+  name: "Pote Hermético de Vidro Retrô 2 L com tampa de Bambu Pote Hermético de Vidro 2L com Tampa de Bambu Retrô",
+  brand: "Oxford",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193887/150620_Pote_Hermetico_c_Tampa_Bambu_2000ml.jpg?v=638826765711770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-2l/p",
+  popularity: 404
+ },
+ {
+  sku: "oxford-60607076",
+  name: "Pote Hermético de Vidro Retrô 1,2 L com tampa de Bambu",
+  brand: "Oxford",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193881/150614_Pote_Hermetico_c_Tampa_Bambu_1200ml.jpg?v=638826756089430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-12l/p",
+  popularity: 405
+ },
+ {
+  sku: "oxford-60607074",
+  name: "Peneira de Aço Inox 39,5cm com Cabo Water Blue",
+  brand: "Oxford",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186151/150761_Peneira_Aco_Inox_39.5cm.jpg?v=638750480114930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/peneira-water-blue-2/p",
+  popularity: 406
+ },
+ {
+  sku: "oxford-60607073",
+  name: "Peneira de Aço Inox 26cm com Cabo Water Blue",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186150/150759_Peneira_Aco_Inox_26cm.jpg?v=638750480093930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/peneira-water-blue/p",
+  popularity: 407
+ },
+ {
+  sku: "oxford-60607069",
+  name: "Panela Antiaderente para indução 20 Cm Gourmet Preta Panela em Alumínio Forjado Gourmet 20cm Gourmet Martelado",
+  brand: "Cookware",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207130/Oxford_Panela_Linha_Gourmet_20cm_Angulo_02.jpg?v=639221597826300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-20cm/p",
+  popularity: 408
+ },
+ {
+  sku: "oxford-60607068",
+  name: "Panela Antiaderente para indução 18 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207122/Oxford_Panela_Linha_Gourmet_18cm_Angulo_02.jpg?v=639221593260600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-18cm/p",
+  popularity: 409
+ },
+ {
+  sku: "oxford-60607014",
+  name: "Jogo de 6 Taças de Cristal para Cerveja 460 ml Beer Glass",
+  brand: "Alumina Crystal",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206008/140480_Conjunto_Alumina_Cerveja_Beer_Glass_460ml.jpg.jpg?v=639203236954030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-cerveja-beer/p",
+  popularity: 410
+ },
+ {
+  sku: "oxford-60607013",
+  name: "Jogo de 6 Taças de Cristal para Cerveja 420 ml Pilsner",
+  brand: "Alumina Crystal",
+  unitPrice: 369.9,
+  unit: "un",
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192471/140480_Alumina_Cerveja_Taca_Pilsner-380ml.jpg.jpg?v=638816278564030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-cerveja-pilsner/p",
+  popularity: 411
+ },
+ {
+  sku: "oxford-60607011",
+  name: "Jogo de 6 Taças de Cristal Espumante 310 ml Dandy",
+  brand: "Alumina Crystal",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192499/151830_Taca_Cristal_Espumante_Classic_Dandy_310ml.jpg.jpg?v=638816285480500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-espumante-dandy-310ml/p",
+  popularity: 412
+ },
+ {
+  sku: "oxford-60606993",
+  name: "Jogo de 6 Pratos Sobremesa 21,5 cm Ryo Galápagos",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191031/porcelanas-conj-6-Ryo_Galapagos_Prato-Sobremesa.jpg.jpg?v=638815530353370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-sobremesa/p",
+  popularity: 413
+ },
+ {
+  sku: "oxford-60606980",
+  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190952/porcelanas-conj-6-Flora_Aster_Prato-Raso.jpg.jpg?v=638815520607430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-pratos-raso/p",
+  popularity: 414
+ },
+ {
+  sku: "oxford-60606970",
+  name: "Jogo de 6 Pratos Fundos 22,5 cm Ryo Volcano",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192830/Conj_6_Pecas_Ryo_Volcano_Fundo.jpg.jpg?v=638816949758770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pratos-fundos/p",
+  popularity: 415
+ },
+ {
+  sku: "oxford-60606969",
+  name: "Jogo de 6 Pratos Fundos 22,5 cm Ryo Galápagos",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191037/porcelanas-conj-6-Ryo_Galapagos_Prato-Fundo.jpg.jpg?v=638815530745270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-fundos/p",
+  popularity: 416
+ },
+ {
+  sku: "oxford-60606962",
+  name: "Jogo de 6 Pratos Fundos 20 cm Flora Camélia Jogo de 6 Pratos Fundo 20cm Flora Camélia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190932/porcelanas-conj-6-Flora_Camelia_Prato-Fundo.jpg.jpg?v=638815518818700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/camelia-pratos-fundo/p",
+  popularity: 417
+ },
+ {
+  sku: "oxford-60606957",
+  name: "Jogo de 6 Potes de vidro para Condimento com tampa de Bambu - 200 ml",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192583/Conj-6-pecas-150626-porta-p-condimento-200-ml-c-tampa-de-bambu.jpg.jpg?v=638816301252130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/potes-condimento-200ml/p",
+  popularity: 418
+ },
+ {
+  sku: "oxford-60606955",
+  name: "Jogo de 6 Copos de Cristal Vinho Branco 440 ml Easy",
+  brand: "Alumina Crystal",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207399/139209_Copo_De_Cristal_Vinho_Branco_440ml_Easy_Classic.jpg.jpg?v=639227431089100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copos-vinho-easy/p",
+  popularity: 419
+ },
+ {
+  sku: "oxford-60606949",
+  name: "Jogo de 6 Copos de Cristal para Água 445 ml Ginga",
+  brand: "Alumina Crystal",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207449/114607_Copo_Ginga_Agua_445ml_M.jpg.jpg?v=639227440839600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copos-agua-ginga/p",
+  popularity: 420
+ },
+ {
+  sku: "oxford-60606948",
+  name: "Jogo de 6 Copos de Cristal Espumante 230 ml Easy",
+  brand: "Alumina Crystal",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207388/139212_Copo_De_Cristal_Espumante_230ml_Easy_Classic.jpg.jpg?v=639227428229870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copos-espumante-easy/p",
+  popularity: 421
+ },
+ {
+  sku: "oxford-60606945",
+  name: "Jogo de 4 Xícaras de Cafezinho Expresso 75ml Com Pires Branco",
+  brand: "Oxford Porcelanas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194156/142748_Xicara_cafe_expreso_longo_75ml_e_pires.jpg.jpg?v=638828264089630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafezinho-expresso-branco/p",
+  popularity: 422
+ },
+ {
+  sku: "oxford-60606913",
+  name: "Jogo de 12 Garfos para Sobremesa 17,5cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202410/Conj_12_pecas_ouro_preto_Garfo Sobremesa.jpg?v=639101250013330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/garfos-sobremesa-ouro/p",
+  popularity: 423
+ },
+ {
+  sku: "oxford-60606907",
+  name: "Jarra de Vidro 1,3 L com tampa Classic",
+  brand: "Oxford",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186144/150629_Jarra_com_Tampa_1300ml.jpg?v=638750480003870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jarra-vidro-classic/p",
+  popularity: 424
+ },
+ {
+  sku: "oxford-60606903",
+  name: "Garfo de Servir 26cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186128/149372_Talher_Para_Servir_Garfo_26cm.jpg?v=638750479770930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/garfo-servir-ouro/p",
+  popularity: 425
+ },
+ {
+  sku: "oxford-60606896",
+  name: "Faqueiro em Aço Inox 30 Peças Olinda",
+  brand: "Oxford",
+  unitPrice: 369.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208381/150450-faqueiro-em-aco-inox-30-pecas-olinda-media--3-.jpg?v=639249811169530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-olinda-30pcs/p",
+  popularity: 426
+ },
+ {
+  sku: "oxford-60606892",
+  name: "Faqueiro em Aço Inox 24 Peças Class",
+  brand: "Biona",
+  unitPrice: 144.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186487/150454-FAQUEIRO-EM-ACO-INOX-24PCS-CLASS.jpg?v=638750485672870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-inox-24pcs/p",
+  popularity: 427
+ },
+ {
+  sku: "oxford-60606883",
+  name: "Jogo de Servir 4 Peças Domus Branco",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189495/152551_Conjunto_Servir_Domus_Branco.jpg?v=638804987091630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/servir-4pcs-branco/p",
+  popularity: 428
+ },
+ {
+  sku: "oxford-60606875",
+  name: "Colher de Servir 25,5cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186125/149370_Talher_Para_Servir_Colher_25.5cm.jpg?v=638750479728700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-servir-ouro/p",
+  popularity: 429
+ },
+ {
+  sku: "oxford-60606862",
+  name: "Prensa Francesa em Vidro Parede Dupla 1L Prateada",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199475/150639_Cafeteira_Francesa_1000ml.jpg?v=639048930817800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-prateada/p",
+  popularity: 430
+ },
+ {
+  sku: "oxford-60606856",
+  name: "Caçarola para Feijoada em Cerâmica 19,5 cm 1,150 L com tampa Caçarola para Feijoada em Cerâmica 19,5 cm 1,150l com tampa",
+  brand: "Cookware",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207719/152790_Linha_Feijoada_Cacarola_19-5cm.jpg?v=639228269487570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-feijoada-195cm/p",
+  popularity: 431
+ },
+ {
+  sku: "oxford-60606855",
+  name: "Caçarola Antiaderente para indução 22 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207168/Oxford_Cacarola_Linha_Gourmet_22cm_Vista_02.jpg?v=639221602231270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aluminio-22cm/p",
+  popularity: 432
+ },
+ {
+  sku: "oxford-60606851",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Vermelho",
+  brand: "Cookware",
+  unitPrice: 779.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207302/Panela-Aroma-Grande-Angulo-Vermelho.jpg.jpg?v=639227417427830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-vermelho-3/p",
+  popularity: 433
+ },
+ {
+  sku: "oxford-60606849",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Cinza",
+  brand: "Cookware",
+  unitPrice: 779.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204165/Panela-Aroma-Grande-Angulo-Cinza.jpg.jpg?v=639177323280100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma-3/p",
+  popularity: 434
+ },
+ {
+  sku: "oxford-60606843",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 18 cm Cinza",
+  brand: "Cookware",
+  unitPrice: 529.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194223/Panela-Aroma-Pequena-Angulo-Cinza.jpg.jpg?v=638829060461130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma/p",
+  popularity: 435
+ },
+ {
+  sku: "oxford-60606835",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186062/5500_Unni_White_Conjuntos_20_30.jpg?v=638750478847030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-white/p",
+  popularity: 436
+ },
+ {
+  sku: "oxford-60606831",
+  name: "Aparelho de Jantar e Chá 30 peças Ryo Galápagos",
+  brand: "Oxford Porcelanas",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188094/9620_Ryo_Galapagos_Conjunto.jpg.jpg?v=638935549041300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-jantar-30pcs/p",
+  popularity: 437
+ },
+ {
+  sku: "oxford-60606817",
+  name: "Aparelho de Jantar e Chá 20 peças Ryo Volcano",
+  brand: "Oxford Porcelanas",
+  unitPrice: 679.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197293/Ryo_Volcano_Conjunto.jpg.jpg?v=638918343308370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-jantar-volcano/p",
+  popularity: 438
+ },
+ {
+  sku: "oxford-60606813",
+  name: "Aparelho de Jantar e Chá 20 peças Flora Camélia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 659.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207580/Flora_Conjunto_20_30_Camelia.jpg?v=639227527141500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/camelia-jantar-20pcs/p",
+  popularity: 439
+ },
+ {
+  sku: "oxford-60606792",
+  name: "Jogo de 6 Pratos Sobremesa 20 cm Unni Tropicano",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196267/Conjunto_Tropicano_Sobremesa_06.jpg?v=638900186752870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-unni-tropicano/p",
+  popularity: 440
+ },
+ {
+  sku: "oxford-60606779",
+  name: "Jogo de 6 Pratos Sobremesa 20 cm Páscoa",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199361/Conjunto_Pascoa_Sobremesa_06.jpg?v=639041780916830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-unni-pascoa/p",
+  popularity: 441
+ },
+ {
+  sku: "oxford-60606778",
+  name: "Jogo de 6 Pratos Rasos 26 cm Páscoa",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199357/Conjunto_Pascoa_Raso_06.jpg?v=639041780426130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-unni-pascoa/p",
+  popularity: 442
+ },
+ {
+  sku: "oxford-60606756",
+  name: "Frigideira Antiaderente para Indução 22 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206968/138741_Frigideira_01.jpg?v=639221547017530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-aluminio-forjado-everyday-22cm/p",
+  popularity: 443
+ },
+ {
+  sku: "oxford-60606749",
+  name: "Aparelho de Jantar Chá 30 peças Donna Caribe",
+  brand: "Biona",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193929/149791_Conjunto_Donna_Caribe_30.jpg?v=638826806395530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-caribe/p",
+  popularity: 444
+ },
+ {
+  sku: "oxford-60606743",
+  name: "Aparelho de Jantar Chá 30 peças Donna Margaridas",
+  brand: "Biona",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185515/149862_Conjunto_Donna_Margaridas_30.jpg?v=638623605456030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-margaridas/p",
+  popularity: 445
+ },
+ {
+  sku: "oxford-60606737",
+  name: "Aparelho de Jantar Chá 30 peças Donna Jardim de Cerejas",
+  brand: "Biona",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185522/149898_Conjunto_Donna_Cereja_30.jpg?v=638623637051100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-jardim-de-cerejas/p",
+  popularity: 446
+ },
+ {
+  sku: "oxford-60606732",
+  name: "Aparelho de Jantar Chá 30 peças Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185729/Conjunto_Orquidea.jpg?v=638635560015700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-orquidea/p",
+  popularity: 447
+ },
+ {
+  sku: "oxford-60606730",
+  name: "Jogo de 6 Xícaras de Chá 200 ml com pires Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191780/Xicara_Pires_06.jpg?v=638816135808400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-xicaras-de-cha-200ml-com-pires-orquidea/p",
+  popularity: 448
+ },
+ {
+  sku: "oxford-60606720",
+  name: "Jogo de 6 Pratos Rasos 26 cm Unni Damas",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189765/149721_Raso_Damas_Unni_26cm.jpg?v=638815271075870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-rasos-26cm-damas/p",
+  popularity: 449
+ },
+ {
+  sku: "oxford-60606030",
+  name: "Aparelho de Jantar e Chá 20 Peças Soleil Limoni",
+  brand: "Oxford Porcelanas",
+  unitPrice: 849.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207765/140129_Aparelho_De_Jantar_E_Cha_20_Pecas_Soleil_Limoni.jpg?v=639228406390830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-limoni-20pcs/p",
+  popularity: 450
+ },
+ {
+  sku: "oxford-60605068",
+  name: "Aparelho de Jantar 20 peças Unni Buquê Tropical",
+  brand: "Cerâmicas",
+  unitPrice: 409.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179880/Aparelho_Jantar_Cha_20.30Pecas_Unni_Buque_Tropical.jpg?v=638126933700900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-buque-tropical-20pcs/p",
+  popularity: 451
+ },
+ {
+  sku: "oxford-60605057",
+  name: "Aparelho de Jantar 20 peças Donna Lírios",
+  brand: "Biona",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180297/Conjunto_donna_lirios.jpg?v=638131019525430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-lirios-20pcs/p",
+  popularity: 452
+ },
+ {
+  sku: "oxford-60605055",
+  name: "Aparelho de Jantar 20 peças Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180265/Conjunto_donna_bem_te_vi.jpg?v=638131006300530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-bem-te-vi-20pcs/p",
+  popularity: 453
+ },
+ {
+  sku: "oxford-60603443",
+  name: "Aparelho de Jantar e Chá 20 Peças Donna Bloom",
+  brand: "Biona",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180519/Conjunto_Bloom.jpg?v=638138711573770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-bloom-jantar-20pcs/p",
+  popularity: 454
+ },
+ {
+  sku: "oxford-60602972",
+  name: "Aparelho de Jantar e Chá 20 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197068/9515_Ryo_Maresia_20_30.jpg?v=638918299190570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-20pcs/p",
+  popularity: 455
+ },
+ {
+  sku: "oxford-60600784",
+  name: "Aparelho de Jantar e Chá 20 Peças Donna Lola",
+  brand: "Biona",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180532/Conjunto_Lola.jpg?v=638138716530670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-lola-20pcs/p",
+  popularity: 456
+ },
+ {
+  sku: "oxford-60600628",
+  name: "Aparelho de Jantar e Chá 20 Peças Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181021/9604_Porcelanas_Ryo_Bambu_Conjuntos_20_30.jpg?v=638211335145370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bambu-20pcs/p",
+  popularity: 457
+ },
+ {
+  sku: "oxford-10700703",
+  name: "Aparelho de Jantar Chá e Café 42 Peças Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1159.9,
+  unit: "un",
+  category: "aparelhos de jantar 42 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156855/oxford-porcelanas-aparelho-de-jantar-soleil-white-42-pecas-00.jpg?v=636213932637200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-42pcs/p",
+  popularity: 458
+ },
+ {
+  sku: "oxford-10201302",
+  name: "Aparelho de Jantar Chá e Café 42 Peças Flamingo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1149.9,
+  unit: "un",
+  category: "aparelhos de jantar 42 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156154/oxford-porcelanas-aparelho-de-jantar-flamingo-white-30-pecas-00.jpg?v=636213696442170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-42pcs/p",
+  popularity: 459
+ },
+ {
+  sku: "oxford-60606471",
+  name: "Tigela 500 ml Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209462/Ryo_Tigela_18cm_500ml_Bambu-otimizada.webp?v=639259300820700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ryo-500ml-bambu/p",
+  popularity: 460
+ },
+ {
+  sku: "oxford-60606458",
+  name: "Jogo de 6 Taças de Cristal Para Água 420 ML Petra Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 309.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197382/Agua.jpg?v=638920671944070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-agua-420ml-petra-classic/p",
+  popularity: 461
+ },
+ {
+  sku: "oxford-60606332",
+  name: "Jogo de 6 Taças de Cristal Para Vinho Tinto 518 Ml Classic",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193953/142341_Taca_De_Cristal_Para_Vinho_Tinto_518ml_Classic_06.jpg?v=638826814483870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-vinho-tinto-518ml-classic/p",
+  popularity: 462
+ },
+ {
+  sku: "oxford-60606331",
+  name: "Jogo de 6 taças de Cristal Para Vinho Branco 388 Ml Classic",
+  brand: "Biona",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192725/142344_Taca_De_Cristal_Para_Vinho_Branco_388ml_Classic_06.jpg?v=638816389754970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-vinho-branco-388ml-classic/p",
+  popularity: 463
+ },
+ {
+  sku: "oxford-60606243",
+  name: "Panela Wok Antiaderente para indução 28 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207152/141760_Panela_Wok_28_Cm_--2-.jpg?v=639221599892700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-gourmet/p",
+  popularity: 464
+ },
+ {
+  sku: "oxford-60606237",
+  name: "Frigideira Antiaderente para Indução 28 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207027/138741_Frigideira_01.jpg?v=639221576756830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-everyday-azul/p",
+  popularity: 465
+ },
+ {
+  sku: "oxford-60606231",
+  name: "Frigideira Antiaderente para indução 24 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207199/141748_Frigideira_24_.jpg?v=639221608919330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-gourmet/p",
+  popularity: 466
+ },
+ {
+  sku: "oxford-60606229",
+  name: "Espátula Para Bolo 25,5 Cm Em Aço Inox Noronha",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183835/141883_Espatula_Para_Bolo_255_Cm_Em_Aco_Inox_Noronha.jpg?v=638442860730830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/espatula-bolo-25-5cm-noronha/p",
+  popularity: 467
+ },
+ {
+  sku: "oxford-60606203",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197247/143004_Conjunto_De_6_Xicaras_Grandes_200_Ml_Com_Pire.jpg?v=638918316899900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-brisa/p",
+  popularity: 468
+ },
+ {
+  sku: "oxford-60606103",
+  name: "Jogo de 12 Colheres de Chá 14 Cm São Paulo",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204047/141913_Conjunto_De_12_Colheres_De_Cha_14_Cm_Sao_Paulo_12.jpg?v=639168632102170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-sao-paulo/p",
+  popularity: 469
+ },
+ {
+  sku: "oxford-60606039",
+  name: "Aparelho de Jantar e Chá 30 Peças Donna Chá Das 5",
+  brand: "Biona",
+  unitPrice: 539.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184202/Donna_Cha_das_5_Conjunto.jpg?v=638447382237430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-cha-das-5/p",
+  popularity: 470
+ },
+ {
+  sku: "oxford-60605929",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189963/139121_Conjunto-de-6-Pratos-Rasos-26-Cm-Unni-Stripes-And-Dots.jpg?v=638815315865830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-stripes-and-dots/p",
+  popularity: 471
+ },
+ {
+  sku: "oxford-60605917",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182973/E-commerce_5949_Balance_Conjunto.jpg?v=638320354191970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-balance/p",
+  popularity: 472
+ },
+ {
+  sku: "oxford-60605895",
+  name: "Boleira Flat 26cm Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "servir prato bolo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182711/Flat_Samambaia_Prato_Bolo_01.jpg?v=638308099269000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/boleira-flat-samambaia/p",
+  popularity: 473
+ },
+ {
+  sku: "oxford-60605771",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml com pires Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191913/136395_Flat_Onix_Xicara_Pires_200ml_06.jpg?v=638816141828570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-xicaras-cha/p",
+  popularity: 474
+ },
+ {
+  sku: "oxford-60605767",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml com pires Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191921/136749_Flat_Chuvisco_Xicara_Pires_200ml_06.jpg?v=638816142630300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-xicaras-cha/p",
+  popularity: 475
+ },
+ {
+  sku: "oxford-60605758",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190073/136750_Flat_Chuvisco_Prato_Sobremesa_20cm_06.jpg?v=638815326048570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-sobremesa/p",
+  popularity: 476
+ },
+ {
+  sku: "oxford-60605753",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190091/136397_Flat_Onix_Prato_Raso_26cm_06.jpg?v=638815327792630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-rasos/p",
+  popularity: 477
+ },
+ {
+  sku: "oxford-60605745",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Pacífico",
+  brand: "Cerâmicas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190115/Prato-Fundo---Pacifico---6-pecas.jpg?v=638815330105000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico-pratos-fundos/p",
+  popularity: 478
+ },
+ {
+  sku: "oxford-60605740",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207543/136752_Flat_Chuvisco_Prato_Fundo_205cm_06.jpg?v=639227464391770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-chuvisco-pratos-fundos/p",
+  popularity: 479
+ },
+ {
+  sku: "oxford-60605731",
+  name: "Aparelho de Jantar e Lanche 16 Peças Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 539.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182179/136755_Flat_Chuvisco_Conjunto_16.jpg?v=638296882170430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-chuvisco/p",
+  popularity: 480
+ },
+ {
+  sku: "oxford-60605727",
+  name: "Aparelho de Jantar e Chá 30 Peças Flat Pacífico",
+  brand: "Cerâmicas",
+  unitPrice: 969.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183240/Conjunto-30-pecas---Pacifico.jpg?v=638355775659800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-pacifico/p",
+  popularity: 481
+ },
+ {
+  sku: "oxford-60605723",
+  name: "Aparelho de Jantar e Chá 30 Peças Flat Gray",
+  brand: "Cerâmicas",
+  unitPrice: 969.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182129/136452_Flat_Gray_Conjunto_30.jpg?v=638296870426270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-gray/p",
+  popularity: 482
+ },
+ {
+  sku: "oxford-60605709",
+  name: "Aparelho de Jantar 18 Peças Flat Pacífico",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183225/Conjunto-18-pecas---Pacifico.jpg?v=638355771596870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-pacifico/p",
+  popularity: 483
+ },
+ {
+  sku: "oxford-60605704",
+  name: "Aparelho de Jantar 18 Peças Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 579.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182162/136756_Flat_Chuvisco_Conjunto_18.jpg?v=638296879684300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-chuvisco/p",
+  popularity: 484
+ },
+ {
+  sku: "oxford-60605420",
+  name: "Assadeira Refratária Tango Grande 40x24x7 Cm Marrom",
+  brand: "Cookware",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180619/126810_Travessaa_Refrataria_Marrom_Tango_G.jpg?v=638150793044070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-grande-marrom/p",
+  popularity: 485
+ },
+ {
+  sku: "oxford-60605376",
+  name: "Assadeira Refratária Tango Pequena 28x18x5,5 Cm Branco",
+  brand: "Cookware",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183207/126818_Travessaa_Refrataria_Branca_Tango_P.jpg?v=638350470223530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-pequena-branco/p",
+  popularity: 486
+ },
+ {
+  sku: "oxford-60605254",
+  name: "Garrafa de Cristal Dandy 2280 Ml",
+  brand: "Alumina Crystal",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180607/111441_Alumina_Wine_Garrafa_Dandy_2280ml.jpg?v=638150075419630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/garrafa-dandy-2280ml-classic/p",
+  popularity: 487
+ },
+ {
+  sku: "oxford-60605248",
+  name: "Decanter de Cristal Baco 1230 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188656/111438_Alumina_Wine_Decanter_Baco_1230ml.jpg?v=638796505061330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/decanter-baco-1230ml-classic/p",
+  popularity: 488
+ },
+ {
+  sku: "oxford-60605185",
+  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Lírios",
+  brand: "Biona",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190415/126283_Conjunto_6_Pratos_Rasos_24Cm_Donna_Lirios.jpg?v=638815407241170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-lirios/p",
+  popularity: 489
+ },
+ {
+  sku: "oxford-60605176",
+  name: "Jogo de 6 Pratos Fundos 21,5 Cm Donna Lírios",
+  brand: "Biona",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190565/126284_Conjunto_6_Pratos_Fundos_215Cm_Donna_Lirios.jpg?v=638815417885830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-donna-lirios/p",
+  popularity: 490
+ },
+ {
+  sku: "oxford-60604769",
+  name: "Tigela Ramequin 180 Ml Branco/Amarelo",
+  brand: "Cookware",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179123/004749_0209_Ramequin_180ml_bic_amarelo.jpg?v=638035255900770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-amarelo-180ml/p",
+  popularity: 491
+ },
+ {
+  sku: "oxford-60604169",
+  name: "Taça de Cristal Para Vinho Branco 360 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178359/064458_Alumina_Forever_Vinho_Branco_360ml.jpg?v=638010057939900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-vinho-branco-forever-classic-360-ml/p",
+  popularity: 492
+ },
+ {
+  sku: "oxford-60604137",
+  name: "Pincel Culinário de Silicone Redondo Cool Grey",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178329/069954_Pincel_Culinario_Redondo_Cool_Grey_265cm.jpg?v=638007507999100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pincel-silicone-redondo-cool-grey/p",
+  popularity: 493
+ },
+ {
+  sku: "oxford-60604133",
+  name: "Pegador Multiuso 27 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178011/069923_Utensilios_Em_Silicone_Cabo_Inox_Cool-Grey_pegador.jpg?v=637970480148470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pegador-multiuso-cool-grey-27-cm/p",
+  popularity: 494
+ },
+ {
+  sku: "oxford-60604103",
+  name: "Descascador de Batata Com Zester Cool Grey",
+  brand: "Oxford",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178308/070317_Descascador_de_Batata_com_Zesper_Cool_Grey_196x32x23cm.jpg?v=638007495506470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/descascador-batata-zester-cool-grey/p",
+  popularity: 495
+ },
+ {
+  sku: "oxford-60604100",
+  name: "Cortador de Pizza Cool Grey",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178016/070314_Utensilios_Silicone_Mail_Order_Cool_Grey_pizza.jpg?v=637970492766800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cortador-pizza-cool-grey/p",
+  popularity: 496
+ },
+ {
+  sku: "oxford-60604081",
+  name: "Colher de Silicone Vazada 33,5 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177927/069963_Colher_Vazada_Aco_Inox_silicone_Cool_Grey_335cm.jpg?v=637958329574600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-vazada-cool-grey-33-cm/p",
+  popularity: 497
+ },
+ {
+  sku: "oxford-60603990",
+  name: "Copo de Vidro Parede Dupla com Tampa 400 ml",
+  brand: "Oxford",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177379/117060_Cafe_Gourmet_Copo_Silicone_400ml.jpg?v=637889956637830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copo-parede-dupla-400ml/p",
+  popularity: 498
+ },
+ {
+  sku: "oxford-60603979",
+  name: "Copo de Vidro com Parede Dupla 350 ml",
+  brand: "Oxford",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189343/117025-1.jpg?v=638802279852300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copo-parede-dupla-350ml/p",
+  popularity: 499
+ },
+ {
+  sku: "oxford-60603968",
+  name: "Tigela para Servir 26 cm Massa",
+  brand: "Cerâmicas",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "servir tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185116/Oxford_Ceramicas_Conjunto_Massa_Travessa.jpg?v=638590801776900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-massa-26cm/p",
+  popularity: 500
+ },
+ {
+  sku: "oxford-60603794",
+  name: "Tábua Em Madeira Para Corte de Pão Com Alça",
+  brand: "Oxford",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176649/115296-1.jpg?v=637852707298000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tabua-madeira-corte-pao/p",
+  popularity: 501
+ },
+ {
+  sku: "oxford-60603791",
+  name: "Queijeira Em Madeira Com Tampa de Vidro 25,4 Cm",
+  brand: "Oxford",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195108/115280-1.jpg?v=638859586491530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/queijeira-madeira-vidro/p",
+  popularity: 502
+ },
+ {
+  sku: "oxford-60603790",
+  name: "Porta Utensílios Em Madeira Porta-utensílios Em Madeira",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176641/115277-1.jpg?v=637852705361870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/porta-utensilios-madeira/p",
+  popularity: 503
+ },
+ {
+  sku: "oxford-60603789",
+  name: "Tábua Em Madeira Para Corte de Pão Baguete 52 Cm",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176640/115275-1.jpg?v=637852704972930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tabua-madeira-pao-baguete/p",
+  popularity: 504
+ },
+ {
+  sku: "oxford-60603741",
+  name: "Caneca Ryo 380 Ml White",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209474/Ryo_Caneca_Grande_380ml_White-otimizada.webp?v=639259303131500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-white-380ml/p",
+  popularity: 505
+ },
+ {
+  sku: "oxford-60603737",
+  name: "Caneca Ryo 380 Ml Pink Sand",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178282/087361_Ryo_Pink_Sand_Caneca_Pequena_380ml_1.jpg?v=638005021118700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-pink-sand-380ml/p",
+  popularity: 506
+ },
+ {
+  sku: "oxford-60603674",
+  name: "Assadeira Funda de Vidro Retangular Com Alça 2,9 L",
+  brand: "Biona",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176512/068403-1.jpg?v=637842594279530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-funda-vidro-alca-2-9l/p",
+  popularity: 507
+ },
+ {
+  sku: "oxford-60603668",
+  name: "Assadeira de Vidro Retangular 3 L",
+  brand: "Biona",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176499/085843-1.jpg?v=637842594221170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-retangular-3l/p",
+  popularity: 508
+ },
+ {
+  sku: "oxford-60603667",
+  name: "Assadeira de Vidro Retangular 2,5 L",
+  brand: "Biona",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176498/085841-1.jpg?v=637842594216300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-retangular-2-5l/p",
+  popularity: 509
+ },
+ {
+  sku: "oxford-60603655",
+  name: "Conjunto Com 2 Talheres Infantil de Silicone Verde",
+  brand: "Oxford",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176286/113360-1.jpg?v=637830495007600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/talher-infantil-silicone-verde/p",
+  popularity: 510
+ },
+ {
+  sku: "oxford-60603471",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Lilac",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207742/1-Ap.-De-Jantar---Cha-30Pcs---Mail-Order---Lilac---Ama3-5625.jpg?v=639228283477930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-lilac-jantar/p",
+  popularity: 511
+ },
+ {
+  sku: "oxford-60603272",
+  name: "Panela Antiaderente Corpo Triplo Indução CookingPro 18 cm",
+  brand: "Cookware",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203678/1-Panela-Em-Aco-Inox-18Cm-2L---Mail-Order---Hive---Hive-4675.jpg?v=639167062111300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cooking-pro-panela/p",
+  popularity: 512
+ },
+ {
+  sku: "oxford-60603266",
+  name: "Tigela de Silicone Com Base de Sucção E Tampa Orange",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174334/Linha---Baby---tigela---orange.jpg?v=637637884018700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-tigela/p",
+  popularity: 513
+ },
+ {
+  sku: "oxford-60603211",
+  name: "Jogo de 6 Copos de Cristal Para On The Rocks 300 Ml Flat Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207442/Copo-OTR-classic.jpg?v=639227439798300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-flat-classic1/p",
+  popularity: 514
+ },
+ {
+  sku: "oxford-60603210",
+  name: "Jogo de 6 Copos de Cristal 440 Ml Flat Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207432/Copo-de-cristal.jpg?v=639227437522700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-flat-classic2/p",
+  popularity: 515
+ },
+ {
+  sku: "oxford-60603185",
+  name: "Jogo de 12 Garfos Para Peixe 20 Cm Salvador",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203782/Design-sem-nome--90-.png?v=639168641010030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador7/p",
+  popularity: 516
+ },
+ {
+  sku: "oxford-60603179",
+  name: "Jogo de 12 Garfos de Mesa 20 Cm Salvador",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203754/Garfo-de-mesa.jpg?v=639167804055170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador11/p",
+  popularity: 517
+ },
+ {
+  sku: "oxford-60603176",
+  name: "Jogo de 12 Facas Para Carne 22,5 Cm Salvador",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203739/Faca-de-carne.jpg?v=639167801867670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador4/p",
+  popularity: 518
+ },
+ {
+  sku: "oxford-60603164",
+  name: "Jogo de 12 Colheres de Chá 14,5 Cm Farol",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173581/Colher-de-Cha-individual.jpg?v=637606569169870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol6/p",
+  popularity: 519
+ },
+ {
+  sku: "oxford-60603127",
+  name: "Jogo de 6 Colheres de Mesa 19 cm Class",
+  brand: "Biona",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173517/Colher-de-Mesa-Class-individual.jpg?v=637606532099300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class3/p",
+  popularity: 520
+ },
+ {
+  sku: "oxford-60603126",
+  name: "Jogo de 6 Garfos de Sobremesa Class",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174350/class-individual.jpg?v=637637907770070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class2/p",
+  popularity: 521
+ },
+ {
+  sku: "oxford-60603125",
+  name: "Jogo de 6 Garfos de Mesa Class",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173513/Garfo-de-Mesa-Class-individual.jpg?v=637606528152600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class6/p",
+  popularity: 522
+ },
+ {
+  sku: "oxford-60603124",
+  name: "Jogo de 6 Facas de Carne 21,4 cm Class",
+  brand: "Biona",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173515/Faca-Class-individual.jpg?v=637606531238400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class5/p",
+  popularity: 523
+ },
+ {
+  sku: "oxford-60603120",
+  name: "Jogo de 6 Colheres de Mesa Cinza Neutro",
+  brand: "Biona",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173498/Colher-de-Mesa-Cinza-Neutro-individual.jpg?v=637606518218830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro1/p",
+  popularity: 524
+ },
+ {
+  sku: "oxford-60603119",
+  name: "Jogo de 6 Garfos de Mesa Cinza Neutro",
+  brand: "Biona",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173495/Garfo-Cinza-Neutro-individual.jpg?v=637606517006970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro4/p",
+  popularity: 525
+ },
+ {
+  sku: "oxford-60603118",
+  name: "Jogo de 6 Facas de Carne Cinza Neutro",
+  brand: "Biona",
+  unitPrice: 23.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173492/Faca-Cinza-Neutro-Individual.jpg?v=637606513126600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro3/p",
+  popularity: 526
+ },
+ {
+  sku: "oxford-60603108",
+  name: "Jogo de 6 Facas de Carne Vermelho Intenso",
+  brand: "Biona",
+  unitPrice: 14.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173456/Faca-Vermelho-Intenso-individual.jpg?v=637606501581500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-vermelhointenso3/p",
+  popularity: 527
+ },
+ {
+  sku: "oxford-60603099",
+  name: "Jogo de 6 Taças de Cristal Para Degustação 210 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190445/Taca-p-degustacao.jpg?v=638815408381330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic1/p",
+  popularity: 528
+ },
+ {
+  sku: "oxford-60603075",
+  name: "Jogo de 6 Copos de Cristal On The Rocks 460 Ml Proper Effect",
+  brand: "Alumina Crystal",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190576/Alumina-Effect-1104x1104-460ml_6pc.jpg?v=638815418159300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-ontherocks-460/p",
+  popularity: 529
+ },
+ {
+  sku: "oxford-60602984",
+  name: "Jogo de Lanche 3 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "servir lanche",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209308/1-Cj.-Lanche-03Pcs---Mail-Order---Maresia---Rm12-9515.jpg?v=639258579731900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-maresia-conjunto-lanche/p",
+  popularity: 530
+ },
+ {
+  sku: "oxford-60600834",
+  name: "Conjunto Refeição Infantil 5 Peças Me Lhama",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/164915/Completo.png?v=636931002407600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-me-lhama/p",
+  popularity: 531
+ },
+ {
+  sku: "oxford-60600719",
+  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195138/oxford-porcelanas-xicara-de-cha-com-pires-ryo-blue-bay-6-pecas-01.jpg?v=638859595164930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-blue-bay/p",
+  popularity: 532
+ },
+ {
+  sku: "oxford-60600713",
+  name: "Jogo de 6 Xícaras Grandes 220 Ml Com Pires Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192325/Oxford_Porcelanas_Ryo_Bambu_Xicara_Cha_06.jpg?v=638816163592330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-ryo-bambu/p",
+  popularity: 533
+ },
+ {
+  sku: "oxford-60600670",
+  name: "Jogo de 6 Pratos Sobremesa 21,5 Cm Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191727/Oxford_Porcelanas_Ryo_Bambu_Prato_Sobremesa_06.jpg?v=638816129616730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-bambu/p",
+  popularity: 534
+ },
+ {
+  sku: "oxford-60600669",
+  name: "Jogo de 6 Pratos Fundos 22,5 Cm Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191733/Oxford_Porcelanas_Ryo_Bambu_Prato_Fundo_06.jpg?v=638816129936800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-bambu/p",
+  popularity: 535
+ },
+ {
+  sku: "oxford-60600668",
+  name: "Jogo de 6 Pratos Rasos 27 Cm Ryo Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191737/Oxford_Porcelanas_Ryo_Bambu_Prato_Raso_06.jpg?v=638816130075770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-bambu/p",
+  popularity: 536
+ },
+ {
+  sku: "oxford-60600679",
+  name: "Jogo de 6 Pratos Sobremesa 21,5 Cm Ryo Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191742/oxford-porcelanas-prato-sobremesa-ryo-blue-bay-6-pecas-01.jpg?v=638816130167630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-blue-bay/p",
+  popularity: 537
+ },
+ {
+  sku: "oxford-60600640",
+  name: "Aparelho de Jantar e Chá 30 Peças Ryo Pink Sand",
+  brand: "Oxford Porcelanas",
+  unitPrice: 839.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181011/9508_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211331261570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pinksand/p",
+  popularity: 538
+ },
+ {
+  sku: "oxford-60600525",
+  name: "Decanter de Cristal 1,5L Casablanca Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207483/Decanter_Classic_Casablanca_1500ml-00.jpg?v=639227449236100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/decanter-casablanca-alumina/p",
+  popularity: 539
+ },
+ {
+  sku: "oxford-60600517",
+  name: "Jogo de 2 Taças de Cristal 580 Ml Athenas Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 139.8,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190583/Athenas_Classic_Taca_580ml-02.jpg?v=638815418533570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/athenas-580-agua/p",
+  popularity: 540
+ },
+ {
+  sku: "oxford-60600301",
+  name: "Assadeira de Vidro Borosilicato Canelada Redonda 1.600 Ml",
+  brand: "Biona",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180937/Biona-assadeira-borosilicato-canelada-00.jpg?v=638200939361330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-temperado-canelada-redonda-1600ml/p",
+  popularity: 541
+ },
+ {
+  sku: "oxford-60201306",
+  name: "Jogo de 6 Xícaras Grandes 180 Ml Com Pires Donna Folk",
+  brand: "Biona",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192683/5118_Donna-Folk_Xicara_Pires_6.jpg?v=638816337122200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/xicaras-cha-donna-folk/p",
+  popularity: 542
+ },
+ {
+  sku: "oxford-50300201",
+  name: "Jogo de 6 Xícaras Pequenas 75 Ml Empilháveis Com Pires",
+  brand: "Oxford Porcelanas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "gourmet conjuntos de xicaras com pires",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192695/oxford-porcelanas-gourmet-xicara-cafe-empilhavel-com-pires-pro-M07A-E0EW-01.jpg?v=638816338193700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-xicara-cafe-empilhavel-75ml-conjunto/p",
+  popularity: 543
+ },
+ {
+  sku: "oxford-29701401",
+  name: "Pote Hermético de Vidro Redondo Com Divisória 833 ML",
+  brand: "Oxford",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cozinha potes com divisorias",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202433/058919-1.jpg?v=639101270320000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-redondo-divisorias/p",
+  popularity: 544
+ },
+ {
+  sku: "oxford-29701301",
+  name: "Pote Hermético de Vidro Retangular 370 ML",
+  brand: "Oxford",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176271/058984-1.jpg?v=637830494936900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-retangular-370ml/p",
+  popularity: 545
+ },
+ {
+  sku: "oxford-29701101",
+  name: "Pote Hermético de Vidro Quadrado 520 ML",
+  brand: "Oxford",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cozinha potes quadrados",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176266/058982-1.jpg?v=637830494912170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-vidro-quadrado-520ml/p",
+  popularity: 546
+ },
+ {
+  sku: "oxford-30400105",
+  name: "Assadeira Refratária Fall Funda 4.400 Ml",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158054/oxford-cookware-travessa-refrataria-fall-retangular-funda-4400ml-00.jpg?v=636219980116670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-funda-4400ml/p",
+  popularity: 547
+ },
+ {
+  sku: "oxford-30400101",
+  name: "Assadeira Refratária Fall Rasa 2.600 Ml",
+  brand: "Cookware",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158039/oxford-cookware-travessa-refrataria-fall-retangular-rasa-2600ml-00.jpg?v=636219966144330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-rasa-2600ml/p",
+  popularity: 548
+ },
+ {
+  sku: "oxford-20100607",
+  name: "Jogo de 6 Xícaras Pequenas 65 Ml Com Pires Floreal Luiza",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192366/oxford-daily-xicara-de-cafe-com-pires-floreal-luiza-02.jpg?v=638816166184300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/floreal-luiza-xicaras-cafe/p",
+  popularity: 549
+ },
+ {
+  sku: "oxford-19902010",
+  name: "Jogo de 6 Tigelas Manteigueira 8 Cm 85 Ml",
+  brand: "Oxford Porcelanas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/162831/oxford-porcelanas-C20C-mantegueira-gourmet-00.jpg?v=636598313090730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-manteigueira-8cm/p",
+  popularity: 550
+ },
+ {
+  sku: "oxford-10701294",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192382/oxford-porcelanas-xicaras-cha-soleil-white-01.jpg?v=638816167090470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-xicaras-cha/p",
+  popularity: 551
+ },
+ {
+  sku: "oxford-10701292",
+  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191558/oxford-porcelanas-pratos-fundos-soleil-white-02.jpg?v=638816120049200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-pratos-fundos/p",
+  popularity: 552
+ },
+ {
+  sku: "oxford-10700708",
+  name: "Sopeira 4 Litros Com Tampa Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "servir sopeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160122/oxford-porcelanas-conjunto-pecas-ocas-sopeira-soleil-white-00.jpg?v=636342608102600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-sopeira/p",
+  popularity: 553
+ },
+ {
+  sku: "oxford-10700707",
+  name: "Saladeira 30cm 2 Litros Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160119/oxford-porcelanas-conjunto-pecas-ocas-saladeira-soleil-white-00.jpg?v=636342607520670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-saladeira/p",
+  popularity: 554
+ },
+ {
+  sku: "oxford-10700607",
+  name: "Sopeira 4 Litros Com Tampa Soleil Victória",
+  brand: "Oxford Porcelanas",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "servir sopeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182744/9812-soleil-victoria-sopeira-media.jpg?v=638309105272800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-victoria-sopeira/p",
+  popularity: 555
+ },
+ {
+  sku: "oxford-10201304",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191086/oxford-porcelanas-pratos-fundos-flamingo-white-02.jpg?v=638815534935500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-white-pratos-fundos/p",
+  popularity: 556
+ },
+ {
+  sku: "oxford-10201110",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Sofia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191590/9209_Flamingo_Sofia_prato-fundo_conjunto-de-6.jpg?v=638816121080430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-pratos-fundos/p",
+  popularity: 557
+ },
+ {
+  sku: "oxford-10100913",
+  name: "Sopeira 2 Litros Com Tampa Coup White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "servir sopeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160031/oxford-porcelanas-conjunto-pecas-ocas-sopeira-flamingo-white-00.jpg?v=636342469340470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-sopeira/p",
+  popularity: 558
+ },
+ {
+  sku: "oxford-10100912",
+  name: "Saladeira Coup White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160030/oxford-porcelanas-conjunto-pecas-ocas-saladeira-flamingo-white-00.jpg?v=636342468802170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/coup-white-saladeira/p",
+  popularity: 559
+ },
+ {
+  sku: "oxford-60608493",
+  name: "Jogo de 6 Pratos Rasos 26 cm Pequenos Encantos",
+  brand: "Cerâmicas",
+  unitPrice: 177.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209376/Pequenos_Encantos_Conjunto_6_Raso-otimizada.webp?v=639258712012500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-pequenos-encantos/p",
+  popularity: 560
+ },
+ {
+  sku: "oxford-60608454",
+  name: "Jogo de 2 Taças de Cristal 650 ml Titanium Max",
+  brand: "Oxford",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209519/Titanium_Conj_2_650-ml-otimizada.webp?v=639259450465000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-650-ml-titanium-max/p",
+  popularity: 561
+ },
+ {
+  sku: "oxford-60608320",
+  name: "Aparelho De Jantar 18 Peças Unni Stripes and Dots",
+  brand: "Cerâmicas",
+  unitPrice: 537,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206435/18-pecas-stripes-and-dots.jpg?v=639210058368030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-stripes-and-dots/p",
+  popularity: 562
+ },
+ {
+  sku: "oxford-60608318",
+  name: "Jogo de 4 Pratos Sobremesa 20 Cm Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 108,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206414/4-sobremesa-stripes-and-dots-otimizada.jpg?v=639209485434700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-stripes-and-dots/p",
+  popularity: 563
+ },
+ {
+  sku: "oxford-60608302",
+  name: "Jogo Lanche e Chá 12 peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 275,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206282/12-pecas-lanche-e-cha-maresia-otimizada.webp?v=639210096250830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-12-pecas-ryo-maresia/p",
+  popularity: 564
+ },
+ {
+  sku: "oxford-60608286",
+  name: "Jogo de 4 Pratos Sobremesa 18 Cm Donna Cena Inglesa",
+  brand: "Biona",
+  unitPrice: 72,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206136/standard_resolution---2026-07-23T170447.574.jpg?v=639210092905670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-18-cm-donna-cena-inglesa/p",
+  popularity: 565
+ },
+ {
+  sku: "oxford-60608264",
+  name: "Jogo De Baixelas 2 peças Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 110,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205346/standard_resolution - 2026-07-14T143003.464.jpg?v=639196470400430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-baixelas-2-pecas-unni-brisa/p",
+  popularity: 566
+ },
+ {
+  sku: "oxford-60608255",
+  name: "Jogo de 4 Travessas 28 Cm Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 198.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205285/4-TRAVESSAS.png?v=639196330709930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-travessas-28-cm-ryo-maresia/p",
+  popularity: 567
+ },
+ {
+  sku: "oxford-60608225",
+  name: "Aparelho De Jantar E Lanche 16 Peças Luna Vanilla - Caneca 360 ml",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204943/Oxford_0001_7102-Luna-Vanilla-Conjunto-16-pecas-otimizada.webp?v=639191302048130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-vanilla/p",
+  popularity: 568
+ },
+ {
+  sku: "oxford-60608210",
+  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Corfu",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205112/Design-sem-nome---2026-07-03T161107.248.png?v=639192160849530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-cm-luna-corfu/p",
+  popularity: 569
+ },
+ {
+  sku: "oxford-60608199",
+  name: "Jogo de Lanche 18 Peças Friss White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 529.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208008/Friss-Conjunto-Lanche-otimizada.webp?v=639245479232530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-18-pecas-friss-white-1/p",
+  popularity: 570
+ },
+ {
+  sku: "oxford-60608179",
+  name: "Jogo de 18 Taças de Cristal Proper Effect",
+  brand: "Alumina Crystal",
+  unitPrice: 789.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202493/Jogo-de-18-Tacas-de-Cristal-Proper-Effect.jpg?v=639107313618070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-proper-effect/p",
+  popularity: 571
+ },
+ {
+  sku: "oxford-60608138",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Belle Bleu",
+  brand: "Cerâmicas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202808/Ecommerce_Conj_6_0001_Flat_Belle_Bleu_Xicara_de_Cha_Com_Pires.jpg?v=639118555092170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-belle-bleu-1/p",
+  popularity: 572
+ },
+ {
+  sku: "oxford-60608052",
+  name: "Aparelho de Jantar 12 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 418.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199392/standard_resolution.jpg?v=639041863366500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-ryo-maresia/p",
+  popularity: 573
+ },
+ {
+  sku: "oxford-60608006",
+  name: "Caneca Mini Quartier 220 Ml Vermelho Canela",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200456/Ecommerce_0223_Caneca_Mini_Quartier_Vermelho-Canela.jpg?v=639161041998900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-vermelho-canela/p",
   popularity: 574
  },
  {
@@ -6331,6 +6331,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 575
  },
  {
+  sku: "oxford-60607971",
+  name: "Faqueiro em Aço Inox 30 Peças Noronha",
+  brand: "Oxford",
+  unitPrice: 389.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203877/Noronha-30.jpg?v=639167908158470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-noronha/p",
+  popularity: 576
+ },
+ {
   sku: "oxford-60607966",
   name: "Jogo de 12 Garfos de Sobremesa 16,9 Cm Olinda",
   brand: "Oxford",
@@ -6339,7 +6350,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201065/Olinda---garfo-de-sobremesa-x-12.jpg?v=639057323545530000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-garfos-de-sobremesa-169-cm-olinda/p",
-  popularity: 576
+  popularity: 577
  },
  {
   sku: "oxford-60607963",
@@ -6350,7 +6361,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200629/Slim---colher-de-cafe-x-6.jpg?v=639056300852400000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cafe-105-cm-slim/p",
-  popularity: 577
+  popularity: 578
  },
  {
   sku: "oxford-60607958",
@@ -6361,7 +6372,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200617/Slim---garfo-de-mesa-x-6.jpg?v=639056298062900000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-garfos-de-mesa-195-cm-slim/p",
-  popularity: 578
+  popularity: 579
  },
  {
   sku: "oxford-60607952",
@@ -6372,18 +6383,18 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200599/basis cafe x 6.jpg?v=639053119224700000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cafe-115-cm-basis/p",
-  popularity: 579
+  popularity: 580
  },
  {
-  sku: "oxford-60607944",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Solara",
+  sku: "oxford-60607945",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Solara",
   brand: "Cerâmicas",
-  unitPrice: 199.9,
+  unitPrice: 169.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200015/Ecommerce_Conj_6__0034_Unni_Solara_Prato_Raso.jpg?v=639052207929730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-solara/p",
-  popularity: 580
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200024/Ecommerce_Conj_6__0033_Unni_Solara_Prato_Fundo.jpg?v=639052208771070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-unni-solara/p",
+  popularity: 581
  },
  {
   sku: "oxford-60607921",
@@ -6394,7 +6405,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 20 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199592/Ecommerce_0082_Flat-Magala_Conjunto.jpg?v=639052024405730000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-20-pecas-flat-malaga/p",
-  popularity: 581
+  popularity: 582
  },
  {
   sku: "oxford-60607912",
@@ -6405,7 +6416,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200205/Ecommerce_Conj_6__0001_Flat_Sevilha_Xicara_de_Cha_com_Pires.jpg?v=639052223559500000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-sevilha/p",
-  popularity: 582
+  popularity: 583
  },
  {
   sku: "oxford-60607909",
@@ -6416,7 +6427,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200222/Ecommerce_Conj_6__0046_Flat_Sevilha_Prato_Raso.jpg?v=639052224723470000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-sevilha/p",
-  popularity: 583
+  popularity: 584
  },
  {
   sku: "oxford-60607908",
@@ -6427,7 +6438,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 30 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200268/Ecommerce_0096_Flat-Atlas_Conjunto.jpg?v=639052228387400000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-30-pecas-flat-atlas/p",
-  popularity: 584
+  popularity: 585
  },
  {
   sku: "oxford-60607906",
@@ -6438,7 +6449,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 18 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200296/Ecommerce_0095_Flat-Atlas_Conjunto_18_Pecas.jpg?v=639052230523170000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-atlas/p",
-  popularity: 585
+  popularity: 586
  },
  {
   sku: "oxford-60607904",
@@ -6449,7 +6460,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200324/Ecommerce_Conj_6__0053_Flat_Atlas_Prato_Sobremesa.jpg?v=639052234623100000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-atlas/p",
-  popularity: 586
+  popularity: 587
  },
  {
   sku: "oxford-60607902",
@@ -6460,7 +6471,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200308/Ecommerce_Conj_6__0055_Flat_Atlas_Prato_Raso.jpg?v=639052232359730000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-atlas/p",
-  popularity: 587
+  popularity: 588
  },
  {
   sku: "oxford-60607901",
@@ -6471,7 +6482,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203008/Luna-canecas-sortidas.jpg?v=639136016363070000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-sortida/p",
-  popularity: 588
+  popularity: 589
  },
  {
   sku: "oxford-60607898",
@@ -6482,7 +6493,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203023/Luna-carmim.jpg?v=639136016665000000",
   productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-carmim/p",
-  popularity: 589
+  popularity: 590
  },
  {
   sku: "oxford-60607896",
@@ -6493,7 +6504,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 16 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202190/Extranet_16_0002_Luna_Sand_Conjunto.jpg?v=639089358515500000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-sand/p",
-  popularity: 590
+  popularity: 591
  },
  {
   sku: "oxford-60607890",
@@ -6504,7 +6515,18 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 16 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205173/Extranet_16_0000_Luna_Seda_Conjunto.jpg?v=639192169772600000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-16-pecas-luna-seda/p",
-  popularity: 591
+  popularity: 592
+ },
+ {
+  sku: "oxford-60607857",
+  name: "Aparelho de Jantar e Chá 20 Peças Flat Belle Bleu",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202840/Ecommerce_0000_Flat_Belle_Bleu_Cunjunto.jpg?v=639118671804230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jantar-20pcs-flat-belle-bleu/p",
+  popularity: 593
  },
  {
   sku: "oxford-60607847",
@@ -6515,7 +6537,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 12 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198824/5190_Donna_Lola_18_3e416d5a5cb6400caf03ed39563050f0.jpg?v=638963220580700000",
   productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-12pcs-donna-lola/p",
-  popularity: 592
+  popularity: 594
  },
  {
   sku: "oxford-60607837",
@@ -6526,7 +6548,7 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 12 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198847/Donna-Margaridas.jpg?v=638966741960930000",
   productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-margaridas/p",
-  popularity: 593
+  popularity: 595
  },
  {
   sku: "oxford-60607800",
@@ -6537,7 +6559,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198020/Conj_6_Boho_Xicara-de-Cha-com-Pires.jpg?v=638926872511830000",
   productUrl: "https://www.oxfordporcelanas.com.br/cj-6-xicaras-com-pires-unni-boho/p",
-  popularity: 594
+  popularity: 596
  },
  {
   sku: "oxford-60607795",
@@ -6548,18 +6570,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198166/Conj_6_Caminho_da_Selva_Raso.jpg?v=638926882237670000",
   productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-rasos-unni-selva/p",
-  popularity: 595
- },
- {
-  sku: "oxford-60607791",
-  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Boho Jogo de 6 Pratos Fundos 20 cm Unni Boho",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200193/Conj_6_Boho_Fundo.jpg?v=639052222667400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-fundos-unni-boho/p",
-  popularity: 596
+  popularity: 597
  },
  {
   sku: "oxford-60607785",
@@ -6570,7 +6581,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198233/Ecommerce_SOS_Amazonina_Tartaruga_Esquerda.jpg?v=638930227087330000",
   productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-tartaruga/p",
-  popularity: 597
+  popularity: 598
  },
  {
   sku: "oxford-60607387",
@@ -6581,7 +6592,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198597/Conjunto_Mendi_Marfim_Caneca_06.jpg?v=638936493383300000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-mendi-360-ml-marfim/p",
-  popularity: 598
+  popularity: 599
  },
  {
   sku: "oxford-60607374",
@@ -6592,7 +6603,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196180/6-Canecas-Pacifico.png?v=639160250252570000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-flat-350-ml-pacifico/p",
-  popularity: 599
+  popularity: 600
  },
  {
   sku: "oxford-60607358",
@@ -6603,7 +6614,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196128/6-Canecas-Jumbo-Salmao.png?v=638894138069800000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-salmao/p",
-  popularity: 600
+  popularity: 601
  },
  {
   sku: "oxford-60607349",
@@ -6614,7 +6625,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196110/6-Tigelas-Cereal--Roxa.png?v=638894136615800000",
   productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-roxo/p",
-  popularity: 601
+  popularity: 602
  },
  {
   sku: "oxford-60607314",
@@ -6625,7 +6636,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195094/151072-caneca-chubby-menta-330-ml-media.jpg?v=638858719857930000",
   productUrl: "https://www.oxfordporcelanas.com.br/caneca-chubby-menta-individual/p",
-  popularity: 602
+  popularity: 603
  },
  {
   sku: "oxford-60607312",
@@ -6636,7 +6647,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195103/151064-caneca-chubby-chia-330-ml-media.jpg?v=638858720874800000",
   productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-chia-individual/p",
-  popularity: 603
+  popularity: 604
  },
  {
   sku: "oxford-60607304",
@@ -6647,18 +6658,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe canecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190211/087361_Ryo_Pink_Sand_Caneca_Pequena_380ml_6.jpg?v=638815350599270000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-380-ml-ryo-pink-sand1/p",
-  popularity: 604
+  popularity: 605
  },
  {
-  sku: "oxford-60607265",
-  name: "Jogo de 6 Taças de Cristal Vinho/Água 340 Ml Slim Classic",
+  sku: "oxford-60607247",
+  name: "Jogo de 6 Taças de Cristal 360 ml Forever Classic",
   brand: "Alumina Crystal",
   unitPrice: 229.9,
   unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190630/1000-x-1000-Alumina---Slim-340-6.jpg?v=638815421899200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-vinho-agua-340-ml-slim-classic1/p",
-  popularity: 605
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190665/Forever_Classic_Taca_470ml-02.jpg?v=638815429212270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-360-ml-forever-classic/p",
+  popularity: 606
  },
  {
   sku: "oxford-60607198",
@@ -6669,7 +6680,7 @@ export const CATALOG: CatalogItem[] = [
   category: "gourmet complementos gourmet",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203187/Melanina_Travessa_Lines_Retangular_Rasa-28x93cm-17cm.jpg?v=639154222527830000",
   productUrl: "https://www.oxfordporcelanas.com.br/travessa-retangular-lines/p",
-  popularity: 606
+  popularity: 607
  },
  {
   sku: "oxford-60607177",
@@ -6680,7 +6691,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186718/oxford-cookware-travessa-refrataria-fall-retangular-rasa-1500ml-00.jpg.jpg?v=638877722043200000",
   productUrl: "https://www.oxfordporcelanas.com.br/travessa-rasa-fall/p",
-  popularity: 607
+  popularity: 608
  },
  {
   sku: "oxford-60607175",
@@ -6691,7 +6702,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186725/oxford-cookware-travessa-refrataria-fall-retangular-funda-4400ml-00.jpg.jpg?v=638750494521700000",
   productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-fall/p",
-  popularity: 608
+  popularity: 609
  },
  {
   sku: "oxford-60607161",
@@ -6702,7 +6713,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207657/152794-linha-feijoada-tigela-media.jpg?v=639227559455600000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-feijoada-19cm/p",
-  popularity: 609
+  popularity: 610
  },
  {
   sku: "oxford-60607132",
@@ -6713,7 +6724,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir saladeira",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207561/2904_Flora_AmorPerfeito_Saladeira.jpg?v=639227478507600000",
   productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-saladeira/p",
-  popularity: 610
+  popularity: 611
  },
  {
   sku: "oxford-60607070",
@@ -6724,7 +6735,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195045/146757_Panelas_Aroma_Wok_Cinza.jpg?v=638858425925670000",
   productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-aroma/p",
-  popularity: 611
+  popularity: 612
  },
  {
   sku: "oxford-60607060",
@@ -6735,7 +6746,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192828/Conj_6_Pecas_Ryo_Volcano_Xicara.jpg.jpg?v=638816949375430000",
   productUrl: "https://www.oxfordporcelanas.com.br/ryo-xicaras-cha/p",
-  popularity: 612
+  popularity: 613
  },
  {
   sku: "oxford-60607059",
@@ -6746,7 +6757,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192422/Conjunto_6_Ryo_Galapagos_Xicara-Cha.jpg.jpg?v=638816169182470000",
   productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-xicaras-cha/p",
-  popularity: 613
+  popularity: 614
  },
  {
   sku: "oxford-60607055",
@@ -6757,7 +6768,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192431/Conjunto_6_Flora_aster_Xicara.jpg.jpg?v=638816171259000000",
   productUrl: "https://www.oxfordporcelanas.com.br/aster-xicaras-cha/p",
-  popularity: 614
+  popularity: 615
  },
  {
   sku: "oxford-60607053",
@@ -6768,7 +6779,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192266/Conjunto_6_Flora_AmorPerfeito_Xicara.jpg.jpg?v=638816159565770000",
   productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-xicara/p",
-  popularity: 615
+  popularity: 616
  },
  {
   sku: "oxford-60607046",
@@ -6779,7 +6790,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192025/Conjunto_6_Flora_dalia_Bowl.jpg.jpg?v=638816147129570000",
   productUrl: "https://www.oxfordporcelanas.com.br/dalia-tigelas-sobremesa/p",
-  popularity: 616
+  popularity: 617
  },
  {
   sku: "oxford-60607044",
@@ -6790,7 +6801,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192030/Conjunto_6_Flora_aster_Bowl.jpg.jpg?v=638816147265570000",
   productUrl: "https://www.oxfordporcelanas.com.br/aster-tigelas-sobremesa/p",
-  popularity: 617
+  popularity: 618
  },
  {
   sku: "oxford-60607009",
@@ -6801,7 +6812,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192487/151832_Dandy_Chardonnay_Agua_520ml.jpg.jpg?v=638816284191200000",
   productUrl: "https://www.oxfordporcelanas.com.br/tacas-chardonnay-dandy-520ml/p",
-  popularity: 618
+  popularity: 619
  },
  {
   sku: "oxford-60607007",
@@ -6812,7 +6823,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192600/129239_Dandy-BORDEAUX-820ml.jpg.jpg?v=638816326826070000",
   productUrl: "https://www.oxfordporcelanas.com.br/tacas-bordeaux-dandy/p",
-  popularity: 619
+  popularity: 620
  },
  {
   sku: "oxford-60607006",
@@ -6823,7 +6834,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192590/127124_Alumina_Flavour_Taca_Bordeaux_650ml.jpg.jpg?v=638816321987400000",
   productUrl: "https://www.oxfordporcelanas.com.br/tacas-bordeaux-flavour/p",
-  popularity: 620
+  popularity: 621
  },
  {
   sku: "oxford-60607000",
@@ -6834,7 +6845,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190943/porcelanas-conj-6-Flora_Aster_Prato-Sobremesa.jpg.jpg?v=638815519863270000",
   productUrl: "https://www.oxfordporcelanas.com.br/aster-pratos-sobremesa/p",
-  popularity: 621
+  popularity: 622
  },
  {
   sku: "oxford-60606972",
@@ -6845,17 +6856,6 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos redondos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195760/porcelanas-conj-6-Flamingo_Lafayette_Prato-Fundo.jpg.jpg?v=638888091228130000",
   productUrl: "https://www.oxfordporcelanas.com.br/lafayette-pratos-fundos/p",
-  popularity: 622
- },
- {
-  sku: "oxford-60606969",
-  name: "Jogo de 6 Pratos Fundos 22,5 cm Ryo Galápagos",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191037/porcelanas-conj-6-Ryo_Galapagos_Prato-Fundo.jpg.jpg?v=638815530745270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-pratos-fundos/p",
   popularity: 623
  },
  {
@@ -6991,14 +6991,14 @@ export const CATALOG: CatalogItem[] = [
   popularity: 635
  },
  {
-  sku: "oxford-60600628",
-  name: "Aparelho de Jantar e Chá 20 Peças Ryo Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 599.9,
+  sku: "oxford-60603472",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni Lilac",
+  brand: "Cerâmicas",
+  unitPrice: 469.9,
   unit: "un",
   category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181021/9604_Porcelanas_Ryo_Bambu_Conjuntos_20_30.jpg?v=638211335145370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bambu-20pcs/p",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207733/1-Ap.-De-Jantar---Cha-20Pcs---Mail-Order---Lilac---Ama2-5625.jpg?v=639228277963170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-lilac-jantar-20pcs/p",
   popularity: 636
  },
  {
@@ -7013,4206 +7013,15 @@ export const CATALOG: CatalogItem[] = [
   popularity: 637
  },
  {
-  sku: "oxford-60606324",
-  name: "Jogo de 6 Taças de Cristal Para Cerveja 396 Ml Classic",
-  brand: "Biona",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192739/142362_Taca_De_Cristal_Para_Cerveja_396_ml_Classic_06.jpg?v=638816393904800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-cerveja-396ml-classic/p",
-  popularity: 638
- },
- {
-  sku: "oxford-60606246",
-  name: "Pote Bahia de Vidro Borosilicato 1,7 L Com Tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183885/138193_Pote_Bahia_De_Vidro_Borosilicato_17_L_Com_Tampa.jpg?v=638442913009000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-1-7l-tampa-bambu/p",
-  popularity: 639
- },
- {
-  sku: "oxford-60606244",
-  name: "Panela Wok Antiaderente para Indução 28 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187304/138751_Wok_01.jpg?v=638761073760400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-everyday-azul/p",
-  popularity: 640
- },
- {
-  sku: "oxford-60606192",
-  name: "Jogo de 6 Pratos Sobremesa 22 Cm Flamingo Palhinha Brasileira",
-  brand: "Oxford Porcelanas",
-  unitPrice: 307.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196432/139871_Conjunto_De_6_Pratos_Sobremesa_22.jpg?v=638903544393400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-flamingo-palhinha-brasileira/p",
-  popularity: 641
- },
- {
-  sku: "oxford-60606174",
-  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Chá Das 5",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189838/Donna_Cha_das_5_Prato_Sobremesa_06.jpg?v=638815289836130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-donna-chadas5/p",
-  popularity: 642
- },
- {
-  sku: "oxford-60606157",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197253/143001_Conjunto_De_6_Pratos_Rasos_26_Cm_Unni_Brisa.jpg?v=638918317366570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-brisa/p",
-  popularity: 643
- },
- {
-  sku: "oxford-60606147",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Toile de Jouy",
-  brand: "Oxford Porcelanas",
-  unitPrice: 209.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189901/141251_Conjunto_De_6_Pratos_Fundos_235_Cm_Fla.jpg?v=638815308581400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-toile-de-jouy/p",
-  popularity: 644
- },
- {
-  sku: "oxford-60606118",
-  name: "Jogo de 12 Facas de Mesa 23,5 Cm São Paulo",
-  brand: "Oxford",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204039/141901_Conjunto_De_12_Facas_De_Mesa_235_Cm_Sao_Paulo_12.jpg?v=639168631705270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-sao-paulo/p",
-  popularity: 645
- },
- {
-  sku: "oxford-60606104",
-  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203979/141875_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Noronha_12.jpg?v=639168008983600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-noronha/p",
-  popularity: 646
- },
- {
-  sku: "oxford-60606065",
-  name: "Caçarola Rasa Antiaderente para Indução 28 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206939/138749_02.jpg?v=639221542087730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-rasa-28cm-everyday-azul/p",
-  popularity: 647
- },
- {
-  sku: "oxford-60606059",
-  name: "Caçarola Antiaderente para indução 28 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207184/141756_Cacarola_28_Cm_.jpg?v=639221607643000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-gourmet/p",
-  popularity: 648
- },
- {
-  sku: "oxford-60606052",
-  name: "Aparelho de Jantar e Chá 30 Peças Soleil Limoni",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1299,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198947/140128_Aparelho_De_Jantar_E_Cha_30_Pecas_Soleil_Limoni.jpg?v=638969153160670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-limoni/p",
-  popularity: 649
- },
- {
-  sku: "oxford-60605927",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189969/5950_Conjunto_Balance_Raso_06.jpg?v=638815317053670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-balance/p",
-  popularity: 650
- },
- {
-  sku: "oxford-60605923",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189980/5950_Conjunto_Balance_Fundo_06.jpg?v=638815317597530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-balance/p",
-  popularity: 651
- },
- {
-  sku: "oxford-60605736",
-  name: "Aparelho de Jantar e Lanche 16 Peças Flat Pacífico",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183247/Conjunto-16-pecas---Pacifico.jpg?v=638355777271430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelhojantar-lanche-16pcs-flat-pacifico/p",
-  popularity: 652
- },
- {
-  sku: "oxford-60605735",
-  name: "Aparelho de Jantar e Lanche 16 Peças Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182260/136401_Flat_Onix_Conjunto_16.jpg?v=638300537654600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-onix/p",
-  popularity: 653
- },
- {
-  sku: "oxford-60605375",
-  name: "Assadeira Refratária Tango Média 34x21x6,5 Cm Marrom",
-  brand: "Cookware",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180624/126794_Travessaa_Refrataria_Marrom_Tango_M.jpg?v=638150793223470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-media-marrom/p",
-  popularity: 654
- },
- {
-  sku: "oxford-60605208",
-  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Lírios",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190188/126285_Conjunto_6_Pratos_Sobremesa_18Cm_Donna_Lirios.jpg?v=638815339205130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesas-lirios/p",
-  popularity: 655
- },
- {
-  sku: "oxford-60605128",
-  name: "Caneca Tulipa 330 Ml Verde Escuro",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180198/126660_Caneca_Tulipa_330Ml_Verde_Escuro.jpg?v=638130927062500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-verde-escuro/p",
-  popularity: 656
- },
- {
-  sku: "oxford-60604269",
-  name: "Cafeteira Italiana Moka de Alumínio 300 ml Black",
-  brand: "Oxford",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192760/Moka_G.jpg?v=638816916293470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-italiana-moka-6xicaras/p",
-  popularity: 657
- },
- {
-  sku: "oxford-60604213",
-  name: "Travessa Gn 2/3 Em Melamina 5,1l Container",
-  brand: "Oxford",
-  unitPrice: 144.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203172/086630_Melamina_Travessa_GN_2_3.jpg?v=639154224510000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-2-3-melamina-container-5-1-litros/p",
-  popularity: 658
- },
- {
-  sku: "oxford-60604211",
-  name: "Tábua Para Servir Redonda Em Melamina 30,5 Cm Slim",
-  brand: "Oxford",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203123/Melanina_Tabua_para_servir_redonda_slim_305cm_13cm.jpg?v=639154235756430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tabua-servir-redonda-melamina-slim-30-5-cm/p",
-  popularity: 659
- },
- {
-  sku: "oxford-60604192",
-  name: "Travessa Para Servir Em Melamina 35,5 X 8,5 Cm Modern",
-  brand: "Oxford",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203184/12-Tabuas-P-Servir-Retangular-Em-Melamina-355X162Cm---Branco-Marfim---2114-M.jpg?v=639154222997200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-servir-melamina-modern-35-5-x-8-5-cm/p",
-  popularity: 660
- },
- {
-  sku: "oxford-60604134",
-  name: "Pegador Multiuso 34,5 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 54.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178012/069926_Pegadores_Multiuso_345Cm_Cool_Grey.jpg?v=637970481345770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pegador-multiuso-cool-grey-34-cm/p",
-  popularity: 661
- },
- {
-  sku: "oxford-60604131",
-  name: "Moedor Em Madeira Para Sal E Pimenta 21,5 Cm Natural",
-  brand: "Oxford",
-  unitPrice: 131.9,
-  unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178074/115293_Moedor_sal_pimenta_G_5x5_H215cm.jpg?v=637974599337300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/moedor-sal-pimenta-madeira-natural-21-cm/p",
-  popularity: 662
- },
- {
-  sku: "oxford-60604129",
-  name: "Moedor Em Madeira Para Pimenta 16,5 Cm Natural",
-  brand: "Oxford",
-  unitPrice: 115.9,
-  unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178071/115291_Moedor_sal_pimenta_P_5x5_H166cm.jpg?v=637974598018800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/moedor-pimenta-madeira-natural-16-cm/p",
-  popularity: 663
- },
- {
-  sku: "oxford-60603837",
-  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Peach",
-  brand: "Oxford Porcelanas",
-  unitPrice: 210.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190798/116179.jpg?v=638815438599900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/prato-raso-flamingo-peach/p",
-  popularity: 664
- },
- {
-  sku: "oxford-60603794",
-  name: "Tábua Em Madeira Para Corte de Pão Com Alça",
-  brand: "Oxford",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "cozinha utensilios linha madeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176649/115296-1.jpg?v=637852707298000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tabua-madeira-corte-pao/p",
-  popularity: 665
- },
- {
-  sku: "oxford-60603740",
-  name: "Caneca Ryo 260 Ml White",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209475/Ryo_Caneca_Pequena_260ml_White-otimizada.webp?v=639259303238600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-white-260ml/p",
-  popularity: 666
- },
- {
-  sku: "oxford-60603670",
-  name: "Assadeira de Vidro Redonda 3 L",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176508/068539-1.jpg?v=637842594262500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-redonda-3l/p",
-  popularity: 667
- },
- {
-  sku: "oxford-60603665",
-  name: "Faqueiro 24 Peças Cinza Neutro",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176496/085556-1.jpg?v=637842594208930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-24-pecas-cinza/p",
-  popularity: 668
- },
- {
-  sku: "oxford-60603663",
-  name: "Tigela Infantil de Silicone Com Base de Sucção E Tampa Verde",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176295/113366-1.jpg?v=637830495063430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-infantil-silicone-base-succao/p",
-  popularity: 669
- },
- {
-  sku: "oxford-60603652",
-  name: "Babador Infantil de Silicone Com Pega Migalhas Verde",
-  brand: "Oxford",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176280/113369-1.jpg?v=637830494979430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/babador-infantil-silicone-pega-migalhas-verde/p",
-  popularity: 670
- },
- {
-  sku: "oxford-60603268",
-  name: "Conjunto Com 2 Talheres Infantil de Silicone 8 Cm Orange",
-  brand: "Oxford",
-  unitPrice: 19.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174339/Linha---Baby---talheres---orange.jpg?v=637637891848400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-talheres/p",
-  popularity: 671
- },
- {
-  sku: "oxford-60603267",
-  name: "Prato de Silicone 3 Divisórias Com Base de Sucção E Tampa Orange",
-  brand: "Oxford",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174337/Linha---Baby---prato---orange.jpg?v=637637889686970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-prato/p",
-  popularity: 672
- },
- {
-  sku: "oxford-60603159",
-  name: "Jogo de 12 Facas Para Sobremesa 16,5 Cm Farol",
-  brand: "Oxford",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173572/Faca-de-sobremesa-individual.jpg?v=637606564783800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol3/p",
-  popularity: 673
- },
- {
-  sku: "oxford-60603129",
-  name: "Jogo de 6 Colheres de Chá 12,8 cm Class",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173522/Colher-de-Cha-Class-individual.jpg?v=637606533729170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class4/p",
-  popularity: 674
- },
- {
-  sku: "oxford-60603092",
-  name: "Jogo de 6 Taças de Cristal Para Conhaque 660 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190494/Taca-de-conhaque-classic.jpg?v=638815410659000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic2/p",
-  popularity: 675
- },
- {
-  sku: "oxford-60603090",
-  name: "Jogo de 6 Taças Para Gin 780 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 429.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207382/Taca-p-gin.jpg?v=639227427536430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic8/p",
-  popularity: 676
- },
- {
-  sku: "oxford-60603085",
-  name: "Jarra de Cristal 1300 Ml Easy Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "tacas e copos complementos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188651/Jarra-1300ml-individual.jpg.jpg?v=638796468103900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-complementosalumina-classic1/p",
-  popularity: 677
- },
- {
-  sku: "oxford-60603023",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Merengue",
-  brand: "Cerâmicas",
-  unitPrice: 849.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177834/5507_Unni_Merengue_20_30pcs_1104x1104px.jpg?v=637949683790200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-merengue/p",
-  popularity: 678
- },
- {
-  sku: "oxford-60601670",
-  name: "Faqueiro 16 Peças Bossa",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208312/Oxford_Talheres_Bossa.jpg?v=639249808221500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/bossa-faqueiro/p",
-  popularity: 679
- },
- {
-  sku: "oxford-60601341",
-  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Mandala",
-  brand: "Biona",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191669/Biona_Donna_Mandala_Prato_Raso-6.jpg?v=638816126754930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-raso-mandala/p",
-  popularity: 680
- },
- {
-  sku: "oxford-60600952",
-  name: "Jogo de 6 Taças de Sobremesa Soleil Victória",
-  brand: "Oxford Porcelanas",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "servir sobremesa",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192000/oxford-porcelanas-tacas-taca-de-sobremesa-soleil-victoria-6-pecas-01.jpg?v=638816146291930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-sobremesa-soleil-victoria/p",
-  popularity: 681
- },
- {
-  sku: "oxford-60600804",
-  name: "Jogo de 2 Potes Herméticos de Vidro Com Divisórias",
-  brand: "Oxford",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193918/P19T_P20T_P21T_Pote-Hermetico-Borosilicato_Redondo-com-Divisoria_00.jpg?v=638826780751170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/potes-hermetico-divisorias/p",
-  popularity: 682
- },
- {
-  sku: "oxford-60600803",
-  name: "Jogo de 3 Potes Herméticos de Vidro Redondos",
-  brand: "Oxford",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193893/P16T_P17T_P18T_Pote-Hermetico-Borosilicato_Redondo_00_l.jpg?v=638826771571270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/potes-hermetico-redondo/p",
-  popularity: 683
- },
- {
-  sku: "oxford-60600785",
-  name: "Aparelho de Jantar e Chá 30 Peças Donna Lola",
-  brand: "Biona",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180537/Conjunto_Lola.jpg?v=638138718012070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-lola/p",
-  popularity: 684
- },
- {
-  sku: "oxford-60600674",
-  name: "Jogo de 6 Pratos Rasos 27,5 Cm Ryo Pink Sand",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191723/077357_Ryo_Pink_Sand_Prato_Raso_27cm_6.jpg?v=638816129527070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-pink-sand/p",
-  popularity: 685
- },
- {
-  sku: "oxford-60600677",
-  name: "Jogo de 6 Pratos Rasos 27 Cm Ryo Blue Bay",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191735/oxford-porcelanas-prato-raso-ryo-blue-bay-6-pecas-01.jpg?v=638816130031030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-blue-bay/p",
-  popularity: 686
- },
- {
-  sku: "oxford-60201305",
-  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Folk",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191486/biona-prato-sobremesa-donna-folk-01.jpg?v=638816117310830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-donna-folk/p",
-  popularity: 687
- },
- {
-  sku: "oxford-60201303",
-  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Folk",
-  brand: "Biona",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191490/biona-prato-raso-donna-folk-01.jpg?v=638816117615000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-donna-folk/p",
-  popularity: 688
- },
- {
-  sku: "oxford-50100301",
-  name: "Jogo de 6 Pratos Sobremesa Pró 20 Cm",
-  brand: "Oxford Porcelanas",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "gourmet pratos restaurante prato pro",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192708/oxford-porcelanas-gourmet-pro-prato-sobremesa-M03C-01.jpg?v=638816339135700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-prato-sobremesa-pro-20cm-conjunto/p",
-  popularity: 689
- },
- {
-  sku: "oxford-29903201",
-  name: "Tigela 600 Ml Branco",
-  brand: "Cerâmicas",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159508/oxford-daily-tigela-colorida-white-0802.jpg?v=636244910848500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-600ml-branco/p",
-  popularity: 690
- },
- {
-  sku: "oxford-29900506",
-  name: "Caneca Mini Quartier 220 Ml Preto",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159203/oxford-daily-caneca-quartier-mini-0806.jpg?v=636243927759800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-preto/p",
-  popularity: 691
- },
- {
-  sku: "oxford-30400106",
-  name: "Assadeira Refratária Fall Funda 3.900 Ml",
-  brand: "Cookware",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158059/oxford-cookware-travessa-refrataria-fall-retangular-funda-3900ml-00.jpg?v=636219982790500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-funda-3900ml/p",
-  popularity: 692
- },
- {
-  sku: "oxford-30400103",
-  name: "Assadeira Refratária Fall Redonda 2.100 Ml",
-  brand: "Cookware",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207368/oxford-cookware-travessa-refrataria-fall-redonda-00.jpg?v=639227423840200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-redonda-2100ml/p",
-  popularity: 693
- },
- {
-  sku: "oxford-10701295",
-  name: "Jogo de 6 Xícaras Pequenas 75 Ml Com Pires Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192380/oxford-porcelanas-xicaras-cafe-soleil-white-01.jpg?v=638816166972800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-xicaras-cafe/p",
-  popularity: 694
- },
- {
-  sku: "oxford-10201107",
-  name: "Sopeira 2 Litros Com Tampa Flamingo Sofia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "servir sopeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174380/9209_Flamingo_Sofia_sopeira.jpg?v=637641096019370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-sopeira/p",
-  popularity: 695
- },
- {
-  sku: "oxford-60201302",
-  name: "Aparelho de Jantar e Chá 30 Peças Donna Folk",
-  brand: "Biona",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180589/5118_Donna-Folk_20_30pcs.jpg?v=638138744974570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-folk/p",
-  popularity: 696
- },
- {
-  sku: "oxford-10200501",
-  name: "Aparelho de Jantar e Chá 30 Peças Flamingo Isabel",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1379.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/155992/oxford-porcelanas-aparelho-de-jantar-flamingo-isabel-30-pecas-00.jpg?v=636213653317470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-isabel/p",
-  popularity: 697
- },
- {
-  sku: "oxford-60608493",
-  name: "Jogo de 6 Pratos Rasos 26 cm Pequenos Encantos",
-  brand: "Cerâmicas",
-  unitPrice: 177.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209376/Pequenos_Encantos_Conjunto_6_Raso-otimizada.webp?v=639258712012500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-pequenos-encantos/p",
-  popularity: 698
- },
- {
-  sku: "oxford-60608488",
-  name: "Jogo de 6 Pratos Rasos 26 cm Noite de Natal",
-  brand: "Cerâmicas",
-  unitPrice: 177.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209365/Noite_de_Natal_Conjunto_6_Raso.webp?v=639258709753870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-noite-de-natal/p",
-  popularity: 699
- },
- {
-  sku: "oxford-60608478",
-  name: "Jogo de Jantar e Lanche 4 Peças Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "aparelhos de jantar 6 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209134/Jogo-de-JantarLanche-4-Pecas-Flat-Chuvisco.jpg?v=639257032666470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-4-pecas-flat-chuvisco/p",
-  popularity: 700
- },
- {
-  sku: "oxford-60608477",
-  name: "Jogo de Jantar e Lanche 3 Peças Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "aparelhos de jantar 6 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209122/Jogo-de-JantarLanche-3-Pecas-Flat-Chuvisco.jpg?v=639257025152900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-3-pecas-flat-chuvisco/p",
-  popularity: 701
- },
- {
-  sku: "oxford-60608476",
-  name: "Jogo de Jantar e Lanche 4 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "aparelhos de jantar 6 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209284/Aparelho-de-Jantar-24-Pecas-Ryo-Maresia--1-.jpg?v=639258578910900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-4-pecas-ryo-maresia/p",
-  popularity: 702
- },
- {
-  sku: "oxford-60608475",
-  name: "Jogo de Jantar e Lanche 3 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "servir lanche",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209291/Jogo-jantar-e-lanche-3-pecas-Maresia.jpg?v=639258579083200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-3-pecas-ryo-maresia/p",
-  popularity: 703
- },
- {
-  sku: "oxford-60608473",
-  name: "Jogo de Lanche 3 Peças Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209062/Conjunto-Lanche-3-pecas-Unni-Orquidea.jpg?v=639256910051300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-orquidea/p",
-  popularity: 704
- },
- {
-  sku: "oxford-60608471",
-  name: "Jogo de Lanche 3 Peças Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209041/Conjunto-Lanche-3-pecas-Unni-Caminho-da-Selva.jpg?v=639256839194800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-caminho-da-selva/p",
-  popularity: 705
- },
- {
-  sku: "oxford-60608470",
-  name: "Jogo de Lanche 3 Peças Unni Damas",
-  brand: "Cerâmicas",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209028/Conjunto-Lanche-3-pecas-Unni-Damas.jpg?v=639258472006000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-damas/p",
-  popularity: 706
- },
- {
-  sku: "oxford-60608469",
-  name: "Jogo de Lanche 3 Peças Unni Stripes and Dots",
-  brand: "Cerâmicas",
-  unitPrice: 69.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209020/Conjunto-Lanche-3-pecas-stripes-and-dots.jpg?v=639256814162400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-stripes-and-dots/p",
-  popularity: 707
- },
- {
-  sku: "oxford-60608467",
-  name: "Jogo de Lanche 3 Peças Flat Gray",
-  brand: "Cerâmicas",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209001/Conjunto-Lanche-3-pecas-flat-Gray.jpg?v=639256795969230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-flat-gray/p",
-  popularity: 708
- },
- {
-  sku: "oxford-60608466",
-  name: "Jogo de Lanche 3 Peças Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208983/Conjunto-Lanche-3-pecas-flat-Onix.jpg?v=639256786946030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-oxford-flat-onix/p",
-  popularity: 709
- },
- {
-  sku: "oxford-60608464",
-  name: "Jogo de Lanche 3 Peças Ryo Blue Bay",
-  brand: "Oxford Porcelanas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208957/Oxford_Porcelanas_Ryo_Blue_Bay_Prato_Sobremesa_tigela_caneca-grande.jpg?v=639256759570670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-blue-bay/p",
-  popularity: 710
- },
- {
-  sku: "oxford-60608463",
-  name: "Jogo de Lanche 3 Peças Ryo Volcano",
-  brand: "Oxford Porcelanas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208947/Conjunto-Lanche-3-pecas-Ryo-Volcano.jpg?v=639256751235870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-volcano/p",
-  popularity: 711
- },
- {
-  sku: "oxford-60608458",
-  name: "Jogo de 2 Taças de Cristal para Espumante 190 ml Titanium Max",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209505/Titanium_Conj_2_Espumante-190-ml-otimizada.webp?v=639259450201130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-para-espumante-190-ml-titanium-max/p",
-  popularity: 712
- },
- {
-  sku: "oxford-60608455",
-  name: "Jogo de 2 Taças de Cristal 520 ml Titanium Max",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209525/Titanium_Conj_2_520-ml-otimizada.webp?v=639259450575370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-520-ml-titanium-max/p",
-  popularity: 713
- },
- {
-  sku: "oxford-60608454",
-  name: "Jogo de 2 Taças de Cristal 650 ml Titanium Max",
-  brand: "Oxford",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209519/Titanium_Conj_2_650-ml-otimizada.webp?v=639259450465000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-650-ml-titanium-max/p",
-  popularity: 714
- },
- {
-  sku: "oxford-60608449",
-  name: "Jogo de 4 Canecas Mendi 360 Ml Marfim",
-  brand: "Cerâmicas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208735/4-canecas-Mendi-Marfim.jpg?v=639250988864200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-mendi-360-ml-marfim/p",
-  popularity: 715
- },
- {
-  sku: "oxford-60608443",
-  name: "Jogo de 4 Pratos Fundos 23 Cm Mendi Marfim",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208678/standard_resolution - 2026-09-15T143955.249.jpg?v=639250912703770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-23-cm-mendi-marfim/p",
-  popularity: 716
- },
- {
-  sku: "oxford-60608440",
-  name: "Jogo Lanche e Chá 18 Peças Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208630/standard_resolution---2026-09-15T130612.833.jpg?v=639250866177700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-cha-18-pecas-unni-brisa/p",
-  popularity: 717
- },
- {
-  sku: "oxford-60608438",
-  name: "Jogo de 4 Pratos Sobremesa 20 Cm Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208596/standard_resolution---2026-09-15T114137.204.jpg?v=639250802455230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-unni-brisa/p",
-  popularity: 718
- },
- {
-  sku: "oxford-60608437",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208587/standard_resolution---2026-09-15T112541.792.jpg?v=639250792297330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-brisa/p",
-  popularity: 719
- },
- {
-  sku: "oxford-60608436",
-  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208574/standard_resolution---2026-09-15T111452.617.jpg?v=639250786913200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-brisa/p",
-  popularity: 720
- },
- {
-  sku: "oxford-60608434",
-  name: "Jogo de 4 Tigelas Flat 600 Ml Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208558/standard_resolution---2026-09-15T105506.127.jpg?v=639258453206870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-flat-600-ml-samambaia/p",
-  popularity: 721
- },
- {
-  sku: "oxford-60608432",
-  name: "Jogo de 4 Pratos Fundos 20,5 Cm Flat Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208544/standard_resolution---2026-09-15T101317.054.jpg?v=639250750033600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-flat-samambaia/p",
-  popularity: 722
- },
- {
-  sku: "oxford-60608430",
-  name: "Aparelho de Jantar 24 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 789.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209298/24-pecas-maresia.png?v=639258579235000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-24-pecas-ryo-maresia/p",
-  popularity: 723
- },
- {
-  sku: "oxford-60608429",
-  name: "Aparelho de Jantar e Chá 40 Peças Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1099.9,
-  unit: "un",
-  category: "aparelhos de jantar ryo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208266/9504_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=639247396274530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-ryo-white/p",
-  popularity: 724
- },
- {
-  sku: "oxford-60608427",
-  name: "Jogo Lanche 8 Peças Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "servir lanche",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208249/Aparelho-24-pecas-ryo-white--1-.png?v=639247346741170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-8-pecas-oxford-ryo-white/p",
-  popularity: 725
- },
- {
-  sku: "oxford-60608426",
-  name: "Jogo de Lanche 3 Peças Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208242/Oxford_Porcelanas_Ryo_White_Prato_Sobremesa_tigela_caneca-grande.jpg?v=639247324290600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-white/p",
-  popularity: 726
- },
- {
-  sku: "oxford-60608424",
-  name: "Jogo de Chá e Lanche 18 Peças Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 409.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208222/standard_resolution---2026-09-11T104151.003.jpg?v=639251008218430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-cha-e-lanche-18-pecas-oxford-ryo-white/p",
-  popularity: 727
- },
- {
-  sku: "oxford-60608423",
-  name: "Aparelho de Jantar 18 Peças Ryo White",
+  sku: "oxford-10700701",
+  name: "Aparelho de Jantar e Chá 20 Peças Soleil White",
   brand: "Oxford Porcelanas",
   unitPrice: 649.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208207/standard_resolution---2026-09-11T102205.052-otimizada.jpg?v=639247301275400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-ryo-white/p",
-  popularity: 728
- },
- {
-  sku: "oxford-60608422",
-  name: "Jogo de 4 Canecas 260 Ml Ryo White",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208195/standard_resolution---2026-09-11T101202.819-otimizada.jpg?v=639247292153230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-260-ml-ryo-white/p",
-  popularity: 729
- },
- {
-  sku: "oxford-60608421",
-  name: "Jogo de 4 Canecas 380 Ml Ryo White",
-  brand: "Cerâmicas",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208188/standard_resolution---2026-09-11T100658.235-otimizada.jpg?v=639247289586300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-380-ml-ryo-white/p",
-  popularity: 730
- },
- {
-  sku: "oxford-60608420",
-  name: "Jogo de 4 Tigelas 500 ml Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208181/4-tigelas-ryo-white.png?v=639247286398170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-500-ml-ryo-white/p",
-  popularity: 731
- },
- {
-  sku: "oxford-60608418",
-  name: "Jogo de 4 Pratos Sobremesa 21,5m Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208167/standard_resolution - 2026-09-11T093738.642-otimizada.jpg?v=639247272260770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-21-5m-ryo-white/p",
-  popularity: 732
- },
- {
-  sku: "oxford-60608417",
-  name: "Jogo de 4 Pratos Fundos 22,5 Cm Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208160/standard_resolution---2026-09-11T093025.653-otimizada.jpg?v=639247268621200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-22-5-cm-ryo-white/p",
-  popularity: 733
- },
- {
-  sku: "oxford-60608415",
-  name: "Jogo de Lanche e Chá 12 peças Unni Tropicano",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208141/standard_resolution---2026-09-11T085453.734.jpg?v=639251001052730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-e-cha-12-pecas-unni-tropicano/p",
-  popularity: 734
- },
- {
-  sku: "oxford-60608346",
-  name: "Jogo de 4 Taças de Sobremesa Soleil White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 151.9,
-  unit: "un",
-  category: "servir sobremesa",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207273/Soleil-4-tacas.png?v=639226582876800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-sobremesa-soleil-white/p",
-  popularity: 735
- },
- {
-  sku: "oxford-60608345",
-  name: "Assadeira Refratária Samba Média Branco - 2,1 l",
-  brand: "Cookware",
-  unitPrice: 94.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207235/Travessas_Refratarias_Samba_M_21L_Branco.webp?v=639222292561700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-media-branco-2-1-l/p",
-  popularity: 736
- },
- {
-  sku: "oxford-60608344",
-  name: "Assadeira Refratária Tango Mini Marrom – 350 ml",
-  brand: "Cookware",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207263/Refratarias_PP_marrom-otimizada.webp?v=639222291413970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-mini-marrom-350-ml/p",
-  popularity: 737
- },
- {
-  sku: "oxford-60608339",
-  name: "Assadeira Refratária Samba Pequena Branco - 1,2 l",
-  brand: "Cookware",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207231/Travessas_Refratarias_Samba_-P_12L_Branco.webp?v=639222287531500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-pequena-branco-1-2-l/p",
-  popularity: 738
- },
- {
-  sku: "oxford-60608335",
-  name: "Panela Corpo Triplo Indução The Cook 20cm",
-  brand: "Cookware",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206716/TheCook_Panela_20cm_5-otimizada.webp?v=639216382901770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-corpo-triplo-inducao-the-cook-20cm/p",
-  popularity: 739
- },
- {
-  sku: "oxford-60608334",
-  name: "Panela Corpo Triplo Indução The Cook 22cm",
-  brand: "Cookware",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206696/TheCook_Panela_22cm_6-otimizada.webp?v=639216382057330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-corpo-triplo-inducao-the-cook-22cm/p",
-  popularity: 740
- },
- {
-  sku: "oxford-60608333",
-  name: "Frigideira Antiaderente Corpo Triplo Indução The Cook 22 cm",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206733/TheCook_Frigideira_22cm_3-otimizada.webp?v=639216383583170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-antiaderente-corpo-triplo-inducao-the-cook-22-cm/p",
-  popularity: 741
- },
- {
-  sku: "oxford-60608332",
-  name: "Caçarola Corpo Triplo Indução The Cook 22 cm",
-  brand: "Cookware",
-  unitPrice: 429.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206743/TheCook_Cacarola_22cm_2-otimizada.webp?v=639216384124700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-22-cm-/p",
-  popularity: 742
- },
- {
-  sku: "oxford-60608331",
-  name: "Frigideira Corpo Triplo Indução The Cook 30 cm",
-  brand: "Cookware",
-  unitPrice: 419.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206726/TheCook_Frigideira_30cm_4-otimizada.webp?v=639216383208030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-corpo-triplo-inducao-the-cook-30-cm/p",
-  popularity: 743
- },
- {
-  sku: "oxford-60608326",
-  name: "Caçarola Corpo Triplo Indução The Cook 24 cm",
-  brand: "Cookware",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206753/TheCook_Cacarola_24cm_2-otimizada.webp?v=639216384407730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-24-cm/p",
-  popularity: 744
- },
- {
-  sku: "oxford-60608324",
-  name: "Jogo Lanche e Chá 12 peças Unni Stripes and Dots",
-  brand: "Cerâmicas",
-  unitPrice: 252,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206464/12-pecas-stripes-and-dots-otimizada.jpg?v=639210090001500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-12-pecas-unni-stripes-and-dots/p",
-  popularity: 745
- },
- {
-  sku: "oxford-60608323",
-  name: "Jogo de 12 Pratos Sobremesa 20 Cm Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 318,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206457/12-pratos-sobremesa-stripes-and-dots.jpg?v=639210084717370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-stripes-and-dots/p",
-  popularity: 746
- },
- {
-  sku: "oxford-60608322",
-  name: "Jogo de 12 Pratos Rasos 26 Cm Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 398,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206451/12-pratos-rasos-stripes-and-dots-otimizada.jpg?v=639210156288370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-unni-stripes-and-dots/p",
-  popularity: 747
- },
- {
-  sku: "oxford-60608321",
-  name: "Jogo de 12 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 358,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206444/12-fundos-stripes-and-dots.jpg?v=639210067585470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-unni-stripes-and-dots/p",
-  popularity: 748
- },
- {
-  sku: "oxford-60608319",
-  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 144,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206421/4-xicaras-stripes-and-dots.jpg?v=639209489733970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-unni-stripes-and-dots/p",
-  popularity: 749
- },
- {
-  sku: "oxford-60608317",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 144,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206408/4-rasos-stripes-and-dots-otimizada.jpg?v=639209391347270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-stripes-and-dots/p",
-  popularity: 750
- },
- {
-  sku: "oxford-60608316",
-  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 120,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206401/4 fundos stripes and dots-otimizada.jpg?v=639209327183600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-stripes-and-dots/p",
-  popularity: 751
- },
- {
-  sku: "oxford-60608315",
-  name: "Jogo de 12 Pratos Sobremesa 20 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 318,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206394/12 sobremesa balance.jpg?v=639209315477470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-unni-balance/p",
-  popularity: 752
- },
- {
-  sku: "oxford-60608314",
-  name: "Jogo de 12 Pratos Rasos 26 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 398,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206388/12 rasos balance-otimizada.jpg?v=639209309737330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-unni-balance/p",
-  popularity: 753
- },
- {
-  sku: "oxford-60608313",
-  name: "Jogo de 12 Pratos Fundos 20,5 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 355,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206381/12-fundos-balance-otimizada.jpg?v=639209270927730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-unni-balance/p",
-  popularity: 754
- },
- {
-  sku: "oxford-60608312",
-  name: "Jogo Lanche e Chá 18 peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 375,
-  unit: "un",
-  category: "conjuntos de cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206373/Cha-lanche-balance-otimizada.jpg?v=639209262943530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-18-pecas-unni-balance/p",
-  popularity: 755
- },
- {
-  sku: "oxford-60608311",
-  name: "Aparelho De Jantar 18 Peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 555,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206360/18-pecas-balance-otimizada.jpg?v=639210099260370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-balance/p",
-  popularity: 756
- },
- {
-  sku: "oxford-60608310",
-  name: "Aparelho de Jantar e Chá 10 Peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 258,
-  unit: "un",
-  category: "aparelhos de jantar 10 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206344/E-commerce_5949_Balance_Conjunto.jpg?v=639209241539600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-10-pecas-unni-balance/p",
-  popularity: 757
- },
- {
-  sku: "oxford-60608309",
-  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 144,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206341/4-xicaras-balance-otimizada.jpg?v=639210098143600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-unni-balance/p",
-  popularity: 758
- },
- {
-  sku: "oxford-60608308",
-  name: "Jogo de 4 Pratos Sobremesa 20 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 108,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206335/4 sobremesa balance-otimizada.jpg?v=639209230650300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-unni-balance/p",
-  popularity: 759
- },
- {
-  sku: "oxford-60608307",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 144,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206329/Design sem nome -47--otimizada.jpg?v=639209227742600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-balance/p",
-  popularity: 760
- },
- {
-  sku: "oxford-60608306",
-  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 120,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206322/4 fundos balance.png?v=639209224056770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-balance/p",
-  popularity: 761
- },
- {
-  sku: "oxford-60608304",
-  name: "Jogo Lanche De 8 Peças Oxford Ryo Maresia",
-  brand: "Cerâmicas",
-  unitPrice: 241,
-  unit: "un",
-  category: "conjuntos de cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209340/4-xicaras-maresia--1--otimizada.jpg?v=639258582343970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-oxford-ryo-maresia/p",
-  popularity: 762
- },
- {
-  sku: "oxford-60608303",
-  name: "Jogo de 4 Xícaras Grandes 220 Ml Com Pires Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 153,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206296/4-xicaras-maresia-otimizada.jpg?v=639208382701930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-220-ml-com-pires-ryo-maresia/p",
-  popularity: 763
- },
- {
-  sku: "oxford-60608297",
-  name: "Jogo de 12 Pratos Sobremesa 20 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 339,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206247/12-rasos-chuvisco-otimizada--1-.webp?v=639208334317630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-flat-chuvisco/p",
-  popularity: 764
- },
- {
-  sku: "oxford-60608295",
-  name: "Jogo de 12 Pratos Fundos 20,5 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 399,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207549/12-pratos-fundos-chuvisco-otimizada.webp?v=639227465391800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-flat-chuvisco/p",
-  popularity: 765
- },
- {
-  sku: "oxford-60608292",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 161,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206195/standard_resolution---2026-07-24T160041.570.jpg?v=639207770107300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-flat-chuvisco/p",
-  popularity: 766
- },
- {
-  sku: "oxford-60608291",
-  name: "Jogo de 4 Pratos Fundos 20,5 Cm Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 131,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206185/standard_resolution---2026-07-24T154505.877.jpg?v=639207778700630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-flat-chuvisco/p",
-  popularity: 767
- },
- {
-  sku: "oxford-60608288",
-  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Donna Cena Inglesa",
-  brand: "Biona",
-  unitPrice: 119,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206171/standard_resolution---2026-07-24T150829.871.jpg?v=639205136283230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-donna-cena-inglesa/p",
-  popularity: 768
- },
- {
-  sku: "oxford-60608280",
-  name: "Jogo de 4 Pratos Fundos 23 Cm Mendi Malaquita",
-  brand: "Cerâmicas",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206095/standard_resolution---2026-07-23T115006.210.jpg?v=639204198682630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-23-cm-mendi-malaquita/p",
-  popularity: 769
- },
- {
-  sku: "oxford-60608276",
-  name: "Aparelho de Jantar e Chá 10 Peças Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 320,
-  unit: "un",
   category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205482/E-commerce_5950_Strips_an_dots_Conjunto.jpg?v=639197374379100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-10-pecas-unni-stripes-and-dots/p",
-  popularity: 770
- },
- {
-  sku: "oxford-60608270",
-  name: "Aparelho de Jantar e Chá 40 Peças Unni Stripes And Dots",
-  brand: "Cerâmicas",
-  unitPrice: 999,
-  unit: "un",
-  category: "aparelhos de jantar outras composicoes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205391/E-commerce_5950_Strips_an_dots_Conjunto.jpg?v=639196551707200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-unni-stripes-and-dots/p",
-  popularity: 771
- },
- {
-  sku: "oxford-60608265",
-  name: "Jogo de 4 Pratos Rasos 26 Cm Donna Colb",
-  brand: "Biona",
-  unitPrice: 101,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205354/standard_resolution---2026-07-14T145002.081.jpg?v=639196482945700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-donna-colb/p",
-  popularity: 772
- },
- {
-  sku: "oxford-60608263",
-  name: "Jogo Lanche de 8 Peças Flat Gray",
-  brand: "Cerâmicas",
-  unitPrice: 290,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205335/standard_resolution - 2026-07-14T141545.302.jpg?v=639196463742200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-flat-gray/p",
-  popularity: 773
- },
- {
-  sku: "oxford-60608262",
-  name: "Jogo Lanche 8 Peças Flat Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 229,
-  unit: "un",
-  category: "servir lanche",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205328/standard_resolution---2026-07-14T133834.329.jpg?v=639196443870330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-8-pecas-flat-samambaia/p",
-  popularity: 774
- },
- {
-  sku: "oxford-60608260",
-  name: "Conjunto para Massa 10 Peças",
-  brand: "Cerâmicas",
-  unitPrice: 338,
-  unit: "un",
-  category: "servir tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205979/churrasco---churrasqueiro--2-.png?v=639202562215900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-para-massa-10-pecas/p",
-  popularity: 775
- },
- {
-  sku: "oxford-60608259",
-  name: "Jogo de 4 Pratos Fundos 20,5 cm Massa",
-  brand: "Cerâmicas",
-  unitPrice: 99,
-  unit: "un",
-  category: "servir tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205313/standard_resolution---2026-07-14T113632.098.jpg?v=639196366460530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-massa/p",
-  popularity: 776
- },
- {
-  sku: "oxford-60608258",
-  name: "Jogo Lanche e Chá 18 peças Unni Stripes and Dots",
-  brand: "Cerâmicas",
-  unitPrice: 359,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205306/18-PECAS-STRIPES-AND-DOTS.png?v=639196361445170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-18-pecas-unni-stripes-and-dots/p",
-  popularity: 777
- },
- {
-  sku: "oxford-60608257",
-  name: "Jogo de 3 Tigelas Flat 600 Ml Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 98,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205298/standard_resolution - 2026-07-14T111441.680.jpg?v=639196353353830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-tigelas-flat-600-ml-samambaia/p",
-  popularity: 778
- },
- {
-  sku: "oxford-60608247",
-  name: "Jogo Completo 15 peças Oxford Ryo Maresia",
-  brand: "Oxford Porcelanas",
-  unitPrice: 505.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209327/standard_resolution---2026-07-09T082155.138.jpg?v=639258582152430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-completo-15-pecas-oxford--ryo-maresia/p",
-  popularity: 779
- },
- {
-  sku: "oxford-60608241",
-  name: "Aparelho de Jantar e Chá 40 Peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 999,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204662/E-commerce_5949_Balance_Conjunto.jpg?v=639186953352700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-unni-balance/p",
-  popularity: 780
- },
- {
-  sku: "oxford-60608236",
-  name: "Jogo Lanche 3 Peças Flat Chuvisco Jogo Lanche 3 Peças Oxford Flat Chuvisco",
-  brand: "Cerâmicas",
-  unitPrice: 85.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204629/Design-sem-nome---2026-07-02T152239.530.png?v=639186134462230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-3-pecas-flat-chuvisco/p",
-  popularity: 781
- },
- {
-  sku: "oxford-60608233",
-  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Seda",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205401/Oxford_4_0012_Oxford_Prato_Raso_Seda-otimizada.webp?v=639197154878470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-luna-seda/p",
-  popularity: 782
- },
- {
-  sku: "oxford-60608223",
-  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Corfu",
-  brand: "Cerâmicas",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205406/Oxford_4_0007_Oxford_Prato_Sobremesa_Corfu-otimizada.webp?v=639197160585900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-cm-luna-corfu/p",
-  popularity: 783
- },
- {
-  sku: "oxford-60608221",
-  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Sand",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205429/Oxford_4_0005_Oxford_Prato_Fundo_Sand-otimizada.webp?v=639197174984770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-cm-luna-sand/p",
-  popularity: 784
- },
- {
-  sku: "oxford-60608220",
-  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Vanilla",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204953/Oxford_4_0014_Oxford_Prato_Fundo_Vanilla.jpg?v=639191302685870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-luna-vanilla/p",
-  popularity: 785
- },
- {
-  sku: "oxford-60608218",
-  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Seda",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205156/Oxford_4_0011_Oxford_Prato_Fundo_Seda.jpg?v=639192168635200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-luna-seda/p",
-  popularity: 786
- },
- {
-  sku: "oxford-60608215",
-  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Sand",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204794/Oxford_4_0006_Oxford_Prato_Raso_Sand-otimizada.webp?v=639187030691130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-cm-luna-sand/p",
-  popularity: 787
- },
- {
-  sku: "oxford-60608214",
-  name: "Aparelho De Jantar E Lanche 16 Peças Luna Sand - Caneca 360 ml",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205232/Oxford_0000_7103-Luna-Sand-Conjunto-16-pecas-otimizada.webp?v=639192207889470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-lanche-16-pecas-luna-sand/p",
-  popularity: 788
- },
- {
-  sku: "oxford-60608212",
-  name: "Aparelho De Jantar E Lanche 16 Peças Luna Seda - Caneca 360 ml",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205163/Oxford_0003_7100-Luna-Seda-Conjunto-16-pecas-otimizada.webp?v=639192168875500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-seda/p",
-  popularity: 789
- },
- {
-  sku: "oxford-60608207",
-  name: "Jogo de Lanche e Chá 18 peças Unni Tropicano",
-  brand: "Cerâmicas",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204090/standard_resolution---2026-06-12T141604.693.jpg?v=639168817919400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-e-cha-18-pecas-unni-tropicano/p",
-  popularity: 790
- },
- {
-  sku: "oxford-60608206",
-  name: "Aparelho de Jantar 18 peças Unni Tropicano",
-  brand: "Cerâmicas",
-  unitPrice: 529.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204069/standard_resolution---2026-06-12T140013.919.jpg?v=639247247655230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-tropicano/p",
-  popularity: 791
- },
- {
-  sku: "oxford-60608201",
-  name: "Conjunto Refeição Infantil 5 Peças Me Lhama",
-  brand: "Oxford",
-  unitPrice: 81.9,
-  unit: "un",
-  category: "servir infantil",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203584/Completo.png?v=639156610575970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-5-pecas-me-lhama/p",
-  popularity: 792
- },
- {
-  sku: "oxford-60608191",
-  name: "Jogo de 3 Potes Herméticos Cristal (PP+PET) Retangular White",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202703/potes-hermeticos-em-acrilico-white-media.jpg?v=639107563033900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-potes-hermeticos-cristal-retangular-white/p",
-  popularity: 793
- },
- {
-  sku: "oxford-60608190",
-  name: "Jogo de 3 Potes Herméticos Cristal (PP+PET) Retangular Grey",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202693/potes-hermeticos-em-acrilico-grey-media.jpg?v=639107549899670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-potes-hermeticos-de-cristal-retangular-grey/p",
-  popularity: 794
- },
- {
-  sku: "oxford-60608189",
-  name: "Jogo de 4 Potes Herméticos de Vidro Retrô com Tampa de Bambu Pote Hermético de Vidro Retrô 1,6 L com tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202685/potes-retro.jpg?v=639177232876300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-potes-hermeticos-de-vidro-retro-com-tampa-de-bambu/p",
-  popularity: 795
- },
- {
-  sku: "oxford-60608188",
-  name: "Jogo de 4 Potes Bahia de Vidro Borosilicato Com Tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 169.6,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202672/potes-redondos-bahia-media.jpg?v=639107497279200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-potes-bahia-de-vidro-borosilicato-com-tampa-de-bambu/p",
-  popularity: 796
- },
- {
-  sku: "oxford-60608185",
-  name: "Jogo de 18 Taças de Cristal Dandy",
-  brand: "Alumina Crystal",
-  unitPrice: 1009.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202627/Jogo de 18 Tacas de Cristal Dandy.jpg?v=639107437691630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-dandy/p",
-  popularity: 797
- },
- {
-  sku: "oxford-60608182",
-  name: "Jogo de 24 Taças de Cristal Flavour",
-  brand: "Alumina Crystal",
-  unitPrice: 1309.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202561/Jogo-de-24-Tacas-de-Cristal-Flavour.jpg?v=639107365676170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-24-tacas-de-cristal-flavour/p",
-  popularity: 798
- },
- {
-  sku: "oxford-60608167",
-  name: "Jogo de 12 Pratos Sobremesa 20x20 Cm Quartier White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "pratos quadrados",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202016/quartier-white-12-sobremesa--1-.jpg?v=639088445590800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20x20-cm-quartier-white-1/p",
-  popularity: 799
- },
- {
-  sku: "oxford-60608159",
-  name: "Jogo de 12 Xícaras Pequenas 65 Ml Com Pires Plateau White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "conjuntos de cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201977/12-xicaras-de-cafe-plateau.jpg?v=639088417733530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-xicaras-pequenas-65-ml-com-pires-plateau-white-1/p",
-  popularity: 800
- },
- {
-  sku: "oxford-60608158",
-  name: "Jogo de 6 Xícaras Pequenas 65 Ml Com Pires Plateau White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "conjuntos de cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201972/plateau-6-cafezinho.jpg?v=639088443722470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-pequenas-65-ml-com-pires-plateau-white-1/p",
-  popularity: 801
- },
- {
-  sku: "oxford-60608157",
-  name: "Kit Petisqueira Oxford 28 Cm + 6 Taças de Cristal para Cerveja 460 ml",
-  brand: "Oxford Porcelanas",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "servir petisqueiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206012/Kit-petisqueira---tacas.jpg?v=639203237491400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-petisqueira-oxford-28-cm-6-tacas-de-cristal-para-cerveja-460-ml-1/p",
-  popularity: 802
- },
- {
-  sku: "oxford-60608154",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Maré",
-  brand: "Cerâmicas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201372/Ecommerce_Conj_6_0002_Unni_Mare_Xicara_de_Cha_com_Pires.jpg?v=639062516526970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-mare-1/p",
-  popularity: 803
- },
- {
-  sku: "oxford-60608140",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Belle Rosé",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202894/Ecommerce_Conj_6_0004_Flat_Belle_Rose_Prato_Fundo_Top.jpg?v=639118677473630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-flat-belle-rose-1/p",
-  popularity: 804
- },
- {
-  sku: "oxford-60608139",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Belle Rosé",
-  brand: "Cerâmicas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202902/Ecommerce_Conj_6_0005_Flat_Belle_Rose_Prato_Raso.jpg?v=639118678021370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-belle-rose-1/p",
-  popularity: 805
- },
- {
-  sku: "oxford-60608137",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Belle Bleu",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202815/Ecommerce_Conj_6_0006_Flat_Belle_Bleu_Prato_Sobremesa.jpg?v=639118659621430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-belle-bleu-1/p",
-  popularity: 806
- },
- {
-  sku: "oxford-60607935",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199820/Ecommerce_0061_Unni-Nuray_Conjunto.jpg?v=639052084275200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-unni-nuray/p",
-  popularity: 807
- },
- {
-  sku: "oxford-60608051",
-  name: "Caneco de Vidro para Chopp Prost 460ml",
-  brand: "Biona",
-  unitPrice: 17.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200923/Sublimacao-1000-x-1000-Caneco_transparente.png?v=639056590317300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneco-chopp-prost-460-ml-1/p",
-  popularity: 808
- },
- {
-  sku: "oxford-60608034",
-  name: "Jogo de 4 Taças de Cristal Para Grappa 100 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205762/4-Tacas-Grappa.jpg?v=639199096786330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-grappa-100-ml-classic/p",
-  popularity: 809
- },
- {
-  sku: "oxford-60608031",
-  name: "Jogo de 4 Copos de Cristal Para Cachaça 70 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207374/4-Copos-de-Cristal-Para-Cachaca-70-Ml-Classic.jpg?v=639227426001770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-copos-de-cristal-para-cachaca-70-ml-classic/p",
-  popularity: 810
- },
- {
-  sku: "oxford-60608024",
-  name: "Jogo de 6 Copos de Cristal 300 Ml Flat Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207418/933833853C41F575FFD6A3944935B0C6_82efdfdc-f398-4ed9-8c0d-0321d69657b8_Flat_Classic_Copo_300ml-02.jpg?v=639227435768100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-300-ml-flat-classic/p",
-  popularity: 811
- },
- {
-  sku: "oxford-60608023",
-  name: "Jogo de 4 Taças de Cristal Para Vinho Branco 360 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205701/4-Tacas-de-Cristal-Para-Vinho-Branco-360-Ml-Forever-Classic.png?v=639199080878000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-vinho-branco-360-ml-forever-classic/p",
-  popularity: 812
- },
- {
-  sku: "oxford-60608021",
-  name: "Jogo de 4 Taças de Cristal Para Bourgogne 720 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205685/4-Tacas-de-Cristal-Bourgogne-720-Ml-Forever-Classic.jpg?v=639199075022970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-bourgogne-720-ml-forever-classic/p",
-  popularity: 813
- },
- {
-  sku: "oxford-60608019",
-  name: "Jogo de 4 Taças de Cristal Para Chardonnay 470 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205676/4-Tacas-de-Cristal-Para-Chardonnay-470-Ml-Forever-Classic.jpg?v=639199073804300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-470-ml-ginga-classic/p",
-  popularity: 814
- },
- {
-  sku: "oxford-60608011",
-  name: "Jogo de 6 Taças de Cristal Para Vinho 510 Ml Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205745/17D71406518B56376E42CACB25C6AD28_f45c9597-00e1-41a0-a833-dade96786c91_vinho.jpg?v=639199093682600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-vinho-510-ml-petra-classic/p",
-  popularity: 815
- },
- {
-  sku: "oxford-60608010",
-  name: "Jogo de 6 Taças de Cristal Para Água 420 Ml Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 309.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205727/5C8A17B37E34CC7D9EB1D67499D71195_4f6a5bd2-8b0b-4a25-ab98-1b3cd39e6255_Agua.jpg?v=639199082592200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-agua-420-ml-petra-classic/p",
-  popularity: 816
- },
- {
-  sku: "oxford-60608009",
-  name: "Jogo de 6 Taças de Cristal Para Espumante 340 Ml Petra Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205709/B41B327192FB50CD430602A8E17EBEEE_d515bfdd-0eb9-405f-a0cc-f53d39853e0f_139223_Taca_Espumante_Petra_340ml_06.jpg?v=639199081535870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-espumante-340-ml-petra-classic/p",
-  popularity: 817
- },
- {
-  sku: "oxford-60608008",
-  name: "Caneca Mini Quartier 220 Ml Azul Nuvem",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200447/Ecommerce_0222_Caneca_Mini_Quartier_-Azul-Nuvem.jpg?v=639161041705700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-azul-nuvem/p",
-  popularity: 818
- },
- {
-  sku: "oxford-60608005",
-  name: "Caneca Mini Quartier 220 Ml Marrom Toffee",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200450/Ecommerce_0224_Caneca_Mini_Quartier_Marrom-Toffee.jpg?v=639161041812970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-marrom-toffee/p",
-  popularity: 819
- },
- {
-  sku: "oxford-60608004",
-  name: "Caneca Tulipa 330 Ml Azul Nuvem",
-  brand: "Cerâmicas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200448/Ecommerce_0170_Caneca-Tulipa-Azul-Nuvem.jpg?v=639161045754730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-330-ml-azul-nuvem/p",
-  popularity: 820
- },
- {
-  sku: "oxford-60608000",
-  name: "Tigela 300 Ml Azul Nuvem",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200445/Ecommerce_0164_Bazar-Tigela_300_ml-Azul_Nuvem.jpg?v=639052913437030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-azul-nuvem/p",
-  popularity: 821
- },
- {
-  sku: "oxford-60607993",
-  name: "Tigela 600 Ml Vermelho Canela",
-  brand: "Cerâmicas",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200443/Ecommerce_0157_Bazar-Tigelas_600_ml-Vermelho Canela.jpg?v=639052911889430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-vermelho-canela/p",
-  popularity: 822
- },
- {
-  sku: "oxford-60607979",
-  name: "Faqueiro em Aço Inox 24 Peças Fortaleza",
-  brand: "Oxford",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203858/160652_Conjunto_Fortaleza-24-pecas.jpg?v=639167906907970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-fortaleza/p",
-  popularity: 823
- },
- {
-  sku: "oxford-60607975",
-  name: "Jogo de 12 Facas de Sobremesa 18 Cm São Paulo",
-  brand: "Oxford",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202421/faca-de-sobremesa-sao-paulo.jpg?v=639101252051700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-facas-de-sobremesa-18-cm-sao-paulo/p",
-  popularity: 824
- },
- {
-  sku: "oxford-60607973",
-  name: "Faqueiro em Aço Inox 30 Peças Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203942/160663-faqueiro-30-pecas-ouro-preto-media.jpg?v=639167994375470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-ouro-preto/p",
-  popularity: 825
- },
- {
-  sku: "oxford-60607968",
-  name: "Faqueiro em Aço Inox 24 Peças Olinda",
-  brand: "Oxford",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203000/Olinda-24.jpg?v=639135187807500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-olinda/p",
-  popularity: 826
- },
- {
-  sku: "oxford-60607967",
-  name: "Jogo de 12 Facas de Sobremesa 16,8 Cm Olinda",
-  brand: "Oxford",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201062/Olinda---Faca-de-sobremesa-x-12.jpg?v=639057322744700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-facas-de-sobremesa-168-cm-olinda/p",
-  popularity: 827
- },
- {
-  sku: "oxford-60607962",
-  name: "Jogo de 6 Colheres de Chá 13,5 Cm Slim",
-  brand: "Biona",
-  unitPrice: 23.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200627/Slim---colher-de-cha-x-6.png?v=639053136422700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cha-135-cm-slim/p",
-  popularity: 828
- },
- {
-  sku: "oxford-60607960",
-  name: "Jogo de 6 Colheres de Mesa 19,5 Cm Slim",
-  brand: "Biona",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200621/Slim---colher-de-mesa-x-6.jpg?v=639056298704930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-mesa-195-cm-slim/p",
-  popularity: 829
- },
- {
-  sku: "oxford-60607956",
-  name: "Jogo de 6 Facas de Carne 22,5 Cm Slim",
-  brand: "Biona",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200613/Slim---Faca-de-carne.jpg?v=639056296767200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-carne-225-cm-slim/p",
-  popularity: 830
- },
- {
-  sku: "oxford-60607955",
-  name: "Jogo de 6 Facas de Mesa 22,5 Cm Slim",
-  brand: "Biona",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200611/Slim---Faca-de-mesa.jpg?v=639056296418200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-mesa-225-cm-slim/p",
-  popularity: 831
- },
- {
-  sku: "oxford-60607950",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200001/Ecommerce_0054_Unni-Solara_Conjunto.jpg?v=639052207059970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-unni-solara/p",
-  popularity: 832
- },
- {
-  sku: "oxford-60607948",
-  name: "Aparelho de Jantar 18 Peças Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199989/Ecommerce_0053_Unni-Solara-Conjunto_18_Pecas.jpg?v=639052205933470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-solara/p",
-  popularity: 833
- },
- {
-  sku: "oxford-60607946",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200030/Ecommerce_Conj_6__0032_Unni_Solara_Prato_Sobremesa.jpg?v=639052209527270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-solara/p",
-  popularity: 834
- },
- {
-  sku: "oxford-60607945",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Solara",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200024/Ecommerce_Conj_6__0033_Unni_Solara_Prato_Fundo.jpg?v=639052208771070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-unni-solara/p",
-  popularity: 835
- },
- {
-  sku: "oxford-60607940",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Lira",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200082/Ecommerce_Conj_6__0010_Unni_Lira_Xicara_de_Cha_com_Pires.jpg?v=639052213824000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-lira/p",
-  popularity: 836
- },
- {
-  sku: "oxford-60607934",
-  name: "Aparelho de Jantar 18 Peças Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199834/Ecommerce_0060_Unni-Nuray_Conjunto_18_Pecas.jpg?v=639052085304270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-nuray/p",
-  popularity: 837
- },
- {
-  sku: "oxford-60607931",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199948/Ecommerce_Conj_6__0069_Unni_Nuray_Prato_Fundo.jpg?v=639052195372000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-unni-nuray/p",
-  popularity: 838
- },
- {
-  sku: "oxford-60607930",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Nuray",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199941/Ecommerce_Conj_6__0070_Unni_Nuray_Prato_Raso.jpg?v=639052195037730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-nuray/p",
-  popularity: 839
- },
- {
-  sku: "oxford-60607929",
-  name: "Aparelho de Jantar e Chá 30 peças Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199742/Ecommerce_0089_Flat-Galata_Conjunto.jpg?v=639052065681270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-flat-galata/p",
-  popularity: 840
- },
- {
-  sku: "oxford-60607928",
-  name: "Aparelho de Jantar e Chá 20 Peças Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199754/Ecommerce_0089_Flat-Galata_Conjunto.jpg?v=639052068309170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-galata/p",
-  popularity: 841
- },
- {
-  sku: "oxford-60607927",
-  name: "Aparelho de Jantar 18 Peças Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 579.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199766/Ecommerce_0088_Flat-Galata_Conjunto_18_Pecas.jpg?v=639052069384070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-galata/p",
-  popularity: 842
- },
- {
-  sku: "oxford-60607926",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200116/Ecommerce_Conj_6__0003_Flat_Galata_Xicara_de_Cha_com_Pires.jpg?v=639052217203500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-galata/p",
-  popularity: 843
- },
- {
-  sku: "oxford-60607925",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200109/Ecommerce_Conj_6__0051_Flat_Galata_Prato_Fundo_Top.jpg?v=639052216931370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-galata/p",
-  popularity: 844
- },
- {
-  sku: "oxford-60607924",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200102/Ecommerce_Conj_6__0051_Flat_Galata_Prato_Fundo_Top.jpg?v=639052215898570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-galata/p",
-  popularity: 845
- },
- {
-  sku: "oxford-60607923",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Gálata",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200096/Ecommerce_Conj_6__0052_Flat_Galata_Prato_Raso.jpg?v=639052215643970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-galata/p",
-  popularity: 846
- },
- {
-  sku: "oxford-60607915",
-  name: "Aparelho de Jantar e Chá 30 Peças Flat Sevilha",
-  brand: "Cerâmicas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200230/Ecommerce_0075_Flat-Sevilha_Conjunto.jpg?v=639052225193500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-flat-sevilha/p",
-  popularity: 847
- },
- {
-  sku: "oxford-60607913",
-  name: "Aparelho de Jantar 18 Peças Flat Sevilha",
-  brand: "Cerâmicas",
-  unitPrice: 579.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200243/Ecommerce_0074_Flat-Sevilha_Conjunto_18_Pecas.jpg?v=639052225644570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-sevilha/p",
-  popularity: 848
- },
- {
-  sku: "oxford-60607910",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Sevilha",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200213/Ecommerce_Conj_6__0045_Flat_Sevilha_Prato_Fundo_Top.jpg?v=639052224400330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-sevilha/p",
-  popularity: 849
- },
- {
-  sku: "oxford-60607907",
-  name: "Aparelho de Jantar e Chá 20 peças - Flat Atlas",
-  brand: "Cerâmicas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200282/Ecommerce_0096_Flat-Atlas_Conjunto.jpg?v=639052229316370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-atlas/p",
-  popularity: 850
- },
- {
-  sku: "oxford-60607905",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Atlas",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200330/Ecommerce_Conj_6__0004_Flat_Atlas_Xicara_de_Cha_com_Pires.jpg?v=639052235464770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-atlas/p",
-  popularity: 851
- },
- {
-  sku: "oxford-60607903",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Atlas",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200316/Ecommerce_Conj_6__0054_Flat_Atlas_Prato_Fundo_Top.jpg?v=639052233520470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-atlas/p",
-  popularity: 852
- },
- {
-  sku: "oxford-60607900",
-  name: "Jogo de 6 Canecas 360 Ml Luna Caviar",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203015/Luna-caviar.jpg?v=639136016465300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-caviar/p",
-  popularity: 853
- },
- {
-  sku: "oxford-60607895",
-  name: "Aparelho de Jantar e Lanche 12 peças - Luna Sand",
-  brand: "Cerâmicas",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205241/Ecommerce_0004_Luna_Sand_Conjunto_12_Pecas.jpg?v=639192208107130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-sand/p",
-  popularity: 854
- },
- {
-  sku: "oxford-60607893",
-  name: "Aparelho de Jantar e Lanche 12 peças - Luna Vanilla",
-  brand: "Cerâmicas",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204971/Ecommerce_0006_Luna_Vanilla_Conjunto_12_Pecas.jpg?v=639191304680500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-vanilla/p",
-  popularity: 855
- },
- {
-  sku: "oxford-60607891",
-  name: "Aparelho de Jantar e Lanche 12 peças - Luna Corfu",
-  brand: "Cerâmicas",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205412/Ecommerce_0005_Luna_Corfu_Conjunto_12_Pecas.jpg?v=639197165216470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-corfu/p",
-  popularity: 856
- },
- {
-  sku: "oxford-60607889",
-  name: "Aparelho de Jantar e Lanche 12 Peças - Luna Seda",
-  brand: "Cerâmicas",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205184/Ecommerce_0007_Luna_Seda_Conjunto_12_Pecas.jpg?v=639192174667470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-seda/p",
-  popularity: 857
- },
- {
-  sku: "oxford-60607888",
-  name: "Jogo de 6 Canecas 360 Ml Flora Amor Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201462/flora-amor-perfeito.jpg?v=639070070812070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-amor-perfeito/p",
-  popularity: 858
- },
- {
-  sku: "oxford-60607887",
-  name: "Jogo de 6 Canecas 360 Ml Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201468/flora-aster.jpg?v=639070072143970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-aster/p",
-  popularity: 859
- },
- {
-  sku: "oxford-60607886",
-  name: "Jogo de 6 Canecas 360 Ml Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200465/flora-dalia.jpg?v=639070071945530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-dalia/p",
-  popularity: 860
- },
- {
-  sku: "oxford-60607838",
-  name: "Aparelho de Jantar e Lanche 12pcs Donna Lírios",
-  brand: "Biona",
-  unitPrice: 199,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198812/Donna-Lirios.jpg?v=638966704771670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-lirios/p",
-  popularity: 861
- },
- {
-  sku: "oxford-60607835",
-  name: "Aparelho de Jantar e Lanche 12pcs Donna Sossego",
-  brand: "Biona",
-  unitPrice: 199,
-  unit: "un",
-  category: "aparelhos de jantar 12 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198804/Donna-Sossego.jpg?v=638963229928230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-sossego/p",
-  popularity: 862
- },
- {
-  sku: "oxford-60607834",
-  name: "Caneca Flat 350ml Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 24.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199518/Ecommerce_Nisa_Caneca-verde.jpg?v=639050533742670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-flat-350ml-flat-nisa/p",
-  popularity: 863
- },
- {
-  sku: "oxford-60607822",
-  name: "Conjunto 4 Canecas Mini Quartier 220 ml Protetores da Amazônia",
-  brand: "Cerâmicas",
-  unitPrice: 158.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198354/Canecas-mini-quartier-amazonia.png?v=638930439037730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-canecas-mini-quartier-220-ml-protetores-da-amazonia/p",
-  popularity: 864
- },
- {
-  sku: "oxford-60607803",
-  name: "Jogo de Panelas Antiaderentes para Indução 5 peças Everyday Ice",
-  brand: "Cookware",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "panelas jogos de panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207075/Extranet_Everyday-Ice_Conjunto_5_Pecas.jpg?v=639221581207170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-de-panelas-everyday-5pcs-everyday-ice/p",
-  popularity: 865
- },
- {
-  sku: "oxford-60607802",
-  name: "Jogo de 6 Xícaras de Chá 200 Ml com pires Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198071/Conj_6_Nisa_Xicara-com-Pires.jpg?v=638926875794130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-xicaras-cha-jogo/p",
-  popularity: 866
- },
- {
-  sku: "oxford-60607801",
-  name: "Jogo de 6 Xícaras de Chá 200 ml com Pires Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198183/Conj_6_Caminho_da_Selva_Xicara-com-Pires.jpg?v=638926885450870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-xicaras-unni-selva/p",
-  popularity: 867
- },
- {
-  sku: "oxford-60607799",
-  name: "Jogo de 6 Pratos de Sobremesa 20 cm Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198076/Conj_6_Nisa_Sobremesa.jpg?v=638926875940430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-sobremesa-nisa/p",
-  popularity: 868
- },
- {
-  sku: "oxford-60607798",
-  name: "Jogo de 6 Pratos de Sobremesa 20 cm Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198177/Conj_6_Caminho_da_Selva_Sobremesa.jpg?v=638926883283330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-sobremesa-unni-selva/p",
-  popularity: 869
- },
- {
-  sku: "oxford-60607796",
-  name: "Jogo de 6 Pratos Rasos 26 cm Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198082/Conj_6_Nisa_Raso.jpg?v=638926876354770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-rasos-nisa/p",
-  popularity: 870
- },
- {
-  sku: "oxford-60607794",
-  name: "Jogo de 6 Pratos Rasos 26 cm Unni Boho",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198031/Conj_6_Boho_Raso.jpg?v=638926873135200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-rasos-unni-boho/p",
-  popularity: 871
- },
- {
-  sku: "oxford-60607793",
-  name: "Jogo de 6 Pratos Fundos 20,5 cm Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198089/Conj_6_Nisa_Fundo.jpg?v=638926876515370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-fundos-nisa/p",
-  popularity: 872
- },
- {
-  sku: "oxford-60607792",
-  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198155/Conj_6_Caminho_da_Selva_Fundo.jpg?v=638926881106400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-fundos-unni-selva/p",
-  popularity: 873
- },
- {
-  sku: "oxford-60607790",
-  name: "Caneca Tulipa 330 ml - Tucano da Amazônia",
-  brand: "Cerâmicas",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198212/Ecommerce_SOS_Amazonia_Tucano_Da_Amazonia_Esquerda.jpg?v=638930225786130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-tucano/p",
-  popularity: 874
- },
- {
-  sku: "oxford-60607789",
-  name: "Caneca Tulipa 330 ml - Tartaruga-da-Amazônia",
-  brand: "Cerâmicas",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198219/Ecommerce_SOS_Amazonia_Tartaruga_Da_Amazonia_Esquerda.jpg?v=638930226374170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-tartaruga/p",
-  popularity: 875
- },
- {
-  sku: "oxford-60607788",
-  name: "Caneca Tulipa 330 ml - Onça-Pintada",
-  brand: "Cerâmicas",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198254/Ecommerce_SOS_Amazonia_Onca_Pintada_Esquerda.jpg?v=638930228501000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-onca/p",
-  popularity: 876
- },
- {
-  sku: "oxford-60607787",
-  name: "Caneca Tulipa 330 ml - Boto-Cor-de-Rosa",
-  brand: "Cerâmicas",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198240/Ecommerce_SOS_Amazonia_Boto_Cor_De_Rosa_Da_Amazonia_Esquerda.jpg?v=638930227607370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-boto/p",
-  popularity: 877
- },
- {
-  sku: "oxford-60607786",
-  name: "Caneca Mini Quartier 220 ml - Tucano da Amazônia",
-  brand: "Cerâmicas",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198226/Ecommerce_SOS_Amazonina_Tucano_Esquerda.jpg?v=638930226706400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caenca-mini-quartier-tucano/p",
-  popularity: 878
- },
- {
-  sku: "oxford-60607784",
-  name: "Caneca Mini Quartier 220 ml - Onça-Pintada",
-  brand: "Cerâmicas",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198261/Ecommerce_SOS_Amazonina_Onca_Esquerda.jpg?v=638930228766430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-onca/p",
-  popularity: 879
- },
- {
-  sku: "oxford-60607783",
-  name: "Caneca Mini Quartier 220 ml - Boto-Cor-de-Rosa",
-  brand: "Cerâmicas",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198247/Ecommerce_SOS_Amazonina_Boto_Cor_De_Rosa_Esquerda.jpg?v=638930228042670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-boto/p",
-  popularity: 880
- },
- {
-  sku: "oxford-60607782",
-  name: "Aparelho de Jantar 18 peças Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 579.9,
-  unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198128/Extranet_Nisa_Conjunto_18_pecas.jpg?v=638926877393370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-18pcs/p",
-  popularity: 881
- },
- {
-  sku: "oxford-60607781",
-  name: "Aparelho de Jantar 16 peças Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 479.9,
-  unit: "un",
-  category: "aparelhos de jantar 16 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198119/Extranet_Nisa_Conjunto_16_pecas1.jpg?v=638926877220300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-16pcs/p",
-  popularity: 882
- },
- {
-  sku: "oxford-60607777",
-  name: "Aparelho de Jantar 30 peças Unni Boho",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198407/Ecommerce_Conjunto_boho.jpg?v=638931252281700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-30-pcs-unni-boho/p",
-  popularity: 883
- },
- {
-  sku: "oxford-60607776",
-  name: "Aparelho de Jantar 20 peças Flat Nisa",
-  brand: "Cerâmicas",
-  unitPrice: 539.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198095/Ecommerce_Nisa_Conjunto.jpg?v=638926876902500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-20pcs/p",
-  popularity: 884
- },
- {
-  sku: "oxford-60607775",
-  name: "Aparelho de Jantar 20 Peças Unni Caminho da Selva",
-  brand: "Cerâmicas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197809/Ecommerce_Caminho-da-Selva-Conjunto.jpg?v=638924369307330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-20-pcs-unni-selva/p",
-  popularity: 885
- },
- {
-  sku: "oxford-60607774",
-  name: "Aparelho de Jantar 20 peças Unni Boho",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198420/Ecommerce_Conjunto_boho.jpg?v=638931252520600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-20-pcs-unni-boho/p",
-  popularity: 886
- },
- {
-  sku: "oxford-60607431",
-  name: "Jogo de 6 Canecas Drop 250 Ml Roxa",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196094/6-Drop-Roxa.png?v=638894135715470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-roxo/p",
-  popularity: 887
- },
- {
-  sku: "oxford-60607430",
-  name: "Jogo de 6 Canecas Az12 330 Ml Verde",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196069/6-AZ12-Verde.png?v=638894134465370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-verde/p",
-  popularity: 888
- },
- {
-  sku: "oxford-60607426",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195998/Oxford_Ceramicas_Unni_White_Prato_Fundo-6.jpg?v=638893271432500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-20-5-cm-unni-white/p",
-  popularity: 889
- },
- {
-  sku: "oxford-60607421",
-  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil Victória",
-  brand: "Oxford Porcelanas",
-  unitPrice: 419.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195978/oxford-porcelanas-pratos-fundos-soleil-victoria-03.jpg?v=638893271024500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-24-cm-soleil-victoria/p",
-  popularity: 890
- },
- {
-  sku: "oxford-60607367",
-  name: "Jogo de 6 Tigelas Flat 600 Ml Samambaia",
-  brand: "Cerâmicas",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196168/6-Tigelas-Flat-Samambaia.png?v=639160245852600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-samambaia/p",
-  popularity: 891
- },
- {
-  sku: "oxford-60607359",
-  name: "Jogo de 6 Canecas Jumbo 740 Ml Preta",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196130/6-Canecas-Jumbo-Preta.png?v=638894138163630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-preta/p",
-  popularity: 892
- },
- {
-  sku: "oxford-60607357",
-  name: "Jogo de 6 Canecas Jumbo 740 Ml Azul",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196126/6-Canecas-Jumbo-Azul.png?v=638894137978430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-azul/p",
-  popularity: 893
- },
- {
-  sku: "oxford-60607356",
-  name: "Jogo de 6 Canecas Jumbo 740 Ml Verde",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196124/6-Canecas-Jumbo-Verde.png?v=638894137883800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-verde/p",
-  popularity: 894
- },
- {
-  sku: "oxford-60607355",
-  name: "Jogo de 6 Canecas Jumbo 740 Ml Roxo",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196122/6-Canecas-Jumbo-Roxa.png?v=638894137788800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-roxo/p",
-  popularity: 895
- },
- {
-  sku: "oxford-60607354",
-  name: "Jogo de 6 Canecas Jumbo 740ml Branca",
-  brand: "Biona",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196120/6-Canecas-Jumbo-Brancas.png?v=638894137692530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740ml-branca/p",
-  popularity: 896
- },
- {
-  sku: "oxford-60607353",
-  name: "Jogo de 6 Tigelas Cereal 600 Ml Preta",
-  brand: "Biona",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196118/6-Tigelas-Cereal-Preta.png?v=638894137595530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-preta/p",
-  popularity: 897
- },
- {
-  sku: "oxford-60607352",
-  name: "Jogo de 6 Tigelas Cereal 600 Ml Salmão",
-  brand: "Biona",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196116/6-Tigelas-Cereal--Salmao.png?v=638894137504970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-salmao/p",
-  popularity: 898
- },
- {
-  sku: "oxford-60607351",
-  name: "Jogo de 6 Tigelas Cereal 600 Ml Azul",
-  brand: "Biona",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196114/6-Tigelas-Cereal--Azul.png?v=638894137332700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-azul/p",
-  popularity: 899
- },
- {
-  sku: "oxford-60607350",
-  name: "Jogo de 6 Tigelas Cereal 600 Ml Verde",
-  brand: "Biona",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196112/6-Tigelas-Cereal--Verde.png?v=638894137102000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-verde/p",
-  popularity: 900
- },
- {
-  sku: "oxford-60607348",
-  name: "Jogo de 6 Tigelas Cereal 600 Ml Branca",
-  brand: "Biona",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196108/6-Tigelas-Cereal--Branca.png?v=638894136501870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-14cm-600ml-bowl-branca/p",
-  popularity: 901
- },
- {
-  sku: "oxford-60607345",
-  name: "Jogo de 6 Tigelas Conic 500 Ml Preto",
-  brand: "Biona",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196102/6-Tigelas-Conic-Preta.png?v=638894136223100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-conic-500-ml-preto/p",
-  popularity: 902
- },
- {
-  sku: "oxford-60607342",
-  name: "Jogo de 6 Tigelas Cônic 500ml Branca",
-  brand: "Biona",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196096/6-Tigelas-Conic-Brancas.png?v=638894135811700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-conic-500ml-branca/p",
-  popularity: 903
- },
- {
-  sku: "oxford-60607341",
-  name: "Jogo de 6 Canecas Drop 250 Ml Azul",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196092/6-Drop-Azul.png?v=638894135616900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-azul/p",
-  popularity: 904
- },
- {
-  sku: "oxford-60607339",
-  name: "Jogo de 6 Canecas Drop 250 Ml Preta",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196090/6-Drop-Preta.png?v=638894135515670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-preta/p",
-  popularity: 905
- },
- {
-  sku: "oxford-60607338",
-  name: "Jogo de 6 Canecas Drop 250 Ml Salmão",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196088/6-Drop-Salmao.png?v=638894135424400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-salmao/p",
-  popularity: 906
- },
- {
-  sku: "oxford-60607337",
-  name: "Jogo de 6 Canecas Drop 250 Ml Verde",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196086/6-Drop-Verde.png?v=638894135317300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-verde/p",
-  popularity: 907
- },
- {
-  sku: "oxford-60607336",
-  name: "Jogo de 6 Canecas Drop 250ml Branca",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196084/6-Drop-Branca.png?v=638894135216730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250ml-branca/p",
-  popularity: 908
- },
- {
-  sku: "oxford-60607335",
-  name: "Jogo de 6 Canecas Az4 100 Ml Salmão",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196082/6-AZ4-Salmao.png?v=638894135099570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-salmao/p",
-  popularity: 909
- },
- {
-  sku: "oxford-60607334",
-  name: "Jogo de 6 Canecas Az4 100 Ml Azul",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196080/6-AZ4-Azul.png?v=638894134995200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-azul/p",
-  popularity: 910
- },
- {
-  sku: "oxford-60607333",
-  name: "Jogo de 6 Canecas Az4 100 Ml Verde",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196078/6-AZ4-Verde.png?v=638894134897300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-verde/p",
-  popularity: 911
- },
- {
-  sku: "oxford-60607332",
-  name: "Jogo de 6 Canecas Az4 100 Ml Roxo",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196076/6-AZ4-Roxa.png?v=638894134795230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-roxo/p",
-  popularity: 912
- },
- {
-  sku: "oxford-60607331",
-  name: "Jogo de 6 Canecas Az4 100 Ml Preta",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196074/6-AZ4-Preta.png?v=638894134695470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-preta/p",
-  popularity: 913
- },
- {
-  sku: "oxford-60607330",
-  name: "Jogo de 6 Canecas Az4 100 Ml Branca",
-  brand: "Biona",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196072/6-AZ4-Branca.png?v=638894134588730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-branca/p",
-  popularity: 914
- },
- {
-  sku: "oxford-60607329",
-  name: "Jogo de 6 Canecas Az12 330 Ml Azul",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196066/6-AZ12-Azul.png?v=638894134352870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-azul/p",
-  popularity: 915
- },
- {
-  sku: "oxford-60607327",
-  name: "Jogo de 6 Canecas Az12 330 Ml Salmão",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196060/6-AZ12-Salmao.png?v=638894134147770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-salmao/p",
-  popularity: 916
- },
- {
-  sku: "oxford-60607326",
-  name: "Jogo de 6 Canecas Az12 330 Ml Preta",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196057/6-AZ12-Preta.png?v=638894133989670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-preta/p",
-  popularity: 917
- },
- {
-  sku: "oxford-60607325",
-  name: "Jogo de 6 Canecas Az12 330 Ml Branca",
-  brand: "Biona",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196054/6-AZ12-Branca.png?v=638894133497970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-branca/p",
-  popularity: 918
- },
- {
-  sku: "oxford-60607324",
-  name: "Kit Completo para Casa Nova - Oxford Ryo Maresia 42 Peças",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1299,
-  unit: "un",
-  category: "aparelhos de jantar 42 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195785/Kit-Completo-Casa-Nova-42-pcs.png?v=638893235770100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/kit-aparelho-de-jantar-e-cha-42-pecas-ryo-maresia-utensilios/p",
-  popularity: 919
- },
- {
-  sku: "oxford-60607319",
-  name: "Aparelho de Jantar 20 Peças Ryo Maresia + Travessa 28cm de Brinde",
-  brand: "Oxford Porcelanas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197214/Ryo_Maresia_20_30pcs-brinde-travessa-1200x1200.jpg?v=638918310925200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-20-pecas-pecas-ryo-maresia-travessa/p",
-  popularity: 920
- },
- {
-  sku: "oxford-60607313",
-  name: "Caneca Chubby 330 ml Jabuticaba",
-  brand: "Cerâmicas",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195099/151068-caneca-chubby-jabuticaba-330-ml-media.jpg?v=638858720431300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-jabuticaba-individual/p",
-  popularity: 921
- },
- {
-  sku: "oxford-60607306",
-  name: "Jogo de 6 Canecas 380 Ml Ryo Volcano",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192826/Conj_6_Ryo_Volcano_Caneca_380ml.jpg.jpg?v=638816949094930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-caneca-ryo-380-ml-volcano/p",
-  popularity: 922
- },
- {
-  sku: "oxford-60607299",
-  name: "Jogo de 6 Canecas 260 Ml Ryo Blue Bay",
-  brand: "Cerâmicas",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190201/Oxford_Porcelanas_Ryo_Blue_Bay_Caneca_Pequena.jpg?v=638815350044530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-260-ml-ryo-blue-bay1/p",
-  popularity: 923
- },
- {
-  sku: "oxford-60607262",
-  name: "Jogo de 6 Taças de Cristal Espumante 210 Ml Slim Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190237/1000-x-1000-Alumina---Slim-210-6.jpg?v=638815351950300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-espumante-210-ml-slim-classic/p",
-  popularity: 924
- },
- {
-  sku: "oxford-60607256",
-  name: "Jogo de 6 Xícaras Grandes 240 Ml Com Pires Flamingo Blue Willow",
-  brand: "Oxford Porcelanas",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190215/oxford-porcelanas-xicara-de-cha-com-pires-flamingo-blue-willow-6-pecas-02.jpg?v=638815350796600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-xicaras-grandes-240-ml-com-pires-flamingo-blue-willow1/p",
-  popularity: 925
- },
- {
-  sku: "oxford-60607254",
-  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Blue Willow",
-  brand: "Oxford Porcelanas",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189718/oxford-porcelanas-prato-raso-flamingo-blue-willow-6-pecas-02.jpg?v=638815266639130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-rasos-28-cm-flamingo-blue-willow/p",
-  popularity: 926
- },
- {
-  sku: "oxford-60607253",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Blue Willow",
-  brand: "Oxford Porcelanas",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189721/oxford-porcelanas-prato-fundo-flamingo-blue-willow-6-pecas-02.jpg?v=638815266977400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-fundos-23-5-cm-flamingo-blue-willow1/p",
-  popularity: 927
- },
- {
-  sku: "oxford-60607247",
-  name: "Jogo de 6 Taças de Cristal 360 ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190665/Forever_Classic_Taca_470ml-02.jpg?v=638815429212270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-360-ml-forever-classic/p",
-  popularity: 928
- },
- {
-  sku: "oxford-60607197",
-  name: "Assadeira Refratária Bake Pequena 22x15x5,3cm Branca",
-  brand: "Cookware",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185972/047948-refrataria-bake-pequena-1000ml-branco.jpg?v=638750477516270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-pequena/p",
-  popularity: 929
- },
- {
-  sku: "oxford-60607196",
-  name: "Assadeira Refratária Bake Media 26x18x5,6cm Branca",
-  brand: "Cookware",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185971/047945-refrataria-bake-media-1500ml-branco.jpg?v=638750477506770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-media/p",
-  popularity: 930
- },
- {
-  sku: "oxford-60607195",
-  name: "Assadeira Refratária Bake Grande 30x21x6cm Branca",
-  brand: "Cookware",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185970/047941-refrataria-bake-grande-2500ml-branco.jpg?v=638750477493370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-grande/p",
-  popularity: 931
- },
- {
-  sku: "oxford-60607186",
-  name: "Travessa Modular em Melamina 600ml 25x21,4cm Circle",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203181/Travessa_Modular_Circle-25x214cm-600ml-1.jpg?v=639154223395170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-modular-circle/p",
-  popularity: 932
- },
- {
-  sku: "oxford-60607185",
-  name: "Travessa Funda em Melamina 25,8x13,7cm Landscape",
-  brand: "Oxford",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203149/Melanina_Travessa_Funda_Landscape-258x137cm-36cm.jpg?v=639154229983400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-landscape/p",
-  popularity: 933
- },
- {
-  sku: "oxford-60607183",
-  name: "Travessa 42 cm Flora Dália Travessa Flora 42cm Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186283/2901_Flora_Dalia_Bandeja.jpg?v=638750482200470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-travessa/p",
-  popularity: 934
- },
- {
-  sku: "oxford-60607181",
-  name: "Travessa 42 cm Flora Áster Travessa Flora 42 cm Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186321/2903_Flora_Aster_Bandeja.jpg?v=638750482710970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-travessa/p",
-  popularity: 935
- },
- {
-  sku: "oxford-60607180",
-  name: "Travessa Flora 42 cm Flora Anis",
-  brand: "Oxford Porcelanas",
-  unitPrice: 195.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186302/2902_Flora_Anis_Bandeja.jpg?v=638750482456230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/anis-travessa/p",
-  popularity: 936
- },
- {
-  sku: "oxford-60607179",
-  name: "Travessa Flora 42 cm Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186340/2904_Flora_AmorPerfeito_Bandeja.jpg?v=638750483016000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-travessa/p",
-  popularity: 937
- },
- {
-  sku: "oxford-60607178",
-  name: "Assadeira Refratária Fall Retangular Rasa 41x22x6,5cm Branca",
-  brand: "Cookware",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186722/oxford-cookware-travessa-refrataria-fall-retangular-rasa-2600ml-00.jpg.jpg?v=638877722462170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-rasa-fall-2/p",
-  popularity: 938
- },
- {
-  sku: "oxford-60607176",
-  name: "Assadeira Refratária Fall Retangular Funda 45x24,5x8,5cm Branca",
-  brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187709/004669_C04I_8001_Travessa_Fall_Funda_44L.jpg.jpg?v=638877721579400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-fall-2/p",
-  popularity: 939
- },
- {
-  sku: "oxford-60607174",
-  name: "Assadeira Refratária Fall Redonda 32x8cm Branca",
-  brand: "Cookware",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186714/oxford-cookware-travessa-refrataria-fall-redonda-00.jpg.jpg?v=638877695061330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-redonda-fall/p",
-  popularity: 940
- },
- {
-  sku: "oxford-60607163",
-  name: "Tigela Ramequin 8x4cm 100ml Branco/Amarelo",
-  brand: "Cookware",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186060/0209_Ramequin_100ml_bic_amarelo.jpg?v=638750478821300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequin-amarelo/p",
-  popularity: 941
- },
- {
-  sku: "oxford-60607162",
-  name: "Tigela para Feijoada em Cerâmica Artesanal Reta 19 cm",
-  brand: "Cookware",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207652/152792_Linha_Feijoada_TigelaReta.jpg?v=639227559060170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-feijoada-reta/p",
-  popularity: 942
- },
- {
-  sku: "oxford-60607136",
-  name: "Saladeira 25,5 cm Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186297/2901_Flora_Dalia_Saladeira.jpg?v=638750482397830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-saladeira/p",
-  popularity: 943
- },
- {
-  sku: "oxford-60607134",
-  name: "Saladeira 25,5 cm Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186335/2903_Flora_Aster_Saladeira.jpg?v=638750482937400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-saladeira/p",
-  popularity: 944
- },
- {
-  sku: "oxford-60607079",
-  name: "Pote Hermético de Vidro Retrô 700 ml com tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186138/150611_Pote_Hermetico_c_Tampa_Bambu_700ml.jpg?v=638750479908070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-700ml/p",
-  popularity: 945
- },
- {
-  sku: "oxford-60607077",
-  name: "Pote Hermético de Vidro Retrô 1,6 L com tampa de Bambu",
-  brand: "Oxford",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193890/150617_Pote_Hermetico_c_Tampa_Bambu_1600ml.jpg?v=638826768258030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-16l/p",
-  popularity: 946
- },
- {
-  sku: "oxford-60607071",
-  name: "Panela de Ferro Fundido Esmaltado Wok Aroma 35 cm Verde",
-  brand: "Cookware",
-  unitPrice: 899.4,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194236/146761_Panelas_Aroma_Wok_Verde.jpg?v=638829062766930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/wok-aroma-verde/p",
-  popularity: 947
- },
- {
-  sku: "oxford-60607067",
-  name: "Panela Antiaderente para Indução 20 Cm Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206888/Panela_Everyday_Vermelho_20cm_Angulo_02.jpg?v=639221525531630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-everyday-vermelho-2/p",
-  popularity: 948
- },
- {
-  sku: "oxford-60607066",
-  name: "Panela Antiaderente para Indução 18 Cm Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206870/138736-panela-everyday-vermelho-16cm-media -7-.jpg?v=639221518284500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-everyday-vermelho/p",
-  popularity: 949
- },
- {
-  sku: "oxford-60607062",
-  name: "Jogo de 6 Xícaras de Chá Grande 240 ml com pires Flamingo Lafayette",
-  brand: "Oxford Porcelanas",
-  unitPrice: 429.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195764/151955-flamingo-lafayette-xicara-de-cha-com-pires-media.jpg.jpg?v=638888092222270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/lafayette-xicaras-cha/p",
-  popularity: 950
- },
- {
-  sku: "oxford-60607061",
-  name: "Jogo de 6 Xícaras de Chá Grande 240 ml com pires Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207531/151923-flamingo-cosmopolitan-xicara-de-cha-com-pires-media.jpg.jpg?v=639227462481300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-xicaras-cha/p",
-  popularity: 951
- },
- {
-  sku: "oxford-60607011",
-  name: "Jogo de 6 Taças de Cristal Espumante 310 ml Dandy",
-  brand: "Alumina Crystal",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192499/151830_Taca_Cristal_Espumante_Classic_Dandy_310ml.jpg.jpg?v=638816285480500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-espumante-dandy-310ml/p",
-  popularity: 952
- },
- {
-  sku: "oxford-60607010",
-  name: "Jogo de 6 Taças de Cristal Espumante 190 ml Flavour",
-  brand: "Alumina Crystal",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192605/127127_Alumina_Flavour_Taca_Espumante_190ml.jpg.jpg?v=638816328512000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-espumante-flavour/p",
-  popularity: 953
- },
- {
-  sku: "oxford-60607008",
-  name: "Jogo de 6 Taças de Cristal Bourgogne 850 ml Flavour",
-  brand: "Alumina Crystal",
-  unitPrice: 379.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192595/127126_Alumina_Flavour_Taca_Bourgogne_850ml.jpg.jpg?v=638816323917600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-bourgogne-flavour/p",
-  popularity: 954
- },
- {
-  sku: "oxford-60607005",
-  name: "Jogo de 6 Taças de Cristal Água 450 ml Flavour",
-  brand: "Alumina Crystal",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192465/127122_Alumina_Flavour_Taca_Chardonnay_Agua_450ml.jpg.jpg?v=638816276563830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tacas-agua-flavour/p",
-  popularity: 955
- },
- {
-  sku: "oxford-60606998",
-  name: "Jogo de 6 Pratos Sobremesa 22 cm Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190850/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Sobremesa.jpg.jpg?v=638815442505630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-sobremesa/p",
-  popularity: 956
- },
- {
-  sku: "oxford-60606996",
-  name: "Jogo de 6 Pratos Sobremesa 22 cm Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196490/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-sobremesa.jpg.jpg?v=638906296361100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-sobremesa/p",
-  popularity: 957
- },
- {
-  sku: "oxford-60606987",
-  name: "Jogo de 6 Pratos Rasos 28 cm Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207524/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-Raso.jpg.jpg?v=639227461683130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-rasos/p",
-  popularity: 958
- },
- {
-  sku: "oxford-60606982",
-  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190948/porcelanas-conj-6-Flora_Dalia_Prato-Raso.jpg.jpg?v=638815520404170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-pratos-rasos/p",
-  popularity: 959
- },
- {
-  sku: "oxford-60606978",
-  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 339.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190840/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Raso.jpg.jpg?v=638815441955470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-raso/p",
-  popularity: 960
- },
- {
-  sku: "oxford-60606971",
-  name: "Jogo de 6 Pratos Fundos 23,5 cm Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207536/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-Fundo.jpg.jpg?v=639227463050130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-fundos/p",
-  popularity: 961
- },
- {
-  sku: "oxford-60606961",
-  name: "Jogo de 6 Pratos Fundo 20 cm Flora Áster Jogo de 6 Pratos Fundo 20cm Flora Aster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190946/porcelanas-conj-6-Flora_Aster_Prato-Fundo.jpg.jpg?v=638815520134100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-pratos-fundo/p",
-  popularity: 962
- },
- {
-  sku: "oxford-60606959",
-  name: "Jogo de 6 Pratos Fundos 20 cm Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190856/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Fundo.jpg.jpg?v=638815442655870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-fundo/p",
-  popularity: 963
- },
- {
-  sku: "oxford-60606958",
-  name: "Jogo de 6 Potes de vidro para Condimento com tampa de Bambu - 85 ml",
-  brand: "Oxford",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192581/Conj-6-pecas-150623-porta-p-condimento-85-ml-c-tampa-de-bambu.jpg.jpg?v=638816300823930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/potes-condimento-85ml/p",
-  popularity: 964
- },
- {
-  sku: "oxford-60606951",
-  name: "Jogo de 6 Copos de Cristal para Long Drink 450 ml Ginga",
-  brand: "Alumina Crystal",
-  unitPrice: 269.9,
-  unit: "un",
-  category: "tacas e copos copos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192521/114604_Copo_Ginga_Long_Drink_450ml_G.jpg.jpg?v=638816287710330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copos-long-ginga/p",
-  popularity: 965
- },
- {
-  sku: "oxford-60606950",
-  name: "Jogo de 6 Copos de Cristal para Cerveja 336ml Classic",
-  brand: "Biona",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "tacas e copos cerveja",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192729/148328-copo-de-cerveja-336ml.jpg.jpg?v=638816391635570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/copos-cerveja-classic/p",
-  popularity: 966
- },
- {
-  sku: "oxford-60606927",
-  name: "Jogo de 4 Canecas Chubby 330 ml Tutti-Frutti",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192249/Conj-4-pecas-151076-caneca-chubby-tutti-frutti-330-ml.jpg.jpg?v=638816158874170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-tutti/p",
-  popularity: 967
- },
- {
-  sku: "oxford-60606926",
-  name: "Jogo de 4 Canecas Chubby 330 ml Menta",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192272/Conj-4-pecas-151072-caneca-chubby-menta-330-ml.jpg.jpg?v=638816159838900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-chubby-menta/p",
-  popularity: 968
- },
- {
-  sku: "oxford-60606911",
-  name: "Jogo de 12 Facas para Sobremesa 20 cm em Aço Inox Salvador",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203820/Design-sem-nome--91-.png?v=639168642135630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-salvador/p",
-  popularity: 969
- },
- {
-  sku: "oxford-60606910",
-  name: "Jogo de 12 Facas para Sobremesa 19cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202414/Conj_12_pecas_ouro_preto_Faca de Sobremesa.jpg?v=639101250517770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-ouro/p",
-  popularity: 970
- },
- {
-  sku: "oxford-60606909",
-  name: "Jogo de 12 Facas para Sobremesa 19 cm Noronha",
-  brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202402/Conj-12-pecas-Faca_sobremesa_noronha.jpg?v=639101246132030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-noronha/p",
-  popularity: 971
- },
- {
-  sku: "oxford-60606901",
-  name: "Frigideira Antiaderente para Indução 22 Cm Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206880/151349-frigideira-everyday-vermelho-22cm-media -1-.jpg?v=639221523630300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-everyday-vermelho/p",
-  popularity: 972
- },
- {
-  sku: "oxford-60606893",
-  name: "Faqueiro em Aço Inox 24 Peças Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "talheres faqueiros",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208372/150447-1-FAQUEIRO-EM-ACO-INOX-24PCS-OURO-PRETO.jpg?v=639249810857800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-ouro-preto/p",
-  popularity: 973
- },
- {
-  sku: "oxford-60606863",
-  name: "Caneca de Chá com Infusor 350 ml Fumê",
-  brand: "Oxford",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186470/Complementar_Caneca_Cha_Infusor_350ml.jpg?v=638750485372300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-cha-fume/p",
-  popularity: 974
- },
- {
-  sku: "oxford-60606861",
-  name: "Cafeteira Francesa em Vidro e Aço Inox Modern 350ml Cafeteira Francesa em Vidro e Aço Inox Cobre 350ml",
-  brand: "Oxford",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186509/-cafeteira-francesa-em-vidro-e-aco-inox-350ml-modern-1-peca-00.jpg?v=638750485875330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-modern-2/p",
-  popularity: 975
- },
- {
-  sku: "oxford-60606860",
-  name: "Cafeteira Francesa em Vidro e Aço Inox Modern 1L Cafeteira Francesa em Vidro e Aço Inox Cobre 1L",
-  brand: "Oxford",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185973/072488_Cafeteira_Francesa_Vidro_Inox_Pequena-scaled.jpg?v=638750477525000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-modern/p",
-  popularity: 976
- },
- {
-  sku: "oxford-60606859",
-  name: "Caçarola para Feijoada em Cerâmica 35 cm 7,2 L com tampa",
-  brand: "Cookware",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207709/152781_Linha_Feijoada_Cacarola_35cm.jpg?v=639228268894800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-feijoada-35cm/p",
-  popularity: 977
- },
- {
-  sku: "oxford-60606853",
-  name: "Caçarola Antiaderente para Indução 22 Cm Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206897/151361-cacarola-everyday-vermelho-22cm-.jpg?v=639221528008670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-everyday-vermelho-2/p",
-  popularity: 978
- },
- {
-  sku: "oxford-60606852",
-  name: "Caçarola Antiaderente para Indução 20 Cm Everyday Vermelho",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206860/151358-cacarola-everyday-vermelho-20cm-fixed.jpg?v=639221509893000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-everyday-vermelho/p",
-  popularity: 979
- },
- {
-  sku: "oxford-60606850",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Verde",
-  brand: "Cookware",
-  unitPrice: 779.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194193/Panela-Aroma-Grande-Angulo-Verde.jpg.jpg?v=638829057466370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde-3/p",
-  popularity: 980
- },
- {
-  sku: "oxford-60606848",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Vermelho",
-  brand: "Cookware",
-  unitPrice: 719.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207318/Panela-Aroma-Media-Angulo-Vermelho.jpg.jpg?v=639227419758470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-vermelho-2/p",
-  popularity: 981
- },
- {
-  sku: "oxford-60606847",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Verde",
-  brand: "Cookware",
-  unitPrice: 719.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207328/Panela-Aroma-Media-Angulo-Verde.jpg.jpg?v=639227420522700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde-2/p",
-  popularity: 982
- },
- {
-  sku: "oxford-60606846",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Cinza",
-  brand: "Cookware",
-  unitPrice: 719.4,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207337/Panela-Aroma-Media-Angulo-Cinza.jpg.jpg?v=639227421253330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma-2/p",
-  popularity: 983
- },
- {
-  sku: "oxford-60606844",
-  name: "Caçarola de Ferro Fundido Esmaltado Aroma 18 cm Verde",
-  brand: "Cookware",
-  unitPrice: 529.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207357/Panela-Aroma-Pequena-Angulo-Verde.jpg.jpg?v=639227422690700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde/p",
-  popularity: 984
- },
- {
-  sku: "oxford-60606840",
-  name: "Bule para Chá com Infusor 1L Fumê",
-  brand: "Oxford",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "cha e cafe bule",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186469/Complementar_Bule_Cha_Infusor_1000ml.jpg?v=638750485361630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/bule-cha-fume/p",
-  popularity: 985
- },
- {
-  sku: "oxford-60606834",
-  name: "Aparelho de Jantar e Chá 30 Peças Unni Oliva",
-  brand: "Cerâmicas",
-  unitPrice: 849.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186490/i_Oliva_20_30pcs.jpg?v=638750485714600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-oliva/p",
-  popularity: 986
- },
- {
-  sku: "oxford-60606833",
-  name: "Aparelho de Jantar e Chá 30 peças Unni Oceânica",
-  brand: "Cerâmicas",
-  unitPrice: 659.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188263/7B60-unni-oceanica-conjunto.jpg?v=638786171898470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-30pcs/p",
-  popularity: 987
- },
- {
-  sku: "oxford-60606829",
-  name: "Aparelho de Jantar e Chá 30 peças Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207613/Flora_Conjunto_20_30_Dalia.jpg?v=639227540802400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-jantar-30pcs/p",
-  popularity: 988
- },
- {
-  sku: "oxford-60606827",
-  name: "Aparelho de Jantar e Chá 30 peças Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187801/Flora_Conjunto_20_30_Aster.jpg?v=638769569911070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-jantar-30pcs/p",
-  popularity: 989
- },
- {
-  sku: "oxford-60606825",
-  name: "Aparelho de Jantar e Chá 30 peças Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187632/Flora_Conjunto_20_30_Amor-Perfeito.jpg?v=638767103562470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-30pcs/p",
-  popularity: 990
- },
- {
-  sku: "oxford-60606820",
-  name: "Aparelho de Jantar e Chá 30 peças Flamingo Lafayette",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1549.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195751/9241_Flamingo_Lafayette_Conjunto.jpg?v=638888091048670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/lafayette-jantar-30pcs/p",
-  popularity: 991
- },
- {
-  sku: "oxford-60606819",
-  name: "Aparelho de Jantar e Chá 30 peças Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1899.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207503/9240_Flamingo_Cosmopolitan_Conjunto.jpg?v=639227459205830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-jantar-30pcs/p",
-  popularity: 992
- },
- {
-  sku: "oxford-60606816",
-  name: "Aparelho de Jantar e Chá 20 peças Ryo Galápagos",
-  brand: "Oxford Porcelanas",
-  unitPrice: 679.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188109/9620_Ryo_Galapagos_Conjunto.jpg?v=638785295172370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-jantar-20pcs/p",
-  popularity: 993
- },
- {
-  sku: "oxford-60606814",
-  name: "Aparelho de Jantar e Chá 20 peças Flora Dália",
-  brand: "Oxford Porcelanas",
-  unitPrice: 659.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207603/Flora_Conjunto_20_30_Dalia.jpg?v=639227540075970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/dalia-jantar-20pcs/p",
-  popularity: 994
- },
- {
-  sku: "oxford-60606812",
-  name: "Aparelho de Jantar e Chá 20 peças Flora Áster",
-  brand: "Oxford Porcelanas",
-  unitPrice: 659.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187795/Flora_Conjunto_20_30_Aster.jpg?v=638769566945200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aster-jantar-20pcs/p",
-  popularity: 995
- },
- {
-  sku: "oxford-60606810",
-  name: "Aparelho de Jantar e Chá 20 peças Flora Amor-Perfeito",
-  brand: "Oxford Porcelanas",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187626/Flora_Conjunto_20_30_Amor-Perfeito.jpg?v=638767098730800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-20pcs/p",
-  popularity: 996
- },
- {
-  sku: "oxford-60606805",
-  name: "Aparelho de Jantar e Chá 20 peças Flamingo Cosmopolitan",
-  brand: "Oxford Porcelanas",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207513/9240_Flamingo_Cosmopolitan_Conjunto.jpg?v=639227460507170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-jantar-20pcs/p",
-  popularity: 997
- },
- {
-  sku: "oxford-60606777",
-  name: "Jogo de 6 Pratos Fundos 20 cm Páscoa",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "pratos tematicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199353/Conjunto_Pascoa_Fundo_06.jpg?v=639041780123600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-unni-pascoa/p",
-  popularity: 998
- },
- {
-  sku: "oxford-60606776",
-  name: "Jogo de 6 Canecas Tulipa 330 ml Páscoa",
-  brand: "Cerâmicas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199347/Conjunto_Pascoa_Caneca_Frente_06.jpg?v=639041779850170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/canecas-tulipa-unni-pascoa/p",
-  popularity: 999
- },
- {
-  sku: "oxford-60606773",
-  name: "Boleira Flat 26 cm Páscoa",
-  brand: "Cerâmicas",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "servir prato bolo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185804/Conjunto_Pascoa_Boleira.jpg?v=638665939584570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/boleira-flat-pascoa/p",
-  popularity: 1000
- },
- {
-  sku: "oxford-60606771",
-  name: "Caçarola Antiaderente para Indução 22 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206989/138747_Cacarola_01.jpg?v=639221564370400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aluminio-forjado-everyday-22cm/p",
-  popularity: 1001
- },
- {
-  sku: "oxford-60606764",
-  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189753/Prato_Fundo_06.jpg?v=638815270393830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-fundos-20-5cm-orquidea/p",
-  popularity: 1002
- },
- {
-  sku: "oxford-60606759",
-  name: "Jogo de Panelas Antiaderentes para Indução 4 peças Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 899.9,
-  unit: "un",
-  category: "panelas jogos de panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207035/Everyday_Azul_Novos_04.jpg?v=639221578617830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-panelas-aluminio-forjado-4-pecas-everyday/p",
-  popularity: 1003
- },
- {
-  sku: "oxford-60606758",
-  name: "Panela Antiaderente para Indução 20 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206975/138753_Panela_01.jpg?v=639221559916730000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-forjado-everyday-20cm/p",
-  popularity: 1004
- },
- {
-  sku: "oxford-60606757",
-  name: "Panela Antiaderente para Indução 18 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206981/138753_Panela_01.jpg?v=639221562677170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-forjado-everyday-18cm/p",
-  popularity: 1005
- },
- {
-  sku: "oxford-60606755",
-  name: "Aparelho de Jantar Chá 30 peças Donna Bosque",
-  brand: "Biona",
-  unitPrice: 539.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185546/149826_Conjunto_Donna_Bosque_30.jpg?v=638627903700570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-bosque/p",
-  popularity: 1006
- },
- {
-  sku: "oxford-60606754",
-  name: "Aparelho de Jantar Chá 20 peças Donna Bosque",
-  brand: "Biona",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185545/149825_Conjunto_Donna_Bosque_20.jpg?v=638627902888300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-20-pecas-bosque/p",
-  popularity: 1007
- },
- {
-  sku: "oxford-60606731",
-  name: "Aparelho de Jantar Chá 20 peças Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194528/Conjunto_Orquidea.jpg?v=638835977764200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-20-pecas-orquidea/p",
-  popularity: 1008
- },
- {
-  sku: "oxford-60606729",
-  name: "Jogo de 6 Pratos Sobremesa 20 cm Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189756/Prato_Sobremesa_06.jpg?v=638815270572400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-sobremesa-20cm-orquidea/p",
-  popularity: 1009
- },
- {
-  sku: "oxford-60606728",
-  name: "Jogo de 6 Pratos Rasos 26 cm Unni Orquídea",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189759/Prato_Raso_06.jpg?v=638815270720170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-rasos-26cm-orquidea/p",
-  popularity: 1010
- },
- {
-  sku: "oxford-60606722",
-  name: "Jogo de 6 Xícaras de Chá 200 ml com pires Unni Damas",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191783/149724_Xicara_Pires_Damas_Unni_200ml.jpg?v=638816136039930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-xicaras-de-cha-200ml-com-pires-damas/p",
-  popularity: 1011
- },
- {
-  sku: "oxford-60605918",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182979/E-commerce_5949_Balance_Conjunto.jpg?v=638320355338570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-balance-20pcs/p",
-  popularity: 1012
- },
- {
-  sku: "oxford-60605717",
-  name: "Aparelho de Jantar e Chá 20 Peças Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 639.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182250/136400_Flat_Onix_Conjunto_20.jpg?v=638300536453800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-20pcs/p",
-  popularity: 1013
- },
- {
-  sku: "oxford-60602952",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni Oliva",
-  brand: "Cerâmicas",
-  unitPrice: 559.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184889/Conjunto_Oliva.jpg?v=638543033216100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-oliva-20pcs/p",
-  popularity: 1014
- },
- {
-  sku: "oxford-60601352",
-  name: "Aparelho de Jantar e Chá 20 Peças Unni White",
-  brand: "Cerâmicas",
-  unitPrice: 469.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199008/Oxford_Ceramicas_Unni_Conjuntos_White_30_42.jpg?v=638981286170900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/unni-white-20pcs/p",
-  popularity: 1015
- },
- {
-  sku: "oxford-60601338",
-  name: "Aparelho de Jantar e Chá 20 Peças Donna Mandala",
-  brand: "Biona",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180466/Biona_Donna_Mandala.jpg?v=638138161173900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-mandala-20pcs/p",
-  popularity: 1016
- },
- {
-  sku: "oxford-60600631",
-  name: "Aparelho de Jantar e Chá 20 Peças Ryo Blue Bay",
-  brand: "Oxford Porcelanas",
-  unitPrice: 559.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181000/9507_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211324921570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bluebay-20pcs/p",
-  popularity: 1017
- },
- {
-  sku: "oxford-60600630",
-  name: "Aparelho de Jantar e Chá 20 Peças Ryo Pink Sand",
-  brand: "Oxford Porcelanas",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181010/9508_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211331006500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pinksand-20pcs/p",
-  popularity: 1018
- },
- {
-  sku: "oxford-60201301",
-  name: "Aparelho de Jantar e Chá 20 Peças Donna Folk",
-  brand: "Biona",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "aparelhos de jantar 20 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180584/5118_Donna-Folk_20_30pcs.jpg?v=638138738753300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-folk-20pcs/p",
-  popularity: 1019
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/156841/oxford-porcelanas-aparelho-de-jantar-soleil-white-20-pecas-00.jpg?v=636213930258830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-20pcs/p",
+  popularity: 638
  },
  {
   sku: "oxford-10700602",
@@ -11223,62 +7032,18 @@ export const CATALOG: CatalogItem[] = [
   category: "aparelhos de jantar 42 pecas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182734/9812-soleil-victoria-aparelho-de-jantar-42-pecas-media.jpg?v=638309101004800000",
   productUrl: "https://www.oxfordporcelanas.com.br/soleil-victoria-42pcs/p",
-  popularity: 1020
+  popularity: 639
  },
  {
-  sku: "oxford-60606456",
-  name: "Jogo de 6 Taças de Cristal Água 420 ml Minimal",
+  sku: "oxford-60606457",
+  name: "Jogo de 6 Taças de Cristal Espumante 340 ML Petra Classic",
   brand: "Alumina Crystal",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190314/139220_Taca_De_Cristal_Para_Agua_420ml_06.jpg?v=638815403756300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-agua-420ml-minimal-classic/p",
-  popularity: 1021
- },
- {
-  sku: "oxford-60606455",
-  name: "Jogo de 6 Taças de Cristal para Vinho 340 ml Minimal",
-  brand: "Alumina Crystal",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "tacas e copos tacas de vinho",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190321/139217_Taca_De_Cristal_Para_Vinho_340ml_06.jpg?v=638815403898700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-vinho-340ml-minimal-classic/p",
-  popularity: 1022
- },
- {
-  sku: "oxford-60606454",
-  name: "Jogo de 6 Taças de Cristal Espumante 170 ml Minimal",
-  brand: "Alumina Crystal",
-  unitPrice: 279.9,
+  unitPrice: 299.9,
   unit: "un",
   category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192785/139214_Taca_Espumante_06.jpg?v=638816921797900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-espumante-170ml-minimal-classic/p",
-  popularity: 1023
- },
- {
-  sku: "oxford-60606453",
-  name: "Panela em Alumínio 18 Cm Use+ Cinza",
-  brand: "Biona",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184628/Panela_Em_Aluminio_18cm_Usemais_Cinza_04.jpg?v=638485158100900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-18cm-usemais/p",
-  popularity: 1024
- },
- {
-  sku: "oxford-60606353",
-  name: "Tigela Conic 500 Ml Mandala",
-  brand: "Biona",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184282/5258_Donna_Mandala_Tigelas.jpg?v=638447484475000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-mandala/p",
-  popularity: 1025
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197389/139223_Taca_Espumante_Petra_340ml_06.jpg?v=638920672195200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-espumante-340ml-petra-classic/p",
+  popularity: 640
  },
  {
   sku: "oxford-60606351",
@@ -11289,1272 +7054,326 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184280/5190_Donna_Lola_Tigela.jpg?v=638447482726100000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-lola/p",
-  popularity: 1026
+  popularity: 641
  },
  {
-  sku: "oxford-60606340",
-  name: "Tigela Conic 500 Ml Bloom",
-  brand: "Biona",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184267/5275_Donna_Bloom_Tigela.jpg?v=638447475479630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-bloom/p",
-  popularity: 1027
- },
- {
-  sku: "oxford-60606327",
-  name: "Jogo de Taças de Cristal Para Espumante 205 Ml Classic",
+  sku: "oxford-60606324",
+  name: "Jogo de 6 Taças de Cristal Para Cerveja 396 Ml Classic",
   brand: "Biona",
   unitPrice: 179.9,
   unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192735/142347_Taca_De_Cristal_Para_Espumante_205ml_Classic_06.jpg?v=638816393518330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-espumante-205ml-classic/p",
-  popularity: 1028
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192739/142362_Taca_De_Cristal_Para_Cerveja_396_ml_Classic_06.jpg?v=638816393904800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-cerveja-396ml-classic/p",
+  popularity: 642
  },
  {
-  sku: "oxford-60606321",
-  name: "Jogo de 6 Taças de Cristal Para Água 627 Ml Classic",
-  brand: "Biona",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "tacas e copos agua",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192715/142338_Taca_De_Cristal_Para_Agua_627ml_Classic_06.jpg?v=638816339828170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-agua-627ml-classic/p",
-  popularity: 1029
- },
- {
-  sku: "oxford-60606252",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 500 Ml White",
+  sku: "oxford-60606246",
+  name: "Pote Bahia de Vidro Borosilicato 1,7 L Com Tampa de Bambu",
   brand: "Oxford",
-  unitPrice: 34.9,
+  unitPrice: 49.9,
   unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183892/136568_Pote_Hermetico_De_Acrilico_Retangular_500_.jpg?v=638442934858400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-500ml-white/p",
-  popularity: 1030
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183885/138193_Pote_Bahia_De_Vidro_Borosilicato_17_L_Com_Tampa.jpg?v=638442913009000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-1-7l-tampa-bambu/p",
+  popularity: 643
  },
  {
-  sku: "oxford-60606251",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 500 Ml Grey",
-  brand: "Oxford",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183889/136574_Pote_Hermetico_De_Acrilico_Retangular_500_M.jpg?v=638442932440500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-500ml-grey/p",
-  popularity: 1031
- },
- {
-  sku: "oxford-60606250",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 1,8L White",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183891/136572_Pote_Hermetico_De_Acrilico_Retangular_18L.jpg?v=638442933826700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-8l-white/p",
-  popularity: 1032
- },
- {
-  sku: "oxford-60606249",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 1,8L Grey",
-  brand: "Oxford",
-  unitPrice: 65.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183888/136578_Pote_Hermetico_De_Acrilico_Retangular_18L.jpg?v=638442931807000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-8l-grey/p",
-  popularity: 1033
- },
- {
-  sku: "oxford-60606248",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 1,2L White",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183890/136570_Pote_Hermetico_De_Acrilico_Retangular_12L.jpg?v=638442933268370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-2l-white/p",
-  popularity: 1034
- },
- {
-  sku: "oxford-60606247",
-  name: "Pote Hermético Cristal (PP+PET) Retangular 1,2L Grey",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "cozinha potes retangulares",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183887/136576_Pote_Hermetico_De_Acrilico_Retangular_12L.jpg?v=638442915846800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-2l-grey/p",
-  popularity: 1035
- },
- {
-  sku: "oxford-60606245",
-  name: "Panela Wok Antiaderente para Indução 28 Cm Everyday Vermelha",
+  sku: "oxford-60606244",
+  name: "Panela Wok Antiaderente para Indução 28 Cm Everyday Azul",
   brand: "Cookware",
   unitPrice: 249.9,
   unit: "un",
   category: "panelas woks",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206853/138734_Wok_1.jpg?v=639221508946830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-everyday-vermelho/p",
-  popularity: 1036
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187304/138751_Wok_01.jpg?v=638761073760400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-everyday-azul/p",
+  popularity: 644
  },
  {
-  sku: "oxford-60606242",
-  name: "Panela Antiaderente para Indução 16 Cm Everyday Vermelha",
-  brand: "Cookware",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206846/138736_Panela.jpg?v=639221508600570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-everyday-vermelho/p",
-  popularity: 1037
- },
- {
-  sku: "oxford-60606241",
-  name: "Panela Antiaderente para Indução 16 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206961/138753_Panela_01.jpg?v=639221544399700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-everyday-azul/p",
-  popularity: 1038
- },
- {
-  sku: "oxford-60606240",
-  name: "Panela Antiaderente para indução 16 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207145/141763_Panela_16--3-.jpg?v=639221599488930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-gourmet/p",
-  popularity: 1039
- },
- {
-  sku: "oxford-60606238",
-  name: "Frigideira Antiaderente para Indução 28 Cm Everyday Vermelha",
-  brand: "Cookware",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206917/138726-frigideira-everyday-vermelho-28cm-media -4-.jpg?v=639221533191430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-everyday-vermelho/p",
-  popularity: 1040
- },
- {
-  sku: "oxford-60606236",
-  name: "Frigideira Antiaderente para Indução 24 Cm Everyday Vermelha",
-  brand: "Cookware",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206839/138730_1.jpg?v=639221507682700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-everyday-vermelho/p",
-  popularity: 1041
- },
- {
-  sku: "oxford-60606235",
-  name: "Frigideira Antiaderente para Indução 24 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206953/138743_Frigideira_01.jpg?v=639221543974230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-everyday-azul/p",
-  popularity: 1042
- },
- {
-  sku: "oxford-60606234",
-  name: "Frigideira em Alumínio 24 Cm Use+ Cinza",
-  brand: "Biona",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184163/140709_Frigideira_Em_Aluminio_24_Cm_Usemais_Cinza_03.jpg?v=638445642620270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-usemais-cinza/p",
-  popularity: 1043
- },
- {
-  sku: "oxford-60606233",
-  name: "Frigideira em Alumínio 20 Cm Use+ Cinza",
-  brand: "Biona",
-  unitPrice: 74.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184159/140707_Frigideira_Em_Aluminio_20_Cm_Usemais_Cinza_03.jpg?v=638445641633900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-20cm-usemais-cinza/p",
-  popularity: 1044
- },
- {
-  sku: "oxford-60606232",
-  name: "Frigideira Antiaderente para indução 28 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207176/141750_Frigideira_28_Cm.jpg?v=639221607169170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-gourmet/p",
-  popularity: 1045
- },
- {
-  sku: "oxford-60606230",
-  name: "Fervedor em Alumínio 1,6 l Use+ Cinza",
-  brand: "Biona",
-  unitPrice: 74.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184155/140703_Fervedor_em_Aluminio_16l_Usemais_Cinza_03.jpg?v=638445640520630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/fervedor-1-6l-usemais-cinza/p",
-  popularity: 1046
- },
- {
-  sku: "oxford-60606199",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Chá Das 5",
-  brand: "Biona",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192752/Donna_Cha_das_5_Prato_Xicara_Pires_06.jpg?v=638816399962900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-donna-chadas5/p",
-  popularity: 1047
- },
- {
-  sku: "oxford-60606196",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Coup Noir",
+  sku: "oxford-60606192",
+  name: "Jogo de 6 Pratos Sobremesa 22 Cm Flamingo Palhinha Brasileira",
   brand: "Oxford Porcelanas",
-  unitPrice: 428.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cafe",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191883/140466_Conjunto_De_6_Xicaras_Grandes_200_Ml_Com_Pires_Coup_.jpg?v=638816139787230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-coup-noir/p",
-  popularity: 1048
- },
- {
-  sku: "oxford-60606194",
-  name: "Jogo de 6 Pratos Sobremesa 23 Cm Soleil Limoni",
-  brand: "Oxford Porcelanas",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207849/140125_Conjunto_De_6_Pratos_Sobremesa_23_Cm_Soleil_Limo.jpg?v=639237947601930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-soleil-limoni/p",
-  popularity: 1049
- },
- {
-  sku: "oxford-60606179",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Brisa",
-  brand: "Cerâmicas",
-  unitPrice: 149.9,
+  unitPrice: 307.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196805/143003_Conjunto_De_6_Pratos_Sobremesa_20_Cm_Unni_Bri.jpg?v=638918265868170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-unni-brisa/p",
-  popularity: 1050
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196432/139871_Conjunto_De_6_Pratos_Sobremesa_22.jpg?v=638903544393400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-flamingo-palhinha-brasileira/p",
+  popularity: 645
  },
  {
-  sku: "oxford-60606172",
-  name: "Jogo de 6 Pratos Rasos 29 Cm Soleil Limoni",
-  brand: "Oxford Porcelanas",
-  unitPrice: 379.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207775/140126_Conjunto_De_6_Pratos_Rasos_29_Cm_Soleil_Limoni.jpg?v=639228407323130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-soleil-limoni/p",
-  popularity: 1051
- },
- {
-  sku: "oxford-60606164",
-  name: "Jogo de 6 Pratos Rasos 28 Cm Coup Noir",
-  brand: "Oxford Porcelanas",
-  unitPrice: 415.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189868/140463_Conjunto_De_6_Pratos_Rasos_28_Cm_Coup_Noir.jpg?v=638815304285600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-coup-noir/p",
-  popularity: 1052
- },
- {
-  sku: "oxford-60606151",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Donna Chá Das 5",
+  sku: "oxford-60606174",
+  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Chá Das 5",
   brand: "Biona",
-  unitPrice: 149.9,
+  unitPrice: 109.9,
   unit: "un",
   category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189893/Donna_Cha_das_5_Prato_Raso_06.jpg?v=638815307278570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-chadas5/p",
-  popularity: 1053
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189838/Donna_Cha_das_5_Prato_Sobremesa_06.jpg?v=638815289836130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-donna-chadas5/p",
+  popularity: 646
  },
  {
-  sku: "oxford-60606148",
-  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil Limoni",
-  brand: "Oxford Porcelanas",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "pratos relevo",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207836/140127_Conjunto_De_6_Pratos_Fundos_24_Cm_Soleil_Limoni.jpg?v=639237942620100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-soleil-limoni/p",
-  popularity: 1054
- },
- {
-  sku: "oxford-60606146",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Palhinha Brasileira",
-  brand: "Oxford Porcelanas",
-  unitPrice: 363.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196439/139873_Conjunto_De_6_Pratos_Fundos_235_.jpg?v=638903548414030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-palhinha-brasileira/p",
-  popularity: 1055
- },
- {
-  sku: "oxford-60606144",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Lazuli",
-  brand: "Oxford Porcelanas",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189910/139827_Conjunto_De_6_Pratos_Fundos_235_Cm_Flamingo_L.jpg?v=638815310693870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-lazuli/p",
-  popularity: 1056
- },
- {
-  sku: "oxford-60606142",
-  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Classic Azul",
-  brand: "Oxford Porcelanas",
-  unitPrice: 363.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189914/139968_Conjunto_De_6_Pratos_Fundos_235_Cm_Flam.jpg?v=638815311009300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-classic-azul/p",
-  popularity: 1057
- },
- {
-  sku: "oxford-60606133",
-  name: "Jogo de 6 Pratos Fundos 21 Cm Coup Noir",
-  brand: "Oxford Porcelanas",
-  unitPrice: 371.9,
-  unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189935/140464_Conjunto_De_6_Pratos_Fundos_21_Cm_Coup_Noir.jpg?v=638815313479400000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-coup-noir/p",
-  popularity: 1058
- },
- {
-  sku: "oxford-60606127",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Brisa",
+  sku: "oxford-60606157",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Brisa",
   brand: "Cerâmicas",
-  unitPrice: 169.9,
+  unitPrice: 199.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197240/143002_Conjunto_De_6_Pratos_Fundos_205_Cm_Unni_Bris.jpg?v=638918316792900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-brisa/p",
-  popularity: 1059
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197253/143001_Conjunto_De_6_Pratos_Rasos_26_Cm_Unni_Brisa.jpg?v=638918317366570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-brisa/p",
+  popularity: 647
  },
  {
-  sku: "oxford-60606121",
-  name: "Jogo de 12 Garfos de Mesa 20 Cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 119.9,
+  sku: "oxford-60606147",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Toile de Jouy",
+  brand: "Oxford Porcelanas",
+  unitPrice: 209.9,
   unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204027/141895_Ouro_Preto_12.jpg?v=639168064684000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-ouro-preto/p",
-  popularity: 1060
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189901/141251_Conjunto_De_6_Pratos_Fundos_235_Cm_Fla.jpg?v=638815308581400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-toile-de-jouy/p",
+  popularity: 648
  },
  {
-  sku: "oxford-60606120",
-  name: "Jogo de 12 Garfos de Mesa 20 Cm Olinda",
+  sku: "oxford-60606118",
+  name: "Jogo de 12 Facas de Mesa 23,5 Cm São Paulo",
   brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204024/141861_Conjunto_De_12_Garfos_De_Mesa_20_Cm_Olinda_12.jpg?v=639168063972130000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-olinda/p",
-  popularity: 1061
- },
- {
-  sku: "oxford-60606119",
-  name: "Jogo de 12 Garfos de Mesa 19,5 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203973/141873_Conjunto_De_12_Garfos_De_Mesa_195_Cm_Noronha_12.jpg?v=639168008475900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-noronha/p",
-  popularity: 1062
- },
- {
-  sku: "oxford-60606117",
-  name: "Jogo de 12 Facas de Mesa 22,5 Cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 189.9,
+  unitPrice: 259.9,
   unit: "un",
   category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204029/141891_Conjunto_De_12_Facas_De_Mesa_225_Cm_Ouro_Pre.jpg?v=639168064876200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-ouro-preto/p",
-  popularity: 1063
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204039/141901_Conjunto_De_12_Facas_De_Mesa_235_Cm_Sao_Paulo_12.jpg?v=639168631705270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-sao-paulo/p",
+  popularity: 649
  },
  {
-  sku: "oxford-60606116",
-  name: "Jogo de 12 Facas de Mesa 22,5 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203975/141869_Conjunto_De_12_Facas_De_Mesa_225_Cm_Noronha_12.jpg?v=639168008648470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-noronha/p",
-  popularity: 1064
- },
- {
-  sku: "oxford-60606115",
-  name: "Jogo de 12 Facas de Mesa 21,5 Cm Olinda",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204021/141857_Conjunto_De_12_Facas_De_Mesa_215_Cm_Olinda_12.jpg?v=639168063851430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-olinda/p",
-  popularity: 1065
- },
- {
-  sku: "oxford-60606114",
-  name: "Jogo de 12 Facas de Churrasco 22,5 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203977/141871_Conjunto_De_12_Facas_De_Churrasco_225_Cm_Noronh.jpg?v=639168008792930000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-noronha/p",
-  popularity: 1066
- },
- {
-  sku: "oxford-60606113",
-  name: "Jogo de 12 Facas de Churrasco 22,6 Cm Olinda",
-  brand: "Oxford",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204019/141859_Conjunto_De_12_Facas_De_Churrasco_215_Cm_Olinda_12.jpg?v=639168063677270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-olinda/p",
-  popularity: 1067
- },
- {
-  sku: "oxford-60606111",
-  name: "Jogo de 12 Facas de Churrasco 22,5 Cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204031/141893_faca_churrasco.jpg?v=639168064951370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-ouro-preto/p",
-  popularity: 1068
- },
- {
-  sku: "oxford-60606109",
-  name: "Jogo de 12 Colheres de Sobremesa 16 Cm Olinda",
-  brand: "Oxford",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202395/141865_Conjunto_De_12_Colheres_De_Sobremesa_16_Cm_Olinda_12.jpg?v=639101243660570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-sobremesa-olinda/p",
-  popularity: 1069
- },
- {
-  sku: "oxford-60606108",
-  name: "Jogo de 12 Colheres de Sobremesa 16 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203971/141877_Conjunto_De_12_Colheres_De_Sobremesa_16_Cm_Noron.jpg?v=639168008266270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-sobremesa-noronha/p",
-  popularity: 1070
- },
- {
-  sku: "oxford-60606106",
-  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204033/141897_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Ouro_12.jpg?v=639168065030430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-ouro-preto/p",
-  popularity: 1071
- },
- {
-  sku: "oxford-60606105",
-  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Olinda",
-  brand: "Oxford",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204017/141863_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Olinda_12.jpg?v=639168063578700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-olinda/p",
-  popularity: 1072
- },
- {
-  sku: "oxford-60606102",
-  name: "Jogo de 12 Colheres de Chá 14 Cm Ouro Preto",
-  brand: "Oxford",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204035/141899_Conjunto_De_12_Colheres_De_Cha_14_Cm_Ouro_Preto_12.jpg?v=639168065124430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-ouro-preto/p",
-  popularity: 1073
- },
- {
-  sku: "oxford-60606101",
-  name: "Jogo de 12 Colheres de Chá 14 Cm Olinda",
+  sku: "oxford-60606104",
+  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Noronha",
   brand: "Oxford",
   unitPrice: 159.9,
   unit: "un",
   category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204015/141867_Conjunto_De_12_Colheres_De_Cha_14_Cm_Olinda_12.jpg?v=639168063471800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-olinda/p",
-  popularity: 1074
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203979/141875_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Noronha_12.jpg?v=639168008983600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-noronha/p",
+  popularity: 650
  },
  {
-  sku: "oxford-60606100",
-  name: "Jogo de 12 Colheres de Chá 14 Cm Noronha",
-  brand: "Oxford",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203981/141879_Conjunto_De_12_Colheres_De_Cha_14_Cm_Noronha_12.jpg?v=639168009027000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-noronha/p",
-  popularity: 1075
- },
- {
-  sku: "oxford-60606096",
-  name: "Chapa Grill Antiaderente para indução 28 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207191/141758_Chapa.jpg?v=639221608555770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/chapa-grill-28cm-gourmet/p",
-  popularity: 1076
- },
- {
-  sku: "oxford-60606066",
-  name: "Caçarola Rasa Antiaderente para Indução 28 Cm Everyday Vermelha",
+  sku: "oxford-60606065",
+  name: "Caçarola Rasa Antiaderente para Indução 28 Cm Everyday Azul",
   brand: "Cookware",
   unitPrice: 359.9,
   unit: "un",
   category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206833/138732-cacarola-rasa-everyday-vermelho-28cm-media -7-.jpg?v=639221506521270000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-rasa-28cm-everyday-vermelho/p",
-  popularity: 1077
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206939/138749_02.jpg?v=639221542087730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-rasa-28cm-everyday-azul/p",
+  popularity: 651
  },
  {
-  sku: "oxford-60606064",
-  name: "Caçarola Antiaderente para Indução 28 Cm Everyday Vermelha",
+  sku: "oxford-60606059",
+  name: "Caçarola Antiaderente para indução 28 Cm Gourmet Preta",
   brand: "Cookware",
-  unitPrice: 439.9,
+  unitPrice: 599.9,
   unit: "un",
   category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206812/138730_2.jpg?v=639221498261170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-everyday-vermelho/p",
-  popularity: 1078
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207184/141756_Cacarola_28_Cm_.jpg?v=639221607643000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-gourmet/p",
+  popularity: 652
  },
  {
-  sku: "oxford-60606063",
-  name: "Caçarola Antiaderente para Indução 28 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 439.9,
+  sku: "oxford-60606052",
+  name: "Aparelho de Jantar e Chá 30 Peças Soleil Limoni",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1299,
   unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207007/138747_Cacarola_02.jpg?v=639221572862970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-everyday-azul/p",
-  popularity: 1079
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198947/140128_Aparelho_De_Jantar_E_Cha_30_Pecas_Soleil_Limoni.jpg?v=638969153160670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-limoni/p",
+  popularity: 653
  },
  {
-  sku: "oxford-60606062",
-  name: "Caçarola Antiaderente para Indução 24 Cm Everyday Vermelha",
-  brand: "Cookware",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206907/138728-cacarola-everyday-vermelho-24cm-media -9-.jpg?v=639221530650230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-everyday-vermelho/p",
-  popularity: 1080
- },
- {
-  sku: "oxford-60606061",
-  name: "Caçarola Antiaderente para Indução 24 Cm Everyday Azul",
-  brand: "Cookware",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207018/138745_Cacarola_01.jpg?v=639221573843100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-everyday-azul/p",
-  popularity: 1081
- },
- {
-  sku: "oxford-60606060",
-  name: "Caçarola em Alumínio 24 Cm Use+ Cinza",
-  brand: "Biona",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184041/140701_Cacarola_Biona_24cm_Angulo_02.jpg?v=638445501047030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-usemais-cinza/p",
-  popularity: 1082
- },
- {
-  sku: "oxford-60606058",
-  name: "Caçarola Antiaderente para indução 24 Cm Gourmet Preta",
-  brand: "Cookware",
-  unitPrice: 449.9,
-  unit: "un",
-  category: "panelas cacarolas e panelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207206/141753_Cacarola_24--2-.jpg?v=639221609429300000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-gourmet/p",
-  popularity: 1083
- },
- {
-  sku: "oxford-60605937",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Stripes And Dots",
+  sku: "oxford-60605927",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Balance",
   brand: "Cerâmicas",
   unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191892/E-commerce_5950_Strips_an_dots_Xicara_Pires_06.jpg?v=638816140508800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-stripes-and-dots/p",
-  popularity: 1084
- },
- {
-  sku: "oxford-60605935",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191898/5950_Conjunto_Balance_Xicara_Pires_06.jpg?v=638816140761800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-balance/p",
-  popularity: 1085
- },
- {
-  sku: "oxford-60605932",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Balance",
-  brand: "Cerâmicas",
-  unitPrice: 159.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189957/5950_Conjunto_Balance_Sobremesa_06.jpg?v=638815315409030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-unni-balance/p",
-  popularity: 1086
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189969/5950_Conjunto_Balance_Raso_06.jpg?v=638815317053670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-unni-balance/p",
+  popularity: 654
  },
  {
-  sku: "oxford-60605925",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
+  sku: "oxford-60605923",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Balance",
   brand: "Cerâmicas",
   unitPrice: 179.9,
   unit: "un",
   category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189972/139127_Conjunto-de-6-Pratos-Fundos-205-Cm-Unni-Stripes-And-Dots.jpg?v=638815317240000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-stripes-and-dots/p",
-  popularity: 1087
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189980/5950_Conjunto_Balance_Fundo_06.jpg?v=638815317597530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-balance/p",
+  popularity: 655
  },
  {
-  sku: "oxford-60605836",
-  name: "Aparelho de Jantar e Chá 30 peças Canelé Branco",
-  brand: "Biona",
-  unitPrice: 654.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182472/Canele_Branco_Conjunto.jpg?v=638301389463900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/canele-branco/p",
-  popularity: 1088
- },
- {
-  sku: "oxford-60605835",
-  name: "Aparelho de Jantar e Chá 30 peças Canelé Azul",
-  brand: "Biona",
-  unitPrice: 654.9,
-  unit: "un",
-  category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182441/Canele_Azul_Conjunto.jpg?v=638301376219800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/canele-azul/p",
-  popularity: 1089
- },
- {
-  sku: "oxford-60605762",
-  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Ônix",
+  sku: "oxford-60605736",
+  name: "Aparelho de Jantar e Lanche 16 Peças Flat Pacífico",
   brand: "Cerâmicas",
-  unitPrice: 199.9,
+  unitPrice: 599.9,
   unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190060/136396_Flat_Onix_Prato_Sobremesa_20cm_06.jpg?v=638815325262900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-sobremesa/p",
-  popularity: 1090
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183247/Conjunto-16-pecas---Pacifico.jpg?v=638355777271430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelhojantar-lanche-16pcs-flat-pacifico/p",
+  popularity: 656
  },
  {
-  sku: "oxford-60605744",
-  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Ônix",
+  sku: "oxford-60605735",
+  name: "Aparelho de Jantar e Lanche 16 Peças Flat Ônix",
   brand: "Cerâmicas",
-  unitPrice: 249.9,
+  unitPrice: 599.9,
   unit: "un",
-  category: "pratos redondos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190119/136398_Flat_Onix_Prato_Fundo_205cm_06.jpg?v=638815330303670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-fundos/p",
-  popularity: 1091
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182260/136401_Flat_Onix_Conjunto_16.jpg?v=638300537654600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-lanche-16pcs-flat-onix/p",
+  popularity: 657
  },
  {
-  sku: "oxford-60605708",
-  name: "Aparelho de Jantar 18 Peças Flat Ônix",
-  brand: "Cerâmicas",
-  unitPrice: 699.9,
+  sku: "oxford-60605375",
+  name: "Assadeira Refratária Tango Média 34x21x6,5 Cm Marrom",
+  brand: "Cookware",
+  unitPrice: 99.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182243/136402_Flat_Onix_Conjunto_18.jpg?v=638300535505100000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-onix/p",
-  popularity: 1092
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180624/126794_Travessaa_Refrataria_Marrom_Tango_M.jpg?v=638150793223470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-media-marrom/p",
+  popularity: 658
  },
  {
-  sku: "oxford-60605684",
-  name: "Aparelho de Jantar 18 Peças Donna Cena Inglesa",
+  sku: "oxford-60605208",
+  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Lírios",
   brand: "Biona",
-  unitPrice: 358.9,
+  unitPrice: 109.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181817/5131_Donna_Cena_Inglesa_18.jpg?v=638285671927000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-donna-cena-inglesa/p",
-  popularity: 1093
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190188/126285_Conjunto_6_Pratos_Sobremesa_18Cm_Donna_Lirios.jpg?v=638815339205130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesas-lirios/p",
+  popularity: 659
  },
  {
-  sku: "oxford-60605454",
-  name: "Aparelho de Jantar 18 Peças Ryo Maresia",
-  brand: "Oxford Porcelanas",
+  sku: "oxford-60605128",
+  name: "Caneca Tulipa 330 Ml Verde Escuro",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180198/126660_Caneca_Tulipa_330Ml_Verde_Escuro.jpg?v=638130927062500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-verde-escuro/p",
+  popularity: 660
+ },
+ {
+  sku: "oxford-60605079",
+  name: "Aparelho de Jantar 30 peças Donna Lirios",
+  brand: "Biona",
   unitPrice: 499.9,
   unit: "un",
-  category: "aparelhos de jantar 18 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196927/Maresia.jpg?v=638918281275900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18ryo-maresia/p",
-  popularity: 1094
- },
- {
-  sku: "oxford-60605390",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192629/127227_Conjunto_6_Xicaras_Grandes_200Ml_Pires_Donna_Bem_Te_Vi.jpg?v=638816332308970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-donna-bem-te-vi/p",
-  popularity: 1095
- },
- {
-  sku: "oxford-60605387",
-  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Lírios",
-  brand: "Biona",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cha e cafe conjuntos de cha",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192631/126286_Conjunto_6_Xicaras_Grandes_180Ml_Pires_Donna_Lirios.jpg?v=638816332435330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-donna-lirios/p",
-  popularity: 1096
- },
- {
-  sku: "oxford-60605377",
-  name: "Assadeira Refratária Tango Pequena 28x18x5,5 Cm Marrom",
-  brand: "Cookware",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180627/126817_Travessaa_Refrataria_Marrom_Tango_P.jpg?v=638150793549500000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-pequena-marrom/p",
-  popularity: 1097
- },
- {
-  sku: "oxford-60605348",
-  name: "Tigela 300 Ml Preto",
-  brand: "Cerâmicas",
-  unitPrice: 34.9,
-  unit: "un",
-  category: "servir bowls e tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180246/025481_Tigela_300Ml_Preto.jpg?v=638130992910800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-preto/p",
-  popularity: 1098
- },
- {
-  sku: "oxford-60605206",
-  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192588/127228_Donna_Pratos_Sobremesa_Bem_Te_Vi_18cm.jpg.jpg?v=638816304218170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesas-donna-bem-te-vi/p",
-  popularity: 1099
- },
- {
-  sku: "oxford-60605186",
-  name: "Jogo de 6 Pratos Rasos 26 Cm Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190413/127230_Conjunto_6_Pratos_Rasos_26Cm_Donna_Bem_Te_Vi.jpg?v=638815407111800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-bem-te-vi/p",
-  popularity: 1100
- },
- {
-  sku: "oxford-60605174",
-  name: "Jogo de 6 Pratos Fundos 21,5 Cm Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190595/127229_Conjunto_6_Pratos_Fundos_215Cm_Donna_Bem_Te_Vi.jpg?v=638815418725530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-donna-bem-te-vi/p",
-  popularity: 1101
- },
- {
-  sku: "oxford-60605110",
-  name: "Caneca Quartier 220 Ml Verde Escuro",
-  brand: "Oxford Porcelanas",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180190/126700_Caneca_Quartier_220Ml_Verde_Escuro.jpg?v=638130923032700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-quartier-verde-escuro-220ml/p",
-  popularity: 1102
- },
- {
-  sku: "oxford-60605077",
-  name: "Aparelho de Jantar 30 peças Donna Bem-Te-Vi",
-  brand: "Biona",
-  unitPrice: 539.9,
-  unit: "un",
   category: "aparelhos de jantar 30 pecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180270/Conjunto_donna_bem_te_vi.jpg?v=638131006790000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-bem-te-vi/p",
-  popularity: 1103
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180304/Conjunto_donna_lirios.jpg?v=638131020536530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-lirios/p",
+  popularity: 661
  },
  {
-  sku: "oxford-60604782",
-  name: "Tigela Ramequin 50 Ml Branco/Vermelho",
-  brand: "Cookware",
-  unitPrice: 22.9,
+  sku: "oxford-60604269",
+  name: "Cafeteira Italiana Moka de Alumínio 300 ml Black",
+  brand: "Oxford",
+  unitPrice: 169.9,
   unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179141/004715_0207_Ramequin_50ml_bic_vermelho.jpg?v=638035332841970000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-vermelho-50ml/p",
-  popularity: 1104
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192760/Moka_G.jpg?v=638816916293470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-italiana-moka-6xicaras/p",
+  popularity: 662
  },
  {
-  sku: "oxford-60604778",
-  name: "Tigela Ramequin 50 Ml Branco/Amarelo",
-  brand: "Cookware",
-  unitPrice: 22.9,
+  sku: "oxford-60604213",
+  name: "Travessa Gn 2/3 Em Melamina 5,1l Container",
+  brand: "Oxford",
+  unitPrice: 144.9,
   unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179136/004717_0209_Ramequin_50ml_bic_amarelo.jpg?v=638035326737670000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-amarelo-50ml/p",
-  popularity: 1105
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203172/086630_Melamina_Travessa_GN_2_3.jpg?v=639154224510000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-2-3-melamina-container-5-1-litros/p",
+  popularity: 663
  },
  {
-  sku: "oxford-60604777",
-  name: "Tigela Ramequin 50 Ml Branco",
-  brand: "Cookware",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179134/004711_9001_Ramequin_50ml_branco.jpg?v=638035286866030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-50ml/p",
-  popularity: 1106
- },
- {
-  sku: "oxford-60604771",
-  name: "Tigela Ramequin 180 Ml Branco/Preto",
-  brand: "Cookware",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179126/004745_0205_Ramequin_180ml_bic_preto.jpg?v=638035273815700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-preto-180ml/p",
-  popularity: 1107
- },
- {
-  sku: "oxford-60604768",
-  name: "Tigela Ramequin 180 Ml Branco",
-  brand: "Cookware",
-  unitPrice: 27.9,
-  unit: "un",
-  category: "cozinha ramequin",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179120/004743_9001_Ramequin_180ml_branco.jpg?v=638035243945900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-180ml/p",
-  popularity: 1108
- },
- {
-  sku: "oxford-60604313",
-  name: "Manteigueira 6 Cm 40 Ml Branco",
-  brand: "Oxford Porcelanas",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181935/oxford-porcelanas-C20B-mantegueira-gourmet-00.jpg?v=638291095329870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/manteigueira-branco-40ml/p",
-  popularity: 1109
- },
- {
-  sku: "oxford-60604268",
-  name: "Cafeteira Italiana Moka de Alumínio 150 ml Black",
+  sku: "oxford-60604211",
+  name: "Tábua Para Servir Redonda Em Melamina 30,5 Cm Slim",
   brand: "Oxford",
   unitPrice: 109.9,
   unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188430/Moka_P.jpg?v=638793900901000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-italiana-moka-3xicaras/p",
-  popularity: 1110
- },
- {
-  sku: "oxford-60604267",
-  name: "Jogo de 6 Taças de Cristal Para Coquetel 530 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 279.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190386/111433_Alumina_Taca_Coquetel_530ml_cj_6.jpg?v=638815406026200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-coquetel-classic-350-ml/p",
-  popularity: 1111
- },
- {
-  sku: "oxford-60604266",
-  name: "Jogo de 6 Taças de Cristal Posh 140 Ml Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "tacas e copos coquetel",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192791/111437_Alumina_Taca_Posh_140ml_cj_6.jpg?v=638816922025470000",
-  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-posh-classic-140-ml/p",
-  popularity: 1112
- },
- {
-  sku: "oxford-60604220",
-  name: "Travessa Gn 1/1 Em Melamina 7l Container",
-  brand: "Oxford",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203157/076416_Melanina_travessa_GN-1_1_524x32cm_7L.jpg?v=639154226944830000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-1-melamina-container-7-litros/p",
-  popularity: 1113
- },
- {
-  sku: "oxford-60604218",
-  name: "Prato Em Melamina 36 X 36 Cm Quartier",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
   category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177788/6-PRATOS-QUADRADO-EM-MELAMINA-36X36CM-BRANCO-MARFIM-J418062-M_Individuais.jpg?v=639154236009430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/prato-melamina-quartier-36-x-36-cm/p",
-  popularity: 1114
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203123/Melanina_Tabua_para_servir_redonda_slim_305cm_13cm.jpg?v=639154235756430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tabua-servir-redonda-melamina-slim-30-5-cm/p",
+  popularity: 664
  },
  {
-  sku: "oxford-60604216",
-  name: "Tigela Em Melamina 3l Ocean",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178257/Tigela_Ocean_431249cm_3L.jpg?v=639154231648700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-melamina-ocean-3-litros/p",
-  popularity: 1115
- },
- {
-  sku: "oxford-60604214",
-  name: "Travessa Gn 2/4 Em Melamina 3l 52 X 16 Cm Container",
-  brand: "Oxford",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203175/076412_Melanina_Travessa_GN-2_4_52x16cm--3L.jpg?v=639154224124700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-2-4-melamina-container-52-x-16-litros/p",
-  popularity: 1116
- },
- {
-  sku: "oxford-60604208",
-  name: "Travessa Modular Em Melamina 1l Zen",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203178/086662_Melamina_Travessa_Modular_Zen_441x26cm_1L.jpg?v=639154223853230000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-modular-melamina-zen-1-litro/p",
-  popularity: 1117
- },
- {
-  sku: "oxford-60604207",
-  name: "Tigela Em Melamina 3300 Ml Quartier",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203135/6-Tigelas-Quadrada-Em-Melamina-3300Ml-24X24Cm---Branco-Marfim---J447771-M.jpg?v=639154231985430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-melamina-quartier-3300-ml/p",
-  popularity: 1118
- },
- {
-  sku: "oxford-60604205",
-  name: "Terrina Em Melamina 900 Ml Colors Red",
-  brand: "Oxford",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178227/076409_Terrina_Colors_vermelha.jpg?v=638004972384570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/terrina-melamina-colors-red-900-ml/p",
-  popularity: 1119
- },
- {
-  sku: "oxford-60604201",
-  name: "Tigela Rasa Quadrada Em Melamina 25,2 X 25,2 Cm Tóquio",
-  brand: "Oxford",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "buffet tigelas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203205/12-Tigelas-Rasa-Quadrada-Toquio-Em-Melamina-106X106Cm---Preto-E-Brilho---D166013-M.jpg?v=639154215985700000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tigela-rasa-quadrada-melamina-toquio-25-2-x-25-2-cm/p",
-  popularity: 1120
- },
- {
-  sku: "oxford-60604199",
-  name: "Travessa Gn 1/4 Em Melamina 1,5l Container",
-  brand: "Oxford",
-  unitPrice: 71.9,
-  unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203166/086627_Melamina_Travessa_GN_1_4.jpg?v=639154226051800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-4-melamina-container-1-5-litros/p",
-  popularity: 1121
- },
- {
-  sku: "oxford-60604196",
-  name: "Travessa Funda Em Melamina 30,5 X 20,2 Cm Landscape",
+  sku: "oxford-60604192",
+  name: "Travessa Para Servir Em Melamina 35,5 X 8,5 Cm Modern",
   brand: "Oxford",
   unitPrice: 54.9,
   unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203152/076380_Melanina_Travessa_Funda_Landscape_305x202cm_71cm.jpg?v=639154229594430000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-melamina-quartier-1-4-litros/p",
-  popularity: 1122
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203184/12-Tabuas-P-Servir-Retangular-Em-Melamina-355X162Cm---Branco-Marfim---2114-M.jpg?v=639154222997200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-servir-melamina-modern-35-5-x-8-5-cm/p",
+  popularity: 665
  },
  {
-  sku: "oxford-60604193",
-  name: "Travessa Gn 1/6 Em Melamina 900 Ml Container",
+  sku: "oxford-60604134",
+  name: "Pegador Multiuso 34,5 Cm Cool Grey",
   brand: "Oxford",
   unitPrice: 54.9,
   unit: "un",
-  category: "cozinha travessas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203169/086628_Melamina_Travessa_GN_1_6--174x159cm_900ml.jpg?v=639154224809530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-6-melamina-container-900-ml/p",
-  popularity: 1123
- },
- {
-  sku: "oxford-60604191",
-  name: "Tábua Para Servir Retangular Em Melamina 32,3 X 13,7 Cm Slim",
-  brand: "Oxford",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203126/076367-tabua-para-servir-retangular-em-melamina-media.jpg?v=639154235372900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/tabua-servir-retangular-melamina-slim-32-3-x-8-5-cm/p",
-  popularity: 1124
- },
- {
-  sku: "oxford-60604189",
-  name: "Prato Em Melamina 29,5 X 12 Cm Tóquio",
-  brand: "Oxford",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "gourmet complementos gourmet",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203201/12-Pratos-Toquio-Em-Melamina-295X12Cm---Preto-E-Brilho---D166064-M.jpg?v=639154216316000000",
-  productUrl: "https://www.oxfordporcelanas.com.br/prato-melamina-toquio-29-5-x-12-cm/p",
-  popularity: 1125
- },
- {
-  sku: "oxford-60604156",
-  name: "Rolo Para Massa de Silicone 46 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 79.9,
-  unit: "un",
   category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178015/070275_Rolos_Massa_De_Silicone_46Cm_Cool_Grey.jpg?v=637970490570170000",
-  productUrl: "https://www.oxfordporcelanas.com.br/rolo-massa-silicone-cool-grey-46-cm/p",
-  popularity: 1126
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178012/069926_Pegadores_Multiuso_345Cm_Cool_Grey.jpg?v=637970481345770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pegador-multiuso-cool-grey-34-cm/p",
+  popularity: 666
  },
  {
-  sku: "oxford-60604140",
-  name: "Porta Papel Toalha Cool Grey",
+  sku: "oxford-60604131",
+  name: "Moedor Em Madeira Para Sal E Pimenta 21,5 Cm Natural",
   brand: "Oxford",
-  unitPrice: 71.9,
+  unitPrice: 131.9,
   unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177997/070278_Porta_Papel_Toalha_Cool-Grey.jpg?v=637970416791600000",
-  productUrl: "https://www.oxfordporcelanas.com.br/porta-papel-toalha-cool-grey/p",
-  popularity: 1127
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178074/115293_Moedor_sal_pimenta_G_5x5_H215cm.jpg?v=637974599337300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/moedor-sal-pimenta-madeira-natural-21-cm/p",
+  popularity: 667
  },
  {
-  sku: "oxford-60604126",
-  name: "Infusor de Cha Em Inox 14,8 Cm Prateado",
+  sku: "oxford-60604129",
+  name: "Moedor Em Madeira Para Pimenta 16,5 Cm Natural",
   brand: "Oxford",
-  unitPrice: 29.9,
+  unitPrice: 115.9,
   unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178004/114110_Infusor_de_cha_inox_2x148cm.jpg?v=637970432521030000",
-  productUrl: "https://www.oxfordporcelanas.com.br/infusor-cha-inox-prateado-14-cm/p",
-  popularity: 1128
+  category: "cozinha utensilios linha madeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178071/115291_Moedor_sal_pimenta_P_5x5_H166cm.jpg?v=637974598018800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/moedor-pimenta-madeira-natural-16-cm/p",
+  popularity: 668
  },
  {
-  sku: "oxford-60604125",
-  name: "Infusor de Cha Baleia Em Silicone E Inox Water Blue",
-  brand: "Oxford",
-  unitPrice: 29.9,
-  unit: "un",
-  category: "cha e cafe cafeteria",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178002/114134_Infusor_de_cha_baleia_12x4x35cm_01.jpg?v=637970431793800000",
-  productUrl: "https://www.oxfordporcelanas.com.br/infusor-cha-silicone-baleia-water-blue/p",
-  popularity: 1129
- },
- {
-  sku: "oxford-60604121",
-  name: "Espátula Para Bolo Cool Grey",
-  brand: "Oxford",
-  unitPrice: 40.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178322/070284_Espatula_para_Bolo_Cool_Grey_268x61x4cm.jpg?v=638007501619630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/espatula-bolo-cool-grey/p",
-  popularity: 1130
- },
- {
-  sku: "oxford-60604109",
-  name: "Escumadeira de Silicone 33,5 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178313/069948_Escumadeira_Cool_Grey_335cm.jpg?v=638007497571070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/escumadeira-silicone-cool-grey-33-cm/p",
-  popularity: 1131
- },
- {
-  sku: "oxford-60604092",
-  name: "Concha de Silicone 31 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 76.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178084/069951_Utensilios_Em_Silicone_Com_Cabo_Inox_Cool_Grey_concha.jpg?v=637974636894370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-cool-frey-31-cm/p",
-  popularity: 1132
- },
- {
-  sku: "oxford-60604082",
-  name: "Colher Para Espaguete 34 Cm Cool Grey",
-  brand: "Oxford",
-  unitPrice: 71.9,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177926/069957_Colher_Espaguete_Aco_Inox_silicone_Cool_Grey_34cm.jpg?v=637958329184070000",
-  productUrl: "https://www.oxfordporcelanas.com.br/colher-espaquete-cool-grey-34-cm/p",
-  popularity: 1133
- },
- {
-  sku: "oxford-60604039",
-  name: "Taça de Cristal Espumante 210 Ml Forever Classic",
-  brand: "Alumina Crystal",
-  unitPrice: 39.9,
-  unit: "un",
-  category: "tacas e copos espumante",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189270/Forever_Classic_Taca_Espumante_210ml-00.jpg.jpg?v=638799153304370000",
-  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-espumante-210-ml-forever-classic/p",
-  popularity: 1134
- },
- {
-  sku: "oxford-60603802",
-  name: "Cesta de Piquenique em Fibra Natural para 2 Pessoas",
-  brand: "Oxford",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "servir piquenique",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176680/116710_Cesta_Piquenique_duas_pessoas_Fechada_40x29cm_H28cm.jpg?v=637855662243570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/cesta-piquenique-fibra-natural/p",
-  popularity: 1135
- },
- {
-  sku: "oxford-60603757",
-  name: "Pote Bahia Em Vidro Borosilicato 600 Ml Com Tampa de Bambu",
+  sku: "oxford-60603837",
+  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Peach",
   brand: "Oxford Porcelanas",
-  unitPrice: 34.9,
+  unitPrice: 210.9,
   unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184850/Pote_de_Vidro_01.jpg?v=638536219508630000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-com-tampa-600ml/p",
-  popularity: 1136
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190798/116179.jpg?v=638815438599900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/prato-raso-flamingo-peach/p",
+  popularity: 669
  },
  {
-  sku: "oxford-60603756",
-  name: "Pote Bahia Em Vidro Borosilicato 1,2 L Com Tampa de Bambu",
-  brand: "Oxford Porcelanas",
-  unitPrice: 43.9,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184849/Pote_de_Vidro_03.jpg?v=638536217378530000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-com-tampa-1l/p",
-  popularity: 1137
- },
- {
-  sku: "oxford-60603728",
-  name: "Caneca Ryo 260 Ml Blue Bay",
+  sku: "oxford-60603740",
+  name: "Caneca Ryo 260 Ml White",
   brand: "Cerâmicas",
   unitPrice: 27.9,
   unit: "un",
   category: "cha e cafe canecas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209470/Ryo_Caneca_Pequena_260ml_Blue_Bay-otimizada.webp?v=639259302295200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-blue-bay-260ml/p",
-  popularity: 1138
- },
- {
-  sku: "oxford-60603680",
-  name: "Forma de Silicone Para Gelo Com Tampa Azul",
-  brand: "Oxford",
-  unitPrice: 42.63,
-  unit: "un",
-  category: "cozinha utensilios",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184418/069918-forma-p-gelo-c-tampa-water-blue-media.jpg?v=638458471173870000",
-  productUrl: "https://www.oxfordporcelanas.com.br/forma-silicone-gelo-azul/p",
-  popularity: 1139
- },
- {
-  sku: "oxford-60603679",
-  name: "Saladeira de Vidro Redonda 3,5 L",
-  brand: "Biona",
-  unitPrice: 84.9,
-  unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176517/068465-1.jpg?v=637842594300200000",
-  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-vidro-redonda-3-5l/p",
-  popularity: 1140
- },
- {
-  sku: "oxford-60603678",
-  name: "Saladeira de Vidro Redonda 4,4 L",
-  brand: "Biona",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "servir saladeira",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176516/068463-1.jpg?v=637842594296900000",
-  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-vidro-redonda-4-4l/p",
-  popularity: 1141
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209475/Ryo_Caneca_Pequena_260ml_White-otimizada.webp?v=639259303238600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-white-260ml/p",
+  popularity: 670
  },
  {
   sku: "oxford-60603677",
@@ -12565,6 +7384,5187 @@ export const CATALOG: CatalogItem[] = [
   category: "servir bowls e tigelas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176515/068409-1.jpg?v=637842594292200000",
   productUrl: "https://www.oxfordporcelanas.com.br/tigela-vidro-redonda-1l/p",
+  popularity: 671
+ },
+ {
+  sku: "oxford-60603670",
+  name: "Assadeira de Vidro Redonda 3 L",
+  brand: "Biona",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176508/068539-1.jpg?v=637842594262500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/assadeira-vidro-redonda-3l/p",
+  popularity: 672
+ },
+ {
+  sku: "oxford-60603665",
+  name: "Faqueiro 24 Peças Cinza Neutro",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176496/085556-1.jpg?v=637842594208930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-24-pecas-cinza/p",
+  popularity: 673
+ },
+ {
+  sku: "oxford-60603663",
+  name: "Tigela Infantil de Silicone Com Base de Sucção E Tampa Verde",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176295/113366-1.jpg?v=637830495063430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-infantil-silicone-base-succao/p",
+  popularity: 674
+ },
+ {
+  sku: "oxford-60603652",
+  name: "Babador Infantil de Silicone Com Pega Migalhas Verde",
+  brand: "Oxford",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176280/113369-1.jpg?v=637830494979430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/babador-infantil-silicone-pega-migalhas-verde/p",
+  popularity: 675
+ },
+ {
+  sku: "oxford-60603268",
+  name: "Conjunto Com 2 Talheres Infantil de Silicone 8 Cm Orange",
+  brand: "Oxford",
+  unitPrice: 19.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174339/Linha---Baby---talheres---orange.jpg?v=637637891848400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-talheres/p",
+  popularity: 676
+ },
+ {
+  sku: "oxford-60603267",
+  name: "Prato de Silicone 3 Divisórias Com Base de Sucção E Tampa Orange",
+  brand: "Oxford",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174337/Linha---Baby---prato---orange.jpg?v=637637889686970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/infantil-orange-prato/p",
+  popularity: 677
+ },
+ {
+  sku: "oxford-60603209",
+  name: "Faca Do Chef Em Cerâmica 29 Cm All Black",
+  brand: "Oxford",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208934/Faca_Ceramica_Faca_Chef_29cm-otimizada.webp?v=639256100544770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faca-do-chef-em-ceramica-29-cm/p",
+  popularity: 678
+ },
+ {
+  sku: "oxford-60603159",
+  name: "Jogo de 12 Facas Para Sobremesa 16,5 Cm Farol",
+  brand: "Oxford",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173572/Faca-de-sobremesa-individual.jpg?v=637606564783800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol3/p",
+  popularity: 679
+ },
+ {
+  sku: "oxford-60603129",
+  name: "Jogo de 6 Colheres de Chá 12,8 cm Class",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173522/Colher-de-Cha-Class-individual.jpg?v=637606533729170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class4/p",
+  popularity: 680
+ },
+ {
+  sku: "oxford-60603098",
+  name: "Jogo de 6 Taças de Cristal Para Prosecco 230 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190455/Taca-de-prosecco.jpg?v=638815408633700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-complementoswine-classic1/p",
+  popularity: 681
+ },
+ {
+  sku: "oxford-60603092",
+  name: "Jogo de 6 Taças de Cristal Para Conhaque 660 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190494/Taca-de-conhaque-classic.jpg?v=638815410659000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic2/p",
+  popularity: 682
+ },
+ {
+  sku: "oxford-60603090",
+  name: "Jogo de 6 Taças Para Gin 780 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 429.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207382/Taca-p-gin.jpg?v=639227427536430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic8/p",
+  popularity: 683
+ },
+ {
+  sku: "oxford-60603085",
+  name: "Jarra de Cristal 1300 Ml Easy Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "tacas e copos complementos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188651/Jarra-1300ml-individual.jpg.jpg?v=638796468103900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-complementosalumina-classic1/p",
+  popularity: 684
+ },
+ {
+  sku: "oxford-60603023",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Merengue",
+  brand: "Cerâmicas",
+  unitPrice: 849.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177834/5507_Unni_Merengue_20_30pcs_1104x1104px.jpg?v=637949683790200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-merengue/p",
+  popularity: 685
+ },
+ {
+  sku: "oxford-60601670",
+  name: "Faqueiro 16 Peças Bossa",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208312/Oxford_Talheres_Bossa.jpg?v=639249808221500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/bossa-faqueiro/p",
+  popularity: 686
+ },
+ {
+  sku: "oxford-60601341",
+  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Mandala",
+  brand: "Biona",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191669/Biona_Donna_Mandala_Prato_Raso-6.jpg?v=638816126754930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-raso-mandala/p",
+  popularity: 687
+ },
+ {
+  sku: "oxford-60600952",
+  name: "Jogo de 6 Taças de Sobremesa Soleil Victória",
+  brand: "Oxford Porcelanas",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "servir sobremesa",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192000/oxford-porcelanas-tacas-taca-de-sobremesa-soleil-victoria-6-pecas-01.jpg?v=638816146291930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-sobremesa-soleil-victoria/p",
+  popularity: 688
+ },
+ {
+  sku: "oxford-60600803",
+  name: "Jogo de 3 Potes Herméticos de Vidro Redondos",
+  brand: "Oxford",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193893/P16T_P17T_P18T_Pote-Hermetico-Borosilicato_Redondo_00_l.jpg?v=638826771571270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/potes-hermetico-redondo/p",
+  popularity: 689
+ },
+ {
+  sku: "oxford-60600785",
+  name: "Aparelho de Jantar e Chá 30 Peças Donna Lola",
+  brand: "Biona",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180537/Conjunto_Lola.jpg?v=638138718012070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-lola/p",
+  popularity: 690
+ },
+ {
+  sku: "oxford-60600674",
+  name: "Jogo de 6 Pratos Rasos 27,5 Cm Ryo Pink Sand",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191723/077357_Ryo_Pink_Sand_Prato_Raso_27cm_6.jpg?v=638816129527070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-pink-sand/p",
+  popularity: 691
+ },
+ {
+  sku: "oxford-60600677",
+  name: "Jogo de 6 Pratos Rasos 27 Cm Ryo Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191735/oxford-porcelanas-prato-raso-ryo-blue-bay-6-pecas-01.jpg?v=638816130031030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-ryo-blue-bay/p",
+  popularity: 692
+ },
+ {
+  sku: "oxford-60600654",
+  name: "Jogo de 6 Pratos Fundos 22,5 Cm Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191744/oxford-porcelanas-prato-fundo-ryo-white-6-pecas-01.jpg?v=638816130246330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-white/p",
+  popularity: 693
+ },
+ {
+  sku: "oxford-60201305",
+  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Folk",
+  brand: "Biona",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191486/biona-prato-sobremesa-donna-folk-01.jpg?v=638816117310830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-donna-folk/p",
+  popularity: 694
+ },
+ {
+  sku: "oxford-60201303",
+  name: "Jogo de 6 Pratos Rasos 24 Cm Donna Folk",
+  brand: "Biona",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191490/biona-prato-raso-donna-folk-01.jpg?v=638816117615000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-rasos-donna-folk/p",
+  popularity: 695
+ },
+ {
+  sku: "oxford-50100301",
+  name: "Jogo de 6 Pratos Sobremesa Pró 20 Cm",
+  brand: "Oxford Porcelanas",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "gourmet pratos restaurante prato pro",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192708/oxford-porcelanas-gourmet-pro-prato-sobremesa-M03C-01.jpg?v=638816339135700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/gourmet-prato-sobremesa-pro-20cm-conjunto/p",
+  popularity: 696
+ },
+ {
+  sku: "oxford-29903201",
+  name: "Tigela 600 Ml Branco",
+  brand: "Cerâmicas",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159508/oxford-daily-tigela-colorida-white-0802.jpg?v=636244910848500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-600ml-branco/p",
+  popularity: 697
+ },
+ {
+  sku: "oxford-29900506",
+  name: "Caneca Mini Quartier 220 Ml Preto",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/159203/oxford-daily-caneca-quartier-mini-0806.jpg?v=636243927759800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-preto/p",
+  popularity: 698
+ },
+ {
+  sku: "oxford-30400106",
+  name: "Assadeira Refratária Fall Funda 3.900 Ml",
+  brand: "Cookware",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/158059/oxford-cookware-travessa-refrataria-fall-retangular-funda-3900ml-00.jpg?v=636219982790500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-funda-3900ml/p",
+  popularity: 699
+ },
+ {
+  sku: "oxford-30400103",
+  name: "Assadeira Refratária Fall Redonda 2.100 Ml",
+  brand: "Cookware",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207368/oxford-cookware-travessa-refrataria-fall-redonda-00.jpg?v=639227423840200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-fall-redonda-2100ml/p",
+  popularity: 700
+ },
+ {
+  sku: "oxford-10701295",
+  name: "Jogo de 6 Xícaras Pequenas 75 Ml Com Pires Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192380/oxford-porcelanas-xicaras-cafe-soleil-white-01.jpg?v=638816166972800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/soleil-white-xicaras-cafe/p",
+  popularity: 701
+ },
+ {
+  sku: "oxford-10201107",
+  name: "Sopeira 2 Litros Com Tampa Flamingo Sofia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "servir sopeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/174380/9209_Flamingo_Sofia_sopeira.jpg?v=637641096019370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-sofia-sopeira/p",
+  popularity: 702
+ },
+ {
+  sku: "oxford-60201302",
+  name: "Aparelho de Jantar e Chá 30 Peças Donna Folk",
+  brand: "Biona",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180589/5118_Donna-Folk_20_30pcs.jpg?v=638138744974570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-folk/p",
+  popularity: 703
+ },
+ {
+  sku: "oxford-10200501",
+  name: "Aparelho de Jantar e Chá 30 Peças Flamingo Isabel",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1379.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/155992/oxford-porcelanas-aparelho-de-jantar-flamingo-isabel-30-pecas-00.jpg?v=636213653317470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-isabel/p",
+  popularity: 704
+ },
+ {
+  sku: "oxford-60608488",
+  name: "Jogo de 6 Pratos Rasos 26 cm Noite de Natal",
+  brand: "Cerâmicas",
+  unitPrice: 177.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209365/Noite_de_Natal_Conjunto_6_Raso.webp?v=639258709753870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-noite-de-natal/p",
+  popularity: 705
+ },
+ {
+  sku: "oxford-60608478",
+  name: "Jogo de Jantar e Lanche 4 Peças Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "aparelhos de jantar 6 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209134/Jogo-de-JantarLanche-4-Pecas-Flat-Chuvisco.jpg?v=639257032666470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-4-pecas-flat-chuvisco/p",
+  popularity: 706
+ },
+ {
+  sku: "oxford-60608477",
+  name: "Jogo de Jantar e Lanche 3 Peças Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "aparelhos de jantar 6 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209122/Jogo-de-JantarLanche-3-Pecas-Flat-Chuvisco.jpg?v=639257025152900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-3-pecas-flat-chuvisco/p",
+  popularity: 707
+ },
+ {
+  sku: "oxford-60608476",
+  name: "Jogo de Jantar e Lanche 4 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "aparelhos de jantar 6 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209284/Aparelho-de-Jantar-24-Pecas-Ryo-Maresia--1-.jpg?v=639258578910900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-4-pecas-ryo-maresia/p",
+  popularity: 708
+ },
+ {
+  sku: "oxford-60608475",
+  name: "Jogo de Jantar e Lanche 3 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "servir lanche",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209291/Jogo-jantar-e-lanche-3-pecas-Maresia.jpg?v=639258579083200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-jantar-lanche-3-pecas-ryo-maresia/p",
+  popularity: 709
+ },
+ {
+  sku: "oxford-60608473",
+  name: "Jogo de Lanche 3 Peças Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209062/Conjunto-Lanche-3-pecas-Unni-Orquidea.jpg?v=639256910051300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-orquidea/p",
+  popularity: 710
+ },
+ {
+  sku: "oxford-60608471",
+  name: "Jogo de Lanche 3 Peças Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209041/Conjunto-Lanche-3-pecas-Unni-Caminho-da-Selva.jpg?v=639256839194800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-caminho-da-selva/p",
+  popularity: 711
+ },
+ {
+  sku: "oxford-60608470",
+  name: "Jogo de Lanche 3 Peças Unni Damas",
+  brand: "Cerâmicas",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209028/Conjunto-Lanche-3-pecas-Unni-Damas.jpg?v=639258472006000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-damas/p",
+  popularity: 712
+ },
+ {
+  sku: "oxford-60608469",
+  name: "Jogo de Lanche 3 Peças Unni Stripes and Dots",
+  brand: "Cerâmicas",
+  unitPrice: 69.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209020/Conjunto-Lanche-3-pecas-stripes-and-dots.jpg?v=639256814162400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-unni-stripes-and-dots/p",
+  popularity: 713
+ },
+ {
+  sku: "oxford-60608467",
+  name: "Jogo de Lanche 3 Peças Flat Gray",
+  brand: "Cerâmicas",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209001/Conjunto-Lanche-3-pecas-flat-Gray.jpg?v=639256795969230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-flat-gray/p",
+  popularity: 714
+ },
+ {
+  sku: "oxford-60608466",
+  name: "Jogo de Lanche 3 Peças Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208983/Conjunto-Lanche-3-pecas-flat-Onix.jpg?v=639256786946030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-oxford-flat-onix/p",
+  popularity: 715
+ },
+ {
+  sku: "oxford-60608464",
+  name: "Jogo de Lanche 3 Peças Ryo Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208957/Oxford_Porcelanas_Ryo_Blue_Bay_Prato_Sobremesa_tigela_caneca-grande.jpg?v=639256759570670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-blue-bay/p",
+  popularity: 716
+ },
+ {
+  sku: "oxford-60608463",
+  name: "Jogo de Lanche 3 Peças Ryo Volcano",
+  brand: "Oxford Porcelanas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208947/Conjunto-Lanche-3-pecas-Ryo-Volcano.jpg?v=639256751235870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-volcano/p",
+  popularity: 717
+ },
+ {
+  sku: "oxford-60608458",
+  name: "Jogo de 2 Taças de Cristal para Espumante 190 ml Titanium Max",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209505/Titanium_Conj_2_Espumante-190-ml-otimizada.webp?v=639259450201130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-para-espumante-190-ml-titanium-max/p",
+  popularity: 718
+ },
+ {
+  sku: "oxford-60608455",
+  name: "Jogo de 2 Taças de Cristal 520 ml Titanium Max",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209525/Titanium_Conj_2_520-ml-otimizada.webp?v=639259450575370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-2-tacas-de-cristal-520-ml-titanium-max/p",
+  popularity: 719
+ },
+ {
+  sku: "oxford-60608449",
+  name: "Jogo de 4 Canecas Mendi 360 Ml Marfim",
+  brand: "Cerâmicas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208735/4-canecas-Mendi-Marfim.jpg?v=639250988864200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-mendi-360-ml-marfim/p",
+  popularity: 720
+ },
+ {
+  sku: "oxford-60608443",
+  name: "Jogo de 4 Pratos Fundos 23 Cm Mendi Marfim",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208678/standard_resolution - 2026-09-15T143955.249.jpg?v=639250912703770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-23-cm-mendi-marfim/p",
+  popularity: 721
+ },
+ {
+  sku: "oxford-60608440",
+  name: "Jogo Lanche e Chá 18 Peças Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208630/standard_resolution---2026-09-15T130612.833.jpg?v=639250866177700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-cha-18-pecas-unni-brisa/p",
+  popularity: 722
+ },
+ {
+  sku: "oxford-60608438",
+  name: "Jogo de 4 Pratos Sobremesa 20 Cm Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208596/standard_resolution---2026-09-15T114137.204.jpg?v=639250802455230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-unni-brisa/p",
+  popularity: 723
+ },
+ {
+  sku: "oxford-60608437",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208587/standard_resolution---2026-09-15T112541.792.jpg?v=639250792297330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-brisa/p",
+  popularity: 724
+ },
+ {
+  sku: "oxford-60608436",
+  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208574/standard_resolution---2026-09-15T111452.617.jpg?v=639250786913200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-brisa/p",
+  popularity: 725
+ },
+ {
+  sku: "oxford-60608434",
+  name: "Jogo de 4 Tigelas Flat 600 Ml Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208558/standard_resolution---2026-09-15T105506.127.jpg?v=639258453206870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-flat-600-ml-samambaia/p",
+  popularity: 726
+ },
+ {
+  sku: "oxford-60608432",
+  name: "Jogo de 4 Pratos Fundos 20,5 Cm Flat Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208544/standard_resolution---2026-09-15T101317.054.jpg?v=639250750033600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-flat-samambaia/p",
+  popularity: 727
+ },
+ {
+  sku: "oxford-60608430",
+  name: "Aparelho de Jantar 24 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 789.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209298/24-pecas-maresia.png?v=639258579235000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-24-pecas-ryo-maresia/p",
+  popularity: 728
+ },
+ {
+  sku: "oxford-60608429",
+  name: "Aparelho de Jantar e Chá 40 Peças Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1099.9,
+  unit: "un",
+  category: "aparelhos de jantar ryo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208266/9504_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=639247396274530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-ryo-white/p",
+  popularity: 729
+ },
+ {
+  sku: "oxford-60608427",
+  name: "Jogo Lanche 8 Peças Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "servir lanche",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208249/Aparelho-24-pecas-ryo-white--1-.png?v=639247346741170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-8-pecas-oxford-ryo-white/p",
+  popularity: 730
+ },
+ {
+  sku: "oxford-60608426",
+  name: "Jogo de Lanche 3 Peças Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208242/Oxford_Porcelanas_Ryo_White_Prato_Sobremesa_tigela_caneca-grande.jpg?v=639247324290600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-3-pecas-ryo-white/p",
+  popularity: 731
+ },
+ {
+  sku: "oxford-60608424",
+  name: "Jogo de Chá e Lanche 18 Peças Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 409.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208222/standard_resolution---2026-09-11T104151.003.jpg?v=639251008218430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-cha-e-lanche-18-pecas-oxford-ryo-white/p",
+  popularity: 732
+ },
+ {
+  sku: "oxford-60608423",
+  name: "Aparelho de Jantar 18 Peças Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 649.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208207/standard_resolution---2026-09-11T102205.052-otimizada.jpg?v=639247301275400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-ryo-white/p",
+  popularity: 733
+ },
+ {
+  sku: "oxford-60608422",
+  name: "Jogo de 4 Canecas 260 Ml Ryo White",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208195/standard_resolution---2026-09-11T101202.819-otimizada.jpg?v=639247292153230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-260-ml-ryo-white/p",
+  popularity: 734
+ },
+ {
+  sku: "oxford-60608421",
+  name: "Jogo de 4 Canecas 380 Ml Ryo White",
+  brand: "Cerâmicas",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208188/standard_resolution---2026-09-11T100658.235-otimizada.jpg?v=639247289586300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-canecas-380-ml-ryo-white/p",
+  popularity: 735
+ },
+ {
+  sku: "oxford-60608420",
+  name: "Jogo de 4 Tigelas 500 ml Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208181/4-tigelas-ryo-white.png?v=639247286398170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tigelas-500-ml-ryo-white/p",
+  popularity: 736
+ },
+ {
+  sku: "oxford-60608418",
+  name: "Jogo de 4 Pratos Sobremesa 21,5m Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208167/standard_resolution - 2026-09-11T093738.642-otimizada.jpg?v=639247272260770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-21-5m-ryo-white/p",
+  popularity: 737
+ },
+ {
+  sku: "oxford-60608417",
+  name: "Jogo de 4 Pratos Fundos 22,5 Cm Ryo White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208160/standard_resolution---2026-09-11T093025.653-otimizada.jpg?v=639247268621200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-22-5-cm-ryo-white/p",
+  popularity: 738
+ },
+ {
+  sku: "oxford-60608415",
+  name: "Jogo de Lanche e Chá 12 peças Unni Tropicano",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208141/standard_resolution---2026-09-11T085453.734.jpg?v=639251001052730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-e-cha-12-pecas-unni-tropicano/p",
+  popularity: 739
+ },
+ {
+  sku: "oxford-60608346",
+  name: "Jogo de 4 Taças de Sobremesa Soleil White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 151.9,
+  unit: "un",
+  category: "servir sobremesa",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207273/Soleil-4-tacas.png?v=639226582876800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-sobremesa-soleil-white/p",
+  popularity: 740
+ },
+ {
+  sku: "oxford-60608345",
+  name: "Assadeira Refratária Samba Média Branco - 2,1 l",
+  brand: "Cookware",
+  unitPrice: 94.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207235/Travessas_Refratarias_Samba_M_21L_Branco.webp?v=639222292561700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-media-branco-2-1-l/p",
+  popularity: 741
+ },
+ {
+  sku: "oxford-60608344",
+  name: "Assadeira Refratária Tango Mini Marrom – 350 ml",
+  brand: "Cookware",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207263/Refratarias_PP_marrom-otimizada.webp?v=639222291413970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-mini-marrom-350-ml/p",
+  popularity: 742
+ },
+ {
+  sku: "oxford-60608339",
+  name: "Assadeira Refratária Samba Pequena Branco - 1,2 l",
+  brand: "Cookware",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207231/Travessas_Refratarias_Samba_-P_12L_Branco.webp?v=639222287531500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-samba-pequena-branco-1-2-l/p",
+  popularity: 743
+ },
+ {
+  sku: "oxford-60608335",
+  name: "Panela Corpo Triplo Indução The Cook 20cm",
+  brand: "Cookware",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206716/TheCook_Panela_20cm_5-otimizada.webp?v=639216382901770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-corpo-triplo-inducao-the-cook-20cm/p",
+  popularity: 744
+ },
+ {
+  sku: "oxford-60608334",
+  name: "Panela Corpo Triplo Indução The Cook 22cm",
+  brand: "Cookware",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206696/TheCook_Panela_22cm_6-otimizada.webp?v=639216382057330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-corpo-triplo-inducao-the-cook-22cm/p",
+  popularity: 745
+ },
+ {
+  sku: "oxford-60608333",
+  name: "Frigideira Antiaderente Corpo Triplo Indução The Cook 22 cm",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206733/TheCook_Frigideira_22cm_3-otimizada.webp?v=639216383583170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-antiaderente-corpo-triplo-inducao-the-cook-22-cm/p",
+  popularity: 746
+ },
+ {
+  sku: "oxford-60608332",
+  name: "Caçarola Corpo Triplo Indução The Cook 22 cm",
+  brand: "Cookware",
+  unitPrice: 429.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206743/TheCook_Cacarola_22cm_2-otimizada.webp?v=639216384124700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-22-cm-/p",
+  popularity: 747
+ },
+ {
+  sku: "oxford-60608331",
+  name: "Frigideira Corpo Triplo Indução The Cook 30 cm",
+  brand: "Cookware",
+  unitPrice: 419.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206726/TheCook_Frigideira_30cm_4-otimizada.webp?v=639216383208030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-corpo-triplo-inducao-the-cook-30-cm/p",
+  popularity: 748
+ },
+ {
+  sku: "oxford-60608326",
+  name: "Caçarola Corpo Triplo Indução The Cook 24 cm",
+  brand: "Cookware",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206753/TheCook_Cacarola_24cm_2-otimizada.webp?v=639216384407730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-corpo-triplo-inducao-the-cook-24-cm/p",
+  popularity: 749
+ },
+ {
+  sku: "oxford-60608324",
+  name: "Jogo Lanche e Chá 12 peças Unni Stripes and Dots",
+  brand: "Cerâmicas",
+  unitPrice: 252,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206464/12-pecas-stripes-and-dots-otimizada.jpg?v=639210090001500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-12-pecas-unni-stripes-and-dots/p",
+  popularity: 750
+ },
+ {
+  sku: "oxford-60608323",
+  name: "Jogo de 12 Pratos Sobremesa 20 Cm Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 318,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206457/12-pratos-sobremesa-stripes-and-dots.jpg?v=639210084717370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-stripes-and-dots/p",
+  popularity: 751
+ },
+ {
+  sku: "oxford-60608322",
+  name: "Jogo de 12 Pratos Rasos 26 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 398,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206451/12-pratos-rasos-stripes-and-dots-otimizada.jpg?v=639210156288370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-unni-stripes-and-dots/p",
+  popularity: 752
+ },
+ {
+  sku: "oxford-60608321",
+  name: "Jogo de 12 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 358,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206444/12-fundos-stripes-and-dots.jpg?v=639210067585470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-unni-stripes-and-dots/p",
+  popularity: 753
+ },
+ {
+  sku: "oxford-60608319",
+  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 144,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206421/4-xicaras-stripes-and-dots.jpg?v=639209489733970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-unni-stripes-and-dots/p",
+  popularity: 754
+ },
+ {
+  sku: "oxford-60608317",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 144,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206408/4-rasos-stripes-and-dots-otimizada.jpg?v=639209391347270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-stripes-and-dots/p",
+  popularity: 755
+ },
+ {
+  sku: "oxford-60608316",
+  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 120,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206401/4 fundos stripes and dots-otimizada.jpg?v=639209327183600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-stripes-and-dots/p",
+  popularity: 756
+ },
+ {
+  sku: "oxford-60608315",
+  name: "Jogo de 12 Pratos Sobremesa 20 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 318,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206394/12 sobremesa balance.jpg?v=639209315477470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-unni-balance/p",
+  popularity: 757
+ },
+ {
+  sku: "oxford-60608314",
+  name: "Jogo de 12 Pratos Rasos 26 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 398,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206388/12 rasos balance-otimizada.jpg?v=639209309737330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-unni-balance/p",
+  popularity: 758
+ },
+ {
+  sku: "oxford-60608313",
+  name: "Jogo de 12 Pratos Fundos 20,5 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 355,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206381/12-fundos-balance-otimizada.jpg?v=639209270927730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-unni-balance/p",
+  popularity: 759
+ },
+ {
+  sku: "oxford-60608312",
+  name: "Jogo Lanche e Chá 18 peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 375,
+  unit: "un",
+  category: "conjuntos de cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206373/Cha-lanche-balance-otimizada.jpg?v=639209262943530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-18-pecas-unni-balance/p",
+  popularity: 760
+ },
+ {
+  sku: "oxford-60608311",
+  name: "Aparelho De Jantar 18 Peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 555,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206360/18-pecas-balance-otimizada.jpg?v=639210099260370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-balance/p",
+  popularity: 761
+ },
+ {
+  sku: "oxford-60608310",
+  name: "Aparelho de Jantar e Chá 10 Peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 258,
+  unit: "un",
+  category: "aparelhos de jantar 10 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206344/E-commerce_5949_Balance_Conjunto.jpg?v=639209241539600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-10-pecas-unni-balance/p",
+  popularity: 762
+ },
+ {
+  sku: "oxford-60608309",
+  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 144,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206341/4-xicaras-balance-otimizada.jpg?v=639210098143600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-unni-balance/p",
+  popularity: 763
+ },
+ {
+  sku: "oxford-60608308",
+  name: "Jogo de 4 Pratos Sobremesa 20 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 108,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206335/4 sobremesa balance-otimizada.jpg?v=639209230650300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-sobremesa-20-cm-unni-balance/p",
+  popularity: 764
+ },
+ {
+  sku: "oxford-60608307",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 144,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206329/Design sem nome -47--otimizada.jpg?v=639209227742600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-unni-balance/p",
+  popularity: 765
+ },
+ {
+  sku: "oxford-60608306",
+  name: "Jogo de 4 Pratos Fundos 20,5 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 120,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206322/4 fundos balance.png?v=639209224056770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-unni-balance/p",
+  popularity: 766
+ },
+ {
+  sku: "oxford-60608304",
+  name: "Jogo Lanche De 8 Peças Oxford Ryo Maresia",
+  brand: "Cerâmicas",
+  unitPrice: 241,
+  unit: "un",
+  category: "conjuntos de cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209340/4-xicaras-maresia--1--otimizada.jpg?v=639258582343970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-oxford-ryo-maresia/p",
+  popularity: 767
+ },
+ {
+  sku: "oxford-60608303",
+  name: "Jogo de 4 Xícaras Grandes 220 Ml Com Pires Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 153,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206296/4-xicaras-maresia-otimizada.jpg?v=639208382701930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-220-ml-com-pires-ryo-maresia/p",
+  popularity: 768
+ },
+ {
+  sku: "oxford-60608297",
+  name: "Jogo de 12 Pratos Sobremesa 20 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 339,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206247/12-rasos-chuvisco-otimizada--1-.webp?v=639208334317630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20-cm-flat-chuvisco/p",
+  popularity: 769
+ },
+ {
+  sku: "oxford-60608296",
+  name: "Jogo de 12 Pratos Rasos 26 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 476,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206233/12-rasos-chuvisco-otimizada.webp?v=639208336833830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-rasos-26-cm-flat-chuvisco/p",
+  popularity: 770
+ },
+ {
+  sku: "oxford-60608295",
+  name: "Jogo de 12 Pratos Fundos 20,5 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 399,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207549/12-pratos-fundos-chuvisco-otimizada.webp?v=639227465391800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-fundos-20-5-cm-flat-chuvisco/p",
+  popularity: 771
+ },
+ {
+  sku: "oxford-60608292",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 161,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206195/standard_resolution---2026-07-24T160041.570.jpg?v=639207770107300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-flat-chuvisco/p",
+  popularity: 772
+ },
+ {
+  sku: "oxford-60608291",
+  name: "Jogo de 4 Pratos Fundos 20,5 Cm Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 131,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206185/standard_resolution---2026-07-24T154505.877.jpg?v=639207778700630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-flat-chuvisco/p",
+  popularity: 773
+ },
+ {
+  sku: "oxford-60608288",
+  name: "Jogo de 4 Xícaras Grandes 200 Ml Com Pires Donna Cena Inglesa",
+  brand: "Biona",
+  unitPrice: 119,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206171/standard_resolution---2026-07-24T150829.871.jpg?v=639205136283230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-xicaras-grandes-200-ml-com-pires-donna-cena-inglesa/p",
+  popularity: 774
+ },
+ {
+  sku: "oxford-60608280",
+  name: "Jogo de 4 Pratos Fundos 23 Cm Mendi Malaquita",
+  brand: "Cerâmicas",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206095/standard_resolution---2026-07-23T115006.210.jpg?v=639204198682630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-23-cm-mendi-malaquita/p",
+  popularity: 775
+ },
+ {
+  sku: "oxford-60608276",
+  name: "Aparelho de Jantar e Chá 10 Peças Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 320,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205482/E-commerce_5950_Strips_an_dots_Conjunto.jpg?v=639197374379100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-10-pecas-unni-stripes-and-dots/p",
+  popularity: 776
+ },
+ {
+  sku: "oxford-60608270",
+  name: "Aparelho de Jantar e Chá 40 Peças Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 999,
+  unit: "un",
+  category: "aparelhos de jantar outras composicoes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205391/E-commerce_5950_Strips_an_dots_Conjunto.jpg?v=639196551707200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-unni-stripes-and-dots/p",
+  popularity: 777
+ },
+ {
+  sku: "oxford-60608265",
+  name: "Jogo de 4 Pratos Rasos 26 Cm Donna Colb",
+  brand: "Biona",
+  unitPrice: 101,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205354/standard_resolution---2026-07-14T145002.081.jpg?v=639196482945700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-26-cm-donna-colb/p",
+  popularity: 778
+ },
+ {
+  sku: "oxford-60608263",
+  name: "Jogo Lanche de 8 Peças Flat Gray",
+  brand: "Cerâmicas",
+  unitPrice: 290,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205335/standard_resolution - 2026-07-14T141545.302.jpg?v=639196463742200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-de-8-pecas-flat-gray/p",
+  popularity: 779
+ },
+ {
+  sku: "oxford-60608262",
+  name: "Jogo Lanche 8 Peças Flat Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 229,
+  unit: "un",
+  category: "servir lanche",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205328/standard_resolution---2026-07-14T133834.329.jpg?v=639196443870330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-8-pecas-flat-samambaia/p",
+  popularity: 780
+ },
+ {
+  sku: "oxford-60608260",
+  name: "Conjunto para Massa 10 Peças",
+  brand: "Cerâmicas",
+  unitPrice: 338,
+  unit: "un",
+  category: "servir tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205979/churrasco---churrasqueiro--2-.png?v=639202562215900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-para-massa-10-pecas/p",
+  popularity: 781
+ },
+ {
+  sku: "oxford-60608259",
+  name: "Jogo de 4 Pratos Fundos 20,5 cm Massa",
+  brand: "Cerâmicas",
+  unitPrice: 99,
+  unit: "un",
+  category: "servir tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205313/standard_resolution---2026-07-14T113632.098.jpg?v=639196366460530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-20-5-cm-massa/p",
+  popularity: 782
+ },
+ {
+  sku: "oxford-60608258",
+  name: "Jogo Lanche e Chá 18 peças Unni Stripes and Dots",
+  brand: "Cerâmicas",
+  unitPrice: 359,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205306/18-PECAS-STRIPES-AND-DOTS.png?v=639196361445170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-e-cha-18-pecas-unni-stripes-and-dots/p",
+  popularity: 783
+ },
+ {
+  sku: "oxford-60608257",
+  name: "Jogo de 3 Tigelas Flat 600 Ml Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 98,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205298/standard_resolution - 2026-07-14T111441.680.jpg?v=639196353353830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-tigelas-flat-600-ml-samambaia/p",
+  popularity: 784
+ },
+ {
+  sku: "oxford-60608247",
+  name: "Jogo Completo 15 peças Oxford Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 505.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209327/standard_resolution---2026-07-09T082155.138.jpg?v=639258582152430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-completo-15-pecas-oxford--ryo-maresia/p",
+  popularity: 785
+ },
+ {
+  sku: "oxford-60608241",
+  name: "Aparelho de Jantar e Chá 40 Peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 999,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204662/E-commerce_5949_Balance_Conjunto.jpg?v=639186953352700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-40-pecas-unni-balance/p",
+  popularity: 786
+ },
+ {
+  sku: "oxford-60608236",
+  name: "Jogo Lanche 3 Peças Flat Chuvisco Jogo Lanche 3 Peças Oxford Flat Chuvisco",
+  brand: "Cerâmicas",
+  unitPrice: 85.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204629/Design-sem-nome---2026-07-02T152239.530.png?v=639186134462230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-lanche-3-pecas-flat-chuvisco/p",
+  popularity: 787
+ },
+ {
+  sku: "oxford-60608233",
+  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Seda",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205401/Oxford_4_0012_Oxford_Prato_Raso_Seda-otimizada.webp?v=639197154878470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-luna-seda/p",
+  popularity: 788
+ },
+ {
+  sku: "oxford-60608223",
+  name: "Jogo De 4 Pratos De Sobremesa 24,8X14X2 Cm Luna Corfu",
+  brand: "Cerâmicas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205406/Oxford_4_0007_Oxford_Prato_Sobremesa_Corfu-otimizada.webp?v=639197160585900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-de-sobremesa-cm-luna-corfu/p",
+  popularity: 789
+ },
+ {
+  sku: "oxford-60608221",
+  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Sand",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205429/Oxford_4_0005_Oxford_Prato_Fundo_Sand-otimizada.webp?v=639197174984770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-cm-luna-sand/p",
+  popularity: 790
+ },
+ {
+  sku: "oxford-60608220",
+  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Vanilla",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204953/Oxford_4_0014_Oxford_Prato_Fundo_Vanilla.jpg?v=639191302685870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-luna-vanilla/p",
+  popularity: 791
+ },
+ {
+  sku: "oxford-60608218",
+  name: "Jogo De 4 Pratos Fundos 21,5X18X4,5 Cm Luna Seda",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205156/Oxford_4_0011_Oxford_Prato_Fundo_Seda.jpg?v=639192168635200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-fundos-luna-seda/p",
+  popularity: 792
+ },
+ {
+  sku: "oxford-60608215",
+  name: "Jogo De 4 Pratos Rasos 26,5X22,2X2,2 Cm Luna Sand",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos organicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204794/Oxford_4_0006_Oxford_Prato_Raso_Sand-otimizada.webp?v=639187030691130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-pratos-rasos-cm-luna-sand/p",
+  popularity: 793
+ },
+ {
+  sku: "oxford-60608214",
+  name: "Aparelho De Jantar E Lanche 16 Peças Luna Sand - Caneca 360 ml",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205232/Oxford_0000_7103-Luna-Sand-Conjunto-16-pecas-otimizada.webp?v=639192207889470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-lanche-16-pecas-luna-sand/p",
+  popularity: 794
+ },
+ {
+  sku: "oxford-60608212",
+  name: "Aparelho De Jantar E Lanche 16 Peças Luna Seda - Caneca 360 ml",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205163/Oxford_0003_7100-Luna-Seda-Conjunto-16-pecas-otimizada.webp?v=639192168875500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-lanche-16-pecas-luna-seda/p",
+  popularity: 795
+ },
+ {
+  sku: "oxford-60608207",
+  name: "Jogo de Lanche e Chá 18 peças Unni Tropicano",
+  brand: "Cerâmicas",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204090/standard_resolution---2026-06-12T141604.693.jpg?v=639168817919400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-lanche-e-cha-18-pecas-unni-tropicano/p",
+  popularity: 796
+ },
+ {
+  sku: "oxford-60608206",
+  name: "Aparelho de Jantar 18 peças Unni Tropicano",
+  brand: "Cerâmicas",
+  unitPrice: 529.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204069/standard_resolution---2026-06-12T140013.919.jpg?v=639247247655230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-tropicano/p",
+  popularity: 797
+ },
+ {
+  sku: "oxford-60608201",
+  name: "Conjunto Refeição Infantil 5 Peças Me Lhama",
+  brand: "Oxford",
+  unitPrice: 81.9,
+  unit: "un",
+  category: "servir infantil",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203584/Completo.png?v=639156610575970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-refeicao-infantil-5-pecas-me-lhama/p",
+  popularity: 798
+ },
+ {
+  sku: "oxford-60608191",
+  name: "Jogo de 3 Potes Herméticos Cristal (PP+PET) Retangular White",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202703/potes-hermeticos-em-acrilico-white-media.jpg?v=639107563033900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-potes-hermeticos-cristal-retangular-white/p",
+  popularity: 799
+ },
+ {
+  sku: "oxford-60608190",
+  name: "Jogo de 3 Potes Herméticos Cristal (PP+PET) Retangular Grey",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202693/potes-hermeticos-em-acrilico-grey-media.jpg?v=639107549899670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-3-potes-hermeticos-de-cristal-retangular-grey/p",
+  popularity: 800
+ },
+ {
+  sku: "oxford-60608189",
+  name: "Jogo de 4 Potes Herméticos de Vidro Retrô com Tampa de Bambu Pote Hermético de Vidro Retrô 1,6 L com tampa de Bambu",
+  brand: "Oxford",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202685/potes-retro.jpg?v=639177232876300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-potes-hermeticos-de-vidro-retro-com-tampa-de-bambu/p",
+  popularity: 801
+ },
+ {
+  sku: "oxford-60608188",
+  name: "Jogo de 4 Potes Bahia de Vidro Borosilicato Com Tampa de Bambu",
+  brand: "Oxford",
+  unitPrice: 169.6,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202672/potes-redondos-bahia-media.jpg?v=639107497279200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-potes-bahia-de-vidro-borosilicato-com-tampa-de-bambu/p",
+  popularity: 802
+ },
+ {
+  sku: "oxford-60608185",
+  name: "Jogo de 18 Taças de Cristal Dandy",
+  brand: "Alumina Crystal",
+  unitPrice: 1009.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202627/Jogo de 18 Tacas de Cristal Dandy.jpg?v=639107437691630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-18-tacas-de-cristal-dandy/p",
+  popularity: 803
+ },
+ {
+  sku: "oxford-60608182",
+  name: "Jogo de 24 Taças de Cristal Flavour",
+  brand: "Alumina Crystal",
+  unitPrice: 1309.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202561/Jogo-de-24-Tacas-de-Cristal-Flavour.jpg?v=639107365676170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-24-tacas-de-cristal-flavour/p",
+  popularity: 804
+ },
+ {
+  sku: "oxford-60608167",
+  name: "Jogo de 12 Pratos Sobremesa 20x20 Cm Quartier White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "pratos quadrados",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202016/quartier-white-12-sobremesa--1-.jpg?v=639088445590800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-pratos-sobremesa-20x20-cm-quartier-white-1/p",
+  popularity: 805
+ },
+ {
+  sku: "oxford-60608159",
+  name: "Jogo de 12 Xícaras Pequenas 65 Ml Com Pires Plateau White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "conjuntos de cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201977/12-xicaras-de-cafe-plateau.jpg?v=639088417733530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-xicaras-pequenas-65-ml-com-pires-plateau-white-1/p",
+  popularity: 806
+ },
+ {
+  sku: "oxford-60608158",
+  name: "Jogo de 6 Xícaras Pequenas 65 Ml Com Pires Plateau White",
+  brand: "Oxford Porcelanas",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "conjuntos de cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201972/plateau-6-cafezinho.jpg?v=639088443722470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-pequenas-65-ml-com-pires-plateau-white-1/p",
+  popularity: 807
+ },
+ {
+  sku: "oxford-60608157",
+  name: "Kit Petisqueira Oxford 28 Cm + 6 Taças de Cristal para Cerveja 460 ml",
+  brand: "Oxford Porcelanas",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "servir petisqueiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206012/Kit-petisqueira---tacas.jpg?v=639203237491400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-petisqueira-oxford-28-cm-6-tacas-de-cristal-para-cerveja-460-ml-1/p",
+  popularity: 808
+ },
+ {
+  sku: "oxford-60608154",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Maré",
+  brand: "Cerâmicas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201372/Ecommerce_Conj_6_0002_Unni_Mare_Xicara_de_Cha_com_Pires.jpg?v=639062516526970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-mare-1/p",
+  popularity: 809
+ },
+ {
+  sku: "oxford-60608140",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Belle Rosé",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202894/Ecommerce_Conj_6_0004_Flat_Belle_Rose_Prato_Fundo_Top.jpg?v=639118677473630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-20-5-cm-flat-belle-rose-1/p",
+  popularity: 810
+ },
+ {
+  sku: "oxford-60608139",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Belle Rosé",
+  brand: "Cerâmicas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202902/Ecommerce_Conj_6_0005_Flat_Belle_Rose_Prato_Raso.jpg?v=639118678021370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-belle-rose-1/p",
+  popularity: 811
+ },
+ {
+  sku: "oxford-60608137",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Belle Bleu",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202815/Ecommerce_Conj_6_0006_Flat_Belle_Bleu_Prato_Sobremesa.jpg?v=639118659621430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-belle-bleu-1/p",
+  popularity: 812
+ },
+ {
+  sku: "oxford-60607935",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199820/Ecommerce_0061_Unni-Nuray_Conjunto.jpg?v=639052084275200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-unni-nuray/p",
+  popularity: 813
+ },
+ {
+  sku: "oxford-60608051",
+  name: "Caneco de Vidro para Chopp Prost 460ml",
+  brand: "Biona",
+  unitPrice: 17.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200923/Sublimacao-1000-x-1000-Caneco_transparente.png?v=639056590317300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneco-chopp-prost-460-ml-1/p",
+  popularity: 814
+ },
+ {
+  sku: "oxford-60608034",
+  name: "Jogo de 4 Taças de Cristal Para Grappa 100 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205762/4-Tacas-Grappa.jpg?v=639199096786330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-grappa-100-ml-classic/p",
+  popularity: 815
+ },
+ {
+  sku: "oxford-60608031",
+  name: "Jogo de 4 Copos de Cristal Para Cachaça 70 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207374/4-Copos-de-Cristal-Para-Cachaca-70-Ml-Classic.jpg?v=639227426001770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-copos-de-cristal-para-cachaca-70-ml-classic/p",
+  popularity: 816
+ },
+ {
+  sku: "oxford-60608024",
+  name: "Jogo de 6 Copos de Cristal 300 Ml Flat Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207418/933833853C41F575FFD6A3944935B0C6_82efdfdc-f398-4ed9-8c0d-0321d69657b8_Flat_Classic_Copo_300ml-02.jpg?v=639227435768100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-300-ml-flat-classic/p",
+  popularity: 817
+ },
+ {
+  sku: "oxford-60608023",
+  name: "Jogo de 4 Taças de Cristal Para Vinho Branco 360 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205701/4-Tacas-de-Cristal-Para-Vinho-Branco-360-Ml-Forever-Classic.png?v=639199080878000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-vinho-branco-360-ml-forever-classic/p",
+  popularity: 818
+ },
+ {
+  sku: "oxford-60608021",
+  name: "Jogo de 4 Taças de Cristal Para Bourgogne 720 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205685/4-Tacas-de-Cristal-Bourgogne-720-Ml-Forever-Classic.jpg?v=639199075022970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-4-tacas-de-cristal-para-bourgogne-720-ml-forever-classic/p",
+  popularity: 819
+ },
+ {
+  sku: "oxford-60608019",
+  name: "Jogo de 4 Taças de Cristal Para Chardonnay 470 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205676/4-Tacas-de-Cristal-Para-Chardonnay-470-Ml-Forever-Classic.jpg?v=639199073804300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-copos-de-cristal-470-ml-ginga-classic/p",
+  popularity: 820
+ },
+ {
+  sku: "oxford-60608011",
+  name: "Jogo de 6 Taças de Cristal Para Vinho 510 Ml Petra Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205745/17D71406518B56376E42CACB25C6AD28_f45c9597-00e1-41a0-a833-dade96786c91_vinho.jpg?v=639199093682600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-vinho-510-ml-petra-classic/p",
+  popularity: 821
+ },
+ {
+  sku: "oxford-60608010",
+  name: "Jogo de 6 Taças de Cristal Para Água 420 Ml Petra Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 309.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205727/5C8A17B37E34CC7D9EB1D67499D71195_4f6a5bd2-8b0b-4a25-ab98-1b3cd39e6255_Agua.jpg?v=639199082592200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-agua-420-ml-petra-classic/p",
+  popularity: 822
+ },
+ {
+  sku: "oxford-60608009",
+  name: "Jogo de 6 Taças de Cristal Para Espumante 340 Ml Petra Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205709/B41B327192FB50CD430602A8E17EBEEE_d515bfdd-0eb9-405f-a0cc-f53d39853e0f_139223_Taca_Espumante_Petra_340ml_06.jpg?v=639199081535870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-para-espumante-340-ml-petra-classic/p",
+  popularity: 823
+ },
+ {
+  sku: "oxford-60608008",
+  name: "Caneca Mini Quartier 220 Ml Azul Nuvem",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200447/Ecommerce_0222_Caneca_Mini_Quartier_-Azul-Nuvem.jpg?v=639161041705700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-azul-nuvem/p",
+  popularity: 824
+ },
+ {
+  sku: "oxford-60608005",
+  name: "Caneca Mini Quartier 220 Ml Marrom Toffee",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200450/Ecommerce_0224_Caneca_Mini_Quartier_Marrom-Toffee.jpg?v=639161041812970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-220-ml-marrom-toffee/p",
+  popularity: 825
+ },
+ {
+  sku: "oxford-60608004",
+  name: "Caneca Tulipa 330 Ml Azul Nuvem",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200448/Ecommerce_0170_Caneca-Tulipa-Azul-Nuvem.jpg?v=639161045754730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-330-ml-azul-nuvem/p",
+  popularity: 826
+ },
+ {
+  sku: "oxford-60608000",
+  name: "Tigela 300 Ml Azul Nuvem",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200445/Ecommerce_0164_Bazar-Tigela_300_ml-Azul_Nuvem.jpg?v=639052913437030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-300-ml-azul-nuvem/p",
+  popularity: 827
+ },
+ {
+  sku: "oxford-60607993",
+  name: "Tigela 600 Ml Vermelho Canela",
+  brand: "Cerâmicas",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200443/Ecommerce_0157_Bazar-Tigelas_600_ml-Vermelho Canela.jpg?v=639052911889430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-mendi-600-ml-vermelho-canela/p",
+  popularity: 828
+ },
+ {
+  sku: "oxford-60607979",
+  name: "Faqueiro em Aço Inox 24 Peças Fortaleza",
+  brand: "Oxford",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203858/160652_Conjunto_Fortaleza-24-pecas.jpg?v=639167906907970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-fortaleza/p",
+  popularity: 829
+ },
+ {
+  sku: "oxford-60607975",
+  name: "Jogo de 12 Facas de Sobremesa 18 Cm São Paulo",
+  brand: "Oxford",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202421/faca-de-sobremesa-sao-paulo.jpg?v=639101252051700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-facas-de-sobremesa-18-cm-sao-paulo/p",
+  popularity: 830
+ },
+ {
+  sku: "oxford-60607973",
+  name: "Faqueiro em Aço Inox 30 Peças Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203942/160663-faqueiro-30-pecas-ouro-preto-media.jpg?v=639167994375470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-30-pecas-ouro-preto/p",
+  popularity: 831
+ },
+ {
+  sku: "oxford-60607968",
+  name: "Faqueiro em Aço Inox 24 Peças Olinda",
+  brand: "Oxford",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203000/Olinda-24.jpg?v=639135187807500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-em-aco-inox-24-pecas-olinda/p",
+  popularity: 832
+ },
+ {
+  sku: "oxford-60607967",
+  name: "Jogo de 12 Facas de Sobremesa 16,8 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201062/Olinda---Faca-de-sobremesa-x-12.jpg?v=639057322744700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-12-facas-de-sobremesa-168-cm-olinda/p",
+  popularity: 833
+ },
+ {
+  sku: "oxford-60607962",
+  name: "Jogo de 6 Colheres de Chá 13,5 Cm Slim",
+  brand: "Biona",
+  unitPrice: 23.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200627/Slim---colher-de-cha-x-6.png?v=639053136422700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-cha-135-cm-slim/p",
+  popularity: 834
+ },
+ {
+  sku: "oxford-60607960",
+  name: "Jogo de 6 Colheres de Mesa 19,5 Cm Slim",
+  brand: "Biona",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200621/Slim---colher-de-mesa-x-6.jpg?v=639056298704930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-colheres-de-mesa-195-cm-slim/p",
+  popularity: 835
+ },
+ {
+  sku: "oxford-60607956",
+  name: "Jogo de 6 Facas de Carne 22,5 Cm Slim",
+  brand: "Biona",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200613/Slim---Faca-de-carne.jpg?v=639056296767200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-carne-225-cm-slim/p",
+  popularity: 836
+ },
+ {
+  sku: "oxford-60607955",
+  name: "Jogo de 6 Facas de Mesa 22,5 Cm Slim",
+  brand: "Biona",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200611/Slim---Faca-de-mesa.jpg?v=639056296418200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-facas-de-mesa-225-cm-slim/p",
+  popularity: 837
+ },
+ {
+  sku: "oxford-60607950",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200001/Ecommerce_0054_Unni-Solara_Conjunto.jpg?v=639052207059970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-unni-solara/p",
+  popularity: 838
+ },
+ {
+  sku: "oxford-60607948",
+  name: "Aparelho de Jantar 18 Peças Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199989/Ecommerce_0053_Unni-Solara-Conjunto_18_Pecas.jpg?v=639052205933470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-solara/p",
+  popularity: 839
+ },
+ {
+  sku: "oxford-60607946",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Solara",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200030/Ecommerce_Conj_6__0032_Unni_Solara_Prato_Sobremesa.jpg?v=639052209527270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-unni-solara/p",
+  popularity: 840
+ },
+ {
+  sku: "oxford-60607940",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Lira",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200082/Ecommerce_Conj_6__0010_Unni_Lira_Xicara_de_Cha_com_Pires.jpg?v=639052213824000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-unni-lira/p",
+  popularity: 841
+ },
+ {
+  sku: "oxford-60607934",
+  name: "Aparelho de Jantar 18 Peças Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199834/Ecommerce_0060_Unni-Nuray_Conjunto_18_Pecas.jpg?v=639052085304270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-unni-nuray/p",
+  popularity: 842
+ },
+ {
+  sku: "oxford-60607931",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199948/Ecommerce_Conj_6__0069_Unni_Nuray_Prato_Fundo.jpg?v=639052195372000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-unni-nuray/p",
+  popularity: 843
+ },
+ {
+  sku: "oxford-60607930",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Unni Nuray",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199941/Ecommerce_Conj_6__0070_Unni_Nuray_Prato_Raso.jpg?v=639052195037730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-unni-nuray/p",
+  popularity: 844
+ },
+ {
+  sku: "oxford-60607929",
+  name: "Aparelho de Jantar e Chá 30 peças Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199742/Ecommerce_0089_Flat-Galata_Conjunto.jpg?v=639052065681270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-flat-galata/p",
+  popularity: 845
+ },
+ {
+  sku: "oxford-60607928",
+  name: "Aparelho de Jantar e Chá 20 Peças Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199754/Ecommerce_0089_Flat-Galata_Conjunto.jpg?v=639052068309170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-galata/p",
+  popularity: 846
+ },
+ {
+  sku: "oxford-60607927",
+  name: "Aparelho de Jantar 18 Peças Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 579.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199766/Ecommerce_0088_Flat-Galata_Conjunto_18_Pecas.jpg?v=639052069384070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-galata/p",
+  popularity: 847
+ },
+ {
+  sku: "oxford-60607926",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200116/Ecommerce_Conj_6__0003_Flat_Galata_Xicara_de_Cha_com_Pires.jpg?v=639052217203500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-galata/p",
+  popularity: 848
+ },
+ {
+  sku: "oxford-60607925",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200109/Ecommerce_Conj_6__0051_Flat_Galata_Prato_Fundo_Top.jpg?v=639052216931370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-sobremesa-20-cm-flat-galata/p",
+  popularity: 849
+ },
+ {
+  sku: "oxford-60607924",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200102/Ecommerce_Conj_6__0051_Flat_Galata_Prato_Fundo_Top.jpg?v=639052215898570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-galata/p",
+  popularity: 850
+ },
+ {
+  sku: "oxford-60607923",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Flat Gálata",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200096/Ecommerce_Conj_6__0052_Flat_Galata_Prato_Raso.jpg?v=639052215643970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-rasos-26-cm-flat-galata/p",
+  popularity: 851
+ },
+ {
+  sku: "oxford-60607915",
+  name: "Aparelho de Jantar e Chá 30 Peças Flat Sevilha",
+  brand: "Cerâmicas",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200230/Ecommerce_0075_Flat-Sevilha_Conjunto.jpg?v=639052225193500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-30-pecas-flat-sevilha/p",
+  popularity: 852
+ },
+ {
+  sku: "oxford-60607913",
+  name: "Aparelho de Jantar 18 Peças Flat Sevilha",
+  brand: "Cerâmicas",
+  unitPrice: 579.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200243/Ecommerce_0074_Flat-Sevilha_Conjunto_18_Pecas.jpg?v=639052225644570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-18-pecas-flat-sevilha/p",
+  popularity: 853
+ },
+ {
+  sku: "oxford-60607910",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Sevilha",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200213/Ecommerce_Conj_6__0045_Flat_Sevilha_Prato_Fundo_Top.jpg?v=639052224400330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-sevilha/p",
+  popularity: 854
+ },
+ {
+  sku: "oxford-60607907",
+  name: "Aparelho de Jantar e Chá 20 peças - Flat Atlas",
+  brand: "Cerâmicas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200282/Ecommerce_0096_Flat-Atlas_Conjunto.jpg?v=639052229316370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-e-cha-20-pecas-flat-atlas/p",
+  popularity: 855
+ },
+ {
+  sku: "oxford-60607905",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Flat Atlas",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200330/Ecommerce_Conj_6__0004_Flat_Atlas_Xicara_de_Cha_com_Pires.jpg?v=639052235464770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-xicaras-grandes-200-ml-com-pires-flat-atlas/p",
+  popularity: 856
+ },
+ {
+  sku: "oxford-60607903",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Atlas",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200316/Ecommerce_Conj_6__0054_Flat_Atlas_Prato_Fundo_Top.jpg?v=639052233520470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-pratos-fundos-205-cm-flat-atlas/p",
+  popularity: 857
+ },
+ {
+  sku: "oxford-60607900",
+  name: "Jogo de 6 Canecas 360 Ml Luna Caviar",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203015/Luna-caviar.jpg?v=639136016465300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-luna-caviar/p",
+  popularity: 858
+ },
+ {
+  sku: "oxford-60607895",
+  name: "Aparelho de Jantar e Lanche 12 peças - Luna Sand",
+  brand: "Cerâmicas",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205241/Ecommerce_0004_Luna_Sand_Conjunto_12_Pecas.jpg?v=639192208107130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-sand/p",
+  popularity: 859
+ },
+ {
+  sku: "oxford-60607893",
+  name: "Aparelho de Jantar e Lanche 12 peças - Luna Vanilla",
+  brand: "Cerâmicas",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204971/Ecommerce_0006_Luna_Vanilla_Conjunto_12_Pecas.jpg?v=639191304680500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-vanilla/p",
+  popularity: 860
+ },
+ {
+  sku: "oxford-60607891",
+  name: "Aparelho de Jantar e Lanche 12 peças - Luna Corfu",
+  brand: "Cerâmicas",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205412/Ecommerce_0005_Luna_Corfu_Conjunto_12_Pecas.jpg?v=639197165216470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-corfu/p",
+  popularity: 861
+ },
+ {
+  sku: "oxford-60607889",
+  name: "Aparelho de Jantar e Lanche 12 Peças - Luna Seda",
+  brand: "Cerâmicas",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/205184/Ecommerce_0007_Luna_Seda_Conjunto_12_Pecas.jpg?v=639192174667470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-12-pecas-luna-seda/p",
+  popularity: 862
+ },
+ {
+  sku: "oxford-60607888",
+  name: "Jogo de 6 Canecas 360 Ml Flora Amor Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201462/flora-amor-perfeito.jpg?v=639070070812070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-amor-perfeito/p",
+  popularity: 863
+ },
+ {
+  sku: "oxford-60607887",
+  name: "Jogo de 6 Canecas 360 Ml Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/201468/flora-aster.jpg?v=639070072143970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-aster/p",
+  popularity: 864
+ },
+ {
+  sku: "oxford-60607886",
+  name: "Jogo de 6 Canecas 360 Ml Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/200465/flora-dalia.jpg?v=639070071945530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-canecas-360-ml-flora-dalia/p",
+  popularity: 865
+ },
+ {
+  sku: "oxford-60607838",
+  name: "Aparelho de Jantar e Lanche 12pcs Donna Lírios",
+  brand: "Biona",
+  unitPrice: 199,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198812/Donna-Lirios.jpg?v=638966704771670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-lirios/p",
+  popularity: 866
+ },
+ {
+  sku: "oxford-60607835",
+  name: "Aparelho de Jantar e Lanche 12pcs Donna Sossego",
+  brand: "Biona",
+  unitPrice: 199,
+  unit: "un",
+  category: "aparelhos de jantar 12 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198804/Donna-Sossego.jpg?v=638963229928230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ap-de-jantar-lanche-12pcs-sossego/p",
+  popularity: 867
+ },
+ {
+  sku: "oxford-60607834",
+  name: "Caneca Flat 350ml Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199518/Ecommerce_Nisa_Caneca-verde.jpg?v=639050533742670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-flat-350ml-flat-nisa/p",
+  popularity: 868
+ },
+ {
+  sku: "oxford-60607822",
+  name: "Conjunto 4 Canecas Mini Quartier 220 ml Protetores da Amazônia",
+  brand: "Cerâmicas",
+  unitPrice: 158.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198354/Canecas-mini-quartier-amazonia.png?v=638930439037730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-canecas-mini-quartier-220-ml-protetores-da-amazonia/p",
+  popularity: 869
+ },
+ {
+  sku: "oxford-60607803",
+  name: "Jogo de Panelas Antiaderentes para Indução 5 peças Everyday Ice",
+  brand: "Cookware",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "panelas jogos de panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207075/Extranet_Everyday-Ice_Conjunto_5_Pecas.jpg?v=639221581207170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-de-panelas-everyday-5pcs-everyday-ice/p",
+  popularity: 870
+ },
+ {
+  sku: "oxford-60607802",
+  name: "Jogo de 6 Xícaras de Chá 200 Ml com pires Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198071/Conj_6_Nisa_Xicara-com-Pires.jpg?v=638926875794130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-xicaras-cha-jogo/p",
+  popularity: 871
+ },
+ {
+  sku: "oxford-60607801",
+  name: "Jogo de 6 Xícaras de Chá 200 ml com Pires Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198183/Conj_6_Caminho_da_Selva_Xicara-com-Pires.jpg?v=638926885450870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-xicaras-unni-selva/p",
+  popularity: 872
+ },
+ {
+  sku: "oxford-60607799",
+  name: "Jogo de 6 Pratos de Sobremesa 20 cm Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198076/Conj_6_Nisa_Sobremesa.jpg?v=638926875940430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-sobremesa-nisa/p",
+  popularity: 873
+ },
+ {
+  sku: "oxford-60607798",
+  name: "Jogo de 6 Pratos de Sobremesa 20 cm Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198177/Conj_6_Caminho_da_Selva_Sobremesa.jpg?v=638926883283330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-sobremesa-unni-selva/p",
+  popularity: 874
+ },
+ {
+  sku: "oxford-60607796",
+  name: "Jogo de 6 Pratos Rasos 26 cm Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198082/Conj_6_Nisa_Raso.jpg?v=638926876354770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-rasos-nisa/p",
+  popularity: 875
+ },
+ {
+  sku: "oxford-60607794",
+  name: "Jogo de 6 Pratos Rasos 26 cm Unni Boho",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198031/Conj_6_Boho_Raso.jpg?v=638926873135200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-rasos-unni-boho/p",
+  popularity: 876
+ },
+ {
+  sku: "oxford-60607793",
+  name: "Jogo de 6 Pratos Fundos 20,5 cm Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198089/Conj_6_Nisa_Fundo.jpg?v=638926876515370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-6-pratos-fundos-nisa/p",
+  popularity: 877
+ },
+ {
+  sku: "oxford-60607792",
+  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198155/Conj_6_Caminho_da_Selva_Fundo.jpg?v=638926881106400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cj-6-pratos-fundos-unni-selva/p",
+  popularity: 878
+ },
+ {
+  sku: "oxford-60607790",
+  name: "Caneca Tulipa 330 ml - Tucano da Amazônia",
+  brand: "Cerâmicas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198212/Ecommerce_SOS_Amazonia_Tucano_Da_Amazonia_Esquerda.jpg?v=638930225786130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-tucano/p",
+  popularity: 879
+ },
+ {
+  sku: "oxford-60607789",
+  name: "Caneca Tulipa 330 ml - Tartaruga-da-Amazônia",
+  brand: "Cerâmicas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198219/Ecommerce_SOS_Amazonia_Tartaruga_Da_Amazonia_Esquerda.jpg?v=638930226374170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-tartaruga/p",
+  popularity: 880
+ },
+ {
+  sku: "oxford-60607788",
+  name: "Caneca Tulipa 330 ml - Onça-Pintada",
+  brand: "Cerâmicas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198254/Ecommerce_SOS_Amazonia_Onca_Pintada_Esquerda.jpg?v=638930228501000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-onca/p",
+  popularity: 881
+ },
+ {
+  sku: "oxford-60607787",
+  name: "Caneca Tulipa 330 ml - Boto-Cor-de-Rosa",
+  brand: "Cerâmicas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198240/Ecommerce_SOS_Amazonia_Boto_Cor_De_Rosa_Da_Amazonia_Esquerda.jpg?v=638930227607370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-tulipa-boto/p",
+  popularity: 882
+ },
+ {
+  sku: "oxford-60607786",
+  name: "Caneca Mini Quartier 220 ml - Tucano da Amazônia",
+  brand: "Cerâmicas",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198226/Ecommerce_SOS_Amazonina_Tucano_Esquerda.jpg?v=638930226706400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caenca-mini-quartier-tucano/p",
+  popularity: 883
+ },
+ {
+  sku: "oxford-60607784",
+  name: "Caneca Mini Quartier 220 ml - Onça-Pintada",
+  brand: "Cerâmicas",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198261/Ecommerce_SOS_Amazonina_Onca_Esquerda.jpg?v=638930228766430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-onca/p",
+  popularity: 884
+ },
+ {
+  sku: "oxford-60607783",
+  name: "Caneca Mini Quartier 220 ml - Boto-Cor-de-Rosa",
+  brand: "Cerâmicas",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198247/Ecommerce_SOS_Amazonina_Boto_Cor_De_Rosa_Esquerda.jpg?v=638930228042670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-mini-quartier-boto/p",
+  popularity: 885
+ },
+ {
+  sku: "oxford-60607782",
+  name: "Aparelho de Jantar 18 peças Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 579.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198128/Extranet_Nisa_Conjunto_18_pecas.jpg?v=638926877393370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-18pcs/p",
+  popularity: 886
+ },
+ {
+  sku: "oxford-60607781",
+  name: "Aparelho de Jantar 16 peças Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 479.9,
+  unit: "un",
+  category: "aparelhos de jantar 16 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198119/Extranet_Nisa_Conjunto_16_pecas1.jpg?v=638926877220300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-16pcs/p",
+  popularity: 887
+ },
+ {
+  sku: "oxford-60607777",
+  name: "Aparelho de Jantar 30 peças Unni Boho",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198407/Ecommerce_Conjunto_boho.jpg?v=638931252281700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-30-pcs-unni-boho/p",
+  popularity: 888
+ },
+ {
+  sku: "oxford-60607776",
+  name: "Aparelho de Jantar 20 peças Flat Nisa",
+  brand: "Cerâmicas",
+  unitPrice: 539.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198095/Ecommerce_Nisa_Conjunto.jpg?v=638926876902500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-nisa-20pcs/p",
+  popularity: 889
+ },
+ {
+  sku: "oxford-60607775",
+  name: "Aparelho de Jantar 20 Peças Unni Caminho da Selva",
+  brand: "Cerâmicas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197809/Ecommerce_Caminho-da-Selva-Conjunto.jpg?v=638924369307330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-20-pcs-unni-selva/p",
+  popularity: 890
+ },
+ {
+  sku: "oxford-60607774",
+  name: "Aparelho de Jantar 20 peças Unni Boho",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/198420/Ecommerce_Conjunto_boho.jpg?v=638931252520600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-20-pcs-unni-boho/p",
+  popularity: 891
+ },
+ {
+  sku: "oxford-60607431",
+  name: "Jogo de 6 Canecas Drop 250 Ml Roxa",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196094/6-Drop-Roxa.png?v=638894135715470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-roxo/p",
+  popularity: 892
+ },
+ {
+  sku: "oxford-60607430",
+  name: "Jogo de 6 Canecas Az12 330 Ml Verde",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196069/6-AZ12-Verde.png?v=638894134465370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-verde/p",
+  popularity: 893
+ },
+ {
+  sku: "oxford-60607426",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195998/Oxford_Ceramicas_Unni_White_Prato_Fundo-6.jpg?v=638893271432500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-20-5-cm-unni-white/p",
+  popularity: 894
+ },
+ {
+  sku: "oxford-60607421",
+  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil Victória",
+  brand: "Oxford Porcelanas",
+  unitPrice: 419.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195978/oxford-porcelanas-pratos-fundos-soleil-victoria-03.jpg?v=638893271024500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-6-pratos-fundos-24-cm-soleil-victoria/p",
+  popularity: 895
+ },
+ {
+  sku: "oxford-60607367",
+  name: "Jogo de 6 Tigelas Flat 600 Ml Samambaia",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196168/6-Tigelas-Flat-Samambaia.png?v=639160245852600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-flat-600-ml-samambaia/p",
+  popularity: 896
+ },
+ {
+  sku: "oxford-60607359",
+  name: "Jogo de 6 Canecas Jumbo 740 Ml Preta",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196130/6-Canecas-Jumbo-Preta.png?v=638894138163630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-preta/p",
+  popularity: 897
+ },
+ {
+  sku: "oxford-60607357",
+  name: "Jogo de 6 Canecas Jumbo 740 Ml Azul",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196126/6-Canecas-Jumbo-Azul.png?v=638894137978430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-azul/p",
+  popularity: 898
+ },
+ {
+  sku: "oxford-60607356",
+  name: "Jogo de 6 Canecas Jumbo 740 Ml Verde",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196124/6-Canecas-Jumbo-Verde.png?v=638894137883800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-verde/p",
+  popularity: 899
+ },
+ {
+  sku: "oxford-60607355",
+  name: "Jogo de 6 Canecas Jumbo 740 Ml Roxo",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196122/6-Canecas-Jumbo-Roxa.png?v=638894137788800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740-ml-roxo/p",
+  popularity: 900
+ },
+ {
+  sku: "oxford-60607354",
+  name: "Jogo de 6 Canecas Jumbo 740ml Branca",
+  brand: "Biona",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196120/6-Canecas-Jumbo-Brancas.png?v=638894137692530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-jumbo-740ml-branca/p",
+  popularity: 901
+ },
+ {
+  sku: "oxford-60607353",
+  name: "Jogo de 6 Tigelas Cereal 600 Ml Preta",
+  brand: "Biona",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196118/6-Tigelas-Cereal-Preta.png?v=638894137595530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-preta/p",
+  popularity: 902
+ },
+ {
+  sku: "oxford-60607352",
+  name: "Jogo de 6 Tigelas Cereal 600 Ml Salmão",
+  brand: "Biona",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196116/6-Tigelas-Cereal--Salmao.png?v=638894137504970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-salmao/p",
+  popularity: 903
+ },
+ {
+  sku: "oxford-60607351",
+  name: "Jogo de 6 Tigelas Cereal 600 Ml Azul",
+  brand: "Biona",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196114/6-Tigelas-Cereal--Azul.png?v=638894137332700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-azul/p",
+  popularity: 904
+ },
+ {
+  sku: "oxford-60607350",
+  name: "Jogo de 6 Tigelas Cereal 600 Ml Verde",
+  brand: "Biona",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196112/6-Tigelas-Cereal--Verde.png?v=638894137102000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-600-ml-verde/p",
+  popularity: 905
+ },
+ {
+  sku: "oxford-60607348",
+  name: "Jogo de 6 Tigelas Cereal 600 Ml Branca",
+  brand: "Biona",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196108/6-Tigelas-Cereal--Branca.png?v=638894136501870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-cereal-14cm-600ml-bowl-branca/p",
+  popularity: 906
+ },
+ {
+  sku: "oxford-60607345",
+  name: "Jogo de 6 Tigelas Conic 500 Ml Preto",
+  brand: "Biona",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196102/6-Tigelas-Conic-Preta.png?v=638894136223100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-conic-500-ml-preto/p",
+  popularity: 907
+ },
+ {
+  sku: "oxford-60607342",
+  name: "Jogo de 6 Tigelas Cônic 500ml Branca",
+  brand: "Biona",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196096/6-Tigelas-Conic-Brancas.png?v=638894135811700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-tigela-conic-500ml-branca/p",
+  popularity: 908
+ },
+ {
+  sku: "oxford-60607341",
+  name: "Jogo de 6 Canecas Drop 250 Ml Azul",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196092/6-Drop-Azul.png?v=638894135616900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-azul/p",
+  popularity: 909
+ },
+ {
+  sku: "oxford-60607339",
+  name: "Jogo de 6 Canecas Drop 250 Ml Preta",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196090/6-Drop-Preta.png?v=638894135515670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-preta/p",
+  popularity: 910
+ },
+ {
+  sku: "oxford-60607338",
+  name: "Jogo de 6 Canecas Drop 250 Ml Salmão",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196088/6-Drop-Salmao.png?v=638894135424400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-salmao/p",
+  popularity: 911
+ },
+ {
+  sku: "oxford-60607337",
+  name: "Jogo de 6 Canecas Drop 250 Ml Verde",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196086/6-Drop-Verde.png?v=638894135317300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250-ml-verde/p",
+  popularity: 912
+ },
+ {
+  sku: "oxford-60607336",
+  name: "Jogo de 6 Canecas Drop 250ml Branca",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196084/6-Drop-Branca.png?v=638894135216730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-drop-250ml-branca/p",
+  popularity: 913
+ },
+ {
+  sku: "oxford-60607335",
+  name: "Jogo de 6 Canecas Az4 100 Ml Salmão",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196082/6-AZ4-Salmao.png?v=638894135099570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-salmao/p",
+  popularity: 914
+ },
+ {
+  sku: "oxford-60607334",
+  name: "Jogo de 6 Canecas Az4 100 Ml Azul",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196080/6-AZ4-Azul.png?v=638894134995200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-azul/p",
+  popularity: 915
+ },
+ {
+  sku: "oxford-60607333",
+  name: "Jogo de 6 Canecas Az4 100 Ml Verde",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196078/6-AZ4-Verde.png?v=638894134897300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-verde/p",
+  popularity: 916
+ },
+ {
+  sku: "oxford-60607332",
+  name: "Jogo de 6 Canecas Az4 100 Ml Roxo",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196076/6-AZ4-Roxa.png?v=638894134795230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-roxo/p",
+  popularity: 917
+ },
+ {
+  sku: "oxford-60607331",
+  name: "Jogo de 6 Canecas Az4 100 Ml Preta",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196074/6-AZ4-Preta.png?v=638894134695470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-preta/p",
+  popularity: 918
+ },
+ {
+  sku: "oxford-60607330",
+  name: "Jogo de 6 Canecas Az4 100 Ml Branca",
+  brand: "Biona",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196072/6-AZ4-Branca.png?v=638894134588730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az4-100-ml-branca/p",
+  popularity: 919
+ },
+ {
+  sku: "oxford-60607329",
+  name: "Jogo de 6 Canecas Az12 330 Ml Azul",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196066/6-AZ12-Azul.png?v=638894134352870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-azul/p",
+  popularity: 920
+ },
+ {
+  sku: "oxford-60607327",
+  name: "Jogo de 6 Canecas Az12 330 Ml Salmão",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196060/6-AZ12-Salmao.png?v=638894134147770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-salmao/p",
+  popularity: 921
+ },
+ {
+  sku: "oxford-60607326",
+  name: "Jogo de 6 Canecas Az12 330 Ml Preta",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196057/6-AZ12-Preta.png?v=638894133989670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-preta/p",
+  popularity: 922
+ },
+ {
+  sku: "oxford-60607325",
+  name: "Jogo de 6 Canecas Az12 330 Ml Branca",
+  brand: "Biona",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196054/6-AZ12-Branca.png?v=638894133497970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-de-caneca-az12-330-ml-branca/p",
+  popularity: 923
+ },
+ {
+  sku: "oxford-60607324",
+  name: "Kit Completo para Casa Nova - Oxford Ryo Maresia 42 Peças",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1299,
+  unit: "un",
+  category: "aparelhos de jantar 42 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195785/Kit-Completo-Casa-Nova-42-pcs.png?v=638893235770100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/kit-aparelho-de-jantar-e-cha-42-pecas-ryo-maresia-utensilios/p",
+  popularity: 924
+ },
+ {
+  sku: "oxford-60607319",
+  name: "Aparelho de Jantar 20 Peças Ryo Maresia + Travessa 28cm de Brinde",
+  brand: "Oxford Porcelanas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197214/Ryo_Maresia_20_30pcs-brinde-travessa-1200x1200.jpg?v=638918310925200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-de-jantar-20-pecas-pecas-ryo-maresia-travessa/p",
+  popularity: 925
+ },
+ {
+  sku: "oxford-60607313",
+  name: "Caneca Chubby 330 ml Jabuticaba",
+  brand: "Cerâmicas",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195099/151068-caneca-chubby-jabuticaba-330-ml-media.jpg?v=638858720431300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-jabuticaba-individual/p",
+  popularity: 926
+ },
+ {
+  sku: "oxford-60607306",
+  name: "Jogo de 6 Canecas 380 Ml Ryo Volcano",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192826/Conj_6_Ryo_Volcano_Caneca_380ml.jpg.jpg?v=638816949094930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-caneca-ryo-380-ml-volcano/p",
+  popularity: 927
+ },
+ {
+  sku: "oxford-60607299",
+  name: "Jogo de 6 Canecas 260 Ml Ryo Blue Bay",
+  brand: "Cerâmicas",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190201/Oxford_Porcelanas_Ryo_Blue_Bay_Caneca_Pequena.jpg?v=638815350044530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-canecas-260-ml-ryo-blue-bay1/p",
+  popularity: 928
+ },
+ {
+  sku: "oxford-60607262",
+  name: "Jogo de 6 Taças de Cristal Espumante 210 Ml Slim Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190237/1000-x-1000-Alumina---Slim-210-6.jpg?v=638815351950300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/jogo-de-6-tacas-de-cristal-espumante-210-ml-slim-classic/p",
+  popularity: 929
+ },
+ {
+  sku: "oxford-60607256",
+  name: "Jogo de 6 Xícaras Grandes 240 Ml Com Pires Flamingo Blue Willow",
+  brand: "Oxford Porcelanas",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190215/oxford-porcelanas-xicara-de-cha-com-pires-flamingo-blue-willow-6-pecas-02.jpg?v=638815350796600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-xicaras-grandes-240-ml-com-pires-flamingo-blue-willow1/p",
+  popularity: 930
+ },
+ {
+  sku: "oxford-60607254",
+  name: "Jogo de 6 Pratos Rasos 28 Cm Flamingo Blue Willow",
+  brand: "Oxford Porcelanas",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189718/oxford-porcelanas-prato-raso-flamingo-blue-willow-6-pecas-02.jpg?v=638815266639130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-rasos-28-cm-flamingo-blue-willow/p",
+  popularity: 931
+ },
+ {
+  sku: "oxford-60607253",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Blue Willow",
+  brand: "Oxford Porcelanas",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189721/oxford-porcelanas-prato-fundo-flamingo-blue-willow-6-pecas-02.jpg?v=638815266977400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-6-pratos-fundos-23-5-cm-flamingo-blue-willow1/p",
+  popularity: 932
+ },
+ {
+  sku: "oxford-60607197",
+  name: "Assadeira Refratária Bake Pequena 22x15x5,3cm Branca",
+  brand: "Cookware",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185972/047948-refrataria-bake-pequena-1000ml-branco.jpg?v=638750477516270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-pequena/p",
+  popularity: 933
+ },
+ {
+  sku: "oxford-60607196",
+  name: "Assadeira Refratária Bake Media 26x18x5,6cm Branca",
+  brand: "Cookware",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185971/047945-refrataria-bake-media-1500ml-branco.jpg?v=638750477506770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-media/p",
+  popularity: 934
+ },
+ {
+  sku: "oxford-60607195",
+  name: "Assadeira Refratária Bake Grande 30x21x6cm Branca",
+  brand: "Cookware",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185970/047941-refrataria-bake-grande-2500ml-branco.jpg?v=638750477493370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-bake-grande/p",
+  popularity: 935
+ },
+ {
+  sku: "oxford-60607186",
+  name: "Travessa Modular em Melamina 600ml 25x21,4cm Circle",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203181/Travessa_Modular_Circle-25x214cm-600ml-1.jpg?v=639154223395170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-modular-circle/p",
+  popularity: 936
+ },
+ {
+  sku: "oxford-60607185",
+  name: "Travessa Funda em Melamina 25,8x13,7cm Landscape",
+  brand: "Oxford",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203149/Melanina_Travessa_Funda_Landscape-258x137cm-36cm.jpg?v=639154229983400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-landscape/p",
+  popularity: 937
+ },
+ {
+  sku: "oxford-60607183",
+  name: "Travessa 42 cm Flora Dália Travessa Flora 42cm Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186283/2901_Flora_Dalia_Bandeja.jpg?v=638750482200470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-travessa/p",
+  popularity: 938
+ },
+ {
+  sku: "oxford-60607181",
+  name: "Travessa 42 cm Flora Áster Travessa Flora 42 cm Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186321/2903_Flora_Aster_Bandeja.jpg?v=638750482710970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-travessa/p",
+  popularity: 939
+ },
+ {
+  sku: "oxford-60607180",
+  name: "Travessa Flora 42 cm Flora Anis",
+  brand: "Oxford Porcelanas",
+  unitPrice: 195.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186302/2902_Flora_Anis_Bandeja.jpg?v=638750482456230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/anis-travessa/p",
+  popularity: 940
+ },
+ {
+  sku: "oxford-60607179",
+  name: "Travessa Flora 42 cm Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186340/2904_Flora_AmorPerfeito_Bandeja.jpg?v=638750483016000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-travessa/p",
+  popularity: 941
+ },
+ {
+  sku: "oxford-60607178",
+  name: "Assadeira Refratária Fall Retangular Rasa 41x22x6,5cm Branca",
+  brand: "Cookware",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186722/oxford-cookware-travessa-refrataria-fall-retangular-rasa-2600ml-00.jpg.jpg?v=638877722462170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-rasa-fall-2/p",
+  popularity: 942
+ },
+ {
+  sku: "oxford-60607176",
+  name: "Assadeira Refratária Fall Retangular Funda 45x24,5x8,5cm Branca",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187709/004669_C04I_8001_Travessa_Fall_Funda_44L.jpg.jpg?v=638877721579400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-fall-2/p",
+  popularity: 943
+ },
+ {
+  sku: "oxford-60607174",
+  name: "Assadeira Refratária Fall Redonda 32x8cm Branca",
+  brand: "Cookware",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186714/oxford-cookware-travessa-refrataria-fall-redonda-00.jpg.jpg?v=638877695061330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-redonda-fall/p",
+  popularity: 944
+ },
+ {
+  sku: "oxford-60607163",
+  name: "Tigela Ramequin 8x4cm 100ml Branco/Amarelo",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186060/0209_Ramequin_100ml_bic_amarelo.jpg?v=638750478821300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequin-amarelo/p",
+  popularity: 945
+ },
+ {
+  sku: "oxford-60607162",
+  name: "Tigela para Feijoada em Cerâmica Artesanal Reta 19 cm",
+  brand: "Cookware",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207652/152792_Linha_Feijoada_TigelaReta.jpg?v=639227559060170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-feijoada-reta/p",
+  popularity: 946
+ },
+ {
+  sku: "oxford-60607136",
+  name: "Saladeira 25,5 cm Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186297/2901_Flora_Dalia_Saladeira.jpg?v=638750482397830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-saladeira/p",
+  popularity: 947
+ },
+ {
+  sku: "oxford-60607134",
+  name: "Saladeira 25,5 cm Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186335/2903_Flora_Aster_Saladeira.jpg?v=638750482937400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-saladeira/p",
+  popularity: 948
+ },
+ {
+  sku: "oxford-60607079",
+  name: "Pote Hermético de Vidro Retrô 700 ml com tampa de Bambu",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186138/150611_Pote_Hermetico_c_Tampa_Bambu_700ml.jpg?v=638750479908070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-700ml/p",
+  popularity: 949
+ },
+ {
+  sku: "oxford-60607077",
+  name: "Pote Hermético de Vidro Retrô 1,6 L com tampa de Bambu",
+  brand: "Oxford",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/193890/150617_Pote_Hermetico_c_Tampa_Bambu_1600ml.jpg?v=638826768258030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-16l/p",
+  popularity: 950
+ },
+ {
+  sku: "oxford-60607071",
+  name: "Panela de Ferro Fundido Esmaltado Wok Aroma 35 cm Verde",
+  brand: "Cookware",
+  unitPrice: 899.4,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194236/146761_Panelas_Aroma_Wok_Verde.jpg?v=638829062766930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/wok-aroma-verde/p",
+  popularity: 951
+ },
+ {
+  sku: "oxford-60607067",
+  name: "Panela Antiaderente para Indução 20 Cm Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206888/Panela_Everyday_Vermelho_20cm_Angulo_02.jpg?v=639221525531630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-everyday-vermelho-2/p",
+  popularity: 952
+ },
+ {
+  sku: "oxford-60607066",
+  name: "Panela Antiaderente para Indução 18 Cm Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206870/138736-panela-everyday-vermelho-16cm-media -7-.jpg?v=639221518284500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-everyday-vermelho/p",
+  popularity: 953
+ },
+ {
+  sku: "oxford-60607062",
+  name: "Jogo de 6 Xícaras de Chá Grande 240 ml com pires Flamingo Lafayette",
+  brand: "Oxford Porcelanas",
+  unitPrice: 429.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195764/151955-flamingo-lafayette-xicara-de-cha-com-pires-media.jpg.jpg?v=638888092222270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/lafayette-xicaras-cha/p",
+  popularity: 954
+ },
+ {
+  sku: "oxford-60607061",
+  name: "Jogo de 6 Xícaras de Chá Grande 240 ml com pires Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207531/151923-flamingo-cosmopolitan-xicara-de-cha-com-pires-media.jpg.jpg?v=639227462481300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-xicaras-cha/p",
+  popularity: 955
+ },
+ {
+  sku: "oxford-60607010",
+  name: "Jogo de 6 Taças de Cristal Espumante 190 ml Flavour",
+  brand: "Alumina Crystal",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192605/127127_Alumina_Flavour_Taca_Espumante_190ml.jpg.jpg?v=638816328512000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-espumante-flavour/p",
+  popularity: 956
+ },
+ {
+  sku: "oxford-60607008",
+  name: "Jogo de 6 Taças de Cristal Bourgogne 850 ml Flavour",
+  brand: "Alumina Crystal",
+  unitPrice: 379.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192595/127126_Alumina_Flavour_Taca_Bourgogne_850ml.jpg.jpg?v=638816323917600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-bourgogne-flavour/p",
+  popularity: 957
+ },
+ {
+  sku: "oxford-60607005",
+  name: "Jogo de 6 Taças de Cristal Água 450 ml Flavour",
+  brand: "Alumina Crystal",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192465/127122_Alumina_Flavour_Taca_Chardonnay_Agua_450ml.jpg.jpg?v=638816276563830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tacas-agua-flavour/p",
+  popularity: 958
+ },
+ {
+  sku: "oxford-60606998",
+  name: "Jogo de 6 Pratos Sobremesa 22 cm Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190850/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Sobremesa.jpg.jpg?v=638815442505630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-sobremesa/p",
+  popularity: 959
+ },
+ {
+  sku: "oxford-60606996",
+  name: "Jogo de 6 Pratos Sobremesa 22 cm Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196490/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-sobremesa.jpg.jpg?v=638906296361100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-sobremesa/p",
+  popularity: 960
+ },
+ {
+  sku: "oxford-60606987",
+  name: "Jogo de 6 Pratos Rasos 28 cm Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207524/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-Raso.jpg.jpg?v=639227461683130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-rasos/p",
+  popularity: 961
+ },
+ {
+  sku: "oxford-60606982",
+  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190948/porcelanas-conj-6-Flora_Dalia_Prato-Raso.jpg.jpg?v=638815520404170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-pratos-rasos/p",
+  popularity: 962
+ },
+ {
+  sku: "oxford-60606978",
+  name: "Jogo de 6 Pratos Rasos 27,5 cm Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 339.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190840/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Raso.jpg.jpg?v=638815441955470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-raso/p",
+  popularity: 963
+ },
+ {
+  sku: "oxford-60606971",
+  name: "Jogo de 6 Pratos Fundos 23,5 cm Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207536/porcelanas-conj-6-Flamingo_Cosmopolitan_Prato-Fundo.jpg.jpg?v=639227463050130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-pratos-fundos/p",
+  popularity: 964
+ },
+ {
+  sku: "oxford-60606961",
+  name: "Jogo de 6 Pratos Fundo 20 cm Flora Áster Jogo de 6 Pratos Fundo 20cm Flora Aster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190946/porcelanas-conj-6-Flora_Aster_Prato-Fundo.jpg.jpg?v=638815520134100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-pratos-fundo/p",
+  popularity: 965
+ },
+ {
+  sku: "oxford-60606959",
+  name: "Jogo de 6 Pratos Fundos 20 cm Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190856/porcelanas-conj-6-Flora_AmorPerfeito_Prato-Fundo.jpg.jpg?v=638815442655870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-fundo/p",
+  popularity: 966
+ },
+ {
+  sku: "oxford-60606958",
+  name: "Jogo de 6 Potes de vidro para Condimento com tampa de Bambu - 85 ml",
+  brand: "Oxford",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192581/Conj-6-pecas-150623-porta-p-condimento-85-ml-c-tampa-de-bambu.jpg.jpg?v=638816300823930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/potes-condimento-85ml/p",
+  popularity: 967
+ },
+ {
+  sku: "oxford-60606951",
+  name: "Jogo de 6 Copos de Cristal para Long Drink 450 ml Ginga",
+  brand: "Alumina Crystal",
+  unitPrice: 269.9,
+  unit: "un",
+  category: "tacas e copos copos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192521/114604_Copo_Ginga_Long_Drink_450ml_G.jpg.jpg?v=638816287710330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copos-long-ginga/p",
+  popularity: 968
+ },
+ {
+  sku: "oxford-60606950",
+  name: "Jogo de 6 Copos de Cristal para Cerveja 336ml Classic",
+  brand: "Biona",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "tacas e copos cerveja",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192729/148328-copo-de-cerveja-336ml.jpg.jpg?v=638816391635570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/copos-cerveja-classic/p",
+  popularity: 969
+ },
+ {
+  sku: "oxford-60606927",
+  name: "Jogo de 4 Canecas Chubby 330 ml Tutti-Frutti",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192249/Conj-4-pecas-151076-caneca-chubby-tutti-frutti-330-ml.jpg.jpg?v=638816158874170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/canecas-chubby-tutti/p",
+  popularity: 970
+ },
+ {
+  sku: "oxford-60606926",
+  name: "Jogo de 4 Canecas Chubby 330 ml Menta",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192272/Conj-4-pecas-151072-caneca-chubby-menta-330-ml.jpg.jpg?v=638816159838900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-chubby-menta/p",
+  popularity: 971
+ },
+ {
+  sku: "oxford-60606911",
+  name: "Jogo de 12 Facas para Sobremesa 20 cm em Aço Inox Salvador",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203820/Design-sem-nome--91-.png?v=639168642135630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-salvador/p",
+  popularity: 972
+ },
+ {
+  sku: "oxford-60606910",
+  name: "Jogo de 12 Facas para Sobremesa 19cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202414/Conj_12_pecas_ouro_preto_Faca de Sobremesa.jpg?v=639101250517770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-ouro/p",
+  popularity: 973
+ },
+ {
+  sku: "oxford-60606909",
+  name: "Jogo de 12 Facas para Sobremesa 19 cm Noronha",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202402/Conj-12-pecas-Faca_sobremesa_noronha.jpg?v=639101246132030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/facas-sobremesa-noronha/p",
+  popularity: 974
+ },
+ {
+  sku: "oxford-60606901",
+  name: "Frigideira Antiaderente para Indução 22 Cm Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206880/151349-frigideira-everyday-vermelho-22cm-media -1-.jpg?v=639221523630300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-everyday-vermelho/p",
+  popularity: 975
+ },
+ {
+  sku: "oxford-60606893",
+  name: "Faqueiro em Aço Inox 24 Peças Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "talheres faqueiros",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208372/150447-1-FAQUEIRO-EM-ACO-INOX-24PCS-OURO-PRETO.jpg?v=639249810857800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/faqueiro-ouro-preto/p",
+  popularity: 976
+ },
+ {
+  sku: "oxford-60606863",
+  name: "Caneca de Chá com Infusor 350 ml Fumê",
+  brand: "Oxford",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186470/Complementar_Caneca_Cha_Infusor_350ml.jpg?v=638750485372300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-cha-fume/p",
+  popularity: 977
+ },
+ {
+  sku: "oxford-60606861",
+  name: "Cafeteira Francesa em Vidro e Aço Inox Modern 350ml Cafeteira Francesa em Vidro e Aço Inox Cobre 350ml",
+  brand: "Oxford",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186509/-cafeteira-francesa-em-vidro-e-aco-inox-350ml-modern-1-peca-00.jpg?v=638750485875330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-modern-2/p",
+  popularity: 978
+ },
+ {
+  sku: "oxford-60606860",
+  name: "Cafeteira Francesa em Vidro e Aço Inox Modern 1L Cafeteira Francesa em Vidro e Aço Inox Cobre 1L",
+  brand: "Oxford",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185973/072488_Cafeteira_Francesa_Vidro_Inox_Pequena-scaled.jpg?v=638750477525000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-francesa-modern/p",
+  popularity: 979
+ },
+ {
+  sku: "oxford-60606859",
+  name: "Caçarola para Feijoada em Cerâmica 35 cm 7,2 L com tampa",
+  brand: "Cookware",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207709/152781_Linha_Feijoada_Cacarola_35cm.jpg?v=639228268894800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-feijoada-35cm/p",
+  popularity: 980
+ },
+ {
+  sku: "oxford-60606853",
+  name: "Caçarola Antiaderente para Indução 22 Cm Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206897/151361-cacarola-everyday-vermelho-22cm-.jpg?v=639221528008670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-everyday-vermelho-2/p",
+  popularity: 981
+ },
+ {
+  sku: "oxford-60606852",
+  name: "Caçarola Antiaderente para Indução 20 Cm Everyday Vermelho",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206860/151358-cacarola-everyday-vermelho-20cm-fixed.jpg?v=639221509893000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-everyday-vermelho/p",
+  popularity: 982
+ },
+ {
+  sku: "oxford-60606850",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 24 cm Verde",
+  brand: "Cookware",
+  unitPrice: 779.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194193/Panela-Aroma-Grande-Angulo-Verde.jpg.jpg?v=638829057466370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde-3/p",
+  popularity: 983
+ },
+ {
+  sku: "oxford-60606848",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Vermelho",
+  brand: "Cookware",
+  unitPrice: 719.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207318/Panela-Aroma-Media-Angulo-Vermelho.jpg.jpg?v=639227419758470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-vermelho-2/p",
+  popularity: 984
+ },
+ {
+  sku: "oxford-60606847",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Verde",
+  brand: "Cookware",
+  unitPrice: 719.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207328/Panela-Aroma-Media-Angulo-Verde.jpg.jpg?v=639227420522700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde-2/p",
+  popularity: 985
+ },
+ {
+  sku: "oxford-60606846",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 22 cm Cinza",
+  brand: "Cookware",
+  unitPrice: 719.4,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207337/Panela-Aroma-Media-Angulo-Cinza.jpg.jpg?v=639227421253330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-ferro-aroma-2/p",
+  popularity: 986
+ },
+ {
+  sku: "oxford-60606844",
+  name: "Caçarola de Ferro Fundido Esmaltado Aroma 18 cm Verde",
+  brand: "Cookware",
+  unitPrice: 529.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207357/Panela-Aroma-Pequena-Angulo-Verde.jpg.jpg?v=639227422690700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aroma-verde/p",
+  popularity: 987
+ },
+ {
+  sku: "oxford-60606840",
+  name: "Bule para Chá com Infusor 1L Fumê",
+  brand: "Oxford",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "cha e cafe bule",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186469/Complementar_Bule_Cha_Infusor_1000ml.jpg?v=638750485361630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/bule-cha-fume/p",
+  popularity: 988
+ },
+ {
+  sku: "oxford-60606834",
+  name: "Aparelho de Jantar e Chá 30 Peças Unni Oliva",
+  brand: "Cerâmicas",
+  unitPrice: 849.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/186490/i_Oliva_20_30pcs.jpg?v=638750485714600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-oliva/p",
+  popularity: 989
+ },
+ {
+  sku: "oxford-60606833",
+  name: "Aparelho de Jantar e Chá 30 peças Unni Oceânica",
+  brand: "Cerâmicas",
+  unitPrice: 659.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188263/7B60-unni-oceanica-conjunto.jpg?v=638786171898470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-jantar-30pcs/p",
+  popularity: 990
+ },
+ {
+  sku: "oxford-60606829",
+  name: "Aparelho de Jantar e Chá 30 peças Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207613/Flora_Conjunto_20_30_Dalia.jpg?v=639227540802400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-jantar-30pcs/p",
+  popularity: 991
+ },
+ {
+  sku: "oxford-60606827",
+  name: "Aparelho de Jantar e Chá 30 peças Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187801/Flora_Conjunto_20_30_Aster.jpg?v=638769569911070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-jantar-30pcs/p",
+  popularity: 992
+ },
+ {
+  sku: "oxford-60606825",
+  name: "Aparelho de Jantar e Chá 30 peças Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187632/Flora_Conjunto_20_30_Amor-Perfeito.jpg?v=638767103562470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-30pcs/p",
+  popularity: 993
+ },
+ {
+  sku: "oxford-60606820",
+  name: "Aparelho de Jantar e Chá 30 peças Flamingo Lafayette",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1549.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195751/9241_Flamingo_Lafayette_Conjunto.jpg?v=638888091048670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/lafayette-jantar-30pcs/p",
+  popularity: 994
+ },
+ {
+  sku: "oxford-60606819",
+  name: "Aparelho de Jantar e Chá 30 peças Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1899.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207503/9240_Flamingo_Cosmopolitan_Conjunto.jpg?v=639227459205830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-jantar-30pcs/p",
+  popularity: 995
+ },
+ {
+  sku: "oxford-60606816",
+  name: "Aparelho de Jantar e Chá 20 peças Ryo Galápagos",
+  brand: "Oxford Porcelanas",
+  unitPrice: 679.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188109/9620_Ryo_Galapagos_Conjunto.jpg?v=638785295172370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/galapagos-ryo-jantar-20pcs/p",
+  popularity: 996
+ },
+ {
+  sku: "oxford-60606814",
+  name: "Aparelho de Jantar e Chá 20 peças Flora Dália",
+  brand: "Oxford Porcelanas",
+  unitPrice: 659.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207603/Flora_Conjunto_20_30_Dalia.jpg?v=639227540075970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/dalia-jantar-20pcs/p",
+  popularity: 997
+ },
+ {
+  sku: "oxford-60606812",
+  name: "Aparelho de Jantar e Chá 20 peças Flora Áster",
+  brand: "Oxford Porcelanas",
+  unitPrice: 659.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187795/Flora_Conjunto_20_30_Aster.jpg?v=638769566945200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aster-jantar-20pcs/p",
+  popularity: 998
+ },
+ {
+  sku: "oxford-60606810",
+  name: "Aparelho de Jantar e Chá 20 peças Flora Amor-Perfeito",
+  brand: "Oxford Porcelanas",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/187626/Flora_Conjunto_20_30_Amor-Perfeito.jpg?v=638767098730800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/amor-perfeito-20pcs/p",
+  popularity: 999
+ },
+ {
+  sku: "oxford-60606805",
+  name: "Aparelho de Jantar e Chá 20 peças Flamingo Cosmopolitan",
+  brand: "Oxford Porcelanas",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207513/9240_Flamingo_Cosmopolitan_Conjunto.jpg?v=639227460507170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flamingo-jantar-20pcs/p",
+  popularity: 1000
+ },
+ {
+  sku: "oxford-60606777",
+  name: "Jogo de 6 Pratos Fundos 20 cm Páscoa",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos tematicos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199353/Conjunto_Pascoa_Fundo_06.jpg?v=639041780123600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-unni-pascoa/p",
+  popularity: 1001
+ },
+ {
+  sku: "oxford-60606776",
+  name: "Jogo de 6 Canecas Tulipa 330 ml Páscoa",
+  brand: "Cerâmicas",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199347/Conjunto_Pascoa_Caneca_Frente_06.jpg?v=639041779850170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/canecas-tulipa-unni-pascoa/p",
+  popularity: 1002
+ },
+ {
+  sku: "oxford-60606773",
+  name: "Boleira Flat 26 cm Páscoa",
+  brand: "Cerâmicas",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "servir prato bolo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185804/Conjunto_Pascoa_Boleira.jpg?v=638665939584570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/boleira-flat-pascoa/p",
+  popularity: 1003
+ },
+ {
+  sku: "oxford-60606771",
+  name: "Caçarola Antiaderente para Indução 22 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206989/138747_Cacarola_01.jpg?v=639221564370400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-aluminio-forjado-everyday-22cm/p",
+  popularity: 1004
+ },
+ {
+  sku: "oxford-60606764",
+  name: "Jogo de 6 Pratos Fundos 20,5 cm Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189753/Prato_Fundo_06.jpg?v=638815270393830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-fundos-20-5cm-orquidea/p",
+  popularity: 1005
+ },
+ {
+  sku: "oxford-60606759",
+  name: "Jogo de Panelas Antiaderentes para Indução 4 peças Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 899.9,
+  unit: "un",
+  category: "panelas jogos de panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207035/Everyday_Azul_Novos_04.jpg?v=639221578617830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-de-panelas-aluminio-forjado-4-pecas-everyday/p",
+  popularity: 1006
+ },
+ {
+  sku: "oxford-60606758",
+  name: "Panela Antiaderente para Indução 20 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206975/138753_Panela_01.jpg?v=639221559916730000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-forjado-everyday-20cm/p",
+  popularity: 1007
+ },
+ {
+  sku: "oxford-60606757",
+  name: "Panela Antiaderente para Indução 18 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206981/138753_Panela_01.jpg?v=639221562677170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-forjado-everyday-18cm/p",
+  popularity: 1008
+ },
+ {
+  sku: "oxford-60606755",
+  name: "Aparelho de Jantar Chá 30 peças Donna Bosque",
+  brand: "Biona",
+  unitPrice: 539.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185546/149826_Conjunto_Donna_Bosque_30.jpg?v=638627903700570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-30-pecas-bosque/p",
+  popularity: 1009
+ },
+ {
+  sku: "oxford-60606754",
+  name: "Aparelho de Jantar Chá 20 peças Donna Bosque",
+  brand: "Biona",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/185545/149825_Conjunto_Donna_Bosque_20.jpg?v=638627902888300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-20-pecas-bosque/p",
+  popularity: 1010
+ },
+ {
+  sku: "oxford-60606731",
+  name: "Aparelho de Jantar Chá 20 peças Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/194528/Conjunto_Orquidea.jpg?v=638835977764200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-20-pecas-orquidea/p",
+  popularity: 1011
+ },
+ {
+  sku: "oxford-60606729",
+  name: "Jogo de 6 Pratos Sobremesa 20 cm Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189756/Prato_Sobremesa_06.jpg?v=638815270572400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-sobremesa-20cm-orquidea/p",
+  popularity: 1012
+ },
+ {
+  sku: "oxford-60606728",
+  name: "Jogo de 6 Pratos Rasos 26 cm Unni Orquídea",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189759/Prato_Raso_06.jpg?v=638815270720170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-pratos-rasos-26cm-orquidea/p",
+  popularity: 1013
+ },
+ {
+  sku: "oxford-60606722",
+  name: "Jogo de 6 Xícaras de Chá 200 ml com pires Unni Damas",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191783/149724_Xicara_Pires_Damas_Unni_200ml.jpg?v=638816136039930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-06-xicaras-de-cha-200ml-com-pires-damas/p",
+  popularity: 1014
+ },
+ {
+  sku: "oxford-60605918",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182979/E-commerce_5949_Balance_Conjunto.jpg?v=638320355338570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-balance-20pcs/p",
+  popularity: 1015
+ },
+ {
+  sku: "oxford-60605717",
+  name: "Aparelho de Jantar e Chá 20 Peças Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 639.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182250/136400_Flat_Onix_Conjunto_20.jpg?v=638300536453800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-20pcs/p",
+  popularity: 1016
+ },
+ {
+  sku: "oxford-60602952",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni Oliva",
+  brand: "Cerâmicas",
+  unitPrice: 559.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184889/Conjunto_Oliva.jpg?v=638543033216100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-oliva-20pcs/p",
+  popularity: 1017
+ },
+ {
+  sku: "oxford-60601352",
+  name: "Aparelho de Jantar e Chá 20 Peças Unni White",
+  brand: "Cerâmicas",
+  unitPrice: 469.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/199008/Oxford_Ceramicas_Unni_Conjuntos_White_30_42.jpg?v=638981286170900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/unni-white-20pcs/p",
+  popularity: 1018
+ },
+ {
+  sku: "oxford-60601338",
+  name: "Aparelho de Jantar e Chá 20 Peças Donna Mandala",
+  brand: "Biona",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180466/Biona_Donna_Mandala.jpg?v=638138161173900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-mandala-20pcs/p",
+  popularity: 1019
+ },
+ {
+  sku: "oxford-60600631",
+  name: "Aparelho de Jantar e Chá 20 Peças Ryo Blue Bay",
+  brand: "Oxford Porcelanas",
+  unitPrice: 559.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181000/9507_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211324921570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-bluebay-20pcs/p",
+  popularity: 1020
+ },
+ {
+  sku: "oxford-60600630",
+  name: "Aparelho de Jantar e Chá 20 Peças Ryo Pink Sand",
+  brand: "Oxford Porcelanas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181010/9508_Oxford_Porcelanas_Ryo_Conjuntos_20_30.jpg?v=638211331006500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/ryo-pinksand-20pcs/p",
+  popularity: 1021
+ },
+ {
+  sku: "oxford-60201301",
+  name: "Aparelho de Jantar e Chá 20 Peças Donna Folk",
+  brand: "Biona",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "aparelhos de jantar 20 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180584/5118_Donna-Folk_20_30pcs.jpg?v=638138738753300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-folk-20pcs/p",
+  popularity: 1022
+ },
+ {
+  sku: "oxford-60606456",
+  name: "Jogo de 6 Taças de Cristal Água 420 ml Minimal",
+  brand: "Alumina Crystal",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190314/139220_Taca_De_Cristal_Para_Agua_420ml_06.jpg?v=638815403756300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-agua-420ml-minimal-classic/p",
+  popularity: 1023
+ },
+ {
+  sku: "oxford-60606455",
+  name: "Jogo de 6 Taças de Cristal para Vinho 340 ml Minimal",
+  brand: "Alumina Crystal",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "tacas e copos tacas de vinho",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190321/139217_Taca_De_Cristal_Para_Vinho_340ml_06.jpg?v=638815403898700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-vinho-340ml-minimal-classic/p",
+  popularity: 1024
+ },
+ {
+  sku: "oxford-60606454",
+  name: "Jogo de 6 Taças de Cristal Espumante 170 ml Minimal",
+  brand: "Alumina Crystal",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192785/139214_Taca_Espumante_06.jpg?v=638816921797900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-espumante-170ml-minimal-classic/p",
+  popularity: 1025
+ },
+ {
+  sku: "oxford-60606453",
+  name: "Panela em Alumínio 18 Cm Use+ Cinza",
+  brand: "Biona",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184628/Panela_Em_Aluminio_18cm_Usemais_Cinza_04.jpg?v=638485158100900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-aluminio-18cm-usemais/p",
+  popularity: 1026
+ },
+ {
+  sku: "oxford-60606353",
+  name: "Tigela Conic 500 Ml Mandala",
+  brand: "Biona",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184282/5258_Donna_Mandala_Tigelas.jpg?v=638447484475000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-mandala/p",
+  popularity: 1027
+ },
+ {
+  sku: "oxford-60606340",
+  name: "Tigela Conic 500 Ml Bloom",
+  brand: "Biona",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184267/5275_Donna_Bloom_Tigela.jpg?v=638447475479630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-conic-500ml-bloom/p",
+  popularity: 1028
+ },
+ {
+  sku: "oxford-60606327",
+  name: "Jogo de Taças de Cristal Para Espumante 205 Ml Classic",
+  brand: "Biona",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192735/142347_Taca_De_Cristal_Para_Espumante_205ml_Classic_06.jpg?v=638816393518330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-espumante-205ml-classic/p",
+  popularity: 1029
+ },
+ {
+  sku: "oxford-60606321",
+  name: "Jogo de 6 Taças de Cristal Para Água 627 Ml Classic",
+  brand: "Biona",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "tacas e copos agua",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192715/142338_Taca_De_Cristal_Para_Agua_627ml_Classic_06.jpg?v=638816339828170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-agua-627ml-classic/p",
+  popularity: 1030
+ },
+ {
+  sku: "oxford-60606252",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 500 Ml White",
+  brand: "Oxford",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183892/136568_Pote_Hermetico_De_Acrilico_Retangular_500_.jpg?v=638442934858400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-500ml-white/p",
+  popularity: 1031
+ },
+ {
+  sku: "oxford-60606251",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 500 Ml Grey",
+  brand: "Oxford",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183889/136574_Pote_Hermetico_De_Acrilico_Retangular_500_M.jpg?v=638442932440500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-500ml-grey/p",
+  popularity: 1032
+ },
+ {
+  sku: "oxford-60606250",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 1,8L White",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183891/136572_Pote_Hermetico_De_Acrilico_Retangular_18L.jpg?v=638442933826700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-8l-white/p",
+  popularity: 1033
+ },
+ {
+  sku: "oxford-60606249",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 1,8L Grey",
+  brand: "Oxford",
+  unitPrice: 65.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183888/136578_Pote_Hermetico_De_Acrilico_Retangular_18L.jpg?v=638442931807000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-8l-grey/p",
+  popularity: 1034
+ },
+ {
+  sku: "oxford-60606248",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 1,2L White",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183890/136570_Pote_Hermetico_De_Acrilico_Retangular_12L.jpg?v=638442933268370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-2l-white/p",
+  popularity: 1035
+ },
+ {
+  sku: "oxford-60606247",
+  name: "Pote Hermético Cristal (PP+PET) Retangular 1,2L Grey",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "cozinha potes retangulares",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183887/136576_Pote_Hermetico_De_Acrilico_Retangular_12L.jpg?v=638442915846800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-hermetico-1-2l-grey/p",
+  popularity: 1036
+ },
+ {
+  sku: "oxford-60606245",
+  name: "Panela Wok Antiaderente para Indução 28 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206853/138734_Wok_1.jpg?v=639221508946830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-wok-28cm-everyday-vermelho/p",
+  popularity: 1037
+ },
+ {
+  sku: "oxford-60606242",
+  name: "Panela Antiaderente para Indução 16 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206846/138736_Panela.jpg?v=639221508600570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-everyday-vermelho/p",
+  popularity: 1038
+ },
+ {
+  sku: "oxford-60606241",
+  name: "Panela Antiaderente para Indução 16 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206961/138753_Panela_01.jpg?v=639221544399700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-everyday-azul/p",
+  popularity: 1039
+ },
+ {
+  sku: "oxford-60606240",
+  name: "Panela Antiaderente para indução 16 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207145/141763_Panela_16--3-.jpg?v=639221599488930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/panela-16cm-gourmet/p",
+  popularity: 1040
+ },
+ {
+  sku: "oxford-60606238",
+  name: "Frigideira Antiaderente para Indução 28 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206917/138726-frigideira-everyday-vermelho-28cm-media -4-.jpg?v=639221533191430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-everyday-vermelho/p",
+  popularity: 1041
+ },
+ {
+  sku: "oxford-60606236",
+  name: "Frigideira Antiaderente para Indução 24 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206839/138730_1.jpg?v=639221507682700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-everyday-vermelho/p",
+  popularity: 1042
+ },
+ {
+  sku: "oxford-60606235",
+  name: "Frigideira Antiaderente para Indução 24 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206953/138743_Frigideira_01.jpg?v=639221543974230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-everyday-azul/p",
+  popularity: 1043
+ },
+ {
+  sku: "oxford-60606234",
+  name: "Frigideira em Alumínio 24 Cm Use+ Cinza",
+  brand: "Biona",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184163/140709_Frigideira_Em_Aluminio_24_Cm_Usemais_Cinza_03.jpg?v=638445642620270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-24cm-usemais-cinza/p",
+  popularity: 1044
+ },
+ {
+  sku: "oxford-60606233",
+  name: "Frigideira em Alumínio 20 Cm Use+ Cinza",
+  brand: "Biona",
+  unitPrice: 74.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184159/140707_Frigideira_Em_Aluminio_20_Cm_Usemais_Cinza_03.jpg?v=638445641633900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-20cm-usemais-cinza/p",
+  popularity: 1045
+ },
+ {
+  sku: "oxford-60606232",
+  name: "Frigideira Antiaderente para indução 28 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207176/141750_Frigideira_28_Cm.jpg?v=639221607169170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/frigideira-28cm-gourmet/p",
+  popularity: 1046
+ },
+ {
+  sku: "oxford-60606230",
+  name: "Fervedor em Alumínio 1,6 l Use+ Cinza",
+  brand: "Biona",
+  unitPrice: 74.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184155/140703_Fervedor_em_Aluminio_16l_Usemais_Cinza_03.jpg?v=638445640520630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/fervedor-1-6l-usemais-cinza/p",
+  popularity: 1047
+ },
+ {
+  sku: "oxford-60606199",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Chá Das 5",
+  brand: "Biona",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192752/Donna_Cha_das_5_Prato_Xicara_Pires_06.jpg?v=638816399962900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-donna-chadas5/p",
+  popularity: 1048
+ },
+ {
+  sku: "oxford-60606196",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Coup Noir",
+  brand: "Oxford Porcelanas",
+  unitPrice: 428.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cafe",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191883/140466_Conjunto_De_6_Xicaras_Grandes_200_Ml_Com_Pires_Coup_.jpg?v=638816139787230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-coup-noir/p",
+  popularity: 1049
+ },
+ {
+  sku: "oxford-60606194",
+  name: "Jogo de 6 Pratos Sobremesa 23 Cm Soleil Limoni",
+  brand: "Oxford Porcelanas",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207849/140125_Conjunto_De_6_Pratos_Sobremesa_23_Cm_Soleil_Limo.jpg?v=639237947601930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-soleil-limoni/p",
+  popularity: 1050
+ },
+ {
+  sku: "oxford-60606179",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196805/143003_Conjunto_De_6_Pratos_Sobremesa_20_Cm_Unni_Bri.jpg?v=638918265868170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-unni-brisa/p",
+  popularity: 1051
+ },
+ {
+  sku: "oxford-60606172",
+  name: "Jogo de 6 Pratos Rasos 29 Cm Soleil Limoni",
+  brand: "Oxford Porcelanas",
+  unitPrice: 379.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207775/140126_Conjunto_De_6_Pratos_Rasos_29_Cm_Soleil_Limoni.jpg?v=639228407323130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-soleil-limoni/p",
+  popularity: 1052
+ },
+ {
+  sku: "oxford-60606164",
+  name: "Jogo de 6 Pratos Rasos 28 Cm Coup Noir",
+  brand: "Oxford Porcelanas",
+  unitPrice: 415.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189868/140463_Conjunto_De_6_Pratos_Rasos_28_Cm_Coup_Noir.jpg?v=638815304285600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-coup-noir/p",
+  popularity: 1053
+ },
+ {
+  sku: "oxford-60606151",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Donna Chá Das 5",
+  brand: "Biona",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189893/Donna_Cha_das_5_Prato_Raso_06.jpg?v=638815307278570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-chadas5/p",
+  popularity: 1054
+ },
+ {
+  sku: "oxford-60606148",
+  name: "Jogo de 6 Pratos Fundos 24 Cm Soleil Limoni",
+  brand: "Oxford Porcelanas",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "pratos relevo",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207836/140127_Conjunto_De_6_Pratos_Fundos_24_Cm_Soleil_Limoni.jpg?v=639237942620100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-soleil-limoni/p",
+  popularity: 1055
+ },
+ {
+  sku: "oxford-60606146",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Palhinha Brasileira",
+  brand: "Oxford Porcelanas",
+  unitPrice: 363.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196439/139873_Conjunto_De_6_Pratos_Fundos_235_.jpg?v=638903548414030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-palhinha-brasileira/p",
+  popularity: 1056
+ },
+ {
+  sku: "oxford-60606144",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Lazuli",
+  brand: "Oxford Porcelanas",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189910/139827_Conjunto_De_6_Pratos_Fundos_235_Cm_Flamingo_L.jpg?v=638815310693870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-lazuli/p",
+  popularity: 1057
+ },
+ {
+  sku: "oxford-60606142",
+  name: "Jogo de 6 Pratos Fundos 23,5 Cm Flamingo Classic Azul",
+  brand: "Oxford Porcelanas",
+  unitPrice: 363.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189914/139968_Conjunto_De_6_Pratos_Fundos_235_Cm_Flam.jpg?v=638815311009300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-flamingo-classic-azul/p",
+  popularity: 1058
+ },
+ {
+  sku: "oxford-60606133",
+  name: "Jogo de 6 Pratos Fundos 21 Cm Coup Noir",
+  brand: "Oxford Porcelanas",
+  unitPrice: 371.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189935/140464_Conjunto_De_6_Pratos_Fundos_21_Cm_Coup_Noir.jpg?v=638815313479400000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-coup-noir/p",
+  popularity: 1059
+ },
+ {
+  sku: "oxford-60606127",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Brisa",
+  brand: "Cerâmicas",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/197240/143002_Conjunto_De_6_Pratos_Fundos_205_Cm_Unni_Bris.jpg?v=638918316792900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-brisa/p",
+  popularity: 1060
+ },
+ {
+  sku: "oxford-60606121",
+  name: "Jogo de 12 Garfos de Mesa 20 Cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204027/141895_Ouro_Preto_12.jpg?v=639168064684000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-ouro-preto/p",
+  popularity: 1061
+ },
+ {
+  sku: "oxford-60606120",
+  name: "Jogo de 12 Garfos de Mesa 20 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204024/141861_Conjunto_De_12_Garfos_De_Mesa_20_Cm_Olinda_12.jpg?v=639168063972130000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-olinda/p",
+  popularity: 1062
+ },
+ {
+  sku: "oxford-60606119",
+  name: "Jogo de 12 Garfos de Mesa 19,5 Cm Noronha",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203973/141873_Conjunto_De_12_Garfos_De_Mesa_195_Cm_Noronha_12.jpg?v=639168008475900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-garfos-mesa-noronha/p",
+  popularity: 1063
+ },
+ {
+  sku: "oxford-60606117",
+  name: "Jogo de 12 Facas de Mesa 22,5 Cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204029/141891_Conjunto_De_12_Facas_De_Mesa_225_Cm_Ouro_Pre.jpg?v=639168064876200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-ouro-preto/p",
+  popularity: 1064
+ },
+ {
+  sku: "oxford-60606116",
+  name: "Jogo de 12 Facas de Mesa 22,5 Cm Noronha",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203975/141869_Conjunto_De_12_Facas_De_Mesa_225_Cm_Noronha_12.jpg?v=639168008648470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-noronha/p",
+  popularity: 1065
+ },
+ {
+  sku: "oxford-60606115",
+  name: "Jogo de 12 Facas de Mesa 21,5 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204021/141857_Conjunto_De_12_Facas_De_Mesa_215_Cm_Olinda_12.jpg?v=639168063851430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-mesa-olinda/p",
+  popularity: 1066
+ },
+ {
+  sku: "oxford-60606114",
+  name: "Jogo de 12 Facas de Churrasco 22,5 Cm Noronha",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203977/141871_Conjunto_De_12_Facas_De_Churrasco_225_Cm_Noronh.jpg?v=639168008792930000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-noronha/p",
+  popularity: 1067
+ },
+ {
+  sku: "oxford-60606113",
+  name: "Jogo de 12 Facas de Churrasco 22,6 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204019/141859_Conjunto_De_12_Facas_De_Churrasco_215_Cm_Olinda_12.jpg?v=639168063677270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-olinda/p",
+  popularity: 1068
+ },
+ {
+  sku: "oxford-60606111",
+  name: "Jogo de 12 Facas de Churrasco 22,5 Cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres facas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204031/141893_faca_churrasco.jpg?v=639168064951370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-facas-churrasco-ouro-preto/p",
+  popularity: 1069
+ },
+ {
+  sku: "oxford-60606109",
+  name: "Jogo de 12 Colheres de Sobremesa 16 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/202395/141865_Conjunto_De_12_Colheres_De_Sobremesa_16_Cm_Olinda_12.jpg?v=639101243660570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-sobremesa-olinda/p",
+  popularity: 1070
+ },
+ {
+  sku: "oxford-60606108",
+  name: "Jogo de 12 Colheres de Sobremesa 16 Cm Noronha",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203971/141877_Conjunto_De_12_Colheres_De_Sobremesa_16_Cm_Noron.jpg?v=639168008266270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-sobremesa-noronha/p",
+  popularity: 1071
+ },
+ {
+  sku: "oxford-60606106",
+  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204033/141897_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Ouro_12.jpg?v=639168065030430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-ouro-preto/p",
+  popularity: 1072
+ },
+ {
+  sku: "oxford-60606105",
+  name: "Jogo de 12 Colheres de Mesa 19,5 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204017/141863_Conjunto_De_12_Colheres_De_Mesa_195_Cm_Olinda_12.jpg?v=639168063578700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-mesa-olinda/p",
+  popularity: 1073
+ },
+ {
+  sku: "oxford-60606102",
+  name: "Jogo de 12 Colheres de Chá 14 Cm Ouro Preto",
+  brand: "Oxford",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204035/141899_Conjunto_De_12_Colheres_De_Cha_14_Cm_Ouro_Preto_12.jpg?v=639168065124430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-ouro-preto/p",
+  popularity: 1074
+ },
+ {
+  sku: "oxford-60606101",
+  name: "Jogo de 12 Colheres de Chá 14 Cm Olinda",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204015/141867_Conjunto_De_12_Colheres_De_Cha_14_Cm_Olinda_12.jpg?v=639168063471800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-olinda/p",
+  popularity: 1075
+ },
+ {
+  sku: "oxford-60606100",
+  name: "Jogo de 12 Colheres de Chá 14 Cm Noronha",
+  brand: "Oxford",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203981/141879_Conjunto_De_12_Colheres_De_Cha_14_Cm_Noronha_12.jpg?v=639168009027000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-colheres-cha-noronha/p",
+  popularity: 1076
+ },
+ {
+  sku: "oxford-60606096",
+  name: "Chapa Grill Antiaderente para indução 28 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207191/141758_Chapa.jpg?v=639221608555770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/chapa-grill-28cm-gourmet/p",
+  popularity: 1077
+ },
+ {
+  sku: "oxford-60606066",
+  name: "Caçarola Rasa Antiaderente para Indução 28 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206833/138732-cacarola-rasa-everyday-vermelho-28cm-media -7-.jpg?v=639221506521270000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-rasa-28cm-everyday-vermelho/p",
+  popularity: 1078
+ },
+ {
+  sku: "oxford-60606064",
+  name: "Caçarola Antiaderente para Indução 28 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 439.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206812/138730_2.jpg?v=639221498261170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-everyday-vermelho/p",
+  popularity: 1079
+ },
+ {
+  sku: "oxford-60606063",
+  name: "Caçarola Antiaderente para Indução 28 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 439.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207007/138747_Cacarola_02.jpg?v=639221572862970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-28cm-everyday-azul/p",
+  popularity: 1080
+ },
+ {
+  sku: "oxford-60606062",
+  name: "Caçarola Antiaderente para Indução 24 Cm Everyday Vermelha",
+  brand: "Cookware",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/206907/138728-cacarola-everyday-vermelho-24cm-media -9-.jpg?v=639221530650230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-everyday-vermelho/p",
+  popularity: 1081
+ },
+ {
+  sku: "oxford-60606061",
+  name: "Caçarola Antiaderente para Indução 24 Cm Everyday Azul",
+  brand: "Cookware",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207018/138745_Cacarola_01.jpg?v=639221573843100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-everyday-azul/p",
+  popularity: 1082
+ },
+ {
+  sku: "oxford-60606060",
+  name: "Caçarola em Alumínio 24 Cm Use+ Cinza",
+  brand: "Biona",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184041/140701_Cacarola_Biona_24cm_Angulo_02.jpg?v=638445501047030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-usemais-cinza/p",
+  popularity: 1083
+ },
+ {
+  sku: "oxford-60606058",
+  name: "Caçarola Antiaderente para indução 24 Cm Gourmet Preta",
+  brand: "Cookware",
+  unitPrice: 449.9,
+  unit: "un",
+  category: "panelas cacarolas e panelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207206/141753_Cacarola_24--2-.jpg?v=639221609429300000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cacarola-24cm-gourmet/p",
+  popularity: 1084
+ },
+ {
+  sku: "oxford-60605937",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191892/E-commerce_5950_Strips_an_dots_Xicara_Pires_06.jpg?v=638816140508800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-stripes-and-dots/p",
+  popularity: 1085
+ },
+ {
+  sku: "oxford-60605935",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191898/5950_Conjunto_Balance_Xicara_Pires_06.jpg?v=638816140761800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-grandes-unni-balance/p",
+  popularity: 1086
+ },
+ {
+  sku: "oxford-60605932",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Unni Balance",
+  brand: "Cerâmicas",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189957/5950_Conjunto_Balance_Sobremesa_06.jpg?v=638815315409030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesa-unni-balance/p",
+  popularity: 1087
+ },
+ {
+  sku: "oxford-60605925",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Unni Stripes And Dots",
+  brand: "Cerâmicas",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189972/139127_Conjunto-de-6-Pratos-Fundos-205-Cm-Unni-Stripes-And-Dots.jpg?v=638815317240000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-unni-stripes-and-dots/p",
+  popularity: 1088
+ },
+ {
+  sku: "oxford-60605836",
+  name: "Aparelho de Jantar e Chá 30 peças Canelé Branco",
+  brand: "Biona",
+  unitPrice: 654.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182472/Canele_Branco_Conjunto.jpg?v=638301389463900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/canele-branco/p",
+  popularity: 1089
+ },
+ {
+  sku: "oxford-60605835",
+  name: "Aparelho de Jantar e Chá 30 peças Canelé Azul",
+  brand: "Biona",
+  unitPrice: 654.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182441/Canele_Azul_Conjunto.jpg?v=638301376219800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/canele-azul/p",
+  popularity: 1090
+ },
+ {
+  sku: "oxford-60605762",
+  name: "Jogo de 6 Pratos Sobremesa 20 Cm Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190060/136396_Flat_Onix_Prato_Sobremesa_20cm_06.jpg?v=638815325262900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-sobremesa/p",
+  popularity: 1091
+ },
+ {
+  sku: "oxford-60605744",
+  name: "Jogo de 6 Pratos Fundos 20,5 Cm Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "pratos redondos",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190119/136398_Flat_Onix_Prato_Fundo_205cm_06.jpg?v=638815330303670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/flat-onix-pratos-fundos/p",
+  popularity: 1092
+ },
+ {
+  sku: "oxford-60605708",
+  name: "Aparelho de Jantar 18 Peças Flat Ônix",
+  brand: "Cerâmicas",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/182243/136402_Flat_Onix_Conjunto_18.jpg?v=638300535505100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-flat-onix/p",
+  popularity: 1093
+ },
+ {
+  sku: "oxford-60605684",
+  name: "Aparelho de Jantar 18 Peças Donna Cena Inglesa",
+  brand: "Biona",
+  unitPrice: 358.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181817/5131_Donna_Cena_Inglesa_18.jpg?v=638285671927000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18pcs-donna-cena-inglesa/p",
+  popularity: 1094
+ },
+ {
+  sku: "oxford-60605454",
+  name: "Aparelho de Jantar 18 Peças Ryo Maresia",
+  brand: "Oxford Porcelanas",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "aparelhos de jantar 18 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196927/Maresia.jpg?v=638918281275900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/aparelho-jantar-18ryo-maresia/p",
+  popularity: 1095
+ },
+ {
+  sku: "oxford-60605390",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192629/127227_Conjunto_6_Xicaras_Grandes_200Ml_Pires_Donna_Bem_Te_Vi.jpg?v=638816332308970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-donna-bem-te-vi/p",
+  popularity: 1096
+ },
+ {
+  sku: "oxford-60605387",
+  name: "Jogo de 6 Xícaras Grandes 200 Ml Com Pires Donna Lírios",
+  brand: "Biona",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cha e cafe conjuntos de cha",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192631/126286_Conjunto_6_Xicaras_Grandes_180Ml_Pires_Donna_Lirios.jpg?v=638816332435330000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-xicaras-donna-lirios/p",
+  popularity: 1097
+ },
+ {
+  sku: "oxford-60605377",
+  name: "Assadeira Refratária Tango Pequena 28x18x5,5 Cm Marrom",
+  brand: "Cookware",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180627/126817_Travessaa_Refrataria_Marrom_Tango_P.jpg?v=638150793549500000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-refrataria-tango-pequena-marrom/p",
+  popularity: 1098
+ },
+ {
+  sku: "oxford-60605348",
+  name: "Tigela 300 Ml Preto",
+  brand: "Cerâmicas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "servir bowls e tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180246/025481_Tigela_300Ml_Preto.jpg?v=638130992910800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-preto/p",
+  popularity: 1099
+ },
+ {
+  sku: "oxford-60605206",
+  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192588/127228_Donna_Pratos_Sobremesa_Bem_Te_Vi_18cm.jpg.jpg?v=638816304218170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-sobremesas-donna-bem-te-vi/p",
+  popularity: 1100
+ },
+ {
+  sku: "oxford-60605186",
+  name: "Jogo de 6 Pratos Rasos 26 Cm Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190413/127230_Conjunto_6_Pratos_Rasos_26Cm_Donna_Bem_Te_Vi.jpg?v=638815407111800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-rasos-donna-bem-te-vi/p",
+  popularity: 1101
+ },
+ {
+  sku: "oxford-60605174",
+  name: "Jogo de 6 Pratos Fundos 21,5 Cm Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190595/127229_Conjunto_6_Pratos_Fundos_215Cm_Donna_Bem_Te_Vi.jpg?v=638815418725530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-pratos-fundos-donna-bem-te-vi/p",
+  popularity: 1102
+ },
+ {
+  sku: "oxford-60605110",
+  name: "Caneca Quartier 220 Ml Verde Escuro",
+  brand: "Oxford Porcelanas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180190/126700_Caneca_Quartier_220Ml_Verde_Escuro.jpg?v=638130923032700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-quartier-verde-escuro-220ml/p",
+  popularity: 1103
+ },
+ {
+  sku: "oxford-60605077",
+  name: "Aparelho de Jantar 30 peças Donna Bem-Te-Vi",
+  brand: "Biona",
+  unitPrice: 539.9,
+  unit: "un",
+  category: "aparelhos de jantar 30 pecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/180270/Conjunto_donna_bem_te_vi.jpg?v=638131006790000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-bem-te-vi/p",
+  popularity: 1104
+ },
+ {
+  sku: "oxford-60604782",
+  name: "Tigela Ramequin 50 Ml Branco/Vermelho",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179141/004715_0207_Ramequin_50ml_bic_vermelho.jpg?v=638035332841970000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-vermelho-50ml/p",
+  popularity: 1105
+ },
+ {
+  sku: "oxford-60604778",
+  name: "Tigela Ramequin 50 Ml Branco/Amarelo",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179136/004717_0209_Ramequin_50ml_bic_amarelo.jpg?v=638035326737670000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-amarelo-50ml/p",
+  popularity: 1106
+ },
+ {
+  sku: "oxford-60604777",
+  name: "Tigela Ramequin 50 Ml Branco",
+  brand: "Cookware",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179134/004711_9001_Ramequin_50ml_branco.jpg?v=638035286866030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-50ml/p",
+  popularity: 1107
+ },
+ {
+  sku: "oxford-60604771",
+  name: "Tigela Ramequin 180 Ml Branco/Preto",
+  brand: "Cookware",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179126/004745_0205_Ramequin_180ml_bic_preto.jpg?v=638035273815700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-preto-180ml/p",
+  popularity: 1108
+ },
+ {
+  sku: "oxford-60604768",
+  name: "Tigela Ramequin 180 Ml Branco",
+  brand: "Cookware",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cozinha ramequin",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/179120/004743_9001_Ramequin_180ml_branco.jpg?v=638035243945900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-ramequim-branco-180ml/p",
+  popularity: 1109
+ },
+ {
+  sku: "oxford-60604313",
+  name: "Manteigueira 6 Cm 40 Ml Branco",
+  brand: "Oxford Porcelanas",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/181935/oxford-porcelanas-C20B-mantegueira-gourmet-00.jpg?v=638291095329870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/manteigueira-branco-40ml/p",
+  popularity: 1110
+ },
+ {
+  sku: "oxford-60604268",
+  name: "Cafeteira Italiana Moka de Alumínio 150 ml Black",
+  brand: "Oxford",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/188430/Moka_P.jpg?v=638793900901000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cafeteira-italiana-moka-3xicaras/p",
+  popularity: 1111
+ },
+ {
+  sku: "oxford-60604267",
+  name: "Jogo de 6 Taças de Cristal Para Coquetel 530 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 279.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190386/111433_Alumina_Taca_Coquetel_530ml_cj_6.jpg?v=638815406026200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-coquetel-classic-350-ml/p",
+  popularity: 1112
+ },
+ {
+  sku: "oxford-60604266",
+  name: "Jogo de 6 Taças de Cristal Posh 140 Ml Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "tacas e copos coquetel",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192791/111437_Alumina_Taca_Posh_140ml_cj_6.jpg?v=638816922025470000",
+  productUrl: "https://www.oxfordporcelanas.com.br/conjunto-tacas-posh-classic-140-ml/p",
+  popularity: 1113
+ },
+ {
+  sku: "oxford-60604220",
+  name: "Travessa Gn 1/1 Em Melamina 7l Container",
+  brand: "Oxford",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203157/076416_Melanina_travessa_GN-1_1_524x32cm_7L.jpg?v=639154226944830000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-1-melamina-container-7-litros/p",
+  popularity: 1114
+ },
+ {
+  sku: "oxford-60604218",
+  name: "Prato Em Melamina 36 X 36 Cm Quartier",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177788/6-PRATOS-QUADRADO-EM-MELAMINA-36X36CM-BRANCO-MARFIM-J418062-M_Individuais.jpg?v=639154236009430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/prato-melamina-quartier-36-x-36-cm/p",
+  popularity: 1115
+ },
+ {
+  sku: "oxford-60604216",
+  name: "Tigela Em Melamina 3l Ocean",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178257/Tigela_Ocean_431249cm_3L.jpg?v=639154231648700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-melamina-ocean-3-litros/p",
+  popularity: 1116
+ },
+ {
+  sku: "oxford-60604214",
+  name: "Travessa Gn 2/4 Em Melamina 3l 52 X 16 Cm Container",
+  brand: "Oxford",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203175/076412_Melanina_Travessa_GN-2_4_52x16cm--3L.jpg?v=639154224124700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-2-4-melamina-container-52-x-16-litros/p",
+  popularity: 1117
+ },
+ {
+  sku: "oxford-60604208",
+  name: "Travessa Modular Em Melamina 1l Zen",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203178/086662_Melamina_Travessa_Modular_Zen_441x26cm_1L.jpg?v=639154223853230000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-modular-melamina-zen-1-litro/p",
+  popularity: 1118
+ },
+ {
+  sku: "oxford-60604207",
+  name: "Tigela Em Melamina 3300 Ml Quartier",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203135/6-Tigelas-Quadrada-Em-Melamina-3300Ml-24X24Cm---Branco-Marfim---J447771-M.jpg?v=639154231985430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-melamina-quartier-3300-ml/p",
+  popularity: 1119
+ },
+ {
+  sku: "oxford-60604205",
+  name: "Terrina Em Melamina 900 Ml Colors Red",
+  brand: "Oxford",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178227/076409_Terrina_Colors_vermelha.jpg?v=638004972384570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/terrina-melamina-colors-red-900-ml/p",
+  popularity: 1120
+ },
+ {
+  sku: "oxford-60604201",
+  name: "Tigela Rasa Quadrada Em Melamina 25,2 X 25,2 Cm Tóquio",
+  brand: "Oxford",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "buffet tigelas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203205/12-Tigelas-Rasa-Quadrada-Toquio-Em-Melamina-106X106Cm---Preto-E-Brilho---D166013-M.jpg?v=639154215985700000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-rasa-quadrada-melamina-toquio-25-2-x-25-2-cm/p",
+  popularity: 1121
+ },
+ {
+  sku: "oxford-60604199",
+  name: "Travessa Gn 1/4 Em Melamina 1,5l Container",
+  brand: "Oxford",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203166/086627_Melamina_Travessa_GN_1_4.jpg?v=639154226051800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-4-melamina-container-1-5-litros/p",
+  popularity: 1122
+ },
+ {
+  sku: "oxford-60604196",
+  name: "Travessa Funda Em Melamina 30,5 X 20,2 Cm Landscape",
+  brand: "Oxford",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203152/076380_Melanina_Travessa_Funda_Landscape_305x202cm_71cm.jpg?v=639154229594430000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-funda-melamina-quartier-1-4-litros/p",
+  popularity: 1123
+ },
+ {
+  sku: "oxford-60604193",
+  name: "Travessa Gn 1/6 Em Melamina 900 Ml Container",
+  brand: "Oxford",
+  unitPrice: 54.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203169/086628_Melamina_Travessa_GN_1_6--174x159cm_900ml.jpg?v=639154224809530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/travessa-gn-1-6-melamina-container-900-ml/p",
+  popularity: 1124
+ },
+ {
+  sku: "oxford-60604191",
+  name: "Tábua Para Servir Retangular Em Melamina 32,3 X 13,7 Cm Slim",
+  brand: "Oxford",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203126/076367-tabua-para-servir-retangular-em-melamina-media.jpg?v=639154235372900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tabua-servir-retangular-melamina-slim-32-3-x-8-5-cm/p",
+  popularity: 1125
+ },
+ {
+  sku: "oxford-60604189",
+  name: "Prato Em Melamina 29,5 X 12 Cm Tóquio",
+  brand: "Oxford",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203201/12-Pratos-Toquio-Em-Melamina-295X12Cm---Preto-E-Brilho---D166064-M.jpg?v=639154216316000000",
+  productUrl: "https://www.oxfordporcelanas.com.br/prato-melamina-toquio-29-5-x-12-cm/p",
+  popularity: 1126
+ },
+ {
+  sku: "oxford-60604156",
+  name: "Rolo Para Massa de Silicone 46 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178015/070275_Rolos_Massa_De_Silicone_46Cm_Cool_Grey.jpg?v=637970490570170000",
+  productUrl: "https://www.oxfordporcelanas.com.br/rolo-massa-silicone-cool-grey-46-cm/p",
+  popularity: 1127
+ },
+ {
+  sku: "oxford-60604140",
+  name: "Porta Papel Toalha Cool Grey",
+  brand: "Oxford",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177997/070278_Porta_Papel_Toalha_Cool-Grey.jpg?v=637970416791600000",
+  productUrl: "https://www.oxfordporcelanas.com.br/porta-papel-toalha-cool-grey/p",
+  popularity: 1128
+ },
+ {
+  sku: "oxford-60604126",
+  name: "Infusor de Cha Em Inox 14,8 Cm Prateado",
+  brand: "Oxford",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178004/114110_Infusor_de_cha_inox_2x148cm.jpg?v=637970432521030000",
+  productUrl: "https://www.oxfordporcelanas.com.br/infusor-cha-inox-prateado-14-cm/p",
+  popularity: 1129
+ },
+ {
+  sku: "oxford-60604125",
+  name: "Infusor de Cha Baleia Em Silicone E Inox Water Blue",
+  brand: "Oxford",
+  unitPrice: 29.9,
+  unit: "un",
+  category: "cha e cafe cafeteria",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178002/114134_Infusor_de_cha_baleia_12x4x35cm_01.jpg?v=637970431793800000",
+  productUrl: "https://www.oxfordporcelanas.com.br/infusor-cha-silicone-baleia-water-blue/p",
+  popularity: 1130
+ },
+ {
+  sku: "oxford-60604121",
+  name: "Espátula Para Bolo Cool Grey",
+  brand: "Oxford",
+  unitPrice: 40.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178322/070284_Espatula_para_Bolo_Cool_Grey_268x61x4cm.jpg?v=638007501619630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/espatula-bolo-cool-grey/p",
+  popularity: 1131
+ },
+ {
+  sku: "oxford-60604109",
+  name: "Escumadeira de Silicone 33,5 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178313/069948_Escumadeira_Cool_Grey_335cm.jpg?v=638007497571070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/escumadeira-silicone-cool-grey-33-cm/p",
+  popularity: 1132
+ },
+ {
+  sku: "oxford-60604092",
+  name: "Concha de Silicone 31 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 76.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/178084/069951_Utensilios_Em_Silicone_Com_Cabo_Inox_Cool_Grey_concha.jpg?v=637974636894370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-silicone-cool-frey-31-cm/p",
+  popularity: 1133
+ },
+ {
+  sku: "oxford-60604082",
+  name: "Colher Para Espaguete 34 Cm Cool Grey",
+  brand: "Oxford",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/177926/069957_Colher_Espaguete_Aco_Inox_silicone_Cool_Grey_34cm.jpg?v=637958329184070000",
+  productUrl: "https://www.oxfordporcelanas.com.br/colher-espaquete-cool-grey-34-cm/p",
+  popularity: 1134
+ },
+ {
+  sku: "oxford-60604039",
+  name: "Taça de Cristal Espumante 210 Ml Forever Classic",
+  brand: "Alumina Crystal",
+  unitPrice: 39.9,
+  unit: "un",
+  category: "tacas e copos espumante",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/189270/Forever_Classic_Taca_Espumante_210ml-00.jpg.jpg?v=638799153304370000",
+  productUrl: "https://www.oxfordporcelanas.com.br/taca-cristal-espumante-210-ml-forever-classic/p",
+  popularity: 1135
+ },
+ {
+  sku: "oxford-60603802",
+  name: "Cesta de Piquenique em Fibra Natural para 2 Pessoas",
+  brand: "Oxford",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "servir piquenique",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176680/116710_Cesta_Piquenique_duas_pessoas_Fechada_40x29cm_H28cm.jpg?v=637855662243570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/cesta-piquenique-fibra-natural/p",
+  popularity: 1136
+ },
+ {
+  sku: "oxford-60603757",
+  name: "Pote Bahia Em Vidro Borosilicato 600 Ml Com Tampa de Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 34.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184850/Pote_de_Vidro_01.jpg?v=638536219508630000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-com-tampa-600ml/p",
+  popularity: 1137
+ },
+ {
+  sku: "oxford-60603756",
+  name: "Pote Bahia Em Vidro Borosilicato 1,2 L Com Tampa de Bambu",
+  brand: "Oxford Porcelanas",
+  unitPrice: 43.9,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184849/Pote_de_Vidro_03.jpg?v=638536217378530000",
+  productUrl: "https://www.oxfordporcelanas.com.br/pote-bahia-com-tampa-1l/p",
+  popularity: 1138
+ },
+ {
+  sku: "oxford-60603728",
+  name: "Caneca Ryo 260 Ml Blue Bay",
+  brand: "Cerâmicas",
+  unitPrice: 27.9,
+  unit: "un",
+  category: "cha e cafe canecas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/209470/Ryo_Caneca_Pequena_260ml_Blue_Bay-otimizada.webp?v=639259302295200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/caneca-ryo-blue-bay-260ml/p",
+  popularity: 1139
+ },
+ {
+  sku: "oxford-60603680",
+  name: "Forma de Silicone Para Gelo Com Tampa Azul",
+  brand: "Oxford",
+  unitPrice: 42.63,
+  unit: "un",
+  category: "cozinha utensilios",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/184418/069918-forma-p-gelo-c-tampa-water-blue-media.jpg?v=638458471173870000",
+  productUrl: "https://www.oxfordporcelanas.com.br/forma-silicone-gelo-azul/p",
+  popularity: 1140
+ },
+ {
+  sku: "oxford-60603679",
+  name: "Saladeira de Vidro Redonda 3,5 L",
+  brand: "Biona",
+  unitPrice: 84.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176517/068465-1.jpg?v=637842594300200000",
+  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-vidro-redonda-3-5l/p",
+  popularity: 1141
+ },
+ {
+  sku: "oxford-60603678",
+  name: "Saladeira de Vidro Redonda 4,4 L",
+  brand: "Biona",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "servir saladeira",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/176516/068463-1.jpg?v=637842594296900000",
+  productUrl: "https://www.oxfordporcelanas.com.br/saladeira-vidro-redonda-4-4l/p",
   popularity: 1142
  },
  {
@@ -12821,17 +12821,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 1165
  },
  {
-  sku: "oxford-60603209",
-  name: "Faca Do Chef Em Cerâmica 29 Cm All Black",
-  brand: "Oxford",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "talheres facas",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208934/Faca_Ceramica_Faca_Chef_29cm-otimizada.webp?v=639256100544770000",
-  productUrl: "https://www.oxfordporcelanas.com.br/faca-do-chef-em-ceramica-29-cm/p",
-  popularity: 1166
- },
- {
   sku: "oxford-60603208",
   name: "Faca Santoku Em Cerâmica 26 Cm All Black",
   brand: "Oxford",
@@ -12840,7 +12829,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/208939/Faca_Ceramica_Faca_Santoku_26cm-otimizada.webp?v=639256101108830000",
   productUrl: "https://www.oxfordporcelanas.com.br/faca-santoku-em-ceramica-26-cm/p",
-  popularity: 1167
+  popularity: 1166
  },
  {
   sku: "oxford-60603184",
@@ -12851,7 +12840,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203778/Design-sem-nome--89-.png?v=639168641105930000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador5/p",
-  popularity: 1168
+  popularity: 1167
  },
  {
   sku: "oxford-60603183",
@@ -12862,7 +12851,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203774/Design-sem-nome--88-.png?v=639168641176800000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador9/p",
-  popularity: 1169
+  popularity: 1168
  },
  {
   sku: "oxford-60603182",
@@ -12873,7 +12862,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203770/Design-sem-nome--87-.png?v=639168641254870000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador1/p",
-  popularity: 1170
+  popularity: 1169
  },
  {
   sku: "oxford-60603181",
@@ -12884,7 +12873,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203766/Design-sem-nome--86-.png?v=639168641331600000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador6/p",
-  popularity: 1171
+  popularity: 1170
  },
  {
   sku: "oxford-60603180",
@@ -12895,7 +12884,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203758/Garfo-de-sobremesa.jpg?v=639167804563170000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador2/p",
-  popularity: 1172
+  popularity: 1171
  },
  {
   sku: "oxford-60603178",
@@ -12906,7 +12895,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203750/Faca-de-sobremesa.jpg?v=639167803490300000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador3/p",
-  popularity: 1173
+  popularity: 1172
  },
  {
   sku: "oxford-60603177",
@@ -12917,7 +12906,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203743/Faca-de-peixe.jpg?v=639167802781930000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador8/p",
-  popularity: 1174
+  popularity: 1173
  },
  {
   sku: "oxford-60603175",
@@ -12928,7 +12917,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203733/Faca-de-mesa.jpg?v=639167799248470000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-salvador10/p",
-  popularity: 1175
+  popularity: 1174
  },
  {
   sku: "oxford-60603173",
@@ -12939,7 +12928,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204007/Design sem nome -98-.png?v=639168036513730000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza5/p",
-  popularity: 1176
+  popularity: 1175
  },
  {
   sku: "oxford-60603171",
@@ -12950,7 +12939,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/204004/Design sem nome -97-.png?v=639168035536830000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza7/p",
-  popularity: 1177
+  popularity: 1176
  },
  {
   sku: "oxford-60603168",
@@ -12961,7 +12950,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203992/Design sem nome -93-.png?v=639168016552330000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza3/p",
-  popularity: 1178
+  popularity: 1177
  },
  {
   sku: "oxford-60603167",
@@ -12972,7 +12961,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/203995/Design sem nome -94-.png?v=639168017970970000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-fortaleza6/p",
-  popularity: 1179
+  popularity: 1178
  },
  {
   sku: "oxford-60603165",
@@ -12983,7 +12972,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173583/Colher-de-Cafe-individual.jpg?v=637606569780770000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol4/p",
-  popularity: 1180
+  popularity: 1179
  },
  {
   sku: "oxford-60603157",
@@ -12994,7 +12983,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173568/Faca-de-mesa-individual.jpg?v=637606563161700000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-talheres-servico-farol9/p",
-  popularity: 1181
+  popularity: 1180
  },
  {
   sku: "oxford-60603123",
@@ -13005,7 +12994,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/175405/Biona_Talheres_Inox_Class_Faca_Mesa.jpg?v=637650599395400000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-inox-class7/p",
-  popularity: 1182
+  popularity: 1181
  },
  {
   sku: "oxford-60603121",
@@ -13016,7 +13005,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173501/Colher-de-Cha-Cinza-Neutro-individual.jpg?v=637606520472900000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-cinzaneutro2/p",
-  popularity: 1183
+  popularity: 1182
  },
  {
   sku: "oxford-60603111",
@@ -13027,7 +13016,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173465/Colher-de-Cha-Vermelho-Intenso-individual.jpg?v=637606504740470000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-vermelhointenso2/p",
-  popularity: 1184
+  popularity: 1183
  },
  {
   sku: "oxford-60603110",
@@ -13038,7 +13027,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173462/Colher-de-Mesa-Vermelho-Intenso-individual.jpg?v=637606503921430000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-vermelhointenso1/p",
-  popularity: 1185
+  popularity: 1184
  },
  {
   sku: "oxford-60603109",
@@ -13049,7 +13038,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/173459/Garfo-VermelhoIntenso-individual.jpg?v=637606502727870000",
   productUrl: "https://www.oxfordporcelanas.com.br/biona-talheres-polip-vermelhointenso4/p",
-  popularity: 1186
+  popularity: 1185
  },
  {
   sku: "oxford-60603097",
@@ -13060,7 +13049,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190468/Copo-de-cachaca-Classic.jpg?v=638815409341100000",
   productUrl: "https://www.oxfordporcelanas.com.br/conjunto-copos-cachaca-classic-70-ml/p",
-  popularity: 1187
+  popularity: 1186
  },
  {
   sku: "oxford-60603096",
@@ -13071,7 +13060,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190473/Taca-p-coquetel.jpg?v=638815409614070000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic3/p",
-  popularity: 1188
+  popularity: 1187
  },
  {
   sku: "oxford-60603095",
@@ -13082,7 +13071,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190478/Taca-p-grappa.jpg?v=638815409762100000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-complementoswine-classic2/p",
-  popularity: 1189
+  popularity: 1188
  },
  {
   sku: "oxford-60603094",
@@ -13093,7 +13082,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190483/Taca-de-licor-classic.jpg?v=638815410050970000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic5/p",
-  popularity: 1190
+  popularity: 1189
  },
  {
   sku: "oxford-60603093",
@@ -13104,7 +13093,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207462/Taca-para-margarita-350ml_Conjunto-6-pecas.jpg?v=639227444625930000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic6/p",
-  popularity: 1191
+  popularity: 1190
  },
  {
   sku: "oxford-60603091",
@@ -13115,7 +13104,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos coquetel",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/207477/Taca-p-martini.jpg?v=639227446774530000",
   productUrl: "https://www.oxfordporcelanas.com.br/oxford-bar-bar-classic7/p",
-  popularity: 1192
+  popularity: 1191
  },
  {
   sku: "oxford-60603080",
@@ -13126,7 +13115,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192763/Taca-bordeaux-570ml.jpg?v=638816917008570000",
   productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-bordeaux-570/p",
-  popularity: 1193
+  popularity: 1192
  },
  {
   sku: "oxford-60603079",
@@ -13137,7 +13126,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos agua",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192808/Taca-de-agua-430ml.jpg?v=638816923106200000",
   productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-agua-430/p",
-  popularity: 1194
+  popularity: 1193
  },
  {
   sku: "oxford-60603078",
@@ -13148,7 +13137,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos espumante",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192770/Taca-de-espumante.jpg?v=638816917298500000",
   productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-espumante-170/p",
-  popularity: 1195
+  popularity: 1194
  },
  {
   sku: "oxford-60603077",
@@ -13159,7 +13148,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas e copos tacas de vinho",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/190556/Taca-de-vinho.jpg?v=638815417757200000",
   productUrl: "https://www.oxfordporcelanas.com.br/proper-effect-vinho-360/p",
-  popularity: 1196
+  popularity: 1195
  },
  {
   sku: "oxford-60602857",
@@ -13170,7 +13159,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/171193/1-Faqueiro-24Pcs---Mail-Order---Vermelho-Intenso.jpg?v=637504851245600000",
   productUrl: "https://www.oxfordporcelanas.com.br/talheres-biona-vermelho-intenso/p",
-  popularity: 1197
+  popularity: 1196
  },
  {
   sku: "oxford-60601666",
@@ -13181,7 +13170,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/196503/Oxford_Talher_Madame_3.jpg?v=638907961804630000",
   productUrl: "https://www.oxfordporcelanas.com.br/madame-faqueiro/p",
-  popularity: 1198
+  popularity: 1197
  },
  {
   sku: "oxford-60601662",
@@ -13192,7 +13181,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/195289/Oxford_Talheres_Syreni.jpg?v=638860284137700000",
   productUrl: "https://www.oxfordporcelanas.com.br/syreni-faqueiro/p",
-  popularity: 1199
+  popularity: 1198
  },
  {
   sku: "oxford-60601343",
@@ -13203,6 +13192,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cha e cafe conjuntos de cha",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192665/Biona_Donna_Mandala_Xicara_Pires_6.jpg?v=638816335587130000",
   productUrl: "https://www.oxfordporcelanas.com.br/donna-xicara-cha-mandala/p",
+  popularity: 1199
+ },
+ {
+  sku: "oxford-60601342",
+  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Mandala",
+  brand: "Biona",
+  unitPrice: 109.9,
+  unit: "un",
+  category: "pratos donna",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191661/Biona_Donna_Mandala_Prato_Sobremesa-6.jpg?v=638816126616570000",
+  productUrl: "https://www.oxfordporcelanas.com.br/donna-sobremesa-mandala/p",
   popularity: 1200
  },
  {
@@ -13239,6 +13239,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 1203
  },
  {
+  sku: "oxford-19902008",
+  name: "Jogo de 6 Tigelas Iogurteira 300 Ml",
+  brand: "Oxford Porcelanas",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "gourmet complementos gourmet",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/192148/oxford-porcelanas-C12Q-tigela-iogurteira-gourmet-01.jpg?v=638816152751100000",
+  productUrl: "https://www.oxfordporcelanas.com.br/tigela-iogurteira-300ml/p",
+  popularity: 1204
+ },
+ {
   sku: "oxford-60600748",
   name: "Travessa Rasa Gourmet Pró 30,5x24 Cm",
   brand: "Oxford Porcelanas",
@@ -13247,7 +13258,18 @@ export const CATALOG: CatalogItem[] = [
   category: "gourmet complementos gourmet",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/164429/oxford-porcelanas-gourmet-pro-travessa-rasa-004591-3-pecas-00.jpg?v=636857447445330000",
   productUrl: "https://www.oxfordporcelanas.com.br/gourmet-travessa-rasa/p",
-  popularity: 1204
+  popularity: 1205
+ },
+ {
+  sku: "oxford-30300103",
+  name: "Assadeira Refratária Bake Media 26x18x5,6 Cm Branca",
+  brand: "Cookware",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "cozinha travessas",
+  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/161608/oxford-cookware-travessa-refrataria-bake-branca-media.jpg?v=636487677551770000",
+  productUrl: "https://www.oxfordporcelanas.com.br/refrataria-bake-branca-media/p",
+  popularity: 1206
  },
  {
   sku: "oxford-30300102",
@@ -13258,7 +13280,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/161607/oxford-cookware-travessa-refrataria-bake-branca-grande.jpg?v=636487677182400000",
   productUrl: "https://www.oxfordporcelanas.com.br/refrataria-bake-branca-grande/p",
-  popularity: 1205
+  popularity: 1207
  },
  {
   sku: "oxford-10700609",
@@ -13269,18 +13291,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha travessas",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160140/oxford-porcelanas-conjunto-pecas-ocas-travessa-soleil-victoria-00.jpg?v=636342622839570000",
   productUrl: "https://www.oxfordporcelanas.com.br/soleil-victoria-travessa/p",
-  popularity: 1206
- },
- {
-  sku: "oxford-60601342",
-  name: "Jogo de 6 Pratos Sobremesa 18 Cm Donna Mandala",
-  brand: "Biona",
-  unitPrice: 109.9,
-  unit: "un",
-  category: "pratos donna",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191661/Biona_Donna_Mandala_Prato_Sobremesa-6.jpg?v=638816126616570000",
-  productUrl: "https://www.oxfordporcelanas.com.br/donna-sobremesa-mandala/p",
-  popularity: 1207
+  popularity: 1208
  },
  {
   sku: "oxford-60600676",
@@ -13291,7 +13302,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191715/077359_Ryo_Pink_Sand_Prato_Sobremesa_215_6.jpg?v=638816129208930000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-sobremesa-ryo-pink-sand/p",
-  popularity: 1208
+  popularity: 1209
  },
  {
   sku: "oxford-60601340",
@@ -13302,7 +13313,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191671/Biona_Donna_Mandala_Prato_Fundo-6.jpg?v=638816126886700000",
   productUrl: "https://www.oxfordporcelanas.com.br/donna-fundo-mandala/p",
-  popularity: 1209
+  popularity: 1210
  },
  {
   sku: "oxford-60201304",
@@ -13313,7 +13324,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos donna",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191488/biona-prato-fundo-donna-folk-01.jpg?v=638816117410170000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-donna-folk/p",
-  popularity: 1210
+  popularity: 1211
  },
  {
   sku: "oxford-10200507",
@@ -13324,7 +13335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir sopeira",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/160068/oxford-porcelanas-conjunto-pecas-ocas-sopeira-flamingo-isabel-00.jpg?v=636342544711000000",
   productUrl: "https://www.oxfordporcelanas.com.br/flamingo-isabel-sopeira/p",
-  popularity: 1211
+  popularity: 1212
  },
  {
   sku: "oxford-10700606",
@@ -13335,7 +13346,7 @@ export const CATALOG: CatalogItem[] = [
   category: "servir saladeira",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/183384/9812-soleil-victoria-saladeira-media.jpg?v=638429088541930000",
   productUrl: "https://www.oxfordporcelanas.com.br/soleil-victoria-saladeira/p",
-  popularity: 1212
+  popularity: 1213
  },
  {
   sku: "oxford-60600678",
@@ -13346,7 +13357,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191699/oxford-porcelanas-prato-fundo-ryo-blue-bay-6-pecas-01.jpg?v=638816127426030000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-blue-bay/p",
-  popularity: 1213
+  popularity: 1214
  },
  {
   sku: "oxford-60600675",
@@ -13357,17 +13368,6 @@ export const CATALOG: CatalogItem[] = [
   category: "pratos organicos",
   imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191717/077358_Ryo_Pink_Sand_Prato_Fundo_225_6.jpg?v=638816129307000000",
   productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-pink-sand/p",
-  popularity: 1214
- },
- {
-  sku: "oxford-60600654",
-  name: "Jogo de 6 Pratos Fundos 22,5 Cm Ryo White",
-  brand: "Oxford Porcelanas",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "pratos organicos",
-  imageUrl: "https://oxfordporcelanas.vteximg.com.br/arquivos/ids/191744/oxford-porcelanas-prato-fundo-ryo-white-6-pecas-01.jpg?v=638816130246330000",
-  productUrl: "https://www.oxfordporcelanas.com.br/pratos-fundos-ryo-white/p",
   popularity: 1215
  }
 ];

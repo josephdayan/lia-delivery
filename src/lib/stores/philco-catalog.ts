@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.philco.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.philco.com.br philco src/lib/stores/philco-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.philco.com.br philco /tmp/lia-catalog-HaGx92/philco.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -545,17 +545,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 49
  },
  {
-  sku: "philco-22999",
-  name: "Ferro de Passar a Vapor Philco 320ml Base Cerâmica PFV70 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "casa ferros de passar",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251165/FERRO-PFV70-v0_03.jpg?v=638760804637900000",
-  productUrl: "https://www.philco.com.br/ferro-pfv09-127v-053601053/p",
-  popularity: 50
- },
- {
   sku: "philco-22970",
   name: "Grill Philco 7 Níveis de temperatura 1500W PGR31 127V",
   brand: "Philco",
@@ -564,7 +553,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270552/GRILL-PGR31-v0_0002.jpg?v=638984041600600000",
   productUrl: "https://www.philco.com.br/grill-pgr31-127v-056701052/p",
-  popularity: 51
+  popularity: 50
  },
  {
   sku: "philco-22961",
@@ -575,7 +564,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha mixers",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266670/PMXE01_001.jpg?v=638973386848870000",
   productUrl: "https://www.philco.com.br/mixer-philco-inox-com-copo-1050ml-750w-pmxe01/p",
-  popularity: 52
+  popularity: 51
  },
  {
   sku: "philco-22479",
@@ -586,7 +575,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266278/Cacheador-PEC16VD-Automatico-Biv.jpg?v=638968245500570000",
   productUrl: "https://www.philco.com.br/cacheador-philco-25mm-rotacao-automatica-bivolt-pec16vd/p",
-  popularity: 53
+  popularity: 52
  },
  {
   sku: "philco-22389",
@@ -597,7 +586,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha mixers",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271165/Mixer-PMX1000.jpg?v=638987347823030000",
   productUrl: "https://www.philco.com.br/mixer-pmx1000-127v-053201029/p",
-  popularity: 54
+  popularity: 53
  },
  {
   sku: "philco-22307",
@@ -608,7 +597,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa de som amplificada",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271760/PCX4800_0001.jpg.jpg?v=638990628079600000",
   productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-380w-pcx4800/p",
-  popularity: 55
+  popularity: 54
  },
  {
   sku: "philco-22157",
@@ -619,7 +608,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266128/PAS1550C_02.jpg?v=638967360392170000",
   productUrl: "https://www.philco.com.br/aspirador-de-po-vertical-philco-2-em-1-1400w-pas1550c/p",
-  popularity: 56
+  popularity: 55
  },
  {
   sku: "philco-24054",
@@ -630,7 +619,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cooktops",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252143/Cooktop-de-Inducao-PCT11P.jpg?v=638620851758170000",
   productUrl: "https://www.philco.com.br/cooktop-de-inducao-pct11p-220v-055902014/p",
-  popularity: 57
+  popularity: 56
  },
  {
   sku: "philco-10280",
@@ -641,7 +630,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas e frigideiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268671/PPH160APR-Redstone-14_01.jpg?v=638979512985670000",
   productUrl: "https://www.philco.com.br/panela-pph160apr-redstone-14l-058335031/p",
-  popularity: 58
+  popularity: 57
  },
  {
   sku: "philco-8539",
@@ -652,7 +641,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286275/Liquidificador  PLQ1350 Turbo Glass.jpg?v=639232619922070000",
   productUrl: "https://www.philco.com.br/liquidificador-philco-1200w-2-6l-12-velocidades-turbo-glass-plq1350/p",
-  popularity: 59
+  popularity: 58
  },
  {
   sku: "philco-8024",
@@ -663,7 +652,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais pranchas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183427/Prancha-Chrome-Rose-PPR10.jpg?v=637457173753230000",
   productUrl: "https://www.philco.com.br/prancha-titanium-philco-ppr10-chrome-rose-display-digital/p",
-  popularity: 60
+  popularity: 59
  },
  {
   sku: "philco-6878",
@@ -674,7 +663,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais pranchas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/178416/Prancha-Ultra-Titanium-PPR05AZ.jpg?v=637310337941870000",
   productUrl: "https://www.philco.com.br/prancha-philco-ultra-titanium-ppr05az-ions-tourmaline/p",
-  popularity: 61
+  popularity: 60
  },
  {
   sku: "philco-6379",
@@ -685,7 +674,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha air fryer",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/231224/Air-Fry-Jumbo-Gourmet-PFR13P_--1-.jpg?v=638768049286170000",
   productUrl: "https://www.philco.com.br/fritadeira-air-fryer-philco-gourmet-pfr13p-8-litros/p",
-  popularity: 62
+  popularity: 61
  },
  {
   sku: "philco-5755",
@@ -696,7 +685,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276698/Liquidificador-PLQ1412V-Inox_1.jpg?v=639026239077730000",
   productUrl: "https://www.philco.com.br/liquidificador-philco-plq1412v-inox/p",
-  popularity: 63
+  popularity: 62
  },
  {
   sku: "philco-5558",
@@ -707,6 +696,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparadores e cortadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/173367/Multigroom-Aqua-PAP03_1.jpg?v=636935254782630000",
   productUrl: "https://www.philco.com.br/aparador-de-pelos-philco-multi-groom-aqua-12-em-1-pap03/p",
+  popularity: 63
+ },
+ {
+  sku: "philco-1614",
+  name: "Depilador Philco Bivolt Aqua Deluxe PDP01R Bivolt",
+  brand: "Philco",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cuidados pessoais depiladores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270352/depi.jpg?v=638983813876130000",
+  productUrl: "https://www.philco.com.br/depilador-philco-aqua-deluxe-pdp01r-/p",
   popularity: 64
  },
  {
@@ -831,6 +831,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 75
  },
  {
+  sku: "philco-24970",
+  name: "Cervejeira Philco 100L 3 em 1 Display Digital PCV10A 127V",
+  brand: "Philco",
+  unitPrice: 2199.9,
+  unit: "un",
+  category: "refrigeracao cervejeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283762/PCV10A_01.jpg?v=639166336601330000",
+  productUrl: "https://www.philco.com.br/cervejeira-philco-100-litros-pcv10a-0598710099/p",
+  popularity: 76
+ },
+ {
   sku: "philco-24966",
   name: "Caixa de Som Speaker Philco Extreme 180W PBS60 Bivolt",
   brand: "Philco",
@@ -839,7 +850,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio speaker",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/273138/PBS60_02.jpg?v=638997619671370000",
   productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-180w-pbs60/p",
-  popularity: 76
+  popularity: 77
  },
  {
   sku: "philco-24965",
@@ -850,7 +861,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa de som amplificada",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281549/PCXE27000_02.jpg.jpg?v=639111868393100000",
   productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-2700w-pcxe27000/p",
-  popularity: 77
+  popularity: 78
  },
  {
   sku: "philco-24927",
@@ -861,7 +872,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa de som amplificada",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271512/PCX10100_02.jpg.jpg?v=638989936227000000",
   productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2000w-pcx10101/p",
-  popularity: 78
+  popularity: 79
  },
  {
   sku: "philco-24658",
@@ -872,7 +883,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258628/PGR27A-01.jpg.jpg?v=638786749438970000",
   productUrl: "https://www.philco.com.br/sanduicheira-e-grill-philco-pgr27a-acabamento-em-inox/p",
-  popularity: 79
+  popularity: 80
  },
  {
   sku: "philco-24649",
@@ -883,7 +894,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha processadores e moedores de alimentos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/273444/PMN04A_01.jpg.jpg?v=638998587923270000",
   productUrl: "https://www.philco.com.br/processador-philco-concept-preto-pmn04a/p",
-  popularity: 80
+  popularity: 81
  },
  {
   sku: "philco-24646",
@@ -894,7 +905,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tvs tvs 40 polegadas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/277271/P40SAA_01.2.jpg?v=639034073631970000",
   productUrl: "https://www.philco.com.br/smart-tv-philco-40-led-full-hd-android-11-hdr10-p40saa/p",
-  popularity: 81
+  popularity: 82
  },
  {
   sku: "philco-24565",
@@ -905,7 +916,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cooktops",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257427/PCT10A-01.jpg.jpg?v=638760164823670000",
   productUrl: "https://www.philco.com.br/cooktop-de-inducao-pct10a-127v-055901016/p",
-  popularity: 82
+  popularity: 83
  },
  {
   sku: "philco-24131",
@@ -916,7 +927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao freezers",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/279003/PFH160B_09.jpg?v=639046195549970000",
   productUrl: "https://www.philco.com.br/freezer-horizontal-pfh160b-127v-056751031/p",
-  popularity: 83
+  popularity: 84
  },
  {
   sku: "philco-23962",
@@ -927,7 +938,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cafeteiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/261415/Caf-PCF40D-v1_0001.jpg?v=638814645558000000",
   productUrl: "https://www.philco.com.br/cafeteira-pcf40d-127v-053901082/p",
-  popularity: 84
+  popularity: 85
  },
  {
   sku: "philco-23864",
@@ -938,7 +949,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa de som amplificada",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271599/PCX7200.jpg?v=638990013805100000",
   productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-1350w-pcx7200/p",
-  popularity: 85
+  popularity: 86
  },
  {
   sku: "philco-23862",
@@ -949,7 +960,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa de som amplificada",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281540/PCX3800_01.jpg?v=639111861303470000",
   productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-250w-pcx3800/p",
-  popularity: 86
+  popularity: 87
  },
  {
   sku: "philco-23861",
@@ -960,7 +971,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio speaker",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271895/PBS30--1-.jpg?v=638990750023930000",
   productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-30w-pbs30/p",
-  popularity: 87
+  popularity: 88
  },
  {
   sku: "philco-23859",
@@ -971,7 +982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha omeleteiras e waffles",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251105/WAFFLE-MAKER-PWM04A_01.jpg?v=638760804868170000",
   productUrl: "https://www.philco.com.br/grill-waffle-maker-pwm04a-127v-054001039/p",
-  popularity: 88
+  popularity: 89
  },
  {
   sku: "philco-23848",
@@ -982,7 +993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas e frigideiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269925/FRIGIDEIRA-PPN20A_0005.jpg?v=638981365878030000",
   productUrl: "https://www.philco.com.br/frigideira-ppn20a-052805004/p",
-  popularity: 89
+  popularity: 90
  },
  {
   sku: "philco-23841",
@@ -993,7 +1004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao climatizadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253179/PCL05A_01.jpg?v=638730860771370000",
   productUrl: "https://www.philco.com.br/climatizador-pcl05a--127v-056251024/p",
-  popularity: 90
+  popularity: 91
  },
  {
   sku: "philco-23598",
@@ -1004,7 +1015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas de pressao",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266711/PPPE04A_01.jpg?v=638973410105930000",
   productUrl: "https://www.philco.com.br/panela-de-pressao-eletrica-philco-4l-pppe04a/p",
-  popularity: 91
+  popularity: 92
  },
  {
   sku: "philco-23570",
@@ -1015,7 +1026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao freezers",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281199/PFH260B_01.jpg?v=639102389335470000",
   productUrl: "https://www.philco.com.br/freezer-horizontal-pfh260b-127v-056751033/p",
-  popularity: 92
+  popularity: 93
  },
  {
   sku: "philco-23352",
@@ -1026,7 +1037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha fornos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284432/PFE65_03.jpg?v=639191908747330000",
   productUrl: "https://www.philco.com.br/forno-eletrico-pfe65-127v-106101008/p",
-  popularity: 93
+  popularity: 94
  },
  {
   sku: "philco-23346",
@@ -1037,7 +1048,18 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas eletricas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/249493/PPAE01_02.jpg?v=638779221999670000",
   productUrl: "https://www.philco.com.br/panela-de-arroz-ppae01-127v-056401097/p",
-  popularity: 94
+  popularity: 95
+ },
+ {
+  sku: "philco-22999",
+  name: "Ferro de Passar a Vapor Philco 320ml Base Cerâmica PFV70 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "casa ferros de passar",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251165/FERRO-PFV70-v0_03.jpg?v=638760804637900000",
+  productUrl: "https://www.philco.com.br/ferro-pfv09-127v-053601053/p",
+  popularity: 96
  },
  {
   sku: "philco-22994",
@@ -1048,7 +1070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais barbeadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250326/PBA08_01.jpg?v=638543275603670000",
   productUrl: "https://www.philco.com.br/barbeador-pba08-biv-052153017/p",
-  popularity: 95
+  popularity: 97
  },
  {
   sku: "philco-22950",
@@ -1059,7 +1081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventiladores ventilador de coluna",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248113/Vent-PVT466_001.jpg?v=638442211044770000",
   productUrl: "https://www.philco.com.br/ventilador-pvt466-127v-103011056/p",
-  popularity: 96
+  popularity: 98
  },
  {
   sku: "philco-22481",
@@ -1070,7 +1092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha lava loucas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253141/PLL10-01.jpg?v=638717783343330000",
   productUrl: "https://www.philco.com.br/lava-loucas-pll10-127v-056151017/p",
-  popularity: 97
+  popularity: 99
  },
  {
   sku: "philco-22391",
@@ -1081,7 +1103,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao adegas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243298/_0000_PAD12E_01.jpg?v=638260601809530000",
   productUrl: "https://www.philco.com.br/adega-pad12e-bivolt-054803026/p",
-  popularity: 98
+  popularity: 100
  },
  {
   sku: "philco-22139",
@@ -1092,7 +1114,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao geladeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257561/prf506ti_01.jpg?v=638761864558900000",
   productUrl: "https://www.philco.com.br/geladeira-prf506ti-127v-056551029/p",
-  popularity: 99
+  popularity: 101
  },
  {
   sku: "philco-22025",
@@ -1103,7 +1125,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao geladeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286140/PRF535I_01.jpg?v=639228541848570000",
   productUrl: "https://www.philco.com.br/geladeira-prf535i-side-by-side-inverter-127v-056551034/p",
-  popularity: 100
+  popularity: 102
  },
  {
   sku: "philco-21874",
@@ -1114,7 +1136,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270136/Grill-Redstone-PGR19PI_01.jpg?v=638983761331370000",
   productUrl: "https://www.philco.com.br/grill-philco-pgr19pi-revestimento-redstone-7-temperaturas/p",
-  popularity: 101
+  popularity: 103
  },
  {
   sku: "philco-18364",
@@ -1125,7 +1147,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa passadeiras a vapor",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/236257/PASSADEIRA-A-VAPOR-PVP10VD_--1-.jpg?v=638049087959530000",
   productUrl: "https://www.philco.com.br/passadeira-a-vapor-pvp10vd-portatil-biv-052253006/p",
-  popularity: 102
+  popularity: 104
  },
  {
   sku: "philco-18356",
@@ -1136,7 +1158,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cooktops",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/287035/PCT04TC__0000_Cooktop-Cook-Chef-4-TC_NOVA.jpg?v=639253372529100000",
   productUrl: "https://www.philco.com.br/cooktop-a-gas-philco-4-queimadores-superautomatico-pct04tc-bivolt/p",
-  popularity: 103
+  popularity: 105
  },
  {
   sku: "philco-10537",
@@ -1147,7 +1169,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270901/PLQ2100PI_04.jpg?v=638985659405070000",
   productUrl: "https://www.philco.com.br/liquidificador-philco-1400w-3l-12-velocidades-inox-plq2100pi/p",
-  popularity: 104
+  popularity: 106
  },
  {
   sku: "philco-10284",
@@ -1158,7 +1180,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas e frigideiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272220/Panela-PPH280ACR-Redstone-61L.jpg?v=638993299082470000",
   productUrl: "https://www.philco.com.br/panela-pph280acr-61l-red-stone-058335032/p",
-  popularity: 105
+  popularity: 107
  },
  {
   sku: "philco-10227",
@@ -1169,7 +1191,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286397/pbt450p_01.jpg?v=639233711875530000",
   productUrl: "https://www.philco.com.br/batedeira-portatil-philco-550w-crome-case-preto-inox-pbt450p/p",
-  popularity: 106
+  popularity: 108
  },
  {
   sku: "philco-9179",
@@ -1180,7 +1202,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283033/PLQ1600P_07.jpg?v=639147326590130000",
   productUrl: "https://www.philco.com.br/liquidificador-plq2300p-turbo-127v-103101139/p",
-  popularity: 107
+  popularity: 109
  },
  {
   sku: "philco-8805",
@@ -1191,7 +1213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas esmerilhadeira",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/204215/pem02-01.jpg?v=638979594747670000",
   productUrl: "https://www.philco.com.br/esmerilhadeira-angular-pem02-127v-051101023/p",
-  popularity: 108
+  popularity: 110
  },
  {
   sku: "philco-8490",
@@ -1202,7 +1224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cooktops",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269092/1200x1200pixel_72dpi-RGB_Site_COOKTOP-DE-INDUCAO-PCT05IFP_01.jpg?v=638980273443130000",
   productUrl: "https://www.philco.com.br/cooktop-philco-de-inducao-pct05ifp-5-queimadores-9300w-220v/p",
-  popularity: 109
+  popularity: 111
  },
  {
   sku: "philco-8190",
@@ -1213,7 +1235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "acessorios cozinha",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/195276/Moedor-de-Carne_053405043_04.jpg?v=637739792513030000",
   productUrl: "https://www.philco.com.br/acessorios-batedeiras-pbp1200-philco-pbp1200-moedor-de-carne-53405043/p",
-  popularity: 110
+  popularity: 112
  },
  {
   sku: "philco-7957",
@@ -1224,7 +1246,7 @@ export const CATALOG: CatalogItem[] = [
   category: "outlet cozinha fornos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274640/PFE36S-Air-Fry-004.jpg?v=639003808410770000",
   productUrl: "https://www.philco.com.br/forno-eletrico-36l-pfe36s-air-fryer-outlet-56101074-philco/p",
-  popularity: 111
+  popularity: 113
  },
  {
   sku: "philco-7921",
@@ -1235,7 +1257,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao adegas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270024/pad18i_01.jpg?v=638983720384670000",
   productUrl: "https://www.philco.com.br/adega-philco-pad18i-18-garrafas/p",
-  popularity: 112
+  popularity: 114
  },
  {
   sku: "philco-6158",
@@ -1246,18 +1268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas eletricas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271553/PHP5P__0000_PH5P-visor_01.jpg?v=638989996417070000",
   productUrl: "https://www.philco.com.br/panela-de-arroz-php5p-visor-glass/p",
-  popularity: 113
- },
- {
-  sku: "philco-6027",
-  name: "Fone de Ouvido Headphone Com Fio Philco Extreme PFO02G Bivolt",
-  brand: "Philco",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "audio fone de ouvido",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281688/pfo02g_01.jpg?v=639114482078730000",
-  productUrl: "https://www.philco.com.br/fone-de-ouvido-headphone-com-fio-philco-extreme-pfo02g/p",
-  popularity: 114
+  popularity: 115
  },
  {
   sku: "philco-5699",
@@ -1268,7 +1279,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha coifas e depuradores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191227/PDR60P_---1-.jpg?v=638754947043900000",
   productUrl: "https://www.philco.com.br/depurador-slim-pdr60p-059011006/p",
-  popularity: 115
+  popularity: 116
  },
  {
   sku: "philco-5580",
@@ -1279,7 +1290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha multiprocessadores e processadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258699/Mult-PMP1600V_--4-.jpg.jpg?v=639228407672700000",
   productUrl: "https://www.philco.com.br/multiprocessador-philco-pmp1600v-1400w/p",
-  popularity: 116
+  popularity: 117
  },
  {
   sku: "philco-2757",
@@ -1290,17 +1301,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas eletricas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/167660/Panela-de-Arroz-PPA12PI.jpg?v=636742576612830000",
   productUrl: "https://www.philco.com.br/panela-de-arroz-philco-ppa95-/p",
-  popularity: 117
- },
- {
-  sku: "philco-1614",
-  name: "Depilador Philco Bivolt Aqua Deluxe PDP01R Bivolt",
-  brand: "Philco",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cuidados pessoais depiladores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270352/depi.jpg?v=638983813876130000",
-  productUrl: "https://www.philco.com.br/depilador-philco-aqua-deluxe-pdp01r-/p",
   popularity: 118
  },
  {
@@ -1524,17 +1524,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 138
  },
  {
-  sku: "philco-24970",
-  name: "Cervejeira Philco 100L 3 em 1 Display Digital PCV10A 127V",
-  brand: "Philco",
-  unitPrice: 2199.9,
-  unit: "un",
-  category: "refrigeracao cervejeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283762/PCV10A_01.jpg?v=639166336601330000",
-  productUrl: "https://www.philco.com.br/cervejeira-philco-100-litros-pcv10a-0598710099/p",
-  popularity: 139
- },
- {
   sku: "philco-24951",
   name: "Aparador de Pelos Philco Bivolt 7 Acessórios USB PAP02 Bivolt",
   brand: "Philco",
@@ -1543,7 +1532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparadores e cortadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/264794/PAP02_00.jpg?v=638949411503870000",
   productUrl: "https://www.philco.com.br/aparador-de-pelos-philco-bivolt-7-acessorios-usb-pap02/p",
-  popularity: 140
+  popularity: 139
  },
  {
   sku: "philco-24674",
@@ -1554,7 +1543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ar-condicionado",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278489/PAJ7FA_01.jpg?v=639040112798300000",
   productUrl: "https://www.philco.com.br/ar-condicionado-philco-janela-7500btus-frio-paj7fa/p",
-  popularity: 141
+  popularity: 140
  },
  {
   sku: "philco-24672",
@@ -1565,18 +1554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tvs tvs 55 polegadas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281990/P55CRA_01.3.jpg?v=639120482228330000",
   productUrl: "https://www.philco.com.br/smart-tv-55-philco-4k-uhd-led-roku-p55cra/p",
-  popularity: 142
- },
- {
-  sku: "philco-24651",
-  name: "Liquidificador Philco Concept 1500W 3,1L Preto PLQ15A 127V",
-  brand: "Philco",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275761/PLQ15A_01.jpg?v=639016796571630000",
-  productUrl: "https://www.philco.com.br/liquidificador-plq15a-127v-103101176/p",
-  popularity: 143
+  popularity: 141
  },
  {
   sku: "philco-24562",
@@ -1587,7 +1565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais barbeadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257361/Barbeador-PBA11A-BIV_01.jpg.jpg?v=638769768005600000",
   productUrl: "https://www.philco.com.br/barbeador-pba11a-biv-052153020/p",
-  popularity: 144
+  popularity: 142
  },
  {
   sku: "philco-24290",
@@ -1598,7 +1576,18 @@ export const CATALOG: CatalogItem[] = [
   category: "tvs tvs 40 polegadas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281973/PTV40M9GR2CGB_01.6.jpg?v=639120336918200000",
   productUrl: "https://www.philco.com.br/smart-tv-40-philco-led-roku-ptv40m9gr2cgb/p",
-  popularity: 145
+  popularity: 143
+ },
+ {
+  sku: "philco-24276",
+  name: "Parafusadeira 2 em 1 Philco Force Bivolt 800RPM PPF12 Bivolt",
+  brand: "Philco",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "ferramentas parafusadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282819/PARAFUSADEIRA-PPF12_02.jpg.jpg?v=639136733414130000",
+  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf12/p",
+  popularity: 144
  },
  {
   sku: "philco-24272",
@@ -1609,7 +1598,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventiladores ventilador de mesa",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282837/PVT45A-1.jpg?v=639138367126930000",
   productUrl: "https://www.philco.com.br/ventilador-pvt45a-127v-103011067/p",
-  popularity: 146
+  popularity: 145
  },
  {
   sku: "philco-24213",
@@ -1620,6 +1609,17 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secadores de cabelo",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270666/PSC2300--1-.jpg?v=638985480682870000",
   productUrl: "https://www.philco.com.br/secador-de-cabelos-philco-motor-dc-2200w-bivolt-psc2300/p",
+  popularity: 146
+ },
+ {
+  sku: "philco-24151",
+  name: "Ar-Condicionado Philco Split Inverter 9000BTUs Frio PAC9FC 220V",
+  brand: "Philco",
+  unitPrice: 3679.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274785/PAC9FC_02.jpg.jpg?v=639005551569970000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-pac9fc/p",
   popularity: 147
  },
  {
@@ -1788,17 +1788,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 162
  },
  {
-  sku: "philco-22280",
-  name: "Robô Aspirador Philco 3 em 1 Função MOP PAS26P Bivolt",
-  brand: "Philco",
-  unitPrice: 929.9,
-  unit: "un",
-  category: "casa aspirador de po robo",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280702/PAS26P_21.jpg?v=639094525129000000",
-  productUrl: "https://www.philco.com.br/aspirador-de-po-robo-philco-3-em-1-bivolt-pas26/p",
-  popularity: 163
- },
- {
   sku: "philco-22272",
   name: "Liquidificador Philco PH900S Função Ice 6 lâminas 3L 1200W 127V",
   brand: "Philco",
@@ -1807,7 +1796,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/242652/_0001_Liq-PH900S-VM_2.jpg?v=639192056650600000",
   productUrl: "https://www.philco.com.br/liquidificador-ph900s-vm-127v-103101171/p",
-  popularity: 164
+  popularity: 163
  },
  {
   sku: "philco-22261",
@@ -1818,7 +1807,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/261070/PES19SG_12.jpg?v=638812089832670000",
   productUrl: "https://www.philco.com.br/escova-secadora-pes19sg-biv-055403043/p",
-  popularity: 165
+  popularity: 164
  },
  {
   sku: "philco-22259",
@@ -1829,7 +1818,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secadores de cabelo",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272684/PSC3050_01.jpg?v=638995860904070000",
   productUrl: "https://www.philco.com.br/secador-de-cabelos-psc3050-127v-053501075/p",
-  popularity: 166
+  popularity: 165
  },
  {
   sku: "philco-22248",
@@ -1840,7 +1829,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha fornos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281600/PFE52P-16.jpg?v=639113390467770000",
   productUrl: "https://www.philco.com.br/forno-eletrico-pfe52p-127v-106101003/p",
-  popularity: 167
+  popularity: 166
  },
  {
   sku: "philco-22225",
@@ -1851,7 +1840,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/273378/Batedeira-Paris-Duo-Mixer-PR-Turbo_3.jpg?v=638998580185830000",
   productUrl: "https://www.philco.com.br/batedeira-philco-500w-preta-paris-duo-mixer-turbo/p",
-  popularity: 168
+  popularity: 167
  },
  {
   sku: "philco-22113",
@@ -1862,7 +1851,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276416/Escova-Secadora-PES25SR-Advance-Biv.jpg?v=639026144844070000",
   productUrl: "https://www.philco.com.br/escova-secadora-pes25sr-advance-biv-055403044/p",
-  popularity: 169
+  popularity: 168
  },
  {
   sku: "philco-22111",
@@ -1873,7 +1862,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa aspiradores de po",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269700/PAS1600P_02.jpg?v=638981226769270000",
   productUrl: "https://www.philco.com.br/aspirador-de-po-pas1600p-127v-054901088/p",
-  popularity: 170
+  popularity: 169
  },
  {
   sku: "philco-21955",
@@ -1884,7 +1873,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha coifas e depuradores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/241314/PDR65I-Retratil_02.jpg?v=638780007630300000",
   productUrl: "https://www.philco.com.br/depurador-pdr65i-retratil-127v-059011014/p",
-  popularity: 171
+  popularity: 170
  },
  {
   sku: "philco-21878",
@@ -1895,7 +1884,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239640/Sanduicheira-e-Grill-PGR17PI_056701046.jpg?v=638170760785800000",
   productUrl: "https://www.philco.com.br/grill-e-sanduicheira-pgr17pi-127v-056701046/p",
-  popularity: 172
+  popularity: 171
  },
  {
   sku: "philco-19150",
@@ -1906,7 +1895,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha coifas e depuradores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268825/PCO62I_01.jpg?v=638979617942670000",
   productUrl: "https://www.philco.com.br/coifa-piramide-philco-60cm-inox-4-bocas-pco62i/p",
-  popularity: 173
+  popularity: 172
  },
  {
   sku: "philco-10259",
@@ -1917,7 +1906,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269590/1_0006_PEC15_07.jpg?v=638981198944470000",
   productUrl: "https://www.philco.com.br/cacheador-pec15-intense-curves-biv-055403042/p",
-  popularity: 174
+  popularity: 173
  },
  {
   sku: "philco-9988",
@@ -1928,7 +1917,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha fornos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274309/PFE47E_01.jpg?v=639003590759370000",
   productUrl: "https://www.philco.com.br/forno-eletrico-de-embutir-philco-pfe47e-esmaltado-dupla-resistencia-47l-056101116/p",
-  popularity: 175
+  popularity: 174
  },
  {
   sku: "philco-9198",
@@ -1939,7 +1928,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275717/Liq-PLQ1430P-Limpa-Facil.jpg?v=639016766858500000",
   productUrl: "https://www.philco.com.br/liquidificador-plq1430p-limpa-facil-127v-103101160/p",
-  popularity: 176
+  popularity: 175
  },
  {
   sku: "philco-8814",
@@ -1950,18 +1939,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio fone de ouvido",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272116/pfo05btsg_01.jpg?v=638990961675570000",
   productUrl: "https://www.philco.com.br/fone-de-ouvido-headphone-philco-extreme-bluetooth-pfo05btsg/p",
-  popularity: 177
- },
- {
-  sku: "philco-8189",
-  name: "Lâminas de Ralar e Fatiar Batedeira PBP1200 Acessório",
-  brand: "Philco",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "acessorios cozinha",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183447/ACESSORIOS-PHILCO-PBP1200-ACO-INOX-LAMINAS-DE-RALAR-E-FATIAR-53405044.jpg?v=637457228331700000",
-  productUrl: "https://www.philco.com.br/acessorios-batedeira-pbp1200-philco-pbp1200-aco-inox-laminas-de-ralar-e-fatiar-53405044/p",
-  popularity: 178
+  popularity: 176
  },
  {
   sku: "philco-7978",
@@ -1972,7 +1950,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/182736/Batedeira-Planetaria-PBP1200P-Turbo-Inox_02.jpg?v=638871733241570000",
   productUrl: "https://www.philco.com.br/batedeira-planetaria-philco-pbp1200p-turbo-inox-53402023/p",
-  popularity: 179
+  popularity: 177
  },
  {
   sku: "philco-7689",
@@ -1983,7 +1961,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventiladores ventilador de teto",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/228346/PVT07B__0000_PVT07_01.jpg?v=637964401944630000",
   productUrl: "https://www.philco.com.br/ventilador-de-teto-philco-easy-fitting-pvt07b-3-em-1-140w/p",
-  popularity: 180
+  popularity: 178
  },
  {
   sku: "philco-7569",
@@ -1994,7 +1972,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269841/PHP500_01.jpg?v=638981318905500000",
   productUrl: "https://www.philco.com.br/batedeira-planetaria-philco-php500v-turbo-red-700w/p",
-  popularity: 181
+  popularity: 179
  },
  {
   sku: "philco-7500",
@@ -2005,7 +1983,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/238292/PEC13_0000_Beauty-Cherry-PEC13_01.jpg?v=638114722294630000",
   productUrl: "https://www.philco.com.br/escova-secadora-philco-soft-beauty-cherry-pec13/p",
-  popularity: 182
+  popularity: 180
  },
  {
   sku: "philco-7415",
@@ -2016,7 +1994,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa ferros de passar",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272527/Ferro-Travel-Ceramic-01.jpg?v=638993462878600000",
   productUrl: "https://www.philco.com.br/ferro-philco-travel-ceramic/p",
-  popularity: 183
+  popularity: 181
  },
  {
   sku: "philco-7231",
@@ -2027,7 +2005,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/179192/Grill-Press-Diamante-PGR07P.jpg?v=637342225543800000",
   productUrl: "https://www.philco.com.br/grill-e-sanduicheira-philco-press-diamante-pgr07p-1000w/p",
-  popularity: 184
+  popularity: 182
  },
  {
   sku: "philco-6186",
@@ -2038,7 +2016,18 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventiladores ventilador de mesa",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183906/PVT400P-turbo-connect.jpg?v=637473398259100000",
   productUrl: "https://www.philco.com.br/ventilador-pvt400p-philco-turbo-connect-entrada-usb-e-tomada/p",
-  popularity: 185
+  popularity: 183
+ },
+ {
+  sku: "philco-6027",
+  name: "Fone de Ouvido Headphone Com Fio Philco Extreme PFO02G Bivolt",
+  brand: "Philco",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "audio fone de ouvido",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281688/pfo02g_01.jpg?v=639114482078730000",
+  productUrl: "https://www.philco.com.br/fone-de-ouvido-headphone-com-fio-philco-extreme-pfo02g/p",
+  popularity: 184
  },
  {
   sku: "philco-5977",
@@ -2049,6 +2038,17 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas serra",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270190/PSM01.jpg?v=638983769808800000",
   productUrl: "https://www.philco.com.br/serra-marmore-philco-psm01-1500w/p",
+  popularity: 185
+ },
+ {
+  sku: "philco-5910",
+  name: "Depurador e Exaustor Philco 90cm 3 velocidades PDR90P Preto 127V",
+  brand: "Philco",
+  unitPrice: 429.9,
+  unit: "un",
+  category: "cozinha coifas e depuradores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191234/PDR90P_---1-.jpg?v=638737802097300000",
+  productUrl: "https://www.philco.com.br/depurador-slim-philco-pdr90p-90cm-depurador-e-exaustor/p",
   popularity: 186
  },
  {
@@ -2316,6 +2316,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 210
  },
  {
+  sku: "philco-24651",
+  name: "Liquidificador Philco Concept 1500W 3,1L Preto PLQ15A 127V",
+  brand: "Philco",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275761/PLQ15A_01.jpg?v=639016796571630000",
+  productUrl: "https://www.philco.com.br/liquidificador-plq15a-127v-103101176/p",
+  popularity: 211
+ },
+ {
   sku: "philco-24563",
   name: "Air Fryer Philco 9L Visor Glass Painel Digital PAF90C 127V",
   brand: "Philco",
@@ -2324,7 +2335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha air fryer",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257743/PAF90C_01.jpg.jpg?v=638769721721200000",
   productUrl: "https://www.philco.com.br/fritadeira-air-fryer-paf90c-127v-053801087/p",
-  popularity: 211
+  popularity: 212
  },
  {
   sku: "philco-24305",
@@ -2335,17 +2346,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha multiprocessadores e processadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280063/PMP10A_004.jpg?v=639063294137030000",
   productUrl: "https://www.philco.com.br/multiprocessador-pmp10a-127v-103301060/p",
-  popularity: 212
- },
- {
-  sku: "philco-24276",
-  name: "Parafusadeira 2 em 1 Philco Force Bivolt 800RPM PPF12 Bivolt",
-  brand: "Philco",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "ferramentas parafusadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282819/PARAFUSADEIRA-PPF12_02.jpg.jpg?v=639136733414130000",
-  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf12/p",
   popularity: 213
  },
  {
@@ -2382,6 +2382,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 216
  },
  {
+  sku: "philco-23755",
+  name: "Ar-Condicionado Philco Inverter 18000BTUs Frio PAC18000IFM15 220V",
+  brand: "Philco",
+  unitPrice: 2999.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278678/PAC18000IFM15_05.jpg?v=639040767279570000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-18000btus-frio-pac18000ifm15/p",
+  popularity: 217
+ },
+ {
   sku: "philco-23741",
   name: "Cafeteira Philco PCF40A 40 Cafezinhos 1,5L 950W 127V",
   brand: "Philco",
@@ -2390,7 +2401,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cafeteiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250061/Caf-PCF40-1_01.jpg?v=638521789126700000",
   productUrl: "https://www.philco.com.br/cafeteira-pcf40a-127v-053901080/p",
-  popularity: 217
+  popularity: 218
  },
  {
   sku: "philco-23689",
@@ -2401,7 +2412,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha panelas e frigideiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/249652/PKT407-Redstone_01.jpg?v=638485394210200000",
   productUrl: "https://www.philco.com.br/conjunto-de-panelas-pkt407-052805002/p",
-  popularity: 218
+  popularity: 219
  },
  {
   sku: "philco-23572",
@@ -2412,7 +2423,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao freezers",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/255394/PFH300B_01.jpg.jpg?v=638735950927500000",
   productUrl: "https://www.philco.com.br/freezer-horizontal-pfh300b-127v-056751034/p",
-  popularity: 219
+  popularity: 220
  },
  {
   sku: "philco-23284",
@@ -2423,7 +2434,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas motosserra",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285284/PMM124_02.jpg?v=639207732268970000",
   productUrl: "https://www.philco.com.br/mini-motosserra-philco-force-3000rpm-pmm124/p",
-  popularity: 220
+  popularity: 221
  },
  {
   sku: "philco-23216",
@@ -2434,7 +2445,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tvs tvs 50 polegadas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257891/TV-PTV50G2SGTSSBL-4K-LED_01.6.jpg?v=638772393618570000",
   productUrl: "https://www.philco.com.br/smart-tv-philco-50-ptv50g2sgtssbl-4k-led-google-tv/p",
-  popularity: 221
+  popularity: 222
  },
  {
   sku: "philco-23162",
@@ -2445,7 +2456,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas kit jardinagem",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/247424/PKJ10_25.jpg?v=638423037422830000",
   productUrl: "https://www.philco.com.br/kit-jardinagem-pkj10-051105046/p",
-  popularity: 222
+  popularity: 223
  },
  {
   sku: "philco-22997",
@@ -2456,7 +2467,7 @@ export const CATALOG: CatalogItem[] = [
   category: "casa ferros de passar",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250340/PFV40_02.jpg?v=638744640353030000",
   productUrl: "https://www.philco.com.br/ferro-pfv08-127v-053601052/p",
-  popularity: 223
+  popularity: 224
  },
  {
   sku: "philco-22960",
@@ -2467,7 +2478,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparadores e cortadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266782/Aparador_PAPE01_BIV_v1_-0001.jpg?v=638974264134030000",
   productUrl: "https://www.philco.com.br/aparador-de-pelos-pape01-biv-052153016/p",
-  popularity: 224
+  popularity: 225
  },
  {
   sku: "philco-22926",
@@ -2478,17 +2489,6 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas retifica",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270064/PRT180_03.jpg?v=638983734766330000",
   productUrl: "https://www.philco.com.br/micro-retifica-philco-prt180-127-v-051101026/p",
-  popularity: 225
- },
- {
-  sku: "philco-22724",
-  name: "Bebedouro Philco 20L Água Gelada e Natural com Compressor PBE11 127V",
-  brand: "Philco",
-  unitPrice: 639.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246737/PBE11_01.jpg?v=638404859949170000",
-  productUrl: "https://www.philco.com.br/bebedouro-pbe11-127v-055101011/p",
   popularity: 226
  },
  {
@@ -2536,6 +2536,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 230
  },
  {
+  sku: "philco-22280",
+  name: "Robô Aspirador Philco 3 em 1 Função MOP PAS26P Bivolt",
+  brand: "Philco",
+  unitPrice: 929.9,
+  unit: "un",
+  category: "casa aspirador de po robo",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280702/PAS26P_21.jpg?v=639094525129000000",
+  productUrl: "https://www.philco.com.br/aspirador-de-po-robo-philco-3-em-1-bivolt-pas26/p",
+  popularity: 231
+ },
+ {
   sku: "philco-22241",
   name: "Caixa de Som Speaker Philco Extreme 220W PBS220BT Bivolt",
   brand: "Philco",
@@ -2544,7 +2555,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio speaker",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271907/PBS220BT_01.jpg?v=638990753030700000",
   productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-220w-pbs220bt/p",
-  popularity: 231
+  popularity: 232
  },
  {
   sku: "philco-22240",
@@ -2555,7 +2566,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio speaker",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271925/SPEAKER-PBS45BT-01.jpg?v=639111848552070000",
   productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-40w-pbs45bt/p",
-  popularity: 232
+  popularity: 233
  },
  {
   sku: "philco-22234",
@@ -2566,7 +2577,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha grills e sanduicheiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284922/Super-Grill-Duo_1.jpg?v=639202292869130000",
   productUrl: "https://www.philco.com.br/super-grill-duo-127v-054001014/p",
-  popularity: 233
+  popularity: 234
  },
  {
   sku: "philco-22115",
@@ -2577,7 +2588,7 @@ export const CATALOG: CatalogItem[] = [
   category: "refrigeracao geladeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/242493/_0000_PRF535ID_02.jpg?v=638228004812430000",
   productUrl: "https://www.philco.com.br/geladeira-prf535id-side-by-side-inverter-127v-056551035/p",
-  popularity: 234
+  popularity: 235
  },
  {
   sku: "philco-20245",
@@ -2588,7 +2599,7 @@ export const CATALOG: CatalogItem[] = [
   category: "outlet cozinha coifas e depuradores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/287297/PCO90I---1-.jpg?v=639257913145470000",
   productUrl: "https://www.philco.com.br/coifa-flat-philco-90cm-vidro-inox-6-bocas-pco90i-outlet/p",
-  popularity: 235
+  popularity: 236
  },
  {
   sku: "philco-18271",
@@ -2599,7 +2610,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tvs tvs 43 polegadas",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/238942/ptv43g70r2csgbl_05.jpg?v=638449186710270000",
   productUrl: "https://www.philco.com.br/tv-ptv43g70r2csgbl-4k-led-099433025/p",
-  popularity: 236
+  popularity: 237
  },
  {
   sku: "philco-10266",
@@ -2610,7 +2621,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha liquidificadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286240/Liq-PLQ1411P_13.jpg?v=639232607229830000",
   productUrl: "https://www.philco.com.br/liquidificador-philco-1150w-2-7l-4-velocidades-preto-plq1411p/p",
-  popularity: 237
+  popularity: 238
  },
  {
   sku: "philco-10207",
@@ -2621,7 +2632,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/198662/Bat-Crome-Base-Cristal-Duo-Turbo-PR.jpg?v=638856975613970000",
   productUrl: "https://www.philco.com.br/batedeira-philco-crome-base-cristal-duo-turbo-preta-550w/p",
-  popularity: 238
+  popularity: 239
  },
  {
   sku: "philco-9524",
@@ -2632,7 +2643,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparadores e cortadores",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/197517/Cortador-de-Cabelos-PCR12CR-Skull-Pro-Chrome.jpg?v=638787663627430000",
   productUrl: "https://www.philco.com.br/cortador-de-cabelos-philco-pcr12cr-skull-pro-chrome-9-em-1/p",
-  popularity: 239
+  popularity: 240
  },
  {
   sku: "philco-8827",
@@ -2643,17 +2654,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha fornos",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274162/PFE40I_0005_Camada-3.jpg?v=639003005081070000",
   productUrl: "https://www.philco.com.br/forno-eletrico-philco-pfe40i-air-fryer-40l-056101099/p",
-  popularity: 240
- },
- {
-  sku: "philco-8581",
-  name: "Processador Compacto Philco PH900V Turbo 250W 127V",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha multiprocessadores e processadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184939/Compacto-PH900V-Turbo.jpg?v=638908747061200000",
-  productUrl: "https://www.philco.com.br/processador-compacto-philco-ph900v-turbo/p",
   popularity: 241
  },
  {
@@ -2767,14 +2767,14 @@ export const CATALOG: CatalogItem[] = [
   popularity: 251
  },
  {
-  sku: "philco-5910",
-  name: "Depurador e Exaustor Philco 90cm 3 velocidades PDR90P Preto 127V",
+  sku: "philco-5908",
+  name: "Caixa de Som Philco Extreme Ex Bass 1800W PCX20000 Bivolt",
   brand: "Philco",
-  unitPrice: 429.9,
+  unitPrice: 1299.9,
   unit: "un",
-  category: "cozinha coifas e depuradores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191234/PDR90P_---1-.jpg?v=638737802097300000",
-  productUrl: "https://www.philco.com.br/depurador-slim-philco-pdr90p-90cm-depurador-e-exaustor/p",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271867/PCX20000_01.jpg?v=638990716391870000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-1800w-pcx20000/p",
   popularity: 252
  },
  {
@@ -2954,2094 +2954,15 @@ export const CATALOG: CatalogItem[] = [
   popularity: 268
  },
  {
-  sku: "philco-24952",
-  name: "Purificador de Água Philco Sistema ECO PPU50A 127V",
+  sku: "philco-25266",
+  name: "Caixa de Som Philco Extreme 1200W Connection TWS PCX6900 Bivolt",
   brand: "Philco",
-  unitPrice: 979.9,
+  unitPrice: 1299.9,
   unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276201/PPU50A-13.jpg?v=639020946402030000",
-  productUrl: "https://www.philco.com.br/purificador-de-agua-philco-sistema-eco-ppu50a/p",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285534/PCX6900_00.jpg?v=639210385940330000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-1200w-pcx6900/p",
   popularity: 269
- },
- {
-  sku: "philco-24926",
-  name: "Caixa de Som Boombox Philco Extreme 300W PBX01 Bivolt",
-  brand: "Philco",
-  unitPrice: 1299.9,
-  unit: "un",
-  category: "audio boombox",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281676/BOOMBOX-PBX01-01.jpg?v=639114256962800000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-boombox-philco-extreme-300w-pbx01/p",
-  popularity: 270
- },
- {
-  sku: "philco-24648",
-  name: "Smart TV 58\" Philco LED 4K Google TV HDR10 P58KGA Bivolt",
-  brand: "Philco",
-  unitPrice: 4429.9,
-  unit: "un",
-  category: "tvs tvs 58 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281781/P58KGA_01.6.jpg.jpg?v=639118762873300000",
-  productUrl: "https://www.philco.com.br/tv-philco-58-p58kga-4k-googletv/p",
-  popularity: 271
- },
- {
-  sku: "philco-24647",
-  name: "Smart TV 43\" Philco Borderless Dolby Audio P43EAB Bivolt",
-  brand: "Philco",
-  unitPrice: 1759.9,
-  unit: "un",
-  category: "tvs tvs 43 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284280/P43EAB_01.9.jpg?v=639185009028570000",
-  productUrl: "https://www.philco.com.br/smart-tv-philco-43-polegadas-p43eab-borderless-dolby-audio/p",
-  popularity: 272
- },
- {
-  sku: "philco-24513",
-  name: "Caixa de Som Philco Extreme Ex Bass 2100W PCX21000 Bivolt",
-  brand: "Philco",
-  unitPrice: 1415.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271543/Caixa-PCX21000_0000.jpg.jpg?v=638989993254800000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-2100w-pcx21000/p",
-  popularity: 273
- },
- {
-  sku: "philco-24307",
-  name: "Batedeira Planetária Philco 700W 4,5L 12 Velocidades PBP70A 127V",
-  brand: "Philco",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "cozinha batedeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/254237/BAT-PBP70A__00.jpg.jpg?v=639177554600600000",
-  productUrl: "https://www.philco.com.br/batedeira-planetaria-pbp70a-127v-103401184/p",
-  popularity: 274
- },
- {
-  sku: "philco-24274",
-  name: "Furadeira Philco Force 3000 RPM Mandril 13mm 850W PFU04 127V",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "ferramentas furadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/254190/PFU04_01.jpg?v=638760798336230000",
-  productUrl: "https://www.philco.com.br/furadeira-pfu04-127v-051101029/p",
-  popularity: 275
- },
- {
-  sku: "philco-24224",
-  name: "Torradeira Philco 3 funções 7 Níveis de tostagem PTR03A 127V",
-  brand: "Philco",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha torradeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272756/PTR03_01.jpg?v=638995868384330000",
-  productUrl: "https://www.philco.com.br/torradeira-ptr03a-127v-056201043/p",
-  popularity: 276
- },
- {
-  sku: "philco-24200",
-  name: "Grill Philco 2 em 1 Chapas Removíveis e abertura 180° PGR50A 127V",
-  brand: "Philco",
-  unitPrice: 509.9,
-  unit: "un",
-  category: "cozinha grills e sanduicheiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/263309/Grill-PGR50A_01.jpg.jpg?v=639245821071070000",
-  productUrl: "https://www.philco.com.br/grill-pgr50a-127v-056701056/p",
-  popularity: 277
- },
- {
-  sku: "philco-24151",
-  name: "Ar-Condicionado Philco Split Inverter 9000BTUs Frio PAC9FC 220V",
-  brand: "Philco",
-  unitPrice: 3679.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274785/PAC9FC_02.jpg.jpg?v=639005551569970000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-pac9fc/p",
-  popularity: 278
- },
- {
-  sku: "philco-24129",
-  name: "Freezer Horizontal Philco 371L 2 em 1 PFH400B A++ 127V",
-  brand: "Philco",
-  unitPrice: 2499.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252530/_0000_FH400B_01.jpg?v=638755688071870000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh400b-127v-056751010/p",
-  popularity: 279
- },
- {
-  sku: "philco-23865",
-  name: "Caixa de Som Philco Extreme Bluetooth V5.3 1500W PCX10100 Bivolt",
-  brand: "Philco",
-  unitPrice: 1099.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271592/PCX10100.jpg?v=638990009941470000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-bluetooth-v5-3-1500w-pcx10100/p",
-  popularity: 280
- },
- {
-  sku: "philco-23855",
-  name: "Air Fryer Philco 14L 4 em 1 Painel Digital PAF14A 127V",
-  brand: "Philco",
-  unitPrice: 899.9,
-  unit: "un",
-  category: "cozinha air fryer",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252798/PAF14A_001.jpg?v=638996890287270000",
-  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-paf14a-127v-053801080/p",
-  popularity: 281
- },
- {
-  sku: "philco-23853",
-  name: "Ferro de Passar a Vapor Philco 320ml Base Cerâmica PFV71 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "casa ferros de passar",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251176/FERRO-PFV71_004.jpg?v=638955434204270000",
-  productUrl: "https://www.philco.com.br/ferro-pfv71-127v-053601054/p",
-  popularity: 282
- },
- {
-  sku: "philco-23845",
-  name: "Escova Secadora Philco Bivolt 1300W Multicerdas 4 em 1 PES30 Bivolt",
-  brand: "Philco",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275021/PES30_0000.jpg.jpg?v=639009032531830000",
-  productUrl: "https://www.philco.com.br/escova-secadora-pes30-biv-051153004/p",
-  popularity: 283
- },
- {
-  sku: "philco-23773",
-  name: "Cortador de Cabelos Philco 9 Acessórios 4 pentes PCR04 127V",
-  brand: "Philco",
-  unitPrice: 79.9,
-  unit: "un",
-  category: "cuidados pessoais aparadores e cortadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250504/PCR04_01.jpg?v=638721139940170000",
-  productUrl: "https://www.philco.com.br/cortador-de-cabelos-pcr04-127v-056301019/p",
-  popularity: 284
- },
- {
-  sku: "philco-23769",
-  name: "Air Fryer Philco 5,5L Cesto Quadrado 1500W PAF55A 127V",
-  brand: "Philco",
-  unitPrice: 439.9,
-  unit: "un",
-  category: "cozinha air fryer",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250569/PAF50_01.jpg?v=638768050283430000",
-  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-paf55a-127v-053801084/p",
-  popularity: 285
- },
- {
-  sku: "philco-23755",
-  name: "Ar-Condicionado Philco Inverter 18000BTUs Frio PAC18000IFM15 220V",
-  brand: "Philco",
-  unitPrice: 2999.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278678/PAC18000IFM15_05.jpg?v=639040767279570000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-18000btus-frio-pac18000ifm15/p",
-  popularity: 286
- },
- {
-  sku: "philco-23568",
-  name: "Freezer Horizontal Philco Dupla Função 199L PFH205B 127V",
-  brand: "Philco",
-  unitPrice: 2189.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281179/PFH205B_12.jpg?v=639102387486130000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh205b-127v-056751032/p",
-  popularity: 287
- },
- {
-  sku: "philco-23566",
-  name: "Freezer Horizontal Philco 99L 2 em 1 PFH105B 127V",
-  brand: "Philco",
-  unitPrice: 1589.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281159/PFH105B_10.jpg?v=639102384073800000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh105b-127v-056751030/p",
-  popularity: 288
- },
- {
-  sku: "philco-23342",
-  name: "Frigobar Philco 93L 6 Níveis de ajustes PFG114 127V",
-  brand: "Philco",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248670/Frigobar-PRG114_01.jpg?v=638718764966400000",
-  productUrl: "https://www.philco.com.br/frigobar-pfg114-127v-056451085/p",
-  popularity: 289
- },
- {
-  sku: "philco-23306",
-  name: "Smart TV 24” Philco Roku TV Dolby Audio PTV24G5YR2CP Bivolt",
-  brand: "Philco",
-  unitPrice: 1009.9,
-  unit: "un",
-  category: "tvs tvs 24 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284262/PTV24G5YR2CP-LED_01.1.jpg?v=639185004623500000",
-  productUrl: "https://www.philco.com.br/smart-tv-24-polegadas-philco-ptv24g5yr2cp-roku-tv-dolby-audio/p",
-  popularity: 290
- },
- {
-  sku: "philco-23292",
-  name: "Monitor Gamer Philco 27\" 180Hz Full HD Tela Plana PMG27M23T Bivolt",
-  brand: "Philco",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "gaming monitor",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266302/PMG27M23T_02.jpg?v=638968263410070000",
-  productUrl: "https://www.philco.com.br/monitor-gamer-pmg27m23t-091473007/p",
-  popularity: 291
- },
- {
-  sku: "philco-23282",
-  name: "Parafusadeira 3 em 1 Philco Force 12V 15 Acessórios PPF120M Bivolt",
-  brand: "Philco",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "ferramentas parafusadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282799/PPF120M_14.jpg?v=639136723033400000",
-  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf120m/p",
-  popularity: 292
- },
- {
-  sku: "philco-23246",
-  name: "Refrigerador Expositor Philco 309L PRE319 Vidro Duplo 127V",
-  brand: "Philco",
-  unitPrice: 3599.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248020/PRE319_01s.jpg?v=638436823694970000",
-  productUrl: "https://www.philco.com.br/refrigerador-expositor-pre319-127v-056551031/p",
-  popularity: 293
- },
- {
-  sku: "philco-23197",
-  name: "Ar-Condicionado Philco Inverter 12000BTUs Frio PAC12000IFM15 220V",
-  brand: "Philco",
-  unitPrice: 2389.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283485/PAC12000IFM15_05.jpg?v=639159207919600000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-12000btus-frio-pac12000ifm15/p",
-  popularity: 294
- },
- {
-  sku: "philco-23160",
-  name: "Multiprocessador Philco Pro 5 em 1 Inox 800W Citrus 127V",
-  brand: "Philco",
-  unitPrice: 263.9,
-  unit: "un",
-  category: "cozinha multiprocessadores e processadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/247412/Mult-Pro-5-em-1.jpg?v=638730790074930000",
-  productUrl: "https://www.philco.com.br/multiprocessador-pro-turbo-5-em-1-127v-101201025/p",
-  popularity: 295
- },
- {
-  sku: "philco-22968",
-  name: "Geladeira 458L Philco Inverter Duplex Inverse Inox PRF45A 127V",
-  brand: "Philco",
-  unitPrice: 3899.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/265688/PFR45A_01.jpg?v=638960598794270000",
-  productUrl: "https://www.philco.com.br/geladeira-458l-inverter-190w-prf45a/p",
-  popularity: 296
- },
- {
-  sku: "philco-22967",
-  name: "Forno Elétrico de Embutir 86L Philco PFE85 Vidro Duplo 2800W 220V",
-  brand: "Philco",
-  unitPrice: 1989.9,
-  unit: "un",
-  category: "cozinha fornos",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284146/PFE85-26.jpg?v=639180925594570000",
-  productUrl: "https://www.philco.com.br/forno-eletrico-de-embutir-pfe85-127v-056101124/p",
-  popularity: 297
- },
- {
-  sku: "philco-22738",
-  name: "Grill Philco 2 em 1 PGR32 Chapa com Abertura 180° 127V",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha grills e sanduicheiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246665/Grill-PGR32_1.jpg?v=638388468483470000",
-  productUrl: "https://www.philco.com.br/grill-pgr32-127v-056701054/p",
-  popularity: 298
- },
- {
-  sku: "philco-22728",
-  name: "Bebedouro De Coluna 20L Philco Água Natural e Gelada PBE80A 127V",
-  brand: "Philco",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257729/PBE80A_01.jpg.jpg?v=638769766366930000",
-  productUrl: "https://www.philco.com.br/bebedouro-pbe17-127v-055101013/p",
-  popularity: 299
- },
- {
-  sku: "philco-22484",
-  name: "Frigobar Philco 92L 6 Níveis de ajuste PFG111I 127V",
-  brand: "Philco",
-  unitPrice: 1399.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/262237/_0000_Arte-2.jpg?v=638826756195430000",
-  productUrl: "https://www.philco.com.br/frigobar-pfg111i-127v-056451083/p",
-  popularity: 300
- },
- {
-  sku: "philco-22477",
-  name: "Adega Philco 24 Garrafas 69L Display Digital Bivolt PAD24DZ Bivolt",
-  brand: "Philco",
-  unitPrice: 1599.9,
-  unit: "un",
-  category: "refrigeracao adegas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/267905/PAD24DZ_01.jpg?v=638977894400730000",
-  productUrl: "https://www.philco.com.br/adega-pad24dz-bivolt-054803033/p",
-  popularity: 301
- },
- {
-  sku: "philco-22454",
-  name: "Frigobar 45L Philco 6 Níveis de ajustes 1400W PFG5P 127V",
-  brand: "Philco",
-  unitPrice: 899.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243708/_0000_PFG50P.jpg?v=638755813751270000",
-  productUrl: "https://www.philco.com.br/frigobar-pfg50p-110v-056451081/p",
-  popularity: 302
- },
- {
-  sku: "philco-22303",
-  name: "Chaleira Elétrica Philco PCH18PI 2L Inox Automática 1250W 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha chaleiras eletricas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243988/PCH18PI_01.jpg?v=638303939235130000",
-  productUrl: "https://www.philco.com.br/chaleira-eletrica-pch18pi-2-0l-127v-053951023/p",
-  popularity: 303
- },
- {
-  sku: "philco-22282",
-  name: "Bebedouro Philco Água Gelada, Natural e Quente com Compressor PBE07CBQF 127V",
-  brand: "Philco",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/242897/BEBEDOURO-PBE07CBQF-3-EM-1_055101010_01.jpg?v=638792170137830000",
-  productUrl: "https://www.philco.com.br/bebedouro-pbe07cbqf-127v-055101010/p",
-  popularity: 304
- },
- {
-  sku: "philco-22238",
-  name: "Caixa de Som Philco Extreme Ex Bass 650W PCX6700 Bivolt",
-  brand: "Philco",
-  unitPrice: 619.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281524/PCX6700_-01.jpg?v=639111065953230000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-650w-pcx6700/p",
-  popularity: 305
- },
- {
-  sku: "philco-22109",
-  name: "Aspirador de Pó Vertical Philco 2 em 1 1300W PAS1450C 127V",
-  brand: "Philco",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "casa aspiradores de po",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272546/PAS1450C_01.jpg?v=638993464860770000",
-  productUrl: "https://www.philco.com.br/aspirador-de-po-pas1450c-127v-054901086/p",
-  popularity: 306
- },
- {
-  sku: "philco-22108",
-  name: "Adega Philco 8 Garrafas Display Digital Bivolt PAD8E Bivolt",
-  brand: "Philco",
-  unitPrice: 799.9,
-  unit: "un",
-  category: "refrigeracao adegas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268421/PAD8E_0000s_0000_1.jpg?v=638979451482800000",
-  productUrl: "https://www.philco.com.br/adega-pad8e-bivolt-054803025/p",
-  popularity: 307
- },
- {
-  sku: "philco-21812",
-  name: "Caixa de Som Philco Extreme Ex Bass 750W PCX7100 Bivolt",
-  brand: "Philco",
-  unitPrice: 849.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271806/PCX7100_08.jpg?v=638990673515570000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-750w-pcx7100/p",
-  popularity: 308
- },
- {
-  sku: "philco-18368",
-  name: "Extratora de Sujeira Philco 2 em 1 1600W PEX20A 127V",
-  brand: "Philco",
-  unitPrice: 699.9,
-  unit: "un",
-  category: "casa extratora",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253873/PEX20A-01.jpg?v=638718471011770000",
-  productUrl: "https://www.philco.com.br/extratora-philco-pex20a-127v-054701010/p",
-  popularity: 309
- },
- {
-  sku: "philco-18357",
-  name: "Cooktop 5 Bocas a Gás Philco PCT05TC Bivolt",
-  brand: "Philco",
-  unitPrice: 569.9,
-  unit: "un",
-  category: "cozinha cooktops",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269543/PCT05TC_01.jpg?v=638981180398970000",
-  productUrl: "https://www.philco.com.br/cooktop-pct05tc-biv-105903030/p",
-  popularity: 310
- },
- {
-  sku: "philco-18269",
-  name: "Soprador e Aspirador Philco PSA1000 275Km/h 16000RPM 830W 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "ferramentas soprador termico",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274489/psa1000_05.jpg?v=639003770302400000",
-  productUrl: "https://www.philco.com.br/soprador-e-aspirador-psa1000-127v-051101020/p",
-  popularity: 311
- },
- {
-  sku: "philco-9258",
-  name: "Smartwatch Philco PSW01P Hit Wear 42mm 1,7” Preto – Bluetooth, 8 funções Bivolt",
-  brand: "Philco",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "celular e informatica smartwatch",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/195598/PSW01P_03.jpg?v=637750794936500000",
-  productUrl: "https://www.philco.com.br/smartwatch-philco-psw01rg-42mm-1-7-preto-bluetooth-8-funcoes/p",
-  popularity: 312
- },
- {
-  sku: "philco-9175",
-  name: "Espremedor de Frutas Philco PEF750P 70W Automático 127V",
-  brand: "Philco",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cozinha espremedores de frutas e centrifugas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251060/PEF750P_01.jpg?v=638572539381570000",
-  productUrl: "https://www.philco.com.br/espremedor-de-frutas-philco-pef750p-70w-automatico/p",
-  popularity: 313
- },
- {
-  sku: "philco-8821",
-  name: "Forno Elétrico de Embutir Philco 55L Esmaltado PFE55E 127V",
-  brand: "Philco",
-  unitPrice: 1199.9,
-  unit: "un",
-  category: "cozinha fornos",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/193703/FORNO-ELETRICO-DE-EMBUTIR-PFE55E_01.jpg?v=638888682590400000",
-  productUrl: "https://www.philco.com.br/forno-eletrico-de-embutir-pfe55e-127v-056101091/p",
-  popularity: 314
- },
- {
-  sku: "philco-8616",
-  name: "Espremedor de Frutas Philco PEF700P 2 Cones 70W 1,5L 127V",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha espremedores de frutas e centrifugas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/185257/PEF700P.jpg?v=637564432697100000",
-  productUrl: "https://www.philco.com.br/--espremedor-de-frutas-philco-pef700p-2-cones-70w-1l/p",
-  popularity: 315
- },
- {
-  sku: "philco-8037",
-  name: "Prancha Ceramic Black Philco PPR08 Placas Anodizadas Bivolt",
-  brand: "Philco",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cuidados pessoais pranchas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183458/Prancha-Ceramic-Black-PPR08.jpg?v=637459806779870000",
-  productUrl: "https://www.philco.com.br/prancha-ceramic-black-philco-ppr08-pranchas-extensas/p",
-  popularity: 316
- },
- {
-  sku: "philco-7667",
-  name: "Freezer Vertical Philco 2 em 1 201L PFV205B 127V",
-  brand: "Philco",
-  unitPrice: 2499.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282975/FREEZER VERTICAL PFV205B_056751001_01.jpg?v=639144710716800000",
-  productUrl: "https://www.philco.com.br/freezer-vertical-philco-201l-pfv205b/p",
-  popularity: 317
- },
- {
-  sku: "philco-7439",
-  name: "Kit de Ferramentas Philco PKF01 70 acessórios + Maleta Acessório",
-  brand: "Philco",
-  unitPrice: 189.9,
-  unit: "un",
-  category: "ferramentas kit ferramentas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192830/Kit-PKF01_03.jpg?v=637660266334670000",
-  productUrl: "https://www.philco.com.br/kit-de-ferramentas-philco-kf01/p",
-  popularity: 318
- },
- {
-  sku: "philco-6790",
-  name: "Soprador Térmico Philco Force PST01 Azul 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "ferramentas soprador termico",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/178438/SOPRADOR-TERMICO-PST01-02.jpg?v=637310432578700000",
-  productUrl: "https://www.philco.com.br/soprador-termico-philco-pst01-2000w/p",
-  popularity: 319
- },
- {
-  sku: "philco-6400",
-  name: "TV 24\" Philco Led PTV24N19D HD Receptor Digital Bivolt",
-  brand: "Philco",
-  unitPrice: 1559.9,
-  unit: "un",
-  category: "tvs tvs 24 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/181210/ptv24n19d_01.jpg?v=637394008417430000",
-  productUrl: "https://www.philco.com.br/tv-ptv24n19d-led-099243049-philco/p",
-  popularity: 320
- },
- {
-  sku: "philco-5908",
-  name: "Caixa de Som Philco Extreme Ex Bass 1800W PCX20000 Bivolt",
-  brand: "Philco",
-  unitPrice: 1299.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271867/PCX20000_01.jpg?v=638990716391870000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-1800w-pcx20000/p",
-  popularity: 321
- },
- {
-  sku: "philco-5902",
-  name: "Martelete Philco Force PMT01 900W Impacto de 3J 1400RPM 127V",
-  brand: "Philco",
-  unitPrice: 549.9,
-  unit: "un",
-  category: "ferramentas martelete",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192840/PMT01.jpg?v=637660276806270000",
-  productUrl: "https://www.philco.com.br/martelete-philco-pmt01-900w/p",
-  popularity: 322
- },
- {
-  sku: "philco-5703",
-  name: "Ferro de Passar Philco PFE01P Retrô 6 Níveis 1100W 127V",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "casa ferros de passar",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174387/pfe01p_01.jpg?v=638871737599500000",
-  productUrl: "https://www.philco.com.br/ferro-de-passar-pfe01p-053601032/p",
-  popularity: 323
- },
- {
-  sku: "philco-5409",
-  name: "Frigobar Philco 65 Litros PFG85B 127V",
-  brand: "Philco",
-  unitPrice: 829.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191971/1200x1200pixel_72dpi-RGB_Site_0012_PFG85B_--1-.jpg?v=638715127932070000",
-  productUrl: "https://www.philco.com.br/frigobar-philco-pfg85b-67-litros/p",
-  popularity: 324
- },
- {
-  sku: "philco-2836",
-  name: "Freezer Philco Horizontal PFZ330B 295L - Refrigerador 127V",
-  brand: "Philco",
-  unitPrice: 2699.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/172743/FREEZER-HORIZONTAL-PFZ330B--3-.jpg?v=636903211028200000",
-  productUrl: "https://www.philco.com.br/freezer-philco-horizontal-pfz330b-295l-freezer-e-refrigerador/p",
-  popularity: 325
- },
- {
-  sku: "philco-2178",
-  name: "Serra Tico-Tico Philco Force PTT01 450W 3000GPM 127V",
-  brand: "Philco",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "ferramentas serra",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/180869/PTT01.jpg?v=638797453363800000",
-  productUrl: "https://www.philco.com.br/serra-philco-ptt01-com-guia-de-corte/p",
-  popularity: 326
- },
- {
-  sku: "philco-2172",
-  name: "Furadeira Philco Force 650W 2800RPM com Maleta PFU01M 127V",
-  brand: "Philco",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "ferramentas furadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269937/PFU01M_01.jpg?v=638981380623270000",
-  productUrl: "https://www.philco.com.br/furadeira-philco-pfu01m-com-reversao/p",
-  popularity: 327
- },
- {
-  sku: "philco-1273",
-  name: "Kit Philco Prancha + Secador Travel Shine Rosa Bivolt",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cuidados pessoais kit cuidados pessoais",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270582/travel-shine_0000_Kit-Travel-Shine_16-copiar.jpg?v=638984044837170000",
-  productUrl: "https://www.philco.com.br/kit-travel-shine-biv-051503045/p",
-  popularity: 328
- },
- {
-  sku: "philco-761",
-  name: "Frigobar Philco 47 Litros Compacto Porta Reversível PH50N 127V",
-  brand: "Philco",
-  unitPrice: 899.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/158233/Frigobar-PH50N_01.jpg?v=636320047177500000",
-  productUrl: "https://www.philco.com.br/056451017-frigobar-ph50n/p",
-  popularity: 329
- },
- {
-  sku: "philco-236",
-  name: "Cacheador Philco Duo Shine Rosa Bivolt",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/156925/Cacheador-Duo-Shine_1.jpg?v=636300906631670000",
-  productUrl: "https://www.philco.com.br/cacheador-philco-duo-shine-rosa-philco/p",
-  popularity: 330
- },
- {
-  sku: "philco-224",
-  name: "Aspirador de Pó Philco 1800W Filtro Hepa PAS1810 127V",
-  brand: "Philco",
-  unitPrice: 367.9,
-  unit: "un",
-  category: "casa aspiradores de po",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246440/PAS1810_01.jpg?v=638373963472500000",
-  productUrl: "https://www.philco.com.br/aspirador-de-po-philco-turbo-pr/p",
-  popularity: 331
- },
- {
-  sku: "philco-25441",
-  name: "Umidificador de Ar Philco 4L Difusor de Aromas PUD04B Bivolt",
-  brand: "Philco",
-  unitPrice: 249.9,
-  unit: "un",
-  category: "climatizacao umidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/279226/PDU04B_00.jpg?v=639047956021530000",
-  productUrl: "https://www.philco.com.br/umidificador-de-ar-philco-4l-difusor-de-aromas-pud04b/p",
-  popularity: 332
- },
- {
-  sku: "philco-24959",
-  name: "Geladeira 409L Philco Inverter Duplex Inverse Inox PRF40A 127V",
-  brand: "Philco",
-  unitPrice: 3899.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284753/PFR40A_01.jpg?v=639201731507000000",
-  productUrl: "https://www.philco.com.br/geladeira-409l-frost-free-inverter-190w-prf40a/p",
-  popularity: 333
- },
- {
-  sku: "philco-23970",
-  name: "Ventilador 2 em 1 Philco Tecnologia Maxx Force 150W PVT41A 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "climatizacao ventiladores ventilador de mesa",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283015/PVT41A_01.jpg?v=639147317712030000",
-  productUrl: "https://www.philco.com.br/ventilador-2-em-1-philco-150w-pvt41a/p",
-  popularity: 334
- },
- {
-  sku: "philco-23775",
-  name: "Caixa de Som Philco Extreme 2400W Flash Lights PCX24000 Bivolt",
-  brand: "Philco",
-  unitPrice: 1799.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271722/PCX24000--3-.jpg?v=638990607757970000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx24000/p",
-  popularity: 335
- },
- {
-  sku: "philco-23758",
-  name: "Ar-Condicionado Philco Inverter 24000BTUs PAC24000IQFM15 220V",
-  brand: "Philco",
-  unitPrice: 5589.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283529/PAC24000IQFM15_05.jpg?v=639159364818100000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-24000btus-quente-frio-pac24000iqfm15/p",
-  popularity: 336
- },
- {
-  sku: "philco-23291",
-  name: "Monitor Gamer Philco 24” 180Hz Full HD 1MS PMG24M23T Bivolt",
-  brand: "Philco",
-  unitPrice: 1099.9,
-  unit: "un",
-  category: "gaming monitor",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270893/PMG24M23T_02.jpg.jpg?v=638985653977630000",
-  productUrl: "https://www.philco.com.br/monitor-gamer-philco-24-pol-180hz-full-hd-1ms-pmg24m23t/p",
-  popularity: 337
- },
- {
-  sku: "philco-22799",
-  name: "Micro-ondas Philco 25L Porta Espelhado Limpa Fácil PMO28E 127V",
-  brand: "Philco",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "cozinha micro-ondas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/277837/PMO28E_01.jpg?v=639038380384600000",
-  productUrl: "https://www.philco.com.br/micro-ondas-pmo28e-127v-096051200/p",
-  popularity: 338
- },
- {
-  sku: "philco-22507",
-  name: "Air Fryer Kitchen Art 4,3L Cesto Quadrado 1500W KFR01 127V",
-  brand: "Philco",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "cozinha air fryer",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/245366/KFR01_01.jpg?v=638338389350800000",
-  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-kfr01-127v-063801106/p",
-  popularity: 339
- },
- {
-  sku: "philco-22486",
-  name: "Freezer Vertical Philco 4 Gavetas 140L PFV165B 127V",
-  brand: "Philco",
-  unitPrice: 2199.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270364/PFV165B_01.jpg?v=638983821538600000",
-  productUrl: "https://www.philco.com.br/freezer-vertical-pfv165b-127v-056751029/p",
-  popularity: 340
- },
- {
-  sku: "philco-22434",
-  name: "Ventilador Philco Maxx Force Função Repelente 160W PVT402 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "climatizacao ventiladores ventilador de mesa",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/245330/PVT402_01.jpg?v=638337630527370000",
-  productUrl: "https://www.philco.com.br/ventilador-pvt402-127v-103011058/p",
-  popularity: 341
- },
- {
-  sku: "philco-10455",
-  name: "Ar-Condicionado Philco Split 9000BTUs Frio PAS9500FA1 220V",
-  brand: "Philco",
-  unitPrice: 2109.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/199286/PAC9000TFM12_0000_Camada-4.jpg?v=637852799102830000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-9000btus-pas9500fa1-frio/p",
-  popularity: 342
- },
- {
-  sku: "philco-7982",
-  name: "Kit Cuidados Pessoais Philco PKT3250 Cherry Tourmaline Íon 127V",
-  brand: "Philco",
-  unitPrice: 259.9,
-  unit: "un",
-  category: "cuidados pessoais kit cuidados pessoais",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/193982/Kit-PKT3250-Cherry.jpg?v=637702509148670000",
-  productUrl: "https://www.philco.com.br/kit-cherry-philco-secador-e-prancha-51502037/p",
-  popularity: 343
- },
- {
-  sku: "philco-7504",
-  name: "Liquidificador Philco PLQ1250P Reverse Turbo 1200W 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275785/Liquidificador-PLQ1250P-Reverse-Turbo_1.jpg?v=639020074513800000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1250p-reverse-turbo-1200w/p",
-  popularity: 344
- },
- {
-  sku: "philco-7040",
-  name: "Cacheador Philco Bivolt 32mm Íon Tourmaline Advance PEC11 Bivolt",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/189137/PEC11_056003038_---6-.jpg?v=637587799114200000",
-  productUrl: "https://www.philco.com.br/cacheador-philco-advance-pec11-ion-tourmaline-/p",
-  popularity: 345
- },
- {
-  sku: "philco-7025",
-  name: "Multiprocessador Philco 5 em 1 900W 4 lâminas PMP1500P Turbo 127V",
-  brand: "Philco",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "cozinha multiprocessadores e processadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/178485/PMP1500P-Turbo.jpg?v=637312131192930000",
-  productUrl: "https://www.philco.com.br/multiprocessador-philco-pmp1500p-turbo-5-em-1/p",
-  popularity: 346
- },
- {
-  sku: "philco-6133",
-  name: "Liquidificador Philco Smart Control PLQ2000 600W 127V",
-  brand: "Philco",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275705/Liquidificador-PLQ2000V-Smart--2-.jpg?v=639016765898530000",
-  productUrl: "https://www.philco.com.br/liquidificador-smart-control-plq2000v-053101029/p",
-  popularity: 347
- },
- {
-  sku: "philco-5924",
-  name: "Liquidificador Philco Inox Turbo 1200W 127V",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/175422/Liq-PLQ1350-Inox-Turbo_3.jpg?v=638955444017470000",
-  productUrl: "https://www.philco.com.br/liquidificador-plq1350-inox-103101063/p",
-  popularity: 348
- },
- {
-  sku: "philco-3079",
-  name: "Liquidificador Philco PLQ950V 4 Velocidades 900W 127V",
-  brand: "Philco",
-  unitPrice: 127.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/177145/Liquidificador-PLQ950V_1.jpg?v=637214525377070000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq950v-4-velocidades-900w/p",
-  popularity: 349
- },
- {
-  sku: "philco-709",
-  name: "Mini Grill e Sanduicheira Philco Inox Preto 750W 127V",
-  brand: "Philco",
-  unitPrice: 119.9,
-  unit: "un",
-  category: "cozinha grills e sanduicheiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/197782/MINI-GRILL-INOX-PR_---6-.jpg?v=638871728261600000",
-  productUrl: "https://www.philco.com.br/054001025-mini-grill-inox-pr/p",
-  popularity: 350
- },
- {
-  sku: "philco-702",
-  name: "Mini Grill e Sanduicheira Philco Inox Vermelha 750W 127V",
-  brand: "Philco",
-  unitPrice: 103.9,
-  unit: "un",
-  category: "cozinha grills e sanduicheiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/197774/MINI-GRILL-INOX-VM_---6-.jpg?v=639088445495630000",
-  productUrl: "https://www.philco.com.br/054001015-mini-grill-inox-vm/p",
-  popularity: 351
- },
- {
-  sku: "philco-378",
-  name: "Liquidificador Philco Inox Filter 4 velocidades 900W Preto 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272857/Liquidificador-Inox-Filter_1.jpg?v=638995886573270000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-inox-filter-900w/p",
-  popularity: 352
- },
- {
-  sku: "philco-25496",
-  name: "Ar-Condicionado Philco Portátil 10000BTUs Frio PAC10FN 127V",
-  brand: "Philco",
-  unitPrice: 3199.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280945/PAC10FN_01.jpg?v=639099799994400000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-portatil-philco-10000btus-frio-pac10fn/p",
-  popularity: 353
- },
- {
-  sku: "philco-25393",
-  name: "Acessório Saco de Pó para Aspirador 5L Philco PAA20A Acessório",
-  brand: "Philco",
-  unitPrice: 49.9,
-  unit: "un",
-  category: "acessorios casa",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276904/PAA20A_002.jpg?v=639026960496930000",
-  productUrl: "https://www.philco.com.br/acessorio-saco-de-po-aspirador-5l-paa20a/p",
-  popularity: 354
- },
- {
-  sku: "philco-25323",
-  name: "Cafeteira Expresso Philco 20 Bar 1,2L com Moedor PCF03A 127V",
-  brand: "Philco",
-  unitPrice: 2799.9,
-  unit: "un",
-  category: "cozinha cafeteiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272162/PCF03A_0000.jpg?v=638991666324270000",
-  productUrl: "https://www.philco.com.br/cafeteira-philco-20-bar-1-2l-pcf03a/p",
-  popularity: 355
- },
- {
-  sku: "philco-25310",
-  name: "Liquidificador Philco 1200W 3L 12 Velocidades Cinza PLQ12A 127V",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275563/PLQ12A-V0_0000.jpg?v=639016747505530000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq12a/p",
-  popularity: 356
- },
- {
-  sku: "philco-25268",
-  name: "Ar-condicionado 24000 BTUs Philco Ciclo Frio PAJ24FH 220V",
-  brand: "Philco",
-  unitPrice: 8149.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/265029/PAJ24FH_01.jpg?v=638953709954600000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-24000-btus-philco-ciclo-frio-paj24fh-/p",
-  popularity: 357
- },
- {
-  sku: "philco-25100",
-  name: "Ar-condicionado Split 36000 BTUs Philco Quente/Frio PAC36QC 220V",
-  brand: "Philco",
-  unitPrice: 9419.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/263431/PAC36QC_01.jpg.jpg?v=638834440729530000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-split-36000-pac36qc/p",
-  popularity: 358
- },
- {
-  sku: "philco-25088",
-  name: "Ar-Condicionado Philco Split Inverter 9000BTUs PAC9QC 220V",
-  brand: "Philco",
-  unitPrice: 2889.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278547/PAC9QC--2-.jpg.jpg?v=639040168925100000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-quente-frio-pac9qc/p",
-  popularity: 359
- },
- {
-  sku: "philco-25085",
-  name: "Ar-Condicionado Philco Split Inverter 12000BTUs Frio PAC12FC 220V",
-  brand: "Philco",
-  unitPrice: 2989.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281031/PAC12FC_01.jpg?v=639100638324770000",
-  productUrl: "https://www.philco.com.br/ar-condicicionado-philco-split-inverter-12000btus-frio-pac12fc/p",
-  popularity: 360
- },
- {
-  sku: "philco-24967",
-  name: "Caixa de Som Philco Extreme 2400W 2x Woofer PCX22000 Bivolt",
-  brand: "Philco",
-  unitPrice: 2339.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285545/PCX22000_01.jpg?v=639210390830500000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx22000/p",
-  popularity: 361
- },
- {
-  sku: "philco-24956",
-  name: "Refil Filtro de Água Philco PFA03A -",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272204/PFA03A_01.jpg?v=638991696074700000",
-  productUrl: "https://www.philco.com.br/refil-filtro-de-agua-philco-pfa03a/p",
-  popularity: 362
- },
- {
-  sku: "philco-24955",
-  name: "Refil Filtro de Água Philco PFA02A -",
-  brand: "Philco",
-  unitPrice: 129.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/277450/PFA02A_01.jpg?v=639038134416100000",
-  productUrl: "https://www.philco.com.br/refil-filtro-de-agua-philco-pfa02a/p",
-  popularity: 363
- },
- {
-  sku: "philco-24858",
-  name: "Multiprocessador Philco Concept 1000W 5 em 1 Preto PMP11A 127V",
-  brand: "Philco",
-  unitPrice: 419.9,
-  unit: "un",
-  category: "cozinha multiprocessadores e processadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/273466/PMP11A_00.jpg.jpg?v=638998591631230000",
-  productUrl: "https://www.philco.com.br/multiprocessador-pmp11a-127v/p",
-  popularity: 364
- },
- {
-  sku: "philco-24744",
-  name: "Liquidificador Philco 4 velocidades 2,7L 1050W PLQ11A 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278949/PLQ11A_02.jpg?v=639045390514230000",
-  productUrl: "https://www.philco.com.br/liquidificador-plq11a-103101181/p",
-  popularity: 365
- },
- {
-  sku: "philco-24556",
-  name: "Ar-condicionado Philco Janela 18000BTUs Frio PAJ18FH 220V",
-  brand: "Philco",
-  unitPrice: 5989.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278504/PAJ18FH_01.jpg.jpg?v=639040123201570000",
-  productUrl: "https://www.philco.com.br/ar-cond-janela-paj18fh-220v-056662017/p",
-  popularity: 366
- },
- {
-  sku: "philco-24304",
-  name: "Ar-Condicionado Inverter 9000BTUs Philco Quente/Frio PAC9QA 220V",
-  brand: "Philco",
-  unitPrice: 3019.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/256547/PAC12FI_01.jpg.jpg?v=638745366495830000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac12fi-220v-conj-096662574/p",
-  popularity: 367
- },
- {
-  sku: "philco-24220",
-  name: "Secador de Cabelos Philco 1600W 4 temperaturas PSC3600 127V",
-  brand: "Philco",
-  unitPrice: 589.9,
-  unit: "un",
-  category: "cuidados pessoais secadores de cabelo",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253698/SECADOR-DE-CABELOS-PSC3600_07.jpg?v=638814702771300000",
-  productUrl: "https://www.philco.com.br/secador-de-cabelos-psc3600-127v-053501080/p",
-  popularity: 368
- },
- {
-  sku: "philco-24216",
-  name: "Smart TV 32” Philco LED Roku PTV32G7PR2CGB Bivolt",
-  brand: "Philco",
-  unitPrice: 1099.9,
-  unit: "un",
-  category: "tvs tvs 32 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281949/TV-PTV32G7PR2CGB_v0_001_D.jpg?v=639241447833100000",
-  productUrl: "https://www.philco.com.br/smart-tv-32-philco-led-roku-ptv32g7pr2cgb/p",
-  popularity: 369
- },
- {
-  sku: "philco-24208",
-  name: "Ar-condicionado Philco Split 24000 Btus Quente/frio PAC24QI 220V",
-  brand: "Philco",
-  unitPrice: 5939.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253123/PAC24QI--1-.jpg?v=638654782501170000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac24qi-220v-conj-096662589/p",
-  popularity: 370
- },
- {
-  sku: "philco-24154",
-  name: "Freezer Horizontal 290L Philco PFH335B 2 em 1 A+ e A++ 127V",
-  brand: "Philco",
-  unitPrice: 4199.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253037/Freezer-Horizontal-PFH335B.jpg?v=638737669751230000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh335b-127v-056751028/p",
-  popularity: 371
- },
- {
-  sku: "philco-24146",
-  name: "Caixa de Som Philco Extreme Ex Bass 3500W PCX35000 Bivolt",
-  brand: "Philco",
-  unitPrice: 3299.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271571/PCX30000_03.jpg?v=638990001909900000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-3500w-pcx35000/p",
-  popularity: 372
- },
- {
-  sku: "philco-23889",
-  name: "Ar-condicionado Split 12000 BTUs Philco Frio PAC12FB 220V",
-  brand: "Philco",
-  unitPrice: 3249.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/256327/PAC12FB_00.jpg.jpg?v=638742919672270000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac12fb-220v-conj-096662679/p",
-  popularity: 373
- },
- {
-  sku: "philco-23886",
-  name: "Ar-Condicionado Philco Split Inverter 9000BTUs Frio PAC9FB 220V",
-  brand: "Philco",
-  unitPrice: 2099.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268225/PAC9FB_01.jpg?v=638978735951800000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-frio-pac9fb/p",
-  popularity: 374
- },
- {
-  sku: "philco-23847",
-  name: "Escova Secadora Philco Bivolt 1300W PES32 Bivolt",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251127/PES32-Biv_01.jpg?v=638576161839330000",
-  productUrl: "https://www.philco.com.br/escova-secadora-pes32-biv-051153006/p",
-  popularity: 375
- },
- {
-  sku: "philco-23666",
-  name: "Frigobar Philco 68L PFG85P 5 Níveis Temperatura 127V",
-  brand: "Philco",
-  unitPrice: 1099.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/249524/PFG85P_01.jpg?v=638738390741470000",
-  productUrl: "https://www.philco.com.br/frigobar-pfg85p-127v-056451082/p",
-  popularity: 376
- },
- {
-  sku: "philco-23635",
-  name: "Ar-Condicionado Split 24000 BTU/h Philco Quente/frio Titanium 220V",
-  brand: "Philco",
-  unitPrice: 5449.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252456/PAC24QA_03.jpg?v=638635805741870000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac24qfa-220v-conj-096662673/p",
-  popularity: 377
- },
- {
-  sku: "philco-23626",
-  name: "Ar-Condicionado Split 9000 BTU/h Philco Quente/frio Titanium 220V",
-  brand: "Philco",
-  unitPrice: 2199.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252464/PAC9QA_03.jpg?v=638635809920170000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac9qfa-220v-conj-096662664/p",
-  popularity: 378
- },
- {
-  sku: "philco-23348",
-  name: "Caixa de Som Philco Extreme Flash Lights 350W PCX4501 Bivolt",
-  brand: "Philco",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281698/PCX4501_03.jpg?v=639114498131700000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-350w-pcx4501/p",
-  popularity: 379
- },
- {
-  sku: "philco-23335",
-  name: "Ar-Condicionado Philco Inverter 9000BTUs Frio PAC9000IFM15 220V",
-  brand: "Philco",
-  unitPrice: 2039.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283511/PAC9000IFM15_05.jpg?v=639159322816430000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-frio-pac9000ifm15/p",
-  popularity: 380
- },
- {
-  sku: "philco-23310",
-  name: "Smart TV 43\" Philco LED Roku TV Dolby Audio PTV43VA4REGB Bivolt",
-  brand: "Philco",
-  unitPrice: 2529.9,
-  unit: "un",
-  category: "tvs tvs 43 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284271/PTV43VA4REGB_01.6.jpg?v=639185006472900000",
-  productUrl: "https://www.philco.com.br/tv-ptv43va4regb-099433039/p",
-  popularity: 381
- },
- {
-  sku: "philco-23285",
-  name: "Mini Motosserra Philco Force PMM216 3000 RPM 7 Acessórios Bivolt",
-  brand: "Philco",
-  unitPrice: 349.9,
-  unit: "un",
-  category: "ferramentas motosserra",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272210/PMM216_19.jpg?v=638991706881630000",
-  productUrl: "https://www.philco.com.br/mini-motosserra-pmm216-051103034/p",
-  popularity: 382
- },
- {
-  sku: "philco-23283",
-  name: "Parafusadeira 3 em 1 Philco Force Bivolt PPF120MF Bivolt",
-  brand: "Philco",
-  unitPrice: 409.9,
-  unit: "un",
-  category: "ferramentas parafusadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281113/PPF120MF_01.jpg?v=639100756640400000",
-  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf120mf/p",
-  popularity: 383
- },
- {
-  sku: "philco-23258",
-  name: "Refrigerador Expositor Philco 211L PRE221 Vidro Duplo 127V",
-  brand: "Philco",
-  unitPrice: 3099.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248101/PRE221_01s.jpg?v=638441192512370000",
-  productUrl: "https://www.philco.com.br/refrigerador-expositor-pre221-127v-056551032/p",
-  popularity: 384
- },
- {
-  sku: "philco-23206",
-  name: "Ar-Condicionado Philco Split 30000BTUs PAC30000IQFM15 220V",
-  brand: "Philco",
-  unitPrice: 7709.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/247813/PAC30000IQFM15_03.jpg?v=638429216574030000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac30000iqfm15-220v-conj-096662403/p",
-  popularity: 385
- },
- {
-  sku: "philco-22539",
-  name: "Monitor Gamer Philco 32” PMG32C900FG Curvo FullHD FreeSync 165Hz - Outlet Bivolt",
-  brand: "Philco",
-  unitPrice: 2159.9,
-  unit: "un",
-  category: "outlet gaming monitor",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/244355/Monitor-Gamer-PMG32C900FG-Curvo_Imagem_06-091473004.jpg?v=638314160019400000",
-  productUrl: "https://www.philco.com.br/monitor-gamer-pmg32c900fg-curvo-out-091473004out/p",
-  popularity: 386
- },
- {
-  sku: "philco-22396",
-  name: "Smart TV 50\" Philco 4K PTV50M8GAGCMBL Android TV LED Bivolt",
-  brand: "Philco",
-  unitPrice: 2539.9,
-  unit: "un",
-  category: "tvs tvs 50 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243339/TV-PTV50M8GAGCMBL-4K-LED_10.jpg?v=638261669342870000",
-  productUrl: "https://www.philco.com.br/tv-ptv50m8gagcmbl-4k-led-099503038/p",
-  popularity: 387
- },
- {
-  sku: "philco-23192",
-  name: "Ar-Condicionado Philco 9000 Btu/h PAC9000ITFM12W Eco Inverter 220V",
-  brand: "Philco",
-  unitPrice: 1899.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257479/PAC9000ITFM12W_01.jpg?v=638761019104870000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac9000itfm12w-conj-220v-096662284/p",
-  popularity: 388
- },
- {
-  sku: "philco-22254",
-  name: "Lavadora de Alta Pressão Philco PLP2300 1750PSI 12 MPa 1500W 127V",
-  brand: "Philco",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "casa lavadora de alta pressao",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248251/PLP2300_01.jpg?v=638447480291630000",
-  productUrl: "https://www.philco.com.br/lavadora-de-alta-pressao-plp2300-127v-051101027/p",
-  popularity: 389
- },
- {
-  sku: "philco-22239",
-  name: "Caixa de Som Philco Extreme Flash Light 350W PCX4500 Bivolt",
-  brand: "Philco",
-  unitPrice: 549.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282870/PCX4500_10.jpg?v=639141148414100000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-350w-pcx4500/p",
-  popularity: 390
- },
- {
-  sku: "philco-22173",
-  name: "Ar-Condicionado Philco Inverter 12000 BTUs Frio PAC12000IFM14 127V",
-  brand: "Philco",
-  unitPrice: 3329.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/240996/PAC9000IFM14_3.jpg?v=638194025095770000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac12000ifm14-conj-127v-096661320/p",
-  popularity: 391
- },
- {
-  sku: "philco-22102",
-  name: "Smart TV 32” Philco LED HD Roku PTV32G7ER2CPBLH Bivolt",
-  brand: "Philco",
-  unitPrice: 1239.9,
-  unit: "un",
-  category: "tvs tvs 32 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258188/TV-PTV32G7ER2CPBLH_--1-.jpg?v=638775825114670000",
-  productUrl: "https://www.philco.com.br/tv-ptv32g7er2cpblh-led-099323107/p",
-  popularity: 392
- },
- {
-  sku: "philco-21968",
-  name: "Aspirador de Pó Vertical 2 em 1 Philco 1300W PAS1460V 127V",
-  brand: "Philco",
-  unitPrice: 199.9,
-  unit: "un",
-  category: "casa aspiradores de po",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/240158/Aspirador-de-Po-PAS1460V.jpg?v=638889767148730000",
-  productUrl: "https://www.philco.com.br/aspirador-de-po-pas1460v-127v-054901082/p",
-  popularity: 393
- },
- {
-  sku: "philco-21895",
-  name: "Politriz Philco PPZ1500 1400W 7” Power Control 127V",
-  brand: "Philco",
-  unitPrice: 369.9,
-  unit: "un",
-  category: "ferramentas politriz",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239116/PPZ1500_01.jpg?v=638156869997330000",
-  productUrl: "https://www.philco.com.br/politriz-ppz1500--127v-051101024/p",
-  popularity: 394
- },
- {
-  sku: "philco-21888",
-  name: "Ar-Condicionado Philco PH9000TFM5 4 Modos de operar 9000BTU/h 220V",
-  brand: "Philco",
-  unitPrice: 2319.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239036/PH9000TFM5_0000s_0000_1.jpg?v=638151706880930000",
-  productUrl: "https://www.philco.com.br/ar-condph9000tfm5-conj-220v-096662355/p",
-  popularity: 395
- },
- {
-  sku: "philco-21841",
-  name: "Smart TV 43” Philco Led PTV43E30AGSBLF Android TV Bivolt",
-  brand: "Philco",
-  unitPrice: 2199.9,
-  unit: "un",
-  category: "tvs tvs 43 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/238150/ptv43e30agsblf-09.jpg?v=638702124861900000",
-  productUrl: "https://www.philco.com.br/tv-ptv43e30agsblf-led-099433026/p",
-  popularity: 396
- },
- {
-  sku: "philco-21837",
-  name: "Parafusadeira 3 em 1 Philco Force Bateria 21V PPF21M Bateria",
-  brand: "Philco",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "ferramentas parafusadeira",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282751/PPF21M_03.jpg?v=639135245563430000",
-  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf21m/p",
-  popularity: 397
- },
- {
-  sku: "philco-21652",
-  name: "Fritadeira Air Fryer Philco PFR55PI Visor Glass 7L 1800W 127V",
-  brand: "Philco",
-  unitPrice: 599.9,
-  unit: "un",
-  category: "cozinha air fryer",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/237057/Fritadeira-Air-Fry-PFR55PI-Visor-Glass.jpg?v=639149808762800000",
-  productUrl: "https://www.philco.com.br/fritadeira-air-fry-pfr55pi-visor-glass-127v-053801062/p",
-  popularity: 398
- },
- {
-  sku: "philco-21493",
-  name: "Air Fryer Philco 4L Air Flow 1500W PFR15V 127V",
-  brand: "Philco",
-  unitPrice: 489.9,
-  unit: "un",
-  category: "cozinha air fryer",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239014/_0006_PFR15V_01.jpg?v=638731674986270000",
-  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-pfr15v-127v-053801064/p",
-  popularity: 399
- },
- {
-  sku: "philco-21609",
-  name: "Ar-Condicionado 30000BTUs Philco Quente/Frio PAC30000IQFM8W 220V",
-  brand: "Philco",
-  unitPrice: 9359.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/235763/pac30000iqfm8w_01.jpg?v=638046349192330000",
-  productUrl: "https://www.philco.com.br/ar-cond-pac30000iqfm8w-conj-220v-096662281/p",
-  popularity: 400
- },
- {
-  sku: "philco-10523",
-  name: "Tupia Elétrica Philco Force 3300RPM PTU01 127V",
-  brand: "Philco",
-  unitPrice: 299.9,
-  unit: "un",
-  category: "ferramentas tupia",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281261/PTU01_05.jpg?v=639106400167070000",
-  productUrl: "https://www.philco.com.br/tupia-eletrica-philco-force-33000rpm-ptu01/p",
-  popularity: 401
- },
- {
-  sku: "philco-10275",
-  name: "Liquidificador Philco 1150W 2,7L 4 velocidades PLQ1411V 127V",
-  brand: "Philco",
-  unitPrice: 151.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286264/Liq-PLQ1411V_12.jpg?v=639232608353930000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-1150w-2-7l-4-velocidades-vermelho-plq1411v/p",
-  popularity: 402
- },
- {
-  sku: "philco-10209",
-  name: "Batedeira Philco Crome Base Inox Turbo Duo Mixer 4L 550W 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha batedeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/198652/Bat-Crome-Base-Inox-Turbo-Duo-Mixer-VM.jpg?v=638731488710200000",
-  productUrl: "https://www.philco.com.br/batedeira-crome-base-inox-turbo-duo-mixer-vm-127v-103401168/p",
-  popularity: 403
- },
- {
-  sku: "philco-11790",
-  name: "Ar-Condicionado Philco 30000Btus PAC30000IFM8W Inverter Frio 220V",
-  brand: "Philco",
-  unitPrice: 9609.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206391/pac30000ifm8w_01.jpg?v=637925619547770000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-30000btus-pac30000ifm8w-frio-inverter/p",
-  popularity: 404
- },
- {
-  sku: "philco-10189",
-  name: "Monitor Gamer Philco 27” PMG27C900FG Curvo 165Hz HDR10 FreeSync Bivolt",
-  brand: "Philco",
-  unitPrice: 1599.9,
-  unit: "un",
-  category: "gaming monitor",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/202592/pmg27c900fg_02.jpg?v=637877975182900000",
-  productUrl: "https://www.philco.com.br/monitor-gamer-pmg27c900fg-curvo-091473003/p",
-  popularity: 405
- },
- {
-  sku: "philco-11152",
-  name: "Ar-Condicionado 12000btus Prime Air Frio 12000TF 220V",
-  brand: "Philco",
-  unitPrice: 2669.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/204066/AR-COND-PRIME-AIR-12000TF_096662174_01.png?v=637903963058300000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-prime-air-12000tf-ciclo-frio-12000-btu-096662176/p",
-  popularity: 406
- },
- {
-  sku: "philco-9249",
-  name: "Caixa de Som Speaker Philco Extreme 50W PBS40BT2 Bivolt",
-  brand: "Philco",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "audio speaker",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271956/pbs40bt2_02.jpg?v=638990821914530000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-50w-pbs40bt2/p",
-  popularity: 407
- },
- {
-  sku: "philco-11792",
-  name: "Ar-Condicionado Split 9000BTUs Philco Frio PAS9200F1 220V",
-  brand: "Philco",
-  unitPrice: 1999.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206372/Ar-cond-PAS9200F1_---1-.jpg?v=637925619381430000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-9000btus-pas9200f1-frio/p",
-  popularity: 408
- },
- {
-  sku: "philco-8932",
-  name: "Smart TV 50” Philco 4K PTV50N10N5E Led Dolby Audio Bivolt",
-  brand: "Philco",
-  unitPrice: 4459.9,
-  unit: "un",
-  category: "tvs tvs 50 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192966/ptv50n10n5e_02.jpg?v=638851771478970000",
-  productUrl: "https://www.philco.com.br/smart-tv-philco-ptv50n10n5e-d-led-ultrahd-4k-50--099503028/p",
-  popularity: 409
- },
- {
-  sku: "philco-8858",
-  name: "Refrigerador/Geladeira 467L Frost Free Philco PRF505TI 127V",
-  brand: "Philco",
-  unitPrice: 11039.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192338/Refrigerador-PRF505TI_01.jpg?v=637648899467200000",
-  productUrl: "https://www.philco.com.br/geladeira-philco-prf505ti-eco-inverter-frost-free-467l-056551021/p",
-  popularity: 410
- },
- {
-  sku: "philco-8811",
-  name: "Fone de Ouvido Headphone Philco Extreme Bluetooth PFO03BTA Bateria",
-  brand: "Philco",
-  unitPrice: 215.9,
-  unit: "un",
-  category: "audio fone de ouvido",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272072/PFO03BTA_01.jpg?v=638990927740670000",
-  productUrl: "https://www.philco.com.br/fone-de-ouvido-headphone-philco-extreme-bluetooth-pfo03bta/p",
-  popularity: 411
- },
- {
-  sku: "philco-8773",
-  name: "Caixa de Som Philco Extreme Ex Bass 2500W PCX30000 Bivolt",
-  brand: "Philco",
-  unitPrice: 2823.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281534/pcx30000_12.jpg?v=639111856229930000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-2500w-pcx30000/p",
-  popularity: 412
- },
- {
-  sku: "philco-8772",
-  name: "Caixa de Som Philco Extreme 2400W Smart DJ PCX32000 Bivolt",
-  brand: "Philco",
-  unitPrice: 3487.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271849/PCX32000DJ_17.jpg?v=638990693643030000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx32000/p",
-  popularity: 413
- },
- {
-  sku: "philco-8709",
-  name: "Geladeira Side By Side 498L Inverse Plus Philco PRF510I 127V",
-  brand: "Philco",
-  unitPrice: 9249.9,
-  unit: "un",
-  category: "refrigeracao geladeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192719/Refrigerador-4-Portas-PRF510I.jpg?v=638768000181670000",
-  productUrl: "https://www.philco.com.br/-refrigerador-philco-side-by-side-prf510i-498l-inverse/p",
-  popularity: 414
- },
- {
-  sku: "philco-8589",
-  name: "Batedeira Philco Paris Power Mixer Turbo Portátil 350W 127V",
-  brand: "Philco",
-  unitPrice: 159.9,
-  unit: "un",
-  category: "cozinha batedeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184965/Bat-Paris-Power-Mixer-Turbo-PR.jpg?v=638703015122300000",
-  productUrl: "https://www.philco.com.br/batedeira-philco-paris-power-mixer-turbo-portatil-350w/p",
-  popularity: 415
- },
- {
-  sku: "philco-8575",
-  name: "Fast Smart TV 32” Philco D-LED PTV32N5SE10H Bivolt",
-  brand: "Philco",
-  unitPrice: 1599.9,
-  unit: "un",
-  category: "tvs tvs 32 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258016/ptv32n5se10h_03.jpg?v=638774021492600000",
-  productUrl: "https://www.philco.com.br/smart-tv-philco-32-ptv32n5se10h-d-led-netflix/p",
-  popularity: 416
- },
- {
-  sku: "philco-8557",
-  name: "TV Philco 39\" PTV39G50D LED Digital Bivolt",
-  brand: "Philco",
-  unitPrice: 1999.9,
-  unit: "un",
-  category: "tvs tvs 39 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184728/ptv39g50d_01.jpg?v=637529012628570000",
-  productUrl: "https://www.philco.com.br/tv-philco-39-ptv39g50d-led-digital/p",
-  popularity: 417
- },
- {
-  sku: "philco-8544",
-  name: "Liquidificador Philco PLQ1550V Pro Maxx6 1200W Turbo 3L 127V",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276670/Liq-PLQ1550V-Turbo.jpg?v=639026238069530000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1550v-pro-maxx6-1200w-turbo-3l/p",
-  popularity: 418
- },
- {
-  sku: "philco-8524",
-  name: "Cooktop de Indução Philco PCT10IP Digital Portátil 127V",
-  brand: "Philco",
-  unitPrice: 229.9,
-  unit: "un",
-  category: "cozinha cooktops",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/185335/1200x1200pixel_72dpi-RGB_Site_PCT10IP_01.jpg?v=638968425358700000",
-  productUrl: "https://www.philco.com.br/cooktop-philco-de-inducao-pct10ip-1-boca-8-niveis-portatil/p",
-  popularity: 419
- },
- {
-  sku: "philco-8461",
-  name: "Freezer e Refrigerador Philco PFH515B 492L Horizontal Branco 127V",
-  brand: "Philco",
-  unitPrice: 3599.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191693/PFH515B_--1-.jpg?v=638814564690730000",
-  productUrl: "https://www.philco.com.br/freezer-e-refrigerador-philco-pfh515b-492l-horizontal-branco/p",
-  popularity: 420
- },
- {
-  sku: "philco-11788",
-  name: "Ar-Condicionado Philco 12000Btus PAC12000ITQFM9W Inverter 220V",
-  brand: "Philco",
-  unitPrice: 2709.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/259470/itfm9wProtect_01.jpg?v=638797323856130000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-12000btus-pac12000itqfm9w-inverter-virus-protect/p",
-  popularity: 421
- },
- {
-  sku: "philco-8212",
-  name: "Kit Cozinha Philco PKT35P Turbo 127V",
-  brand: "Philco",
-  unitPrice: 489.9,
-  unit: "un",
-  category: "cozinha kit cozinha",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183684/Cozinha-Philco-PKT35P.jpg?v=637465855627900000",
-  productUrl: "https://www.philco.com.br/kit-cozinha-philco-pkt35p-turbo-/p",
-  popularity: 422
- },
- {
-  sku: "philco-8114",
-  name: "Unidade Auxiliar da Caixa Acústica Double PHT12000 Philco- Outlet Bivolt",
-  brand: "Philco",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "acessorios",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253852/PHT12000_01.jpg?v=638678962392670000",
-  productUrl: "https://www.philco.com.br/auxiliar-philco-outlet/p",
-  popularity: 423
- },
- {
-  sku: "philco-7679",
-  name: "Lavadora de Alta Pressão e Aspirador Philco 2 em 1 PLAS4000 127V",
-  brand: "Philco",
-  unitPrice: 1309.9,
-  unit: "un",
-  category: "casa lavadora de alta pressao",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276283/1200x1200pixel_72dpi-RGB_Site_0000_Camada-8.jpg?v=639021123710730000",
-  productUrl: "https://www.philco.com.br/lavadora-de-alta-pressao-e-aspirador-philco-2-em-1-plas4000/p",
-  popularity: 424
- },
- {
-  sku: "philco-11787",
-  name: "Ar-Condicionado Philco Inverter 24000Btus PAC24000IQFM9W 220V",
-  brand: "Philco",
-  unitPrice: 6139.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206316/ifm9w_01.jpg?v=637925618974400000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-24000btus-pac24000iqfm9w-inverter-quente-frio/p",
-  popularity: 425
- },
- {
-  sku: "philco-11794",
-  name: "Ar-Condicionado Philco Inverter 24000Btus Frio PAC24000IFM9W 220V",
-  brand: "Philco",
-  unitPrice: 6409.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206328/ifm9w_01.jpg?v=637925619070100000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-24000btus-pac24000ifm9w-inverter-frio/p",
-  popularity: 426
- },
- {
-  sku: "philco-7533",
-  name: "Limpador de Piso Philco PME01B Speed Clean Mop Sem Fio Bateria",
-  brand: "Philco",
-  unitPrice: 559.9,
-  unit: "un",
-  category: "casa aspiradores de po",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/180593/Limpador-de-Piso-Speed-Clean-Mop-PME01B.jpg?v=637378695859070000",
-  productUrl: "https://www.philco.com.br/limpador-de-piso-philco-pme01b-speed-clean-mop-sem-fio-bivolt/p",
-  popularity: 427
- },
- {
-  sku: "philco-7506",
-  name: "Liquidificador Philco PLQ1250V Reverse Turbo 1200W 127V",
-  brand: "Philco",
-  unitPrice: 179.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276620/PLQ1250V-Reverse-Turbo.jpg?v=639026231514470000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq125v-reverse-turbo-1200w/p",
-  popularity: 428
- },
- {
-  sku: "philco-7448",
-  name: "Freezer Horizontal Philco 99L 2 em 1 PFH105B 127V",
-  brand: "Philco",
-  unitPrice: 1659.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191666/PFH105B_--1-.jpg?v=638997802034770000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-philco-2-em-1-pfh105b-99l/p",
-  popularity: 429
- },
- {
-  sku: "philco-7411",
-  name: "Caixa de Som Philco Extreme 1500W Ex Bass PCX17000 Bivolt",
-  brand: "Philco",
-  unitPrice: 1479.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/179931/pcx17000_01.jpg?v=637362925812700000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-1500w-pcx17000/p",
-  popularity: 430
- },
- {
-  sku: "philco-8157",
-  name: "Cacheador Philco PEC12 Vermelho Mulher Maravilha Bivolt Bivolt",
-  brand: "Philco",
-  unitPrice: 99.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183028/Cacheador-Mulher-Maravilha-PEC12_3.jpg?v=637437316033370000",
-  productUrl: "https://www.philco.com.br/cacheador-philco-mulher-maravilha-pec12-revestimento-ceramico/p",
-  popularity: 431
- },
- {
-  sku: "philco-6777",
-  name: "Freezer Horizontal Philco PFH440B Dupla Função 418L 127V",
-  brand: "Philco",
-  unitPrice: 3999.9,
-  unit: "un",
-  category: "refrigeracao freezers",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191701/PFH440B_--1-.jpg?v=639238670410030000",
-  productUrl: "https://www.philco.com.br/freezer-horizontal-philco-pfh440b-418l-freezer-e-congelador/p",
-  popularity: 432
- },
- {
-  sku: "philco-6644",
-  name: "Speaker Philco Go PBS10BTRG Bluetooth 5.0 Rosa Bivolt",
-  brand: "Philco",
-  unitPrice: 209.9,
-  unit: "un",
-  category: "audio speaker",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/177462/pbs10btrg_01.jpg?v=637251620153330000",
-  productUrl: "https://www.philco.com.br/speaker-philco-go-pbs10bta-bluetooth--5-rosaa/p",
-  popularity: 433
- },
- {
-  sku: "philco-6642",
-  name: "Coifa de Parede Philco PCO60IP Flat 60cm Inox Dupla Função 127V",
-  brand: "Philco",
-  unitPrice: 1127.9,
-  unit: "un",
-  category: "cozinha coifas e depuradores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/190671/pco60ipVFflat---1-.jpg?v=637594426895130000",
-  productUrl: "https://www.philco.com.br/coifa-philco-pco60ip-flat-inox-60cm-depurador-exaustor-inox-vidro/p",
-  popularity: 434
- },
- {
-  sku: "philco-6469",
-  name: "Depurador e Exaustor Retrátil Philco PDR60I 3 velocidades Inox 127V",
-  brand: "Philco",
-  unitPrice: 663.9,
-  unit: "un",
-  category: "cozinha coifas e depuradores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191250/PDR60IRETRATIL_---1-.jpg?v=639166876674670000",
-  productUrl: "https://www.philco.com.br/depurador-philco-pdr60i-retratil-e-exaustor/p",
-  popularity: 435
- },
- {
-  sku: "philco-6417",
-  name: "Serra Esquadria Philco 8\" Guia Laser/Led 1500W 127V",
-  brand: "Philco",
-  unitPrice: 809.9,
-  unit: "un",
-  category: "ferramentas serra",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176962/pse1500-8_01.jpg?v=638797443911130000",
-  productUrl: "https://www.philco.com.br/serra-philco-pse1500-8-4500rpm/p",
-  popularity: 436
- },
- {
-  sku: "philco-6191",
-  name: "Panela de Arroz Philco PH10V 10 xícaras Visor Glass Inox 127V",
-  brand: "Philco",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cozinha panelas eletricas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176160/PH10V-Visor-Glass-Inox.jpg?v=637130553094970000",
-  productUrl: "https://www.philco.com.br/panela-eletrica-de-arroz-philco-ph10v-visor-glass-inox/p",
-  popularity: 437
- },
- {
-  sku: "philco-6175",
-  name: "Smart TV Philco 32\" PTV32G52S LED Bivolt",
-  brand: "Philco",
-  unitPrice: 1599.9,
-  unit: "un",
-  category: "tvs tvs 32 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176095/ptv32g52s_01.jpg?v=637122045310400000",
-  productUrl: "https://www.philco.com.br/smart-tv-philco-led-32-ptv32g52s/p",
-  popularity: 438
- },
- {
-  sku: "philco-11795",
-  name: "Ar-Condicionado Split 30000BTUs Philco Frio PAC30000FM9 220V",
-  brand: "Philco",
-  unitPrice: 6419.9,
-  unit: "un",
-  category: "climatizacao ar-condicionado",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206252/m9_01.jpg?v=637925618516530000",
-  productUrl: "https://www.philco.com.br/ar-condicionado-philco-pac30000fm9-conj-220v-096652712/p",
-  popularity: 439
- },
- {
-  sku: "philco-6080",
-  name: "Liquidificador Philco Reverse PLQ1300 1200W 127V",
-  brand: "Philco",
-  unitPrice: 151.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276784/Liquidificador-Reverse-PLQ1300V_3.jpg?v=639026245930000000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-reverse--plq1300-1200/p",
-  popularity: 440
- },
- {
-  sku: "philco-5935",
-  name: "Cortina de Ar Philco 220W Branco PCA120 220V",
-  brand: "Philco",
-  unitPrice: 899.9,
-  unit: "un",
-  category: "climatizacao cortina de ar",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280109/PCA120_01.jpg?v=639063321254230000",
-  productUrl: "https://www.philco.com.br/cortina-de-ar-philco-220w-branco-pca120/p",
-  popularity: 441
- },
- {
-  sku: "philco-5904",
-  name: "Ferro a Vapor Philco PFV2310R Cerâmico Rosa 127V",
-  brand: "Philco",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "casa ferros de passar",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/175391/PFV2310R_.jpg?v=638889770409130000",
-  productUrl: "https://www.philco.com.br/ferro-philco-053601035/p",
-  popularity: 442
- },
- {
-  sku: "philco-5723",
-  name: "Ventilador Philco 2 em 1 Silencioso Maxx Force 160W PVT400B 127V",
-  brand: "Philco",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "climatizacao ventiladores ventilador de mesa",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251423/Vent-PVT400B-Turbo.jpg?v=638598615132900000",
-  productUrl: "https://www.philco.com.br/ventilador-pvt400b-branco-103011031/p",
-  popularity: 443
- },
- {
-  sku: "philco-5687",
-  name: "Batedeira Planetária Philco PHP500 Turbo Vermelha 700W 220V",
-  brand: "Philco",
-  unitPrice: 559.9,
-  unit: "un",
-  category: "cozinha batedeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/237939/PHP500V-Turbo.jpg?v=638098147859970000",
-  productUrl: "https://www.philco.com.br/batedeira-planetaria-php500-turbo/p",
-  popularity: 444
- },
- {
-  sku: "philco-5660",
-  name: "Escova Rotativa Philco Spin Ion Brush Silver PEC06S 1100W 127V",
-  brand: "Philco",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174049/Escova-Rotativa-Spin-Ion-Silver-PEC06S_055401027---4-.jpg?v=636984541551300000",
-  productUrl: "https://www.philco.com.br/escova-rotativa-philco-spin-ion-brush-silver-pec06s-1100w/p",
-  popularity: 445
- },
- {
-  sku: "philco-5560",
-  name: "Purificador de Água Philco Àgua Natural e Gelada PBE04BF Bivolt",
-  brand: "Philco",
-  unitPrice: 689.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/189321/PURIF-PBE04BF-01.jpg?v=637593635361600000",
-  productUrl: "https://www.philco.com.br/purificador-de-agua-philco-pbe04bf-/p",
-  popularity: 446
- },
- {
-  sku: "philco-5530",
-  name: "Liquidificador Philco PLQ800P 4 velocidades 900w 127V",
-  brand: "Philco",
-  unitPrice: 169.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275929/Liquidificador-PLQ800P_4.jpg?v=639020098855000000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq800p-4-velocidades-900w/p",
-  popularity: 447
- },
- {
-  sku: "philco-5432",
-  name: "Frigobar Philco 45L Branco Porta Reversível PFG50B 127V",
-  brand: "Philco",
-  unitPrice: 999.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285487/pfg50b_01.jpg?v=639210301137670000",
-  productUrl: "https://www.philco.com.br/frigobar-philco-pfg50b/p",
-  popularity: 448
- },
- {
-  sku: "philco-3084",
-  name: "TV 39” Philco Led PTV39N87D HD Recepção Digital Bivolt",
-  brand: "Philco",
-  unitPrice: 1559.9,
-  unit: "un",
-  category: "tvs tvs 39 polegadas",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/171132/TV-PTV39N87D.jpg?v=636832427078700000",
-  productUrl: "https://www.philco.com.br/tv-philco-led-39-ptv39n87d-/p",
-  popularity: 449
- },
- {
-  sku: "philco-2736",
-  name: "Cooktop de Indução Philco Smart Chef PCT01 127V",
-  brand: "Philco",
-  unitPrice: 379.9,
-  unit: "un",
-  category: "cozinha cooktops",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/202799/Smart-Chef__0000_PCT01_19.jpg?v=639166858606430000",
-  productUrl: "https://www.philco.com.br/cooktop-de-inducao-philco-smart-chef-pct01-/p",
-  popularity: 450
- },
- {
-  sku: "philco-2703",
-  name: "Aspirador de Água e Pó Philco PAS10 1000W 127V",
-  brand: "Philco",
-  unitPrice: 319.9,
-  unit: "un",
-  category: "casa aspiradores de po",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276307/Aspirador-PAS10-_054901053--1-.jpg?v=639021126832330000",
-  productUrl: "https://www.philco.com.br/aspirador-de-po-e-agua-1000w/p",
-  popularity: 451
- },
- {
-  sku: "philco-2111",
-  name: "Frigobar Philco PFG120 Vintage 121 Litros 127V",
-  brand: "Philco",
-  unitPrice: 3499.9,
-  unit: "un",
-  category: "refrigeracao frigobares",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/163312/PFG120_01.jpg?v=636547248011630000",
-  productUrl: "https://www.philco.com.br/frigobar-philco-pfg120-vintage-121-litros-/p",
-  popularity: 452
- },
- {
-  sku: "philco-2109",
-  name: "Sanduicheira e Grill Philco PGR02I Inox Antiaderente 900W 127V",
-  brand: "Philco",
-  unitPrice: 289.9,
-  unit: "un",
-  category: "cozinha grills e sanduicheiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/163305/SAND-GRILL-INOX-PGR02I_056701015--2-.jpg?v=636547177257300000",
-  productUrl: "https://www.philco.com.br/sanduicheira-e-grill-inox-philco-pgr02i-900w/p",
-  popularity: 453
- },
- {
-  sku: "philco-1785",
-  name: "Unidade Auxiliar da Caixa Acústica Double PHT12000 Philco Acessório",
-  brand: "Philco",
-  unitPrice: 959.9,
-  unit: "un",
-  category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253856/PHT12000_01.jpg?v=638678983559430000",
-  productUrl: "https://www.philco.com.br/auxiliar-philco/p",
-  popularity: 454
- },
- {
-  sku: "philco-1478",
-  name: "Smart TV Philco 49” PH49F30DSGWA LED Bivolt",
-  brand: "Philco",
-  unitPrice: 3099.9,
-  unit: "un",
-  category: "tvs smart tv",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/164896/TV-PH49F30DSGWA.jpg?v=636644846797870000",
-  productUrl: "https://www.philco.com.br/tv-philco-led-smart-49-ph49f30dsgwa/p",
-  popularity: 455
- },
- {
-  sku: "philco-1277",
-  name: "Liquidificador Philco PLQ1400 1400W 127V",
-  brand: "Philco",
-  unitPrice: 223.9,
-  unit: "un",
-  category: "cozinha liquidificadores",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174808/Liquidificador-PLQ1400-Turbo_2.jpg?v=638889827739130000",
-  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1400/p",
-  popularity: 456
- },
- {
-  sku: "philco-1086",
-  name: "Bebedouro Philco 20L Água Gelada e Natural com Compressor PBE02BF 127V",
-  brand: "Philco",
-  unitPrice: 639.9,
-  unit: "un",
-  category: "cozinha bebedouros e purificadores de agua",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258898/Imagem-pronta-09.jpg?v=638792187884100000",
-  productUrl: "https://www.philco.com.br/bebedouro-compressor-pbe02bf-127v-055101006/p",
-  popularity: 457
- },
- {
-  sku: "philco-1080",
-  name: "Batedeira Philco Vermelha PHP500 Turbo 127V",
-  brand: "Philco",
-  unitPrice: 499.9,
-  unit: "un",
-  category: "cozinha batedeiras",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/194112/PHP500-Turbo-VM.jpg?v=638871743640070000",
-  productUrl: "https://www.philco.com.br/batedeira-vermelha-php500-turbo/p",
-  popularity: 458
  },
  {
   sku: "philco-25260",
@@ -5052,17 +2973,2096 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha batedeiras",
   imageUrl: "https://philco.vteximg.com.br/arquivos/ids/264837/BATEDEIRA-DE-MAO-PBT50A_0000.jpg?v=638950226220400000",
   productUrl: "https://www.philco.com.br/batedeira-portatil-4l-500w-pbt50a/p",
-  popularity: 459
+  popularity: 270
  },
  {
-  sku: "philco-25266",
-  name: "Caixa de Som Philco Extreme 1200W Connection TWS PCX6900 Bivolt",
+  sku: "philco-25133",
+  name: "Frigobar Philco 121L Branco Porta Reversível PFGE12B 127V",
+  brand: "Philco",
+  unitPrice: 1259.89,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/287235/PFGE12A_01.jpg?v=639257805422900000",
+  productUrl: "https://www.philco.com.br/frigobar-philco-121l-branco-porta-reversivel-pfge12b-2/p",
+  popularity: 271
+ },
+ {
+  sku: "philco-24959",
+  name: "Geladeira 409L Philco Inverter Duplex Inverse Inox PRF40A 127V",
+  brand: "Philco",
+  unitPrice: 3899.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284753/PFR40A_01.jpg?v=639201731507000000",
+  productUrl: "https://www.philco.com.br/geladeira-409l-frost-free-inverter-190w-prf40a/p",
+  popularity: 272
+ },
+ {
+  sku: "philco-24952",
+  name: "Purificador de Água Philco Sistema ECO PPU50A 127V",
+  brand: "Philco",
+  unitPrice: 979.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276201/PPU50A-13.jpg?v=639020946402030000",
+  productUrl: "https://www.philco.com.br/purificador-de-agua-philco-sistema-eco-ppu50a/p",
+  popularity: 273
+ },
+ {
+  sku: "philco-24926",
+  name: "Caixa de Som Boombox Philco Extreme 300W PBX01 Bivolt",
   brand: "Philco",
   unitPrice: 1299.9,
   unit: "un",
+  category: "audio boombox",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281676/BOOMBOX-PBX01-01.jpg?v=639114256962800000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-boombox-philco-extreme-300w-pbx01/p",
+  popularity: 274
+ },
+ {
+  sku: "philco-24647",
+  name: "Smart TV 43\" Philco Borderless Dolby Audio P43EAB Bivolt",
+  brand: "Philco",
+  unitPrice: 1759.9,
+  unit: "un",
+  category: "tvs tvs 43 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284280/P43EAB_01.9.jpg?v=639185009028570000",
+  productUrl: "https://www.philco.com.br/smart-tv-philco-43-polegadas-p43eab-borderless-dolby-audio/p",
+  popularity: 275
+ },
+ {
+  sku: "philco-24513",
+  name: "Caixa de Som Philco Extreme Ex Bass 2100W PCX21000 Bivolt",
+  brand: "Philco",
+  unitPrice: 1415.9,
+  unit: "un",
   category: "audio caixa de som amplificada",
-  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285534/PCX6900_00.jpg?v=639210385940330000",
-  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-1200w-pcx6900/p",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271543/Caixa-PCX21000_0000.jpg.jpg?v=638989993254800000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-2100w-pcx21000/p",
+  popularity: 276
+ },
+ {
+  sku: "philco-24307",
+  name: "Batedeira Planetária Philco 700W 4,5L 12 Velocidades PBP70A 127V",
+  brand: "Philco",
+  unitPrice: 359.9,
+  unit: "un",
+  category: "cozinha batedeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/254237/BAT-PBP70A__00.jpg.jpg?v=639177554600600000",
+  productUrl: "https://www.philco.com.br/batedeira-planetaria-pbp70a-127v-103401184/p",
+  popularity: 277
+ },
+ {
+  sku: "philco-24274",
+  name: "Furadeira Philco Force 3000 RPM Mandril 13mm 850W PFU04 127V",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "ferramentas furadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/254190/PFU04_01.jpg?v=638760798336230000",
+  productUrl: "https://www.philco.com.br/furadeira-pfu04-127v-051101029/p",
+  popularity: 278
+ },
+ {
+  sku: "philco-24224",
+  name: "Torradeira Philco 3 funções 7 Níveis de tostagem PTR03A 127V",
+  brand: "Philco",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha torradeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272756/PTR03_01.jpg?v=638995868384330000",
+  productUrl: "https://www.philco.com.br/torradeira-ptr03a-127v-056201043/p",
+  popularity: 279
+ },
+ {
+  sku: "philco-24200",
+  name: "Grill Philco 2 em 1 Chapas Removíveis e abertura 180° PGR50A 127V",
+  brand: "Philco",
+  unitPrice: 509.9,
+  unit: "un",
+  category: "cozinha grills e sanduicheiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/263309/Grill-PGR50A_01.jpg.jpg?v=639245821071070000",
+  productUrl: "https://www.philco.com.br/grill-pgr50a-127v-056701056/p",
+  popularity: 280
+ },
+ {
+  sku: "philco-24129",
+  name: "Freezer Horizontal Philco 371L 2 em 1 PFH400B A++ 127V",
+  brand: "Philco",
+  unitPrice: 2499.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252530/_0000_FH400B_01.jpg?v=638755688071870000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh400b-127v-056751010/p",
+  popularity: 281
+ },
+ {
+  sku: "philco-23865",
+  name: "Caixa de Som Philco Extreme Bluetooth V5.3 1500W PCX10100 Bivolt",
+  brand: "Philco",
+  unitPrice: 1099.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271592/PCX10100.jpg?v=638990009941470000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-bluetooth-v5-3-1500w-pcx10100/p",
+  popularity: 282
+ },
+ {
+  sku: "philco-23855",
+  name: "Air Fryer Philco 14L 4 em 1 Painel Digital PAF14A 127V",
+  brand: "Philco",
+  unitPrice: 899.9,
+  unit: "un",
+  category: "cozinha air fryer",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252798/PAF14A_001.jpg?v=638996890287270000",
+  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-paf14a-127v-053801080/p",
+  popularity: 283
+ },
+ {
+  sku: "philco-23853",
+  name: "Ferro de Passar a Vapor Philco 320ml Base Cerâmica PFV71 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "casa ferros de passar",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251176/FERRO-PFV71_004.jpg?v=638955434204270000",
+  productUrl: "https://www.philco.com.br/ferro-pfv71-127v-053601054/p",
+  popularity: 284
+ },
+ {
+  sku: "philco-23845",
+  name: "Escova Secadora Philco Bivolt 1300W Multicerdas 4 em 1 PES30 Bivolt",
+  brand: "Philco",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275021/PES30_0000.jpg.jpg?v=639009032531830000",
+  productUrl: "https://www.philco.com.br/escova-secadora-pes30-biv-051153004/p",
+  popularity: 285
+ },
+ {
+  sku: "philco-23773",
+  name: "Cortador de Cabelos Philco 9 Acessórios 4 pentes PCR04 127V",
+  brand: "Philco",
+  unitPrice: 79.9,
+  unit: "un",
+  category: "cuidados pessoais aparadores e cortadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250504/PCR04_01.jpg?v=638721139940170000",
+  productUrl: "https://www.philco.com.br/cortador-de-cabelos-pcr04-127v-056301019/p",
+  popularity: 286
+ },
+ {
+  sku: "philco-23769",
+  name: "Air Fryer Philco 5,5L Cesto Quadrado 1500W PAF55A 127V",
+  brand: "Philco",
+  unitPrice: 439.9,
+  unit: "un",
+  category: "cozinha air fryer",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/250569/PAF50_01.jpg?v=638768050283430000",
+  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-paf55a-127v-053801084/p",
+  popularity: 287
+ },
+ {
+  sku: "philco-23568",
+  name: "Freezer Horizontal Philco Dupla Função 199L PFH205B 127V",
+  brand: "Philco",
+  unitPrice: 2189.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281179/PFH205B_12.jpg?v=639102387486130000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh205b-127v-056751032/p",
+  popularity: 288
+ },
+ {
+  sku: "philco-23566",
+  name: "Freezer Horizontal Philco 99L 2 em 1 PFH105B 127V",
+  brand: "Philco",
+  unitPrice: 1589.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281159/PFH105B_10.jpg?v=639102384073800000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh105b-127v-056751030/p",
+  popularity: 289
+ },
+ {
+  sku: "philco-23342",
+  name: "Frigobar Philco 93L 6 Níveis de ajustes PFG114 127V",
+  brand: "Philco",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248670/Frigobar-PRG114_01.jpg?v=638718764966400000",
+  productUrl: "https://www.philco.com.br/frigobar-pfg114-127v-056451085/p",
+  popularity: 290
+ },
+ {
+  sku: "philco-23306",
+  name: "Smart TV 24” Philco Roku TV Dolby Audio PTV24G5YR2CP Bivolt",
+  brand: "Philco",
+  unitPrice: 1009.9,
+  unit: "un",
+  category: "tvs tvs 24 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284262/PTV24G5YR2CP-LED_01.1.jpg?v=639185004623500000",
+  productUrl: "https://www.philco.com.br/smart-tv-24-polegadas-philco-ptv24g5yr2cp-roku-tv-dolby-audio/p",
+  popularity: 291
+ },
+ {
+  sku: "philco-23292",
+  name: "Monitor Gamer Philco 27\" 180Hz Full HD Tela Plana PMG27M23T Bivolt",
+  brand: "Philco",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "gaming monitor",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/266302/PMG27M23T_02.jpg?v=638968263410070000",
+  productUrl: "https://www.philco.com.br/monitor-gamer-pmg27m23t-091473007/p",
+  popularity: 292
+ },
+ {
+  sku: "philco-23282",
+  name: "Parafusadeira 3 em 1 Philco Force 12V 15 Acessórios PPF120M Bivolt",
+  brand: "Philco",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "ferramentas parafusadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282799/PPF120M_14.jpg?v=639136723033400000",
+  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf120m/p",
+  popularity: 293
+ },
+ {
+  sku: "philco-23246",
+  name: "Refrigerador Expositor Philco 309L PRE319 Vidro Duplo 127V",
+  brand: "Philco",
+  unitPrice: 3599.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248020/PRE319_01s.jpg?v=638436823694970000",
+  productUrl: "https://www.philco.com.br/refrigerador-expositor-pre319-127v-056551031/p",
+  popularity: 294
+ },
+ {
+  sku: "philco-23197",
+  name: "Ar-Condicionado Philco Inverter 12000BTUs Frio PAC12000IFM15 220V",
+  brand: "Philco",
+  unitPrice: 2389.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283485/PAC12000IFM15_05.jpg?v=639159207919600000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-12000btus-frio-pac12000ifm15/p",
+  popularity: 295
+ },
+ {
+  sku: "philco-23160",
+  name: "Multiprocessador Philco Pro 5 em 1 Inox 800W Citrus 127V",
+  brand: "Philco",
+  unitPrice: 263.9,
+  unit: "un",
+  category: "cozinha multiprocessadores e processadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/247412/Mult-Pro-5-em-1.jpg?v=638730790074930000",
+  productUrl: "https://www.philco.com.br/multiprocessador-pro-turbo-5-em-1-127v-101201025/p",
+  popularity: 296
+ },
+ {
+  sku: "philco-22968",
+  name: "Geladeira 458L Philco Inverter Duplex Inverse Inox PRF45A 127V",
+  brand: "Philco",
+  unitPrice: 3899.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/265688/PFR45A_01.jpg?v=638960598794270000",
+  productUrl: "https://www.philco.com.br/geladeira-458l-inverter-190w-prf45a/p",
+  popularity: 297
+ },
+ {
+  sku: "philco-22967",
+  name: "Forno Elétrico de Embutir 86L Philco PFE85 Vidro Duplo 2800W 220V",
+  brand: "Philco",
+  unitPrice: 1989.9,
+  unit: "un",
+  category: "cozinha fornos",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284146/PFE85-26.jpg?v=639180925594570000",
+  productUrl: "https://www.philco.com.br/forno-eletrico-de-embutir-pfe85-127v-056101124/p",
+  popularity: 298
+ },
+ {
+  sku: "philco-22738",
+  name: "Grill Philco 2 em 1 PGR32 Chapa com Abertura 180° 127V",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha grills e sanduicheiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246665/Grill-PGR32_1.jpg?v=638388468483470000",
+  productUrl: "https://www.philco.com.br/grill-pgr32-127v-056701054/p",
+  popularity: 299
+ },
+ {
+  sku: "philco-22728",
+  name: "Bebedouro De Coluna 20L Philco Água Natural e Gelada PBE80A 127V",
+  brand: "Philco",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257729/PBE80A_01.jpg.jpg?v=638769766366930000",
+  productUrl: "https://www.philco.com.br/bebedouro-pbe17-127v-055101013/p",
+  popularity: 300
+ },
+ {
+  sku: "philco-22724",
+  name: "Bebedouro Philco 20L Água Gelada e Natural com Compressor PBE11 127V",
+  brand: "Philco",
+  unitPrice: 639.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246737/PBE11_01.jpg?v=638404859949170000",
+  productUrl: "https://www.philco.com.br/bebedouro-pbe11-127v-055101011/p",
+  popularity: 301
+ },
+ {
+  sku: "philco-22484",
+  name: "Frigobar Philco 92L 6 Níveis de ajuste PFG111I 127V",
+  brand: "Philco",
+  unitPrice: 1399.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/262237/_0000_Arte-2.jpg?v=638826756195430000",
+  productUrl: "https://www.philco.com.br/frigobar-pfg111i-127v-056451083/p",
+  popularity: 302
+ },
+ {
+  sku: "philco-22477",
+  name: "Adega Philco 24 Garrafas 69L Display Digital Bivolt PAD24DZ Bivolt",
+  brand: "Philco",
+  unitPrice: 1599.9,
+  unit: "un",
+  category: "refrigeracao adegas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/267905/PAD24DZ_01.jpg?v=638977894400730000",
+  productUrl: "https://www.philco.com.br/adega-pad24dz-bivolt-054803033/p",
+  popularity: 303
+ },
+ {
+  sku: "philco-22454",
+  name: "Frigobar 45L Philco 6 Níveis de ajustes 1400W PFG5P 127V",
+  brand: "Philco",
+  unitPrice: 899.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243708/_0000_PFG50P.jpg?v=638755813751270000",
+  productUrl: "https://www.philco.com.br/frigobar-pfg50p-110v-056451081/p",
+  popularity: 304
+ },
+ {
+  sku: "philco-22303",
+  name: "Chaleira Elétrica Philco PCH18PI 2L Inox Automática 1250W 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha chaleiras eletricas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243988/PCH18PI_01.jpg?v=638303939235130000",
+  productUrl: "https://www.philco.com.br/chaleira-eletrica-pch18pi-2-0l-127v-053951023/p",
+  popularity: 305
+ },
+ {
+  sku: "philco-22282",
+  name: "Bebedouro Philco Água Gelada, Natural e Quente com Compressor PBE07CBQF 127V",
+  brand: "Philco",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/242897/BEBEDOURO-PBE07CBQF-3-EM-1_055101010_01.jpg?v=638792170137830000",
+  productUrl: "https://www.philco.com.br/bebedouro-pbe07cbqf-127v-055101010/p",
+  popularity: 306
+ },
+ {
+  sku: "philco-22238",
+  name: "Caixa de Som Philco Extreme Ex Bass 650W PCX6700 Bivolt",
+  brand: "Philco",
+  unitPrice: 619.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281524/PCX6700_-01.jpg?v=639111065953230000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-650w-pcx6700/p",
+  popularity: 307
+ },
+ {
+  sku: "philco-22109",
+  name: "Aspirador de Pó Vertical Philco 2 em 1 1300W PAS1450C 127V",
+  brand: "Philco",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "casa aspiradores de po",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272546/PAS1450C_01.jpg?v=638993464860770000",
+  productUrl: "https://www.philco.com.br/aspirador-de-po-pas1450c-127v-054901086/p",
+  popularity: 308
+ },
+ {
+  sku: "philco-22108",
+  name: "Adega Philco 8 Garrafas Display Digital Bivolt PAD8E Bivolt",
+  brand: "Philco",
+  unitPrice: 799.9,
+  unit: "un",
+  category: "refrigeracao adegas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268421/PAD8E_0000s_0000_1.jpg?v=638979451482800000",
+  productUrl: "https://www.philco.com.br/adega-pad8e-bivolt-054803025/p",
+  popularity: 309
+ },
+ {
+  sku: "philco-21812",
+  name: "Caixa de Som Philco Extreme Ex Bass 750W PCX7100 Bivolt",
+  brand: "Philco",
+  unitPrice: 849.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271806/PCX7100_08.jpg?v=638990673515570000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-750w-pcx7100/p",
+  popularity: 310
+ },
+ {
+  sku: "philco-18368",
+  name: "Extratora de Sujeira Philco 2 em 1 1600W PEX20A 127V",
+  brand: "Philco",
+  unitPrice: 699.9,
+  unit: "un",
+  category: "casa extratora",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253873/PEX20A-01.jpg?v=638718471011770000",
+  productUrl: "https://www.philco.com.br/extratora-philco-pex20a-127v-054701010/p",
+  popularity: 311
+ },
+ {
+  sku: "philco-18357",
+  name: "Cooktop 5 Bocas a Gás Philco PCT05TC Bivolt",
+  brand: "Philco",
+  unitPrice: 569.9,
+  unit: "un",
+  category: "cozinha cooktops",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269543/PCT05TC_01.jpg?v=638981180398970000",
+  productUrl: "https://www.philco.com.br/cooktop-pct05tc-biv-105903030/p",
+  popularity: 312
+ },
+ {
+  sku: "philco-18269",
+  name: "Soprador e Aspirador Philco PSA1000 275Km/h 16000RPM 830W 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "ferramentas soprador termico",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/274489/psa1000_05.jpg?v=639003770302400000",
+  productUrl: "https://www.philco.com.br/soprador-e-aspirador-psa1000-127v-051101020/p",
+  popularity: 313
+ },
+ {
+  sku: "philco-9258",
+  name: "Smartwatch Philco PSW01P Hit Wear 42mm 1,7” Preto – Bluetooth, 8 funções Bivolt",
+  brand: "Philco",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "celular e informatica smartwatch",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/195598/PSW01P_03.jpg?v=637750794936500000",
+  productUrl: "https://www.philco.com.br/smartwatch-philco-psw01rg-42mm-1-7-preto-bluetooth-8-funcoes/p",
+  popularity: 314
+ },
+ {
+  sku: "philco-9175",
+  name: "Espremedor de Frutas Philco PEF750P 70W Automático 127V",
+  brand: "Philco",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cozinha espremedores de frutas e centrifugas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251060/PEF750P_01.jpg?v=638572539381570000",
+  productUrl: "https://www.philco.com.br/espremedor-de-frutas-philco-pef750p-70w-automatico/p",
+  popularity: 315
+ },
+ {
+  sku: "philco-8821",
+  name: "Forno Elétrico de Embutir Philco 55L Esmaltado PFE55E 127V",
+  brand: "Philco",
+  unitPrice: 1199.9,
+  unit: "un",
+  category: "cozinha fornos",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/193703/FORNO-ELETRICO-DE-EMBUTIR-PFE55E_01.jpg?v=638888682590400000",
+  productUrl: "https://www.philco.com.br/forno-eletrico-de-embutir-pfe55e-127v-056101091/p",
+  popularity: 316
+ },
+ {
+  sku: "philco-8616",
+  name: "Espremedor de Frutas Philco PEF700P 2 Cones 70W 1,5L 127V",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha espremedores de frutas e centrifugas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/185257/PEF700P.jpg?v=637564432697100000",
+  productUrl: "https://www.philco.com.br/--espremedor-de-frutas-philco-pef700p-2-cones-70w-1l/p",
+  popularity: 317
+ },
+ {
+  sku: "philco-8581",
+  name: "Processador Compacto Philco PH900V Turbo 250W 127V",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha multiprocessadores e processadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184939/Compacto-PH900V-Turbo.jpg?v=638908747061200000",
+  productUrl: "https://www.philco.com.br/processador-compacto-philco-ph900v-turbo/p",
+  popularity: 318
+ },
+ {
+  sku: "philco-8189",
+  name: "Lâminas de Ralar e Fatiar Batedeira PBP1200 Acessório",
+  brand: "Philco",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "acessorios cozinha",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183447/ACESSORIOS-PHILCO-PBP1200-ACO-INOX-LAMINAS-DE-RALAR-E-FATIAR-53405044.jpg?v=637457228331700000",
+  productUrl: "https://www.philco.com.br/acessorios-batedeira-pbp1200-philco-pbp1200-aco-inox-laminas-de-ralar-e-fatiar-53405044/p",
+  popularity: 319
+ },
+ {
+  sku: "philco-8037",
+  name: "Prancha Ceramic Black Philco PPR08 Placas Anodizadas Bivolt",
+  brand: "Philco",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cuidados pessoais pranchas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183458/Prancha-Ceramic-Black-PPR08.jpg?v=637459806779870000",
+  productUrl: "https://www.philco.com.br/prancha-ceramic-black-philco-ppr08-pranchas-extensas/p",
+  popularity: 320
+ },
+ {
+  sku: "philco-7667",
+  name: "Freezer Vertical Philco 2 em 1 201L PFV205B 127V",
+  brand: "Philco",
+  unitPrice: 2499.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282975/FREEZER VERTICAL PFV205B_056751001_01.jpg?v=639144710716800000",
+  productUrl: "https://www.philco.com.br/freezer-vertical-philco-201l-pfv205b/p",
+  popularity: 321
+ },
+ {
+  sku: "philco-7439",
+  name: "Kit de Ferramentas Philco PKF01 70 acessórios + Maleta Acessório",
+  brand: "Philco",
+  unitPrice: 189.9,
+  unit: "un",
+  category: "ferramentas kit ferramentas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192830/Kit-PKF01_03.jpg?v=637660266334670000",
+  productUrl: "https://www.philco.com.br/kit-de-ferramentas-philco-kf01/p",
+  popularity: 322
+ },
+ {
+  sku: "philco-6790",
+  name: "Soprador Térmico Philco Force PST01 Azul 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "ferramentas soprador termico",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/178438/SOPRADOR-TERMICO-PST01-02.jpg?v=637310432578700000",
+  productUrl: "https://www.philco.com.br/soprador-termico-philco-pst01-2000w/p",
+  popularity: 323
+ },
+ {
+  sku: "philco-6400",
+  name: "TV 24\" Philco Led PTV24N19D HD Receptor Digital Bivolt",
+  brand: "Philco",
+  unitPrice: 1559.9,
+  unit: "un",
+  category: "tvs tvs 24 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/181210/ptv24n19d_01.jpg?v=637394008417430000",
+  productUrl: "https://www.philco.com.br/tv-ptv24n19d-led-099243049-philco/p",
+  popularity: 324
+ },
+ {
+  sku: "philco-5902",
+  name: "Martelete Philco Force PMT01 900W Impacto de 3J 1400RPM 127V",
+  brand: "Philco",
+  unitPrice: 549.9,
+  unit: "un",
+  category: "ferramentas martelete",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192840/PMT01.jpg?v=637660276806270000",
+  productUrl: "https://www.philco.com.br/martelete-philco-pmt01-900w/p",
+  popularity: 325
+ },
+ {
+  sku: "philco-5703",
+  name: "Ferro de Passar Philco PFE01P Retrô 6 Níveis 1100W 127V",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "casa ferros de passar",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174387/pfe01p_01.jpg?v=638871737599500000",
+  productUrl: "https://www.philco.com.br/ferro-de-passar-pfe01p-053601032/p",
+  popularity: 326
+ },
+ {
+  sku: "philco-5409",
+  name: "Frigobar Philco 65 Litros PFG85B 127V",
+  brand: "Philco",
+  unitPrice: 829.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191971/1200x1200pixel_72dpi-RGB_Site_0012_PFG85B_--1-.jpg?v=638715127932070000",
+  productUrl: "https://www.philco.com.br/frigobar-philco-pfg85b-67-litros/p",
+  popularity: 327
+ },
+ {
+  sku: "philco-2836",
+  name: "Freezer Philco Horizontal PFZ330B 295L - Refrigerador 127V",
+  brand: "Philco",
+  unitPrice: 2699.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/172743/FREEZER-HORIZONTAL-PFZ330B--3-.jpg?v=636903211028200000",
+  productUrl: "https://www.philco.com.br/freezer-philco-horizontal-pfz330b-295l-freezer-e-refrigerador/p",
+  popularity: 328
+ },
+ {
+  sku: "philco-2178",
+  name: "Serra Tico-Tico Philco Force PTT01 450W 3000GPM 127V",
+  brand: "Philco",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "ferramentas serra",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/180869/PTT01.jpg?v=638797453363800000",
+  productUrl: "https://www.philco.com.br/serra-philco-ptt01-com-guia-de-corte/p",
+  popularity: 329
+ },
+ {
+  sku: "philco-2172",
+  name: "Furadeira Philco Force 650W 2800RPM com Maleta PFU01M 127V",
+  brand: "Philco",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "ferramentas furadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/269937/PFU01M_01.jpg?v=638981380623270000",
+  productUrl: "https://www.philco.com.br/furadeira-philco-pfu01m-com-reversao/p",
+  popularity: 330
+ },
+ {
+  sku: "philco-1273",
+  name: "Kit Philco Prancha + Secador Travel Shine Rosa Bivolt",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cuidados pessoais kit cuidados pessoais",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270582/travel-shine_0000_Kit-Travel-Shine_16-copiar.jpg?v=638984044837170000",
+  productUrl: "https://www.philco.com.br/kit-travel-shine-biv-051503045/p",
+  popularity: 331
+ },
+ {
+  sku: "philco-761",
+  name: "Frigobar Philco 47 Litros Compacto Porta Reversível PH50N 127V",
+  brand: "Philco",
+  unitPrice: 899.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/158233/Frigobar-PH50N_01.jpg?v=636320047177500000",
+  productUrl: "https://www.philco.com.br/056451017-frigobar-ph50n/p",
+  popularity: 332
+ },
+ {
+  sku: "philco-236",
+  name: "Cacheador Philco Duo Shine Rosa Bivolt",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/156925/Cacheador-Duo-Shine_1.jpg?v=636300906631670000",
+  productUrl: "https://www.philco.com.br/cacheador-philco-duo-shine-rosa-philco/p",
+  popularity: 333
+ },
+ {
+  sku: "philco-224",
+  name: "Aspirador de Pó Philco 1800W Filtro Hepa PAS1810 127V",
+  brand: "Philco",
+  unitPrice: 367.9,
+  unit: "un",
+  category: "casa aspiradores de po",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/246440/PAS1810_01.jpg?v=638373963472500000",
+  productUrl: "https://www.philco.com.br/aspirador-de-po-philco-turbo-pr/p",
+  popularity: 334
+ },
+ {
+  sku: "philco-25441",
+  name: "Umidificador de Ar Philco 4L Difusor de Aromas PUD04B Bivolt",
+  brand: "Philco",
+  unitPrice: 249.9,
+  unit: "un",
+  category: "climatizacao umidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/279226/PDU04B_00.jpg?v=639047956021530000",
+  productUrl: "https://www.philco.com.br/umidificador-de-ar-philco-4l-difusor-de-aromas-pud04b/p",
+  popularity: 335
+ },
+ {
+  sku: "philco-24648",
+  name: "Smart TV 58\" Philco LED 4K Google TV HDR10 P58KGA Bivolt",
+  brand: "Philco",
+  unitPrice: 4429.9,
+  unit: "un",
+  category: "tvs tvs 58 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281781/P58KGA_01.6.jpg.jpg?v=639118762873300000",
+  productUrl: "https://www.philco.com.br/tv-philco-58-p58kga-4k-googletv/p",
+  popularity: 336
+ },
+ {
+  sku: "philco-23970",
+  name: "Ventilador 2 em 1 Philco Tecnologia Maxx Force 150W PVT41A 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "climatizacao ventiladores ventilador de mesa",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283015/PVT41A_01.jpg?v=639147317712030000",
+  productUrl: "https://www.philco.com.br/ventilador-2-em-1-philco-150w-pvt41a/p",
+  popularity: 337
+ },
+ {
+  sku: "philco-23775",
+  name: "Caixa de Som Philco Extreme 2400W Flash Lights PCX24000 Bivolt",
+  brand: "Philco",
+  unitPrice: 1799.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271722/PCX24000--3-.jpg?v=638990607757970000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx24000/p",
+  popularity: 338
+ },
+ {
+  sku: "philco-23758",
+  name: "Ar-Condicionado Philco Inverter 24000BTUs PAC24000IQFM15 220V",
+  brand: "Philco",
+  unitPrice: 5589.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283529/PAC24000IQFM15_05.jpg?v=639159364818100000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-24000btus-quente-frio-pac24000iqfm15/p",
+  popularity: 339
+ },
+ {
+  sku: "philco-23291",
+  name: "Monitor Gamer Philco 24” 180Hz Full HD 1MS PMG24M23T Bivolt",
+  brand: "Philco",
+  unitPrice: 1099.9,
+  unit: "un",
+  category: "gaming monitor",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270893/PMG24M23T_02.jpg.jpg?v=638985653977630000",
+  productUrl: "https://www.philco.com.br/monitor-gamer-philco-24-pol-180hz-full-hd-1ms-pmg24m23t/p",
+  popularity: 340
+ },
+ {
+  sku: "philco-22507",
+  name: "Air Fryer Kitchen Art 4,3L Cesto Quadrado 1500W KFR01 127V",
+  brand: "Philco",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "cozinha air fryer",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/245366/KFR01_01.jpg?v=638338389350800000",
+  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-kfr01-127v-063801106/p",
+  popularity: 341
+ },
+ {
+  sku: "philco-22434",
+  name: "Ventilador Philco Maxx Force Função Repelente 160W PVT402 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "climatizacao ventiladores ventilador de mesa",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/245330/PVT402_01.jpg?v=638337630527370000",
+  productUrl: "https://www.philco.com.br/ventilador-pvt402-127v-103011058/p",
+  popularity: 342
+ },
+ {
+  sku: "philco-10455",
+  name: "Ar-Condicionado Philco Split 9000BTUs Frio PAS9500FA1 220V",
+  brand: "Philco",
+  unitPrice: 2109.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/199286/PAC9000TFM12_0000_Camada-4.jpg?v=637852799102830000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-9000btus-pas9500fa1-frio/p",
+  popularity: 343
+ },
+ {
+  sku: "philco-7982",
+  name: "Kit Cuidados Pessoais Philco PKT3250 Cherry Tourmaline Íon 127V",
+  brand: "Philco",
+  unitPrice: 259.9,
+  unit: "un",
+  category: "cuidados pessoais kit cuidados pessoais",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/193982/Kit-PKT3250-Cherry.jpg?v=637702509148670000",
+  productUrl: "https://www.philco.com.br/kit-cherry-philco-secador-e-prancha-51502037/p",
+  popularity: 344
+ },
+ {
+  sku: "philco-7504",
+  name: "Liquidificador Philco PLQ1250P Reverse Turbo 1200W 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275785/Liquidificador-PLQ1250P-Reverse-Turbo_1.jpg?v=639020074513800000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1250p-reverse-turbo-1200w/p",
+  popularity: 345
+ },
+ {
+  sku: "philco-7040",
+  name: "Cacheador Philco Bivolt 32mm Íon Tourmaline Advance PEC11 Bivolt",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/189137/PEC11_056003038_---6-.jpg?v=637587799114200000",
+  productUrl: "https://www.philco.com.br/cacheador-philco-advance-pec11-ion-tourmaline-/p",
+  popularity: 346
+ },
+ {
+  sku: "philco-7025",
+  name: "Multiprocessador Philco 5 em 1 900W 4 lâminas PMP1500P Turbo 127V",
+  brand: "Philco",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "cozinha multiprocessadores e processadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/178485/PMP1500P-Turbo.jpg?v=637312131192930000",
+  productUrl: "https://www.philco.com.br/multiprocessador-philco-pmp1500p-turbo-5-em-1/p",
+  popularity: 347
+ },
+ {
+  sku: "philco-6133",
+  name: "Liquidificador Philco Smart Control PLQ2000 600W 127V",
+  brand: "Philco",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275705/Liquidificador-PLQ2000V-Smart--2-.jpg?v=639016765898530000",
+  productUrl: "https://www.philco.com.br/liquidificador-smart-control-plq2000v-053101029/p",
+  popularity: 348
+ },
+ {
+  sku: "philco-5924",
+  name: "Liquidificador Philco Inox Turbo 1200W 127V",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/175422/Liq-PLQ1350-Inox-Turbo_3.jpg?v=638955444017470000",
+  productUrl: "https://www.philco.com.br/liquidificador-plq1350-inox-103101063/p",
+  popularity: 349
+ },
+ {
+  sku: "philco-3079",
+  name: "Liquidificador Philco PLQ950V 4 Velocidades 900W 127V",
+  brand: "Philco",
+  unitPrice: 127.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/177145/Liquidificador-PLQ950V_1.jpg?v=637214525377070000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq950v-4-velocidades-900w/p",
+  popularity: 350
+ },
+ {
+  sku: "philco-709",
+  name: "Mini Grill e Sanduicheira Philco Inox Preto 750W 127V",
+  brand: "Philco",
+  unitPrice: 119.9,
+  unit: "un",
+  category: "cozinha grills e sanduicheiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/197782/MINI-GRILL-INOX-PR_---6-.jpg?v=638871728261600000",
+  productUrl: "https://www.philco.com.br/054001025-mini-grill-inox-pr/p",
+  popularity: 351
+ },
+ {
+  sku: "philco-702",
+  name: "Mini Grill e Sanduicheira Philco Inox Vermelha 750W 127V",
+  brand: "Philco",
+  unitPrice: 103.9,
+  unit: "un",
+  category: "cozinha grills e sanduicheiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/197774/MINI-GRILL-INOX-VM_---6-.jpg?v=639088445495630000",
+  productUrl: "https://www.philco.com.br/054001015-mini-grill-inox-vm/p",
+  popularity: 352
+ },
+ {
+  sku: "philco-378",
+  name: "Liquidificador Philco Inox Filter 4 velocidades 900W Preto 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272857/Liquidificador-Inox-Filter_1.jpg?v=638995886573270000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-inox-filter-900w/p",
+  popularity: 353
+ },
+ {
+  sku: "philco-25496",
+  name: "Ar-Condicionado Philco Portátil 10000BTUs Frio PAC10FN 127V",
+  brand: "Philco",
+  unitPrice: 3199.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280945/PAC10FN_01.jpg?v=639099799994400000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-portatil-philco-10000btus-frio-pac10fn/p",
+  popularity: 354
+ },
+ {
+  sku: "philco-25393",
+  name: "Acessório Saco de Pó para Aspirador 5L Philco PAA20A Acessório",
+  brand: "Philco",
+  unitPrice: 49.9,
+  unit: "un",
+  category: "acessorios casa",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276904/PAA20A_002.jpg?v=639026960496930000",
+  productUrl: "https://www.philco.com.br/acessorio-saco-de-po-aspirador-5l-paa20a/p",
+  popularity: 355
+ },
+ {
+  sku: "philco-25323",
+  name: "Cafeteira Expresso Philco 20 Bar 1,2L com Moedor PCF03A 127V",
+  brand: "Philco",
+  unitPrice: 2799.9,
+  unit: "un",
+  category: "cozinha cafeteiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272162/PCF03A_0000.jpg?v=638991666324270000",
+  productUrl: "https://www.philco.com.br/cafeteira-philco-20-bar-1-2l-pcf03a/p",
+  popularity: 356
+ },
+ {
+  sku: "philco-25310",
+  name: "Liquidificador Philco 1200W 3L 12 Velocidades Cinza PLQ12A 127V",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275563/PLQ12A-V0_0000.jpg?v=639016747505530000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq12a/p",
+  popularity: 357
+ },
+ {
+  sku: "philco-25268",
+  name: "Ar-condicionado 24000 BTUs Philco Ciclo Frio PAJ24FH 220V",
+  brand: "Philco",
+  unitPrice: 8149.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/265029/PAJ24FH_01.jpg?v=638953709954600000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-24000-btus-philco-ciclo-frio-paj24fh-/p",
+  popularity: 358
+ },
+ {
+  sku: "philco-25100",
+  name: "Ar-condicionado Split 36000 BTUs Philco Quente/Frio PAC36QC 220V",
+  brand: "Philco",
+  unitPrice: 9419.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/263431/PAC36QC_01.jpg.jpg?v=638834440729530000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-split-36000-pac36qc/p",
+  popularity: 359
+ },
+ {
+  sku: "philco-25088",
+  name: "Ar-Condicionado Philco Split Inverter 9000BTUs PAC9QC 220V",
+  brand: "Philco",
+  unitPrice: 2889.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278547/PAC9QC--2-.jpg.jpg?v=639040168925100000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-quente-frio-pac9qc/p",
+  popularity: 360
+ },
+ {
+  sku: "philco-25085",
+  name: "Ar-Condicionado Philco Split Inverter 12000BTUs Frio PAC12FC 220V",
+  brand: "Philco",
+  unitPrice: 2989.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281031/PAC12FC_01.jpg?v=639100638324770000",
+  productUrl: "https://www.philco.com.br/ar-condicicionado-philco-split-inverter-12000btus-frio-pac12fc/p",
+  popularity: 361
+ },
+ {
+  sku: "philco-24967",
+  name: "Caixa de Som Philco Extreme 2400W 2x Woofer PCX22000 Bivolt",
+  brand: "Philco",
+  unitPrice: 2339.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285545/PCX22000_01.jpg?v=639210390830500000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx22000/p",
+  popularity: 362
+ },
+ {
+  sku: "philco-24956",
+  name: "Refil Filtro de Água Philco PFA03A -",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272204/PFA03A_01.jpg?v=638991696074700000",
+  productUrl: "https://www.philco.com.br/refil-filtro-de-agua-philco-pfa03a/p",
+  popularity: 363
+ },
+ {
+  sku: "philco-24955",
+  name: "Refil Filtro de Água Philco PFA02A -",
+  brand: "Philco",
+  unitPrice: 129.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/277450/PFA02A_01.jpg?v=639038134416100000",
+  productUrl: "https://www.philco.com.br/refil-filtro-de-agua-philco-pfa02a/p",
+  popularity: 364
+ },
+ {
+  sku: "philco-24858",
+  name: "Multiprocessador Philco Concept 1000W 5 em 1 Preto PMP11A 127V",
+  brand: "Philco",
+  unitPrice: 419.9,
+  unit: "un",
+  category: "cozinha multiprocessadores e processadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/273466/PMP11A_00.jpg.jpg?v=638998591631230000",
+  productUrl: "https://www.philco.com.br/multiprocessador-pmp11a-127v/p",
+  popularity: 365
+ },
+ {
+  sku: "philco-24744",
+  name: "Liquidificador Philco 4 velocidades 2,7L 1050W PLQ11A 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278949/PLQ11A_02.jpg?v=639045390514230000",
+  productUrl: "https://www.philco.com.br/liquidificador-plq11a-103101181/p",
+  popularity: 366
+ },
+ {
+  sku: "philco-24556",
+  name: "Ar-condicionado Philco Janela 18000BTUs Frio PAJ18FH 220V",
+  brand: "Philco",
+  unitPrice: 5989.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/278504/PAJ18FH_01.jpg.jpg?v=639040123201570000",
+  productUrl: "https://www.philco.com.br/ar-cond-janela-paj18fh-220v-056662017/p",
+  popularity: 367
+ },
+ {
+  sku: "philco-24304",
+  name: "Ar-Condicionado Inverter 9000BTUs Philco Quente/Frio PAC9QA 220V",
+  brand: "Philco",
+  unitPrice: 3019.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/256547/PAC12FI_01.jpg.jpg?v=638745366495830000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac12fi-220v-conj-096662574/p",
+  popularity: 368
+ },
+ {
+  sku: "philco-24220",
+  name: "Secador de Cabelos Philco 1600W 4 temperaturas PSC3600 127V",
+  brand: "Philco",
+  unitPrice: 589.9,
+  unit: "un",
+  category: "cuidados pessoais secadores de cabelo",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253698/SECADOR-DE-CABELOS-PSC3600_07.jpg?v=638814702771300000",
+  productUrl: "https://www.philco.com.br/secador-de-cabelos-psc3600-127v-053501080/p",
+  popularity: 369
+ },
+ {
+  sku: "philco-24216",
+  name: "Smart TV 32” Philco LED Roku PTV32G7PR2CGB Bivolt",
+  brand: "Philco",
+  unitPrice: 1099.9,
+  unit: "un",
+  category: "tvs tvs 32 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281949/TV-PTV32G7PR2CGB_v0_001_D.jpg?v=639241447833100000",
+  productUrl: "https://www.philco.com.br/smart-tv-32-philco-led-roku-ptv32g7pr2cgb/p",
+  popularity: 370
+ },
+ {
+  sku: "philco-24208",
+  name: "Ar-condicionado Philco Split 24000 Btus Quente/frio PAC24QI 220V",
+  brand: "Philco",
+  unitPrice: 5939.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253123/PAC24QI--1-.jpg?v=638654782501170000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac24qi-220v-conj-096662589/p",
+  popularity: 371
+ },
+ {
+  sku: "philco-24154",
+  name: "Freezer Horizontal 290L Philco PFH335B 2 em 1 A+ e A++ 127V",
+  brand: "Philco",
+  unitPrice: 4199.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253037/Freezer-Horizontal-PFH335B.jpg?v=638737669751230000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-pfh335b-127v-056751028/p",
+  popularity: 372
+ },
+ {
+  sku: "philco-24146",
+  name: "Caixa de Som Philco Extreme Ex Bass 3500W PCX35000 Bivolt",
+  brand: "Philco",
+  unitPrice: 3299.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271571/PCX30000_03.jpg?v=638990001909900000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-3500w-pcx35000/p",
+  popularity: 373
+ },
+ {
+  sku: "philco-23889",
+  name: "Ar-condicionado Split 12000 BTUs Philco Frio PAC12FB 220V",
+  brand: "Philco",
+  unitPrice: 3249.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/256327/PAC12FB_00.jpg.jpg?v=638742919672270000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac12fb-220v-conj-096662679/p",
+  popularity: 374
+ },
+ {
+  sku: "philco-23886",
+  name: "Ar-Condicionado Philco Split Inverter 9000BTUs Frio PAC9FB 220V",
+  brand: "Philco",
+  unitPrice: 2099.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/268225/PAC9FB_01.jpg?v=638978735951800000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-frio-pac9fb/p",
+  popularity: 375
+ },
+ {
+  sku: "philco-23847",
+  name: "Escova Secadora Philco Bivolt 1300W PES32 Bivolt",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251127/PES32-Biv_01.jpg?v=638576161839330000",
+  productUrl: "https://www.philco.com.br/escova-secadora-pes32-biv-051153006/p",
+  popularity: 376
+ },
+ {
+  sku: "philco-23666",
+  name: "Frigobar Philco 68L PFG85P 5 Níveis Temperatura 127V",
+  brand: "Philco",
+  unitPrice: 1099.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/249524/PFG85P_01.jpg?v=638738390741470000",
+  productUrl: "https://www.philco.com.br/frigobar-pfg85p-127v-056451082/p",
+  popularity: 377
+ },
+ {
+  sku: "philco-23635",
+  name: "Ar-Condicionado Split 24000 BTU/h Philco Quente/frio Titanium 220V",
+  brand: "Philco",
+  unitPrice: 5449.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252456/PAC24QA_03.jpg?v=638635805741870000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac24qfa-220v-conj-096662673/p",
+  popularity: 378
+ },
+ {
+  sku: "philco-23626",
+  name: "Ar-Condicionado Split 9000 BTU/h Philco Quente/frio Titanium 220V",
+  brand: "Philco",
+  unitPrice: 2199.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/252464/PAC9QA_03.jpg?v=638635809920170000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac9qfa-220v-conj-096662664/p",
+  popularity: 379
+ },
+ {
+  sku: "philco-23348",
+  name: "Caixa de Som Philco Extreme Flash Lights 350W PCX4501 Bivolt",
+  brand: "Philco",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281698/PCX4501_03.jpg?v=639114498131700000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-350w-pcx4501/p",
+  popularity: 380
+ },
+ {
+  sku: "philco-23335",
+  name: "Ar-Condicionado Philco Inverter 9000BTUs Frio PAC9000IFM15 220V",
+  brand: "Philco",
+  unitPrice: 2039.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/283511/PAC9000IFM15_05.jpg?v=639159322816430000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-split-inverter-9000btus-frio-pac9000ifm15/p",
+  popularity: 381
+ },
+ {
+  sku: "philco-23310",
+  name: "Smart TV 43\" Philco LED Roku TV Dolby Audio PTV43VA4REGB Bivolt",
+  brand: "Philco",
+  unitPrice: 2529.9,
+  unit: "un",
+  category: "tvs tvs 43 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/284271/PTV43VA4REGB_01.6.jpg?v=639185006472900000",
+  productUrl: "https://www.philco.com.br/tv-ptv43va4regb-099433039/p",
+  popularity: 382
+ },
+ {
+  sku: "philco-23285",
+  name: "Mini Motosserra Philco Force PMM216 3000 RPM 7 Acessórios Bivolt",
+  brand: "Philco",
+  unitPrice: 349.9,
+  unit: "un",
+  category: "ferramentas motosserra",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272210/PMM216_19.jpg?v=638991706881630000",
+  productUrl: "https://www.philco.com.br/mini-motosserra-pmm216-051103034/p",
+  popularity: 383
+ },
+ {
+  sku: "philco-23283",
+  name: "Parafusadeira 3 em 1 Philco Force Bivolt PPF120MF Bivolt",
+  brand: "Philco",
+  unitPrice: 409.9,
+  unit: "un",
+  category: "ferramentas parafusadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281113/PPF120MF_01.jpg?v=639100756640400000",
+  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf120mf/p",
+  popularity: 384
+ },
+ {
+  sku: "philco-23258",
+  name: "Refrigerador Expositor Philco 211L PRE221 Vidro Duplo 127V",
+  brand: "Philco",
+  unitPrice: 3099.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248101/PRE221_01s.jpg?v=638441192512370000",
+  productUrl: "https://www.philco.com.br/refrigerador-expositor-pre221-127v-056551032/p",
+  popularity: 385
+ },
+ {
+  sku: "philco-23206",
+  name: "Ar-Condicionado Philco Split 30000BTUs PAC30000IQFM15 220V",
+  brand: "Philco",
+  unitPrice: 7709.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/247813/PAC30000IQFM15_03.jpg?v=638429216574030000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac30000iqfm15-220v-conj-096662403/p",
+  popularity: 386
+ },
+ {
+  sku: "philco-22539",
+  name: "Monitor Gamer Philco 32” PMG32C900FG Curvo FullHD FreeSync 165Hz - Outlet Bivolt",
+  brand: "Philco",
+  unitPrice: 2159.9,
+  unit: "un",
+  category: "outlet gaming monitor",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/244355/Monitor-Gamer-PMG32C900FG-Curvo_Imagem_06-091473004.jpg?v=638314160019400000",
+  productUrl: "https://www.philco.com.br/monitor-gamer-pmg32c900fg-curvo-out-091473004out/p",
+  popularity: 387
+ },
+ {
+  sku: "philco-22486",
+  name: "Freezer Vertical Philco 4 Gavetas 140L PFV165B 127V",
+  brand: "Philco",
+  unitPrice: 2199.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/270364/PFV165B_01.jpg?v=638983821538600000",
+  productUrl: "https://www.philco.com.br/freezer-vertical-pfv165b-127v-056751029/p",
+  popularity: 388
+ },
+ {
+  sku: "philco-22396",
+  name: "Smart TV 50\" Philco 4K PTV50M8GAGCMBL Android TV LED Bivolt",
+  brand: "Philco",
+  unitPrice: 2539.9,
+  unit: "un",
+  category: "tvs tvs 50 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/243339/TV-PTV50M8GAGCMBL-4K-LED_10.jpg?v=638261669342870000",
+  productUrl: "https://www.philco.com.br/tv-ptv50m8gagcmbl-4k-led-099503038/p",
+  popularity: 389
+ },
+ {
+  sku: "philco-23192",
+  name: "Ar-Condicionado Philco 9000 Btu/h PAC9000ITFM12W Eco Inverter 220V",
+  brand: "Philco",
+  unitPrice: 1899.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/257479/PAC9000ITFM12W_01.jpg?v=638761019104870000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac9000itfm12w-conj-220v-096662284/p",
+  popularity: 390
+ },
+ {
+  sku: "philco-22254",
+  name: "Lavadora de Alta Pressão Philco PLP2300 1750PSI 12 MPa 1500W 127V",
+  brand: "Philco",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "casa lavadora de alta pressao",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/248251/PLP2300_01.jpg?v=638447480291630000",
+  productUrl: "https://www.philco.com.br/lavadora-de-alta-pressao-plp2300-127v-051101027/p",
+  popularity: 391
+ },
+ {
+  sku: "philco-22239",
+  name: "Caixa de Som Philco Extreme Flash Light 350W PCX4500 Bivolt",
+  brand: "Philco",
+  unitPrice: 549.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282870/PCX4500_10.jpg?v=639141148414100000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-flash-lights-350w-pcx4500/p",
+  popularity: 392
+ },
+ {
+  sku: "philco-22173",
+  name: "Ar-Condicionado Philco Inverter 12000 BTUs Frio PAC12000IFM14 127V",
+  brand: "Philco",
+  unitPrice: 3329.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/240996/PAC9000IFM14_3.jpg?v=638194025095770000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac12000ifm14-conj-127v-096661320/p",
+  popularity: 393
+ },
+ {
+  sku: "philco-22102",
+  name: "Smart TV 32” Philco LED HD Roku PTV32G7ER2CPBLH Bivolt",
+  brand: "Philco",
+  unitPrice: 1239.9,
+  unit: "un",
+  category: "tvs tvs 32 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258188/TV-PTV32G7ER2CPBLH_--1-.jpg?v=638775825114670000",
+  productUrl: "https://www.philco.com.br/tv-ptv32g7er2cpblh-led-099323107/p",
+  popularity: 394
+ },
+ {
+  sku: "philco-21968",
+  name: "Aspirador de Pó Vertical 2 em 1 Philco 1300W PAS1460V 127V",
+  brand: "Philco",
+  unitPrice: 199.9,
+  unit: "un",
+  category: "casa aspiradores de po",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/240158/Aspirador-de-Po-PAS1460V.jpg?v=638889767148730000",
+  productUrl: "https://www.philco.com.br/aspirador-de-po-pas1460v-127v-054901082/p",
+  popularity: 395
+ },
+ {
+  sku: "philco-21895",
+  name: "Politriz Philco PPZ1500 1400W 7” Power Control 127V",
+  brand: "Philco",
+  unitPrice: 369.9,
+  unit: "un",
+  category: "ferramentas politriz",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239116/PPZ1500_01.jpg?v=638156869997330000",
+  productUrl: "https://www.philco.com.br/politriz-ppz1500--127v-051101024/p",
+  popularity: 396
+ },
+ {
+  sku: "philco-21888",
+  name: "Ar-Condicionado Philco PH9000TFM5 4 Modos de operar 9000BTU/h 220V",
+  brand: "Philco",
+  unitPrice: 2319.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239036/PH9000TFM5_0000s_0000_1.jpg?v=638151706880930000",
+  productUrl: "https://www.philco.com.br/ar-condph9000tfm5-conj-220v-096662355/p",
+  popularity: 397
+ },
+ {
+  sku: "philco-21841",
+  name: "Smart TV 43” Philco Led PTV43E30AGSBLF Android TV Bivolt",
+  brand: "Philco",
+  unitPrice: 2199.9,
+  unit: "un",
+  category: "tvs tvs 43 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/238150/ptv43e30agsblf-09.jpg?v=638702124861900000",
+  productUrl: "https://www.philco.com.br/tv-ptv43e30agsblf-led-099433026/p",
+  popularity: 398
+ },
+ {
+  sku: "philco-21837",
+  name: "Parafusadeira 3 em 1 Philco Force Bateria 21V PPF21M Bateria",
+  brand: "Philco",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "ferramentas parafusadeira",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/282751/PPF21M_03.jpg?v=639135245563430000",
+  productUrl: "https://www.philco.com.br/parafusadeira-philco-force-bivolt-ppf21m/p",
+  popularity: 399
+ },
+ {
+  sku: "philco-21652",
+  name: "Fritadeira Air Fryer Philco PFR55PI Visor Glass 7L 1800W 127V",
+  brand: "Philco",
+  unitPrice: 599.9,
+  unit: "un",
+  category: "cozinha air fryer",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/237057/Fritadeira-Air-Fry-PFR55PI-Visor-Glass.jpg?v=639149808762800000",
+  productUrl: "https://www.philco.com.br/fritadeira-air-fry-pfr55pi-visor-glass-127v-053801062/p",
+  popularity: 400
+ },
+ {
+  sku: "philco-21493",
+  name: "Air Fryer Philco 4L Air Flow 1500W PFR15V 127V",
+  brand: "Philco",
+  unitPrice: 489.9,
+  unit: "un",
+  category: "cozinha air fryer",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/239014/_0006_PFR15V_01.jpg?v=638731674986270000",
+  productUrl: "https://www.philco.com.br/fritadeira-air-fryer-pfr15v-127v-053801064/p",
+  popularity: 401
+ },
+ {
+  sku: "philco-21609",
+  name: "Ar-Condicionado 30000BTUs Philco Quente/Frio PAC30000IQFM8W 220V",
+  brand: "Philco",
+  unitPrice: 9359.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/235763/pac30000iqfm8w_01.jpg?v=638046349192330000",
+  productUrl: "https://www.philco.com.br/ar-cond-pac30000iqfm8w-conj-220v-096662281/p",
+  popularity: 402
+ },
+ {
+  sku: "philco-10523",
+  name: "Tupia Elétrica Philco Force 3300RPM PTU01 127V",
+  brand: "Philco",
+  unitPrice: 299.9,
+  unit: "un",
+  category: "ferramentas tupia",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281261/PTU01_05.jpg?v=639106400167070000",
+  productUrl: "https://www.philco.com.br/tupia-eletrica-philco-force-33000rpm-ptu01/p",
+  popularity: 403
+ },
+ {
+  sku: "philco-10275",
+  name: "Liquidificador Philco 1150W 2,7L 4 velocidades PLQ1411V 127V",
+  brand: "Philco",
+  unitPrice: 151.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/286264/Liq-PLQ1411V_12.jpg?v=639232608353930000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-1150w-2-7l-4-velocidades-vermelho-plq1411v/p",
+  popularity: 404
+ },
+ {
+  sku: "philco-10209",
+  name: "Batedeira Philco Crome Base Inox Turbo Duo Mixer 4L 550W 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha batedeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/198652/Bat-Crome-Base-Inox-Turbo-Duo-Mixer-VM.jpg?v=638731488710200000",
+  productUrl: "https://www.philco.com.br/batedeira-crome-base-inox-turbo-duo-mixer-vm-127v-103401168/p",
+  popularity: 405
+ },
+ {
+  sku: "philco-11790",
+  name: "Ar-Condicionado Philco 30000Btus PAC30000IFM8W Inverter Frio 220V",
+  brand: "Philco",
+  unitPrice: 9609.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206391/pac30000ifm8w_01.jpg?v=637925619547770000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-30000btus-pac30000ifm8w-frio-inverter/p",
+  popularity: 406
+ },
+ {
+  sku: "philco-10189",
+  name: "Monitor Gamer Philco 27” PMG27C900FG Curvo 165Hz HDR10 FreeSync Bivolt",
+  brand: "Philco",
+  unitPrice: 1599.9,
+  unit: "un",
+  category: "gaming monitor",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/202592/pmg27c900fg_02.jpg?v=637877975182900000",
+  productUrl: "https://www.philco.com.br/monitor-gamer-pmg27c900fg-curvo-091473003/p",
+  popularity: 407
+ },
+ {
+  sku: "philco-11152",
+  name: "Ar-Condicionado 12000btus Prime Air Frio 12000TF 220V",
+  brand: "Philco",
+  unitPrice: 2669.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/204066/AR-COND-PRIME-AIR-12000TF_096662174_01.png?v=637903963058300000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-prime-air-12000tf-ciclo-frio-12000-btu-096662176/p",
+  popularity: 408
+ },
+ {
+  sku: "philco-9249",
+  name: "Caixa de Som Speaker Philco Extreme 50W PBS40BT2 Bivolt",
+  brand: "Philco",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "audio speaker",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271956/pbs40bt2_02.jpg?v=638990821914530000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-speaker-philco-extreme-50w-pbs40bt2/p",
+  popularity: 409
+ },
+ {
+  sku: "philco-11792",
+  name: "Ar-Condicionado Split 9000BTUs Philco Frio PAS9200F1 220V",
+  brand: "Philco",
+  unitPrice: 1999.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206372/Ar-cond-PAS9200F1_---1-.jpg?v=637925619381430000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-9000btus-pas9200f1-frio/p",
+  popularity: 410
+ },
+ {
+  sku: "philco-8932",
+  name: "Smart TV 50” Philco 4K PTV50N10N5E Led Dolby Audio Bivolt",
+  brand: "Philco",
+  unitPrice: 4459.9,
+  unit: "un",
+  category: "tvs tvs 50 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192966/ptv50n10n5e_02.jpg?v=638851771478970000",
+  productUrl: "https://www.philco.com.br/smart-tv-philco-ptv50n10n5e-d-led-ultrahd-4k-50--099503028/p",
+  popularity: 411
+ },
+ {
+  sku: "philco-8858",
+  name: "Refrigerador/Geladeira 467L Frost Free Philco PRF505TI 127V",
+  brand: "Philco",
+  unitPrice: 11039.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192338/Refrigerador-PRF505TI_01.jpg?v=637648899467200000",
+  productUrl: "https://www.philco.com.br/geladeira-philco-prf505ti-eco-inverter-frost-free-467l-056551021/p",
+  popularity: 412
+ },
+ {
+  sku: "philco-8811",
+  name: "Fone de Ouvido Headphone Philco Extreme Bluetooth PFO03BTA Bateria",
+  brand: "Philco",
+  unitPrice: 215.9,
+  unit: "un",
+  category: "audio fone de ouvido",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/272072/PFO03BTA_01.jpg?v=638990927740670000",
+  productUrl: "https://www.philco.com.br/fone-de-ouvido-headphone-philco-extreme-bluetooth-pfo03bta/p",
+  popularity: 413
+ },
+ {
+  sku: "philco-8773",
+  name: "Caixa de Som Philco Extreme Ex Bass 2500W PCX30000 Bivolt",
+  brand: "Philco",
+  unitPrice: 2823.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/281534/pcx30000_12.jpg?v=639111856229930000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-exbass-2500w-pcx30000/p",
+  popularity: 414
+ },
+ {
+  sku: "philco-8772",
+  name: "Caixa de Som Philco Extreme 2400W Smart DJ PCX32000 Bivolt",
+  brand: "Philco",
+  unitPrice: 3487.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/271849/PCX32000DJ_17.jpg?v=638990693643030000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-2400w-pcx32000/p",
+  popularity: 415
+ },
+ {
+  sku: "philco-8709",
+  name: "Geladeira Side By Side 498L Inverse Plus Philco PRF510I 127V",
+  brand: "Philco",
+  unitPrice: 9249.9,
+  unit: "un",
+  category: "refrigeracao geladeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/192719/Refrigerador-4-Portas-PRF510I.jpg?v=638768000181670000",
+  productUrl: "https://www.philco.com.br/-refrigerador-philco-side-by-side-prf510i-498l-inverse/p",
+  popularity: 416
+ },
+ {
+  sku: "philco-8589",
+  name: "Batedeira Philco Paris Power Mixer Turbo Portátil 350W 127V",
+  brand: "Philco",
+  unitPrice: 159.9,
+  unit: "un",
+  category: "cozinha batedeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184965/Bat-Paris-Power-Mixer-Turbo-PR.jpg?v=638703015122300000",
+  productUrl: "https://www.philco.com.br/batedeira-philco-paris-power-mixer-turbo-portatil-350w/p",
+  popularity: 417
+ },
+ {
+  sku: "philco-8575",
+  name: "Fast Smart TV 32” Philco D-LED PTV32N5SE10H Bivolt",
+  brand: "Philco",
+  unitPrice: 1599.9,
+  unit: "un",
+  category: "tvs tvs 32 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258016/ptv32n5se10h_03.jpg?v=638774021492600000",
+  productUrl: "https://www.philco.com.br/smart-tv-philco-32-ptv32n5se10h-d-led-netflix/p",
+  popularity: 418
+ },
+ {
+  sku: "philco-8557",
+  name: "TV Philco 39\" PTV39G50D LED Digital Bivolt",
+  brand: "Philco",
+  unitPrice: 1999.9,
+  unit: "un",
+  category: "tvs tvs 39 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/184728/ptv39g50d_01.jpg?v=637529012628570000",
+  productUrl: "https://www.philco.com.br/tv-philco-39-ptv39g50d-led-digital/p",
+  popularity: 419
+ },
+ {
+  sku: "philco-8544",
+  name: "Liquidificador Philco PLQ1550V Pro Maxx6 1200W Turbo 3L 127V",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276670/Liq-PLQ1550V-Turbo.jpg?v=639026238069530000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1550v-pro-maxx6-1200w-turbo-3l/p",
+  popularity: 420
+ },
+ {
+  sku: "philco-8524",
+  name: "Cooktop de Indução Philco PCT10IP Digital Portátil 127V",
+  brand: "Philco",
+  unitPrice: 229.9,
+  unit: "un",
+  category: "cozinha cooktops",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/185335/1200x1200pixel_72dpi-RGB_Site_PCT10IP_01.jpg?v=638968425358700000",
+  productUrl: "https://www.philco.com.br/cooktop-philco-de-inducao-pct10ip-1-boca-8-niveis-portatil/p",
+  popularity: 421
+ },
+ {
+  sku: "philco-8461",
+  name: "Freezer e Refrigerador Philco PFH515B 492L Horizontal Branco 127V",
+  brand: "Philco",
+  unitPrice: 3599.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191693/PFH515B_--1-.jpg?v=638814564690730000",
+  productUrl: "https://www.philco.com.br/freezer-e-refrigerador-philco-pfh515b-492l-horizontal-branco/p",
+  popularity: 422
+ },
+ {
+  sku: "philco-11788",
+  name: "Ar-Condicionado Philco 12000Btus PAC12000ITQFM9W Inverter 220V",
+  brand: "Philco",
+  unitPrice: 2709.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/259470/itfm9wProtect_01.jpg?v=638797323856130000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-12000btus-pac12000itqfm9w-inverter-virus-protect/p",
+  popularity: 423
+ },
+ {
+  sku: "philco-8212",
+  name: "Kit Cozinha Philco PKT35P Turbo 127V",
+  brand: "Philco",
+  unitPrice: 489.9,
+  unit: "un",
+  category: "cozinha kit cozinha",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183684/Cozinha-Philco-PKT35P.jpg?v=637465855627900000",
+  productUrl: "https://www.philco.com.br/kit-cozinha-philco-pkt35p-turbo-/p",
+  popularity: 424
+ },
+ {
+  sku: "philco-8114",
+  name: "Unidade Auxiliar da Caixa Acústica Double PHT12000 Philco- Outlet Bivolt",
+  brand: "Philco",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "acessorios",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253852/PHT12000_01.jpg?v=638678962392670000",
+  productUrl: "https://www.philco.com.br/auxiliar-philco-outlet/p",
+  popularity: 425
+ },
+ {
+  sku: "philco-7679",
+  name: "Lavadora de Alta Pressão e Aspirador Philco 2 em 1 PLAS4000 127V",
+  brand: "Philco",
+  unitPrice: 1309.9,
+  unit: "un",
+  category: "casa lavadora de alta pressao",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276283/1200x1200pixel_72dpi-RGB_Site_0000_Camada-8.jpg?v=639021123710730000",
+  productUrl: "https://www.philco.com.br/lavadora-de-alta-pressao-e-aspirador-philco-2-em-1-plas4000/p",
+  popularity: 426
+ },
+ {
+  sku: "philco-11787",
+  name: "Ar-Condicionado Philco Inverter 24000Btus PAC24000IQFM9W 220V",
+  brand: "Philco",
+  unitPrice: 6139.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206316/ifm9w_01.jpg?v=637925618974400000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-24000btus-pac24000iqfm9w-inverter-quente-frio/p",
+  popularity: 427
+ },
+ {
+  sku: "philco-11794",
+  name: "Ar-Condicionado Philco Inverter 24000Btus Frio PAC24000IFM9W 220V",
+  brand: "Philco",
+  unitPrice: 6409.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206328/ifm9w_01.jpg?v=637925619070100000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-24000btus-pac24000ifm9w-inverter-frio/p",
+  popularity: 428
+ },
+ {
+  sku: "philco-7533",
+  name: "Limpador de Piso Philco PME01B Speed Clean Mop Sem Fio Bateria",
+  brand: "Philco",
+  unitPrice: 559.9,
+  unit: "un",
+  category: "casa aspiradores de po",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/180593/Limpador-de-Piso-Speed-Clean-Mop-PME01B.jpg?v=637378695859070000",
+  productUrl: "https://www.philco.com.br/limpador-de-piso-philco-pme01b-speed-clean-mop-sem-fio-bivolt/p",
+  popularity: 429
+ },
+ {
+  sku: "philco-7506",
+  name: "Liquidificador Philco PLQ1250V Reverse Turbo 1200W 127V",
+  brand: "Philco",
+  unitPrice: 179.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276620/PLQ1250V-Reverse-Turbo.jpg?v=639026231514470000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq125v-reverse-turbo-1200w/p",
+  popularity: 430
+ },
+ {
+  sku: "philco-7448",
+  name: "Freezer Horizontal Philco 99L 2 em 1 PFH105B 127V",
+  brand: "Philco",
+  unitPrice: 1659.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191666/PFH105B_--1-.jpg?v=638997802034770000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-philco-2-em-1-pfh105b-99l/p",
+  popularity: 431
+ },
+ {
+  sku: "philco-7411",
+  name: "Caixa de Som Philco Extreme 1500W Ex Bass PCX17000 Bivolt",
+  brand: "Philco",
+  unitPrice: 1479.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/179931/pcx17000_01.jpg?v=637362925812700000",
+  productUrl: "https://www.philco.com.br/caixa-de-som-philco-extreme-1500w-pcx17000/p",
+  popularity: 432
+ },
+ {
+  sku: "philco-8157",
+  name: "Cacheador Philco PEC12 Vermelho Mulher Maravilha Bivolt Bivolt",
+  brand: "Philco",
+  unitPrice: 99.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/183028/Cacheador-Mulher-Maravilha-PEC12_3.jpg?v=637437316033370000",
+  productUrl: "https://www.philco.com.br/cacheador-philco-mulher-maravilha-pec12-revestimento-ceramico/p",
+  popularity: 433
+ },
+ {
+  sku: "philco-6777",
+  name: "Freezer Horizontal Philco PFH440B Dupla Função 418L 127V",
+  brand: "Philco",
+  unitPrice: 3999.9,
+  unit: "un",
+  category: "refrigeracao freezers",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191701/PFH440B_--1-.jpg?v=639238670410030000",
+  productUrl: "https://www.philco.com.br/freezer-horizontal-philco-pfh440b-418l-freezer-e-congelador/p",
+  popularity: 434
+ },
+ {
+  sku: "philco-6644",
+  name: "Speaker Philco Go PBS10BTRG Bluetooth 5.0 Rosa Bivolt",
+  brand: "Philco",
+  unitPrice: 209.9,
+  unit: "un",
+  category: "audio speaker",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/177462/pbs10btrg_01.jpg?v=637251620153330000",
+  productUrl: "https://www.philco.com.br/speaker-philco-go-pbs10bta-bluetooth--5-rosaa/p",
+  popularity: 435
+ },
+ {
+  sku: "philco-6642",
+  name: "Coifa de Parede Philco PCO60IP Flat 60cm Inox Dupla Função 127V",
+  brand: "Philco",
+  unitPrice: 1127.9,
+  unit: "un",
+  category: "cozinha coifas e depuradores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/190671/pco60ipVFflat---1-.jpg?v=637594426895130000",
+  productUrl: "https://www.philco.com.br/coifa-philco-pco60ip-flat-inox-60cm-depurador-exaustor-inox-vidro/p",
+  popularity: 436
+ },
+ {
+  sku: "philco-6469",
+  name: "Depurador e Exaustor Retrátil Philco PDR60I 3 velocidades Inox 127V",
+  brand: "Philco",
+  unitPrice: 663.9,
+  unit: "un",
+  category: "cozinha coifas e depuradores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/191250/PDR60IRETRATIL_---1-.jpg?v=639166876674670000",
+  productUrl: "https://www.philco.com.br/depurador-philco-pdr60i-retratil-e-exaustor/p",
+  popularity: 437
+ },
+ {
+  sku: "philco-6417",
+  name: "Serra Esquadria Philco 8\" Guia Laser/Led 1500W 127V",
+  brand: "Philco",
+  unitPrice: 809.9,
+  unit: "un",
+  category: "ferramentas serra",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176962/pse1500-8_01.jpg?v=638797443911130000",
+  productUrl: "https://www.philco.com.br/serra-philco-pse1500-8-4500rpm/p",
+  popularity: 438
+ },
+ {
+  sku: "philco-6191",
+  name: "Panela de Arroz Philco PH10V 10 xícaras Visor Glass Inox 127V",
+  brand: "Philco",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cozinha panelas eletricas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176160/PH10V-Visor-Glass-Inox.jpg?v=637130553094970000",
+  productUrl: "https://www.philco.com.br/panela-eletrica-de-arroz-philco-ph10v-visor-glass-inox/p",
+  popularity: 439
+ },
+ {
+  sku: "philco-6175",
+  name: "Smart TV Philco 32\" PTV32G52S LED Bivolt",
+  brand: "Philco",
+  unitPrice: 1599.9,
+  unit: "un",
+  category: "tvs tvs 32 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/176095/ptv32g52s_01.jpg?v=637122045310400000",
+  productUrl: "https://www.philco.com.br/smart-tv-philco-led-32-ptv32g52s/p",
+  popularity: 440
+ },
+ {
+  sku: "philco-11795",
+  name: "Ar-Condicionado Split 30000BTUs Philco Frio PAC30000FM9 220V",
+  brand: "Philco",
+  unitPrice: 6419.9,
+  unit: "un",
+  category: "climatizacao ar-condicionado",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/206252/m9_01.jpg?v=637925618516530000",
+  productUrl: "https://www.philco.com.br/ar-condicionado-philco-pac30000fm9-conj-220v-096652712/p",
+  popularity: 441
+ },
+ {
+  sku: "philco-6080",
+  name: "Liquidificador Philco Reverse PLQ1300 1200W 127V",
+  brand: "Philco",
+  unitPrice: 151.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276784/Liquidificador-Reverse-PLQ1300V_3.jpg?v=639026245930000000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-reverse--plq1300-1200/p",
+  popularity: 442
+ },
+ {
+  sku: "philco-5935",
+  name: "Cortina de Ar Philco 220W Branco PCA120 220V",
+  brand: "Philco",
+  unitPrice: 899.9,
+  unit: "un",
+  category: "climatizacao cortina de ar",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/280109/PCA120_01.jpg?v=639063321254230000",
+  productUrl: "https://www.philco.com.br/cortina-de-ar-philco-220w-branco-pca120/p",
+  popularity: 443
+ },
+ {
+  sku: "philco-5904",
+  name: "Ferro a Vapor Philco PFV2310R Cerâmico Rosa 127V",
+  brand: "Philco",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "casa ferros de passar",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/175391/PFV2310R_.jpg?v=638889770409130000",
+  productUrl: "https://www.philco.com.br/ferro-philco-053601035/p",
+  popularity: 444
+ },
+ {
+  sku: "philco-5723",
+  name: "Ventilador Philco 2 em 1 Silencioso Maxx Force 160W PVT400B 127V",
+  brand: "Philco",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "climatizacao ventiladores ventilador de mesa",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/251423/Vent-PVT400B-Turbo.jpg?v=638598615132900000",
+  productUrl: "https://www.philco.com.br/ventilador-pvt400b-branco-103011031/p",
+  popularity: 445
+ },
+ {
+  sku: "philco-5687",
+  name: "Batedeira Planetária Philco PHP500 Turbo Vermelha 700W 220V",
+  brand: "Philco",
+  unitPrice: 559.9,
+  unit: "un",
+  category: "cozinha batedeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/237939/PHP500V-Turbo.jpg?v=638098147859970000",
+  productUrl: "https://www.philco.com.br/batedeira-planetaria-php500-turbo/p",
+  popularity: 446
+ },
+ {
+  sku: "philco-5660",
+  name: "Escova Rotativa Philco Spin Ion Brush Silver PEC06S 1100W 127V",
+  brand: "Philco",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "cuidados pessoais escovas secadoras, rotativas e cacheadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174049/Escova-Rotativa-Spin-Ion-Silver-PEC06S_055401027---4-.jpg?v=636984541551300000",
+  productUrl: "https://www.philco.com.br/escova-rotativa-philco-spin-ion-brush-silver-pec06s-1100w/p",
+  popularity: 447
+ },
+ {
+  sku: "philco-5560",
+  name: "Purificador de Água Philco Àgua Natural e Gelada PBE04BF Bivolt",
+  brand: "Philco",
+  unitPrice: 689.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/189321/PURIF-PBE04BF-01.jpg?v=637593635361600000",
+  productUrl: "https://www.philco.com.br/purificador-de-agua-philco-pbe04bf-/p",
+  popularity: 448
+ },
+ {
+  sku: "philco-5530",
+  name: "Liquidificador Philco PLQ800P 4 velocidades 900w 127V",
+  brand: "Philco",
+  unitPrice: 169.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/275929/Liquidificador-PLQ800P_4.jpg?v=639020098855000000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq800p-4-velocidades-900w/p",
+  popularity: 449
+ },
+ {
+  sku: "philco-5432",
+  name: "Frigobar Philco 45L Branco Porta Reversível PFG50B 127V",
+  brand: "Philco",
+  unitPrice: 999.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/285487/pfg50b_01.jpg?v=639210301137670000",
+  productUrl: "https://www.philco.com.br/frigobar-philco-pfg50b/p",
+  popularity: 450
+ },
+ {
+  sku: "philco-3084",
+  name: "TV 39” Philco Led PTV39N87D HD Recepção Digital Bivolt",
+  brand: "Philco",
+  unitPrice: 1559.9,
+  unit: "un",
+  category: "tvs tvs 39 polegadas",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/171132/TV-PTV39N87D.jpg?v=636832427078700000",
+  productUrl: "https://www.philco.com.br/tv-philco-led-39-ptv39n87d-/p",
+  popularity: 451
+ },
+ {
+  sku: "philco-2736",
+  name: "Cooktop de Indução Philco Smart Chef PCT01 127V",
+  brand: "Philco",
+  unitPrice: 379.9,
+  unit: "un",
+  category: "cozinha cooktops",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/202799/Smart-Chef__0000_PCT01_19.jpg?v=639166858606430000",
+  productUrl: "https://www.philco.com.br/cooktop-de-inducao-philco-smart-chef-pct01-/p",
+  popularity: 452
+ },
+ {
+  sku: "philco-2703",
+  name: "Aspirador de Água e Pó Philco PAS10 1000W 127V",
+  brand: "Philco",
+  unitPrice: 319.9,
+  unit: "un",
+  category: "casa aspiradores de po",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/276307/Aspirador-PAS10-_054901053--1-.jpg?v=639021126832330000",
+  productUrl: "https://www.philco.com.br/aspirador-de-po-e-agua-1000w/p",
+  popularity: 453
+ },
+ {
+  sku: "philco-2111",
+  name: "Frigobar Philco PFG120 Vintage 121 Litros 127V",
+  brand: "Philco",
+  unitPrice: 3499.9,
+  unit: "un",
+  category: "refrigeracao frigobares",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/163312/PFG120_01.jpg?v=636547248011630000",
+  productUrl: "https://www.philco.com.br/frigobar-philco-pfg120-vintage-121-litros-/p",
+  popularity: 454
+ },
+ {
+  sku: "philco-2109",
+  name: "Sanduicheira e Grill Philco PGR02I Inox Antiaderente 900W 127V",
+  brand: "Philco",
+  unitPrice: 289.9,
+  unit: "un",
+  category: "cozinha grills e sanduicheiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/163305/SAND-GRILL-INOX-PGR02I_056701015--2-.jpg?v=636547177257300000",
+  productUrl: "https://www.philco.com.br/sanduicheira-e-grill-inox-philco-pgr02i-900w/p",
+  popularity: 455
+ },
+ {
+  sku: "philco-1785",
+  name: "Unidade Auxiliar da Caixa Acústica Double PHT12000 Philco Acessório",
+  brand: "Philco",
+  unitPrice: 959.9,
+  unit: "un",
+  category: "audio caixa de som amplificada",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/253856/PHT12000_01.jpg?v=638678983559430000",
+  productUrl: "https://www.philco.com.br/auxiliar-philco/p",
+  popularity: 456
+ },
+ {
+  sku: "philco-1478",
+  name: "Smart TV Philco 49” PH49F30DSGWA LED Bivolt",
+  brand: "Philco",
+  unitPrice: 3099.9,
+  unit: "un",
+  category: "tvs smart tv",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/164896/TV-PH49F30DSGWA.jpg?v=636644846797870000",
+  productUrl: "https://www.philco.com.br/tv-philco-led-smart-49-ph49f30dsgwa/p",
+  popularity: 457
+ },
+ {
+  sku: "philco-1277",
+  name: "Liquidificador Philco PLQ1400 1400W 127V",
+  brand: "Philco",
+  unitPrice: 223.9,
+  unit: "un",
+  category: "cozinha liquidificadores",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/174808/Liquidificador-PLQ1400-Turbo_2.jpg?v=638889827739130000",
+  productUrl: "https://www.philco.com.br/liquidificador-philco-plq1400/p",
+  popularity: 458
+ },
+ {
+  sku: "philco-1086",
+  name: "Bebedouro Philco 20L Água Gelada e Natural com Compressor PBE02BF 127V",
+  brand: "Philco",
+  unitPrice: 639.9,
+  unit: "un",
+  category: "cozinha bebedouros e purificadores de agua",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/258898/Imagem-pronta-09.jpg?v=638792187884100000",
+  productUrl: "https://www.philco.com.br/bebedouro-compressor-pbe02bf-127v-055101006/p",
+  popularity: 459
+ },
+ {
+  sku: "philco-1080",
+  name: "Batedeira Philco Vermelha PHP500 Turbo 127V",
+  brand: "Philco",
+  unitPrice: 499.9,
+  unit: "un",
+  category: "cozinha batedeiras",
+  imageUrl: "https://philco.vteximg.com.br/arquivos/ids/194112/PHP500-Turbo-VM.jpg?v=638871743640070000",
+  productUrl: "https://www.philco.com.br/batedeira-vermelha-php500-turbo/p",
   popularity: 460
  }
 ];

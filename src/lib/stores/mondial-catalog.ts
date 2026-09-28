@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.mondial.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.mondial.com.br mondial src/lib/stores/mondial-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.mondial.com.br mondial /tmp/lia-catalog-HaGx92/mondial.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -50,17 +50,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 4
  },
  {
-  sku: "mondial-1577",
-  name: "Air Fryer Forno 25L French Door Mondial Preto/Inox 2000W - AFDO-25L-FD 127V",
-  brand: "MONDIAL",
-  unitPrice: 1946.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha air fryer oven",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165769/AFDO-25L-FD---Foto-01.jpg?v=638918316491500000",
-  productUrl: "https://www.mondial.com.br/air-fryer-mondial-25l-french-door-preto-inox-2000w/p",
-  popularity: 5
- },
- {
   sku: "mondial-1295",
   name: "Tampa Branca com Dosadora do Liquidificador Mondial L-1000 WI SC DA TAMPA [L-1000 W] C/DOSADORA BRANCO",
   brand: "MONDIAL",
@@ -69,6 +58,17 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores tampa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162628/1095-22.jpg?v=638483682024330000",
   productUrl: "https://www.mondial.com.br/tampa-branca-com-dosador-do-liquidificador-mondial-l-1000-wi/p",
+  popularity: 5
+ },
+ {
+  sku: "mondial-1743",
+  name: "Chaleira Elétrica Digital Control Mondial Preto CE-18-DP 127V",
+  brand: "MONDIAL",
+  unitPrice: 276.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168781/CE-18-DP---Foto-01.jpg?v=639189420338730000",
+  productUrl: "https://www.mondial.com.br/chaleira-eletrica-ce-18-dp/p",
   popularity: 6
  },
  {
@@ -105,17 +105,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 9
  },
  {
-  sku: "mondial-1743",
-  name: "Chaleira Elétrica Digital Control Mondial Preto CE-18-DP 127V",
-  brand: "MONDIAL",
-  unitPrice: 276.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168781/CE-18-DP---Foto-01.jpg?v=639189420338730000",
-  productUrl: "https://www.mondial.com.br/chaleira-eletrica-ce-18-dp/p",
-  popularity: 10
- },
- {
   sku: "mondial-1739",
   name: "Chaleira Elétrica Glass View Mondial Vidro Transparente CE-19-GI 127V",
   brand: "MONDIAL",
@@ -124,18 +113,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/169165/CE-19-GI---Foto-01.jpg?v=639244701666200000",
   productUrl: "https://www.mondial.com.br/chaleira-eletrica-ce-19-gi/p",
-  popularity: 11
- },
- {
-  sku: "mondial-1653",
-  name: "Cafeteira Espresso Dolce Crema 20 Bar Mondial Preto/Inox 1200W - C-21-E-CNP 110",
-  brand: "MONDIAL",
-  unitPrice: 836.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha cafeteira",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167267/C21ECNPFoto01.jpg?v=639062382365400000",
-  productUrl: "https://www.mondial.com.br/cafeteira-espresso-mondial-dolce-crema-20-bar-capsula-po-c-21-e-cnp/p",
-  popularity: 12
+  popularity: 10
  },
  {
   sku: "mondial-1649",
@@ -146,7 +124,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168866/SM-01-BLDC-CP - Foto 01.jpg?v=639198311928070000",
   productUrl: "https://www.mondial.com.br/secador-multifuncional-mondial-5-em-1-ceramic-pink-sm-01-bldc-cp/p",
-  popularity: 13
+  popularity: 11
  },
  {
   sku: "mondial-1264",
@@ -157,7 +135,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras cuba",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162094/cuba-1841-70--2-.jpg?v=638367163157530000",
   productUrl: "https://www.mondial.com.br/cuba-metal--antiad--af-/p",
-  popularity: 14
+  popularity: 12
  },
  {
   sku: "mondial-1041",
@@ -168,7 +146,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos micro-ondas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164462/MO-02-34-E---Foto-01.jpg.jpg?v=638913789119670000",
   productUrl: "https://www.mondial.com.br/micro-ondas-34l-mondial-mo-02-34-e/p",
-  popularity: 15
+  popularity: 13
  },
  {
   sku: "mondial-1704",
@@ -179,7 +157,18 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168443/AP-42-BI-PET---Foto-01.jpg?v=639161153446500000",
   productUrl: "https://www.mondial.com.br/aspirador-po-ap-42-bi-pet-127v-60hz/p",
-  popularity: 16
+  popularity: 14
+ },
+ {
+  sku: "mondial-1653",
+  name: "Cafeteira Espresso Dolce Crema 20 Bar Mondial Preto/Inox 1200W - C-21-E-CNP 110",
+  brand: "MONDIAL",
+  unitPrice: 836.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha cafeteira",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167267/C21ECNPFoto01.jpg?v=639062382365400000",
+  productUrl: "https://www.mondial.com.br/cafeteira-espresso-mondial-dolce-crema-20-bar-capsula-po-c-21-e-cnp/p",
+  popularity: 15
  },
  {
   sku: "mondial-1615",
@@ -190,7 +179,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de torre",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166353/VTR-01-B---Foto-01.jpg?v=639033214632070000",
   productUrl: "https://www.mondial.com.br/ventilador-torre-mondial-air-tower-vtr-01-b-45w-preto/p",
-  popularity: 17
+  popularity: 16
  },
  {
   sku: "mondial-1445",
@@ -201,7 +190,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer oven",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166213/AFON-12L-BI---Foto-01.jpg?v=638996854751870000",
   productUrl: "https://www.mondial.com.br/fritadeira-air-fryer-oven-mondial-afon-12l-bi/p",
-  popularity: 18
+  popularity: 17
  },
  {
   sku: "mondial-1425",
@@ -212,7 +201,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas acessorios para cafeteiras porta-capsulas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167261/CPCNPFoto01.jpg?v=639059149458070000",
   productUrl: "https://www.mondial.com.br/conjunto-porta-capsula-cpc-np/p",
-  popularity: 19
+  popularity: 18
  },
  {
   sku: "mondial-1421",
@@ -223,7 +212,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162676/EA-JU-03---Foto-01.jpg?v=638494865874970000",
   productUrl: "https://www.mondial.com.br/escova-alisadora-by-juliette-mondial-azul-rosa-ea-ju-03/p",
-  popularity: 20
+  popularity: 19
  },
  {
   sku: "mondial-1391",
@@ -234,7 +223,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165396/ES-11-BI---Foto-01.jpg?v=638925902509830000",
   productUrl: "https://www.mondial.com.br/escova-secadora-mondial-preto-golden-rose-1300w-es-05-bi/p",
-  popularity: 21
+  popularity: 20
  },
  {
   sku: "mondial-1367",
@@ -245,7 +234,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de coluna",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162224/VSP-40C-NB---Foto-01.jpg?v=638774102751300000",
   productUrl: "https://www.mondial.com.br/ventilador-coluna-mondial-super-power-6-pas-40-cm-vsp-40c-nb/p",
-  popularity: 22
+  popularity: 21
  },
  {
   sku: "mondial-1337",
@@ -256,7 +245,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores tampa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162592/0005-24.jpg?v=638483662236030000",
   productUrl: "https://www.mondial.com.br/tampa-com-bico-do-liquidificador-personal-blender-mondial-dg-01/p",
-  popularity: 23
+  popularity: 22
  },
  {
   sku: "mondial-1247",
@@ -267,7 +256,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165232/SCP-JU-03---Foto-01.jpg?v=638895830053530000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelo-by-juliette-mondial-azul-rosa-2000w-scp-ju-03/p",
-  popularity: 24
+  popularity: 23
  },
  {
   sku: "mondial-1246",
@@ -278,7 +267,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165947/P-JU-03 - Foto 01.png?v=638936504533400000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-p-ju-03-bivolt/p",
-  popularity: 25
+  popularity: 24
  },
  {
   sku: "mondial-1216",
@@ -289,7 +278,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160648/L-1400-GI---Foto-01.jpg?v=638197512402970000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-glass-l-1400-gi/p",
-  popularity: 26
+  popularity: 25
  },
  {
   sku: "mondial-1181",
@@ -300,7 +289,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160507/EA-06---Foto-01.jpg?v=638121734112800000",
   productUrl: "https://www.mondial.com.br/escova-alisadora-black-gold-argan-mondial-preto-champagne-ea-06/p",
-  popularity: 27
+  popularity: 26
  },
  {
   sku: "mondial-1158",
@@ -311,7 +300,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais modelador de cachos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159646/EM-12---Foto-01.jpg?v=638010921200200000",
   productUrl: "https://www.mondial.com.br/modelador-de-cachos-mondial-infinity-em-12/p",
-  popularity: 28
+  popularity: 27
  },
  {
   sku: "mondial-1138",
@@ -322,7 +311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras puxador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160713/_22A5410--1-.jpg?v=638205485045300000",
   productUrl: "https://www.mondial.com.br/puxador-preto-e-inox-da-air-fryer-naf-03i--mondial/p",
-  popularity: 29
+  popularity: 28
  },
  {
   sku: "mondial-1102",
@@ -333,7 +322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159099/BG-06---Foto-01.jpg?v=637903862718570000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-mondial-super-groom-10-bg-06/p",
-  popularity: 30
+  popularity: 29
  },
  {
   sku: "mondial-1039",
@@ -344,7 +333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos micro-ondas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164478/MO-02-34-W---Foto-01.jpg.jpg?v=639104875671500000",
   productUrl: "https://www.mondial.com.br/micro-ondas-34l-mondial-mo-02-34-w/p",
-  popularity: 31
+  popularity: 30
  },
  {
   sku: "mondial-1037",
@@ -355,7 +344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos micro-ondas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158235/MO-01-21-B---Foto-01.jpg?v=639104873320700000",
   productUrl: "https://www.mondial.com.br/micro-ondas-21l-mondial-mo-01-21-b/p",
-  popularity: 32
+  popularity: 31
  },
  {
   sku: "mondial-910",
@@ -366,7 +355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157869/COPO-PRETO-COM-FILTRO.jpg?v=637678615843000000",
   productUrl: "https://www.mondial.com.br/copo-cristal-completo-do-liquidificador-mondial-l-1200-bi/p",
-  popularity: 33
+  popularity: 32
  },
  {
   sku: "mondial-901",
@@ -377,7 +366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras cesto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158115/af-30-1.jpg?v=637738796390870000",
   productUrl: "https://www.mondial.com.br/cesto-antiaderente-air-fryer-mondial-af-30-e-af-30i/p",
-  popularity: 34
+  popularity: 33
  },
  {
   sku: "mondial-889",
@@ -388,7 +377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para batedeiras batedor de massa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157765/BATEDOR-01A.jpg?v=637678574142570000",
   productUrl: "https://www.mondial.com.br/batedor-de-massa-leve-para-batedeira-planetaria/p",
-  popularity: 35
+  popularity: 34
  },
  {
   sku: "mondial-834",
@@ -399,524 +388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156928/P-20-ROSE_--1-.jpg?v=637653197738730000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-golden-rose-p-20/p",
-  popularity: 36
- },
- {
-  sku: "mondial-778",
-  name: "Ventilador de Mesa Mondial Turbo 8 Pás 50cm VTX-50-8P 110V",
-  brand: "MONDIAL",
-  unitPrice: 326.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de mesa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167102/VTX-50-8P_--5-.jpg?v=639059106866630000",
-  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-50cm-vtx-50-8p/p",
-  popularity: 37
- },
- {
-  sku: "mondial-729",
-  name: "Ventilador Coluna 50cm Super Turbo 8 Pás Mondial Preto/Prata 150W - VTX-50C-8P 110V",
-  brand: "MONDIAL",
-  unitPrice: 399.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de coluna",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160736/VTX-50C-8P---Foto-08.jpg?v=638882898341330000",
-  productUrl: "https://www.mondial.com.br/ventilador-de-coluna-turbo-mondial-8-pas-vtx-50c-8p/p",
-  popularity: 38
- },
- {
-  sku: "mondial-319",
-  name: "Escova Alisadora Mondial Golden Rose EA-02 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 139.9,
-  unit: "un",
-  category: "cuidados pessoais escova alisadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159846/EA-02---Foto-01.jpg?v=638016284834770000",
-  productUrl: "https://www.mondial.com.br/escova-alisadora-mondial-golden-rose-ea-02/p",
-  popularity: 39
- },
- {
-  sku: "mondial-178",
-  name: "Aparador de Pelos Mondial Super Groom BG-05 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 183.9,
-  unit: "un",
-  category: "cuidados pessoais aparador de pelos",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156752/BG-05_--1-.jpg?v=637652339061130000",
-  productUrl: "https://www.mondial.com.br/aparador-de-pelos-super-groom-11-mondial-preto-prata-bivolt-bg-05/p",
-  popularity: 40
- },
- {
-  sku: "mondial-132",
-  name: "Batedeira Mondial Bella Massa B-23 NP 110V",
-  brand: "MONDIAL",
-  unitPrice: 206.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha batedeira",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156088/B-23-NP_--6-.jpg?v=637643751744470000",
-  productUrl: "https://www.mondial.com.br/batedeira-bella-massa-mondial-preto-inox-500w-b-23-np/p",
-  popularity: 41
- },
- {
-  sku: "mondial-59",
-  name: "Aparador de Pelos Classic Mondial Preto/Prata Bateria - TR-01 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 31.9,
-  unit: "un",
-  category: "cuidados pessoais barbeador eletrico",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156705/TR-01_--1-.jpg?v=637651701973300000",
-  productUrl: "https://www.mondial.com.br/aparador-de-pelos-classic-mondial-preto-prata-08w-bateria-tr-01-1/p",
-  popularity: 42
- },
- {
-  sku: "mondial-20",
-  name: "Fritadeira Sem Óleo Air Fryer 3,5L Mondial AF-31 110V",
-  brand: "MONDIAL",
-  unitPrice: 409.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha air fryer",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161890/AF-31---Foto-01.jpg?v=639089442368730000",
-  productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-5l-mondial-preto-1500w-af-31/p",
-  popularity: 43
- },
- {
-  sku: "mondial-18",
-  name: "Fritadeira Sem Óleo Air Fryer 3,5L Mondial AF-30-DI 110V",
-  brand: "MONDIAL",
-  unitPrice: 439.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha air fryer",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155477/AF-30-DI_6.jpg?v=637626606931470000",
-  productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-5l-mondial-preto-inox-1500w-af-30-di/p",
-  popularity: 44
- },
- {
-  sku: "mondial-1740",
-  name: "Robô Aspirador de Pó Pratic Clean Mondial Preto Bivolt RB-12-ST-BL BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 546.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para casa aspirador de po",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168721/RB-12-ST-BL---Foto-01.jpg?v=639193086526000000",
-  productUrl: "https://www.mondial.com.br/robo-aspirador-rb-12-st-bl-biv/p",
-  popularity: 45
- },
- {
-  sku: "mondial-1700",
-  name: "Churrasqueira Elétrica Mondial Grand Steak & Grill CH-08-BI 2000W Preto 127V",
-  brand: "MONDIAL",
-  unitPrice: 256.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha churrasqueira eletrica",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168125/CH-08-BI---Foto-01.jpg?v=639135889475200000",
-  productUrl: "https://www.mondial.com.br/churrasqueira-elet--ch-08-bi-127v-60h/p",
-  popularity: 46
- },
- {
-  sku: "mondial-1696",
-  name: "Caixa Amplificada Xsound Mondial Preto 300W RMS Bivolt - CM-300-N BIV",
-  brand: "MONDIAL",
-  unitPrice: 434.9,
-  unit: "un",
-  category: "audio caixa amplificadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168036/CM-300-N---Foto-01.jpg?v=639114245200800000",
-  productUrl: "https://www.mondial.com.br/caixa-amplificada-cm-300-n-biv-/p",
-  popularity: 47
- },
- {
-  sku: "mondial-1684",
-  name: "Mixer Turbo 3 em 1 Mondial Preto/Inox 500W - M-18-BI 127V",
-  brand: "MONDIAL",
-  unitPrice: 266.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha mixer",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168018/M-18-BI---Foto-01.jpg?v=639113438009130000",
-  productUrl: "https://www.mondial.com.br/mixer-m-18-bi-127v-60hz/p",
-  popularity: 48
- },
- {
-  sku: "mondial-1667",
-  name: "Escova Rotativa Bivolt Infinity Keratin Mondial Vermelho 1300W ERB-11-KR BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 219.9,
-  unit: "un",
-  category: "cuidados pessoais escova rotativa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167501/ERB11KRFoto01.jpg?v=639082169049000000",
-  productUrl: "https://www.mondial.com.br/escova-rotativa-mondial-red-infinity-keratin-bivolt-erb-11-kr/p",
-  popularity: 49
- },
- {
-  sku: "mondial-1655",
-  name: "Cafeteira Espresso Automática Dolce Latte 20 bar Mondial Preto/Inox - CCL-01 110",
-  brand: "MONDIAL",
-  unitPrice: 1546.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha cafeteira",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167289/CCL-01---Foto-01.jpg?v=639064143801270000",
-  productUrl: "https://www.mondial.com.br/cafeteira-espresso-automatica-mondial-dolce-latte-20-bar-ccl-01-capsula-po/p",
-  popularity: 50
- },
- {
-  sku: "mondial-1619",
-  name: "Climatizador Fresh Air Mondial Branco 90W CL-07L 110",
-  brand: "MONDIAL",
-  unitPrice: 606.9,
-  unit: "un",
-  category: "climatizacao climatizador",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166401/CL-07L---Foto-09.jpg?v=639033214063000000",
-  productUrl: "https://www.mondial.com.br/climatizador-cl-07l-127v-60hz/p",
-  popularity: 51
- },
- {
-  sku: "mondial-1547",
-  name: "Caixa Amplificada Mondial Preto 550W RMS Bivolt - CM-550-L BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 686.9,
-  unit: "un",
-  category: "audio caixa amplificadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165106/CM-550-L---Foto-01.jpg?v=638877664051900000",
-  productUrl: "https://www.mondial.com.br/caixa-amplificada-mondial-preto-550w-rms-bivolt-cm-550-l/p",
-  popularity: 52
- },
- {
-  sku: "mondial-1527",
-  name: "Torre de Som Mondial TM-2200 luzes Bluetooth 2200W RMS APP BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 1999.9,
-  unit: "un",
-  category: "audio torre de som",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165381/TM-2200-Foto-01.jpg?v=638924467681570000",
-  productUrl: "https://www.mondial.com.br/torre-de-som-mondial-tm-2200-luzes-bluetooth-2200w-rms-app/p",
-  popularity: 53
- },
- {
-  sku: "mondial-1511",
-  name: "Ferro a Seco Mondial FS-01-BI 110V",
-  brand: "MONDIAL",
-  unitPrice: 166.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para casa ferro de passar",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163964/FS-01-BI---Foto-01.jpg?v=638717951379130000",
-  productUrl: "https://www.mondial.com.br/ferro-de-passar-a-seco-fs-01-bi/p",
-  popularity: 54
- },
- {
-  sku: "mondial-1488",
-  name: "Escova Secadora Space Shine Mondial Lilás - ES-21 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 154.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163953/ES-21---Foto-01.jpg?v=638705606751770000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-slim-es-21/p",
-  popularity: 55
- },
- {
-  sku: "mondial-1487",
-  name: "Escova Secadora Space Shine Mondial Grafite ES-20 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 154.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163952/ES-20---Foto-01.jpg?v=638705605615900000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-space-shine-mondial-grafite-1300w-es-20/p",
-  popularity: 56
- },
- {
-  sku: "mondial-1470",
-  name: "Aspirador de Pó Turbo Cycle Mondial Vermelho/Preto 1500W- AP-40-R 110V",
-  brand: "MONDIAL",
-  unitPrice: 258.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para casa aspirador de po",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163867/AP-40-R---Foto-01.png?v=638731505508070000",
-  productUrl: "https://www.mondial.com.br/aspirador-de-po-vertical-turbo-cycle-mondial-vermelho-preto-1500w-ap-40-r/p",
-  popularity: 57
- },
- {
-  sku: "mondial-1433",
-  name: "Ventilador de Mesa 40cm Turbo - NVT-40-8P-B 110V",
-  brand: "MONDIAL",
-  unitPrice: 242.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de mesa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163008/NVT-40-8P-B---Foto-01.jpg?v=638755935450500000",
-  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-40-cm-nvt-40-8p-b/p",
-  popularity: 58
- },
- {
-  sku: "mondial-1420",
-  name: "Secador de Cabelo By Juliette Mondial Azul/Rosa 1200W Bivolt - SCT-JU-03 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 149.9,
-  unit: "un",
-  category: "cuidados pessoais secador de cabelos",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162667/SCT-JU-03---Foto-01.jpg?v=638494823293800000",
-  productUrl: "https://www.mondial.com.br/secador-de-cabelo-by-juliette-mondial-azul-rosa-1200w-sct-ju-03-1/p",
-  popularity: 59
- },
- {
-  sku: "mondial-1399",
-  name: "Chaleira Elétrica Pratic Hot 17L Mondial Preto 1850W - CE-17 110V",
-  brand: "MONDIAL",
-  unitPrice: 154.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162383/CE-17---Foto-01.jpg?v=638458473717500000",
-  productUrl: "https://www.mondial.com.br/chaleira-eletrica-mondial-pratic-hot-1-7l-ce-17/p",
-  popularity: 60
- },
- {
-  sku: "mondial-1347",
-  name: "Filtro Permanente da Cafeteira Mondial Dolce Arome C-30",
-  brand: "MONDIAL",
-  unitPrice: 24.9,
-  unit: "un",
-  category: "pecas pecas para cafeteiras",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162607/0200-20.jpg?v=638483668152770000",
-  productUrl: "https://www.mondial.com.br/filtro-permanente-cafeteira-mondial-dolce-arome-c-30/p",
-  popularity: 61
- },
- {
-  sku: "mondial-1323",
-  name: "Forno Elétrico 42L Family II Mondial Preto/Inox 1600W - FR-42 110V",
-  brand: "MONDIAL",
-  unitPrice: 464.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha forno eletrico",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161875/FR-42---Foto-01.jpg?v=638324762253370000",
-  productUrl: "https://www.mondial.com.br/forno-eletrico-mondial-42l-family-preto-inox-fr-42/p",
-  popularity: 62
- },
- {
-  sku: "mondial-1320",
-  name: "Depurador de Ar Inox 90cm Mondial Inox 165W DP90-01 110V",
-  brand: "MONDIAL",
-  unitPrice: 884.9,
-  unit: "un",
-  category: "eletrodomesticos depuradores",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162232/DP90-01---Foto-01.jpg?v=639001932409870000",
-  productUrl: "https://www.mondial.com.br/depurador-de-ar-90cm-dp90-01-127v-60hz/p",
-  popularity: 63
- },
- {
-  sku: "mondial-1287",
-  name: "Escova Secadora InfraRed Mondial Azul/Golden Rose 1300W Bivolt - ES-01-IR BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 194.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161401/ES-01-IR---Foto-01.jpg?v=638271854689100000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-infrared-mondial-azul-golden-rose-1300w-es-01-ir-1/p",
-  popularity: 64
- },
- {
-  sku: "mondial-1268",
-  name: "Cesto Quadrado Antiaderente da Air Fryer Mondial AFN-40 CESTO P/ALIMENTOS ANTIADERENTE[AFN-40]",
-  brand: "MONDIAL",
-  unitPrice: 71.9,
-  unit: "un",
-  category: "pecas pecas para fritadeiras cesto",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162103/cesta-1841-90.jpg?v=638367176890700000",
-  productUrl: "https://www.mondial.com.br/cesto-air-fryer-mondial-quadrado-antiaderente-afn-40/p",
-  popularity: 65
- },
- {
-  sku: "mondial-1266",
-  name: "Cesto Antiaderente Preto da Air Fryer Mondial AFN-50",
-  brand: "MONDIAL",
-  unitPrice: 79,
-  unit: "un",
-  category: "pecas pecas para fritadeiras cesto",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162185/cesta1841-82-1-.jpg?v=638380752488600000",
-  productUrl: "https://www.mondial.com.br/cesto-air-fryer-mondial-redondo-antiaderente-afn-50/p",
-  popularity: 66
- },
- {
-  sku: "mondial-1251",
-  name: "Hélice Azul 6 Pás 30cm do Ventilador Mondial V-30-6P HELICE 6PAS 30CM AZUL PETROLEO",
-  brand: "MONDIAL",
-  unitPrice: 22.9,
-  unit: "un",
-  category: "pecas pecas para ventiladores helice",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161238/2U8A8496--1-.jpg?v=638247041261070000",
-  productUrl: "https://www.mondial.com.br/helice-6pas-30cm-azul-petroleo/p",
-  popularity: 67
- },
- {
-  sku: "mondial-1245",
-  name: "Modelador de Cachos By Juliette Mondial 28mm Colors Bivolt MC-JU-03 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 209.9,
-  unit: "un",
-  category: "cuidados pessoais modelador de cachos",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160742/6.jpg?v=638225433080300000",
-  productUrl: "https://www.mondial.com.br/modelador-de-cachos-mc-ju-03-bivolt/p",
-  popularity: 68
- },
- {
-  sku: "mondial-1244",
-  name: "Escova Secadora By Juliette Mondial Azul e Rosa ES-JU-03 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165437/ES-JU-03---Foto-01.jpg?v=638925914759900000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-azul-rosa-1300w-es-ju-03/p",
-  popularity: 69
- },
- {
-  sku: "mondial-1218",
-  name: "Passadeira a Vapor Portátil Mondial Fast Steam VP-09 110V",
-  brand: "MONDIAL",
-  unitPrice: 256.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para casa vaporizador",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161475/VP-09---Foto-01--1-.jpg?v=638307421636270000",
-  productUrl: "https://www.mondial.com.br/vaporizador-vp-09-127v-60hz/p",
-  popularity: 70
- },
- {
-  sku: "mondial-1209",
-  name: "Botão do Timer cor Vermelha da Air Fryer AFN-50 Mondial Botão Air Fryer Mondial AFN-50 - Vermelho",
-  brand: "MONDIAL",
-  unitPrice: 17.9,
-  unit: "un",
-  category: "pecas pecas para fritadeiras botao",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160721/0f7a98a172354b5b07f0f278ef88a881--1-.jpg?v=638210662624830000",
-  productUrl: "https://www.mondial.com.br/botao-timer-air-fryer-mondial-vermelho-afn-50/p",
-  popularity: 71
- },
- {
-  sku: "mondial-1176",
-  name: "Forno Elétrico 52L Grand Family II Mondial Preto/Inox 1800W - FR-52 110V",
-  brand: "MONDIAL",
-  unitPrice: 549.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha forno eletrico",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160480/FR-52---Foto-01.jpg?v=638748154559470000",
-  productUrl: "https://www.mondial.com.br/forno-eletrico-mondial-fr-52-l-grand-family-60hz/p",
-  popularity: 72
- },
- {
-  sku: "mondial-1156",
-  name: "Modelador de Cachos By Juliette Mondial 28mm Golden Rose Bivolt MC-JU-01 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 232.9,
-  unit: "un",
-  category: "cuidados pessoais modelador de cachos",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159620/MC-JU-01---Foto-01.jpg?v=638010911430800000",
-  productUrl: "https://www.mondial.com.br/modelador-de-cachos-mondial-golden-rose-mc-ju-01/p",
-  popularity: 73
- },
- {
-  sku: "mondial-1149",
-  name: "Escova Secadora By Juliette Mondial Verde Oliva 1300W Bivolt - ES-JU-02 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165429/ES-JU-02---Foto-01.jpg?v=638925914359970000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-verde-oliva-1300w-es-ju-02-1/p",
-  popularity: 74
- },
- {
-  sku: "mondial-1148",
-  name: "Escova Secadora By Juliette Mondial Golden Rose ES-JU-01 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 239.9,
-  unit: "un",
-  category: "cuidados pessoais escova secadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165422/ES-JU-01---Foto-01.jpg?v=638925912306030000",
-  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-golden-rose-1300w-es-ju-01/p",
-  popularity: 75
- },
- {
-  sku: "mondial-1139",
-  name: "Puxador Vermelho e Cinza da Air Fryer AF-34R - Mondial PUXADOR VERMELHO E CINZA DA CESTA PARA ALIMENTOS - CONJ [AF]",
-  brand: "MONDIAL",
-  unitPrice: 69.9,
-  unit: "un",
-  category: "pecas pecas para fritadeiras puxador",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159530/AF-1.jpg?v=638006597998230000",
-  productUrl: "https://www.mondial.com.br/puxador-vermelho-e-cinza-da-air-fryer-af-34r--mondial/p",
-  popularity: 76
- },
- {
-  sku: "mondial-1044",
-  name: "Escova Rotativa Mondial Preto e Golden Rose ERB-01 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 244.9,
-  unit: "un",
-  category: "cuidados pessoais escova rotativa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166793/ERB-01---Foto-01.jpg?v=639059097370400000",
-  productUrl: "https://www.mondial.com.br/escova-rotativa-mondial-preto-golden-rose-1200w-erb-01/p",
-  popularity: 77
- },
- {
-  sku: "mondial-951",
-  name: "Ventilador de Mesa 40cm Super Power Mondial Preto/Prata 140W - VSP-40-B 110V",
-  brand: "MONDIAL",
-  unitPrice: 206.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de mesa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157967/VSP40B_LINK01_P1.jpg?v=638755927655270000",
-  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-40-b/p",
-  popularity: 78
- },
- {
-  sku: "mondial-927",
-  name: "Cuba Metalica Antiaderente da Air Fryer Mondial AF-17 e AF-55i CUBA METÁLICA ANTIADERENTE [AF]",
-  brand: "MONDIAL",
-  unitPrice: 89.9,
-  unit: "un",
-  category: "pecas pecas para fritadeiras cuba",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157808/CUBA-01.jpg?v=637678591700500000",
-  productUrl: "https://www.mondial.com.br/cuba-metalica-antiaderente-af-17-e-af-55i/p",
-  popularity: 79
- },
- {
-  sku: "mondial-884",
-  name: "Copo Completo Preto do Liquidificador Mondial L-60 Copo Cristal com Filtro do Liquidificador Mondial L-60",
-  brand: "MONDIAL",
-  unitPrice: 59.9,
-  unit: "un",
-  category: "pecas pecas para liquidificadores copo",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157850/989700_copo-completo-c-filtro-preto-do-liquidificador-mondial-l-60-l-61-l-62-l-63-l-66-nl-60-e-nl-60i_z1_637304996845981891.jpg?v=637678610818570000",
-  productUrl: "https://www.mondial.com.br/copo-completo-preto-do-liquidificador-mondial-l-60/p",
-  popularity: 80
- },
- {
-  sku: "mondial-861",
-  name: "Depurador de Ar 60cm Mondial Inox 165W - DP60-01 110V",
-  brand: "MONDIAL",
-  unitPrice: 672.9,
-  unit: "un",
-  category: "eletrodomesticos depuradores",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160800/DP60-01---Foto-01.jpg?v=639129079031670000",
-  productUrl: "https://www.mondial.com.br/depurador-de-ar-mondial-60cm-dp60-01/p",
-  popularity: 81
- },
- {
-  sku: "mondial-865",
-  name: "Prancha Alisadora Mondial Twist P-29 Bivolt BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 183.9,
-  unit: "un",
-  category: "cuidados pessoais prancha alisadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158117/p-29-4.jpg?v=637738921638930000",
-  productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-twist-p-29-bivolt/p",
-  popularity: 82
- },
- {
-  sku: "mondial-821",
-  name: "Ventilador de Teto Maxi Air Mondial Branco 125W - VTE-01 110V",
-  brand: "MONDIAL",
-  unitPrice: 409.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de teto",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157721/VTE-01_--1-.jpg?v=638882890818270000",
-  productUrl: "https://www.mondial.com.br/ventilador-de-teto-mondial-maxi-air-vte-01/p",
-  popularity: 83
+  popularity: 35
  },
  {
   sku: "mondial-817",
@@ -927,7 +399,524 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de teto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157709/VTE-02_--1-.jpg?v=638882891260070000",
   productUrl: "https://www.mondial.com.br/ventilador-de-teto-mondial-maxi-air-control-vte-02/p",
-  popularity: 84
+  popularity: 36
+ },
+ {
+  sku: "mondial-729",
+  name: "Ventilador Coluna 50cm Super Turbo 8 Pás Mondial Preto/Prata 150W - VTX-50C-8P 110V",
+  brand: "MONDIAL",
+  unitPrice: 399.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de coluna",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160736/VTX-50C-8P---Foto-08.jpg?v=638882898341330000",
+  productUrl: "https://www.mondial.com.br/ventilador-de-coluna-turbo-mondial-8-pas-vtx-50c-8p/p",
+  popularity: 37
+ },
+ {
+  sku: "mondial-319",
+  name: "Escova Alisadora Mondial Golden Rose EA-02 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 139.9,
+  unit: "un",
+  category: "cuidados pessoais escova alisadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159846/EA-02---Foto-01.jpg?v=638016284834770000",
+  productUrl: "https://www.mondial.com.br/escova-alisadora-mondial-golden-rose-ea-02/p",
+  popularity: 38
+ },
+ {
+  sku: "mondial-178",
+  name: "Aparador de Pelos Mondial Super Groom BG-05 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 183.9,
+  unit: "un",
+  category: "cuidados pessoais aparador de pelos",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156752/BG-05_--1-.jpg?v=637652339061130000",
+  productUrl: "https://www.mondial.com.br/aparador-de-pelos-super-groom-11-mondial-preto-prata-bivolt-bg-05/p",
+  popularity: 39
+ },
+ {
+  sku: "mondial-132",
+  name: "Batedeira Mondial Bella Massa B-23 NP 110V",
+  brand: "MONDIAL",
+  unitPrice: 206.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha batedeira",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156088/B-23-NP_--6-.jpg?v=637643751744470000",
+  productUrl: "https://www.mondial.com.br/batedeira-bella-massa-mondial-preto-inox-500w-b-23-np/p",
+  popularity: 40
+ },
+ {
+  sku: "mondial-59",
+  name: "Aparador de Pelos Classic Mondial Preto/Prata Bateria - TR-01 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 31.9,
+  unit: "un",
+  category: "cuidados pessoais barbeador eletrico",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156705/TR-01_--1-.jpg?v=637651701973300000",
+  productUrl: "https://www.mondial.com.br/aparador-de-pelos-classic-mondial-preto-prata-08w-bateria-tr-01-1/p",
+  popularity: 41
+ },
+ {
+  sku: "mondial-20",
+  name: "Fritadeira Sem Óleo Air Fryer 3,5L Mondial AF-31 110V",
+  brand: "MONDIAL",
+  unitPrice: 409.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha air fryer",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161890/AF-31---Foto-01.jpg?v=639089442368730000",
+  productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-5l-mondial-preto-1500w-af-31/p",
+  popularity: 42
+ },
+ {
+  sku: "mondial-18",
+  name: "Fritadeira Sem Óleo Air Fryer 3,5L Mondial AF-30-DI 110V",
+  brand: "MONDIAL",
+  unitPrice: 439.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha air fryer",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155477/AF-30-DI_6.jpg?v=637626606931470000",
+  productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-5l-mondial-preto-inox-1500w-af-30-di/p",
+  popularity: 43
+ },
+ {
+  sku: "mondial-1740",
+  name: "Robô Aspirador de Pó Pratic Clean Mondial Preto Bivolt RB-12-ST-BL BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 546.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para casa aspirador de po",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168721/RB-12-ST-BL---Foto-01.jpg?v=639193086526000000",
+  productUrl: "https://www.mondial.com.br/robo-aspirador-rb-12-st-bl-biv/p",
+  popularity: 44
+ },
+ {
+  sku: "mondial-1700",
+  name: "Churrasqueira Elétrica Mondial Grand Steak & Grill CH-08-BI 2000W Preto 127V",
+  brand: "MONDIAL",
+  unitPrice: 256.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha churrasqueira eletrica",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168125/CH-08-BI---Foto-01.jpg?v=639135889475200000",
+  productUrl: "https://www.mondial.com.br/churrasqueira-elet--ch-08-bi-127v-60h/p",
+  popularity: 45
+ },
+ {
+  sku: "mondial-1696",
+  name: "Caixa Amplificada Xsound Mondial Preto 300W RMS Bivolt - CM-300-N BIV",
+  brand: "MONDIAL",
+  unitPrice: 434.9,
+  unit: "un",
+  category: "audio caixa amplificadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168036/CM-300-N---Foto-01.jpg?v=639114245200800000",
+  productUrl: "https://www.mondial.com.br/caixa-amplificada-cm-300-n-biv-/p",
+  popularity: 46
+ },
+ {
+  sku: "mondial-1684",
+  name: "Mixer Turbo 3 em 1 Mondial Preto/Inox 500W - M-18-BI 127V",
+  brand: "MONDIAL",
+  unitPrice: 266.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha mixer",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168018/M-18-BI---Foto-01.jpg?v=639113438009130000",
+  productUrl: "https://www.mondial.com.br/mixer-m-18-bi-127v-60hz/p",
+  popularity: 47
+ },
+ {
+  sku: "mondial-1667",
+  name: "Escova Rotativa Bivolt Infinity Keratin Mondial Vermelho 1300W ERB-11-KR BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 219.9,
+  unit: "un",
+  category: "cuidados pessoais escova rotativa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167501/ERB11KRFoto01.jpg?v=639082169049000000",
+  productUrl: "https://www.mondial.com.br/escova-rotativa-mondial-red-infinity-keratin-bivolt-erb-11-kr/p",
+  popularity: 48
+ },
+ {
+  sku: "mondial-1655",
+  name: "Cafeteira Espresso Automática Dolce Latte 20 bar Mondial Preto/Inox - CCL-01 110",
+  brand: "MONDIAL",
+  unitPrice: 1546.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha cafeteira",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167289/CCL-01---Foto-01.jpg?v=639064143801270000",
+  productUrl: "https://www.mondial.com.br/cafeteira-espresso-automatica-mondial-dolce-latte-20-bar-ccl-01-capsula-po/p",
+  popularity: 49
+ },
+ {
+  sku: "mondial-1619",
+  name: "Climatizador Fresh Air Mondial Branco 90W CL-07L 110",
+  brand: "MONDIAL",
+  unitPrice: 606.9,
+  unit: "un",
+  category: "climatizacao climatizador",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166401/CL-07L---Foto-09.jpg?v=639033214063000000",
+  productUrl: "https://www.mondial.com.br/climatizador-cl-07l-127v-60hz/p",
+  popularity: 50
+ },
+ {
+  sku: "mondial-1527",
+  name: "Torre de Som Mondial TM-2200 luzes Bluetooth 2200W RMS APP BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 1999.9,
+  unit: "un",
+  category: "audio torre de som",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165381/TM-2200-Foto-01.jpg?v=638924467681570000",
+  productUrl: "https://www.mondial.com.br/torre-de-som-mondial-tm-2200-luzes-bluetooth-2200w-rms-app/p",
+  popularity: 51
+ },
+ {
+  sku: "mondial-1511",
+  name: "Ferro a Seco Mondial FS-01-BI 110V",
+  brand: "MONDIAL",
+  unitPrice: 166.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para casa ferro de passar",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163964/FS-01-BI---Foto-01.jpg?v=638717951379130000",
+  productUrl: "https://www.mondial.com.br/ferro-de-passar-a-seco-fs-01-bi/p",
+  popularity: 52
+ },
+ {
+  sku: "mondial-1488",
+  name: "Escova Secadora Space Shine Mondial Lilás - ES-21 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 154.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163953/ES-21---Foto-01.jpg?v=638705606751770000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-slim-es-21/p",
+  popularity: 53
+ },
+ {
+  sku: "mondial-1487",
+  name: "Escova Secadora Space Shine Mondial Grafite ES-20 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 154.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163952/ES-20---Foto-01.jpg?v=638705605615900000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-space-shine-mondial-grafite-1300w-es-20/p",
+  popularity: 54
+ },
+ {
+  sku: "mondial-1470",
+  name: "Aspirador de Pó Turbo Cycle Mondial Vermelho/Preto 1500W- AP-40-R 110V",
+  brand: "MONDIAL",
+  unitPrice: 258.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para casa aspirador de po",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163867/AP-40-R---Foto-01.png?v=638731505508070000",
+  productUrl: "https://www.mondial.com.br/aspirador-de-po-vertical-turbo-cycle-mondial-vermelho-preto-1500w-ap-40-r/p",
+  popularity: 55
+ },
+ {
+  sku: "mondial-1433",
+  name: "Ventilador de Mesa 40cm Turbo - NVT-40-8P-B 110V",
+  brand: "MONDIAL",
+  unitPrice: 242.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de mesa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163008/NVT-40-8P-B---Foto-01.jpg?v=638755935450500000",
+  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-40-cm-nvt-40-8p-b/p",
+  popularity: 56
+ },
+ {
+  sku: "mondial-1420",
+  name: "Secador de Cabelo By Juliette Mondial Azul/Rosa 1200W Bivolt - SCT-JU-03 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 149.9,
+  unit: "un",
+  category: "cuidados pessoais secador de cabelos",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162667/SCT-JU-03---Foto-01.jpg?v=638494823293800000",
+  productUrl: "https://www.mondial.com.br/secador-de-cabelo-by-juliette-mondial-azul-rosa-1200w-sct-ju-03-1/p",
+  popularity: 57
+ },
+ {
+  sku: "mondial-1399",
+  name: "Chaleira Elétrica Pratic Hot 17L Mondial Preto 1850W - CE-17 110V",
+  brand: "MONDIAL",
+  unitPrice: 154.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162383/CE-17---Foto-01.jpg?v=638458473717500000",
+  productUrl: "https://www.mondial.com.br/chaleira-eletrica-mondial-pratic-hot-1-7l-ce-17/p",
+  popularity: 58
+ },
+ {
+  sku: "mondial-1347",
+  name: "Filtro Permanente da Cafeteira Mondial Dolce Arome C-30",
+  brand: "MONDIAL",
+  unitPrice: 24.9,
+  unit: "un",
+  category: "pecas pecas para cafeteiras",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162607/0200-20.jpg?v=638483668152770000",
+  productUrl: "https://www.mondial.com.br/filtro-permanente-cafeteira-mondial-dolce-arome-c-30/p",
+  popularity: 59
+ },
+ {
+  sku: "mondial-1326",
+  name: "Escova Alisadora Black Rose Mondial Preto e Rose EA-07 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 154.9,
+  unit: "un",
+  category: "cuidados pessoais escova alisadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161881/EA-07---Foto-01.jpg?v=638326300078400000",
+  productUrl: "https://www.mondial.com.br/escova-alisadora-black-rose-mondial-preto-rose-ea-07/p",
+  popularity: 60
+ },
+ {
+  sku: "mondial-1323",
+  name: "Forno Elétrico 42L Family II Mondial Preto/Inox 1600W - FR-42 110V",
+  brand: "MONDIAL",
+  unitPrice: 464.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha forno eletrico",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161875/FR-42---Foto-01.jpg?v=638324762253370000",
+  productUrl: "https://www.mondial.com.br/forno-eletrico-mondial-42l-family-preto-inox-fr-42/p",
+  popularity: 61
+ },
+ {
+  sku: "mondial-1320",
+  name: "Depurador de Ar Inox 90cm Mondial Inox 165W DP90-01 110V",
+  brand: "MONDIAL",
+  unitPrice: 884.9,
+  unit: "un",
+  category: "eletrodomesticos depuradores",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162232/DP90-01---Foto-01.jpg?v=639001932409870000",
+  productUrl: "https://www.mondial.com.br/depurador-de-ar-90cm-dp90-01-127v-60hz/p",
+  popularity: 62
+ },
+ {
+  sku: "mondial-1287",
+  name: "Escova Secadora InfraRed Mondial Azul/Golden Rose 1300W Bivolt - ES-01-IR BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 194.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161401/ES-01-IR---Foto-01.jpg?v=638271854689100000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-infrared-mondial-azul-golden-rose-1300w-es-01-ir-1/p",
+  popularity: 63
+ },
+ {
+  sku: "mondial-1268",
+  name: "Cesto Quadrado Antiaderente da Air Fryer Mondial AFN-40 CESTO P/ALIMENTOS ANTIADERENTE[AFN-40]",
+  brand: "MONDIAL",
+  unitPrice: 71.9,
+  unit: "un",
+  category: "pecas pecas para fritadeiras cesto",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162103/cesta-1841-90.jpg?v=638367176890700000",
+  productUrl: "https://www.mondial.com.br/cesto-air-fryer-mondial-quadrado-antiaderente-afn-40/p",
+  popularity: 64
+ },
+ {
+  sku: "mondial-1266",
+  name: "Cesto Antiaderente Preto da Air Fryer Mondial AFN-50",
+  brand: "MONDIAL",
+  unitPrice: 79,
+  unit: "un",
+  category: "pecas pecas para fritadeiras cesto",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162185/cesta1841-82-1-.jpg?v=638380752488600000",
+  productUrl: "https://www.mondial.com.br/cesto-air-fryer-mondial-redondo-antiaderente-afn-50/p",
+  popularity: 65
+ },
+ {
+  sku: "mondial-1251",
+  name: "Hélice Azul 6 Pás 30cm do Ventilador Mondial V-30-6P HELICE 6PAS 30CM AZUL PETROLEO",
+  brand: "MONDIAL",
+  unitPrice: 22.9,
+  unit: "un",
+  category: "pecas pecas para ventiladores helice",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161238/2U8A8496--1-.jpg?v=638247041261070000",
+  productUrl: "https://www.mondial.com.br/helice-6pas-30cm-azul-petroleo/p",
+  popularity: 66
+ },
+ {
+  sku: "mondial-1245",
+  name: "Modelador de Cachos By Juliette Mondial 28mm Colors Bivolt MC-JU-03 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 209.9,
+  unit: "un",
+  category: "cuidados pessoais modelador de cachos",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160742/6.jpg?v=638225433080300000",
+  productUrl: "https://www.mondial.com.br/modelador-de-cachos-mc-ju-03-bivolt/p",
+  popularity: 67
+ },
+ {
+  sku: "mondial-1244",
+  name: "Escova Secadora By Juliette Mondial Azul e Rosa ES-JU-03 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165437/ES-JU-03---Foto-01.jpg?v=638925914759900000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-azul-rosa-1300w-es-ju-03/p",
+  popularity: 68
+ },
+ {
+  sku: "mondial-1218",
+  name: "Passadeira a Vapor Portátil Mondial Fast Steam VP-09 110V",
+  brand: "MONDIAL",
+  unitPrice: 256.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para casa vaporizador",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161475/VP-09---Foto-01--1-.jpg?v=638307421636270000",
+  productUrl: "https://www.mondial.com.br/vaporizador-vp-09-127v-60hz/p",
+  popularity: 69
+ },
+ {
+  sku: "mondial-1209",
+  name: "Botão do Timer cor Vermelha da Air Fryer AFN-50 Mondial Botão Air Fryer Mondial AFN-50 - Vermelho",
+  brand: "MONDIAL",
+  unitPrice: 17.9,
+  unit: "un",
+  category: "pecas pecas para fritadeiras botao",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160721/0f7a98a172354b5b07f0f278ef88a881--1-.jpg?v=638210662624830000",
+  productUrl: "https://www.mondial.com.br/botao-timer-air-fryer-mondial-vermelho-afn-50/p",
+  popularity: 70
+ },
+ {
+  sku: "mondial-1176",
+  name: "Forno Elétrico 52L Grand Family II Mondial Preto/Inox 1800W - FR-52 110V",
+  brand: "MONDIAL",
+  unitPrice: 549.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha forno eletrico",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160480/FR-52---Foto-01.jpg?v=638748154559470000",
+  productUrl: "https://www.mondial.com.br/forno-eletrico-mondial-fr-52-l-grand-family-60hz/p",
+  popularity: 71
+ },
+ {
+  sku: "mondial-1156",
+  name: "Modelador de Cachos By Juliette Mondial 28mm Golden Rose Bivolt MC-JU-01 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 232.9,
+  unit: "un",
+  category: "cuidados pessoais modelador de cachos",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159620/MC-JU-01---Foto-01.jpg?v=638010911430800000",
+  productUrl: "https://www.mondial.com.br/modelador-de-cachos-mondial-golden-rose-mc-ju-01/p",
+  popularity: 72
+ },
+ {
+  sku: "mondial-1149",
+  name: "Escova Secadora By Juliette Mondial Verde Oliva 1300W Bivolt - ES-JU-02 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165429/ES-JU-02---Foto-01.jpg?v=638925914359970000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-verde-oliva-1300w-es-ju-02-1/p",
+  popularity: 73
+ },
+ {
+  sku: "mondial-1148",
+  name: "Escova Secadora By Juliette Mondial Golden Rose ES-JU-01 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 239.9,
+  unit: "un",
+  category: "cuidados pessoais escova secadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165422/ES-JU-01---Foto-01.jpg?v=638925912306030000",
+  productUrl: "https://www.mondial.com.br/escova-secadora-by-juliette-mondial-golden-rose-1300w-es-ju-01/p",
+  popularity: 74
+ },
+ {
+  sku: "mondial-1139",
+  name: "Puxador Vermelho e Cinza da Air Fryer AF-34R - Mondial PUXADOR VERMELHO E CINZA DA CESTA PARA ALIMENTOS - CONJ [AF]",
+  brand: "MONDIAL",
+  unitPrice: 69.9,
+  unit: "un",
+  category: "pecas pecas para fritadeiras puxador",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159530/AF-1.jpg?v=638006597998230000",
+  productUrl: "https://www.mondial.com.br/puxador-vermelho-e-cinza-da-air-fryer-af-34r--mondial/p",
+  popularity: 75
+ },
+ {
+  sku: "mondial-1044",
+  name: "Escova Rotativa Mondial Preto e Golden Rose ERB-01 BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 244.9,
+  unit: "un",
+  category: "cuidados pessoais escova rotativa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166793/ERB-01---Foto-01.jpg?v=639059097370400000",
+  productUrl: "https://www.mondial.com.br/escova-rotativa-mondial-preto-golden-rose-1200w-erb-01/p",
+  popularity: 76
+ },
+ {
+  sku: "mondial-951",
+  name: "Ventilador de Mesa 40cm Super Power Mondial Preto/Prata 140W - VSP-40-B 110V",
+  brand: "MONDIAL",
+  unitPrice: 206.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de mesa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157967/VSP40B_LINK01_P1.jpg?v=638755927655270000",
+  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-40-b/p",
+  popularity: 77
+ },
+ {
+  sku: "mondial-927",
+  name: "Cuba Metalica Antiaderente da Air Fryer Mondial AF-17 e AF-55i CUBA METÁLICA ANTIADERENTE [AF]",
+  brand: "MONDIAL",
+  unitPrice: 89.9,
+  unit: "un",
+  category: "pecas pecas para fritadeiras cuba",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157808/CUBA-01.jpg?v=637678591700500000",
+  productUrl: "https://www.mondial.com.br/cuba-metalica-antiaderente-af-17-e-af-55i/p",
+  popularity: 78
+ },
+ {
+  sku: "mondial-884",
+  name: "Copo Completo Preto do Liquidificador Mondial L-60 Copo Cristal com Filtro do Liquidificador Mondial L-60",
+  brand: "MONDIAL",
+  unitPrice: 59.9,
+  unit: "un",
+  category: "pecas pecas para liquidificadores copo",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157850/989700_copo-completo-c-filtro-preto-do-liquidificador-mondial-l-60-l-61-l-62-l-63-l-66-nl-60-e-nl-60i_z1_637304996845981891.jpg?v=637678610818570000",
+  productUrl: "https://www.mondial.com.br/copo-completo-preto-do-liquidificador-mondial-l-60/p",
+  popularity: 79
+ },
+ {
+  sku: "mondial-861",
+  name: "Depurador de Ar 60cm Mondial Inox 165W - DP60-01 110V",
+  brand: "MONDIAL",
+  unitPrice: 672.9,
+  unit: "un",
+  category: "eletrodomesticos depuradores",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160800/DP60-01---Foto-01.jpg?v=639129079031670000",
+  productUrl: "https://www.mondial.com.br/depurador-de-ar-mondial-60cm-dp60-01/p",
+  popularity: 80
+ },
+ {
+  sku: "mondial-865",
+  name: "Prancha Alisadora Mondial Twist P-29 Bivolt BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 183.9,
+  unit: "un",
+  category: "cuidados pessoais prancha alisadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158117/p-29-4.jpg?v=637738921638930000",
+  productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-twist-p-29-bivolt/p",
+  popularity: 81
+ },
+ {
+  sku: "mondial-821",
+  name: "Ventilador de Teto Maxi Air Mondial Branco 125W - VTE-01 110V",
+  brand: "MONDIAL",
+  unitPrice: 409.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de teto",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157721/VTE-01_--1-.jpg?v=638882890818270000",
+  productUrl: "https://www.mondial.com.br/ventilador-de-teto-mondial-maxi-air-vte-01/p",
+  popularity: 82
+ },
+ {
+  sku: "mondial-778",
+  name: "Ventilador de Mesa Mondial Turbo 8 Pás 50cm VTX-50-8P 110V",
+  brand: "MONDIAL",
+  unitPrice: 326.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de mesa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167102/VTX-50-8P_--5-.jpg?v=639059106866630000",
+  productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-50cm-vtx-50-8p/p",
+  popularity: 83
  },
  {
   sku: "mondial-727",
@@ -938,7 +927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de coluna",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157628/VTX-40C-8P-CR_--2-.jpg?v=638774091264330000",
   productUrl: "https://www.mondial.com.br/ventilador-de-coluna-turbo-mondial-40cm-vtx-40c-8p-cr/p",
-  popularity: 85
+  popularity: 84
  },
  {
   sku: "mondial-664",
@@ -949,7 +938,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156931/SC-10_--1-.jpg?v=637653204854670000",
   productUrl: "https://www.mondial.com.br/secador-maxis-travel-mondial-vermelho-preto-1200w-sc-10/p",
-  popularity: 86
+  popularity: 85
  },
  {
   sku: "mondial-629",
@@ -960,7 +949,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha pipoqueira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157248/PP-05.jpg?v=638960772059670000",
   productUrl: "https://www.mondial.com.br/pipoqueira-pop-bowl-mondial-pp-05/p",
-  popularity: 87
+  popularity: 86
  },
  {
   sku: "mondial-627",
@@ -971,7 +960,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha pipoqueira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155803/PP-03_--2-.jpg?v=638842213172530000",
   productUrl: "https://www.mondial.com.br/pipoqueira-mondial-popflix-pp-03/p",
-  popularity: 88
+  popularity: 87
  },
  {
   sku: "mondial-625",
@@ -982,7 +971,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha pipoqueira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157244/PP-04_--1-.jpg?v=638925917073100000",
   productUrl: "https://www.mondial.com.br/pipoqueira-mondial-popflix-pp-04/p",
-  popularity: 89
+  popularity: 88
  },
  {
   sku: "mondial-608",
@@ -993,7 +982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167625/PE-43-6X---Foto-01.jpg?v=639111842167330000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-pratic-6i-pe-43-6x/p",
-  popularity: 90
+  popularity: 89
  },
  {
   sku: "mondial-582",
@@ -1004,7 +993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157430/PE-47-3L-I_--3---1-.jpg?v=639257853415500000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-pratic-cook-3-l-premium-i-pe-47-3l-i/p",
-  popularity: 91
+  popularity: 90
  },
  {
   sku: "mondial-532",
@@ -1015,7 +1004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha multiprocessador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157237/MP16_--2-.jpg?v=638887853866470000",
   productUrl: "https://www.mondial.com.br/miniprocessador-mondial-mp-16-b/p",
-  popularity: 92
+  popularity: 91
  },
  {
   sku: "mondial-502",
@@ -1026,7 +1015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156064/Sem-Titulo-14.jpg?v=638875936802000000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-power-l-99-fb/p",
-  popularity: 93
+  popularity: 92
  },
  {
   sku: "mondial-466",
@@ -1037,7 +1026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157897/l-550-b.jpg?v=637679395100730000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-easy-power-550w-l-550-b/p",
-  popularity: 94
+  popularity: 93
  },
  {
   sku: "mondial-336",
@@ -1048,7 +1037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha espremedor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156568/E-10_--3-.jpg?v=637650648059600000",
   productUrl: "https://www.mondial.com.br/extrator-de-sucos-mondial-turbo-premium-e-10/p",
-  popularity: 95
+  popularity: 94
  },
  {
   sku: "mondial-330",
@@ -1059,7 +1048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha espremedor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155783/E-02_--1-.jpg?v=638918233429970000",
   productUrl: "https://www.mondial.com.br/espremedor-mondial-premium-e-02/p",
-  popularity: 96
+  popularity: 95
  },
  {
   sku: "mondial-324",
@@ -1070,7 +1059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova rotativa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156891/ER-09_--1-.jpg?v=638887857692330000",
   productUrl: "https://www.mondial.com.br/escova-rotativa-ceramic-ion-turbo-mondial-vermelho-preto-1200w-er-09/p",
-  popularity: 97
+  popularity: 96
  },
  {
   sku: "mondial-322",
@@ -1081,7 +1070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova rotativa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156901/ER-10_--1-.jpg?v=638737820553400000",
   productUrl: "https://www.mondial.com.br/escova-rotativa-black-rose-line-mondial-er-10/p",
-  popularity: 98
+  popularity: 97
  },
  {
   sku: "mondial-296",
@@ -1092,7 +1081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops cooktop 4 bocas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156550/CTG-01_--5-.jpg?v=639040181666400000",
   productUrl: "https://www.mondial.com.br/cooktop-a-gas-4-bocas-mondial-ctg-01/p",
-  popularity: 99
+  popularity: 98
  },
  {
   sku: "mondial-237",
@@ -1103,7 +1092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164720/CE-06---Foto-01.jpg.jpg?v=638833444326200000",
   productUrl: "https://www.mondial.com.br/chaleira-eletrica-mondial-premium-inox-1200w-ce-06-1/p",
-  popularity: 100
+  popularity: 99
  },
  {
   sku: "mondial-235",
@@ -1114,7 +1103,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha chaleira eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155774/CE-07_--1-.jpg?v=638785126987500000",
   productUrl: "https://www.mondial.com.br/chaleira-eletrica-mondial-pratic-hot-ce-07/p",
-  popularity: 101
+  popularity: 100
  },
  {
   sku: "mondial-174",
@@ -1125,7 +1114,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166121/B-44-B---Foto-01.jpg?v=639008148039470000",
   productUrl: "https://www.mondial.com.br/batedeira-pratica-mondial-preto-400w-b-44-b/p",
-  popularity: 102
+  popularity: 101
  },
  {
   sku: "mondial-160",
@@ -1136,7 +1125,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira planetaria",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156131/BP-01P-B--4-.jpg?v=638835442057870000",
   productUrl: "https://www.mondial.com.br/batedeira-planetaria-mondial-preto-inox-700w-bp-01p-b-1/p",
-  popularity: 103
+  popularity: 102
  },
  {
   sku: "mondial-62",
@@ -1147,18 +1136,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156733/BG-03_--1-.jpg?v=638838634542670000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-super-groom-10-mondial-preto-azul-bivolt-bg-03-1/p",
-  popularity: 104
- },
- {
-  sku: "mondial-52",
-  name: "Ventilador 40cm Super Turbo 8 Pás Mondial Preto 150W - VTX-40-8P 110V",
-  brand: "MONDIAL",
-  unitPrice: 276.9,
-  unit: "un",
-  category: "climatizacao ventilador ventilador de mesa",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160283/VTX-40-8P---Foto-02.jpg?v=638755925289870000",
-  productUrl: "https://www.mondial.com.br/ventilador-40cm-super-turbo-8-pas-mondial-preto-prata-140w-vtx-40-8p-1/p",
-  popularity: 105
+  popularity: 103
  },
  {
   sku: "mondial-34",
@@ -1169,7 +1147,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/169149/DG-01---Foto-01.jpg?v=639241294586970000",
   productUrl: "https://www.mondial.com.br/personal-blender-mondial-preto-prata-300w-dg-01-1/p",
-  popularity: 106
+  popularity: 104
  },
  {
   sku: "mondial-32",
@@ -1180,7 +1158,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155863/L-900-FB_--2-.jpg?v=638998943073200000",
   productUrl: "https://www.mondial.com.br/liquidificador-turbo-full-mondial-preto-900w-l-900-fb-1/p",
-  popularity: 107
+  popularity: 105
  },
  {
   sku: "mondial-5",
@@ -1191,18 +1169,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165408/ES-15---Foto-01.jpg?v=638925903906570000",
   productUrl: "https://www.mondial.com.br/escova-secadora-mondial-preto-champagne-bivolt-es-15/p",
-  popularity: 108
- },
- {
-  sku: "mondial-1759",
-  name: "Caixa Amplificada Xsound Mondial Preto 220W RMS Bivolt - CM-220-N Bivolt",
-  brand: "MONDIAL",
-  unitPrice: 329.9,
-  unit: "un",
-  category: "audio caixa amplificadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/169008/CM220NFoto01.jpg?v=639226577272470000",
-  productUrl: "https://www.mondial.com.br/caixa-amplificada-xsound-mondial-preto-220w-rms-bivolt-cm-220-n/p",
-  popularity: 109
+  popularity: 106
  },
  {
   sku: "mondial-1718",
@@ -1213,7 +1180,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa umidificador de ar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168502/UA-08---Foto-01.jpg?v=639166220976070000",
   productUrl: "https://www.mondial.com.br/ua-08-umidificador-de-ar-comfort-air-essence-bivolt-mondial/p",
-  popularity: 110
+  popularity: 107
  },
  {
   sku: "mondial-1690",
@@ -1224,7 +1191,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167984/EA-09---Foto-01.jpg?v=639112567557300000",
   productUrl: "https://www.mondial.com.br/escova-alisadora-ea-09-bivolt/p",
-  popularity: 111
+  popularity: 108
  },
  {
   sku: "mondial-1689",
@@ -1235,7 +1202,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167992/EA-08--Foto-01.jpg?v=639167102519630000",
   productUrl: "https://www.mondial.com.br/escova-alisadora-ea-08-bivolt/p",
-  popularity: 112
+  popularity: 109
  },
  {
   sku: "mondial-1685",
@@ -1246,7 +1213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha churrasqueira eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167962/CH-09-BI---Foto-01.jpg?v=639112567861970000",
   productUrl: "https://www.mondial.com.br/churrasqueira-elet--ch-09-bi-127v-60hz/p",
-  popularity: 113
+  popularity: 110
  },
  {
   sku: "mondial-1678",
@@ -1257,7 +1224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168368/PG-01-CL---Foto-01.jpg?v=639161055023000000",
   productUrl: "https://www.mondial.com.br/sanduicheira-grill-mondial-master-press-inox-1000w-pg-01-cl/p",
-  popularity: 114
+  popularity: 111
  },
  {
   sku: "mondial-1635",
@@ -1268,7 +1235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166733/SC-21-BI---Foto-01.jpg?v=639008036716370000",
   productUrl: "https://www.mondial.com.br/secador-mondial-space-shine-2100w-2200w-sc-21-bi/p",
-  popularity: 115
+  popularity: 112
  },
  {
   sku: "mondial-1625",
@@ -1279,7 +1246,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa vaporizador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166503/VP-10-DB---Foto-01.jpg?v=638978577171070000",
   productUrl: "https://www.mondial.com.br/vaporizador-vp-10-db-bivolt-60hz/p",
-  popularity: 116
+  popularity: 113
  },
  {
   sku: "mondial-1617",
@@ -1290,7 +1257,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao climatizador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166425/CL-25L---Foto-09.jpg?v=639033215304700000",
   productUrl: "https://www.mondial.com.br/climatizador-cl-25l-220v-60hz/p",
-  popularity: 117
+  popularity: 114
  },
  {
   sku: "mondial-1587",
@@ -1301,7 +1268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha forno eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167116/FRN42BFoto01.jpg?v=639059116116430000",
   productUrl: "https://www.mondial.com.br/forno-eletrico-42l-family-ii-mondial-preto-inox-1600w-frn-42-b/p",
-  popularity: 118
+  popularity: 115
  },
  {
   sku: "mondial-1589",
@@ -1312,7 +1279,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha forno eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167152/FRN52BFoto01.jpg?v=639059116908900000",
   productUrl: "https://www.mondial.com.br/forno-eletrico-52l-grand-family-ii-mondial-preto-inox-1800w-frn-52-b/p",
-  popularity: 119
+  popularity: 116
  },
  {
   sku: "mondial-1573",
@@ -1323,7 +1290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer oven",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166245/AFON-12L-WI---Foto-01.jpg?v=639008146096500000",
   productUrl: "https://www.mondial.com.br/fritadeira-air-fryer-forno-oven-12l-mondial-branco-inox-2200w-afon-12l-wi/p",
-  popularity: 120
+  popularity: 117
  },
  {
   sku: "mondial-1583",
@@ -1334,7 +1301,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha moedor de cafe",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165664/MCF-01-BI---Foto-01.jpg?v=638917244814470000",
   productUrl: "https://www.mondial.com.br/moedor-cafe-mondial-dolce-arome-inox-180w-mcf01bi/p",
-  popularity: 121
+  popularity: 118
  },
  {
   sku: "mondial-1568",
@@ -1345,7 +1312,18 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165082/AFN-40-BF---Foto-01.jpg?v=638874989001600000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-4l-mondial-preto-1500w-afn-40-bf/p",
-  popularity: 122
+  popularity: 119
+ },
+ {
+  sku: "mondial-1547",
+  name: "Caixa Amplificada Mondial Preto 550W RMS Bivolt - CM-550-L BIVOLT",
+  brand: "MONDIAL",
+  unitPrice: 686.9,
+  unit: "un",
+  category: "audio caixa amplificadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165106/CM-550-L---Foto-01.jpg?v=638877664051900000",
+  productUrl: "https://www.mondial.com.br/caixa-amplificada-mondial-preto-550w-rms-bivolt-cm-550-l/p",
+  popularity: 120
  },
  {
   sku: "mondial-1492",
@@ -1356,7 +1334,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163705/AF-50-DV---Foto-01.jpg?v=638690194346070000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-digital-5l-mondial-preto-2000w-af-50-dv/p",
-  popularity: 123
+  popularity: 121
  },
  {
   sku: "mondial-1443",
@@ -1367,7 +1345,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer oven",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164444/AFON-12L-BI-BC---Foto-01.jpg.jpg?v=639190423401600000",
   productUrl: "https://www.mondial.com.br/fritadeira-air-fryer-oven-12l-mondial-afon-12l-bi-bc/p",
-  popularity: 124
+  popularity: 122
  },
  {
   sku: "mondial-1427",
@@ -1378,7 +1356,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163388/L-98-B---Foto-01.jpg?v=638785154440530000",
   productUrl: "https://www.mondial.com.br/liquidificador-pratic-turbo-mondial-l-98-b/p",
-  popularity: 125
+  popularity: 123
  },
  {
   sku: "mondial-1306",
@@ -1389,7 +1367,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165963/MONDIAL_SiteIMG_Produto0043-97_3.png?v=638938171329800000",
   productUrl: "https://www.mondial.com.br/botao-da-temperatura-vermelho-inox-da-air-fryer-mondial/p",
-  popularity: 126
+  popularity: 124
  },
  {
   sku: "mondial-1305",
@@ -1400,7 +1378,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165960/MONDIAL_SiteIMG_Produto0043-69_1.png?v=638938171018330000",
   productUrl: "https://www.mondial.com.br/botao-da-temperatura-preto-inox-da-air-fryer-mondial/p",
-  popularity: 127
+  popularity: 125
  },
  {
   sku: "mondial-1276",
@@ -1411,7 +1389,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161358/SCN-05---Foto-01.jpg?v=638267780211400000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelos-scn-05-127v-60hz/p",
-  popularity: 128
+  popularity: 126
  },
  {
   sku: "mondial-1258",
@@ -1422,7 +1400,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162095/botao-0043-66--2-.jpg?v=638367164119070000",
   productUrl: "https://www.mondial.com.br/botao-temperatura-air-fryer-mondial-vermelho-inox-af-32/p",
-  popularity: 129
+  popularity: 127
  },
  {
   sku: "mondial-1253",
@@ -1433,7 +1411,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras puxador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162098/puxador-1561-34--3-.jpg?v=638367173072730000",
   productUrl: "https://www.mondial.com.br/puxador-da-air-fryer-mondial-af-14-4l-vermelho-inox/p",
-  popularity: 130
+  popularity: 128
  },
  {
   sku: "mondial-1185",
@@ -1444,7 +1422,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160519/C-30-18X-FB---Foto-01.jpg?v=638961288985030000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-c-30-18x-fb/p",
-  popularity: 131
+  popularity: 129
  },
  {
   sku: "mondial-1153",
@@ -1455,7 +1433,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159592/P-JU-02---Foto-01.jpg?v=638010898054700000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-p-ju-02/p",
-  popularity: 132
+  popularity: 130
  },
  {
   sku: "mondial-1150",
@@ -1466,7 +1444,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159585/P-JU-01---Foto-01.jpg?v=638010895555770000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-golden-rose-p-ju-01/p",
-  popularity: 133
+  popularity: 131
  },
  {
   sku: "mondial-1093",
@@ -1477,7 +1455,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165390/ES-11-BI---Foto-01.jpg?v=638925903454230000",
   productUrl: "https://www.mondial.com.br/escova-secadora-mondial-keratin-es-11-bi-1/p",
-  popularity: 134
+  popularity: 132
  },
  {
   sku: "mondial-874",
@@ -1488,7 +1466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158414/ES-14---Foto-01.jpg?v=638887856916700000",
   productUrl: "https://www.mondial.com.br/escova-secadora-mondial-es-14/p",
-  popularity: 135
+  popularity: 133
  },
  {
   sku: "mondial-1049",
@@ -1499,7 +1477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais barbeador eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158207/BE-02---Foto-01.jpg?v=637750165813370000",
   productUrl: "https://www.mondial.com.br/barbeador-eletrico-power-shave-mondial-bivolt-be-02/p",
-  popularity: 136
+  popularity: 134
  },
  {
   sku: "mondial-1045",
@@ -1510,7 +1488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159671/P-50-FOTO-01.png?v=638012811826100000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-white-rose-line-mondial-p-50/p",
-  popularity: 137
+  popularity: 135
  },
  {
   sku: "mondial-1021",
@@ -1521,7 +1499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha multiprocessador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160464/MPN-01-BF---Foto-01.png?v=638363676148500000",
   productUrl: "https://www.mondial.com.br/multiprocessador-turbo-chef-9-em-1-mondial-mpn-01-bf/p",
-  popularity: 138
+  popularity: 136
  },
  {
   sku: "mondial-1003",
@@ -1532,7 +1510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166527/SC-37-BI---Foto-01.jpg?v=638980393136370000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelos-sc-37-bi-bivolt-60hz/p",
-  popularity: 139
+  popularity: 137
  },
  {
   sku: "mondial-926",
@@ -1543,7 +1521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157876/989761_copo-pp-com-tampa-branca-do-liquidificador-mondial-nl-26-l-03-l-12-e-l-15_z1_637304998987673676.jpg?v=637678618313200000",
   productUrl: "https://www.mondial.com.br/copo-pp-com-tampa-branca-do-liquidificador-mondial-nl-26/p",
-  popularity: 140
+  popularity: 138
  },
  {
   sku: "mondial-886",
@@ -1554,7 +1532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157847/989760_copo-cristal-completo-com-filtro-para-liquidificador-mondial-l-51-l-52-l-53-kt-03-l-55-e-kt-06_z2_637304998653339854.jpg?v=637678610220570000",
   productUrl: "https://www.mondial.com.br/copo-cristal-completo-do-liquidificador-mondial-l-51/p",
-  popularity: 141
+  popularity: 139
  },
  {
   sku: "mondial-870",
@@ -1565,7 +1543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157740/P-15_--1---1-.jpg?v=637668535260570000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-tourmaline-ceramic-p-15/p",
-  popularity: 142
+  popularity: 140
  },
  {
   sku: "mondial-869",
@@ -1576,7 +1554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157739/P-27_--2-.jpg?v=637668533749230000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-mondial-black-rose-p-27/p",
-  popularity: 143
+  popularity: 141
  },
  {
   sku: "mondial-837",
@@ -1587,7 +1565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157563/L-1200-RI_--11-.jpg?v=637667513652800000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-inox-l-1200-ri/p",
-  popularity: 144
+  popularity: 142
  },
  {
   sku: "mondial-833",
@@ -1598,7 +1576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156926/ES-28_--2-.jpg?v=637653189136430000",
   productUrl: "https://www.mondial.com.br/escova-secadora-mondial-azul-1200w-es-28/p",
-  popularity: 145
+  popularity: 143
  },
  {
   sku: "mondial-694",
@@ -1609,7 +1587,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha torradeira de paes",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157276/T-13_--1---1-.jpg?v=638913151769470000",
   productUrl: "https://www.mondial.com.br/torradeira-de-paes-smart-toast-inox-mondial-t-13/p",
-  popularity: 146
+  popularity: 144
  },
  {
   sku: "mondial-652",
@@ -1620,7 +1598,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166564/S-20---Foto-01.jpg?v=638987246430030000",
   productUrl: "https://www.mondial.com.br/sanduicheira-mondial-s-20/p",
-  popularity: 147
+  popularity: 145
  },
  {
   sku: "mondial-633",
@@ -1631,7 +1609,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157212/PG-01--1-.jpg?v=639216338607870000",
   productUrl: "https://www.mondial.com.br/press-grill-mondial-pg-01/p",
-  popularity: 148
+  popularity: 146
  },
  {
   sku: "mondial-604",
@@ -1642,7 +1620,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167609/PE-42-10X---Foto-01.jpg?v=639111840886500000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-pratic-10i-pe-42-10x/p",
-  popularity: 149
+  popularity: 147
  },
  {
   sku: "mondial-594",
@@ -1653,7 +1631,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157456/PE-44-10X_--3---1-.jpg?v=637666970997030000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-fast-rice-10-pe-44-10x/p",
-  popularity: 150
+  popularity: 148
  },
  {
   sku: "mondial-566",
@@ -1664,7 +1642,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157390/PE-38--2---1-.jpg?v=638742883009100000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-mondial-digital-master-cooker-pe-38/p",
-  popularity: 151
+  popularity: 149
  },
  {
   sku: "mondial-452",
@@ -1675,7 +1653,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157194/G-03_--5-.jpg?v=637654201216370000",
   productUrl: "https://www.mondial.com.br/grill-redondo-mondial-cook--grill-40-g-03/p",
-  popularity: 152
+  popularity: 150
  },
  {
   sku: "mondial-444",
@@ -1686,7 +1664,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157251/S-07_--3-.jpg?v=638835434827000000",
   productUrl: "https://www.mondial.com.br/grill-e-sanduicheira-mondial-premium-s-07/p",
-  popularity: 153
+  popularity: 151
  },
  {
   sku: "mondial-410",
@@ -1697,7 +1675,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161889/AF-30-I---Foto-01.jpg?v=638363677033800000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-5l-mondial-af-30-i/p",
-  popularity: 154
+  popularity: 152
  },
  {
   sku: "mondial-359",
@@ -1708,7 +1686,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha fogao eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157170/FE-03_--2-.jpg?v=638883716294830000",
   productUrl: "https://www.mondial.com.br/fogao-eletrico-mondial-fast-cook-dual-fe-03/p",
-  popularity: 155
+  popularity: 153
  },
  {
   sku: "mondial-353",
@@ -1719,7 +1697,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa ferro de passar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157379/F-53_--1-.jpg?v=637666683606600000",
   productUrl: "https://www.mondial.com.br/ferro-de-passar-a-vapor-mondial-f-53/p",
-  popularity: 156
+  popularity: 154
  },
  {
   sku: "mondial-334",
@@ -1730,7 +1708,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha espremedor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156563/E-01_--1-.jpg?v=638785129121000000",
   productUrl: "https://www.mondial.com.br/espremedor-mondial-turbo-citrus-e-01/p",
-  popularity: 157
+  popularity: 155
  },
  {
   sku: "mondial-297",
@@ -1741,7 +1719,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops cooktop 5 bocas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156556/CTG-02_--5-.jpg?v=639199082402070000",
   productUrl: "https://www.mondial.com.br/cooktop-a-gas-5-bocas-mondial-ctg-02/p",
-  popularity: 158
+  popularity: 156
  },
  {
   sku: "mondial-100",
@@ -1752,7 +1730,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160461/AP-36---Foto-01.png?v=638363682438270000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-turbo-cycle-mondial-vermelho-preto-1100w-ap-36/p",
-  popularity: 159
+  popularity: 157
  },
  {
   sku: "mondial-80",
@@ -1763,7 +1741,18 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160455/AP-25---Foto-01.png?v=638077669301670000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-vertical-brush-carpet-mondial-vermelho-1200w-ap-25/p",
-  popularity: 160
+  popularity: 158
+ },
+ {
+  sku: "mondial-52",
+  name: "Ventilador 40cm Super Turbo 8 Pás Mondial Preto 150W - VTX-40-8P 110V",
+  brand: "MONDIAL",
+  unitPrice: 276.9,
+  unit: "un",
+  category: "climatizacao ventilador ventilador de mesa",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160283/VTX-40-8P---Foto-02.jpg?v=638755925289870000",
+  productUrl: "https://www.mondial.com.br/ventilador-40cm-super-turbo-8-pas-mondial-preto-prata-140w-vtx-40-8p-1/p",
+  popularity: 159
  },
  {
   sku: "mondial-1777",
@@ -1774,6 +1763,17 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas pistola de pintura",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/169229/FPP-01---Foto-01.jpg?v=639245806117500000",
   productUrl: "https://www.mondial.com.br/power-tools-mondial-vermelho-500w-fpp-01/p",
+  popularity: 160
+ },
+ {
+  sku: "mondial-1759",
+  name: "Caixa Amplificada Xsound Mondial Preto 220W RMS Bivolt - CM-220-N Bivolt",
+  brand: "MONDIAL",
+  unitPrice: 329.9,
+  unit: "un",
+  category: "audio caixa amplificadora",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/169008/CM220NFoto01.jpg?v=639226577272470000",
+  productUrl: "https://www.mondial.com.br/caixa-amplificada-xsound-mondial-preto-220w-rms-bivolt-cm-220-n/p",
   popularity: 161
  },
  {
@@ -2217,6 +2217,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 201
  },
  {
+  sku: "mondial-1577",
+  name: "Air Fryer Forno 25L French Door Mondial Preto/Inox 2000W - AFDO-25L-FD 127V",
+  brand: "MONDIAL",
+  unitPrice: 1946.9,
+  unit: "un",
+  category: "eletroportateis eletroportateis para cozinha air fryer oven",
+  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165769/AFDO-25L-FD---Foto-01.jpg?v=638918316491500000",
+  productUrl: "https://www.mondial.com.br/air-fryer-mondial-25l-french-door-preto-inox-2000w/p",
+  popularity: 202
+ },
+ {
   sku: "mondial-1564",
   name: "Frigobar Mondial 73L Porta Reversível Preto FGB-01-B80 110",
   brand: "MONDIAL",
@@ -2225,7 +2236,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167776/FGB-01-B80---Foto-01.jpg?v=639113357988770000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-73l-porta-reversivel-preto-fgb-01-b80/p",
-  popularity: 202
+  popularity: 203
  },
  {
   sku: "mondial-1566",
@@ -2236,7 +2247,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165068/FGB-01-B50---Foto-01.jpg?v=638874949274700000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-46l-porta-reversivel-preto-fgb-01-b50/p",
-  popularity: 203
+  popularity: 204
  },
  {
   sku: "mondial-1562",
@@ -2247,7 +2258,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165058/FGB-01-B120---Foto-01.jpg?v=638887199805130000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-120l-porta-reversivel-preto-fgb-01-b120/p",
-  popularity: 204
+  popularity: 205
  },
  {
   sku: "mondial-1558",
@@ -2258,7 +2269,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer oven",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166197/AFON-12L-AB---Foto-01.jpg?v=638984641082700000",
   productUrl: "https://www.mondial.com.br/fritadeira-air-fryer-forno-oven-12l-mondial-preto-2000w-afon-12l-ab/p",
-  popularity: 205
+  popularity: 206
  },
  {
   sku: "mondial-1557",
@@ -2269,7 +2280,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais cortador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165193/CR-11---Foto-10.jpg?v=638895844001330000",
   productUrl: "https://www.mondial.com.br/cortador-de-cabelos-smart-cub-mondial-preto-bivolt-cr-11/p",
-  popularity: 206
+  popularity: 207
  },
  {
   sku: "mondial-1669",
@@ -2280,7 +2291,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167493/CM-650-N---Foto-01.jpg?v=639081597855730000",
   productUrl: "https://www.mondial.com.br/caixa-amplificada-mondial-xsound-650w-bivolt-cm-650-n/p",
-  popularity: 207
+  popularity: 208
  },
  {
   sku: "mondial-1546",
@@ -2291,7 +2302,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165098/CM-400-L---Foto-01.png.png?v=638877598415800000",
   productUrl: "https://www.mondial.com.br/caixa-amplificada-mondial-preto-400w-rms-bivolt-cm-400-l/p",
-  popularity: 208
+  popularity: 209
  },
  {
   sku: "mondial-1697",
@@ -2302,7 +2313,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha mixer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168064/M-17-BI---Foto-01.png?v=639155040518470000",
   productUrl: "https://www.mondial.com.br/mixer-pratic-mondial-m17-bi-500w-inox/p",
-  popularity: 209
+  popularity: 210
  },
  {
   sku: "mondial-1537",
@@ -2313,7 +2324,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164636/BG-09---Foto---01.jpg.jpg?v=638851660546600000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-praticgroom-mondial-preto-bivolt---bg-09/p",
-  popularity: 210
+  popularity: 211
  },
  {
   sku: "mondial-1538",
@@ -2324,7 +2335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos freezer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165928/FHZ-01-W320---Foto-01.jpg?v=639076425865100000",
   productUrl: "https://www.mondial.com.br/freezer-horizontal-308l-mondial-branco-fhz-01-w320/p",
-  popularity: 211
+  popularity: 212
  },
  {
   sku: "mondial-1540",
@@ -2335,7 +2346,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos freezer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164670/FHZ-01-W150---Foto-01.jpg.jpg?v=638912027546800000",
   productUrl: "https://www.mondial.com.br/freezer-horizontal-150l-mondial-branco-fhz-01-w150/p",
-  popularity: 212
+  popularity: 213
  },
  {
   sku: "mondial-1535",
@@ -2346,7 +2357,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164622/P-26---Foto-01.jpg.jpg?v=638851574391930000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-space-shine-mondial-lilas-bivolt-p-26/p",
-  popularity: 213
+  popularity: 214
  },
  {
   sku: "mondial-1536",
@@ -2357,7 +2368,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais prancha alisadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164615/P-25---Foto-01.jpg.jpg?v=638814657485970000",
   productUrl: "https://www.mondial.com.br/prancha-alisadora-space-shine-mondial-grafite-bivolt-p-25/p",
-  popularity: 214
+  popularity: 215
  },
  {
   sku: "mondial-1530",
@@ -2368,7 +2379,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164286/CTI-03---Foto-01.jpg.jpg?v=638780723538800000",
   productUrl: "https://www.mondial.com.br/cooktop-por-inducao-4-bocas-mondial-preto-7000w-220v-cti-03/p",
-  popularity: 215
+  popularity: 216
  },
  {
   sku: "mondial-1529",
@@ -2379,7 +2390,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164292/CTI-02---Foto-01.jpg.jpg?v=638780723897100000",
   productUrl: "https://www.mondial.com.br/cooktop-por-inducao-2-bocas-mondial-preto-3500w-220v--cti-02/p",
-  popularity: 216
+  popularity: 217
  },
  {
   sku: "mondial-1524",
@@ -2390,7 +2401,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer oven",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164595/AFO-25L-BI---Foto-01.jpg.jpg?v=638796595818370000",
   productUrl: "https://www.mondial.com.br/fritadeira-air-fryer-forno-oven-digital-25l-mondial-preto-inox-2000w-afo-25l-bi/p",
-  popularity: 217
+  popularity: 218
  },
  {
   sku: "mondial-1519",
@@ -2401,7 +2412,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164155/FGB-01-W80---Foto-01.jpg.jpg?v=638762762385000000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-73l-porta-reversivel-branco-fgb-01-w80/p",
-  popularity: 218
+  popularity: 219
  },
  {
   sku: "mondial-1521",
@@ -2412,7 +2423,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164169/FGB-01-W120---Foto-01.jpg.jpg?v=638762763365570000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-120l-porta-reversivel-branco-fgb-01-w120/p",
-  popularity: 219
+  popularity: 220
  },
  {
   sku: "mondial-1517",
@@ -2423,7 +2434,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos frigobar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164185/FGB-01-W50---Foto-01.jpg.jpg?v=638762763768770000",
   productUrl: "https://www.mondial.com.br/frigobar-mondial-46l-porta-reversivel-branco-fgb-01-w50/p",
-  popularity: 220
+  popularity: 221
  },
  {
   sku: "mondial-1515",
@@ -2434,7 +2445,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164943/AP-41-BLI - Foto 01.jpg?v=638842271384930000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-turbo-cycle-hepa-mondial-1550w--ap-41-bli-1/p",
-  popularity: 221
+  popularity: 222
  },
  {
   sku: "mondial-1513",
@@ -2445,7 +2456,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164963/AP-41-GI - Foto 01.jpg?v=638842272144970000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-turbo-cycle-hepa-mondial-1550w--ap-41-gi-1/p",
-  popularity: 222
+  popularity: 223
  },
  {
   sku: "mondial-1491",
@@ -2456,7 +2467,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164406/PBX-350---Foto-01.jpg.jpg?v=638785154684000000",
   productUrl: "https://www.mondial.com.br/party-box-pbx-350-bivolt/p",
-  popularity: 223
+  popularity: 224
  },
  {
   sku: "mondial-1489",
@@ -2467,7 +2478,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais cortador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163685/CR-10-BI---Foto-01.jpg?v=638683154035670000",
   productUrl: "https://www.mondial.com.br/cortador-cabelo-cr-10-bi-bivolt-60hz/p",
-  popularity: 224
+  popularity: 225
  },
  {
   sku: "mondial-1504",
@@ -2478,7 +2489,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa lavadora de alta pressao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165017/LAP-03-GY---Foto-01.jpg?v=638851584868400000",
   productUrl: "https://www.mondial.com.br/lavadora-alta-pressao-aqua-power-3-mondial-1800w-lap-03-gy/p",
-  popularity: 225
+  popularity: 226
  },
  {
   sku: "mondial-1501",
@@ -2489,7 +2500,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa lavadora de alta pressao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165147/LAP-02-GY---Foto-01.jpg?v=638880981619370000",
   productUrl: "https://www.mondial.com.br/lavadora-alta-pressao-aqua-power-2-mondial-1800w-lap-02-gy/p",
-  popularity: 226
+  popularity: 227
  },
  {
   sku: "mondial-1499",
@@ -2500,7 +2511,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa lavadora de alta pressao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163751/LAP-01-GY---Foto-01.jpg?v=638787770394200000",
   productUrl: "https://www.mondial.com.br/lavadora-alta-pressao-aqua-power-mondial-1400w-lap-01-gy/p",
-  popularity: 227
+  popularity: 228
  },
  {
   sku: "mondial-1508",
@@ -2511,7 +2522,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa extratora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163756/EXP-01-R---Foto-01.jpg?v=638701568006270000",
   productUrl: "https://www.mondial.com.br/extratora-e-higienizadora-portatil-mondial-exp-01-r-165-w/p",
-  popularity: 228
+  popularity: 229
  },
  {
   sku: "mondial-1476",
@@ -2522,7 +2533,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas micro retifica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163485/FMR-02---Foto-01.jpg?v=638785126721170000",
   productUrl: "https://www.mondial.com.br/micro-retifica-mondial-vermelha-preta-180w-fmr-02/p",
-  popularity: 229
+  popularity: 230
  },
  {
   sku: "mondial-1474",
@@ -2533,7 +2544,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas serra circular",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163423/FSC-04---Foto-01.jpg?v=638785126332070000",
   productUrl: "https://www.mondial.com.br/serra-circular-mondial-vermelha-1500w-fsc-04/p",
-  popularity: 230
+  popularity: 231
  },
  {
   sku: "mondial-1670",
@@ -2544,7 +2555,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167521/L1400LTFoto01.jpg?v=639083076832430000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-inox-1400w-3-litros-l-1400-lt/p",
-  popularity: 231
+  popularity: 232
  },
  {
   sku: "mondial-1447",
@@ -2555,7 +2566,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha mixer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167018/M16BIFoto01.jpg?v=639046252009330000",
   productUrl: "https://www.mondial.com.br/mixer-turbo-inox-mondial-500w-m-16-bi/p",
-  popularity: 232
+  popularity: 233
  },
  {
   sku: "mondial-1440",
@@ -2566,7 +2577,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163944/SC-21---Foto-01.jpg?v=638833629302270000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelo-space-shine-mondial-sc-21/p",
-  popularity: 233
+  popularity: 234
  },
  {
   sku: "mondial-1438",
@@ -2577,7 +2588,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163930/SC-20---Foto-01.jpg?v=638895843221700000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelos-space-shine-mondial-grafite-2000w-sc-20/p",
-  popularity: 234
+  popularity: 235
  },
  {
   sku: "mondial-1435",
@@ -2588,7 +2599,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163015/NVT-40C-8P-B---Foto-01.jpg?v=638755934795970000",
   productUrl: "https://www.mondial.com.br/ventilador-de-coluna-mondial-8-pas-turbo-40cm-nvt-40c-8p-b/p",
-  popularity: 235
+  popularity: 236
  },
  {
   sku: "mondial-1430",
@@ -2599,7 +2610,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162989/CTG-04---Foto-01.jpg?v=638533861799470000",
   productUrl: "https://www.mondial.com.br/cooktop-a-gas-ctg-04-bivolt-2-bocas/p",
-  popularity: 236
+  popularity: 237
  },
  {
   sku: "mondial-1429",
@@ -2610,7 +2621,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162974/PBX-600-A---Foto-01.jpg?v=638530383335400000",
   productUrl: "https://www.mondial.com.br/party-box-pbx-600-a-bivolt/p",
-  popularity: 237
+  popularity: 238
  },
  {
   sku: "mondial-1422",
@@ -2621,7 +2632,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova secadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163020/ES-14-BI---Foto-01.jpg?v=638566503985500000",
   productUrl: "https://www.mondial.com.br/escova-secadora-argan-mondial-preto-golden-rose-1200w-es-14-bi/p",
-  popularity: 238
+  popularity: 239
  },
  {
   sku: "mondial-1405",
@@ -2632,7 +2643,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos micro-ondas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164393/MO-02-34-B---Foto-01.jpg?v=638785082711270000",
   productUrl: "https://www.mondial.com.br/micro-ondas-34l-mondial-preto-1400w-mo-02-34-b/p",
-  popularity: 239
+  popularity: 240
  },
  {
   sku: "mondial-1404",
@@ -2643,7 +2654,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de parede",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165935/NVP-PRO-50---Foto-01.jpg?v=638932833963400000",
   productUrl: "https://www.mondial.com.br/ventilador-parede-50cm-150w-5-pas-mondial/p",
-  popularity: 240
+  popularity: 241
  },
  {
   sku: "mondial-1394",
@@ -2654,7 +2665,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162366/PE-60-6L-I---Foto-01.jpg?v=639001934919670000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-digital-6l-mondial-preto-inox-pe-60-6l-i/p",
-  popularity: 241
+  popularity: 242
  },
  {
   sku: "mondial-1393",
@@ -2665,7 +2676,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais modelador de cachos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162365/MCT-JU-03---Foto-01.jpg?v=638455200346500000",
   productUrl: "https://www.mondial.com.br/modelador-de-cachos-mct-ju-03-bivolt/p",
-  popularity: 242
+  popularity: 243
  },
  {
   sku: "mondial-1385",
@@ -2676,7 +2687,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162982/L-97-W---Foto-01.jpg?v=639001934697600000",
   productUrl: "https://www.mondial.com.br/liquidificador-pratic-power-mondial-branco-l-97-w/p",
-  popularity: 243
+  popularity: 244
  },
  {
   sku: "mondial-1378",
@@ -2687,7 +2698,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162322/AFN-NT-01---Foto-01.jpg?v=638446569535000000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-4l-mondial-afn-nt-01/p",
-  popularity: 244
+  popularity: 245
  },
  {
   sku: "mondial-1373",
@@ -2698,7 +2709,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha maquina de gelo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162328/MG-12-GI---Foto-01.jpg?v=638778329832270000",
   productUrl: "https://www.mondial.com.br/maquina-de-gelo-mg-12-gi-turbo-127v-60hz/p",
-  popularity: 245
+  popularity: 246
  },
  {
   sku: "mondial-1356",
@@ -2709,7 +2720,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas parafusadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162079/PI-11MA---Foto-01.jpg?v=638362825320800000",
   productUrl: "https://www.mondial.com.br/parafusadeira-e-furadeira-mondial-power-tools-bivolt-pi-11ma/p",
-  popularity: 246
+  popularity: 247
  },
  {
   sku: "mondial-1355",
@@ -2720,7 +2731,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa ferro de passar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165737/FVN-01-NB---Foto-01.jpg?v=639001934267500000",
   productUrl: "https://www.mondial.com.br/ferro-de-passar-a-vapor-mondial-fvn-01-nb/p",
-  popularity: 247
+  popularity: 248
  },
  {
   sku: "mondial-1349",
@@ -2731,7 +2742,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162613/0310-38.jpg?v=638483672122870000",
   productUrl: "https://www.mondial.com.br/botao-preto-inox-do-liquidificador-mondial-l-900/p",
-  popularity: 248
+  popularity: 249
  },
  {
   sku: "mondial-1346",
@@ -2742,7 +2753,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras motor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162595/0062-12.jpg?v=638483663240500000",
   productUrl: "https://www.mondial.com.br/motor-da-air-fryer-mondial-af-31-e-af-32/p",
-  popularity: 249
+  popularity: 250
  },
  {
   sku: "mondial-1330",
@@ -2753,17 +2764,6 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas resistencia",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162615/0449-58.jpg?v=638483672849470000",
   productUrl: "https://www.mondial.com.br/resistencia-da-air-fryer-mondial-afn-40-com-suporte/p",
-  popularity: 250
- },
- {
-  sku: "mondial-1326",
-  name: "Escova Alisadora Black Rose Mondial Preto e Rose EA-07 BIVOLT",
-  brand: "MONDIAL",
-  unitPrice: 154.9,
-  unit: "un",
-  category: "cuidados pessoais escova alisadora",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161881/EA-07---Foto-01.jpg?v=638326300078400000",
-  productUrl: "https://www.mondial.com.br/escova-alisadora-black-rose-mondial-preto-rose-ea-07/p",
   popularity: 251
  },
  {
@@ -3746,17 +3746,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 340
  },
  {
-  sku: "mondial-976",
-  name: "Grill Redondo Cook & Grill 40 Mondial Preto 1270W - G-03-RC 110V",
-  brand: "MONDIAL",
-  unitPrice: 359.9,
-  unit: "un",
-  category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
-  imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158020/g03rc-1.jpg?v=637693137877170000",
-  productUrl: "https://www.mondial.com.br/grill-redondo-mondial-cook--grill-g-03-rc/p",
-  popularity: 341
- },
- {
   sku: "mondial-974",
   name: "Press Grill Red Ceramic Mondial PG-01-RC 110V",
   brand: "MONDIAL",
@@ -3765,7 +3754,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158016/pg-01-rc-2.jpg?v=637693124989830000",
   productUrl: "https://www.mondial.com.br/press-grill-red-ceramic-mondial-pg-01-rc/p",
-  popularity: 342
+  popularity: 341
  },
  {
   sku: "mondial-972",
@@ -3776,7 +3765,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158006/pe491.jpg?v=637693045339870000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-grill-mondial-pe-49/p",
-  popularity: 343
+  popularity: 342
  },
  {
   sku: "mondial-970",
@@ -3787,7 +3776,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira planetaria",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157922/BP-01P-R_--5-.jpg?v=639214741173000000",
   productUrl: "https://www.mondial.com.br/batedeira-planetaria-mondial-premium-bp-01p-r/p",
-  popularity: 344
+  popularity: 343
  },
  {
   sku: "mondial-969",
@@ -3798,7 +3787,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158225/7899882302318---L-74-Foto-03.jpg?v=637769887418030000",
   productUrl: "https://www.mondial.com.br/copo-cristal-com-filtro-do-liquidificador-mondial-l-74/p",
-  popularity: 345
+  popularity: 344
  },
  {
   sku: "mondial-968",
@@ -3809,7 +3798,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158099/bg-16-1.jpg?v=637735282951400000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-supergroom-mondial-bg-16/p",
-  popularity: 346
+  popularity: 345
  },
  {
   sku: "mondial-967",
@@ -3820,7 +3809,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158096/bg-08-1.jpg?v=637735280735470000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-supergroom-mondial-bg-08/p",
-  popularity: 347
+  popularity: 346
  },
  {
   sku: "mondial-963",
@@ -3831,7 +3820,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157982/VT30-NB_LINK01_P1.jpg?v=638774950724230000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-turbo-vt-30-nb/p",
-  popularity: 348
+  popularity: 347
  },
  {
   sku: "mondial-961",
@@ -3842,7 +3831,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de coluna",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157981/VT-30C-NB_LINK01_P1.jpg?v=638882888006800000",
   productUrl: "https://www.mondial.com.br/ventilador-de-coluna-mondial-6-pas-turbo-vt-30c-nb/p",
-  popularity: 349
+  popularity: 348
  },
  {
   sku: "mondial-949",
@@ -3853,7 +3842,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157959/VSP40W_LINK01_P1.jpg?v=638774102059430000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-40-w/p",
-  popularity: 350
+  popularity: 349
  },
  {
   sku: "mondial-947",
@@ -3864,7 +3853,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164813/VSP30AP_LINK01_P1.jpg?v=638839456060870000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-30-ap/p",
-  popularity: 351
+  popularity: 350
  },
  {
   sku: "mondial-945",
@@ -3875,7 +3864,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167820/VSP30WFoto01.jpg?v=639107591984030000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-30-w/p",
-  popularity: 352
+  popularity: 351
  },
  {
   sku: "mondial-943",
@@ -3886,7 +3875,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164841/VSP30B_LINK01_P1.jpg?v=638839459088970000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-6-pas-vsp-30-b/p",
-  popularity: 353
+  popularity: 352
  },
  {
   sku: "mondial-932",
@@ -3897,7 +3886,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores helice",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157837/PRATA.jpg?v=637678604990700000",
   productUrl: "https://www.mondial.com.br/helice-prata-6-pas-40cm-do-ventilador-mondial-vt-41/p",
-  popularity: 354
+  popularity: 353
  },
  {
   sku: "mondial-931",
@@ -3908,7 +3897,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores helice",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157836/PRATA.jpg?v=637678604573530000",
   productUrl: "https://www.mondial.com.br/helice-prata-6-pas-30cm-do-ventilador-mondial-vt-31/p",
-  popularity: 355
+  popularity: 354
  },
  {
   sku: "mondial-930",
@@ -3919,7 +3908,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores helice",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157835/AZUL.jpg?v=637678604221170000",
   productUrl: "https://www.mondial.com.br/helice-azul-6-pas-40-cm-do-ventilador-mondial-nv-06-6p-e-nv-45-6p/p",
-  popularity: 356
+  popularity: 355
  },
  {
   sku: "mondial-922",
@@ -3930,7 +3919,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores helice",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157834/BLACK.jpg?v=637678602913170000",
   productUrl: "https://www.mondial.com.br/helice-preta-6-pas-40cm-ventilador-mondial-nv-41-6p/p",
-  popularity: 357
+  popularity: 356
  },
  {
   sku: "mondial-921",
@@ -3941,7 +3930,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores helice",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157833/PRATA.jpg?v=637678602466130000",
   productUrl: "https://www.mondial.com.br/helice-prata-8-pas-50cm-do-ventilador-mondial-vtx-50-8p/p",
-  popularity: 358
+  popularity: 357
  },
  {
   sku: "mondial-919",
@@ -3952,7 +3941,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras puxador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157819/PUXADOR-01.jpg?v=637678594572900000",
   productUrl: "https://www.mondial.com.br/puxador-preto-da-fritadeira-mondial-ft-07/p",
-  popularity: 359
+  popularity: 358
  },
  {
   sku: "mondial-911",
@@ -3963,7 +3952,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para fritadeiras puxador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157811/PUXADOR-01.jpg?v=637678592983600000",
   productUrl: "https://www.mondial.com.br/puxador-vermelho-cinza-da-air-fryer-mondial-af-32-ri/p",
-  popularity: 360
+  popularity: 359
  },
  {
   sku: "mondial-908",
@@ -3974,7 +3963,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para batedeiras tigela",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157756/BLACK-A.jpg?v=637678572659230000",
   productUrl: "https://www.mondial.com.br/tigela-preta-da-batedeira-planetaria-mondial/p",
-  popularity: 361
+  popularity: 360
  },
  {
   sku: "mondial-906",
@@ -3985,7 +3974,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores tampa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157838/989758_tampa-com-dosadora-do-liquidificador-mondial-l-1000-l-1000-b-l-1000-bi-l-1000-fb-e-l-1000-rb_z3_637305003213396468.jpg?v=637678607121130000",
   productUrl: "https://www.mondial.com.br/tampa-preta-com-dosadora-do-liquidificador-mondial/p",
-  popularity: 362
+  popularity: 361
  },
  {
   sku: "mondial-899",
@@ -3996,7 +3985,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157831/PRATA-B1.jpg?v=637678601839900000",
   productUrl: "https://www.mondial.com.br/botao-da-helice-sporca-prata-do-ventilador-mondial/p",
-  popularity: 363
+  popularity: 362
  },
  {
   sku: "mondial-898",
@@ -4007,7 +3996,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157828/WHITE.jpg?v=637678600994230000",
   productUrl: "https://www.mondial.com.br/botao-de-oscilacao-branco-do-ventilador-mondial/p",
-  popularity: 364
+  popularity: 363
  },
  {
   sku: "mondial-897",
@@ -4018,7 +4007,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para ventiladores botao",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157829/AZUL-A.jpg?v=637678601518930000",
   productUrl: "https://www.mondial.com.br/botao-da-helice-sporca-azul-escuro-do-ventilador-mondial/p",
-  popularity: 365
+  popularity: 364
  },
  {
   sku: "mondial-893",
@@ -4029,7 +4018,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157857/COPO-VERMEL-COM-FILTRO.jpg?v=637678612931470000",
   productUrl: "https://www.mondial.com.br/copo-cristal-completo-do-liquidificador-mondial-l-99-fr/p",
-  popularity: 366
+  popularity: 365
  },
  {
   sku: "mondial-892",
@@ -4040,7 +4029,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157853/COPO-BRANCO-COM-FILTRO.jpg?v=637678612415300000",
   productUrl: "https://www.mondial.com.br/copo-cristal-completo-do-liquidificador-mondial-l-99-wg/p",
-  popularity: 367
+  popularity: 366
  },
  {
   sku: "mondial-891",
@@ -4051,7 +4040,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para batedeiras batedor de massa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157769/BATEDOR-03A.jpg?v=637678574492770000",
   productUrl: "https://www.mondial.com.br/batedor-de-massa-pesada-para-batedeira-planetaria/p",
-  popularity: 368
+  popularity: 367
  },
  {
   sku: "mondial-890",
@@ -4062,7 +4051,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para batedeiras batedor de massa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157767/BATEDOR-02A.jpg?v=637678574332700000",
   productUrl: "https://www.mondial.com.br/batedor-de-massa-media-para-batedeira-planetaria/p",
-  popularity: 369
+  popularity: 368
  },
  {
   sku: "mondial-887",
@@ -4073,7 +4062,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para extratores de suco castanha",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157771/CAST-LIMAO-FRONT.jpg?v=637678576278430000",
   productUrl: "https://www.mondial.com.br/castanha-menor-do-extrator-preto-mondial-e-08-e-e-10/p",
-  popularity: 370
+  popularity: 369
  },
  {
   sku: "mondial-872",
@@ -4084,7 +4073,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais escova rotativa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157751/ER-12-GR_--1-.jpg?v=638774868593770000",
   productUrl: "https://www.mondial.com.br/escova-rotativa-golden-rose-argan-mondial-er-12-gr/p",
-  popularity: 371
+  popularity: 370
  },
  {
   sku: "mondial-903",
@@ -4095,7 +4084,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pecas pecas para liquidificadores copo",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157794/COPO-VERMEL-COM-FILTRO.jpg?v=637678586726230000",
   productUrl: "https://www.mondial.com.br/copo-cristal-completo-do-liquidificador-mondial-l-900-fr/p",
-  popularity: 372
+  popularity: 371
  },
  {
   sku: "mondial-859",
@@ -4106,7 +4095,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos coifas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157594/CF90-01--2-.jpg?v=637667529812330000",
   productUrl: "https://www.mondial.com.br/coifa-de-parede-mondial-cf90-01/p",
-  popularity: 373
+  popularity: 372
  },
  {
   sku: "mondial-857",
@@ -4117,7 +4106,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos coifas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157592/CF60-01_--4-.jpg?v=637667526344770000",
   productUrl: "https://www.mondial.com.br/coifa-de-parede-mondial-cf60-01/p",
-  popularity: 374
+  popularity: 373
  },
  {
   sku: "mondial-849",
@@ -4128,7 +4117,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cupcake e waffle",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157583/CK-01_1.jpg?v=639215344390230000",
   productUrl: "https://www.mondial.com.br/cupcake-maker-mondial-pratic-cupcake-ck-01/p",
-  popularity: 375
+  popularity: 374
  },
  {
   sku: "mondial-848",
@@ -4139,7 +4128,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159498/CM-700---Foto-01.jpg?v=638882865725800000",
   productUrl: "https://www.mondial.com.br/caixa-amplificada-connect-lights-plus-cm-700/p",
-  popularity: 376
+  popularity: 375
  },
  {
   sku: "mondial-841",
@@ -4150,7 +4139,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas parafusadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168418/PI-10MA---Foto-09.jpg?v=639155087505200000",
   productUrl: "https://www.mondial.com.br/furadeira-parafusadeira-de-impacto-mondial-pi-10ma/p",
-  popularity: 377
+  popularity: 376
  },
  {
   sku: "mondial-847",
@@ -4161,7 +4150,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio caixa amplificadora",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157017/CM-1500_--1-.jpg?v=637653993436700000",
   productUrl: "https://www.mondial.com.br/caixa-amplificada-connect-mega-sound-ii-cm-1500/p",
-  popularity: 378
+  popularity: 377
  },
  {
   sku: "mondial-784",
@@ -4172,7 +4161,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157678/VT-RP-01.jpg?v=637668504071530000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-excellence-vt-rp-01/p",
-  popularity: 379
+  popularity: 378
  },
  {
   sku: "mondial-772",
@@ -4183,7 +4172,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157654/VTX-40-8P-RP_--1-.jpg?v=638882892710030000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-40-cm-repelente-pastilha-vtx-40-8p-rp/p",
-  popularity: 380
+  popularity: 379
  },
  {
   sku: "mondial-770",
@@ -4194,7 +4183,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de mesa",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157647/VTX-40-8P-RL_--1-.jpg?v=638882892425570000",
   productUrl: "https://www.mondial.com.br/ventilador-de-mesa-mondial-turbo-8-pas-40-cm-repelente-liquido-vtx-40-8p-rl/p",
-  popularity: 381
+  popularity: 380
  },
  {
   sku: "mondial-722",
@@ -4205,7 +4194,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de coluna",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157621/VTX-40C-8P_--6-.jpg?v=638882892946900000",
   productUrl: "https://www.mondial.com.br/ventilador-de-coluna-mondial-turbo-8-pas-40-cm-vtx-40c-8p/p",
-  popularity: 382
+  popularity: 381
  },
  {
   sku: "mondial-720",
@@ -4216,7 +4205,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao ventilador ventilador de coluna",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156207/NVC-PRO-55_1.jpg?v=638774110677970000",
   productUrl: "https://www.mondial.com.br/ventilador-de-coluna-mondial-nvc-pro-55/p",
-  popularity: 383
+  popularity: 382
  },
  {
   sku: "mondial-704",
@@ -4227,7 +4216,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa umidificador de ar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157539/UA-07_--1---1-.jpg?v=637667045285800000",
   productUrl: "https://www.mondial.com.br/umidificador-de-ar-mondial-comfort-air-6-ua-07/p",
-  popularity: 384
+  popularity: 383
  },
  {
   sku: "mondial-703",
@@ -4238,7 +4227,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa umidificador de ar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157537/NUA-02_--1---1-.jpg?v=637667014947200000",
   productUrl: "https://www.mondial.com.br/umidificador-de-ar-ultrassonico-mondial-comfort-air-2-nua-02/p",
-  popularity: 385
+  popularity: 384
  },
  {
   sku: "mondial-683",
@@ -4249,7 +4238,7 @@ export const CATALOG: CatalogItem[] = [
   category: "audio speaker",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157132/SK-03_--3-.jpg?v=637654144897230000",
   productUrl: "https://www.mondial.com.br/speaker-mondial-vibe-one-sk-03/p",
-  popularity: 386
+  popularity: 385
  },
  {
   sku: "mondial-679",
@@ -4260,7 +4249,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas serra tico-tico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156696/FST-03_--1-.jpg?v=638924458460430000",
   productUrl: "https://www.mondial.com.br/serra-tico-tico-mondial-power-tools-fst-03/p",
-  popularity: 387
+  popularity: 386
  },
  {
   sku: "mondial-675",
@@ -4271,7 +4260,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas serra marmore",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156685/FSM-03_--1-.jpg?v=638935433508370000",
   productUrl: "https://www.mondial.com.br/serra-marmore-mondial-power-tools-fsm-03/p",
-  popularity: 388
+  popularity: 387
  },
  {
   sku: "mondial-662",
@@ -4282,7 +4271,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156938/SC-12--2-.jpg?v=637653208679800000",
   productUrl: "https://www.mondial.com.br/secador-infinity-2500-mondial-vermelho-preto-1900w-sc-12-1/p",
-  popularity: 389
+  popularity: 388
  },
  {
   sku: "mondial-650",
@@ -4293,7 +4282,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157256/S-12_--1-.jpg?v=638785131508400000",
   productUrl: "https://www.mondial.com.br/sanduicheira-mondial-fast-grill-e-sandwich-s-12/p",
-  popularity: 390
+  popularity: 389
  },
  {
   sku: "mondial-635",
@@ -4304,7 +4293,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155819/7908259500414_3--6-.jpg?v=639159975826500000",
   productUrl: "https://www.mondial.com.br/press-grill-mondial-red-ceramic-pg-02/p",
-  popularity: 391
+  popularity: 390
  },
  {
   sku: "mondial-631",
@@ -4315,7 +4304,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas plaina eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159508/FPL-02---Foto-01.jpg?v=637980622656500000",
   productUrl: "https://www.mondial.com.br/plaina-eletrica-mondial-power-tools-fpl-02/p",
-  popularity: 392
+  popularity: 391
  },
  {
   sku: "mondial-623",
@@ -4326,7 +4315,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa vaporizador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157510/VP-07--1---1-.jpg?v=637666997720930000",
   productUrl: "https://www.mondial.com.br/passadeira-a-vapor-mondial-vip-care-vp-07/p",
-  popularity: 393
+  popularity: 392
  },
  {
   sku: "mondial-622",
@@ -4337,7 +4326,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas parafusadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156645/FPF-05M_--5-.jpg?v=637651474992500000",
   productUrl: "https://www.mondial.com.br/parafusadeira-recarregavel-mondial-power-tools-fpf-05m/p",
-  popularity: 394
+  popularity: 393
  },
  {
   sku: "mondial-621",
@@ -4348,7 +4337,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas parafusadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156634/FPF-05_--1-.jpg?v=637651469081830000",
   productUrl: "https://www.mondial.com.br/parafusadeira-eletrica-mondial-power-tools-fpf-05/p",
-  popularity: 395
+  popularity: 394
  },
  {
   sku: "mondial-619",
@@ -4359,7 +4348,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas parafusadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159524/FPF-06M---Foto-01--1-.jpg?v=637989338522400000",
   productUrl: "https://www.mondial.com.br/parafusadeira-e-furadeira-mondial-power-tools-fpf-06m/p",
-  popularity: 396
+  popularity: 395
  },
  {
   sku: "mondial-610",
@@ -4370,7 +4359,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167577/PE-45-6X---Foto-01.jpg?v=639111841427930000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-pratic-6i-pe-45-6x/p",
-  popularity: 397
+  popularity: 396
  },
  {
   sku: "mondial-606",
@@ -4381,7 +4370,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167593/PE-46-10X---Foto-01.jpg?v=639111841822470000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-pratic-10i-pe-46-10x/p",
-  popularity: 398
+  popularity: 397
  },
  {
   sku: "mondial-602",
@@ -4392,7 +4381,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163243/NPE-05-5X---Foto-01.jpg?v=638887835819900000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-npe-05-5x/p",
-  popularity: 399
+  popularity: 398
  },
  {
   sku: "mondial-600",
@@ -4403,7 +4392,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157466/PE-28_--1---1-.jpg?v=638954651402530000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-multicook-red-pe-28/p",
-  popularity: 400
+  popularity: 399
  },
  {
   sku: "mondial-598",
@@ -4414,7 +4403,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157463/NPE-08-5X_--3---1-.jpg?v=637666974929170000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-fast-rice-5-premium-npe-08-5x/p",
-  popularity: 401
+  popularity: 400
  },
  {
   sku: "mondial-592",
@@ -4425,7 +4414,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157449/PE-10_--1---1-.jpg?v=638887836181030000",
   productUrl: "https://www.mondial.com.br/panela-eletrica-mondial-bianca-rice-10-pe-10/p",
-  popularity: 402
+  popularity: 401
  },
  {
   sku: "mondial-586",
@@ -4436,7 +4425,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157519/PE-48-5L-I_--2---2-.jpg?v=637667001180770000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-pratic-cook-5-l-premium-i-pe-48-5l-i/p",
-  popularity: 403
+  popularity: 402
  },
  {
   sku: "mondial-584",
@@ -4447,7 +4436,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157436/PE-47-3L-RI_--3---1-.jpg?v=638742880274430000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-pratic-cook-3-l-red-premium-i-pe-47-3l-ri/p",
-  popularity: 404
+  popularity: 403
  },
  {
   sku: "mondial-576",
@@ -4458,7 +4447,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167641/PE-39---Foto-01.jpg?v=639111842783630000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-mondial-master-cooker-red-pe-39/p",
-  popularity: 405
+  popularity: 404
  },
  {
   sku: "mondial-572",
@@ -4469,7 +4458,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha panela de pressao eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157407/PE-40_--2---1-.jpg?v=638742879065230000",
   productUrl: "https://www.mondial.com.br/panela-de-pressao-eletrica-mondial-digital-master-cooker-pe-40/p",
-  popularity: 406
+  popularity: 405
  },
  {
   sku: "mondial-562",
@@ -4480,7 +4469,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha crepeira e omeleteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166135/OM-02---Foto-01.jpg?v=638967359471370000",
   productUrl: "https://www.mondial.com.br/omeleteira-eletrica-mondial-easy-omelet-om-02/p",
-  popularity: 407
+  popularity: 406
  },
  {
   sku: "mondial-554",
@@ -4491,7 +4480,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais modelador de cachos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156881/EM-05_--1-.jpg?v=637653171390400000",
   productUrl: "https://www.mondial.com.br/modelador-de-cachos-mondial-spiral-infinity-em-05/p",
-  popularity: 408
+  popularity: 407
  },
  {
   sku: "mondial-546",
@@ -4502,7 +4491,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha mixer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166997/M10Foto01.jpg?v=639046248810670000",
   productUrl: "https://www.mondial.com.br/power-mixer-premium-mondial-vermelho-inox-750w-m-10/p",
-  popularity: 409
+  popularity: 408
  },
  {
   sku: "mondial-544",
@@ -4513,7 +4502,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha mixer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/167197/M07Foto01.jpg?v=639059134714930000",
   productUrl: "https://www.mondial.com.br/power-mixer-premium-mondial-preto-inox-500w-m-07/p",
-  popularity: 410
+  popularity: 409
  },
  {
   sku: "mondial-534",
@@ -4524,7 +4513,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha multiprocessador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157239/MP16R_--1---1-.jpg?v=637654258574400000",
   productUrl: "https://www.mondial.com.br/miniprocessador-mondial-mp-16-r/p",
-  popularity: 411
+  popularity: 410
  },
  {
   sku: "mondial-529",
@@ -4535,7 +4524,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas micro retifica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156623/FMR-01_--1-.jpg?v=638924455445200000",
   productUrl: "https://www.mondial.com.br/micro-retifica-mondial-power-tools-fmr-01/p",
-  popularity: 412
+  popularity: 411
  },
  {
   sku: "mondial-527",
@@ -4546,7 +4535,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157198/G-07_--1-.jpg?v=639001925621400000",
   productUrl: "https://www.mondial.com.br/max-grill-inox-premium-mondial-g-01/p",
-  popularity: 413
+  popularity: 412
  },
  {
   sku: "mondial-522",
@@ -4557,7 +4546,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas lixadeira orbital",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156616/FLO-02_--1-.jpg?v=638935434123170000",
   productUrl: "https://www.mondial.com.br/lixadeira-orbital-mondial-power-tools-flo-02/p",
-  popularity: 414
+  popularity: 413
  },
  {
   sku: "mondial-510",
@@ -4568,7 +4557,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155853/L-99-WG_--10-.jpg?v=639057161402330000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-power-l-99-wg/p",
-  popularity: 415
+  popularity: 414
  },
  {
   sku: "mondial-504",
@@ -4579,7 +4568,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155821/L-99-FR_--2-.jpg?v=639057162024700000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-power-l-99-fr/p",
-  popularity: 416
+  popularity: 415
  },
  {
   sku: "mondial-498",
@@ -4590,7 +4579,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155878/L-900-FR_--2-.jpg?v=637642410541100000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-l-900-fr/p",
-  popularity: 417
+  popularity: 416
  },
  {
   sku: "mondial-496",
@@ -4601,7 +4590,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155969/L-1100-RI_--1-.jpg?v=639232587542400000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-turbo-inox-3l-l-1100-ri/p",
-  popularity: 418
+  popularity: 417
  },
  {
   sku: "mondial-482",
@@ -4612,7 +4601,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157318/NL26_LINK16_P1.jpg?v=637660385294070000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-power-2-nl-26/p",
-  popularity: 419
+  popularity: 418
  },
  {
   sku: "mondial-480",
@@ -4623,7 +4612,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/163764/L-28---Foto-01.jpg?v=638702293414230000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-power-2-black-l-28/p",
-  popularity: 420
+  popularity: 419
  },
  {
   sku: "mondial-468",
@@ -4634,7 +4623,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155861/L-550-W_--5-.jpg?v=638918261751400000",
   productUrl: "https://www.mondial.com.br/liquidificador-mondial-easy-power-550w-l-550-w/p",
-  popularity: 421
+  popularity: 420
  },
  {
   sku: "mondial-460",
@@ -4645,7 +4634,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas furadeira de impacto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168914/NFFI-07M - Foto 01.jpg?v=639201566138300000",
   productUrl: "https://www.mondial.com.br/kit-oficina-mondial-power-tools-nffi-07m/p",
-  popularity: 422
+  popularity: 421
  },
  {
   sku: "mondial-454",
@@ -4656,7 +4645,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155795/G-04_--1-.jpg?v=637642040500330000",
   productUrl: "https://www.mondial.com.br/grill-redondo-mondial-smart-grill-g-04/p",
-  popularity: 423
+  popularity: 422
  },
  {
   sku: "mondial-440",
@@ -4667,7 +4656,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha grill e sanduicheira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155805/S-19_--1-.jpg?v=638835435639330000",
   productUrl: "https://www.mondial.com.br/grill-e-sanduicheira-mondial-inox-red-s-19/p",
-  popularity: 424
+  popularity: 423
  },
  {
   sku: "mondial-438",
@@ -4678,7 +4667,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas furadeira de impacto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156604/NFFI-07_--1-.jpg?v=638918179343470000",
   productUrl: "https://www.mondial.com.br/furadeira-de-impacto-mondial-power-tools-nffi-07/p",
-  popularity: 425
+  popularity: 424
  },
  {
   sku: "mondial-434",
@@ -4689,7 +4678,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas furadeira de impacto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164535/FI-09---Foto-01.jpg.jpg?v=638918276364900000",
   productUrl: "https://www.mondial.com.br/furadeira-de-impacto-mondial-power-tools-fi-09/p",
-  popularity: 426
+  popularity: 425
  },
  {
   sku: "mondial-430",
@@ -4700,7 +4689,7 @@ export const CATALOG: CatalogItem[] = [
   category: "ferramentas furadeira de impacto",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156582/FFI-05_--2-.jpg?v=638918234402300000",
   productUrl: "https://www.mondial.com.br/furadeira-de-impacto-mondial-power-tools-ffi-05/p",
-  popularity: 427
+  popularity: 426
  },
  {
   sku: "mondial-424",
@@ -4711,7 +4700,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155695/AF-34_7.jpg?v=638887853678930000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-3-2l-mondial-af-34/p",
-  popularity: 428
+  popularity: 427
  },
  {
   sku: "mondial-396",
@@ -4722,7 +4711,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha fritadeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157188/FT-07_--3-.jpg?v=638883715480030000",
   productUrl: "https://www.mondial.com.br/fritadeira-eletrica-mondial-big-fry-2-5l-ft-07/p",
-  popularity: 429
+  popularity: 428
  },
  {
   sku: "mondial-384",
@@ -4733,7 +4722,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155738/AFN-51-RI_6.jpg?v=638918275795930000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-5l-mondial-afn-51-ri/p",
-  popularity: 430
+  popularity: 429
  },
  {
   sku: "mondial-378",
@@ -4744,7 +4733,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155720/AFN-40-RI_2.jpg?v=638918266731330000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-4l-mondial-afn-40-ri/p",
-  popularity: 431
+  popularity: 430
  },
  {
   sku: "mondial-376",
@@ -4755,7 +4744,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155708/AFN-40-BI_1.jpg?v=638363659294170000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-4-litros-afn-40-bi-mondial/p",
-  popularity: 432
+  popularity: 431
  },
  {
   sku: "mondial-364",
@@ -4766,7 +4755,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha forno eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155793/FR-09_1.jpg?v=637642033913700000",
   productUrl: "https://www.mondial.com.br/forno-eletrico-mondial-pratic-cook-6l-fr-09/p",
-  popularity: 433
+  popularity: 432
  },
  {
   sku: "mondial-361",
@@ -4777,7 +4766,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha fogao eletrico",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157171/FE-04_--1-.jpg?v=638926892068130000",
   productUrl: "https://www.mondial.com.br/fogao-eletrico-mondial-fast-cook-fe-04/p",
-  popularity: 434
+  popularity: 433
  },
  {
   sku: "mondial-347",
@@ -4788,7 +4777,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa ferro de passar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157368/F-32_--6---1-.jpg?v=637666209773830000",
   productUrl: "https://www.mondial.com.br/ferro-de-passar-a-vapor-mondial-f-32/p",
-  popularity: 435
+  popularity: 434
  },
  {
   sku: "mondial-342",
@@ -4799,7 +4788,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa ferro de passar",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/158885/F-40---Foto-01.jpg?v=638918272538500000",
   productUrl: "https://www.mondial.com.br/ferro-de-passar-a-vapor-mondial-ceramic-express-f-40/p",
-  popularity: 436
+  popularity: 435
  },
  {
   sku: "mondial-337",
@@ -4810,7 +4799,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha espremedor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157893/e-24.jpg?v=637679391859870000",
   productUrl: "https://www.mondial.com.br/extrator-mondial-turbo-premium-e-24/p",
-  popularity: 437
+  popularity: 436
  },
  {
   sku: "mondial-332",
@@ -4821,7 +4810,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha espremedor",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156574/E-23-RED_--2-.jpg?v=638918255864370000",
   productUrl: "https://www.mondial.com.br/espremedor-mondial-premium-e-23/p",
-  popularity: 438
+  popularity: 437
  },
  {
   sku: "mondial-316",
@@ -4832,7 +4821,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha crepeira e omeleteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156545/CP-01_--5-.jpg?v=638918181814330000",
   productUrl: "https://www.mondial.com.br/crepeira-mondial-pratic-crepe--hot-dog-cp-01/p",
-  popularity: 439
+  popularity: 438
  },
  {
   sku: "mondial-310",
@@ -4843,7 +4832,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais cortador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156845/CR-09M_--2-.jpg?v=638918179962330000",
   productUrl: "https://www.mondial.com.br/cortador-de-cabelos-mondial-titanium-power-cr-09m/p",
-  popularity: 440
+  popularity: 439
  },
  {
   sku: "mondial-304",
@@ -4854,7 +4843,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais cortador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/168382/CR-02---Foto-01.jpg?v=639160868728530000",
   productUrl: "https://www.mondial.com.br/cortador-de-cabelos-mondial-hair-stylo-cr-02/p",
-  popularity: 441
+  popularity: 440
  },
  {
   sku: "mondial-303",
@@ -4865,7 +4854,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais cortador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156820/CR-04_--1-.jpg?v=637652401504270000",
   productUrl: "https://www.mondial.com.br/cortador-de-cabelos-mondial-flex-clipper-cr-04/p",
-  popularity: 442
+  popularity: 441
  },
  {
   sku: "mondial-298",
@@ -4876,7 +4865,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletrodomesticos cooktops cooktop 5 bocas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156562/CTG-03_--6-.jpg?v=637650639188030000",
   productUrl: "https://www.mondial.com.br/cooktop-a-gas-5-bocas-tripla-chama-mondial-ctg-03/p",
-  popularity: 443
+  popularity: 442
  },
  {
   sku: "mondial-285",
@@ -4887,7 +4876,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha kits para cozinha",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160699/KT-111---Foto-01.jpg?v=638918228856700000",
   productUrl: "https://www.mondial.com.br/conjunto-especial-mondial-kt-111/p",
-  popularity: 444
+  popularity: 443
  },
  {
   sku: "mondial-253",
@@ -4898,7 +4887,7 @@ export const CATALOG: CatalogItem[] = [
   category: "climatizacao climatizador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157337/CL-03_--1---1-.jpg?v=638882875098530000",
   productUrl: "https://www.mondial.com.br/climatizador-mondial-fresh-air-cl-03/p",
-  popularity: 445
+  popularity: 444
  },
  {
   sku: "mondial-245",
@@ -4909,7 +4898,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha churrasqueira eletrica",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156539/CH-07_--1-.jpg?v=638926878841170000",
   productUrl: "https://www.mondial.com.br/churrasqueira-eletrica-mondial-pratic-steak--grill-ii-ch-07/p",
-  popularity: 446
+  popularity: 445
  },
  {
   sku: "mondial-208",
@@ -4920,7 +4909,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156526/C-42-2X-RI_--1-.jpg?v=638918267960700000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-smart-coffe-mondial-vermelho-inox-500w-c-42-2x-ri-1/p",
-  popularity: 447
+  popularity: 446
  },
  {
   sku: "mondial-206",
@@ -4931,7 +4920,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156522/C-42-2X-BI_--1-.jpg?v=638918264919400000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-smart-coffe-mondial-preto-inox-500w-c-42-2x-bi-1/p",
-  popularity: 448
+  popularity: 447
  },
  {
   sku: "mondial-200",
@@ -4942,7 +4931,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/157607/157456-800-auto.jpg?v=638918228430200000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-vermelho-inox-800w-c-32-32x-r-1/p",
-  popularity: 449
+  popularity: 448
  },
  {
   sku: "mondial-196",
@@ -4953,7 +4942,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156520/C-37-JI-30X_--2-.jpg?v=638918262832600000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-preto-inox-800w-c-37ji-30x-1/p",
-  popularity: 450
+  popularity: 449
  },
  {
   sku: "mondial-192",
@@ -4964,7 +4953,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/159922/C-34-JI-15X---Foto-01.2.jpg?v=638019757909000000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-preto-inox-550w-c-34-ji-15x-1/p",
-  popularity: 451
+  popularity: 450
  },
  {
   sku: "mondial-190",
@@ -4975,7 +4964,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156510/C-33-JT--24X_--1-.jpg?v=637650005131700000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-thermo-mondial-preto-inox-800w-c-33-jt-24x/p",
-  popularity: 452
+  popularity: 451
  },
  {
   sku: "mondial-188",
@@ -4986,7 +4975,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156507/C-32-32X_--1-.jpg?v=637650001355500000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-preto-800w-c-32-32x-1/p",
-  popularity: 453
+  popularity: 452
  },
  {
   sku: "mondial-186",
@@ -4997,7 +4986,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha cafeteira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/161906/C-30-18X---Foto-01.jpg?v=638887858190670000",
   productUrl: "https://www.mondial.com.br/cafeteira-eletrica-dolce-arome-mondial-preto-inox-550w-c-30-18x-1/p",
-  popularity: 454
+  popularity: 453
  },
  {
   sku: "mondial-170",
@@ -5008,7 +4997,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira planetaria",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156160/BP-02P-W-TI_--2-.jpg?v=638835443924600000",
   productUrl: "https://www.mondial.com.br/batedeira-planetaria-mondial-branco-inox-700w-bp-02p-w-ti/p",
-  popularity: 455
+  popularity: 454
  },
  {
   sku: "mondial-164",
@@ -5019,7 +5008,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira planetaria",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156153/BP-01P-W_--4-.jpg?v=637643988797770000",
   productUrl: "https://www.mondial.com.br/batedeira-planetaria-mondial-branco-inox-700w-bp-01p-w-1/p",
-  popularity: 456
+  popularity: 455
  },
  {
   sku: "mondial-156",
@@ -5030,7 +5019,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira planetaria",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156165/BP-03-R_--1-.jpg?v=637644055580200000",
   productUrl: "https://www.mondial.com.br/batedeira-planetaria-mondial-vermelho-700w-bp-03-r/p",
-  popularity: 457
+  popularity: 456
  },
  {
   sku: "mondial-140",
@@ -5041,7 +5030,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/162944/B-45-R---Foto-01.jpg?v=639214740906070000",
   productUrl: "https://www.mondial.com.br/batedeira-pratic-due-mondial-vermelho-400w-b-45-r/p",
-  popularity: 458
+  popularity: 457
  },
  {
   sku: "mondial-138",
@@ -5052,7 +5041,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/166109/B-44-R---Foto-01.jpg?v=639008147572270000",
   productUrl: "https://www.mondial.com.br/batedeira-power-pratica-mondial-vermelho-400w-b-44-r-1/p",
-  popularity: 459
+  popularity: 458
  },
  {
   sku: "mondial-130",
@@ -5063,7 +5052,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156092/B-29-NP_--4-.jpg?v=637643753435830000",
   productUrl: "https://www.mondial.com.br/batedeira-bella-massa-mondial-vermelho-inox-500w-b-29-np-1/p",
-  popularity: 460
+  popularity: 459
  },
  {
   sku: "mondial-126",
@@ -5074,7 +5063,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha batedeira",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/164528/B-04 NP - Foto 01.jpg.jpg?v=638785099435170000",
   productUrl: "https://www.mondial.com.br/batedeira-premium-mondial-preto-inox-500w-b-04-np/p",
-  popularity: 461
+  popularity: 460
  },
  {
   sku: "mondial-116",
@@ -5085,7 +5074,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais balancas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165457/BL-05 - Foto 01.jpg?v=638906933752100000",
   productUrl: "https://www.mondial.com.br/balanca-digital-smart-mondial-preto-3v-bateria-bl-05/p",
-  popularity: 462
+  popularity: 461
  },
  {
   sku: "mondial-115",
@@ -5096,7 +5085,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais balancas",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165462/BL-03 - Foto 01.jpg?v=638906934771400000",
   productUrl: "https://www.mondial.com.br/balanca-digital-ellegance-mondial-prata-6v-bateria-bl-03/p",
-  popularity: 463
+  popularity: 462
  },
  {
   sku: "mondial-110",
@@ -5107,7 +5096,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160457/AP-31---Foto-01.png?v=638077674145800000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-vertical-turbo-premium-mondial-preto-laranja-1200w-ap-31/p",
-  popularity: 464
+  popularity: 463
  },
  {
   sku: "mondial-102",
@@ -5118,7 +5107,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156357/AP-15_2.jpg?v=637648933637300000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-hepa-turbo-2000-mondial-branco-laranja-1500w-ap-15/p",
-  popularity: 465
+  popularity: 464
  },
  {
   sku: "mondial-98",
@@ -5129,7 +5118,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para casa aspirador de po",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/160460/AP-35---Foto-01.png?v=638077678203800000",
   productUrl: "https://www.mondial.com.br/aspirador-de-po-vertical-turbo-cycle-mondial-preto-laranja-1100w-ap-35/p",
-  popularity: 466
+  popularity: 465
  },
  {
   sku: "mondial-61",
@@ -5140,7 +5129,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais aparador de pelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/156745/BG-04_--1-.jpg?v=637652335694300000",
   productUrl: "https://www.mondial.com.br/aparador-de-pelos-super-groom-06-mondial-preto-verde-bivolt-bg-04-1/p",
-  popularity: 467
+  popularity: 466
  },
  {
   sku: "mondial-44",
@@ -5151,7 +5140,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165445/SC-13 Foto 01.jpg?v=638906932440830000",
   productUrl: "https://www.mondial.com.br/secador-power-shine-mondial-preto-2000w-sc-13/p",
-  popularity: 468
+  popularity: 467
  },
  {
   sku: "mondial-42",
@@ -5162,7 +5151,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cuidados pessoais secador de cabelos",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/165805/SC-32 - Foto 01.jpg?v=638924162473730000",
   productUrl: "https://www.mondial.com.br/secador-de-cabelos-mondial-golden-rose-2000w-sc-32/p",
-  popularity: 469
+  popularity: 468
  },
  {
   sku: "mondial-30",
@@ -5173,7 +5162,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha liquidificador",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155558/L-1100-BI_--1-.jpg?v=637629262846970000",
   productUrl: "https://www.mondial.com.br/liquidificador-turbo-mondial-preto-inox-1100w-l-1100-bi-1/p",
-  popularity: 470
+  popularity: 469
  },
  {
   sku: "mondial-24",
@@ -5184,7 +5173,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155496/AFN-50-RI_3.jpg?v=639172138259630000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-5l-mondial-vermelho-inox-1900w-afn-50-ri/p",
-  popularity: 471
+  popularity: 470
  },
  {
   sku: "mondial-22",
@@ -5195,6 +5184,6 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis eletroportateis para cozinha air fryer",
   imageUrl: "https://lojamondial.vteximg.com.br/arquivos/ids/155486/AFN-50-BI_1.jpg?v=639172137981830000",
   productUrl: "https://www.mondial.com.br/fritadeira-sem-oleo-air-fryer-5l-mondial-preto-inox-1900w-afn-50-bi/p",
-  popularity: 472
+  popularity: 471
  }
 ];

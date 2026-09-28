@@ -1,7 +1,7 @@
-// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-27 a partir da
+// GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.brinox.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.brinox.com.br brinox src/lib/stores/brinox-catalog.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.brinox.com.br brinox /tmp/lia-catalog-HaGx92/brinox.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -50,6 +50,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 4
  },
  {
+  sku: "brinox-4814101",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Sirius com Indução Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 799.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282126/jogo-de-panelas-sirius-6-pecas-ceramic-life.jpg?v=639040016103570000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-sirius-6-pecas-com-inducao-vanilla_4814101-1/p",
+  popularity: 5
+ },
+ {
   sku: "brinox-4791105",
   name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 8 Peças Smart Plus Vanilla Vanilla",
   brand: "Brinox",
@@ -58,7 +69,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276492/jogo-de-panelas-brinox-antiaderente-8-pecas-cor-vanilla.jpg?v=638919087523570000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-8-pecas-smart-plus-vanilla_4791105-1/p",
-  popularity: 5
+  popularity: 6
  },
  {
   sku: "brinox-4773100",
@@ -69,7 +80,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280623/Jogo-de-Panelas-5-pecas-Ceramic-Life-Cookie.jpg?v=639004695916300000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-5-pecas-smart-plus-vanilla_4773100-1/p",
-  popularity: 6
+  popularity: 7
  },
  {
   sku: "brinox-994242275",
@@ -80,17 +91,6 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas pipoqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287264/4,2 L - Nevada Champagne.png?v=639239732111800000",
   productUrl: "https://www.brinox.com.br/pipoqueira-brinox-ceramic-life-nevada-o20-cm-4-2-l-champagne/p",
-  popularity: 7
- },
- {
-  sku: "brinox-994242162",
-  name: "Forma para Airfryer Brinox Ceramic Life Bakeware Ø16cm 7cm Vanilla",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "cozinha assadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287588/forma-de-airfryer-brinox-antiaderente-1481311.png?v=639246387315370000",
-  productUrl: "https://www.brinox.com.br/forma-para-airfryer-brinox-ceramic-life-bakeware-o16cm-7cm-vanilla/p",
   popularity: 8
  },
  {
@@ -138,193 +138,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 12
  },
  {
-  sku: "brinox-4835101",
-  name: "Jogo de Panelas Empilhável Brinox Fit 10 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução - Preto Preto",
-  brand: "Brinox",
-  unitPrice: 399.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285585/jogo-de-panelas-empilhavel-brinox-fit-10-pecas-antiaderente-ceramic-life-cabo-removivel-e-fundo-de-inducao-preto_hero_lancamento_1.jpg.jpg?v=639220385836270000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-fit-10-pecas-antiaderente-ceramic-life-cabo-removivel-e-fundo-de-inducao-preto/p",
-  popularity: 13
- },
- {
-  sku: "brinox-4834100",
-  name: "Jogo de Panelas Empilhável Brinox Loft 7 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução - Areia Areia",
-  brand: "Brinox",
-  unitPrice: 499.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279452/promocao-nova-panela-brinox-loft-ceramic-life-areia-1.jpg?v=638950908665400000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-loft-7-pecas-antiaderente-ceramic-life--cabo-removivel-e-fundo-de-inducao-areia_4834100/p",
-  popularity: 14
- },
- {
-  sku: "brinox-4820200",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Marble Wood com Indução Cinza Escuro Cinza",
-  brand: "Brinox",
-  unitPrice: 399.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282437/Marble-Wood.png?v=639086567810100000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-marble-wood-com-inducao-cinza-escuro_4820200-1/p",
-  popularity: 15
- },
- {
-  sku: "brinox-4818100",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Marble Blend com Indução Cinza Claro Cinza",
-  brand: "Brinox",
-  unitPrice: 499.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280738/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_5_Pecas_Marble_Blend_com_Inducao_Cinza_Claro_Nova_1.jpg?v=639004717803870000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-antiaderentes-5-pecas-inducao-ceramic-life-marble-brinox-cinza-claro_4818100/p",
-  popularity: 16
- },
- {
-  sku: "brinox-4814103",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Sirius com Indução Preto Preto",
-  brand: "Brinox",
-  unitPrice: 799.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282080/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-sirius-com-inducao-preto_1.jpg.jpg?v=639039199281630000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-sirius-com-inducao-preto/p",
-  popularity: 17
- },
- {
-  sku: "brinox-4814101",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Sirius com Indução Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 799.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282126/jogo-de-panelas-sirius-6-pecas-ceramic-life.jpg?v=639040016103570000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-sirius-6-pecas-com-inducao-vanilla_4814101-1/p",
-  popularity: 18
- },
- {
-  sku: "brinox-4791104",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 8 Peças Smart Plus Vermelho Vermelho",
-  brand: "Brinox",
-  unitPrice: 569.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280675/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_8_Pecas_Smart_Plus_Vermelho_Nova.jpg?v=639004705313730000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-8-pecas-smart-plus-vermelho_4791104-1/p",
-  popularity: 19
- },
- {
-  sku: "brinox-4791103",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 8 Peças Smart Plus Preto Preto",
-  brand: "Brinox",
-  unitPrice: 699.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283698/jogo-de-panelas-antiaderente-ceramic-life-8-pecas-smart-plus-preto.jpg?v=639105832304000000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-8-pecas-smart-plus-preto_4791103/p",
-  popularity: 20
- },
- {
-  sku: "brinox-4774106",
-  name: "Jogo de Panelas com Indução Brinox Antiaderente Ceramic Life Smart Plus 7 Peças - areia Areia",
-  brand: "Brinox",
-  unitPrice: 649.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280466/promocao-jogo-de-panelas-smart-plus-areia-ceramic--life-antiaderente-1.jpg?v=638990104326970000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-antiaderente-ceramic-life-smart-plus-7-pecas-areia/p",
-  popularity: 21
- },
- {
-  sku: "brinox-994242160",
-  name: "Forma para Quiche Brinox Ceramic Life Bakeware Ø24cm 4,2cm Vanilla",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "cozinha assadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287519/1481_106_1.jpg?v=639246379938730000",
-  productUrl: "https://www.brinox.com.br/forma-para-quiche-brinox-ceramic-life-bakeware-o24cm-42cm-vanilla/p",
-  popularity: 22
- },
- {
-  sku: "brinox-994242158",
-  name: "Forma para Bolo Brinox Ceramic Life Bakeware Ø19,5cm 2,2 Litros Vanilla Forma para Bolo Brinox Ceramic Life Bakeware Ø19,5cm 2,2 L Vanilla",
-  brand: "Brinox",
-  unitPrice: 54.99,
-  unit: "un",
-  category: "cozinha assadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287577/1481_310_2.jpg?v=639246385863770000",
-  productUrl: "https://www.brinox.com.br/forma-para-bolo-brinox-ceramic-life-bakeware-o195cm-22-litros-vanilla/p",
-  popularity: 23
- },
- {
-  sku: "brinox-994242156",
-  name: "Assadeira Retangular Funda Brinox Ceramic Life Bakeware 33,5x24x5cm Vanilla Assadeira Retangular Funda Brinox Ceramic Life Bakeware 33,5 x 24 x 5cm Vanilla",
-  brand: "Brinox",
-  unitPrice: 69.99,
-  unit: "un",
-  category: "cozinha assadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287544/1481_301.jpg?v=639246381108370000",
-  productUrl: "https://www.brinox.com.br/assadeira-retangular-funda-brinox-ceramic-life-bakeware-33-5-x-24-x-5cm-vanilla/p",
-  popularity: 24
- },
- {
-  sku: "brinox-7305200",
-  name: "Jogo de Panelas Brinox Suprema Antiaderente Ceramic Life 8 Peças Jeans Jeans",
-  brand: "Brinox",
-  unitPrice: 249.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281993/7305_200.jpg?v=639035702840870000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-suprema-antiaderente-ceramic-life-8-pecas-jeans/p",
-  popularity: 25
- },
- {
-  sku: "brinox-7244352",
-  name: "Frigideira Brinox Suprema Antiaderente Ceramic Life Ø20cm 950ml Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273777/frigideira-20cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=638919140894830000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-antiaderente-ceramic-life-mineral-resist-%C3%B820-cm-950-ml-vanilla/p",
-  popularity: 26
- },
- {
-  sku: "brinox-7001375",
-  name: "Frigideira 4 Ovos Brinox Naturalle Antiaderente Ceramic Life Ø26cm 1,3 Litros Garlic Vermelho",
-  brand: "Brinox",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282495/7001_375.jpg?v=639063246712600000",
-  productUrl: "https://www.brinox.com.br/frigideira-4-ovos-brinox-naturalle-antiaderente-ceramic-life-o26cm-13-litros-garlic/p",
-  popularity: 27
- },
- {
-  sku: "brinox-4953202",
-  name: "Panela de Pressão Indução Brinox Pressure Antiaderente Ceramic Life 5,4 Litros Borgonha Vermelho",
-  brand: "Brinox",
-  unitPrice: 229.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287095/5.4L---Pressure-Borgonha.png?v=639256097691730000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-pressure-antiaderente-ceramic-life-5-4-litros-borgonha/p",
-  popularity: 28
- },
- {
-  sku: "brinox-4953100",
-  name: "Panela de Pressão Indução Brinox Pressure Antiaderente Ceramic Life 5,4 Litros Preto Preto",
-  brand: "Brinox",
-  unitPrice: 259.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287089/54L---Pressure-Preto.png?v=639256097914830000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-pressure-antiaderente-ceramic-life-5-4litros-preto/p",
-  popularity: 29
- },
- {
   sku: "brinox-4952103",
   name: "Panela de Pressão Indução Brinox Antiaderente Ceramic Life Pressure 6,8 Litros Ø24cm Vanilla Vanilla",
   brand: "Brinox",
@@ -333,7 +146,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panelas de pressao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287114/68L---Pressure-Vanilla.png?v=639256096347630000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-antiaderente-ceramic-life-pressure-6-8-litros-%C3%B824-cm-vanilla/p",
-  popularity: 30
+  popularity: 13
  },
  {
   sku: "brinox-4952101",
@@ -344,51 +157,51 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panelas de pressao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287009/42L---Pressure-Vanilla.png?v=639256096177300000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-antiaderente-ceramic-life-pressure-4-2l-vanilla/p",
-  popularity: 31
+  popularity: 14
  },
  {
-  sku: "brinox-4875112",
-  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Areia Areia",
+  sku: "brinox-4835101",
+  name: "Jogo de Panelas Empilhável Brinox Fit 10 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução - Preto Preto",
   brand: "Brinox",
-  unitPrice: 99.99,
+  unitPrice: 399.99,
   unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285548/suprema-roma-areia.png?v=639215419702170000",
-  productUrl: "https://www.brinox.com.br/chaleira_de_inox_com_inducao_e_apito_brinox_roma_2-7_litros_areia_aco_inox_cabo_antitermico_soft-touch_compativel_com_todos_os_fogoes/p",
-  popularity: 32
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285585/jogo-de-panelas-empilhavel-brinox-fit-10-pecas-antiaderente-ceramic-life-cabo-removivel-e-fundo-de-inducao-preto_hero_lancamento_1.jpg.jpg?v=639220385836270000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-fit-10-pecas-antiaderente-ceramic-life-cabo-removivel-e-fundo-de-inducao-preto/p",
+  popularity: 15
  },
  {
-  sku: "brinox-4875110",
-  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 119.99,
-  unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285558/suprema-roma-vanilla.png?v=639215419941070000",
-  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-roma-2-7-litros-vanilla/p",
-  popularity: 33
- },
- {
-  sku: "brinox-4834101",
-  name: "Jogo de Panelas Empilhável Brinox Loft 7 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução – Verde Verde",
+  sku: "brinox-4834100",
+  name: "Jogo de Panelas Empilhável Brinox Loft 7 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução - Areia Areia",
   brand: "Brinox",
   unitPrice: 499.99,
   unit: "un",
   category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279473/conjunto-panelas-empilhaveis-brinox-novidade-loft-ceramic-life-verde.jpg?v=638951060353970000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-loft-7-pecas-antiaderente-ceramic-life--cabo-removivel-e-fundo-de-inducao---verde_4834101/p",
-  popularity: 34
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279452/promocao-nova-panela-brinox-loft-ceramic-life-areia-1.jpg?v=638950908665400000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-loft-7-pecas-antiaderente-ceramic-life--cabo-removivel-e-fundo-de-inducao-areia_4834100/p",
+  popularity: 16
  },
  {
-  sku: "brinox-4814354",
-  name: "Frigideira de Indução Brinox Sirius Antiaderente Ceramic Life Ø20cm 1 Litro Vanilla Vanilla",
+  sku: "brinox-4820200",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Marble Wood com Indução Cinza Escuro Cinza",
   brand: "Brinox",
-  unitPrice: 99.99,
+  unitPrice: 399.99,
   unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284016/frigideira-antiaderente-ceramic-life-brinox-sirius-inducao-vanilla.jpg?v=639137779168300000",
-  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-sirius-antiaderente-ceramic-life-%C3%B8-20-cm-1-litro-vanilla/p",
-  popularity: 35
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282437/Marble-Wood.png?v=639086567810100000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-marble-wood-com-inducao-cinza-escuro_4820200-1/p",
+  popularity: 17
+ },
+ {
+  sku: "brinox-4818100",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Marble Blend com Indução Cinza Claro Cinza",
+  brand: "Brinox",
+  unitPrice: 499.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280738/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_5_Pecas_Marble_Blend_com_Inducao_Cinza_Claro_Nova_1.jpg?v=639004717803870000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-antiaderentes-5-pecas-inducao-ceramic-life-marble-brinox-cinza-claro_4818100/p",
+  popularity: 18
  },
  {
   sku: "brinox-4814335",
@@ -399,6 +212,193 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas fervedores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287769/Fervedor Sirius Vanilla 1,7 L.png?v=639251535149330000",
   productUrl: "https://www.brinox.com.br/fervedor-com-inducao-brinox-sirius-1-7-litros-%C3%B814-cm-ceramic-life-vanilla/p",
+  popularity: 19
+ },
+ {
+  sku: "brinox-4814103",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Sirius com Indução Preto Preto",
+  brand: "Brinox",
+  unitPrice: 799.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282080/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-sirius-com-inducao-preto_1.jpg.jpg?v=639039199281630000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-sirius-com-inducao-preto/p",
+  popularity: 20
+ },
+ {
+  sku: "brinox-4791104",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 8 Peças Smart Plus Vermelho Vermelho",
+  brand: "Brinox",
+  unitPrice: 569.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280675/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_8_Pecas_Smart_Plus_Vermelho_Nova.jpg?v=639004705313730000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-8-pecas-smart-plus-vermelho_4791104-1/p",
+  popularity: 21
+ },
+ {
+  sku: "brinox-4791103",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 8 Peças Smart Plus Preto Preto",
+  brand: "Brinox",
+  unitPrice: 699.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283698/jogo-de-panelas-antiaderente-ceramic-life-8-pecas-smart-plus-preto.jpg?v=639105832304000000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-8-pecas-smart-plus-preto_4791103/p",
+  popularity: 22
+ },
+ {
+  sku: "brinox-4774106",
+  name: "Jogo de Panelas com Indução Brinox Antiaderente Ceramic Life Smart Plus 7 Peças - areia Areia",
+  brand: "Brinox",
+  unitPrice: 649.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280466/promocao-jogo-de-panelas-smart-plus-areia-ceramic--life-antiaderente-1.jpg?v=638990104326970000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-antiaderente-ceramic-life-smart-plus-7-pecas-areia/p",
+  popularity: 23
+ },
+ {
+  sku: "brinox-994242162",
+  name: "Forma para Airfryer Brinox Ceramic Life Bakeware Ø16cm 7cm Vanilla",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "cozinha assadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287588/forma-de-airfryer-brinox-antiaderente-1481311.png?v=639246387315370000",
+  productUrl: "https://www.brinox.com.br/forma-para-airfryer-brinox-ceramic-life-bakeware-o16cm-7cm-vanilla/p",
+  popularity: 24
+ },
+ {
+  sku: "brinox-994242160",
+  name: "Forma para Quiche Brinox Ceramic Life Bakeware Ø24cm 4,2cm Vanilla",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "cozinha assadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287519/1481_106_1.jpg?v=639246379938730000",
+  productUrl: "https://www.brinox.com.br/forma-para-quiche-brinox-ceramic-life-bakeware-o24cm-42cm-vanilla/p",
+  popularity: 25
+ },
+ {
+  sku: "brinox-994242158",
+  name: "Forma para Bolo Brinox Ceramic Life Bakeware Ø19,5cm 2,2 Litros Vanilla Forma para Bolo Brinox Ceramic Life Bakeware Ø19,5cm 2,2 L Vanilla",
+  brand: "Brinox",
+  unitPrice: 54.99,
+  unit: "un",
+  category: "cozinha assadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287577/1481_310_2.jpg?v=639246385863770000",
+  productUrl: "https://www.brinox.com.br/forma-para-bolo-brinox-ceramic-life-bakeware-o195cm-22-litros-vanilla/p",
+  popularity: 26
+ },
+ {
+  sku: "brinox-994242156",
+  name: "Assadeira Retangular Funda Brinox Ceramic Life Bakeware 33,5x24x5cm Vanilla Assadeira Retangular Funda Brinox Ceramic Life Bakeware 33,5 x 24 x 5cm Vanilla",
+  brand: "Brinox",
+  unitPrice: 69.99,
+  unit: "un",
+  category: "cozinha assadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287544/1481_301.jpg?v=639246381108370000",
+  productUrl: "https://www.brinox.com.br/assadeira-retangular-funda-brinox-ceramic-life-bakeware-33-5-x-24-x-5cm-vanilla/p",
+  popularity: 27
+ },
+ {
+  sku: "brinox-7305200",
+  name: "Jogo de Panelas Brinox Suprema Antiaderente Ceramic Life 8 Peças Jeans Jeans",
+  brand: "Brinox",
+  unitPrice: 249.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281993/7305_200.jpg?v=639035702840870000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-suprema-antiaderente-ceramic-life-8-pecas-jeans/p",
+  popularity: 28
+ },
+ {
+  sku: "brinox-7244352",
+  name: "Frigideira Brinox Suprema Antiaderente Ceramic Life Ø20cm 950ml Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273777/frigideira-20cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=638919140894830000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-antiaderente-ceramic-life-mineral-resist-%C3%B820-cm-950-ml-vanilla/p",
+  popularity: 29
+ },
+ {
+  sku: "brinox-7001375",
+  name: "Frigideira 4 Ovos Brinox Naturalle Antiaderente Ceramic Life Ø26cm 1,3 Litros Garlic Vermelho",
+  brand: "Brinox",
+  unitPrice: 49.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282495/7001_375.jpg?v=639063246712600000",
+  productUrl: "https://www.brinox.com.br/frigideira-4-ovos-brinox-naturalle-antiaderente-ceramic-life-o26cm-13-litros-garlic/p",
+  popularity: 30
+ },
+ {
+  sku: "brinox-4953202",
+  name: "Panela de Pressão Indução Brinox Pressure Antiaderente Ceramic Life 5,4 Litros Borgonha Vermelho",
+  brand: "Brinox",
+  unitPrice: 229.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287095/5.4L---Pressure-Borgonha.png?v=639256097691730000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-pressure-antiaderente-ceramic-life-5-4-litros-borgonha/p",
+  popularity: 31
+ },
+ {
+  sku: "brinox-4953100",
+  name: "Panela de Pressão Indução Brinox Pressure Antiaderente Ceramic Life 5,4 Litros Preto Preto",
+  brand: "Brinox",
+  unitPrice: 259.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287089/54L---Pressure-Preto.png?v=639256097914830000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-pressure-antiaderente-ceramic-life-5-4litros-preto/p",
+  popularity: 32
+ },
+ {
+  sku: "brinox-4875112",
+  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Areia Areia",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285548/suprema-roma-areia.png?v=639215419702170000",
+  productUrl: "https://www.brinox.com.br/chaleira_de_inox_com_inducao_e_apito_brinox_roma_2-7_litros_areia_aco_inox_cabo_antitermico_soft-touch_compativel_com_todos_os_fogoes/p",
+  popularity: 33
+ },
+ {
+  sku: "brinox-4875110",
+  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 119.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285558/suprema-roma-vanilla.png?v=639215419941070000",
+  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-roma-2-7-litros-vanilla/p",
+  popularity: 34
+ },
+ {
+  sku: "brinox-4834101",
+  name: "Jogo de Panelas Empilhável Brinox Loft 7 Peças Antiaderente Ceramic Life, Cabo Removível e Fundo de Indução – Verde Verde",
+  brand: "Brinox",
+  unitPrice: 499.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279473/conjunto-panelas-empilhaveis-brinox-novidade-loft-ceramic-life-verde.jpg?v=638951060353970000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-empilhavel-brinox-loft-7-pecas-antiaderente-ceramic-life--cabo-removivel-e-fundo-de-inducao---verde_4834101/p",
+  popularity: 35
+ },
+ {
+  sku: "brinox-4814354",
+  name: "Frigideira de Indução Brinox Sirius Antiaderente Ceramic Life Ø20cm 1 Litro Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284016/frigideira-antiaderente-ceramic-life-brinox-sirius-inducao-vanilla.jpg?v=639137779168300000",
+  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-sirius-antiaderente-ceramic-life-%C3%B8-20-cm-1-litro-vanilla/p",
   popularity: 36
  },
  {
@@ -490,6 +490,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 44
  },
  {
+  sku: "brinox-994242305",
+  name: "Espagueteira Antiaderente Brinox Especiarias Ø22cm 5,7 Litros Vanilla Espagueteira Brinox Ø 22cm 5,7 L Especiarias Vanilla",
+  brand: "Brinox",
+  unitPrice: 219.99,
+  unit: "un",
+  category: "panelas espagueteiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287167/espagueteira-brinox-o-22cm-5-7-l-especiarias-vanilla_0.jpg?v=639239628594600000",
+  productUrl: "https://www.brinox.com.br/espagueteira-brinox-especiarias-antiaderente-22cm-5-7l-vanilla/p",
+  popularity: 45
+ },
+ {
   sku: "brinox-994242281",
   name: "Panela de Pressão Elétrica Brinox Ceramic Life 6 Litros 220V Voltagem 220v",
   brand: "Brinox",
@@ -498,7 +509,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis panelas de pressao eletricas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285299/panela-de-pressao-eletrica-brinox-ceramic-life-6-litros-220v_0.jpg?v=639191229985630000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-eletrica-brinox-ceramic-life-6-litros-220v/p",
-  popularity: 45
+  popularity: 46
  },
  {
   sku: "brinox-994242263",
@@ -509,7 +520,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas de aco inox jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287906/jogo-de-panelas-city-inox-conjunto-5.png?v=639255876756300000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-city-inox-fundo-triplo-5-pecas/p",
-  popularity: 46
+  popularity: 47
  },
  {
   sku: "brinox-994242262",
@@ -520,7 +531,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284633/jogo-de-panelas-com-inducao-brinox-ceramic-life-inox-5-pecas-cinza_0.jpg?v=639154993006500000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-ceramic-life-nox-5-pecas-cinza/p",
-  popularity: 47
+  popularity: 48
  },
  {
   sku: "brinox-994242228",
@@ -531,7 +542,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284389/frigideira-brinox-ceramic-life-rainbow-o16cm-450-ml-grafite_0.jpg?v=639147818684100000",
   productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-grafite/p",
-  popularity: 48
+  popularity: 49
  },
  {
   sku: "brinox-994242187",
@@ -542,7 +553,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas pipoqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284036/pipoqueira-brinox-ceramic-life-rainbow-o20cm-4-2-litros-grafite_0.jpg?v=639138432001800000",
   productUrl: "https://www.brinox.com.br/pipoqueira-brinox-antiaderente-ceramic-life-rainbow-o20cm-42-litros-grafite/p",
-  popularity: 49
+  popularity: 50
  },
  {
   sku: "brinox-994242171",
@@ -553,7 +564,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286755/jogo-de-panelas-brinox-antiaderente-ceramic-life-duna-5-pecas-com-inducao-terracota_0.jpg?v=639238848532400000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-duna-antiaderente-ceramic-life-5-pecas-terracota/p",
-  popularity: 50
+  popularity: 51
  },
  {
   sku: "brinox-994242159",
@@ -564,7 +575,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha assadeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287552/1481_303.jpg?v=639246382836030000",
   productUrl: "https://www.brinox.com.br/forma-de-pao-brinox-ceramic-life-bakeware-30-x-125-x-63-cm-vanilla/p",
-  popularity: 51
+  popularity: 52
  },
  {
   sku: "brinox-7244374",
@@ -575,7 +586,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286998/wok-com-tampa-28cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238887840770000",
   productUrl: "https://www.brinox.com.br/wok-com-tampa-brinox-suprema-antiaderente-ceramic-life-%C3%B828-cm-4-65-litros-vanilla/p",
-  popularity: 52
+  popularity: 53
  },
  {
   sku: "brinox-7244360",
@@ -586,403 +597,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273786/panela-com-tampa-16cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=638919146265100000",
   productUrl: "https://www.brinox.com.br/panela-com-tampa-16-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-vanilla-ceramic-life-suprema-brinox_7244360/p",
-  popularity: 53
- },
- {
-  sku: "brinox-7241154",
-  name: "Pipoqueira Brinox Pic Poc Antiaderente Ceramic Life 5,5 Litros Ø22cm Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas pipoqueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281655/pipoqueira-ceramic-life-linha-pic-poc-55l-misturador-de-nylon-tampa-com-vidro-temperado-e-saida-vapor.jpg?v=639015726141600000",
-  productUrl: "https://www.brinox.com.br/pipoqueira-brinox-pic-poc-antiaderente-ceramic-life-5-5-litros-%C3%B822cm-vanilla/p",
   popularity: 54
- },
- {
-  sku: "brinox-7190462",
-  name: "Fervedor Brinox Naturalle 1,2 Litros Ø12cm Antiaderente Ceramic Life Preto Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 63.15,
-  unit: "un",
-  category: "panelas fervedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287765/Fervedor-Naturalle-Preto-12-L.png?v=639256059593000000",
-  productUrl: "https://www.brinox.com.br/fervedor-brinox-naturalle-antiaderente-ceramic-life-12-litros-o12cm-preto/p",
-  popularity: 55
- },
- {
-  sku: "brinox-4829200",
-  name: "Chaleira de Inox com Indução e Apito Brinox 3 Litros Black Diamond Preto Fosco Preto",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285527/Black-Diamond-3L.png?v=639249992310570000",
-  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-3-litros-black-diamond-preto-fosco/p",
-  popularity: 56
- },
- {
-  sku: "brinox-4814333",
-  name: "Caçarola de Indução Brinox Sirius Antiaderente Ceramic Life Ø24cm 4 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 229.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277412/cacarola-de-inducao-brinox-sirius-antiaderente-ceramic-life-Ø24-cm-4-litros-vanilla.jpg.jpg?v=638920905084700000",
-  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-brinox-sirius-antiaderente-ceramic-life-%C3%B824-cm-4-litros-vanilla/p",
-  popularity: 57
- },
- {
-  sku: "brinox-4814331",
-  name: "Panela de Indução com Tampa Brinox Sirus Antiaderente Ceramic Life Ø20cm 2,1 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 169.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277418/panela-de-inducao-com-tampa-brinox-sirus-antiaderente-ceramic-life-Ø20-cm-2-1-litros-vanilla.jpg.jpg?v=638919171567570000",
-  productUrl: "https://www.brinox.com.br/panela-de-inducao-com-tampa-brinox-sirus-antiaderente-ceramic-life-%C3%B820-cm-2-1-litros-vanilla/p",
-  popularity: 58
- },
- {
-  sku: "brinox-4814157",
-  name: "Wok de Indução com Tampa Brinox Sirius Antiaderente Ceramic Life Ø28cm 3,4 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 299.99,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284760/wok-com-tampa-antiaderente-com-inducao-sirius-vanilla.jpg?v=639165225858200000",
-  productUrl: "https://www.brinox.com.br/wok-de-inducao-com-tampa-brinox-sirius-antiaderente-ceramic-life-28-cm-3-4-litros-vanilla/p",
-  popularity: 59
- },
- {
-  sku: "brinox-4814102",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 4 Peças Sirius com Indução Preto Preto",
-  brand: "Brinox",
-  unitPrice: 599.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284082/jogo-de-panelas-brinox-antiaderente-ceramic-life-4-pecas-sirius-com-inducao-preto.jpg.jpg?v=639138552151830000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-4-pecas-sirius-com-inducao-preto/p",
-  popularity: 60
- },
- {
-  sku: "brinox-4791102",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Smart Plus Vanilla VANILLA Brinox",
-  brand: "Brinox",
-  unitPrice: 489.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276510/jogo-de-panelas-antiaderente-smart-plus-6-pecas-cor-vanilla-brinox.jpg?v=638919112955700000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-smart-plus-vanilla_4791102-1/p",
-  popularity: 61
- },
- {
-  sku: "brinox-4774351",
-  name: "Fervedor de Indução Brinox Smart Plus 1,7 Litros Ø14cm Ceramic Life Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas fervedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287781/Fervedor SmartP Vanilla 1,7 L.png?v=639251535818400000",
-  productUrl: "https://www.brinox.com.br/fervedor-de-inducao-brinox-smart-plus-1-7-litros-%C3%B814-cm-ceramic-life-vanilla/p",
-  popularity: 62
- },
- {
-  sku: "brinox-4774340",
-  name: "Frigideira de Indução Brinox Smart Plus Ø 20cm 0,6L Antiaderente Ceramic Life Vanilla VANILLA Brinox",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283714/promocao-brinox-frigideira-smart-plus-vanilla.png?v=639106577744830000",
-  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-smart-plus---20-cm-0-6-l-antiaderente-ceramic-life-vanilla/p",
-  popularity: 63
- },
- {
-  sku: "brinox-4774333",
-  name: "Caçarola de Indução com Tampa Brinox Smart Plus Ø 24cm 4,55L Antiaderente Ceramic Life Vanilla VANILLA Brinox",
-  brand: "Brinox",
-  unitPrice: 219.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284632/promocao-brinox-ceramic-life-primea-cappuchino-antiaderente.png?v=639154877853670000",
-  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-com-tampa-brinox-smart-plus---24-cm-4-55-l-antiaderente-ceramic-life-vanilla/p",
-  popularity: 64
- },
- {
-  sku: "brinox-4773101",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Smart Plus Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 589.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282292/4791_105.png?v=639046950360370000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-vanilla_4773101/p",
-  popularity: 65
- },
- {
-  sku: "brinox-2600334",
-  name: "Mixer Brinox Descomplica 22cm Preto Preto",
-  brand: "Brinox",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "cozinha mixer",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282164/brinox.png?v=639040883948000000",
-  productUrl: "https://www.brinox.com.br/mixer_brinox_descomplica_22_cm_preto/p",
-  popularity: 66
- },
- {
-  sku: "brinox-2364100",
-  name: "Cuscuzeira Brinox Lyon 2 Litros Aço Inox Inox",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "panelas cuscuzeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284129/promocao-brinox-cuscuzeira.png?v=639141172969700000",
-  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-lyon-2-litros-aco-inox/p",
-  popularity: 67
- },
- {
-  sku: "brinox-2250325",
-  name: "Fouet Fio Inox com Silicone Brinox Duo 30cm Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios batedores e fues",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285504/promocao-brinox-fue-vanilla-inox-silicone.png?v=639214470126270000",
-  productUrl: "https://www.brinox.com.br/fouet-fio-inox-com-silicone-brinox-duo-30-cm-vanilla/p",
-  popularity: 68
- },
- {
-  sku: "brinox-2204325",
-  name: "Ralador 4 Faces com Coletor Brinox Top Pratic 20,5 cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 22.99,
-  unit: "un",
-  category: "cozinha utensilios raladores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287964/Ralador-com-coletor-205-cm.png?v=639258498778570000",
-  productUrl: "https://www.brinox.com.br/ralador_4_faces_com_coletor_brinox_top_pratic_20-5cm_aco_inox/p",
-  popularity: 69
- },
- {
-  sku: "brinox-2203301",
-  name: "Conjunto de Medidores Tipo Xícara em Aço Inox Brinox Top Pratic 4 Peças Aço Inox",
-  brand: "Brinox",
-  unitPrice: 29.99,
-  unit: "un",
-  category: "cozinha utensilios medidores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282372/Conjunto_medidores_xicaras_240_ml_120_ml_80ml_e_60_ml_Brinox_Top_Pratic_4_pecas_aco_inox.jpg?v=639052916594300000",
-  productUrl: "https://www.brinox.com.br/conjunto_de_medidores_tipo_xicara_brinox_top_pratic_aco_inox_4_pecas/p",
-  popularity: 70
- },
- {
-  sku: "brinox-2107100",
-  name: "Conjunto de Tigelas Brinox Suprema 3 Peças Aço Inox Inox",
-  brand: "Brinox",
-  unitPrice: 64.99,
-  unit: "un",
-  category: "mesa cumbucas e bowls",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284646/Conjunto_de_Tigelas_Brinox_Suprema_3_Pecas_Aco_Inox.jpg?v=639155904925630000",
-  productUrl: "https://www.brinox.com.br/conjunto-de-tigelas-brinox-suprema-3-pecas-aco-inox/p",
-  popularity: 71
- },
- {
-  sku: "brinox-2080307",
-  name: "Espátula Perfurada Brinox Suprema 33cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios espatulas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280988/Espatula_Perfurada_Brinox_Suprema_16_mm_x_325_cm_Aco_Inox.jpg?v=639081431496700000",
-  productUrl: "https://www.brinox.com.br/espatula-perfurada-brinox-suprema-33-cm-aco-inox/p",
-  popularity: 72
- },
- {
-  sku: "brinox-2080303",
-  name: "Concha Terrina Brinox Suprema Brinox 70ml 30cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios conchas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280985/Concha_Terrina_Brinox_Suprema_16_mm_x_30_cm_70_ml_Aco_Inox.jpg?v=639035735346430000",
-  productUrl: "https://www.brinox.com.br/concha-terrina-brinox-suprema-brinox-70-ml-30-cm-aco-inox/p",
-  popularity: 73
- },
- {
-  sku: "brinox-1425132",
-  name: "Bandeja para Servir Brinox Atina 32 x 15,5 cm Aço Inox Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 34.99,
-  unit: "un",
-  category: "mesa bandejas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281463/Bandeja_para_Servir_Brinox_Atina_32_x_155_cm_Aco_Inox.jpg?v=639052924528770000",
-  productUrl: "https://www.brinox.com.br/bandeja-para-servir-brinox-atina-32-x-15-5-cm-aco-inox/p",
-  popularity: 74
- },
- {
-  sku: "brinox-1424140",
-  name: "Bandeja para Torta Fria Rocambole Brinox Atina 40 x 16 cm Aço Inox Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 46.99,
-  unit: "un",
-  category: "mesa bandejas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283978/promocao-brinox-bandeja-inox.png?v=639136717921700000",
-  productUrl: "https://www.brinox.com.br/bandeja-para-torta-fria-rocambole-brinox-atina-40-x-16-cm-aco-inox/p",
-  popularity: 75
- },
- {
-  sku: "brinox-994242307",
-  name: "Cuscuzeira Brinox Especiarias Antiaderente Ø 10 cm 800 ml Vanilla Cuscuzeira Brinox Ø10cm 800 ml Especiarias Vanilla",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas cuscuzeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287150/cuscuzeira-brinox-o10cm-800-ml-especiarias-vanilla_0.jpg?v=639239627272870000",
-  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-especiarias-antiaderente-10cm-800ml-vanilla/p",
-  popularity: 76
- },
- {
-  sku: "brinox-994242306",
-  name: "Cuscuzeira Brinox Especiarias Antiaderente Ø 16 cm 2 L Vanilla Cuscuzeira Brinox Ø 16cm 2 L Especiarias Vanilla",
-  brand: "Brinox",
-  unitPrice: 219.99,
-  unit: "un",
-  category: "panelas cuscuzeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287159/cuscuzeira-brinox-o-16cm-2-l-especiarias-vanilla_0.jpg?v=639239628098300000",
-  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-especiarias-antiaderente-16cm-2l-vanilla/p",
-  popularity: 77
- },
- {
-  sku: "brinox-994242305",
-  name: "Espagueteira Antiaderente Brinox Especiarias Ø22cm 5,7 Litros Vanilla Espagueteira Brinox Ø 22cm 5,7 L Especiarias Vanilla",
-  brand: "Brinox",
-  unitPrice: 219.99,
-  unit: "un",
-  category: "panelas espagueteiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287167/espagueteira-brinox-o-22cm-5-7-l-especiarias-vanilla_0.jpg?v=639239628594600000",
-  productUrl: "https://www.brinox.com.br/espagueteira-brinox-especiarias-antiaderente-22cm-5-7l-vanilla/p",
-  popularity: 78
- },
- {
-  sku: "brinox-994242274",
-  name: "Pipoqueira Brinox Ceramic Life Nevada Ø20 cm 4,2 L Borgonha",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas pipoqueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287256/4,2 L - Nevada Borgonha.png?v=639239731818070000",
-  productUrl: "https://www.brinox.com.br/pipoqueira-brinox-ceramic-life-nevada-o20-cm-4-2-l-borgonha/p",
-  popularity: 79
- },
- {
-  sku: "brinox-994242206",
-  name: "Fervedor Brinox Suprema Antiaderente Ceramic Life Ø14cm 1,8 Litros Preto Fervedor Brinox Ceramic Life Suprema Ø14cm 1,8 L Preto",
-  brand: "Brinox",
-  unitPrice: 106.99,
-  unit: "un",
-  category: "panelas fervedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287800/Fervedor-Suprema-Preto-18-L.png?v=639251539452370000",
-  productUrl: "https://www.brinox.com.br/fervedor-brinox-suprema-antiaderente-ceramic-life-o14cm-18-litros-preto/p",
-  popularity: 80
- },
- {
-  sku: "brinox-994242196",
-  name: "Frigideira Brinox Primea Antiaderente Ceramic Life Ø20cm 1 Litro Cappuccino Frigideira Brinox Ceramic Life Primea Ø20cm 1 L Cappuccino",
-  brand: "Brinox",
-  unitPrice: 69.99,
-  unit: "un",
-  category: "panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284768/frigideira-brinox-ceramic-life-primea-o20cm-1-l-cappuccino_0.jpg?v=639165226952030000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-primea-antibacteriana-antiaderente-ceramic-life-20cm-cappuccino/p",
-  popularity: 81
- },
- {
-  sku: "brinox-994242191",
-  name: "Jogo de Panelas Brinox Primea Antiaderente Ceramic Life 5 Peças Cappuccino Jogo de Panelas Brinox Ceramic Life Primea 5 Peças Cappuccino",
-  brand: "Brinox",
-  unitPrice: 449.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284711/jogo-de-panelas-brinox-ceramic-life-primea-5-pecas-cappuccino_0.jpg?v=639161044888900000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-primea-ceramic-life-5-pecas-cappuccino/p",
-  popularity: 82
- },
- {
-  sku: "brinox-994242140",
-  name: "Carrinho Organizador Inox Suprema Brinox",
-  brand: "Brinox",
-  unitPrice: 249.99,
-  unit: "un",
-  category: "organizacao organizadores multiuso",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282280/carrinho-organizador-inox-suprema-brinox_0.jpg?v=639046865399100000",
-  productUrl: "https://www.brinox.com.br/carrinho-organizador-inox-suprema-brinox/p",
-  popularity: 83
- },
- {
-  sku: "brinox-994242080",
-  name: "Porta Condimentos em Bambu com Colher Coza Brisa Pote com Colher Brisa Bambu Coza",
-  brand: "Coza",
-  unitPrice: 29.99,
-  unit: "un",
-  category: "mesa acessorios porta condimentos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286159/pote_com_colher_coza_brisa_site_brinox_1.webp?v=639234450135970000",
-  productUrl: "https://www.brinox.com.br/porta-condimentos-em-bambu-com-colher-coza-brisa/p",
-  popularity: 84
- },
- {
-  sku: "brinox-406423009",
-  name: "Pote Hermético Quadrado Coza Modo Bambu 1,2 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 34.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285819/pote_hermetico_coza_modo_bambu_1_2_litros_cristal_site_brinox_3.webp?v=639233659665530000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-1-2-litros-cristal/p",
-  popularity: 85
- },
- {
-  sku: "brinox-102463009",
-  name: "Dispenser com Medidor Coza Easy 1,5 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "organizacao organizadores multiuso",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286084/dispenser_com_medidor_coza_easy_15_litros_cristal_site_brinox_1.webp?v=639234364934930000",
-  productUrl: "https://www.brinox.com.br/dispenser-com-medidor-coza-easy-1-5-litros-cristal/p",
-  popularity: 86
- },
- {
-  sku: "brinox-7245352",
-  name: "Frigideira Brinox Suprema 20cm Revestimento Antiaderente Ceramic Life Mineral Resist Verde Verde",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286848/frigideira-20cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238872471430000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-20-cm-revestimento-antiaderente-ceramic-life-mineral-resist-verde/p",
-  popularity: 87
- },
- {
-  sku: "brinox-7244367",
-  name: "Fervedor Brinox Suprema 1,8 Litros Ø14cm Antiaderente Ceramico Mineral Resist Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 79.99,
-  unit: "un",
-  category: "panelas fervedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287784/Fervedor-Suprema-Vanilla-18-L.png?v=639256059904900000",
-  productUrl: "https://www.brinox.com.br/fervedo-brinox-suprema-1-8-litros-%C3%B814-cm-antiaderente-ceramico-mineral-resist-vanilla/p",
-  popularity: 88
- },
- {
-  sku: "brinox-7244365",
-  name: "Caçarola com Tampa Brinox Suprema Antiaderente Mineral Resist Ceramic Life Ø24cm 4,5 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286815/cacarola-com-tampa-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238867301570000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-antiaderente-mineral-resist-ceramic-life-%C3%B824-cm-4-5-litros-vanilla/p",
-  popularity: 89
  },
  {
   sku: "brinox-7244359",
@@ -993,18 +608,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas omeleteiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286931/omeleteira-18cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238880168770000",
   productUrl: "https://www.brinox.com.br/omeleteira-brinox-suprema-18-cm-revestimento-ceramic-life-antiaderente-mineral-resist-vanilla/p",
-  popularity: 90
- },
- {
-  sku: "brinox-7244358",
-  name: "Grill Brinox Suprema Antiaderente Mineral Resist Ceramic Life 24cm 0,75L Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 89.99,
-  unit: "un",
-  category: "panelas grills",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286869/grill-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238875514800000",
-  productUrl: "https://www.brinox.com.br/grill-brinox-suprema-antiaderente-mineral-resist-ceramic-life-24-cm-0-75-l-vanilla/p",
-  popularity: 91
+  popularity: 55
  },
  {
   sku: "brinox-7244357",
@@ -1015,7 +619,414 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panquequeiras e tapioqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286958/tapioqueira-22cm-revestimento-ceramico-antiadernete-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238883993370000",
   productUrl: "https://www.brinox.com.br/tapioqueira-panquequeira-brinox-suprema-antiaderente-ceramic-life-mineral-resist-%C3%B822-cm-600-ml-vanilla/p",
+  popularity: 56
+ },
+ {
+  sku: "brinox-7241154",
+  name: "Pipoqueira Brinox Pic Poc Antiaderente Ceramic Life 5,5 Litros Ø22cm Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 149.99,
+  unit: "un",
+  category: "panelas pipoqueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281655/pipoqueira-ceramic-life-linha-pic-poc-55l-misturador-de-nylon-tampa-com-vidro-temperado-e-saida-vapor.jpg?v=639015726141600000",
+  productUrl: "https://www.brinox.com.br/pipoqueira-brinox-pic-poc-antiaderente-ceramic-life-5-5-litros-%C3%B822cm-vanilla/p",
+  popularity: 57
+ },
+ {
+  sku: "brinox-7190462",
+  name: "Fervedor Brinox Naturalle 1,2 Litros Ø12cm Antiaderente Ceramic Life Preto Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 63.15,
+  unit: "un",
+  category: "panelas fervedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287765/Fervedor-Naturalle-Preto-12-L.png?v=639256059593000000",
+  productUrl: "https://www.brinox.com.br/fervedor-brinox-naturalle-antiaderente-ceramic-life-12-litros-o12cm-preto/p",
+  popularity: 58
+ },
+ {
+  sku: "brinox-4829200",
+  name: "Chaleira de Inox com Indução e Apito Brinox 3 Litros Black Diamond Preto Fosco Preto",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285527/Black-Diamond-3L.png?v=639249992310570000",
+  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-3-litros-black-diamond-preto-fosco/p",
+  popularity: 59
+ },
+ {
+  sku: "brinox-4814333",
+  name: "Caçarola de Indução Brinox Sirius Antiaderente Ceramic Life Ø24cm 4 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 229.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277412/cacarola-de-inducao-brinox-sirius-antiaderente-ceramic-life-Ø24-cm-4-litros-vanilla.jpg.jpg?v=638920905084700000",
+  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-brinox-sirius-antiaderente-ceramic-life-%C3%B824-cm-4-litros-vanilla/p",
+  popularity: 60
+ },
+ {
+  sku: "brinox-4814331",
+  name: "Panela de Indução com Tampa Brinox Sirus Antiaderente Ceramic Life Ø20cm 2,1 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 169.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277418/panela-de-inducao-com-tampa-brinox-sirus-antiaderente-ceramic-life-Ø20-cm-2-1-litros-vanilla.jpg.jpg?v=638919171567570000",
+  productUrl: "https://www.brinox.com.br/panela-de-inducao-com-tampa-brinox-sirus-antiaderente-ceramic-life-%C3%B820-cm-2-1-litros-vanilla/p",
+  popularity: 61
+ },
+ {
+  sku: "brinox-4814157",
+  name: "Wok de Indução com Tampa Brinox Sirius Antiaderente Ceramic Life Ø28cm 3,4 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 299.99,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284760/wok-com-tampa-antiaderente-com-inducao-sirius-vanilla.jpg?v=639165225858200000",
+  productUrl: "https://www.brinox.com.br/wok-de-inducao-com-tampa-brinox-sirius-antiaderente-ceramic-life-28-cm-3-4-litros-vanilla/p",
+  popularity: 62
+ },
+ {
+  sku: "brinox-4814102",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 4 Peças Sirius com Indução Preto Preto",
+  brand: "Brinox",
+  unitPrice: 599.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284082/jogo-de-panelas-brinox-antiaderente-ceramic-life-4-pecas-sirius-com-inducao-preto.jpg.jpg?v=639138552151830000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-4-pecas-sirius-com-inducao-preto/p",
+  popularity: 63
+ },
+ {
+  sku: "brinox-4791102",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Smart Plus Vanilla VANILLA Brinox",
+  brand: "Brinox",
+  unitPrice: 489.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276510/jogo-de-panelas-antiaderente-smart-plus-6-pecas-cor-vanilla-brinox.jpg?v=638919112955700000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-smart-plus-vanilla_4791102-1/p",
+  popularity: 64
+ },
+ {
+  sku: "brinox-4774351",
+  name: "Fervedor de Indução Brinox Smart Plus 1,7 Litros Ø14cm Ceramic Life Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas fervedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287781/Fervedor SmartP Vanilla 1,7 L.png?v=639251535818400000",
+  productUrl: "https://www.brinox.com.br/fervedor-de-inducao-brinox-smart-plus-1-7-litros-%C3%B814-cm-ceramic-life-vanilla/p",
+  popularity: 65
+ },
+ {
+  sku: "brinox-4774340",
+  name: "Frigideira de Indução Brinox Smart Plus Ø 20cm 0,6L Antiaderente Ceramic Life Vanilla VANILLA Brinox",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283714/promocao-brinox-frigideira-smart-plus-vanilla.png?v=639106577744830000",
+  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-smart-plus---20-cm-0-6-l-antiaderente-ceramic-life-vanilla/p",
+  popularity: 66
+ },
+ {
+  sku: "brinox-4774333",
+  name: "Caçarola de Indução com Tampa Brinox Smart Plus Ø 24cm 4,55L Antiaderente Ceramic Life Vanilla VANILLA Brinox",
+  brand: "Brinox",
+  unitPrice: 219.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284632/promocao-brinox-ceramic-life-primea-cappuchino-antiaderente.png?v=639154877853670000",
+  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-com-tampa-brinox-smart-plus---24-cm-4-55-l-antiaderente-ceramic-life-vanilla/p",
+  popularity: 67
+ },
+ {
+  sku: "brinox-4773101",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Smart Plus Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 589.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282292/4791_105.png?v=639046950360370000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-vanilla_4773101/p",
+  popularity: 68
+ },
+ {
+  sku: "brinox-2600334",
+  name: "Mixer Brinox Descomplica 22cm Preto Preto",
+  brand: "Brinox",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "cozinha mixer",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282164/brinox.png?v=639040883948000000",
+  productUrl: "https://www.brinox.com.br/mixer_brinox_descomplica_22_cm_preto/p",
+  popularity: 69
+ },
+ {
+  sku: "brinox-2364100",
+  name: "Cuscuzeira Brinox Lyon 2 Litros Aço Inox Inox",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "panelas cuscuzeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284129/promocao-brinox-cuscuzeira.png?v=639141172969700000",
+  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-lyon-2-litros-aco-inox/p",
+  popularity: 70
+ },
+ {
+  sku: "brinox-2250325",
+  name: "Fouet Fio Inox com Silicone Brinox Duo 30cm Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios batedores e fues",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285504/promocao-brinox-fue-vanilla-inox-silicone.png?v=639214470126270000",
+  productUrl: "https://www.brinox.com.br/fouet-fio-inox-com-silicone-brinox-duo-30-cm-vanilla/p",
+  popularity: 71
+ },
+ {
+  sku: "brinox-2204325",
+  name: "Ralador 4 Faces com Coletor Brinox Top Pratic 20,5 cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 22.99,
+  unit: "un",
+  category: "cozinha utensilios raladores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287964/Ralador-com-coletor-205-cm.png?v=639258498778570000",
+  productUrl: "https://www.brinox.com.br/ralador_4_faces_com_coletor_brinox_top_pratic_20-5cm_aco_inox/p",
+  popularity: 72
+ },
+ {
+  sku: "brinox-2203301",
+  name: "Conjunto de Medidores Tipo Xícara em Aço Inox Brinox Top Pratic 4 Peças Aço Inox",
+  brand: "Brinox",
+  unitPrice: 29.99,
+  unit: "un",
+  category: "cozinha utensilios medidores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282372/Conjunto_medidores_xicaras_240_ml_120_ml_80ml_e_60_ml_Brinox_Top_Pratic_4_pecas_aco_inox.jpg?v=639052916594300000",
+  productUrl: "https://www.brinox.com.br/conjunto_de_medidores_tipo_xicara_brinox_top_pratic_aco_inox_4_pecas/p",
+  popularity: 73
+ },
+ {
+  sku: "brinox-2107100",
+  name: "Conjunto de Tigelas Brinox Suprema 3 Peças Aço Inox Inox",
+  brand: "Brinox",
+  unitPrice: 64.99,
+  unit: "un",
+  category: "mesa cumbucas e bowls",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284646/Conjunto_de_Tigelas_Brinox_Suprema_3_Pecas_Aco_Inox.jpg?v=639155904925630000",
+  productUrl: "https://www.brinox.com.br/conjunto-de-tigelas-brinox-suprema-3-pecas-aco-inox/p",
+  popularity: 74
+ },
+ {
+  sku: "brinox-2080307",
+  name: "Espátula Perfurada Brinox Suprema 33cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios espatulas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280988/Espatula_Perfurada_Brinox_Suprema_16_mm_x_325_cm_Aco_Inox.jpg?v=639081431496700000",
+  productUrl: "https://www.brinox.com.br/espatula-perfurada-brinox-suprema-33-cm-aco-inox/p",
+  popularity: 75
+ },
+ {
+  sku: "brinox-2080303",
+  name: "Concha Terrina Brinox Suprema Brinox 70ml 30cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios conchas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280985/Concha_Terrina_Brinox_Suprema_16_mm_x_30_cm_70_ml_Aco_Inox.jpg?v=639035735346430000",
+  productUrl: "https://www.brinox.com.br/concha-terrina-brinox-suprema-brinox-70-ml-30-cm-aco-inox/p",
+  popularity: 76
+ },
+ {
+  sku: "brinox-1425132",
+  name: "Bandeja para Servir Brinox Atina 32 x 15,5 cm Aço Inox Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 34.99,
+  unit: "un",
+  category: "mesa bandejas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281463/Bandeja_para_Servir_Brinox_Atina_32_x_155_cm_Aco_Inox.jpg?v=639052924528770000",
+  productUrl: "https://www.brinox.com.br/bandeja-para-servir-brinox-atina-32-x-15-5-cm-aco-inox/p",
+  popularity: 77
+ },
+ {
+  sku: "brinox-1424140",
+  name: "Bandeja para Torta Fria Rocambole Brinox Atina 40 x 16 cm Aço Inox Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 46.99,
+  unit: "un",
+  category: "mesa bandejas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283978/promocao-brinox-bandeja-inox.png?v=639136717921700000",
+  productUrl: "https://www.brinox.com.br/bandeja-para-torta-fria-rocambole-brinox-atina-40-x-16-cm-aco-inox/p",
+  popularity: 78
+ },
+ {
+  sku: "brinox-994242307",
+  name: "Cuscuzeira Brinox Especiarias Antiaderente Ø 10 cm 800 ml Vanilla Cuscuzeira Brinox Ø10cm 800 ml Especiarias Vanilla",
+  brand: "Brinox",
+  unitPrice: 149.99,
+  unit: "un",
+  category: "panelas cuscuzeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287150/cuscuzeira-brinox-o10cm-800-ml-especiarias-vanilla_0.jpg?v=639239627272870000",
+  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-especiarias-antiaderente-10cm-800ml-vanilla/p",
+  popularity: 79
+ },
+ {
+  sku: "brinox-994242306",
+  name: "Cuscuzeira Brinox Especiarias Antiaderente Ø 16 cm 2 L Vanilla Cuscuzeira Brinox Ø 16cm 2 L Especiarias Vanilla",
+  brand: "Brinox",
+  unitPrice: 219.99,
+  unit: "un",
+  category: "panelas cuscuzeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287159/cuscuzeira-brinox-o-16cm-2-l-especiarias-vanilla_0.jpg?v=639239628098300000",
+  productUrl: "https://www.brinox.com.br/cuscuzeira-brinox-especiarias-antiaderente-16cm-2l-vanilla/p",
+  popularity: 80
+ },
+ {
+  sku: "brinox-994242274",
+  name: "Pipoqueira Brinox Ceramic Life Nevada Ø20 cm 4,2 L Borgonha",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas pipoqueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287256/4,2 L - Nevada Borgonha.png?v=639239731818070000",
+  productUrl: "https://www.brinox.com.br/pipoqueira-brinox-ceramic-life-nevada-o20-cm-4-2-l-borgonha/p",
+  popularity: 81
+ },
+ {
+  sku: "brinox-994242245",
+  name: "Faqueiro Brinox Noble 48 Peças Aço Inoxidável Faqueiro Brinox Noble 48 Peças Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 869.99,
+  unit: "un",
+  category: "talheres faqueiros e jogos de talher",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284950/5127_143.jpg?v=639172166321230000",
+  productUrl: "https://www.brinox.com.br/faqueiro-brinox-noble-48-pecas-aco-inoxidavel/p",
+  popularity: 82
+ },
+ {
+  sku: "brinox-994242206",
+  name: "Fervedor Brinox Suprema Antiaderente Ceramic Life Ø14cm 1,8 Litros Preto Fervedor Brinox Ceramic Life Suprema Ø14cm 1,8 L Preto",
+  brand: "Brinox",
+  unitPrice: 106.99,
+  unit: "un",
+  category: "panelas fervedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287800/Fervedor-Suprema-Preto-18-L.png?v=639251539452370000",
+  productUrl: "https://www.brinox.com.br/fervedor-brinox-suprema-antiaderente-ceramic-life-o14cm-18-litros-preto/p",
+  popularity: 83
+ },
+ {
+  sku: "brinox-994242196",
+  name: "Frigideira Brinox Primea Antiaderente Ceramic Life Ø20cm 1 Litro Cappuccino Frigideira Brinox Ceramic Life Primea Ø20cm 1 L Cappuccino",
+  brand: "Brinox",
+  unitPrice: 69.99,
+  unit: "un",
+  category: "panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284768/frigideira-brinox-ceramic-life-primea-o20cm-1-l-cappuccino_0.jpg?v=639165226952030000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-primea-antibacteriana-antiaderente-ceramic-life-20cm-cappuccino/p",
+  popularity: 84
+ },
+ {
+  sku: "brinox-994242191",
+  name: "Jogo de Panelas Brinox Primea Antiaderente Ceramic Life 5 Peças Cappuccino Jogo de Panelas Brinox Ceramic Life Primea 5 Peças Cappuccino",
+  brand: "Brinox",
+  unitPrice: 449.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284711/jogo-de-panelas-brinox-ceramic-life-primea-5-pecas-cappuccino_0.jpg?v=639161044888900000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-primea-ceramic-life-5-pecas-cappuccino/p",
+  popularity: 85
+ },
+ {
+  sku: "brinox-994242140",
+  name: "Carrinho Organizador Inox Suprema Brinox",
+  brand: "Brinox",
+  unitPrice: 249.99,
+  unit: "un",
+  category: "organizacao organizadores multiuso",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282280/carrinho-organizador-inox-suprema-brinox_0.jpg?v=639046865399100000",
+  productUrl: "https://www.brinox.com.br/carrinho-organizador-inox-suprema-brinox/p",
+  popularity: 86
+ },
+ {
+  sku: "brinox-994242080",
+  name: "Porta Condimentos em Bambu com Colher Coza Brisa Pote com Colher Brisa Bambu Coza",
+  brand: "Coza",
+  unitPrice: 29.99,
+  unit: "un",
+  category: "mesa acessorios porta condimentos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286159/pote_com_colher_coza_brisa_site_brinox_1.webp?v=639234450135970000",
+  productUrl: "https://www.brinox.com.br/porta-condimentos-em-bambu-com-colher-coza-brisa/p",
+  popularity: 87
+ },
+ {
+  sku: "brinox-406423009",
+  name: "Pote Hermético Quadrado Coza Modo Bambu 1,2 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 34.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285819/pote_hermetico_coza_modo_bambu_1_2_litros_cristal_site_brinox_3.webp?v=639233659665530000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-1-2-litros-cristal/p",
+  popularity: 88
+ },
+ {
+  sku: "brinox-102463009",
+  name: "Dispenser com Medidor Coza Easy 1,5 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "organizacao organizadores multiuso",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286084/dispenser_com_medidor_coza_easy_15_litros_cristal_site_brinox_1.webp?v=639234364934930000",
+  productUrl: "https://www.brinox.com.br/dispenser-com-medidor-coza-easy-1-5-litros-cristal/p",
+  popularity: 89
+ },
+ {
+  sku: "brinox-7245352",
+  name: "Frigideira Brinox Suprema 20cm Revestimento Antiaderente Ceramic Life Mineral Resist Verde Verde",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286848/frigideira-20cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238872471430000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-20-cm-revestimento-antiaderente-ceramic-life-mineral-resist-verde/p",
+  popularity: 90
+ },
+ {
+  sku: "brinox-7244367",
+  name: "Fervedor Brinox Suprema 1,8 Litros Ø14cm Antiaderente Ceramico Mineral Resist Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 79.99,
+  unit: "un",
+  category: "panelas fervedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287784/Fervedor-Suprema-Vanilla-18-L.png?v=639256059904900000",
+  productUrl: "https://www.brinox.com.br/fervedo-brinox-suprema-1-8-litros-%C3%B814-cm-antiaderente-ceramico-mineral-resist-vanilla/p",
+  popularity: 91
+ },
+ {
+  sku: "brinox-7244365",
+  name: "Caçarola com Tampa Brinox Suprema Antiaderente Mineral Resist Ceramic Life Ø24cm 4,5 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 149.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286815/cacarola-com-tampa-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238867301570000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-antiaderente-mineral-resist-ceramic-life-%C3%B824-cm-4-5-litros-vanilla/p",
   popularity: 92
+ },
+ {
+  sku: "brinox-7244358",
+  name: "Grill Brinox Suprema Antiaderente Mineral Resist Ceramic Life 24cm 0,75L Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 89.99,
+  unit: "un",
+  category: "panelas grills",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286869/grill-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238875514800000",
+  productUrl: "https://www.brinox.com.br/grill-brinox-suprema-antiaderente-mineral-resist-ceramic-life-24-cm-0-75-l-vanilla/p",
+  popularity: 93
  },
  {
   sku: "brinox-7244101",
@@ -1026,7 +1037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286914/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-vanilla.jpg?v=639238878619570000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-vanilla_7244101-1/p",
-  popularity: 93
+  popularity: 94
  },
  {
   sku: "brinox-7239192",
@@ -1037,7 +1048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panelas de pressao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287051/3L---Vapt-Vanilla.png?v=639256095598670000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-3-litros-%C3%B820-cm-vanilla/p",
-  popularity: 94
+  popularity: 95
  },
  {
   sku: "brinox-7190467",
@@ -1048,7 +1059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282639/7190_467.jpg?v=639074585077300000",
   productUrl: "https://www.brinox.com.br/wok-brinox-naturalle-antiaderente-ceramic-life-o28cm-41-litros-preta/p",
-  popularity: 95
+  popularity: 96
  },
  {
   sku: "brinox-5111142",
@@ -1059,7 +1070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279670/imagens-900x900---2025-10-24T112559.623.jpg?v=638969218622300000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-turim-24-pecas-aco-inoxidavel/p",
-  popularity: 96
+  popularity: 97
  },
  {
   sku: "brinox-5101118",
@@ -1070,7 +1081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283565/faqueiro-brinox-aco-inoxidavel-42-pecas-6-pessoas-polimento-extra-brilho-linha-lyon.jpg?v=639095390597770000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-lyon-42-pecas-aco-inoxidavel/p",
-  popularity: 97
+  popularity: 98
  },
  {
   sku: "brinox-5101102",
@@ -1081,7 +1092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280888/5101_102--1-.jpg?v=639039965608000000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-lyon-24-pecas-aco-inoxidavel/p",
-  popularity: 98
+  popularity: 99
  },
  {
   sku: "brinox-4954103",
@@ -1092,17 +1103,6 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panelas de pressao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287100/5.4L---Super-Gris.png?v=639256097113900000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-super-antiaderente-ceramic-life-5-4-litros-22cm-gris/p",
-  popularity: 99
- },
- {
-  sku: "brinox-4875100",
-  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Inox",
-  brand: "Brinox",
-  unitPrice: 109.99,
-  unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285565/suprema-roma-inox.png?v=639215420594070000",
-  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-roma-2-7-litros/p",
   popularity: 100
  },
  {
@@ -1194,6 +1194,17 @@ export const CATALOG: CatalogItem[] = [
   popularity: 108
  },
  {
+  sku: "brinox-4774103",
+  name: "Jogo de Panelas com Indução Brinox Antiaderente Ceramic Life Smart Plus 5 Peças Granito Granito",
+  brand: "Brinox",
+  unitPrice: 449.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276821/jogo-de-panelas-antiaderente-ceramic-life-5-pecas-smart-plus-inducao-granito-brinox.jpg?v=638919145180430000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-antiaderente-ceramic-life-smart-plus-5-pecas-granito/p",
+  popularity: 109
+ },
+ {
   sku: "brinox-3040202",
   name: "Lixeira com Pedal e Balde Brinox Decorline 5 Litros Ø20 x 30cm Aço Inoxidável Inox",
   brand: "Brinox",
@@ -1202,7 +1213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287714/Lixeira-5-L---Decorline.png?v=639251847335430000",
   productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-decorline-5-litros-%C3%B8-20-x-30-cm-aco-inoxidavel/p",
-  popularity: 109
+  popularity: 110
  },
  {
   sku: "brinox-3033203",
@@ -1213,7 +1224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com aro",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287750/Lixeira-212-L---Decorline-aro--1-.png?v=639256078746730000",
   productUrl: "https://www.brinox.com.br/lixeira-com-aro-brinox-decorline-21-2-litros-%C3%B8-25-x-46-cm-aco-inoxidavel/p",
-  popularity: 110
+  popularity: 111
  },
  {
   sku: "brinox-3032206",
@@ -1224,7 +1235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras tampa basculante",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287746/Lixeira-78-L---Decorline.png?v=639251848847000000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-7-8-litros-18-5-x-29-cm-aco-inoxidavel/p",
-  popularity: 111
+  popularity: 112
  },
  {
   sku: "brinox-3032203",
@@ -1235,7 +1246,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras tampa basculante",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287651/Lixeira-212-L---Decorline-basculante.png?v=639251849073570000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-21-2-litros-25-cm-aco-inox/p",
-  popularity: 112
+  popularity: 113
  },
  {
   sku: "brinox-3030202",
@@ -1246,7 +1257,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com tampa",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287708/Lixeira-5-L---Decorline-tampa.png?v=639256079788330000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-brinox-decorline-5-4-litros-%C3%B8-18-5-x-23-cm-aco-inoxidavel/p",
-  popularity: 113
+  popularity: 114
  },
  {
   sku: "brinox-2204327",
@@ -1257,7 +1268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios raladores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287970/Ralador com pote 13,5 cm.png?v=639258499091070000",
   productUrl: "https://www.brinox.com.br/ralador_com_pote_coletor_brinox_top_pratic_13-5_x_6_x_4_cm_aco_inox/p",
-  popularity: 114
+  popularity: 115
  },
  {
   sku: "brinox-2203300",
@@ -1268,17 +1279,6 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios medidores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282366/Inox.jpg?v=639052913106030000",
   productUrl: "https://www.brinox.com.br/conjunto-medidor-colher-brinox-4-pecas---inox---para-receitas-que-precisam-exatidao_2203300/p",
-  popularity: 115
- },
- {
-  sku: "brinox-2202327",
-  name: "Peneira em Aço Inox Brinox Top Pratic Ø20cm Aço Inox",
-  brand: "Brinox",
-  unitPrice: 26.99,
-  unit: "un",
-  category: "cozinha utensilios peneiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287974/Peneira Top Pratic 20 cm.png?v=639258500774900000",
-  productUrl: "https://www.brinox.com.br/peneira_em_aco_inox_brinox_top_pratic_%C3%B820cm/p",
   popularity: 116
  },
  {
@@ -1458,17 +1458,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 132
  },
  {
-  sku: "brinox-994242245",
-  name: "Faqueiro Brinox Noble 48 Peças Aço Inoxidável Faqueiro Brinox Noble 48 Peças Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 869.99,
-  unit: "un",
-  category: "talheres faqueiros e jogos de talher",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284950/5127_143.jpg?v=639172166321230000",
-  productUrl: "https://www.brinox.com.br/faqueiro-brinox-noble-48-pecas-aco-inoxidavel/p",
-  popularity: 133
- },
- {
   sku: "brinox-994242229",
   name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø22cm 1,2 Litros Grafite Frigideira Brinox Ceramic Life Rainbow Ø22cm 1,2 Litros Grafite",
   brand: "Brinox",
@@ -1477,7 +1466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284447/frigideira-brinox-ceramic-life-rainbow-o22cm-1-2-litros-grafite_0.jpg?v=639147826201000000",
   productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o22cm-12-litros-grafite/p",
-  popularity: 134
+  popularity: 133
  },
  {
   sku: "brinox-994242207",
@@ -1488,7 +1477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282862/wok-brinox-ceramic-life-suprema-o24cm-2-3-l-preto_0.jpg?v=639089225511430000",
   productUrl: "https://www.brinox.com.br/wok-brinox-suprema-antiaderente-ceramic-life-o24cm-23-litros-preto/p",
-  popularity: 135
+  popularity: 134
  },
  {
   sku: "brinox-994242204",
@@ -1499,7 +1488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286792/cacarola-com-tampa-brinox-ceramic-life-suprema-o20cm-2-65-l-preto_0.jpg?v=639238854638030000",
   productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-ceramic-life-o20cm-265-litros-preto/p",
-  popularity: 136
+  popularity: 135
  },
  {
   sku: "brinox-994242203",
@@ -1510,7 +1499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282858/panela-com-tampa-brinox-ceramic-life-suprema-o18cm-1-9-l-preto_0.jpg?v=639089208167300000",
   productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-suprema-antiaderente-ceramic-life-o18cm-19-litros-preto/p",
-  popularity: 137
+  popularity: 136
  },
  {
   sku: "brinox-994242202",
@@ -1521,7 +1510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282857/frigideira-brinox-ceramic-life-suprema-o20cm-800ml-preto_0.jpg?v=639089204206970000",
   productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-antiaderente-ceramic-life-o20cm-800ml-preto/p",
-  popularity: 138
+  popularity: 137
  },
  {
   sku: "brinox-994242195",
@@ -1532,7 +1521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas cacarolas e panelas avulsas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284798/cacarola-com-tampa-brinox-ceramic-life-o24cm-4-7-l-primea-cappuccino_0.jpg?v=639165234625600000",
   productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-primea-antibacteriana-antiaderente-ceramic-life-24cm-cappuccino/p",
-  popularity: 139
+  popularity: 138
  },
  {
   sku: "brinox-994242194",
@@ -1543,7 +1532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas cacarolas e panelas avulsas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284793/cacarola-com-tampa-brinox-ceramic-life-o20cm-2-7-l-primea-cappuccino_0.jpg?v=639165234058700000",
   productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-primea-antibacteriana-antiaderente-ceramic-life-20cm-cappuccino/p",
-  popularity: 140
+  popularity: 139
  },
  {
   sku: "brinox-994242189",
@@ -1554,7 +1543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas panelas de pressao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287058/4,5L - Vapt Preto.png?v=639238893461500000",
   productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-4-5-litros-preto/p",
-  popularity: 141
+  popularity: 140
  },
  {
   sku: "brinox-994242186",
@@ -1565,7 +1554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas pipoqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284067/pipoqueira-brinox-ceramic-life-rainbow-o20cm-4-2-litros-rosa_0.jpg?v=639138436367130000",
   productUrl: "https://www.brinox.com.br/pipoqueira-brinox-antiaderente-ceramic-life-rainbow-o20cm-42-litros-rosa/p",
-  popularity: 142
+  popularity: 141
  },
  {
   sku: "brinox-994242184",
@@ -1576,7 +1565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284523/wok-brinox-ceramic-life-rainbow-o24cm-2-65-litros-grafite_0.jpg?v=639147834376930000",
   productUrl: "https://www.brinox.com.br/wok-brinox-antiaderente-ceramic-life-rainbow-o24cm-265-litros-grafite/p",
-  popularity: 143
+  popularity: 142
  },
  {
   sku: "brinox-994242182",
@@ -1587,7 +1576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284503/wok-brinox-ceramic-life-rainbow-o24cm-2-65-litros-rosa_0.jpg?v=639147830908370000",
   productUrl: "https://www.brinox.com.br/wok-brinox-antiaderente-ceramic-life-rainbow-o24cm-265-litros-rosa/p",
-  popularity: 144
+  popularity: 143
  },
  {
   sku: "brinox-994242117",
@@ -1598,7 +1587,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286683/organizador_coza_new_retro_2_1_litros_2x4_cristal_site_brinox_1.webp?v=639235367819800000",
   productUrl: "https://www.brinox.com.br/organizador-coza-new-retro-2-1-litros-2x4-cristal/p",
-  popularity: 145
+  popularity: 144
  },
  {
   sku: "brinox-994242081",
@@ -1609,7 +1598,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta pao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286150/porta_pao_em_bambu_com_cpula_coza_brisa_1.webp?v=639234448491000000",
   productUrl: "https://www.brinox.com.br/porta-pao-em-bambu-com-cupula-coza-brisa/p",
-  popularity: 146
+  popularity: 145
  },
  {
   sku: "brinox-406473009",
@@ -1620,7 +1609,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285861/pote_hermetico_retangular_coza_modo_bambu_2_7_litros_cristal_site_Brinox_1.webp?v=639233664860030000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-bambu-2-7-litros-cristal/p",
-  popularity: 147
+  popularity: 146
  },
  {
   sku: "brinox-406413009",
@@ -1631,788 +1620,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285808/pote_hermetico_coza_modo_bambu_580ml_cristal__site_Brinox_1.webp?v=639233658565230000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-580ml-cristal/p",
-  popularity: 148
- },
- {
-  sku: "brinox-101953009",
-  name: "Organizador de Geladeira com Cesto 3,2 Litros Coza Dry Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "organizacao organizadores de geladeira",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285950/organizador_de_geladeira_com_cesto_32_litros_coza_site_brinox_1.webp?v=639233688095770000",
-  productUrl: "https://www.brinox.com.br/organizador-de-geladeira-com-cesto-3-2-litros-coza-dry-cristal/p",
-  popularity: 149
- },
- {
-  sku: "brinox-7245374",
-  name: "Wok com Tampa Brinox Suprema Antiaderente Ceramic Life Ø28cm 4,65 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286993/wok-com-tampa-28cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238887544530000",
-  productUrl: "https://www.brinox.com.br/wok-com-tampa-brinox-suprema-antiaderente-ceramic-life-%C3%B828-cm-4-65-litros-verde/p",
-  popularity: 150
- },
- {
-  sku: "brinox-7245366",
-  name: "Fervedor 1,2 L Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
-  brand: "Brinox",
-  unitPrice: 69.99,
-  unit: "un",
-  category: "panelas fervedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287789/Fervedor Suprema Verde 1,2  L.png?v=639251536669970000",
-  productUrl: "https://www.brinox.com.br/fervedor-1-2-l-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245366/p",
-  popularity: 151
- },
- {
-  sku: "brinox-7245361",
-  name: "Panela com Tampa 18 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286944/panela-com-tampa-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_0.jpg?v=639238882446300000",
-  productUrl: "https://www.brinox.com.br/panela-com-tampa-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox/p",
-  popularity: 152
- },
- {
-  sku: "brinox-7245357",
-  name: "Tapioqueira 22 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
-  brand: "Brinox",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "panelas panquequeiras e tapioqueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286953/tapioqueira-22cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238883670800000",
-  productUrl: "https://www.brinox.com.br/tapioqueira-22-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245357/p",
-  popularity: 153
- },
- {
-  sku: "brinox-7244373",
-  name: "Wok Brinox Suprema Antiaderente Ceramic Life Ø24cm 2,65 Litros Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286968/wok-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238884955100000",
-  productUrl: "https://www.brinox.com.br/wok-brinox-suprema-antiaderente-ceramic-life-%C3%B824-cm-2-65-litros-vanilla/p",
-  popularity: 154
- },
- {
-  sku: "brinox-7239193",
-  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 7,5 Litros Ø24cm Vanilla VANILLA",
-  brand: "Brinox",
-  unitPrice: 299.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287120/75L---Vapt-Vanilla.png?v=639256095950600000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-7-5-litros-24-cm-vanilla/p",
-  popularity: 155
- },
- {
-  sku: "brinox-7239170",
-  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 4,5 Litros Ø20cm Vanilla VANILLA",
-  brand: "Brinox",
-  unitPrice: 209.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287062/45L---Vapt-Vanilla.png?v=639256095771470000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-4-5-litros-%C3%B820cm-vanilla/p",
-  popularity: 156
- },
- {
-  sku: "brinox-7190458",
-  name: "Panela com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø20cm 2,5 Litros Preta Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 84.2,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282573/7190_458.jpg?v=639070125148730000",
-  productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-naturalle-antiaderente-ceramic-life-%C3%B820-cm-2-5-litros-preta/p",
-  popularity: 157
- },
- {
-  sku: "brinox-7001360",
-  name: "Caçarola com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø22cm 3,4 Litros Garlic Vermelho Brinox",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282700/7001_360.jpg?v=639081506088300000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-antiaderente-ceramic-life-o22cm-34-litros-garlic/p",
-  popularity: 158
- },
- {
-  sku: "brinox-7000394",
-  name: "Tampa De Vidro - Ø 16 Cm - Brinox Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 42.99,
-  unit: "un",
-  category: "panelas tampas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261806/Preto-Brinox.jpg?v=638971858059630000",
-  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_16_cm___brinox_7000394/p",
-  popularity: 159
- },
- {
-  sku: "brinox-5111118",
-  name: "Faqueiro Brinox Turim 42 Peças Aço Inoxidável Aço Inox",
-  brand: "Brinox",
-  unitPrice: 119.99,
-  unit: "un",
-  category: "talheres faqueiros e jogos de talher",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286742/faqueiro-linha-turim-42-pecas-aco-inoxidavel-brinox.jpg?v=639237693770300000",
-  productUrl: "https://www.brinox.com.br/faqueiro-brinox-turim-42-pecas-aco-inoxidavel/p",
-  popularity: 160
- },
- {
-  sku: "brinox-5100020",
-  name: "Colher para Refresco Brinox Lyon 18cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 6.99,
-  unit: "un",
-  category: "cozinha utensilios colheres para coquetel e refresco",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248401/Colher-de-Refresco---Lyon-184-x-12-mm---Brinox.jpg?v=637001128307470000",
-  productUrl: "https://www.brinox.com.br/colher-para-refresco-brinox-lyon-18-cm-aco-inox/p",
-  popularity: 161
- },
- {
-  sku: "brinox-4954100",
-  name: "Panela de Pressão Indução Brinox Super Antiaderente Ceramic Life 4,2 Litros 20cm Preto Preto",
-  brand: "Brinox",
-  unitPrice: 289.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287044/42L---Preto.png?v=639256096941500000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-super-antiaderente-ceramic-life-4-2-litros-20cm-preto/p",
-  popularity: 162
- },
- {
-  sku: "brinox-4875111",
-  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 119.99,
-  unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285562/suprema-roma-verde.png?v=639215420204670000",
-  productUrl: "https://www.brinox.com.br/chaleira_de_inox_com_inducao_e_apito_brinox_roma_2-7_litros_verde/p",
-  popularity: 163
- },
- {
-  sku: "brinox-4828202",
-  name: "Chaleira de Inox com Indução e Apito Brinox Jasmin 3 Litros Metalizada Inox",
-  brand: "Brinox",
-  unitPrice: 119.99,
-  unit: "un",
-  category: "panelas chaleiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285535/Jasmin-3L.png?v=639255922668900000",
-  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-jasmin-3-litros-metalizada/p",
-  popularity: 164
- },
- {
-  sku: "brinox-4815331",
-  name: "Caçarola de Indução com Tampa Brinox Botanika Antiaderente Ceramic Life Ø20cm 2,5 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 129.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278156/panela-cacarola-de-inducao-com-tampa-brinox-ceramic-life-botanika-verde.jpg.jpg?v=638919173803170000",
-  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-com-tampa-brinox-botanika-antiaderente-ceramic-life-%C3%B820-cm-2-5-litros-verde/p",
-  popularity: 165
- },
- {
-  sku: "brinox-4815330",
-  name: "Frigideira de Indução Brinox Botanika Antiaderente Ceramic Life Ø22cm 1,1 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278160/frigideira-antiaderente-de-inducao-brinox-botanika-verde.jpg.jpg?v=638919167594730000",
-  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-botanika-antiaderente-ceramic-life-%C3%B822-cm-1-1-litros-verde/p",
-  popularity: 166
- },
- {
-  sku: "brinox-4815102",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Botanika com Indução Verde Verde",
-  brand: "Brinox",
-  unitPrice: 549.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280871/jogo-de-panelas-antiaderente-ceramic-life-5-pecas-botanika-com-inducao-brinox.jpg?v=639005360010500000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-5-pecas-botanika-com-inducao-verde_4815102-1/p",
-  popularity: 167
- },
- {
-  sku: "brinox-4789113",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Easy Carbono-Vermelho Carbono",
-  brand: "Brinox",
-  unitPrice: 369.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282305/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_6_Pecas_Easy_Carbono_Vermelho_Nova.jpg?v=639047068447870000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-easy-carbono-vermelho_4789113-1/p",
-  popularity: 168
- },
- {
-  sku: "brinox-4774334",
-  name: "Panela de Indução com Tampa Brinox Ceramic Life 1,25 Litros Ø 16 cm Vanilla Vanilla",
-  brand: "Brinox",
-  unitPrice: 129.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/265434/VANILLA-Brinox.jpg?v=638919134282300000",
-  productUrl: "https://www.brinox.com.br/panela_com_tampa_o16_ceramic_life_granada_inducao___brinox_4774334/p",
-  popularity: 169
- },
- {
-  sku: "brinox-4774103",
-  name: "Jogo de Panelas com Indução Brinox Antiaderente Ceramic Life Smart Plus 5 Peças Granito Granito",
-  brand: "Brinox",
-  unitPrice: 449.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276821/jogo-de-panelas-antiaderente-ceramic-life-5-pecas-smart-plus-inducao-granito-brinox.jpg?v=638919145180430000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-com-inducao-brinox-antiaderente-ceramic-life-smart-plus-5-pecas-granito/p",
-  popularity: 170
- },
- {
-  sku: "brinox-4774101",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Smart Plus com Indução Vanilla VANILLA",
-  brand: "Brinox",
-  unitPrice: 499.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285650/Vanilla-Inducao-5-pecas.png?v=639221370814530000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-5-pecas-granada-com-inducao-vanilla_4774101-1/p",
-  popularity: 171
- },
- {
-  sku: "brinox-3074101",
-  name: "Lixeira com Pedal e Balde Brinox Spin 5 Litros Aço Inox Escovado Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287737/Lixeira-5-L---Spin.png?v=639256076973800000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-spin-5-litros-aco-inox-escovado/p",
-  popularity: 172
- },
- {
-  sku: "brinox-3065101",
-  name: "Lixeira com Pedal e Balde Brinox Frame 12 Litros Aço Inox Escovado Inox",
-  brand: "Brinox",
-  unitPrice: 279.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287621/Lixeira 12 L - Decorline.png?v=639251501044200000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-12-litros-aco-inox-escovado/p",
-  popularity: 173
- },
- {
-  sku: "brinox-3065100",
-  name: "Lixeira com Pedal e Balde Brinox Frame 12 Litros Aço Carbono Preto Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 399.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/260899/Preto-Brinox.jpg?v=638920934957100000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-12-litros-aco-carbono-preto/p",
-  popularity: 174
- },
- {
-  sku: "brinox-3064101",
-  name: "Lixeira com Pedal e Balde Brinox Frame 6 Litros Aço Inox Escovado Lixeira Inox Pedal E Balde Frame 6l Inox Brinox 29x22x29,2cm",
-  brand: "Brinox",
-  unitPrice: 269.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287826/Lixeira 6 L - Frame Inox.png?v=639251559380430000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-6-litros-aco-inox-escovado/p",
-  popularity: 175
- },
- {
-  sku: "brinox-3032205",
-  name: "Lixeira com Tampa Basculante Brinox Decorline 40,5 Litros Ø30cm Aço Inoxidável Inox",
-  brand: "Brinox",
-  unitPrice: 249.99,
-  unit: "un",
-  category: "lixeiras lixeiras tampa basculante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282404/lixeira-inox-com-tampa-basculante-40-litros-linha-decorline-brinox.jpg?v=639056507675530000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-40-5-litros-30-x-60-cm-aco-inoxidavel/p",
-  popularity: 176
- },
- {
-  sku: "brinox-3032202",
-  name: "Lixeira com Tampa Basculante Brinox Decorline 5,4 Litros 18,5 x 20 cm Aço Inoxidável Inox",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "lixeiras lixeiras tampa basculante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287751/Lixeira-5-L---Decorline-basculante--1-.png?v=639251848097830000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-5-4-litros-18-5-x-20-cm-aco-inoxidavel/p",
-  popularity: 177
- },
- {
-  sku: "brinox-3030201",
-  name: "Lixeira com Tampa Brinox Decorline 3,2 Litros Ø15,5 x 20cm Aço Inoxidável Aço Inox",
-  brand: "Brinox",
-  unitPrice: 69.99,
-  unit: "un",
-  category: "lixeiras lixeiras tampa basculante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287664/Lixeira-32L---Decorline-tampa.png?v=639256079538730000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-brinox-decorline-3-2-litros-%C3%B8-15-5-x-20-cm-aco-inoxidavel/p",
-  popularity: 178
- },
- {
-  sku: "brinox-2554109",
-  name: "Jogo De Talheres Para Churrasco 12 Peças Aço Inoxidável Linha Churrasco da Brinox Preto",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "talheres talheres para churrasco",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277847/jogo-de-talheres-para-churrasco-12-pecas-aco-inoxidavel-linha-churrasco-da-brinox.jpg?v=638920923011800000",
-  productUrl: "https://www.brinox.com.br/jogo-de-talheres-para-churrasco-12-pecas-aco-inoxidavel-linha-churrasco-da-brinox_2554109/p",
-  popularity: 179
- },
- {
-  sku: "brinox-2508306",
-  name: "Cortador de Pizza Brinox Precision Ø10cm Aço Temperado Aço Inox",
-  brand: "Brinox",
-  unitPrice: 28.99,
-  unit: "un",
-  category: "cozinha utensilios cortadores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248420/Cortador-de-Pizza---Precision-Ø-10-cm---Brinox.jpg?v=639032188040000000",
-  productUrl: "https://www.brinox.com.br/cortador-de-pizza-brinox-precision-%C3%B810-cm-aco-temperado/p",
-  popularity: 180
- },
- {
-  sku: "brinox-2427302",
-  name: "Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul",
-  brand: "Brinox",
-  unitPrice: 54.99,
-  unit: "un",
-  category: "cozinha macaricos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254842/Azul-Brinox.jpg?v=638978615717700000",
-  productUrl: "https://www.brinox.com.br/macarico_multiuso_brinox_descomplica_glace_17_cm/p",
-  popularity: 181
- },
- {
-  sku: "brinox-2425105",
-  name: "Tampa de Pressão para Garrafas de Vinho Brinox Ø4,7 x 7,2cm Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "cozinha utensilios acessorios para vinho e espumante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249759/Preto-Brinox.jpg?v=638962301387800000",
-  productUrl: "https://www.brinox.com.br/tampa_de_pressao_para_garrafas_de_vinho_brinox_%C3%B84_7_x_7_2cm/p",
-  popularity: 182
- },
- {
-  sku: "brinox-2310321",
-  name: "Saca Rolhas Abridor de Garrafas Brinox Bar e Vinho Preto Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios abridores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/257371/Preto-Brinox.jpg?v=637030301780200000",
-  productUrl: "https://www.brinox.com.br/saca_rolhas_abridor_de_garrafas_brinox_bar_e_vinho_preto/p",
-  popularity: 183
- },
- {
-  sku: "brinox-2310318",
-  name: "Tampa para Garrafas 2 Peças Brinox Acessórios de Vinho Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "cozinha utensilios acessorios para vinho e espumante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249748/Tampa-para-Garrafas-2-Pecas---Acessorios-de-Vinho---Brinox.jpg?v=639032163785870000",
-  productUrl: "https://www.brinox.com.br/tampa_para_garrafas_2_pecas_brinox_acessorios_de_vinho_aco_inox/p",
-  popularity: 184
- },
- {
-  sku: "brinox-2310315",
-  name: "Saca Rolhas Brinox Bar e Vinho Aço Inox Preto Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "cozinha utensilios abridores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285568/Preto-Brinox.jpg?v=639216080279770000",
-  productUrl: "https://www.brinox.com.br/saca_rolhas_brinox_bar_e_vinho_aco_inox_preto/p",
-  popularity: 185
- },
- {
-  sku: "brinox-2310311",
-  name: "Saca Rolhas com 2° Estágio Brinox Acessórios para Vinho Preto Preto",
-  brand: "Brinox",
-  unitPrice: 12.99,
-  unit: "un",
-  category: "cozinha utensilios abridores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281032/Saca_Rolhas_com_2°_Estagio_Brinox_Acessorios_para_Vinho_Preto.jpg?v=639052924461570000",
-  productUrl: "https://www.brinox.com.br/saca-rolhas-com-2--estagio-brinox-acessorios-para-vinho-preto/p",
-  popularity: 186
- },
- {
-  sku: "brinox-2310305",
-  name: "Tampa para Garrafa de Espumante Brinox Acessórios de Vinho Aço Inox Tampa para Garrafa de Espumante - Acessórios de Vinho - Brinox",
-  brand: "Brinox",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "cozinha utensilios acessorios para vinho e espumante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247738/Tampa-para-Garrafa-de-Espumante---Acessorios-de-Vinho---Brinox.jpg?v=639032172941930000",
-  productUrl: "https://www.brinox.com.br/tampa_para_garrafa_de_espumante_brinox_aco_inox/p",
-  popularity: 187
- },
- {
-  sku: "brinox-2204324",
-  name: "Ralador 4 Faces com Visor Brinox Top Pratic 20,5 cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "cozinha utensilios raladores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/262606/Preto-Brinox.jpg?v=638971853821630000",
-  productUrl: "https://www.brinox.com.br/ralador_4_faces_com_visor_brinox_top_pratic_20-5cm_aco_inox_preto/p",
-  popularity: 188
- },
- {
-  sku: "brinox-2202315",
-  name: "Cortador Plaina para Queijo Brinox Top Pratic 20cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "cozinha utensilios plainas para queijo",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/258521/Plaina-para-queijo-Top-Pratic-Brinox-20-cm---Brinox.jpg?v=639032175750900000",
-  productUrl: "https://www.brinox.com.br/cortador-plaina-para-queijo-brinox-top-pratic-20-cm-aco-inox/p",
-  popularity: 189
- },
- {
-  sku: "brinox-2099116",
-  name: "Escorredor de Louças Brinox Suprema com Porta Talheres 16 Pratos Aço inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 169.99,
-  unit: "un",
-  category: "pia escorredores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287949/Escorredor Suprema 16 pecas.png?v=639258496428100000",
-  productUrl: "https://www.brinox.com.br/escorredor-de-loucas-brinox-suprema-com-porta-talheres-16-pratos-aco-inox/p",
-  popularity: 190
- },
- {
-  sku: "brinox-2080304",
-  name: "Espumadeira Brinox Suprema 32cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios espumadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280986/Espumadeira_Brinox_Suprema_16-mm_x_32_cm_Aco_Inox.jpg?v=639081431404400000",
-  productUrl: "https://www.brinox.com.br/espumadeira-brinox-suprema-32-cm-aco-inox/p",
-  popularity: 191
- },
- {
-  sku: "brinox-1687000",
-  name: "Pegador Universal Brinox Arienzo 20,5cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "cozinha utensilios pegadores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280972/Pegador_Universal_Brinox_Arienzo_205_cm_Aco_Inox.jpg?v=639081431649300000",
-  productUrl: "https://www.brinox.com.br/pegador-universal-brinox-arienzo-20-5-cm-aco-inox/p",
-  popularity: 192
- },
- {
-  sku: "brinox-1676000",
-  name: "Pegador para Massa Brinox Arienzo 20cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 10.99,
-  unit: "un",
-  category: "cozinha utensilios pegadores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280970/Pegador_para_Massa_Brinox_Arienzo_20_cm_Aco_Inox.jpg?v=639007100559600000",
-  productUrl: "https://www.brinox.com.br/pegador-para-massa-brinox-arienzo-20-cm-aco-inox/p",
-  popularity: 193
- },
- {
-  sku: "brinox-1660301",
-  name: "Colher para Arroz Brinox Arienzo 33cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "cozinha utensilios colheres para arroz",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280960/Colher_para_arroz_Arienzo_Brinox_01_x_33_cm_Nova.jpg?v=639081431262030000",
-  productUrl: "https://www.brinox.com.br/colher_para_arroz_arienzo_brinox_1660301/p",
-  popularity: 194
- },
- {
-  sku: "brinox-1649303",
-  name: "Concha Terrina Brinox Jornata 50ml 20cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "cozinha utensilios conchas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/257385/Concha-terrina-Jornata-Brinox-12-mm-x-21-cm-50-ml---Brinox.jpg?v=638971852032800000",
-  productUrl: "https://www.brinox.com.br/concha_terrina_brinox_jornata_50ml_20cm_aco_inox/p",
-  popularity: 195
- },
- {
-  sku: "brinox-1580705",
-  name: "Moedor para Pimenta e Sal Brinox Parma em Madeira 26,4 x Ø 5,5cm Madeira Brinox",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "cozinha moedores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/262432/Madeira-Brinox.jpg?v=637195331802100000",
-  productUrl: "https://www.brinox.com.br/moedor_para_pimenta_e_sal_brinox_parma_madeira_26-4cm/p",
-  popularity: 196
- },
- {
-  sku: "brinox-994242313",
-  name: "Organizador Giratório Coza New Retrô Ø31 x 8,4 cm Cristal Coza",
-  brand: "Coza",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "organizacao organizadores multiuso",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286605/organizador_giratorio_coza_new_retro_31_x_8_4_cm_site_brinox_1.webp?v=639235345945270000",
-  productUrl: "https://www.brinox.com.br/organizador-giratorio-coza-new-retro-31-cm-cristal/p",
-  popularity: 197
- },
- {
-  sku: "brinox-994242312",
-  name: "Organizador Giratório Coza Dry Ø29 x 3,2 cm Cristal Organizador Giratório Dry Coza 29X3,2CM Cor Cristal",
-  brand: "Coza",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "organizacao organizadores de geladeira",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286010/organizador_giratrio_coza_dry_29_x_32_cm_cristal_site_brinox.webp?v=639233702876170000",
-  productUrl: "https://www.brinox.com.br/organizador-giratorio-coza-dry-29-cm-cristal/p",
-  popularity: 198
- },
- {
-  sku: "brinox-994242304",
-  name: "Cozi Vapore Antiaderente com Tampa Brinox Especiarias Ø16cm 1,4 Litros Vanilla Cozi Vapore com Tampa Brinox Especiarias Ø 16cm 1,4 L Vanilla",
-  brand: "Brinox",
-  unitPrice: 199.99,
-  unit: "un",
-  category: "panelas cozi e vapore",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287173/cozi-vapore-com-tampa-brinox-especiarias-o-16cm-1-4-l-vanilla_0.jpg?v=639239629402130000",
-  productUrl: "https://www.brinox.com.br/cozi-vapore-brinox-especiarias-antiaderente-16cm-1-4l-vanilla/p",
-  popularity: 199
- },
- {
-  sku: "brinox-994242291",
-  name: "Cooktop de Indução 2 Bocas Brinox Touch Screen 220V Preto Voltagem 220v",
-  brand: "Brinox",
-  unitPrice: 549.99,
-  unit: "un",
-  category: "eletroportateis cooktops de inducao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287863/8002_102_4.jpg?v=639252475921070000",
-  productUrl: "https://www.brinox.com.br/cooktop-de-inducao-2-bocas-brinox-touch-screen-220v-preto/p",
-  popularity: 200
- },
- {
-  sku: "brinox-994242231",
-  name: "Saco a Vácuo Coza Zip Vácuo G 90x55cm Saco a Vacuo Zip Vacuo G 90X55 cm Coza",
-  brand: "Coza",
-  unitPrice: 12.99,
-  unit: "un",
-  category: "organizacao sacos a vacuo",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286508/saco-a-vacuo-zip-vacuo-g-90x55-cm-coza_0.jpg?v=639235329783830000",
-  productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-g-90x55/p",
-  popularity: 201
- },
- {
-  sku: "brinox-994242223",
-  name: "Lixeira com Pedal e Balde Brinox Matte 5 Litros Cinza Chumbo Lixeira Retangular com Pedal e Balde Matte Cinza 5L Brinox",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "lixeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287802/Lixeira 5 L - Matte Cinza Chumbo.png?v=639251558288970000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-matte-5-litros-cinza-chumbo/p",
-  popularity: 202
- },
- {
-  sku: "brinox-994242220",
-  name: "Cesto de Roupas com Tampa Coza Puffer 49 Litros Cinza Chumbo Cesto de Roupas com Tampa Puffer 49 L Cinza Chumbo Coza",
-  brand: "Coza",
-  unitPrice: 109.99,
-  unit: "un",
-  category: "organizacao caixas organizadoras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286472/cesto_de_roupas_com_tampa_puffer_49_l_cinza_chumbo_coza_site_brinox_1.webp?v=639235202192070000",
-  productUrl: "https://www.brinox.com.br/cesto-de-roupas-com-tampa-coza-puffer-49-litros-cinza-chumbo/p",
-  popularity: 203
- },
- {
-  sku: "brinox-994242210",
-  name: "Caixa Organizadora Coza Puffer 4 Litros Cinza Chumbo Caixa Organizadora Puffer 4 L Cinza Chumbo Coza",
-  brand: "Coza",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "organizacao caixas organizadoras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286385/caixa_organizadora_coza_puffer_4_litros_cinza_chumbo_site_brinox_1.webp?v=639235161375600000",
-  productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-4-litros-cinza-chumbo/p",
-  popularity: 204
- },
- {
-  sku: "brinox-994242201",
-  name: "Grill Brinox Primea Antiaderente Ceramic Life 24cm 1,3 Litros Cappuccino Grill Brinox Ceramic Life Primea 24x24x3,5cm Cappuccino",
-  brand: "Brinox",
-  unitPrice: 104.99,
-  unit: "un",
-  category: "panelas grills",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284808/grill-brinox-ceramic-life-primea-24x24x3-5cm-cappuccino_0.jpg?v=639165237559970000",
-  productUrl: "https://www.brinox.com.br/grill-brinox-primea-antiaderente-ceramic-life-24cm-1-5-litros-cappuccino/p",
-  popularity: 205
- },
- {
-  sku: "brinox-994242193",
-  name: "Panela com Tampa Brinox Primea Antiaderente Ceramic Life Ø18cm 2,05 Litros Cappuccino Panela com Tampa Brinox Ceramic Life Primea Ø18cm 2,05L Cappuccino",
-  brand: "Brinox",
-  unitPrice: 109.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284783/panela-com-tampa-brinox-ceramic-life-primea-o18cm-2-05l-cappuccino_0.jpg?v=639165231582830000",
-  productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-primea-antibacteriana-antiaderente-ceramic-life-18cm-cappuccino/p",
-  popularity: 206
- },
- {
-  sku: "brinox-994242188",
-  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 3 Litros Preto Panela de Pressão Brinox Ceramic Life Vapt 3 Litros Preto",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287049/3L - Vapt Preta.png?v=639238892475400000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-3-litros-preto/p",
-  popularity: 207
- },
- {
-  sku: "brinox-994242179",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø22cm 1,2 Litros Azul Frigideira Brinox Ceramic Life Rainbow Ø22cm 1,2 Litros Azul",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284433/7442_352.jpg?v=639147824829070000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o22cm-12-litros-azul/p",
-  popularity: 208
- },
- {
-  sku: "brinox-994242178",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø22cm 1,2 Litros Rosa Frigideira Brinox Ceramic Life Rainbow Ø22cm 1,2 Litros Rosa",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284421/frigideira-brinox-ceramic-life-rainbow-o22cm-1-2-litros-rosa_0.jpg?v=639147821574100000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o22cm-12-litros-rosa/p",
-  popularity: 209
- },
- {
-  sku: "brinox-994242176",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Verde Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Verde",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284399/7442_344--1-.jpg?v=639147819286600000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-16cm-450-ml-verde/p",
-  popularity: 210
- },
- {
-  sku: "brinox-994242174",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Rosa Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Rosa",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284374/frigideira-brinox-ceramic-life-rainbow-o16cm-450-ml-rosa_0.jpg?v=639147817400700000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-rosa/p",
-  popularity: 211
- },
- {
-  sku: "brinox-994242173",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Cereja Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Cereja",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284365/frigideira-brinox-ceramic-life-rainbow-o16cm-450-ml-cereja_0.jpg?v=639147816639100000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-cereja/p",
-  popularity: 212
- },
- {
-  sku: "brinox-206463009",
-  name: "Pote Hermético Retangular Coza Modo 1,3 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 34.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285879/pote_hermetico_retangular_coza_modo_1_3_litros_cristal_6043_1_4bed3d8e1b884468665ab69aa77e5e99.webp?v=639233670632130000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-1-3-litros-cristal/p",
-  popularity: 213
- },
- {
-  sku: "brinox-206413009",
-  name: "Pote Hermético Quadrado Coza Modo 580ml Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285929/pote_hermetico_coza_modo_580ml_cristal_6073_1_site_brinox_1.webp?v=639233680665970000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-580ml-cristal/p",
-  popularity: 214
- },
- {
-  sku: "brinox-202010009",
-  name: "Copo Cônico Coza Cozy 300ml Cristal Cristal Coza",
-  brand: "Coza",
-  unitPrice: 7.99,
-  unit: "un",
-  category: "mesa tacas e copos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287450/copo_conico_coza_cozy_300ml_cristal_site_brinox_2.webp?v=639241249332830000",
-  productUrl: "https://www.brinox.com.br/copo-conico-coza-cozy-300ml-cristal/p",
-  popularity: 215
- },
- {
-  sku: "brinox-108630536",
-  name: "Grade de Pia Coza Basic Cinza Chumbo Cinza",
-  brand: "Coza",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "organizacao organizadores de pia",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287293/grade_de_pia_basic_coza_cinza_chumbo_cinza_Chumbo_1.webp?v=639239775954930000",
-  productUrl: "https://www.brinox.com.br/grade-de-pia-coza-basic-cinza-chumbo/p",
-  popularity: 216
- },
- {
-  sku: "brinox-108620536",
-  name: "Organizador de Pia Coza Basic Cinza Chumbo Cinza Chumbo Coza",
-  brand: "Coza",
-  unitPrice: 44.99,
-  unit: "un",
-  category: "organizacao organizadores de pia",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287341/organizador_de_pia_coza_basic_cinza_chumbo_site_brinox_1.webp?v=639240374153670000",
-  productUrl: "https://www.brinox.com.br/organizador-de-pia-coza-basic-cinza-chumbo/p",
-  popularity: 217
- },
- {
-  sku: "brinox-108400008",
-  name: "Escorredor de Talheres Oval Coza Basic Preto Preto Coza",
-  brand: "Coza",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "organizacao organizadores de pia",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287297/escorredor_de_talheres_oval_coza_basic_preto_site_brinox_1.webp?v=639240335872730000",
-  productUrl: "https://www.brinox.com.br/escorredor-de-talheres-oval-coza-basic-preto/p",
-  popularity: 218
- },
- {
-  sku: "brinox-105700007",
-  name: "Prato Refeição Cozy 25,7 x 25,7 x 3 cm Branco Coza",
-  brand: "Coza",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "mesa travessas e pratos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268861/Branco-Coza.jpg?v=638059215144300000",
-  productUrl: "https://www.brinox.com.br/prato_refeicao_cozy__105700007/p",
-  popularity: 219
+  popularity: 147
  },
  {
   sku: "brinox-102473009",
@@ -2423,579 +1631,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores multiuso",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286120/dispenser_com_medidor_coza_easy_39_litros_cristal_site_1.webp?v=639234439125770000",
   productUrl: "https://www.brinox.com.br/dispenser-com-medidor-coza-easy-3-9-litros-cristal/p",
-  popularity: 220
- },
- {
-  sku: "brinox-101983009",
-  name: "Organizador de Ovos com Tampa Coza Dry 24 Unidades Cristal",
-  brand: "Coza",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "organizacao organizadores de geladeira",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285972/organizador_de_ovos_com_tampa_coza_dry_24_unidades_site_brinox_1.webp?v=639233692650230000",
-  productUrl: "https://www.brinox.com.br/organizador-para-ovos-com-tampa-transparente-linha-dry-24-unidades-coza/p",
-  popularity: 221
- },
- {
-  sku: "brinox-51401003",
-  name: "Prato Redondo de Melamina Haus Concept Buffet 20,4cm Branco Branco Haus",
-  brand: "Haus Concept",
-  unitPrice: 44.99,
-  unit: "un",
-  category: "profissional pratos e petisqueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256503/Branco-Haus--Haus.jpg?v=637021648173070000",
-  productUrl: "https://www.brinox.com.br/prato-redondo-melamina-haus-concept-buffet-20cm-branco/p",
-  popularity: 222
- },
- {
-  sku: "brinox-7245365",
-  name: "Caçarola com Tampa Brinox Suprema 24 cm 4,5 L Antiaderente Mineral Resist Ceramic Life Verde Verde",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286810/cacarola-com-tampa-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238866915430000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-24-cm-4-5-l-antiaderente-mineral-resist-ceramic-life-verde/p",
-  popularity: 223
- },
- {
-  sku: "brinox-7245354",
-  name: "Frigideira Brinox Suprema Antiaderente Ceramic Life Mineral Resist Ø24cm 1,45 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 79.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286858/frigideira-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238874533100000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-antiaderente-ceramic-life-mineral-resist-%C3%B824-cm-1-45-litros-verde/p",
-  popularity: 224
- },
- {
-  sku: "brinox-7245101",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Suprema Verde Verde",
-  brand: "Brinox",
-  unitPrice: 629.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286897/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-verde.jpg?v=639238878314370000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-verde_7245101-1/p",
-  popularity: 225
- },
- {
-  sku: "brinox-7190461",
-  name: "Caçarola com Tampa Brinox Naturalle Ø24cm 4,3 Litros Antiaderente Ceramic Life Preta Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 119.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282457/7190_461.jpg?v=639062566826100000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-24cm-43l-antiaderente-ceramic-life-preta/p",
-  popularity: 226
- },
- {
-  sku: "brinox-7001353",
-  name: "Frigideira Brinox Naturalle Antiaderente Ceramic Life Ø20cm 800ml Garlic Vermelho",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283219/7001_353.jpg?v=639086705297230000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-naturalle-antiaderente-ceramic-life-o20cm-800ml-garlic/p",
-  popularity: 227
- },
- {
-  sku: "brinox-7001351",
-  name: "Frigideira Brinox Naturalle Antiaderente Ceramic Life Ø16cm 400ml Garlic Vermelho Brinox",
-  brand: "Brinox",
-  unitPrice: 31.57,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283211/7001_351.jpg?v=639086704045070000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-naturalle-antiaderente-ceramic-life-o16cm-400ml-garlic/p",
-  popularity: 228
- },
- {
-  sku: "brinox-7000399",
-  name: "Tampa De Vidro - 20 Cm - Brinox Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas tampas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261815/Preto-Brinox.jpg?v=638962197635730000",
-  productUrl: "https://www.brinox.com.br/tampa_de_vidro____o_20_cm___brinox_7000399/p",
-  popularity: 229
- },
- {
-  sku: "brinox-7000397",
-  name: "Tampa De Vidro - 24 Cm - Brinox Preto",
-  brand: "Brinox",
-  unitPrice: 62.99,
-  unit: "un",
-  category: "panelas tampas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/267872/Preto.jpg?v=638919174649400000",
-  productUrl: "https://www.brinox.com.br/7000397/p",
-  popularity: 230
- },
- {
-  sku: "brinox-7000396",
-  name: "Tampa De Vidro - 22 Cm - Brinox Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 58.99,
-  unit: "un",
-  category: "panelas tampas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261809/Preto-Brinox.jpg?v=638978611474200000",
-  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_22_cm___brinox_7000396/p",
-  popularity: 231
- },
- {
-  sku: "brinox-7000395",
-  name: "Tampa De Vidro - 18 Cm - Brinox Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 46.99,
-  unit: "un",
-  category: "panelas tampas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261808/Preto-Brinox.jpg?v=638978647526300000",
-  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_18_cm___brinox_7000395/p",
-  popularity: 232
- },
- {
-  sku: "brinox-5120103",
-  name: "Jogo Faca de Mesa Brinox Bistrô 239 x 9mm 12 Peças Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "talheres facas de mesa",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281552/Jogo_Faca_de_Mesa_Brinox_New_Bistro_Duzia_239_x_9mm_Aco_Inox.jpg?v=639081432587670000",
-  productUrl: "https://www.brinox.com.br/jogo-faca-de-mesa-brinox-bistro-239-x-9mm-12-pecas-aco-inox/p",
-  popularity: 233
- },
- {
-  sku: "brinox-5120102",
-  name: "Jogo de Garfo de Mesa Brinox Bristô 205x3mm 12 Peças Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 129.99,
-  unit: "un",
-  category: "talheres garfos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/275929/jogo-de-garfo-de-mesa-12-pecas-linha-bistro-brinox.jpg?v=638971823464230000",
-  productUrl: "https://www.brinox.com.br/jogo-de-garfo-de-mesa-brinox-bristo-205x3mm-12-pecas-aco-inox/p",
-  popularity: 234
- },
- {
-  sku: "brinox-5100120",
-  name: "Jogo de Colher de Refresco Brinox Lyon em Aço Inox 12 Peças Colher de Refresco 12 Peças",
-  brand: "Brinox",
-  unitPrice: 44.99,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251159/Colher-de-Refresco-Duzia---Lyon-184-x-12-mm---Brinox.jpg?v=637002585106900000",
-  productUrl: "https://www.brinox.com.br/jogo-de-colher-de-refresco-lyon-aco-inox-12-pecas/p",
-  popularity: 235
- },
- {
-  sku: "brinox-4935100",
-  name: "Panela de Pressão Inox Brinox Ultra com Fundo Triplo 4 Litros Ø20cm com 4 Dispostivos de Segurança Inox",
-  brand: "Brinox",
-  unitPrice: 499.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287071/4L - Ultra.png?v=639239403190930000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-inox-brinox-ultra-com-fundo-triplo-4-litros--20-cm-com-4-dispostivos-de-seguranca/p",
-  popularity: 236
- },
- {
-  sku: "brinox-4815361",
-  name: "Frigideira com Indução Brinox Botanika Antiaderente Ceramic Life Ø24cm 1,35 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 139.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276025/frigideira-com-fundo-de-inducao-revestimento-ceramico-antiaderente-verde-botanika-brinox.jpg?v=638919173299630000",
-  productUrl: "https://www.brinox.com.br/frigideira-com-inducao-brinox-botanika-antiaderente-ceramic-life-%C3%B824-cm-1-35-litros-verde/p",
-  popularity: 237
- },
- {
-  sku: "brinox-4815157",
-  name: "Wok de Indução com Tampa Brinox Botanika Antiaderente Ceramic Life Ø28cm 3,4 Litros Verde Verde",
-  brand: "Brinox",
-  unitPrice: 279.99,
-  unit: "un",
-  category: "panelas woks",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281575/Wok_de_Inducao_com_Tampa_Brinox_Botanika_28cm_34L_Antiaderente_Ceramic_Life_Verde_Nova_1.jpg?v=639010707741200000",
-  productUrl: "https://www.brinox.com.br/wok-de-inducao-com-tampa-brinox-botanika-antiaderente-ceramic-life-28-cm-3-4-litros-verde/p",
-  popularity: 238
- },
- {
-  sku: "brinox-4789110",
-  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Easy Preto Preto",
-  brand: "Brinox",
-  unitPrice: 479.99,
-  unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282325/foto-easy.png?v=639052218527370000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-easy-preto_4789110-1/p",
-  popularity: 239
- },
- {
-  sku: "brinox-4774335",
-  name: "Panela de Indução com Tampa Brinox Smart Plus Antiaderente Ceramic Life Ø18cm 1,55 Litros Vanilla VANILLA",
-  brand: "Brinox",
-  unitPrice: 149.99,
-  unit: "un",
-  category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280775/Panela_de_Inducao_com_Tampa_Brinox_Smart_Plus_Ø18_cm_155_Litros_Antiaderente_Ceramic_Life_Vanilla_Nova_1.jpg?v=639020916872530000",
-  productUrl: "https://www.brinox.com.br/panela-de-inducao-com-tampa-brinox-smart-plus-antiaderente-ceramic-life-%C3%B818-cm-1-55-litros-vanilla/p",
-  popularity: 240
- },
- {
-  sku: "brinox-3074100",
-  name: "Lixeira com Pedal e Balde Brinox Spin 3 Litros Aço Inox Escovado Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 99.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287668/Lixeira-3L---Spin.png?v=639256076798230000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-spin-3-litros-aco-inox-escovado/p",
-  popularity: 241
- },
- {
-  sku: "brinox-3073200",
-  name: "Lixeira com Pedal e Balde Brinox Plana 40 Litros Aço Inoxidável Escovado Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 1124.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287680/Lixeira-40--L---Plana.png?v=639256076193430000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-plana-40-litros-aco-inoxidavel-escovado/p",
-  popularity: 242
- },
- {
-  sku: "brinox-3064100",
-  name: "Lixeira Pedal e Balde Brinox Frame 6 Litros Aço Carbono Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 249.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287830/Lixeira 6 L - Frame Preto.png?v=639251559567900000",
-  productUrl: "https://www.brinox.com.br/lixeira_com_pedal_e_balde_brinox_frame_6_litros_aco_carbono/p",
-  popularity: 243
- },
- {
-  sku: "brinox-3050252",
-  name: "Lixeira com Tampa Press Brinox Decorline 4 Litros Ø17 x 25cm Aço Inoxidável Preto Brinox",
-  brand: "Brinox",
-  unitPrice: 79.99,
-  unit: "un",
-  category: "lixeiras lixeiras tampa press",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287693/Lixeira-4-L---Decorline-Press.png?v=639256082609570000",
-  productUrl: "https://www.brinox.com.br/lixeira_com_tampa_press_brinox_4_litros_%C3%B817cm_x_25cm_aco_inoxidavel/p",
-  popularity: 244
- },
- {
-  sku: "brinox-3040201",
-  name: "Lixeira com Pedal e Balde Brinox Decorline 3 Litros Ø17 x 27cm Aço Inoxidável Inox",
-  brand: "Brinox",
-  unitPrice: 79.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287659/Lixeira 3 L - Decorline.png?v=639251507431000000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-decorline-3-litros-%C3%B8-17-x-27-cm-aco-inoxidavel/p",
-  popularity: 245
- },
- {
-  sku: "brinox-3032201",
-  name: "Lixeira com Tampa Basculante Brinox Decorline 3,2 Litros Ø15,5cm Aço Inox Inox",
-  brand: "Brinox",
-  unitPrice: 89.99,
-  unit: "un",
-  category: "lixeiras lixeiras tampa basculante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287660/Lixeira-32L---Decorline-basculante.png?v=639251847761070000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-3-2-litros-%C3%B8-15-5-cm-aco-inox/p",
-  popularity: 246
- },
- {
-  sku: "brinox-2506322",
-  name: "Fouet Profissional Brinox Precision 30cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "cozinha utensilios batedores e fues",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/263758/Batedor-manual-Profissional-30cm-Precision---Brinox-30-cm---Brinox.jpg?v=637421004805400000",
-  productUrl: "https://www.brinox.com.br/fouet-profissional-brinox-precision-30-cm-aco-inox/p",
-  popularity: 247
- },
- {
-  sku: "brinox-2389100",
-  name: "Porta Frios Empilhável com Pinça Brinox A´tina 3 Peças Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "mesa acessorios porta frios",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281036/Porta_Frios_Empilhavel_com_Pinca_Brinox_Lyon_3_Pecas_Aco_Inox.jpg?v=639032186953830000",
-  productUrl: "https://www.brinox.com.br/porta-frios-empilhavel-com-pinca-brinox-atina-3-pecas-aco-inox/p",
-  popularity: 248
- },
- {
-  sku: "brinox-2310310",
-  name: "Saca Rolhas Brinox Acessórios para Vinho Aço Inox Saca-Rolhas - Acessórios de Vinho - Brinox",
-  brand: "Brinox",
-  unitPrice: 49.99,
-  unit: "un",
-  category: "cozinha utensilios acessorios para vinho e espumante",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247742/Saca-Rolhas---Acessorios-de-Vinho---Brinox.jpg?v=639032183407600000",
-  productUrl: "https://www.brinox.com.br/saca-rolhas-brinox-acessorios-para-vinho-aco-inox/p",
-  popularity: 249
- },
- {
-  sku: "brinox-2202343",
-  name: "Peneira em Aço Inox com Cabo ABS Brinox Top Pratic Ø14cm Aço Inox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "cozinha utensilios peneiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287972/Peneira ABS Top Pratic 14 cm.png?v=639258500059630000",
-  productUrl: "https://www.brinox.com.br/peneira_em_aco_inox_com_cabo_abs_brinox_top_pratic_%C3%B814cm/p",
-  popularity: 250
- },
- {
-  sku: "brinox-2202304",
-  name: "Espumadeira Brinox Top Pratic 33,5cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 26.99,
-  unit: "un",
-  category: "cozinha utensilios espumadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249463/Espumadeira---Top-Pratic-335-cm---Brinox.jpg?v=637001686337270000",
-  productUrl: "https://www.brinox.com.br/espumadeira-brinox-top-pratic-33-5-cm-aco-inox/p",
-  popularity: 251
- },
- {
-  sku: "brinox-2100101",
-  name: "Conjunto de Potes para Mantimentos com Tampa Brinox Suprema 5 Peças Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 499.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285719/Conjunto_de_Potes_para_Mantimentos_com_Tampa_e_Visor_Brinox_Suprema_5_Pecas_Aco_Inox.jpg?v=639223066740130000",
-  productUrl: "https://www.brinox.com.br/conjunto-de-potes-porta-mantimentos-com-tampa-brinox-suprema-5-pecas-inox/p",
-  popularity: 252
- },
- {
-  sku: "brinox-2051327",
-  name: "Descansa Brinox Beli Ø9cm Aço Inox 6 Peças Aço Inox",
-  brand: "Brinox",
-  unitPrice: 54.99,
-  unit: "un",
-  category: "profissional bar e coquetelaria",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276023/descansa-copos-6-pecas-linha-beli-brinox.jpg?v=638978582726300000",
-  productUrl: "https://www.brinox.com.br/descansa_copos_brinox_beli_%C3%B89cm_aco_inox_6_pecas/p",
-  popularity: 253
- },
- {
-  sku: "brinox-2050327",
-  name: "Colher para Refresco 3 Peças - Beli - Brinox",
-  brand: "Brinox",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "cozinha utensilios colheres para coquetel e refresco",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254252/Colher-para-Refresco-3-Pecas---Beli---Brinox.jpg?v=639081449768600000",
-  productUrl: "https://www.brinox.com.br/colher_para_refresco_3_pecas___beli_2050327/p",
-  popularity: 254
- },
- {
-  sku: "brinox-1660304",
-  name: "Espumadeira Brinox Arienzo 34,5cm Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "cozinha utensilios espumadeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280962/Espumadeira_Brinox_Brinox_01_x_345_cm_Nova.jpg?v=639081450711670000",
-  productUrl: "https://www.brinox.com.br/espumadeira_brinox_arienzo_34-5cm_aco_inox/p",
-  popularity: 255
- },
- {
-  sku: "brinox-1530100",
-  name: "Conjunto para Queijo Minas Ricota Brinox Petúnia 2 Peças Aço Inox",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "mesa acessorios queijeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251812/Conjunto-para-Queijo-Minas-Ricota-2-Pecas---Petunia---Brinox.jpg?v=638971855305930000",
-  productUrl: "https://www.brinox.com.br/conjunto-para-queijo-minas-ricota-brinox-petunia-2-pecas/p",
-  popularity: 256
- },
- {
-  sku: "brinox-1527123",
-  name: "Conjunto para Queijo Brinox Petúnia 2 Peças Aço Inox Aço Inox",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "mesa acessorios queijeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281544/Conjunto_para_Queijo_Brinox_Petunia_2_Pecas_Aco_Inox.jpg?v=639032187963400000",
-  productUrl: "https://www.brinox.com.br/conjunto-para-queijo-brinox-petunia-2-pecas-aco-inox/p",
-  popularity: 257
- },
- {
-  sku: "brinox-1413100",
-  name: "Porta Frios Brinox Átina 19x28x7,2cm 3 Peças Aço Inox Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 59.99,
-  unit: "un",
-  category: "mesa acessorios porta frios",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280947/Kit_Porta_Frios_Brinox_atina_19_x_28_x_72_cm_3_Pecas_Nova.jpg?v=639032170654600000",
-  productUrl: "https://www.brinox.com.br/porta-frios-brinox-atina-19-x-28-x-7-2-cm-3-pecas-aco-inox/p",
-  popularity: 258
- },
- {
-  sku: "brinox-1075200",
-  name: "Espagueteira de Inox Brinox Savoy 10 Litros Ø31cm 4 Divisões Aço Inox Aço Inoxidável",
-  brand: "Brinox",
-  unitPrice: 549.99,
-  unit: "un",
-  category: "panelas espagueteiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281748/Espagueteira_de_Inox_Brinox_Savoy_10_Litros_Ø31_cm_4_Divisoes.jpg?v=639032194266230000",
-  productUrl: "https://www.brinox.com.br/espagueteira-de-inox-brinox-savoy-10-litros-%C3%B831-cm-4-divisoes-aco_inox/p",
-  popularity: 259
- },
- {
-  sku: "brinox-994242290",
-  name: "Cooktop de Indução 2 Bocas Brinox Touch Screen 127V Preto Voltagem 127v",
-  brand: "Brinox",
-  unitPrice: 549.99,
-  unit: "un",
-  category: "eletroportateis cooktops de inducao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287854/8002_102_4.jpg?v=639252475563830000",
-  productUrl: "https://www.brinox.com.br/cooktop-de-inducao-2-bocas-brinox-touch-screen-127v-preto/p",
-  popularity: 260
- },
- {
-  sku: "brinox-994242222",
-  name: "Lixeira com Pedal e Balde Brinox Matte 5 Litros Inox Lixeira Retangular com Pedal e Balde Matte Inox 5L Brinox",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "lixeiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287727/Lixeira 5 L - Matte Inox.png?v=639251525655300000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-matte-5-litros-inox/p",
-  popularity: 261
- },
- {
-  sku: "brinox-994242190",
-  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 7,5 Litros Preto Panela de Pressão Brinox Ceramic Life Vapt 7,5 Litros Preto",
-  brand: "Brinox",
-  unitPrice: 299.99,
-  unit: "un",
-  category: "panelas panelas de pressao",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287135/7,5L - Vapt Preta.png?v=639239410845970000",
-  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-7-5-litros-preto/p",
-  popularity: 262
- },
- {
-  sku: "brinox-994242175",
-  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Azul Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Azul",
-  brand: "Brinox",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "panelas frigideiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284382/7442_342.jpg?v=639147817991170000",
-  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-azul/p",
-  popularity: 263
- },
- {
-  sku: "brinox-994242106",
-  name: "Travessa Retangular GN 1/6 18cm Coza Uno Branco Travessa Retangular Uno 1/6 Branca Coza",
-  brand: "Coza",
-  unitPrice: 16.99,
-  unit: "un",
-  category: "mesa travessas e pratos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280258/travessa-retangular-uno-1-6-branca-coza_0.jpg?v=638983911356500000",
-  productUrl: "https://www.brinox.com.br/travessa-retangular-gn-1-6-18-cm-coza-uno-branco/p",
-  popularity: 264
- },
- {
-  sku: "brinox-994242082",
-  name: "Bandeja em Bambu Coza Brisa Pequena 17,9x9,3x0,8cm Bandeja Pequena Brisa Bambu Coza",
-  brand: "Coza",
-  unitPrice: 14.99,
-  unit: "un",
-  category: "mesa bandejas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286145/bandeja_pequena_brisa_6925_site_brinox_1.webp?v=639234446435930000",
-  productUrl: "https://www.brinox.com.br/bandeja-em-bambu-coza-brisa-pequena/p",
-  popularity: 265
- },
- {
-  sku: "brinox-994242078",
-  name: "Mantegueira em Bambu Coza Brisa Mantegueira Brisa Bambu com Cúpula Coza",
-  brand: "Coza",
-  unitPrice: 29.99,
-  unit: "un",
-  category: "mesa acessorios mantegueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286175/mantegueira_em_bambu_coza_brisa_site_brinox_1.webp?v=639234454134300000",
-  productUrl: "https://www.brinox.com.br/manteigueira-em-bambu-coza-brisa/p",
-  popularity: 266
- },
- {
-  sku: "brinox-994242030",
-  name: "Jogo de Colher de Mesa Brinox Noble em Aço Inox 304 12 Peças Colher de Mesa Noble em Aço Inox",
-  brand: "Brinox",
-  unitPrice: 329.72,
-  unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279879/jogo-colher-de-mesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232717634530000",
-  productUrl: "https://www.brinox.com.br/jogo-de-colher-de-mesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 267
- },
- {
-  sku: "brinox-406403009",
-  name: "Pote Hermético Quadrado Coza Modo Bambu 230ml Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285798/pote_hermetico_coza_modo_bambu_230ml_cristal_site_brinox_5.webp?v=639233657740170000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-230ml-cristal/p",
-  popularity: 268
- },
- {
-  sku: "brinox-206443009",
-  name: "Pote Hermético Quadrado Coza Modo 1,8 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 34.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285900/pote_hermetico_coza_modo_1_8_litros_cristal_6055_1_site_Brinox_1.webp?v=639233675089630000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-1-8-litros-cristal/p",
-  popularity: 269
- },
- {
-  sku: "brinox-206433009",
-  name: "Pote Hermético Quadrado Coza Modo 1,5 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 29.99,
-  unit: "un",
-  category: "cozinha potes",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285910/pote_hermetico_coza_modo_1_5_litros_cristal_site_brinox_1.webp?v=639233676976500000",
-  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-1-5-litros-cristal/p",
-  popularity: 270
- },
- {
-  sku: "brinox-108060008",
-  name: "Cesta Organizadora Coza One Grande 4,7 Litros Preto Preto Coza",
-  brand: "Coza",
-  unitPrice: 12.99,
-  unit: "un",
-  category: "organizacao caixas organizadoras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287461/cesta_organizadora_coza_one_grande_4_7_litros_preto_site_brinox_1.webp?v=639241372531300000",
-  productUrl: "https://www.brinox.com.br/cesta_one_grande_108060008/p",
-  popularity: 271
- },
- {
-  sku: "brinox-102523009",
-  name: "Cesta Organizadora Coza New Retrô Maxi 7,8 Litros Cristal Cristal",
-  brand: "Coza",
-  unitPrice: 39.99,
-  unit: "un",
-  category: "organizacao caixas organizadoras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286598/cesta_organizadora_coza_new_retro_maxi_7_8_litros_cristal_site_brinox_1.webp?v=639235343947770000",
-  productUrl: "https://www.brinox.com.br/cesta-organizadora-coza-new-retro-maxi-7-8-litros-cristal/p",
-  popularity: 272
+  popularity: 148
  },
  {
   sku: "brinox-102343009",
@@ -3006,7 +1642,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286066/porta_mantimentos_coza_39l_easy_cor_cristal_site_brinox_1.webp?v=639233719750330000",
   productUrl: "https://www.brinox.com.br/porta-mantimentos-coza-easy-3-9-litros-cristal/p",
-  popularity: 273
+  popularity: 149
  },
  {
   sku: "brinox-102333009",
@@ -3017,106 +1653,975 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286075/porta_mantimentos_coza_easy_15_litros_cristal_site_Brinox_1.webp?v=639234361683600000",
   productUrl: "https://www.brinox.com.br/porta-mantimentos-coza-easy-1-5-litros-cristal/p",
-  popularity: 274
+  popularity: 150
  },
  {
-  sku: "brinox-101620007",
-  name: "Ramekin Coza Uno 150ml Branco Branco Coza",
+  sku: "brinox-101953009",
+  name: "Organizador de Geladeira com Cesto 3,2 Litros Coza Dry Cristal Cristal",
   brand: "Coza",
-  unitPrice: 3.99,
+  unitPrice: 49.99,
   unit: "un",
-  category: "profissional bowls, cumbucas e ramekins",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286276/ramekin_coza_uno_150_ml_branco_site_brinox_1.webp?v=639234557140930000",
-  productUrl: "https://www.brinox.com.br/ramekin-coza-uno-150ml-branco/p",
-  popularity: 275
+  category: "organizacao organizadores de geladeira",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285950/organizador_de_geladeira_com_cesto_32_litros_coza_site_brinox_1.webp?v=639233688095770000",
+  productUrl: "https://www.brinox.com.br/organizador-de-geladeira-com-cesto-3-2-litros-coza-dry-cristal/p",
+  popularity: 151
  },
  {
-  sku: "brinox-101610008",
-  name: "Ramekin Coza Uno 90ml Preto Preto Coza",
-  brand: "Coza",
-  unitPrice: 3.49,
+  sku: "brinox-7245374",
+  name: "Wok com Tampa Brinox Suprema Antiaderente Ceramic Life Ø28cm 4,65 Litros Verde Verde",
+  brand: "Brinox",
+  unitPrice: 149.99,
   unit: "un",
-  category: "profissional bowls, cumbucas e ramekins",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286288/ramekin_coza_uno_90_ml_preto_site_brinox_1.webp?v=639234558582270000",
-  productUrl: "https://www.brinox.com.br/ramekin-coza-uno-90ml-preto/p",
-  popularity: 276
+  category: "panelas woks",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286993/wok-com-tampa-28cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238887544530000",
+  productUrl: "https://www.brinox.com.br/wok-com-tampa-brinox-suprema-antiaderente-ceramic-life-%C3%B828-cm-4-65-litros-verde/p",
+  popularity: 152
  },
  {
-  sku: "brinox-7245363",
-  name: "Caçarola com Tampa Brinox Suprema Antiaderente Mineral Resist Ceramic Life Ø20cm 3 Litros Verde Verde",
+  sku: "brinox-7245366",
+  name: "Fervedor 1,2 L Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
+  brand: "Brinox",
+  unitPrice: 69.99,
+  unit: "un",
+  category: "panelas fervedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287789/Fervedor Suprema Verde 1,2  L.png?v=639251536669970000",
+  productUrl: "https://www.brinox.com.br/fervedor-1-2-l-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245366/p",
+  popularity: 153
+ },
+ {
+  sku: "brinox-7245361",
+  name: "Panela com Tampa 18 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286944/panela-com-tampa-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_0.jpg?v=639238882446300000",
+  productUrl: "https://www.brinox.com.br/panela-com-tampa-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox/p",
+  popularity: 154
+ },
+ {
+  sku: "brinox-7245357",
+  name: "Tapioqueira 22 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
+  brand: "Brinox",
+  unitPrice: 49.99,
+  unit: "un",
+  category: "panelas panquequeiras e tapioqueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286953/tapioqueira-22cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238883670800000",
+  productUrl: "https://www.brinox.com.br/tapioqueira-22-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245357/p",
+  popularity: 155
+ },
+ {
+  sku: "brinox-7244373",
+  name: "Wok Brinox Suprema Antiaderente Ceramic Life Ø24cm 2,65 Litros Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286968/wok-24cm-revestimento-ceramico-antiaderente-mineral-resist-vanilla-ceramic-life-suprema-brinox.jpg?v=639238884955100000",
+  productUrl: "https://www.brinox.com.br/wok-brinox-suprema-antiaderente-ceramic-life-%C3%B824-cm-2-65-litros-vanilla/p",
+  popularity: 156
+ },
+ {
+  sku: "brinox-7239193",
+  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 7,5 Litros Ø24cm Vanilla VANILLA",
+  brand: "Brinox",
+  unitPrice: 299.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287120/75L---Vapt-Vanilla.png?v=639256095950600000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-7-5-litros-24-cm-vanilla/p",
+  popularity: 157
+ },
+ {
+  sku: "brinox-7239170",
+  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 4,5 Litros Ø20cm Vanilla VANILLA",
+  brand: "Brinox",
+  unitPrice: 209.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287062/45L---Vapt-Vanilla.png?v=639256095771470000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-4-5-litros-%C3%B820cm-vanilla/p",
+  popularity: 158
+ },
+ {
+  sku: "brinox-7190458",
+  name: "Panela com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø20cm 2,5 Litros Preta Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 84.2,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282573/7190_458.jpg?v=639070125148730000",
+  productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-naturalle-antiaderente-ceramic-life-%C3%B820-cm-2-5-litros-preta/p",
+  popularity: 159
+ },
+ {
+  sku: "brinox-7001360",
+  name: "Caçarola com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø22cm 3,4 Litros Garlic Vermelho Brinox",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282700/7001_360.jpg?v=639081506088300000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-antiaderente-ceramic-life-o22cm-34-litros-garlic/p",
+  popularity: 160
+ },
+ {
+  sku: "brinox-7000394",
+  name: "Tampa De Vidro - Ø 16 Cm - Brinox Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 42.99,
+  unit: "un",
+  category: "panelas tampas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261806/Preto-Brinox.jpg?v=638971858059630000",
+  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_16_cm___brinox_7000394/p",
+  popularity: 161
+ },
+ {
+  sku: "brinox-5111118",
+  name: "Faqueiro Brinox Turim 42 Peças Aço Inoxidável Aço Inox",
+  brand: "Brinox",
+  unitPrice: 119.99,
+  unit: "un",
+  category: "talheres faqueiros e jogos de talher",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286742/faqueiro-linha-turim-42-pecas-aco-inoxidavel-brinox.jpg?v=639237693770300000",
+  productUrl: "https://www.brinox.com.br/faqueiro-brinox-turim-42-pecas-aco-inoxidavel/p",
+  popularity: 162
+ },
+ {
+  sku: "brinox-5100020",
+  name: "Colher para Refresco Brinox Lyon 18cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 6.99,
+  unit: "un",
+  category: "cozinha utensilios colheres para coquetel e refresco",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248401/Colher-de-Refresco---Lyon-184-x-12-mm---Brinox.jpg?v=637001128307470000",
+  productUrl: "https://www.brinox.com.br/colher-para-refresco-brinox-lyon-18-cm-aco-inox/p",
+  popularity: 163
+ },
+ {
+  sku: "brinox-4954100",
+  name: "Panela de Pressão Indução Brinox Super Antiaderente Ceramic Life 4,2 Litros 20cm Preto Preto",
+  brand: "Brinox",
+  unitPrice: 289.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287044/42L---Preto.png?v=639256096941500000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-inducao-brinox-super-antiaderente-ceramic-life-4-2-litros-20cm-preto/p",
+  popularity: 164
+ },
+ {
+  sku: "brinox-4875111",
+  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Verde Verde",
+  brand: "Brinox",
+  unitPrice: 119.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285562/suprema-roma-verde.png?v=639215420204670000",
+  productUrl: "https://www.brinox.com.br/chaleira_de_inox_com_inducao_e_apito_brinox_roma_2-7_litros_verde/p",
+  popularity: 165
+ },
+ {
+  sku: "brinox-4875100",
+  name: "Chaleira de Inox com Indução e Apito Brinox Roma 2,7 Litros Inox",
+  brand: "Brinox",
+  unitPrice: 109.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285565/suprema-roma-inox.png?v=639215420594070000",
+  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-roma-2-7-litros/p",
+  popularity: 166
+ },
+ {
+  sku: "brinox-4828202",
+  name: "Chaleira de Inox com Indução e Apito Brinox Jasmin 3 Litros Metalizada Inox",
+  brand: "Brinox",
+  unitPrice: 119.99,
+  unit: "un",
+  category: "panelas chaleiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285535/Jasmin-3L.png?v=639255922668900000",
+  productUrl: "https://www.brinox.com.br/chaleira-de-inox-com-inducao-e-apito-brinox-jasmin-3-litros-metalizada/p",
+  popularity: 167
+ },
+ {
+  sku: "brinox-4815331",
+  name: "Caçarola de Indução com Tampa Brinox Botanika Antiaderente Ceramic Life Ø20cm 2,5 Litros Verde Verde",
   brand: "Brinox",
   unitPrice: 129.99,
   unit: "un",
   category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286782/cacarola-com-tampa-20cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238853521630000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-antiaderente-mineral-resist-ceramic-life-%C3%B820-cm-3-litros-verde/p",
-  popularity: 277
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278156/panela-cacarola-de-inducao-com-tampa-brinox-ceramic-life-botanika-verde.jpg.jpg?v=638919173803170000",
+  productUrl: "https://www.brinox.com.br/cacarola-de-inducao-com-tampa-brinox-botanika-antiaderente-ceramic-life-%C3%B820-cm-2-5-litros-verde/p",
+  popularity: 168
  },
  {
-  sku: "brinox-7245359",
-  name: "Omeleteira 18 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
+  sku: "brinox-4815330",
+  name: "Frigideira de Indução Brinox Botanika Antiaderente Ceramic Life Ø22cm 1,1 Litros Verde Verde",
   brand: "Brinox",
-  unitPrice: 84.99,
+  unitPrice: 99.99,
   unit: "un",
-  category: "panelas omeleteiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286926/omeleteira-18cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238879643930000",
-  productUrl: "https://www.brinox.com.br/omeleteira-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245359/p",
-  popularity: 278
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278160/frigideira-antiaderente-de-inducao-brinox-botanika-verde.jpg.jpg?v=638919167594730000",
+  productUrl: "https://www.brinox.com.br/frigideira-de-inducao-brinox-botanika-antiaderente-ceramic-life-%C3%B822-cm-1-1-litros-verde/p",
+  popularity: 169
  },
  {
-  sku: "brinox-7237101",
-  name: "Jogo de Panelas Brinox Antiaderente Pro-Flon 7 Peças Anis Borgonha Borgonha",
+  sku: "brinox-4815102",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Botanika com Indução Verde Verde",
+  brand: "Brinox",
+  unitPrice: 549.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280871/jogo-de-panelas-antiaderente-ceramic-life-5-pecas-botanika-com-inducao-brinox.jpg?v=639005360010500000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-5-pecas-botanika-com-inducao-verde_4815102-1/p",
+  popularity: 170
+ },
+ {
+  sku: "brinox-4789113",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 6 Peças Easy Carbono-Vermelho Carbono",
+  brand: "Brinox",
+  unitPrice: 369.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282305/Jogo_de_Panelas_Brinox_Antiaderente_Ceramic_Life_6_Pecas_Easy_Carbono_Vermelho_Nova.jpg?v=639047068447870000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-6-pecas-easy-carbono-vermelho_4789113-1/p",
+  popularity: 171
+ },
+ {
+  sku: "brinox-4789110",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Easy Preto Preto",
+  brand: "Brinox",
+  unitPrice: 479.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282325/foto-easy.png?v=639052218527370000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-easy-preto_4789110-1/p",
+  popularity: 172
+ },
+ {
+  sku: "brinox-4774334",
+  name: "Panela de Indução com Tampa Brinox Ceramic Life 1,25 Litros Ø 16 cm Vanilla Vanilla",
+  brand: "Brinox",
+  unitPrice: 129.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/265434/VANILLA-Brinox.jpg?v=638919134282300000",
+  productUrl: "https://www.brinox.com.br/panela_com_tampa_o16_ceramic_life_granada_inducao___brinox_4774334/p",
+  popularity: 173
+ },
+ {
+  sku: "brinox-4774101",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 5 Peças Smart Plus com Indução Vanilla VANILLA",
+  brand: "Brinox",
+  unitPrice: 499.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285650/Vanilla-Inducao-5-pecas.png?v=639221370814530000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-5-pecas-granada-com-inducao-vanilla_4774101-1/p",
+  popularity: 174
+ },
+ {
+  sku: "brinox-3074101",
+  name: "Lixeira com Pedal e Balde Brinox Spin 5 Litros Aço Inox Escovado Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 149.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287737/Lixeira-5-L---Spin.png?v=639256076973800000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-spin-5-litros-aco-inox-escovado/p",
+  popularity: 175
+ },
+ {
+  sku: "brinox-3065101",
+  name: "Lixeira com Pedal e Balde Brinox Frame 12 Litros Aço Inox Escovado Inox",
+  brand: "Brinox",
+  unitPrice: 279.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287621/Lixeira 12 L - Decorline.png?v=639251501044200000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-12-litros-aco-inox-escovado/p",
+  popularity: 176
+ },
+ {
+  sku: "brinox-3065100",
+  name: "Lixeira com Pedal e Balde Brinox Frame 12 Litros Aço Carbono Preto Preto Brinox",
   brand: "Brinox",
   unitPrice: 399.99,
   unit: "un",
-  category: "panelas jogo de panelas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281326/Jogo_de_Panelas_Brinox_Antiaderente_Pro-Flon_7_Pecas_Anis_Borgonha.jpg?v=639008167116930000",
-  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-pro-flon-7-pecas-anis-borgonha_7237101/p",
-  popularity: 279
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/260899/Preto-Brinox.jpg?v=638920934957100000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-12-litros-aco-carbono-preto/p",
+  popularity: 177
  },
  {
-  sku: "brinox-7190470",
-  name: "Omeleteira Brinox Naturalle Antiaderente Ceramic Life Ø14cm 400ml Preto Preto Brinox",
+  sku: "brinox-3064101",
+  name: "Lixeira com Pedal e Balde Brinox Frame 6 Litros Aço Inox Escovado Lixeira Inox Pedal E Balde Frame 6l Inox Brinox 29x22x29,2cm",
+  brand: "Brinox",
+  unitPrice: 269.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287826/Lixeira 6 L - Frame Inox.png?v=639251559380430000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-6-litros-aco-inox-escovado/p",
+  popularity: 178
+ },
+ {
+  sku: "brinox-3032205",
+  name: "Lixeira com Tampa Basculante Brinox Decorline 40,5 Litros Ø30cm Aço Inoxidável Inox",
+  brand: "Brinox",
+  unitPrice: 249.99,
+  unit: "un",
+  category: "lixeiras lixeiras tampa basculante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282404/lixeira-inox-com-tampa-basculante-40-litros-linha-decorline-brinox.jpg?v=639056507675530000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-40-5-litros-30-x-60-cm-aco-inoxidavel/p",
+  popularity: 179
+ },
+ {
+  sku: "brinox-3032202",
+  name: "Lixeira com Tampa Basculante Brinox Decorline 5,4 Litros 18,5 x 20 cm Aço Inoxidável Inox",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "lixeiras lixeiras tampa basculante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287751/Lixeira-5-L---Decorline-basculante--1-.png?v=639251848097830000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-5-4-litros-18-5-x-20-cm-aco-inoxidavel/p",
+  popularity: 180
+ },
+ {
+  sku: "brinox-3030201",
+  name: "Lixeira com Tampa Brinox Decorline 3,2 Litros Ø15,5 x 20cm Aço Inoxidável Aço Inox",
   brand: "Brinox",
   unitPrice: 69.99,
   unit: "un",
-  category: "panelas omeleteiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282675/7190_470.jpg?v=639077971245630000",
-  productUrl: "https://www.brinox.com.br/tapioqueira-panquequeira-brinox-naturalle-antiaderente-ceramic-life-o22cm-450ml-preto/p",
-  popularity: 280
+  category: "lixeiras lixeiras tampa basculante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287664/Lixeira-32L---Decorline-tampa.png?v=639256079538730000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-brinox-decorline-3-2-litros-%C3%B8-15-5-x-20-cm-aco-inoxidavel/p",
+  popularity: 181
  },
  {
-  sku: "brinox-7001369",
-  name: "Tapioqueira e Panquequeira Brinox Naturalle Ceramic Life Ø22cm 450ml Garlic Vermelho",
+  sku: "brinox-2554109",
+  name: "Jogo De Talheres Para Churrasco 12 Peças Aço Inoxidável Linha Churrasco da Brinox Preto",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "talheres talheres para churrasco",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277847/jogo-de-talheres-para-churrasco-12-pecas-aco-inoxidavel-linha-churrasco-da-brinox.jpg?v=638920923011800000",
+  productUrl: "https://www.brinox.com.br/jogo-de-talheres-para-churrasco-12-pecas-aco-inoxidavel-linha-churrasco-da-brinox_2554109/p",
+  popularity: 182
+ },
+ {
+  sku: "brinox-2508306",
+  name: "Cortador de Pizza Brinox Precision Ø10cm Aço Temperado Aço Inox",
+  brand: "Brinox",
+  unitPrice: 28.99,
+  unit: "un",
+  category: "cozinha utensilios cortadores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248420/Cortador-de-Pizza---Precision-Ø-10-cm---Brinox.jpg?v=639032188040000000",
+  productUrl: "https://www.brinox.com.br/cortador-de-pizza-brinox-precision-%C3%B810-cm-aco-temperado/p",
+  popularity: 183
+ },
+ {
+  sku: "brinox-2427302",
+  name: "Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul",
+  brand: "Brinox",
+  unitPrice: 54.99,
+  unit: "un",
+  category: "cozinha macaricos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254842/Azul-Brinox.jpg?v=638978615717700000",
+  productUrl: "https://www.brinox.com.br/macarico_multiuso_brinox_descomplica_glace_17_cm/p",
+  popularity: 184
+ },
+ {
+  sku: "brinox-2425105",
+  name: "Tampa de Pressão para Garrafas de Vinho Brinox Ø4,7 x 7,2cm Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "cozinha utensilios acessorios para vinho e espumante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249759/Preto-Brinox.jpg?v=638962301387800000",
+  productUrl: "https://www.brinox.com.br/tampa_de_pressao_para_garrafas_de_vinho_brinox_%C3%B84_7_x_7_2cm/p",
+  popularity: 185
+ },
+ {
+  sku: "brinox-2310321",
+  name: "Saca Rolhas Abridor de Garrafas Brinox Bar e Vinho Preto Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios abridores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/257371/Preto-Brinox.jpg?v=637030301780200000",
+  productUrl: "https://www.brinox.com.br/saca_rolhas_abridor_de_garrafas_brinox_bar_e_vinho_preto/p",
+  popularity: 186
+ },
+ {
+  sku: "brinox-2310318",
+  name: "Tampa para Garrafas 2 Peças Brinox Acessórios de Vinho Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "cozinha utensilios acessorios para vinho e espumante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249748/Tampa-para-Garrafas-2-Pecas---Acessorios-de-Vinho---Brinox.jpg?v=639032163785870000",
+  productUrl: "https://www.brinox.com.br/tampa_para_garrafas_2_pecas_brinox_acessorios_de_vinho_aco_inox/p",
+  popularity: 187
+ },
+ {
+  sku: "brinox-2310315",
+  name: "Saca Rolhas Brinox Bar e Vinho Aço Inox Preto Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "cozinha utensilios abridores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285568/Preto-Brinox.jpg?v=639216080279770000",
+  productUrl: "https://www.brinox.com.br/saca_rolhas_brinox_bar_e_vinho_aco_inox_preto/p",
+  popularity: 188
+ },
+ {
+  sku: "brinox-2310311",
+  name: "Saca Rolhas com 2° Estágio Brinox Acessórios para Vinho Preto Preto",
+  brand: "Brinox",
+  unitPrice: 12.99,
+  unit: "un",
+  category: "cozinha utensilios abridores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281032/Saca_Rolhas_com_2°_Estagio_Brinox_Acessorios_para_Vinho_Preto.jpg?v=639052924461570000",
+  productUrl: "https://www.brinox.com.br/saca-rolhas-com-2--estagio-brinox-acessorios-para-vinho-preto/p",
+  popularity: 189
+ },
+ {
+  sku: "brinox-2310305",
+  name: "Tampa para Garrafa de Espumante Brinox Acessórios de Vinho Aço Inox Tampa para Garrafa de Espumante - Acessórios de Vinho - Brinox",
+  brand: "Brinox",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "cozinha utensilios acessorios para vinho e espumante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247738/Tampa-para-Garrafa-de-Espumante---Acessorios-de-Vinho---Brinox.jpg?v=639032172941930000",
+  productUrl: "https://www.brinox.com.br/tampa_para_garrafa_de_espumante_brinox_aco_inox/p",
+  popularity: 190
+ },
+ {
+  sku: "brinox-2204324",
+  name: "Ralador 4 Faces com Visor Brinox Top Pratic 20,5 cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "cozinha utensilios raladores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/262606/Preto-Brinox.jpg?v=638971853821630000",
+  productUrl: "https://www.brinox.com.br/ralador_4_faces_com_visor_brinox_top_pratic_20-5cm_aco_inox_preto/p",
+  popularity: 191
+ },
+ {
+  sku: "brinox-2099116",
+  name: "Escorredor de Louças Brinox Suprema com Porta Talheres 16 Pratos Aço inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 169.99,
+  unit: "un",
+  category: "pia escorredores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287949/Escorredor Suprema 16 pecas.png?v=639258496428100000",
+  productUrl: "https://www.brinox.com.br/escorredor-de-loucas-brinox-suprema-com-porta-talheres-16-pratos-aco-inox/p",
+  popularity: 192
+ },
+ {
+  sku: "brinox-2080304",
+  name: "Espumadeira Brinox Suprema 32cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios espumadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280986/Espumadeira_Brinox_Suprema_16-mm_x_32_cm_Aco_Inox.jpg?v=639081431404400000",
+  productUrl: "https://www.brinox.com.br/espumadeira-brinox-suprema-32-cm-aco-inox/p",
+  popularity: 193
+ },
+ {
+  sku: "brinox-1687000",
+  name: "Pegador Universal Brinox Arienzo 20,5cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "cozinha utensilios pegadores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280972/Pegador_Universal_Brinox_Arienzo_205_cm_Aco_Inox.jpg?v=639081431649300000",
+  productUrl: "https://www.brinox.com.br/pegador-universal-brinox-arienzo-20-5-cm-aco-inox/p",
+  popularity: 194
+ },
+ {
+  sku: "brinox-1676000",
+  name: "Pegador para Massa Brinox Arienzo 20cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 10.99,
+  unit: "un",
+  category: "cozinha utensilios pegadores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280970/Pegador_para_Massa_Brinox_Arienzo_20_cm_Aco_Inox.jpg?v=639007100559600000",
+  productUrl: "https://www.brinox.com.br/pegador-para-massa-brinox-arienzo-20-cm-aco-inox/p",
+  popularity: 195
+ },
+ {
+  sku: "brinox-1660301",
+  name: "Colher para Arroz Brinox Arienzo 33cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "cozinha utensilios colheres para arroz",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280960/Colher_para_arroz_Arienzo_Brinox_01_x_33_cm_Nova.jpg?v=639081431262030000",
+  productUrl: "https://www.brinox.com.br/colher_para_arroz_arienzo_brinox_1660301/p",
+  popularity: 196
+ },
+ {
+  sku: "brinox-1649303",
+  name: "Concha Terrina Brinox Jornata 50ml 20cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "cozinha utensilios conchas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/257385/Concha-terrina-Jornata-Brinox-12-mm-x-21-cm-50-ml---Brinox.jpg?v=638971852032800000",
+  productUrl: "https://www.brinox.com.br/concha_terrina_brinox_jornata_50ml_20cm_aco_inox/p",
+  popularity: 197
+ },
+ {
+  sku: "brinox-1580705",
+  name: "Moedor para Pimenta e Sal Brinox Parma em Madeira 26,4 x Ø 5,5cm Madeira Brinox",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "cozinha moedores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/262432/Madeira-Brinox.jpg?v=637195331802100000",
+  productUrl: "https://www.brinox.com.br/moedor_para_pimenta_e_sal_brinox_parma_madeira_26-4cm/p",
+  popularity: 198
+ },
+ {
+  sku: "brinox-994242313",
+  name: "Organizador Giratório Coza New Retrô Ø31 x 8,4 cm Cristal Coza",
+  brand: "Coza",
+  unitPrice: 49.99,
+  unit: "un",
+  category: "organizacao organizadores multiuso",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286605/organizador_giratorio_coza_new_retro_31_x_8_4_cm_site_brinox_1.webp?v=639235345945270000",
+  productUrl: "https://www.brinox.com.br/organizador-giratorio-coza-new-retro-31-cm-cristal/p",
+  popularity: 199
+ },
+ {
+  sku: "brinox-994242312",
+  name: "Organizador Giratório Coza Dry Ø29 x 3,2 cm Cristal Organizador Giratório Dry Coza 29X3,2CM Cor Cristal",
+  brand: "Coza",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "organizacao organizadores de geladeira",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286010/organizador_giratrio_coza_dry_29_x_32_cm_cristal_site_brinox.webp?v=639233702876170000",
+  productUrl: "https://www.brinox.com.br/organizador-giratorio-coza-dry-29-cm-cristal/p",
+  popularity: 200
+ },
+ {
+  sku: "brinox-994242304",
+  name: "Cozi Vapore Antiaderente com Tampa Brinox Especiarias Ø16cm 1,4 Litros Vanilla Cozi Vapore com Tampa Brinox Especiarias Ø 16cm 1,4 L Vanilla",
+  brand: "Brinox",
+  unitPrice: 199.99,
+  unit: "un",
+  category: "panelas cozi e vapore",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287173/cozi-vapore-com-tampa-brinox-especiarias-o-16cm-1-4-l-vanilla_0.jpg?v=639239629402130000",
+  productUrl: "https://www.brinox.com.br/cozi-vapore-brinox-especiarias-antiaderente-16cm-1-4l-vanilla/p",
+  popularity: 201
+ },
+ {
+  sku: "brinox-994242291",
+  name: "Cooktop de Indução 2 Bocas Brinox Touch Screen 220V Preto Voltagem 220v",
+  brand: "Brinox",
+  unitPrice: 549.99,
+  unit: "un",
+  category: "eletroportateis cooktops de inducao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287863/8002_102_4.jpg?v=639252475921070000",
+  productUrl: "https://www.brinox.com.br/cooktop-de-inducao-2-bocas-brinox-touch-screen-220v-preto/p",
+  popularity: 202
+ },
+ {
+  sku: "brinox-994242290",
+  name: "Cooktop de Indução 2 Bocas Brinox Touch Screen 127V Preto Voltagem 127v",
+  brand: "Brinox",
+  unitPrice: 549.99,
+  unit: "un",
+  category: "eletroportateis cooktops de inducao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287854/8002_102_4.jpg?v=639252475563830000",
+  productUrl: "https://www.brinox.com.br/cooktop-de-inducao-2-bocas-brinox-touch-screen-127v-preto/p",
+  popularity: 203
+ },
+ {
+  sku: "brinox-994242231",
+  name: "Saco a Vácuo Coza Zip Vácuo G 90x55cm Saco a Vacuo Zip Vacuo G 90X55 cm Coza",
+  brand: "Coza",
+  unitPrice: 12.99,
+  unit: "un",
+  category: "organizacao sacos a vacuo",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286508/saco-a-vacuo-zip-vacuo-g-90x55-cm-coza_0.jpg?v=639235329783830000",
+  productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-g-90x55/p",
+  popularity: 204
+ },
+ {
+  sku: "brinox-994242223",
+  name: "Lixeira com Pedal e Balde Brinox Matte 5 Litros Cinza Chumbo Lixeira Retangular com Pedal e Balde Matte Cinza 5L Brinox",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "lixeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287802/Lixeira 5 L - Matte Cinza Chumbo.png?v=639251558288970000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-matte-5-litros-cinza-chumbo/p",
+  popularity: 205
+ },
+ {
+  sku: "brinox-994242220",
+  name: "Cesto de Roupas com Tampa Coza Puffer 49 Litros Cinza Chumbo Cesto de Roupas com Tampa Puffer 49 L Cinza Chumbo Coza",
+  brand: "Coza",
+  unitPrice: 109.99,
+  unit: "un",
+  category: "organizacao caixas organizadoras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286472/cesto_de_roupas_com_tampa_puffer_49_l_cinza_chumbo_coza_site_brinox_1.webp?v=639235202192070000",
+  productUrl: "https://www.brinox.com.br/cesto-de-roupas-com-tampa-coza-puffer-49-litros-cinza-chumbo/p",
+  popularity: 206
+ },
+ {
+  sku: "brinox-994242210",
+  name: "Caixa Organizadora Coza Puffer 4 Litros Cinza Chumbo Caixa Organizadora Puffer 4 L Cinza Chumbo Coza",
+  brand: "Coza",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "organizacao caixas organizadoras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286385/caixa_organizadora_coza_puffer_4_litros_cinza_chumbo_site_brinox_1.webp?v=639235161375600000",
+  productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-4-litros-cinza-chumbo/p",
+  popularity: 207
+ },
+ {
+  sku: "brinox-994242201",
+  name: "Grill Brinox Primea Antiaderente Ceramic Life 24cm 1,3 Litros Cappuccino Grill Brinox Ceramic Life Primea 24x24x3,5cm Cappuccino",
+  brand: "Brinox",
+  unitPrice: 104.99,
+  unit: "un",
+  category: "panelas grills",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284808/grill-brinox-ceramic-life-primea-24x24x3-5cm-cappuccino_0.jpg?v=639165237559970000",
+  productUrl: "https://www.brinox.com.br/grill-brinox-primea-antiaderente-ceramic-life-24cm-1-5-litros-cappuccino/p",
+  popularity: 208
+ },
+ {
+  sku: "brinox-994242193",
+  name: "Panela com Tampa Brinox Primea Antiaderente Ceramic Life Ø18cm 2,05 Litros Cappuccino Panela com Tampa Brinox Ceramic Life Primea Ø18cm 2,05L Cappuccino",
+  brand: "Brinox",
+  unitPrice: 109.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284783/panela-com-tampa-brinox-ceramic-life-primea-o18cm-2-05l-cappuccino_0.jpg?v=639165231582830000",
+  productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-primea-antibacteriana-antiaderente-ceramic-life-18cm-cappuccino/p",
+  popularity: 209
+ },
+ {
+  sku: "brinox-994242188",
+  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 3 Litros Preto Panela de Pressão Brinox Ceramic Life Vapt 3 Litros Preto",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287049/3L - Vapt Preta.png?v=639238892475400000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-3-litros-preto/p",
+  popularity: 210
+ },
+ {
+  sku: "brinox-994242179",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø22cm 1,2 Litros Azul Frigideira Brinox Ceramic Life Rainbow Ø22cm 1,2 Litros Azul",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284433/7442_352.jpg?v=639147824829070000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o22cm-12-litros-azul/p",
+  popularity: 211
+ },
+ {
+  sku: "brinox-994242178",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø22cm 1,2 Litros Rosa Frigideira Brinox Ceramic Life Rainbow Ø22cm 1,2 Litros Rosa",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284421/frigideira-brinox-ceramic-life-rainbow-o22cm-1-2-litros-rosa_0.jpg?v=639147821574100000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o22cm-12-litros-rosa/p",
+  popularity: 212
+ },
+ {
+  sku: "brinox-994242176",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Verde Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Verde",
   brand: "Brinox",
   unitPrice: 39.99,
   unit: "un",
-  category: "panelas panquequeiras e tapioqueiras",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283239/7001_369.jpg?v=639086709813970000",
-  productUrl: "https://www.brinox.com.br/tapioqueira-e-panquequeira-brinox-naturalle-ceramic-life-o22cm-450ml-garlic/p",
-  popularity: 281
+  category: "panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284399/7442_344--1-.jpg?v=639147819286600000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-16cm-450-ml-verde/p",
+  popularity: 213
  },
  {
-  sku: "brinox-7001361",
-  name: "Caçarola com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø24cm 4,3 Litros Garlic Vermelho Brinox",
+  sku: "brinox-994242175",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Azul Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Azul",
   brand: "Brinox",
-  unitPrice: 126.31,
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284382/7442_342.jpg?v=639147817991170000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-azul/p",
+  popularity: 214
+ },
+ {
+  sku: "brinox-994242174",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Rosa Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Rosa",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284374/frigideira-brinox-ceramic-life-rainbow-o16cm-450-ml-rosa_0.jpg?v=639147817400700000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-rosa/p",
+  popularity: 215
+ },
+ {
+  sku: "brinox-994242173",
+  name: "Frigideira Brinox Antiaderente Ceramic Life Rainbow Ø16cm 450ml Cereja Frigideira Brinox Ceramic Life Rainbow Ø16cm 450 ml Cereja",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284365/frigideira-brinox-ceramic-life-rainbow-o16cm-450-ml-cereja_0.jpg?v=639147816639100000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-antiaderente-ceramic-life-rainbow-o16cm-450ml-cereja/p",
+  popularity: 216
+ },
+ {
+  sku: "brinox-206463009",
+  name: "Pote Hermético Retangular Coza Modo 1,3 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 34.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285879/pote_hermetico_retangular_coza_modo_1_3_litros_cristal_6043_1_4bed3d8e1b884468665ab69aa77e5e99.webp?v=639233670632130000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-1-3-litros-cristal/p",
+  popularity: 217
+ },
+ {
+  sku: "brinox-206413009",
+  name: "Pote Hermético Quadrado Coza Modo 580ml Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285929/pote_hermetico_coza_modo_580ml_cristal_6073_1_site_brinox_1.webp?v=639233680665970000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-580ml-cristal/p",
+  popularity: 218
+ },
+ {
+  sku: "brinox-202010009",
+  name: "Copo Cônico Coza Cozy 300ml Cristal Cristal Coza",
+  brand: "Coza",
+  unitPrice: 7.99,
+  unit: "un",
+  category: "mesa tacas e copos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287450/copo_conico_coza_cozy_300ml_cristal_site_brinox_2.webp?v=639241249332830000",
+  productUrl: "https://www.brinox.com.br/copo-conico-coza-cozy-300ml-cristal/p",
+  popularity: 219
+ },
+ {
+  sku: "brinox-108630536",
+  name: "Grade de Pia Coza Basic Cinza Chumbo Cinza",
+  brand: "Coza",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "organizacao organizadores de pia",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287293/grade_de_pia_basic_coza_cinza_chumbo_cinza_Chumbo_1.webp?v=639239775954930000",
+  productUrl: "https://www.brinox.com.br/grade-de-pia-coza-basic-cinza-chumbo/p",
+  popularity: 220
+ },
+ {
+  sku: "brinox-108630468",
+  name: "Grade de Pia Basic Coza Light Gray Light Gray",
+  brand: "Coza",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "organizacao organizadores de pia",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287289/grade_de_pia_basic_coza_light_gray_site_brinox_1.webp?v=639239774579700000",
+  productUrl: "https://www.brinox.com.br/grade-de-pia-coza-basic-light-gray/p",
+  popularity: 221
+ },
+ {
+  sku: "brinox-108620536",
+  name: "Organizador de Pia Coza Basic Cinza Chumbo Cinza Chumbo Coza",
+  brand: "Coza",
+  unitPrice: 44.99,
+  unit: "un",
+  category: "organizacao organizadores de pia",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287341/organizador_de_pia_coza_basic_cinza_chumbo_site_brinox_1.webp?v=639240374153670000",
+  productUrl: "https://www.brinox.com.br/organizador-de-pia-coza-basic-cinza-chumbo/p",
+  popularity: 222
+ },
+ {
+  sku: "brinox-108400008",
+  name: "Escorredor de Talheres Oval Coza Basic Preto Preto Coza",
+  brand: "Coza",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "organizacao organizadores de pia",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287297/escorredor_de_talheres_oval_coza_basic_preto_site_brinox_1.webp?v=639240335872730000",
+  productUrl: "https://www.brinox.com.br/escorredor-de-talheres-oval-coza-basic-preto/p",
+  popularity: 223
+ },
+ {
+  sku: "brinox-105700007",
+  name: "Prato Refeição Cozy 25,7 x 25,7 x 3 cm Branco Coza",
+  brand: "Coza",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "mesa travessas e pratos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268861/Branco-Coza.jpg?v=638059215144300000",
+  productUrl: "https://www.brinox.com.br/prato_refeicao_cozy__105700007/p",
+  popularity: 224
+ },
+ {
+  sku: "brinox-101983009",
+  name: "Organizador de Ovos com Tampa Coza Dry 24 Unidades Cristal",
+  brand: "Coza",
+  unitPrice: 49.99,
+  unit: "un",
+  category: "organizacao organizadores de geladeira",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285972/organizador_de_ovos_com_tampa_coza_dry_24_unidades_site_brinox_1.webp?v=639233692650230000",
+  productUrl: "https://www.brinox.com.br/organizador-para-ovos-com-tampa-transparente-linha-dry-24-unidades-coza/p",
+  popularity: 225
+ },
+ {
+  sku: "brinox-51401003",
+  name: "Prato Redondo de Melamina Haus Concept Buffet 20,4cm Branco Branco Haus",
+  brand: "Haus Concept",
+  unitPrice: 44.99,
+  unit: "un",
+  category: "profissional pratos e petisqueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256503/Branco-Haus--Haus.jpg?v=637021648173070000",
+  productUrl: "https://www.brinox.com.br/prato-redondo-melamina-haus-concept-buffet-20cm-branco/p",
+  popularity: 226
+ },
+ {
+  sku: "brinox-7245365",
+  name: "Caçarola com Tampa Brinox Suprema 24 cm 4,5 L Antiaderente Mineral Resist Ceramic Life Verde Verde",
+  brand: "Brinox",
+  unitPrice: 149.99,
   unit: "un",
   category: "panelas cacarolas e panelas avulsas",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282704/7001_361.jpg?v=639081506857870000",
-  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-antiaderente-ceramic-life-o24cm-43-litros-garlic/p",
-  popularity: 282
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286810/cacarola-com-tampa-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238866915430000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-24-cm-4-5-l-antiaderente-mineral-resist-ceramic-life-verde/p",
+  popularity: 227
  },
  {
-  sku: "brinox-5120107",
-  name: "Jogo de Colheres de Chá Brinox Bistrô 135 x 2,5mm 12 Peças Aço Inox Aço Inox",
+  sku: "brinox-7245354",
+  name: "Frigideira Brinox Suprema Antiaderente Ceramic Life Mineral Resist Ø24cm 1,45 Litros Verde Verde",
   brand: "Brinox",
-  unitPrice: 74.99,
+  unitPrice: 79.99,
   unit: "un",
-  category: "talheres colheres",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278796/Sem-nome--1200-x-1200-px----2025-08-26T112840.298.jpg?v=638918154837830000",
-  productUrl: "https://www.brinox.com.br/jogo-de-colheres-de-cha-brinox-bistro-135-x-2-5mm-12-pecas-aco-inox/p",
-  popularity: 283
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286858/frigideira-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238874533100000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-suprema-antiaderente-ceramic-life-mineral-resist-%C3%B824-cm-1-45-litros-verde/p",
+  popularity: 228
+ },
+ {
+  sku: "brinox-7245101",
+  name: "Jogo de Panelas Brinox Antiaderente Ceramic Life 7 Peças Suprema Verde Verde",
+  brand: "Brinox",
+  unitPrice: 629.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286897/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-verde.jpg?v=639238878314370000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-ceramic-life-7-pecas-suprema-verde_7245101-1/p",
+  popularity: 229
+ },
+ {
+  sku: "brinox-7190461",
+  name: "Caçarola com Tampa Brinox Naturalle Ø24cm 4,3 Litros Antiaderente Ceramic Life Preta Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 119.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282457/7190_461.jpg?v=639062566826100000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-24cm-43l-antiaderente-ceramic-life-preta/p",
+  popularity: 230
+ },
+ {
+  sku: "brinox-7001353",
+  name: "Frigideira Brinox Naturalle Antiaderente Ceramic Life Ø20cm 800ml Garlic Vermelho",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283219/7001_353.jpg?v=639086705297230000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-naturalle-antiaderente-ceramic-life-o20cm-800ml-garlic/p",
+  popularity: 231
+ },
+ {
+  sku: "brinox-7001351",
+  name: "Frigideira Brinox Naturalle Antiaderente Ceramic Life Ø16cm 400ml Garlic Vermelho Brinox",
+  brand: "Brinox",
+  unitPrice: 31.57,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283211/7001_351.jpg?v=639086704045070000",
+  productUrl: "https://www.brinox.com.br/frigideira-brinox-naturalle-antiaderente-ceramic-life-o16cm-400ml-garlic/p",
+  popularity: 232
+ },
+ {
+  sku: "brinox-7000399",
+  name: "Tampa De Vidro - 20 Cm - Brinox Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas tampas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261815/Preto-Brinox.jpg?v=638962197635730000",
+  productUrl: "https://www.brinox.com.br/tampa_de_vidro____o_20_cm___brinox_7000399/p",
+  popularity: 233
+ },
+ {
+  sku: "brinox-7000397",
+  name: "Tampa De Vidro - 24 Cm - Brinox Preto",
+  brand: "Brinox",
+  unitPrice: 62.99,
+  unit: "un",
+  category: "panelas tampas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/267872/Preto.jpg?v=638919174649400000",
+  productUrl: "https://www.brinox.com.br/7000397/p",
+  popularity: 234
+ },
+ {
+  sku: "brinox-7000396",
+  name: "Tampa De Vidro - 22 Cm - Brinox Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 58.99,
+  unit: "un",
+  category: "panelas tampas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261809/Preto-Brinox.jpg?v=638978611474200000",
+  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_22_cm___brinox_7000396/p",
+  popularity: 235
+ },
+ {
+  sku: "brinox-7000395",
+  name: "Tampa De Vidro - 18 Cm - Brinox Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 46.99,
+  unit: "un",
+  category: "panelas tampas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261808/Preto-Brinox.jpg?v=638978647526300000",
+  productUrl: "https://www.brinox.com.br/tampa_de_vidro___o_18_cm___brinox_7000395/p",
+  popularity: 236
+ },
+ {
+  sku: "brinox-5120103",
+  name: "Jogo Faca de Mesa Brinox Bistrô 239 x 9mm 12 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "talheres facas de mesa",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281552/Jogo_Faca_de_Mesa_Brinox_New_Bistro_Duzia_239_x_9mm_Aco_Inox.jpg?v=639081432587670000",
+  productUrl: "https://www.brinox.com.br/jogo-faca-de-mesa-brinox-bistro-239-x-9mm-12-pecas-aco-inox/p",
+  popularity: 237
+ },
+ {
+  sku: "brinox-5120102",
+  name: "Jogo de Garfo de Mesa Brinox Bristô 205x3mm 12 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 129.99,
+  unit: "un",
+  category: "talheres garfos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/275929/jogo-de-garfo-de-mesa-12-pecas-linha-bistro-brinox.jpg?v=638971823464230000",
+  productUrl: "https://www.brinox.com.br/jogo-de-garfo-de-mesa-brinox-bristo-205x3mm-12-pecas-aco-inox/p",
+  popularity: 238
  },
  {
   sku: "brinox-5119118",
@@ -3127,6 +2632,501 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278771/faqueiro-42-pecas-linha-modena-aco-inoxidavel-brinox.jpg?v=638920932323970000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-modena-42-pecas-aco-inoxidavel/p",
+  popularity: 239
+ },
+ {
+  sku: "brinox-5100120",
+  name: "Jogo de Colher de Refresco Brinox Lyon em Aço Inox 12 Peças Colher de Refresco 12 Peças",
+  brand: "Brinox",
+  unitPrice: 44.99,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251159/Colher-de-Refresco-Duzia---Lyon-184-x-12-mm---Brinox.jpg?v=637002585106900000",
+  productUrl: "https://www.brinox.com.br/jogo-de-colher-de-refresco-lyon-aco-inox-12-pecas/p",
+  popularity: 240
+ },
+ {
+  sku: "brinox-4935100",
+  name: "Panela de Pressão Inox Brinox Ultra com Fundo Triplo 4 Litros Ø20cm com 4 Dispostivos de Segurança Inox",
+  brand: "Brinox",
+  unitPrice: 499.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287071/4L - Ultra.png?v=639239403190930000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-inox-brinox-ultra-com-fundo-triplo-4-litros--20-cm-com-4-dispostivos-de-seguranca/p",
+  popularity: 241
+ },
+ {
+  sku: "brinox-4815361",
+  name: "Frigideira com Indução Brinox Botanika Antiaderente Ceramic Life Ø24cm 1,35 Litros Verde Verde",
+  brand: "Brinox",
+  unitPrice: 139.99,
+  unit: "un",
+  category: "panelas frigideiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276025/frigideira-com-fundo-de-inducao-revestimento-ceramico-antiaderente-verde-botanika-brinox.jpg?v=638919173299630000",
+  productUrl: "https://www.brinox.com.br/frigideira-com-inducao-brinox-botanika-antiaderente-ceramic-life-%C3%B824-cm-1-35-litros-verde/p",
+  popularity: 242
+ },
+ {
+  sku: "brinox-4815157",
+  name: "Wok de Indução com Tampa Brinox Botanika Antiaderente Ceramic Life Ø28cm 3,4 Litros Verde Verde",
+  brand: "Brinox",
+  unitPrice: 279.99,
+  unit: "un",
+  category: "panelas woks",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281575/Wok_de_Inducao_com_Tampa_Brinox_Botanika_28cm_34L_Antiaderente_Ceramic_Life_Verde_Nova_1.jpg?v=639010707741200000",
+  productUrl: "https://www.brinox.com.br/wok-de-inducao-com-tampa-brinox-botanika-antiaderente-ceramic-life-28-cm-3-4-litros-verde/p",
+  popularity: 243
+ },
+ {
+  sku: "brinox-4774335",
+  name: "Panela de Indução com Tampa Brinox Smart Plus Antiaderente Ceramic Life Ø18cm 1,55 Litros Vanilla VANILLA",
+  brand: "Brinox",
+  unitPrice: 149.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280775/Panela_de_Inducao_com_Tampa_Brinox_Smart_Plus_Ø18_cm_155_Litros_Antiaderente_Ceramic_Life_Vanilla_Nova_1.jpg?v=639020916872530000",
+  productUrl: "https://www.brinox.com.br/panela-de-inducao-com-tampa-brinox-smart-plus-antiaderente-ceramic-life-%C3%B818-cm-1-55-litros-vanilla/p",
+  popularity: 244
+ },
+ {
+  sku: "brinox-3074100",
+  name: "Lixeira com Pedal e Balde Brinox Spin 3 Litros Aço Inox Escovado Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 99.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287668/Lixeira-3L---Spin.png?v=639256076798230000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-spin-3-litros-aco-inox-escovado/p",
+  popularity: 245
+ },
+ {
+  sku: "brinox-3073200",
+  name: "Lixeira com Pedal e Balde Brinox Plana 40 Litros Aço Inoxidável Escovado Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 1124.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287680/Lixeira-40--L---Plana.png?v=639256076193430000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-plana-40-litros-aco-inoxidavel-escovado/p",
+  popularity: 246
+ },
+ {
+  sku: "brinox-3064100",
+  name: "Lixeira Pedal e Balde Brinox Frame 6 Litros Aço Carbono Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 249.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287830/Lixeira 6 L - Frame Preto.png?v=639251559567900000",
+  productUrl: "https://www.brinox.com.br/lixeira_com_pedal_e_balde_brinox_frame_6_litros_aco_carbono/p",
+  popularity: 247
+ },
+ {
+  sku: "brinox-3050252",
+  name: "Lixeira com Tampa Press Brinox Decorline 4 Litros Ø17 x 25cm Aço Inoxidável Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 79.99,
+  unit: "un",
+  category: "lixeiras lixeiras tampa press",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287693/Lixeira-4-L---Decorline-Press.png?v=639256082609570000",
+  productUrl: "https://www.brinox.com.br/lixeira_com_tampa_press_brinox_4_litros_%C3%B817cm_x_25cm_aco_inoxidavel/p",
+  popularity: 248
+ },
+ {
+  sku: "brinox-3040201",
+  name: "Lixeira com Pedal e Balde Brinox Decorline 3 Litros Ø17 x 27cm Aço Inoxidável Inox",
+  brand: "Brinox",
+  unitPrice: 79.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287659/Lixeira 3 L - Decorline.png?v=639251507431000000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-decorline-3-litros-%C3%B8-17-x-27-cm-aco-inoxidavel/p",
+  popularity: 249
+ },
+ {
+  sku: "brinox-3032201",
+  name: "Lixeira com Tampa Basculante Brinox Decorline 3,2 Litros Ø15,5cm Aço Inox Inox",
+  brand: "Brinox",
+  unitPrice: 89.99,
+  unit: "un",
+  category: "lixeiras lixeiras tampa basculante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287660/Lixeira-32L---Decorline-basculante.png?v=639251847761070000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-brinox-decorline-3-2-litros-%C3%B8-15-5-cm-aco-inox/p",
+  popularity: 250
+ },
+ {
+  sku: "brinox-2506322",
+  name: "Fouet Profissional Brinox Precision 30cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "cozinha utensilios batedores e fues",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/263758/Batedor-manual-Profissional-30cm-Precision---Brinox-30-cm---Brinox.jpg?v=637421004805400000",
+  productUrl: "https://www.brinox.com.br/fouet-profissional-brinox-precision-30-cm-aco-inox/p",
+  popularity: 251
+ },
+ {
+  sku: "brinox-2405000",
+  name: "Pasta para Polir Aço Inox Brinox Arienzo 200g Pasta para Polir Aço Inox 200 g - Brinox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "lavanderia limpadores",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247809/Pasta-para-Polir-Aco-Inox-200-g---Brinox.jpg?v=638920934588100000",
+  productUrl: "https://www.brinox.com.br/pasta_para_polir_aco_inox_brinox_arienzo_200_gramas/p",
+  popularity: 252
+ },
+ {
+  sku: "brinox-2389100",
+  name: "Porta Frios Empilhável com Pinça Brinox A´tina 3 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "mesa acessorios porta frios",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281036/Porta_Frios_Empilhavel_com_Pinca_Brinox_Lyon_3_Pecas_Aco_Inox.jpg?v=639032186953830000",
+  productUrl: "https://www.brinox.com.br/porta-frios-empilhavel-com-pinca-brinox-atina-3-pecas-aco-inox/p",
+  popularity: 253
+ },
+ {
+  sku: "brinox-2310310",
+  name: "Saca Rolhas Brinox Acessórios para Vinho Aço Inox Saca-Rolhas - Acessórios de Vinho - Brinox",
+  brand: "Brinox",
+  unitPrice: 49.99,
+  unit: "un",
+  category: "cozinha utensilios acessorios para vinho e espumante",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247742/Saca-Rolhas---Acessorios-de-Vinho---Brinox.jpg?v=639032183407600000",
+  productUrl: "https://www.brinox.com.br/saca-rolhas-brinox-acessorios-para-vinho-aco-inox/p",
+  popularity: 254
+ },
+ {
+  sku: "brinox-2202343",
+  name: "Peneira em Aço Inox com Cabo ABS Brinox Top Pratic Ø14cm Aço Inox",
+  brand: "Brinox",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "cozinha utensilios peneiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287972/Peneira ABS Top Pratic 14 cm.png?v=639258500059630000",
+  productUrl: "https://www.brinox.com.br/peneira_em_aco_inox_com_cabo_abs_brinox_top_pratic_%C3%B814cm/p",
+  popularity: 255
+ },
+ {
+  sku: "brinox-2202315",
+  name: "Cortador Plaina para Queijo Brinox Top Pratic 20cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "cozinha utensilios plainas para queijo",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/258521/Plaina-para-queijo-Top-Pratic-Brinox-20-cm---Brinox.jpg?v=639032175750900000",
+  productUrl: "https://www.brinox.com.br/cortador-plaina-para-queijo-brinox-top-pratic-20-cm-aco-inox/p",
+  popularity: 256
+ },
+ {
+  sku: "brinox-2202304",
+  name: "Espumadeira Brinox Top Pratic 33,5cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 26.99,
+  unit: "un",
+  category: "cozinha utensilios espumadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249463/Espumadeira---Top-Pratic-335-cm---Brinox.jpg?v=637001686337270000",
+  productUrl: "https://www.brinox.com.br/espumadeira-brinox-top-pratic-33-5-cm-aco-inox/p",
+  popularity: 257
+ },
+ {
+  sku: "brinox-2100101",
+  name: "Conjunto de Potes para Mantimentos com Tampa Brinox Suprema 5 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 499.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285719/Conjunto_de_Potes_para_Mantimentos_com_Tampa_e_Visor_Brinox_Suprema_5_Pecas_Aco_Inox.jpg?v=639223066740130000",
+  productUrl: "https://www.brinox.com.br/conjunto-de-potes-porta-mantimentos-com-tampa-brinox-suprema-5-pecas-inox/p",
+  popularity: 258
+ },
+ {
+  sku: "brinox-2051327",
+  name: "Descansa Brinox Beli Ø9cm Aço Inox 6 Peças Aço Inox",
+  brand: "Brinox",
+  unitPrice: 54.99,
+  unit: "un",
+  category: "profissional bar e coquetelaria",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276023/descansa-copos-6-pecas-linha-beli-brinox.jpg?v=638978582726300000",
+  productUrl: "https://www.brinox.com.br/descansa_copos_brinox_beli_%C3%B89cm_aco_inox_6_pecas/p",
+  popularity: 259
+ },
+ {
+  sku: "brinox-2050327",
+  name: "Colher para Refresco 3 Peças - Beli - Brinox",
+  brand: "Brinox",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "cozinha utensilios colheres para coquetel e refresco",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254252/Colher-para-Refresco-3-Pecas---Beli---Brinox.jpg?v=639081449768600000",
+  productUrl: "https://www.brinox.com.br/colher_para_refresco_3_pecas___beli_2050327/p",
+  popularity: 260
+ },
+ {
+  sku: "brinox-1660304",
+  name: "Espumadeira Brinox Arienzo 34,5cm Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "cozinha utensilios espumadeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280962/Espumadeira_Brinox_Brinox_01_x_345_cm_Nova.jpg?v=639081450711670000",
+  productUrl: "https://www.brinox.com.br/espumadeira_brinox_arienzo_34-5cm_aco_inox/p",
+  popularity: 261
+ },
+ {
+  sku: "brinox-1530100",
+  name: "Conjunto para Queijo Minas Ricota Brinox Petúnia 2 Peças Aço Inox",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "mesa acessorios queijeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251812/Conjunto-para-Queijo-Minas-Ricota-2-Pecas---Petunia---Brinox.jpg?v=638971855305930000",
+  productUrl: "https://www.brinox.com.br/conjunto-para-queijo-minas-ricota-brinox-petunia-2-pecas/p",
+  popularity: 262
+ },
+ {
+  sku: "brinox-1527123",
+  name: "Conjunto para Queijo Brinox Petúnia 2 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "mesa acessorios queijeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281544/Conjunto_para_Queijo_Brinox_Petunia_2_Pecas_Aco_Inox.jpg?v=639032187963400000",
+  productUrl: "https://www.brinox.com.br/conjunto-para-queijo-brinox-petunia-2-pecas-aco-inox/p",
+  popularity: 263
+ },
+ {
+  sku: "brinox-1413100",
+  name: "Porta Frios Brinox Átina 19x28x7,2cm 3 Peças Aço Inox Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 59.99,
+  unit: "un",
+  category: "mesa acessorios porta frios",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280947/Kit_Porta_Frios_Brinox_atina_19_x_28_x_72_cm_3_Pecas_Nova.jpg?v=639032170654600000",
+  productUrl: "https://www.brinox.com.br/porta-frios-brinox-atina-19-x-28-x-7-2-cm-3-pecas-aco-inox/p",
+  popularity: 264
+ },
+ {
+  sku: "brinox-994242222",
+  name: "Lixeira com Pedal e Balde Brinox Matte 5 Litros Inox Lixeira Retangular com Pedal e Balde Matte Inox 5L Brinox",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "lixeiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287727/Lixeira 5 L - Matte Inox.png?v=639251525655300000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-matte-5-litros-inox/p",
+  popularity: 265
+ },
+ {
+  sku: "brinox-994242190",
+  name: "Panela de Pressão Brinox Vapt Antiaderente Ceramic Life 7,5 Litros Preto Panela de Pressão Brinox Ceramic Life Vapt 7,5 Litros Preto",
+  brand: "Brinox",
+  unitPrice: 299.99,
+  unit: "un",
+  category: "panelas panelas de pressao",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287135/7,5L - Vapt Preta.png?v=639239410845970000",
+  productUrl: "https://www.brinox.com.br/panela-de-pressao-brinox-vapt-antiaderente-ceramic-life-7-5-litros-preto/p",
+  popularity: 266
+ },
+ {
+  sku: "brinox-994242106",
+  name: "Travessa Retangular GN 1/6 18cm Coza Uno Branco Travessa Retangular Uno 1/6 Branca Coza",
+  brand: "Coza",
+  unitPrice: 16.99,
+  unit: "un",
+  category: "mesa travessas e pratos",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280258/travessa-retangular-uno-1-6-branca-coza_0.jpg?v=638983911356500000",
+  productUrl: "https://www.brinox.com.br/travessa-retangular-gn-1-6-18-cm-coza-uno-branco/p",
+  popularity: 267
+ },
+ {
+  sku: "brinox-994242082",
+  name: "Bandeja em Bambu Coza Brisa Pequena 17,9x9,3x0,8cm Bandeja Pequena Brisa Bambu Coza",
+  brand: "Coza",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "mesa bandejas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286145/bandeja_pequena_brisa_6925_site_brinox_1.webp?v=639234446435930000",
+  productUrl: "https://www.brinox.com.br/bandeja-em-bambu-coza-brisa-pequena/p",
+  popularity: 268
+ },
+ {
+  sku: "brinox-994242078",
+  name: "Mantegueira em Bambu Coza Brisa Mantegueira Brisa Bambu com Cúpula Coza",
+  brand: "Coza",
+  unitPrice: 29.99,
+  unit: "un",
+  category: "mesa acessorios mantegueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286175/mantegueira_em_bambu_coza_brisa_site_brinox_1.webp?v=639234454134300000",
+  productUrl: "https://www.brinox.com.br/manteigueira-em-bambu-coza-brisa/p",
+  popularity: 269
+ },
+ {
+  sku: "brinox-994242030",
+  name: "Jogo de Colher de Mesa Brinox Noble em Aço Inox 304 12 Peças Colher de Mesa Noble em Aço Inox",
+  brand: "Brinox",
+  unitPrice: 329.72,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279879/jogo-colher-de-mesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232717634530000",
+  productUrl: "https://www.brinox.com.br/jogo-de-colher-de-mesa-noble-aco-inox-304-12-pecas/p",
+  popularity: 270
+ },
+ {
+  sku: "brinox-406403009",
+  name: "Pote Hermético Quadrado Coza Modo Bambu 230ml Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 24.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285798/pote_hermetico_coza_modo_bambu_230ml_cristal_site_brinox_5.webp?v=639233657740170000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-230ml-cristal/p",
+  popularity: 271
+ },
+ {
+  sku: "brinox-206443009",
+  name: "Pote Hermético Quadrado Coza Modo 1,8 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 34.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285900/pote_hermetico_coza_modo_1_8_litros_cristal_6055_1_site_Brinox_1.webp?v=639233675089630000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-1-8-litros-cristal/p",
+  popularity: 272
+ },
+ {
+  sku: "brinox-206433009",
+  name: "Pote Hermético Quadrado Coza Modo 1,5 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 29.99,
+  unit: "un",
+  category: "cozinha potes",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285910/pote_hermetico_coza_modo_1_5_litros_cristal_site_brinox_1.webp?v=639233676976500000",
+  productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-1-5-litros-cristal/p",
+  popularity: 273
+ },
+ {
+  sku: "brinox-108060008",
+  name: "Cesta Organizadora Coza One Grande 4,7 Litros Preto Preto Coza",
+  brand: "Coza",
+  unitPrice: 12.99,
+  unit: "un",
+  category: "organizacao caixas organizadoras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287461/cesta_organizadora_coza_one_grande_4_7_litros_preto_site_brinox_1.webp?v=639241372531300000",
+  productUrl: "https://www.brinox.com.br/cesta_one_grande_108060008/p",
+  popularity: 274
+ },
+ {
+  sku: "brinox-102523009",
+  name: "Cesta Organizadora Coza New Retrô Maxi 7,8 Litros Cristal Cristal",
+  brand: "Coza",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "organizacao caixas organizadoras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286598/cesta_organizadora_coza_new_retro_maxi_7_8_litros_cristal_site_brinox_1.webp?v=639235343947770000",
+  productUrl: "https://www.brinox.com.br/cesta-organizadora-coza-new-retro-maxi-7-8-litros-cristal/p",
+  popularity: 275
+ },
+ {
+  sku: "brinox-101620007",
+  name: "Ramekin Coza Uno 150ml Branco Branco Coza",
+  brand: "Coza",
+  unitPrice: 3.99,
+  unit: "un",
+  category: "profissional bowls, cumbucas e ramekins",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286276/ramekin_coza_uno_150_ml_branco_site_brinox_1.webp?v=639234557140930000",
+  productUrl: "https://www.brinox.com.br/ramekin-coza-uno-150ml-branco/p",
+  popularity: 276
+ },
+ {
+  sku: "brinox-101610008",
+  name: "Ramekin Coza Uno 90ml Preto Preto Coza",
+  brand: "Coza",
+  unitPrice: 3.49,
+  unit: "un",
+  category: "profissional bowls, cumbucas e ramekins",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286288/ramekin_coza_uno_90_ml_preto_site_brinox_1.webp?v=639234558582270000",
+  productUrl: "https://www.brinox.com.br/ramekin-coza-uno-90ml-preto/p",
+  popularity: 277
+ },
+ {
+  sku: "brinox-7245363",
+  name: "Caçarola com Tampa Brinox Suprema Antiaderente Mineral Resist Ceramic Life Ø20cm 3 Litros Verde Verde",
+  brand: "Brinox",
+  unitPrice: 129.99,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286782/cacarola-com-tampa-20cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238853521630000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-suprema-antiaderente-mineral-resist-ceramic-life-%C3%B820-cm-3-litros-verde/p",
+  popularity: 278
+ },
+ {
+  sku: "brinox-7245359",
+  name: "Omeleteira 18 cm Revestimento Cerâmico Antiaderente Mineral Resist Cor Verde Ceramic Life Suprema Brinox Verde",
+  brand: "Brinox",
+  unitPrice: 84.99,
+  unit: "un",
+  category: "panelas omeleteiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286926/omeleteira-18cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238879643930000",
+  productUrl: "https://www.brinox.com.br/omeleteira-18-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245359/p",
+  popularity: 279
+ },
+ {
+  sku: "brinox-7237101",
+  name: "Jogo de Panelas Brinox Antiaderente Pro-Flon 7 Peças Anis Borgonha Borgonha",
+  brand: "Brinox",
+  unitPrice: 399.99,
+  unit: "un",
+  category: "panelas jogo de panelas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281326/Jogo_de_Panelas_Brinox_Antiaderente_Pro-Flon_7_Pecas_Anis_Borgonha.jpg?v=639008167116930000",
+  productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-pro-flon-7-pecas-anis-borgonha_7237101/p",
+  popularity: 280
+ },
+ {
+  sku: "brinox-7190470",
+  name: "Omeleteira Brinox Naturalle Antiaderente Ceramic Life Ø14cm 400ml Preto Preto Brinox",
+  brand: "Brinox",
+  unitPrice: 69.99,
+  unit: "un",
+  category: "panelas omeleteiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282675/7190_470.jpg?v=639077971245630000",
+  productUrl: "https://www.brinox.com.br/tapioqueira-panquequeira-brinox-naturalle-antiaderente-ceramic-life-o22cm-450ml-preto/p",
+  popularity: 281
+ },
+ {
+  sku: "brinox-7001369",
+  name: "Tapioqueira e Panquequeira Brinox Naturalle Ceramic Life Ø22cm 450ml Garlic Vermelho",
+  brand: "Brinox",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "panelas panquequeiras e tapioqueiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283239/7001_369.jpg?v=639086709813970000",
+  productUrl: "https://www.brinox.com.br/tapioqueira-e-panquequeira-brinox-naturalle-ceramic-life-o22cm-450ml-garlic/p",
+  popularity: 282
+ },
+ {
+  sku: "brinox-7001361",
+  name: "Caçarola com Tampa Brinox Naturalle Antiaderente Ceramic Life Ø24cm 4,3 Litros Garlic Vermelho Brinox",
+  brand: "Brinox",
+  unitPrice: 126.31,
+  unit: "un",
+  category: "panelas cacarolas e panelas avulsas",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282704/7001_361.jpg?v=639081506857870000",
+  productUrl: "https://www.brinox.com.br/cacarola-com-tampa-brinox-naturalle-antiaderente-ceramic-life-o24cm-43-litros-garlic/p",
+  popularity: 283
+ },
+ {
+  sku: "brinox-5120107",
+  name: "Jogo de Colheres de Chá Brinox Bistrô 135 x 2,5mm 12 Peças Aço Inox Aço Inox",
+  brand: "Brinox",
+  unitPrice: 74.99,
+  unit: "un",
+  category: "talheres colheres",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278796/Sem-nome--1200-x-1200-px----2025-08-26T112840.298.jpg?v=638918154837830000",
+  productUrl: "https://www.brinox.com.br/jogo-de-colheres-de-cha-brinox-bistro-135-x-2-5mm-12-pecas-aco-inox/p",
   popularity: 284
  },
  {
@@ -3185,17 +3185,6 @@ export const CATALOG: CatalogItem[] = [
   popularity: 289
  },
  {
-  sku: "brinox-3040204",
-  name: "Lixeira com Tampa e Balde Brinox Decorline 20 Litros Aço Inoxidável Inox",
-  brand: "Brinox",
-  unitPrice: 189.99,
-  unit: "un",
-  category: "lixeiras lixeiras de pedal",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287637/Lixeira 20 L - Decorline.png?v=639251502080930000",
-  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-e-balde-brinox-decorline-20-litros-aco-inoxidavel/p",
-  popularity: 290
- },
- {
   sku: "brinox-2555303",
   name: "Pegador para Churrasco Brinox - Madeira (40cm x 5cm x 5cm) - em aço inoxidável e madeira - Linha Churrasco Madeira",
   brand: "Brinox",
@@ -3204,7 +3193,7 @@ export const CATALOG: CatalogItem[] = [
   category: "churrasco churrasqueiras kamado",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/266250/Madeira.jpg?v=639052915564830000",
   productUrl: "https://www.brinox.com.br/pegador-para-churrasco-brinox----madeira--40cm-x-5cm-x-5cm----em-aco-inoxidavel-e-madeira---linha-churrasco_2555303/p",
-  popularity: 291
+  popularity: 290
  },
  {
   sku: "brinox-2554107",
@@ -3215,7 +3204,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres para churrasco",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281549/Jogo_de_Talheres_para_Churrasco_Brinox_Jumbo_12_Pecas.jpg?v=639008825988400000",
   productUrl: "https://www.brinox.com.br/jogo-de-talheres-para-churrasco-brinox-jumbo-12-pecas/p",
-  popularity: 292
+  popularity: 291
  },
  {
   sku: "brinox-2425304",
@@ -3226,7 +3215,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios acessorios para vinho e espumante",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249762/Funil---Aerador-para-Garrafa-de-Vinho-Ø3-x-85-cm---Brinox.jpg?v=637001727802200000",
   productUrl: "https://www.brinox.com.br/aerador_para_garrafa_de_vinho_brinox_%C3%B83_x_8_5cm/p",
-  popularity: 293
+  popularity: 292
  },
  {
   sku: "brinox-2356100",
@@ -3237,7 +3226,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios acucareiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249672/Acucareiro---Lyon-250-g---Brinox.jpg?v=638978582675330000",
   productUrl: "https://www.brinox.com.br/acucareiro_brinox_lyon_250g_aco_inox/p",
-  popularity: 294
+  popularity: 293
  },
  {
   sku: "brinox-2354000",
@@ -3248,7 +3237,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa coqueteleiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250610/Coqueteleira-inox-500-ml---Lyon-500-ml---Brinox.jpg?v=639081444582470000",
   productUrl: "https://www.brinox.com.br/coqueteleira_brinox_lyon_500ml_aco_inox/p",
-  popularity: 295
+  popularity: 294
  },
  {
   sku: "brinox-2098499",
@@ -3259,7 +3248,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores multiuso",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281810/Carrinho-Organizador---Suprema---Brinox---Brinox.jpg?v=639033163264770000",
   productUrl: "https://www.brinox.com.br/carrinho-organizador-brinox-suprema-aco-inox/p",
-  popularity: 296
+  popularity: 295
  },
  {
   sku: "brinox-2080305",
@@ -3270,7 +3259,7 @@ export const CATALOG: CatalogItem[] = [
   category: "facas garfos trinchantes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280987/Garfo_Trinchante_Brinox_Suprema_16_mm_x_355_cm_Aco_Inox.jpg?v=639035744573200000",
   productUrl: "https://www.brinox.com.br/garfo-trinchante-brinox-suprema-35-5-cm-aco-inox/p",
-  popularity: 297
+  popularity: 296
  },
  {
   sku: "brinox-1649305",
@@ -3281,7 +3270,7 @@ export const CATALOG: CatalogItem[] = [
   category: "facas garfos trinchantes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/258615/Gardo-trinchante-Jornata-Brinox-15-mm-x-24-cm---Brinox.jpg?v=637030519793930000",
   productUrl: "https://www.brinox.com.br/garfo_trinchante_brinox_jornata_24cm_aco_inox/p",
-  popularity: 298
+  popularity: 297
  },
  {
   sku: "brinox-1525132",
@@ -3292,7 +3281,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa kits para servir",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281539/Conjunto_para_Bolo_Boleira_32_cm_Brinox_Petunia_2_Pecas_Aco_Inox.jpg?v=639081451083870000",
   productUrl: "https://www.brinox.com.br/boleira-prato-com-cupula-brinox-petunia-32cm-aco-inox/p",
-  popularity: 299
+  popularity: 298
  },
  {
   sku: "brinox-1419100",
@@ -3303,7 +3292,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta pao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251626/Porta-Pao-Rocambole-e-Torta-Fria-2-Pecas---Atina-40-x-16-cm---Brinox.jpg?v=638971826664970000",
   productUrl: "https://www.brinox.com.br/porta-pao-brinox-atina-40x16cm-aco-inox/p",
-  popularity: 300
+  popularity: 299
  },
  {
   sku: "brinox-1410100",
@@ -3314,7 +3303,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios mantegueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251810/Margarineira-para-Pote---Atina---Brinox.jpg?v=638971826372000000",
   productUrl: "https://www.brinox.com.br/margarineira_brinox_atina_aco_inox_250g/p",
-  popularity: 301
+  popularity: 300
  },
  {
   sku: "brinox-994242350",
@@ -3325,7 +3314,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287472/cesta_organizadora_coza_one_grande_4_7_litros_cinza_chumbo_site_brinox_1.webp?v=639241375964730000",
   productUrl: "https://www.brinox.com.br/cesta-organizadora-coza-one-grande-4-7-litros-cinza-chumbo/p",
-  popularity: 302
+  popularity: 301
  },
  {
   sku: "brinox-994242348",
@@ -3336,7 +3325,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro escovas sanitarias",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287447/lixeira_com_tampa_serene_5l_preta_site_brinox_1.webp?v=639241243810630000",
   productUrl: "https://www.brinox.com.br/lixeira-para-banheiro-com-tampa-5-litros-coza-serene-preto/p",
-  popularity: 303
+  popularity: 302
  },
  {
   sku: "brinox-994242339",
@@ -3347,7 +3336,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286749/lixeira_com_tampa_basculante_coza_9_litros_cinza_chumbo_6663_1_site_brinox_3.webp?v=639238844280500000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-coza-9-litros-cinza-chumbo/p",
-  popularity: 304
+  popularity: 303
  },
  {
   sku: "brinox-994242333",
@@ -3358,7 +3347,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287602/10661_0008.jpg?v=639250665599330000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-12-litros-preta-com-alca-light-gray/p",
-  popularity: 305
+  popularity: 304
  },
  {
   sku: "brinox-994242332",
@@ -3369,7 +3358,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287847/10661_0468.jpg?v=639251655020630000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-12-litros-light-gray-com-alca-cinza-chumbo/p",
-  popularity: 306
+  popularity: 305
  },
  {
   sku: "brinox-994242331",
@@ -3380,7 +3369,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287608/10661_0499.jpg?v=639250666807170000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-12-litros-cinza-frio-com-alca-cinza-chumbo/p",
-  popularity: 307
+  popularity: 306
  },
  {
   sku: "brinox-994242330",
@@ -3391,7 +3380,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287610/10661_0536.jpg?v=639250667220070000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-12-litros-cinza-chumbo-com-alca-light-gray/p",
-  popularity: 308
+  popularity: 307
  },
  {
   sku: "brinox-994242327",
@@ -3402,7 +3391,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287615/10662_0468 -1-.jpg?v=639250669496500000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-20-litros-light-gray-com-alca-cinza-chumbo/p",
-  popularity: 309
+  popularity: 308
  },
  {
   sku: "brinox-994242326",
@@ -3413,7 +3402,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287394/borboleta-lixeira-coza-20-cinza-frio.png?v=639240521020100000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-20-litros-cinza-frio-com-alca-cinza-chumbo/p",
-  popularity: 310
+  popularity: 309
  },
  {
   sku: "brinox-994242325",
@@ -3424,7 +3413,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287391/borboleta-lixeira-coza-20-cinza.png?v=639240519120770000",
   productUrl: "https://www.brinox.com.br/lixeira-coza-borboleta-com-pedal-20-litros-cinza-chumbo-com-alca-light-gray/p",
-  popularity: 311
+  popularity: 310
  },
  {
   sku: "brinox-994242323",
@@ -3435,7 +3424,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287411/borboleta-lixeira-coza-20-preto.png?v=639240525316770000",
   productUrl: "https://www.brinox.com.br/lixeira-dupla-coza-borboleta-com-pedal-10-10-litros-preta-com-alca-light-gray/p",
-  popularity: 312
+  popularity: 311
  },
  {
   sku: "brinox-994242322",
@@ -3446,7 +3435,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287396/borboleta-lixeira-coza-20-light-gray.png?v=639240522367130000",
   productUrl: "https://www.brinox.com.br/lixeira-dupla-coza-borboleta-com-pedal-10-10-litros-light-gray-com-alca-cinza-chumbo/p",
-  popularity: 313
+  popularity: 312
  },
  {
   sku: "brinox-994242321",
@@ -3457,7 +3446,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287619/10663_0499.jpg?v=639250669947330000",
   productUrl: "https://www.brinox.com.br/lixeira-dupla-coza-borboleta-com-pedal-10-10-litros-cinza-frio-com-alca-cinza-chumbo/p",
-  popularity: 314
+  popularity: 313
  },
  {
   sku: "brinox-994242317",
@@ -3468,7 +3457,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres para churrasco",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287517/garfo-brinox-inox-2554013.png?v=639245663995900000",
   productUrl: "https://www.brinox.com.br/garfo-de-mesa-para-churrasco-brinox-207mm-preto/p",
-  popularity: 315
+  popularity: 314
  },
  {
   sku: "brinox-994242310",
@@ -3479,7 +3468,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285996/organizador_para_latas_coza_dry_6867_1_site_brinox_1.webp?v=639233698916370000",
   productUrl: "https://www.brinox.com.br/organizador-para-latas-coza-dry/p",
-  popularity: 316
+  popularity: 315
  },
  {
   sku: "brinox-994242308",
@@ -3490,7 +3479,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285980/Organizador_de_Geladeira_Coza_Dry_6_Litros_com_3_Cestos_site_brinox_1.webp?v=639233694303530000",
   productUrl: "https://www.brinox.com.br/organizador-de-geladeira-coza-dry-6-litros-com-3-cestos/p",
-  popularity: 317
+  popularity: 316
  },
  {
   sku: "brinox-994242293",
@@ -3501,7 +3490,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis cooktops de inducao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287871/8002_100_5.jpg?v=639252476379900000",
   productUrl: "https://www.brinox.com.br/cooktop-de-inducao-1-boca-brinox-touch-screen-220v-preto/p",
-  popularity: 318
+  popularity: 317
  },
  {
   sku: "brinox-994242292",
@@ -3512,7 +3501,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletroportateis cooktops de inducao",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287882/8002_100_5.jpg?v=639252476756400000",
   productUrl: "https://www.brinox.com.br/cooktop-de-inducao-1-boca-brinox-touch-screen-127v-preto/p",
-  popularity: 319
+  popularity: 318
  },
  {
   sku: "brinox-994242255",
@@ -3523,7 +3512,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284865/panela-com-tampa-brinox-antiaderente-ceramic-life-naturalle-o18cm-1-75-litros-champagne_0.jpg?v=639165405962430000",
   productUrl: "https://www.brinox.com.br/panela-com-tampa-brinox-antiaderente-ceramic-life-naturalle-o18cm-1-75-litros-champagne/p",
-  popularity: 320
+  popularity: 319
  },
  {
   sku: "brinox-994242250",
@@ -3534,7 +3523,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284535/wok-brinox-ceramic-life-rainbow-o24cm-2-65-litros-verde_0.jpg?v=639147835996700000",
   productUrl: "https://www.brinox.com.br/wok-brinox-antiaderente-ceramic-life-rainbow-o24cm-265-litros-verde/p",
-  popularity: 321
+  popularity: 320
  },
  {
   sku: "brinox-994242235",
@@ -3545,7 +3534,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286561/kit-saco-a-vacuo-zip-vacuo-10-pecas-60x50cm-e-bomba-manual-coza_0.jpg?v=639235335153670000",
   productUrl: "https://www.brinox.com.br/kit-saco-a-vacuo-zip-vacuo-10-pecas-60x50cm-e-bomba-manual-coza/p",
-  popularity: 322
+  popularity: 321
  },
  {
   sku: "brinox-994242234",
@@ -3556,7 +3545,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283081/bomba-manual-para-saco-a-vacuo-zip-vacuo-coza_0.jpg?v=639086541425130000",
   productUrl: "https://www.brinox.com.br/bomba-manual-para-saco-a-vacuo-coza-zip-vacuo/p",
-  popularity: 323
+  popularity: 322
  },
  {
   sku: "brinox-994242233",
@@ -3567,7 +3556,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286497/saco-a-vacuo-zip-vacuo-xg-110x100-cm-coza_0.jpg?v=639235329402630000",
   productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-xg-110x100/p",
-  popularity: 324
+  popularity: 323
  },
  {
   sku: "brinox-994242232",
@@ -3578,7 +3567,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286486/saco-a-vacuo-zip-vacuo-gg-100x80-cm-coza_0.jpg?v=639235327619670000",
   productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-gg-100x80/p",
-  popularity: 325
+  popularity: 324
  },
  {
   sku: "brinox-994242224",
@@ -3589,7 +3578,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287716/Lixeira 5 L - Matte Branco.png?v=639251525307000000",
   productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-matte-5-litros-branco/p",
-  popularity: 326
+  popularity: 325
  },
  {
   sku: "brinox-994242219",
@@ -3600,7 +3589,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286465/caixa_organizadora_coza_puffer_45_litros_light_gray_site_brinox_1.webp?v=639235200002970000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-4-5-litros-light-gray/p",
-  popularity: 327
+  popularity: 326
  },
  {
   sku: "brinox-994242218",
@@ -3611,7 +3600,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286457/caixa_organizadora_coza_puffer_45_litros_cinza_chumbo_site_brinox_1.webp?v=639235190745970000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-4-5-litros-cinza-chumbo/p",
-  popularity: 328
+  popularity: 327
  },
  {
   sku: "brinox-994242217",
@@ -3622,7 +3611,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286449/caixa_organizadora_coza_puffer_23_litros_light_gray_site_brinox_1.webp?v=639235187823730000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-2-3-litros-light-gray/p",
-  popularity: 329
+  popularity: 328
  },
  {
   sku: "brinox-994242216",
@@ -3633,7 +3622,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286441/caixa_organizadora_coza_puffer_23_litros_cinza_chumbo_site_brinox_1.webp?v=639235187076500000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-2-3-litros-cinza-chumbo/p",
-  popularity: 330
+  popularity: 329
  },
  {
   sku: "brinox-994242215",
@@ -3644,7 +3633,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286432/caixa_organizadora_coza_puffer_19_litros_light_gray_site_brinox_1.webp?v=639235184154000000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-puffer-19-l-light-gray-coza/p",
-  popularity: 331
+  popularity: 330
  },
  {
   sku: "brinox-994242214",
@@ -3655,7 +3644,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286422/caixa_organizadora_coza_puffer_19_litros_cinza_chumbo_site_brinox_1.webp?v=639235180298830000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-19-litros-cinza-chumbo--descricao-%E2%80%94-3-986---4-000/p",
-  popularity: 332
+  popularity: 331
  },
  {
   sku: "brinox-994242211",
@@ -3666,7 +3655,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286394/caixa_organizadora_coza_puffer_4_litros_light_gray_site_brinox_1.webp?v=639235162554370000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-4-litros-light-gray/p",
-  popularity: 333
+  popularity: 332
  },
  {
   sku: "brinox-994242209",
@@ -3677,7 +3666,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286370/caixa_organizadora_coza_puffer_28_litros_light_gray_site_brinox_1.webp?v=639235156295630000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-puffer-2-8-litros-light-gray/p",
-  popularity: 334
+  popularity: 333
  },
  {
   sku: "brinox-994242185",
@@ -3688,7 +3677,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas pipoqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/284052/pipoqueira-brinox-ceramic-life-rainbow-o20cm-4-2-litros-cereja_0.jpg?v=639138433316370000",
   productUrl: "https://www.brinox.com.br/pipoqueira-brinox-antiaderente-ceramic-life-rainbow-o20cm-42-litros-cereja/p",
-  popularity: 335
+  popularity: 334
  },
  {
   sku: "brinox-994242148",
@@ -3699,7 +3688,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286519/saco-a-vacuo-zip-vacuo-m-65x45-cm-coza_0.jpg?v=639235330091170000",
   productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-m-65x45/p",
-  popularity: 336
+  popularity: 335
  },
  {
   sku: "brinox-994242147",
@@ -3710,7 +3699,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao sacos a vacuo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286528/saco-a-vacuo-zip-vacuo-trip-60x40-cm-coza_0.jpg?v=639235330430500000",
   productUrl: "https://www.brinox.com.br/saco-a-vacuo-coza-zip-vacuo-trip-60x40/p",
-  popularity: 337
+  popularity: 336
  },
  {
   sku: "brinox-994242125",
@@ -3721,7 +3710,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro escovas sanitarias",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287437/escova_sanitaria_serene_preta_site_brinox_1.webp?v=639241236531570000",
   productUrl: "https://www.brinox.com.br/escova-sanitaria-coza-serene-preto/p",
-  popularity: 338
+  popularity: 337
  },
  {
   sku: "brinox-994242115",
@@ -3732,7 +3721,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286658/organizador_coza_new_retro_1_litro_2x2_cristal_site_brinox_1.webp?v=639235360122900000",
   productUrl: "https://www.brinox.com.br/organizador-coza-new-retro-1-litro-2x2-cristal/p",
-  popularity: 339
+  popularity: 338
  },
  {
   sku: "brinox-994242114",
@@ -3743,7 +3732,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286646/organizador_coza_new_retro_1_litro_1x4_cristal_site_brinox_1.webp?v=639235356979400000",
   productUrl: "https://www.brinox.com.br/organizador-coza-new-retro-1-litro-1x4-cristal/p",
-  popularity: 340
+  popularity: 339
  },
  {
   sku: "brinox-994242113",
@@ -3754,7 +3743,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286637/organizador_coza_new_retro_700ml_1x3_cristal_site_brinox_1.webp?v=639235354602600000",
   productUrl: "https://www.brinox.com.br/organizador-coza-new-retro-700-ml-1x3-cristal/p",
-  popularity: 341
+  popularity: 340
  },
  {
   sku: "brinox-994242112",
@@ -3765,7 +3754,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286625/organizador_coza_new_retro_500ml_1x2_cristal_site_brinox_1.webp?v=639235352877000000",
   productUrl: "https://www.brinox.com.br/organizador-coza-new-retro-500-ml-1x2-cristal/p",
-  popularity: 342
+  popularity: 341
  },
  {
   sku: "brinox-994242110",
@@ -3776,7 +3765,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286015/caixa_organizadora_8_l_dry_cristal_6989_1_site_brinox_1.webp?v=639233705608200000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-dry-8-litros-cristal/p",
-  popularity: 343
+  popularity: 342
  },
  {
   sku: "brinox-994242109",
@@ -3787,7 +3776,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286027/caixa_organizadora_5_l_dry_cristal_6991_site_brinox_1.webp?v=639233710346370000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-dry-5-litros-cristal/p",
-  popularity: 344
+  popularity: 343
  },
  {
   sku: "brinox-994242108",
@@ -3798,7 +3787,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286036/caixa_organizadora_6_3_l_dry_cristal_6993_site_brinox_1.webp?v=639233712567030000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-dry-6-3-litros-cristal/p",
-  popularity: 345
+  popularity: 344
  },
  {
   sku: "brinox-994242107",
@@ -3809,7 +3798,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286046/caixa_organizadora_2_7l_dry_cristal_6995_site_brinox_1.webp?v=639233714779870000",
   productUrl: "https://www.brinox.com.br/caixa-organizadora-coza-dry-2-7-litros-cristal/p",
-  popularity: 346
+  popularity: 345
  },
  {
   sku: "brinox-994242104",
@@ -3820,18 +3809,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280238/travessa-retangular-uno-1-6-preta-coza_0.jpg?v=638983907173530000",
   productUrl: "https://www.brinox.com.br/travessa-retangular-gn-1-6-18-cm-coza-uno-preto/p",
-  popularity: 347
- },
- {
-  sku: "brinox-994242103",
-  name: "Travessa Oval Coza Uno 800ml Branco Travessa Oval Uno 800ml Branca Coza",
-  brand: "Coza",
-  unitPrice: 19.98,
-  unit: "un",
-  category: "mesa travessas e pratos",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280232/travessa-oval-uno-800ml-branca-coza_0.jpg?v=638983903371300000",
-  productUrl: "https://www.brinox.com.br/travessa-oval-coza-uno-800ml-branco/p",
-  popularity: 348
+  popularity: 346
  },
  {
   sku: "brinox-994242098",
@@ -3842,7 +3820,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280198/travessa-oval-uno-550ml-preta_0.jpg?v=638983891058470000",
   productUrl: "https://www.brinox.com.br/travessa-oval-coza-uno-550ml-preta/p",
-  popularity: 349
+  popularity: 347
  },
  {
   sku: "brinox-994242097",
@@ -3853,7 +3831,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280191/cumbuca-uno-450ml-branca-coza_0.jpg?v=638983888919770000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-450ml-branco/p",
-  popularity: 350
+  popularity: 348
  },
  {
   sku: "brinox-994242095",
@@ -3864,7 +3842,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280178/cumbuca-uno-450ml-preta-coza_0.jpg?v=638983884216930000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-450ml-preta/p",
-  popularity: 351
+  popularity: 349
  },
  {
   sku: "brinox-994242094",
@@ -3875,7 +3853,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280173/cumbuca-uno-100ml-branca-coza_0.jpg?v=638983880467900000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-100ml-branco/p",
-  popularity: 352
+  popularity: 350
  },
  {
   sku: "brinox-994242092",
@@ -3886,7 +3864,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280159/cumbuca-uno-preta-100ml-coza_0.jpg?v=638983831686600000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-100ml-preta/p",
-  popularity: 353
+  popularity: 351
  },
  {
   sku: "brinox-994242091",
@@ -3897,7 +3875,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280153/bandeja-padrao-horeca-uno-pequena-coza-branco_0.jpg?v=638983829026000000",
   productUrl: "https://www.brinox.com.br/bandeja-padrao-horeca-uno-pequena-coza-branco/p",
-  popularity: 354
+  popularity: 352
  },
  {
   sku: "brinox-994242089",
@@ -3908,7 +3886,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280134/bandeja-padrao-horeca-uno-pequena-coza-preto_0.jpg?v=638983819349970000",
   productUrl: "https://www.brinox.com.br/bandeja-padrao-horeca-uno-pequena-coza-preto/p",
-  popularity: 355
+  popularity: 353
  },
  {
   sku: "brinox-994242088",
@@ -3919,7 +3897,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280126/bandeja-padrao-horeca-uno-coza-branco_0.jpg?v=638983816189570000",
   productUrl: "https://www.brinox.com.br/bandeja-padrao-horeca-uno-coza-branco/p",
-  popularity: 356
+  popularity: 354
  },
  {
   sku: "brinox-994242086",
@@ -3930,7 +3908,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280114/bandeja-padrao-horeca-uno-coza-preto_0.jpg?v=638983808059600000",
   productUrl: "https://www.brinox.com.br/bandeja-padrao-horeca-uno-coza-preto/p",
-  popularity: 357
+  popularity: 355
  },
  {
   sku: "brinox-994242083",
@@ -3941,7 +3919,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta condimentos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286136/porta_condimentos_duplo_em_bambu_coza_brisa_site_Brinox_1.webp?v=639234444909900000",
   productUrl: "https://www.brinox.com.br/porta-condimentos-duplo-em-bambu-coza-brisa/p",
-  popularity: 358
+  popularity: 356
  },
  {
   sku: "brinox-994242079",
@@ -3952,7 +3930,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios meleiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286166/meleira_em_bambu_coza_brisa_site_brinox_1.webp?v=639234452043500000",
   productUrl: "https://www.brinox.com.br/meleira-brisa-com-colher-de-bambu-coza/p",
-  popularity: 359
+  popularity: 357
  },
  {
   sku: "brinox-994242038",
@@ -3963,7 +3941,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres auxiliares",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279909/jogo-faca-de-sobremesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232730812330000",
   productUrl: "https://www.brinox.com.br/jogo-de-faca-de-sobremesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 360
+  popularity: 358
  },
  {
   sku: "brinox-994242037",
@@ -3974,7 +3952,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres para churrasco",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279905/jogo-faca-de-churrasco-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232727365730000",
   productUrl: "https://www.brinox.com.br/jogo-de-faca-de-churrasco-noble-aco-inox-304-12-pecas/p",
-  popularity: 361
+  popularity: 359
  },
  {
   sku: "brinox-994242036",
@@ -3985,7 +3963,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres facas de mesa",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279901/jogo-faca-de-mesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232728144330000",
   productUrl: "https://www.brinox.com.br/jogo-de-faca-de-mesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 362
+  popularity: 360
  },
  {
   sku: "brinox-994242035",
@@ -3996,7 +3974,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279898/jogo-garfo-de-sobremesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232821360200000",
   productUrl: "https://www.brinox.com.br/jogo-de-garfo-de-sobremesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 363
+  popularity: 361
  },
  {
   sku: "brinox-994242034",
@@ -4007,7 +3985,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279894/jogo-garfo-de-mesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232820098400000",
   productUrl: "https://www.brinox.com.br/jogo-de-garfo-de-mesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 364
+  popularity: 362
  },
  {
   sku: "brinox-994242033",
@@ -4018,7 +3996,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279890/jogo-colher-de-cafe-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232713788300000",
   productUrl: "https://www.brinox.com.br/jogo-de-colher-de-cafe-noble-aco-inox-304-12-pecas/p",
-  popularity: 365
+  popularity: 363
  },
  {
   sku: "brinox-994242032",
@@ -4029,7 +4007,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279886/jogo-colher-de-cha-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232715248870000",
   productUrl: "https://www.brinox.com.br/jogo-de-colher-de-cha-noble-aco-inox-304-12-pecas/p",
-  popularity: 366
+  popularity: 364
  },
  {
   sku: "brinox-994242031",
@@ -4040,7 +4018,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/279882/jogo-colher-de-sobremesa-noble-duzia-em-aco-inox-brinox_0.jpg?v=639232718944530000",
   productUrl: "https://www.brinox.com.br/jogo-de-colher-de-sobremesa-noble-aco-inox-304-12-pecas/p",
-  popularity: 367
+  popularity: 365
  },
  {
   sku: "brinox-992454008",
@@ -4051,7 +4029,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/274159/kit-cestas-pequenas-linha-one-coza-preto.jpg?v=638542285567270000",
   productUrl: "https://www.brinox.com.br/kit-cestas-pequenas-linha-one-coza-preto_992454008/p",
-  popularity: 368
+  popularity: 366
  },
  {
   sku: "brinox-992454001",
@@ -4062,7 +4040,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/274164/kit-cesta-pequena-coza-linha-one-cor-natural.jpg?v=638542293197630000",
   productUrl: "https://www.brinox.com.br/kit-cesta-pequena-coza-linha-one-cor-natural_992454001/p",
-  popularity: 369
+  popularity: 367
  },
  {
   sku: "brinox-406463009",
@@ -4073,7 +4051,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285851/pote_hermetico_retangular_coza_modo_bambu_1_3_litros_cristal_site_brinox_1.webp?v=639233663803730000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-bambu-1-3-litros-cristal/p",
-  popularity: 370
+  popularity: 368
  },
  {
   sku: "brinox-406443009",
@@ -4084,7 +4062,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285828/pote_hermetico_coza_modo_bambu_1_8_litros_cristal_brinox_site_5.webp?v=639233661324070000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-bambu-1-8-litros-cristal/p",
-  popularity: 371
+  popularity: 369
  },
  {
   sku: "brinox-207703007",
@@ -4095,7 +4073,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/244061/Branco-Coza.jpg?v=636867062804400000",
   productUrl: "https://www.brinox.com.br/pote_clear_trio_840ml_207703007/p",
-  popularity: 372
+  popularity: 370
  },
  {
   sku: "brinox-207693007",
@@ -4106,7 +4084,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/244063/Branco-Coza.jpg?v=636867062866970000",
   productUrl: "https://www.brinox.com.br/pote_clear_duo_560ml_207693007/p",
-  popularity: 373
+  popularity: 371
  },
  {
   sku: "brinox-207680007",
@@ -4117,7 +4095,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/244065/Branco-Coza.jpg?v=636867062927930000",
   productUrl: "https://www.brinox.com.br/pote_clear_uno_280ml_207680007/p",
-  popularity: 374
+  popularity: 372
  },
  {
   sku: "brinox-207183009",
@@ -4128,7 +4106,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pia organizadores para pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/241089/Cristal-Coza.jpg?v=636736551833930000",
   productUrl: "https://www.brinox.com.br/mini_organizador_com_ventosa_glass_207183009/p",
-  popularity: 375
+  popularity: 373
  },
  {
   sku: "brinox-206473009",
@@ -4139,7 +4117,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285871/pote_hermetico_retangular_coza_modo_2_7_litros_cristal_site_Brinox_1.webp?v=639233668172200000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-2-7-litros-cristal/p",
-  popularity: 376
+  popularity: 374
  },
  {
   sku: "brinox-206453009",
@@ -4150,7 +4128,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285889/pote_hermetico_retangular_coza_modo_530ml_cristal_6049_1_site_brinox_1.webp?v=639233672392600000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-retangular-coza-modo-530ml-cristal/p",
-  popularity: 377
+  popularity: 375
  },
  {
   sku: "brinox-206423009",
@@ -4161,7 +4139,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285920/pote_hermetico_coza_modo_1_2_litros_cristal_6067_1_site_brinox_1.webp?v=639233678613400000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-1-2-litros-cristal/p",
-  popularity: 378
+  popularity: 376
  },
  {
   sku: "brinox-206403009",
@@ -4172,7 +4150,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285940/pote_hermetico_coza_modo_230ml_cristal_6079_1_site_Brinox.webp?v=639233682288430000",
   productUrl: "https://www.brinox.com.br/pote-hermetico-quadrado-coza-modo-230ml-cristal/p",
-  popularity: 379
+  popularity: 377
  },
  {
   sku: "brinox-202090009",
@@ -4183,7 +4161,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287453/copo_conico_coza_cozy_500ml_cristal_site_brinox_1.webp?v=639241252465630000",
   productUrl: "https://www.brinox.com.br/copo-conico-coza-cozy-500ml-cristal-1/p",
-  popularity: 380
+  popularity: 378
  },
  {
   sku: "brinox-170090536",
@@ -4194,7 +4172,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287181/lixeira_com_tampa_coza_single_2_5_litros_cinza_chumbo_6613_site_brinox_1.webp?v=639239656907370000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-coza-single-2-5-litros-cinza-chumbo/p",
-  popularity: 381
+  popularity: 379
  },
  {
   sku: "brinox-170090008",
@@ -4205,7 +4183,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286707/lixeira_com_tampa_coza_single_2_5_litros_preto_site_brinox_1.webp?v=639235385551730000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-coza-single-2-5-litros-preto/p",
-  popularity: 382
+  popularity: 380
  },
  {
   sku: "brinox-170030334",
@@ -4216,7 +4194,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287220/lixeira_com_tampa_coza_flat_2_8_litros_warm_gray_e_light_gray_site_brinox_1.webp?v=639239681023630000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-press-coza-flat-2-8-litros-warm-gray-e-light-gray/p",
-  popularity: 383
+  popularity: 381
  },
  {
   sku: "brinox-170001832",
@@ -4227,7 +4205,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287383/escorredor_de_loucas_coza_flat_cinza_frio_e_cinza_grafite_site_brinox_1.webp?v=639240509557100000",
   productUrl: "https://www.brinox.com.br/escorredor-de-loucas-coza-flat-cinza-frio-e-cinza-grafite/p",
-  popularity: 384
+  popularity: 382
  },
  {
   sku: "brinox-170001334",
@@ -4238,7 +4216,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287387/escorredor_de_loucas_coza_flat_cinza_frio_e_cinza_grafite_site_brinox_1.webp?v=639240510895700000",
   productUrl: "https://www.brinox.com.br/escorredor-de-loucas-coza-flat-warm-gray-e-light-gray/p",
-  popularity: 385
+  popularity: 383
  },
  {
   sku: "brinox-131073536",
@@ -4249,7 +4227,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro escovas sanitarias",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287433/escova_sanitaria_coza_serene_cinza_chumbo_site_brinox_1.webp?v=639241234143170000",
   productUrl: "https://www.brinox.com.br/escova-sanitaria-coza-serene-cinza-chumbo/p",
-  popularity: 386
+  popularity: 384
  },
  {
   sku: "brinox-131073468",
@@ -4260,7 +4238,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro escovas sanitarias",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287442/escova_sanitaria_coza_serene_light_gray_site_brinox_1.webp?v=639241238795470000",
   productUrl: "https://www.brinox.com.br/escova-sanitaria-coza-serene-light-gray/p",
-  popularity: 387
+  popularity: 385
  },
  {
   sku: "brinox-131063536",
@@ -4271,7 +4249,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287236/lixeira_para_banheiro_com_tampa_5_litros_coza_serene_cinza_chumbo_site_brinox_1.webp?v=639239696640230000",
   productUrl: "https://www.brinox.com.br/lixeira-para-banheiro-com-tampa-5-litros-coza-serene-cinza-chumbo/p",
-  popularity: 388
+  popularity: 386
  },
  {
   sku: "brinox-131063468",
@@ -4282,7 +4260,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287232/lixeira_para_banheiro_com_tampa_5_litros_coza_serene_light_gray_site_brinox_1.webp?v=639239695495630000",
   productUrl: "https://www.brinox.com.br/lixeira-para-banheiro-com-tampa-5-litros-coza-serene-light-gray/p",
-  popularity: 389
+  popularity: 387
  },
  {
   sku: "brinox-109460008",
@@ -4293,7 +4271,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/272600/lixeira-com-tampa-basculante-cor-preto-coza.jpg?v=638475800852000000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-basculante-coza-9-litros-preto/p",
-  popularity: 390
+  popularity: 388
  },
  {
   sku: "brinox-109090468",
@@ -4304,7 +4282,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276336/lixeira-press-9l-coza-cor-light-gray.jpg?v=638659824913200000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-press-coza-9-litros-light-gray/p",
-  popularity: 391
+  popularity: 389
  },
  {
   sku: "brinox-109090008",
@@ -4315,7 +4293,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/266147/Preto.jpg?v=637704249367800000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-press-coza-9-litros-preto/p",
-  popularity: 392
+  popularity: 390
  },
  {
   sku: "brinox-109080008",
@@ -4326,7 +4304,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/266143/Preto.jpg?v=637704249316970000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-press-coza-5-litros-preto/p",
-  popularity: 393
+  popularity: 391
  },
  {
   sku: "brinox-109060008",
@@ -4337,7 +4315,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287228/lixeira_com_tampa_coza_basic_2_5_litros_preto_site_brinox_1.webp?v=639239683013570000",
   productUrl: "https://www.brinox.com.br/lixeira-com-tampa-coza-basic-2-5-litros-preto/p",
-  popularity: 394
+  popularity: 392
  },
  {
   sku: "brinox-109040008",
@@ -4348,18 +4326,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247950/Preto-Coza.jpg?v=637001058323600000",
   productUrl: "https://www.brinox.com.br/lixeira-redonda-sem-tampa-coza-10-litros-preto/p",
-  popularity: 395
- },
- {
-  sku: "brinox-108630468",
-  name: "Grade de Pia Basic Coza Light Gray Light Gray",
-  brand: "Coza",
-  unitPrice: 24.99,
-  unit: "un",
-  category: "organizacao organizadores de pia",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287289/grade_de_pia_basic_coza_light_gray_site_brinox_1.webp?v=639239774579700000",
-  productUrl: "https://www.brinox.com.br/grade-de-pia-coza-basic-light-gray/p",
-  popularity: 396
+  popularity: 393
  },
  {
   sku: "brinox-108630008",
@@ -4370,7 +4337,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287285/grade_de_pia_coza_basic_preto_site_brinox_1.webp?v=639239771570200000",
   productUrl: "https://www.brinox.com.br/grade-de-pia-coza-basic-preto/p",
-  popularity: 397
+  popularity: 394
  },
  {
   sku: "brinox-108620008",
@@ -4381,7 +4348,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287333/organizador_de_pia_coza_basic_preto_site_brinox_1.webp?v=639240367148030000",
   productUrl: "https://www.brinox.com.br/organizador-de-pia-coza-basic-preto/p",
-  popularity: 398
+  popularity: 395
  },
  {
   sku: "brinox-108430008",
@@ -4392,7 +4359,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios saleiros e pimenteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251831/Preto-Coza.jpg?v=637002673711330000",
   productUrl: "https://www.brinox.com.br/saleiro_mix_108430008/p",
-  popularity: 399
+  popularity: 396
  },
  {
   sku: "brinox-108430007",
@@ -4403,7 +4370,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios saleiros e pimenteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251830/Branco-Coza.jpg?v=637002673689870000",
   productUrl: "https://www.brinox.com.br/saleiro_mix_108430007/p",
-  popularity: 400
+  popularity: 397
  },
  {
   sku: "brinox-108400536",
@@ -4414,7 +4381,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287306/escorredor_de_talheres_oval_coza_basic_cinza_chumbo_site_brinox_1.webp?v=639240348460730000",
   productUrl: "https://www.brinox.com.br/escorredor-de-talheres-oval-coza-basic-cinza-chumbo/p",
-  popularity: 401
+  popularity: 398
  },
  {
   sku: "brinox-108380008",
@@ -4425,7 +4392,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287345/escorredor_para_pia_coza_basic_preto_site_brinox_1.webp?v=639240379719770000",
   productUrl: "https://www.brinox.com.br/escorredor-para-pia-coza-basic-preto/p",
-  popularity: 402
+  popularity: 399
  },
  {
   sku: "brinox-108370008",
@@ -4436,7 +4403,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de pia",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287272/dispenser_para_detergente_e_esponja_coza_basic_600ml_preto_site_brinox_1.webp?v=639239749577100000",
   productUrl: "https://www.brinox.com.br/dispenser-para-detergente-e-esponja-coza-basic-600ml-preto/p",
-  popularity: 403
+  popularity: 400
  },
  {
   sku: "brinox-108060001",
@@ -4447,7 +4414,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287455/cesta_organizadora_coza_one_grande_4_7_litros_natural_site_brinox_1.webp?v=639241371441700000",
   productUrl: "https://www.brinox.com.br/cesta_one_grande_108060001/p",
-  popularity: 404
+  popularity: 401
  },
  {
   sku: "brinox-107110007",
@@ -4458,7 +4425,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286336/bandeja_a4_coza_uno_branco_site_brinox_1.webp?v=639234570312500000",
   productUrl: "https://www.brinox.com.br/bandeja_a4_casual__107110007/p",
-  popularity: 405
+  popularity: 402
  },
  {
   sku: "brinox-107070007",
@@ -4469,7 +4436,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286340/bandeja_coza_uno_maxi_branco_site_brinox.webp?v=639234570998600000",
   productUrl: "https://www.brinox.com.br/bandeja-coza-uno-maxi-branco/p",
-  popularity: 406
+  popularity: 403
  },
  {
   sku: "brinox-107040008",
@@ -4480,7 +4447,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268825/Preto-Coza.jpg?v=638059214915930000",
   productUrl: "https://www.brinox.com.br/bandeja_casual_pequena_107040008/p",
-  popularity: 407
+  popularity: 404
  },
  {
   sku: "brinox-106180008",
@@ -4491,7 +4458,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286241/prato_petisqueira_grande_coza_uno_preto_site_brinox_1.webp?v=639234550756630000",
   productUrl: "https://www.brinox.com.br/prato-petisqueira-pequeno-coza-uno-branco-1/p",
-  popularity: 408
+  popularity: 405
  },
  {
   sku: "brinox-106180007",
@@ -4502,7 +4469,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286244/prato_petisqueira_grande_coza_uno_branco_site_brinox_1.webp?v=639234551996470000",
   productUrl: "https://www.brinox.com.br/prato-petisqueira-grande-coza-uno-branco/p",
-  popularity: 409
+  popularity: 406
  },
  {
   sku: "brinox-106170008",
@@ -4513,7 +4480,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286233/prato_petisqueira_pequeno_coza_uno_preto_site_brinox_1.webp?v=639234548286930000",
   productUrl: "https://www.brinox.com.br/prato-petisqueira-pequeno-coza-uno-preto/p",
-  popularity: 410
+  popularity: 407
  },
  {
   sku: "brinox-106170007",
@@ -4524,7 +4491,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286237/prato_petisqueira_pequeno_coza_uno_branco_site_brinox_1.webp?v=639234549084400000",
   productUrl: "https://www.brinox.com.br/prato-petisqueira-pequeno-coza-uno-branco/p",
-  popularity: 411
+  popularity: 408
  },
  {
   sku: "brinox-106110007",
@@ -4535,7 +4502,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios molheiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251622/Branco-Coza.jpg?v=637002653586670000",
   productUrl: "https://www.brinox.com.br/molheira-coza-cozy-120ml-branco/p",
-  popularity: 412
+  popularity: 409
  },
  {
   sku: "brinox-105800008",
@@ -4546,7 +4513,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios acucareiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249684/Preto-Coza.jpg?v=637001721105300000",
   productUrl: "https://www.brinox.com.br/acucareiro_due_casual__105800008/p",
-  popularity: 413
+  popularity: 410
  },
  {
   sku: "brinox-105800007",
@@ -4557,7 +4524,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios acucareiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249683/Branco-Coza.jpg?v=637001721053230000",
   productUrl: "https://www.brinox.com.br/acucareiro_due_casual__105800007/p",
-  popularity: 414
+  popularity: 411
  },
  {
   sku: "brinox-105730001",
@@ -4568,7 +4535,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa jarras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250920/Natural-Coza.jpg?v=637002021083570000",
   productUrl: "https://www.brinox.com.br/jarra_medidora_mix__105730001/p",
-  popularity: 415
+  popularity: 412
  },
  {
   sku: "brinox-105700008",
@@ -4579,7 +4546,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268848/Preto-Coza.jpg?v=638059215073000000",
   productUrl: "https://www.brinox.com.br/prato_refeicao_cozy__105700008/p",
-  popularity: 416
+  popularity: 413
  },
  {
   sku: "brinox-105640008",
@@ -4590,7 +4557,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios farinheiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251002/Preto-Coza.jpg?v=637002023813730000",
   productUrl: "https://www.brinox.com.br/farinheira_cozy__105640008/p",
-  popularity: 417
+  popularity: 414
  },
  {
   sku: "brinox-105610008",
@@ -4601,7 +4568,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/252002/Preto-Coza.jpg?v=637002761610400000",
   productUrl: "https://www.brinox.com.br/prato_sobremesa_cozy__105610008/p",
-  popularity: 418
+  popularity: 415
  },
  {
   sku: "brinox-105610007",
@@ -4612,7 +4579,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/252001/Branco-Coza.jpg?v=637002761551970000",
   productUrl: "https://www.brinox.com.br/prato_sobremesa_cozy__105610007/p",
-  popularity: 419
+  popularity: 416
  },
  {
   sku: "brinox-105530008",
@@ -4623,7 +4590,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/252107/Preto-Coza.jpg?v=637002765362170000",
   productUrl: "https://www.brinox.com.br/prato_essential__105530008/p",
-  popularity: 420
+  popularity: 417
  },
  {
   sku: "brinox-105530007",
@@ -4634,7 +4601,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268823/Branco-Coza.jpg?v=638059214897570000",
   productUrl: "https://www.brinox.com.br/prato_essential__105530007/p",
-  popularity: 421
+  popularity: 418
  },
  {
   sku: "brinox-105350007",
@@ -4645,7 +4612,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/252016/Branco-Coza.jpg?v=637002762233870000",
   productUrl: "https://www.brinox.com.br/prato_quadrado_casual_grande_cozy_105350007/p",
-  popularity: 422
+  popularity: 419
  },
  {
   sku: "brinox-105110008",
@@ -4656,7 +4623,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251004/Preto-Coza.jpg?v=637002023870300000",
   productUrl: "https://www.brinox.com.br/prato_cereal_cozy__105110008/p",
-  popularity: 423
+  popularity: 420
  },
  {
   sku: "brinox-105100008",
@@ -4667,7 +4634,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250968/Preto-Coza.jpg?v=637002022623370000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-cozy-750ml-preto/p",
-  popularity: 424
+  popularity: 421
  },
  {
   sku: "brinox-105100007",
@@ -4678,7 +4645,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250967/Branco-Coza.jpg?v=637002022593070000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-cozy-750ml-branco/p",
-  popularity: 425
+  popularity: 422
  },
  {
   sku: "brinox-105060007",
@@ -4689,7 +4656,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios paliteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251608/Branco-Coza.jpg?v=637002653002900000",
   productUrl: "https://www.brinox.com.br/paliteiro_casual__105060007/p",
-  popularity: 426
+  popularity: 423
  },
  {
   sku: "brinox-105050008",
@@ -4700,7 +4667,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios saleiros e pimenteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251774/Preto-Coza.jpg?v=637002671533300000",
   productUrl: "https://www.brinox.com.br/saleiro___pimenteiro_casual__105050008/p",
-  popularity: 427
+  popularity: 424
  },
  {
   sku: "brinox-105050007",
@@ -4711,7 +4678,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios saleiros e pimenteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251773/Branco-Coza.jpg?v=637002671481400000",
   productUrl: "https://www.brinox.com.br/saleiro___pimenteiro_casual__105050007/p",
-  popularity: 428
+  popularity: 425
  },
  {
   sku: "brinox-105030007",
@@ -4722,7 +4689,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta guardanapos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251661/Branco-Coza.jpg?v=637002658656500000",
   productUrl: "https://www.brinox.com.br/porta-guardanapos-e-saches-coza-uno-branco/p",
-  popularity: 429
+  popularity: 426
  },
  {
   sku: "brinox-105020008",
@@ -4733,7 +4700,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta guardanapos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286220/porta_guardanapos_coza_uno_preto_site_brinox_1.webp?v=639234544086430000",
   productUrl: "https://www.brinox.com.br/porta-guardanapos-coza-uno-preto/p",
-  popularity: 430
+  popularity: 427
  },
  {
   sku: "brinox-105020007",
@@ -4744,7 +4711,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta guardanapos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286222/porta_guardanapos_coza_uno_branco_site_brinox_1.webp?v=639234545019470000",
   productUrl: "https://www.brinox.com.br/porta-guardanapos-coza-uno-branco/p",
-  popularity: 431
+  popularity: 428
  },
  {
   sku: "brinox-105000007",
@@ -4755,7 +4722,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta guardanapos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251614/Branco-Coza.jpg?v=637002653287430000",
   productUrl: "https://www.brinox.com.br/porta_guardanapo_cozy_pequeno_105000007/p",
-  popularity: 432
+  popularity: 429
  },
  {
   sku: "brinox-104240008",
@@ -4766,7 +4733,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras coza",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287240/lixeira_com_pedal_coza_new_square_5_litros_preto_site_brinox_4.webp?v=639239708067270000",
   productUrl: "https://www.brinox.com.br/lixeira-com-pedal-coza-new-square-5-litros-preto/p",
-  popularity: 433
+  popularity: 430
  },
  {
   sku: "brinox-102513009",
@@ -4777,7 +4744,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286592/cesta_organizadora_coza_new_retr_grande_5_1_litros_site_brinox_1.webp?v=639235341952700000",
   productUrl: "https://www.brinox.com.br/cesta-organizadora-coza-new-retro-grande-5-1-litros-cristal/p",
-  popularity: 434
+  popularity: 431
  },
  {
   sku: "brinox-102503009",
@@ -4788,7 +4755,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao caixas organizadoras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286585/cesta_organizadora_coza_new_retr_pequena_3_4_litros_site_brinox_1.webp?v=639235340540970000",
   productUrl: "https://www.brinox.com.br/cesta-organizadora-coza-new-retro-pequena-3-4-litros-cristal/p",
-  popularity: 435
+  popularity: 432
  },
  {
   sku: "brinox-102493009",
@@ -4799,7 +4766,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro organizadores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286578/organizador_com_rodinhas_coza_new_retr_maxi_3_6_litros_site_brinox_1.webp?v=639235338823030000",
   productUrl: "https://www.brinox.com.br/organizador-com-rodinhas-coza-new-retro-maxi-3-6-litros-cristal/p",
-  popularity: 436
+  popularity: 433
  },
  {
   sku: "brinox-102483009",
@@ -4810,7 +4777,7 @@ export const CATALOG: CatalogItem[] = [
   category: "banheiro organizadores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286571/organizador_com_rodinhas_coza_new_retr_grande_2_6_litros_site_brinox_1.webp?v=639235337238500000",
   productUrl: "https://www.brinox.com.br/organizador-com-rodinhas-coza-new-retro-grande-2-6-litros-cristal/p",
-  popularity: 437
+  popularity: 434
  },
  {
   sku: "brinox-102100008",
@@ -4821,7 +4788,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251995/Preto-Coza.jpg?v=637002761316070000",
   productUrl: "https://www.brinox.com.br/copo_alto_cozy_102100008/p",
-  popularity: 438
+  popularity: 435
  },
  {
   sku: "brinox-102100007",
@@ -4832,7 +4799,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251994/Branco-Coza.jpg?v=637002761267470000",
   productUrl: "https://www.brinox.com.br/copo_alto_cozy_102100007/p",
-  popularity: 439
+  popularity: 436
  },
  {
   sku: "brinox-102020007",
@@ -4843,7 +4810,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273689/copo-cozy-branco-coza.jpg?v=638515480849170000",
   productUrl: "https://www.brinox.com.br/copo_cozy_102020007/p",
-  popularity: 440
+  popularity: 437
  },
  {
   sku: "brinox-102010008",
@@ -4854,7 +4821,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268833/Preto-Coza.jpg?v=638059214969670000",
   productUrl: "https://www.brinox.com.br/copo_conico_casual__102010008/p",
-  popularity: 441
+  popularity: 438
  },
  {
   sku: "brinox-101973009",
@@ -4865,7 +4832,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285956/organizador_de_geladeira_com_2_cestos_67_litros_coza_site_brinox_1.webp?v=639233689553800000",
   productUrl: "https://www.brinox.com.br/organizador-de-geladeira-com-2-cestos-6-7-litros-coza-dry-cristal/p",
-  popularity: 442
+  popularity: 439
  },
  {
   sku: "brinox-101963009",
@@ -4876,7 +4843,7 @@ export const CATALOG: CatalogItem[] = [
   category: "organizacao organizadores de geladeira",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/285963/organizador_de_geladeira_com_cesto_6_litros_coza_site_Brinox_1.webp?v=639233691019630000",
   productUrl: "https://www.brinox.com.br/organizador-de-geladeira-com-cesto-6-litros-coza-dry-cristal/p",
-  popularity: 443
+  popularity: 440
  },
  {
   sku: "brinox-101830007",
@@ -4887,7 +4854,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286312/travessa_retangular_gn_1_3_32_cm_coza_uno_branco_site_brinox_1.webp?v=639234565446330000",
   productUrl: "https://www.brinox.com.br/travessa-retangular-gn-1-3-32-cm-coza-uno-branco/p",
-  popularity: 444
+  popularity: 441
  },
  {
   sku: "brinox-101820007",
@@ -4898,7 +4865,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286319/travessa_retangular_gn_1_2_33_cm_coza_uno_branco_site_brinox_1.webp?v=639234566622300000",
   productUrl: "https://www.brinox.com.br/travessa-retangular-gn-1-2-32-cm-coza-uno-branco/p",
-  popularity: 445
+  popularity: 442
  },
  {
   sku: "brinox-101803465",
@@ -4909,7 +4876,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta frios",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/274286/porta-frios-duplo-linha-cozy-cor-vermelho-coza.jpg?v=638544011342570000",
   productUrl: "https://www.brinox.com.br/porta-frios-duplo-cozy-vermelho-coza_101803465/p",
-  popularity: 446
+  popularity: 443
  },
  {
   sku: "brinox-101803008",
@@ -4920,7 +4887,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta frios",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/274306/porta-frios-duplo-cozy-preto-coza.jpg?v=638544103218270000",
   productUrl: "https://www.brinox.com.br/porta-frios-duplo-cozy-preto-coza_101803008/p",
-  popularity: 447
+  popularity: 444
  },
  {
   sku: "brinox-101680008",
@@ -4931,7 +4898,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios molheiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286352/molheira_para_shoyu_coza_uno_50_ml_preto_site_brinox_1.webp?v=639234574953670000",
   productUrl: "https://www.brinox.com.br/molheira-para-shoyu-coza-uno-60ml-preto/p",
-  popularity: 448
+  popularity: 445
  },
  {
   sku: "brinox-101680007",
@@ -4942,7 +4909,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios molheiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286354/molheira_para_shoyu_coza_uno_50_ml_branco_site_brinox_1.webp?v=639234575120430000",
   productUrl: "https://www.brinox.com.br/molheira-para-shoyu-coza-uno-60ml-branco/p",
-  popularity: 449
+  popularity: 446
  },
  {
   sku: "brinox-101670008",
@@ -4953,7 +4920,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta saches",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268765/Preto-Coza.jpg?v=638059214672730000",
   productUrl: "https://www.brinox.com.br/porta-saches-coza-uno-preto/p",
-  popularity: 450
+  popularity: 447
  },
  {
   sku: "brinox-101670007",
@@ -4964,7 +4931,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta saches",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261491/Branco-Coza.jpg?v=637183985753230000",
   productUrl: "https://www.brinox.com.br/porta-saches-coza-uno-branco/p",
-  popularity: 451
+  popularity: 448
  },
  {
   sku: "brinox-101660008",
@@ -4975,7 +4942,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286326/travessa_pequena_coza_uno_230_ml_preto_site_brinox_1.webp?v=639234567685500000",
   productUrl: "https://www.brinox.com.br/travessa-pequena-coza-uno-230ml-preto/p",
-  popularity: 452
+  popularity: 449
  },
  {
   sku: "brinox-101660007",
@@ -4986,7 +4953,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286329/travessa_pequena_coza_uno_230_ml_branco_site_brinox_1.webp?v=639234568362570000",
   productUrl: "https://www.brinox.com.br/travessa-pequena-coza-uno-230ml-branco/p",
-  popularity: 453
+  popularity: 450
  },
  {
   sku: "brinox-101650008",
@@ -4997,7 +4964,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286247/prato_retangular_coza_uno_preto_site_brinox.webp?v=639234552765500000",
   productUrl: "https://www.brinox.com.br/prato-retangular-coza-uno-preto/p",
-  popularity: 454
+  popularity: 451
  },
  {
   sku: "brinox-101630007",
@@ -5008,7 +4975,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286260/ramekin_coza_uno_220_ml_branco_site_brinox_1.webp?v=639234555579400000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-280ml-branco/p",
-  popularity: 455
+  popularity: 452
  },
  {
   sku: "brinox-101610007",
@@ -5019,7 +4986,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286292/ramekin_coza_uno_90_ml_branco_site_brinox_1.webp?v=639234558815730000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-90ml-branco/p",
-  popularity: 456
+  popularity: 453
  },
  {
   sku: "brinox-101600008",
@@ -5030,7 +4997,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286296/ramekin_coza_uno_60_ml_preto_site_brinox_1.webp?v=639234560787270000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-60ml-preto/p",
-  popularity: 457
+  popularity: 454
  },
  {
   sku: "brinox-101600007",
@@ -5041,7 +5008,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286300/ramekin_coza_uno_60_ml_branco_site_brinox_1.webp?v=639234560992470000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-60ml-branco/p",
-  popularity: 458
+  popularity: 455
  },
  {
   sku: "brinox-101590008",
@@ -5052,7 +5019,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286304/ramekin_coza_uno_30_ml_preto_site_brinox_1.webp?v=639234562615300000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-30ml-preto/p",
-  popularity: 459
+  popularity: 456
  },
  {
   sku: "brinox-101590007",
@@ -5063,7 +5030,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286308/ramekin_coza_uno_30_ml_branco_site_brinox_1.webp?v=639234562893000000",
   productUrl: "https://www.brinox.com.br/ramekin-coza-uno-30ml-branco/p",
-  popularity: 460
+  popularity: 457
  },
  {
   sku: "brinox-101580008",
@@ -5074,7 +5041,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286225/prato_para_sushi_coza_uno_preto_site_brinox_1.webp?v=639234546509070000",
   productUrl: "https://www.brinox.com.br/prato_para_sushi_19_3x11_2x21_5cm_preto_uno_coza_101580008/p",
-  popularity: 461
+  popularity: 458
  },
  {
   sku: "brinox-101580007",
@@ -5085,7 +5052,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286229/prato_para_sushi_coza_uno_branco_site_brinox_1.webp?v=639234547369130000",
   productUrl: "https://www.brinox.com.br/prato-para-sushi-coza-uno-branco/p",
-  popularity: 462
+  popularity: 459
  },
  {
   sku: "brinox-101570008",
@@ -5096,7 +5063,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261462/Preto-Coza.jpg?v=637183984964430000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-550ml-preto/p",
-  popularity: 463
+  popularity: 460
  },
  {
   sku: "brinox-101570007",
@@ -5107,7 +5074,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/268876/Branco-Coza.jpg?v=638059215359000000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-550ml-branco/p",
-  popularity: 464
+  popularity: 461
  },
  {
   sku: "brinox-101560008",
@@ -5118,7 +5085,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261459/Preto-Coza.jpg?v=637183984889330000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-350-ml-preto/p",
-  popularity: 465
+  popularity: 462
  },
  {
   sku: "brinox-101560007",
@@ -5129,7 +5096,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/261458/Branco-Coza.jpg?v=637183984854330000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-uno-350ml-branco/p",
-  popularity: 466
+  popularity: 463
  },
  {
   sku: "brinox-101383465",
@@ -5140,7 +5107,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios mantegueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/260774/Imagem.png?v=637135818542600000",
   productUrl: "https://www.brinox.com.br/manteigueira_cozy_101383465/p",
-  popularity: 467
+  popularity: 464
  },
  {
   sku: "brinox-101383008",
@@ -5151,7 +5118,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios mantegueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251425/Preto-Coza.jpg?v=637002617036730000",
   productUrl: "https://www.brinox.com.br/manteigueira_cozy_101383008/p",
-  popularity: 468
+  popularity: 465
  },
  {
   sku: "brinox-101383007",
@@ -5162,7 +5129,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios mantegueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251422/Branco-Coza.jpg?v=637002616988800000",
   productUrl: "https://www.brinox.com.br/manteigueira_cozy_101383007/p",
-  popularity: 469
+  popularity: 466
  },
  {
   sku: "brinox-101343465",
@@ -5173,7 +5140,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta frios",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250591/Vermelho-Bold-Coza.jpg?v=637001944149600000",
   productUrl: "https://www.brinox.com.br/porta_queijo_minas_cozy__101343465/p",
-  popularity: 470
+  popularity: 467
  },
  {
   sku: "brinox-101343008",
@@ -5184,7 +5151,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta frios",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250589/Preto-Coza.jpg?v=637001944023030000",
   productUrl: "https://www.brinox.com.br/porta_queijo_minas_cozy__101343008/p",
-  popularity: 471
+  popularity: 468
  },
  {
   sku: "brinox-101300008",
@@ -5195,7 +5162,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250946/Preto-Coza.jpg?v=637002021905930000",
   productUrl: "https://www.brinox.com.br/cremeira-triangular-coza-cozy-250ml-preto/p",
-  popularity: 472
+  popularity: 469
  },
  {
   sku: "brinox-101170007",
@@ -5206,7 +5173,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa cumbucas e bowls",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250949/Branco-Coza.jpg?v=637002022003730000",
   productUrl: "https://www.brinox.com.br/cumbuca-coza-cozy-500ml-branco/p",
-  popularity: 473
+  popularity: 470
  },
  {
   sku: "brinox-101120008",
@@ -5217,7 +5184,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa kits para servir",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251506/Preto-Coza.jpg?v=637002619572430000",
   productUrl: "https://www.brinox.com.br/taca_de_sobremesa_cozy__101120008/p",
-  popularity: 474
+  popularity: 471
  },
  {
   sku: "brinox-100030008",
@@ -5228,7 +5195,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa canecas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250353/Preto-Coza.jpg?v=637001871647230000",
   productUrl: "https://www.brinox.com.br/caneca_empilhavel_casual__100030008/p",
-  popularity: 475
+  popularity: 472
  },
  {
   sku: "brinox-100030007",
@@ -5239,7 +5206,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa canecas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250352/Branco-Coza.jpg?v=637001871620630000",
   productUrl: "https://www.brinox.com.br/caneca_empilhavel_casual__100030007/p",
-  popularity: 476
+  popularity: 473
  },
  {
   sku: "brinox-100020008",
@@ -5250,7 +5217,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa canecas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250357/Preto-Coza.jpg?v=637001871811370000",
   productUrl: "https://www.brinox.com.br/caneca_viena_cozy__100020008/p",
-  popularity: 477
+  popularity: 474
  },
  {
   sku: "brinox-100020007",
@@ -5261,7 +5228,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa canecas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250356/Branco-Coza.jpg?v=637001871783230000",
   productUrl: "https://www.brinox.com.br/caneca_viena_cozy__100020007/p",
-  popularity: 478
+  popularity: 475
  },
  {
   sku: "brinox-57760101",
@@ -5272,7 +5239,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273562/jogo-de-copos-gala-6-pecas-haus-concept.jpg?v=638512002244900000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-copos-de-vidro-350-ml-haus-concept-gala/p",
-  popularity: 479
+  popularity: 476
  },
  {
   sku: "brinox-57716005",
@@ -5283,7 +5250,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa canecas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283972/caneca-chopp-cerveja-vidro.png?v=639135766875630000",
   productUrl: "https://www.brinox.com.br/caneca-de-vidro-para-chopp-e-cerveja-350ml-haus-concept-pavillion/p",
-  popularity: 480
+  popularity: 477
  },
  {
   sku: "brinox-57605001",
@@ -5294,7 +5261,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/260505/Branco-Haus.jpg?v=637098431405130000",
   productUrl: "https://www.brinox.com.br/bowl-raso-pinoli-melamina-haus-concept-340ml-branco/p",
-  popularity: 481
+  popularity: 478
  },
  {
   sku: "brinox-57603003",
@@ -5305,7 +5272,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/260497/Branco-Haus.jpg?v=637098430972170000",
   productUrl: "https://www.brinox.com.br/travessa-oval-rasa-pasta-melamina-haus-concept-30cm-branca/p",
-  popularity: 482
+  popularity: 479
  },
  {
   sku: "brinox-994242127",
@@ -5316,7 +5283,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282197/jogo-6-tacas-para-espumante-vintage-340ml-cristal-dream-haus-concept_0.jpg?v=639040949311830000",
   productUrl: "https://www.brinox.com.br/jogo-6-tacas-para-espumante-vintage-em-cristal-bohemia-340-ml-haus-concept-dream/p",
-  popularity: 483
+  popularity: 480
  },
  {
   sku: "brinox-56415202",
@@ -5327,7 +5294,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281247/1280x1280--46-.jpg?v=639009910678570000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-espumante-em-cristal-bohemia-190-ml-haus-concept-dream/p",
-  popularity: 484
+  popularity: 481
  },
  {
   sku: "brinox-56415201",
@@ -5338,7 +5305,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281166/jogo-de-6-tacas-para-agua-dream-550ml-haus-concept_0.jpg?v=639009905315900000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-agua-em-cristal-bohemia-550-ml-haus-concept-dream/p",
-  popularity: 485
+  popularity: 482
  },
  {
   sku: "brinox-56415200",
@@ -5349,7 +5316,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281269/jogo-de-6-tacas-para-vinho-dream-450ml-haus-concept_0.jpg?v=639008117962230000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-vinho-em-cristal-bohemia-450-ml-haus-concept-dream/p",
-  popularity: 486
+  popularity: 483
  },
  {
   sku: "brinox-56414203",
@@ -5360,7 +5327,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282191/jogo-de-6-tacas-para-espumante-aroma-190ml-haus-concept_0.jpg?v=639040947059170000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-espumante-em-cristal-bohemia-190-ml-haus-concept-aroma/p",
-  popularity: 487
+  popularity: 484
  },
  {
   sku: "brinox-56414202",
@@ -5371,7 +5338,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282177/56414202_1.jpg?v=639040945345930000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-gin-tonica-em-cristal-bohemia-580-ml-haus-concept-aroma/p",
-  popularity: 488
+  popularity: 485
  },
  {
   sku: "brinox-56414201",
@@ -5382,7 +5349,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282184/56414201_1.jpg?v=639040946157530000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-agua-em-cristal-bohemia-560-ml-haus-concept-aroma/p",
-  popularity: 489
+  popularity: 486
  },
  {
   sku: "brinox-56414200",
@@ -5393,7 +5360,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282168/56414200.jpg?v=639040943900270000",
   productUrl: "https://www.brinox.com.br/jogo-de-6-tacas-para-vinho-em-cristal-bohemia-455-ml-haus-concept-aroma/p",
-  popularity: 490
+  popularity: 487
  },
  {
   sku: "brinox-56414103",
@@ -5404,7 +5371,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas taca para espumante",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282050/tacas-haus-concept-aroma--2-.png?v=639039102723800000",
   productUrl: "https://www.brinox.com.br/taca-para-espumante-em-cristal-bohemia-190-ml-cristal-haus-concept-aroma/p",
-  popularity: 491
+  popularity: 488
  },
  {
   sku: "brinox-56414102",
@@ -5415,7 +5382,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas taca para drinks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282042/taca-para-gin-tonica-haus-aroma.jpg?v=639039102135800000",
   productUrl: "https://www.brinox.com.br/taca-para-gin-tinica-em-cristal-bohemia-580-ml-haus-concept-aroma/p",
-  popularity: 492
+  popularity: 489
  },
  {
   sku: "brinox-56414100",
@@ -5426,7 +5393,7 @@ export const CATALOG: CatalogItem[] = [
   category: "tacas taca para vinho",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282028/taca-para-vinho-haus-aroma.jpg?v=639039100640430000",
   productUrl: "https://www.brinox.com.br/taca-para-vinho-em-cristal-bohemia-455-ml-haus-concept-aroma/p",
-  popularity: 493
+  popularity: 490
  },
  {
   sku: "brinox-56413103",
@@ -5437,7 +5404,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281920/tacas-haus-concept-aroma -5-.png?v=639034916172900000",
   productUrl: "https://www.brinox.com.br/taca-para-espumante-vintage-em-cristal-bohemia-220-ml-haus-concept-pleasure/p",
-  popularity: 494
+  popularity: 491
  },
  {
   sku: "brinox-56413102",
@@ -5448,7 +5415,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/270618/taca_agua_56413_102.jpg?v=638248433693270000",
   productUrl: "https://www.brinox.com.br/taca-para-vinho-em-cristal-bohemia-560-ml-haus-concept-pleasure/p",
-  popularity: 495
+  popularity: 492
  },
  {
   sku: "brinox-56313107",
@@ -5459,7 +5426,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/270628/taca_gin_56313_107.jpg?v=638248443864000000",
   productUrl: "https://www.brinox.com.br/taca-para-gin-tonica-em-cristal-bohemia-820-ml-haus-concept-sense/p",
-  popularity: 496
+  popularity: 493
  },
  {
   sku: "brinox-56113106",
@@ -5470,7 +5437,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282251/56113_106.jpg?v=639040962064430000",
   productUrl: "https://www.brinox.com.br/taca-para-gin-tonica-em-cristal-bohemia-600-ml-haus-concept-fizzy/p",
-  popularity: 497
+  popularity: 494
  },
  {
   sku: "brinox-56113104",
@@ -5481,7 +5448,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282230/56113_104.jpg?v=639040958733470000",
   productUrl: "https://www.brinox.com.br/taca-para-vinho-tinto-em-cristal-bohemia-450-ml-haus-concept-fizzy/p",
-  popularity: 498
+  popularity: 495
  },
  {
   sku: "brinox-56113101",
@@ -5492,7 +5459,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa tacas e copos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283501/copo-de-agua-56113_101.jpg?v=639094351801070000",
   productUrl: "https://www.brinox.com.br/copo-para-agua-em-cristal-bohemia-380-ml-haus-concept-light/p",
-  popularity: 499
+  popularity: 496
  },
  {
   sku: "brinox-52601009",
@@ -5503,7 +5470,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional saladeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256536/Branco-Haus--Haus.jpg?v=637021649145770000",
   productUrl: "https://www.brinox.com.br/saladeira___square_52601009/p",
-  popularity: 500
+  popularity: 497
  },
  {
   sku: "brinox-52601006",
@@ -5514,7 +5481,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional saladeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256533/Branco-Haus--Haus.jpg?v=637021649079270000",
   productUrl: "https://www.brinox.com.br/saladeira___square_52601006/p",
-  popularity: 501
+  popularity: 498
  },
  {
   sku: "brinox-52601004",
@@ -5525,7 +5492,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256420/Branco-Haus--Haus.jpg?v=637021606116270000",
   productUrl: "https://www.brinox.com.br/saladeira-quadrada-square-melamina-haus-concept-550ml-branca/p",
-  popularity: 502
+  popularity: 499
  },
  {
   sku: "brinox-52601003",
@@ -5536,7 +5503,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256419/Branco-Haus--Haus.jpg?v=637021606101530000",
   productUrl: "https://www.brinox.com.br/bowl-quadrado-square-melamina-haus-concept-500ml-branco/p",
-  popularity: 503
+  popularity: 500
  },
  {
   sku: "brinox-52601002",
@@ -5547,7 +5514,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256418/Branco-Haus--Haus.jpg?v=637021606077600000",
   productUrl: "https://www.brinox.com.br/bowl-quadrado-pequeno-square-melamina-haus-concept-100ml/p",
-  popularity: 504
+  popularity: 501
  },
  {
   sku: "brinox-51901006",
@@ -5558,7 +5525,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/263757/Branco-Haus--Haus.jpg?v=637420946900600000",
   productUrl: "https://www.brinox.com.br/ramekin-ramequim-canelado-reto-melamina-haus-concept-sauce-150ml/p",
-  popularity: 505
+  popularity: 502
  },
  {
   sku: "brinox-51901003",
@@ -5569,7 +5536,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/259930/Branco-Haus--Haus.jpg?v=637091743990830000",
   productUrl: "https://www.brinox.com.br/ramekin-ramequim-canelado-melamina-haus-concept-sauce-50ml/p",
-  popularity: 506
+  popularity: 503
  },
  {
   sku: "brinox-51901001",
@@ -5580,7 +5547,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/257363/Branco-Haus--Haus.jpg?v=637027048157700000",
   productUrl: "https://www.brinox.com.br/ramekin-ramequim-canelado-melamina-haus-concept-sauce-30ml/p",
-  popularity: 507
+  popularity: 504
  },
  {
   sku: "brinox-51401001",
@@ -5591,7 +5558,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional pratos e petisqueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256501/Branco-Haus--Haus.jpg?v=637021648101470000",
   productUrl: "https://www.brinox.com.br/prato-sobremesa-melamina-haus-concept-sauce-20cm-branco/p",
-  popularity: 508
+  popularity: 505
  },
  {
   sku: "brinox-50901003",
@@ -5602,7 +5569,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional saladeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256464/Branco-Haus--Haus.jpg?v=637021646830800000",
   productUrl: "https://www.brinox.com.br/saladeira___flower_50901003/p",
-  popularity: 509
+  popularity: 506
  },
  {
   sku: "brinox-50901002",
@@ -5613,7 +5580,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional saladeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256628/Branco-Haus--Haus.jpg?v=637021653260730000",
   productUrl: "https://www.brinox.com.br/saladeira___flower_50901002/p",
-  popularity: 510
+  popularity: 507
  },
  {
   sku: "brinox-50901001",
@@ -5624,7 +5591,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional saladeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256627/Branco-Haus--Haus.jpg?v=637021653237100000",
   productUrl: "https://www.brinox.com.br/saladeira___flower_50901001/p",
-  popularity: 511
+  popularity: 508
  },
  {
   sku: "brinox-50301006",
@@ -5635,7 +5602,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256436/Branco-Haus--Haus.jpg?v=637021606561030000",
   productUrl: "https://www.brinox.com.br/bowl-cumbuca-melamina-haus-concept-buffet-500ml-branco/p",
-  popularity: 512
+  popularity: 509
  },
  {
   sku: "brinox-50301005",
@@ -5646,7 +5613,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256435/Branco-Haus--Haus.jpg?v=638962223616900000",
   productUrl: "https://www.brinox.com.br/bowl-cumbuca-melamina-haus-concept-buffet-300ml-branco/p",
-  popularity: 513
+  popularity: 510
  },
  {
   sku: "brinox-50101004",
@@ -5657,7 +5624,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256430/Branco-Haus--Haus.jpg?v=637021606403700000",
   productUrl: "https://www.brinox.com.br/bowl-melamina-haus-concept-asia-200ml-branco-profissional/p",
-  popularity: 514
+  popularity: 511
  },
  {
   sku: "brinox-50101001",
@@ -5668,7 +5635,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/256463/Branco-Haus--Haus.jpg?v=637021634484900000",
   productUrl: "https://www.brinox.com.br/molheira-melamina-haus-concept-asia-180ml-branca-profissional/p",
-  popularity: 515
+  popularity: 512
  },
  {
   sku: "brinox-7245373",
@@ -5679,7 +5646,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286963/wok-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238884551070000",
   productUrl: "https://www.brinox.com.br/wok-brinox-suprema-antiaderente-ceramic-life-%C3%B824-cm-2-65-litros-verde/p",
-  popularity: 516
+  popularity: 513
  },
  {
   sku: "brinox-7245372",
@@ -5690,7 +5657,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286983/wok-com-tampa-24cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238886468400000",
   productUrl: "https://www.brinox.com.br/wok-com-tampa-24-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245372/p",
-  popularity: 517
+  popularity: 514
  },
  {
   sku: "brinox-7245360",
@@ -5701,7 +5668,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/286936/panela-com-tampa-16cm-revestimento-ceramico-antiaderente-verde-ceramic-life-suprema-brinox.jpg?v=639238880962570000",
   productUrl: "https://www.brinox.com.br/panela-com-tampa-16-cm-revestimento-ceramico-antiaderente-mineral-resist-cor-verde-ceramic-life-suprema-brinox_7245360/p",
-  popularity: 518
+  popularity: 515
  },
  {
   sku: "brinox-7237100",
@@ -5712,7 +5679,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281344/Jogo_de_Panelas_Brinox_Antiaderente_Pro-Flon_5_Pecas_Anis_Borgonha.jpg?v=639008168832800000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-pro-flon-5-pecas-anis-borgonha_7237100/p",
-  popularity: 519
+  popularity: 516
  },
  {
   sku: "brinox-7190465",
@@ -5723,7 +5690,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282634/7190_465--1-.jpg?v=639074584259800000",
   productUrl: "https://www.brinox.com.br/wok-brinox-naturalle-antiaderente-ceramic-life-o24cm-23-litros-preta/p",
-  popularity: 520
+  popularity: 517
  },
  {
   sku: "brinox-7190453",
@@ -5734,7 +5701,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282651/7190_453.jpg?v=639076201352600000",
   productUrl: "https://www.brinox.com.br/frigideira-brinox-naturalle-antiaderente-ceramic-life-%C3%B820-cm-800-ml-preto/p",
-  popularity: 521
+  popularity: 518
  },
  {
   sku: "brinox-7131419",
@@ -5745,7 +5712,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas jogo de panelas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281352/Jogo_de_Panelas_Brinox_Antiaderente_Pro-Flon_5_Pecas_Ruby_Vermelho.jpg?v=639008169827700000",
   productUrl: "https://www.brinox.com.br/jogo-de-panelas-brinox-antiaderente-pro-flon-5-pecas-ruby-vermelho_7131419/p",
-  popularity: 522
+  popularity: 519
  },
  {
   sku: "brinox-7001367",
@@ -5756,7 +5723,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283203/7001_367.jpg?v=639086700864600000",
   productUrl: "https://www.brinox.com.br/wok-brinox-naturalle-antiaderente-ceramic-life-o28cm-41-litros-garlic/p",
-  popularity: 523
+  popularity: 520
  },
  {
   sku: "brinox-7001365",
@@ -5767,7 +5734,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas woks",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283199/7001_365.jpg?v=639086699302800000",
   productUrl: "https://www.brinox.com.br/wok-brinox-naturalle-antiaderente-ceramic-life-o24cm-23-litros-garlic/p",
-  popularity: 524
+  popularity: 521
  },
  {
   sku: "brinox-7001355",
@@ -5778,7 +5745,7 @@ export const CATALOG: CatalogItem[] = [
   category: "panelas frigideiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282494/7001_355.jpg?v=639063245846170000",
   productUrl: "https://www.brinox.com.br/frigideira-brinox-garlic-antiaderente-pro-flon-%C3%B8-24-cm-1-45-litros-cereja/p",
-  popularity: 525
+  popularity: 522
  },
  {
   sku: "brinox-6000759",
@@ -5789,7 +5756,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251044/Vermelho-Bold-Brinox.jpg?v=637002027352270000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-itaparica-16-pecas-vermelho-bold/p",
-  popularity: 526
+  popularity: 523
  },
  {
   sku: "brinox-6000752",
@@ -5800,7 +5767,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287983/Vermelho-Brinox.jpg?v=639259378622800000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-itaparica-24-pecas-vermelho-bold/p",
-  popularity: 527
+  popularity: 524
  },
  {
   sku: "brinox-6000719",
@@ -5811,7 +5778,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278782/Preto-Brinox.jpg?v=638917477409170000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-itaparica-16-pecas-preto/p",
-  popularity: 528
+  popularity: 525
  },
  {
   sku: "brinox-6000712",
@@ -5822,7 +5789,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287975/Preto-Brinox.jpg?v=639259375160500000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-itaparica-24-pecas-preto/p",
-  popularity: 529
+  popularity: 526
  },
  {
   sku: "brinox-5120108",
@@ -5833,7 +5800,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres colheres",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278799/Sem-nome--1200-x-1200-px----2025-08-26T113847.497.jpg?v=638991544456370000",
   productUrl: "https://www.brinox.com.br/jogo-de-colheres-de-cafe-brinox-bistro-113-x-2mm-12-pecas-aco-inox/p",
-  popularity: 530
+  popularity: 527
  },
  {
   sku: "brinox-5120105",
@@ -5844,7 +5811,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres garfos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/278794/Sem-nome--1200-x-1200-px----2025-08-26T110843.910.jpg?v=638991546117070000",
   productUrl: "https://www.brinox.com.br/jogo-garfo-de-sobremesa-brinox-bistro-197-x-2-5mm-12-pecas-aco-inox/p",
-  popularity: 531
+  popularity: 528
  },
  {
   sku: "brinox-5109142",
@@ -5855,7 +5822,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres faqueiros e jogos de talher",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/277886/faqueiro-aco-inoxidavel-linha-siena-24-pecas-brinox.jpg?v=638920896884400000",
   productUrl: "https://www.brinox.com.br/faqueiro-brinox-siena-24-pecas-aco-inoxidavel/p",
-  popularity: 532
+  popularity: 529
  },
  {
   sku: "brinox-3074102",
@@ -5866,7 +5833,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287838/Lixeira-12-L---Spin.png?v=639256076375900000",
   productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-spin-12-litros-aco-inox-escovado/p",
-  popularity: 533
+  popularity: 530
  },
  {
   sku: "brinox-3073201",
@@ -5877,7 +5844,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287676/Lixeira-40--L---Aro.png?v=639256075546600000",
   productUrl: "https://www.brinox.com.br/lixeira-com-aro-e-balde-brinox-plana-40-litros-aco-inoxidavel-escovado/p",
-  popularity: 534
+  popularity: 531
  },
  {
   sku: "brinox-3066100",
@@ -5888,7 +5855,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/266187/Preto.jpg?v=638920881565070000",
   productUrl: "https://www.brinox.com.br/lixeira-com-pedal-e-balde-brinox-frame-20-litros-aco-carbono-preto/p",
-  popularity: 535
+  popularity: 532
  },
  {
   sku: "brinox-3048206",
@@ -5899,7 +5866,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com tampa",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287638/Lixeira 20 L - Flat.png?v=639251502448370000",
   productUrl: "https://www.brinox.com.br/lixeira_de_inox_com_pedal_brinox_flat_20_litros_com_tampa_plastica_preta_ventosa_e_aro_removivel/p",
-  popularity: 536
+  popularity: 533
  },
  {
   sku: "brinox-3048205",
@@ -5910,7 +5877,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287631/Lixeira 15 L - Flat.png?v=639251501605670000",
   productUrl: "https://www.brinox.com.br/lixeira_de_inox_com_pedal_brinox_flat_15_litros_com_tampa_plastica_preta_ventosa_e_aro_removivel/p",
-  popularity: 537
+  popularity: 534
  },
  {
   sku: "brinox-3048204",
@@ -5921,7 +5888,18 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras de pedal",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287821/Lixeira 6 L - Flat.png?v=639251558968800000",
   productUrl: "https://www.brinox.com.br/lixeira_de_inox_com_pedal_brinox_flat_6_litros_com_tampa_plastica_preta/p",
-  popularity: 538
+  popularity: 535
+ },
+ {
+  sku: "brinox-3040204",
+  name: "Lixeira com Tampa e Balde Brinox Decorline 20 Litros Aço Inoxidável Inox",
+  brand: "Brinox",
+  unitPrice: 189.99,
+  unit: "un",
+  category: "lixeiras lixeiras de pedal",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287637/Lixeira 20 L - Decorline.png?v=639251502080930000",
+  productUrl: "https://www.brinox.com.br/lixeira-com-tampa-e-balde-brinox-decorline-20-litros-aco-inoxidavel/p",
+  popularity: 536
  },
  {
   sku: "brinox-3033211",
@@ -5932,7 +5910,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com aro",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287745/Lixeira-64-L---Decorline-aro.png?v=639256075921000000",
   productUrl: "https://www.brinox.com.br/lixeira-com-aro-brinox-decorline-64-litros---35-x-70-cm-aco-inoxidavel/p",
-  popularity: 539
+  popularity: 537
  },
  {
   sku: "brinox-3033210",
@@ -5943,7 +5921,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com aro",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287688/Lixeira-47-L---Decorline-aro.png?v=639256075734600000",
   productUrl: "https://www.brinox.com.br/lixeira-com-aro-brinox-decorline-47-litros-%C3%B8-30-x-70-cm-aco-inoxidavel/p",
-  popularity: 540
+  popularity: 538
  },
  {
   sku: "brinox-3033204",
@@ -5954,7 +5932,7 @@ export const CATALOG: CatalogItem[] = [
   category: "lixeiras lixeiras com aro",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/275205/lixeira-inox-com-aro-28-litros-linha-decorline-lixeiras-brinox.jpg?v=638962241779570000",
   productUrl: "https://www.brinox.com.br/lixeira-com-aro-brinox-decorline-28-17-litros---25-x-60-cm-aco-inoxidavel/p",
-  popularity: 541
+  popularity: 539
  },
  {
   sku: "brinox-2554306",
@@ -5965,7 +5943,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres para churrasco",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273628/kit-churrasco-brinox-2-pecas-faca-chaira-aco-inoxidavel-cabo-branco-linha-precision.jpg?v=638513885972530000",
   productUrl: "https://www.brinox.com.br/kit-churrasco-brinox-precision-faca-acougue-8-e-chaira-8/p",
-  popularity: 542
+  popularity: 540
  },
  {
   sku: "brinox-2554302",
@@ -5976,7 +5954,7 @@ export const CATALOG: CatalogItem[] = [
   category: "talheres talheres para churrasco",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/273627/kit-churrasco-3-pecas-faca-garfo-trinchante-chaira-lamina-aco-inoxidacel-cabo-branco-precision-brinox.jpg?v=638513883965630000",
   productUrl: "https://www.brinox.com.br/kit-churrasco-brinox-precision-3-pecas-faca-garfo-e-chaira/p",
-  popularity: 543
+  popularity: 541
  },
  {
   sku: "brinox-2508309",
@@ -5987,7 +5965,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios espatulas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254441/Espatula-para-Pizza---Precision-32-cm---Brinox.jpg?v=639032188123800000",
   productUrl: "https://www.brinox.com.br/espatula-para-pizza-brinox-precision-32-cm-aco-temperado/p",
-  popularity: 544
+  popularity: 542
  },
  {
   sku: "brinox-2508305",
@@ -5998,7 +5976,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios espatulas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248419/Espatula-para-Fritura-10-cm-Precision-10-cm---Brinox.jpg?v=639081450634200000",
   productUrl: "https://www.brinox.com.br/espatula-para-fritura-brinox-precision-10cm/p",
-  popularity: 545
+  popularity: 543
  },
  {
   sku: "brinox-2508304",
@@ -6009,7 +5987,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios espatulas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248418/Espatula-para-Fritura-8-cm-Precision-8-cm---Brinox.jpg?v=637001142783030000",
   productUrl: "https://www.brinox.com.br/espatula-para-fritura-brinox-precision-8-cm-aco-temperado/p",
-  popularity: 546
+  popularity: 544
  },
  {
   sku: "brinox-2508303",
@@ -6020,7 +5998,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios espatulas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/248417/Espatula-Raspadora---Precision-12-cm---Brinox.jpg?v=639081454531700000",
   productUrl: "https://www.brinox.com.br/espatula-raspadora-brinox-precision-12-cm-aco-temperado/p",
-  popularity: 547
+  popularity: 545
  },
  {
   sku: "brinox-2506310",
@@ -6031,7 +6009,7 @@ export const CATALOG: CatalogItem[] = [
   category: "facas afiadores chairas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247609/Chaira---Precision-8----Brinox.jpg?v=637000875383130000",
   productUrl: "https://www.brinox.com.br/chaira-brinox-precision-8-polegadas-32-6cm/p",
-  popularity: 548
+  popularity: 546
  },
  {
   sku: "brinox-2425101",
@@ -6042,7 +6020,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios acessorios para vinho e espumante",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249757/Aerador-para-Vinho-15-cm-15-cm---Brinox.jpg?v=639032183609870000",
   productUrl: "https://www.brinox.com.br/aerador_para_vinho_brinox_15_cm/p",
-  popularity: 549
+  popularity: 547
  },
  {
   sku: "brinox-2423306",
@@ -6053,18 +6031,7 @@ export const CATALOG: CatalogItem[] = [
   category: "facas tesouras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/283697/promocao-brinox-tesoura-multiuso.png?v=639105829837000000",
   productUrl: "https://www.brinox.com.br/tesoura_trinchante_2423306/p",
-  popularity: 550
- },
- {
-  sku: "brinox-2405000",
-  name: "Pasta para Polir Aço Inox Brinox Arienzo 200g Pasta para Polir Aço Inox 200 g - Brinox",
-  brand: "Brinox",
-  unitPrice: 19.99,
-  unit: "un",
-  category: "lavanderia limpadores",
-  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/247809/Pasta-para-Polir-Aco-Inox-200-g---Brinox.jpg?v=638920934588100000",
-  productUrl: "https://www.brinox.com.br/pasta_para_polir_aco_inox_brinox_arienzo_200_gramas/p",
-  popularity: 551
+  popularity: 548
  },
  {
   sku: "brinox-2353101",
@@ -6075,7 +6042,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios para bebida champanheiras e baldes para gelo",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250421/Champanheira---Lyon-Ø-395-x-228-cm-12-L---Brinox.jpg?v=637001893162430000",
   productUrl: "https://www.brinox.com.br/champanheira_brinox_lyon_12_litros_aco_inox/p",
-  popularity: 552
+  popularity: 549
  },
  {
   sku: "brinox-2253333",
@@ -6086,7 +6053,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios pinceis",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/282018/pincel-silicone-28cm-verde-flex-brinox.jpg?v=639052917823870000",
   productUrl: "https://www.brinox.com.br/pincel-de-silicone-brinox-flex-28-cm-verde/p",
-  popularity: 553
+  popularity: 550
  },
  {
   sku: "brinox-2204328",
@@ -6097,7 +6064,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios raladores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287962/Ralador 20 cm.png?v=639258498037070000",
   productUrl: "https://www.brinox.com.br/ralador_6_faces_brinox_top_pratic_11-5x10-5x20cm_aco_inox/p",
-  popularity: 554
+  popularity: 551
  },
  {
   sku: "brinox-2182100",
@@ -6108,7 +6075,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha cafeteiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287892/Cafeteira Verona Aluminio.png?v=639253479227530000",
   productUrl: "https://www.brinox.com.br/cafeteira-italiana-brinox-verona-6-xicaras-300ml-em-aluminio/p",
-  popularity: 555
+  popularity: 552
  },
  {
   sku: "brinox-2125101",
@@ -6119,7 +6086,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha potes",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281009/Conjunto_de_Potes_para_Mantimentos_com_Tampa_e_Visor_Brinox_Suprema_Aco_Inox_5_Pecas_1.jpg?v=639007127101500000",
   productUrl: "https://www.brinox.com.br/conjunto-de-potes-para-mantimentos-com-tampa-e-visor-brinox-suprema-aco-inox-5-pecas/p",
-  popularity: 556
+  popularity: 553
  },
  {
   sku: "brinox-2118101",
@@ -6130,7 +6097,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bar e coquetelaria",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/254339/Balde-Termico-com-Tampa---Suprema-15-L---Brinox.jpg?v=637007003391200000",
   productUrl: "https://www.brinox.com.br/balde-termico-com-tampa-brinox-suprema-1-5-litros-aco-inox/p",
-  popularity: 557
+  popularity: 554
  },
  {
   sku: "brinox-2099120",
@@ -6141,7 +6108,7 @@ export const CATALOG: CatalogItem[] = [
   category: "pia escorredores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287956/Escorredor Suprema 20 pecas.png?v=639258496744670000",
   productUrl: "https://www.brinox.com.br/escorredor_de_loucas_brinox_suprema_20_pratos_aco_inox/p",
-  popularity: 558
+  popularity: 555
  },
  {
   sku: "brinox-2080032",
@@ -6152,7 +6119,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bowls, cumbucas e ramekins",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280982/Tigela_Multiuso_Brinox_Suprema_Ø32_cm_38_Litros_Aco_Inox.jpg?v=639032181890100000",
   productUrl: "https://www.brinox.com.br/tigela_multiuso_brinox_suprema_3-8l_%C3%B8_32_cm_aco_inox/p",
-  popularity: 559
+  popularity: 556
  },
  {
   sku: "brinox-1685302",
@@ -6163,7 +6130,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios pegadores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249730/Vermelho-Brinox.jpg?v=637001726826100000",
   productUrl: "https://www.brinox.com.br/pegador_universal_emborrachado_brinox_arienzo_35-5cm_aco_inox_vermelho/p",
-  popularity: 560
+  popularity: 557
  },
  {
   sku: "brinox-1656220",
@@ -6174,7 +6141,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bar e coquetelaria",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/287933/Suporte-para-Balde---Arienzo-Ø-20-x-605-cm---Brinox.jpg?v=639257891518800000",
   productUrl: "https://www.brinox.com.br/suporte_para_balde_brinox_arienzo_%C3%B820x60-5cm_aco_inox/p",
-  popularity: 561
+  popularity: 558
  },
  {
   sku: "brinox-1649304",
@@ -6185,7 +6152,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha utensilios espumadeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/258614/Espumadeira-Jornata-Brinox-12-mm-x-23-cm---Brinox.jpg?v=637030519769630000",
   productUrl: "https://www.brinox.com.br/espumadeira_brinox_jornata_23cm_aco_inox/p",
-  popularity: 562
+  popularity: 559
  },
  {
   sku: "brinox-1626000",
@@ -6196,7 +6163,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios queijeiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/258612/Queijeira-oreganeira-300-ml-com-sobretampa-Jornata-Brinox-280-ml---Brinox.jpg?v=637030519678830000",
   productUrl: "https://www.brinox.com.br/queijeira_oreganeira_brinox_jornata_280ml_aco_inox/p",
-  popularity: 563
+  popularity: 560
  },
  {
   sku: "brinox-1611025",
@@ -6207,7 +6174,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa travessas e pratos",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/252054/Travessa-Oval-Rasa-26-cm---Jornata-26-x-19-cm---Brinox.jpg?v=637002764152630000",
   productUrl: "https://www.brinox.com.br/travessa_oval_rasa_26_cm___jornata_1611025/p",
-  popularity: 564
+  popularity: 561
  },
  {
   sku: "brinox-1580702",
@@ -6218,7 +6185,7 @@ export const CATALOG: CatalogItem[] = [
   category: "cozinha moedores",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/249656/Madeira-Brinox.jpg?v=638962300106170000",
   productUrl: "https://www.brinox.com.br/moedor_para_pimenta_e_sal_brinox_parma_madeira_21cm/p",
-  popularity: 565
+  popularity: 562
  },
  {
   sku: "brinox-1578100",
@@ -6229,7 +6196,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios paliteiros",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251599/Paliteiro-Elegance---Parma-Ø-35-x-8-cm---Brinox.jpg?v=638971827554470000",
   productUrl: "https://www.brinox.com.br/paliteiro_elegance_brinox_parma_%C3%B83-5_x_8_cm/p",
-  popularity: 566
+  popularity: 563
  },
  {
   sku: "brinox-1577100",
@@ -6240,7 +6207,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta saches",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/251823/Suporte-para-Saches---Parma-205-x-65-x-7-cm---Brinox.jpg?v=638978647702630000",
   productUrl: "https://www.brinox.com.br/suporte_para_saches_brinox_parma_aco_inox/p",
-  popularity: 567
+  popularity: 564
  },
  {
   sku: "brinox-1575100",
@@ -6251,7 +6218,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios porta saches",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280954/Porta_Saches_de_Acucar_e_Adocantes_Brinox_Parma_Nova.jpg?v=639081431726330000",
   productUrl: "https://www.brinox.com.br/porta_saches_brinox_parma_aco_inox/p",
-  popularity: 568
+  popularity: 565
  },
  {
   sku: "brinox-1423137",
@@ -6262,7 +6229,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/276672/bandeja-com-alca-atina-aco-inoxidavel.jpg?v=639052924258600000",
   productUrl: "https://www.brinox.com.br/bandeja-com-alca-brinox-atina-37-x-23-cm-aco-inox/p",
-  popularity: 569
+  popularity: 566
  },
  {
   sku: "brinox-1421140",
@@ -6273,7 +6240,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa bandejas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280907/Bandeja_com_Alca_Brinox_atina_40_x_28_cm_Aco_Inox_Nova_2.jpg?v=639005560573800000",
   productUrl: "https://www.brinox.com.br/bandeja-com-alca-brinox-atina-40-x-28-cm-aco-inox/p",
-  popularity: 570
+  popularity: 567
  },
  {
   sku: "brinox-1406100",
@@ -6284,7 +6251,7 @@ export const CATALOG: CatalogItem[] = [
   category: "mesa acessorios mantegueiras",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/280939/Manteigueira_Redonda_com_Pires_Brinox_Atina_130_g_Nova.jpg?v=639007062200870000",
   productUrl: "https://www.brinox.com.br/manteigueira_redonda_com_pires___atina_1406100/p",
-  popularity: 571
+  popularity: 568
  },
  {
   sku: "brinox-1109207",
@@ -6295,7 +6262,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional rechauds e cubas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/255127/Rechaud-Redondo---Savoy-Ø-42-x-333-x-33-cm-7L---Brinox.jpg?v=638978648182500000",
   productUrl: "https://www.brinox.com.br/rechaud-redondo-brinox-savoy-7-litros-%C3%B8-42-x-33-3-x-33-cm-aco-inoxidavel/p",
-  popularity: 572
+  popularity: 569
  },
  {
   sku: "brinox-1105208",
@@ -6306,7 +6273,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional rechauds e cubas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/255124/Rechaud-Redondo-8-Litros---Savoy-33-x-43-cm---Brinox.jpg?v=638978585804900000",
   productUrl: "https://www.brinox.com.br/rechaud-redondo-brinox-savoy-8-litros-%C3%B8-33-x-43-cm-aco-inoxidavel/p",
-  popularity: 573
+  popularity: 570
  },
  {
   sku: "brinox-1098202",
@@ -6317,7 +6284,7 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional rechauds e cubas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/255118/Rechaud-Retangular-com-Banho-Maria-com-Cuba-1-2---Savoy-23-x-57-x-36-cm---Brinox.jpg?v=638971827727070000",
   productUrl: "https://www.brinox.com.br/rechaud_retangular_com_banho_maria_1-2_brinox_savoy_23x57x36cm_aco_inoxidavel_2_cubas_gn_1-2/p",
-  popularity: 574
+  popularity: 571
  },
  {
   sku: "brinox-1098201",
@@ -6328,7 +6295,18 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional rechauds e cubas",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/255117/Rechaud-Retangular-com-Banho-Maria-com-Cuba-1-1---Savoy-23-x-57-x-36-cm---Brinox.jpg?v=638962184419270000",
   productUrl: "https://www.brinox.com.br/rechaud_retangular_com_banho_maria_brinox_savoy_23x57x36cm_aco_inoxidavel_gn_1-1/p",
-  popularity: 575
+  popularity: 572
+ },
+ {
+  sku: "brinox-1075200",
+  name: "Espagueteira de Inox Brinox Savoy 10 Litros Ø31cm 4 Divisões Aço Inox Aço Inoxidável",
+  brand: "Brinox",
+  unitPrice: 549.99,
+  unit: "un",
+  category: "panelas espagueteiras",
+  imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/281748/Espagueteira_de_Inox_Brinox_Savoy_10_Litros_Ø31_cm_4_Divisoes.jpg?v=639032194266230000",
+  productUrl: "https://www.brinox.com.br/espagueteira-de-inox-brinox-savoy-10-litros-%C3%B831-cm-4-divisoes-aco_inox/p",
+  popularity: 573
  },
  {
   sku: "brinox-1074100",
@@ -6339,6 +6317,6 @@ export const CATALOG: CatalogItem[] = [
   category: "profissional bar e coquetelaria",
   imageUrl: "https://brinox.vteximg.com.br/arquivos/ids/250427/Balde-Termico-com-Pinca---Savoy-15-L---Brinox.jpg?v=638978582410530000",
   productUrl: "https://www.brinox.com.br/balde_termico_com_pinca_brinox_suprema_1_5_litros_aco_inox/p",
-  popularity: 576
+  popularity: 574
  }
 ];

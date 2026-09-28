@@ -1,7 +1,7 @@
 // GERADO por scripts/harvest-vtex-catalog.mts em 2026-09-28 a partir da
 // API pública de https://www.drogal.com.br (dados reais: nome/preço/URL/imagem verbatim; disponíveis no momento
 // da coleta). Preço é referência de vitrine — no concierge a autoridade é a cotação do operador.
-// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.drogal.com.br drogal /var/folders/7r/7hym0mvj1_l51n6b8pm8ym9h0000gn/T/lia-catalog-ojnVnD/drogal.ts
+// Para atualizar: node --import tsx scripts/harvest-vtex-catalog.mts https://www.drogal.com.br drogal /tmp/lia-catalog-HaGx92/drogal.ts
 import type { CatalogItem } from "./types";
 
 export const CATALOG: CatalogItem[] = [
@@ -54723,7 +54723,7 @@ export const CATALOG: CatalogItem[] = [
   sku: "drogal-24603",
   name: "Gel Fixador Trá Lá Lá Kids Glitter Estelar 150g",
   brand: "Tra La La",
-  unitPrice: 15.69,
+  unitPrice: 15.15,
   unit: "un",
   category: "mundo infantil cuidados com o cabelo infantil",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/280611/197244.jpg?v=639147028096800000",
@@ -62365,6 +62365,1326 @@ export const CATALOG: CatalogItem[] = [
   popularity: 5669
  },
  {
+  sku: "drogal-25088",
+  name: "Compressa não Aderente Estéril Triane 10 Unidades",
+  brand: "Triane",
+  unitPrice: 2.99,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285888/203132.png?v=639213680600370000",
+  productUrl: "https://www.drogal.com.br/compressa-nao-aderente-esteril-triane-10-unidades/p",
+  popularity: 5670
+ },
+ {
+  sku: "drogal-14335",
+  name: "Compressa de Gaze Cremer 5 unidades",
+  brand: "Cremer",
+  unitPrice: 2.89,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264471/176901.jpg?v=638905117241430000",
+  productUrl: "https://www.drogal.com.br/compressa-de-gaze-cremer-5-unidades/p",
+  popularity: 5671
+ },
+ {
+  sku: "drogal-15973",
+  name: "Adesivos ByeBye-Fever para Bebês 2 Unidades",
+  brand: "Bye Bye Fever",
+  unitPrice: 12.29,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258246/140472.jpg?v=638881844529370000",
+  productUrl: "https://www.drogal.com.br/adesivo-para-alivio-da-febre-byebye-fever-0-a-2-anos-2-unidades/p",
+  popularity: 5672
+ },
+ {
+  sku: "drogal-16558",
+  name: "Compressa Multiuso Triane 10 Unidades",
+  brand: "Triane",
+  unitPrice: 4.15,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197819/57121.png?v=638394716210670000",
+  productUrl: "https://www.drogal.com.br/compressa-multiuso-triane-10-unidades/p",
+  popularity: 5673
+ },
+ {
+  sku: "drogal-16510",
+  name: "Curativo Hidrocoloide Para Acnes e Espinhas Acnesept 24 Unidades",
+  brand: "Acnesept",
+  unitPrice: 21.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197735/62241.png?v=638394717531530000",
+  productUrl: "https://www.drogal.com.br/curativo-hidrocoloide-para-acnes-e-espinhas-acnesept-24-unidades/p",
+  popularity: 5674
+ },
+ {
+  sku: "drogal-13588",
+  name: "Disco de Algodão Triane Duo Face 100 Unidades",
+  brand: "Triane",
+  unitPrice: 13.05,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192961/57007.png?v=638394716630170000",
+  productUrl: "https://www.drogal.com.br/disco-de-algodao-triane-duo-face-100-unidades/p",
+  popularity: 5675
+ },
+ {
+  sku: "drogal-13585",
+  name: "Bolas de Algodão Hidrófilo Triane 50g",
+  brand: "Triane",
+  unitPrice: 7.15,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192958/57004.png?v=638394716652400000",
+  productUrl: "https://www.drogal.com.br/bolas-de-algodao-hidrofilo-triane-50g/p",
+  popularity: 5676
+ },
+ {
+  sku: "drogal-117",
+  name: "Curativos Band Aid 40 Unidades",
+  brand: "Band Aid",
+  unitPrice: 14.95,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254923/136830.jpg?v=638834266569000000",
+  productUrl: "https://www.drogal.com.br/curativos-band-aid-40-unidades/p",
+  popularity: 5677
+ },
+ {
+  sku: "drogal-23800",
+  name: "Esparadrapo Impermeável Cremer Bege 1,2cm x 3cm 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 5.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272235/187986.jpg?v=638985479035400000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-cremer-bege-12cm-x-3cm-1-unidade/p",
+  popularity: 5678
+ },
+ {
+  sku: "drogal-19956",
+  name: "Algodão Quadrado Flock Baby 100 Unidades",
+  brand: "Flock Baby",
+  unitPrice: 32.65,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282009/199083.png?v=639162794715470000",
+  productUrl: "https://www.drogal.com.br/algodao-quadrado-flock-baby-100-unidades/p",
+  popularity: 5679
+ },
+ {
+  sku: "drogal-16515",
+  name: "Curativos Transparentes Triane 40 Unidades",
+  brand: "Triane",
+  unitPrice: 13.25,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197747/62243.jpg?v=638394717568970000",
+  productUrl: "https://www.drogal.com.br/curativos-transparentes-triane-40-unidades/p",
+  popularity: 5680
+ },
+ {
+  sku: "drogal-14659",
+  name: "Fita Micropore Nexcare Bege 25mm x 1,35m",
+  brand: "Nexcare",
+  unitPrice: 9.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194273/58646.jpg?v=638394716976430000",
+  productUrl: "https://www.drogal.com.br/fitamicroporenexcarebege/p",
+  popularity: 5681
+ },
+ {
+  sku: "drogal-14599",
+  name: "Bolas de Algodão Triane 95g",
+  brand: "Triane",
+  unitPrice: 12.35,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194162/58551.jpg?v=638394716847530000",
+  productUrl: "https://www.drogal.com.br/bolas-de-algodao-triane-95g/p",
+  popularity: 5682
+ },
+ {
+  sku: "drogal-14552",
+  name: "Atadura de Crepe Triane 6cm 1 Unidade",
+  brand: "Triane",
+  unitPrice: 6.15,
+  unit: "un",
+  category: "primeiros socorros atadura",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194035/58495.jpg?v=638394716908100000",
+  productUrl: "https://www.drogal.com.br/atadura-de-crepe-triane-6cm-1-unidade/p",
+  popularity: 5683
+ },
+ {
+  sku: "drogal-14398",
+  name: "Compressas de Gaze Esterilizadas Triane 10 Unidades",
+  brand: "Triane",
+  unitPrice: 5.45,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193759/58185.png?v=638394716897500000",
+  productUrl: "https://www.drogal.com.br/compressas-de-gaze-esterilizadas-triane-10-unidades/p",
+  popularity: 5684
+ },
+ {
+  sku: "drogal-14379",
+  name: "Curativos Band Aid 10 Unidades",
+  brand: "Band Aid",
+  unitPrice: 8.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254928/136835.jpg?v=638834271870070000",
+  productUrl: "https://www.drogal.com.br/curativos-band-aid-10-unidades/p",
+  popularity: 5685
+ },
+ {
+  sku: "drogal-14290",
+  name: "Esparadrapo Nexcare Impermeável 25mm x 0,9m",
+  brand: "Nexcare",
+  unitPrice: 6.05,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193538/57876.jpg?v=638394716032700000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-nexcare-impermeavel-25mm-x-09m/p",
+  popularity: 5686
+ },
+ {
+  sku: "drogal-14285",
+  name: "Fita Micropore Nexcare Bege - 12mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 10.55,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193530/57875.jpg?v=638394716398930000",
+  productUrl: "https://www.drogal.com.br/fita-micropore-nexcare-bege-12mm-x-45m/p",
+  popularity: 5687
+ },
+ {
+  sku: "drogal-14278",
+  name: "Fita Micropore Nexcare Bege - 25mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 19.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193496/57874.jpg?v=638394716488730000",
+  productUrl: "https://www.drogal.com.br/fita-micropore-nexcare-bege-25mm-x-45m/p",
+  popularity: 5688
+ },
+ {
+  sku: "drogal-13584",
+  name: "Algodão Hidrófilo em Rolo Triane 25g",
+  brand: "Triane",
+  unitPrice: 6.29,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192957/57003.jpg?v=638394716745470000",
+  productUrl: "https://www.drogal.com.br/algodao-hidrofilo-em-rolo-triane-25g/p",
+  popularity: 5689
+ },
+ {
+  sku: "drogal-24875",
+  name: "Curativo Infantil Mickey Flock Kids Disney And Friends 25 Unidades",
+  brand: "Flock Kids",
+  unitPrice: 11.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283035/199997.png?v=639172295965600000",
+  productUrl: "https://www.drogal.com.br/curativo-infantil-mickey-flock-kids-disney-and-friends-25-unidades/p",
+  popularity: 5690
+ },
+ {
+  sku: "drogal-24874",
+  name: "Curativo Infantil Mickey Flock Kids Disney And Friends 15 Unidades",
+  brand: "Flock Kids",
+  unitPrice: 7.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283032/199999.png?v=639172295990200000",
+  productUrl: "https://www.drogal.com.br/curativo-infantil-mickey-flock-kids-disney-and-friends-15-unidades/p",
+  popularity: 5691
+ },
+ {
+  sku: "drogal-21438",
+  name: "Espaçador Universal Biopress para Todas as Idades 1 Unidade",
+  brand: "Biopress",
+  unitPrice: 39.99,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/241207/121330.jpg?v=638686283225970000",
+  productUrl: "https://www.drogal.com.br/espacador-universal-biopress-para-todas-as-idades-1-unidade/p",
+  popularity: 5692
+ },
+ {
+  sku: "drogal-15983",
+  name: "Adesivos ByeBye-Fever para Crianças 2 Unidades",
+  brand: "Bye Bye Fever",
+  unitPrice: 12.39,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258258/140484.jpg?v=638881857105770000",
+  productUrl: "https://www.drogal.com.br/adesivo-para-alivio-da-febre-byebye-fever-para-criancas-2-unidades/p",
+  popularity: 5693
+ },
+ {
+  sku: "drogal-15707",
+  name: "Fita Cirúrgica Microporosa Triane Bege 1,2cm x 4,5m 1 Unidade",
+  brand: "Triane",
+  unitPrice: 8.89,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196085/60512.png?v=638394717305670000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-microporosa-triane-bege-12cm-x-45m-1-unidade/p",
+  popularity: 5694
+ },
+ {
+  sku: "drogal-15680",
+  name: "Esparadrapo Impermeável Triane Branco 2,5cm X 90cm",
+  brand: "Triane",
+  unitPrice: 6.89,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196049/60428.png?v=638394717235100000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-triane-branco-25cm-x-90cm/p",
+  popularity: 5695
+ },
+ {
+  sku: "drogal-15628",
+  name: "Fita Cirúrgica Microporosa Triane Branca 1,2cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 8.89,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195970/60430.png?v=638394717277900000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-microporosa-triane-branca-12cm-x-45m/p",
+  popularity: 5696
+ },
+ {
+  sku: "drogal-14689",
+  name: "Algodão Quadrado Flock Baby 50 Unidades",
+  brand: "Flock Baby",
+  unitPrice: 19.99,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282005/199078.png?v=639162762636870000",
+  productUrl: "https://www.drogal.com.br/algodao-quadrado-flock-baby-50-unidades/p",
+  popularity: 5697
+ },
+ {
+  sku: "drogal-14666",
+  name: "Fita Transparente Nexcare 25mm x 1,35m",
+  brand: "Nexcare",
+  unitPrice: 10.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194283/58647.jpg?v=638394716994170000",
+  productUrl: "https://www.drogal.com.br/fita-transparente-nexcare-25mm-x-135m/p",
+  popularity: 5698
+ },
+ {
+  sku: "drogal-14651",
+  name: "Fita Micropore Nexcare Branco 25mm X 1,35m",
+  brand: "Nexcare",
+  unitPrice: 9.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194242/58639.jpg?v=638394716957170000",
+  productUrl: "https://www.drogal.com.br/fita-micropore-nexcare-branco-25mm-x-135m/p",
+  popularity: 5699
+ },
+ {
+  sku: "drogal-14555",
+  name: "Atadura de Crepe Triane 10cm 1 Unidade",
+  brand: "Triane",
+  unitPrice: 9.25,
+  unit: "un",
+  category: "primeiros socorros atadura",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194049/58496.jpg?v=638394716880330000",
+  productUrl: "https://www.drogal.com.br/atadura-de-crepe-triane-10cm-1-unidade/p",
+  popularity: 5700
+ },
+ {
+  sku: "drogal-14550",
+  name: "Quadradinhos de Algodão Triane 250 Unidades",
+  brand: "Triane",
+  unitPrice: 20.49,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194025/58469.png?v=638394716496730000",
+  productUrl: "https://www.drogal.com.br/quadradinhos-de-algodao-triane-250-unidades/p",
+  popularity: 5701
+ },
+ {
+  sku: "drogal-14549",
+  name: "Atadura de Crepe Triane 15cm 1 Unidade",
+  brand: "Triane",
+  unitPrice: 12.19,
+  unit: "un",
+  category: "primeiros socorros atadura",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194016/58494.jpg?v=638394716897370000",
+  productUrl: "https://www.drogal.com.br/atadura-de-crepe-triane-15cm-1-unidade/p",
+  popularity: 5702
+ },
+ {
+  sku: "drogal-14539",
+  name: "Atadura de Crepe Triane 8cm 1 Unidade",
+  brand: "Triane",
+  unitPrice: 7.19,
+  unit: "un",
+  category: "primeiros socorros atadura",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193989/58492.jpg?v=638394716925700000",
+  productUrl: "https://www.drogal.com.br/atadura-de-crepe-triane-8cm-1-unidade/p",
+  popularity: 5703
+ },
+ {
+  sku: "drogal-14388",
+  name: "Curativos Band-Aid Pequenos Ferimentos 16 Unidades",
+  brand: "Band Aid",
+  unitPrice: 10.85,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193748/58145.jpg?v=638394715847000000",
+  productUrl: "https://www.drogal.com.br/curativos-band-aid-pequenos-ferimentos-16-unidades/p",
+  popularity: 5704
+ },
+ {
+  sku: "drogal-14316",
+  name: "Esparadrapo Impermeável Cremer 2,5cm x 90cm 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 7.85,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193585/57961.jpg?v=638464430991600000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-cremer-25cm-x-90cm-1-unidade/p",
+  popularity: 5705
+ },
+ {
+  sku: "drogal-14255",
+  name: "Fita Micropore Nexcare Branca - 25mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 19.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193433/57870.jpg?v=638394716471200000",
+  productUrl: "https://www.drogal.com.br/fita-micropore-nexcare-branca-25mm-x-45m/p",
+  popularity: 5706
+ },
+ {
+  sku: "drogal-14136",
+  name: "Óleo Corporal de Girassol Triane 100ml",
+  brand: "Triane",
+  unitPrice: 26.25,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193331/57680.png?v=638394716762030000",
+  productUrl: "https://www.drogal.com.br/oleo-corporal-de-girassol-triane-100ml/p",
+  popularity: 5707
+ },
+ {
+  sku: "drogal-13599",
+  name: "Esparadrapo Nexcare Impermeável Bege 12mm x 3m",
+  brand: "Nexcare",
+  unitPrice: 8.45,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192969/57018.jpg?v=638394716682830000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-nexcare-impermeavel-bege-12mm-x-3m/p",
+  popularity: 5708
+ },
+ {
+  sku: "drogal-13587",
+  name: "Curativos Triane 10 Unidades",
+  brand: "Triane",
+  unitPrice: 5.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192960/57006.png?v=638394716717130000",
+  productUrl: "https://www.drogal.com.br/curativos-triane-10-unidades/p",
+  popularity: 5709
+ },
+ {
+  sku: "drogal-25069",
+  name: "Curativo Band-Aid Flexible Fabric Flores do Campo Tamanhos Variados 30 Unidades",
+  brand: "Band Aid",
+  unitPrice: 18.05,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285780/202686.jpg?v=639211323409770000",
+  productUrl: "https://www.drogal.com.br/curativo-band-aid-flexible-fabric-flores-do-campo-tamanhos-variados-30-unidades/p",
+  popularity: 5710
+ },
+ {
+  sku: "drogal-23374",
+  name: "Discos de Algodão Triane Duo Face 150 Unidades",
+  brand: "Triane",
+  unitPrice: 21.19,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268943/184003.jpg?v=638956921018830000",
+  productUrl: "https://www.drogal.com.br/discos-de-algodao-triane-duo-face-150-unidades/p",
+  popularity: 5711
+ },
+ {
+  sku: "drogal-16518",
+  name: "Curativos Variados Triane 30 Unidades",
+  brand: "Triane",
+  unitPrice: 14.49,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197755/62244.jpg?v=638394716276870000",
+  productUrl: "https://www.drogal.com.br/curativos-variados-triane-30-unidades/p",
+  popularity: 5712
+ },
+ {
+  sku: "drogal-16371",
+  name: "Esparadrapo Cremer Bege 2,5cm X 3m",
+  brand: "Cremer",
+  unitPrice: 12.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197477/61952.png?v=638394717470470000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-cremer-bege-25cm-x-3m/p",
+  popularity: 5713
+ },
+ {
+  sku: "drogal-16062",
+  name: "Curativo Nexcare Transparente 35 Unidades",
+  brand: "Nexcare",
+  unitPrice: 14.85,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196720/61123.jpg?v=638394717486800000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-transparente-35-unidades/p",
+  popularity: 5714
+ },
+ {
+  sku: "drogal-15673",
+  name: "Esparadrapo Impermeável Triane Branco 2,5cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 13.49,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196039/60427.png?v=638394717210730000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-triane-branco-25cm-x-45m/p",
+  popularity: 5715
+ },
+ {
+  sku: "drogal-15636",
+  name: "Fita Cirúrgica Microporosa Triane Branca 2,5cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 13.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195978/60431.png?v=638394717298770000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-microporosa-triane-branca-25cm-x-45m/p",
+  popularity: 5716
+ },
+ {
+  sku: "drogal-15251",
+  name: "Curativos Band-Aid Formatos Variados 30 Unidades",
+  brand: "Band Aid",
+  unitPrice: 20.49,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195275/59714.png?v=638394717199300000",
+  productUrl: "https://www.drogal.com.br/band-aid-formatos-variados-30-unidades/p",
+  popularity: 5717
+ },
+ {
+  sku: "drogal-14707",
+  name: "Curativos Redondo Triane 16 Unidades",
+  brand: "Triane",
+  unitPrice: 8.75,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194342/58698.jpg?v=638394717043700000",
+  productUrl: "https://www.drogal.com.br/curativos-redondo-triane-16-unidades/p",
+  popularity: 5718
+ },
+ {
+  sku: "drogal-14542",
+  name: "Atadura Crepe Triane 12cm",
+  brand: "Triane",
+  unitPrice: 10.25,
+  unit: "un",
+  category: "primeiros socorros atadura",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194003/58493.png?v=638394716936470000",
+  productUrl: "https://www.drogal.com.br/ataduracrepetriane12cm/p",
+  popularity: 5719
+ },
+ {
+  sku: "drogal-14354",
+  name: "Fita Microporosa Cremer Branca 5cm x 4,5m 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 31.95,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193659/57972.png?v=638394715866800000",
+  productUrl: "https://www.drogal.com.br/fita-microporosa-cremer-branca-5cm-x-45m-1-unidade/p",
+  popularity: 5720
+ },
+ {
+  sku: "drogal-14349",
+  name: "Fita Microporosa Cremer Branca 2,5cm x 90cm",
+  brand: "Cremer",
+  unitPrice: 7.89,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193646/57971.jpg?v=638394716568530000",
+  productUrl: "https://www.drogal.com.br/fita-microporosa-cremer-branca-25cm-x-90cm/p",
+  popularity: 5721
+ },
+ {
+  sku: "drogal-14275",
+  name: "Micropore Nexcare Branco 50mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 40.29,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193468/57894.jpg?v=638394716382770000",
+  productUrl: "https://www.drogal.com.br/micropore-nexcare-branco-50mm-x-45m/p",
+  popularity: 5722
+ },
+ {
+  sku: "drogal-14267",
+  name: "Protetor Auditivo Nexcare 2 Pares",
+  brand: "Nexcare",
+  unitPrice: 13.45,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193454/57882.jpg?v=638394716066870000",
+  productUrl: "https://www.drogal.com.br/protetor-auditivo-nexcare-2-pares/p",
+  popularity: 5723
+ },
+ {
+  sku: "drogal-13632",
+  name: "Algodão Hidrófilo em Rolo Triane 50g",
+  brand: "Triane",
+  unitPrice: 10.49,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193003/57117.png?v=638394716663700000",
+  productUrl: "https://www.drogal.com.br/algodao-hidrofilo-em-rolo-triane-50g/p",
+  popularity: 5724
+ },
+ {
+  sku: "drogal-25013",
+  name: "Curativos Band-Aid Skin Flex Extra Grande 7 Unidades",
+  brand: "Band Aid",
+  unitPrice: 28.09,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284757/201900.png?v=639203195528900000",
+  productUrl: "https://www.drogal.com.br/curativos-band-aid-skin-flex-extra-grande-7-unidades/p",
+  popularity: 5725
+ },
+ {
+  sku: "drogal-22052",
+  name: "Adesivos ByeBye-Fever Super Gelado para Adultos e Crianças 2 Unidades",
+  brand: "Bye Bye Fever",
+  unitPrice: 11.49,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249903/130890.jpg?v=638772875935430000",
+  productUrl: "https://www.drogal.com.br/adesivo-para-alivio-da-febre-byebye-fever-super-gelado-para-adultos-e-criancas-2-unidades/p",
+  popularity: 5726
+ },
+ {
+  sku: "drogal-16505",
+  name: "Curativos Triane Cor Bege 40 Unidades",
+  brand: "Triane",
+  unitPrice: 13.25,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197725/62240.jpg?v=638394717550330000",
+  productUrl: "https://www.drogal.com.br/curativos-triane-cor-bege-40-unidades/p",
+  popularity: 5727
+ },
+ {
+  sku: "drogal-15984",
+  name: "Fita Cirúrgica Triane Microporosa Bege 2,5cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 14.15,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196517/60960.jpg?v=638394717356570000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-triane-microporosa-bege-25cm-x-45m/p",
+  popularity: 5728
+ },
+ {
+  sku: "drogal-15643",
+  name: "Fita Cirúrgica Microporosa Triane Branca 5cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 25.95,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195987/60432.png?v=638394717311470000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-microporosa-triane-branca-5cm-x-45m/p",
+  popularity: 5729
+ },
+ {
+  sku: "drogal-14970",
+  name: "Curativo Nexcare Cicatrização Avançada - 6 Unidades",
+  brand: "Nexcare",
+  unitPrice: 26.65,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194707/59196.jpg?v=638394717132830000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-cicatrizacao-avancada-6-unidades/p",
+  popularity: 5730
+ },
+ {
+  sku: "drogal-14918",
+  name: "Curativos Triane À Prova D'água Tamanho 2 - 20 Unidades",
+  brand: "Triane",
+  unitPrice: 15.85,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194631/59036.png?v=638394717131900000",
+  productUrl: "https://www.drogal.com.br/curativos-triane-a-prova-dagua-tamanho-2-20-unidades/p",
+  popularity: 5731
+ },
+ {
+  sku: "drogal-14744",
+  name: "Compressa de Gaze Sanfarma 13 Fios 500 Unidades",
+  brand: "Sanfarma",
+  unitPrice: 73.05,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286238/203512.jpg?v=639216513796370000",
+  productUrl: "https://www.drogal.com.br/compressa-de-gaze-sanfarma-13-fios-500-unidades/p",
+  popularity: 5732
+ },
+ {
+  sku: "drogal-14701",
+  name: "Curativos À Prova D'água Triane Formato Grande 8 Unidades",
+  brand: "Triane",
+  unitPrice: 20.49,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194335/58697.png?v=638394717064070000",
+  productUrl: "https://www.drogal.com.br/curativos-a-prova-dagua-triane-formato-grande-8-unidades/p",
+  popularity: 5733
+ },
+ {
+  sku: "drogal-14408",
+  name: "Copos Descartáveis para Inalador Soniclear 15 Unidades",
+  brand: "Soniclear",
+  unitPrice: 22.65,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243561/124190.jpg?v=638708148142530000",
+  productUrl: "https://www.drogal.com.br/copos-descartaveis-para-inalador-soniclear-15-unidades/p",
+  popularity: 5734
+ },
+ {
+  sku: "drogal-14297",
+  name: "Esparadrapo Impermeável Nexcare Branco 12mm x 3m",
+  brand: "Nexcare",
+  unitPrice: 9.49,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193547/57877.jpg?v=638394716151970000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-nexcare-branco-12mm-x-3m/p",
+  popularity: 5735
+ },
+ {
+  sku: "drogal-14281",
+  name: "Micropore Nexcare Bege 50mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 40.29,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193499/57895.jpg?v=638394716059170000",
+  productUrl: "https://www.drogal.com.br/micropore-nexcare-bege-50mm-x-45m/p",
+  popularity: 5736
+ },
+ {
+  sku: "drogal-14253",
+  name: "Curativo Nexcare à Prova D'água 12 Unidades",
+  brand: "Nexcare",
+  unitPrice: 22.29,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193431/57888.png?v=638394716326630000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-a-prova-dagua-12-unidades/p",
+  popularity: 5737
+ },
+ {
+  sku: "drogal-14251",
+  name: "Fita Transparente Nexcare 25mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 27.35,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193428/57879.jpg?v=638394716399570000",
+  productUrl: "https://www.drogal.com.br/fita-transparente-nexcare-25mm-x-45m/p",
+  popularity: 5738
+ },
+ {
+  sku: "drogal-14248",
+  name: "Fita Micropore Nexcare 12mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 10.55,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193425/57869.jpg?v=638394716416030000",
+  productUrl: "https://www.drogal.com.br/fita-micropore-nexcare-12mm-x-45m/p",
+  popularity: 5739
+ },
+ {
+  sku: "drogal-14244",
+  name: "Esparadrapo Impermeável Nexcare Branco 25mm x 3m",
+  brand: "Nexcare",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193421/57878.jpg?v=638394716116070000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-nexcare-branco-25mm-x-3m/p",
+  popularity: 5740
+ },
+ {
+  sku: "drogal-14224",
+  name: "Saf-Gel Hidrogel com Alginatol 85g",
+  brand: "Saf-Gel",
+  unitPrice: 86.89,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193396/57821.png?v=638394716792970000",
+  productUrl: "https://www.drogal.com.br/saf-gel-hidrogel-com-alginatol-85g/p",
+  popularity: 5741
+ },
+ {
+  sku: "drogal-13598",
+  name: "Esparadrapo Nexcare Impermeável Bege 25mm x 3m",
+  brand: "Nexcare",
+  unitPrice: 14.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192968/57017.jpg?v=638394716727700000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-nexcare-impermeavel-bege-25mm-x-3m/p",
+  popularity: 5742
+ },
+ {
+  sku: "drogal-23528",
+  name: "Micronebulizador Universal Enovamix com 3 Máscaras 1 Unidade",
+  brand: "Enovamix",
+  unitPrice: 34.95,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270162/184806.jpg?v=638967286471570000",
+  productUrl: "https://www.drogal.com.br/micronebulizador-universal-enovamix-com-3-mascaras-1-unidade/p",
+  popularity: 5743
+ },
+ {
+  sku: "drogal-23267",
+  name: "Esparadrapo Impermeável Triane Branco 10cm X 4,5m 1 Unidade",
+  brand: "Triane",
+  unitPrice: 36.29,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/267835/182689.jpg?v=638947536384130000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-triane-branco-10cm-x-45m-1-unidade/p",
+  popularity: 5744
+ },
+ {
+  sku: "drogal-23101",
+  name: "Compressa Não Aderente Triane 10 Unidades",
+  brand: "Triane",
+  unitPrice: 2.45,
+  unit: "un",
+  category: "primeiros socorros compressa",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265831/178464.jpg?v=638974312915330000",
+  productUrl: "https://www.drogal.com.br/compressa-nao-aderente-triane-10-unidades/p",
+  popularity: 5745
+ },
+ {
+  sku: "drogal-16573",
+  name: "Óleo Cicatrizante Curativo Triane 200ml",
+  brand: "Triane",
+  unitPrice: 30.99,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197839/62166.jpg?v=638394717475500000",
+  productUrl: "https://www.drogal.com.br/oleo-cicatrizante-curativo-triane-200ml/p",
+  popularity: 5746
+ },
+ {
+  sku: "drogal-16064",
+  name: "Curativo Nexcare Transparente 10 Unidades",
+  brand: "Nexcare",
+  unitPrice: 8.59,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196740/61124.jpg?v=638394717469200000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-transparente-10-unidades/p",
+  popularity: 5747
+ },
+ {
+  sku: "drogal-15745",
+  name: "Curativo Transparente Nexcare Tegaderm + Pad À Prova D'Água 3 unidades",
+  brand: "Nexcare",
+  unitPrice: 41.05,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272358/188137.png?v=638989812488330000",
+  productUrl: "https://www.drogal.com.br/curativo-transparente-nexcare-tegaderm-pad-a-prova-dagua-3-unidades/p",
+  popularity: 5748
+ },
+ {
+  sku: "drogal-15667",
+  name: "Esparadrapo Impermeável Triane Branco 1,2cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 9.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196028/60426.png?v=638394717189900000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-triane-branco-12cm-x-45m/p",
+  popularity: 5749
+ },
+ {
+  sku: "drogal-15621",
+  name: "Esparadrapo Impermeável Triane Branco 5,0cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 27.15,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195961/60429.png?v=638394717257070000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-triane-branco-50cm-x-45m/p",
+  popularity: 5750
+ },
+ {
+  sku: "drogal-14714",
+  name: "Protetor Ocular Triane 20 Unidades",
+  brand: "Triane",
+  unitPrice: 29.85,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194350/58699.png?v=638394717085370000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-triane-20-unidades/p",
+  popularity: 5751
+ },
+ {
+  sku: "drogal-14391",
+  name: "Micronebulizador Micropar Plus Máscara Infantil 1un.",
+  brand: "Soniclear",
+  unitPrice: 27.29,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193746/58159.jpg?v=638394716589170000",
+  productUrl: "https://www.drogal.com.br/conj-micropar-plus/p",
+  popularity: 5752
+ },
+ {
+  sku: "drogal-14321",
+  name: "Esparadrapo Cremer 5 Cm X 4,5 Metros",
+  brand: "Cremer",
+  unitPrice: 29.39,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193596/57963.jpg?v=638394716623370000",
+  productUrl: "https://www.drogal.com.br/espar-cremer-5cmx45m/p",
+  popularity: 5753
+ },
+ {
+  sku: "drogal-14282",
+  name: "Curativos Nexcare Acne 36 Unidades",
+  brand: "Nexcare",
+  unitPrice: 46.19,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193502/57884.jpg?v=638394716038630000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-acne-36-unidades/p",
+  popularity: 5754
+ },
+ {
+  sku: "drogal-14264",
+  name: "Protetor para os Pés Nexcare 25mm x 3m",
+  brand: "Nexcare",
+  unitPrice: 18.45,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193450/57892.jpg?v=638394716826070000",
+  productUrl: "https://www.drogal.com.br/protetor-para-os-pes-nexcare-25mm-x-3m/p",
+  popularity: 5755
+ },
+ {
+  sku: "drogal-14263",
+  name: "Curativo Micropore Nexcare 10 Unidades",
+  brand: "Nexcare",
+  unitPrice: 8.49,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193446/57881.jpg?v=638394716705100000",
+  productUrl: "https://www.drogal.com.br/curativo-micropore-nexcare-10-unidades/p",
+  popularity: 5756
+ },
+ {
+  sku: "drogal-13589",
+  name: "Protetor Para os Pés Triane Hipoalergênico 1 Unidade",
+  brand: "Triane",
+  unitPrice: 16.09,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192962/57008.png?v=638394716706200000",
+  productUrl: "https://www.drogal.com.br/protetor-para-os-pes-triane-hipoalergenico-1-unidade/p",
+  popularity: 5757
+ },
+ {
+  sku: "drogal-13537",
+  name: "Band Aid Ultra Protection 15 Unidades",
+  brand: "Band Aid",
+  unitPrice: 19.05,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192918/56910.jpg?v=638394716798600000",
+  productUrl: "https://www.drogal.com.br/band-aid-ultra-protection-15-unidades/p",
+  popularity: 5758
+ },
+ {
+  sku: "drogal-23638",
+  name: "Esparadrapo Impermeável Cremer Bege 5,0cm x 3cm 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 24.45,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270803/186375.jpg?v=638971599254000000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-cremer-bege-50cm-x-3cm-1-unidade/p",
+  popularity: 5759
+ },
+ {
+  sku: "drogal-16797",
+  name: "Curativos Divertidos Cremer Minions 25 Unidades",
+  brand: "Cremer",
+  unitPrice: 18.69,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/231739/111539.jpg?v=638580931580630000",
+  productUrl: "https://www.drogal.com.br/curativos-divertidos-cremer-minions-25-unidades/p",
+  popularity: 5760
+ },
+ {
+  sku: "drogal-16795",
+  name: "Traqueia Flex Enovamix Acompanha 2 Máscaras Anatômicas",
+  brand: "Enovamix",
+  unitPrice: 39.79,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/223086/103428.jpg?v=638554117095630000",
+  productUrl: "https://www.drogal.com.br/traqueia-flex-enovamix-acompanha-2-mascaras-anatomicas/p",
+  popularity: 5761
+ },
+ {
+  sku: "drogal-16363",
+  name: "Curativo Topz Patrulha Canina 25 Unidades",
+  brand: "Topz",
+  unitPrice: 18.69,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197463/61951.jpg?v=638394717488830000",
+  productUrl: "https://www.drogal.com.br/curativo-topz-patrulha-canina-25-unidades/p",
+  popularity: 5762
+ },
+ {
+  sku: "drogal-15694",
+  name: "Esparadrapo Triane Transparente 1,2Cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 9.79,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196065/60510.jpg?v=638394717334670000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-triane-transparente-12cm-x-45m/p",
+  popularity: 5763
+ },
+ {
+  sku: "drogal-15648",
+  name: "Fita Cirúrgica Microporosa Triane Branca 10cm X 4,5m",
+  brand: "Triane",
+  unitPrice: 44.25,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195993/60433.png?v=638394717322130000",
+  productUrl: "https://www.drogal.com.br/fita-cirurgica-microporosa-triane-branca-10cm-x-45m/p",
+  popularity: 5764
+ },
+ {
+  sku: "drogal-15356",
+  name: "Fita Microp Nexcare Remoção Sem Dor 25mm",
+  brand: "Nexcare",
+  unitPrice: 33.05,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195442/59872.png?v=638394717233230000",
+  productUrl: "https://www.drogal.com.br/fita-microp-nexcare-remocao-sem-dor-25mm/p",
+  popularity: 5765
+ },
+ {
+  sku: "drogal-14628",
+  name: "Respiron Classic Nível Médio",
+  brand: "Respiron Classic",
+  unitPrice: 45.75,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194196/58603.png?v=638394716912930000",
+  productUrl: "https://www.drogal.com.br/respiron-classic-nivel-medio/p",
+  popularity: 5766
+ },
+ {
+  sku: "drogal-14343",
+  name: "Fita Microporosa Cremer Branca 2,5cm x 4,5m",
+  brand: "Cremer",
+  unitPrice: 21.79,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193631/57969.png?v=638394715909000000",
+  productUrl: "https://www.drogal.com.br/fita-microporosa-cremer-branca-25cm-x-45m/p",
+  popularity: 5767
+ },
+ {
+  sku: "drogal-16603",
+  name: "Fita Microporosa Cremer Branca 1,2cm x 45m",
+  brand: "Cremer",
+  unitPrice: 10.89,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/200131/57966.jpg?v=638394715942600000",
+  productUrl: "https://www.drogal.com.br/fita-microp-cremer-12cmx45m/p",
+  popularity: 5768
+ },
+ {
+  sku: "drogal-14311",
+  name: "Esparadrapo Impermeável Cremer 2,5cm X 4,5m Cor Branco 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 19.09,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/212200/91026.jpg?v=638463753796970000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-impermeavel-cremer-25cm-x-45m-cor-branco-1-unidade/p",
+  popularity: 5769
+ },
+ {
+  sku: "drogal-14295",
+  name: "Algodão Cremer Hidrófilo Rolo 250g",
+  brand: "Cremer",
+  unitPrice: 37.25,
+  unit: "un",
+  category: "primeiros socorros algodao",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193544/57949.jpg?v=638394716027630000",
+  productUrl: "https://www.drogal.com.br/algodao-cremer-rolo-250g/p",
+  popularity: 5770
+ },
+ {
+  sku: "drogal-14261",
+  name: "Protetor Ocular Nexcare Adulto Normal 12 Unidades",
+  brand: "Nexcare",
+  unitPrice: 42.39,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193442/57871.jpg?v=638394716160600000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-nexcare-adulto-normal-12-unidades/p",
+  popularity: 5771
+ },
+ {
+  sku: "drogal-16020",
+  name: "Curativo Nexcare Duo Joelho e Cotovelo 6 Unidades",
+  brand: "Nexcare",
+  unitPrice: 38.59,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196581/60978.png?v=638394716422030000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-duo-joelho-e-cotovelo-6-unidades/p",
+  popularity: 5772
+ },
+ {
+  sku: "drogal-15702",
+  name: "Esparadrapo Triane Transparente 2,5cm x 4,5m",
+  brand: "Triane",
+  unitPrice: 16.35,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196073/60511.jpg?v=638394717323830000",
+  productUrl: "https://www.drogal.com.br/esparadrapo-transparente-triane-25cm-x-45m/p",
+  popularity: 5773
+ },
+ {
+  sku: "drogal-15347",
+  name: "Protetor Ocular Oftan Bege Tamanho Grande 20 Unidades",
+  brand: "Oftam",
+  unitPrice: 32.69,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195426/59794.png?v=638394717236670000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-oftan-bege-tamanho-grande-20-unidades/p",
+  popularity: 5774
+ },
+ {
+  sku: "drogal-14304",
+  name: "Esparadrapo Cremer 1,2 Cm X 4,5 Metros",
+  brand: "Cremer",
+  unitPrice: 12.05,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193562/57959.jpg?v=638394716640800000",
+  productUrl: "https://www.drogal.com.br/esparadrapocremer12cmx45metros/p",
+  popularity: 5775
+ },
+ {
+  sku: "drogal-14296",
+  name: "Curativos Nexcare Superflexíveis 10 Unidades",
+  brand: "Nexcare",
+  unitPrice: 10.75,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193546/57886.jpg?v=638394715997970000",
+  productUrl: "https://www.drogal.com.br/curativos-nexcare-superflexiveis-10-unidades/p",
+  popularity: 5776
+ },
+ {
+  sku: "drogal-14273",
+  name: "Fita Transparente Nexcare 12mm x 4,5m",
+  brand: "Nexcare",
+  unitPrice: 17.99,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193465/57873.jpg?v=638394716069070000",
+  productUrl: "https://www.drogal.com.br/fita-transparente-nexcare-12mm-x-45m/p",
+  popularity: 5777
+ },
+ {
+  sku: "drogal-14217",
+  name: "Protetor Ocular Oftam Pequeno Colorido 20 Unidades",
+  brand: "Oftam",
+  unitPrice: 32.69,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193388/57820.jpg?v=638394716935530000",
+  productUrl: "https://www.drogal.com.br/oftam-prot-ocular-inf-colo20u/p",
+  popularity: 5778
+ },
+ {
+  sku: "drogal-21326",
+  name: "Curativos Topz Baby Galinha Pintadinha 25 Unidades",
+  brand: "Topz",
+  unitPrice: 18.69,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/240509/120701.jpg?v=638686285101670000",
+  productUrl: "https://www.drogal.com.br/curativos-topz-baby-galinha-pintadinha-25-unidades/p",
+  popularity: 5779
+ },
+ {
+  sku: "drogal-16005",
+  name: "Curativo Nexcare Duo Tamanhos Sortidos 10 Unidades",
+  brand: "Nexcare",
+  unitPrice: 21.35,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196546/60971.png?v=638394717412030000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-duo-tamanhos-sortidos-10-unidades/p",
+  popularity: 5780
+ },
+ {
+  sku: "drogal-15833",
+  name: "Espaçador Universal Enovamix",
+  brand: "Enovamix",
+  unitPrice: 45.35,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196253/60670.png?v=638394717394330000",
+  productUrl: "https://www.drogal.com.br/espacador-universal-enovamix/p",
+  popularity: 5781
+ },
+ {
+  sku: "drogal-15343",
+  name: "Protetor Ocular Hipoalergênico Bege Tamanho P 20 Unidades",
+  brand: "Oftam",
+  unitPrice: 32.69,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195414/59793.png?v=638394716529930000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-hipoalergenico-bege-tamanho-p-20-unidades/p",
+  popularity: 5782
+ },
+ {
+  sku: "drogal-15299",
+  name: "Protetor Ocular Divertido Azul Tamanho P 20 Unidades",
+  brand: "Oftam",
+  unitPrice: 41.19,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195339/59796.png?v=638394716552830000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-divertido-azul-tamanho-p-20-unidades/p",
+  popularity: 5783
+ },
+ {
+  sku: "drogal-15291",
+  name: "Protetor Ocular Divertido Rosa Tamanho P 20 Unidades",
+  brand: "Oftam",
+  unitPrice: 41.19,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195331/59795.png?v=638394717269600000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-divertido-rosa-tamanho-p-20-unidades/p",
+  popularity: 5784
+ },
+ {
+  sku: "drogal-14477",
+  name: "CurativoS Nexcare SuperflexíveIS Sortidos 24 Unidades",
+  brand: "Nexcare",
+  unitPrice: 32.69,
+  unit: "un",
+  category: "primeiros socorros curativo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193876/58270.jpg?v=638394716822000000",
+  productUrl: "https://www.drogal.com.br/curativo-nexcare-superflexivel-sortidos-24-unidades/p",
+  popularity: 5785
+ },
+ {
+  sku: "drogal-14340",
+  name: "Esparadrapo Impermeável Cremer 10cm x 4,5cm com 1 Unidade",
+  brand: "Cremer",
+  unitPrice: 51.05,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193627/57957.jpg?v=638394715956400000",
+  productUrl: "https://www.drogal.com.br/esparadrapoimpermeavelcremer10cmpor45mcom1unidade/p",
+  popularity: 5786
+ },
+ {
+  sku: "drogal-14337",
+  name: "Fita Microporosa Cremer Branca 10cm x 4,5m",
+  brand: "Cremer",
+  unitPrice: 52.79,
+  unit: "un",
+  category: "primeiros socorros esparadrapo",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193622/57968.jpg?v=638394715905530000",
+  productUrl: "https://www.drogal.com.br/fita-microp-cremer-10cmx45m/p",
+  popularity: 5787
+ },
+ {
+  sku: "drogal-14266",
+  name: "Protetor Ocular Nexcare Infantil 20 Unidades",
+  brand: "Nexcare",
+  unitPrice: 47.35,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193452/57872.jpg?v=638394716104300000",
+  productUrl: "https://www.drogal.com.br/protetor-ocular-nexcare-infantil-20-unidades/p",
+  popularity: 5788
+ },
+ {
+  sku: "drogal-13812",
+  name: "Espaçador AgaChamber para Broncodilatador Spray 1 Unidade",
+  brand: "Agachamber",
+  unitPrice: 74.39,
+  unit: "un",
+  category: "primeiros socorros acessorios de primeiros socorros",
+  imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248410/129538.jpg?v=638754837375070000",
+  productUrl: "https://www.drogal.com.br/espacador-agachamber-para-broncodilatador-spray-1-unidade/p",
+  popularity: 5789
+ },
+ {
   sku: "drogal-21365",
   name: "Pastilha Vick Drops Sabores Sortidos Sachê 1 Unidade 1,8g",
   brand: "Vick",
@@ -62373,7 +63693,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/240985/121291.jpg?v=638911167610170000",
   productUrl: "https://www.drogal.com.br/pastilha-vick-drops-sabores-sortidos-18g-sache-1-unidade/p",
-  popularity: 5670
+  popularity: 5790
  },
  {
   sku: "drogal-19920",
@@ -62384,7 +63704,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/255428/137362.jpg?v=638841404676230000",
   productUrl: "https://www.drogal.com.br/leite-em-po-ninho-integral-ninho-forti-380g/p",
-  popularity: 5671
+  popularity: 5791
  },
  {
   sku: "drogal-19883",
@@ -62395,7 +63715,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/232571/112440.jpg?v=638608834499100000",
   productUrl: "https://www.drogal.com.br/leite-em-po-ninho-integral-instantaneo-380g/p",
-  popularity: 5672
+  popularity: 5792
  },
  {
   sku: "drogal-24936",
@@ -62406,7 +63726,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283827/200705.png?v=639186386076330000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-sabor-bacon-60g/p",
-  popularity: 5673
+  popularity: 5793
  },
  {
   sku: "drogal-24794",
@@ -62417,7 +63737,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282233/199319.jpg?v=639166300328000000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-branco-40g/p",
-  popularity: 5674
+  popularity: 5794
  },
  {
   sku: "drogal-22111",
@@ -62428,7 +63748,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277960/194542.png?v=639099721806970000",
   productUrl: "https://www.drogal.com.br/chocolate-chocotrio-nestle-avela-90g/p",
-  popularity: 5675
+  popularity: 5795
  },
  {
   sku: "drogal-20504",
@@ -62439,7 +63759,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/226183/105810.jpg?v=638574534596030000",
   productUrl: "https://www.drogal.com.br/salgadinho-doritos-queijo-nacho-32g/p",
-  popularity: 5676
+  popularity: 5796
  },
  {
   sku: "drogal-16346",
@@ -62450,7 +63770,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/231364/111162.jpg?v=638580929669400000",
   productUrl: "https://www.drogal.com.br/chocolate-chocotrio-nestle-sabor-chocolate-90g/p",
-  popularity: 5677
+  popularity: 5797
  },
  {
   sku: "drogal-16325",
@@ -62461,7 +63781,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249368/130494.jpg?v=638762680013600000",
   productUrl: "https://www.drogal.com.br/chocolate-chocotrio-nestle-cookies-e-cream-90g/p",
-  popularity: 5678
+  popularity: 5798
  },
  {
   sku: "drogal-16254",
@@ -62472,7 +63792,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211931/90718.png?v=638463759005200000",
   productUrl: "https://www.drogal.com.br/chocolate-stikadinho-go-sabor-morango-40g/p",
-  popularity: 5679
+  popularity: 5799
  },
  {
   sku: "drogal-16211",
@@ -62483,7 +63803,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197170/61513.png?v=638394761124870000",
   productUrl: "https://www.drogal.com.br/pilha-moeda-de-litio-duracell-2032-3v-1-unidade/p",
-  popularity: 5680
+  popularity: 5800
  },
  {
   sku: "drogal-14888",
@@ -62494,7 +63814,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia leite uht",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194590/58989.jpg?v=638394763463400000",
   productUrl: "https://www.drogal.com.br/leite-integral-piracanjuba-1-litro/p",
-  popularity: 5681
+  popularity: 5801
  },
  {
   sku: "drogal-14779",
@@ -62505,7 +63825,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211478/90262.jpg?v=638463732418700000",
   productUrl: "https://www.drogal.com.br/bombom-grandes-sucessos-2506g/p",
-  popularity: 5682
+  popularity: 5802
  },
  {
   sku: "drogal-14400",
@@ -62516,7 +63836,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193763/58116.jpg?v=638394758483170000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-nissin-turma-da-monica-sabor-tomate-suave-85g/p",
-  popularity: 5683
+  popularity: 5803
  },
  {
   sku: "drogal-14387",
@@ -62527,7 +63847,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193734/58111.jpg?v=638394758372430000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-nissin-lamen-sabor-galinha-caipira-85g/p",
-  popularity: 5684
+  popularity: 5804
  },
  {
   sku: "drogal-13728",
@@ -62538,7 +63858,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/229240/109797.jpg?v=638574505048070000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-valda-tablete-sabor-mentol-eucaliptol-e-timol-4g/p",
-  popularity: 5685
+  popularity: 5805
  },
  {
   sku: "drogal-25262",
@@ -62549,7 +63869,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287385/204584.jpg?v=639240365442230000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-caramelo-macchiato-40g/p",
-  popularity: 5686
+  popularity: 5806
  },
  {
   sku: "drogal-25109",
@@ -62560,7 +63880,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286234/203442.jpg?v=639216365311130000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-recheado-chokito-90g/p",
-  popularity: 5687
+  popularity: 5807
  },
  {
   sku: "drogal-25108",
@@ -62571,7 +63891,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286226/203500.jpg?v=639216360094630000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-passatempo-sabor-alpino-90g/p",
-  popularity: 5688
+  popularity: 5808
  },
  {
   sku: "drogal-25107",
@@ -62582,7 +63902,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286218/203471.jpg?v=639216359136500000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-passatempo-sabor-galak-90g/p",
-  popularity: 5689
+  popularity: 5809
  },
  {
   sku: "drogal-24887",
@@ -62593,7 +63913,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283229/200304.jpg?v=639215531710770000",
   productUrl: "https://www.drogal.com.br/chocostick-nestle-caramelo-salgado-24g/p",
-  popularity: 5690
+  popularity: 5810
  },
  {
   sku: "drogal-24880",
@@ -62604,7 +63924,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283177/198844.jpg?v=639177234938530000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-baton-choco-stick-caribe-24g/p",
-  popularity: 5691
+  popularity: 5811
  },
  {
   sku: "drogal-24793",
@@ -62615,7 +63935,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282228/199312.jpg?v=639166083900930000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-dark-40g/p",
-  popularity: 5692
+  popularity: 5812
  },
  {
   sku: "drogal-24392",
@@ -62626,7 +63946,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278274/194287.png?v=639101369377600000",
   productUrl: "https://www.drogal.com.br/mini-barra-de-biscoito-cronns-goiabinha-50g/p",
-  popularity: 5693
+  popularity: 5813
  },
  {
   sku: "drogal-21564",
@@ -62637,7 +63957,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249794/131035.jpg?v=638769534578070000",
   productUrl: "https://www.drogal.com.br/biscoto-nestle-choco-biscuit-chocolate-ao-leite-78g/p",
-  popularity: 5694
+  popularity: 5814
  },
  {
   sku: "drogal-20554",
@@ -62648,7 +63968,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/227330/106767.jpg?v=638574549531800000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-fandangos-sabor-presunto-35g/p",
-  popularity: 5695
+  popularity: 5815
  },
  {
   sku: "drogal-20503",
@@ -62659,7 +63979,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/226180/105805.jpg?v=638574526996730000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-cheetos-onda-requeijao-40g/p",
-  popularity: 5696
+  popularity: 5816
  },
  {
   sku: "drogal-19897",
@@ -62670,7 +63990,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/269795/185137.jpg?v=638962990085600000",
   productUrl: "https://www.drogal.com.br/leite-em-po-semidesnatado-ninho-adulto-350g/p",
-  popularity: 5697
+  popularity: 5817
  },
  {
   sku: "drogal-19718",
@@ -62681,7 +64001,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211309/90073.jpg?v=638463759178500000",
   productUrl: "https://www.drogal.com.br/chocolate-kinder-bueno-white-43g/p",
-  popularity: 5698
+  popularity: 5818
  },
  {
   sku: "drogal-16935",
@@ -62692,7 +64012,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/207237/86159.png?v=638416953958900000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-tablito-59g/p",
-  popularity: 5699
+  popularity: 5819
  },
  {
   sku: "drogal-16928",
@@ -62703,7 +64023,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286896/204262.jpg?v=639227459670730000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-eskibon-92g/p",
-  popularity: 5700
+  popularity: 5820
  },
  {
   sku: "drogal-16566",
@@ -62714,7 +64034,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/289000/206599.png?v=639259555915230000",
   productUrl: "https://www.drogal.com.br/bombom-lacta-sonho-de-valsa-20g/p",
-  popularity: 5701
+  popularity: 5821
  },
  {
   sku: "drogal-16295",
@@ -62725,7 +64045,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/230929/110753.jpg?v=638580929390030000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-negresco-90g/p",
-  popularity: 5702
+  popularity: 5822
  },
  {
   sku: "drogal-16174",
@@ -62736,7 +64056,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273317/189253.png?v=639005590682400000",
   productUrl: "https://www.drogal.com.br/cha-leao-camomila-10-saches-10g/p",
-  popularity: 5703
+  popularity: 5823
  },
  {
   sku: "drogal-16148",
@@ -62747,7 +64067,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273412/189336.png?v=639009643834330000",
   productUrl: "https://www.drogal.com.br/cha-leao-erva-doce-10-saches-16g/p",
-  popularity: 5704
+  popularity: 5824
  },
  {
   sku: "drogal-16081",
@@ -62758,7 +64078,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285551/202878.jpg?v=639210336133400000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-ao-leite-150g/p",
-  popularity: 5705
+  popularity: 5825
  },
  {
   sku: "drogal-16039",
@@ -62769,7 +64089,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211546/90335.jpg?v=638463734377400000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-crunch-80g/p",
-  popularity: 5706
+  popularity: 5826
  },
  {
   sku: "drogal-16015",
@@ -62780,7 +64100,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196571/61027.jpg?v=638394764572970000",
   productUrl: "https://www.drogal.com.br/chiclete-trident-x-fresh-intense-266g/p",
-  popularity: 5707
+  popularity: 5827
  },
  {
   sku: "drogal-16008",
@@ -62791,7 +64111,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211395/90195.jpg?v=638463733183330000",
   productUrl: "https://www.drogal.com.br/chocolate-stick-lacta-recheio-sonho-de-valsa-25g/p",
-  popularity: 5708
+  popularity: 5828
  },
  {
   sku: "drogal-15982",
@@ -62802,7 +64122,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196515/60916.jpg?v=638394760267230000",
   productUrl: "https://www.drogal.com.br/biscoito-trakinas-sabor-chocolate-126g/p",
-  popularity: 5709
+  popularity: 5829
  },
  {
   sku: "drogal-15975",
@@ -62813,7 +64133,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/289004/206611.png?v=639259564458130000",
   productUrl: "https://www.drogal.com.br/bombom-lacta-ouro-branco-20g/p",
-  popularity: 5710
+  popularity: 5830
  },
  {
   sku: "drogal-15085",
@@ -62824,7 +64144,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278853/195239.png?v=639113334979600000",
   productUrl: "https://www.drogal.com.br/pilha-rayovac-zinco-aaa4-sm-96-com-4-unidades/p",
-  popularity: 5711
+  popularity: 5831
  },
  {
   sku: "drogal-14903",
@@ -62835,7 +64155,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211614/90394.png?v=638463732712530000",
   productUrl: "https://www.drogal.com.br/chocolate-twix-original-40g/p",
-  popularity: 5712
+  popularity: 5832
  },
  {
   sku: "drogal-14801",
@@ -62846,7 +64166,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194464/58855.jpg?v=638394758687700000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-cup-noodles-sabor-galinha-caipira-85g/p",
-  popularity: 5713
+  popularity: 5833
  },
  {
   sku: "drogal-14756",
@@ -62857,7 +64177,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264997/177544.jpg?v=638913133833930000",
   productUrl: "https://www.drogal.com.br/drops-halls-extra-forte-nv/p",
-  popularity: 5714
+  popularity: 5834
  },
  {
   sku: "drogal-14686",
@@ -62868,7 +64188,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276694/192884.png?v=639082507362500000",
   productUrl: "https://www.drogal.com.br/barrinha-assiflora-zero-acucar-sabor-pe-de-moleque-22g/p",
-  popularity: 5715
+  popularity: 5835
  },
  {
   sku: "drogal-14419",
@@ -62879,7 +64199,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238345/111124.jpg?v=638660376038630000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-sabor-prestigio-140g/p",
-  popularity: 5716
+  popularity: 5836
  },
  {
   sku: "drogal-14414",
@@ -62890,7 +64210,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/232929/112806.jpg?v=638962177697830000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-ao-leite-415g/p",
-  popularity: 5717
+  popularity: 5837
  },
  {
   sku: "drogal-14382",
@@ -62901,7 +64221,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193721/58110.jpg?v=638394758523030000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-nissin-lamen-sabor-carne-85g/p",
-  popularity: 5718
+  popularity: 5838
  },
  {
   sku: "drogal-14342",
@@ -62912,7 +64232,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193633/58052.png?v=638394763094500000",
   productUrl: "https://www.drogal.com.br/biscoito-de-polvilho-reds-100g/p",
-  popularity: 5719
+  popularity: 5839
  },
  {
   sku: "drogal-14325",
@@ -62923,7 +64243,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193608/57984.jpg?v=638394758177870000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-trident-menta-8g/p",
-  popularity: 5720
+  popularity: 5840
  },
  {
   sku: "drogal-14320",
@@ -62934,7 +64254,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193593/57942.png?v=638394758031200000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-beijos-morango-90g/p",
-  popularity: 5721
+  popularity: 5841
  },
  {
   sku: "drogal-14269",
@@ -62945,7 +64265,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193455/57911.png?v=638394758004000000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-dentaduras-90g/p",
-  popularity: 5722
+  popularity: 5842
  },
  {
   sku: "drogal-14223",
@@ -62956,7 +64276,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193395/57829.png?v=638394757867800000",
   productUrl: "https://www.drogal.com.br/tampao-de-ouvido-silicone-1-par/p",
-  popularity: 5723
+  popularity: 5843
  },
  {
   sku: "drogal-14077",
@@ -62967,7 +64287,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264818/177339.jpg?v=638911116731330000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-mentos-fruit-38g/p",
-  popularity: 5724
+  popularity: 5844
  },
  {
   sku: "drogal-13962",
@@ -62978,7 +64298,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193203/57550.png?v=638394762996000000",
   productUrl: "https://www.drogal.com.br/biscoito-oreo-original-90g/p",
-  popularity: 5725
+  popularity: 5845
  },
  {
   sku: "drogal-25263",
@@ -62989,7 +64309,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287392/204929.jpg?v=639240323306030000",
   productUrl: "https://www.drogal.com.br/chocolate-twix-sabor-banoffee-40g/p",
-  popularity: 5726
+  popularity: 5846
  },
  {
   sku: "drogal-25201",
@@ -63000,7 +64320,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286860/204166.jpg?v=639227323373770000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-strawberry-podium-415g/p",
-  popularity: 5727
+  popularity: 5847
  },
  {
   sku: "drogal-25139",
@@ -63011,7 +64331,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286460/203797.png?v=639222394583030000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-mentos-stick-wild-spearmint-375g/p",
-  popularity: 5728
+  popularity: 5848
  },
  {
   sku: "drogal-25111",
@@ -63022,7 +64342,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286241/203515.jpg?v=639216513883930000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-chocowaffle-nestle-chocolate-ao-leite-80g/p",
-  popularity: 5729
+  popularity: 5849
  },
  {
   sku: "drogal-25110",
@@ -63033,7 +64353,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286239/203513.jpg?v=639216415378300000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-passatempo-sabor-prestigio-branco-90g/p",
-  popularity: 5730
+  popularity: 5850
  },
  {
   sku: "drogal-24989",
@@ -63044,7 +64364,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284592/201667.jpg?v=639198974112470000",
   productUrl: "https://www.drogal.com.br/odorizador-aromatizador-de-ambientes-aerossol-puro-ar-flor-de-ylang-ylang-500ml/p",
-  popularity: 5731
+  popularity: 5851
  },
  {
   sku: "drogal-24987",
@@ -63055,7 +64375,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284580/201257.jpg?v=639198868944930000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-choco-trio-cappucino-90g/p",
-  popularity: 5732
+  popularity: 5852
  },
  {
   sku: "drogal-24973",
@@ -63066,7 +64386,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284254/201263.jpg?v=639197946517170000",
   productUrl: "https://www.drogal.com.br/chocolate-stick-nestle-avela-26g/p",
-  popularity: 5733
+  popularity: 5853
  },
  {
   sku: "drogal-24929",
@@ -63077,7 +64397,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283494/198863.png?v=639184179814430000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-baton-choco-stick-triplo-chocolate-26g/p",
-  popularity: 5734
+  popularity: 5854
  },
  {
   sku: "drogal-24928",
@@ -63088,7 +64408,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/283491/198858.jpg?v=639184179775400000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-baton-choco-stick-cookies-cream-24g/p",
-  popularity: 5735
+  popularity: 5855
  },
  {
   sku: "drogal-24797",
@@ -63099,7 +64419,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282248/199336.jpg?v=639166102621330000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-pe-de-moleque-40g/p",
-  popularity: 5736
+  popularity: 5856
  },
  {
   sku: "drogal-24796",
@@ -63110,7 +64430,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282242/199330.jpg?v=639166096198500000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-morango-40g/p",
-  popularity: 5737
+  popularity: 5857
  },
  {
   sku: "drogal-24792",
@@ -63121,7 +64441,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282225/199310.jpg?v=639166079597730000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-40g/p",
-  popularity: 5738
+  popularity: 5858
  },
  {
   sku: "drogal-24732",
@@ -63132,7 +64452,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281583/198194.jpg?v=639160052283000000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-morango-silvestre-80g/p",
-  popularity: 5739
+  popularity: 5859
  },
  {
   sku: "drogal-24538",
@@ -63143,7 +64463,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279692/196040.jpg?v=639136663435900000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-cebolitos-36g/p",
-  popularity: 5740
+  popularity: 5860
  },
  {
   sku: "drogal-24507",
@@ -63154,7 +64474,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279371/195787.jpg?v=639129011157070000",
   productUrl: "https://www.drogal.com.br/cereal-matinal-nestle-kitkat-sabor-chocolate-25g/p",
-  popularity: 5741
+  popularity: 5861
  },
  {
   sku: "drogal-24477",
@@ -63165,7 +64485,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279139/195716.jpg?v=639124620725100000",
   productUrl: "https://www.drogal.com.br/creme-de-chocolate-kitkat-crunch-creamy-330g/p",
-  popularity: 5742
+  popularity: 5862
  },
  {
   sku: "drogal-24338",
@@ -63176,7 +64496,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277494/191396.jpg?v=639089382632270000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-recheado-galak-90g/p",
-  popularity: 5743
+  popularity: 5863
  },
  {
   sku: "drogal-23689",
@@ -63187,7 +64507,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/271158/185427.jpg?v=638975156512930000",
   productUrl: "https://www.drogal.com.br/mms-chocolate-132g/p",
-  popularity: 5744
+  popularity: 5864
  },
  {
   sku: "drogal-23508",
@@ -63198,7 +64518,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270019/185450.jpg?v=638965811460930000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-recheado-prestigio-90g/p",
-  popularity: 5745
+  popularity: 5865
  },
  {
   sku: "drogal-22982",
@@ -63209,7 +64529,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264576/177016.jpg?v=638906249270100000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-melancia-56g/p",
-  popularity: 5746
+  popularity: 5866
  },
  {
   sku: "drogal-22875",
@@ -63220,7 +64540,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/259185/139226.jpg?v=638888911225370000",
   productUrl: "https://www.drogal.com.br/chocolate-hershey%E2%80%99s-cookies%E2%80%99n-creme-77g/p",
-  popularity: 5747
+  popularity: 5867
  },
  {
   sku: "drogal-22873",
@@ -63231,7 +64551,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/259171/138927.jpg?v=638888908977770000",
   productUrl: "https://www.drogal.com.br/chocolate-hershey%E2%80%99s-ovomaltine-77g/p",
-  popularity: 5748
+  popularity: 5868
  },
  {
   sku: "drogal-21704",
@@ -63242,7 +64562,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243815/124222.jpg?v=638739863927570000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-morango-92g/p",
-  popularity: 5749
+  popularity: 5869
  },
  {
   sku: "drogal-21520",
@@ -63253,7 +64573,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242020/122399.jpg?v=638686286704600000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-tablito-3-chocolates-61g/p",
-  popularity: 5750
+  popularity: 5870
  },
  {
   sku: "drogal-21110",
@@ -63264,7 +64584,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/239257/119411.jpg?v=638660384794900000",
   productUrl: "https://www.drogal.com.br/cookies-garoto-caribe-60g/p",
-  popularity: 5751
+  popularity: 5871
  },
  {
   sku: "drogal-20943",
@@ -63275,7 +64595,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238339/106760.jpg?v=638660413939500000",
   productUrl: "https://www.drogal.com.br/batata-frita-ondulada-original-elma-chips-ruffles-33g/p",
-  popularity: 5752
+  popularity: 5872
  },
  {
   sku: "drogal-20502",
@@ -63286,7 +64606,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/226175/105791.jpg?v=638574528937030000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-cheetos-lua-parmesao-35g/p",
-  popularity: 5753
+  popularity: 5873
  },
  {
   sku: "drogal-19747",
@@ -63297,7 +64617,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211334/90109.png?v=638463758853000000",
   productUrl: "https://www.drogal.com.br/chocolate-lacta-bis-xtra-oreo-45g/p",
-  popularity: 5754
+  popularity: 5874
  },
  {
   sku: "drogal-19727",
@@ -63308,7 +64628,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211329/90076.jpg?v=638463758706770000",
   productUrl: "https://www.drogal.com.br/chocolate-lacta-branco-laka-80g/p",
-  popularity: 5755
+  popularity: 5875
  },
  {
   sku: "drogal-16922",
@@ -63319,7 +64639,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278848/195233.png?v=639113275607370000",
   productUrl: "https://www.drogal.com.br/pilha-alcalina-rayovac-aa-4-unidades/p",
-  popularity: 5756
+  popularity: 5876
  },
  {
   sku: "drogal-16466",
@@ -63330,7 +64650,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211837/90616.png?v=638463754455030000",
   productUrl: "https://www.drogal.com.br/chocolate-bis-lacta-xtra-black-45g/p",
-  popularity: 5757
+  popularity: 5877
  },
  {
   sku: "drogal-16422",
@@ -63341,7 +64661,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197556/62026.jpg?v=638394762478430000",
   productUrl: "https://www.drogal.com.br/bala-de-cafe-pocket-zero-acucar-coffee-23g/p",
-  popularity: 5758
+  popularity: 5878
  },
  {
   sku: "drogal-16420",
@@ -63352,7 +64672,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273402/189324.png?v=639009007134570000",
   productUrl: "https://www.drogal.com.br/cha-leao-mamae-serena-alcaravia-funcho-e-melissa-10-saches-20g/p",
-  popularity: 5759
+  popularity: 5879
  },
  {
   sku: "drogal-16416",
@@ -63363,7 +64683,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197548/62025.jpg?v=638394762466270000",
   productUrl: "https://www.drogal.com.br/bala-de-leite-pocket-zero-acucar-milk-23g/p",
-  popularity: 5760
+  popularity: 5880
  },
  {
   sku: "drogal-16249",
@@ -63374,7 +64694,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287210/204633.jpg?v=639235227404470000",
   productUrl: "https://www.drogal.com.br/nutella-t-140g/p",
-  popularity: 5761
+  popularity: 5881
  },
  {
   sku: "drogal-16237",
@@ -63385,7 +64705,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197198/61672.png?v=638394761654000000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-sabor-menta-145g/p",
-  popularity: 5762
+  popularity: 5882
  },
  {
   sku: "drogal-16168",
@@ -63396,7 +64716,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250254/131565.jpg?v=638773878550800000",
   productUrl: "https://www.drogal.com.br/biscoito-recheadinho-goiaba-bauducco-112g/p",
-  popularity: 5763
+  popularity: 5883
  },
  {
   sku: "drogal-16161",
@@ -63407,7 +64727,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273320/189256.png?v=639005610487970000",
   productUrl: "https://www.drogal.com.br/cha-leao-capim-cidreira-10-saches-10g/p",
-  popularity: 5764
+  popularity: 5884
  },
  {
   sku: "drogal-16065",
@@ -63418,7 +64738,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233067/112946.jpg?v=638608803756300000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-suflair-duo-80g/p",
-  popularity: 5765
+  popularity: 5885
  },
  {
   sku: "drogal-16048",
@@ -63429,7 +64749,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211876/90669.jpg?v=638463734065400000",
   productUrl: "https://www.drogal.com.br/chocolate-branco-galak-80g/p",
-  popularity: 5766
+  popularity: 5886
  },
  {
   sku: "drogal-16034",
@@ -63440,7 +64760,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211868/90636.jpg?v=638463733975100000",
   productUrl: "https://www.drogal.com.br/chocolate-ao-leite-nestle-classic-80g/p",
-  popularity: 5767
+  popularity: 5887
  },
  {
   sku: "drogal-16026",
@@ -63451,7 +64771,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211802/90567.jpg?v=638463733715100000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-prestigio-80g/p",
-  popularity: 5768
+  popularity: 5888
  },
  {
   sku: "drogal-16024",
@@ -63462,7 +64782,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196595/61032.jpg?v=638394764519230000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-trident-melancia-252g/p",
-  popularity: 5769
+  popularity: 5889
  },
  {
   sku: "drogal-15987",
@@ -63473,7 +64793,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196526/60917.jpg?v=638394760285100000",
   productUrl: "https://www.drogal.com.br/bolacha-trakinas-sabor-morango-126g/p",
-  popularity: 5770
+  popularity: 5890
  },
  {
   sku: "drogal-15971",
@@ -63484,7 +64804,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211887/90664.png?v=638463733754870000",
   productUrl: "https://www.drogal.com.br/chocolate-bis-lacta-xtra-ao-leite-45g/p",
-  popularity: 5771
+  popularity: 5891
  },
  {
   sku: "drogal-15952",
@@ -63495,7 +64815,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250454/131786.jpg?v=638774702259400000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-branco-com-cereais-85g/p",
-  popularity: 5772
+  popularity: 5892
  },
  {
   sku: "drogal-15908",
@@ -63506,7 +64826,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211714/90639.png?v=638463733092730000",
   productUrl: "https://www.drogal.com.br/stikadinho-neugebauer-sticks-sabor-morango-615g/p",
-  popularity: 5773
+  popularity: 5893
  },
  {
   sku: "drogal-15893",
@@ -63517,7 +64837,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211855/90632.jpg?v=638463733191700000",
   productUrl: "https://www.drogal.com.br/chocolate-neugebauer-napolitano-70g/p",
-  popularity: 5774
+  popularity: 5894
  },
  {
   sku: "drogal-15818",
@@ -63528,7 +64848,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248506/129639.jpg?v=638756472449600000",
   productUrl: "https://www.drogal.com.br/bala-de-gengibre-cristalizado-gengibre-da-natureza-40g/p",
-  popularity: 5775
+  popularity: 5895
  },
  {
   sku: "drogal-15789",
@@ -63539,7 +64859,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276699/192906.png?v=639082521872970000",
   productUrl: "https://www.drogal.com.br/barrinha-de-cocada-com-chocolate-assiflora-zero-acucar-sabor-22g/p",
-  popularity: 5776
+  popularity: 5896
  },
  {
   sku: "drogal-15651",
@@ -63550,7 +64870,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/251581/132991.jpg?v=638786788293030000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-ao-leite-com-castanha-do-para-85g/p",
-  popularity: 5777
+  popularity: 5897
  },
  {
   sku: "drogal-15638",
@@ -63561,7 +64881,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211524/90304.jpg?v=638463732903430000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-ao-leite-com-avelas-85g/p",
-  popularity: 5778
+  popularity: 5898
  },
  {
   sku: "drogal-15619",
@@ -63572,7 +64892,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211412/90200.jpg?v=638463734636770000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-meio-amargo-com-amendoas-85g/p",
-  popularity: 5779
+  popularity: 5899
  },
  {
   sku: "drogal-15239",
@@ -63583,7 +64903,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285198/202418.jpg?v=639208406346530000",
   productUrl: "https://www.drogal.com.br/biscoito-nesfit-nestle-sabor-cacau-e-cereais-160g/p",
-  popularity: 5780
+  popularity: 5900
  },
  {
   sku: "drogal-15016",
@@ -63594,7 +64914,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273479/189444.png?v=639010805280800000",
   productUrl: "https://www.drogal.com.br/cha-matte-leao-original-10-saches-16g-cada/p",
-  popularity: 5781
+  popularity: 5901
  },
  {
   sku: "drogal-14863",
@@ -63605,7 +64925,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250328/131648.jpg?v=638773988354300000",
   productUrl: "https://www.drogal.com.br/torradabauduccotradicional142g/p",
-  popularity: 5782
+  popularity: 5902
  },
  {
   sku: "drogal-14810",
@@ -63616,7 +64936,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194477/58857.jpg?v=638394758751170000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-cup-noodles-sabor-carne-defumada-85g/p",
-  popularity: 5783
+  popularity: 5903
  },
  {
   sku: "drogal-20761",
@@ -63627,7 +64947,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276695/192907.png?v=639082509670800000",
   productUrl: "https://www.drogal.com.br/barrinha-assiflora-zero-acucar-sabor-banana-23g/p",
-  popularity: 5784
+  popularity: 5904
  },
  {
   sku: "drogal-14735",
@@ -63638,7 +64958,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276692/192908.png?v=639082500320700000",
   productUrl: "https://www.drogal.com.br/barrinha-assiflora-sabor-banana-cremosa-com-acucar-30g/p",
-  popularity: 5785
+  popularity: 5905
  },
  {
   sku: "drogal-20880",
@@ -63649,7 +64969,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276693/192879.png?v=639082503555570000",
   productUrl: "https://www.drogal.com.br/barrinha-assiflora-zero-acucar-sabor-goiaba-22g/p",
-  popularity: 5786
+  popularity: 5906
  },
  {
   sku: "drogal-14727",
@@ -63660,7 +64980,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276691/192909.png?v=639082496499570000",
   productUrl: "https://www.drogal.com.br/barrinha-assiflora-zero-acucar-banana-com-chocolate-25g/p",
-  popularity: 5787
+  popularity: 5907
  },
  {
   sku: "drogal-14411",
@@ -63671,7 +64991,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211641/90401.png?v=638463732125400000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-baton-ao-leite-16g/p",
-  popularity: 5788
+  popularity: 5908
  },
  {
   sku: "drogal-14409",
@@ -63682,7 +65002,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278852/195238.png?v=639113326763230000",
   productUrl: "https://www.drogal.com.br/pilha-rayovac-zinco-aa4-c4/p",
-  popularity: 5789
+  popularity: 5909
  },
  {
   sku: "drogal-14396",
@@ -63693,7 +65013,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257569/139726.jpg?v=638875734344700000",
   productUrl: "https://www.drogal.com.br/macarrao-instantaneo-nissin-lamen-sabor-galinha-85g/p",
-  popularity: 5790
+  popularity: 5910
  },
  {
   sku: "drogal-14310",
@@ -63704,7 +65024,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193575/58002.jpg?v=638394758287230000",
   productUrl: "https://www.drogal.com.br/cola-super-bonder-3g/p",
-  popularity: 5791
+  popularity: 5911
  },
  {
   sku: "drogal-14288",
@@ -63715,7 +65035,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211660/90423.png?v=638463753773470000",
   productUrl: "https://www.drogal.com.br/mms-tubo-chocolate-ao-leite-30g/p",
-  popularity: 5792
+  popularity: 5912
  },
  {
   sku: "drogal-14280",
@@ -63726,7 +65046,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264592/177032.jpg?v=638906867254430000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-up2u-menta-e-tutti-frutti-56g/p",
-  popularity: 5793
+  popularity: 5913
  },
  {
   sku: "drogal-14071",
@@ -63737,7 +65057,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264630/177076.jpg?v=638907689919100000",
   productUrl: "https://www.drogal.com.br/bala-fruitella-swirl-stick-sabor-suco-de-frutas-40g/p",
-  popularity: 5794
+  popularity: 5914
  },
  {
   sku: "drogal-14062",
@@ -63748,7 +65068,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264621/177066.jpg?v=638907675463470000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-fruitella-stick-sabor-suco-de-frutas-40g/p",
-  popularity: 5795
+  popularity: 5915
  },
  {
   sku: "drogal-12085",
@@ -63759,7 +65079,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/188820/52875.jpg?v=638415302876730000",
   productUrl: "https://www.drogal.com.br/bala-de-gengibre-assiflora-sabor-propolis-mel-e-limao-38g/p",
-  popularity: 5796
+  popularity: 5916
  },
  {
   sku: "drogal-25363",
@@ -63770,7 +65090,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288558/206125.jpg?v=639256981691130000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-melancia-azedinha-em-fatias-80g/p",
-  popularity: 5797
+  popularity: 5917
  },
  {
   sku: "drogal-25352",
@@ -63781,7 +65101,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288446/206025.jpg?v=639256128447570000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-batata-lisa-sabor-creme-de-cebola-45g/p",
-  popularity: 5798
+  popularity: 5918
  },
  {
   sku: "drogal-25351",
@@ -63792,7 +65112,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288444/206024.jpg?v=639255985659370000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-batata-lisa-sabor-picanha-com-barbecue-45g/p",
-  popularity: 5799
+  popularity: 5919
  },
  {
   sku: "drogal-25243",
@@ -63803,7 +65123,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287211/204625.jpg?v=639235386530100000",
   productUrl: "https://www.drogal.com.br/palha-italiana-germanos-zero-acucar-sabor-pistache-25g/p",
-  popularity: 5800
+  popularity: 5920
  },
  {
   sku: "drogal-25195",
@@ -63814,7 +65134,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286830/204167.jpg?v=639226609691670000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-recheado-maracuja-85g/p",
-  popularity: 5801
+  popularity: 5921
  },
  {
   sku: "drogal-24982",
@@ -63825,7 +65145,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284572/201701.jpg?v=639198865670100000",
   productUrl: "https://www.drogal.com.br/biscoito-choco-biscuit-garoto-chocolate-branco-78g/p",
-  popularity: 5802
+  popularity: 5922
  },
  {
   sku: "drogal-24795",
@@ -63836,7 +65156,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282240/199323.jpg?v=639166300393400000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-mousse-de-maracuja-40g/p",
-  popularity: 5803
+  popularity: 5923
  },
  {
   sku: "drogal-24583",
@@ -63847,7 +65167,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/280381/197114.jpg?v=639142941526900000",
   productUrl: "https://www.drogal.com.br/chocolate-suflair-duo-80g/p",
-  popularity: 5804
+  popularity: 5924
  },
  {
   sku: "drogal-24405",
@@ -63858,7 +65178,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285213/202438.jpg?v=639208422065800000",
   productUrl: "https://www.drogal.com.br/chocolate-ao-leite-nestle-suflair-80g/p",
-  popularity: 5805
+  popularity: 5925
  },
  {
   sku: "drogal-24232",
@@ -63869,7 +65189,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276393/191259.jpg?v=639076317918430000",
   productUrl: "https://www.drogal.com.br/caixa-de-bombom-nestle-especialidades-220g/p",
-  popularity: 5806
+  popularity: 5926
  },
  {
   sku: "drogal-23507",
@@ -63880,7 +65200,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270013/185442.jpg?v=638966407247130000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-recheado-negresco-90g/p",
-  popularity: 5807
+  popularity: 5927
  },
  {
   sku: "drogal-23195",
@@ -63891,7 +65211,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273473/189431.png?v=639010741001670000",
   productUrl: "https://www.drogal.com.br/cha-leao-sabor-camomila-cidreira-e-maracuja-10-saches/p",
-  popularity: 5808
+  popularity: 5928
  },
  {
   sku: "drogal-23161",
@@ -63902,7 +65222,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/266582/180013.jpg?v=638931936983200000",
   productUrl: "https://www.drogal.com.br/chocolate-mms-40g/p",
-  popularity: 5809
+  popularity: 5929
  },
  {
   sku: "drogal-22988",
@@ -63913,7 +65233,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264666/177122.jpg?v=638907935986870000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-fruittella-sabor-morango-acido-40g/p",
-  popularity: 5810
+  popularity: 5930
  },
  {
   sku: "drogal-22980",
@@ -63924,7 +65244,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264572/177012.jpg?v=638906232065130000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-cool-white-sabor-fresh-mint-85g/p",
-  popularity: 5811
+  popularity: 5931
  },
  {
   sku: "drogal-22874",
@@ -63935,7 +65255,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/259178/139218.jpg?v=638888910340270000",
   productUrl: "https://www.drogal.com.br/chocolate-hershey%E2%80%99s-ao-leite-82g/p",
-  popularity: 5812
+  popularity: 5932
  },
  {
   sku: "drogal-22159",
@@ -63946,7 +65266,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/251422/132755.jpg?v=638784634779070000",
   productUrl: "https://www.drogal.com.br/amendoim-japones-mendorato-santa-helena-90g/p",
-  popularity: 5813
+  popularity: 5933
  },
  {
   sku: "drogal-22114",
@@ -63957,7 +65277,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250877/132222.jpg?v=638779014978770000",
   productUrl: "https://www.drogal.com.br/chococookies-nestle-recheio-de-avela-100g/p",
-  popularity: 5814
+  popularity: 5934
  },
  {
   sku: "drogal-22026",
@@ -63968,7 +65288,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249669/130526.jpg?v=638766276742700000",
   productUrl: "https://www.drogal.com.br/caixa-de-bombom-garoto-crocribe-2152g/p",
-  popularity: 5815
+  popularity: 5935
  },
  {
   sku: "drogal-21522",
@@ -63979,7 +65299,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242038/121840.jpg?v=638703132272300000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-nutablito-max-avela-64g/p",
-  popularity: 5816
+  popularity: 5936
  },
  {
   sku: "drogal-21516",
@@ -63990,7 +65310,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243543/124175.jpg?v=638706420122670000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-pistache-65g/p",
-  popularity: 5817
+  popularity: 5937
  },
  {
   sku: "drogal-21502",
@@ -64001,7 +65321,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252620/134269.jpg?v=638799682154200000",
   productUrl: "https://www.drogal.com.br/biscoito-garoto-choco-biscuit-chocolate-ao-leite-78g/p",
-  popularity: 5818
+  popularity: 5938
  },
  {
   sku: "drogal-21321",
@@ -64012,7 +65332,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248505/129638.jpg?v=638756469653500000",
   productUrl: "https://www.drogal.com.br/bala-de-gengibre-cristalizado-com-canela-gengibre-da-natureza-40g/p",
-  popularity: 5819
+  popularity: 5939
  },
  {
   sku: "drogal-20243",
@@ -64023,7 +65343,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/222009/102122.jpg?v=638528163208900000",
   productUrl: "https://www.drogal.com.br/doce-de-leite-pingo-de-ouro-iceali-tradicional-20g/p",
-  popularity: 5820
+  popularity: 5940
  },
  {
   sku: "drogal-19877",
@@ -64034,7 +65354,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265167/177737.jpg?v=638914024352170000",
   productUrl: "https://www.drogal.com.br/biscoito-belga-nestle-tostines-especiarias-150g/p",
-  popularity: 5821
+  popularity: 5941
  },
  {
   sku: "drogal-19750",
@@ -64045,7 +65365,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211291/90112.jpg?v=638463759289800000",
   productUrl: "https://www.drogal.com.br/chocolate-kinder-bueno-classic-43g/p",
-  popularity: 5822
+  popularity: 5942
  },
  {
   sku: "drogal-19737",
@@ -64056,7 +65376,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211292/90082.png?v=638463871360970000",
   productUrl: "https://www.drogal.com.br/pao-de-mel-bauducco-sabor-chocolate-180g/p",
-  popularity: 5823
+  popularity: 5943
  },
  {
   sku: "drogal-19722",
@@ -64067,7 +65387,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211299/90093.jpg?v=638463758596570000",
   productUrl: "https://www.drogal.com.br/chocolate-lacta-ao-leite-80g/p",
-  popularity: 5824
+  popularity: 5944
  },
  {
   sku: "drogal-19468",
@@ -64078,7 +65398,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243575/124225.jpg?v=638713060345130000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-minis-bombons-chicabon-92g/p",
-  popularity: 5825
+  popularity: 5945
  },
  {
   sku: "drogal-16969",
@@ -64089,7 +65409,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242220/122571.jpg?v=638686274687800000",
   productUrl: "https://www.drogal.com.br/limpa-lentes-eros-vision--flanela-de-microfibra/p",
-  popularity: 5826
+  popularity: 5946
  },
  {
   sku: "drogal-16522",
@@ -64100,7 +65420,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197767/57029.jpg?v=638394757831030000",
   productUrl: "https://www.drogal.com.br/biscoito-passatempo-nestle-recheio-chocolate-140g/p",
-  popularity: 5827
+  popularity: 5947
  },
  {
   sku: "drogal-16436",
@@ -64111,7 +65431,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211976/90751.jpg?v=638463759073370000",
   productUrl: "https://www.drogal.com.br/chocolate-dark-neugebauer-bar-1891-supreme-ao-leite-90g/p",
-  popularity: 5828
+  popularity: 5948
  },
  {
   sku: "drogal-16428",
@@ -64122,7 +65442,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273407/189328.png?v=639009628596300000",
   productUrl: "https://www.drogal.com.br/cha-leao-xo-tpm-sabor-cereja-morango-e-baunilha-10-saches-20g/p",
-  popularity: 5829
+  popularity: 5949
  },
  {
   sku: "drogal-16414",
@@ -64133,7 +65453,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273391/189308.png?v=639008885558330000",
   productUrl: "https://www.drogal.com.br/cha-leao-cheguei-menopausa-sabor-amora-e-laranja-10-saches-20g/p",
-  popularity: 5830
+  popularity: 5950
  },
  {
   sku: "drogal-16386",
@@ -64144,7 +65464,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197507/61963.jpg?v=638394762074600000",
   productUrl: "https://www.drogal.com.br/batata-pringles-sabor-original-104g/p",
-  popularity: 5831
+  popularity: 5951
  },
  {
   sku: "drogal-16335",
@@ -64155,7 +65475,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211711/90493.jpg?v=638463757695430000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-chocotrio-amendoim-90g/p",
-  popularity: 5832
+  popularity: 5952
  },
  {
   sku: "drogal-16289",
@@ -64166,7 +65486,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197335/61819.jpg?v=638394761785870000",
   productUrl: "https://www.drogal.com.br/castanha-de-caju-iracema-50g/p",
-  popularity: 5833
+  popularity: 5953
  },
  {
   sku: "drogal-16244",
@@ -64177,7 +65497,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211949/90731.jpg?v=638463759016230000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-meio-amargo-80g/p",
-  popularity: 5834
+  popularity: 5954
  },
  {
   sku: "drogal-16239",
@@ -64188,7 +65508,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211923/90705.png?v=638463757483630000",
   productUrl: "https://www.drogal.com.br/chocolate-kinder-tronky-18g/p",
-  popularity: 5835
+  popularity: 5955
  },
  {
   sku: "drogal-16175",
@@ -64199,7 +65519,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250313/131633.jpg?v=638773971942030000",
   productUrl: "https://www.drogal.com.br/choco-biscuit-bauducco-ao-leite-36g/p",
-  popularity: 5836
+  popularity: 5956
  },
  {
   sku: "drogal-16163",
@@ -64210,7 +65530,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250834/132166.jpg?v=638778942834030000",
   productUrl: "https://www.drogal.com.br/biscoito-integral-bauducco-cereale-cacau-e-castanhas-170g/p",
-  popularity: 5837
+  popularity: 5957
  },
  {
   sku: "drogal-16137",
@@ -64221,7 +65541,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273465/189412.jpg?v=639010584677630000",
   productUrl: "https://www.drogal.com.br/cha-vitaminico-leao-mel-gengibre-curcuma-10-saches-20g/p",
-  popularity: 5838
+  popularity: 5958
  },
  {
   sku: "drogal-16132",
@@ -64232,7 +65552,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273414/189347.png?v=639009680156070000",
   productUrl: "https://www.drogal.com.br/cha-leao-hortela-10-saches-10g/p",
-  popularity: 5839
+  popularity: 5959
  },
  {
   sku: "drogal-16074",
@@ -64243,7 +65563,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211834/90588.jpg?v=638463733662300000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-recheado-tiramisu-85g/p",
-  popularity: 5840
+  popularity: 5960
  },
  {
   sku: "drogal-16043",
@@ -64254,7 +65574,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211996/90784.jpg?v=638463733599700000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-branco-33g/p",
-  popularity: 5841
+  popularity: 5961
  },
  {
   sku: "drogal-15604",
@@ -64265,7 +65585,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211370/90148.jpg?v=638463753042200000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-amendoas-e-passas-85g/p",
-  popularity: 5842
+  popularity: 5962
  },
  {
   sku: "drogal-15553",
@@ -64276,7 +65596,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211580/90337.jpg?v=638463734209430000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-33g/p",
-  popularity: 5843
+  popularity: 5963
  },
  {
   sku: "drogal-15494",
@@ -64287,7 +65607,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211783/90570.jpg?v=638463752844600000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-diet-com-avelas-25g/p",
-  popularity: 5844
+  popularity: 5964
  },
  {
   sku: "drogal-15315",
@@ -64298,7 +65618,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211675/90486.png?v=638463734011700000",
   productUrl: "https://www.drogal.com.br/mms-crispy-35g/p",
-  popularity: 5845
+  popularity: 5965
  },
  {
   sku: "drogal-15304",
@@ -64309,7 +65629,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195348/59749.png?v=638394763819970000",
   productUrl: "https://www.drogal.com.br/desinfetante-aerossol-lysoform-original-360ml/p",
-  popularity: 5846
+  popularity: 5966
  },
  {
   sku: "drogal-15105",
@@ -64320,7 +65640,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194983/59346.png?v=638394758895300000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-bananas-90g/p",
-  popularity: 5847
+  popularity: 5967
  },
  {
   sku: "drogal-15065",
@@ -64331,7 +65651,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194909/59321.png?v=638394763627730000",
   productUrl: "https://www.drogal.com.br/balas-mastigaveis-skittles-wild-berry-38g/p",
-  popularity: 5848
+  popularity: 5968
  },
  {
   sku: "drogal-14930",
@@ -64342,7 +65662,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia leite uht",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194646/59049.jpg?v=638394763451530000",
   productUrl: "https://www.drogal.com.br/leite-semidesnatado-piracanjuba-zero-lactose-1-litro/p",
-  popularity: 5849
+  popularity: 5969
  },
  {
   sku: "drogal-14897",
@@ -64353,7 +65673,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194604/58991.png?v=638394763502870000",
   productUrl: "https://www.drogal.com.br/skittles-original-388g/p",
-  popularity: 5850
+  popularity: 5970
  },
  {
   sku: "drogal-14879",
@@ -64364,7 +65684,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/267338/182110.jpg?v=638938850642930000",
   productUrl: "https://www.drogal.com.br/doce-de-amendoim-pacoquita-santa-helena-18g/p",
-  popularity: 5851
+  popularity: 5971
  },
  {
   sku: "drogal-14788",
@@ -64375,7 +65695,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264992/177532.jpg?v=638913073958370000",
   productUrl: "https://www.drogal.com.br/balahallscereja21unidades28g/p",
-  popularity: 5852
+  popularity: 5972
  },
  {
   sku: "drogal-14786",
@@ -64386,7 +65706,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278866/195255.png?v=639113409363400000",
   productUrl: "https://www.drogal.com.br/bateriarayovaccr2032/p",
-  popularity: 5853
+  popularity: 5973
  },
  {
   sku: "drogal-14776",
@@ -64397,7 +65717,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264995/177535.jpg?v=638913097125430000",
   productUrl: "https://www.drogal.com.br/drops-halls-menta-nv/p",
-  popularity: 5854
+  popularity: 5974
  },
  {
   sku: "drogal-14761",
@@ -64408,7 +65728,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264994/177533.jpg?v=638913091756870000",
   productUrl: "https://www.drogal.com.br/drops-halls-melancia-nv/p",
-  popularity: 5855
+  popularity: 5975
  },
  {
   sku: "drogal-14422",
@@ -64419,7 +65739,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211384/90213.jpg?v=638463731081670000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-white-415g/p",
-  popularity: 5856
+  popularity: 5976
  },
  {
   sku: "drogal-14348",
@@ -64430,7 +65750,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/241282/121583.jpg?v=638670996297270000",
   productUrl: "https://www.drogal.com.br/biscoito-nestle-passatempo-leite-150g/p",
-  popularity: 5857
+  popularity: 5977
  },
  {
   sku: "drogal-14336",
@@ -64441,7 +65761,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250289/131593.jpg?v=638773893055500000",
   productUrl: "https://www.drogal.com.br/biscoito-bauducco-wafer-sabor-chocolate-140g/p",
-  popularity: 5858
+  popularity: 5978
  },
  {
   sku: "drogal-14313",
@@ -64452,7 +65772,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193579/57904.png?v=638394758034100000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-minhocas-90g/p",
-  popularity: 5859
+  popularity: 5979
  },
  {
   sku: "drogal-14309",
@@ -64463,7 +65783,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193572/57938.png?v=638394757676600000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-minhocas-citricas-90g/p",
-  popularity: 5860
+  popularity: 5980
  },
  {
   sku: "drogal-14308",
@@ -64474,7 +65794,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264588/177028.jpg?v=638906811755800000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-menta-verde-85g/p",
-  popularity: 5861
+  popularity: 5981
  },
  {
   sku: "drogal-14305",
@@ -64485,7 +65805,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193561/57900.png?v=638394757962170000",
   productUrl: "https://www.drogal.com.br/balas-fini-regaliz-tubes-sabor-morango-80g/p",
-  popularity: 5862
+  popularity: 5982
  },
  {
   sku: "drogal-14299",
@@ -64496,7 +65816,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193549/57918.jpg?v=638394758106930000",
   productUrl: "https://www.drogal.com.br/balas-fini-regaliz-sour-tubes-acido-sabor-morango-80g/p",
-  popularity: 5863
+  popularity: 5983
  },
  {
   sku: "drogal-14260",
@@ -64507,7 +65827,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193449/57847.png?v=638394757886400000",
   productUrl: "https://www.drogal.com.br/pilha-duracell-aa-alcalina-4-unidades/p",
-  popularity: 5864
+  popularity: 5984
  },
  {
   sku: "drogal-14095",
@@ -64518,7 +65838,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264961/177496.jpg?v=638912848655070000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-mentos-frutas-vermelhas-38g/p",
-  popularity: 5865
+  popularity: 5985
  },
  {
   sku: "drogal-14047",
@@ -64529,7 +65849,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264590/177030.jpg?v=638906842856170000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fruit-sabor-morango-maca-verde-e-framboesa-85g/p",
-  popularity: 5866
+  popularity: 5986
  },
  {
   sku: "drogal-14046",
@@ -64540,7 +65860,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264582/177022.jpg?v=638906785729830000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-menta-fresca-56g/p",
-  popularity: 5867
+  popularity: 5987
  },
  {
   sku: "drogal-14037",
@@ -64551,7 +65871,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264586/177026.jpg?v=638906798079100000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-menta-verde-56g/p",
-  popularity: 5868
+  popularity: 5988
  },
  {
   sku: "drogal-12088",
@@ -64562,7 +65882,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/188827/52876.jpg?v=638415302970530000",
   productUrl: "https://www.drogal.com.br/bala-de-gengibre-assiflora-sem-acucar-propolis-e-limao-38g/p",
-  popularity: 5869
+  popularity: 5989
  },
  {
   sku: "drogal-25397",
@@ -64573,7 +65893,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288735/206346.png?v=639258455731470000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-cookie-e-caramelo-salgado-85g/p",
-  popularity: 5870
+  popularity: 5990
  },
  {
   sku: "drogal-25350",
@@ -64584,7 +65904,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288443/206023.jpg?v=639256128435100000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-batata-lisa-sabor-costelinha-com-limao-45g/p",
-  popularity: 5871
+  popularity: 5991
  },
  {
   sku: "drogal-25349",
@@ -64595,7 +65915,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288442/206015.jpg?v=639256128422700000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-batata-lisa-sabor-frango-grelhado-45g/p",
-  popularity: 5872
+  popularity: 5992
  },
  {
   sku: "drogal-25318",
@@ -64606,7 +65926,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288108/204256.jpg?v=639250275894900000",
   productUrl: "https://www.drogal.com.br/panettone-nestle-sensacao-450g/p",
-  popularity: 5873
+  popularity: 5993
  },
  {
   sku: "drogal-25264",
@@ -64617,7 +65937,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287396/204594.jpg?v=639240328669970000",
   productUrl: "https://www.drogal.com.br/chocolate-twix-sabor-cocada-40g/p",
-  popularity: 5874
+  popularity: 5994
  },
  {
   sku: "drogal-25156",
@@ -64628,7 +65948,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286543/203854.jpg?v=639222231955370000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-regaliz-terror-azedinho-extremo-sabor-morango-e-limao-80g/p",
-  popularity: 5875
+  popularity: 5995
  },
  {
   sku: "drogal-24789",
@@ -64639,7 +65959,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282284/199367.png?v=639166278860700000",
   productUrl: "https://www.drogal.com.br/amendoim-sem-pele-santa-helena-sabor-picanha-90g/p",
-  popularity: 5876
+  popularity: 5996
  },
  {
   sku: "drogal-24754",
@@ -64650,7 +65970,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281656/198561.jpg?v=639160198056730000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-sabor-morango-65g/p",
-  popularity: 5877
+  popularity: 5997
  },
  {
   sku: "drogal-24743",
@@ -64661,7 +65981,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281628/198485.png?v=639160819689500000",
   productUrl: "https://www.drogal.com.br/difusor-de-aromas-aurye-home-bambu-250ml/p",
-  popularity: 5878
+  popularity: 5998
  },
  {
   sku: "drogal-24676",
@@ -64672,7 +65992,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281315/198413.jpg?v=639155900735370000",
   productUrl: "https://www.drogal.com.br/bala-fini-tubes-maca-do-amor-80g/p",
-  popularity: 5879
+  popularity: 5999
  },
  {
   sku: "drogal-24422",
@@ -64683,7 +66003,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278750/194644.jpg?v=639111126579200000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-negresco-nevado-sabor-baunilha-e-morango-90g/p",
-  popularity: 5880
+  popularity: 6000
  },
  {
   sku: "drogal-24421",
@@ -64694,7 +66014,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278743/194609.png?v=639111005493370000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-negresco-nevado-sabor-duplo-baunilha-90g/p",
-  popularity: 5881
+  popularity: 6001
  },
  {
   sku: "drogal-24381",
@@ -64705,7 +66025,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286819/191585.png?v=639225919968000000",
   productUrl: "https://www.drogal.com.br/biscoito-cookies-cronns-baunilha-60g/p",
-  popularity: 5882
+  popularity: 6002
  },
  {
   sku: "drogal-24015",
@@ -64716,7 +66036,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273929/189926.jpg?v=639026042970170000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-metalizado-tamanho-g-sortido-1-unidade-laco/p",
-  popularity: 5883
+  popularity: 6003
  },
  {
   sku: "drogal-24014",
@@ -64727,7 +66047,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273927/189936.jpg?v=639026042933800000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-metalizado-tamanho-m-sortido-1-unidade-laco/p",
-  popularity: 5884
+  popularity: 6004
  },
  {
   sku: "drogal-23972",
@@ -64738,7 +66058,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273625/189323.jpg?v=639017388462700000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-cherry-vanilla-415g/p",
-  popularity: 5885
+  popularity: 6005
  },
  {
   sku: "drogal-23787",
@@ -64749,7 +66069,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/271920/187525.jpg?v=638981462113170000",
   productUrl: "https://www.drogal.com.br/pilha-alcalina-palito-duracell-optimum-aaa-4-unidades/p",
-  popularity: 5886
+  popularity: 6006
  },
  {
   sku: "drogal-23774",
@@ -64760,7 +66080,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/271860/187524.png?v=638981413534970000",
   productUrl: "https://www.drogal.com.br/chocolate-mms-amendoim-40g/p",
-  popularity: 5887
+  popularity: 6007
  },
  {
   sku: "drogal-23688",
@@ -64771,7 +66091,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/271156/185421.jpg?v=638975156703800000",
   productUrl: "https://www.drogal.com.br/chocolate-mms-amendoim-sache-132g/p",
-  popularity: 5888
+  popularity: 6008
  },
  {
   sku: "drogal-23687",
@@ -64782,7 +66102,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/271155/185431.jpg?v=638975156491430000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-caribe-33g/p",
-  popularity: 5889
+  popularity: 6009
  },
  {
   sku: "drogal-23353",
@@ -64793,7 +66113,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286050/203276.jpg?v=639214504309100000",
   productUrl: "https://www.drogal.com.br/panettone-nestle-alpino-ao-leite-450g/p",
-  popularity: 5890
+  popularity: 6010
  },
  {
   sku: "drogal-23194",
@@ -64804,7 +66124,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273470/189427.png?v=639010717726730000",
   productUrl: "https://www.drogal.com.br/cha-leao-sabor-camomila-baunilha-e-mel-10-saches/p",
-  popularity: 5891
+  popularity: 6011
  },
  {
   sku: "drogal-23118",
@@ -64815,7 +66135,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/266002/178700.jpg?v=638925856136200000",
   productUrl: "https://www.drogal.com.br/bala-fini-regaliz-tubes-azedissimo-sabor-morango-e-limao-80g/p",
-  popularity: 5892
+  popularity: 6012
  },
  {
   sku: "drogal-23117",
@@ -64826,7 +66146,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265976/178687.jpg?v=638925866365630000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-mix-surpresa-doce-ou-citrico-80g/p",
-  popularity: 5893
+  popularity: 6013
  },
  {
   sku: "drogal-23114",
@@ -64837,7 +66157,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265970/178672.jpg?v=638925820528830000",
   productUrl: "https://www.drogal.com.br/bala-fini-regaliz-terror-sabor-amora-com-capim-limao-80g/p",
-  popularity: 5894
+  popularity: 6014
  },
  {
   sku: "drogal-23031",
@@ -64848,7 +66168,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265163/177733.jpg?v=638914717722770000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-tostines-sabor-leite-maltado-160g/p",
-  popularity: 5895
+  popularity: 6015
  },
  {
   sku: "drogal-22981",
@@ -64859,7 +66179,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264574/177014.jpg?v=638906249223300000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-cool-white-sabor-tutti-fresh-85g/p",
-  popularity: 5896
+  popularity: 6016
  },
  {
   sku: "drogal-22979",
@@ -64870,7 +66190,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264571/177010.jpg?v=638906231616130000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-cool-white-sabor-blue-raspberry-85g/p",
-  popularity: 5897
+  popularity: 6017
  },
  {
   sku: "drogal-22823",
@@ -64881,7 +66201,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258904/141228.jpg?v=638893836567500000",
   productUrl: "https://www.drogal.com.br/castanha-de-caju-caramelizada-cooper-nutrimix-40g/p",
-  popularity: 5898
+  popularity: 6018
  },
  {
   sku: "drogal-22436",
@@ -64892,7 +66212,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254357/136161.jpg?v=638821366411670000",
   productUrl: "https://www.drogal.com.br/ovo-toys-bob-esponja-1-unidade/p",
-  popularity: 5899
+  popularity: 6019
  },
  {
   sku: "drogal-21778",
@@ -64903,7 +66223,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/244880/125226.jpg?v=638739863890170000",
   productUrl: "https://www.drogal.com.br/alfajor-croc-tentacao-carmela-sabor-morango-e-chocolate-50g/p",
-  popularity: 5900
+  popularity: 6020
  },
  {
   sku: "drogal-21324",
@@ -64914,7 +66234,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/240502/120695.jpg?v=638686285733070000",
   productUrl: "https://www.drogal.com.br/bala-gelatina-fini-sorvetinho-80g/p",
-  popularity: 5901
+  popularity: 6021
  },
  {
   sku: "drogal-21174",
@@ -64925,7 +66245,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/239626/119820.jpg?v=638660414670770000",
   productUrl: "https://www.drogal.com.br/cookies-crocante-garoto-com-gotas-de-chocolate-e-amendoim-60g/p",
-  popularity: 5902
+  popularity: 6022
  },
  {
   sku: "drogal-20905",
@@ -64936,7 +66256,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/237894/117953.jpg?v=638629524277700000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-zoio-goma-kids-zone-12g-cada/p",
-  popularity: 5903
+  popularity: 6023
  },
  {
   sku: "drogal-20505",
@@ -64947,7 +66267,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/226186/105817.jpg?v=638574527063930000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-fandangos-sabor-queijo-35g/p",
-  popularity: 5904
+  popularity: 6024
  },
  {
   sku: "drogal-19930",
@@ -64958,7 +66278,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/214676/62132.jpg?v=638488003168900000",
   productUrl: "https://www.drogal.com.br/alfajor-carmela-croc-duo-50g/p",
-  popularity: 5905
+  popularity: 6025
  },
  {
   sku: "drogal-19758",
@@ -64969,7 +66289,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/212219/90858.jpg?v=638460180134970000",
   productUrl: "https://www.drogal.com.br/wafer-amandita-recheado-de-chocolate-200g/p",
-  popularity: 5906
+  popularity: 6026
  },
  {
   sku: "drogal-19732",
@@ -64980,7 +66300,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211350/90099.jpg?v=638463758125600000",
   productUrl: "https://www.drogal.com.br/chocolate-lacta-ao-leite-diamante-negro-80g/p",
-  popularity: 5907
+  popularity: 6027
  },
  {
   sku: "drogal-19477",
@@ -64991,7 +66311,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243579/124229.jpg?v=638713060432000000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-doce-de-leite-92g/p",
-  popularity: 5908
+  popularity: 6028
  },
  {
   sku: "drogal-19472",
@@ -65002,7 +66322,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243546/124178.jpg?v=638706420113200000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-zero-acucar-chocolate-90g/p",
-  popularity: 5909
+  popularity: 6029
  },
  {
   sku: "drogal-19454",
@@ -65013,7 +66333,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208116/86030.jpg?v=638441139779930000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-praline-69g/p",
-  popularity: 5910
+  popularity: 6030
  },
  {
   sku: "drogal-19426",
@@ -65024,7 +66344,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243540/124172.jpg?v=638706420193930000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-amendoas-72g/p",
-  popularity: 5911
+  popularity: 6031
  },
  {
   sku: "drogal-17009",
@@ -65035,7 +66355,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233047/112926.jpg?v=638594100079030000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-maxi-90g/p",
-  popularity: 5912
+  popularity: 6032
  },
  {
   sku: "drogal-16924",
@@ -65046,7 +66366,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286892/204247.jpg?v=639227426757370000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-eskibon-classico-28g/p",
-  popularity: 5913
+  popularity: 6033
  },
  {
   sku: "drogal-16911",
@@ -65057,7 +66377,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277582/193976.png?v=639090305011800000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-frutilly-morango-40g/p",
-  popularity: 5914
+  popularity: 6034
  },
  {
   sku: "drogal-16884",
@@ -65068,7 +66388,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/200215/74904.jpg?v=638441139462000000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-cookies-and-cream-77g/p",
-  popularity: 5915
+  popularity: 6035
  },
  {
   sku: "drogal-16545",
@@ -65079,7 +66399,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264581/177021.jpg?v=638906241517670000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-menta-forte-85g/p",
-  popularity: 5916
+  popularity: 6036
  },
  {
   sku: "drogal-16497",
@@ -65090,7 +66410,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197720/62239.jpg?v=638394762882600000",
   productUrl: "https://www.drogal.com.br/balas-de-gengibre-assiflora-sabor-menta-38g/p",
-  popularity: 5917
+  popularity: 6037
  },
  {
   sku: "drogal-16468",
@@ -65101,7 +66421,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211410/90182.jpg?v=638463759023270000",
   productUrl: "https://www.drogal.com.br/chocolate-bis-lacta-branco-100g/p",
-  popularity: 5918
+  popularity: 6038
  },
  {
   sku: "drogal-16460",
@@ -65112,7 +66432,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/230215/110724.jpg?v=638575092227830000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-bono-nestle-sabor-chocolate-90g/p",
-  popularity: 5919
+  popularity: 6039
  },
  {
   sku: "drogal-16433",
@@ -65123,7 +66443,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273399/189318.png?v=639008961994170000",
   productUrl: "https://www.drogal.com.br/cha-leao-ciclo-suave-sabor-framboesa-cravo-e-canela-10-saches-20g/p",
-  popularity: 5920
+  popularity: 6040
  },
  {
   sku: "drogal-16394",
@@ -65134,7 +66454,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197516/62021.jpg?v=638394762527730000",
   productUrl: "https://www.drogal.com.br/bala-my-toffee-diet-zero-lactose-sabor-leite-52g/p",
-  popularity: 5921
+  popularity: 6041
  },
  {
   sku: "drogal-16368",
@@ -65145,7 +66465,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211720/90475.jpg?v=638463757981130000",
   productUrl: "https://www.drogal.com.br/chocolate-dark-neugebauer-bar-1891-70-cacau-intense-90g/p",
-  popularity: 5922
+  popularity: 6042
  },
  {
   sku: "drogal-16230",
@@ -65156,7 +66476,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197183/61670.png?v=638394764963600000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-sabor-laranja-145g/p",
-  popularity: 5923
+  popularity: 6043
  },
  {
   sku: "drogal-16227",
@@ -65167,7 +66487,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197179/61514.png?v=638394761144600000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-duracell-13-6-unidades/p",
-  popularity: 5924
+  popularity: 6044
  },
  {
   sku: "drogal-16152",
@@ -65178,7 +66498,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273314/189247.png?v=639005569107400000",
   productUrl: "https://www.drogal.com.br/cha-kids-leaozinho-morango-e-maracuja-10-saches-23g/p",
-  popularity: 5925
+  popularity: 6045
  },
  {
   sku: "drogal-16140",
@@ -65189,7 +66509,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196961/61529.png?v=638394761240530000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-duracell-312-6-unidades/p",
-  popularity: 5926
+  popularity: 6046
  },
  {
   sku: "drogal-16092",
@@ -65200,7 +66520,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211811/90599.jpg?v=638463733419600000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-branco-com-doce-de-leite-85g/p",
-  popularity: 5927
+  popularity: 6047
  },
  {
   sku: "drogal-16083",
@@ -65211,7 +66531,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211817/90578.jpg?v=638463734084800000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-opereta-castanha-de-caju-85g/p",
-  popularity: 5928
+  popularity: 6048
  },
  {
   sku: "drogal-16049",
@@ -65222,7 +66542,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211908/90681.jpg?v=638463733406730000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-dark-33g/p",
-  popularity: 5929
+  popularity: 6049
  },
  {
   sku: "drogal-16017",
@@ -65233,7 +66553,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211664/90372.jpg?v=638463733308430000",
   productUrl: "https://www.drogal.com.br/chocolate-ao-leite-garoto-caju-com-passas-80g/p",
-  popularity: 5930
+  popularity: 6050
  },
  {
   sku: "drogal-16012",
@@ -65244,7 +66564,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211901/90683.jpg?v=638463734288000000",
   productUrl: "https://www.drogal.com.br/chocolate-stick-lacta-recheio-ouro-branco-25g/p",
-  popularity: 5931
+  popularity: 6051
  },
  {
   sku: "drogal-15935",
@@ -65255,7 +66575,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211770/90558.png?v=638463733325200000",
   productUrl: "https://www.drogal.com.br/bombom-de-chocolate-flormel-mini-doce-de-coco-zero-acucar-12g/p",
-  popularity: 5932
+  popularity: 6052
  },
  {
   sku: "drogal-15760",
@@ -65266,7 +66586,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276696/192889.png?v=639082514626800000",
   productUrl: "https://www.drogal.com.br/barra-de-cereal-nuts-fruits-assiflora-sabor-cranberries-20g/p",
-  popularity: 5933
+  popularity: 6053
  },
  {
   sku: "drogal-15661",
@@ -65277,7 +66597,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285300/202560.jpg?v=639208573779570000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-suflair-ao-leite-50g/p",
-  popularity: 5934
+  popularity: 6054
  },
  {
   sku: "drogal-15523",
@@ -65288,7 +66608,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211611/90465.png?v=638463781055830000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-dark-42g/p",
-  popularity: 5935
+  popularity: 6055
  },
  {
   sku: "drogal-15490",
@@ -65299,7 +66619,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211768/90554.jpg?v=638681396417770000",
   productUrl: "https://www.drogal.com.br/chocolate-kinder-joy-20g/p",
-  popularity: 5936
+  popularity: 6056
  },
  {
   sku: "drogal-15478",
@@ -65310,7 +66630,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211772/90546.jpg?v=638463734114000000",
   productUrl: "https://www.drogal.com.br/nutella-b-ready-22g/p",
-  popularity: 5937
+  popularity: 6057
  },
  {
   sku: "drogal-15431",
@@ -65321,7 +66641,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/232949/112826.jpg?v=638593236582000000",
   productUrl: "https://www.drogal.com.br/chocolate-nescau-ball-75g/p",
-  popularity: 5938
+  popularity: 6058
  },
  {
   sku: "drogal-20884",
@@ -65332,7 +66652,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/237648/101865.jpg?v=639064188192970000",
   productUrl: "https://www.drogal.com.br/desinfetante-aerossol-lysoform-original-55ml/p",
-  popularity: 5939
+  popularity: 6059
  },
  {
   sku: "drogal-15332",
@@ -65343,7 +66663,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264678/177134.jpg?v=638907798169230000",
   productUrl: "https://www.drogal.com.br/pastilha-mentos-clearbreath-30-minutos-sabor-menta-35g/p",
-  popularity: 5940
+  popularity: 6060
  },
  {
   sku: "drogal-15327",
@@ -65354,7 +66674,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195381/59837.png?v=638394759558330000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-fini-klets-tutti-frutti-zero-acucar-30g/p",
-  popularity: 5941
+  popularity: 6061
  },
  {
   sku: "drogal-15129",
@@ -65365,7 +66685,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211493/90284.png?v=638463733750800000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-pe-de-moleque-42g/p",
-  popularity: 5942
+  popularity: 6062
  },
  {
   sku: "drogal-15075",
@@ -65376,7 +66696,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249355/130480.jpg?v=638762634223470000",
   productUrl: "https://www.drogal.com.br/caixa-de-bombom-nestle-especialidades-251g/p",
-  popularity: 5943
+  popularity: 6063
  },
  {
   sku: "drogal-14934",
@@ -65387,7 +66707,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211459/90231.png?v=638463732819670000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-45g/p",
-  popularity: 5944
+  popularity: 6064
  },
  {
   sku: "drogal-14922",
@@ -65398,7 +66718,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia leite uht",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194637/59047.jpg?v=638394763577700000",
   productUrl: "https://www.drogal.com.br/leite-semidesnatado-piracanjuba-1-litro/p",
-  popularity: 5945
+  popularity: 6065
  },
  {
   sku: "drogal-14769",
@@ -65409,7 +66729,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264996/177537.jpg?v=638913101046570000",
   productUrl: "https://www.drogal.com.br/drops-halls-morango-nv/p",
-  popularity: 5946
+  popularity: 6066
  },
  {
   sku: "drogal-14685",
@@ -65420,7 +66740,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194312/58714.jpg?v=638394763377000000",
   productUrl: "https://www.drogal.com.br/clubsocialcrostiniqueijoparmesaoevegetais80g/p",
-  popularity: 5947
+  popularity: 6067
  },
  {
   sku: "drogal-14586",
@@ -65431,7 +66751,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211324/90131.png?v=638463732265000000",
   productUrl: "https://www.drogal.com.br/mms-chocolate-45g/p",
-  popularity: 5948
+  popularity: 6068
  },
  {
   sku: "drogal-14439",
@@ -65442,7 +66762,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193833/58212.jpg?v=638394758568070000",
   productUrl: "https://www.drogal.com.br/snack-eqlibri-panetini-sabor-presunto-defumado-40g/p",
-  popularity: 5949
+  popularity: 6069
  },
  {
   sku: "drogal-14416",
@@ -65453,7 +66773,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278867/195256.png?v=639113440423300000",
   productUrl: "https://www.drogal.com.br/pilha-rayovac-elet-v23gamulc1/p",
-  popularity: 5950
+  popularity: 6070
  },
  {
   sku: "drogal-14344",
@@ -65464,7 +66784,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193636/57989.jpg?v=638394758260270000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-trident-tutti-frutti-8g/p",
-  popularity: 5951
+  popularity: 6071
  },
  {
   sku: "drogal-14317",
@@ -65475,7 +66795,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193586/58003.png?v=638394758301700000",
   productUrl: "https://www.drogal.com.br/isqueiro-bic-maxi-1-unidade/p",
-  popularity: 5952
+  popularity: 6072
  },
  {
   sku: "drogal-14315",
@@ -65486,7 +66806,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193584/57977.jpg?v=638394758194830000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-trident-hortela-8g/p",
-  popularity: 5953
+  popularity: 6073
  },
  {
   sku: "drogal-14292",
@@ -65497,7 +66817,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264690/177147.jpg?v=638907959710900000",
   productUrl: "https://www.drogal.com.br/pastilha-mentos-mint-kiss-sabor-menta-35g/p",
-  popularity: 5954
+  popularity: 6074
  },
  {
   sku: "drogal-14259",
@@ -65508,7 +66828,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193441/57908.png?v=638394758097400000",
   productUrl: "https://www.drogal.com.br/balas-de-gelatina-fini-amoras-90g/p",
-  popularity: 5955
+  popularity: 6075
  },
  {
   sku: "drogal-14086",
@@ -65519,7 +66839,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264962/177497.jpg?v=638912856587230000",
   productUrl: "https://www.drogal.com.br/bala-mastigavel-mentos-mint-38g/p",
-  popularity: 5956
+  popularity: 6076
  },
  {
   sku: "drogal-14054",
@@ -65530,7 +66850,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264585/177025.jpg?v=638906792779870000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-menta-fresca-85g/p",
-  popularity: 5957
+  popularity: 6077
  },
  {
   sku: "drogal-25353",
@@ -65541,7 +66861,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288447/206027.png?v=639256128458630000",
   productUrl: "https://www.drogal.com.br/salgadinho-cronns-batata-lisa-sabor-original-45g/p",
-  popularity: 5958
+  popularity: 6078
  },
  {
   sku: "drogal-25142",
@@ -65552,7 +66872,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286471/203805.jpg?v=639221454019300000",
   productUrl: "https://www.drogal.com.br/pastilhas-mentos-kiss-sabor-tutti-frutti-e-menta-35g/p",
-  popularity: 5959
+  popularity: 6079
  },
  {
   sku: "drogal-24811",
@@ -65563,7 +66883,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282294/198476.png?v=639166860608070000",
   productUrl: "https://www.drogal.com.br/spray-aromatizador-de-ambientes-aurye-home-alecrim-200ml/p",
-  popularity: 5960
+  popularity: 6080
  },
  {
   sku: "drogal-24809",
@@ -65574,7 +66894,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282289/198475.png?v=639166313410530000",
   productUrl: "https://www.drogal.com.br/spray-aromatizador-de-ambientes-aurye-home-bambu-200ml/p",
-  popularity: 5961
+  popularity: 6081
  },
  {
   sku: "drogal-24808",
@@ -65585,7 +66905,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282286/198461.jpg?v=639166286206800000",
   productUrl: "https://www.drogal.com.br/spray-aromatizador-de-ambientes-aurye-home-vanilla-200ml/p",
-  popularity: 5962
+  popularity: 6082
  },
  {
   sku: "drogal-24791",
@@ -65596,7 +66916,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282220/199304.png?v=639166064193230000",
   productUrl: "https://www.drogal.com.br/doce-de-amendoim-pacoquita-santa-helena-maca-do-amor-8-unidades/p",
-  popularity: 5963
+  popularity: 6083
  },
  {
   sku: "drogal-24740",
@@ -65607,7 +66927,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281624/198483.jpg?v=639160102977930000",
   productUrl: "https://www.drogal.com.br/agua-perfumada-para-tecidos-aurye-home-vanilla-250ml/p",
-  popularity: 5964
+  popularity: 6084
  },
  {
   sku: "drogal-24371",
@@ -65618,7 +66938,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286820/191586.png?v=639225920325470000",
   productUrl: "https://www.drogal.com.br/biscoito-cookies-cronns-sabor-chocolate-60g/p",
-  popularity: 5965
+  popularity: 6085
  },
  {
   sku: "drogal-24212",
@@ -65629,7 +66949,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/275996/191272.jpg?v=639071067354800000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-the-hero-tutti-frutti-415g/p",
-  popularity: 5966
+  popularity: 6086
  },
  {
   sku: "drogal-24018",
@@ -65640,7 +66960,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273933/189930.jpg?v=639026043024470000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-infantil-tamanho-g-sortido-1-unidade-laco/p",
-  popularity: 5967
+  popularity: 6087
  },
  {
   sku: "drogal-23969",
@@ -65651,7 +66971,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273618/187477.jpg?v=639014820629300000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-gingerbread-sabor-biscoito-spekulatius-80g/p",
-  popularity: 5968
+  popularity: 6088
  },
  {
   sku: "drogal-23968",
@@ -65662,7 +66982,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273613/189297.jpg?v=639014249867370000",
   productUrl: "https://www.drogal.com.br/biscoito-nestle-tostines-especiarias-ginger-150g/p",
-  popularity: 5969
+  popularity: 6089
  },
  {
   sku: "drogal-23586",
@@ -65673,7 +66993,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270417/185866.jpg?v=638968181130000000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-strawberry-415g/p",
-  popularity: 5970
+  popularity: 6090
  },
  {
   sku: "drogal-23585",
@@ -65684,7 +67004,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270414/185872.jpg?v=638968180482900000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-mystery-415/p",
-  popularity: 5971
+  popularity: 6091
  },
  {
   sku: "drogal-23506",
@@ -65695,7 +67015,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270009/185378.jpg?v=638965809734970000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-recheado-charge-90g/p",
-  popularity: 5972
+  popularity: 6092
  },
  {
   sku: "drogal-23354",
@@ -65706,7 +67026,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286145/203414.jpg?v=639215510735470000",
   productUrl: "https://www.drogal.com.br/panettone-nestle-chocolate-trufado-450g/p",
-  popularity: 5973
+  popularity: 6093
  },
  {
   sku: "drogal-23332",
@@ -65717,7 +67037,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268569/183572.jpg?v=638954494035830000",
   productUrl: "https://www.drogal.com.br/chocolate-milka-alpine-milk-90g/p",
-  popularity: 5974
+  popularity: 6094
  },
  {
   sku: "drogal-23115",
@@ -65728,7 +67048,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265971/178676.jpg?v=638925820201570000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-caveira-recheada-sabor-cereja-com-nata-80g/p",
-  popularity: 5975
+  popularity: 6095
  },
  {
   sku: "drogal-22994",
@@ -65739,7 +67059,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264820/177340.jpg?v=638911133166130000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-oceanitos-80g/p",
-  popularity: 5976
+  popularity: 6096
  },
  {
   sku: "drogal-22983",
@@ -65750,7 +67070,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264579/177019.jpg?v=638906220656530000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-fresh-sabor-fresh-mint-92g/p",
-  popularity: 5977
+  popularity: 6097
  },
  {
   sku: "drogal-22938",
@@ -65761,7 +67081,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264038/176379.jpg?v=638899149696400000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-ao-leite-com-amendoin-150g/p",
-  popularity: 5978
+  popularity: 6098
  },
  {
   sku: "drogal-22829",
@@ -65772,7 +67092,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258925/141242.jpg?v=638887785292300000",
   productUrl: "https://www.drogal.com.br/mix-nuts-cooper-nutrimix-40g/p",
-  popularity: 5979
+  popularity: 6099
  },
  {
   sku: "drogal-22495",
@@ -65783,7 +67103,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254919/136825.jpg?v=638833925284500000",
   productUrl: "https://www.drogal.com.br/doce-de-amendoim-pacoquita-santa-helena-sabor-coco-queimado-8-unidades/p",
-  popularity: 5980
+  popularity: 6100
  },
  {
   sku: "drogal-22105",
@@ -65794,7 +67114,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250820/132110.jpg?v=638778263984200000",
   productUrl: "https://www.drogal.com.br/chocolate-neugebauer-noig-creme-brulee-70g/p",
-  popularity: 5981
+  popularity: 6101
  },
  {
   sku: "drogal-22045",
@@ -65805,7 +67125,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249820/130862.jpg?v=638769734146870000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-doce-de-leite-33g/p",
-  popularity: 5982
+  popularity: 6102
  },
  {
   sku: "drogal-21725",
@@ -65816,7 +67136,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278593/195088.png?v=639107350298070000",
   productUrl: "https://www.drogal.com.br/chocolate-ferrero-rocher-tablete-dark-70-com-avela-90g/p",
-  popularity: 5983
+  popularity: 6103
  },
  {
   sku: "drogal-21724",
@@ -65827,7 +67147,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252999/134707.jpg?v=638803283379400000",
   productUrl: "https://www.drogal.com.br/chocolate-ferrero-rocher-tablete-branco-com-avela-90g/p",
-  popularity: 5984
+  popularity: 6104
  },
  {
   sku: "drogal-21646",
@@ -65838,7 +67158,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243111/123635.jpg?v=638713047712400000",
   productUrl: "https://www.drogal.com.br/chocolate-chocotrio-garoto-prestigio-90g/p",
-  popularity: 5985
+  popularity: 6105
  },
  {
   sku: "drogal-21600",
@@ -65849,7 +67169,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242496/122834.jpg?v=638713046315130000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-branco-42g/p",
-  popularity: 5986
+  popularity: 6106
  },
  {
   sku: "drogal-20926",
@@ -65860,7 +67180,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238053/118113.jpg?v=638634900642500000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-aranha-80g/p",
-  popularity: 5987
+  popularity: 6107
  },
  {
   sku: "drogal-20628",
@@ -65871,7 +67191,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/227947/108471.jpg?v=638574532016700000",
   productUrl: "https://www.drogal.com.br/cha-leao-preparo-para-drinks-pessego-10-saches-20g-cada/p",
-  popularity: 5988
+  popularity: 6108
  },
  {
   sku: "drogal-20627",
@@ -65882,7 +67202,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/227940/108464.jpg?v=638574527392600000",
   productUrl: "https://www.drogal.com.br/cha-leao-preparo-para-drinks-morango-com-hortela-10-saches-20g-cada/p",
-  popularity: 5989
+  popularity: 6109
  },
  {
   sku: "drogal-20297",
@@ -65893,7 +67213,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/222806/102663.jpg?v=638554127501600000",
   productUrl: "https://www.drogal.com.br/pirulito-lollipops-gourmet-31g/p",
-  popularity: 5990
+  popularity: 6110
  },
  {
   sku: "drogal-19913",
@@ -65904,7 +67224,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/214267/92758.png?v=638487959187770000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-sabor-menta-fresh-145g/p",
-  popularity: 5991
+  popularity: 6111
  },
  {
   sku: "drogal-19760",
@@ -65915,7 +67235,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/212221/90862.jpg?v=638460180354530000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-morango-42g/p",
-  popularity: 5992
+  popularity: 6112
  },
  {
   sku: "drogal-19734",
@@ -65926,7 +67246,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/209893/88666.png?v=638463759122200000",
   productUrl: "https://www.drogal.com.br/batata-xcrons-extra-crocante-sabor-creme-de-cebola-45g/p",
-  popularity: 5993
+  popularity: 6113
  },
  {
   sku: "drogal-19697",
@@ -65937,7 +67257,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211269/90057.jpg?v=638594088168470000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-chocotrio-bono-morango-90g/p",
-  popularity: 5994
+  popularity: 6114
  },
  {
   sku: "drogal-19649",
@@ -65948,7 +67268,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233066/112945.jpg?v=638594100120730000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-chocotrio-negresco-90g/p",
-  popularity: 5995
+  popularity: 6115
  },
  {
   sku: "drogal-19485",
@@ -65959,7 +67279,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208194/84685.jpg?v=638443167882330000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-mms-62g/p",
-  popularity: 5996
+  popularity: 6116
  },
  {
   sku: "drogal-19484",
@@ -65970,7 +67290,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208192/84240.jpg?v=638443168968400000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-crocante-60g-farmacia-online-drogal/p",
-  popularity: 5997
+  popularity: 6117
  },
  {
   sku: "drogal-19461",
@@ -65981,7 +67301,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208139/84662.jpg?v=638443162876000000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-unicornetto-90g/p",
-  popularity: 5998
+  popularity: 6118
  },
  {
   sku: "drogal-17008",
@@ -65992,7 +67312,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233072/112952.jpg?v=638608811713470000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-duo-80g/p",
-  popularity: 5999
+  popularity: 6119
  },
  {
   sku: "drogal-16985",
@@ -66003,7 +67323,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252712/134075.jpg?v=638799969317470000",
   productUrl: "https://www.drogal.com.br/guarda-chuva-automatico-transparente-1-unidade/p",
-  popularity: 6000
+  popularity: 6120
  },
  {
   sku: "drogal-16981",
@@ -66014,7 +67334,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252714/134077.jpg?v=638799969936370000",
   productUrl: "https://www.drogal.com.br/guarda-chuva-automatico-cabo-de-couro-cor-preto/p",
-  popularity: 6001
+  popularity: 6121
  },
  {
   sku: "drogal-16950",
@@ -66025,7 +67345,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/207236/86150.png?v=638416953955930000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-brigadeiro-52g-/p",
-  popularity: 6002
+  popularity: 6122
  },
  {
   sku: "drogal-16939",
@@ -66036,7 +67356,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208200/86880.jpg?v=638443161030200000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-classico-69g/p",
-  popularity: 6003
+  popularity: 6123
  },
  {
   sku: "drogal-16927",
@@ -66047,7 +67367,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278849/195235.png?v=639113290439970000",
   productUrl: "https://www.drogal.com.br/pilha-alcalina-rayovac-aaa-4-unidades/p",
-  popularity: 6004
+  popularity: 6124
  },
  {
   sku: "drogal-16923",
@@ -66058,7 +67378,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286672/203981.jpg?v=639223167040500000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-triple-caramel-chunk-458ml/p",
-  popularity: 6005
+  popularity: 6125
  },
  {
   sku: "drogal-16876",
@@ -66069,7 +67389,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286656/203966.jpg?v=639223104510530000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-phish-food-458ml/p",
-  popularity: 6006
+  popularity: 6126
  },
  {
   sku: "drogal-16446",
@@ -66080,7 +67400,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211540/90451.jpg?v=638463757799530000",
   productUrl: "https://www.drogal.com.br/chocolate-dark-neugebauer-bar-1891-55-cacau-90g/p",
-  popularity: 6007
+  popularity: 6127
  },
  {
   sku: "drogal-16418",
@@ -66091,7 +67411,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197553/62055.jpg?v=638394762515130000",
   productUrl: "https://www.drogal.com.br/batata-xcrons-extra-crocante-sabor-picanha-com-barbecue-45g/p",
-  popularity: 6008
+  popularity: 6128
  },
  {
   sku: "drogal-16409",
@@ -66102,7 +67422,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197538/62054.jpg?v=638394762496470000",
   productUrl: "https://www.drogal.com.br/batata-xcrons-extra-crocante-sabor-costelinha-com-limao-45g/p",
-  popularity: 6009
+  popularity: 6129
  },
  {
   sku: "drogal-16300",
@@ -66113,7 +67433,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/231866/111677.jpg?v=638580929480800000",
   productUrl: "https://www.drogal.com.br/palha-italiana-germanos-zero-sabor-doce-de-leite-30g/p",
-  popularity: 6010
+  popularity: 6130
  },
  {
   sku: "drogal-16298",
@@ -66124,7 +67444,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197354/61845.jpg?v=638394761833470000",
   productUrl: "https://www.drogal.com.br/ovinhos-de-amendoin-elma-chips-65g/p",
-  popularity: 6011
+  popularity: 6131
  },
  {
   sku: "drogal-16294",
@@ -66135,7 +67455,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197342/61854.jpg?v=638394765118030000",
   productUrl: "https://www.drogal.com.br/palha-italiana-germanos-zero-sabor-churros-30g/p",
-  popularity: 6012
+  popularity: 6132
  },
  {
   sku: "drogal-16288",
@@ -66146,7 +67466,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197332/61852.jpg?v=638394761824970000",
   productUrl: "https://www.drogal.com.br/snack-eqlibri-panetini-sabor-tomate-temperado-40g/p",
-  popularity: 6013
+  popularity: 6133
  },
  {
   sku: "drogal-16245",
@@ -66157,7 +67477,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197217/61676.png?v=638394761520400000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-incrivel-dupla-sabor-morango-145g/p",
-  popularity: 6014
+  popularity: 6134
  },
  {
   sku: "drogal-16219",
@@ -66168,7 +67488,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197160/61667.png?v=638394764899770000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-frutas-comotegusta-sabor-laranja-morango-manga-e-melao-145g/p",
-  popularity: 6015
+  popularity: 6135
  },
  {
   sku: "drogal-16167",
@@ -66179,7 +67499,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273310/189240.png?v=639005522358930000",
   productUrl: "https://www.drogal.com.br/cha-kids-leaozinho-amora-e-framboesa-10-saches-23g/p",
-  popularity: 6016
+  popularity: 6136
  },
  {
   sku: "drogal-16154",
@@ -66190,7 +67510,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196988/61581.png?v=638394761484200000",
   productUrl: "https://www.drogal.com.br/difusor-de-aromas-glade-lavanda-100ml/p",
-  popularity: 6017
+  popularity: 6137
  },
  {
   sku: "drogal-16102",
@@ -66201,7 +67521,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211828/90604.jpg?v=638463733492830000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-recheado-torta-holandesa-85g/p",
-  popularity: 6018
+  popularity: 6138
  },
  {
   sku: "drogal-16070",
@@ -66212,7 +67532,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233042/112921.jpg?v=638594100107130000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-classic-duo-cookie-150g/p",
-  popularity: 6019
+  popularity: 6139
  },
  {
   sku: "drogal-16029",
@@ -66223,7 +67543,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278865/195254.png?v=639113396834430000",
   productUrl: "https://www.drogal.com.br/pilha-rayovac-lithium-cr2025-3v-1-unidade/p",
-  popularity: 6020
+  popularity: 6140
  },
  {
   sku: "drogal-15917",
@@ -66234,7 +67554,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211875/90644.jpg?v=638463733321330000",
   productUrl: "https://www.drogal.com.br/stikadinho-neugebauer-sticks-sabor-morango-32g/p",
-  popularity: 6021
+  popularity: 6141
  },
  {
   sku: "drogal-15750",
@@ -66245,7 +67565,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211359/90145.jpg?v=638463733138400000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-charge-40g/p",
-  popularity: 6022
+  popularity: 6142
  },
  {
   sku: "drogal-15375",
@@ -66256,7 +67576,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195475/59856.png?v=638394759580830000",
   productUrl: "https://www.drogal.com.br/desinfetante-lysoform-original-500ml/p",
-  popularity: 6023
+  popularity: 6143
  },
  {
   sku: "drogal-15337",
@@ -66267,7 +67587,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195400/59763.png?v=638394759654800000",
   productUrl: "https://www.drogal.com.br/desinfetante-aerossol-lysoform-lembranca-de-infancia-360ml/p",
-  popularity: 6024
+  popularity: 6144
  },
  {
   sku: "drogal-15321",
@@ -66278,7 +67598,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195373/59756.png?v=638394759502700000",
   productUrl: "https://www.drogal.com.br/desinfetante-aerossol-lysoform-lavanda-360ml/p",
-  popularity: 6025
+  popularity: 6145
  },
  {
   sku: "drogal-14884",
@@ -66289,7 +67609,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264591/177031.jpg?v=638906856285270000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-white-sbor-menta-56g/p",
-  popularity: 6026
+  popularity: 6146
  },
  {
   sku: "drogal-14695",
@@ -66300,7 +67620,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194324/58718.png?v=638394763256030000",
   productUrl: "https://www.drogal.com.br/club-social-crostini-sabor-tomate-seco-e-salsinha-80g/p",
-  popularity: 6027
+  popularity: 6147
  },
  {
   sku: "drogal-14466",
@@ -66311,7 +67631,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193864/58216.jpg?v=638394758621030000",
   productUrl: "https://www.drogal.com.br/snack-eqlibri-panetini-sabor-queijo-suave-40g/p",
-  popularity: 6028
+  popularity: 6148
  },
  {
   sku: "drogal-14366",
@@ -66322,7 +67642,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211602/90444.jpg?v=638463731066300000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-chokito-32g/p",
-  popularity: 6029
+  popularity: 6149
  },
  {
   sku: "drogal-14287",
@@ -66333,7 +67653,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264683/177139.jpg?v=638907931969670000",
   productUrl: "https://www.drogal.com.br/pastilha-mentos-fruit-kiss-sabor-morango-35g/p",
-  popularity: 6030
+  popularity: 6150
  },
  {
   sku: "drogal-14270",
@@ -66344,7 +67664,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193463/57850.png?v=638394757929270000",
   productUrl: "https://www.drogal.com.br/pilha-duracell-alcalina-palito-aaa-com-4/p",
-  popularity: 6031
+  popularity: 6151
  },
  {
   sku: "drogal-13547",
@@ -66355,7 +67675,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264695/177152.jpg?v=638907971513370000",
   productUrl: "https://www.drogal.com.br/pastilha-mentos-mint-kiss-sabor-menta-forte-35g/p",
-  popularity: 6032
+  popularity: 6152
  },
  {
   sku: "drogal-24787",
@@ -66366,7 +67686,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282285/199368.png?v=639166279866330000",
   productUrl: "https://www.drogal.com.br/amendoim-sem-pele-santa-helena-sabor-bacon-com-maple-90g/p",
-  popularity: 6033
+  popularity: 6153
  },
  {
   sku: "drogal-24739",
@@ -66377,7 +67697,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281621/198481.png?v=639160101386000000",
   productUrl: "https://www.drogal.com.br/agua-perfumada-para-tecidos-aurye-home-bambu-250ml/p",
-  popularity: 6034
+  popularity: 6154
  },
  {
   sku: "drogal-24731",
@@ -66388,7 +67708,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281579/198315.jpg?v=639160048816730000",
   productUrl: "https://www.drogal.com.br/marshmallows-fini-pacoquita-70g/p",
-  popularity: 6035
+  popularity: 6155
  },
  {
   sku: "drogal-24319",
@@ -66399,7 +67719,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277399/193087.png?v=639089962773330000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-magnum-pistache-86g/p",
-  popularity: 6036
+  popularity: 6156
  },
  {
   sku: "drogal-23587",
@@ -66410,7 +67730,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270422/185875.jpg?v=638968191442670000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-churros-415g/p",
-  popularity: 6037
+  popularity: 6157
  },
  {
   sku: "drogal-23331",
@@ -66421,7 +67741,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268568/183571.jpg?v=638954323602470000",
   productUrl: "https://www.drogal.com.br/chocolate-milka-hazelnut-90g/p",
-  popularity: 6038
+  popularity: 6158
  },
  {
   sku: "drogal-22990",
@@ -66432,7 +67752,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264697/177154.jpg?v=638908712658900000",
   productUrl: "https://www.drogal.com.br/chocolate-branco-nestle-galak-20-gratis-80g/p",
-  popularity: 6039
+  popularity: 6159
  },
  {
   sku: "drogal-22967",
@@ -66443,7 +67763,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264467/176897.jpg?v=638905152333600000",
   productUrl: "https://www.drogal.com.br/alfajor-cooper-energy-sabor-morango-55g/p",
-  popularity: 6040
+  popularity: 6160
  },
  {
   sku: "drogal-22966",
@@ -66454,7 +67774,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264466/176893.jpg?v=638905152295830000",
   productUrl: "https://www.drogal.com.br/alfajor-cooper-energy-sabor-leite-em-po-55g/p",
-  popularity: 6041
+  popularity: 6161
  },
  {
   sku: "drogal-22497",
@@ -66465,7 +67785,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254922/136828.jpg?v=638834314562770000",
   productUrl: "https://www.drogal.com.br/doce-de-amendoim-pacoquita-santa-helena-sabor-pamonha-8-unidades/p",
-  popularity: 6042
+  popularity: 6162
  },
  {
   sku: "drogal-22481",
@@ -66476,7 +67796,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254669/136527.jpg?v=638829107829670000",
   productUrl: "https://www.drogal.com.br/salgadinho-popcorners-white-cheddar-57g/p",
-  popularity: 6043
+  popularity: 6163
  },
  {
   sku: "drogal-22444",
@@ -66487,7 +67807,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254391/136211.jpg?v=638822989076330000",
   productUrl: "https://www.drogal.com.br/ovo-toys-patrulha-canina-1-unidade/p",
-  popularity: 6044
+  popularity: 6164
  },
  {
   sku: "drogal-22117",
@@ -66498,7 +67818,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250903/132171.jpg?v=638779143102970000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-coconut-415g/p",
-  popularity: 6045
+  popularity: 6165
  },
  {
   sku: "drogal-22113",
@@ -66509,7 +67829,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250860/132213.jpg?v=638779008163800000",
   productUrl: "https://www.drogal.com.br/choco-cookies-nestle-recheio-de-chocolate-100g/p",
-  popularity: 6046
+  popularity: 6166
  },
  {
   sku: "drogal-22108",
@@ -66520,7 +67840,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250824/132151.jpg?v=638778351123430000",
   productUrl: "https://www.drogal.com.br/choco-cookies-garoto-com-recheio-de-serenata-de-amor-100g/p",
-  popularity: 6047
+  popularity: 6167
  },
  {
   sku: "drogal-22027",
@@ -66531,7 +67851,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249672/130536.jpg?v=638766182099370000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-polvo-80g/p",
-  popularity: 6048
+  popularity: 6168
  },
  {
   sku: "drogal-21016",
@@ -66542,7 +67862,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238871/118144.jpg?v=638660409795130000",
   productUrl: "https://www.drogal.com.br/marshmallows-fini-marshboo-rip-sabor-baunilha-80g/p",
-  popularity: 6049
+  popularity: 6169
  },
  {
   sku: "drogal-20553",
@@ -66553,7 +67873,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/227327/106757.jpg?v=638563081243930000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-cebolitos-45g/p",
-  popularity: 6050
+  popularity: 6170
  },
  {
   sku: "drogal-19411",
@@ -66564,7 +67884,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286665/203970.jpg?v=639223114844600000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-half-baked-458ml/p",
-  popularity: 6051
+  popularity: 6171
  },
  {
   sku: "drogal-16991",
@@ -66575,7 +67895,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/233060/112939.jpg?v=638594100067370000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-mini-moments-cookies-cream-346g/p",
-  popularity: 6052
+  popularity: 6172
  },
  {
   sku: "drogal-16907",
@@ -66586,7 +67906,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/207319/86165.jpg?v=638443163781730000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-sabor-cocos-do-nordeste-60g/p",
-  popularity: 6053
+  popularity: 6173
  },
  {
   sku: "drogal-16301",
@@ -66597,7 +67917,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197364/61800.jpg?v=638394764904430000",
   productUrl: "https://www.drogal.com.br/bala-butter-tofffees-sabor-leite-100g/p",
-  popularity: 6054
+  popularity: 6174
  },
  {
   sku: "drogal-16278",
@@ -66608,7 +67928,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273432/189370.png?v=639009720618300000",
   productUrl: "https://www.drogal.com.br/cha-leao-preparo-gelado-sabor-morango-laranja-10-saches-23g-cada/p",
-  popularity: 6055
+  popularity: 6175
  },
  {
   sku: "drogal-16276",
@@ -66619,7 +67939,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia leite uht",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197308/61838.jpg?v=638394765080330000",
   productUrl: "https://www.drogal.com.br/leite-semidesnatado-piracanjuba-a2-1-litro/p",
-  popularity: 6056
+  popularity: 6176
  },
  {
   sku: "drogal-16240",
@@ -66630,7 +67950,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211950/90717.png?v=638463757410300000",
   productUrl: "https://www.drogal.com.br/bombom-ferrero-rocher-345g/p",
-  popularity: 6057
+  popularity: 6177
  },
  {
   sku: "drogal-16164",
@@ -66641,7 +67961,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197013/61586.jpg?v=638627963963000000",
   productUrl: "https://www.drogal.com.br/difusor-de-aromas-glade-lembrancas-de-infancia-100ml/p",
-  popularity: 6058
+  popularity: 6178
  },
  {
   sku: "drogal-15978",
@@ -66652,7 +67972,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196501/60959.jpg?v=638394764553700000",
   productUrl: "https://www.drogal.com.br/biscoito-club-social-integral-tradicional-144g/p",
-  popularity: 6059
+  popularity: 6179
  },
  {
   sku: "drogal-15824",
@@ -66663,7 +67983,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248507/129640.jpg?v=638756483438600000",
   productUrl: "https://www.drogal.com.br/gengibre-da-natureza-cristalizado-40g-abacaxi/p",
-  popularity: 6060
+  popularity: 6180
  },
  {
   sku: "drogal-15009",
@@ -66674,7 +67994,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273430/189368.png?v=639009717457370000",
   productUrl: "https://www.drogal.com.br/cha-verde-leao-gengibre-limao-10-saches-25g/p",
-  popularity: 6061
+  popularity: 6181
  },
  {
   sku: "drogal-14898",
@@ -66685,7 +68005,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194605/58951.png?v=638394763525870000",
   productUrl: "https://www.drogal.com.br/balas-fini-regaliz-tubes-twister-sabor-frutas-silvestres-e-nata-80g/p",
-  popularity: 6062
+  popularity: 6182
  },
  {
   sku: "drogal-14530",
@@ -66696,7 +68016,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193971/58463.png?v=638394758598600000",
   productUrl: "https://www.drogal.com.br/balas-fini-regaliz-acido-tubes-sabor-uva-80g/p",
-  popularity: 6063
+  popularity: 6183
  },
  {
   sku: "drogal-14495",
@@ -66707,7 +68027,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278844/195232.png?v=639112715773370000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-rayovac-675-extra-advanced-6-unidades/p",
-  popularity: 6064
+  popularity: 6184
  },
  {
   sku: "drogal-14301",
@@ -66718,7 +68038,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193551/57934.png?v=638394758069770000",
   productUrl: "https://www.drogal.com.br/marshmallows-fini-torcao-80g/p",
-  popularity: 6065
+  popularity: 6185
  },
  {
   sku: "drogal-14286",
@@ -66729,7 +68049,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193531/57896.jpg?v=638394757970830000",
   productUrl: "https://www.drogal.com.br/protetor-ouvido-sil-3m/p",
-  popularity: 6066
+  popularity: 6186
  },
  {
   sku: "drogal-25141",
@@ -66740,7 +68060,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286466/203785.png?v=639222394617900000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-fazendo-arte-sabores-sortidos-80g/p",
-  popularity: 6067
+  popularity: 6187
  },
  {
   sku: "drogal-24744",
@@ -66751,7 +68071,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281629/198486.png?v=639160819643470000",
   productUrl: "https://www.drogal.com.br/difusor-de-aromas-aurye-home-vanilla-250ml/p",
-  popularity: 6068
+  popularity: 6188
  },
  {
   sku: "drogal-24742",
@@ -66762,7 +68082,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia bazar",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281627/198479.png?v=639160819677970000",
   productUrl: "https://www.drogal.com.br/difusor-de-aromas-aurye-home-alecrim-250ml/p",
-  popularity: 6069
+  popularity: 6189
  },
  {
   sku: "drogal-24738",
@@ -66773,7 +68093,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281619/198477.jpg?v=639160096361730000",
   productUrl: "https://www.drogal.com.br/agua-perfumada-para-tecidos-aurye-home-alecrim-250ml/p",
-  popularity: 6070
+  popularity: 6190
  },
  {
   sku: "drogal-24516",
@@ -66784,7 +68104,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279448/196039.jpg?v=639130574242330000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-baconzitos-36g/p",
-  popularity: 6071
+  popularity: 6191
  },
  {
   sku: "drogal-24372",
@@ -66795,7 +68115,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278099/194377.png?v=639101219533500000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-prestigio-sabor-frutas-vermelhas-33g/p",
-  popularity: 6072
+  popularity: 6192
  },
  {
   sku: "drogal-24369",
@@ -66806,7 +68126,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/285367/202653.png?v=639209245449000000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-surpresa-sabor-chocolate-130g/p",
-  popularity: 6073
+  popularity: 6193
  },
  {
   sku: "drogal-24345",
@@ -66817,7 +68137,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277675/194235.png?v=639096205301300000",
   productUrl: "https://www.drogal.com.br/batata-lays-sabor-taco-mexicano-62g/p",
-  popularity: 6074
+  popularity: 6194
  },
  {
   sku: "drogal-24409",
@@ -66828,7 +68148,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278500/194030.jpg?v=639106560618600000",
   productUrl: "https://www.drogal.com.br/batata-lays-sabor-picanha-brasileira-62g/p",
-  popularity: 6075
+  popularity: 6195
  },
  {
   sku: "drogal-24347",
@@ -66839,7 +68159,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277696/194032.png?v=639096876173230000",
   productUrl: "https://www.drogal.com.br/batata-lay%E2%80%99s-sabor-queijo-camembert-frances-62g/p",
-  popularity: 6076
+  popularity: 6196
  },
  {
   sku: "drogal-24327",
@@ -66850,7 +68170,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277438/193125.jpg?v=639089964181870000",
   productUrl: "https://www.drogal.com.br/sorvete-pote-kibon-duo-limao-e-maracuja-713g/p",
-  popularity: 6077
+  popularity: 6197
  },
  {
   sku: "drogal-24323",
@@ -66861,7 +68181,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277418/193106.png?v=639089962399270000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-harry-potter-sonserina-sabor-maca-verde-e-caramelo-amanteigado-58g/p",
-  popularity: 6078
+  popularity: 6198
  },
  {
   sku: "drogal-24322",
@@ -66872,7 +68192,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277405/193104.png?v=639089215294600000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-harry-potter-grifinoria-sabor-framboesa-manga-e-maracuja-58g/p",
-  popularity: 6079
+  popularity: 6199
  },
  {
   sku: "drogal-24321",
@@ -66883,7 +68203,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277403/193102.jpg?v=639089962555670000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-harry-potter-expecto-patronum-sabor-pera-e-limao-61g/p",
-  popularity: 6080
+  popularity: 6200
  },
  {
   sku: "drogal-24320",
@@ -66894,7 +68214,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277400/193097.png?v=639089962790930000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-sabor-tangerina-59g/p",
-  popularity: 6081
+  popularity: 6201
  },
  {
   sku: "drogal-24318",
@@ -66905,7 +68225,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277398/193094.jpg?v=639089201886300000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-frutilly-chiclete-pinta-lingua-40g/p",
-  popularity: 6082
+  popularity: 6202
  },
  {
   sku: "drogal-24317",
@@ -66916,7 +68236,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277394/193086.jpg?v=639089962748030000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-magnum-cookies--cream-85g/p",
-  popularity: 6083
+  popularity: 6203
  },
  {
   sku: "drogal-24316",
@@ -66927,7 +68247,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/277382/193071.jpg?v=639089962482300000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-choco-mix-65g/p",
-  popularity: 6084
+  popularity: 6204
  },
  {
   sku: "drogal-24240",
@@ -66938,7 +68258,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276422/192699.jpg?v=639077068317300000",
   productUrl: "https://www.drogal.com.br/confeito-mms-chocolate-e-brownie-120g/p",
-  popularity: 6085
+  popularity: 6205
  },
  {
   sku: "drogal-24239",
@@ -66949,7 +68269,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/288212/205739.png?v=639250790294400000",
   productUrl: "https://www.drogal.com.br/confeito-mms-chocolate-e-brownie-35g/p",
-  popularity: 6086
+  popularity: 6206
  },
  {
   sku: "drogal-24213",
@@ -66960,7 +68280,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/275998/191211.jpg?v=639071071155100000",
   productUrl: "https://www.drogal.com.br/biscoito-nestle-choco-biscuit-chocolate-branco-78g/p",
-  popularity: 6087
+  popularity: 6207
  },
  {
   sku: "drogal-24017",
@@ -66971,7 +68291,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273932/189929.jpg?v=639026043002370000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-infantil-tamanho-m-sortido-1-unidade-laco/p",
-  popularity: 6088
+  popularity: 6208
  },
  {
   sku: "drogal-24016",
@@ -66982,7 +68302,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273931/189928.jpg?v=639026042986000000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-infantil-tamanho-p-sortido-1-unidade-laco/p",
-  popularity: 6089
+  popularity: 6209
  },
  {
   sku: "drogal-24013",
@@ -66993,7 +68313,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273924/189921.jpg?v=639023725346900000",
   productUrl: "https://www.drogal.com.br/saco-para-presente-metalizado-tamanho-p-sortido-1-unidade-laco/p",
-  popularity: 6090
+  popularity: 6210
  },
  {
   sku: "drogal-23591",
@@ -67004,7 +68324,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270448/185983.jpg?v=638968239125030000",
   productUrl: "https://www.drogal.com.br/stikadinho-neugebauer-sticks-sabor-morango-29g/p",
-  popularity: 6091
+  popularity: 6211
  },
  {
   sku: "drogal-23534",
@@ -67015,7 +68335,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270185/185396.jpg?v=638966565173470000",
   productUrl: "https://www.drogal.com.br/biscoito-nestle-chocopretzel-ao-leite-80g/p",
-  popularity: 6092
+  popularity: 6212
  },
  {
   sku: "drogal-23533",
@@ -67026,7 +68346,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270174/185377.jpg?v=638966564289430000",
   productUrl: "https://www.drogal.com.br/biscoito-garoto-chocopretzel-80g/p",
-  popularity: 6093
+  popularity: 6213
  },
  {
   sku: "drogal-23359",
@@ -67037,7 +68357,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268859/183872.jpg?v=638956180150870000",
   productUrl: "https://www.drogal.com.br/caixa-de-bombom-nestle-especialidades-20-gratis-251g/p",
-  popularity: 6094
+  popularity: 6214
  },
  {
   sku: "drogal-23358",
@@ -67048,7 +68368,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268844/183855.jpg?v=638956179982800000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-lollo-6-unidades/p",
-  popularity: 6095
+  popularity: 6215
  },
  {
   sku: "drogal-23356",
@@ -67059,7 +68379,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268838/183837.jpg?v=638956179887600000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-charge-130g/p",
-  popularity: 6096
+  popularity: 6216
  },
  {
   sku: "drogal-23273",
@@ -67070,7 +68390,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/267866/182720.jpg?v=638947549742070000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-charge-6-unidades/p",
-  popularity: 6097
+  popularity: 6217
  },
  {
   sku: "drogal-23269",
@@ -67081,7 +68401,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/267843/182696.jpg?v=638947536424100000",
   productUrl: "https://www.drogal.com.br/chocolate-ao-leite-nestle-classic-20-gratis-80g/p",
-  popularity: 6098
+  popularity: 6218
  },
  {
   sku: "drogal-23116",
@@ -67092,7 +68412,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265972/178677.jpg?v=638925809026100000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-fazendo-arte-80g/p",
-  popularity: 6099
+  popularity: 6219
  },
  {
   sku: "drogal-23113",
@@ -67103,7 +68423,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265968/178670.jpg?v=638925820490470000",
   productUrl: "https://www.drogal.com.br/doce-de-amendoim-pacoquita-santa-helena-halloween-fini-tubes-azedinhos-sabor-morango-e-nata-8-unidades/p",
-  popularity: 6100
+  popularity: 6220
  },
  {
   sku: "drogal-23097",
@@ -67114,7 +68434,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265799/178429.jpg?v=638923460569070000",
   productUrl: "https://www.drogal.com.br/goma-de-mascar-mentos-pure-white-sabor-spearmint-56g/p",
-  popularity: 6101
+  popularity: 6221
  },
  {
   sku: "drogal-23030",
@@ -67125,7 +68445,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/265161/177731.jpg?v=638914717687330000",
   productUrl: "https://www.drogal.com.br/biscoito-recheado-nestle-tostines-especiarias-sabor-cappuccino-93g/p",
-  popularity: 6102
+  popularity: 6222
  },
  {
   sku: "drogal-22991",
@@ -67136,7 +68456,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264699/177155.jpg?v=638908519360030000",
   productUrl: "https://www.drogal.com.br/bala-de-gelatina-fini-rato-80g/p",
-  popularity: 6103
+  popularity: 6223
  },
  {
   sku: "drogal-22827",
@@ -67147,7 +68467,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258917/141240.jpg?v=638887785213500000",
   productUrl: "https://www.drogal.com.br/castanha-de-caju-torrada-e-salgada-cooper-nutrimix-40g/p",
-  popularity: 6104
+  popularity: 6224
  },
  {
   sku: "drogal-22826",
@@ -67158,7 +68478,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/258912/141236.jpg?v=638885395387800000",
   productUrl: "https://www.drogal.com.br/pistache-com-casca-torrado-e-salgado-cooper-nutrimix-40g/p",
-  popularity: 6105
+  popularity: 6225
  },
  {
   sku: "drogal-22696",
@@ -67169,7 +68489,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257384/139503.jpg?v=638872530329430000",
   productUrl: "https://www.drogal.com.br/aromatizante-p-carro-areon-fresh-wave-new-car/p",
-  popularity: 6106
+  popularity: 6226
  },
  {
   sku: "drogal-22695",
@@ -67180,7 +68500,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257381/139501.jpg?v=638872535254230000",
   productUrl: "https://www.drogal.com.br/aromatizante-para-carro-areon-american-dream-1-unidade/p",
-  popularity: 6107
+  popularity: 6227
  },
  {
   sku: "drogal-22694",
@@ -67191,7 +68511,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257379/139499.jpg?v=638872535197600000",
   productUrl: "https://www.drogal.com.br/aromatizante-para-carro-areon-blue-eye-peach-1-unidade/p",
-  popularity: 6108
+  popularity: 6228
  },
  {
   sku: "drogal-22693",
@@ -67202,7 +68522,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257377/139497.jpg?v=638872535160330000",
   productUrl: "https://www.drogal.com.br/aromatizante-para-carro-areon-smile-bubble-gum-1-unidade/p",
-  popularity: 6109
+  popularity: 6229
  },
  {
   sku: "drogal-22692",
@@ -67213,7 +68533,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia aromatizantes",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/257375/139494.jpg?v=638872473965130000",
   productUrl: "https://www.drogal.com.br/aromatizante-para-carro-areon-vip-black-king-1-unidade/p",
-  popularity: 6110
+  popularity: 6230
  },
  {
   sku: "drogal-22565",
@@ -67224,7 +68544,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/264463/176891.jpg?v=638905077686070000",
   productUrl: "https://www.drogal.com.br/alfajor-cooper-energy-sabor-avela-55g/p",
-  popularity: 6111
+  popularity: 6231
  },
  {
   sku: "drogal-22470",
@@ -67235,7 +68555,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/254636/136496.jpg?v=638828365928600000",
   productUrl: "https://www.drogal.com.br/amendoim-salgado-sem-pele-grelhaditos-amindus-sante-helena-90g/p",
-  popularity: 6112
+  popularity: 6232
  },
  {
   sku: "drogal-22364",
@@ -67246,7 +68566,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/253170/134919.jpg?v=638805005723470000",
   productUrl: "https://www.drogal.com.br/guarda-chuva-enovamix-longo-com-coletor-de-agua-1-unidade/p",
-  popularity: 6113
+  popularity: 6233
  },
  {
   sku: "drogal-22326",
@@ -67257,7 +68577,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252682/134343.jpg?v=638801059528700000",
   productUrl: "https://www.drogal.com.br/salgadinho-de-milho-tostitos-sabor-toque-de-sal-marinho-110g/p",
-  popularity: 6114
+  popularity: 6234
  },
  {
   sku: "drogal-22324",
@@ -67268,7 +68588,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252673/134330.jpg?v=638801059452830000",
   productUrl: "https://www.drogal.com.br/batata-lays-rusticas-sabor-cream-cheese-68g/p",
-  popularity: 6115
+  popularity: 6235
  },
  {
   sku: "drogal-22217",
@@ -67279,7 +68599,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/251837/133297.jpg?v=638790519877630000",
   productUrl: "https://www.drogal.com.br/choco-cookies-nestle-peanut-butter-100g/p",
-  popularity: 6116
+  popularity: 6236
  },
  {
   sku: "drogal-22112",
@@ -67290,7 +68610,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250854/132199.jpg?v=638779127003900000",
   productUrl: "https://www.drogal.com.br/choco-cookies-nestle-brownie-100g/p",
-  popularity: 6117
+  popularity: 6237
  },
  {
   sku: "drogal-22106",
@@ -67301,7 +68621,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250821/132113.jpg?v=638778264005570000",
   productUrl: "https://www.drogal.com.br/chocolate-neugebauer-noig-pavlona-70g/p",
-  popularity: 6118
+  popularity: 6238
  },
  {
   sku: "drogal-22104",
@@ -67312,7 +68632,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250819/131979.jpg?v=638778263964770000",
   productUrl: "https://www.drogal.com.br/chocolate-neugebauer-noig-banoffee-70g/p",
-  popularity: 6119
+  popularity: 6239
  },
  {
   sku: "drogal-22103",
@@ -67323,7 +68643,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250818/132138.jpg?v=638778263943630000",
   productUrl: "https://www.drogal.com.br/caixa-de-bombom-neugebauer-noig-2055g/p",
-  popularity: 6120
+  popularity: 6240
  },
  {
   sku: "drogal-22046",
@@ -67334,7 +68654,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249823/131131.jpg?v=638771231917870000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-surpresa-20g/p",
-  popularity: 6121
+  popularity: 6241
  },
  {
   sku: "drogal-21954",
@@ -67345,7 +68665,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248502/124185.jpg?v=638755945397370000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-bombom-chocolate-161g/p",
-  popularity: 6122
+  popularity: 6242
  },
  {
   sku: "drogal-21829",
@@ -67356,7 +68676,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/245811/126444.jpg?v=638735796348300000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-triplo-chocolate-415g/p",
-  popularity: 6123
+  popularity: 6243
  },
  {
   sku: "drogal-21826",
@@ -67367,7 +68687,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/245781/126407.jpg?v=638735826018070000",
   productUrl: "https://www.drogal.com.br/marshmallows-fini-pipoca-doce-80g/p",
-  popularity: 6124
+  popularity: 6244
  },
  {
   sku: "drogal-21785",
@@ -67378,7 +68698,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/244894/125234.jpg?v=638727172683530000",
   productUrl: "https://www.drogal.com.br/bala-gelatina-fini-80g/p",
-  popularity: 6125
+  popularity: 6245
  },
  {
   sku: "drogal-21777",
@@ -67389,7 +68709,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/244879/125225.jpg?v=638739863514970000",
   productUrl: "https://www.drogal.com.br/biscoito-fino-amanteigado-carmela-sabor-limao150g/p",
-  popularity: 6126
+  popularity: 6246
  },
  {
   sku: "drogal-21776",
@@ -67400,7 +68720,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/244878/125224.jpg?v=638739865435000000",
   productUrl: "https://www.drogal.com.br/biscoito-fino-amanteigado-carmela-sabor-tradicional-150g/p",
-  popularity: 6127
+  popularity: 6247
  },
  {
   sku: "drogal-21775",
@@ -67411,7 +68731,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/244877/125223.jpg?v=638739863398800000",
   productUrl: "https://www.drogal.com.br/biscoito-fino-amanteigado-carmela-sabor-chocolate-150g/p",
-  popularity: 6128
+  popularity: 6248
  },
  {
   sku: "drogal-21718",
@@ -67422,7 +68742,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243923/124495.jpg?v=638739861827800000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-chicabon-pote-184g/p",
-  popularity: 6129
+  popularity: 6249
  },
  {
   sku: "drogal-21702",
@@ -67433,7 +68753,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243813/124195.jpg?v=638739863849670000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-doce-de-leite-pote-184g/p",
-  popularity: 6130
+  popularity: 6250
  },
  {
   sku: "drogal-21701",
@@ -67444,7 +68764,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243812/124205.jpg?v=638778310862570000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-bombons-morango-pote-184g/p",
-  popularity: 6131
+  popularity: 6251
  },
  {
   sku: "drogal-21700",
@@ -67455,7 +68775,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243811/124216.jpg?v=638739864014600000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-mini-eskibon-baunilha-pote-184g/p",
-  popularity: 6132
+  popularity: 6252
  },
  {
   sku: "drogal-21697",
@@ -67466,7 +68786,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243554/124187.jpg?v=638713046907570000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-bombom-classico-161g/p",
-  popularity: 6133
+  popularity: 6253
  },
  {
   sku: "drogal-21696",
@@ -67477,7 +68797,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243553/124184.jpg?v=638713048014070000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-bombom-branco-161g/p",
-  popularity: 6134
+  popularity: 6254
  },
  {
   sku: "drogal-21557",
@@ -67488,7 +68808,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243545/124177.jpg?v=638706420102430000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-avela-72g/p",
-  popularity: 6135
+  popularity: 6255
  },
  {
   sku: "drogal-21531",
@@ -67499,7 +68819,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243550/124182.jpg?v=638706420127670000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-classico-resilience-69g/p",
-  popularity: 6136
+  popularity: 6256
  },
  {
   sku: "drogal-21336",
@@ -67510,7 +68830,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/240561/120753.jpg?v=638686285085170000",
   productUrl: "https://www.drogal.com.br/palha-italiana-germanos-zero-acucar-whey-sabor-pistache-30g/p",
-  popularity: 6137
+  popularity: 6257
  },
  {
   sku: "drogal-21170",
@@ -67521,7 +68841,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/239611/119795.jpg?v=638660414453230000",
   productUrl: "https://www.drogal.com.br/choco-cookies-nestle-brownie-120g/p",
-  popularity: 6138
+  popularity: 6258
  },
  {
   sku: "drogal-21109",
@@ -67532,7 +68852,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/239256/119414.jpg?v=638660384776570000",
   productUrl: "https://www.drogal.com.br/choco-cookies-garoto-com-recheio-de-chocolate100g/p",
-  popularity: 6139
+  popularity: 6259
  },
  {
   sku: "drogal-21015",
@@ -67543,7 +68863,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238867/118930.jpg?v=638660412637700000",
   productUrl: "https://www.drogal.com.br/bala-liquida-em-spray-go-play-peppa-pig-sabor-morango-25ml/p",
-  popularity: 6140
+  popularity: 6260
  },
  {
   sku: "drogal-20873",
@@ -67554,7 +68874,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/237498/117531.jpg?v=638633771241430000",
   productUrl: "https://www.drogal.com.br/alfajor-carmela-chocolate-com-doce-de-leite-50g/p",
-  popularity: 6141
+  popularity: 6261
  },
  {
   sku: "drogal-20864",
@@ -67565,7 +68885,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/237457/117226.jpg?v=638633771253270000",
   productUrl: "https://www.drogal.com.br/alfajor-carmela-creme-de-avela-zero-acucar-25g/p",
-  popularity: 6142
+  popularity: 6262
  },
  {
   sku: "drogal-20552",
@@ -67576,7 +68896,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/227323/106751.jpg?v=638574547968500000",
   productUrl: "https://www.drogal.com.br/salgadinho-elma-chips-baconzitos-42g/p",
-  popularity: 6143
+  popularity: 6263
  },
  {
   sku: "drogal-19761",
@@ -67587,7 +68907,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/212209/90870.jpg?v=638463759180370000",
   productUrl: "https://www.drogal.com.br/bombom-ferrero-rocher-100g/p",
-  popularity: 6144
+  popularity: 6264
  },
  {
   sku: "drogal-19746",
@@ -67598,7 +68918,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211303/90071.png?v=638463758677900000",
   productUrl: "https://www.drogal.com.br/chocolate-trento-allegro-dark-amendoim-26g/p",
-  popularity: 6145
+  popularity: 6265
  },
  {
   sku: "drogal-19741",
@@ -67609,7 +68929,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211283/90085.png?v=638463758426100000",
   productUrl: "https://www.drogal.com.br/chocolate-trento-allegro-choco-branco-amendoim-26g/p",
-  popularity: 6146
+  popularity: 6266
  },
  {
   sku: "drogal-19729",
@@ -67620,7 +68940,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/209967/88734.png?v=638463758334470000",
   productUrl: "https://www.drogal.com.br/batata-xcrons-extra-crocante-sabor-frango-grelhado-45g/p",
-  popularity: 6147
+  popularity: 6267
  },
  {
   sku: "drogal-19725",
@@ -67631,7 +68951,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238267/118328.jpg?v=638636436119730000",
   productUrl: "https://www.drogal.com.br/chocolate-garroto-talento-artesao-amendoa-avela-e-amendoim-75g/p",
-  popularity: 6148
+  popularity: 6268
  },
  {
   sku: "drogal-19714",
@@ -67642,7 +68962,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211286/90068.jpg?v=638594094601400000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-talento-artesao-castanha-de-caju-castanha-do-para-e-nibs-de-cacau-75g/p",
-  popularity: 6149
+  popularity: 6269
  },
  {
   sku: "drogal-19623",
@@ -67653,7 +68973,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211451/90226.jpg?v=638961256348200000",
   productUrl: "https://www.drogal.com.br/chocolate-toblerone-crunchy-almonds-100g/p",
-  popularity: 6150
+  popularity: 6270
  },
  {
   sku: "drogal-19476",
@@ -67664,7 +68984,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/209598/88402.jpg?v=638448313506000000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-morango-55g/p",
-  popularity: 6151
+  popularity: 6271
  },
  {
   sku: "drogal-19475",
@@ -67675,7 +68995,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete cone",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208173/84606.jpg?v=638446284513370000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-cornetto-brigadeiro-65g/p",
-  popularity: 6152
+  popularity: 6272
  },
  {
   sku: "drogal-19467",
@@ -67686,7 +69006,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208153/84609.jpg?v=638441139836430000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-blast-chicabon-pote-800ml/p",
-  popularity: 6153
+  popularity: 6273
  },
  {
   sku: "drogal-19463",
@@ -67697,7 +69017,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208145/84661.jpg?v=639226550622370000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-chicabon-zero-63g/p",
-  popularity: 6154
+  popularity: 6274
  },
  {
   sku: "drogal-19459",
@@ -67708,7 +69028,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208134/84668.jpg?v=638443167842470000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-vegano-amendoas-69g/p",
-  popularity: 6155
+  popularity: 6275
  },
  {
   sku: "drogal-19456",
@@ -67719,7 +69039,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete mini bombom",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/287090/204463.jpg?v=639231881865000000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-bites-classico-mini-bombons-92g/p",
-  popularity: 6156
+  popularity: 6276
  },
  {
   sku: "drogal-19430",
@@ -67730,7 +69050,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208052/86083.jpg?v=638441139632270000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-sabor-mangas-do-sudeste-77g/p",
-  popularity: 6157
+  popularity: 6277
  },
  {
   sku: "drogal-19425",
@@ -67741,7 +69061,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/208037/82593.jpg?v=638443160956570000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-ruby-71g/p",
-  popularity: 6158
+  popularity: 6278
  },
  {
   sku: "drogal-19422",
@@ -67752,7 +69072,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286666/203971.jpg?v=639223117209170000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-strawberry-cheesecake-458ml/p",
-  popularity: 6159
+  popularity: 6279
  },
  {
   sku: "drogal-19413",
@@ -67763,7 +69083,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286667/203974.jpg?v=639223119253500000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-doce-deleite-core-458ml/p",
-  popularity: 6160
+  popularity: 6280
  },
  {
   sku: "drogal-16986",
@@ -67774,7 +69094,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/252713/134083.jpg?v=638799969565300000",
   productUrl: "https://www.drogal.com.br/guarda-chuva-automatico-estampado-1-unidade/p",
-  popularity: 6161
+  popularity: 6281
  },
  {
   sku: "drogal-16983",
@@ -67785,7 +69105,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/253242/134082.jpg?v=638809160837000000",
   productUrl: "https://www.drogal.com.br/guarda-chuva-automatico-prata-com-estampa-1-unidade/p",
-  popularity: 6162
+  popularity: 6282
  },
  {
   sku: "drogal-16945",
@@ -67796,7 +69116,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243547/124179.jpg?v=638706420153000000",
   productUrl: "https://www.drogal.com.br/sorvete-kibon-magnum-white-78g/p",
-  popularity: 6163
+  popularity: 6283
  },
  {
   sku: "drogal-16925",
@@ -67807,7 +69127,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/205248/82609.jpg?v=638441139634630000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-sabor-uva-do-sul-59g/p",
-  popularity: 6164
+  popularity: 6284
  },
  {
   sku: "drogal-16920",
@@ -67818,7 +69138,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/207306/86167.jpg?v=638443161307430000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-sabor-limoes-do-sudeste-58g/p",
-  popularity: 6165
+  popularity: 6285
  },
  {
   sku: "drogal-16917",
@@ -67829,7 +69149,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/200252/75023.jpg?v=639226551093670000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-chicabon-62g/p",
-  popularity: 6166
+  popularity: 6286
  },
  {
   sku: "drogal-16901",
@@ -67840,7 +69160,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete picole",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/200236/75020.jpg?v=638441139881330000",
   productUrl: "https://www.drogal.com.br/sorvete-picole-kibon-fruttare-abacaxi-59g/p",
-  popularity: 6167
+  popularity: 6287
  },
  {
   sku: "drogal-16883",
@@ -67851,7 +69171,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia sorvete pote",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/286662/203969.jpg?v=639223110717600000",
   productUrl: "https://www.drogal.com.br/sorvete-benjerrys-chocolate-fudge-brownie-458ml/p",
-  popularity: 6168
+  popularity: 6288
  },
  {
   sku: "drogal-16519",
@@ -67862,7 +69182,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/266518/179757.jpg?v=638931133783400000",
   productUrl: "https://www.drogal.com.br/panettone-bauducco-frutas-cristalizadas-400g/p",
-  popularity: 6169
+  popularity: 6289
  },
  {
   sku: "drogal-16513",
@@ -67873,7 +69193,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211696/90523.jpg?v=638463754495430000",
   productUrl: "https://www.drogal.com.br/chocolate-bis-lacta-original-100g/p",
-  popularity: 6170
+  popularity: 6290
  },
  {
   sku: "drogal-16486",
@@ -67884,7 +69204,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197697/62212.jpg?v=638394762707700000",
   productUrl: "https://www.drogal.com.br/acendedor-isqueiro-bic-ez-reach-1-unidade/p",
-  popularity: 6171
+  popularity: 6291
  },
  {
   sku: "drogal-16470",
@@ -67895,7 +69215,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/231002/110786.jpg?v=638580930164230000",
   productUrl: "https://www.drogal.com.br/choco-cookies-nestle-duplo-chocolate-120g/p",
-  popularity: 6172
+  popularity: 6292
  },
  {
   sku: "drogal-16461",
@@ -67906,7 +69226,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197631/62069.jpg?v=638394762506230000",
   productUrl: "https://www.drogal.com.br/chococookies-nestle-recheio-de-avela-120g/p",
-  popularity: 6173
+  popularity: 6293
  },
  {
   sku: "drogal-16444",
@@ -67917,7 +69237,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197591/62061.jpg?v=638394762947900000",
   productUrl: "https://www.drogal.com.br/biscoito-integral-mae-terra-maizena-choco-biscoito-58g/p",
-  popularity: 6174
+  popularity: 6294
  },
  {
   sku: "drogal-16425",
@@ -67928,7 +69248,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197559/61997.jpg?v=638394762347600000",
   productUrl: "https://www.drogal.com.br/drops-freegells-pro-sabor-eucalipto-e-mentol-15-unidades/p",
-  popularity: 6175
+  popularity: 6295
  },
  {
   sku: "drogal-16408",
@@ -67939,7 +69259,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197536/62024.jpg?v=638394762448670000",
   productUrl: "https://www.drogal.com.br/bala-my-toffee-diet-zero-lactose-chocolate-52g/p",
-  popularity: 6176
+  popularity: 6296
  },
  {
   sku: "drogal-16403",
@@ -67950,7 +69270,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197532/62053.jpg?v=638394765190400000",
   productUrl: "https://www.drogal.com.br/batata-xcrons-extra-crocante-sabor-original-45g/p",
-  popularity: 6177
+  popularity: 6297
  },
  {
   sku: "drogal-16399",
@@ -67961,7 +69281,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197521/61988.jpg?v=638394762351830000",
   productUrl: "https://www.drogal.com.br/drops-freegells-pro-sabor-mel-limao-e-mentol-15-unidades/p",
-  popularity: 6178
+  popularity: 6298
  },
  {
   sku: "drogal-16379",
@@ -67972,7 +69292,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211857/90752.jpg?v=638463757773730000",
   productUrl: "https://www.drogal.com.br/chocolate-dark-neugebauer-bar-1891-55-cacau-sabor-avela-90g/p",
-  popularity: 6179
+  popularity: 6299
  },
  {
   sku: "drogal-16356",
@@ -67983,7 +69303,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211963/90737.jpg?v=638463757389330000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-mini-moments-caramel-346g/p",
-  popularity: 6180
+  popularity: 6300
  },
  {
   sku: "drogal-16310",
@@ -67994,7 +69314,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197378/61861.jpg?v=638394761842730000",
   productUrl: "https://www.drogal.com.br/palha-italiana-germanos-zero-sabor-banoffe-30g/p",
-  popularity: 6181
+  popularity: 6301
  },
  {
   sku: "drogal-16305",
@@ -68005,7 +69325,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197372/61826.jpg?v=638394761735170000",
   productUrl: "https://www.drogal.com.br/mix-nuts-iracema-castanha-de-caju-amendoin-e-uva-passa-50g/p",
-  popularity: 6182
+  popularity: 6302
  },
  {
   sku: "drogal-16256",
@@ -68016,7 +69336,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211939/90721.jpg?v=638463757498400000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-alpino-85g/p",
-  popularity: 6183
+  popularity: 6303
  },
  {
   sku: "drogal-16247",
@@ -68027,7 +69347,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211686/90418.jpg?v=638463757574300000",
   productUrl: "https://www.drogal.com.br/bombom-raffaello-30g/p",
-  popularity: 6184
+  popularity: 6304
  },
  {
   sku: "drogal-16216",
@@ -68038,7 +69358,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211302/90123.png?v=638463758103100000",
   productUrl: "https://www.drogal.com.br/chocolate-snickers-mousse-de-maracuja-42g/p",
-  popularity: 6185
+  popularity: 6305
  },
  {
   sku: "drogal-16153",
@@ -68049,7 +69369,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273447/189393.png?v=639009900716970000",
   productUrl: "https://www.drogal.com.br/cha-vitaminico-leao-laranja--cenoura-10-saches-20g/p",
-  popularity: 6186
+  popularity: 6306
  },
  {
   sku: "drogal-16144",
@@ -68060,7 +69380,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273444/189390.png?v=639009879797270000",
   productUrl: "https://www.drogal.com.br/cha-vitaminico-leao-acai-guarana-10-saches-20g/p",
-  popularity: 6187
+  popularity: 6307
  },
  {
   sku: "drogal-16135",
@@ -68071,7 +69391,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/266520/179758.jpg?v=638931139864500000",
   productUrl: "https://www.drogal.com.br/chocottone-mms-bauducco-mini-80g/p",
-  popularity: 6188
+  popularity: 6308
  },
  {
   sku: "drogal-16104",
@@ -68082,7 +69402,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278864/195253.png?v=639113395613000000",
   productUrl: "https://www.drogal.com.br/pilha-rayovac-lithium-cr2016-3v-1-unidade/p",
-  popularity: 6189
+  popularity: 6309
  },
  {
   sku: "drogal-16084",
@@ -68093,7 +69413,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250180/131473.jpg?v=638773771201000000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-lollo-28g/p",
-  popularity: 6190
+  popularity: 6310
  },
  {
   sku: "drogal-16057",
@@ -68104,7 +69424,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211572/90367.jpg?v=638463733630830000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-suflair-ao-leite-80g/p",
-  popularity: 6191
+  popularity: 6311
  },
  {
   sku: "drogal-16053",
@@ -68115,7 +69435,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211606/90344.png?v=638463733610170000",
   productUrl: "https://www.drogal.com.br/chocolate-garoto-baton-branco-16g/p",
-  popularity: 6192
+  popularity: 6312
  },
  {
   sku: "drogal-15856",
@@ -68126,7 +69446,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196283/60675.png?v=638394764457070000",
   productUrl: "https://www.drogal.com.br/bala-big-boca-dinossauro-fampar-1-unidade-com-13g/p",
-  popularity: 6193
+  popularity: 6313
  },
  {
   sku: "drogal-15796",
@@ -68137,7 +69457,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276698/192887.png?v=639082520248900000",
   productUrl: "https://www.drogal.com.br/cocada-com-abacaxi-assiflora-zero-acucar-sabor-22g/p",
-  popularity: 6194
+  popularity: 6314
  },
  {
   sku: "drogal-15784",
@@ -68148,7 +69468,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276697/192901.png?v=639082517048930000",
   productUrl: "https://www.drogal.com.br/barrinha-bananita-assiflora-blend-de-amendoin-zero-acucar-25g/p",
-  popularity: 6195
+  popularity: 6315
  },
  {
   sku: "drogal-15761",
@@ -68159,7 +69479,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211987/90770.png?v=638463733038830000",
   productUrl: "https://www.drogal.com.br/mms-amendoim-148g/p",
-  popularity: 6196
+  popularity: 6316
  },
  {
   sku: "drogal-15193",
@@ -68170,7 +69490,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195184/59614.png?v=638394763658270000",
   productUrl: "https://www.drogal.com.br/flanela-antiembacante-outfog/p",
-  popularity: 6197
+  popularity: 6317
  },
  {
   sku: "drogal-15001",
@@ -68181,7 +69501,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia alimentos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194770/59202.jpg?v=638394763520530000",
   productUrl: "https://www.drogal.com.br/grelhaditossempele100g/p",
-  popularity: 6198
+  popularity: 6318
  },
  {
   sku: "drogal-14907",
@@ -68192,7 +69512,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194619/58955.png?v=638394763431800000",
   productUrl: "https://www.drogal.com.br/bala-fini-tubes-acido-twister-frutas-silvestres-e-nata-80g/p",
-  popularity: 6199
+  popularity: 6319
  },
  {
   sku: "drogal-14858",
@@ -68203,7 +69523,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211591/90390.png?v=638463732655600000",
   productUrl: "https://www.drogal.com.br/chocolate-trento-bites-ao-leite-40g/p",
-  popularity: 6200
+  popularity: 6320
  },
  {
   sku: "drogal-14450",
@@ -68214,7 +69534,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia chocolates",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/211418/90218.jpg?v=638463732095570000",
   productUrl: "https://www.drogal.com.br/chocolate-nestle-kitkat-dark-415g/p",
-  popularity: 6201
+  popularity: 6321
  },
  {
   sku: "drogal-14444",
@@ -68225,7 +69545,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278827/195231.png?v=639112689933970000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-rayovac-312-extra-advanced-6-unidades/p",
-  popularity: 6202
+  popularity: 6322
  },
  {
   sku: "drogal-14437",
@@ -68236,7 +69556,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278826/195230.png?v=639112667866930000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-rayovac-10-extra-advanced-6-unidades/p",
-  popularity: 6203
+  popularity: 6323
  },
  {
   sku: "drogal-14426",
@@ -68247,7 +69567,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/278817/195229.png?v=639112595996430000",
   productUrl: "https://www.drogal.com.br/pilha-auditiva-rayovac-13-extra-advanced-6-unidades/p",
-  popularity: 6204
+  popularity: 6324
  },
  {
   sku: "drogal-14372",
@@ -68258,7 +69578,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia confeitos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193699/58045.png?v=638394763129900000",
   productUrl: "https://www.drogal.com.br/pastilha-tic-tac-incrivel-dupla-sabor-morango-16g/p",
-  popularity: 6205
+  popularity: 6325
  },
  {
   sku: "drogal-14274",
@@ -68269,7 +69589,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia acessorios de conveniencia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193466/57883.png?v=638394757953300000",
   productUrl: "https://www.drogal.com.br/rolo-adesivo-s-brite-3m-ccabo/p",
-  popularity: 6206
+  popularity: 6326
  },
  {
   sku: "drogal-14254",
@@ -68280,7 +69600,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/268011/182900.jpg?v=638949188666800000",
   productUrl: "https://www.drogal.com.br/pilha-duracell-alc-aaa-pal-2u/p",
-  popularity: 6207
+  popularity: 6327
  },
  {
   sku: "drogal-14247",
@@ -68291,7 +69611,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193424/57843.jpg?v=638394757905330000",
   productUrl: "https://www.drogal.com.br/pilha-duracell-alc-aa-peq-c2/p",
-  popularity: 6208
+  popularity: 6328
  },
  {
   sku: "drogal-14241",
@@ -68302,7 +69622,7 @@ export const CATALOG: CatalogItem[] = [
   category: "conveniencia pilhas e baterias",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193417/57842.jpg?v=638394757886700000",
   productUrl: "https://www.drogal.com.br/bateria-duracell-alc-9v/p",
-  popularity: 6209
+  popularity: 6329
  },
  {
   sku: "drogal-14608",
@@ -68313,7 +69633,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194175/58619.jpg?v=638394737743300000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-zero-cal-sucralose-2-unidades-100ml/p",
-  popularity: 6210
+  popularity: 6330
  },
  {
   sku: "drogal-15157",
@@ -68324,7 +69644,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/245658/126590.jpg?v=638733204036030000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-zero-cal-stevia-2-unidades-80ml/p",
-  popularity: 6211
+  popularity: 6331
  },
  {
   sku: "drogal-21624",
@@ -68335,7 +69655,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242662/123078.jpg?v=638713046897870000",
   productUrl: "https://www.drogal.com.br/tiras-reagentes-para-medicao-de-glicose-biopress-50-unidades/p",
-  popularity: 6212
+  popularity: 6332
  },
  {
   sku: "drogal-15897",
@@ -68346,7 +69666,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196343/60789.jpg?v=638394738415630000",
   productUrl: "https://www.drogal.com.br/lancetas-para-lancetador-g-tech-100-unidades/p",
-  popularity: 6213
+  popularity: 6333
  },
  {
   sku: "drogal-15801",
@@ -68357,7 +69677,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196209/60584.png?v=638394738403670000",
   productUrl: "https://www.drogal.com.br/tira-reagente-para-medicao-de-glicose-free-lite-g-tech-25-unidades/p",
-  popularity: 6214
+  popularity: 6334
  },
  {
   sku: "drogal-15786",
@@ -68368,7 +69688,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196192/60582.png?v=638394738297800000",
   productUrl: "https://www.drogal.com.br/tiras-reagentes-para-medicao-de-glicose-g-tech-lite-50-unidades/p",
-  popularity: 6215
+  popularity: 6335
  },
  {
   sku: "drogal-15609",
@@ -68379,7 +69699,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250453/131781.jpg?v=638774701661800000",
   productUrl: "https://www.drogal.com.br/adocante-zero-cal-eritritol-liquido-2-unidades-65ml/p",
-  popularity: 6216
+  popularity: 6336
  },
  {
   sku: "drogal-16609",
@@ -68390,7 +69710,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/249859/131198.jpg?v=638772139264630000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-zero-cal-sacarina-100ml/p",
-  popularity: 6217
+  popularity: 6337
  },
  {
   sku: "drogal-21622",
@@ -68401,7 +69721,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242660/123065.jpg?v=638713047556370000",
   productUrl: "https://www.drogal.com.br/lancetas-estereis-biopress-100-unidades/p",
-  popularity: 6218
+  popularity: 6338
  },
  {
   sku: "drogal-16374",
@@ -68412,7 +69732,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/247516/128563.jpg?v=638764014939670000",
   productUrl: "https://www.drogal.com.br/adocante-dietetico-liquido-adocyl-com-stevia-80ml/p",
-  popularity: 6219
+  popularity: 6339
  },
  {
   sku: "drogal-15793",
@@ -68423,7 +69743,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196201/60583.png?v=638394738359870000",
   productUrl: "https://www.drogal.com.br/tiras-reagentes-para-medicao-de-glicose-g-tech-free-1-50-unidades/p",
-  popularity: 6220
+  popularity: 6340
  },
  {
   sku: "drogal-15776",
@@ -68434,7 +69754,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/276502/192841.png?v=639080686386730000",
   productUrl: "https://www.drogal.com.br/kit-medidor-de-glicose-g-tech-free-no-code-10-tiras-10-lancetas-1-lancetador/p",
-  popularity: 6221
+  popularity: 6341
  },
  {
   sku: "drogal-21933",
@@ -68445,7 +69765,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248340/129472.jpg?v=638754715686070000",
   productUrl: "https://www.drogal.com.br/adocante-dietetico-liquido-zero-cal-xilitol-com-sucralose-65ml/p",
-  popularity: 6222
+  popularity: 6342
  },
  {
   sku: "drogal-21830",
@@ -68456,7 +69776,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/245815/126727.jpg?v=638739866219170000",
   productUrl: "https://www.drogal.com.br/kit-aparelho-para-medicao-de-glicose-biopress-10-tiras-reagentes-10-lancetas-lancetador-estojo-para-transporte/p",
-  popularity: 6223
+  popularity: 6343
  },
  {
   sku: "drogal-16381",
@@ -68467,7 +69787,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250457/131795.jpg?v=638774708011500000",
   productUrl: "https://www.drogal.com.br/adocante-dietetico-em-po-zero-cal-sucralose-600mg/p",
-  popularity: 6224
+  popularity: 6344
  },
  {
   sku: "drogal-15770",
@@ -68478,7 +69798,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196170/60580.png?v=638394738338670000",
   productUrl: "https://www.drogal.com.br/tiras-reagentes-para-medicao-de-glicose-g-tech-free-1-25-unidades/p",
-  popularity: 6225
+  popularity: 6345
  },
  {
   sku: "drogal-15250",
@@ -68489,7 +69809,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272705/188473.jpg?v=638993369548930000",
   productUrl: "https://www.drogal.com.br/adocante-zero-cal-sucralose-50-envelopes-600mg-cada/p",
-  popularity: 6226
+  popularity: 6346
  },
  {
   sku: "drogal-14728",
@@ -68500,7 +69820,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194364/58701.jpg?v=638394738083600000",
   productUrl: "https://www.drogal.com.br/kitaccuchekactivecontroledeglicemia/p",
-  popularity: 6227
+  popularity: 6347
  },
  {
   sku: "drogal-14718",
@@ -68511,7 +69831,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273684/189673.png?v=639015912400070000",
   productUrl: "https://www.drogal.com.br/tiras-accu-chek-guide-50-unidades/p",
-  popularity: 6228
+  popularity: 6348
  },
  {
   sku: "drogal-14540",
@@ -68522,7 +69842,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/274300/190339.png?v=639044206092070000",
   productUrl: "https://www.drogal.com.br/kit-adocante-liquido-linea-sucralose-2-unidades-75ml-adocante-liquido-linea-sucralose-25ml-1-unidade/p",
-  popularity: 6229
+  popularity: 6349
  },
  {
   sku: "drogal-14501",
@@ -68533,7 +69853,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273682/189670.png?v=639015883742430000",
   productUrl: "https://www.drogal.com.br/tiras-accu-chek-active-50-unidades/p",
-  popularity: 6230
+  popularity: 6350
  },
  {
   sku: "drogal-13604",
@@ -68544,7 +69864,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192974/57023.png?v=638394737942530000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-linea-stevia-60ml/p",
-  popularity: 6231
+  popularity: 6351
  },
  {
   sku: "drogal-23866",
@@ -68555,7 +69875,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272660/188389.png?v=638993312156200000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-gold-stevia-dietetico-premium-65ml/p",
-  popularity: 6232
+  popularity: 6352
  },
  {
   sku: "drogal-23577",
@@ -68566,7 +69886,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270374/185971.jpg?v=638968191192770000",
   productUrl: "https://www.drogal.com.br/auto-lanceta-mini-g-tech-conforto-ultrafina-28g-100-unidades/p",
-  popularity: 6233
+  popularity: 6353
  },
  {
   sku: "drogal-21623",
@@ -68577,7 +69897,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242661/123067.jpg?v=638713047243430000",
   productUrl: "https://www.drogal.com.br/tiras-reagentes-para-medicao-de-glicose-biopress-25-unidades/p",
-  popularity: 6234
+  popularity: 6354
  },
  {
   sku: "drogal-16859",
@@ -68588,7 +69908,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273690/189619.png?v=639016584999470000",
   productUrl: "https://www.drogal.com.br/tiras-para-controle-de-glicemia-accu-chek-guide-150-unidades/p",
-  popularity: 6235
+  popularity: 6355
  },
  {
   sku: "drogal-15437",
@@ -68599,7 +69919,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273685/189674.png?v=639015923811900000",
   productUrl: "https://www.drogal.com.br/kit-sistema-de-monitorizacao-da-glicemia-accu-chek-active-tiras-de-teste-50-unidades/p",
-  popularity: 6236
+  popularity: 6356
  },
  {
   sku: "drogal-15432",
@@ -68610,7 +69930,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273687/189681.jpg?v=639015966960330000",
   productUrl: "https://www.drogal.com.br/kit-sistema-de-monitorizacao-da-glicemia-sem-fio-accu-chek-guide-me-um-frasco-com-50-tiras-teste/p",
-  popularity: 6237
+  popularity: 6357
  },
  {
   sku: "drogal-15424",
@@ -68621,7 +69941,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273689/189685.png?v=639016523251370000",
   productUrl: "https://www.drogal.com.br/kit-accu-chek-guide-me-monitor-de-glicemia-completo/p",
-  popularity: 6238
+  popularity: 6358
  },
  {
   sku: "drogal-15264",
@@ -68632,7 +69952,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273642/189583.png?v=639014843955700000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-zero-cal-eritritol-65ml/p",
-  popularity: 6239
+  popularity: 6359
  },
  {
   sku: "drogal-14725",
@@ -68643,7 +69963,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273676/189658.png?v=639015812414470000",
   productUrl: "https://www.drogal.com.br/tiras-accu-chek-guide-para-controle-de-glicemia-25-testes/p",
-  popularity: 6240
+  popularity: 6360
  },
  {
   sku: "drogal-14474",
@@ -68654,7 +69974,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/246376/127360.jpg?v=638738388425500000",
   productUrl: "https://www.drogal.com.br/tiras-para-controle-de-glicemia-accu-chek-active-10-unidades/p",
-  popularity: 6241
+  popularity: 6361
  },
  {
   sku: "drogal-14373",
@@ -68665,7 +69985,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250060/131313.jpg?v=638772948279830000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-zero-cal-sucralose-100ml/p",
-  popularity: 6242
+  popularity: 6362
  },
  {
   sku: "drogal-14365",
@@ -68676,7 +69996,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/274244/190243.png?v=639040828531170000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-linea-sucralose-75ml/p",
-  popularity: 6243
+  popularity: 6363
  },
  {
   sku: "drogal-13615",
@@ -68687,7 +70007,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250446/131777.jpg?v=638774691547670000",
   productUrl: "https://www.drogal.com.br/adocante-em-po-zero-cal-stevia-50-saches/p",
-  popularity: 6244
+  popularity: 6364
  },
  {
   sku: "drogal-21831",
@@ -68698,7 +70018,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/245816/123081.jpg?v=638739866219300000",
   productUrl: "https://www.drogal.com.br/lancetador-biopress-1-unidade/p",
-  popularity: 6245
+  popularity: 6365
  },
  {
   sku: "drogal-15809",
@@ -68709,7 +70029,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico monitores",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196218/60585.png?v=638394738318400000",
   productUrl: "https://www.drogal.com.br/kit-medidor-de-glicose-free-lite-g-tech/p",
-  popularity: 6246
+  popularity: 6366
  },
  {
   sku: "drogal-15434",
@@ -68720,7 +70040,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195592/60019.png?v=638394738372670000",
   productUrl: "https://www.drogal.com.br/adocante-dietetico-liquido-linea-xilitol-sucralose-60ml/p",
-  popularity: 6247
+  popularity: 6367
  },
  {
   sku: "drogal-13983",
@@ -68731,7 +70051,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273669/189644.png?v=639015767447870000",
   productUrl: "https://www.drogal.com.br/lancetas-esterilizadas--accu-chek-safe-t-pro-uno-200-unidades/p",
-  popularity: 6248
+  popularity: 6368
  },
  {
   sku: "drogal-13976",
@@ -68742,7 +70062,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273686/189680.jpg?v=639015947450130000",
   productUrl: "https://www.drogal.com.br/tiratesteaccuchekperforma50unidades/p",
-  popularity: 6249
+  popularity: 6369
  },
  {
   sku: "drogal-13608",
@@ -68753,7 +70073,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/250475/131804.jpg?v=638774740310900000",
   productUrl: "https://www.drogal.com.br/zero-cal-stevia-adocante-liquido-80ml/p",
-  popularity: 6250
+  popularity: 6370
  },
  {
   sku: "drogal-14852",
@@ -68764,7 +70084,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273655/189618.png?v=639015656018630000",
   productUrl: "https://www.drogal.com.br/tiras-para-controle-de-glicemia-accu-chek-active-150-unidades/p",
-  popularity: 6251
+  popularity: 6371
  },
  {
   sku: "drogal-13956",
@@ -68775,7 +70095,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273662/189623.png?v=639015707166000000",
   productUrl: "https://www.drogal.com.br/lancetasaccucheksoftclix25lancetas/p",
-  popularity: 6252
+  popularity: 6372
  },
  {
   sku: "drogal-23867",
@@ -68786,7 +70106,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272664/188388.jpg?v=638993467612700000",
   productUrl: "https://www.drogal.com.br/adocante-liquido-gold-sucralose-dietetico-premium-75ml/p",
-  popularity: 6253
+  popularity: 6373
  },
  {
   sku: "drogal-14937",
@@ -68797,7 +70117,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico adocante",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/222777/103127.jpg?v=638554111201270000",
   productUrl: "https://www.drogal.com.br/adocante-em-po-linea-xilitol-250g/p",
-  popularity: 6254
+  popularity: 6374
  },
  {
   sku: "drogal-14468",
@@ -68808,7 +70128,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico tiras",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/246284/127326.jpg?v=638739838926730000",
   productUrl: "https://www.drogal.com.br/tiras-para-controle-de-glicemia-accu-chek-active-25-unidades/p",
-  popularity: 6255
+  popularity: 6375
  },
  {
   sku: "drogal-14183",
@@ -68819,7 +70139,7 @@ export const CATALOG: CatalogItem[] = [
   category: "espaco do diabetico lancetas",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/273671/189647.png?v=639015786067900000",
   productUrl: "https://www.drogal.com.br/lancetasaccu-chekfastclix24unidades/p",
-  popularity: 6256
+  popularity: 6376
  },
  {
   sku: "drogal-24459",
@@ -68830,7 +70150,7 @@ export const CATALOG: CatalogItem[] = [
   category: "futebol pelucia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279061/195656.png?v=639120491087870000",
   productUrl: "https://www.drogal.com.br/pelucia-feras-do-futebol-alce-1-unidade/p",
-  popularity: 6257
+  popularity: 6377
  },
  {
   sku: "drogal-24458",
@@ -68841,7 +70161,7 @@ export const CATALOG: CatalogItem[] = [
   category: "futebol pelucia",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/279056/195645.png?v=639120488169330000",
   productUrl: "https://www.drogal.com.br/pelucia-feras-do-futebol-canarinho-1-unidade/p",
-  popularity: 6258
+  popularity: 6378
  },
  {
   sku: "drogal-19388",
@@ -68852,7 +70172,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238164/118235.jpg?v=638660408534030000",
   productUrl: "https://www.drogal.com.br/chip-vivo-para-celular/p",
-  popularity: 6259
+  popularity: 6379
  },
  {
   sku: "drogal-22589",
@@ -68863,7 +70183,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de pressao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282185/199253.jpg?v=639165935180630000",
   productUrl: "https://www.drogal.com.br/medidor-digital-de-pressao-arterial-omron-hem-6181-1-unidade/p",
-  popularity: 6260
+  popularity: 6380
  },
  {
   sku: "drogal-17017",
@@ -68874,7 +70194,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238160/118230.jpg?v=638660368267330000",
   productUrl: "https://www.drogal.com.br/chip-claro-para-celular/p",
-  popularity: 6261
+  popularity: 6381
  },
  {
   sku: "drogal-14665",
@@ -68885,7 +70205,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de pressao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282115/199214.png?v=639165408628270000",
   productUrl: "https://www.drogal.com.br/monitor-de-pressao-arterial-omron-automatico-de-braco-hem-7122/p",
-  popularity: 6262
+  popularity: 6382
  },
  {
   sku: "drogal-14456",
@@ -68896,7 +70216,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/218492/98492.jpg?v=638693521272670000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-biopress-branco/p",
-  popularity: 6263
+  popularity: 6383
  },
  {
   sku: "drogal-13567",
@@ -68907,7 +70227,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192939/56980.jpg?v=638394774662630000",
   productUrl: "https://www.drogal.com.br/cabo-iphone-leve-me-usb-1-unidade/p",
-  popularity: 6264
+  popularity: 6384
  },
  {
   sku: "drogal-25025",
@@ -68918,7 +70238,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284804/201962.jpg?v=639204867480070000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-g-tech-urso-flex-com-ponta-flexivel-1-unidade/p",
-  popularity: 6265
+  popularity: 6385
  },
  {
   sku: "drogal-21663",
@@ -68929,7 +70249,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243447/123090.jpg?v=638713047897300000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-biopress-rosa/p",
-  popularity: 6266
+  popularity: 6386
  },
  {
   sku: "drogal-21662",
@@ -68940,7 +70260,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243446/123057.jpg?v=638713047925100000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-biopress-azul/p",
-  popularity: 6267
+  popularity: 6387
  },
  {
   sku: "drogal-17020",
@@ -68951,7 +70271,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238162/118232.jpg?v=638660367453230000",
   productUrl: "https://www.drogal.com.br/chip-tim-para-celular/p",
-  popularity: 6268
+  popularity: 6388
  },
  {
   sku: "drogal-15663",
@@ -68962,7 +70282,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282212/199297.png?v=639166045674100000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-omron-mc-246/p",
-  popularity: 6269
+  popularity: 6389
  },
  {
   sku: "drogal-14441",
@@ -68973,7 +70293,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/272410/188308.jpg?v=638990699289500000",
   productUrl: "https://www.drogal.com.br/inalador-e-nebulizador-g-tech-nebcom-v/p",
-  popularity: 6270
+  popularity: 6390
  },
  {
   sku: "drogal-25026",
@@ -68984,7 +70304,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/284811/201921.jpg?v=639204870612930000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-g-tech-sapo-flex-com-ponta-flexivel-1-unidade/p",
-  popularity: 6271
+  popularity: 6391
  },
  {
   sku: "drogal-24677",
@@ -68995,7 +70315,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/281327/198296.jpg?v=639156057724930000",
   productUrl: "https://www.drogal.com.br/termometro-infravermelho-multilaser-termo-check-smart-sem-contato/p",
-  popularity: 6272
+  popularity: 6392
  },
  {
   sku: "drogal-23278",
@@ -69006,7 +70326,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos oximetros",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/267907/182769.jpg?v=639186728525230000",
   productUrl: "https://www.drogal.com.br/oximetro-de-dedo-multisaude-vital-check-hc276-1-unidade/p",
-  popularity: 6273
+  popularity: 6393
  },
  {
   sku: "drogal-21664",
@@ -69017,7 +70337,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/243448/123089.jpg?v=638713047911970000",
   productUrl: "https://www.drogal.com.br/termometro-clinico-digital-biopress-lilas/p",
-  popularity: 6274
+  popularity: 6394
  },
  {
   sku: "drogal-17044",
@@ -69028,7 +70348,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238159/118228.jpg?v=638660366581200000",
   productUrl: "https://www.drogal.com.br/chip-claro-prezao-12gb-combo-para-celular/p",
-  popularity: 6275
+  popularity: 6395
  },
  {
   sku: "drogal-17042",
@@ -69039,7 +70359,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238163/118234.jpg?v=638660366531270000",
   productUrl: "https://www.drogal.com.br/chip-vivo-pre-giga-chip/p",
-  popularity: 6276
+  popularity: 6396
  },
  {
   sku: "drogal-17036",
@@ -69050,7 +70370,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238161/118231.jpg?v=638660368441970000",
   productUrl: "https://www.drogal.com.br/chip-tim-combo-top-para-celular/p",
-  popularity: 6277
+  popularity: 6397
  },
  {
   sku: "drogal-14700",
@@ -69061,7 +70381,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194333/58719.jpg?v=638394774097530000",
   productUrl: "https://www.drogal.com.br/cabo-tipo-c-universal-leve-me-v8-usb-1-unidade/p",
-  popularity: 6278
+  popularity: 6398
  },
  {
   sku: "drogal-14383",
@@ -69072,7 +70392,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193723/58156.png?v=638394774586130000",
   productUrl: "https://www.drogal.com.br/inalador-nebulizador-pulmoclear-soniclear-ultrassonico/p",
-  popularity: 6279
+  popularity: 6399
  },
  {
   sku: "drogal-21172",
@@ -69083,7 +70403,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de pressao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282128/199232.png?v=639165426270770000",
   productUrl: "https://www.drogal.com.br/monitor-de-pressao-arterial-de-braco-omron-progress-hem-7156t/p",
-  popularity: 6280
+  popularity: 6400
  },
  {
   sku: "drogal-19986",
@@ -69094,7 +70414,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos oximetros",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/214829/93957.png?v=638487959554970000",
   productUrl: "https://www.drogal.com.br/oximetro-de-dedo-g-tech-led-portatil/p",
-  popularity: 6281
+  popularity: 6401
  },
  {
   sku: "drogal-16562",
@@ -69105,7 +70425,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197827/56976.jpg?v=638394774645000000",
   productUrl: "https://www.drogal.com.br/cabo-universal-leve-me-v8-usb-1-unidade/p",
-  popularity: 6282
+  popularity: 6402
  },
  {
   sku: "drogal-16559",
@@ -69116,7 +70436,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197822/56974.jpg?v=638394774751500000",
   productUrl: "https://www.drogal.com.br/fone-de-ouvido-leve-me-1-unidade/p",
-  popularity: 6283
+  popularity: 6403
  },
  {
   sku: "drogal-16382",
@@ -69127,7 +70447,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197497/61937.jpg?v=638394774165700000",
   productUrl: "https://www.drogal.com.br/fone-de-ouvido-iphone-leve-me-pd-1-unidade/p",
-  popularity: 6284
+  popularity: 6404
  },
  {
   sku: "drogal-16376",
@@ -69138,7 +70458,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197488/61936.jpg?v=638394774185870000",
   productUrl: "https://www.drogal.com.br/carregador-de-tomada-leve-me-pd-1-unidade/p",
-  popularity: 6285
+  popularity: 6405
  },
  {
   sku: "drogal-16365",
@@ -69149,7 +70469,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197467/61933.jpg?v=638394774131230000",
   productUrl: "https://www.drogal.com.br/cabo-tipo-c-iphone-leve-me-pd-1-unidade/p",
-  popularity: 6286
+  popularity: 6406
  },
  {
   sku: "drogal-15040",
@@ -69160,7 +70480,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194867/59238.jpg?v=638394774726870000",
   productUrl: "https://www.drogal.com.br/porta-documento-cnh-leve-me-1-unidade/p",
-  popularity: 6287
+  popularity: 6407
  },
  {
   sku: "drogal-14853",
@@ -69171,7 +70491,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282104/199200.png?v=639165360575330000",
   productUrl: "https://www.drogal.com.br/inalador-compressor-inalar-omron-ne-c701/p",
-  popularity: 6288
+  popularity: 6408
  },
  {
   sku: "drogal-14629",
@@ -69182,7 +70502,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194211/58625.png?v=638394774205700000",
   productUrl: "https://www.drogal.com.br/aparelho-umidificador-ultra-waterclear-supreme/p",
-  popularity: 6289
+  popularity: 6409
  },
  {
   sku: "drogal-14425",
@@ -69193,7 +70513,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/213256/92266.jpg?v=638475732781930000",
   productUrl: "https://www.drogal.com.br/aparelho-inalador-nebulizador-soniclear-pneumatico-pulmomais/p",
-  popularity: 6290
+  popularity: 6410
  },
  {
   sku: "drogal-24607",
@@ -69204,7 +70524,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos oximetros",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/280705/197478.jpg?v=639148107802570000",
   productUrl: "https://www.drogal.com.br/oximetro-de-dedo-infantil-multilaser-hc265-medidor-spo2-portatil/p",
-  popularity: 6291
+  popularity: 6411
  },
  {
   sku: "drogal-24396",
@@ -69215,7 +70535,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282073/199167.png?v=639165328072500000",
   productUrl: "https://www.drogal.com.br/aparelho-inalador-portatil-omron-inalar-mini-ne-u300/p",
-  popularity: 6292
+  popularity: 6412
  },
  {
   sku: "drogal-16370",
@@ -69226,7 +70546,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197474/61934.jpg?v=638394774114170000",
   productUrl: "https://www.drogal.com.br/cabo-tipo-c-leve-me-pd-1-unidade/p",
-  popularity: 6293
+  popularity: 6413
  },
  {
   sku: "drogal-16340",
@@ -69237,7 +70557,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197429/61938.jpg?v=638394774118970000",
   productUrl: "https://www.drogal.com.br/fone-de-ouvido-tipo-c-iphone-leve-me-pd-1-unidade/p",
-  popularity: 6294
+  popularity: 6414
  },
  {
   sku: "drogal-15881",
@@ -69248,7 +70568,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282083/199179.png?v=639165336357200000",
   productUrl: "https://www.drogal.com.br/inalador-ultrassonico-omron-respiramax-ne-u702/p",
-  popularity: 6295
+  popularity: 6415
  },
  {
   sku: "drogal-15446",
@@ -69259,7 +70579,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195609/60021.jpg?v=638394774303900000",
   productUrl: "https://www.drogal.com.br/umidificador-ultrassonico-fisher-price-hc055-22l/p",
-  popularity: 6296
+  popularity: 6416
  },
  {
   sku: "drogal-15046",
@@ -69270,7 +70590,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194878/59239.jpg?v=638394774710930000",
   productUrl: "https://www.drogal.com.br/porta-documento-rg-leve-me-1-unidade/p",
-  popularity: 6297
+  popularity: 6417
  },
  {
   sku: "drogal-14473",
@@ -69281,7 +70601,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/234423/114366.jpg?v=638608788329630000",
   productUrl: "https://www.drogal.com.br/aparelho-de-inalador-nebulizador-pneumatico-soniclear-uppy/p",
-  popularity: 6298
+  popularity: 6418
  },
  {
   sku: "drogal-23652",
@@ -69292,7 +70612,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/270851/186388.jpg?v=638971740741600000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ar-touch-elgin-desligamento-automatico-bivolt-4-litros/p",
-  popularity: 6299
+  popularity: 6419
  },
  {
   sku: "drogal-21931",
@@ -69303,7 +70623,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/248315/129450.jpg?v=638754157498930000",
   productUrl: "https://www.drogal.com.br/balanca-digital-multilaser-hc021-multi-saude-180kg/p",
-  popularity: 6300
+  popularity: 6420
  },
  {
   sku: "drogal-15772",
@@ -69314,7 +70634,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282063/199157.png?v=639165300822470000",
   productUrl: "https://www.drogal.com.br/inalador-nebulizador-compressor-omron-ne-c803-bivolt/p",
-  popularity: 6301
+  popularity: 6421
  },
  {
   sku: "drogal-15660",
@@ -69325,7 +70645,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/274054/190112.jpg?v=639034041808400000",
   productUrl: "https://www.drogal.com.br/aparelho-inaladornebulizador-portatil-mesh-microsonic/p",
-  popularity: 6302
+  popularity: 6422
  },
  {
   sku: "drogal-14892",
@@ -69336,7 +70656,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de pressao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/194596/59014.png?v=638394774692100000",
   productUrl: "https://www.drogal.com.br/medidor-digital-de-pressao-biopress-punho-mp050-1-unidade/p",
-  popularity: 6303
+  popularity: 6423
  },
  {
   sku: "drogal-14415",
@@ -69347,7 +70667,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de inalacao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/193795/58168.jpg?v=638394774613330000",
   productUrl: "https://www.drogal.com.br/inalador-e-nebulizador-soniclear-pulmopar-plus-pistao/p",
-  popularity: 6304
+  popularity: 6424
  },
  {
   sku: "drogal-13565",
@@ -69358,7 +70678,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192936/56977.jpg?v=638394774771970000",
   productUrl: "https://www.drogal.com.br/carregador-de-tomada-leve-me-2-entradas-usb-1-unidade/p",
-  popularity: 6305
+  popularity: 6425
  },
  {
   sku: "drogal-22649",
@@ -69369,7 +70689,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/256928/139011.jpg?v=638866439127730000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ar-ultrassonico-biopress-umd-050-plus-infantil-16l/p",
-  popularity: 6306
+  popularity: 6426
  },
  {
   sku: "drogal-22648",
@@ -69380,7 +70700,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/256924/139006.jpg?v=638866337639830000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ar-ultrassonico-biopress-umd-050-plus-16l/p",
-  popularity: 6307
+  popularity: 6427
  },
  {
   sku: "drogal-22606",
@@ -69391,7 +70711,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/256083/138052.jpg?v=638857852429200000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ar-ultrassonico-biopress-umd-110-3l/p",
-  popularity: 6308
+  popularity: 6428
  },
  {
   sku: "drogal-21577",
@@ -69402,7 +70722,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/242390/122768.jpg?v=638686286952030000",
   productUrl: "https://www.drogal.com.br/termometro-digital-sem-contato-multilaser-multifuncoes-touch-care-1-unidade/p",
-  popularity: 6309
+  popularity: 6429
  },
  {
   sku: "drogal-21496",
@@ -69413,7 +70733,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/241550/121903.jpg?v=638686284046670000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ar-ultrassonico-g-tech-allergy-free-hm-bivolt-3l/p",
-  popularity: 6310
+  popularity: 6430
  },
  {
   sku: "drogal-21474",
@@ -69424,7 +70744,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/241467/121804.jpg?v=638686284883170000",
   productUrl: "https://www.drogal.com.br/raquete-eletrica-mata-insetos-multilaser-recarregavel-1-unidade/p",
-  popularity: 6311
+  popularity: 6431
  },
  {
   sku: "drogal-21149",
@@ -69435,7 +70755,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/239473/119669.jpg?v=638660410801600000",
   productUrl: "https://www.drogal.com.br/aparelho-umidificador-de-ar-elgin-2-litros/p",
-  popularity: 6312
+  popularity: 6432
  },
  {
   sku: "drogal-17046",
@@ -69446,7 +70766,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/238176/118247.jpg?v=638660368575630000",
   productUrl: "https://www.drogal.com.br/chip-claro-flex-para-celular/p",
-  popularity: 6313
+  popularity: 6433
  },
  {
   sku: "drogal-17016",
@@ -69457,7 +70777,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho umidificador",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/236213/116213.jpg?v=638615700341700000",
   productUrl: "https://www.drogal.com.br/umidificador-de-ambiente-umitta-soniclear-25l/p",
-  popularity: 6314
+  popularity: 6434
  },
  {
   sku: "drogal-16158",
@@ -69468,7 +70788,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos aparelho de pressao",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/197003/61556.png?v=638394774357130000",
   productUrl: "https://www.drogal.com.br/medidor-digital-de-pressao-biopress-braco-mb050-1-unidade/p",
-  popularity: 6315
+  popularity: 6435
  },
  {
   sku: "drogal-15817",
@@ -69479,7 +70799,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos termometro",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/196230/60648.png?v=638394774293500000",
   productUrl: "https://www.drogal.com.br/termometro-digital-multilaser-minnie-com-ponta-flexivel-hc079/p",
-  popularity: 6316
+  popularity: 6436
  },
  {
   sku: "drogal-15574",
@@ -69490,7 +70810,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195860/60321.jpg?v=638394774945670000",
   productUrl: "https://www.drogal.com.br/cartao-sem-parar-pre-pago/p",
-  popularity: 6317
+  popularity: 6437
  },
  {
   sku: "drogal-15570",
@@ -69501,7 +70821,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/195851/60320.jpg?v=638394774927600000",
   productUrl: "https://www.drogal.com.br/cartao-sem-parar-pos-pago/p",
-  popularity: 6318
+  popularity: 6438
  },
  {
   sku: "drogal-14088",
@@ -69512,7 +70832,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/282193/199269.png?v=639165961234500000",
   productUrl: "https://www.drogal.com.br/balanca-digital-omron-hn-289/p",
-  popularity: 6319
+  popularity: 6439
  },
  {
   sku: "drogal-13570",
@@ -69523,7 +70843,7 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192947/56988.png?v=638394774682700000",
   productUrl: "https://www.drogal.com.br/suporte-veicular-para-celular-leve-me/p",
-  popularity: 6320
+  popularity: 6440
  },
  {
   sku: "drogal-13566",
@@ -69534,6 +70854,6 @@ export const CATALOG: CatalogItem[] = [
   category: "eletronicos acessorios para eletronicos",
   imageUrl: "https://drogal.vteximg.com.br/arquivos/ids/192937/56978.jpg?v=638394774782970000",
   productUrl: "https://www.drogal.com.br/carregador-carro-leve-me-2-entradas-usb-1-unidade/p",
-  popularity: 6321
+  popularity: 6441
  }
 ];
