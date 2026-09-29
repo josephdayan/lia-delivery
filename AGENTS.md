@@ -24,6 +24,7 @@ da decisão: teto de R$81 mil do MEI e receita bruta = markup ou total (contador
 - Pix de loja: aceito com URL do banco ou, quando vem da API da própria loja, no formato Mercado Pago (chave + valor + txid). Recebedor novo com CNPJ nesse caminho entra sozinho na allowlist e o dono é avisado; CPF ou Pix de tela pedem o toque (dono, 28/09).
 - PROVADO 28/09 (#LYAWQ8, Mambo): 1ª compra 100% automática — pedido na loja, recebedor aprovado sozinho, Pix pago pelo Asaas em segundos, loja em payment-approved, compra registrada, zero toque humano.
 - Perfil de convidado no fechamento VTEX leva telefone (LIA_BUYER_PHONE ou o do cliente): sem ele 7 conectores de Pix recusam (CHK0223). Elenco por API: 19 lojas (só Martins Fontes e Mondial fora, ORD062) (29/09).
+- Loja regional entra na vitrine (dono, 29/09): quem decide é o CEP do cliente na cotação ao vivo; sondagem de loja que não entrega na capital usa um CEP da região dela (substitui a regra de 14/09 de sondar só em casa).
 - Vitrine: até 5 opções no carrossel (a IA só JULGA — lista todos os candidatos que são o produto pedido, em ordem; o código monta a vitrine com `diversifyOptions`: distintos primeiro, variantes de tamanho/cor depois, até 5; menos só quando não há mais aprovados; nunca outro tipo ou outra marca pedida — "mostrar algo nada a ver é o pior", dono 28/09). Botões: card do carrossel = 2 (teto Meta de template), card solto = 3 (teto de mensagem interativa) — ambos já no máximo (28/09).
 - Cotação não diz mais "Preço garantido por N min" ao cliente; o TTL segue valendo por baixo (dono, 28/09).
 

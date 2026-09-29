@@ -86,7 +86,16 @@ if (!storeKey || !STORES[storeKey]) {
 const domain = STORES[storeKey];
 const root = resolve(process.cwd(), ".retail-buyer");
 const config = JSON.parse(readFileSync(resolve(root, "config.json"), "utf8")) as { probe?: Record<string, string> };
-const probe = config.probe;
+let probe = config.probe;
+// --cep=XXXXXXXX (29/09, decisão do dono: loja regional entra): sonda num CEP da região da loja.
+// Endereço vem do BrasilAPI (rua/bairro/cidade/UF), número genérico; nome e telefone seguem os do config.
+const cepFlag = args.find((a) => a.startsWith("--cep="))?.slice(6)?.replace(/\D/g, "");
+if (cepFlag && cepFlag.length === 8) {
+  const r = await fetch(`https://brasilapi.com.br/api/cep/v2/${cepFlag}`, { headers: { "User-Agent": "lia-probe/1.0" } });
+  const j = (await r.json()) as { street?: string; neighborhood?: string; city?: string; state?: string };
+  if (!j.city) { console.error(`CEP ${cepFlag} não encontrado no BrasilAPI.`); process.exit(2); }
+  probe = { ...probe, cep: cepFlag, street: j.street || "Rua Principal", number: "100", complement: "", neighborhood: j.neighborhood || "Centro", city: j.city, state: j.state };
+}
 if (!probe?.cep || !probe.street || !probe.name) {
   console.error("Defina `probe` no .retail-buyer/config.json (name, cep, street, number, neighborhood, city, state).");
   process.exit(2);
