@@ -1,9 +1,10 @@
 ## 28/09/2026 — Pix loja a loja
 
 - [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
-- [ ] CHK0223 em 7 lojas: testar se é o pagador CNPJ (precisaria de um CPF de comprador — decisão
-  do dono) antes de desistir de Casa & Vídeo, Época, Kopenhagen, Polishop, Zona Criativa,
-  Obramax e Telhanorte.
+- [ ] CHK0223/ORD062 em 9 lojas: dono autorizou testar com CPF de comprador (28/09); script
+  `testa-cpf.sh` na pasta temporária, CPF só no comando, nunca em arquivo. Aguardando o dono rodar.
+- [ ] Pesquisa de outros caminhos de compra: [docs/pesquisa-formas-de-compra-2026-09-28.md](docs/pesquisa-formas-de-compra-2026-09-28.md).
+  Próximos com código: Wake (parceria/token), Magento GraphQL (Divinho), 1 loja Shopify BR via UCP.
 - [ ] ORD062 (Martins Fontes, Mondial): provável exigência de login do cliente; sem solução por API.
 
 ## 28/09/2026 — Vitrine de 5
