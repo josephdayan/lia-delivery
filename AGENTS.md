@@ -1,3 +1,31 @@
+## 29/09/2026 — Remédio isento no chat, no CPF do cliente (implementado, DESLIGADO por padrão)
+
+Decisão do dono: remédio sem receita dentro do WhatsApp, sem contrato com farmácia. Tudo atrás
+de `LIA_MEDICINE_MIP=true`; desligado, a Lia recusa remédio exatamente como antes. Análise
+jurídica e riscos em [docs/remedio-intermediacao-legal-2026-09-29.md](docs/remedio-intermediacao-legal-2026-09-29.md):
+zona cinzenta até a regra da ANVISA (Mercado Livre notificado em 28/09); risco aceito pelo dono.
+
+- **Só isento.** Catálogo = prateleira de isentos da própria Drogaria SP ("Remédios", C:/868 +
+  "Sem Tarja" em C:/800) e Pague Menos só com código de barras igual a um isento da Drogaria SP
+  (`scripts/harvest-mip-catalog.mts`, entra na rotina semanal como `mip`). Guarda de receita por
+  nome em `src/lib/medicine.ts`, na colheita E no runtime (`anvisa.mipOnly`). Receita, tarja,
+  controlado: sempre recusado. A Lia não indica remédio por sintoma.
+- **Compra no nome do cliente.** Nome completo + CPF pedidos uma vez antes de cotar (passo
+  `need_cpf`, consentimento em `User.cpfConsentAt`); cópia no pedido
+  (`DeliveryOrder.buyerDocument/buyerName`). Só a loja que tem o remédio compra no CPF; o resto
+  segue no CNPJ. E-mail próprio por CPF (`contato+c<hash>@…`) porque a VTEX guarda perfil por
+  e-mail; o checkout aborta e estorna se a loja devolver perfil mascarado ou outro documento.
+- **Meta.** Vitrine de remédio e escolha de pagamento em texto; sem carrossel, bolha Pix nativa
+  ou One-Click em pedido com remédio.
+- **Preço.** Remédio pelo preço da farmácia; taxa `LIA_MEDICINE_SERVICE_FEE` (padrão R$4,90) em
+  linha própria da cotação.
+- **Nota fiscal.** O link da NF-e do e-mail de faturamento vai para o cliente.
+- **Termos/privacidade.** Seção de remédio só aparece com a flag.
+
+Antes de ligar (dono): advogado sanitário (recomendado); confirmar que o ImprovMX entrega
+`contato+teste@liadelivery.com.br` na caixa lida pelo servidor; `LIA_MEDICINE_MIP=true` na
+Vercel + redeploy; 1 pedido real próprio de dipirona conferindo a NF no nome do comprador.
+
 ## 28/09/2026 (noite) — DECISÃO: continuar no B2C atual; pivot analisado e descartado por ora
 
 Contexto: o Muse (agente pessoal da Meta) lançou nos EUA em 08/09, compra em Shopify,

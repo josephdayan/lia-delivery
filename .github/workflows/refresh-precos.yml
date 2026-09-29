@@ -31,13 +31,13 @@ jobs:
         run: |
           npx tsx scripts/refresh-catalogs.mts \
             drogariasp cobasi paguemenos swift kopenhagen rihappy mambo americanas covabra savegnago wepink underarmour tokstok pbkids osklen motorola livrariascuritiba fila farmaciaindiana extrafarma drogariaspacheco drogariacatarinense santaluzia cea capodarte aramis epocacosmeticos drogal \
-            martinsfontes brinox creamy casaevideo telhanorte zonacriativa philco mondial oxford polishop obramax \
+            martinsfontes brinox creamy casaevideo telhanorte zonacriativa philco mondial oxford polishop obramax mip \
             | tee refresh.log
       - name: Conferir tipos
         run: npx tsc --noEmit -p tsconfig.json
       # Bloqueiam o commit: segurança (remédio fora), catálogo íntegro, checkout e frete.
       - name: Testes de segurança do catálogo
-        run: npm run test:local -- tests/anvisa-pharmacy.test.ts tests/catalog-gaps.test.ts tests/vtex-checkout.test.ts tests/live-freight.test.ts
+        run: npm run test:local -- tests/anvisa-pharmacy.test.ts tests/medicine.test.ts tests/catalog-gaps.test.ts tests/vtex-checkout.test.ts tests/live-freight.test.ts
       # Informativo: o golden mede o piso da busca sem IA num elenco histórico; drift de catálogo
       # aparece aqui para o dono ver, mas não impede o preço de ser atualizado.
       - name: Qualidade da busca (golden, não bloqueia)

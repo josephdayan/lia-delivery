@@ -279,6 +279,30 @@ for (const custom of CUSTOM) {
   );
 }
 
+// Remédio isento (29/09): uma colheita, dois catálogos (Drogaria SP e Pague Menos). Mesma trava
+// das outras lojas: colheita que encolhe ou muda de prefixo não substitui o catálogo em uso.
+if (wanted("mip")) {
+  console.log(`→ ${"mip".padEnd(16)}`);
+  if (!run("scripts/harvest-mip-catalog.mts", [`--out-dir=${work}`])) {
+    failed.push("mip");
+  } else {
+    for (const key of ["drogariasp-mip", "paguemenos-mip"]) {
+      const target = catalogPath(key);
+      const out = join(work, `${key}-catalog.ts`);
+      const before = readPrices(target);
+      const after = readPrices(out);
+      process.stdout.write(`  ${key.padEnd(16)}`);
+      if (!accept(key, out, target, before, after)) {
+        failed.push(key);
+        continue;
+      }
+      const report = compare(key, before, after);
+      reports.push(report);
+      console.log(`${String(report.after).padStart(5)} itens · ${report.changed} preços mudaram · +${report.added}/-${report.removed}`);
+    }
+  }
+}
+
 console.log("\n" + "─".repeat(72));
 console.log(dryRun ? "SIMULAÇÃO (nenhum arquivo alterado)" : "CATÁLOGOS ATUALIZADOS");
 console.log("─".repeat(72));

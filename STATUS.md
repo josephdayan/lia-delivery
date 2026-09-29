@@ -1,3 +1,15 @@
+## 29/09/2026 (noite) — Remédio isento no chat implementado, desligado por padrão
+
+Commits 5698ef5 e dd4570b + rotina semanal. Com `LIA_MEDICINE_MIP=true`: vitrine de remédio sem
+receita em texto (1.252 isentos da Drogaria SP, 798 da Pague Menos confirmados por código de
+barras), taxa da Lia de R$4,90 em linha própria, nome + CPF pedidos uma vez, compra na farmácia
+no CPF do cliente com e-mail próprio por CPF e aborto com estorno se a loja devolver outro
+documento, NF-e encaminhada ao cliente, seção nos termos e na privacidade. Receita e controlado
+seguem recusados. Testes: `tests/medicine.test.ts` (10) e `tests/medicine-chat.test.ts` (5,
+conversa com banco); suíte inteira 701/701 no Postgres local e `next build` ok numa cópia
+isolada. Regra canônica no topo do AGENTS.md. O 1º lote quebrou o build do /ops (node:crypto em
+`medicine.ts`); a outra sessão corrigiu em 34f315e com SHA-256 puro.
+
 ## 29/09/2026 (noite) — Varredura em massa terminou: 530 lojas VTEX abertas de 2.158
 
 Contas VTEX descobertas pelo índice do Wayback (2.673; 2.157 sondadas após filtro de teste/país).

@@ -2,6 +2,7 @@
 //
 //   npx tsx scripts/harvest-mip-catalog.mts            # escreve os dois arquivos
 //   npx tsx scripts/harvest-mip-catalog.mts --dry      # só conta, não escreve
+//   npx tsx scripts/harvest-mip-catalog.mts --out-dir=/tmp/x   # grava noutra pasta (rotina semanal)
 //
 // Lista POSITIVA, feita pela própria farmácia, nunca por palavra nossa:
 //   - Drogaria SP: a loja separa os isentos numa prateleira própria ("Remédios", C:/868/ —
@@ -19,6 +20,9 @@ import { writeFileSync } from "node:fs";
 import { isPrescriptionText, isValidGtin, onlyDigits } from "../src/lib/medicine";
 
 const DRY = process.argv.includes("--dry");
+// --out-dir=<pasta>: a rotina semanal (scripts/refresh-catalogs.mts) colhe numa pasta temporária
+// e só troca o catálogo real se a colheita não encolheu.
+const OUT_DIR = process.argv.find((a) => a.startsWith("--out-dir="))?.slice("--out-dir=".length) ?? "src/lib/stores";
 const DSP = "https://www.drogariasaopaulo.com.br";
 const PM = "https://www.paguemenos.com.br";
 const HEADERS = {
@@ -170,6 +174,6 @@ export const MIP_CATALOG: CatalogItem[] = `;
 }
 if (!DRY) {
   if (dsp.length < 200) throw new Error(`Drogaria SP devolveu só ${dsp.length} isentos — colheita suspeita, nada escrito.`);
-  write("src/lib/stores/drogariasp-mip-catalog.ts", DSP, dsp);
-  write("src/lib/stores/paguemenos-mip-catalog.ts", PM, pm);
+  write(`${OUT_DIR}/drogariasp-mip-catalog.ts`, DSP, dsp);
+  write(`${OUT_DIR}/paguemenos-mip-catalog.ts`, PM, pm);
 }

@@ -1,3 +1,17 @@
+## 29/09/2026 — Remédio isento no CPF do cliente (implementado, desligado)
+
+- [x] Catálogo MIP, trava só para receita, vitrine em texto, taxa separada (5698ef5).
+- [x] CPF do cliente no pedido e na compra, NF-e ao cliente, termos e privacidade (dd4570b).
+- [x] Colheita `mip` na rotina semanal + `tests/medicine.test.ts` entre os testes que bloqueiam.
+- [ ] Dono (recomendado): 1 hora de advogado sanitário com docs/remedio-intermediacao-legal-2026-09-29.md.
+- [ ] Dono: mandar um e-mail para `contato+teste@liadelivery.com.br` e confirmar que chega na caixa
+  que o servidor lê (subendereçamento do ImprovMX). Sem isso, a loja manda os e-mails do pedido
+  no CPF para um endereço que ninguém lê. Alternativa: `LIA_MEDICINE_BUYER_EMAIL_TEMPLATE`.
+- [ ] Dono: `LIA_MEDICINE_MIP=true` na Vercel + redeploy; migration 20260929150000 aplica no build.
+- [ ] 1 pedido real próprio de dipirona: CPF pedido, cotação com a taxa, pedido na Drogaria SP no
+  nome do comprador, NF-e recebida no chat.
+- [ ] Drogal fora: não publica tarja nem código de barras confiável.
+
 ## 29/09/2026 — Varredura em massa
 
 - [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 37 lojas (comando no chat) + redeploy.
