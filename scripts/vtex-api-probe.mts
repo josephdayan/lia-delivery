@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { findPixCode } from "../src/lib/pix-emv";
+import { effectiveSla } from "../src/lib/live-freight";
 
 const STORES: Record<string, string> = {
   cobasi: "www.cobasi.com.br",
@@ -305,11 +306,16 @@ if (!chosen) {
   await clearCart();
   fail(`SLA "${wanted}" não está entre ${options.map((o) => o[0]).join(", ")}`);
 }
+// Entrega agendada (Mambo, Atacadão, Covabra: ORD006 "janela de entrega é obrigatória"): escolhe a
+// janela mais cedo da SLA, igual ao comprador do servidor (effectiveSla).
+const rawSla = ((((shipping.json as Json).shippingData as Json)?.logisticsInfo as Json[])?.[0]?.slas as Json[] | undefined)?.find((x) => x.id === chosen);
+const window = rawSla ? (effectiveSla(rawSla as never) as { deliveryWindow?: Json }).deliveryWindow : undefined;
 shipping = await call(`${base}/orderForm/${orderFormId}/attachments/shippingData`, {
   selectedAddresses: [address],
-  logisticsInfo: [{ itemIndex: 0, selectedDeliveryChannel: "delivery", selectedSla: chosen }],
+  logisticsInfo: [{ itemIndex: 0, selectedDeliveryChannel: "delivery", selectedSla: chosen, ...(window ? { deliveryWindow: window } : {}) }],
   clearAddressIfPostalCodeNotFound: false,
 });
+if (window) step("deliveryWindow", 0, window);
 summary = orderFormSummary(shipping.json as Json);
 step("selectedSla", shipping.status, { selectedSla: summary.selectedSla, totalizers: summary.totalizers, value: summary.value });
 if (summary.selectedSla !== chosen) {
