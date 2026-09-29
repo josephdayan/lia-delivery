@@ -9,8 +9,8 @@
 - [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
 - [ ] CHK0223/ORD062 em 9 lojas: dono autorizou testar com CPF de comprador (28/09); script
   `testa-cpf.sh` na pasta temporária, CPF só no comando, nunca em arquivo. Aguardando o dono rodar.
-- [ ] Americanas (VTEX, API aberta até o Pix): dono roda `testa-americanas.sh`; se fechar,
-  somar conector + catálogo (loja mais larga do elenco).
+- [ ] Americanas FECHOU por API (28/09, Pix Stark Infra com URL, mínimo R$30, entrega 2h): somar
+  conector + catálogo (loja mais larga do elenco). Atenção: recebedor em recuperação judicial.
 - [ ] UCP em lojas Shopify BR (Sallve, Dailus, Insider, Zissou): checkout funciona até o CPF;
   pagamento só cartão/Google Pay. Decisão do dono: cartão da empresa para pagar essas lojas?
   Se sim, próximo passo é o campo de CPF/CNPJ no checkout e o handler `dev.shopify.card`.

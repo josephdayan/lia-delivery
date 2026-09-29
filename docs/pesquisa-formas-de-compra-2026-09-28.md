@@ -27,6 +27,9 @@ Contexto: das 20 lojas VTEX com compra por API, 11 passam no Pix e 9 recusam (OR
   1ª tentativa de fechamento: ORD079 "valor mínimo de R$ 30,00 no carrinho" — primeira loja
   com mínimo publicado (vai para o conector). Frete no endereço de sondagem: "Entrega" R$12,90
   (1 dia útil) e **"Entrega 2h" R$19,89** (same-day).
+  2ª tentativa (8 un., R$44,82): **PEDIDO CRIADO** (grupo 1665078885691), Pix dinâmico da Stark
+  Infra com URL — formato que a Lia já paga. Recebedor "Americanas s.a - em Recup" (empresa em
+  recuperação judicial: risco de estorno/pós-venda a ponderar). Próximo: conector + catálogo.
 - **Divinho virou VTEX** (não é Magento) e **não oferece Pix** (só cartão): fora.
 - **Mundo Verde (VTEX):** o seller é de BH e não entrega em SP: fora.
 - **Kalunga (Wake):** frontend próprio com token no servidor; Wake segue sendo parceria.
