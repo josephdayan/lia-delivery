@@ -1,3 +1,15 @@
+## 29/09/2026 — Com CPF + telefone, 7 das 9 lojas desligadas fecham por API
+
+Teste do dono (`testa-cpf.sh`, pedidos sem pagamento): Kopenhagen, Casa & Vídeo, Época,
+Polishop, Zona Criativa, Obramax e Telhanorte criaram pedido com Pix dinâmico com URL
+(Stone/Pagar.me, MagaluPay, BTG). Martins Fontes e Mondial seguem em ORD062 "Acesso negado"
+(provável exigência de login). O 1º teste com CPF caiu em ORD007 "campo telefone inválido":
+perfil de pessoa física exige telefone (a sondagem não mandava; com CNPJ a VTEX não exigia).
+Falta isolar a causa: se CNPJ + telefone também passa, produção só ganha o telefone; se só
+CPF passa, essas 7 lojas precisam de comprador CPF (documento do dono) + telefone no
+`clientProfileData` do comprador do servidor. Atenção: em 4 delas o recebedor do Pix é
+"Pagar Me Instituição de Pagamento" (subadquirente), não a loja.
+
 ## 28/09/2026 (noite) — Americanas entra no elenco: 21ª loja por API, 7.532 itens, entrega em 2h
 
 Fechamento real provado por API (pedido 1665078885691 sem pagamento, Pix dinâmico da Stark Infra

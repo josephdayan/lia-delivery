@@ -7,8 +7,10 @@
 ## 28/09/2026 — Pix loja a loja
 
 - [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
-- [ ] CHK0223/ORD062 em 9 lojas: dono autorizou testar com CPF de comprador (28/09); script
-  `testa-cpf.sh` na pasta temporária, CPF só no comando, nunca em arquivo. Aguardando o dono rodar.
+- [x] Teste com CPF + telefone (29/09): 7/9 fecham (ver STATUS). Martins Fontes e Mondial: ORD062, fora.
+- [ ] Isolar causa (dono roda `testa-cnpj-telefone.sh`): CNPJ + telefone passa? Então produção só
+  ganha telefone no perfil. Senão: comprador CPF por loja (documento só em env) + telefone.
+- [ ] Depois: religar as 7 lojas no registry e provar 1 compra real numa delas.
 - [x] Americanas somada (conector + 7.532 itens + fiação completa, 28/09).
 - [ ] Dono: `americanas` em `LIA_AUTO_PURCHASE_STORES` na Vercel + redeploy; 1ª compra real
   (mínimo R$30). Recebedor em recuperação judicial: acompanhar pós-venda.
