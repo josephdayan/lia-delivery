@@ -1,4 +1,4 @@
-## 28/09/2026 (tarde) — Pix loja a loja: 8 passam, 6 desligadas, 6 no reteste
+## 28/09/2026 (tarde) — Pix loja a loja: 11 passam, 9 desligadas
 
 Pedido real sem pagamento em cada loja (dono rodou; vencem sozinhos), lendo o Pix emitido:
 
@@ -6,15 +6,18 @@ Pedido real sem pagamento em cada loja (dono rodou; vencem sozinhos), lendo o Pi
 |---|---|---|
 | Cobasi, Pague Menos, Drogal, Ri Happy (Tuna) | Itaú com URL | passa |
 | Drogaria SP | Adyen com URL | passa |
-| Mambo, Swift, Brinox | Mercado Pago (chave+valor+txid) | passa (Mambo pago de verdade) |
+| Oxford | Bradesco com URL | passa (campo 59 do código traz "LIA DELIVERY"; o recebedor real vem do decode) |
+| Philco (Britânia) | Cielo com URL | passa |
+| Mambo, Swift, Brinox, Creamy | Mercado Pago (chave+valor+txid) | passa (Mambo pago de verdade) |
 | Martins Fontes, Mondial | — | ORD062 "Acesso negado" no `transaction`: DESLIGADAS |
-| Obramax, Telhanorte, Época, Casa & Vídeo | — | CHK0223 "pagamento não autorizado" (Época/C&V também com item do próprio seller): DESLIGADAS |
-| Kopenhagen, Creamy, Zona Criativa, Philco, Oxford, Polishop | ? | dão desconto no Pix; a SONDAGEM mandava o total cheio e a loja devolvia 200 sem pedido. Sondagem corrigida (63eece5); produção já usava o valor do Pix. Reteste pendente |
+| Obramax, Telhanorte, Época, Casa & Vídeo, Kopenhagen, Polishop, Zona Criativa | — | CHK0223 "pagamento não autorizado", sem Tid: DESLIGADAS |
 
-Desligadas = opt-in no registry (`LIA_ENABLE_<LOJA>=true` religa). Sem Casa & Vídeo não há
-carregador USB-C no elenco: o golden agora exige "não tenho" (nunca veicular). Swift cobra
-num Mercado Pago de nome pessoal: se o documento for CPF, a 1ª compra pede o toque do dono.
-Hipótese para o CHK0223 (não testada): conector de Pix que exige pagador CPF.
+Seis lojas dão desconto no Pix (1–7%); a sondagem mandava o total cheio e a loja devolvia 200
+sem pedido. Corrigida em 63eece5 (produção já usava o valor do Pix). Desligadas = opt-in no
+registry (`LIA_ENABLE_<LOJA>=true` religa). Sem Casa & Vídeo não há carregador USB-C: o golden
+exige "não tenho". Swift/Creamy cobram em Mercado Pago de apelido; se o documento for CPF, a
+1ª compra pede o toque do dono. Hipótese para o CHK0223 (não testada): conector de Pix que
+recusa pagador CNPJ.
 
 ## 28/09/2026 (tarde) — PROVADO: primeira compra 100% automática, sem nenhum toque humano
 

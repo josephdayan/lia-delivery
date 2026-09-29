@@ -65,7 +65,7 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_KALUNGA === "true" ? { [kalungaStore.key]: kalungaStore } : {}),
   ...(process.env.LIA_ENABLE_RIHAPPY !== "false" ? { [rihappyStore.key]: rihappyStore } : {}),
   ...(process.env.LIA_ENABLE_CACAUSHOW === "true" ? { [cacauShowStore.key]: cacauShowStore } : {}),
-  ...(process.env.LIA_ENABLE_KOPENHAGEN !== "false" ? { [kopenhagenStore.key]: kopenhagenStore } : {}),
+  ...(process.env.LIA_ENABLE_KOPENHAGEN === "true" ? { [kopenhagenStore.key]: kopenhagenStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_DROGARAIA === "true" ? { [drogaRaiaStore.key]: drogaRaiaStore } : {}),
   // Vitrines adicionadas em 2026-08-02 para fechar as lacunas de demanda mapeadas
   // (farmácia não-remédio, bebidas, hortifruti, flores/presente e redundância de pet).
@@ -83,7 +83,8 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
   // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.
   // 28/09: teste de Pix loja a loja. Martins Fontes e Mondial recusam criar o pedido (ORD062
-  // "Acesso negado"); Obramax, Telhanorte, Época e Casa & Vídeo recusam autorizar o Pix (CHK0223,
+  // "Acesso negado"); Obramax, Telhanorte, Época, Casa & Vídeo, Kopenhagen, Polishop e Zona Criativa recusam
+  // autorizar o Pix (CHK0223,
   // também com item do próprio seller). Sem operador,
   // loja que não fecha sozinha sai da vitrine (regra do dono 25/09). LIA_ENABLE_<LOJA>=true religa.
   ...(process.env.LIA_ENABLE_MARTINSFONTES === "true" ? { [martinsfontesStore.key]: martinsfontesStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
@@ -91,12 +92,12 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_CREAMY !== "false" ? { [creamyStore.key]: creamyStore } : {}),
   ...(process.env.LIA_ENABLE_CASAEVIDEO === "true" ? { [casaevideoStore.key]: casaevideoStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_TELHANORTE === "true" ? { [telhanorteStore.key]: telhanorteStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
-  ...(process.env.LIA_ENABLE_ZONACRIATIVA !== "false" ? { [zonacriativaStore.key]: zonacriativaStore } : {}),
+  ...(process.env.LIA_ENABLE_ZONACRIATIVA === "true" ? { [zonacriativaStore.key]: zonacriativaStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   // 27/09 (2ª leva): eletro e casa — Philco, Mondial, Oxford, Polishop, Obramax.
   ...(process.env.LIA_ENABLE_PHILCO !== "false" ? { [philcoStore.key]: philcoStore } : {}),
   ...(process.env.LIA_ENABLE_MONDIAL === "true" ? { [mondialStore.key]: mondialStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   ...(process.env.LIA_ENABLE_OXFORD !== "false" ? { [oxfordStore.key]: oxfordStore } : {}),
-  ...(process.env.LIA_ENABLE_POLISHOP !== "false" ? { [polishopStore.key]: polishopStore } : {}),
+  ...(process.env.LIA_ENABLE_POLISHOP === "true" ? { [polishopStore.key]: polishopStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_OBRAMAX === "true" ? { [obramaxStore.key]: obramaxStore } : {}), // DESLIGADA 28/09: fechamento por API falhou
   // Mercado Livre: vitrine de CAUDA LONGA, ao vivo (decisão do dono 16/08). Fica por
   // ÚLTIMO no registry de propósito: as lojas locais decidem o "hoje"; o ML entra pra

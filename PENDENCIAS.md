@@ -1,9 +1,10 @@
 ## 28/09/2026 — Pix loja a loja
 
-- [ ] Reteste (dono roda `testa-pix-4.sh` da pasta temporária): Kopenhagen, Creamy, Zona
-  Criativa, Philco, Oxford, Polishop, com a sondagem mandando o valor do Pix com desconto.
-- [ ] Desligadas até provar um fechamento: Martins Fontes, Mondial (ORD062), Obramax,
-  Telhanorte, Época, Casa & Vídeo (CHK0223).
+- [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
+- [ ] CHK0223 em 7 lojas: testar se é o pagador CNPJ (precisaria de um CPF de comprador — decisão
+  do dono) antes de desistir de Casa & Vídeo, Época, Kopenhagen, Polishop, Zona Criativa,
+  Obramax e Telhanorte.
+- [ ] ORD062 (Martins Fontes, Mondial): provável exigência de login do cliente; sem solução por API.
 
 ## 28/09/2026 — Vitrine de 5
 
