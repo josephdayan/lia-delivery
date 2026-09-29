@@ -8,6 +8,24 @@ import { decathlonStore } from "./decathlon";
 import { swiftStore } from "./swift";
 import { mamboStore } from "./mambo";
 import { americanasStore } from "./americanas";
+import { covabraStore } from "./covabra";
+import { savegnagoStore } from "./savegnago";
+import { wepinkStore } from "./wepink";
+import { underarmourStore } from "./underarmour";
+import { tokstokStore } from "./tokstok";
+import { pbkidsStore } from "./pbkids";
+import { osklenStore } from "./osklen";
+import { motorolaStore } from "./motorola";
+import { livrariascuritibaStore } from "./livrariascuritiba";
+import { filaStore } from "./fila";
+import { farmaciaindianaStore } from "./farmaciaindiana";
+import { extrafarmaStore } from "./extrafarma";
+import { drogariaspachecoStore } from "./drogariaspacheco";
+import { drogariacatarinenseStore } from "./drogariacatarinense";
+import { santaluziaStore } from "./santaluzia";
+import { ceaStore } from "./cea";
+import { capodarteStore } from "./capodarte";
+import { aramisStore } from "./aramis";
 import { epocacosmeticosStore } from "./epocacosmeticos";
 import { drogalStore } from "./drogal";
 import { martinsfontesStore } from "./martinsfontes";
@@ -82,6 +100,24 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_MAMBO !== "false" ? { [mamboStore.key]: mamboStore } : {}),
   // 28/09/2026: Americanas fechou por API (Pix Stark Infra); mínimo R$30, entrega 2h na capital.
   ...(process.env.LIA_ENABLE_AMERICANAS !== "false" ? { [americanasStore.key]: americanasStore } : {}),
+  ...(process.env.LIA_ENABLE_COVABRA !== "false" ? { [covabraStore.key]: covabraStore } : {}),
+  ...(process.env.LIA_ENABLE_SAVEGNAGO !== "false" ? { [savegnagoStore.key]: savegnagoStore } : {}),
+  ...(process.env.LIA_ENABLE_WEPINK !== "false" ? { [wepinkStore.key]: wepinkStore } : {}),
+  ...(process.env.LIA_ENABLE_UNDERARMOUR !== "false" ? { [underarmourStore.key]: underarmourStore } : {}),
+  ...(process.env.LIA_ENABLE_TOKSTOK !== "false" ? { [tokstokStore.key]: tokstokStore } : {}),
+  ...(process.env.LIA_ENABLE_PBKIDS !== "false" ? { [pbkidsStore.key]: pbkidsStore } : {}),
+  ...(process.env.LIA_ENABLE_OSKLEN !== "false" ? { [osklenStore.key]: osklenStore } : {}),
+  ...(process.env.LIA_ENABLE_MOTOROLA !== "false" ? { [motorolaStore.key]: motorolaStore } : {}),
+  ...(process.env.LIA_ENABLE_LIVRARIASCURITIBA !== "false" ? { [livrariascuritibaStore.key]: livrariascuritibaStore } : {}),
+  ...(process.env.LIA_ENABLE_FILA !== "false" ? { [filaStore.key]: filaStore } : {}),
+  ...(process.env.LIA_ENABLE_FARMACIAINDIANA !== "false" ? { [farmaciaindianaStore.key]: farmaciaindianaStore } : {}),
+  ...(process.env.LIA_ENABLE_EXTRAFARMA !== "false" ? { [extrafarmaStore.key]: extrafarmaStore } : {}),
+  ...(process.env.LIA_ENABLE_DROGARIASPACHECO !== "false" ? { [drogariaspachecoStore.key]: drogariaspachecoStore } : {}),
+  ...(process.env.LIA_ENABLE_DROGARIACATARINENSE !== "false" ? { [drogariacatarinenseStore.key]: drogariacatarinenseStore } : {}),
+  ...(process.env.LIA_ENABLE_SANTALUZIA !== "false" ? { [santaluziaStore.key]: santaluziaStore } : {}),
+  ...(process.env.LIA_ENABLE_CEA !== "false" ? { [ceaStore.key]: ceaStore } : {}),
+  ...(process.env.LIA_ENABLE_CAPODARTE !== "false" ? { [capodarteStore.key]: capodarteStore } : {}),
+  ...(process.env.LIA_ENABLE_ARAMIS !== "false" ? { [aramisStore.key]: aramisStore } : {}),
   ...(process.env.LIA_ENABLE_EPOCACOSMETICOS !== "false" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}), // religada 29/09: fecha com telefone no perfil
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
   // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.

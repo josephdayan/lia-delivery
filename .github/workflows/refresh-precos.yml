@@ -30,7 +30,7 @@ jobs:
       - name: Recolher catálogos
         run: |
           npx tsx scripts/refresh-catalogs.mts \
-            drogariasp cobasi paguemenos swift kopenhagen rihappy mambo americanas epocacosmeticos drogal \
+            drogariasp cobasi paguemenos swift kopenhagen rihappy mambo americanas covabra savegnago wepink underarmour tokstok pbkids osklen motorola livrariascuritiba fila farmaciaindiana extrafarma drogariaspacheco drogariacatarinense santaluzia cea capodarte aramis epocacosmeticos drogal \
             martinsfontes brinox creamy casaevideo telhanorte zonacriativa philco mondial oxford polishop obramax \
             | tee refresh.log
       - name: Conferir tipos

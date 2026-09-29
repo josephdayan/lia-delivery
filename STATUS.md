@@ -1,3 +1,18 @@
+## 29/09/2026 (tarde) — Varredura em massa: +18 lojas ligadas, elenco por API vai a 37
+
+Varredura de 151 domínios (dono leu o CSV) → 24 abertas até o Pix; lote 1 fechou 16 de verdade
+(Aramis, Capodarte, C&A, Casa Santa Luzia, Drogaria Catarinense, Drogarias Pacheco, Extrafarma,
+Farmácia Indiana, Fila, Livrarias Curitiba, Motorola, Osklen, PBKids, Tok&Stok, Under Armour,
+WePink) e o interior de SP fechou Savegnago (Ribeirão) e Covabra (Campinas), ambas com mínimo
+R$30. Tudo ligado por `scripts/add-vtex-store.mts` (conector, registry, checkout, frete, e-mail,
+allowlist, rotina, workflow, golden, load-env + colheita): 18 catálogos, 0 falhas. Fora: Dengo,
+Dermage, Electrolux, São João (ORD062), Reserva (pedido sem Pix no callback), Atacadão (mínimo
+R$250). Sondagem ganhou `--domain`, `--cep` (regional dentro de SP), janela de entrega automática
+e termos de busca por setor. Descoberta em massa: 2.673 contas VTEX pelo índice do Wayback
+(`*.vtexcommercestable.com.br` / `*.vtexassets.com`); varredura seca de 2.157 em curso (~1 em 5
+abre). Suíte focada 77/77. Falta: conta de compra em produção para as 18 (script --db) e
+`LIA_AUTO_PURCHASE_STORES` na Vercel com as 37.
+
 ## 29/09/2026 — Era o telefone: 7 lojas religadas, elenco por API vai a 19
 
 `testa-cnpj-telefone.sh` (dono): CNPJ + telefone fecha na Kopenhagen e na Casa & Vídeo. Logo, o

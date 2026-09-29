@@ -5,7 +5,7 @@ export const PURCHASE_DOMAINS: Record<string, string> = {
   drogariasp: "drogariasaopaulo.com.br", cobasi: "cobasi.com.br", oba: "obahortifruti.com.br",
   swift: "swift.com.br", divvino: "divvino.com.br", kopenhagen: "kopenhagen.com.br",
   rihappy: "rihappy.com.br", naturaldaterra: "naturaldaterra.com.br",
-  americanas: "americanas.com.br", mambo: "mambo.com.br", epocacosmeticos: "epocacosmeticos.com.br", drogal: "drogal.com.br",
+  americanas: "americanas.com.br", covabra: "covabra.com.br", savegnago: "savegnago.com.br", wepink: "wepink.com.br", underarmour: "underarmour.com.br", tokstok: "tokstok.com.br", pbkids: "pbkids.com.br", osklen: "osklen.com.br", motorola: "motorola.com.br", livrariascuritiba: "livrariascuritiba.com.br", fila: "fila.com.br", farmaciaindiana: "farmaciaindiana.com.br", extrafarma: "extrafarma.com.br", drogariaspacheco: "drogariaspacheco.com.br", drogariacatarinense: "drogariacatarinense.com.br", santaluzia: "santaluzia.com.br", cea: "cea.com.br", capodarte: "capodarte.com.br", aramis: "aramis.com.br", mambo: "mambo.com.br", epocacosmeticos: "epocacosmeticos.com.br", drogal: "drogal.com.br",
   martinsfontes: "martinsfontespaulista.com.br", brinox: "brinox.com.br", creamy: "creamy.com.br", casaevideo: "casaevideo.com.br", telhanorte: "telhanorte.com.br", zonacriativa: "zonacriativa.com.br",
   philco: "philco.com.br", mondial: "mondial.com.br", oxford: "oxfordporcelanas.com.br", polishop: "polishop.com.br", obramax: "obramax.com.br"
 };

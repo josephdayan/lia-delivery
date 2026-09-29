@@ -1,3 +1,12 @@
+## 29/09/2026 — Varredura em massa
+
+- [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 37 lojas (comando no chat) + redeploy.
+- [ ] Varredura seca das 2.157 contas VTEX (em curso): ler CSV (dono, o classificador bloqueia a
+  leitura em massa), filtrar SP/nacional, lote de fechamento pelo dono, ligar com `add-vtex-store.mts`.
+- [ ] Contas com nome diferente do domínio: o host `<conta>.vtexcommercestable.com.br` serve o
+  checkout, mas o conector precisa do domínio real (seguir redirect ou ler `storePreferencesData`).
+- [ ] 1 compra real em pelo menos 1 loja nova de cada setor (farmácia, moda, casa, livros).
+
 ## 28/09/2026 — Decisão: seguir no B2C atual
 
 - [x] Pivot (trilho pra agentes / B2B pequeno negócio) analisado e descartado pelo dono; ver [docs/pivot-longo-prazo-2026-09-28.md](docs/pivot-longo-prazo-2026-09-28.md). Não repropor sem dado novo.
