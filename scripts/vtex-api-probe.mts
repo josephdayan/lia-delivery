@@ -70,7 +70,10 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 
 type Json = Record<string, unknown>;
 const args = process.argv.slice(2);
-const storeKey = args[0];
+// --domain=www.loja.com.br: sonda um domínio fora da tabela (varredura em massa, 29/09).
+const domainFlag = args.find((a) => a.startsWith("--domain="))?.slice(9);
+const storeKey = domainFlag ? domainFlag.replace(/^www\./, "").replace(/\..*$/, "") : args[0];
+if (domainFlag) STORES[storeKey] = domainFlag;
 const flag = (name: string) => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
@@ -191,10 +194,19 @@ let sku = flag("--sku");
 let seller = flag("--seller") ?? "1";
 const qty = Number(flag("--qty") ?? 1);
 if (!sku) {
-  const term = flag("--term") ?? "sabonete";
-  const r = await call(`https://${domain}/api/catalog_system/pub/products/search?ft=${encodeURIComponent(term)}&_from=0&_to=9`);
-  if (!Array.isArray(r.json)) fail(`busca ${r.status}: catálogo bloqueado ou vazio (${r.text.slice(0, 120)})`);
-  for (const p of r.json as Json[]) {
+  // Sem --term: tenta termos de vários setores até achar um item disponível.
+  const terms = flag("--term") ? [flag("--term")!] : ["sabonete", "arroz", "shampoo", "chocolate", "livro", "panela", "racao", "camiseta", "cabo", "caneta", "toalha", "vinho"];
+  let r: { status: number; json: unknown; text: string } = { status: 0, json: null, text: "" };
+  let products: Json[] = [];
+  let term = terms[0];
+  for (term of terms) {
+    r = await call(`https://${domain}/api/catalog_system/pub/products/search?ft=${encodeURIComponent(term)}&_from=0&_to=9`);
+    if (!Array.isArray(r.json)) fail(`busca ${r.status}: catálogo bloqueado ou vazio (${r.text.slice(0, 120)})`);
+    products = r.json as Json[];
+    const hasStock = products.some((p) => ((p.items as Json[]) ?? []).some((it) => ((it.sellers as Json[]) ?? []).some((x) => Number((x.commertialOffer as Json)?.AvailableQuantity) > 0)));
+    if (hasStock) break;
+  }
+  for (const p of products) {
     for (const it of (p.items as Json[]) ?? []) {
       const s = ((it.sellers as Json[]) ?? []).find((x) => Number((x.commertialOffer as Json)?.AvailableQuantity) > 0);
       if (s) {
