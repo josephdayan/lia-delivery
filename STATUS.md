@@ -1,3 +1,15 @@
+## 29/09/2026 (noite) — Varredura em massa terminou: 530 lojas VTEX abertas de 2.158
+
+Contas VTEX descobertas pelo índice do Wayback (2.673; 2.157 sondadas após filtro de teste/país).
+Sondagem seca no endereço do dono: **530 abrem até o Pix**. Agrupadas por nome (arquivo na pasta
+temporária, lido pelo dono): farmácia 13, mercado 7, pet 16, beleza 8, casa 27, bebê 6, livros 7,
+esporte 4, moda 70, sem setor no nome 372. Limite real que aparece agora: o modelo de catálogo
+estático em `src/lib/stores/*-catalog.ts` (~1 MB por 5 mil itens, colheita de minutos por loja)
+não escala para centenas de lojas. Para a cauda longa, o caminho é busca ao vivo na API pública
+de catálogo da VTEX por loja na hora da cotação (não é navegador remoto), guardando só a lista
+de lojas e o domínio. Decisão pendente do dono. Deploy 34f315e corrigiu o build (node:crypto
+em `medicine.ts`, commit da outra sessão, no caminho do `/ops`).
+
 ## 29/09/2026 (tarde) — Varredura em massa: +18 lojas ligadas, elenco por API vai a 37
 
 Varredura de 151 domínios (dono leu o CSV) → 24 abertas até o Pix; lote 1 fechou 16 de verdade

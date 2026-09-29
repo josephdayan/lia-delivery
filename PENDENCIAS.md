@@ -1,8 +1,10 @@
 ## 29/09/2026 — Varredura em massa
 
 - [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 37 lojas (comando no chat) + redeploy.
-- [ ] Varredura seca das 2.157 contas VTEX (em curso): ler CSV (dono, o classificador bloqueia a
-  leitura em massa), filtrar SP/nacional, lote de fechamento pelo dono, ligar com `add-vtex-store.mts`.
+- [x] Varredura seca das 2.157 contas: 530 abertas (arquivo por setor na pasta temporária).
+- [ ] Dono escolhe lojas (escolhidas.txt) → `fecha-lista.sh` → ligar as que fecharem.
+- [ ] DECISÃO: catálogo estático não escala para centenas de lojas → busca ao vivo na API pública
+  VTEX por loja na cotação (lista de lojas + domínio só). Precisa de desenho e testes.
 - [ ] Contas com nome diferente do domínio: o host `<conta>.vtexcommercestable.com.br` serve o
   checkout, mas o conector precisa do domínio real (seguir redirect ou ler `storePreferencesData`).
 - [ ] 1 compra real em pelo menos 1 loja nova de cada setor (farmácia, moda, casa, livros).
