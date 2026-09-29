@@ -11,7 +11,7 @@
 //
 // TUDO atrás de LIA_MEDICINE_MIP=true. Desligado, nada muda: o catálogo MIP não é servido e
 // a recusa de remédio continua exatamente como antes.
-import { createHash } from "node:crypto";
+import { sha256Hex } from "./sha256";
 
 export function medicineEnabled(): boolean {
   return process.env.LIA_MEDICINE_MIP === "true";
@@ -137,7 +137,7 @@ export function splitName(full: string): { firstName: string; lastName: string }
 // um perfil próprio e continua caindo na mesma caixa (subendereçamento com "+").
 // O vtex-checkout ainda confere o documento devolvido e aborta se não for o CPF.
 export function medicineBuyerEmail(baseEmail: string, cpf: string): string {
-  const tag = `c${createHash("sha256").update(onlyDigits(cpf)).digest("hex").slice(0, 10)}`;
+  const tag = `c${sha256Hex(onlyDigits(cpf)).slice(0, 10)}`;
   const template = process.env.LIA_MEDICINE_BUYER_EMAIL_TEMPLATE?.trim();
   if (template && template.includes("{tag}")) return template.replace("{tag}", tag);
   const [local, domain] = baseEmail.trim().split("@");
