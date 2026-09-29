@@ -40,6 +40,7 @@ const VTEX_LIVE: Record<string, { domain: string; sku: RegExp }> = {
   // a simulação do site responde isso (withoutStock) e agora barra antes de cobrar.
   naturaldaterra: { domain: "www.naturaldaterra.com.br", sku: /^naturaldaterra-(\d+)$/ },
   mambo: { domain: "www.mambo.com.br", sku: /^mambo-(\d+)$/ },
+  americanas: { domain: "www.americanas.com.br", sku: /^americanas-(\d+)$/ },
   epocacosmeticos: { domain: "www.epocacosmeticos.com.br", sku: /^epoca-(\d+)$/ },
   drogal: { domain: "www.drogal.com.br", sku: /^drogal-(\d+)$/ },
   martinsfontes: { domain: "www.martinsfontespaulista.com.br", sku: /^martinsfontes-(\d+)$/ },

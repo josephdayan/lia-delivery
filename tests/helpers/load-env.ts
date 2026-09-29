@@ -87,6 +87,7 @@ for (const store of [
   "COBASI",
   "GIULIANAFLORES",
   "MAMBO",
+  "AMERICANAS",
   "EPOCACOSMETICOS",
   "DROGAL",
   "MARTINSFONTES",

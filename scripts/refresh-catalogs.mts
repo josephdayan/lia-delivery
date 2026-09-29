@@ -24,6 +24,7 @@ type Source = {
   /** Farmácia: allowlist de categorias seguras (ANVISA). Ver src/lib/stores/README.md. */
   categories?: string;
   deny?: string;
+  seller?: string;
   /**
    * Varreduras complementares por busca de texto (separadas por ";"). O top-vendas
    * esconde nicho que cliente real pede — caso 17/08: "sorvete que não engorda" existia
@@ -62,6 +63,15 @@ const SOURCES: Source[] = [
     deny: PHARMACY_DENY
   },
   // 25–27/09: lojas da compra por API (sem operador). Mesmos parâmetros da colheita original.
+  // 28/09: Americanas (VTEX, fechou por API; mínimo R$30; "Entrega 2h" no endereço do dono).
+  // Marketplace: só o seller "1" (a própria Americanas). Categorias do dia a dia; remédio,
+  // gift card e seguro fora.
+  {
+    key: "americanas", origin: "https://www.americanas.com.br", max: 6000, seller: "1",
+    categories: "322,1087,1251,1522,3052,3714,4084,4254,3600,1402,3125,2709,1639,2547,3902",
+    deny: `${PHARMACY_DENY}|gift ?card|vale.?presente|seguro|recarga`,
+    ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;biscoito;chocolate;papel higienico;detergente;sabao em po;amaciante;desinfetante;fralda;lenco umedecido;shampoo;condicionador;sabonete;desodorante;creme dental;racao;areia gato;pilha;lampada;panela",
+  },
   { key: "mambo", origin: "https://www.mambo.com.br", max: 6000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
   { key: "epocacosmeticos", origin: "https://www.epocacosmeticos.com.br", max: 1200, rewriteHost: "www.epocacosmeticos.com.br", skuPrefix: "epoca" },
   {
@@ -211,6 +221,7 @@ for (const source of SOURCES) {
   const args = [source.origin, source.skuPrefix ?? source.key, out, String(source.max)];
   if (source.categories) args.push(`--categories=${source.categories}`);
   if (source.deny) args.push(`--deny=${source.deny}`);
+  if (source.seller) args.push(`--seller=${source.seller}`);
   if (source.ft) args.push(`--ft=${source.ft}`);
   if (!run("scripts/harvest-vtex-catalog.mts", args)) {
     failed.push(source.key);

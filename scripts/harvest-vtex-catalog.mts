@@ -32,6 +32,9 @@ const CATEGORIES = (flagValue("categories") ?? "").split(",").map((s) => s.trim(
 // ";" como separador: termos de busca podem conter vírgula/espaço ("zero acucar").
 const FT_TERMS = (flagValue("ft") ?? "").split(";").map((s) => s.trim()).filter(Boolean);
 const FT_MAX_PER_TERM = 150;
+// --seller=<id>: só entra o item que ESSE seller vende com estoque (marketplace como a
+// Americanas: o seller "1" é a própria loja, com entrega rápida; 3P entrega em dias).
+const ONLY_SELLER = flagValue("seller") ?? "";
 const denyArg = flagValue("deny");
 const DENY = denyArg ? new RegExp(denyArg, "i") : null;
 
@@ -71,7 +74,7 @@ let denied = 0;
 function absorb(products: Product[]) {
   for (const product of products) {
     const item = product.items?.[0];
-    const seller = item?.sellers?.find((s) => (s.commertialOffer?.AvailableQuantity ?? 0) > 0 && (s.commertialOffer?.Price ?? 0) > 0);
+    const seller = item?.sellers?.find((s) => (!ONLY_SELLER || String(s.sellerId) === ONLY_SELLER) && (s.commertialOffer?.AvailableQuantity ?? 0) > 0 && (s.commertialOffer?.Price ?? 0) > 0);
     const price = seller?.commertialOffer?.Price;
     const link = product.link ?? (product.linkText ? `${origin}/${product.linkText}/p` : undefined);
     const id = item?.itemId;

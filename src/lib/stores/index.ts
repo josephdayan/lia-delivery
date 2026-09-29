@@ -7,6 +7,7 @@ import { carrefourStore } from "./carrefour";
 import { decathlonStore } from "./decathlon";
 import { swiftStore } from "./swift";
 import { mamboStore } from "./mambo";
+import { americanasStore } from "./americanas";
 import { epocacosmeticosStore } from "./epocacosmeticos";
 import { drogalStore } from "./drogal";
 import { martinsfontesStore } from "./martinsfontes";
@@ -79,6 +80,8 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_GIULIANAFLORES === "true" ? { [giulianaFloresStore.key]: giulianaFloresStore } : {}),
   // 25/09/2026: lojas somadas pela varredura de checkout VTEX aberto (compra por API no servidor).
   ...(process.env.LIA_ENABLE_MAMBO !== "false" ? { [mamboStore.key]: mamboStore } : {}),
+  // 28/09/2026: Americanas fechou por API (Pix Stark Infra); mínimo R$30, entrega 2h na capital.
+  ...(process.env.LIA_ENABLE_AMERICANAS !== "false" ? { [americanasStore.key]: americanasStore } : {}),
   ...(process.env.LIA_ENABLE_EPOCACOSMETICOS === "true" ? { [epocacosmeticosStore.key]: epocacosmeticosStore } : {}), // DESLIGADA 28/09: Pix recusado (CHK0223)
   ...(process.env.LIA_ENABLE_DROGAL !== "false" ? { [drogalStore.key]: drogalStore } : {}),
   // 27/09/2026: livros, casa, construção, presentes e skincare — fora de farmácia/mercado.

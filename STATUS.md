@@ -1,3 +1,15 @@
+## 28/09/2026 (noite) — Americanas entra no elenco: 21ª loja por API, 7.532 itens, entrega em 2h
+
+Fechamento real provado por API (pedido 1665078885691 sem pagamento, Pix dinâmico da Stark Infra
+com URL). Conector `src/lib/stores/americanas.ts` (mínimo R$30 = ORD079 da loja; sem remédio:
+deny na colheita + `withoutMedicine`), catálogo só do seller próprio (`--seller=1`, flag nova da
+colheita) em 15 categorias do dia a dia + 26 termos de busca: papelaria 1.965, beleza 871,
+brinquedos 771, livros 692, alimentos 621, cama/mesa/banho 524, utilidades 512, limpeza 498,
+eletroportáteis 280, saúde 265, cabelos 188, bebês 188. Ligada no registry, checkout por API,
+frete ao vivo, leitor de e-mail, rotina semanal e golden. Suíte focada 83/83. Falta: conta de
+compra em produção e `americanas` em `LIA_AUTO_PURCHASE_STORES` na Vercel; 1ª compra real.
+Recebedor "Americanas s.a - em Recup" (recuperação judicial): acompanhar pós-venda.
+
 ## 28/09/2026 (fim de tarde) — Testes de outros caminhos: Americanas aberta por API; UCP vivo em Shopify BR
 
 Sem criar pedido: **Americanas é VTEX e passa até o Pix** (fechamento real pendente, dono roda).

@@ -43,6 +43,7 @@ export const STORE_MAIL_RULES: Record<string, Rule> = {
   rihappy: { domains: ["rihappy.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   kopenhagen: { domains: ["kopenhagen.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   mambo: { domains: ["mambo.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  americanas: { domains: ["americanas.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   epocacosmeticos: { domains: ["epocacosmeticos.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   drogal: { domains: ["drogal.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   martinsfontes: { domains: ["martinsfontespaulista.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },

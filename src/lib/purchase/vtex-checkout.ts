@@ -25,6 +25,7 @@ export const VTEX_API_STORES: Record<string, { domain: string; skuPrefix: string
   rihappy: { domain: "www.rihappy.com.br", skuPrefix: "rihappy-", label: "Ri Happy" },
   // 25/09 (varredura de 80 varejistas + sondagem a seco): supermercado, beleza e farmácia.
   mambo: { domain: "www.mambo.com.br", skuPrefix: "mambo-", label: "Mambo" },
+  americanas: { domain: "www.americanas.com.br", skuPrefix: "americanas-", label: "Americanas" },
   epocacosmeticos: { domain: "www.epocacosmeticos.com.br", skuPrefix: "epoca-", label: "Época Cosméticos" },
   drogal: { domain: "www.drogal.com.br", skuPrefix: "drogal-", label: "Drogal" },
   // 27/09: fora de farmácia/mercado (livros, casa, construção, presentes, skincare).
