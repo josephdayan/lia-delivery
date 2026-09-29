@@ -1,3 +1,19 @@
+## 28/09/2026 (noite) — DECISÃO: continuar no B2C atual; pivot analisado e descartado por ora
+
+Contexto: o Muse (agente pessoal da Meta) lançou nos EUA em 08/09, compra em Shopify,
+Walmart e Instacart e vive dentro do WhatsApp; sem data pro Brasil e sem Pix. O dono
+levantou o risco de ser substituído. Análise completa em
+[docs/pivot-longo-prazo-2026-09-28.md](docs/pivot-longo-prazo-2026-09-28.md): a camada de
+conversa é o que a Meta substitui; o motor de compra (API VTEX + Pix da loja pela Asaas +
+leitura de status + estorno) é o ativo que ninguém tem no Brasil. Claude recomendou virar
+o motor em produto (trilho pra agentes) com B2B de pequeno negócio como cunha pagante.
+
+**Decisão do dono:** descartado por ora. Motivos: as 11 lojas não cobrem a lista de uma
+empresa (papelaria, informática, volume), e é distinto demais do que ele faz. **Continua
+no B2C atual "pra ver no que dá".** Não repropor pivot sem dado novo (Muse no Brasil,
+varejista BR em ACP/UCP, ou empresa pedindo espontaneamente). Segue aberto e independente
+da decisão: teto de R$81 mil do MEI e receita bruta = markup ou total (contador).
+
 ## 27/09/2026 — Regras vigentes de operação sem operador
 
 - Item que a loja não confirma no fechamento → "não tenho X", resto fecha; nunca espera humana.

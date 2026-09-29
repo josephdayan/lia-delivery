@@ -1,3 +1,10 @@
+## 28/09/2026 (noite) — Decisão: continuar no B2C atual
+
+Muse (Meta) lançado nos EUA em 08/09, sem data pro Brasil. Pivot pra trilho de compra/B2B
+analisado em [docs/pivot-longo-prazo-2026-09-28.md](docs/pivot-longo-prazo-2026-09-28.md) e
+descartado pelo dono (lojas não cobrem lista de empresa; muito distinto do atual). Segue o
+B2C. Registro canônico no AGENTS.md.
+
 ## 28/09/2026 (tarde) — Pix loja a loja: 11 passam, 9 desligadas
 
 Pedido real sem pagamento em cada loja (dono rodou; vencem sozinhos), lendo o Pix emitido:

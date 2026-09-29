@@ -1,3 +1,9 @@
+## 28/09/2026 — Decisão: seguir no B2C atual
+
+- [x] Pivot (trilho pra agentes / B2B pequeno negócio) analisado e descartado pelo dono; ver [docs/pivot-longo-prazo-2026-09-28.md](docs/pivot-longo-prazo-2026-09-28.md). Não repropor sem dado novo.
+- [ ] Definir o que "ver no que dá" significa: critério e prazo do piloto B2C (ex.: Ads R$30/dia por 2 semanas, meta de pedidos pagos de desconhecidos).
+- [ ] Contador: teto do MEI e base da receita bruta (independe da decisão).
+
 ## 28/09/2026 — Pix loja a loja
 
 - [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
