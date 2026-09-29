@@ -220,10 +220,14 @@ step("items", added.status, orderFormSummary(added.json as Json));
 
 // 3. Perfil de convidado (sem login). O documento só entra em --buy.
 const corporate = buy && documentType === "cnpj";
+// Telefone: obrigatório no perfil de pessoa física (28/09: ORD007 "campo telefone ... inválido"
+// nas 9 lojas testadas com CPF; com CNPJ a VTEX não exigia). `LIA_PROBE_PHONE` sobrepõe.
+const phone = process.env.LIA_PROBE_PHONE ?? (probe.phone as string | undefined) ?? "+5511999990000";
 const profile = await call(`${base}/orderForm/${orderFormId}/attachments/clientProfileData`, {
   email,
   firstName: "Lia",
   lastName: "Delivery",
+  phone,
   documentType,
   isCorporate: corporate,
   ...(buy ? { document } : {}),
