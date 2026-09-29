@@ -96,7 +96,13 @@ export function maxPaidAgeHours() {
 export function serverBuyerEnabled() {
   return process.env.LIA_AUTO_PURCHASE_OFF !== "true" && process.env.LIA_SERVER_BUYER_OFF !== "true";
 }
-export function buyerProfile(email: string): VtexBuyerProfile {
+// Telefone do perfil: o da empresa (LIA_BUYER_PHONE) ou, sem ele, o do cliente (contato da entrega).
+export function buyerPhone(customerPhone?: string | null): string | undefined {
+  const raw = (process.env.LIA_BUYER_PHONE ?? customerPhone ?? "").replace(/[^\d+]/g, "");
+  if (!raw) return undefined;
+  return raw.startsWith("+") ? raw : `+${raw.replace(/^0+/, "")}`;
+}
+export function buyerProfile(email: string, customerPhone?: string | null): VtexBuyerProfile {
   const document = (process.env.LIA_BUYER_DOCUMENT ?? "").replace(/\D/g, "");
   if (document.length !== 11 && document.length !== 14) throw new Error("LIA_BUYER_DOCUMENT ausente ou inválido (CPF 11 / CNPJ 14 dígitos).");
   return {
@@ -106,6 +112,7 @@ export function buyerProfile(email: string): VtexBuyerProfile {
     document,
     documentType: document.length === 14 ? "cnpj" : "cpf",
     corporateName: process.env.LIA_BUYER_CORPORATE_NAME?.trim() || "Lia Delivery",
+    phone: buyerPhone(customerPhone),
   };
 }
 
@@ -135,7 +142,7 @@ export async function executeVtexJob(
   if (!payload.accountEmail) return fail("ACCOUNT_EMAIL_MISSING", "Conta da loja sem e-mail no /ops.");
   if (!payload.customer.cep || !payload.customer.address || !payload.customer.name) return fail("ADDRESS_MISSING", "Pedido sem nome, CEP ou endereço.");
   let profile: VtexBuyerProfile;
-  try { profile = buyerProfile(payload.accountEmail); } catch (error) { return fail("BUYER_DOCUMENT", error instanceof Error ? error.message : "documento"); }
+  try { profile = buyerProfile(payload.accountEmail, payload.customer.phone); } catch (error) { return fail("BUYER_DOCUMENT", error instanceof Error ? error.message : "documento"); }
 
   // ---- preparação (nada criado na loja) ----
   let evidence;

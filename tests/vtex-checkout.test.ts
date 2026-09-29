@@ -8,7 +8,7 @@ import { parsePixEmv } from "../src/lib/pix-emv";
 import { classifyStoreMail } from "../src/lib/mailbox-policy";
 import { fakeVtex } from "./helpers/fake-vtex";
 
-const profile = { email: "compras@example.test", firstName: "Lia", lastName: "Delivery", document: "12345678000199", documentType: "cnpj" as const, corporateName: "Lia Delivery" };
+const profile = { email: "compras@example.test", firstName: "Lia", lastName: "Delivery", document: "12345678000199", documentType: "cnpj" as const, corporateName: "Lia Delivery", phone: "+5511999990000" };
 const address = { receiverName: "Joseph Teste", postalCode: "01233020", street: "Rua Engenheiro Edgar Egidio de Souza", number: "221", complement: "ap 13", neighborhood: "Santa Cecília", city: "São Paulo", state: "SP", geo: { lat: -23.5372, lng: -46.6533 } };
 const job = { cartHash: "a".repeat(64), customerAddress: "Rua Engenheiro Edgar Egidio de Souza, 221 ap 13, Santa Cecília, São Paulo, SP", items: [{ sku: "dsp-354260" }] };
 
@@ -34,6 +34,7 @@ test("cesta → PJ → entrega no prazo prometido (mais barata) → Pix; evidên
   await session.prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address, deliveryPromise: "pela própria loja · prazo da loja: 90 min" });
   const profileCall = fake.calls.find((c) => c.url.endsWith("/attachments/clientProfileData"))!.body as Record<string, unknown>;
   assert.equal(profileCall.documentType, "cnpj");
+  assert.equal(profileCall.phone, "+5511999990000", "telefone no perfil (29/09: sem ele 7 lojas recusam o Pix)");
   assert.equal(profileCall.isCorporate, true);
   assert.equal(profileCall.corporateDocument, "12345678000199");
   const shipCall = fake.calls.find((c) => c.url.endsWith("/attachments/shippingData"))!.body as { selectedAddresses: Record<string, unknown>[] };

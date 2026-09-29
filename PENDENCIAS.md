@@ -8,9 +8,9 @@
 
 - [x] Todas as 20 lojas testadas até o Pix: 11 passam, 9 desligadas (tabela no STATUS).
 - [x] Teste com CPF + telefone (29/09): 7/9 fecham (ver STATUS). Martins Fontes e Mondial: ORD062, fora.
-- [ ] Isolar causa (dono roda `testa-cnpj-telefone.sh`): CNPJ + telefone passa? Então produção só
-  ganha telefone no perfil. Senão: comprador CPF por loja (documento só em env) + telefone.
-- [ ] Depois: religar as 7 lojas no registry e provar 1 compra real numa delas.
+- [x] Causa isolada: era o telefone. Comprador manda telefone; 7 lojas religadas (29/09).
+- [ ] Dono: `LIA_AUTO_PURCHASE_STORES` na Vercel com as 19 lojas + redeploy (comando no chat).
+- [ ] 1 compra real numa das 7 religadas (Kopenhagen é a mais barata) e 1 na Americanas.
 - [x] Americanas somada (conector + 7.532 itens + fiação completa, 28/09).
 - [ ] Dono: `americanas` em `LIA_AUTO_PURCHASE_STORES` na Vercel + redeploy; 1ª compra real
   (mínimo R$30). Recebedor em recuperação judicial: acompanhar pós-venda.

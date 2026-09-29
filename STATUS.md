@@ -1,3 +1,13 @@
+## 29/09/2026 — Era o telefone: 7 lojas religadas, elenco por API vai a 19
+
+`testa-cnpj-telefone.sh` (dono): CNPJ + telefone fecha na Kopenhagen e na Casa & Vídeo. Logo, o
+CHK0223 das 7 lojas era só o perfil de convidado sem telefone; o CPF não é necessário. O
+comprador do servidor agora manda `phone` no `clientProfileData` (`LIA_BUYER_PHONE` ou, sem
+ele, o telefone do cliente). Religadas: Kopenhagen, Casa & Vídeo, Época, Polishop, Zona
+Criativa, Obramax, Telhanorte. Golden volta a exigir carregador USB-C (Casa & Vídeo). Fora
+só Martins Fontes e Mondial (ORD062). Suíte focada 65/65. Falta: dono atualizar
+`LIA_AUTO_PURCHASE_STORES` na Vercel com as 19 lojas e redeploy.
+
 ## 29/09/2026 — Com CPF + telefone, 7 das 9 lojas desligadas fecham por API
 
 Teste do dono (`testa-cpf.sh`, pedidos sem pagamento): Kopenhagen, Casa & Vídeo, Época,

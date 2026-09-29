@@ -57,7 +57,8 @@ export type VtexAddress = {
   state: string;
   geo?: { lat: number; lng: number };
 };
-export type VtexBuyerProfile = { email: string; firstName: string; lastName: string; document: string; documentType: "cpf" | "cnpj"; corporateName?: string };
+// `phone`: obrigatório em 7 lojas (29/09: sem ele o conector de Pix recusava com CHK0223).
+export type VtexBuyerProfile = { email: string; firstName: string; lastName: string; document: string; documentType: "cpf" | "cnpj"; corporateName?: string; phone?: string };
 export type VtexCartItem = { sku: string; qty: number };
 export type VtexPix = { code: string; expiresAt?: string; paymentId?: string; transactionId: string; orderGroup: string };
 
@@ -160,6 +161,7 @@ export class VtexCheckoutSession {
       email: input.profile.email,
       firstName: input.profile.firstName,
       lastName: input.profile.lastName,
+      ...(input.profile.phone ? { phone: input.profile.phone } : {}),
       document: input.profile.document,
       documentType: input.profile.documentType,
       isCorporate: corporate,
