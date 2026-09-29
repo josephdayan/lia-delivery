@@ -5,13 +5,16 @@ export const metadata: Metadata = {
   description: "Política de privacidade da Lia Delivery."
 };
 
+// Remédio isento (29/09): CPF e dado de saúde só entram na política com LIA_MEDICINE_MIP=true.
+const medicineOn = process.env.LIA_MEDICINE_MIP === "true";
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#f3f2ed] px-6 py-12 text-[#0b2128] sm:px-10">
       <article className="mx-auto max-w-3xl rounded-lg bg-white p-8 shadow-sm sm:p-12">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#0f3d3a]">Lia Delivery</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Política de privacidade</h1>
-        <p className="mt-3 text-sm text-slate-600">Última atualização: 9 de julho de 2026</p>
+        <p className="mt-3 text-sm text-slate-600">Última atualização: {medicineOn ? "29 de setembro de 2026" : "9 de julho de 2026"}</p>
 
         <div className="mt-10 space-y-8 text-base leading-7 text-slate-700">
           <section>
@@ -31,6 +34,13 @@ export default function PrivacyPage() {
               de entrega, itens do pedido, informações de pagamento necessárias para confirmar a transação e dados
               técnicos básicos do atendimento.
             </p>
+            {medicineOn && (
+              <p className="mt-2">
+                Em pedidos de remédio sem receita, também usamos o nome completo e o CPF informados pelo próprio
+                cliente, porque a compra é feita no nome dele. O pedido de um remédio pode revelar informação de
+                saúde: ela é usada só para executar a compra e a entrega, nunca para oferta ou perfil de marketing.
+              </p>
+            )}
           </section>
 
           <section>
@@ -49,6 +59,12 @@ export default function PrivacyPage() {
               comunicação, processadores de pagamento para confirmar o Pix, fornecedores para separar os itens e
               empresas de entrega para executar o transporte. Não vendemos dados pessoais.
             </p>
+            {medicineOn && (
+              <p className="mt-2">
+                No pedido de remédio sem receita, o nome completo, o CPF, o endereço e os itens vão para a farmácia que
+                vende o medicamento, para a compra em nome do cliente e a emissão da nota fiscal.
+              </p>
+            )}
           </section>
 
           <section>

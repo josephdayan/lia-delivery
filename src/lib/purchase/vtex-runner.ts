@@ -15,6 +15,7 @@ import {
 } from "../purchase-execution";
 import { reportPurchaseJobFailure } from "../purchase-worker";
 import { resolveVtexAddress } from "./vtex-address";
+import { isValidCpf, medicineBuyerEmail, onlyDigits, splitName } from "../medicine";
 import { VTEX_API_STORE_KEYS, VtexCheckoutRejected, VtexCheckoutSession, vtexOrderId, type FetchLike, type VtexBuyerProfile } from "./vtex-checkout";
 
 export const SERVER_BUYER_ID = "server-vtex-api";
@@ -116,6 +117,26 @@ export function buyerProfile(email: string, customerPhone?: string | null): Vtex
   };
 }
 
+// Remédio isento (29/09): a compra na farmácia sai no CPF e no nome do cliente, com um
+// e-mail próprio por CPF (a VTEX guarda perfil por e-mail; o da Lia já tem o CNPJ).
+// `strictDocument` faz o checkout abortar se a loja devolver outro documento.
+export function customerBuyerProfile(accountEmail: string, buyer: { document: string; name: string }, customerPhone?: string | null): VtexBuyerProfile {
+  const document = onlyDigits(buyer.document);
+  if (!isValidCpf(document)) throw new Error("CPF do comprador inválido no pedido.");
+  const { firstName, lastName } = splitName(buyer.name);
+  if (!firstName || !lastName) throw new Error("Nome completo do comprador ausente no pedido.");
+  const raw = onlyDigits(customerPhone ?? "");
+  return {
+    email: medicineBuyerEmail(accountEmail, document),
+    firstName,
+    lastName,
+    document,
+    documentType: "cpf",
+    ...(raw ? { phone: `+${raw.replace(/^0+/, "")}` } : {}),
+    strictDocument: true,
+  };
+}
+
 // Um job, do claim ao Pix pago. `fetchImpl` só existe para os testes.
 export async function executeVtexJob(
   payload: NonNullable<Awaited<ReturnType<typeof claimPurchaseSession>>>,
@@ -142,7 +163,11 @@ export async function executeVtexJob(
   if (!payload.accountEmail) return fail("ACCOUNT_EMAIL_MISSING", "Conta da loja sem e-mail no /ops.");
   if (!payload.customer.cep || !payload.customer.address || !payload.customer.name) return fail("ADDRESS_MISSING", "Pedido sem nome, CEP ou endereço.");
   let profile: VtexBuyerProfile;
-  try { profile = buyerProfile(payload.accountEmail, payload.customer.phone); } catch (error) { return fail("BUYER_DOCUMENT", error instanceof Error ? error.message : "documento"); }
+  try {
+    profile = payload.buyer
+      ? customerBuyerProfile(payload.accountEmail, payload.buyer, payload.customer.phone)
+      : buyerProfile(payload.accountEmail, payload.customer.phone);
+  } catch (error) { return fail("BUYER_DOCUMENT", error instanceof Error ? error.message : "documento"); }
 
   // ---- preparação (nada criado na loja) ----
   let evidence;

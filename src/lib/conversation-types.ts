@@ -104,6 +104,9 @@ export type DeliveryContext = {
     // Perfil do WhatsApp sem nome, ou entrega para outra pessoa: a loja precisa do
     // nome de quem recebe (11/09).
     | "need_recipient_name"
+    // Remédio isento (29/09): a compra na farmácia sai no CPF do cliente — pede nome
+    // completo + CPF uma vez, antes de cotar.
+    | "need_cpf"
     | "choosing"
     | "choosing_freight"
     | "awaiting_operator_quote"
@@ -116,6 +119,9 @@ export type DeliveryContext = {
   basket?: BasketItem[];
   // Nome de quem recebe este pedido quando difere do perfil do WhatsApp (11/09).
   recipientName?: string;
+  // CPF ou nome recebidos em mensagens separadas enquanto `need_cpf` (29/09). Some assim
+  // que os dois vão para o User.
+  cpfDraft?: { cpf?: string; name?: string };
   // Pedido não-pago parado + item novo pedido do nada (01/09): a Lia pergunta "juntar
   // ou pedido novo?" e guarda aqui o pedido antigo e o texto do item até a resposta.
   mergeDecision?: { orderId: string; request: string; total: number };

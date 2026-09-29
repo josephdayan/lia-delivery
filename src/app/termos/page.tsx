@@ -5,13 +5,17 @@ export const metadata: Metadata = {
   description: "Termos de uso da Lia Delivery."
 };
 
+// Seção de remédio isento (29/09): só aparece com LIA_MEDICINE_MIP=true, junto com a
+// funcionalidade — nada é anunciado antes de o dono ligar.
+const medicineOn = process.env.LIA_MEDICINE_MIP === "true";
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#f3f2ed] px-6 py-12 text-[#0b2128] sm:px-10">
       <article className="mx-auto max-w-3xl rounded-lg bg-white p-8 shadow-sm sm:p-12">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#0f3d3a]">Lia Delivery</p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Termos de uso</h1>
-        <p className="mt-3 text-sm text-slate-600">Última atualização: 9 de julho de 2026</p>
+        <p className="mt-3 text-sm text-slate-600">Última atualização: {medicineOn ? "29 de setembro de 2026" : "9 de julho de 2026"}</p>
 
         <div className="mt-10 space-y-8 text-base leading-7 text-slate-700">
           <section>
@@ -50,8 +54,28 @@ export default function TermsPage() {
             </p>
           </section>
 
+          {medicineOn && (
+            <section>
+              <h2 className="text-xl font-semibold text-[#0b2128]">5. Remédios sem receita</h2>
+              <p className="mt-2">
+                A pedido do cliente, a Lia pode comprar medicamentos isentos de prescrição em farmácias e drogarias
+                licenciadas. Nesses pedidos a Lia age em nome do cliente: a compra é feita no nome e no CPF que o próprio
+                cliente informa no atendimento, e ao informá-los o cliente autoriza esse uso para aquele fim.
+              </p>
+              <p className="mt-2">
+                A venda, a dispensação, a nota fiscal e a entrega são da farmácia, que responde pelo medicamento. A Lia
+                não vende medicamento em nome próprio, não o armazena nem o transporta, e não indica tratamento: dúvidas
+                sobre o uso devem ser tiradas com o farmacêutico ou o médico, e a bula deve ser lida antes do uso.
+              </p>
+              <p className="mt-2">
+                Medicamentos que exigem receita não são atendidos. O medicamento é cobrado pelo preço da farmácia e a
+                taxa de serviço da Lia é mostrada separada, antes do pagamento.
+              </p>
+            </section>
+          )}
+
           <section>
-            <h2 className="text-xl font-semibold text-[#0b2128]">5. Suporte</h2>
+            <h2 className="text-xl font-semibold text-[#0b2128]">{medicineOn ? "6" : "5"}. Suporte</h2>
             <p className="mt-2">
               Para dúvidas sobre um pedido, cancelamento ou estes termos, envie uma mensagem pelo WhatsApp da Lia no
               número (11) 97844-4813.

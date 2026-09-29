@@ -30,6 +30,18 @@ export function messageText(payload?: GmailPart): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+// Link da nota fiscal num e-mail de faturamento (29/09, remédio no CPF do cliente): o
+// cliente recebe a nota que saiu no nome dele. Procura no HTML CRU (href) e no texto, e
+// só aceita link com cara de NF-e/DANFE — nunca "acompanhe seu pedido" ou descadastro.
+const INVOICE_LINK_RE = /(nf-?e|nfc-?e|danfe|nota[-_ ]?fiscal|notafiscal|invoice|sefaz|fazenda\.|consultadfe|nfce)/i;
+const NOT_INVOICE_RE = /(unsubscribe|descadastr|optout|opt-out|preferenc|privacidade|facebook|instagram|twitter|youtube|whatsapp|\.(png|jpe?g|gif|svg)(\?|$))/i;
+export function invoiceLinkFrom(raw: string): string | undefined {
+  const urls = [
+    ...[...(raw ?? "").matchAll(/href\s*=\s*["']([^"']+)["']/gi)].map((m) => m[1]),
+    ...((raw ?? "").match(/https?:\/\/[^\s"'<>)]+/gi) ?? []),
+  ].map((u) => u.replace(/&amp;/g, "&").trim());
+  return urls.find((u) => /^https:\/\//i.test(u) && INVOICE_LINK_RE.test(u) && !NOT_INVOICE_RE.test(u));
+}
 function header(m: GmailMessage, name: string) {
   return (m.payload?.headers ?? []).find((h) => h.name.toLowerCase() === name.toLowerCase())?.value ?? "";
 }
@@ -71,7 +83,7 @@ export class GmailStoreMailReader {
   }
   async read(id: string) {
     const m = await this.gmail<GmailMessage>(`/gmail/v1/users/me/messages/${encodeURIComponent(id)}?format=full`);
-    return { id, from: header(m, "from"), subject: header(m, "subject"), text: messageText(m.payload).slice(0, 20_000), receivedAt: Number(m.internalDate) || Date.now() };
+    return { id, from: header(m, "from"), subject: header(m, "subject"), text: messageText(m.payload).slice(0, 20_000), receivedAt: Number(m.internalDate) || Date.now(), invoiceUrl: invoiceLinkFrom(decode(m.payload)) };
   }
 }
 
@@ -97,6 +109,7 @@ export async function readStoreMailOnce(reader = new GmailStoreMailReader(), day
         const result = await reportMail({
           storeKey, storeOrderNumber: verdict.storeOrderNumber, kind: verdict.kind, messageId: id, receivedAt: new Date(mail.receivedAt).toISOString(),
           ...(verdict.trackingUrl ? { trackingUrl: verdict.trackingUrl } : {}), ...(verdict.deliveryCode ? { deliveryCode: verdict.deliveryCode } : {}),
+          ...(verdict.kind === "invoiced" && (mail as { invoiceUrl?: string }).invoiceUrl ? { invoiceUrl: (mail as { invoiceUrl?: string }).invoiceUrl } : {}),
         });
         report.reported += 1;
         report.verdicts.push(`${storeKey}:${verdict.kind}:${result.matched ? "ok" : result.reason}`);

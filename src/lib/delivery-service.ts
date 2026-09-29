@@ -18,7 +18,7 @@ import { mlBasketFreight } from "@/lib/ml-freight";
 import { detectIntent, extractCep, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
-import { extractCpf, extractFullName, hasMip, isValidCpf, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
+import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
 import { isSaoPauloState } from "@/lib/coverage";
 import * as copy from "@/lib/lia-copy";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
@@ -1722,6 +1722,49 @@ async function handleDeliveryTurn(
   if (intent.kind === "clear_cart") {
     await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
     await reply(phone, copy.cartCleared());
+    return;
+  }
+
+  // ---- remédio isento (29/09): nome completo + CPF para a compra sair no nome do cliente ----
+  // Vem ANTES do CEP: um CPF nunca pode ser lido como CEP. "sem remédio" tira o remédio da
+  // cesta e fecha o resto.
+  if (ctx.step === "need_cpf") {
+    const n = normalizeMsg(text);
+    if (/\b(sem|tira|tirar|remove|remover|nao quero|deixa)\b.*\bremedios?\b/.test(n)) {
+      ctx.basket = (ctx.basket ?? []).filter((item) => !isMipItem(item));
+      ctx.step = "collecting";
+      delete ctx.cpfDraft;
+      await writeCtx(convo.id, ctx);
+      if (!ctx.basket.length) {
+        await reply(phone, copy.cartCleared());
+        return;
+      }
+      await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.medicineRemovedFromBasket());
+      return;
+    }
+    const cpf = extractCpf(text) ?? ctx.cpfDraft?.cpf;
+    if (!cpf) {
+      if (extractFullName(text) && !looksLikeCpfAttempt(text)) {
+        ctx.cpfDraft = { name: extractFullName(text)! };
+        await writeCtx(convo.id, ctx);
+        await reply(phone, copy.askCpfAfterName());
+        return;
+      }
+      await reply(phone, looksLikeCpfAttempt(text) ? copy.cpfInvalid() : copy.askCpfForMedicine());
+      return;
+    }
+    const name = extractFullName(text) ?? ctx.cpfDraft?.name;
+    if (!name) {
+      ctx.cpfDraft = { cpf };
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.askFullNameForCpf());
+      return;
+    }
+    await prisma.user.update({ where: { id: user.id }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
+    delete ctx.cpfDraft;
+    ctx.step = "collecting";
+    await writeCtx(convo.id, ctx);
+    await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.cpfSaved(maskCpf(cpf)));
     return;
   }
 
@@ -4459,6 +4502,18 @@ async function continueAfterBasket(
         return;
       }
     }
+    // Remédio isento (29/09): a farmácia vende NO NOME do cliente (nota e dispensação dele).
+    // Sem nome completo + CPF guardados, pede uma vez antes de cotar.
+    if (medicineEnabled() && hasMip(ctx.basket)) {
+      const buyer = await prisma.user.findFirst({ where: { phone }, select: { cpf: true, cpfName: true } });
+      if (!buyer?.cpf || !buyer?.cpfName) {
+        ctx.step = "need_cpf";
+        await writeCtx(convoId, ctx);
+        if (prefix) await reply(phone, prefix);
+        await reply(phone, copy.askCpfForMedicine());
+        return;
+      }
+    }
     await createOperatorQuoteRequest(phone, convoId, ctx, prefix);
     return;
   }
@@ -4528,6 +4583,14 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
   const recipientName = ctx.recipientName?.trim() ||
     (await prisma.user.findUnique({ where: { id: convo.userId }, select: { name: true } }))?.name?.trim() || null;
   const acquisitionTouchId = await latestAcquisitionTouchId(convoId);
+  // Remédio isento (29/09): o pedido na farmácia sai no CPF/nome do cliente. Cópia no pedido
+  // pra compra não depender do perfil mudar depois; nulo = CNPJ da Lia, como sempre.
+  const buyer = medicineEnabled() && hasMip(ctx.basket)
+    ? await prisma.user.findUnique({ where: { id: convo.userId }, select: { cpf: true, cpfName: true } })
+    : null;
+  const buyerData = buyer?.cpf && buyer.cpfName
+    ? { buyerDocument: buyer.cpf, buyerName: buyer.cpfName }
+    : { buyerDocument: null, buyerName: null };
 
   // Tag de urgência (pedido do dono, 17/08): o cliente disse "urgente"/"pra hoje" em
   // algum momento da conversa — o operador decide o canal por isso (Rappi/retirada
@@ -4548,6 +4611,7 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
         cep: ctx.cep,
         deliveryAddress: ctx.deliveryAddress,
         ...(recipientName && !existing.customerName ? { customerName: recipientName } : {}),
+        ...buyerData,
         ...(addUrgent ? { notes: appendOrderNote(existing.notes, URGENT_NOTE) } : {})
       }
     });
@@ -4558,6 +4622,7 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
         conversationId: convoId,
         phone,
         customerName: recipientName,
+        ...buyerData,
         acquisitionTouchId,
         cep: ctx.cep,
         deliveryAddress: ctx.deliveryAddress,

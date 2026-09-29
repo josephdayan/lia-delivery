@@ -16,6 +16,11 @@ model User {
   email                  String?
   defaultAddress         String?
   cep                    String?
+  // Remédio isento (29/09): compra na farmácia NO NOME do cliente. CPF e nome como vão na
+  // nota fiscal, informados pelo próprio cliente no chat, com o instante do consentimento.
+  cpf                    String?
+  cpfName                String?
+  cpfConsentAt           DateTime?
   createdAt              DateTime                @default(now())
   conversations          Conversation[]
   deliveryOrders         DeliveryOrder[]
@@ -33,6 +38,10 @@ model DeliveryOrder {
   conversationId        String?
   phone                 String
   customerName          String?
+  // Remédio isento (29/09): o pedido NA FARMÁCIA sai neste CPF/nome (cópia do User no
+  // instante do pedido). Nulo = compra no CNPJ da Lia, como todo pedido sem remédio.
+  buyerDocument         String?
+  buyerName             String?
   // Last acquisition touch present when this order was created. The click id stays
   // on AcquisitionTouch; orders keep a stable attribution snapshot even if the
   // customer later returns through another campaign.

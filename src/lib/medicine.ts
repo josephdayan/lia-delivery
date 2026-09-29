@@ -145,6 +145,22 @@ export function medicineBuyerEmail(baseEmail: string, cpf: string): string {
   return `${local.split("+")[0]}+${tag}@${domain}`;
 }
 
+// Conferência do comprador (purchase-execution): o checkout precisa estar na conta
+// operacional da loja. Com compra no CPF do cliente, o e-mail do checkout é o apelido
+// derivado DAQUELE CPF — qualquer outro continua recusado.
+export function matchesOperationalEmail(accountEmail: string | null | undefined, checkoutEmail: string, buyerDocument?: string | null): boolean {
+  const account = (accountEmail ?? "").trim().toLowerCase();
+  const checkout = (checkoutEmail ?? "").trim().toLowerCase();
+  if (!account || !checkout) return false;
+  if (account === checkout) return true;
+  if (!buyerDocument) return false;
+  try {
+    return medicineBuyerEmail(account, buyerDocument).toLowerCase() === checkout;
+  } catch {
+    return false;
+  }
+}
+
 // Código de barras de verdade (GTIN com dígito verificador). Kit na Pague Menos vem com
 // "123456789101112": nunca pode casar com nada.
 export function isValidGtin(value: string | undefined | null): boolean {

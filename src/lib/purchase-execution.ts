@@ -15,6 +15,7 @@ import { createOpsAction, cancelPendingActions, sendOperatorButtons } from "./op
 import * as copy from "./lia-copy";
 import { parsePixEmv, pixCodeHash } from "./pix-emv";
 import { promisedMinutes } from "./live-freight";
+import { matchesOperationalEmail } from "./medicine";
 import { pixOutProvider, PixOutTimeout } from "./payments/pix-out";
 
 export const checkoutEvidenceSchema = z
@@ -365,8 +366,7 @@ export async function stageCheckout(
     });
     if (
       !account?.enabled || !account.loginReady || !account.paymentReady ||
-      account.email?.trim().toLowerCase() !==
-        e.accountEmail.trim().toLowerCase()
+      !matchesOperationalEmail(account.email, e.accountEmail, order.buyerDocument)
     )
       throw new Error("Checkout não está na conta operacional configurada.");
     const digest = checkoutDigest(e);
@@ -532,8 +532,7 @@ export async function beginPurchase(
       !account?.enabled ||
       !account.loginReady ||
       !account.paymentReady ||
-      account.email?.trim().toLowerCase() !==
-        evidence.accountEmail.trim().toLowerCase()
+      !matchesOperationalEmail(account.email, evidence.accountEmail, order.buyerDocument)
     )
       throw new Error("Conta da loja pausada.");
     if (

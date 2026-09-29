@@ -76,7 +76,9 @@ export type VtexAddress = {
   geo?: { lat: number; lng: number };
 };
 // `phone`: obrigatório em 7 lojas (29/09: sem ele o conector de Pix recusava com CHK0223).
-export type VtexBuyerProfile = { email: string; firstName: string; lastName: string; document: string; documentType: "cpf" | "cnpj"; corporateName?: string; phone?: string };
+// `strictDocument` (remédio no CPF do cliente, 29/09): a loja PRECISA devolver este documento
+// no perfil; perfil mascarado (e-mail já conhecido) ou outro documento aborta antes do pedido.
+export type VtexBuyerProfile = { email: string; firstName: string; lastName: string; document: string; documentType: "cpf" | "cnpj"; corporateName?: string; phone?: string; strictDocument?: boolean };
 export type VtexCartItem = { sku: string; qty: number };
 export type VtexPix = { code: string; expiresAt?: string; paymentId?: string; transactionId: string; orderGroup: string };
 
@@ -175,7 +177,7 @@ export class VtexCheckoutSession {
       if (Number(got.quantity) !== wanted.quantity) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id}: quantidade ${String(got.quantity)} ≠ ${wanted.quantity}`);
     }
     const corporate = input.profile.documentType === "cnpj";
-    await this.orderFormCall("clientProfileData", `/orderForm/${orderFormId}/attachments/clientProfileData`, {
+    const profiled = await this.orderFormCall("clientProfileData", `/orderForm/${orderFormId}/attachments/clientProfileData`, {
       email: input.profile.email,
       firstName: input.profile.firstName,
       lastName: input.profile.lastName,
@@ -187,6 +189,12 @@ export class VtexCheckoutSession {
         ? { corporateDocument: input.profile.document, corporateName: input.profile.corporateName ?? `${input.profile.firstName} ${input.profile.lastName}`.trim(), tradeName: input.profile.corporateName ?? "", stateInscription: "isento" }
         : {}),
     });
+    if (input.profile.strictDocument) {
+      const back = (profiled.clientProfileData as Json | undefined) ?? {};
+      const got = String(back.document ?? "").replace(/\D/g, "");
+      if (got !== input.profile.document.replace(/\D/g, "") || back.isCorporate === true)
+        throw new VtexCheckoutRejected("clientProfileData", 200, "a loja não confirmou o CPF do comprador (perfil mascarado ou outro documento)");
+    }
     const a = input.address;
     const shipped = await this.orderFormCall("shippingData", `/orderForm/${orderFormId}/attachments/shippingData`, {
       clearAddressIfPostalCodeNotFound: false,

@@ -268,6 +268,17 @@ export async function claimNextPurchaseJob(workerId: string, allowedStores?: str
   return null;
 }
 
+// Só a compra da loja que tem o REMÉDIO sai no CPF do cliente; as outras lojas do mesmo
+// pedido seguem no CNPJ. Não depende da flag: pedido pago com remédio compra no CPF mesmo
+// que a flag seja desligada depois.
+function medicineBuyerFor(job: NonNullable<Awaited<ReturnType<typeof claimNextPurchaseJob>>>): { document: string; name: string } | null {
+  const order = job.deliveryOrder;
+  if (!order.buyerDocument || !order.buyerName) return null;
+  const items = Array.isArray(order.items) ? (order.items as Array<{ sku?: unknown; medicine?: unknown }>) : [];
+  const mipSkus = new Set(items.flatMap((i) => (i && i.medicine === "mip" && typeof i.sku === "string" ? [i.sku] : [])));
+  return job.items.some((item) => mipSkus.has(item.requestedSku)) ? { document: order.buyerDocument, name: order.buyerName } : null;
+}
+
 export function workerPayload(job: NonNullable<Awaited<ReturnType<typeof claimNextPurchaseJob>>>) {
   return {
     jobId: job.id,
@@ -290,6 +301,8 @@ export function workerPayload(job: NonNullable<Awaited<ReturnType<typeof claimNe
       cep: job.deliveryOrder.cep,
       address: job.deliveryOrder.deliveryAddress
     },
+    // Remédio isento (29/09): esta compra sai no CPF/nome do cliente (nulo = CNPJ da Lia).
+    buyer: medicineBuyerFor(job),
     items: job.items.map((item) => ({
       sku: item.requestedSku,
       name: item.requestedName,
