@@ -15,8 +15,9 @@ export function cardTotal(base: number): number {
   return Math.round((base / (1 - CARD_MDR)) * 100) / 100;
 }
 
-export function display(price: number): number {
-  return displayPrice(price);
+// Remédio isento não leva markup (29/09): a taxa da Lia sai numa linha própria da cotação.
+export function display(price: number, medicine?: string): number {
+  return medicine === "mip" ? Math.round(price * 100) / 100 : displayPrice(price);
 }
 
 export type BasketItem = {
@@ -32,12 +33,14 @@ export type BasketItem = {
   // A oferta escolhida declarava frete grátis (anúncio do ML) — a cotação não cobra
   // frete por cima do que o próprio anúncio dá de graça.
   freeShipping?: boolean;
+  // Remédio isento (29/09): sem markup, taxa da Lia em linha própria, compra no CPF do cliente.
+  medicine?: "mip";
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
 // o CEP do cliente — a única fonte que pode pôr prazo num card.
 // `repeat` (04/09): o cliente já comprou este produto — vem primeiro e com destaque.
-export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean };
+export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip" };
 
 export type StoreFulfillment = {
   storeKey: string;
@@ -255,7 +258,7 @@ export function basketForCopy(ctx: DeliveryContext): copy.CopyBasketItem[] {
   return (ctx.basket ?? []).map((item) => ({
     qty: item.qty,
     name: item.name,
-    displayLineTotal: Math.round(display(item.unitPrice) * item.qty * 100) / 100
+    displayLineTotal: Math.round(display(item.unitPrice, item.medicine) * item.qty * 100) / 100
   }));
 }
 

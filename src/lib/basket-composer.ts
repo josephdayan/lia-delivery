@@ -11,6 +11,7 @@ export type ComposeOption = {
   unitPrice: number;
   storeKey?: string;
   storeLabel?: string;
+  medicine?: string;
 };
 
 export type ComposeLine = { qty: number; options: ComposeOption[] };
@@ -36,12 +37,12 @@ const round2 = (v: number) => Math.round(v * 100) / 100;
 
 export function composeBasket(
   lines: ComposeLine[],
-  display: (unitPrice: number) => number,
+  display: (unitPrice: number, medicine?: string) => number,
   freightFor: (storeKey: string, storeLabel: string | undefined, storeDisplaySubtotal: number) => number
 ): ComposeOutcome {
   const storeOf = (o: ComposeOption) => o.storeKey ?? "concierge";
   const lineDisplay = (i: number, pick: number) =>
-    round2(display(lines[i].options[pick].unitPrice) * Math.max(1, lines[i].qty));
+    round2(display(lines[i].options[pick].unitPrice, lines[i].options[pick].medicine) * Math.max(1, lines[i].qty));
   const lineRaw = (i: number, pick: number) =>
     round2(lines[i].options[pick].unitPrice * Math.max(1, lines[i].qty));
 

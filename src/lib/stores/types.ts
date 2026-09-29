@@ -24,6 +24,13 @@ export type CatalogItem = {
   // (O=OrderByTopSaleDESC) — e, nos catálogos antigos, derivada da ordem do arquivo por
   // `ensurePopularity`. Só desempata entre itens de MESMA relevância (05/09, dono).
   popularity?: number;
+  // Remédio isento de prescrição (29/09): SÓ vem dos catálogos *-mip-catalog.ts, colhidos
+  // da prateleira de isentos da farmácia (scripts/harvest-mip-catalog.mts). Servido apenas
+  // com LIA_MEDICINE_MIP=true; comprado no CPF do cliente (src/lib/medicine.ts).
+  medicine?: "mip";
+  // Código de barras do produto — é como a Pague Menos prova que o item é o mesmo MIP da
+  // Drogaria SP (a Pague Menos não publica a tarja).
+  ean?: string;
 };
 
 export type StoreUnit = {

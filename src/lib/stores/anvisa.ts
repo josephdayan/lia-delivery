@@ -1,4 +1,5 @@
 import type { CatalogItem } from "./types";
+import { isPrescriptionText } from "../medicine";
 
 // Terceira guarda ANVISA — roda em RUNTIME, no conector, depois da colheita.
 //
@@ -78,4 +79,13 @@ export function isVeterinaryMedicine(item: Pick<CatalogItem, "name" | "category"
 /** Remove medicamento veterinário e dieta de prescrição de uma vitrine de pet. */
 export function withoutVeterinaryMedicine(items: CatalogItem[]): CatalogItem[] {
   return items.filter((item) => !isVeterinaryMedicine(item));
+}
+
+// ---------------------------------------------------------------------------
+// Remédio isento (29/09): a ÚNICA porta de entrada de medicamento numa vitrine. Só passa item
+// marcado `medicine: "mip"` (veio da prateleira de isentos da farmácia) e que não bate com a
+// guarda de prescrição por nome — mesmo que uma recolheita traga um item de receita, ele
+// não chega ao cliente. Servido só com LIA_MEDICINE_MIP=true (conectores das farmácias).
+export function mipOnly(items: CatalogItem[]): CatalogItem[] {
+  return items.filter((item) => item.medicine === "mip" && !isPrescriptionText(`${item.name ?? ""} ${item.category ?? ""}`));
 }

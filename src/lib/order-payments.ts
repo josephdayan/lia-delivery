@@ -1,3 +1,4 @@
+import { orderHasMedicine } from "@/lib/medicine-orders";
 import type { Prisma } from "@prisma/client";
 // Dinheiro do pedido (revisão 02/09): emissão de Pix/cartão, troca de método,
 // cartão salvo, saída de awaiting_payment, evidência de pagamento e marcação de pago.
@@ -229,6 +230,8 @@ export async function maybeSendNativePixBubble(
   mock: boolean
 ): Promise<boolean> {
   if (process.env.LIA_NATIVE_PIX !== "1" || mock || !pixCode) return false;
+  // Remédio isento (29/09): a Meta proíbe pagamento nativo para remédio — só o copia-e-cola.
+  if (await orderHasMedicine(orderId)) return false;
   const merchantName = process.env.LIA_PIX_MERCHANT_NAME;
   const key = process.env.LIA_PIX_KEY;
   const keyType = process.env.LIA_PIX_KEY_TYPE;

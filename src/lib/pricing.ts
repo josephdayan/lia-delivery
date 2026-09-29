@@ -6,6 +6,8 @@
 // ("200:0.06,500:0.04,1000:0.03" = acima de 200 cobra 6% naquela fatia, e assim por
 // diante), tudo calibrável sem deploy.
 
+import { hasMip, isMipItem, medicineServiceFee } from "./medicine";
+
 type Tier = { above: number; rate: number };
 
 function baseRate(): number {
@@ -57,10 +59,19 @@ export function displayPrice(price: number): number {
 
 // Margem de uma cesta COM itens: soma linha a linha (unidade com markup × qty) menos o
 // custo real — é o serviceFee exato que bate com os preços que o cliente viu nos cards.
-export function serviceFeeForItems(items: { unitPrice: number; qty: number }[]): number {
-  const display = items.reduce((sum, i) => sum + Math.round(displayPrice(i.unitPrice) * i.qty * 100) / 100, 0);
-  const real = items.reduce((sum, i) => sum + Math.round(i.unitPrice * i.qty * 100) / 100, 0);
-  return Math.round((display - real) * 100) / 100;
+// Remédio isento (29/09) não leva markup: a margem da cesta soma só os outros itens, e o
+// pedido com remédio ganha a taxa fixa da Lia (medicineServiceFee), mostrada em linha própria.
+export function serviceFeeForItems(items: { unitPrice: number; qty: number; medicine?: string }[]): number {
+  const marked = items.filter((i) => !isMipItem(i));
+  const display = marked.reduce((sum, i) => sum + Math.round(displayPrice(i.unitPrice) * i.qty * 100) / 100, 0);
+  const real = marked.reduce((sum, i) => sum + Math.round(i.unitPrice * i.qty * 100) / 100, 0);
+  return Math.round((display - real + medicineFeeForItems(items)) * 100) / 100;
+}
+
+// Parte da margem que é a taxa do remédio (0 sem remédio na cesta). A cotação usa para
+// mostrar "Taxa de serviço da Lia" separada dos produtos.
+export function medicineFeeForItems(items: ReadonlyArray<{ medicine?: string }>): number {
+  return hasMip(items) ? medicineServiceFee() : 0;
 }
 
 // Margem quando só existe o SUBTOTAL (cotação manual do /ops, sem custo por item):

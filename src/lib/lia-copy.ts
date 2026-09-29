@@ -199,6 +199,70 @@ export function medicineSkippedNote(): string {
   return "_Remédio eu não posso vender, então deixei ele de fora._";
 }
 
+// ---------- remédio isento no CPF do cliente (29/09, LIA_MEDICINE_MIP) ----------
+
+// Pedido de remédio de receita com MIP ligado: recusa só o de receita e diz o que dá.
+export function prescriptionRefusal(): string {
+  return "Remédio de receita eu não consigo comprar. Remédio *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome. Me diz o nome do que você precisa.";
+}
+
+export function prescriptionSkippedNote(): string {
+  return "_Remédio de receita eu não consigo comprar, então deixei ele de fora._";
+}
+
+// Pedido por sintoma com MIP ligado: a Lia não indica remédio (é papel do farmacêutico).
+export function symptomExplainerMip(): string {
+  return "Indicar remédio eu não posso — isso é com o farmacêutico. Se você já sabe o nome do remédio *sem receita* que quer, me diz que eu compro na farmácia no seu nome. Enquanto isso, olha o que achei de conforto:";
+}
+
+export function medicineQuoteNote(): string {
+  return "💊 _O remédio é comprado na farmácia no seu nome e CPF. A farmácia separa, entrega e emite a nota fiscal pra você._";
+}
+
+const TERMS_URL = "liadelivery.com.br/termos";
+
+export function askCpfForMedicine(): string {
+  return [
+    "💊 Remédio eu compro na farmácia *no seu nome*: a nota fiscal sai pra você e a farmácia faz a entrega.",
+    "",
+    "Pra isso preciso do seu *nome completo* e *CPF*, uma vez só. Pode mandar numa mensagem, assim:",
+    "_Maria da Silva 123.456.789-09_",
+    "",
+    `Uso só pra comprar na farmácia em seu nome (${TERMS_URL}). Se preferir, responde *sem remédio* que eu tiro ele da cesta.`
+  ].join("\n");
+}
+
+export function cpfInvalid(): string {
+  return "Esse CPF não confere 🤔 Confere os números e me manda de novo, junto com seu nome completo. Ou responde *sem remédio* que eu sigo sem ele.";
+}
+
+export function askFullNameForCpf(): string {
+  return "Anotei o CPF ✅ Agora me manda seu *nome completo* (nome e sobrenome), do jeito que vai sair na nota.";
+}
+
+export function askCpfAfterName(): string {
+  return "Anotei o nome ✅ Agora me manda o *CPF* (só os números servem).";
+}
+
+export function cpfSaved(masked: string): string {
+  return `Pronto, guardei o CPF ${masked} pra compras de remédio. Fechando seu pedido…`;
+}
+
+export function medicineRemovedFromBasket(): string {
+  return "Tirei o remédio da cesta 👍 Fechando o resto…";
+}
+
+export function medicineInvoiceNotice(shortId: string, storeLabel: string, url?: string): string {
+  return url
+    ? `🧾 Pedido #${shortId}: a ${storeLabel} emitiu a nota fiscal no seu nome. Aqui está: ${url}`
+    : `🧾 Pedido #${shortId}: a ${storeLabel} emitiu a nota fiscal no seu nome. Se precisar de uma cópia, é só pedir aqui.`;
+}
+
+// Escolha de pagamento em pedido com remédio: texto puro, sem botão de pagamento do WhatsApp.
+export function medicinePaymentChoiceText(pixTotal: number, cardTotal: number): string {
+  return `Como você quer pagar?\n• *Pix*: ${brl(pixTotal)}\n• *Cartão*: ${brl(cardTotal)}\n\nResponde *pix* ou *cartão*.`;
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }
@@ -382,6 +446,8 @@ export function notFoundNote(items: string[]): string {
 export type SummaryInput = {
   items: CopyBasketItem[];
   produtos: number;
+  // Taxa da Lia em pedido com remédio isento (29/09), fora de "Produtos".
+  serviceLine?: number;
   frete: number;
   etaMinutes?: number;
   deliveryPromise?: string;
@@ -407,9 +473,11 @@ export function summary(input: SummaryInput): string {
     ...lines,
     "",
     `Produtos: ${brl(input.produtos)}`,
+    ...(input.serviceLine != null ? [`Taxa de serviço da Lia: ${brl(input.serviceLine)}`] : []),
     deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
+  if (input.serviceLine != null) out.push("", medicineQuoteNote());
   if (input.notFound?.length) {
     out.push("", notFoundNote(input.notFound));
   }
@@ -1274,6 +1342,9 @@ export function manualQuoteSummary(input: {
   // (rodada 27/08 S1: linhas antigas R$10,31 vs Produtos R$12,53 após troca de loja).
   items: { qty: number; name: string; lineTotal?: number }[];
   produtos: number;
+  // Pedido com remédio isento (29/09): taxa da Lia em linha própria; o remédio vai pelo preço
+  // da farmácia e é comprado no nome/CPF do cliente.
+  serviceLine?: number;
   frete: number;
   deliveryPromise?: string;
   etaMinutes?: number;
@@ -1292,9 +1363,11 @@ export function manualQuoteSummary(input: {
     ...lines,
     "",
     `Produtos: ${brl(input.produtos)}`,
+    ...(input.serviceLine != null ? [`Taxa de serviço da Lia: ${brl(input.serviceLine)}`] : []),
     deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
+  if (input.serviceLine != null) out.push("", medicineQuoteNote());
   if (input.deliveryAddress) {
     out.push("", `📍 ${input.deliveryAddress}`);
     if (!input.addressButton) out.push('_Pra mudar, diz "trocar endereço"._');

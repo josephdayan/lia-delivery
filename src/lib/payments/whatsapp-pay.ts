@@ -1,3 +1,4 @@
+import { orderHasMedicine } from "@/lib/medicine-orders";
 import { prisma } from "@/lib/prisma";
 import { whatsappAdapter, type PaymentConfirmation, type WhatsAppOrderDetailsInput } from "@/lib/adapters/whatsapp";
 import { checkoutAdapter } from "@/lib/payments/mercadopago";
@@ -172,7 +173,8 @@ export async function createCardAttempt(order: CardOrder, credential: { id: stri
     }
   });
   try {
-    if (paymentFeatureEnabled()) {
+    // Remédio isento (29/09): nada de order_details (pagamento nativo da Meta) — cai nos botões.
+    if (paymentFeatureEnabled() && !(await orderHasMedicine(order.id))) {
       const input = orderDetailsInput(order, credential);
       await whatsappAdapter.sendOrderDetailsCard(order.phone, { ...input, referenceId: attempt.id });
       return attempt;

@@ -6,7 +6,8 @@ import { normalizeCity } from "@/lib/coverage";
 import { normalizeMsg } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, OPS_QUEUE_STATUSES, PAID_OR_IN_FULFILLMENT_STATUSES, REFUND_CONFIRMED_PREFIX, REFUND_PENDING_FLAG, appendOrderNote } from "@/lib/order-flags";
 import { refundOrderViaProvider } from "@/lib/payments/ledger";
-import { serviceFeeForSubtotal } from "@/lib/pricing";
+import { medicineFeeForItems, serviceFeeForSubtotal } from "@/lib/pricing";
+import { medicineEnabled } from "@/lib/medicine";
 import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
@@ -97,6 +98,9 @@ export async function opsPublishManualQuote(
         };
       })
     : ((order.items as unknown as BasketItem[]) ?? []);
+  // Remédio isento (29/09): a taxa da Lia sai numa linha própria e os produtos mostram o
+  // preço da farmácia. O total não muda — só a apresentação separa a taxa.
+  const medicineFee = input.serviceFee != null ? roundMoney(Math.min(serviceFee, medicineFeeForItems(items))) : 0;
 
   const quoteExpiresAt = new Date(Date.now() + quoteTtlMinutes() * 60_000);
   const fulfillment = {
@@ -180,10 +184,11 @@ export async function opsPublishManualQuote(
       qty: item.qty,
       name: item.name,
       ...(input.serviceFee != null && item.unitPrice > 0
-        ? { lineTotal: roundMoney(display(item.unitPrice) * item.qty) }
+        ? { lineTotal: roundMoney(display(item.unitPrice, item.medicine) * item.qty) }
         : {})
     })),
-    produtos,
+    produtos: roundMoney(produtos - medicineFee),
+    ...(medicineFee > 0 ? { serviceLine: medicineFee } : {}),
     frete: deliveryFee,
     deliveryPromise: input.deliveryPromise,
     etaMinutes: input.etaMinutes,
@@ -241,6 +246,11 @@ export async function opsPublishManualQuote(
     throw error;
   }
   try {
+    // Remédio isento (29/09): escolha de pagamento em texto, sem botão de pagamento.
+    if (medicineFee > 0 && medicineEnabled()) {
+      await reply(order.phone, copy.medicinePaymentChoiceText(total, cardTotal(total)));
+      return prisma.deliveryOrder.findUnique({ where: { id: order.id } });
+    }
     const interactive = await whatsappAdapter.sendPaymentChoices(order.phone, total, cardTotal(total));
     if (!interactive) await reply(order.phone, copy.paymentMethod(total, cardTotal(total)));
   } catch (error) {

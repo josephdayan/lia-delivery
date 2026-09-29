@@ -18,6 +18,7 @@ import { mlBasketFreight } from "@/lib/ml-freight";
 import { detectIntent, extractCep, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
+import { extractCpf, extractFullName, hasMip, isValidCpf, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
 import { isSaoPauloState } from "@/lib/coverage";
 import * as copy from "@/lib/lia-copy";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
@@ -83,6 +84,19 @@ function rewriteGroceryOil(lines: ParsedLine[]): ParsedLine[] {
   });
 }
 
+// Remédio (29/09): com LIA_MEDICINE_MIP=true só o remédio de RECEITA é barrado — o isento
+// segue como pedido normal e só existe nas vitrines das farmácias (catálogo MIP). Desligado,
+// qualquer remédio é barrado, como sempre foi.
+function blocksMedicine(text: string): boolean {
+  return medicineEnabled() ? looksLikePrescriptionRequest(text) : looksLikeMedicine(text);
+}
+function noMedicineCopy(): string {
+  return medicineEnabled() ? copy.prescriptionRefusal() : copy.noMedicine();
+}
+function medicineSkippedCopy(): string {
+  return medicineEnabled() ? copy.prescriptionSkippedNote() : copy.medicineSkippedNote();
+}
+
 // Clean the request into a shopping list. The LLM handles greetings, synonyms
 // ("pasta de dente"->creme dental), medicines and quantities; the deterministic
 // splitter + medicine word-list covers OpenAI-off and OpenAI-error, so a remédio
@@ -96,18 +110,18 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   const extraction = await extractShoppingList(sanitized);
   const deterministic = parseBasketLines(sanitized)
     .filter((line) => queryTokens(line.phrase).length)
-    .filter((line) => !looksLikeMedicine(line.phrase))
+    .filter((line) => !blocksMedicine(line.phrase))
     .filter((line) => !looksLikeTobacco(line.phrase));
   if (extraction) {
     // A IA às vezes devolve contexto como item ("Para uma viagem") — o mesmo filtro de
     // modificador do parser determinístico vale pra ela (6º ciclo, rodada 1).
     const items = extraction.items.filter(
-      (item) => !looksLikeMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query)
+      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query)
     );
     return {
       lines: rewriteGroceryOil(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic)),
       greetingOnly: extraction.greetingOnly,
-      containsMedicine: extraction.containsMedicine || looksLikeMedicine(sanitized),
+      containsMedicine: extraction.containsMedicine || blocksMedicine(sanitized),
       containsTobacco
     };
   }
@@ -116,7 +130,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   return {
     lines: rewriteGroceryOil(safe),
     greetingOnly: false,
-    containsMedicine: safe.length < raw.length - (containsTobacco ? 1 : 0) || looksLikeMedicine(sanitized),
+    containsMedicine: safe.length < raw.length - (containsTobacco ? 1 : 0) || blocksMedicine(sanitized),
     containsTobacco
   };
 }
@@ -155,7 +169,7 @@ async function buildChoices(
   if (crossStore && !forceLongTail && mercadoLivreEnabled() && !longTailOptInEnabled()) {
     const sanitized = stripMedicineNegation(text);
     for (const line of parseBasketLines(sanitized)) {
-      if (!queryTokens(line.phrase).length || looksLikeMedicine(line.phrase)) continue;
+      if (!queryTokens(line.phrase).length || blocksMedicine(line.phrase)) continue;
       void prefetchLongTailIfNeeded(splitPriceCap(line.phrase).phrase).catch(() => {});
     }
   }
@@ -187,7 +201,7 @@ async function buildChoices(
         const lineStore = lockedStoreKey ? getStore(lockedStoreKey) : await pickStoreForQueries([searchPhrase]);
         candidates = (await lineStore.searchItems(searchPhrase, 12)).map((item) => ({ store: lineStore, item }));
       }
-      if (cap != null) candidates = candidates.filter((c) => display(c.item.unitPrice) <= cap);
+      if (cap != null) candidates = candidates.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
       // Tamanho/volume pedido ("30 litros", "2kg") vale para TODOS os cards, não só a
       // escolha (rodada 7, 4º ciclo: 1 das 3 opções não era de 30l). Se ao menos um
       // candidato tem o atributo, os que não têm saem da vitrine.
@@ -240,7 +254,7 @@ async function buildChoices(
             sku: c.item.sku,
             name: c.item.name,
             brand: c.item.brand,
-            price: display(c.item.unitPrice),
+            price: display(c.item.unitPrice, c.item.medicine),
             store: c.store.label
           }))
         })),
@@ -390,7 +404,8 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector)
     storeKey: selectedStore.key,
     storeLabel: o.storeLabel ?? selectedStore.label,
     ...(o.productUrl ? { productUrl: o.productUrl } : {}),
-    ...(o.freeShipping ? { freeShipping: true } : {})
+    ...(o.freeShipping ? { freeShipping: true } : {}),
+    ...(o.medicine === "mip" ? { medicine: "mip" as const } : {})
   };
 }
 
@@ -398,7 +413,7 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector)
 function choicesTextFor(p: PendingChoice, header?: string): string {
   return copy.choicesText(
     p.query,
-    p.options.map((o) => ({ name: customerChoiceName(p, o), displayPrice: display(o.unitPrice), delivery: o.delivery, repeat: o.repeat })),
+    p.options.map((o) => ({ name: customerChoiceName(p, o), displayPrice: display(o.unitPrice, o.medicine), delivery: o.delivery, repeat: o.repeat })),
     header ?? choicesHeaderFor(p)
   );
 }
@@ -411,7 +426,7 @@ function customerChoiceName(p: PendingChoice, option: ChoiceOption): string {
 }
 
 function toChoiceOption(
-  o: { sku: string; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; category?: string; freeShipping?: boolean },
+  o: { sku: string; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; category?: string; freeShipping?: boolean; medicine?: "mip" },
   storeRef?: { storeKey?: string; storeLabel?: string },
   live?: LiveItemCheck,
   urgent = false
@@ -434,6 +449,7 @@ function toChoiceOption(
     ...storeRef,
     ...(delivery ? { delivery } : {}),
     ...(o.freeShipping ? { freeShipping: true } : {}),
+    ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(live?.available ? { verified: true, ...(eta != null ? { etaMinutes: eta } : {}), ...(fee != null ? { freightFee: fee } : {}) } : {})
   };
 }
@@ -514,6 +530,12 @@ function sameDayMaxMinutes(): number {
 }
 
 async function sendChoices(phone: string, p: PendingChoice, header?: string) {
+  // Remédio isento (29/09): vitrine em TEXTO puro — a política da Meta proíbe catálogo,
+  // carrossel de produto e pagamento nativo para remédio. O cliente responde o número.
+  if (medicineEnabled() && hasMip(p.options)) {
+    await reply(phone, choicesTextFor(p, header));
+    return;
+  }
   // Meta supports reply buttons inside the 24h customer-service window. One card per
   // option keeps each "Escolher este" button attached to the correct product.
   if (process.env.WHATSAPP_PROVIDER === "meta") {
@@ -523,7 +545,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     const choices = p.options.map((o) => ({
       id: `optsku:${o.sku}`,
       name: customerChoiceName(p, o),
-      displayPrice: display(o.unitPrice),
+      displayPrice: display(o.unitPrice, o.medicine),
       imageUrl: o.imageUrl,
       delivery: o.delivery,
       ...(o.repeat ? { badge: "Você já pediu este" } : {}),
@@ -570,7 +592,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   await reply(phone, header ?? choicesHeaderFor(p));
   for (let i = 0; i < p.options.length; i++) {
     const o = p.options[i];
-    await replyPhoto(phone, copy.choiceLine(i, o.name, display(o.unitPrice), o.delivery, o.repeat), o.imageUrl);
+    await replyPhoto(phone, copy.choiceLine(i, o.name, display(o.unitPrice, o.medicine), o.delivery, o.repeat), o.imageUrl);
     if (gapMs > 0 && i < p.options.length - 1) await sleep(gapMs);
   }
   await reply(phone, copy.choicesAsk(p.options.length));
@@ -607,7 +629,7 @@ export async function recoverFailedCarousel(messageId: string, recipientDigits: 
     const choices = saved.pending.options.map((o) => ({
       id: `optsku:${o.sku}`,
       name: customerChoiceName(saved.pending, o),
-      displayPrice: display(o.unitPrice),
+      displayPrice: display(o.unitPrice, o.medicine),
       imageUrl: o.imageUrl,
       delivery: o.delivery,
       ...(o.repeat ? { badge: "Você já pediu este" } : {}),
@@ -653,7 +675,7 @@ function minimumOrderText(ctx: DeliveryContext, store: StoreConnector): string {
   const displayMin = display(storeMinReal(store));
   const produtos = (ctx.basket ?? [])
     .filter((item) => item.storeKey === store.key)
-    .reduce((sum, item) => sum + Math.round(display(item.unitPrice) * item.qty * 100) / 100, 0);
+    .reduce((sum, item) => sum + Math.round(display(item.unitPrice, item.medicine) * item.qty * 100) / 100, 0);
   const falta = Math.max(0, Math.round((displayMin - produtos) * 100) / 100);
   const scoped = { ...ctx, basket: (ctx.basket ?? []).filter((item) => item.storeKey === store.key) };
   // O resto da cesta aparece junto: a mensagem parecia resumo COMPLETO e o cliente
@@ -684,9 +706,9 @@ function swapPairsForCopy(
     if (!from) continue;
     pairs.push({
       fromName: from.name,
-      fromPrice: Math.round(display(from.unitPrice) * from.qty * 100) / 100,
+      fromPrice: Math.round(display(from.unitPrice, from.medicine) * from.qty * 100) / 100,
       toName: r.option.name,
-      toPrice: Math.round(display(r.option.unitPrice) * r.qty * 100) / 100
+      toPrice: Math.round(display(r.option.unitPrice, r.option.medicine) * r.qty * 100) / 100
     });
   }
   return pairs;
@@ -755,8 +777,8 @@ async function offerMinimumSwap(
     if (!found) return false;
     replacements.push({ fromSku: item.sku, qty: item.qty, option: found });
   }
-  const oldDisplay = stuck.reduce((sum, i) => sum + Math.round(display(i.unitPrice) * i.qty * 100) / 100, 0);
-  const newDisplay = replacements.reduce((sum, r) => sum + Math.round(display(r.option.unitPrice) * r.qty * 100) / 100, 0);
+  const oldDisplay = stuck.reduce((sum, i) => sum + Math.round(display(i.unitPrice, i.medicine) * i.qty * 100) / 100, 0);
+  const newDisplay = replacements.reduce((sum, r) => sum + Math.round(display(r.option.unitPrice, r.option.medicine) * r.qty * 100) / 100, 0);
   ctx.minSwap = { fromStoreKey: store.key, replacements };
   await writeCtx(convoId, ctx);
   const body = copy.minimumSwapOffer({
@@ -1091,8 +1113,8 @@ async function handleDeliveryTurn(
   // GUARDA DE REMÉDIO GLOBAL (26/08 P1.6: 2/4 — a recusa dependia da etapa; na
   // pergunta de quantidade "também queria dipirona" virava "responde o número").
   // "sem remédio, quero X" segue como pedido (negação já tratada na extração).
-  if (looksLikeMedicine(text) && !/^sem\s/.test(normalizeMsg(text))) {
-    await reply(phone, copy.noMedicine());
+  if (blocksMedicine(text) && !/^sem\s/.test(normalizeMsg(text))) {
+    await reply(phone, noMedicineCopy());
     if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
     return;
   }
@@ -1542,7 +1564,7 @@ async function handleDeliveryTurn(
             }
           });
           const notes: string[] = [];
-          if (containsMedicine) notes.push(copy.medicineSkippedNote());
+          if (containsMedicine) notes.push(medicineSkippedCopy());
           notes.push(copy.addedToPendingQuote(addedLabels));
           await replyQuoteNotice(phone, notes.join("\n"));
           await notifyOperator(copy.operatorItemAddedAlert(order.id.slice(-6).toUpperCase(), addedLabels), phone);
@@ -1552,7 +1574,7 @@ async function handleDeliveryTurn(
       // A mensagem era SÓ remédio (a extração filtra): responde a recusa certa em vez
       // de fingir que está cotando algo que não pode vender.
       if (!lines.length && containsMedicine) {
-        await reply(phone, copy.noMedicine());
+        await reply(phone, noMedicineCopy());
         return;
       }
     }
@@ -1845,8 +1867,8 @@ async function handleDeliveryTurn(
 
   // ---- onboarding: save the complete delivery address once, before the first basket ----
   if (!user.defaultAddress) {
-    if (looksLikeMedicine(text)) {
-      await reply(phone, copy.noMedicine());
+    if (blocksMedicine(text)) {
+      await reply(phone, noMedicineCopy());
       return;
     }
     if (intent.kind === "reject") {
@@ -1887,8 +1909,8 @@ async function handleDeliveryTurn(
   // O pedido NÃO é resolvido agora (senão o 1º pedido do cliente seria auto-escolhido
   // sem opções nem preço): guarda o texto cru e roda a busca normal depois do CEP.
   if (!savedCep) {
-    if (looksLikeMedicine(text)) {
-      await reply(phone, copy.noMedicine());
+    if (blocksMedicine(text)) {
+      await reply(phone, noMedicineCopy());
       return;
     }
     const alreadyAsked = ctx.step === "need_cep";
@@ -2129,7 +2151,7 @@ async function handleDeliveryTurn(
     await reply(
       phone,
       copy.repeatOrderConfirm(
-        items.map((i) => ({ qty: i.qty, name: i.name, total: Math.round(display(i.unitPrice) * i.qty * 100) / 100 }))
+        items.map((i) => ({ qty: i.qty, name: i.name, total: Math.round(display(i.unitPrice, i.medicine) * i.qty * 100) / 100 }))
       )
     );
     return;
@@ -2863,7 +2885,7 @@ async function handleDeliveryAddress(
     // aqui está fazendo o pedido, não errando o endereço. Guardar em vez de descartar,
     // pra rodar a busca assim que o endereço chegar. Só PEDIDO entra no estoque:
     // "pode ser amanhã" (affirm), "obrigado" e afins ficam de fora (24/08).
-    if (kind === "free_text" && queryTokens(address).length && !looksLikeMedicine(address)) {
+    if (kind === "free_text" && queryTokens(address).length && !blocksMedicine(address)) {
       ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${address}` : address;
     }
     ctx.step = "need_address";
@@ -3019,7 +3041,7 @@ async function handleChoosing(
     await reply(
       phone,
       copy.optionComparison(
-        current.options.map((o) => ({ name: o.name, price: display(o.unitPrice), storeLabel: o.storeLabel }))
+        current.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine), storeLabel: o.storeLabel }))
       )
     );
     await sendChoices(phone, current);
@@ -3110,7 +3132,7 @@ async function handleChoosing(
   // com markup). Nenhuma dentro do teto → resposta honesta + caminhos (barato/opções).
   const priceCap = parsePriceCap(text);
   if (priceCap != null) {
-    const within = current.options.filter((o) => display(o.unitPrice) <= priceCap);
+    const within = current.options.filter((o) => display(o.unitPrice, o.medicine) <= priceCap);
     if (!within.length) {
       await reply(phone, copy.nonePriceCap(priceCap));
       await sendChoices(phone, current);
@@ -3167,7 +3189,7 @@ async function handleChoosing(
       // O teto da busca original continua valendo no refinamento por marca. Esse é o
       // caminho de cauda longa de "fone até 150" → "Philco" que ainda deixava um
       // anúncio caro do ML furar o orçamento depois de os primeiros cards respeitarem.
-      .filter((o) => current.cap == null || display(o.unitPrice) <= current.cap);
+      .filter((o) => current.cap == null || display(o.unitPrice, o.medicine) <= current.cap);
     if (strong.length) {
       current.baseQuery = current.baseQuery ?? current.query;
       current.query = combinedQuery;
@@ -3300,7 +3322,7 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
   // score>0 sem piso). O rerank de IA não roda aqui (resposta na hora), então o piso
   // léxico é a única guarda; pool que esvazia vira o honesto "essas são todas".
   pool = pool.filter((o) => conciergeMatchIsStrong(query, o));
-  if (p.cap != null) pool = pool.filter((o) => display(o.unitPrice) <= p.cap!);
+  if (p.cap != null) pool = pool.filter((o) => display(o.unitPrice, o.medicine) <= p.cap!);
   return active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
 }
 
@@ -3396,7 +3418,7 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
         const rescue = (await gatherCrossStoreCandidates(relaxedQuery, 12, 4, { forceLongTail: true }))
           .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
           .filter((o) => conciergeMatchIsStrong(relaxedQuery, o) && !shown.includes(o.sku))
-          .filter((o) => p.cap == null || display(o.unitPrice) <= p.cap);
+          .filter((o) => p.cap == null || display(o.unitPrice, o.medicine) <= p.cap);
         const rescueNext = diversifyOptions(relaxedQuery, rescue, vitrineLimit());
         if (rescueNext.length) {
           const rememberedRescue = new Set((p.shownOptions ?? p.options).map((o) => o.sku));
@@ -4010,7 +4032,7 @@ async function handleConciergeRequest(
   }
   if (!pending.length && !notFoundLines.length) {
     if (containsMedicine) {
-      await reply(phone, copy.noMedicine());
+      await reply(phone, noMedicineCopy());
     } else if (raw.containsTobacco) {
       await reply(phone, copy.tobaccoRefusal());
     } else {
@@ -4058,7 +4080,7 @@ async function handleConciergeRequest(
     ctx.pending = rest.length ? rest : undefined;
     ctx.step = rest.length ? "choosing" : "collecting";
     const notes: string[] = [copy.autoAddedNote(added.map((i) => `${i.qty}x ${i.name}`)), ...packNotes];
-    if (containsMedicine) notes.push(copy.medicineSkippedNote());
+    if (containsMedicine) notes.push(medicineSkippedCopy());
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     if (unavailable.length) notes.push(notFoundNote(false));
     if (rest.length) {
@@ -4131,7 +4153,7 @@ async function handleConciergeRequest(
     const lineDisplayOf = (choice: PendingChoice) => {
       const top = choice.options[0];
       const adj = packAdjusted(top.name, Math.max(1, choice.qty));
-      return display(top.unitPrice) * adj.qty;
+      return display(top.unitPrice, top.medicine) * adj.qty;
     };
     const auto = pending.filter((choice) => lineDisplayOf(choice) <= autopickMax);
     const confirm = pending.filter((choice) => lineDisplayOf(choice) > autopickMax);
@@ -4151,12 +4173,12 @@ async function handleConciergeRequest(
       const notes: string[] = [];
       if (added.length) {
         notes.push(
-          copy.bulkBasketAdded(added.map((i) => ({ qty: i.qty, name: i.name, total: display(i.unitPrice) * i.qty })))
+          copy.bulkBasketAdded(added.map((i) => ({ qty: i.qty, name: i.name, total: display(i.unitPrice, i.medicine) * i.qty })))
         );
       }
       notes.push(...composedNotes);
       notes.push(...packNotes);
-      if (containsMedicine) notes.push(copy.medicineSkippedNote());
+      if (containsMedicine) notes.push(medicineSkippedCopy());
       if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
       if (unavailable.length) notes.push(notFoundNote(false));
       await writeCtx(convoId, ctx);
@@ -4165,11 +4187,11 @@ async function handleConciergeRequest(
       return;
     }
     const notes: string[] = [
-      copy.bulkBasketAdded(added.map((i) => ({ qty: i.qty, name: i.name, total: display(i.unitPrice) * i.qty })))
+      copy.bulkBasketAdded(added.map((i) => ({ qty: i.qty, name: i.name, total: display(i.unitPrice, i.medicine) * i.qty })))
     ];
     notes.push(...composedNotes);
     notes.push(...packNotes);
-    if (containsMedicine) notes.push(copy.medicineSkippedNote());
+    if (containsMedicine) notes.push(medicineSkippedCopy());
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     if (unavailable.length) notes.push(notFoundNote(false));
     await advancePending(phone, convoId, ctx, userCep, notes.join("\n"));
@@ -4181,7 +4203,7 @@ async function handleConciergeRequest(
     ctx.pending = pending;
     await writeCtx(convoId, ctx);
     const notes: string[] = [];
-    if (containsMedicine) notes.push(copy.medicineSkippedNote());
+    if (containsMedicine) notes.push(medicineSkippedCopy());
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     // Os itens sem preço são recusados ANTES das opções — mas com escopo explícito:
     // "não achei X — o resto tá abaixo" (a copy global parecia contradição, 19/08).
@@ -4207,7 +4229,7 @@ async function handleConciergeRequest(
     }
   }
   const notes: string[] = [];
-  if (containsMedicine) notes.push(copy.medicineSkippedNote());
+  if (containsMedicine) notes.push(medicineSkippedCopy());
   if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
   notes.push(notFoundNote(false));
   if (offerLongTail) {
@@ -4333,7 +4355,7 @@ async function handleSearch(
   // Pedido por SINTOMA ("algo pra dor de cabeça"): explica o limite de remédio ANTES
   // das opções de conforto (28/08 S3 — mostrou touca térmica sem uma palavra).
   if (looksLikeSymptomAsk(text) && !looksLikeMedicine(text)) {
-    await reply(phone, copy.symptomExplainer());
+    await reply(phone, (medicineEnabled() ? copy.symptomExplainerMip() : copy.symptomExplainer()));
   }
   // Urgência ("pra HOJE"): a vitrine responde com dado (04/09) — só o que a loja entrega
   // hoje, ou "nada chega hoje" com o mais rápido. O aviso genérico de 28/08 saiu.
@@ -4664,7 +4686,7 @@ async function tryPublishInstantQuote(
     const storeEstimates: string[] = [];
     // Entrega mais rápida da loja (SUPER EXPRESSA etc.), por loja da cesta.
     const storeFaster: Array<{ index: number; cheapFee: number; faster: { fee: number; estimate?: string; name?: string } }> = [];
-    const repriced: Array<{ name: string; from: number; to: number }> = [];
+    const repriced: Array<{ name: string; from: number; to: number; medicine?: string }> = [];
     if (liveFreightEnabled() && ctx.cep) {
       const outcomes = await Promise.all(
         freights.map((f) =>
@@ -4699,7 +4721,7 @@ async function tryPublishInstantQuote(
           for (const item of items) {
             const live = outcome.unitPrices?.[item.sku];
             if (item.storeKey !== freights[i].storeKey || live == null || Math.abs(live - item.unitPrice) < 0.005) continue;
-            repriced.push({ name: item.name, from: item.unitPrice, to: live });
+            repriced.push({ name: item.name, from: item.unitPrice, to: live, medicine: item.medicine });
             item.unitPrice = live;
             (item as { lineTotal?: number }).lineTotal = roundMoney(live * item.qty);
           }
@@ -4738,7 +4760,7 @@ async function tryPublishInstantQuote(
         notes: appendOrderNote(current?.notes ?? null, `💲 Preço atualizado pela loja no fechamento: ${repriced.map((r) => `${r.name} R$${r.from.toFixed(2)} → R$${r.to.toFixed(2)}`).join("; ")}.`),
       } });
       if (convoId) await writeCtx(convoId, { ...ctx, basket: items });
-      await reply(phone, copy.pricesUpdatedByStore(repriced.map((r) => ({ name: r.name, from: displayPrice(r.from), to: displayPrice(r.to) }))));
+      await reply(phone, copy.pricesUpdatedByStore(repriced.map((r) => ({ name: r.name, from: display(r.from, r.medicine), to: display(r.to, r.medicine) }))));
     }
     const totalFee = Math.round(freights.reduce((sum, f) => sum + f.fee, 0) * 100) / 100;
     const itemsSubtotal = roundMoney(items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0));
