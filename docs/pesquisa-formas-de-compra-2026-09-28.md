@@ -24,6 +24,9 @@ Contexto: das 20 lojas VTEX com compra por API, 11 passam no Pix e 9 recusam (OR
 - **Americanas é VTEX e está aberta por API:** cesta, perfil de convidado, entrega no
   endereço de sondagem e Pix aceitos. Falta só o fechamento real (`testa-americanas.sh`,
   dono roda). Se fechar, é a maior loja do elenco (mercado, higiene, casa, eletro).
+  1ª tentativa de fechamento: ORD079 "valor mínimo de R$ 30,00 no carrinho" — primeira loja
+  com mínimo publicado (vai para o conector). Frete no endereço de sondagem: "Entrega" R$12,90
+  (1 dia útil) e **"Entrega 2h" R$19,89** (same-day).
 - **Divinho virou VTEX** (não é Magento) e **não oferece Pix** (só cartão): fora.
 - **Mundo Verde (VTEX):** o seller é de BH e não entrega em SP: fora.
 - **Kalunga (Wake):** frontend próprio com token no servidor; Wake segue sendo parceria.
