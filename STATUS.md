@@ -1,3 +1,14 @@
+## 28/09/2026 (fim de tarde) — Testes de outros caminhos: Americanas aberta por API; UCP vivo em Shopify BR
+
+Sem criar pedido: **Americanas é VTEX e passa até o Pix** (fechamento real pendente, dono roda).
+Divinho é VTEX sem Pix; Mundo Verde não entrega em SP; Kalunga (Wake) tem token no servidor.
+**UCP (Google/Shopify) já responde em lojas Shopify brasileiras** sem cadastro: com o perfil de
+agente da Lia publicado em `/.well-known/ucp-agent.json`, busca e `create_checkout` funcionaram
+e a Dailus calculou frete real para o endereço de sondagem; travou só no CPF/CNPJ. Pagamento por
+UCP é só cartão/Google Pay (sem Pix) — precisaria de cartão da empresa. Teste com CPF nas 9
+lojas VTEX que recusam ainda depende do dono rodar. Detalhes em
+[docs/pesquisa-formas-de-compra-2026-09-28.md](docs/pesquisa-formas-de-compra-2026-09-28.md).
+
 ## 28/09/2026 (noite) — Decisão: continuar no B2C atual
 
 Muse (Meta) lançado nos EUA em 08/09, sem data pro Brasil. Pivot pra trilho de compra/B2B

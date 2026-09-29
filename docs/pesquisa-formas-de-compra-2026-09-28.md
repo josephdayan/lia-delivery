@@ -19,6 +19,23 @@ Contexto: das 20 lojas VTEX com compra por API, 11 passam no Pix e 9 recusam (OR
 | **Zinc / Rye** | "compre em qualquer varejista por API" | Só EUA/Canadá |
 | **iFood, Rappi, Mercado Livre, Amazon** | sem API de comprador; robô = banimento | Não |
 
+## Testes feitos em 28/09 (sem criar pedido)
+
+- **Americanas é VTEX e está aberta por API:** cesta, perfil de convidado, entrega no
+  endereço de sondagem e Pix aceitos. Falta só o fechamento real (`testa-americanas.sh`,
+  dono roda). Se fechar, é a maior loja do elenco (mercado, higiene, casa, eletro).
+- **Divinho virou VTEX** (não é Magento) e **não oferece Pix** (só cartão): fora.
+- **Mundo Verde (VTEX):** o seller é de BH e não entrega em SP: fora.
+- **Kalunga (Wake):** frontend próprio com token no servidor; Wake segue sendo parceria.
+- **UCP funciona em lojas Shopify brasileiras, sem cadastro.** Sallve, Dailus, Insider e
+  Zissou publicam `/.well-known/ucp` com endpoint MCP. A Lia publicou seu perfil de agente em
+  `https://liadelivery.com.br/.well-known/ucp-agent.json` (obrigatório: sem ele a loja responde
+  `profile_unreachable`). Busca de catálogo e `create_checkout` funcionaram; na Dailus o
+  checkout calculou frete real para o endereço de sondagem (R$10,05) e parou só em "Insira um
+  CPF/CNPJ válido" (campo de localização Shopify BR; Sallve/Insider param numa extensão de
+  checkout). **Pagamento: só Google Pay e cartão via Shopify (`dev.shopify.card`), sem Pix.**
+  Para comprar por UCP a Lia precisaria de um cartão da empresa como instrumento. Decisão do dono.
+
 ## Leitura
 
 1. Não há atalho: no Brasil, comprar em loja de terceiro sem operador continua sendo

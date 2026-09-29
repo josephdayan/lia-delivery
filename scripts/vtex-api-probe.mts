@@ -33,6 +33,7 @@ const STORES: Record<string, string> = {
   sonda: "www.sondadelivery.com.br",
   hortifruti: "www.hortifruti.com.br",
   mundoverde: "www.mundoverde.com.br",
+  americanas: "www.americanas.com.br",
   drogal: "www.drogal.com.br",
   epocacosmeticos: "www.epocacosmeticos.com.br",
   livup: "www.livup.com.br",
