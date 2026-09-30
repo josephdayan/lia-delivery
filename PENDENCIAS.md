@@ -1,3 +1,14 @@
+## 30/09/2026 — ALERTA: migration não chegou ao banco de produção pelo build
+
+O build da Vercel roda `prisma migrate deploy` com o `DIRECT_URL` da Vercel e disse "No pending
+migrations", mas o banco que o app usa (o do `.env`, onde estão os pedidos reais) NÃO tinha a
+migration `20260929150000_medicine_buyer_cpf`; o client Prisma publicado já tinha a coluna
+`buyerDocument` → qualquer leitura completa de `DeliveryOrder` daria P2022 em produção. Apliquei
+a migration à mão no banco de produção (30/09, `prisma migrate deploy` com o DIRECT_URL do .env).
+- [ ] Dono: conferir na Vercel se `DIRECT_URL` aponta para o MESMO projeto Supabase que
+  `DATABASE_URL` (tudo indica que não: o build aplica migrations num banco e o app usa outro).
+- [ ] Até corrigir, toda migration nova precisa de `prisma migrate deploy` manual antes do deploy.
+
 ## 29/09/2026 — Remédio isento no CPF do cliente (implementado, desligado)
 
 - [x] Catálogo MIP, trava só para receita, vitrine em texto, taxa separada (5698ef5).
