@@ -272,6 +272,10 @@ const CATEGORY_NOUNS = new Set([
   // FANTA Laranja") — o apelido identifica o produto em qualquer posição do nome
   "coca", "guarana", "fanta", "sprite", "pepsi", "tonica"
 ]);
+// Versão "para mulher" de um produto sem gênero (Advil Mulher, Dorflex Mulher): variante de
+// público, só na frente quando pedida (05/10: "advil" mostrou Advil Mulher em 1º).
+const WOMAN_VARIANT_RE = /\bmulher(es)?\b/;
+const WOMAN_ASK_RE = /\b(mulher|mulheres|feminin[oa]s?|menstrua\w*|colica)\b/;
 function isChildVariant(nameNorm: string): boolean {
   return CHILD_VARIANT_RE.test(nameNorm) && !CHILD_NATIVE_RE.test(nameNorm);
 }
@@ -553,6 +557,7 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
     // Versão infantil/baby só quando pedida ("perfume" pra adulto não pode virar
     // Boti Baby; "shampoo" não pode virar Johnson's Baby). Pedir "infantil" inverte.
     if (!CHILD_VARIANT_RE.test(queryNorm) && isChildVariant(nameNorm)) score -= 2;
+    if (!WOMAN_ASK_RE.test(queryNorm) && WOMAN_VARIANT_RE.test(nameNorm)) score -= 2;
     if (beforePenalties > 0) score = Math.max(1, score);
   }
   return score;

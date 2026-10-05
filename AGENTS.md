@@ -1,3 +1,21 @@
+## 05/10/2026 (tarde) — Remédio LIGADO em produção + 1º teste real do dono (Advil) corrigido
+
+`LIA_MEDICINE_MIP=true` na Vercel (dono, 05/10; e-mail `contato+teste@` chegou na caixa). 1º pedido
+real (Advil 12h, Drogaria SP) pago no Pix e estornado sozinho. Correções:
+- **Comprador VTEX e estoque regional:** o catálogo sem CEP diz 0 para a própria loja, mas o carrinho
+  com o endereço tem o item. Sem seller com estoque no catálogo, a loja ("1") segue e o carrinho com
+  endereço decide. Era o "não tinha" do Advil.
+- **Aviso falso "remédio de receita deixei de fora"** quando a IA marca remédio mas mantém o isento na
+  lista: só avisa se algum pedido da mensagem saiu de fato.
+- **Variante de público ("Advil Mulher")** só na frente quando pedida (scorer + regra no rerank).
+- **Meta (substitui a regra de 29/09):** remédio usa cards soltos com foto + botão e botões Pix/Cartão
+  comuns. Continuam fora: carrossel (template de marketing) e pagamento NATIVO do WhatsApp.
+- **CPF no cadastro (dono):** nome + CPF pedidos uma vez logo depois do 1º endereço e guardados; sem
+  CPF na resposta, nada trava (segue como mensagem normal e o CPF volta só no 1º remédio). Textos
+  curtos: "✅ Anotado."; resumo sem o aviso "comprado no seu nome".
+- **Cartão recusado** no mesmo pedido = antifraude da Pagar.me (3ª vez com o mesmo cartão desde 28/09),
+  não é regra da Lia. Pendente: olhar a configuração de antifraude no painel da Pagar.me.
+
 ## 05/10/2026 — Compra do lenço (#FZUI31): 6 defeitos da conversa corrigidos
 
 Compra real do dono (2x lenço Huggies, Mambo, cartão, comprada sozinha). O que deu errado e a

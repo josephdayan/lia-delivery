@@ -36,8 +36,8 @@ export default function PrivacyPage() {
             </p>
             {medicineOn && (
               <p className="mt-2">
-                Em pedidos de remédio sem receita, também usamos o nome completo e o CPF informados pelo próprio
-                cliente, porque a compra é feita no nome dele. O pedido de um remédio pode revelar informação de
+                No cadastro, pedimos uma vez o nome completo e o CPF do cliente e os guardamos para as compras
+                feitas no nome dele, como as de remédio sem receita. O pedido de um remédio pode revelar informação de
                 saúde: ela é usada só para executar a compra e a entrega, nunca para oferta ou perfil de marketing.
               </p>
             )}

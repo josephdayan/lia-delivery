@@ -122,6 +122,9 @@ export type DeliveryContext = {
   // CPF ou nome recebidos em mensagens separadas enquanto `need_cpf` (29/09). Some assim
   // que os dois vão para o User.
   cpfDraft?: { cpf?: string; name?: string };
+  // 05/10 (dono): nome + CPF pedidos no CADASTRO, logo depois do endereço. Neste modo a
+  // resposta sem CPF não trava nada: segue como mensagem normal.
+  cpfOnboarding?: boolean;
   // Pedido não-pago parado + item novo pedido do nada (01/09): a Lia pergunta "juntar
   // ou pedido novo?" e guarda aqui o pedido antigo e o texto do item até a resposta.
   mergeDecision?: { orderId: string; request: string; total: number };

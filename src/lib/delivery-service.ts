@@ -118,10 +118,19 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     const items = extraction.items.filter(
       (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query)
     );
+    // Remédio isento ligado (05/10): a IA às vezes marca containsMedicine para um isento que
+    // ELA MESMA manteve na lista ("quero advil" → Advil na lista + aviso "remédio de receita
+    // deixei de fora"). Só vale o aviso se algum pedido da mensagem ficou de fora de verdade.
+    const kept = [...items.map((item) => item.query), ...deterministic.map((line) => line.phrase)];
+    const llmDroppedSomething =
+      !medicineEnabled() ||
+      parseBasketLines(sanitized)
+        .filter((line) => queryTokens(line.phrase).length && !looksLikeTobacco(line.phrase))
+        .some((line) => !kept.some((query) => queryTokens(query).some((token) => queryTokens(line.phrase).includes(token))));
     return {
       lines: rewriteGroceryOil(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic)),
       greetingOnly: extraction.greetingOnly,
-      containsMedicine: extraction.containsMedicine || blocksMedicine(sanitized),
+      containsMedicine: (extraction.containsMedicine && llmDroppedSomething) || blocksMedicine(sanitized),
       containsTobacco
     };
   }
@@ -531,12 +540,11 @@ function sameDayMaxMinutes(): number {
 }
 
 async function sendChoices(phone: string, p: PendingChoice, header?: string) {
-  // Remédio isento (29/09): vitrine em TEXTO puro — a política da Meta proíbe catálogo,
-  // carrossel de produto e pagamento nativo para remédio. O cliente responde o número.
-  if (medicineEnabled() && hasMip(p.options)) {
-    await reply(phone, choicesTextFor(p, header));
-    return;
-  }
+  // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
+  // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
+  // ter botão?") a vitrine de remédio é de cards soltos (foto + "Adicionar"); só o carrossel
+  // fica de fora, porque é template de MARKETING revisado pela Meta.
+  const medicine = medicineEnabled() && hasMip(p.options);
   // Meta supports reply buttons inside the 24h customer-service window. One card per
   // option keeps each "Escolher este" button attached to the correct product.
   if (process.env.WHATSAPP_PROVIDER === "meta") {
@@ -558,7 +566,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     // foto faltando, template não aprovado, desligado), segue nos cards soltos.
     const intro = header ?? choicesHeaderFor(p);
     let introSent = false;
-    if (carouselEnabled()) {
+    if (carouselEnabled() && !medicine) {
       try {
         markTurnReplied();
         // Carrossel v5 (05/10): corpo fixo "Olha o que achei 👇". Cabeçalho que só navega
@@ -1781,7 +1789,19 @@ async function handleDeliveryTurn(
   // ---- remédio isento (29/09): nome completo + CPF para a compra sair no nome do cliente ----
   // Vem ANTES do CEP: um CPF nunca pode ser lido como CEP. "sem remédio" tira o remédio da
   // cesta e fecha o resto.
-  if (ctx.step === "need_cpf") {
+  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft && !looksLikeCpfAttempt(text)) {
+    // Cadastro: sem CPF na mensagem, a pergunta não segura o cliente — o que ele mandou
+    // segue como mensagem normal (o CPF volta a ser pedido só no 1º remédio).
+    delete ctx.cpfOnboarding;
+    ctx.step = "collecting";
+    const queued = ctx.pendingRequest;
+    ctx.pendingRequest = undefined;
+    await writeCtx(convo.id, ctx);
+    if (queued) {
+      await handleSearch(phone, convo.id, user.cep, ctx, intent.kind === "free_text" ? `${queued}, ${text}` : queued, user.id);
+      return;
+    }
+  } else if (ctx.step === "need_cpf") {
     const n = normalizeMsg(text);
     if (/\b(sem|tira|tirar|remove|remover|nao quero|deixa)\b.*\bremedios?\b/.test(n)) {
       ctx.basket = (ctx.basket ?? []).filter((item) => !isMipItem(item));
@@ -1816,6 +1836,22 @@ async function handleDeliveryTurn(
     await prisma.user.update({ where: { id: user.id }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
     delete ctx.cpfDraft;
     ctx.step = "collecting";
+    if (ctx.cpfOnboarding) {
+      // Cadastro: segue para o pedido guardado no onboarding, ou pergunta o que ele quer.
+      delete ctx.cpfOnboarding;
+      const queued = ctx.pendingRequest;
+      ctx.pendingRequest = undefined;
+      await writeCtx(convo.id, ctx);
+      if (queued) {
+        await reply(phone, copy.cpfSaved(maskCpf(cpf)));
+        await handleSearch(phone, convo.id, user.cep, ctx, queued, user.id);
+      } else if (ctx.basket?.length) {
+        await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.cpfSaved(maskCpf(cpf)));
+      } else {
+        await reply(phone, copy.cpfSavedAskItems());
+      }
+      return;
+    }
     await writeCtx(convo.id, ctx);
     await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.cpfSaved(maskCpf(cpf)));
     return;
@@ -2908,6 +2944,7 @@ async function handleNewCep(
   const savedMsg = hadCepBefore ? copy.addressUpdated(shownAddress, ctx.cep) : copy.addressSavedPrefix(shownAddress, ctx.cep);
   ctx.pendingRequest = undefined;
   if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return;
+  if (restIsAddress && !hadCepBefore && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedMsg, queued))) return;
   if (queued) {
     await reply(phone, savedMsg);
     await handleSearch(phone, convoId, null, ctx, queued);
@@ -3000,6 +3037,8 @@ async function handleDeliveryAddress(
     return;
   }
 
+  // 1º endereço do cliente = fim do cadastro (o CPF é pedido logo depois, uma vez).
+  const firstAddress = !(await prisma.user.findUnique({ where: { id: userId }, select: { defaultAddress: true } }))?.defaultAddress;
   ctx.deliveryAddress = address;
   ctx.deliveryAddressVerified = true;
   await prisma.user.update({ where: { id: userId }, data: { defaultAddress: address } });
@@ -3017,6 +3056,7 @@ async function handleDeliveryAddress(
 
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
+  if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, copy.addressSavedPrefix(address, ctx.cep), queued))) return;
   if (queued) {
     await reply(phone, copy.addressUpdated(address, ctx.cep));
     await handleSearch(phone, convoId, null, ctx, queued);
@@ -3030,6 +3070,22 @@ async function handleDeliveryAddress(
 
   await writeCtx(convoId, ctx);
   await reply(phone, copy.addressSavedAskItems(address));
+}
+
+// Cadastro (05/10, dono): nome + CPF pedidos UMA vez, logo depois do 1º endereço, e
+// guardados para sempre. Só com remédio isento ligado (é o único uso do CPF hoje). O pedido
+// que veio no onboarding fica guardado e roda assim que o CPF chega (ou quando o cliente
+// responde outra coisa — a pergunta nunca trava).
+async function askCpfAtOnboarding(phone: string, userId: string, convoId: string, ctx: DeliveryContext, savedMsg: string, queued?: string): Promise<boolean> {
+  if (!medicineEnabled() || ctx.basket?.length || ctx.pending?.length) return false;
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { cpf: true, cpfName: true } });
+  if (user?.cpf && user.cpfName) return false;
+  ctx.step = "need_cpf";
+  ctx.cpfOnboarding = true;
+  ctx.pendingRequest = queued || undefined;
+  await writeCtx(convoId, ctx);
+  await reply(phone, `${savedMsg}\n\n${copy.askCpfOnboarding()}`);
+  return true;
 }
 
 // Endereço novo confirmado com um pedido AINDA na fila do operador (2ª revisão, 11/08):

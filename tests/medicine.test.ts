@@ -97,13 +97,13 @@ test("preço: remédio sem markup; taxa fixa da Lia uma vez por pedido com remé
   assert.equal(serviceFeeForItems(onlyMedicine), 3.5);
 });
 
-test("cotação: taxa da Lia em linha própria e aviso de compra no nome do cliente", () => {
+test("cotação: taxa da Lia em linha própria, sem o aviso longo de compra no nome (05/10)", () => {
   const text = copy.manualQuoteSummary({
     items: [{ qty: 1, name: "Dipirona 1g", lineTotal: 5.33 }], produtos: 5.33, serviceLine: 4.9, frete: 6.9, total: 17.13,
   });
   assert.match(text, /Produtos: R\$ 5,33/);
   assert.match(text, /Taxa de serviço da Lia: R\$ 4,90/);
-  assert.match(text, /no seu nome e CPF/);
+  assert.doesNotMatch(text, /no seu nome e CPF/);
   const plain = copy.manualQuoteSummary({ items: [{ qty: 1, name: "Shampoo" }], produtos: 22, frete: 6.9, total: 28.9 });
   assert.doesNotMatch(plain, /Taxa de serviço|CPF/);
 });

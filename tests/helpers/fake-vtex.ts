@@ -28,6 +28,8 @@ export type FakeVtexOptions = {
   // Promoção "leve 2" (Drogarias Pacheco 05/10): a 2ª unidade em diante volta numa linha
   // separada com este preço.
   splitPriceCents?: number;
+  // Estoque regional (Drogaria SP 05/10): o catálogo sem CEP diz 0, o carrinho tem o item.
+  regionalStock?: boolean;
 };
 export function fakeVtex(opts: FakeVtexOptions = {}) {
   const domain = opts.domain ?? "www.drogariasaopaulo.com.br";
@@ -71,7 +73,7 @@ export function fakeVtex(opts: FakeVtexOptions = {}) {
     if (p.endsWith("/items")) {
       const wanted = (body.orderItems as { id: string; quantity: number; seller: string }[]);
       form.items = wanted.flatMap((w) => {
-        const row = (quantity: number, unit: number) => ({ id: w.id, name: "Sabonete Dove Creamy Comfort 90g", seller: w.seller, quantity, sellingPrice: unit, availability: w.id === skuId && opts.available !== false && (opts.sellers ?? [{ sellerId: "1", available: 99 }]).some((s) => s.sellerId === w.seller && s.available >= w.quantity) ? "available" : "withoutStock", priceDefinition: { total: unit * quantity } });
+        const row = (quantity: number, unit: number) => ({ id: w.id, name: "Sabonete Dove Creamy Comfort 90g", seller: w.seller, quantity, sellingPrice: unit, availability: w.id === skuId && opts.available !== false && (opts.regionalStock || (opts.sellers ?? [{ sellerId: "1", available: 99 }]).some((s) => s.sellerId === w.seller && s.available >= w.quantity)) ? "available" : "withoutStock", priceDefinition: { total: unit * quantity } });
         return opts.splitPriceCents && w.quantity > 1 ? [row(1, price), row(w.quantity - 1, opts.splitPriceCents)] : [row(w.quantity, price)];
       });
       recompute(); return json(200, form);

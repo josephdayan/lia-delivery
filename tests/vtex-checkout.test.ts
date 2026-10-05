@@ -138,7 +138,7 @@ test("seller do SKU na hora: própria loja preferida; marketplace único aceito;
   await s2.prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address });
   assert.equal(s2.snapshot(job).items[0].seller, "epc057");
   await assert.rejects(new VtexCheckoutSession("drogariasp", fakeVtex({ sellers: [{ sellerId: "a", available: 3 }, { sellerId: "b", available: 3 }] }).fetchImpl).prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address }), /ambíguo/);
-  await assert.rejects(new VtexCheckoutSession("drogariasp", fakeVtex({ sellers: [{ sellerId: "1", available: 1 }] }).fetchImpl).prepare({ items: [{ sku: "dsp-354260", qty: 2 }], profile, address }), /sem seller/);
+  await assert.rejects(new VtexCheckoutSession("drogariasp", fakeVtex({ sellers: [{ sellerId: "1", available: 1 }] }).fetchImpl).prepare({ items: [{ sku: "dsp-354260", qty: 2 }], profile, address }), /sem seller|indispon/);
 });
 
 test("entrega agendada (Mambo): escolhe a janela mais cedo, soma o preço dela e o prazo vai até o fim da janela", async () => {
@@ -172,4 +172,14 @@ test("promo 'leve 2' (Pacheco 05/10): linha dividida pela loja entra na cesta e 
   const { purchaseCartHash } = await import("../src/lib/purchase-worker");
   const hash = purchaseCartHash(order.items.map((i) => ({ ...i, name: "", storeLabel: "" })), order.deliveryFee, "prazo da loja: 90 min", order);
   assert.doesNotThrow(() => checkCheckout(order, { ...e, cartHash: hash }));
+});
+
+test("estoque regional (Drogaria SP 05/10): catálogo sem CEP diz 0, a própria loja segue e o carrinho decide", async () => {
+  const fake = fakeVtex({ sellers: [{ sellerId: "1", available: 0 }], regionalStock: true });
+  const session = new VtexCheckoutSession("drogariasp", fake.fetchImpl);
+  await session.prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address });
+  assert.equal((fake.calls.find((c) => c.url.endsWith("/items"))!.body as { orderItems: { seller: string }[] }).orderItems[0].seller, "1");
+  assert.equal(session.snapshot(job).items[0].qty, 1);
+  // Marketplace sem a própria loja e sem estoque continua recusado.
+  await assert.rejects(new VtexCheckoutSession("drogariasp", fakeVtex({ sellers: [{ sellerId: "mkt", available: 0 }] }).fetchImpl).prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address }), /sem seller/);
 });

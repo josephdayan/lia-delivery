@@ -250,11 +250,8 @@ export async function opsPublishManualQuote(
     throw error;
   }
   try {
-    // Remédio isento (29/09): escolha de pagamento em texto, sem botão de pagamento.
-    if (medicineFee > 0 && medicineEnabled()) {
-      await reply(order.phone, copy.medicinePaymentChoiceText(total, cardTotal(total)));
-      return prisma.deliveryOrder.findUnique({ where: { id: order.id } });
-    }
+    // Remédio isento: botões comuns Pix/Cartão valem (05/10, dono); o que a Meta veta é o
+    // pagamento NATIVO do WhatsApp, que segue fora para remédio (order-payments/whatsapp-pay).
     const interactive = await whatsappAdapter.sendPaymentChoices(order.phone, total, cardTotal(total));
     if (!interactive) await reply(order.phone, copy.paymentMethod(total, cardTotal(total)));
   } catch (error) {

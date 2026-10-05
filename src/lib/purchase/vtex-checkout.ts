@@ -148,7 +148,13 @@ export class VtexCheckoutSession {
     if (r.status !== 200 && r.status !== 206) throw new VtexCheckoutRejected("seller", r.status, `catálogo não respondeu para o SKU ${id}`);
     const products = Array.isArray(r.json) ? (r.json as Json[]) : [];
     const sku = products.flatMap((p) => (p.items as Json[] | undefined) ?? []).find((i) => String(i.itemId) === id);
-    const sellers = ((sku?.sellers as Json[] | undefined) ?? []).filter((sl) => Number((sl.commertialOffer as Json | undefined)?.AvailableQuantity ?? 0) >= quantity && Number((sl.commertialOffer as Json | undefined)?.Price ?? 0) > 0);
+    const priced = ((sku?.sellers as Json[] | undefined) ?? []).filter((sl) => Number((sl.commertialOffer as Json | undefined)?.Price ?? 0) > 0);
+    const sellers = priced.filter((sl) => Number((sl.commertialOffer as Json | undefined)?.AvailableQuantity ?? 0) >= quantity);
+    // Estoque REGIONAL (Drogaria SP, 05/10): o catálogo sem CEP mostra 0 para a própria loja,
+    // mas o carrinho com o endereço do cliente tem o item e entrega. Sem seller com estoque no
+    // catálogo, a própria loja ("1") segue e quem decide é o carrinho com endereço (a
+    // conferência recusa item que não ficar `available`).
+    if (!sellers.length && priced.some((sl) => String(sl.sellerId) === "1")) return "1";
     if (!sellers.length) throw new VtexCheckoutRejected("items", 200, `item ${id} sem seller com estoque`);
     const own = sellers.find((sl) => String(sl.sellerId) === "1");
     if (own) return "1";

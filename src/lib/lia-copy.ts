@@ -215,37 +215,36 @@ export function symptomExplainerMip(): string {
   return "Indicar remédio eu não posso — isso é com o farmacêutico. Se você já sabe o nome do remédio *sem receita* que quer, me diz que eu compro na farmácia no seu nome. Enquanto isso, olha o que achei de conforto:";
 }
 
-export function medicineQuoteNote(): string {
-  return "💊 _O remédio é comprado na farmácia no seu nome e CPF. A farmácia separa, entrega e emite a nota fiscal pra você._";
-}
-
 const TERMS_URL = "liadelivery.com.br/termos";
 
+// 05/10 (dono): curto. Pedido uma vez (no cadastro ou no 1º remédio) e guardado.
 export function askCpfForMedicine(): string {
-  return [
-    "💊 Remédio eu compro na farmácia *no seu nome*: a nota fiscal sai pra você e a farmácia faz a entrega.",
-    "",
-    "Pra isso preciso do seu *nome completo* e *CPF*, uma vez só. Pode mandar numa mensagem, assim:",
-    "_Maria da Silva 123.456.789-09_",
-    "",
-    `Uso só pra comprar na farmácia em seu nome (${TERMS_URL}). Se preferir, responde *sem remédio* que eu tiro ele da cesta.`
-  ].join("\n");
+  return `Me manda seu *nome completo* e *CPF*, uma vez só, pra eu comprar no seu nome quando precisar (ex.: remédio). Assim:\n_Maria da Silva 123.456.789-09_\n\n_Uso só pra isso (${TERMS_URL})._`;
+}
+
+// Cadastro (05/10): logo depois do endereço, uma vez só.
+export function askCpfOnboarding(): string {
+  return `Última coisa: seu *nome completo* e *CPF*, pra eu comprar no seu nome quando precisar (ex.: remédio). Assim:\n_Maria da Silva 123.456.789-09_`;
+}
+
+export function cpfSavedAskItems(): string {
+  return "✅ Anotado. O que você precisa?";
 }
 
 export function cpfInvalid(): string {
-  return "Esse CPF não confere 🤔 Confere os números e me manda de novo, junto com seu nome completo. Ou responde *sem remédio* que eu sigo sem ele.";
+  return "Esse CPF não confere 🤔 Me manda de novo, junto com seu nome completo.";
 }
 
 export function askFullNameForCpf(): string {
-  return "Anotei o CPF ✅ Agora me manda seu *nome completo* (nome e sobrenome), do jeito que vai sair na nota.";
+  return "Anotei o CPF ✅ Agora seu *nome completo*.";
 }
 
 export function askCpfAfterName(): string {
-  return "Anotei o nome ✅ Agora me manda o *CPF* (só os números servem).";
+  return "Anotei o nome ✅ Agora o *CPF*.";
 }
 
-export function cpfSaved(masked: string): string {
-  return `Pronto, guardei o CPF ${masked} pra compras de remédio. Fechando seu pedido…`;
+export function cpfSaved(_masked: string): string {
+  return "✅ Anotado.";
 }
 
 export function medicineRemovedFromBasket(): string {
@@ -484,7 +483,6 @@ export function summary(input: SummaryInput): string {
     deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
-  if (input.serviceLine != null) out.push("", medicineQuoteNote());
   if (input.notFound?.length) {
     out.push("", notFoundNote(input.notFound));
   }
@@ -1374,7 +1372,6 @@ export function manualQuoteSummary(input: {
     deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
-  if (input.serviceLine != null) out.push("", medicineQuoteNote());
   if (input.deliveryAddress) {
     out.push("", `📍 ${input.deliveryAddress}`);
     if (!input.addressButton) out.push('_Pra mudar, diz "trocar endereço"._');

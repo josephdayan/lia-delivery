@@ -26,8 +26,9 @@ const interactive: string[] = [];
   outbox.push({ to, text });
   return { provider: "test", to, text };
 };
-// Qualquer superfície interativa de compra da Meta com remédio é falha de política.
-for (const name of ["sendDeliveryCarousel", "sendDeliveryChoices", "sendPaymentChoices", "sendPixOrderDetails", "sendOrderDetailsCard"] as const) {
+// Superfícies de COMPRA da Meta (carrossel de template, pagamento nativo) com remédio são
+// falha de política. Cards soltos com foto e botões comuns Pix/Cartão valem (dono, 05/10).
+for (const name of ["sendDeliveryCarousel", "sendPixOrderDetails", "sendOrderDetailsCard"] as const) {
   (whatsappAdapter as unknown as Record<string, unknown>)[name] = async () => {
     interactive.push(name);
     return null;
@@ -80,13 +81,13 @@ async function pickDipirona(phone: string) {
   return { vitrine, first };
 }
 
-test("remédio isento: vitrine em texto, sem markup, CPF uma vez, cotação com a taxa da Lia separada", async (t) => {
+test("remédio isento: vitrine sem carrossel, sem markup, CPF uma vez, cotação com a taxa da Lia separada", async (t) => {
   if (!dbOk) return t.skip();
   const c = await customer();
   const { vitrine, first } = await pickDipirona(c.phone);
   assert.doesNotMatch(vitrine, /não posso vender/i, vitrine.slice(0, 300));
   assert.match(first, /dipirona/i, `vitrine sem dipirona: ${vitrine.slice(0, 300)}`);
-  assert.deepEqual(interactive, [], "vitrine de remédio nunca sai em carrossel/cards");
+  assert.deepEqual(interactive, [], "vitrine de remédio nunca sai em carrossel");
 
   const asked = await send(c.phone, "só isso");
   assert.match(asked, /nome completo[\s\S]*CPF/i, `devia pedir nome e CPF: ${asked.slice(0, 300)}`);
@@ -97,11 +98,11 @@ test("remédio isento: vitrine em texto, sem markup, CPF uma vez, cotação com 
   assert.match(invalid, /não confere/i);
 
   const quoted = await send(c.phone, "Maria da Silva 529.982.247-25");
-  assert.match(quoted, /\*\*\*\.\*\*\*\.247-25/, "confirma o CPF mascarado, nunca inteiro");
+  assert.match(quoted, /✅ Anotado/, "confirmação curta (dono, 05/10)");
   assert.doesNotMatch(quoted, /529\.982\.247-25|52998224725/, "CPF inteiro nunca volta no chat");
   assert.match(quoted, /Taxa de serviço da Lia: R\$ 4,90/, quoted.slice(0, 600));
-  assert.match(quoted, /no seu nome e CPF/);
-  assert.match(quoted, /Responde \*pix\* ou \*cartão\*/, "pagamento em texto");
+  assert.doesNotMatch(quoted, /no seu nome e CPF/, "resumo sem o aviso longo (dono, 05/10)");
+  assert.match(quoted, /pix[\s\S]*cart(ã|a)o/i, "pagamento oferecido");
   assert.deepEqual(interactive, [], `nenhuma superfície de compra da Meta: ${interactive.join(",")}`);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: c.userId } });
@@ -152,4 +153,41 @@ test("flag desligada: remédio segue recusado como sempre", async (t) => {
   const c = await customer();
   const out = await send(c.phone, "quero dipirona");
   assert.match(out, /Remédio eu não posso vender/i, out.slice(0, 300));
+});
+
+// 05/10 (dono): nome + CPF no CADASTRO, logo depois do 1º endereço, e o pedido guardado segue.
+async function newCustomer() {
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  const user = await prisma.user.create({ data: { phone } });
+  return { phone, userId: user.id };
+}
+
+test("cadastro (05/10): CPF pedido logo depois do endereço; o pedido guardado roda em seguida", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await newCustomer();
+  await send(c.phone, "quero dipirona");
+  await send(c.phone, "01310-100");
+  const afterAddress = await send(c.phone, "Rua das Flores, 123, Bela Vista");
+  assert.match(afterAddress, /Endereço salvo[\s\S]*nome completo[\s\S]*CPF/i, afterAddress.slice(0, 400));
+  const out = await send(c.phone, "Maria da Silva 529.982.247-25");
+  assert.match(out, /✅ Anotado/);
+  assert.match(out, /dipirona/i, `o pedido guardado devia virar vitrine: ${out.slice(0, 300)}`);
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: c.userId } });
+  assert.equal(user.cpf, CPF);
+  // Daqui pra frente o remédio fecha sem perguntar de novo.
+  await send(c.phone, "1");
+  const quoted = await send(c.phone, "só isso");
+  assert.doesNotMatch(quoted, /nome completo/i, quoted.slice(0, 300));
+});
+
+test("cadastro (05/10): resposta sem CPF não trava — segue como pedido normal", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await newCustomer();
+  await send(c.phone, "oi");
+  await send(c.phone, "01310-100");
+  const afterAddress = await send(c.phone, "Rua das Flores, 123, Bela Vista");
+  assert.match(afterAddress, /CPF/);
+  const out = await send(c.phone, "quero dipirona");
+  assert.doesNotMatch(out, /CPF não confere|nome completo/i, out.slice(0, 300));
+  assert.match(out, /dipirona/i, out.slice(0, 300));
 });

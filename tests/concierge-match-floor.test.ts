@@ -70,3 +70,11 @@ test("concierge: o piso nunca aceita o que o scorer já rejeitou (guardas de esp
   assert.equal(scoreCatalogMatch("racao para cachorro", racaoGato), 0);
   assert.equal(conciergeMatchIsStrong("racao para cachorro", racaoGato), false);
 });
+
+test("05/10: 'advil' prefere o Advil comum ao 'Advil Mulher' (variante de público só quando pedida)", async () => {
+  const { scoreCatalogMatch } = await import("../src/lib/stores/types");
+  const comum = { sku: "a", name: "Analgésico e Anti-inflamatório Advil 12h 600mg 2 Comprimidos", brand: "Advil", unitPrice: 8.65 };
+  const mulher = { sku: "b", name: "Advil Mulher 400mg 2 Cápsulas Moles", brand: "Advil", unitPrice: 5.99 };
+  assert.ok(scoreCatalogMatch("advil", comum) > scoreCatalogMatch("advil", mulher));
+  assert.ok(scoreCatalogMatch("advil mulher", mulher) > scoreCatalogMatch("advil mulher", comum));
+});
