@@ -15,6 +15,9 @@ a migration à mão no banco de produção (30/09, `prisma migrate deploy` com o
 - [x] CPF do cliente no pedido e na compra, NF-e ao cliente, termos e privacidade (dd4570b).
 - [x] Colheita `mip` na rotina semanal + `tests/medicine.test.ts` entre os testes que bloqueiam.
 - [ ] Dono (recomendado): 1 hora de advogado sanitário com docs/remedio-intermediacao-legal-2026-09-29.md.
+- [~] 05/10: e-mail de jdayan027@gmail.com para `contato+teste@liadelivery.com.br` (assunto "Teste Lia
+  subendereco remedio 0510") foi ACEITO pelo ImprovMX (nenhuma devolução). Falta só ver com os
+  próprios olhos que ele está na caixa joseph.dayan@beityaacov.com.br (o Chrome pediu login de novo).
 - [ ] Dono: mandar um e-mail para `contato+teste@liadelivery.com.br` e confirmar que chega na caixa
   que o servidor lê (subendereçamento do ImprovMX). Sem isso, a loja manda os e-mails do pedido
   no CPF para um endereço que ninguém lê. Alternativa: `LIA_MEDICINE_BUYER_EMAIL_TEMPLATE`.
