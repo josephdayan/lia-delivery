@@ -107,6 +107,16 @@ export const CAROUSEL_BUTTONS = [
 // v4 (28/09): card sem "(contado da compra)". Criado sozinho pelo cron /api/cron/meta-templates;
 // o envio usa v4 só quando a Meta aprovar o template daquele número de cards.
 export const CAROUSEL_V4_PREFIX = "vitrine_carrossel_v4";
+// v5 (05/10, dono: "não precisa de tudo isso. Só põe um olha o que achei e esse emojizinho"):
+// corpo FIXO, sem variável e sem instrução. Card igual ao v4. O que for informação de verdade
+// (ex.: "a loja não confirmou X, escolhe outra") vai num texto antes do carrossel.
+export const CAROUSEL_V5_PREFIX = "vitrine_carrossel_v5";
+export const CAROUSEL_BODY_V5 = "Olha o que achei 👇";
+// Do mais novo ao mais antigo: o envio usa o primeiro APROVADO; o cron cria os que faltam.
+const CAROUSEL_AUTO_PREFIXES = [CAROUSEL_V5_PREFIX, CAROUSEL_V4_PREFIX] as const;
+export function carouselHasFixedBody(templateOrPrefix: string): boolean {
+  return templateOrPrefix.replace(/_\d+$/, "") === CAROUSEL_V5_PREFIX;
+}
 
 export function carouselTemplateName(cards: number, prefix = CAROUSEL_TEMPLATE_PREFIX): string {
   return `${prefix}_${cards}`;
@@ -125,7 +135,9 @@ export function buildCarouselTemplate(cards: number, headerHandle: string, prefi
     language: "pt_BR",
     category: "marketing",
     components: [
-      { type: "body", text: CAROUSEL_BODY, example: { body_text: [["Opções de *ração pra cachorro*:"]] } },
+      carouselHasFixedBody(prefix)
+        ? { type: "body", text: CAROUSEL_BODY_V5 }
+        : { type: "body", text: CAROUSEL_BODY, example: { body_text: [["Opções de *ração pra cachorro*:"]] } },
       { type: "carousel", cards: Array.from({ length: cards }, () => JSON.parse(JSON.stringify(card))) }
     ]
   };
@@ -323,20 +335,21 @@ export async function runMetaSetup(action: MetaSetupAction, opts: { flowId?: str
 }
 
 
-// ---------- Carrossel v4 automático (28/09) ----------
-// Cron: cria na Meta os templates v4 que faltam (uma vez) e devolve o status de cada um.
+// ---------- Carrossel automático (v4 28/09, v5 05/10) ----------
+// Cron: cria na Meta os templates v4/v5 que faltam (uma vez) e devolve o status de cada um.
 export async function ensureCarouselV4(): Promise<Record<string, string>> {
   const { token } = creds();
   const { waba } = await ids(token);
   if (!waba) throw new Error("WABA id não veio do debug_token");
-  const names = CAROUSEL_CARD_COUNTS.map((n) => carouselTemplateName(n, CAROUSEL_V4_PREFIX));
+  const wanted = CAROUSEL_AUTO_PREFIXES.flatMap((prefix) => CAROUSEL_CARD_COUNTS.map((cards) => ({ prefix, cards, name: carouselTemplateName(cards, prefix) })));
+  const names = wanted.map((w) => w.name);
   const list = (await graph(token, `${waba}/message_templates?fields=name,status,rejected_reason&limit=200`)) as { data?: Array<{ name: string; status: string; rejected_reason?: string }> };
   const existing = new Map((list.data ?? []).filter((t) => names.includes(t.name)).map((t) => [t.name, t.rejected_reason && t.rejected_reason !== "NONE" ? `${t.status}:${t.rejected_reason}` : t.status]));
-  const missing = CAROUSEL_CARD_COUNTS.filter((n) => !existing.has(carouselTemplateName(n, CAROUSEL_V4_PREFIX)));
+  const missing = wanted.filter((w) => !existing.has(w.name));
   if (missing.length) {
     const handle = await uploadBrandImage(token);
-    for (const cards of missing) {
-      const body = buildCarouselTemplate(cards, handle, CAROUSEL_V4_PREFIX);
+    for (const { prefix, cards } of missing) {
+      const body = buildCarouselTemplate(cards, handle, prefix);
       const created = await graph(token, `${waba}/message_templates`, { method: "POST", body: JSON.stringify(body) }).catch((e) => ({ error: String(e).slice(0, 300) }));
       existing.set(body.name, (created as { status?: string; error?: string }).status ?? `ERRO ${(created as { error?: string }).error ?? ""}`);
     }
@@ -345,7 +358,8 @@ export async function ensureCarouselV4(): Promise<Record<string, string>> {
 }
 
 // Envio: prefixo do template a usar para N cards. LIA_CAROUSEL_TEMPLATE força um prefixo;
-// senão v4 se APROVADO na Meta (consulta com cache de 10 min por instância), senão v3.
+// senão o mais novo APROVADO na Meta — v5, depois v4 (consulta com cache de 10 min por
+// instância) —, senão v3.
 const approvedCache: { at: number; approved: Set<string> } = { at: 0, approved: new Set() };
 export async function activeCarouselPrefix(cards: number): Promise<string> {
   if (process.env.LIA_CAROUSEL_TEMPLATE?.trim()) return CAROUSEL_TEMPLATE_PREFIX;
@@ -355,12 +369,12 @@ export async function activeCarouselPrefix(cards: number): Promise<string> {
       const { waba } = await ids(token);
       if (waba) {
         const list = (await graph(token, `${waba}/message_templates?fields=name,status&limit=200`)) as { data?: Array<{ name: string; status: string }> };
-        approvedCache.approved = new Set((list.data ?? []).filter((t) => t.status === "APPROVED" && t.name.startsWith(CAROUSEL_V4_PREFIX)).map((t) => t.name));
+        approvedCache.approved = new Set((list.data ?? []).filter((t) => t.status === "APPROVED" && CAROUSEL_AUTO_PREFIXES.some((prefix) => t.name.startsWith(prefix))).map((t) => t.name));
       }
     } catch (error) {
       console.warn("[meta:carousel-prefix]", error instanceof Error ? error.message : error);
     }
     approvedCache.at = Date.now();
   }
-  return approvedCache.approved.has(carouselTemplateName(cards, CAROUSEL_V4_PREFIX)) ? CAROUSEL_V4_PREFIX : CAROUSEL_TEMPLATE_PREFIX;
+  return CAROUSEL_AUTO_PREFIXES.find((prefix) => approvedCache.approved.has(carouselTemplateName(cards, prefix))) ?? CAROUSEL_TEMPLATE_PREFIX;
 }

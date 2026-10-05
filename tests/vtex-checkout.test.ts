@@ -159,3 +159,17 @@ test("entrega agendada (Mambo): escolhe a janela mais cedo, soma o preço dela e
   await assert.rejects(new VtexCheckoutSession("drogariasp", fakeVtex({ slas: [{ id: "Entrega Agendada", price: 1290, shippingEstimate: "2h", availableDeliveryWindows: [{ startDateUtc: start.toISOString(), endDateUtc: end.toISOString(), price: 300 }] }] }).fetchImpl)
     .prepare({ items: [{ sku: "dsp-354260", qty: 1 }], profile, address, deliveryPromise: "prazo da loja: 2h" }), /prazo prometido/);
 });
+
+test("promo 'leve 2' (Pacheco 05/10): linha dividida pela loja entra na cesta e a conferência fecha", async () => {
+  const fake = fakeVtex({ splitPriceCents: 400 });
+  const session = new VtexCheckoutSession("drogariasp", fake.fetchImpl);
+  await session.prepare({ items: [{ sku: "dsp-354260", qty: 2 }], profile, address, deliveryPromise: "prazo da loja: 90 min" });
+  const e = session.snapshot(job);
+  assert.equal(e.items.length, 1, "uma linha por sku");
+  assert.equal(e.items[0].qty, 2);
+  assert.equal(e.items[0].lineTotalCents, 939, "R$5,39 + R$4,00");
+  const order = { items: [{ sku: "dsp-354260", qty: 2, unitPrice: 4.695, storeKey: "drogariasp", productUrl: "https://www.drogariasaopaulo.com.br/sabonete/p" }], deliveryAddress: job.customerAddress, customerName: "Joseph Teste", cep: "01233-020", deliveryFee: 17.8, itemsSubtotal: 9.39, fulfillments: [{ deliveryPromise: "prazo da loja: 90 min" }] };
+  const { purchaseCartHash } = await import("../src/lib/purchase-worker");
+  const hash = purchaseCartHash(order.items.map((i) => ({ ...i, name: "", storeLabel: "" })), order.deliveryFee, "prazo da loja: 90 min", order);
+  assert.doesNotThrow(() => checkCheckout(order, { ...e, cartHash: hash }));
+});

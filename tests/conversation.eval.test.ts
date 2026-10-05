@@ -164,7 +164,7 @@ test("multi-item ambíguo avisa que vai escolher um de cada vez e preserva o seg
   const first = await c.send("quero uma coca e uma escova de dente");
   assert.match(first, /Achei os 2 itens/i);
   assert.match(first, /um de cada vez[\s\S]*coca[\s\S]*depois[\s\S]*escova/i);
-  assert.match(first, /opções de \*coca\*/i);
+  assert.match(first, /Olha o que achei[\s\S]*Coca-Cola/i);
   const second = await c.send("1");
   assert.match(second, /Agora \*escova de dente\*/i);
   assert.match(second, /Escova de Dente/i);
@@ -211,10 +211,10 @@ test("quantidade: escolher sem dizer quantas assume 1 un e avisa como mudar (reg
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const offer = await c.send("quero coca");
-  assert.match(offer, /opções/i);
+  assert.match(offer, /Olha o que achei|opções/i);
   const confirmed = await c.send("1");
   assert.doesNotMatch(confirmed, /Quantas unidades/i, `voltou a perguntar quantidade: ${confirmed.slice(0, 200)}`);
-  assert.match(confirmed, /1 un/, confirmed.slice(0, 200));
+  assert.match(confirmed, /^✅ /m, confirmed.slice(0, 200));
 });
 
 test("multi-loja: ração e perfume convivem na mesma cesta com duas entregas", async (t) => {
@@ -316,16 +316,17 @@ test("pedido mínimo: 'pix' abaixo do mínimo recebe a saída honesta, não o nu
 });
 
 // A pergunta de quantidade morreu em 01/09 (assume 1 un e segue); este teste guarda a
-// regra nova: nenhuma escolha pode reabrir a pergunta, e a dica de ajuste aparece.
-test("escolha nunca pergunta quantidade: assume 1 un com dica de ajuste (regra 01/09)", async (t) => {
+// regra nova: nenhuma escolha pode reabrir a pergunta. A dica "1 un — fala 2x" saiu em 05/10
+// (dono: a confirmação é só "✅ produto"; o botão "Mudar quantidade" faz o ajuste).
+test("escolha nunca pergunta quantidade: assume 1 un e confirma só com ✅ produto (regra 01/09, 05/10)", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const opts = await c.send("arroz");
   assert.match(opts, /Responde \*1\*/);
   const confirmed = await c.send("1");
   assert.doesNotMatch(confirmed, /Quantas unidades|de 1 a 50/i, `perguntou quantidade: ${confirmed.slice(0, 200)}`);
-  assert.match(confirmed, /1 un/, confirmed.slice(0, 200));
-  assert.match(confirmed, /2x arroz/i, `sem dica de ajuste: ${confirmed.slice(0, 200)}`);
+  assert.match(confirmed, /^✅ /m, confirmed.slice(0, 200));
+  assert.doesNotMatch(confirmed, /1 un —/, `dica longa voltou: ${confirmed.slice(0, 200)}`);
   await c.send("limpar carrinho");
 });
 
@@ -609,17 +610,17 @@ test("item novo no meio de uma escolha é reconhecido, não entra mudo na fila",
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const first = await c.send("arroz");
-  assert.match(first, /opções de \*arroz\*/i);
+  assert.match(first, /Olha o que achei[\s\S]*Arroz/i);
   const add = await c.send("e feijao tambem");
   assert.match(add, /Anotei \*feijao\*/);
-  assert.match(add, /opções de \*arroz\*/i); // continua na escolha atual
+  assert.match(add, /Olha o que achei[\s\S]*Arroz/i); // continua na escolha atual
 });
 
 test("teto de preço na escolha: 'até X reais' filtra as opções pelo preço exibido", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const first = await c.send("arroz");
-  assert.match(first, /opções de \*arroz\*/i);
+  assert.match(first, /Olha o que achei[\s\S]*Arroz/i);
   const prices = [...first.matchAll(/R\$ (\d+,\d{2})/g)].map((m) => Number(m[1].replace(",", ".")));
   assert.ok(prices.length >= 2, "precisa de 2+ opções pra filtrar");
   const cap = Math.floor((prices[0] + prices[prices.length - 1]) / 2); // entre a mais barata e a mais cara
@@ -638,7 +639,7 @@ test("rodada 6: orçamento nunca vira item — um pedido com teto é UMA escolha
   // Nada de "não tenho como trazer: até uns 8 reais" nem segunda linha de escolha.
   assert.doesNotMatch(out, /não consigo trazer/i, `fantasma de orçamento: ${out.slice(0, 200)}`);
   assert.doesNotMatch(out, /2 itens/i);
-  assert.match(out, /opções de \*coca/i);
+  assert.match(out, /Olha o que achei[\s\S]*Coca-Cola/i);
   // Todas as opções mostradas respeitam o teto (preço exibido, com markup).
   for (const m of out.matchAll(/R\$ (\d+),(\d{2})/g)) {
     const price = Number(m[1]) + Number(m[2]) / 100;

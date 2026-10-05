@@ -267,3 +267,31 @@ test("ao vivo: devolve o preço que a loja cobra AGORA (sellingPrice em centavos
   assert.equal(out.kind, "ok");
   assert.deepEqual(out.kind === "ok" ? out.unitPrices : null, { "paguemenos-1639750": 12.99 });
 });
+
+test("ao vivo: loja que DIVIDE a linha em preços (promo 'leve 2') cota normal, com preço médio (Pacheco 05/10)", async () => {
+  // Resposta real da Drogarias Pacheco para 2 un do sku 834920: duas linhas de 1 un.
+  mockResponse({
+    items: [
+      { id: "834920", quantity: 1, availability: "available", sellingPrice: 757 },
+      { id: "834920", quantity: 1, availability: "available", sellingPrice: 1082 }
+    ],
+    logisticsInfo: [
+      { itemIndex: 0, slas: [{ name: "RETIRE NA LOJA (694)", price: 0, shippingEstimate: "30m" }, { name: "NORMAL", price: 345, shippingEstimate: "1bd" }] },
+      { itemIndex: 1, slas: [{ name: "RETIRE NA LOJA (694)", price: 0, shippingEstimate: "30m" }, { name: "NORMAL", price: 345, shippingEstimate: "1bd" }] }
+    ]
+  });
+  const out = await liveStoreFreight("drogariaspacheco", [{ sku: "drogariaspacheco-834920", qty: 2 }], "01233-020");
+  assert.equal(out.kind, "ok");
+  if (out.kind !== "ok") return;
+  assert.equal(out.fee, 6.9, "frete das duas linhas somado = frete da cesta");
+  assert.equal(Math.round(out.unitPrices!["drogariaspacheco-834920"] * 2 * 100) / 100, 18.39, "linha cobra o total da loja");
+});
+
+test("disponibilidade: devolve o preço da loja AGORA para o card (05/10)", async () => {
+  mockResponse({
+    items: [{ id: "8152", quantity: 1, availability: "available", sellingPrice: 1290 }],
+    logisticsInfo: [{ itemIndex: 0, slas: [{ name: "Normal", price: 1590, shippingEstimate: "6h" }] }]
+  });
+  const result = await liveItemAvailability("mambo", ["mambo-8152"], "01233-020");
+  assert.equal(result?.get("mambo-8152")?.unitPrice, 12.9);
+});

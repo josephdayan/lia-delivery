@@ -310,7 +310,12 @@ export function noneTodayHeader(query: string): string {
   return `Nada chega hoje para *${query}* nas lojas que consigo confirmar. O mais rápido que tenho:`;
 }
 
-export function choicesHeader(query: string): string {
+// Abertura da vitrine (dono, 05/10: "só põe um olha o que achei e esse emojizinho").
+export function choicesHeader(_query: string): string {
+  return "Olha o que achei 👇";
+}
+// Variável {{1}} dos carrosséis v3/v4 (o corpo deles já começa com "Olha o que achei 👇").
+export function choicesHeaderLegacy(query: string): string {
   return `Opções de *${query}*:`;
 }
 
@@ -401,8 +406,10 @@ export function choiceConfirmed(name: string, qty = 1): string {
 // Quantidade não dita = 1 e segue (dono, 01/09): a rodada "quantas unidades?" era uma
 // mensagem a mais no caso comum. A dica de ajuste usa o TERMO PEDIDO (curto), não o
 // nome completo do produto.
-export function choiceConfirmedAssumedOne(name: string, query: string): string {
-  return `✅ ${name}\n_1 un — quer mais? é só falar "2x ${query}"._`;
+// 05/10 (dono): "é só o check e o nome do produto" — os botões embaixo já dizem o resto
+// (Pagar / Adicionar mais / Mudar quantidade).
+export function choiceConfirmedAssumedOne(name: string, _query: string): string {
+  return `✅ ${name}`;
 }
 
 // Botão "Ver detalhes" / "detalhes 2" digitado: link real do anúncio/página, onde o
@@ -1495,10 +1502,10 @@ export function moreOfSameAdded(added: number, name: string, totalQty: number): 
 }
 // Versão com botões (28/09, dono): Pagar / Adicionar mais / Cancelar fazem o papel do "só isso".
 export function moreOfSameAddedShort(totalQty: number, name: string): string {
-  return `✅ Agora são ${totalQty}x ${name}. Quer mais alguma coisa?`;
+  return `✅ ${totalQty}x ${name}`;
 }
 export function qtyAdjustedShort(qty: number, name: string): string {
-  return `✅ Ajustei: ${qty}x ${name}. Quer mais alguma coisa?`;
+  return `✅ ${qty}x ${name}`;
 }
 
 // Número solto logo após um item entrar na cesta = ajuste de quantidade do último item.
@@ -1702,6 +1709,11 @@ export function itemsNotDeliverableHere(items: string[], closingRest: boolean): 
     ? `Não tenho ${what} para entregar no seu endereço agora — a loja não confirmou estoque ou entrega.`
     : `Não tenho estes itens para entregar no seu endereço agora — a loja não confirmou estoque ou entrega:\n${what}`;
   return closingRest ? `${head}\nFecho o resto pra você:` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
+}
+
+// A escolha não tem entrega no endereço, mas a vitrine tem outras: elas vêm logo abaixo.
+export function itemNotDeliverableShowOthers(item: string): string {
+  return `A loja não confirmou *${item}* para o seu endereço agora. Escolhe outra opção 👇`;
 }
 
 export function quoteUnavailableNow(): string {

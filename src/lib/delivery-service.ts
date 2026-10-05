@@ -443,7 +443,8 @@ function toChoiceOption(
     sku: o.sku,
     name: o.name,
     brand: o.brand,
-    unitPrice: o.unitPrice,
+    // Preço da loja AGORA quando a simulação respondeu (05/10): o card e o total batem.
+    unitPrice: live?.available && live.unitPrice != null ? live.unitPrice : o.unitPrice,
     imageUrl: o.imageUrl,
     productUrl: o.productUrl ?? STORE_SEARCH_URL[storeRef?.storeKey ?? ""]?.(o.name),
     ...storeRef,
@@ -555,19 +556,37 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     }));
     // Carrossel (dono, 07/09): cabeçalho + cards numa mensagem só. Se não der (1 opção,
     // foto faltando, template não aprovado, desligado), segue nos cards soltos.
+    const intro = header ?? choicesHeaderFor(p);
+    let introSent = false;
     if (carouselEnabled()) {
       try {
         markTurnReplied();
-        const sent = await whatsappAdapter.sendDeliveryCarousel(phone, header ?? choicesHeaderFor(p), choices);
+        // Carrossel v5 (05/10): corpo fixo "Olha o que achei 👇". Cabeçalho que só navega
+        // ("Mais opções de X") some; o que INFORMA ("a loja não confirmou X", "chega hoje")
+        // vai num texto logo antes. v3/v4 seguem levando o cabeçalho no corpo.
+        const { activeCarouselPrefix, carouselHasFixedBody } = await import("@/lib/meta-setup");
+        const navigational = [
+          copy.choicesHeader(p.query),
+          copy.moreChoicesHeader(p.query),
+          copy.priceSortedHeader(p.query, true),
+          copy.priceSortedHeader(p.query, false),
+          copy.narrowedChoices(p.query)
+        ].includes(intro);
+        if (!navigational && choices.length >= 2 && carouselHasFixedBody(await activeCarouselPrefix(Math.min(choices.length, 5)))) {
+          await reply(phone, intro);
+          introSent = true;
+        }
+        const legacyHeader = intro === copy.choicesHeader(p.query) ? copy.choicesHeaderLegacy(p.query) : intro;
+        const sent = await whatsappAdapter.sendDeliveryCarousel(phone, legacyHeader, choices);
         if (sent) {
-          await rememberCarousel(phone, sent.messageId, p, header ?? choicesHeaderFor(p));
+          await rememberCarousel(phone, sent.messageId, p, intro);
           return;
         }
       } catch (error) {
         console.warn("[whatsapp:meta:carousel:error]", error instanceof Error ? error.message : error);
       }
     }
-    await reply(phone, header ?? choicesHeaderFor(p));
+    if (!introSent) await reply(phone, intro);
     try {
       markTurnReplied();
       const interactive = await whatsappAdapter.sendDeliveryChoices(phone, choices);
@@ -613,6 +632,40 @@ async function rememberCarousel(phone: string, messageId: string | undefined, p:
   } catch (error) {
     console.warn("[carousel:remember-failed]", error instanceof Error ? error.message : error);
   }
+}
+
+// Vitrine recente que mostrou este sku: a última escolha (memória da conversa) ou um dos
+// carrosséis gravados nas últimas horas. Opção achada → a vitrine volta como escolha aberta.
+const REVIVE_TAP_WINDOW_MS = 6 * 60 * 60 * 1000;
+async function reviveTappedOption(
+  convoId: string,
+  ctx: DeliveryContext,
+  sku: string
+): Promise<{ pending: PendingChoice; option: ChoiceOption } | null> {
+  const wanted = sku.trim().toLowerCase();
+  const find = (p: PendingChoice) =>
+    p.options.find((o) => o.sku.toLowerCase() === wanted) ?? p.shownOptions?.find((o) => o.sku.toLowerCase() === wanted);
+  if (ctx.lastChoice) {
+    const { chosenSku: _chosen, replaceSku: _replace, ...pending } = ctx.lastChoice;
+    const option = find(pending);
+    if (option) return { pending, option };
+  }
+  try {
+    const rows = await prisma.message.findMany({
+      where: { conversationId: convoId, sender: { in: ["carousel", "carousel-recovered"] }, createdAt: { gte: new Date(Date.now() - REVIVE_TAP_WINDOW_MS) } },
+      orderBy: { createdAt: "desc" },
+      take: 10
+    });
+    for (const row of rows) {
+      const saved = JSON.parse(row.text) as { pending?: PendingChoice };
+      if (!saved.pending?.options?.length) continue;
+      const option = find(saved.pending);
+      if (option) return { pending: saved.pending, option };
+    }
+  } catch (error) {
+    console.warn("[stale-tap:revive]", error instanceof Error ? error.message : error);
+  }
+  return null;
 }
 
 export async function recoverFailedCarousel(messageId: string, recipientDigits: string, failure?: string): Promise<boolean> {
@@ -2295,6 +2348,16 @@ async function handleDeliveryTurn(
 
   // ---- botão "Escolher esse" de uma mensagem antiga, fora de escolha ativa ----
   if (intent.kind === "stale_option_tap") {
+    // Card de um carrossel que ainda está na tela (05/10: a opção escolhida não tinha
+    // entrega, o cliente tocou em OUTRA do mesmo carrossel e ouviu "conversa antiga"). Sem
+    // pedido em andamento, o toque vale: a vitrine é recuperada e a opção entra na cesta.
+    const revived = ctx.deliveryOrderId ? null : await reviveTappedOption(convo.id, ctx, intent.sku);
+    if (revived) {
+      ctx.pending = [revived.pending, ...(ctx.pending ?? [])];
+      const store = getStore(revived.option.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
+      await confirmChosenOption(phone, convo.id, ctx, user.cep, store, revived.pending, revived.option);
+      return;
+    }
     await reply(phone, copy.staleButtonTap(false));
     return;
   }
@@ -3357,7 +3420,7 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
       const check = live.checks.get(liveKey(w.storeKey, w.sku));
       if (!check?.available) return w.o;
       const delivery = humanEstimate(check.estimate);
-      return { ...w.o, verified: true, ...(delivery ? { delivery } : {}), ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}) };
+      return { ...w.o, verified: true, ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}), ...(delivery ? { delivery } : {}), ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}) };
     });
   }
   // Piso de relevância TAMBÉM na paginação/refino (vistoria 10/08: "outras" de
@@ -3592,7 +3655,9 @@ async function advancePending(
       ctx.longTailOffer
         ? copy.longTailOffer(ctx.longTailOffer.lines.map((line) => (line.qty > 1 ? `${line.qty}x ${line.phrase}` : line.phrase)))
         : undefined;
-    const body = [prefix, offerAgain, copy.conciergeChooseNext()].filter(Boolean).join("\n");
+    // Com a confirmação ("✅ produto") o corpo é SÓ ela: os botões já são o próximo passo
+    // (dono, 05/10). A instrução fica para quando não há o que confirmar.
+    const body = [prefix, offerAgain].filter(Boolean).join("\n") || copy.conciergeChooseNext();
     try {
       markTurnReplied();
       const interactive = await whatsappAdapter.sendChoiceFollowUp(phone, body, followUpOpts);
@@ -4561,6 +4626,21 @@ async function closeWithoutOperator(
     return;
   }
   const names = blocked.map((i) => (i.qty > 1 ? `${i.qty}x ${i.name}` : i.name));
+  // O único item era a escolha de uma vitrine e ela tem OUTRAS opções (05/10: Pacheco sem
+  // confirmação, o cliente teve de buscar tudo de novo): as outras voltam na hora, sem a
+  // que falhou — o cliente só toca em outra.
+  const others = blocked.length === 1 && !rest.length && ctx.lastChoice?.chosenSku === blocked[0].sku
+    ? [...new Map([...ctx.lastChoice.options, ...(ctx.lastChoice.shownOptions ?? [])].map((o) => [o.sku, o])).values()]
+        .filter((o) => o.sku !== blocked[0].sku && !(holdupStores ?? []).includes(o.storeKey ?? CONCIERGE_STORE_KEY))
+        .slice(0, vitrineLimit())
+    : [];
+  if (others.length) {
+    const { chosenSku: _chosen, replaceSku: _replace, ...base } = ctx.lastChoice!;
+    const pending: PendingChoice = { ...base, qty: blocked[0].qty, qtyExplicit: base.qtyExplicit || blocked[0].qty > 1, options: others };
+    await writeCtx(convoId, { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, step: "choosing", pending: [pending] });
+    await sendChoices(phone, pending, copy.itemNotDeliverableShowOthers(names[0]));
+    return;
+  }
   if (!rest.length || depth >= 3) {
     await writeCtx(convoId, { ...addressOnlyCtx(ctx) });
     await reply(phone, copy.itemsNotDeliverableHere(names, false));
@@ -4824,8 +4904,16 @@ async function tryPublishInstantQuote(
         items: items as unknown as object,
         notes: appendOrderNote(current?.notes ?? null, `💲 Preço atualizado pela loja no fechamento: ${repriced.map((r) => `${r.name} R$${r.from.toFixed(2)} → R$${r.to.toFixed(2)}`).join("; ")}.`),
       } });
-      if (convoId) await writeCtx(convoId, { ...ctx, basket: items });
-      await reply(phone, copy.pricesUpdatedByStore(repriced.map((r) => ({ name: r.name, from: display(r.from, r.medicine), to: display(r.to, r.medicine) }))));
+      // NÃO regrava a conversa aqui (05/10, #9AK28P): o contexto já é "aguardando cotação"
+      // deste pedido. Regravar o `ctx` antigo devolvia a cesta à conversa — a cotação saía
+      // como "pedido separado" e o "cartão" seguinte abria um SEGUNDO pedido e uma segunda
+      // cobrança. Os itens repreçados já estão no pedido (e no `ctx.basket` em memória).
+      // Só AVISA quando o preço SUBIU: baixa é boa notícia e o total já sai certo — o aviso
+      // "a loja mudou o preço" num preço menor só parecia erro (dono, 05/10).
+      const raised = repriced.filter((r) => r.to > r.from);
+      if (raised.length) {
+        await reply(phone, copy.pricesUpdatedByStore(raised.map((r) => ({ name: r.name, from: display(r.from, r.medicine), to: display(r.to, r.medicine) }))));
+      }
     }
     const totalFee = Math.round(freights.reduce((sum, f) => sum + f.fee, 0) * 100) / 100;
     const itemsSubtotal = roundMoney(items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0));

@@ -25,6 +25,9 @@ export type FakeVtexOptions = {
   pixDiscountCents?: number;
   // Sellers do SKU na busca por skuId (marketplace). Padrão: só a loja ("1") com estoque.
   sellers?: { sellerId: string; available: number; price?: number }[];
+  // Promoção "leve 2" (Drogarias Pacheco 05/10): a 2ª unidade em diante volta numa linha
+  // separada com este preço.
+  splitPriceCents?: number;
 };
 export function fakeVtex(opts: FakeVtexOptions = {}) {
   const domain = opts.domain ?? "www.drogariasaopaulo.com.br";
@@ -67,7 +70,10 @@ export function fakeVtex(opts: FakeVtexOptions = {}) {
     if (p.endsWith("/items/removeAll")) { form = { ...form, items: [], shippingData: undefined, paymentData: undefined }; recompute(); return json(200, form); }
     if (p.endsWith("/items")) {
       const wanted = (body.orderItems as { id: string; quantity: number; seller: string }[]);
-      form.items = wanted.map((w) => ({ id: w.id, name: "Sabonete Dove Creamy Comfort 90g", seller: w.seller, quantity: w.quantity, sellingPrice: price, availability: w.id === skuId && opts.available !== false && (opts.sellers ?? [{ sellerId: "1", available: 99 }]).some((s) => s.sellerId === w.seller && s.available >= w.quantity) ? "available" : "withoutStock", priceDefinition: { total: price * w.quantity } }));
+      form.items = wanted.flatMap((w) => {
+        const row = (quantity: number, unit: number) => ({ id: w.id, name: "Sabonete Dove Creamy Comfort 90g", seller: w.seller, quantity, sellingPrice: unit, availability: w.id === skuId && opts.available !== false && (opts.sellers ?? [{ sellerId: "1", available: 99 }]).some((s) => s.sellerId === w.seller && s.available >= w.quantity) ? "available" : "withoutStock", priceDefinition: { total: unit * quantity } });
+        return opts.splitPriceCents && w.quantity > 1 ? [row(1, price), row(w.quantity - 1, opts.splitPriceCents)] : [row(w.quantity, price)];
+      });
       recompute(); return json(200, form);
     }
     if (p.endsWith("/attachments/clientProfileData")) { form.clientProfileData = { email: body.email, documentType: body.documentType, isCorporate: body.isCorporate }; return json(200, form); }

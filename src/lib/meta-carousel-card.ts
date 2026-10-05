@@ -20,7 +20,8 @@ export const CAROUSEL_CARD_BODY = "Produto: {{1}}\nPreço do item: *{{2}}*\nPraz
 // (src/lib/meta-setup.ts ensureCarouselV4 + activeCarouselPrefix).
 export const CAROUSEL_CARD_BODY_V4 = "Produto: {{1}}\nPreço: *{{2}}*\nEntrega pela loja: {{3}}\nToque abaixo para adicionar.";
 export function carouselCardBodyFor(prefix: string): string {
-  return /_v4$/.test(prefix) ? CAROUSEL_CARD_BODY_V4 : CAROUSEL_CARD_BODY;
+  // v5 (05/10) só mudou o corpo da mensagem; o card é o do v4.
+  return /_v[45]$/.test(prefix) ? CAROUSEL_CARD_BODY_V4 : CAROUSEL_CARD_BODY;
 }
 // Prazo no card, curto: janela agendada vira só a janela ("amanhã, 12h–15h"); o resto sem o
 // rótulo "prazo da loja:" (o template já tem o rótulo).

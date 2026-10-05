@@ -155,7 +155,9 @@ export function checkCheckout(
     items.some((i) => !e.items.some((j) => j.sku === i.sku && j.qty === i.qty))
   )
     throw new Error("Produtos/quantidades divergentes.");
-  if (e.items.some((i) => i.lineTotalCents !== i.unitPriceCents * i.qty))
+  // Tolerância de meio centavo por unidade: linha que a loja dividiu em preços diferentes
+  // (promoção "leve 2") chega somada, com o unitário arredondado da média (05/10).
+  if (e.items.some((i) => Math.abs(i.lineTotalCents - i.unitPriceCents * i.qty) > Math.floor(i.qty / 2)))
     throw new Error("Preço por quantidade precisa de revisão.");
   if (
     e.totalCents !==

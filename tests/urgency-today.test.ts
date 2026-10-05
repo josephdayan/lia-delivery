@@ -99,7 +99,7 @@ test("sem urgência, nada muda: cabeçalho normal e prazo da entrega mais barata
   __setLiveSimulateForTests(simulate, () => true);
   const phone = await customer();
   const reply = await send(phone, "arroz");
-  assert.match(reply, /Opções de \*arroz\*/, reply.slice(0, 200));
+  assert.match(reply, /Olha o que achei 👇/, reply.slice(0, 200));
   assert.doesNotMatch(reply, /Chega hoje|Nada chega hoje/);
   assert.match(reply, /prazo da loja: 1 dia útil/);
 });

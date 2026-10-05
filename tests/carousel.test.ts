@@ -162,3 +162,14 @@ test("falha assíncrona do carrossel → cards soltos pelo wamid (idempotente)",
     await prisma.$disconnect();
   }
 });
+
+test("v5 (05/10): corpo fixo 'Olha o que achei 👇' — template sem variável e envio sem parâmetro de corpo", async () => {
+  const { buildCarouselTemplate, CAROUSEL_V5_PREFIX } = await import("../src/lib/meta-setup");
+  const template = buildCarouselTemplate(3, "handle", CAROUSEL_V5_PREFIX) as any;
+  assert.equal(template.name, "vitrine_carrossel_v5_3");
+  assert.deepEqual(template.components[0], { type: "body", text: "Olha o que achei 👇" });
+  assert.match(template.components[1].cards[0].components[1].text, /Toque abaixo para adicionar/, "card igual ao v4");
+  const p = buildCarouselPayload("+5511999999999", "vitrine_carrossel_v5_3", "Opções de *ração*:", OPTIONS) as any;
+  assert.equal(p.template.components.length, 1, "só o carrossel");
+  assert.equal(p.template.components[0].type, "carousel");
+});

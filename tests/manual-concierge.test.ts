@@ -133,7 +133,7 @@ test("vitrine: item com preço vira opção; item sem preço é recusado na mesm
   const c = await returningCustomer();
   const out = await c.send("quero coca cola e um vedante pra torneira");
   // A coca existe na vitrine → opções numeradas.
-  assert.match(out, /op(ç|c)(õ|o)es/i);
+  assert.match(out, /Olha o que achei|op(ç|c)(õ|o)es/i);
   assert.match(out.toLowerCase(), /coca/);
   // O vedante não existe → recusa honesta na hora (regra 11/08), nunca "vou cotar".
   // 19/08: com opções na mesma resposta, a recusa ganhou escopo ("não achei — o resto tá abaixo").
@@ -603,7 +603,7 @@ test("'Outras opções' com escolha já fechada REABRE — e o novo pick substit
   const firstSku = ctx0.basket[0].sku as string;
   const reopened = await c.send("opt:outras");
   assert.doesNotMatch(reopened, /outro jeito/i, `não pode cair no reject: ${reopened.slice(0, 200)}`);
-  assert.match(reopened, /op(ç|c)(õ|o)es de/i, `esperava opções de novo: ${reopened.slice(0, 200)}`);
+  assert.match(reopened, /Olha o que achei|op(ç|c)(õ|o)es de/i, `esperava opções de novo: ${reopened.slice(0, 200)}`);
   const convo1 = await prisma.conversation.findFirst({ where: { userId: c.userId } });
   const ctx1 = JSON.parse(convo1!.context ?? "{}");
   assert.equal(ctx1.step, "choosing");
@@ -718,7 +718,7 @@ test("1º testador (24/08): onboarding sobrevive a 'Quem é vc', pergunta de end
   assert.doesNotMatch(q, /manda seu \*endereço/i, "não pode re-pedir endereço");
   // Produto depois de tudo: opções normais.
   const soap = await c.send("quero um sabonete");
-  assert.match(soap, /op(ç|c)(õ|o)es de/i, soap.slice(0, 200));
+  assert.match(soap, /Olha o que achei|op(ç|c)(õ|o)es de/i, soap.slice(0, 200));
 });
 
 test("step need_address órfão com endereço salvo se DESTRAVA no próximo pedido (24/08)", async (t) => {
@@ -744,7 +744,7 @@ test("step need_address órfão com endereço salvo se DESTRAVA no próximo pedi
     }
   });
   const out = await c.send("quero um sabonete");
-  assert.match(out, /op(ç|c)(õ|o)es de|sabonete/i, `deveria buscar, não pedir endereço: ${out.slice(0, 200)}`);
+  assert.match(out, /Olha o que achei|op(ç|c)(õ|o)es de|sabonete/i, `deveria buscar, não pedir endereço: ${out.slice(0, 200)}`);
   assert.doesNotMatch(out, /manda seu \*endereço/i);
   void base;
 });
@@ -824,7 +824,7 @@ test("26/08 P1.6 (adaptado 01/09): dipirona é recusada logo após a escolha, se
   const c = await returningCustomer();
   await c.send("quero coca cola");
   const afterChoice = await c.send("1");
-  assert.match(afterChoice, /1 un/, afterChoice.slice(0, 200));
+  assert.match(afterChoice, /^✅ /m, afterChoice.slice(0, 200));
   const med = await c.send("também queria dipirona");
   assert.match(med, /não posso vender/i, med.slice(0, 250));
   assert.doesNotMatch(med, /1 a 50|quantas unidades/i);
@@ -835,7 +835,7 @@ test("26/08 P2.4 (adaptado 01/09): sem pergunta de quantidade, a mensagem seguin
   const c = await returningCustomer();
   await c.send("quero coca cola");
   const afterChoice = await c.send("1");
-  assert.match(afterChoice, /1 un/, afterChoice.slice(0, 200));
+  assert.match(afterChoice, /^✅ /m, afterChoice.slice(0, 200));
   const second = await c.send("Philco");
   assert.doesNotMatch(second, /1 a 50|quantas unidades/i, `preso na quantidade: ${second.slice(0, 200)}`);
   const convo = await prisma.conversation.findFirst({ where: { userId: c.userId } });
@@ -847,7 +847,7 @@ test("26/08 P1.3: teto de preço sobrevive à paginação ('outras')", async (t)
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const out = await c.send("sabonete até 5 reais");
-  assert.match(out, /op(ç|c)(õ|o)es/i, out.slice(0, 200));
+  assert.match(out, /Olha o que achei|op(ç|c)(õ|o)es/i, out.slice(0, 200));
   await c.send("outras");
   const convo = await prisma.conversation.findFirst({ where: { userId: c.userId } });
   const pending = JSON.parse(convo!.context ?? "{}").pending as Array<{ options: Array<{ unitPrice: number }> }>;
@@ -1045,7 +1045,7 @@ test("rodada 13: 'quatro caixas' é quantidade, '4' ajusta e 'mais três do mesm
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const opts = await c.send("queria quatro caixas de bombom, pode ser qualquer marca");
-  assert.match(opts, /opções de \*/i, `esperava opções: ${opts.slice(0, 200)}`);
+  assert.match(opts, /Olha o que achei|opções de \*/i, `esperava opções: ${opts.slice(0, 200)}`);
   const chosen = await c.send("1");
   // Quantidade veio por extenso → explícita → NUNCA re-pergunta "Quantas unidades?".
   assert.doesNotMatch(chosen, /quantas unidades/i, `re-perguntou quantidade: ${chosen.slice(0, 200)}`);
@@ -1070,7 +1070,7 @@ test("rodada 5: esclarecimento durante a escolha refina o MESMO item, nunca dupl
   // SEGUNDA linha e o cliente levou dois shampoos. Mesmo substantivo = refina, não soma.
   const c = await returningCustomer();
   const first = await c.send("quero uma coca cola, pode ser qualquer marca");
-  assert.match(first, /opções de \*/i, `esperava opções: ${first.slice(0, 200)}`);
+  assert.match(first, /Olha o que achei|opções de \*/i, `esperava opções: ${first.slice(0, 200)}`);
   const clarified = await c.send("pode ser coca zero");
   // Continua UMA escolha (refinada para zero) — nada de fila com 2 refrigerantes.
   assert.doesNotMatch(clarified, /Anotei \*/, `virou item novo: ${clarified.slice(0, 200)}`);
@@ -1153,7 +1153,7 @@ test("botão 'Outra quantidade' (adaptado 01/09): pergunta livre pós-escolha e 
   const c = await returningCustomer();
   await c.send("quero coca cola");
   const afterChoice = await c.send("1");
-  assert.match(afterChoice, /1 un/, afterChoice.slice(0, 150));
+  assert.match(afterChoice, /^✅ /m, afterChoice.slice(0, 150));
   const other = await c.send("qty:other");
   assert.match(other, /1 a 50/i, `esperava pergunta livre: ${other.slice(0, 150)}`);
   await c.send("7");
@@ -1438,7 +1438,7 @@ test("27/08 r3 S14 (adaptado 01/09): escolha assume 1 un e 'esquece' tira da ces
   const afterChoice = await c.send("1");
   // Regra 01/09: nada de "Quantas unidades?" — assume 1 un e avisa como mudar.
   assert.doesNotMatch(afterChoice, /Quantas unidades/i, afterChoice.slice(0, 200));
-  assert.match(afterChoice, /1 un/, afterChoice.slice(0, 200));
+  assert.match(afterChoice, /^✅ /m, afterChoice.slice(0, 200));
   const out = await c.send("aa esquece a coca");
   assert.doesNotMatch(out, /Quantas unidades|1 a 50/i, `insistiu na quantidade do removido: ${out.slice(0, 300)}`);
   assert.match(out, /Tirei/i, out.slice(0, 300));
@@ -1808,7 +1808,7 @@ test("01/09: botão Mudar quantidade reabre 1/2/Outra e o toque ajusta o último
   const c = await returningCustomer();
   await c.send("quero coca cola");
   const confirmed = await c.send("1");
-  assert.match(confirmed, /1 un/, confirmed.slice(0, 200));
+  assert.match(confirmed, /^✅ /m, confirmed.slice(0, 200));
   const ask = await c.send("qtd_alterar");
   assert.match(ask, /Quantas unidades/i, ask.slice(0, 200));
   const adjusted = await c.send("qty:2");
@@ -1823,7 +1823,7 @@ test("01/09: Ver detalhes — 'detalhes 2' devolve a página do produto sem fech
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
   const offer = await c.send("quero ração");
-  assert.match(offer, /opções/i);
+  assert.match(offer, /Olha o que achei|opções/i);
   const details = await c.send("detalhes 2");
   assert.match(details, /🔎/, details.slice(0, 300));
   assert.match(details, /https:\/\//, `sem link: ${details.slice(0, 300)}`);

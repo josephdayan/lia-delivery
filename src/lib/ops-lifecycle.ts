@@ -216,6 +216,10 @@ export async function opsPublishManualQuote(
     const buttonBody = copy.manualQuoteSummary({ ...summaryInput, addressButton: true });
     if (summaryInput.deliveryAddress && buttonBody.length <= 1024) {
       try {
+        // Envio direto pelo adapter (fora do reply()) também é resposta do turno: sem a
+        // marca, a rede anti-silêncio mandava "Me perdi aqui 😅" logo depois do total
+        // (05/10, toque em "cartão" que publicou a cotação).
+        markTurnReplied();
         summarySent = Boolean(await whatsappAdapter.sendQuoteSummary(order.phone, buttonBody));
       } catch (error) {
         console.warn("[whatsapp:quote-summary:fallback-text]", error instanceof Error ? error.message : error);

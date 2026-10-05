@@ -1,3 +1,25 @@
+## 05/10/2026 — Compra do lenço (#FZUI31): 6 defeitos da conversa corrigidos
+
+Compra real do dono (2x lenço Huggies, Mambo, cartão, comprada sozinha). O que deu errado e a
+regra que ficou:
+- **Pedido e cobrança em dobro.** No "pagar", a loja baixou o preço (R$13,90 → R$12,90 de custo) e
+  o repreço regravava a conversa com a cesta antiga → cotação rotulada "esse é separado do que a
+  gente está vendo", o "cartão" abriu um 2º pedido (#FZUI31) e mandou total + pagamento de novo;
+  #9AK28P ficou aberto (cancelado à mão, nada cobrado). Repreço não mexe mais na conversa.
+- **"Me perdi aqui 😅" depois do total.** O resumo com botão contava como turno mudo; agora conta.
+- **Aviso de preço só quando SOBE.** Preço menor entra calado no total.
+- **Preço do card = preço da loja agora.** A simulação da vitrine já rodava; o card passa a usar o
+  `sellingPrice` dela (antes usava a foto semanal do catálogo).
+- **"Não tinha" na Pacheco era falso.** Com 2 un a loja divide a linha em dois preços (promo leve 2);
+  frete ao vivo e o comprador VTEX tratavam isso como erro. Agora somam as linhas (preço médio).
+  Se a escolha mesmo assim não fecha, as OUTRAS opções da vitrine voltam na hora.
+- **Toque em outro card do mesmo carrossel** não é mais "botão de conversa antiga": a vitrine dos
+  últimos carrosséis (6h) é recuperada e o item entra na cesta.
+- **Textos (dono):** vitrine abre só com "Olha o que achei 👇" (template de carrossel v5, criado
+  pelo cron horário e usado sozinho quando a Meta aprovar; até lá segue o v4); "Adicionar ao
+  carrinho" responde só "✅ produto" com os botões embaixo; ajuste de quantidade = "✅ 2x produto".
+Teste: `tests/compra-lenco-2026-10-05.test.ts` (reproduz a conversa de produção).
+
 ## 29/09/2026 (noite) — Remédio isento no chat implementado, desligado por padrão
 
 Commits 5698ef5 e dd4570b + rotina semanal. Com `LIA_MEDICINE_MIP=true`: vitrine de remédio sem

@@ -321,7 +321,8 @@ export function buildCarouselPayload(to: string, templateName: string, header: s
       name: templateName,
       language: { code: process.env.LIA_TEMPLATE_LANG ?? "pt_BR" },
       components: [
-        { type: "body", parameters: [{ type: "text", text: templateParam(header) }] },
+        // v5 (05/10): corpo fixo "Olha o que achei 👇", sem variável — o cabeçalho não vai.
+        ...(/^vitrine_carrossel_v5_\d+$/.test(templateName) ? [] : [{ type: "body", parameters: [{ type: "text", text: templateParam(header) }] }]),
         {
           type: "carousel",
           cards: options.map((option, index) => ({

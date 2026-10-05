@@ -171,10 +171,14 @@ export class VtexCheckoutSession {
     const withItems = await this.orderFormCall("items", `/orderForm/${orderFormId}/items`, { orderItems });
     const echoed = (withItems.items as Json[] | undefined) ?? [];
     for (const wanted of orderItems) {
-      const got = echoed.find((i) => String(i.id) === wanted.id);
-      if (!got) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id} não entrou na cesta`);
-      if (got.availability !== "available") throw new VtexCheckoutRejected("items", 200, `item ${wanted.id} indisponível (${String(got.availability)})`);
-      if (Number(got.quantity) !== wanted.quantity) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id}: quantidade ${String(got.quantity)} ≠ ${wanted.quantity}`);
+      // A loja pode dividir a mesma linha em várias com preços diferentes (promoção "leve 2",
+      // Drogarias Pacheco 05/10): a quantidade é a SOMA das linhas daquele item.
+      const rows = echoed.filter((i) => String(i.id) === wanted.id);
+      if (!rows.length) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id} não entrou na cesta`);
+      const off = rows.find((i) => i.availability !== "available");
+      if (off) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id} indisponível (${String(off.availability)})`);
+      const got = rows.reduce((sum, i) => sum + Number(i.quantity), 0);
+      if (got !== wanted.quantity) throw new VtexCheckoutRejected("items", 200, `item ${wanted.id}: quantidade ${String(got)} ≠ ${wanted.quantity}`);
     }
     const corporate = input.profile.documentType === "cnpj";
     const profiled = await this.orderFormCall("clientProfileData", `/orderForm/${orderFormId}/attachments/clientProfileData`, {
@@ -268,13 +272,24 @@ export class VtexCheckoutSession {
     if (payments.length !== 1 || !Number.isFinite(payValue) || payValue > Number(form.value) || String(payments[0].paymentSystem) !== PIX_PAYMENT_SYSTEM)
       throw new Error("Pix não está selecionado no checkout.");
     const { skuPrefix } = this.store;
-    const items = ((form.items as Json[] | undefined) ?? []).map((i) => {
+    const rows = ((form.items as Json[] | undefined) ?? []).map((i) => {
       const sku = `${skuPrefix}${String(i.id)}`;
       if (!job.items.some((j) => j.sku === sku) || i.availability !== "available") throw new Error("Produto divergente ou sem estoque.");
       const unit = Number(i.sellingPrice);
       const total = Number((i.priceDefinition as Json | undefined)?.total ?? unit * Number(i.quantity));
       return { sku, retailerSku: String(i.id), seller: String(i.seller), name: String(i.name).slice(0, 300), qty: Number(i.quantity), unitPriceCents: unit, lineTotalCents: total };
     });
+    // Linha dividida pela loja (promoção "leve 2", 05/10) volta a ser UMA por sku: quantidade e
+    // total somados, preço unitário = média (a conferência aceita o arredondamento disso).
+    const items: typeof rows = [];
+    for (const row of rows) {
+      const same = items.find((i) => i.sku === row.sku);
+      if (!same) { items.push({ ...row }); continue; }
+      if (same.seller !== row.seller) throw new Error("Produto dividido entre vendedores.");
+      same.qty += row.qty;
+      same.lineTotalCents += row.lineTotalCents;
+      same.unitPriceCents = Math.round(same.lineTotalCents / same.qty);
+    }
     const freight = ((form.totalizers as Json[] | undefined) ?? []).find((t) => t.id === "Shipping");
     const itemsAndFreight = items.reduce((a, i) => a + i.lineTotalCents, 0) + Number(freight?.value ?? 0);
     const discountCents = Math.max(0, itemsAndFreight - payValue);

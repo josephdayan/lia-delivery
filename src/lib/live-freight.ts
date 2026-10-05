@@ -225,7 +225,11 @@ export async function liveStoreFreight(
     // O frete é POR ITEM no VTEX (um logisticsInfo por item). Uma resposta que não cobre
     // a cesta inteira não permite calcular o frete do carrinho — sem isso, uma cesta de
     // 5 itens era cobrada pelo frete de 1 (achatava todos os SLAs e pegava o mais barato).
-    if (simulated.length !== simItems.length || logistics.length !== simItems.length) {
+    // A loja pode DIVIDIR a mesma linha em várias (promoção "leve 2": 1 un a R$7,57 + 1 un a
+    // R$10,82 — Drogarias Pacheco, 05/10). Cada linha devolvida tem sua logística; o eco por
+    // multiconjunto abaixo garante que a soma ainda é a nossa cesta. Antes, contar linhas
+    // tratava a divisão como erro e o item "não tinha" para o CEP.
+    if (simulated.length < simItems.length || logistics.length !== simulated.length) {
       return { kind: "unavailable" };
     }
     // O ECO tem que ser a NOSSA cesta (2ª revisão, 11/08): contar linhas não basta —
@@ -255,7 +259,7 @@ export async function liveStoreFreight(
     const infoByItem = new Map<number, LogisticsInfo>();
     for (let i = 0; i < logistics.length; i++) {
       const index = typeof logistics[i].itemIndex === "number" ? logistics[i].itemIndex! : i;
-      if (index < 0 || index >= simItems.length || infoByItem.has(index)) return { kind: "unavailable" };
+      if (index < 0 || index >= simulated.length || infoByItem.has(index)) return { kind: "unavailable" };
       infoByItem.set(index, logistics[i]);
     }
 
@@ -308,8 +312,13 @@ export async function liveStoreFreight(
     const unitPrices: Record<string, number> = {};
     for (const item of items) {
       const m = store.sku.exec(item.sku);
-      const sim = m ? simulated.find((x) => String(x.id ?? "") === m[1]) : undefined;
-      if (sim && typeof sim.sellingPrice === "number" && Number.isFinite(sim.sellingPrice) && sim.sellingPrice > 0) unitPrices[item.sku] = sim.sellingPrice / 100;
+      // Linha dividida em preços diferentes: o preço unitário é a média ponderada — é o que
+      // a loja cobra pela quantidade inteira.
+      const rows = m ? simulated.filter((x) => String(x.id ?? "") === m[1]) : [];
+      if (!rows.length || rows.some((x) => typeof x.sellingPrice !== "number" || !Number.isFinite(x.sellingPrice) || x.sellingPrice <= 0)) continue;
+      const qty = rows.reduce((sum, x) => sum + (x.quantity ?? 0), 0);
+      const cents = rows.reduce((sum, x) => sum + x.sellingPrice! * (x.quantity ?? 0), 0);
+      if (qty > 0) unitPrices[item.sku] = cents / qty / 100;
     }
     return { kind: "ok", fee, estimate, ...(faster ? { faster } : {}), ...(Object.keys(unitPrices).length ? { unitPrices } : {}) };
   } catch {
@@ -323,7 +332,10 @@ export async function liveStoreFreight(
 // loja não ecoou fica fora do mapa (desconhecido). null = loja não consultável/erro.
 // `fast*` (04/09): a entrega mais rápida que a loja oferece pro item — usada quando o cliente
 // pede "pra hoje" (o card mostra esse prazo e a cotação oferece a opção rápida).
-export type LiveItemCheck = { sku: string; available: boolean; fee?: number; estimate?: string; etaMinutes?: number; fastFee?: number; fastEstimate?: string; fastEtaMinutes?: number };
+// `unitPrice` (05/10): preço de CUSTO que a loja cobra AGORA por 1 unidade (sellingPrice da
+// simulação). A vitrine mostra este, não a foto semanal do catálogo — o card dizia R$15,29 e
+// o fechamento corrigia para R$14,19 ("a loja mudou o preço" logo depois de escolher).
+export type LiveItemCheck = { sku: string; available: boolean; fee?: number; estimate?: string; etaMinutes?: number; fastFee?: number; fastEstimate?: string; fastEtaMinutes?: number; unitPrice?: number };
 
 export async function liveItemAvailability(storeKey: string, skus: string[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   const store = VTEX_LIVE[storeKey];
@@ -383,9 +395,11 @@ export async function liveItemAvailability(storeKey: string, skus: string[], cep
         return sla.price! < best.price! ? sla : best;
       });
       const fastMinutes = estimateMinutes(fastest.shippingEstimate);
+      const livePrice = typeof item.sellingPrice === "number" && Number.isFinite(item.sellingPrice) && item.sellingPrice > 0 ? item.sellingPrice / 100 : undefined;
       result.set(entry.sku, {
         sku: entry.sku,
         available: true,
+        ...(livePrice != null ? { unitPrice: livePrice } : {}),
         fee: cheapest.price! / 100,
         estimate: cheapest.shippingEstimate,
         ...(minutes >= 0 ? { etaMinutes: minutes } : {}),
