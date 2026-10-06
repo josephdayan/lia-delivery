@@ -1,3 +1,11 @@
+## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
+
+- [ ] Dono: cadastrar/reenviar a conta bancária (saque) no Asaas — `bankAccountInfo` está
+  PENDING pela API — e/ou pedir ao suporte (chat "Falar com atendente") que libere o Pix da conta
+  8100866-6, citando o erro `invalid_action` no `POST /v3/pix/qrCodes/decode`.
+- [ ] Conferir em `/api/ops/asaas-status` (logado no /ops): `bankAccountInfo` APPROVED e
+  `decode.http` 200. Só então a compra automática volta a fechar.
+
 ## 06/10/2026 — Carrossel v4/v5: card com 2 quebras de linha
 
 - [x] Card v4/v5 com 2 quebras de linha; teste de limites cobre v3, v4 e v5.

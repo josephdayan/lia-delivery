@@ -1,3 +1,14 @@
+## 06/10/2026 — Asaas recusa o Pix de saída: "conta não aprovada" (bankAccountInfo PENDING)
+
+Pedido da Mambo (job cmuwozhi00005kevwy7gt5v4c, R$46,66) às 10h06: o decode do Pix da loja
+voltou `Asaas 400 invalid_action: Assim que você tiver sua conta aprovada, você poderá utilizar o
+Pix no Asaas`. Job cancelado e cliente estornado sozinho no MP (refund 3420560228). Na véspera
+(05/10 13h49) o Asaas pagou R$41,70 à Mambo normalmente. Painel: cadastro/documentos/aprovação
+geral "Aprovado", chave Pix ativa, saldo R$608,21, nenhum aviso. Diagnóstico pela API (rota nova
+só de leitura `GET /api/ops/asaas-status`, commit 1799e4e): `commercialInfo/documentation/general
+= APPROVED`, **`bankAccountInfo = PENDING`**, decode de uma cobrança de R$1 ainda recusado às
+10h52. Enquanto isso, toda compra automática falha no Pix e vira estorno.
+
 ## 06/10/2026 — Carrossel v4/v5 recusado na criação: card com 3 quebras de linha
 
 O cron `/api/cron/meta-templates` dava ERRO nos 8 templates `vitrine_carrossel_v4/v5_{2..5}` a
