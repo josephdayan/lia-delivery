@@ -914,6 +914,28 @@ function isVagueWant(n: string): boolean {
   return words.length > 0 && words.length <= 16 && words.every((w) => VAGUE_WANT_WORDS.has(w));
 }
 
+// Motivo do cancelamento (06/10, testadora no grupo: "quando cancelado faz a pergunta com
+// algumas opções de motivo"). O toque na lista volta como `cancelmotivo:<chave>`; digitado, só
+// vale número ou palavra curta do motivo — qualquer outra coisa segue o fluxo normal (um
+// pedido novo logo depois do cancelamento NUNCA pode virar motivo).
+export const CANCEL_REASON_KEYS = ["frete", "preco", "outro_app", "desisti", "outro"] as const;
+export type CancelReasonKey = (typeof CANCEL_REASON_KEYS)[number];
+export function parseCancelReason(text: string, asked: boolean): CancelReasonKey | null {
+  const n = normalizeMsg(text);
+  const tapped = /^cancelmotivo:([a-z_]+)$/.exec(n)?.[1];
+  if (tapped) return (CANCEL_REASON_KEYS as readonly string[]).includes(tapped) ? (tapped as CancelReasonKey) : null;
+  if (!asked) return null;
+  const number = /^([1-5])\s*[).]?$/.exec(n)?.[1];
+  if (number) return CANCEL_REASON_KEYS[Number(number) - 1];
+  if (n.split(" ").length > 6) return null;
+  if (/\bfrete\b/.test(n)) return "frete";
+  if (/\b(outro|outra)\s+(app|aplicativo|loja|lugar|site)\b|\b(rappi|ifood|mercado livre|amazon|shopee)\b/.test(n)) return "outro_app";
+  if (/\b(produto|preco|valor)\b.*\bcar[oa]\b|\bcar[oa]\b.*\b(produto|preco|valor)\b|^(muito |ta |achei )?car[oa]$/.test(n)) return "preco";
+  if (/\bdesist/.test(n)) return "desisti";
+  if (/^outro( motivo)?$/.test(n)) return "outro";
+  return null;
+}
+
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
   if (!n) return { kind: "free_text" };

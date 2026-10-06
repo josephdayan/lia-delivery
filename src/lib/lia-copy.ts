@@ -849,6 +849,32 @@ export function canceledUnpaid(): string {
   return "Cancelado. Nada foi cobrado. Quando quiser, é só pedir de novo.";
 }
 
+// Motivo do cancelamento (06/10, testadora): opções de tocar, na ordem das chaves de
+// CANCEL_REASON_KEYS (lia-intents). Título de linha de lista ≤ 24 caracteres.
+export const CANCEL_REASON_OPTIONS = [
+  { key: "frete", title: "Frete caro" },
+  { key: "preco", title: "Produto caro" },
+  { key: "outro_app", title: "Comprei em outro app" },
+  { key: "desisti", title: "Desisti da compra" },
+  { key: "outro", title: "Outro motivo" }
+] as const;
+
+export function cancelReasonAsk(): string {
+  return "Se puder, me conta por que cancelou? Isso me ajuda a melhorar.";
+}
+
+export function cancelReasonAskText(): string {
+  return [cancelReasonAsk(), ...CANCEL_REASON_OPTIONS.map((o, i) => `*${i + 1})* ${o.title}`)].join("\n");
+}
+
+export function cancelReasonLabel(key: string): string {
+  return CANCEL_REASON_OPTIONS.find((o) => o.key === key)?.title ?? key;
+}
+
+export function cancelReasonThanks(): string {
+  return "Obrigada, anotei 🙏 Quando quiser, é só pedir de novo.";
+}
+
 // Regra de 11/09 (CDC art. 49): antes de a compra na loja sair, o cliente pode desistir e
 // o estorno é na hora. Depois que a compra saiu, não dá — item faltando é estornado e
 // atraso é avisado. O texto é um só nas três entradas, de propósito.

@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1095,6 +1095,25 @@ async function handleDeliveryTurn(
     ctx.deliveryAddressVerified = true;
   }
   const intent = detectIntent(text);
+
+  // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
+  // perguntar) vira nota no pedido cancelado. Pergunta vale 30 min e UMA resposta; qualquer
+  // outra mensagem desarma e segue o fluxo normal — nunca prende o cliente.
+  if (ctx.cancelReason || /^cancelmotivo:/.test(normalizeMsg(text))) {
+    const asked = ctx.cancelReason && Date.now() - ctx.cancelReason.askedAt < 30 * 60_000 ? ctx.cancelReason : undefined;
+    const reason = parseCancelReason(text, Boolean(asked));
+    const orderId = asked?.orderId ?? ctx.lastCanceledOrderId;
+    if (ctx.cancelReason) {
+      ctx.cancelReason = undefined;
+      await writeCtx(convo.id, ctx);
+    }
+    if (reason) {
+      await recordCancelReason(orderId, reason);
+      await reply(phone, copy.cancelReasonThanks());
+      return;
+    }
+    if (/^cancelmotivo:/.test(normalizeMsg(text))) return;
+  }
 
   // Auto-expire a stale cart: if the last activity was over 30 min ago, start fresh
   // (keep only the saved address) so a leftover basket from a previous session doesn't
@@ -2864,6 +2883,35 @@ async function handlePaidClaim(phone: string, convoId: string, userId: string, c
   await reply(phone, copy.pixNotSeenYet());
 }
 
+// Testadora no grupo (06/10): "quando cancelado faz a pergunta com algumas opções de motivo,
+// por exemplo: valor frete, valor produto, comprei outro app, desisti da compra". Lista de
+// tocar no Meta; fora dele (ou se falhar), a mesma lista numerada em texto.
+async function askCancelReason(phone: string) {
+  try {
+    const sent = await whatsappAdapter.sendListMessage(phone, {
+      body: copy.cancelReasonAsk(),
+      buttonText: "Escolher motivo",
+      sections: [{ rows: copy.CANCEL_REASON_OPTIONS.map((o) => ({ id: `cancelmotivo:${o.key}`, title: o.title })) }]
+    });
+    if (sent) {
+      markTurnReplied();
+      return;
+    }
+  } catch (error) {
+    console.warn("[whatsapp:cancel-reason:fallback-text]", error instanceof Error ? error.message : error);
+  }
+  await reply(phone, copy.cancelReasonAskText());
+}
+
+async function recordCancelReason(orderId: string | undefined, reason: string) {
+  const label = copy.cancelReasonLabel(reason);
+  console.log("[cancel-reason]", reason, orderId ?? "-");
+  if (!orderId) return;
+  const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
+  if (!order) return;
+  await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(order.notes, `📝 Motivo do cancelamento (cliente): ${label}`) } });
+}
+
 async function handleCancel(
   phone: string,
   convoId: string,
@@ -2932,17 +2980,19 @@ async function handleCancel(
   }
   // O contexto limpo LEMBRA qual pedido acabou de ser cancelado: "cadê meu pedido?"
   // em seguida fala dele primeiro (27/08 S17).
-  const canceledCtx = { ...addressOnlyCtx(ctx, userCep), lastCanceledOrderId: order.id };
+  const canceledCtx = { ...addressOnlyCtx(ctx, userCep), lastCanceledOrderId: order.id, cancelReason: { orderId: order.id, askedAt: Date.now() } };
   if (order.status === AWAITING_OPERATOR_QUOTE_STATUS) {
     await prisma.deliveryOrder.update({ where: { id: order.id }, data: { status: "canceled" } });
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
   if (order.status === "awaiting_supplier_validation" || order.status === "awaiting_quote_confirmation") {
     await cancelPendingRetailerQuote(order.id);
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
   if (order.status === "awaiting_payment") {
@@ -2958,6 +3008,7 @@ async function handleCancel(
     }
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
   if (isOrderOutForDelivery(order.status)) {
@@ -2972,6 +3023,7 @@ async function handleCancel(
   if (outcome.ok) {
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.withdrawnRefunded(outcome.amount));
+    await askCancelReason(phone);
     return;
   }
   await reply(phone, copy.cancelRequestedPaid());
