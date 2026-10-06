@@ -271,5 +271,49 @@ export const GOLDEN_CASES: GoldenCase[] = [
     deterministic: true,
     note: "'Premier Raças Específicas Bulldog Francês 1 kg' não diz 'cão' no nome — a raça diz"
   },
+  {
+    name: "shampoo genérico não traz remédio (cetoconazol) entre as 3 (M5)",
+    query: "shampoo",
+    allExclude: /cetoconazol|generico|\d+\s?mg/,
+    top1Include: /shampoo/,
+    env: AUTO_ROSTER,
+    deterministic: true
+  },
+  {
+    name: "fralda sem público é a infantil — nem geriátrica nem de cachorro (M5)",
+    query: "fralda",
+    allExclude: /geriatric|adulto|bigfral|macho|femea|dogs|petix/,
+    top1Include: /fralda/,
+    env: AUTO_ROSTER,
+    deterministic: true
+  },
+  { name: "fralda XG sem público é a infantil (M5)", query: "fralda xg", allExclude: /geriatric|adulto|bigfral/, top1Include: /fralda.*\bxg\b/, env: AUTO_ROSTER, deterministic: true },
+  { name: "fralda geriátrica continua achável quando pedida", query: "fralda geriatrica", top1Include: /geriatric/, env: AUTO_ROSTER, deterministic: true },
+  { name: "macarrão é massa seca, não o instantâneo (M5)", query: "macarrao", top1Exclude: /instantaneo|lamen/, top1Include: /macarrao/, env: AUTO_ROSTER, deterministic: true },
+  {
+    name: "feijão genérico = carioca primeiro (M5, só a IA)",
+    query: "feijao",
+    top1Include: /carioca/,
+    env: AUTO_ROSTER,
+    deterministic: false,
+    note: "preferência regional (SP); o scorer não ganha regra por produto — quem decide é o rerank"
+  },
+  {
+    name: "presente nunca é a sacola de presente (A7)",
+    query: "presente",
+    allExclude: /^sacola|^embalage|^papel/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "'presente pra minha mãe até R$100' → única opção 'Sacola Presenteável P' R$5,49"
+  },
+  {
+    name: "presente de aniversário pra menino de 5 anos acha brinquedo (A7)",
+    query: "brinquedo menino 5 anos",
+    message: "presente de aniversário pra menino de 5 anos",
+    top1Include: /brinquedo|boneco|carrinho|lego|jogo|hot wheels|bola/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "com a Ri Happy no ar a Lia dizia 'não achei': 'menino'/'anos' contavam como palavras do produto"
+  },
   { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true }
 ];

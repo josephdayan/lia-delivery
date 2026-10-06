@@ -244,6 +244,12 @@ const PET_INTRINSIC_RE = /\b(racao|racoes|petiscos?|bifinhos?|areia|coleiras?|ar
 // Marcas de item pet para a PENALIDADE geral. Sem o "pet" solto do PET_ANY_RE de
 // propósito: em catálogo brasileiro "PET" é a garrafa plástica ("Coca-Cola Pet 2L"),
 // então usá-lo aqui penalizava refrigerante como se fosse ração.
+const GIFT_WRAP_HEAD_RE = /^(sacolas?|embalage\w*|papel|lacos?|fitas?|caixas? presente\w*|cartao presente|vale presente|gift card)\b/;
+const GIFT_WRAP_ASK_RE = /\b(sacolas?|embalage\w*|papel|lacos?|fitas?|caixas?|cartao|vale|gift)\b/;
+// Público (menino/menina/idade) qualifica o pedido de presente/brinquedo, mas raramente está
+// no nome do produto: não conta na cobertura (06/10, A7: "brinquedo menino 5 anos" → nada).
+const AUDIENCE_WORDS = new Set(["menino", "meninos", "menina", "meninas", "crianca", "criancas", "anos", "ano", "infantil", "bebe", "adolescente"]);
+const ADULT_DIAPER_RE = /\b(adultos?|geriatric[ao]s?|incontinencia|bigfral|tena|plenitud|dauf)\b/;
 const PET_SPECIES_RE = /\b(caes|cao|cachorros?|gatos?|felinos?|caninos?|aquario|peixes?|roedores?|passaros?)\b/;
 
 // Variantes "processadas" que só devem vencer quando pedidas ("café" = torrado/moído,
@@ -253,7 +259,8 @@ const PET_SPECIES_RE = /\b(caes|cao|cachorros?|gatos?|felinos?|caninos?|aquario|
 // "agua" — mesma classe da sanitária/oxigenada (água que não é água de beber).
 // "saborizada" entrou em 17/08: a varredura fit da colheita trouxe águas saborizadas
 // zero pro catálogo e "água" seca passou a devolver maracujá em vez de mineral (golden).
-const PROCESSED_VARIANTS = new Set(["soy", "condensado", "condensada", "soluvel", "sache", "saches", "capsula", "capsulas", "fermentado", "fermentada", "vegetal", "sanitaria", "oxigenada", "tonica", "micelar", "termal", "saborizada", "saborizado"]);
+// "instantaneo" (06/10, M5): "macarrão" é massa seca; o instantâneo (lámen) só quando pedido.
+const PROCESSED_VARIANTS = new Set(["instantaneo", "instantanea", "soy", "condensado", "condensada", "soluvel", "sache", "saches", "capsula", "capsulas", "fermentado", "fermentada", "vegetal", "sanitaria", "oxigenada", "tonica", "micelar", "termal", "saborizada", "saborizado"]);
 // "Leite DE COCO" é tão pouco "leite" quanto o de soja: quem pede leite quer o de vaca.
 // A lista existia mas estava incompleta, e o coco (barato, 200ml) vencia o desempate de
 // preço — pedir "leite" devolvia leite de coco.
@@ -416,6 +423,12 @@ function scoreQuery(query: string, item: CatalogItem): number {
     }
   }
 
+  // Embalagem nunca é o presente (06/10, A7: "presente pra minha mãe até R$100" → "Sacola
+  // Presenteável P" de R$5,49). Pedido de presente só traz sacola/papel/cartão-presente quando
+  // a pessoa pediu a embalagem.
+  const queryNormEarly = normalizeText(query);
+  if (/\bpresentes?\b/.test(queryNormEarly) && GIFT_WRAP_HEAD_RE.test(nameNorm) && !GIFT_WRAP_ASK_RE.test(queryNormEarly)) return 0;
+
   // Species guard: a dog request must NEVER surface cat food (or vice versa).
   const queryAnimal = animalOf(effTokens);
   const itemAnimal = animalOf(nameWords, true);
@@ -575,7 +588,16 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // pra higiene/beleza; aqui é a versão geral, e como PENALIDADE (não zero) porque
     // existe item que só existe em versão pet. Palavra intrinsecamente pet desliga:
     // pedir "ração" não pode punir toda ração por ela dizer "Cães" no nome.
-    if (!queryAnimal && PET_SPECIES_RE.test(nameNorm) && !PET_INTRINSIC_RE.test(queryNorm)) score -= 3;
+    // 06/10 (M5): a CATEGORIA da loja também diz que é pet ("Fralda … para Macho Petix" está em
+    // "cachorro higiene e limpeza") — "fralda" mostrava fralda de cachorro.
+    const petHay = `${nameNorm} ${normalizeText(item.category ?? "")}`;
+    if (!queryAnimal && PET_SPECIES_RE.test(petHay) && !PET_INTRINSIC_RE.test(queryNorm)) score -= 3;
+    // Variante de PÚBLICO na fralda (06/10, M5): "fralda"/"fralda XG" é a infantil; a geriátrica
+    // só quando pedida (vinham 3 Bigfral adulto para "fralda XG").
+    if (/\bfraldas?\b/.test(nameNorm) && ADULT_DIAPER_RE.test(nameNorm) && !ADULT_DIAPER_RE.test(queryNorm) && !/\b(idos[oa]s?|velh[oa]s?|vovo|vo)\b/.test(queryNorm)) score -= 3;
+    // Higiene/beleza pedida sem falar de remédio (06/10, M5): o produto com DOSE ou "genérico"
+    // no nome é medicamento ("Shampoo Cetoconazol 20mg/ml Genérico") e vai para trás.
+    if (effTokens.some((t) => HUMAN_PRODUCT_WORDS.has(t)) && /\b\d+(?:[.,]\d+)?\s*mg\b|\bgenerico\b/.test(nameNorm) && !/\b(mg|generico|remedio|anticaspa|cetoconazol)\b/.test(queryNorm)) score -= 2;
     // Pedido de UMA palavra genérica ("leite", "ovos", "café") = o produto básico. Um
     // qualificador "DE x" que o cliente não pediu troca o TIPO do produto, não a variante:
     // "Leite de Rosas" é loção de pele, "Leite de Coco" é ingrediente, "Ovos de Codorna"
@@ -641,6 +663,11 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   const wordTokens = queryTokens(query).filter(
     (token) => !negs.has(token) && !MEASURE_TOKEN_RE.test(token) && !/^\d+$/.test(token)
   );
+  // Pedido de presente/brinquedo: o público (menino, 5 anos) não precisa estar no nome.
+  if (/\b(brinquedos?|presentes?)\b/.test(normalizeText(query))) {
+    const core = wordTokens.filter((token) => !AUDIENCE_WORDS.has(token));
+    if (core.length) wordTokens.splice(0, wordTokens.length, ...core);
+  }
   if (!wordTokens.length) return false;
 
   const nameWords = words(item.name);
