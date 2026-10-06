@@ -898,3 +898,8 @@ test("escolha por ordinal: quarto e quinto (vitrine de 5 no carrossel, 10/09)", 
   const short = parseChoiceReply("o quinto", five.slice(0, 3) as any);
   assert.ok(!short || short.type !== "pick" || short.index !== 4, "quinto sem 5 opções não escolhe a 5ª");
 });
+
+test("06/10: botão de boas-vindas 'Peça qualquer coisa 🛒' é pedido de compra, não busca", () => {
+  assert.equal(detectIntent("Peça qualquer coisa 🛒").kind, "want_items");
+  assert.equal(detectIntent("pedir qualquer coisa").kind, "want_items");
+});

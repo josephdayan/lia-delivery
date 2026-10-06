@@ -879,6 +879,8 @@ const EMOJI_ONLY_RE = /^[\p{Extended_Pictographic}️‍\s]+$/u;
 // intenção de comprar SEM item nenhum. Não pode virar busca (dá "não entendi").
 const WANT_ITEMS_RE =
   /^(?:oi[,!\s]+)?(?:eu )?(?:vou querer|quero|queria|gostaria|preciso|to precisando|estou precisando)(?: (?:de )?(?:comprar|pedir|encomendar|fazer (?:um |uma )?(?:pedido|compra|encomenda)|umas? coisas?|algumas coisas)| de)?[\s!.,…]*$/;
+// Botão de boas-vindas do WhatsApp (05/10, dono): "Peça qualquer coisa" chega como texto.
+const ASK_ANYTHING_RE = /^(?:pe[cç]a|pedir|quero pedir) qualquer coisa\W*$/;
 
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
@@ -1253,7 +1255,7 @@ export function detectIntent(text: string): Intent {
 
   // "quero" / "queria comprar" / "quero fazer um pedido" sozinho: vontade de comprar
   // sem dizer O QUÊ. Buscar isso vira "Não entendi seu pedido" — frio. Perguntamos.
-  if (WANT_ITEMS_RE.test(n)) return { kind: "want_items" };
+  if (WANT_ITEMS_RE.test(n) || ASK_ANYTHING_RE.test(n)) return { kind: "want_items" };
 
   // Pergunta operacional (frete/prazo/área/pagamento) SEM cara de produto — responder
   // com copy de serviço; cair em busca aqui gera "sabonete pra quem pergunta de frete".

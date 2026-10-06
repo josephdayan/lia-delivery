@@ -20,7 +20,8 @@ export const META_PROFILE = {
 
 // Até 4 perguntas sugeridas, ≤ 80 caracteres cada. Aparecem quando alguém abre o chat
 // pela primeira vez; o toque chega como mensagem de texto normal.
-export const META_PROMPTS = ["Quero um chá", "Ração pro meu cachorro", "Papel higiênico e sabão", "Um presente da Boticário"];
+// 06/10 (dono): exemplos soltos ("Quero um chá") pareciam estranhos — um convite só.
+export const META_PROMPTS = ["Peça qualquer coisa 🛒"];
 
 // Flow de endereço: CEP/rua/bairro/cidade pré-preenchidos (ViaCEP); o cliente completa
 // número e complemento com validação. Terminal: o "complete" volta como nfm_reply.

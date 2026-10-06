@@ -1,3 +1,9 @@
+## 06/10/2026 — Boas-vindas do WhatsApp: um convite só
+
+Os botões de sugestão da 1ª conversa ("Quero um chá", "Ração pro meu cachorro"…) pareciam
+estranhos (dono). Agora é um só: **"Peça qualquer coisa 🛒"**, lido como "quero fazer um pedido"
+(`want_items`). Aplicar na Meta = `/api/ops/meta-setup?action=welcome` logado no /ops.
+
 ## 05/10/2026 (tarde) — Remédio LIGADO em produção + 1º teste real do dono (Advil) corrigido
 
 `LIA_MEDICINE_MIP=true` na Vercel (dono, 05/10; e-mail `contato+teste@` chegou na caixa). 1º pedido
