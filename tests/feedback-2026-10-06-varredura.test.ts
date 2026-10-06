@@ -304,3 +304,24 @@ test("'ok' com a cesta montada mostra o total, não encerra", async (t) => {
   assert.doesNotMatch(out, /Imagina!/, out.slice(0, 200));
   assert.match(out, /Total|pedido|endere|pagar/i, out.slice(0, 300));
 });
+
+test("trocar o endereço mandando rua + CEP com pedido pago avisa que esse pedido vai pro endereço antigo", async (t) => {
+  if (!dbOk) return t.skip();
+  const realFetch = global.fetch;
+  global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (/viacep\.com\.br\/ws\/01305100/.test(url)) return new Response(JSON.stringify({ logradouro: "Rua Augusta", bairro: "Consolação", localidade: "São Paulo", uf: "SP" }), { status: 200 });
+    return realFetch(input, init);
+  }) as typeof fetch;
+  try {
+    const phone = await customer();
+    const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+    await prisma.deliveryOrder.create({
+      data: { userId: user.id, phone, status: "paid", paidAt: new Date(), total: 30, itemsSubtotal: 25, deliveryFee: 5, items: [], storeKey: "concierge", cep: "01310-100", deliveryAddress: ADDRESS }
+    });
+    const out = await send(phone, "Rua Augusta 500, Consolação, São Paulo, 01305-100");
+    assert.match(out, /já está pago e vai para/i, out.slice(0, 400));
+  } finally {
+    global.fetch = realFetch;
+  }
+});

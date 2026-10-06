@@ -22,6 +22,8 @@ import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, lo
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
+import { CEP_RE_GLOBAL } from "@/lib/lia-intents";
+import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
@@ -575,7 +577,11 @@ async function askSignup(phone: string, body: string, fallback: () => Promise<vo
 async function askStreetOrSignup(phone: string, ctx: DeliveryContext, userCep: string | null | undefined) {
   if (ctx.cep || userCep) return askStreetAndNumber(phone, ctx);
   const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
-  await askSignup(phone, copy.signupFormBody(noted, false), () => askStreetAndNumber(phone, ctx));
+  // Sem CEP nenhum, o texto pede o endereço COM CEP (06/10: "Falta o endereço: rua, número e
+  // complemento" saía para quem nem tinha mandado endereço e soava como cobrança).
+  await askSignup(phone, copy.signupFormBody(noted, false), () =>
+    reply(phone, noted.length ? `${copy.notedItemsLine(noted)}\n\n${copy.askAddressWithCep()}` : copy.askAddressWithCep())
+  );
 }
 
 // Rua/número/complemento com o Flow de endereço (formulário dentro do chat, 04/09) quando
@@ -603,7 +609,13 @@ async function askStreetAndNumber(phone: string, ctx: DeliveryContext) {
       console.warn("[whatsapp:meta:flow:fallback-text]", error instanceof Error ? error.message : error);
     }
   }
-  await reply(phone, copy.askFullDeliveryAddress());
+  // Rua conhecida pelo CEP (06/10, A3): confirma a rua e pede só o número.
+  const street = !ctx.deliveryAddressVerified ? ctx.cepPlace?.street : undefined;
+  if (street && ctx.cep) {
+    await reply(phone, copy.askHouseNumber(street, ctx.cepPlace?.district, ctx.cep));
+    return;
+  }
+  await reply(phone, ctx.cep ? copy.askFullDeliveryAddress() : copy.askAddressWithCep());
 }
 
 // Tamanho da vitrine (dono, 10/09: "agora que tem carrossel, uns 5"): 5 opções quando o
@@ -1232,6 +1244,12 @@ async function handleDeliveryTurn(
   // Depois dos dois resets acima, para a marca não morrer na mesma mensagem que a criou.
   // Persistida pelo writeCtx do handler que tratar a mensagem (toda rota de pedido grava).
   if (!ctx.urgent && hasUrgencySignal(text)) ctx.urgent = true;
+
+  // ---- endereço: pergunta da Lia em aberto (troca de CEP / cidade ≠ CEP), 06/10 ----
+  if ((ctx.cepSwap || ctx.cepCityCheck) && (await handlePendingAddressQuestion(phone, user, convo.id, ctx, text, intent))) return;
+  // "deixa o endereço antigo" / "usa o de antes" (06/10, A4): no meio de uma troca, volta o
+  // endereço anterior; fora dela, confirma que nada mudou (a IA respondia "consigo trocar").
+  if (isKeepOldAddress(text) && (await keepPreviousAddress(phone, user, convo.id, ctx, text))) return;
 
   const savedCep = user.cep ?? ctx.cep;
 
@@ -2228,6 +2246,19 @@ async function handleDeliveryTurn(
       await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, text);
       return;
     }
+    // Acabou de ouvir "ainda não chego em X" (06/10, M9): lembra o motivo e mostra a saída
+    // (endereço de alguém na área); o produto pedido fica anotado pra depois.
+    if (ctx.outsideArea) {
+      const note = isQuestion(text) ? "" : onboardingNote(text).text;
+      if (note) ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.stillOutsideArea(ctx.outsideArea.city, servedAreaLabel()));
+      return;
+    }
+    if (saysNoCep(text)) {
+      await reply(phone, copy.dontKnowCep());
+      return;
+    }
     await reply(phone, copy.cepNeededNotLandmark());
     return;
   }
@@ -2333,16 +2364,18 @@ async function handleDeliveryTurn(
       await reply(phone, copy.thanks());
       return;
     }
-    // "tem açaí?" é pedido em forma de pergunta: anota o item (06/10, sumia depois do endereço).
+    // "tem açaí?" e "quanto tá o leite ninho?" são pedido em forma de pergunta: anota o item
+    // (06/10, sumiam depois do endereço).
     const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
     if (availability) text = availability;
-    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
+    const priceAsk = !availability && intent.kind === "free_text" ? parsePriceAsk(text) : null;
+    const asking = !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
-      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
+      await answerOnboardingQuestion(phone, text);
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
-      await askSignup(phone, copy.signupFormBody([], false), () => askStreetAndNumber(phone, ctx));
+      await askSignup(phone, copy.signupFormBody([], false), () => reply(phone, copy.askAddressWithCep()));
       return;
     }
     // Cliente que abre a conversa mandando o endereço direto (sem "oi") está respondendo
@@ -2353,13 +2386,16 @@ async function handleDeliveryTurn(
       await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, text);
       return;
     }
-    const lines = intent.kind === "free_text" ? parseBasketLines(text) : [];
-    if (lines.length) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${text}` : text;
+    // Só o que tem cara de produto é anotado (06/10, M1): "sou a Clara Souza", "gostaria de
+    // fazer um pedido", "vi o anúncio", história pessoal e "me liga" ficam de fora.
+    const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    if (note) {
+      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
     }
     ctx.flow = "delivery";
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
+    if (priceAsk && note) await reply(phone, copy.priceAfterAddress(priceAsk));
     const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
     await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
     return;
@@ -2383,18 +2419,20 @@ async function handleDeliveryTurn(
     // Pergunta ("o que vc consegue comprar?") se responde — NUNCA vira item anotado.
     const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
     if (availability) text = availability;
-    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
+    const priceAsk = !availability && intent.kind === "free_text" ? parsePriceAsk(text) : null;
+    const asking = !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
-      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
+      await answerOnboardingQuestion(phone, text);
       ctx.flow = "delivery";
       ctx.step = "need_cep";
       await writeCtx(convo.id, ctx);
       await askAddress(phone, copy.askCepAgain());
       return;
     }
-    const lines = intent.kind === "free_text" ? parseBasketLines(text) : [];
-    if (lines.length) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${text}` : text;
+    const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    const lines = note ? parseBasketLines(note) : [];
+    if (note) {
+      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
     }
     ctx.flow = "delivery";
     ctx.step = "need_cep";
@@ -3425,6 +3463,19 @@ async function replyChargeNotIssuedButtons(phone: string, userId: string, ctx: D
   else markTurnReplied();
 }
 
+// Endereço trocado por CEP/rua com pedido PAGO ainda não saído (06/10, A4): o pedido pago
+// segue pro endereço antigo — diz isso junto do "Endereço atualizado" e anota pro dono.
+async function paidOrderAddressNotice(userId: string, newAddress: string): Promise<string> {
+  const paid = await latestPaidOrder(userId);
+  if (!paid?.deliveryAddress || isOrderOutForDelivery(paid.status)) return "";
+  if (normalizeMsg(paid.deliveryAddress) === normalizeMsg(newAddress)) return "";
+  await prisma.deliveryOrder.update({
+    where: { id: paid.id },
+    data: { notes: appendOrderNote(paid.notes, `📍 Cliente trocou o endereço DEPOIS de pagar (novo: "${newAddress.slice(0, 120)}") — este pedido segue para o endereço original; o novo vale para os próximos.`) }
+  });
+  return `\n\n${copy.paidOrderAddressKept(paid.id.slice(-6).toUpperCase(), paid.deliveryAddress)}`;
+}
+
 async function handleNewCep(
   phone: string,
   userId: string,
@@ -3438,12 +3489,17 @@ async function handleNewCep(
   restItems?: string,
   // Mensagem original. O endereço que vai pro courier tem que sair daqui: "Av Paulista
   // 1000, apto 5" não pode virar "av paulista 1000 apto 5" no rótulo da entrega.
-  rawText?: string
+  rawText?: string,
+  // 06/10: o cliente já disse "sim" à troca do CEP / à cidade diferente da do CEP.
+  opts?: { swapConfirmed?: boolean; cityConfirmed?: boolean }
 ) {
   const normalizedCep = cep.replace(/\D/g, "");
-  const previousCep = ctx.cep?.replace(/\D/g, "");
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { cep: true, defaultAddress: true } });
+  // O CEP anterior é o da conversa OU o do cadastro: com o contexto limpo (ctx.cep vazio) o
+  // CEP novo era gravado por cima do endereço antigo sem ninguém perceber (06/10, A4).
+  const previousCep = (ctx.cep ?? user?.cep ?? "").replace(/\D/g, "") || undefined;
   const cepChanged = Boolean(previousCep && previousCep !== normalizedCep);
-  const { address, city, uf, invalid } = await expandCep(cep);
+  const { address, street, district, city, uf, invalid } = await expandCep(cep);
   if (invalid) {
     ctx.step = "need_cep";
     await writeCtx(convoId, ctx);
@@ -3458,16 +3514,72 @@ async function handleNewCep(
   const area = { covered: isServedState({ cep, city, uf }), city, uf };
   if (!area.covered) {
     await recordWaitlistLead({ phone, cep, city, uf, reason: "outside_coverage" });
-    ctx.step = "need_cep";
+    // A mensagem seguinte ("quero shampoo", "e se for pra SP?") lembra o motivo (06/10, M9).
+    // Quem já tem endereço confirmado continua com ele: o passo não vira "manda o CEP".
+    const keepsAddress = Boolean(ctx.deliveryAddress && ctx.deliveryAddressVerified && user?.defaultAddress);
+    if (!keepsAddress) {
+      ctx.step = "need_cep";
+      ctx.outsideArea = { city };
+    }
     await writeCtx(convoId, ctx);
     await reply(phone, copy.outsideCoverage(city, servedAreaLabel()));
     return;
   }
 
+  // O que veio além do CEP (06/10): endereço com número (com ou sem pedido junto), só o
+  // número (a rua vem do CEP), só a rua sem número, ou itens.
+  const raw = rawText ?? "";
+  const split = raw ? splitAddressAndItems(raw) : null;
+  const rawRest = raw
+    .replace(CEP_RE_GLOBAL, " ")
+    .replace(/\b(?:o\s+)?(?:meu\s+)?(?:novo\s+)?cep\s*(?:[eé]|eh|:)?\s*/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const place = { street, district, city };
+  const house = !split && rawRest ? parseHouseNumberReply(rawRest, place) : null;
+  const streetOnly = !split && !house && Boolean(rawRest) && mentionsStreetWithoutNumber(rawRest, street);
+  const firstAddress = !user?.defaultAddress;
+  // Antes do cadastro, só o que tem cara de produto vira item (cortesia e apresentação não).
+  const items = split
+    ? (split.items ? onboardingNote(split.items).text : "") || undefined
+    : house || streetOnly
+      ? undefined
+      : firstAddress && rawRest
+        ? onboardingNote(rawRest).text || undefined
+        : restItems;
 
+  // Cliente com endereço confirmado mandou um CEP solto (A4): pergunta antes de trocar. O
+  // endereço salvo continua valendo; "deixa o antigo" ou qualquer pedido segue com ele.
+  const hasConfirmed = Boolean(ctx.deliveryAddress && ctx.deliveryAddressVerified && user?.defaultAddress);
+  const quietSteps: Array<DeliveryContext["step"]> = [undefined, "collecting", "choosing"];
+  if (cepChanged && hasConfirmed && !split && !house && !opts?.swapConfirmed && quietSteps.includes(ctx.step)) {
+    ctx.cepSwap = { cep, askedAt: Date.now(), ...(items ? { items } : {}) };
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.confirmCepSwap(cep, place, ctx.deliveryAddress!));
+    return;
+  }
+
+  // CEP de uma cidade, endereço escrito com outra (A5): nada é salvo antes de confirmar.
+  if (split && city && !opts?.cityConfirmed) {
+    const typedCity = typedCityMismatch(split.address, city, uf);
+    if (typedCity) {
+      ctx.cepCityCheck = { cep, raw, askedAt: Date.now(), via: "cep" };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.cepCityMismatch(cep, city, typedCity));
+      return;
+    }
+  }
+
+  if (cepChanged && user?.defaultAddress && previousCep && !ctx.previousAddress) {
+    ctx.previousAddress = { cep: `${previousCep.slice(0, 5)}-${previousCep.slice(5)}`, address: user.defaultAddress, city: ctx.city, uf: ctx.uf };
+  }
+  ctx.outsideArea = undefined;
+  ctx.cepSwap = undefined;
+  ctx.cepCityCheck = undefined;
   ctx.cep = cep;
   ctx.city = city ?? ctx.city;
   ctx.uf = uf ?? ctx.uf;
+  ctx.cepPlace = { street, district };
   // ViaCEP's street fragment is useful context but cannot be sent as the final
   // courier destination. A confirmed address remains valid only for the same CEP.
   if (cepChanged || !ctx.deliveryAddressVerified) {
@@ -3477,29 +3589,23 @@ async function handleNewCep(
   ctx.flow = "delivery";
   await prisma.user.update({ where: { id: userId }, data: { cep } });
   // "Av Paulista 1000, Bela Vista, São Paulo, 01310-100" é UMA mensagem com endereço E
-  // CEP — o jeito mais natural de responder. O resto da mensagem só é "itens" quando não
-  // é a própria rua: sem esta checagem o endereço virava pedido ("1x apto 5") e o cliente
-  // ainda tinha que redigitar tudo.
-  const restIsAddress = Boolean(restItems && looksLikeDeliveryAddress(restItems));
-  if (restIsAddress && !ctx.deliveryAddressVerified) {
-    // O texto ORIGINAL menos o CEP — com acento, maiúscula e vírgula, do jeito que o
-    // motoboy precisa ler. Só cai no `restItems` normalizado se o raw não sobreviver.
-    const fromRaw = (rawText ?? "")
-      .replace(/\b\d{5}-?\d{3}\b/, " ")
-      // A palavra "CEP" órfã depois de remover os dígitos ("… - SP, CEP .") não pode
-      // sobrar no endereço salvo (6º ciclo, rodada 8: exibia "CEP." sem números).
-      .replace(/[,;]?\s*\bcep\b\s*[.:]?\s*/gi, " ")
-      .replace(/\s*[,;]\s*$/, "")
-      .replace(/\s{2,}/g, " ")
-      .trim()
-      .replace(/[,;]+$/, "");
-    ctx.deliveryAddress = looksLikeDeliveryAddress(fromRaw) ? fromRaw : restItems!.trim();
+  // CEP — o jeito mais natural de responder. Desde 06/10 o endereço é SEPARADO do pedido
+  // que veio junto ("quero 2 sabonetes, entrega em Rua X 221 … 01233020"): antes o texto
+  // inteiro virava o endereço da etiqueta e os itens sumiam. Só o número ("meu cep é X e o
+  // número é 1500") monta o endereço com a rua do CEP.
+  const typedAddress = split?.address
+    ? split.address
+    : house && street && !ctx.deliveryAddressVerified
+      ? buildSignupAddress({ street, numero: house.numero, complemento: house.complemento, district, city, uf })
+      : undefined;
+  if (typedAddress) {
+    ctx.deliveryAddress = typedAddress;
     ctx.deliveryAddressVerified = true;
-    await prisma.user.update({ where: { id: userId }, data: { defaultAddress: ctx.deliveryAddress } });
+    await prisma.user.update({ where: { id: userId }, data: { defaultAddress: typedAddress } });
   }
   // Itens enviados na MESMA mensagem do CEP — ou guardados no onboarding — entram no
   // fluxo NORMAL de busca (com opções e preço), nunca auto-escolhidos.
-  const queued = [restIsAddress ? undefined : restItems, ctx.pendingRequest].filter(Boolean).join(", ").trim();
+  const queued = [items, ctx.pendingRequest].filter(Boolean).join(", ").trim();
   ctx.pendingRequest = queued || undefined;
   if (!ctx.deliveryAddressVerified) {
     ctx.step = "need_address";
@@ -3508,13 +3614,19 @@ async function handleNewCep(
     return;
   }
 
+  // Fim do cadastro = 1º endereço completo OU 1º CEP (06/10, M11: o CEP salvo antes do
+  // endereço fazia o 1º endereço sair como "atualizado" e o CPF nunca ser pedido).
+  const completingSignup = firstAddress || !hadCepBefore;
   const shownAddress = ctx.deliveryAddress ?? cep;
-  const savedMsg = hadCepBefore ? copy.addressUpdated(shownAddress, ctx.cep) : copy.addressSavedPrefix(shownAddress, ctx.cep);
+  const savedMsg = completingSignup ? copy.addressSavedPrefix(shownAddress, ctx.cep) : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`;
   ctx.pendingRequest = undefined;
   if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return;
   // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
   // 01310-100") ou antes (06/10, Clara mandou rua e número, depois o CEP: o CPF nunca foi pedido).
-  if (!hadCepBefore && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedMsg, queued))) return;
+  // Os itens guardados aparecem na confirmação: o cliente vê que não sumiram.
+  const noted = queued ? parseBasketLines(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const savedWithNoted = noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg;
+  if (completingSignup && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedWithNoted, queued))) return;
   if (queued) {
     await reply(phone, savedMsg);
     await handleSearch(phone, convoId, null, ctx, queued);
@@ -3537,15 +3649,16 @@ async function handleNewCep(
   }
   ctx.step = "collecting";
   await writeCtx(convoId, ctx);
-  await reply(phone, hadCepBefore ? copy.addressUpdated(shownAddress, ctx.cep) : copy.addressSavedAskItems(shownAddress));
+  await reply(phone, completingSignup ? copy.addressSavedAskItems(shownAddress) : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`);
 }
 
 // Uma mensagem é o ENDEREÇO de entrega (e não um pedido de produto)? Marcador de
 // logradouro + número é o menor sinal confiável, sem tentar parsing frágil. Serve às
 // duas pontas: aceitar o endereço e — no caminho do CEP — não confundir a rua com item.
+// "Al. Santos 1000" (06/10) também é endereço.
 function looksLikeDeliveryAddress(text: string): boolean {
   const address = text.trim();
-  const hasStreet = /\b(?:rua|r\.?|avenida|av\.?|alameda|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
+  const hasStreet = /\b(?:rua|r\.?|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
   const hasNumber = /(?:\d|\bs\/?n\b)/i.test(address);
   return address.length >= 12 && hasStreet && hasNumber;
 }
@@ -3556,10 +3669,34 @@ async function handleDeliveryAddress(
   convoId: string,
   ctx: DeliveryContext,
   userCep: string | null | undefined,
-  rawAddress: string
+  rawAddress: string,
+  opts?: { cityConfirmed?: boolean }
 ) {
   const address = rawAddress.trim();
-  if (!looksLikeDeliveryAddress(address)) {
+  const knownCep = ctx.cep ?? userCep ?? undefined;
+  // CEP já conhecido e a rua veio do ViaCEP (06/10, A3): "1500", "221 apto 13", "o numero é
+  // 1500", "Augusta 1500" bastam. Antes era laço infinito de "Falta o endereço".
+  const place = !ctx.deliveryAddressVerified && knownCep ? ctx.cepPlace : undefined;
+  const house = place?.street ? parseHouseNumberReply(address, { ...place, city: ctx.city }) : null;
+  let finalAddress: string | undefined;
+  let extraItems: string | undefined;
+  if (house && place?.street) {
+    finalAddress = buildSignupAddress({ street: place.street, numero: house.numero, complemento: house.complemento, district: place.district, city: ctx.city, uf: ctx.uf });
+  } else if (looksLikeDeliveryAddress(address)) {
+    // Pedido e endereço na mesma mensagem (A1): só a rua vai pra etiqueta; o resto é pedido.
+    const split = splitAddressAndItems(address);
+    finalAddress = split?.address && looksLikeDeliveryAddress(split.address) ? split.address : address;
+    extraItems = split?.items ? onboardingNote(split.items).text || undefined : undefined;
+    // Cidade escrita ≠ cidade do CEP já salvo (A5): pergunta antes de gravar.
+    const typedCity = knownCep && ctx.city && !opts?.cityConfirmed ? typedCityMismatch(finalAddress, ctx.city, ctx.uf) : null;
+    if (typedCity && knownCep) {
+      ctx.cepCityCheck = { cep: knownCep, raw: rawAddress, askedAt: Date.now(), via: "address" };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.cepCityMismatch(knownCep, ctx.city!, typedCity));
+      return;
+    }
+  }
+  if (!finalAddress) {
     const kind = detectIntent(address).kind;
     const hasSavedAddress = Boolean(ctx.deliveryAddress && ctx.deliveryAddressVerified);
     // "Vc salvou o endereço já?" — pergunta SOBRE o endereço com endereço na mão:
@@ -3569,7 +3706,7 @@ async function handleDeliveryAddress(
       const queued = ctx.pendingRequest;
       ctx.pendingRequest = undefined;
       await writeCtx(convoId, ctx);
-      await reply(phone, copy.addressUpdated(ctx.deliveryAddress!, ctx.cep));
+      await reply(phone, `${copy.addressUpdated(ctx.deliveryAddress!, ctx.cep)}${await paidOrderAddressNotice(userId, ctx.deliveryAddress!)}`);
       if (queued) await handleSearch(phone, convoId, null, ctx, queued);
       return;
     }
@@ -3585,21 +3722,61 @@ async function handleDeliveryAddress(
       await reply(phone, copy.addressSavedAskItems(ctx.deliveryAddress!));
       return;
     }
-    // Pergunta no meio do onboarding: responde e pede o endereço de novo — pergunta não
-    // é pedido e nunca entra no estoque.
-    if (isQuestion(address) || kind === "help" || kind === "service_question") {
-      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
+    // "não sei meu cep" (06/10, M6): explica onde achar, em vez de repetir o pedido.
+    if (!knownCep && saysNoCep(address)) {
+      ctx.step = "need_address";
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.dontKnowCep());
+      return;
+    }
+    // Nome e CPF antes do endereço (06/10, M11): vão pro cadastro, nunca pra lista de itens.
+    const cpf = extractCpf(address);
+    if (cpf || looksLikeCpfAttempt(address)) {
+      if (cpf) {
+        // O nome pode ter vindo na mensagem anterior ("Teste Silva") e ficado na lista guardada.
+        const segments = (ctx.pendingRequest ?? "").split(", ").filter(Boolean);
+        const lastSegment = segments[segments.length - 1];
+        const nameFromList = lastSegment && looksLikePersonName(lastSegment) ? lastSegment : undefined;
+        const name = extractFullName(address) ?? nameFromList;
+        if (name) {
+          if (nameFromList && !extractFullName(address)) ctx.pendingRequest = segments.slice(0, -1).join(", ") || undefined;
+          await prisma.user.update({ where: { id: userId }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
+          ctx.step = "need_address";
+          await writeCtx(convoId, ctx);
+          await reply(phone, copy.identitySavedAskAddress(Boolean(ctx.cepPlace?.street && knownCep)));
+          return;
+        }
+      }
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
       await askStreetOrSignup(phone, ctx, userCep);
       return;
     }
+    // Pergunta no meio do onboarding: responde e pede o endereço de novo — pergunta não
+    // é pedido e nunca entra no estoque.
+    if (isQuestion(address) || kind === "help" || kind === "service_question") {
+      await answerOnboardingQuestion(phone, address);
+      ctx.step = "need_address";
+      await writeCtx(convoId, ctx);
+      await askStreetOrSignup(phone, ctx, userCep);
+      return;
+    }
+    // Rua sem número ("moro na rua augusta perto do metrô"): diz exatamente o que falta.
+    if (mentionsStreetWithoutNumber(address, ctx.cepPlace?.street)) {
+      ctx.step = "need_address";
+      await writeCtx(convoId, ctx);
+      if (ctx.cepPlace?.street && knownCep) await askStreetAndNumber(phone, ctx);
+      else await reply(phone, copy.askNumberAndCep(Boolean(knownCep)));
+      return;
+    }
     // Não é endereço — mas TAMBÉM não é lixo: quem responde "preciso de um carregador"
     // aqui está fazendo o pedido, não errando o endereço. Guardar em vez de descartar,
     // pra rodar a busca assim que o endereço chegar. Só PEDIDO entra no estoque:
-    // "pode ser amanhã" (affirm), "obrigado" e afins ficam de fora (24/08).
-    if (kind === "free_text" && queryTokens(address).length && !blocksMedicine(address)) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${address}` : address;
+    // "pode ser amanhã" (affirm), "obrigado" e afins ficam de fora (24/08). Número solto
+    // ("1500") e cortesia ("sou a Clara") também não (06/10).
+    const note = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
+    if (note && queryTokens(note).length && !blocksMedicine(address)) {
+      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
     }
     ctx.step = "need_address";
     await writeCtx(convoId, ctx);
@@ -3609,15 +3786,18 @@ async function handleDeliveryAddress(
 
   // 1º endereço do cliente = fim do cadastro (o CPF é pedido logo depois, uma vez).
   const firstAddress = !(await prisma.user.findUnique({ where: { id: userId }, select: { defaultAddress: true } }))?.defaultAddress;
-  ctx.deliveryAddress = address;
+  ctx.deliveryAddress = finalAddress;
   ctx.deliveryAddressVerified = true;
-  await prisma.user.update({ where: { id: userId }, data: { defaultAddress: address } });
+  ctx.cepCityCheck = undefined;
+  await prisma.user.update({ where: { id: userId }, data: { defaultAddress: finalAddress } });
+  if (extraItems) ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${extraItems}` : extraItems;
 
   if (!ctx.cep && userCep) ctx.cep = userCep;
   if (!ctx.cep) {
     ctx.step = "need_cep";
     await writeCtx(convoId, ctx);
-    await reply(phone, copy.addressSavedAskCep());
+    const noted = extraItems ? parseBasketLines(extraItems).map((line) => `${line.qty}x ${line.phrase}`) : [];
+    await reply(phone, noted.length ? `${copy.addressSavedAskCep()}\n\n${copy.notedItemsLine(noted)}` : copy.addressSavedAskCep());
     return;
   }
 
@@ -3626,20 +3806,146 @@ async function handleDeliveryAddress(
 
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
-  if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, copy.addressSavedPrefix(address, ctx.cep), queued))) return;
+  const savedMsg = copy.addressSavedPrefix(finalAddress, ctx.cep);
+  const noted = queued ? parseBasketLines(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg, queued))) return;
   if (queued) {
-    await reply(phone, copy.addressUpdated(address, ctx.cep));
+    await reply(phone, `${copy.addressUpdated(finalAddress, ctx.cep)}${await paidOrderAddressNotice(userId, finalAddress)}`);
     await handleSearch(phone, convoId, null, ctx, queued);
     return;
   }
 
   if (ctx.basket?.length) {
-    await continueAfterBasket(phone, convoId, ctx, userCep, copy.addressUpdated(address, ctx.cep));
+    await continueAfterBasket(phone, convoId, ctx, userCep, `${copy.addressUpdated(finalAddress, ctx.cep)}${await paidOrderAddressNotice(userId, finalAddress)}`);
     return;
   }
 
   await writeCtx(convoId, ctx);
-  await reply(phone, copy.addressSavedAskItems(address));
+  await reply(phone, copy.addressSavedAskItems(finalAddress));
+}
+
+// Pergunta antes do cadastro (06/10, testadores: "vocês são do iFood?", "quem é o dono?",
+// "é de graça?" recebiam o texto genérico). A mesma IA que responde depois do cadastro
+// responde aqui; sem IA (ou sem resposta), o genérico de sempre.
+async function answerOnboardingQuestion(phone: string, text: string) {
+  const meta = turnMeta.getStore();
+  let answer: string | undefined;
+  if (!meta?.llmUsed) {
+    if (meta) meta.llmUsed = true;
+    const verdict = await interpretCustomerMessage({
+      text,
+      state: "cliente novo, ainda sem cadastro: depois da resposta a Lia pede o endereço com CEP"
+    }).catch(() => null);
+    if (verdict?.reply && ["question", "support", "smalltalk", "manipulation"].includes(verdict.action)) answer = verdict.reply;
+  }
+  await reply(phone, answer ?? copy.serviceAnswer("generic", servedAreaLabel()));
+}
+
+type TurnUser = Awaited<ReturnType<typeof getOrCreateConvo>>["user"];
+
+// Resposta à pergunta de endereço que a Lia deixou em aberto (06/10). Vale 30 min e UMA
+// resposta: "sim" faz a troca / aceita a cidade do CEP; "não"/"deixa o antigo" mantém; outra
+// mensagem desarma e segue o fluxo normal com o endereço de sempre — nunca prende o cliente.
+async function handlePendingAddressQuestion(
+  phone: string,
+  user: TurnUser,
+  convoId: string,
+  ctx: DeliveryContext,
+  text: string,
+  intent: Intent
+): Promise<boolean> {
+  const fresh = (at: number) => Date.now() - at < 30 * 60_000;
+  const n = normalizeMsg(text).replace(/[!.?,]+/g, " ").trim();
+  const yes =
+    intent.kind === "affirm" ||
+    /^(sim|s|pode|pode sim|pode trocar|troca|trocar|quero trocar|muda|mudar|isso|esse|esse mesmo|ta certo|esta certo|certo|correto|confirmo|confirma|o cep (ta|esta) certo)\b/.test(n);
+  const no = isKeepOldAddress(text) || intent.kind === "reject" || /^(nao|n)\b/.test(n);
+  if (ctx.cepSwap) {
+    const swap = ctx.cepSwap;
+    ctx.cepSwap = undefined;
+    if (fresh(swap.askedAt)) {
+      if (yes && !no) {
+        await handleNewCep(phone, user.id, convoId, ctx, swap.cep, true, swap.items, swap.cep, { swapConfirmed: true });
+        return true;
+      }
+      // Número logo depois da pergunta ("1500") = sim, e já é o número da casa.
+      if (!no && parseHouseNumberReply(text)) {
+        await handleNewCep(phone, user.id, convoId, ctx, swap.cep, true, undefined, `${swap.cep} ${text}`, { swapConfirmed: true });
+        return true;
+      }
+      if (no) {
+        await writeCtx(convoId, ctx);
+        await reply(phone, copy.keptAddress(ctx.deliveryAddress ?? user.defaultAddress ?? "", ctx.cep ?? user.cep ?? undefined));
+        if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+        else if (swap.items) await handleSearch(phone, convoId, user.cep, ctx, swap.items, user.id);
+        return true;
+      }
+    }
+    await writeCtx(convoId, ctx);
+    return false;
+  }
+  const check = ctx.cepCityCheck!;
+  ctx.cepCityCheck = undefined;
+  if (fresh(check.askedAt) && !extractCep(text)) {
+    if (yes && !no) {
+      if (check.via === "cep") await handleNewCep(phone, user.id, convoId, ctx, check.cep, Boolean(user.cep), undefined, check.raw, { cityConfirmed: true });
+      else await handleDeliveryAddress(phone, user.id, convoId, ctx, user.cep, check.raw, { cityConfirmed: true });
+      return true;
+    }
+    if (no) {
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.askRightCep());
+      return true;
+    }
+  }
+  await writeCtx(convoId, ctx);
+  return false;
+}
+
+// "deixa o endereço antigo" / "usa o de antes" (06/10, A4). No meio de uma troca (passo de
+// CEP/endereço), volta o endereço anterior inteiro — CEP, rua e cidade. Fora dela, com o
+// endereço confirmado, só diz que nada mudou. false = a mensagem não era sobre isso.
+async function keepPreviousAddress(phone: string, user: TurnUser, convoId: string, ctx: DeliveryContext, text: string): Promise<boolean> {
+  const changing = ctx.step === "need_cep" || ctx.step === "need_address";
+  if (changing) {
+    const prev = ctx.previousAddress ?? (user.defaultAddress && user.cep ? { cep: user.cep, address: user.defaultAddress } : undefined);
+    if (!prev || !user.defaultAddress) return false;
+    ctx.cep = prev.cep;
+    if ("city" in prev && prev.city) ctx.city = prev.city;
+    if ("uf" in prev && prev.uf) ctx.uf = prev.uf;
+    ctx.deliveryAddress = prev.address;
+    ctx.deliveryAddressVerified = true;
+    ctx.previousAddress = undefined;
+    ctx.cepPlace = undefined;
+    ctx.outsideArea = undefined;
+    if (user.cep !== prev.cep || user.defaultAddress !== prev.address) {
+      await prisma.user.update({ where: { id: user.id }, data: { cep: prev.cep, defaultAddress: prev.address } });
+    }
+    if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return true;
+    const kept = copy.keptAddress(prev.address, prev.cep);
+    if (ctx.pending?.length) {
+      ctx.step = "choosing";
+      await writeCtx(convoId, ctx);
+      await reply(phone, kept);
+      await sendChoices(phone, ctx.pending[0]);
+      return true;
+    }
+    if (ctx.basket?.length) {
+      await continueAfterBasket(phone, convoId, ctx, prev.cep, kept);
+      return true;
+    }
+    ctx.step = "collecting";
+    const queued = ctx.pendingRequest;
+    ctx.pendingRequest = undefined;
+    await writeCtx(convoId, ctx);
+    await reply(phone, kept);
+    if (queued) await handleSearch(phone, convoId, prev.cep, ctx, queued, user.id);
+    return true;
+  }
+  if (!ctx.deliveryAddress || !ctx.deliveryAddressVerified || !isKeepOldAddressExplicit(text)) return false;
+  await reply(phone, copy.keptAddress(ctx.deliveryAddress, ctx.cep ?? user.cep ?? undefined));
+  if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+  return true;
 }
 
 // Cadastro (05/10, dono): nome + CPF pedidos UMA vez, logo depois do 1º endereço, e

@@ -179,6 +179,75 @@ export function addressSavedAskCep(): string {
   return "📍 Endereço salvo. Falta o *CEP*.";
 }
 
+// ---------- cadastro e endereço em texto (06/10, relatório do testador) ----------
+
+// Itens que vieram junto do endereço: aparecem na confirmação pra o cliente ver que não sumiram.
+export function notedItemsLine(notedItems: string[]): string {
+  return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}` : "";
+}
+
+// CEP recebido e a rua veio do ViaCEP: confirma a rua e pede SÓ o número.
+export function askHouseNumber(street: string, district: string | undefined, cep: string | undefined): string {
+  return `📍 CEP ${cep ?? ""}: *${street}*${district ? `, ${district}` : ""}.\nPra completar o endereço, falta só o *número* (e o complemento, se tiver).`.replace("CEP : ", "");
+}
+
+// Pedido do endereço quando ainda não há CEP nenhum (antes era "Falta o endereço: rua, número
+// e complemento", que soava como se o cliente tivesse esquecido algo).
+export function askAddressWithCep(): string {
+  return "Pra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍";
+}
+
+// Rua citada sem número ("moro na rua augusta perto do metrô").
+export function askNumberAndCep(hasCep: boolean): string {
+  return hasCep ? "Falta o *número* da casa (e o complemento, se tiver) 📍" : "Falta o *número* e o *CEP* 📍";
+}
+
+// "quanto tá o leite ninho?" antes do cadastro (M2): o preço depende da loja que entrega no
+// endereço — anota e promete o número logo depois.
+export function priceAfterAddress(item: string): string {
+  return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
+}
+
+export function dontKnowCep(): string {
+  return "Sem problema 🙂 Você acha o CEP pelo nome da rua em *buscacep.correios.com.br*. Depois me manda *rua, número e CEP* juntos.";
+}
+
+// Cliente com endereço confirmado mandou um CEP solto (A4): pergunta antes de trocar — o
+// endereço salvo continua valendo até ele dizer sim.
+export function confirmCepSwap(cep: string, place: { street?: string; district?: string; city?: string }, current: string): string {
+  const where = [place.street, place.district, place.city].filter(Boolean).join(", ");
+  return [
+    `Quer trocar o endereço de entrega para o CEP *${cep}*${where ? ` (${where})` : ""}?`,
+    `Responde *sim* pra trocar. Se não, sigo com o de sempre: ${current.replace(/[\s.,;]+$/, "")}.`
+  ].join("\n");
+}
+
+export function keptAddress(address: string, cep?: string): string {
+  const clean = address.replace(/[\s.,;]+$/, "");
+  return `Ok, continua o mesmo endereço 📍 ${cep && !clean.includes(cep) ? `${clean} — CEP ${cep}` : clean}`;
+}
+
+// CEP de uma cidade, endereço escrito com outra (A5): nada é salvo até o cliente confirmar.
+export function cepCityMismatch(cep: string, cepCity: string, typedCity: string): string {
+  return `Opa, o CEP *${cep}* é de *${cepCity}*, mas no endereço está *${typedCity}* 🤔\nSe o CEP estiver certo, responde *sim*. Se não, me manda o CEP certo.`;
+}
+
+export function askRightCep(): string {
+  return "Me manda o *CEP certo* (8 números) junto com rua e número 📍";
+}
+
+// Fora da área, o cliente insiste com outra coisa (M9): lembra o motivo e mostra a saída.
+export function stillOutsideArea(city: string | undefined, areaLabel: string): string {
+  // "os estados de São Paulo e Rio de Janeiro" → "São Paulo ou Rio de Janeiro".
+  const where = areaLabel.replace(/^os? estados? de /, "").replace(/ e ([^,]+)$/, " ou $1");
+  return `Ainda não entrego ${city ? `em ${city}` : "nessa região"} 😔 Se quiser mandar pra alguém em ${where}, me manda o endereço com CEP de lá.`;
+}
+
+// Nome e CPF mandados antes do endereço (M11): guardados, e o endereço continua faltando.
+export function identitySavedAskAddress(hasCep: boolean): string {
+  return `✅ Anotei seu nome e CPF. ${hasCep ? "Falta o *número* da casa (e o complemento, se tiver) 📍" : "Agora seu *endereço com CEP* — rua, número, bairro e cidade 📍"}`;
+}
+
 // UMA pergunta, não duas (feedback do dono, 16/08: "por que pede o CEP e depois o
 // endereço?"). Os dois são necessários — CEP decide cobertura/frete, o endereço com
 // número e complemento é o que o entregador usa — mas cabem na MESMA mensagem, e o
