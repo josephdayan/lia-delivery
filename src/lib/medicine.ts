@@ -43,11 +43,19 @@ const PRESCRIPTION_ACTIVE_RE =
 const PRESCRIPTION_DOSE_RE = /\b(omeprazol\s*(20|40)\s*mg|pantoprazol\s*40\s*mg|esomeprazol\s*(20|40)\s*mg)\b/i;
 
 const PRESCRIPTION_BRAND_RE =
-  /\b(ozempic|wegovy|mounjaro|saxenda|victoza|trulicity|rivotril|frontal|lexotan|apraz|ritalina|venvanse|concerta|viagra|cialis|roacutan|tramal|zoloft|prozac|lexapro|pristiq|wellbutrin|seroquel|zyprexa|depakote|tegretol|lyrica|neurontin|xarelto|eliquis|marevan|glifage|diamicron|jardiance|forxiga|januvia|galvus|puran t4|synthroid|meticorten|predsim|decadron|celestone|diane 35|yasmin|selene|tamisa|microvlar|ciclo 21|amoxil|clavulin|keflex|zitromax|flagyl)\b/i;
+  /\b(ozempic|wegovy|mounjaro|saxenda|victoza|trulicity|rivotril|frontal|lexotan|apraz|ritalina|venvanse|concerta|viagra|cialis|roacutan|tramal|zoloft|prozac|lexapro|pristiq|wellbutrin|seroquel|zyprexa|depakote|tegretol|lyrica|neurontin|xarelto|eliquis|marevan|glifage|diamicron|jardiance|forxiga|januvia|galvus|puran t4|synthroid|euthyrox|levoid|meticorten|predsim|decadron|celestone|diane 35|yasmin|selene|tamisa|microvlar|ciclo 21|amoxil|clavulin|keflex|zitromax|flagyl)\b/i;
 
 export function isPrescriptionText(text: string): boolean {
   const t = text ?? "";
   return PRESCRIPTION_WORDS_RE.test(t) || PRESCRIPTION_ACTIVE_RE.test(t) || PRESCRIPTION_DOSE_RE.test(t) || PRESCRIPTION_BRAND_RE.test(t);
+}
+
+// Pedido com cara de remédio pelo nome e dose ("Euthyrox 50mg", "losartana 50 mg 30
+// comprimidos") — 06/10: quando nada é achado, a Lia explica que remédio de receita ela não
+// compra, em vez de "me diz outra marca", e não gasta uma segunda busca pela IA.
+export function looksLikeMedicineName(text: string): boolean {
+  const t = text ?? "";
+  return /\b\d+(?:[.,]\d+)?\s*(?:mg|mcg|µg|ui)\b/i.test(t) || /\b(?:comprimidos?|c[aá]psulas?|dr[aá]geas?)\b/i.test(t);
 }
 
 // Pedido que a Lia recusa mesmo com MIP ligado: nomeia remédio de receita ou fala de

@@ -782,6 +782,10 @@ export async function markDeliveryOrderPaid(orderId: string, evidence?: PaymentE
   // Create the durable local-worker task after the money state is committed. This is
   // best-effort: a queue outage must not undo a real payment; claim() backfills paid
   // orders that missed this hook.
+  // A compra no servidor só DISPARA depois da confirmação ao cliente (06/10, caso Karlão):
+  // a compra que falhava em 1 s mandava o estorno antes do "Pagamento confirmado. Já estou
+  // separando" — o cliente lia as duas mensagens ao contrário.
+  let startServerBuyer: (() => void) | undefined;
   try {
     const { ensurePurchaseJobForPaidOrder, manualQueueJobForPaidOrder } = await import("@/lib/purchase-worker");
     // Sem executor para esta loja/cesta: fila manual explícita no /ops (11/09).
@@ -792,12 +796,16 @@ export async function markDeliveryOrderPaid(orderId: string, evidence?: PaymentE
     else if ((await import("@/lib/purchase/vtex-checkout")).VTEX_API_STORE_KEYS.includes(job.storeKey)) {
       const { runVtexApiPurchases } = await import("@/lib/purchase/vtex-runner");
       const { waitUntil } = await import("@vercel/functions");
-      waitUntil(runVtexApiPurchases({ maxJobs: 1 }).then((r) => { if (r.errors.length) console.warn("[vtex-runner:on-paid]", r.errors); }).catch((error) => console.error("[vtex-runner:on-paid]", error instanceof Error ? error.message : error)));
+      startServerBuyer = () =>
+        waitUntil(runVtexApiPurchases({ maxJobs: 1 }).then((r) => { if (r.errors.length) console.warn("[vtex-runner:on-paid]", r.errors); }).catch((error) => console.error("[vtex-runner:on-paid]", error instanceof Error ? error.message : error)));
     }
   } catch (error) {
     console.error("[purchase-worker:enqueue-failed]", error instanceof Error ? error.message : error);
   }
-  if (!result.flipped) return order;
+  if (!result.flipped) {
+    startServerBuyer?.();
+    return order;
+  }
   // Reset the conversation (keep the address) so the next message starts a fresh
   // basket instead of resurrecting the awaiting_payment step. If the customer has
   // ALREADY started a new basket in this conversation, leave it alone — the async
@@ -807,14 +815,18 @@ export async function markDeliveryOrderPaid(orderId: string, evidence?: PaymentE
   // Não existe mais carrinho reservado por robô: quem compra é o operador, depois do
   // pagamento confirmado. Fora do horário de quem compra (operador contratado), a Lia diz
   // a verdade em vez de "já estou separando" — o prazo da loja não muda.
-  if (opts.notifyCustomer !== false)
-    await reply(
-      order.phone,
-      operatorIsHired() && !withinOperatorHours() ? copy.paymentConfirmedOutsideHours() : copy.paymentConfirmed()
-    );
-  // Pix pago com "juntar ou pedido novo?" aberta: o reset apaga o passo, mas o item
-  // novo que o cliente pediu não pode sumir em silêncio (revisão 01/09).
-  if (pendingNewItem) await reply(order.phone, copy.newItemAfterPayment(pendingNewItem));
+  try {
+    if (opts.notifyCustomer !== false)
+      await reply(
+        order.phone,
+        operatorIsHired() && !withinOperatorHours() ? copy.paymentConfirmedOutsideHours() : copy.paymentConfirmed()
+      );
+    // Pix pago com "juntar ou pedido novo?" aberta: o reset apaga o passo, mas o item
+    // novo que o cliente pediu não pode sumir em silêncio (revisão 01/09).
+    if (pendingNewItem) await reply(order.phone, copy.newItemAfterPayment(pendingNewItem));
+  } finally {
+    startServerBuyer?.();
+  }
   // Pedido pago é o alerta mais urgente de todos: dinheiro na mão e ninguém comprando.
   // Ficou desligado enquanto o dono era o operador (20/08 — o /ops já mostra). Com um
   // operador CONTRATADO ele volta sozinho: quem compra não fica olhando o painel o dia

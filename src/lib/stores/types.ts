@@ -367,6 +367,9 @@ export function inferCatalogRefinement(text: string, candidates: CatalogItem[]):
   return candidates.some((item) => attrs.every((attr) => attrMatchesItem(attr, item))) ? attrs : null;
 }
 
+const PACK_COUNT_RE = /\b(\d{1,3})\s*(bolas?|rolos?|capsulas?|comprimidos?|saches?|folhas?|metros?|pares?|tabletes?)\b/g;
+const packUnit = (unit: string) => unit.replace(/s$/, "");
+
 export function scoreCatalogMatch(query: string, item: CatalogItem): number {
   const tokens = queryTokens(query);
   if (!tokens.length) return 0;
@@ -438,6 +441,20 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
     const attr = `${m[1]}${m[2].replace(/litros?|lts?$/, "l")}`;
     if (attrMatchesItem(attr, item)) score += 3;
     else score -= 1;
+  }
+
+  // Contagem na embalagem pedida ("tubo com 4 bolas", "papel higiênico 12 rolos", "30
+  // cápsulas") é identidade (06/10, tio Semy pediu o tubo com 4 bolas e veio o de 3): item
+  // que declara OUTRA contagem do mesmo substantivo não é o produto; a mesma contagem sobe.
+  // Fora daqui "unidades"/"latas", que o cliente também usa como quantidade a comprar.
+  const countAsks = [...normalizeText(query).matchAll(PACK_COUNT_RE)].map((m) => ({ n: Number(m[1]), unit: packUnit(m[2]) }));
+  if (countAsks.length) {
+    const declared = [...nameNorm.matchAll(PACK_COUNT_RE)].map((m) => ({ n: Number(m[1]), unit: packUnit(m[2]) }));
+    for (const ask of countAsks) {
+      const sameUnit = declared.filter((d) => d.unit === ask.unit);
+      if (sameUnit.length && !sameUnit.some((d) => d.n === ask.n)) return 0;
+      if (sameUnit.some((d) => d.n === ask.n)) score += 3;
+    }
   }
 
   // Head-noun bonus: o head EFETIVO pula as palavras da marca ("Quem Disse, Berenice?

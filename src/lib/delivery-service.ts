@@ -15,10 +15,10 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { checkCandidatesLive, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
-import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
+import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
@@ -1286,6 +1286,11 @@ async function handleDeliveryTurn(
       await reply(phone, copy.currentFee(ctx.deliveryFee));
       return;
     }
+    if (intent.topic === "stores") {
+      const onTable = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0].options : [];
+      await reply(phone, copy.storesAnswer(onTable.map((o) => ({ storeLabel: o.storeLabel }))));
+      return;
+    }
     await reply(
       phone,
       copy.serviceAnswer(intent.topic, servedAreaLabel(), {
@@ -1470,6 +1475,15 @@ async function handleDeliveryTurn(
     } else {
       await resendCharge(phone, order);
     }
+    return;
+  }
+
+  // ---- complemento do endereço sozinho ("apto 4", "ap 23", "bloco B apto 31"), 06/10 ----
+  // Clara mandou o endereço, o CEP e depois "apto 4": a Lia buscou placa de apartamento.
+  // Complemento nunca é produto — entra no endereço salvo, em qualquer passo da conversa.
+  const complement = parseAddressComplement(text);
+  if (complement && ctx.deliveryAddress && ctx.deliveryAddressVerified && ctx.step !== "need_address") {
+    await handleAddressComplement(phone, user.id, convo.id, ctx, complement);
     return;
   }
 
@@ -3001,7 +3015,9 @@ async function handleNewCep(
   const savedMsg = hadCepBefore ? copy.addressUpdated(shownAddress, ctx.cep) : copy.addressSavedPrefix(shownAddress, ctx.cep);
   ctx.pendingRequest = undefined;
   if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return;
-  if (restIsAddress && !hadCepBefore && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedMsg, queued))) return;
+  // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
+  // 01310-100") ou antes (06/10, Clara mandou rua e número, depois o CEP: o CPF nunca foi pedido).
+  if (!hadCepBefore && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedMsg, queued))) return;
   if (queued) {
     await reply(phone, savedMsg);
     await handleSearch(phone, convoId, null, ctx, queued);
@@ -3143,6 +3159,27 @@ async function askCpfAtOnboarding(phone: string, userId: string, convoId: string
   await writeCtx(convoId, ctx);
   await reply(phone, `${savedMsg}\n\n${copy.askCpfOnboarding()}`);
   return true;
+}
+
+// Complemento que chegou sozinho (06/10): vai pro endereço salvo e pro pedido aberto ainda
+// não pago (mesmo CEP, mesmo frete). A conversa continua de onde estava.
+async function handleAddressComplement(phone: string, userId: string, convoId: string, ctx: DeliveryContext, complement: string) {
+  const updated = withAddressComplement(ctx.deliveryAddress!, complement);
+  ctx.deliveryAddress = updated;
+  await prisma.user.update({ where: { id: userId }, data: { defaultAddress: updated } });
+  if (ctx.deliveryOrderId) {
+    await prisma.deliveryOrder.updateMany({
+      where: { id: ctx.deliveryOrderId, status: { in: [AWAITING_OPERATOR_QUOTE_STATUS, "awaiting_payment"] } },
+      data: { deliveryAddress: updated }
+    });
+  }
+  await writeCtx(convoId, ctx);
+  await reply(phone, ctx.step === "need_cep" ? `${copy.addressUpdated(updated)}\n\nFalta o *CEP* 📍` : copy.addressUpdated(updated, ctx.cep));
+  if (ctx.step === "need_cpf") {
+    await reply(phone, ctx.cpfOnboarding ? copy.askCpfOnboarding() : copy.askCpfForMedicine());
+    return;
+  }
+  if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
 }
 
 // Resposta do formulário de cadastro (06/10). Ordem: CEP (existe? estado atendido?) →
@@ -3372,6 +3409,24 @@ async function handleChoosing(
     return;
   }
 
+  // "só amora"/"só essa" com algo já escolhido (06/10, Adely): fecha a lista com o que está
+  // na cesta. Virava busca "framboesa só amora" e, no "só essa", a IA TIRAVA a amora.
+  const only = parseOnlyKeep(text);
+  if (only && (ctx.basket?.length ?? 0) > 0) {
+    const keepsBasket =
+      "demonstrative" in only
+        ? current.options.length > 1
+        : (ctx.basket ?? []).some((b) => sharesProductNoun(only.target, b.name)) &&
+          !current.options.some((o) => sharesProductNoun(only.target, o.name));
+    if (keepsBasket) {
+      const skipped = (ctx.pending ?? []).map((pending) => pending.query);
+      ctx.pending = [];
+      await reply(phone, copy.onlyKeepSkipped(skipped));
+      await advancePending(phone, convoId, ctx, userCep);
+      return;
+    }
+  }
+
   // Narrativa no meio da escolha ("meu neto que pediu isso aí"): ANTES de qualquer
   // parser de escolha — na rodada 3 (S15) a frase caiu no parser e ESCOLHEU o "Violão
   // Meu Primeiro Violão" pelo token "meu/isso". Nunca vira pick nem item "anotado".
@@ -3390,6 +3445,23 @@ async function handleChoosing(
     // "tem que ser estilo tocha" → atributo "tocha" (o "estilo/tipo" é só conectivo).
     const attr = styleAsk[1].replace(/[.!?]+$/, "").replace(/^(?:estilo|tipo|modelo|de|do|da|um|uma)\s+/, "").trim();
     if (await researchChoice(phone, convoId, ctx, current, `${current.baseQuery ?? current.query} ${attr}`)) return;
+  }
+  // "veja se tem kerasys de coco", "tem de coco?" (06/10, Claire): o MESMO produto com uma
+  // característica nova. Busca nova com ela e só mostra o que tem a característica; sem
+  // nada, diz que não achou. Antes, o refino achava "kerasys" e repetia a mesma opção
+  // ("Ficou entre essas") — "ele insiste no outro produto".
+  const attrAsk = parseAttributeAsk(text);
+  if (attrAsk && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
+    const base = current.baseQuery ?? current.query;
+    const baseTokens = new Set(queryTokens(normalizeMsg(base)));
+    const fresh = queryTokens(normalizeMsg(attrAsk)).filter((token) => !baseTokens.has(token));
+    if (fresh.length && fresh.length <= 4) {
+      const wanted = `${base} ${fresh.join(" ")}`;
+      if (await researchChoice(phone, convoId, ctx, current, wanted, fresh.join(" "))) return;
+      await reply(phone, copy.refineNoResult(wanted));
+      await sendChoices(phone, current);
+      return;
+    }
   }
   if (/^(nao|não) (gostei|curti|quero ess[ea]s?)( d[eo]ss?[ea]s?( ai)?)?[\s!.]*$/.test(normalizeMsg(text)) || REJECT_ONLY_RE.test(normalizeMsg(text))) {
     await pageMoreOptions(phone, convoId, ctx, store);
@@ -3478,7 +3550,10 @@ async function handleChoosing(
   // 04/09 (dono): texto que discrimina NUNCA escolhe sozinho — "masculino" com uma só
   // opção masculina mostrava o card e já fechava. Agora estreita para 1 e o cliente
   // confirma no botão/número, como em qualquer escolha.
-  const narrowed = narrowChoiceByName(text, current.options);
+  // Mensagem com 2+ produtos ("shampoo Kerasys Coconut 1L, condicionador Kerasys Coconut
+  // 1L", 06/10, Claire) é pedido novo: não estreita nem refina as opções na mesa.
+  const multiItem = parseBasketLines(text).length >= 2;
+  const narrowed = multiItem ? [] : narrowChoiceByName(text, current.options);
   if (narrowed.length >= 1 && narrowed.length < current.options.length) {
     current.options = narrowed.map((i) => current.options[i]);
     await writeCtx(convoId, ctx);
@@ -3491,7 +3566,10 @@ async function handleChoosing(
   // fixa. Isso cobre marca, sabor, aroma, material, número de roupa/calçado e futuras
   // características do catálogo. Se não combinar com a busca atual (ex.: "leite"
   // enquanto escolhe Coca), continua sendo tratado como um NOVO produto.
-  const catalogAttrs = await contextualCatalogAttrs(store, ctx, current, text);
+  // Refino pelo catálogo é para resposta CURTA ("morango", "azul", "42"): numa frase longa
+  // ele achava um atributo qualquer ("kerasys") e descartava o resto (06/10, Claire).
+  const shortReply = !multiItem && queryTokens(normalizeMsg(text)).length <= 3;
+  const catalogAttrs = shortReply ? await contextualCatalogAttrs(store, ctx, current, text) : null;
   if (catalogAttrs) {
     await refineOptions(phone, convoId, ctx, store, catalogAttrs);
     return;
@@ -3561,6 +3639,36 @@ async function handleChoosing(
     // esclarecimento do MESMO item — substitui as opções na mesa, nunca vira uma
     // segunda linha (rodada 5 dos testes de 14/08: a linha duplicada fez o cliente
     // escolher DOIS shampoos sem perceber e a cesta foi contraditória pro pagamento).
+    // Com 2+ produtos na mensagem (06/10, Claire), o que é do MESMO produto da escolha
+    // aberta a substitui e os outros entram na fila — antes, todos iam pra fila e a Lia
+    // reapresentava o shampoo antigo.
+    const clarifyIdx = multiItem ? added.pending.findIndex((pending) => sharesProductNoun(pending.query, current.query)) : -1;
+    if (clarifyIdx >= 0) {
+      const clarified = added.pending[clarifyIdx];
+      const others = added.pending.filter((_, i) => i !== clarifyIdx);
+      current.baseQuery = undefined;
+      current.attrs = undefined;
+      current.query = clarified.query.replace(/^(.+?)\s+\1$/i, "$1");
+      if (clarified.qtyExplicit) {
+        current.qty = clarified.qty;
+        current.qtyExplicit = true;
+      }
+      const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
+      current.shownOptions = [...(current.shownOptions ?? current.options), ...clarified.options.filter((o) => !remembered.has(o.sku))];
+      current.options = clarified.options;
+      current.shownSkus = [...new Set([...(current.shownSkus ?? []), ...clarified.options.map((o) => o.sku)])];
+      ctx.basket = mergeBaskets(ctx.basket ?? [], added.autoAdded);
+      ctx.pending = [current, ...(ctx.pending ?? []).slice(1), ...others];
+      ctx.notFound = [...(ctx.notFound ?? []), ...added.notFound];
+      await writeCtx(convoId, ctx);
+      const notes: string[] = [];
+      if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
+      if (others.length) notes.push(copy.queuedItemsNote(others.map((pending) => pending.query)));
+      if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
+      if (notes.length) await reply(phone, notes.join("\n"));
+      await sendChoices(phone, current, copy.narrowedChoices(current.query));
+      return;
+    }
     if (!added.autoAdded.length && added.pending.length === 1 && sharesProductNoun(added.pending[0].query, current.query)) {
       const clarified = added.pending[0];
       current.baseQuery = undefined;
@@ -3784,9 +3892,12 @@ const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|ne
 // Busca nova (vitrines + Mercado Livre) para a escolha ABERTA com uma frase mais
 // específica ("isqueiro maçarico", "isqueiro tocha") e troca as opções na mesa. Devolve
 // false quando nada aparece — o chamador segue o caminho de sempre.
-async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string): Promise<boolean> {
+async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string, mustMatch?: string): Promise<boolean> {
   const found = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, true, ctx.cep);
   const choice = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
+  // `mustMatch` (06/10): só vale opção que tem a característica pedida ("coco"); a busca
+  // nova não pode devolver o mesmo shampoo sem coco com cabeçalho de refino.
+  if (choice && mustMatch) choice.options = choice.options.filter((o) => conciergeMatchIsStrong(mustMatch, o));
   if (!choice?.options.length) return false;
   current.baseQuery = undefined;
   current.attrs = undefined;
@@ -4375,12 +4486,16 @@ async function handleConciergeRequest(
   // cotação — "se não tem, fala que não tem". A linha livre saiu do fluxo do cliente:
   // só item com preço entra na cesta, e por isso todo fechamento tem total NA HORA.
   const unavailable = notFoundLines.map((line) => (line.qty > 1 ? `${line.qty}x ${line.phrase}` : line.phrase));
+  // Remédio pelo nome que não está entre os isentos (06/10, Euthyrox): diz o porquê.
+  const medicineMiss = medicineEnabled() && unavailable.length > 0 && unavailable.every(looksLikeMedicineName);
   const notFoundNote = (withOptions: boolean) =>
     offerLongTail
       ? copy.longTailOffer(unavailable)
       : withOptions
         ? copy.itemsNotAvailableWithOptions(unavailable)
-        : copy.itemsNotAvailable(unavailable);
+        : medicineMiss
+          ? copy.medicineNotFound(unavailable)
+          : copy.itemsNotAvailable(unavailable);
   ctx.flow = "delivery";
   // A cesta continua pertencendo ao "concierge" mesmo quando o item veio de uma vitrine: o
   // pedido é cotado e comprado à mão, então não há uma loja dona do pedido.
@@ -4547,7 +4662,8 @@ async function handleConciergeRequest(
   // NADA achou preço: o roteador LLM tenta entender a mensagem (pergunta? "uma 51"?
   // edição?) antes do eco de não-achado — o eco fazia "posso agendar a entrega pra…"
   // virar produto (29/08: 6 sessões nesse padrão).
-  if (!containsMedicine && !raw.containsTobacco) {
+  // Remédio não achado já tem resposta certa: a segunda busca pela IA só atrasava (>45 s).
+  if (!containsMedicine && !raw.containsTobacco && !medicineMiss) {
     if (await tryLlmInterpret(phone, convoId, userCep, ctx, text, userId)) return;
     if (isQuestion(text)) {
       await reply(phone, copy.questionNotUnderstood());

@@ -21,6 +21,10 @@ export type ParsedLine = {
   raw?: string;
 };
 
+// "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
+// preços?" — a IA improvisava ("não faço comparativo de preços", falso).
+export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare";
+
 export type Intent =
   | { kind: "thanks" }
   | { kind: "greeting" }
@@ -59,7 +63,7 @@ export type Intent =
   // "só isso", "mais nada", "é só" — fechar a lista e seguir pro total.
   | { kind: "done" }
   // Pergunta operacional (frete/prazo/área/pagamento) — responder com copy, nunca buscar produto.
-  | { kind: "service_question"; topic: "area" | "fee" | "eta" | "payment" | "generic" }
+  | { kind: "service_question"; topic: ServiceTopic }
   // "posso cancelar?" — pergunta sobre cancelar; explicar, não executar.
   | { kind: "cancel_question" }
   // "não recebi o código", "o pix expirou", "manda de novo" — reemitir cobrança.
@@ -300,7 +304,7 @@ export function parseBasketLines(text: string): ParsedLine[] {
     .join("\n");
 
   const parsedLines = source
-    .replace(/\bvou querer\b|\bquero\b|\bqueria\b|\bme manda\b|\bme ve\b|\bmanda\b|\b(?:preciso|presiso)(?: de| d)?\b|\bpode ser\b|\bcoloca\b|\bpoe\b|\bbota\b|\btraz\b|\badiciona\b|\binclui\b|\bcompra\b|\btambem\b|\btbm?\b|\bpor favor\b/gi, "")
+    .replace(/\bvou querer\b|\bquero\b|\bqueria\b|\bme manda\b|\bme ve\b|\bmanda\b|\b(?:preciso|presiso)(?: de| d)?\b|\bpode ser\b|\bcoloca\b|\bpoe\b|\bbota\b|\btraz\b|\badiciona\b|\binclui\b|\bcomprar\b|\bpedir\b|\bencomendar\b|\bcompra\b|\btambem\b|\btbm?\b|\bpor favor\b/gi, "")
     // protege decimais ("1,5l" / "1.5l") do split por vírgula/ponto
     .replace(/(\d),(\d)/g, "$1§$2")
     .replace(/(\d)\.(\d)/g, "$1¤$2")
@@ -1078,6 +1082,12 @@ export function detectIntent(text: string): Intent {
     return { kind: "store_location_question" };
   }
 
+  // "qual a loja?", "de onde vc compra?", "de que loja ela vem?", "é uma loja específica?"
+  // (06/10, Clara e Claire): a ORIGEM do produto. A resposta nomeia a loja das opções.
+  if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
+  // "você faz comparativo de preços?", "como sei que é o melhor valor?" (06/10, Claire).
+  if (PRICE_COMPARE_RE.test(n)) return { kind: "service_question", topic: "price_compare" };
+
   // "parcela em quantas vezes?" (29/08 S12).
   if (/\bparcela(r|mento)?\b|\bem quantas vezes\b|\bdividir (no cartao|em vezes)\b|\bparcelad[oa]\b/.test(n)) {
     return { kind: "installments_question" };
@@ -1681,4 +1691,83 @@ const RUNNING_TOTAL_RE =
   /\b(quanto (deu|da|ta|esta|fica|ficou|foi|custou) ?(tudo|o total|o pedido|a compra)?|qual( e| o)? total|total (ate agora|parcial|do pedido)|ver (o )?total|fecha(r)? (o )?total|me (mostra|manda) o total|resumo (do pedido|da compra|do carrinho)?|(o que|q) tem no (carrinho|pedido)|meu carrinho)\b|^total[\s?!.]*$|^resumo[\s?!.]*$/;
 export function asksRunningTotal(text: string): boolean {
   return RUNNING_TOTAL_RE.test(normalizeMsg(text));
+}
+
+
+// ---------- retorno dos testadores, 06/10/2026 ----------
+
+const STORE_SOURCE_RE =
+  /\b(?:qual|que|quais)\s+(?:e\s+|eh\s+)?(?:a\s+|as\s+)?(?:loja|lojas|mercado|farmacia|site)\b(?!\s+fisica)|\bde\s+(?:que|qual|quais)\s+(?:loja|lojas|mercado|farmacia|site)\b|\bde\s+onde\s+(?:(?:vc|voce|vcs|voces|tu|ce|c)\s+)?(?:compra\w*|vem|veio|e|eh|sai|tira\w*|pega\w*)\b|\bonde\s+(?:vc|voce|vcs|voces)\s+compra\w*\b|\bloja\s+especifica\b/;
+
+const PRICE_COMPARE_RE =
+  /\b(?:compar\w*|pesquis\w*|cotac\w*)\s+(?:de\s+|os\s+|o\s+)?(?:precos?|valor(?:es)?)\b|\b(?:faz|fazem|faria)\s+(?:um\s+)?(?:comparativo|comparacao|pesquisa)\b|\b(?:melhor|menor)\s+(?:preco|valor|oferta)\b|\bmais\s+barat\w+\s+(?:que|do\s+que)\b/;
+
+// Complemento do endereço numa mensagem sozinha ("apto 4", "ap 23", "bloco B apto 31",
+// "casa 2", "sou do apto 4") — Clara mandou "apto 4" logo depois do endereço e a Lia
+// buscou placa de apartamento. Devolve o complemento como o cliente escreveu, ou null.
+const COMPLEMENT_HEAD = String.raw`(?:apto|apt|ap|apartamento|bloco|bl|casa|sala|conjunto|cj|torre|lote)`;
+const COMPLEMENT_ID = String.raw`(?:\s*n?\s*\d{1,5}[a-z]?|\s+[a-z]{1,2})`;
+const COMPLEMENT_PAIR = String.raw`(?:${COMPLEMENT_HEAD}${COMPLEMENT_ID}|\d{1,3}\s*o?\s*andar|fundos|cobertura|terreo)`;
+const COMPLEMENT_RE = new RegExp(String.raw`^${COMPLEMENT_PAIR}(?:\s+(?:e\s+)?${COMPLEMENT_PAIR})*$`);
+const COMPLEMENT_FILLER_RE =
+  /^(?:(?:e|é|eh|sou|fico|moro|mora|fica|no|na|do|da|o|a|meu|minha|ah|obs|faltou|esqueci(?:\s+de\s+(?:falar|dizer))?(?:\s+que)?)\s+)+/i;
+
+export function parseAddressComplement(text: string): string | null {
+  const raw = (text ?? "").replace(/\s+/g, " ").trim();
+  if (!raw || raw.length > 48 || /\d{5}-?\d{3}/.test(raw)) return null;
+  const cleaned = raw.replace(/^[\s,.;:-]+|[\s,.;:!?-]+$/g, "").replace(COMPLEMENT_FILLER_RE, "").trim();
+  const n = normalizeMsg(cleaned).replace(/[º°ª]/g, " ").replace(/[.,;:#/-]+/g, " ").replace(/\s+/g, " ").trim();
+  return n && COMPLEMENT_RE.test(n) ? cleaned : null;
+}
+
+const COMPLEMENT_START_RE = new RegExp(String.raw`^(?:${COMPLEMENT_HEAD}\b|\d{1,3}\s*o?\s*andar\b)`);
+const complementKind = (part: string) => {
+  const head = normalizeMsg(part).split(/\s+/)[0] ?? "";
+  return /^(?:apto|apt|ap|apartamento)$/.test(head) ? "apto" : head;
+};
+
+// Põe o complemento no endereço salvo: troca o complemento do MESMO tipo ("apto 2" →
+// "apto 4"), soma depois de outro tipo ("bloco B" + "apto 4") e, sem complemento, entra
+// logo depois do número da casa.
+export function withAddressComplement(address: string, complement: string): string {
+  const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
+  const existing = parts.map((part, i) => (i > 0 && COMPLEMENT_START_RE.test(normalizeMsg(part)) ? i : -1)).filter((i) => i >= 0);
+  const same = existing.find((i) => complementKind(parts[i]) === complementKind(complement));
+  if (same != null) {
+    parts[same] = complement;
+    return parts.join(", ");
+  }
+  if (existing.length) {
+    parts.splice(existing[existing.length - 1] + 1, 0, complement);
+    return parts.join(", ");
+  }
+  const numberAt = parts.findIndex((part) => /(?:^|\s)\d+[a-z]?$/i.test(part));
+  parts.splice(numberAt >= 0 ? numberAt + 1 : Math.min(1, parts.length), 0, complement);
+  return parts.join(", ");
+}
+
+// "só amora", "somente a amora", "apenas o arroz", "só essa" no meio de uma escolha — Adely
+// pediu amora e framboesa, escolheu a amora e respondeu "só amora" na vez da framboesa:
+// virou busca "framboesa só amora" e, no "só essa", a Lia TIROU a amora.
+export function parseOnlyKeep(text: string): { target: string } | { demonstrative: true } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const m = n.match(/^(?:nao\s+)?(?:so|soh|somente|apenas)\s+(?:quero\s+|vou querer\s+)?(?:(?:a|o|as|os|um|uma)\s+)?(.{1,40})$/);
+  if (!m) return null;
+  const rest = m[1].replace(/\s+(?:mesmo|msm|ta|ok|obrigad[ao]|por favor|pfv|pf)$/g, "").trim();
+  if (!rest || /^(?:isso|isto)$/.test(rest)) return null; // "só isso" é encerrar a lista (DONE)
+  if (/^(?:ess[ae]s?|est[ae]s?|ela|ele|elas|eles|aquel[ae]s?)$/.test(rest)) return { demonstrative: true };
+  return { target: rest };
+}
+
+// "veja se tem kerasys de coco", "tem de coco?", "eu pedi com 4 bolas", "queria sem
+// açúcar" — o MESMO produto com uma característica (Claire e o tio Semy, 06/10). Devolve a
+// frase da característica, sem o verbo, ou null.
+export function parseAttributeAsk(text: string): string | null {
+  const n = normalizeMsg(text).replace(/[?!.]+$/g, "").trim();
+  const ask = n.match(
+    /^(?:(?:ve|veja|ver|olha|confere|checa|procura)\s+(?:ai\s+)?(?:se\s+)?)?(?:tem|teria|tinha|existe|acha|nao tem)\s+(?:(?:um|uma|o|a)\s+)?((?:com|de|do|da|sem|em|na|no)\s+.{2,40}|.{2,40})$/
+  );
+  if (ask) return ask[1].trim();
+  const fix = n.match(/^(?:mas\s+)?(?:eu\s+)?(?:pedi|queria|quero|era|tinha que ser|tem que ser|precisa ser)\s+(?:(?:um|uma|o|a)\s+)?((?:com|de|do|da|sem|em)\s+.{1,40})$/);
+  return fix ? fix[1].trim() : null;
 }

@@ -1429,7 +1429,7 @@ export function manualQuoteSummary(input: {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "payment" | "generic",
+  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean }
 ): string {
@@ -1449,9 +1449,45 @@ export function serviceAnswer(
       return "O prazo depende da loja e do seu endereço — tem item que chega em horas, tem item que leva alguns dias. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
+    case "stores":
+      return storesAnswer([]);
+    case "price_compare":
+      return priceCompareAnswer();
     default:
       return "Eu compro o que você precisar e entrego no seu endereço. Você paga por Pix ou cartão aqui no chat, e eu mostro o prazo antes. O que você precisa?";
   }
+}
+
+// "qual a loja?"/"de onde vc compra?" (06/10, Clara e Claire): a resposta da IA era vaga
+// ("lojas oficiais parceiras"). Com opções na tela, diz a loja de cada uma.
+const STORES_GENERAL = "Eu compro em dezenas de lojas online — mercado, farmácia, pet, beleza e casa — sempre uma que entrega no seu endereço.";
+export function storesAnswer(onTable: { storeLabel?: string }[]): string {
+  const labeled = onTable.filter((o) => o.storeLabel);
+  if (!labeled.length) return STORES_GENERAL;
+  const unique = [...new Set(labeled.map((o) => o.storeLabel))];
+  if (onTable.length === 1 || unique.length === 1) {
+    return `${onTable.length === 1 ? "Essa opção é" : "Essas opções são"} da loja *${unique[0]}*. ${STORES_GENERAL}`;
+  }
+  return `Cada opção é de uma loja: ${onTable.map((o, i) => `*${i + 1})* ${o.storeLabel ?? "—"}`).join(" · ")}. ${STORES_GENERAL}`;
+}
+
+// "você faz comparativo de preços?"/"como sei que é o melhor valor?" (06/10, Claire): a IA
+// respondia "não faço comparativo de preços" — falso. A busca roda em todas as lojas.
+export function priceCompareAnswer(): string {
+  return "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma. Quer ver as mais baratas? Responde *mais barato*.";
+}
+
+// "só amora" na vez da framboesa (06/10, Adely): fecha a lista com o que já foi escolhido.
+export function onlyKeepSkipped(skipped: string[]): string {
+  if (!skipped.length) return "Fechado, fica só o que você escolheu.";
+  return `Fechado, fica só o que você escolheu. Tirei da lista: ${skipped.map((q) => `*${q}*`).join(", ")}.`;
+}
+
+// Remédio pedido pelo nome que não está entre os isentos (06/10, Euthyrox): "não achei, me diz
+// outra marca" fazia o cliente procurar à toa. Com o remédio isento ligado, diz o porquê.
+export function medicineNotFound(labels: string[]): string {
+  const what = labels.length === 1 ? `*${labels[0]}*` : labels.map((l) => `*${l}*`).join(", ");
+  return `${what} eu não achei entre os remédios *sem receita*. Remédio que precisa de receita eu não consigo comprar. Os sem receita (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome.`;
 }
 
 export function humanHandoff(): string {
