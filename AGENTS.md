@@ -101,9 +101,13 @@ da decisão: teto de R$81 mil do MEI e receita bruta = markup ou total (contador
 O dono re-registrou o número (POST `register` no /ops, PIN digitado por ele). Leitura da
 Graph logo depois: `verified_name` = **"Lia Delivery"**, `name_status` APPROVED,
 `new_name_status` NONE, `status` CONNECTED. Nome pessoal e CNPJ saíram do nome visível.
-Encerrar o acompanhamento horário do nome (automação do Codex) e os casos Meta/fórum; não
-reenviar pedido de nome. Regra para o futuro: toda troca de nome aprovada na Cloud API
-exige re-registro em até 14 dias; o webhook agora avisa a decisão.
+Conferência independente no WhatsApp Manager: `Lia Delivery` consta como
+`Name visible to customers`, número `Connected`. A automação horária
+`resolver-nome-p-blico-da-lia-no-whatsapp` foi pausada (`PAUSED` confirmado);
+os casos Meta já estavam fechados e o tópico do fórum foi respondido sem dados
+pessoais e marcado `Resolved`. Não reenviar pedido de nome. Regra para o futuro:
+toda troca de nome aprovada na Cloud API exige re-registro em até 14 dias; o
+webhook agora avisa a decisão.
 
 ## 25/09/2026 (noite) — CONFIRMADO: "Lia Delivery" aprovado e não aplicado
 
