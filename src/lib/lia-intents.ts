@@ -136,15 +136,21 @@ export function normalizeMsg(input: string): string {
 
 // ---------- CEP ----------
 
+// CEP com ponto ou espaço também vale (06/10, testador: "01305 100" e "01.305-100" não eram
+// lidos). Exige as bordas: CPF (529.982.247-25), telefone (11 91234-5678) e 11 dígitos
+// seguidos não casam.
+export const CEP_RE = /\b(\d{2})\.?(\d{3})\s?-?\s?(\d{3})\b/;
+export const CEP_RE_GLOBAL = new RegExp(CEP_RE.source, "g");
+
 export function extractCep(text: string): string | undefined {
-  const m = normalizeMsg(text).match(/\b(\d{5})-?(\d{3})\b/);
-  return m ? `${m[1]}-${m[2]}` : undefined;
+  const m = normalizeMsg(text).match(CEP_RE);
+  return m ? `${m[1]}${m[2]}-${m[3]}` : undefined;
 }
 
 // "01310-100", "cep 01310100", "meu cep e 01310-100" — nothing else in the message.
 export function isBareCep(text: string): boolean {
   const n = normalizeMsg(text).replace(/\b(meu|o|cep|e|eh|é|:|novo)\b/g, " ").replace(/\s+/g, " ").trim();
-  return /^\d{5}-?\d{3}$/.test(n);
+  return new RegExp(`^${CEP_RE.source}$`).test(n);
 }
 
 // ---------- deterministic basket line splitter (fallback when OpenAI is off) ----------
@@ -238,7 +244,19 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(o |a )?(seu|dona|sr|sra|dr|dra|doutora?)\\.? [a-zà-ú]+ (aqui|falando|na linha)( .*)?",
       "aqui (e|eh|quem fala e|quem ta e) (o |a |seu |dona )?[a-zà-ú]+",
       "(sou|me chamo) (o |a |seu |dona )?[a-zà-ú]+",
-      "meu nome (e|eh) [a-zà-ú]+( [a-zà-ú]+)?"
+      "meu nome (e|eh) [a-zà-ú]+( [a-zà-ú]+)?",
+      // História pessoal no meio do pedido (06/10, testadores): "minha filha tá doente com
+      // febre desde ontem", "o pediatra falou pra dar líquido", "semana passada meu marido
+      // viajou", "fiquei sozinha com as crianças", "hoje acabou tudo aqui", "acabei de me
+      // mudar", "nada em casa", "moro em SP". Só o produto da mensagem vira item.
+      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (viajou|saiu|foi|chegou|nasceu|ficou|esta|ta|anda|caiu|quebrou|operou)\\b.*",
+      "(ele |ela |eles |elas )?(ta|esta|tava|estava|ficou|anda|andou) ((com|meio|muito|toda?|todo) )?(doente|febre|gripad\\w*|resfriad\\w*|passando mal|mal|com dor|vomitando|tossindo|internad\\w*)\\b.*",
+      "(o |a )?(pediatra|medic[oa]|doutora?|dentista|veterinari[oa]|vet|farmaceutic[oa]|enfermeir[oa]) (falou|disse|mandou|receitou|pediu|recomendou|indicou|passou)\\b.*",
+      "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",
+      "((semana|mes) passad[ao]|ontem|anteontem|hoje|agora|aqui)? ?(acab(ou|aram) (tudo|as coisas|o que tinha)|nao tem mais nada)( .*)?",
+      "(eu |a gente )?(acabei|acabamos) de (me mudar|mudar|chegar|voltar)\\b.*",
+      "(nada|quase nada) (em casa|aqui( em casa)?)",
+      "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
     ].join("|") +
     ")$"
 );
@@ -1335,7 +1353,7 @@ export function detectIntent(text: string): Intent {
   if (cep) {
     // "meu cep é 01310-100, quero arroz e leite" — o CEP não pode engolir os itens.
     const rest = n
-      .replace(/\b\d{5}-?\d{3}\b/, " ")
+      .replace(CEP_RE, " ")
       .replace(/\b(meu|o|novo|cep|endereco|e|eh|é)\b/g, " ")
       .replace(/[:,.;]+/g, " ")
       .replace(/\s+/g, " ")
@@ -1736,7 +1754,7 @@ const COMPLEMENT_FILLER_RE =
 
 export function parseAddressComplement(text: string): string | null {
   const raw = (text ?? "").replace(/\s+/g, " ").trim();
-  if (!raw || raw.length > 48 || /\d{5}-?\d{3}/.test(raw)) return null;
+  if (!raw || raw.length > 48 || CEP_RE.test(raw)) return null;
   const cleaned = raw.replace(/^[\s,.;:-]+|[\s,.;:!?-]+$/g, "").replace(COMPLEMENT_FILLER_RE, "").trim();
   const n = normalizeMsg(cleaned).replace(/[º°ª]/g, " ").replace(/[.,;:#/-]+/g, " ").replace(/\s+/g, " ").trim();
   return n && COMPLEMENT_RE.test(n) ? cleaned : null;
@@ -1748,10 +1766,21 @@ const complementKind = (part: string) => {
   return /^(?:apto|apt|ap|apartamento)$/.test(head) ? "apto" : head;
 };
 
+const INLINE_COMPLEMENT_RE: Record<string, RegExp> = {
+  apto: /(?<![\p{L}\d])(?:apto|apt|ap|apartamento)\.?\s*(?:n[º°o.]?\s*)?\d{1,5}[a-z]?(?![\p{L}\d])/iu,
+  bloco: /(?<![\p{L}\d])(?:bloco|bl)\.?\s+(?:\d{1,3}|[a-z]{1,2})(?![\p{L}\d])/iu,
+  casa: /(?<![\p{L}\d])casa\s+\d{1,4}[a-z]?(?![\p{L}\d])/iu
+};
+
 // Põe o complemento no endereço salvo: troca o complemento do MESMO tipo ("apto 2" →
 // "apto 4"), soma depois de outro tipo ("bloco B" + "apto 4") e, sem complemento, entra
 // logo depois do número da casa.
 export function withAddressComplement(address: string, complement: string): string {
+  // Complemento do mesmo tipo NO MEIO de um trecho, sem vírgula ("… 221 ap 13 Santa Cecília",
+  // 06/10): troca no lugar. Antes somava e a etiqueta saía com dois apartamentos.
+  const kind = complementKind(complement);
+  const inline = INLINE_COMPLEMENT_RE[kind];
+  if (inline && inline.test(address)) return address.replace(inline, complement);
   const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
   const existing = parts.map((part, i) => (i > 0 && COMPLEMENT_START_RE.test(normalizeMsg(part)) ? i : -1)).filter((i) => i >= 0);
   const same = existing.find((i) => complementKind(parts[i]) === complementKind(complement));

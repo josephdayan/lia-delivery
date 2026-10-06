@@ -209,6 +209,17 @@ export type DeliveryContext = {
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;
+  // Cadastro/endereço em texto (06/10, relatório do testador):
+  // rua e bairro que o ViaCEP deu para o CEP — com eles, "1500" ou "221 apto 13" bastam.
+  cepPlace?: { street?: string; district?: string };
+  // Cliente com endereço confirmado mandou um CEP solto: a troca espera o "sim".
+  cepSwap?: { cep: string; askedAt: number; items?: string };
+  // O CEP é de outra cidade que a escrita no endereço: nada salvo até confirmar.
+  cepCityCheck?: { cep: string; raw: string; askedAt: number; via: "cep" | "address" };
+  // Endereço de antes de uma troca, para "deixa o antigo"/"usa o de antes".
+  previousAddress?: { cep: string; address: string; city?: string; uf?: string };
+  // Último CEP recusado por estar fora da área: a mensagem seguinte lembra o motivo.
+  outsideArea?: { city?: string };
 };
 
 export const ACTIVE_ORDER_STATUSES = ACTIVE_DELIVERY_ORDER_STATUSES;
