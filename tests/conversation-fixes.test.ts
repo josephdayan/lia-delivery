@@ -355,7 +355,7 @@ test("pedido vago com saudação/enfeite é want_items — nunca busca por 'cois
   }
   // com produto ou destinatário segue lista; "mais um" e "outra coisa" mantêm o sentido
   assert.equal(kind("queria comprar uma coisa pra minha mãe"), "free_text");
-  assert.equal(kind("quero algo bom pra comer"), "free_text");
+  assert.equal(kind("quero algo bom pra comer"), "vague_request"); // varredura 06/10: pede o produto em vez de "não achei"
   assert.equal(kind("quero mais um"), "free_text");
   assert.equal(kind("quero outra coisa"), "free_text");
   assert.equal(kind("bom dia"), "greeting");
