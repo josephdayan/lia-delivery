@@ -23,7 +23,8 @@ Commit ac79556, publicado no deploy do push de 1fad7e1. O 1º contato manda um f
 texto. Regra e detalhes no topo do AGENTS.md. Testes: `tests/signup-form.test.ts` 21/21 e
 regressão do caminho em texto (medicine-chat, manual-concierge, lia-copy, carousel, adapter,
 compra do lenço) 148/148 no Postgres local; `next build` + guarda de emoji ok numa cópia isolada.
-Falta: o cron horário publicar o Flow na Meta e um teste real com o "cadastro" do dono.
+O cron das 10h17 publicou o Flow `cadastro_lia_v1` (id 930932673109335) sem erro de validação; a
+partir daí todo 1º contato recebe o formulário. Falta um teste real com o "cadastro" do dono.
 
 ## 06/10/2026 — Boas-vindas do WhatsApp: um convite só
 

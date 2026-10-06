@@ -19,7 +19,7 @@
 ## 06/10/2026 — Cadastro por formulário no 1º contato
 
 - [x] Formulário, tratamento da resposta e plano B em texto (ac79556); 21 testes; build ok.
-- [ ] Cron horário publicar o Flow `cadastro_lia_v1` (log `[cron:meta-templates:signup-flow]`).
+- [x] Cron das 10h17 (06/10) criou e publicou o Flow `cadastro_lia_v1` (id 930932673109335), sem erro de validação.
 - [ ] Teste real: dono manda "cadastro" no WhatsApp da Lia, preenche e confere a resposta.
 
 ## 06/10/2026 — Encerrar o operador Carlos
