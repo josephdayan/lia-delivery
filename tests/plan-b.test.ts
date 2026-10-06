@@ -138,8 +138,9 @@ test("'trocar' substitui o item no pedido pago, limpa o bloqueio, reinicia o rel
   assert.doesNotMatch(after1.notes ?? "", new RegExp(PURCHASE_BLOCKED_PREFIX));
   assert.match(after1.notes ?? "", new RegExp(PLAN_B_ACCEPTED_PREFIX));
   assert.match(textsTo(OPERATOR, start), /Comprar agora: 1x Chá Ice Tea Pêssego Zero 1,5L — Pague Menos https:\/\/www\.paguemenos\.com\.br\/p\/777/);
-  // Relógio do estorno automático reinicia no aceite: 7h depois do pagamento ainda não estorna.
-  assert.equal(autoRefundDecision(after1, new Date(after1.paidAt!.getTime() + 7 * 3_600_000)).refund, false);
+  // Relógio do estorno automático reinicia no aceite: 5,9h depois do aceite (já 6h+ desde o
+  // pagamento, que foi 20 min antes) ainda não estorna.
+  assert.equal(autoRefundDecision(after1, new Date(Date.now() + 5.9 * 3_600_000)).refund, false);
   const convo = await prisma.conversation.findUniqueOrThrow({ where: { id: o.convoId } });
   assert.doesNotMatch(convo.context ?? "", /planB/);
 });

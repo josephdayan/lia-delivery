@@ -48,11 +48,12 @@ test("loja sem execução automática vira fila manual explícita e nunca é rei
   // Idempotente: segunda chamada devolve o mesmo job.
   assert.equal((await manualQueueJobForPaidOrder(order.id))?.id, job.id);
   assert.equal(await claimNextPurchaseJob("manual-tests", ["kalunga"]), null);
-  // Estorno automático dá mais tempo à fila manual (48h) do que ao automático (24h).
-  const paidAt = new Date(Date.now() - 30 * 3_600_000);
-  assert.equal(autoRefundDecision({ status: "paid", paidAt, manualQueue: true }).refund, false);
-  assert.equal(autoRefundDecision({ status: "paid", paidAt }).refund, true);
-  assert.equal(autoRefundDecision({ status: "paid", paidAt: new Date(Date.now() - 50 * 3_600_000), manualQueue: true }).refund, true);
+  // Estorno automático (dono 06/10): 6h sem compra, na fila manual ou na automática.
+  const at = (h: number) => new Date(Date.now() - h * 3_600_000);
+  assert.equal(autoRefundDecision({ status: "paid", paidAt: at(5), manualQueue: true }).refund, false);
+  assert.equal(autoRefundDecision({ status: "paid", paidAt: at(5) }).refund, false);
+  assert.equal(autoRefundDecision({ status: "paid", paidAt: at(6.1), manualQueue: true }).refund, true);
+  assert.equal(autoRefundDecision({ status: "paid", paidAt: at(6.1) }).refund, true);
   // O operador registra a compra à mão e o job manual fecha.
   await opsSetRecipient(order.id, "  maria   silva ");
   assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).customerName, "maria silva");

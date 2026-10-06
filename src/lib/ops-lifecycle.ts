@@ -479,13 +479,16 @@ function autoRefundSince(): number {
   const parsed = Date.parse(process.env.LIA_AUTO_REFUND_SINCE ?? "2026-09-04T12:00:00Z");
   return Number.isFinite(parsed) ? parsed : Date.parse("2026-09-04T12:00:00Z");
 }
+// Dono (06/10): pago e sem compra na loja por 6h → estorna sozinho e avisa o cliente, sem
+// esperar humano (era 24h). Pedido com compra enviada e resultado desconhecido NÃO entra:
+// opsPurchaseFailedRefund recusa e o dono reconcilia.
 function autoRefundStaleHours(): number {
-  return Number(process.env.LIA_AUTO_REFUND_STALE_HOURS ?? 24);
+  return Number(process.env.LIA_AUTO_REFUND_STALE_HOURS ?? 6);
 }
-// Fila manual (loja sem execução automática): o humano compra quando puder, então o
-// prazo de "sem compra" é mais longo antes de devolver o dinheiro sozinho (11/09).
+// Fila manual: era 48h (11/09, humano comprando quando pudesse). Desde 06/10 a vitrine só
+// tem loja automática, então a fila manual é exceção e segue o mesmo prazo de 6h.
 function autoRefundManualHours(): number {
-  return Number(process.env.LIA_AUTO_REFUND_MANUAL_HOURS ?? 48);
+  return Number(process.env.LIA_AUTO_REFUND_MANUAL_HOURS ?? 6);
 }
 
 // O bloqueio é escrito em jargão de operação; o cliente recebe uma frase simples.

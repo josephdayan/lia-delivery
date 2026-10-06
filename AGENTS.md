@@ -1,3 +1,15 @@
+## 06/10/2026 (tarde) — Estorno automático em 6h; o agente nunca devolve dinheiro (dono)
+
+O dono quer que estorno aconteça sem ele. O agente (Claude Code) não executa movimentação de
+dinheiro em nenhuma hipótese, então a saída é **regra do sistema**: pedido pago sem compra na
+loja há **6h** é estornado sozinho e o cliente avisado (`autoRefundDecision`, era 24h; fila manual
+era 48h e também virou 6h). Pedido com Pix da loja pago ou compra com resultado desconhecido
+continua fora (`opsPurchaseFailedRefund` recusa; o dono reconcilia). Override por env:
+`LIA_AUTO_REFUND_STALE_HOURS` / `LIA_AUTO_REFUND_MANUAL_HOURS`. Em último caso (quando precisar
+de julgamento), botão de estorno em um toque no WhatsApp do dono — ainda não feito.
+**Regra do dono: "sem estoque depois de cobrar" não é para acontecer** — a Lia confere estoque
+antes de cobrar; estorno por falta de estoque é falha a corrigir, não fluxo normal.
+
 ## 06/10/2026 (tarde) — Decisões do dono sobre o retorno dos testadores
 
 - **Nome da loja aparece em toda opção** (texto, card, carrossel): "Mambo · 1 dia útil"

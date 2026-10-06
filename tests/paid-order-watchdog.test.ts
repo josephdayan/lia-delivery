@@ -168,18 +168,18 @@ test("pedido pago há 3h sem compra e com bloqueio: alerta o operador e avisa o 
   assert.match(order.notes ?? "", /COMPRA PENDENTE 2h/);
 });
 
-test("pedido pago há 10 min é normal: nada dispara; via cron o de 3h conta no relatório", async (t) => {
+test("pedido pago há 10 min é normal: nada dispara; via cron o de 5h conta no relatório", async (t) => {
   if (!dbOk) return t.skip();
   const fresh = await paidOrder(10 * 60_000); // 1º lembrete agora é aos 30 min (04/09)
   assert.equal(await watchPaidOrder(fresh.orderId), "none");
-  const stuck = await paidOrder(7 * 60 * 60_000);
+  const stuck = await paidOrder(5 * 60 * 60_000);
   const start = outbox.length;
   const report = await reconcilePayments();
   assert.ok(report.paidStuckAlerts >= 1, JSON.stringify(report));
-  assert.match(textsTo(OPERATOR, start), new RegExp(`#${stuck.orderId.slice(-6).toUpperCase()} PAGO há 7h`));
-  // Sem bloqueio conhecido, 6h+ também avisa o cliente (texto honesto, sem promessa de prazo).
-  assert.equal(textsTo(stuck.phone, start), copy.purchaseDelayedCustomer(stuck.orderId.slice(-6).toUpperCase(), false));
-  assert.doesNotMatch(textsTo(stuck.phone, start), /hoje|amanh|\d+h/);
+  assert.match(textsTo(OPERATOR, start), new RegExp(`#${stuck.orderId.slice(-6).toUpperCase()} PAGO há 5h`));
+  // Sem bloqueio conhecido, o cliente não recebe "atrasou" antes das 6h — às 6h o
+  // dinheiro volta sozinho (dono 06/10), e a mensagem dele é a do estorno.
+  assert.equal(textsTo(stuck.phone, start), "");
 });
 
 test("'Não consegui comprar → estornar': estorna pelo provedor, fecha o pedido e explica com o motivo", async (t) => {
@@ -211,9 +211,9 @@ test("cliente fora da janela de 24h: com template configurado o aviso vai por te
     templates.push({ to, name: input.name, params: input.bodyParams });
     return { provider: "test", to, template: input.name };
   };
-  // Cliente cuja última mensagem foi há 2 dias (fora da janela).
-  // Sem bloqueio, o cliente é avisado a partir do balde de 6h.
-  const stale = await paidOrder(7 * 60 * 60_000, "Pagamento: cartão", 2 * 24 * 60 * 60_000);
+  // Cliente cuja última mensagem foi há 2 dias (fora da janela). Com bloqueio, o cliente é
+  // avisado já no 1º alerta (sem bloqueio, às 6h o pedido é estornado — dono 06/10).
+  const stale = await paidOrder(3 * 60 * 60_000, `Pagamento: cartão\n${PURCHASE_BLOCKED_PREFIX} sem estoque para o CEP.`, 2 * 24 * 60 * 60_000);
 
   process.env.LIA_TEMPLATE_ORDER_UPDATE = "pedido_atualizacao";
   try {
@@ -265,21 +265,21 @@ test("bloqueado há 6h+: estorna sozinho pelo provedor, avisa cliente e operador
   assert.equal(await watchPaidOrder(o.orderId), "none", "já estornado: nada a fazer");
 });
 
-test("bloqueado há 3h só alerta; sem bloqueio não estorna em 13h e estorna em 24h+", async (t) => {
+test("bloqueado há 3h só alerta; sem bloqueio não estorna em 5h e estorna em 6h+ (dono 06/10)", async (t) => {
   if (!dbOk) return t.skip();
   const early = await paidOrder(3 * 60 * 60_000, `Pagamento: cartão\n${PURCHASE_BLOCKED_PREFIX} sem estoque.`);
   assert.equal(await watchPaidOrder(early.orderId), "operator+customer");
   assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: early.orderId } })).status, "paid");
 
-  const stale13 = await paidOrder(13 * 60 * 60_000);
-  assert.equal(await watchPaidOrder(stale13.orderId), "operator+customer");
-  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: stale13.orderId } })).status, "paid");
+  const stale5 = await paidOrder(5 * 60 * 60_000);
+  assert.equal(await watchPaidOrder(stale5.orderId), "operator");
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: stale5.orderId } })).status, "paid");
 
-  const stale25 = await paidOrder(25 * 60 * 60_000);
+  const stale7 = await paidOrder(7 * 60 * 60_000);
   const start = outbox.length;
-  assert.equal(await watchPaidOrder(stale25.orderId), "auto_refunded");
-  assert.match(textsTo(stale25.phone, start), /não consegui confirmar a compra a tempo/);
-  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: stale25.orderId } })).status, "refunded");
+  assert.equal(await watchPaidOrder(stale7.orderId), "auto_refunded");
+  assert.match(textsTo(stale7.phone, start), /não consegui confirmar a compra a tempo/);
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: stale7.orderId } })).status, "refunded");
 });
 
 test("kill-switch e pedido já em compra nunca estornam sozinhos", async (t) => {
