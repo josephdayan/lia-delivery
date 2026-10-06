@@ -42,7 +42,7 @@ export function help(): string {
     "1. Você me diz o que precisa",
     "2. Eu mostro o total, o frete e o prazo",
     "3. Você paga por Pix ou cartão",
-    "4. Eu compro e acompanho até chegar 🛵",
+    "4. Eu compro na loja e acompanho até chegar 📦",
     "",
     "Também entendo *status*, *trocar endereço*, *tira o item X* e *repete o de sempre*.",
     "",
@@ -927,8 +927,14 @@ export function trustAnswer(): string {
     "• Você só paga DEPOIS de ver e aprovar o total — nada é cobrado antes.",
     "• O pagamento é por Pix ou cartão com recibo; se algo não vier, o valor do item é estornado.",
     "• Eu compro no site oficial de lojas grandes (Drogaria São Paulo, Pague Menos, Cobasi, Mambo e outras) e a própria loja entrega.",
+    "• A Lia Delivery é uma empresa registrada (MEI, com CNPJ) — o Pix vai pra ela, e o banco mostra o nome do responsável.",
     "Qualquer dúvida antes de pagar, é só perguntar — sem pressa."
   ].join("\n");
+}
+
+// "quem é vc?", "vc é robô?" (06/10): a apresentação genérica não dizia nem "sou a Lia".
+export function identityAnswer(): string {
+  return "Sou a Lia, assistente virtual da *Lia Delivery* 🤖 Eu procuro o que você precisa em lojas oficiais, mostro o total com frete e prazo, e compro pra você depois que você paga. Se preferir falar com uma pessoa, é só dizer *atendente*.";
 }
 
 // "meu filho que vai pagar, manda pra ele?" — honesto: a cobrança sai aqui, mas o

@@ -84,6 +84,8 @@ export type Intent =
   | { kind: "price_dispute" }
   // "é seguro? como sei que não é golpe?" — confiança/segurança (28/08 S7).
   | { kind: "trust_question" }
+  // "quem é vc?", "vc é robô?" (06/10) — identidade, com a saída para uma pessoa.
+  | { kind: "identity" }
   // "meu filho que vai pagar, manda pra ele?" — cobrança para terceiro (28/08 S7).
   | { kind: "third_party_pay" }
   // "emitem nota fiscal?" / "qual o CNPJ?" (28/08 S8).
@@ -968,7 +970,8 @@ export function detectIntent(text: string): Intent {
   if (
     /^(?:oi[,!\s]+)?(?:quem (?:e|eh) (?:vc|voce|tu)|com quem (?:eu )?(?:to|estou|tou) falando|(?:vc|voce) (?:e|eh) (?:um |uma )?(?:robo|bot|ia|maquina|pessoa|humano|atendente)|o que (?:e|eh) (?:isso|esse numero|a lia|aqui))[\s?!.]*$/.test(n)
   ) {
-    return { kind: "help" };
+    // "quem é vc?"/"é robô?" (06/10): resposta de identidade, não o tutorial "Funciona assim".
+    return /\b(quem|robo|bot|ia|maquina|pessoa|humano|atendente|com quem)\b/.test(n) ? { kind: "identity" } : { kind: "help" };
   }
 
   // "é seguro? como sei q n é golpe?" — pergunta de CONFIANÇA na hora do dinheiro:
@@ -985,7 +988,8 @@ export function detectIntent(text: string): Intent {
     n.length <= 90 &&
     (/(quem (e|eh) (vc|voce|tu)\b)|(\b(e|eh|isso e|isso eh) golpe\b)|(\bgolpe\b.*\?)|(\bconfiavel\b)/.test(n))
   ) {
-    return { kind: "help" };
+    // "é golpe?"/"é confiável?" (06/10) pedem a resposta de CONFIANÇA, não o tutorial.
+    return /\bgolpe\b|\bconfiavel\b/.test(n) ? { kind: "trust_question" } : { kind: "identity" };
   }
 
   // "pera"/"espera aí, meu neto tá chorando"/"já volto": pedido de PAUSA — jamais
@@ -1019,7 +1023,7 @@ export function detectIntent(text: string): Intent {
   // "no site da loja tá mais barato, tá me cobrando a mais?" — disputa de preço:
   // resposta honesta sobre o serviço, nunca o menu de pagamento (28/08 S5).
   if (
-    /\b(no site|na loja|no mercado(?! livre))\b.*\bmais barato\b|\bcobrando (a mais|caro|errado)\b|\bpor ?que (ta|tá|esta|está) mais caro\b|\bmais caro que (o site|a loja|la)\b|\bpreco (ta|tá|esta|está) diferente\b/.test(n)
+    /\b(no site|na loja|no mercado(?! livre))\b.*\bmais barato\b|\bcobrando (a mais|caro|errado)\b|\bpor ?que (ta|tá|esta|está) mais caro\b|\bmais caro (do )?que (o site|a loja|la|no site|na loja|no app|no mercado)\b|\bpreco (ta|tá|esta|está) diferente\b/.test(n)
   ) {
     return { kind: "price_dispute" };
   }
@@ -1788,7 +1792,7 @@ export function parseAttributeAsk(text: string): string | null {
 const SERVICE_ASK_NOUNS =
   /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
 const SERVICE_FEE_RE =
-  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b/;
+  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b|^(?:e|eh) (?:de graca|gratis)\b/;
 const PIX_RECEIVER_RE =
   /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
 

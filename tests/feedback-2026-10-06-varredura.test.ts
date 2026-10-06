@@ -19,6 +19,7 @@ import { handleDeliveryMessage, looksLikeOnboardingName, parseRecipientName } fr
 import { detectIntent, parseAvailabilityAsk, parseBasketLines } from "../src/lib/lia-intents";
 import { pixOutReadiness, resetPixOutProbeCache } from "../src/lib/payments/pix-out/readiness";
 import * as copy from "../src/lib/lia-copy";
+import { sanitizeRouterReply } from "../src/lib/adapters/ai";
 
 // ---------- puros ----------
 
@@ -112,6 +113,18 @@ test("taxa e recebedor do Pix têm resposta fixa e verdadeira", () => {
   assert.match(copy.pixReceiverAnswer(""), /não pra loja/);
   assert.doesNotMatch(copy.paymentConfirmed(), /separando/);
   assert.doesNotMatch(copy.trustAnswer(), /Carrefour|Mercado Livre/);
+});
+
+test("golpe/confiança, identidade e 'é de graça?' têm resposta própria; IA não pode negar a margem", () => {
+  for (const q of ["isso é golpe?", "é confiável?", "é seguro?"]) assert.deepEqual(detectIntent(q), { kind: "trust_question" }, q);
+  for (const q of ["vc é robô?", "quem é você?"]) assert.deepEqual(detectIntent(q), { kind: "identity" }, q);
+  assert.deepEqual(detectIntent("é de graça?"), { kind: "service_question", topic: "service_fee" });
+  assert.deepEqual(detectIntent("tá mais caro que no site"), { kind: "price_dispute" });
+  assert.match(copy.identityAnswer(), /Sou a Lia/);
+  for (const r of ["Não cobramos pelo serviço 🙂", "Sem margem extra nossa", "Não faço comparativo de preços", "O Pix é para a própria loja"]) {
+    assert.equal(sanitizeRouterReply(r), undefined, r);
+  }
+  assert.equal(sanitizeRouterReply("Claro! Te ajudo com isso"), "Claro! Te ajudo com isso");
 });
 
 // ---------- conversa (banco local) ----------

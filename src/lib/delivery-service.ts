@@ -1387,6 +1387,11 @@ async function handleDeliveryTurn(
     await rePresentStep();
     return;
   }
+  if (intent.kind === "identity") {
+    await reply(phone, copy.identityAnswer());
+    await rePresentStep();
+    return;
+  }
   if (intent.kind === "third_party_pay") {
     await reply(phone, copy.thirdPartyPayAnswer());
     await rePresentStep();
