@@ -218,8 +218,10 @@ export function cepNotFound(cep: string): string {
 // dizer até onde a Lia vai, a recusa vira um "não" sem informação nenhuma.
 export function outsideCoverage(city: string | undefined, areaLabel: string): string {
   const onde = city ? `em ${city}` : "aí";
+  // "o estado de SP" → "no estado de SP"; "os estados de…" → "nos estados de…".
+  const where = /^os? /.test(areaLabel) ? `n${areaLabel}` : `em ${areaLabel}`;
   return [
-    `Ainda não chego ${onde} — hoje entrego só em *${areaLabel}* 😔`,
+    `Ainda não chego ${onde} — hoje entrego só ${where.replace(/^(nos?|em) (.*)$/, "$1 *$2*")} 😔`,
     "",
     "Anotei seu contato: quando eu chegar na sua região, te chamo."
   ].join("\n");

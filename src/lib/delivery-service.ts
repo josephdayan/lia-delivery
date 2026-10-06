@@ -19,7 +19,8 @@ import { detectIntent, extractCep, isDemonstrativeOnly, isQuestion, asksRunningT
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
-import { isSaoPauloState } from "@/lib/coverage";
+import { isServedState, servedAreaLabel } from "@/lib/coverage";
+import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import * as copy from "@/lib/lia-copy";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
@@ -170,6 +171,7 @@ async function buildChoices(
   forceLongTail?: boolean,
   cep?: string | null
 ): Promise<ChoicesResult> {
+  noteShopperCep(cep);
   // Mapa (loja:sku → verificação ao vivo) preenchido por linha e lido ao montar os cards.
   const liveChecks = new Map<string, LiveItemCheck>();
   // Enquanto a IA extrai a lista (~2-5s), o parser determinístico já sabe quais linhas
@@ -1011,6 +1013,8 @@ export async function handleDeliveryMessage(input: {
     // primeira escrita deste turno colide com a do turno que terminou enquanto
     // esperávamos o lock e morre em falso TurnSupersededError — cliente sem resposta.
     rememberCtxSnapshot(convo.id, freshConvo.context ?? null);
+    // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
+    if (!currentShopperCep()) noteShopperCep(user.cep);
     if (signupForm) await handleSignupForm(phone, signupForm, user, freshConvo);
     else await handleDeliveryTurn(phone, text, user, freshConvo, inboundMessageId);
     // REDE ANTI-SILÊNCIO: nenhum caminho do turno respondeu nada → fallback pedindo
@@ -1284,7 +1288,7 @@ async function handleDeliveryTurn(
     }
     await reply(
       phone,
-      copy.serviceAnswer(intent.topic, "o estado de São Paulo", {
+      copy.serviceAnswer(intent.topic, servedAreaLabel(), {
         hasCep: Boolean(user.cep),
         hasBasket: (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0
       })
@@ -2063,7 +2067,7 @@ async function handleDeliveryTurn(
     }
     const asking = intent.kind === "free_text" && isQuestion(text);
     if (asking) {
-      await reply(phone, copy.serviceAnswer("generic", "o estado de São Paulo"));
+      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
@@ -2108,7 +2112,7 @@ async function handleDeliveryTurn(
     // Pergunta ("o que vc consegue comprar?") se responde — NUNCA vira item anotado.
     const asking = intent.kind === "free_text" && isQuestion(text);
     if (asking) {
-      await reply(phone, copy.serviceAnswer("generic", "o estado de São Paulo"));
+      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
       ctx.step = "need_cep";
       await writeCtx(convo.id, ctx);
@@ -2710,7 +2714,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
   if (!order) {
     // "que horas chega?" sem pedido = pergunta de PRAZO, não de status.
     if (text && /\b(chega|demora|horas|prazo|falta)\b/.test(normalizeMsg(text))) {
-      await reply(phone, copy.serviceAnswer("eta", "o estado de São Paulo"));
+      await reply(phone, copy.serviceAnswer("eta", servedAreaLabel()));
     } else {
       await reply(phone, copy.noOrdersYet());
     }
@@ -2940,12 +2944,12 @@ async function handleNewCep(
   // área → grava o lead (vira mapa de demanda no /ops) e NÃO persiste o CEP nem cota.
   // The active concierge has a hard state boundary. Legacy catalog mode keeps its
   // configurable city/preset behavior for compatibility with the conversation evals.
-  const area = { covered: isSaoPauloState({ cep, city, uf }), city, uf };
+  const area = { covered: isServedState({ cep, city, uf }), city, uf };
   if (!area.covered) {
     await recordWaitlistLead({ phone, cep, city, uf, reason: "outside_coverage" });
     ctx.step = "need_cep";
     await writeCtx(convoId, ctx);
-    await reply(phone, copy.outsideCoverage(city, "o estado de São Paulo"));
+    await reply(phone, copy.outsideCoverage(city, servedAreaLabel()));
     return;
   }
 
@@ -3071,7 +3075,7 @@ async function handleDeliveryAddress(
     // Pergunta no meio do onboarding: responde e pede o endereço de novo — pergunta não
     // é pedido e nunca entra no estoque.
     if (isQuestion(address) || kind === "help" || kind === "service_question") {
-      await reply(phone, copy.serviceAnswer("generic", "o estado de São Paulo"));
+      await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
       await askStreetOrSignup(phone, ctx, userCep);
@@ -3141,7 +3145,7 @@ async function askCpfAtOnboarding(phone: string, userId: string, convoId: string
   return true;
 }
 
-// Resposta do formulário de cadastro (06/10). Ordem: CEP (existe? estado de SP?) →
+// Resposta do formulário de cadastro (06/10). Ordem: CEP (existe? estado atendido?) →
 // endereço com a rua do CEP + número e complemento do formulário → nome + CPF. O que
 // conferiu fica salvo mesmo quando outra parte falha; só a parte que falhou volta a ser
 // pedida, por texto, pelos passos de sempre (need_cep / need_address / need_cpf).
@@ -3183,11 +3187,11 @@ async function handleSignupForm(
   }
   // Fora da área: guarda o lead (mapa de demanda no /ops) e NÃO guarda o CPF, porque sem
   // entrega ele não tem uso.
-  if (!isSaoPauloState({ cep: form.cep, city: place.city, uf: place.uf })) {
+  if (!isServedState({ cep: form.cep, city: place.city, uf: place.uf })) {
     await recordWaitlistLead({ phone, cep: form.cep, city: place.city, uf: place.uf, reason: "outside_coverage" });
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
-    await reply(phone, copy.outsideCoverage(place.city, "o estado de São Paulo"));
+    await reply(phone, copy.outsideCoverage(place.city, servedAreaLabel()));
     return;
   }
   ctx.cep = form.cep;
@@ -4847,6 +4851,8 @@ async function closeWithoutOperator(
   const others = blocked.length === 1 && !rest.length && ctx.lastChoice?.chosenSku === blocked[0].sku
     ? [...new Map([...ctx.lastChoice.options, ...(ctx.lastChoice.shownOptions ?? [])].map((o) => [o.sku, o])).values()]
         .filter((o) => o.sku !== blocked[0].sku && !(holdupStores ?? []).includes(o.storeKey ?? CONCIERGE_STORE_KEY))
+        // Vitrine montada antes de trocar de CEP pode ter loja regional de outra área.
+        .filter((o) => storeServesCep(o.storeKey ?? CONCIERGE_STORE_KEY, ctx.cep))
         .slice(0, vitrineLimit())
     : [];
   if (others.length) {

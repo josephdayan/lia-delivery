@@ -4,6 +4,17 @@
 - [x] Cron das 10h17 (06/10) criou os 8 templates `vitrine_carrossel_v4/v5_{2..5}`: todos PENDING.
 - [ ] Meta aprovar o v5: o envio troca sozinho para "Olha o que achei 👇" (`activeCarouselPrefix`,
   cache de 10 min). Se reprovar, o motivo aparece no mesmo log.
+## 06/10/2026 — Expansão RJ
+
+- [x] SP + RJ atendidos, área por loja regional nas 4 travas (busca, vitrine, cotação, cobrança).
+- [x] Zona Sul e Prezunic conectados e colhidos (opt-in, desligados).
+- [ ] Deploy (push de main).
+- [ ] Fechamento real (`vtex-api-probe.mts --domain=www.zonasul.com.br --cep=<CEP do Rio> --buy`
+  e o mesmo no Prezunic), depois `LIA_ENABLE_ZONASUL/PREZUNIC=true` e somar os dois em
+  `LIA_AUTO_PURCHASE_STORES` na Vercel + conta de compra (script --db).
+- [ ] 1º pedido real no Rio (precisa de um endereço/cliente lá).
+- [ ] Telefones de teste dos evals estão gravando `WaitlistLead` no banco de produção (39 de 40
+  contatos fora de SP) — limpar e achar o teste que vaza.
 
 ## 06/10/2026 — Cadastro por formulário no 1º contato
 

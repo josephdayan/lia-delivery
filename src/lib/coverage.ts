@@ -36,6 +36,48 @@ export function isSaoPauloState(input: CoverageInput): boolean {
   return digits.length === 8 && /^[01]/.test(digits);
 }
 
+// Faixas de CEP por UF (Correios). Usado quando o ViaCEP não responde e pela trava de
+// área das lojas regionais (store-areas.ts).
+const CEP_UF_RANGES: Array<[number, number, string]> = [
+  [1000, 19999, "SP"], [20000, 28999, "RJ"], [29000, 29999, "ES"], [30000, 39999, "MG"],
+  [40000, 48999, "BA"], [49000, 49999, "SE"], [50000, 56999, "PE"], [57000, 57999, "AL"],
+  [58000, 58999, "PB"], [59000, 59999, "RN"], [60000, 63999, "CE"], [64000, 64999, "PI"],
+  [65000, 65999, "MA"], [66000, 68899, "PA"], [68900, 68999, "AP"], [69000, 69299, "AM"],
+  [69300, 69399, "RR"], [69400, 69899, "AM"], [69900, 69999, "AC"], [70000, 72799, "DF"],
+  [72800, 72999, "GO"], [73000, 73699, "DF"], [73700, 76799, "GO"], [76800, 76999, "RO"],
+  [77000, 77999, "TO"], [78000, 78899, "MT"], [79000, 79999, "MS"], [80000, 87999, "PR"],
+  [88000, 89999, "SC"], [90000, 99999, "RS"]
+];
+
+export function ufFromCep(cep: string | null | undefined): string | undefined {
+  const digits = (cep ?? "").replace(/\D/g, "");
+  if (digits.length !== 8) return undefined;
+  const head = Number(digits.slice(0, 5));
+  return CEP_UF_RANGES.find(([from, to]) => head >= from && head <= to)?.[2];
+}
+
+// Estados atendidos hoje (06/10/2026: SP + RJ). `LIA_SERVICE_UFS` troca sem deploy de código
+// ("SP" volta ao corte antigo). Dentro do estado, quem decide se dá pra entregar é a loja
+// (store-areas.ts + simulação ao vivo por CEP).
+const UF_NAMES: Record<string, string> = { SP: "São Paulo", RJ: "Rio de Janeiro", MG: "Minas Gerais", ES: "Espírito Santo", PR: "Paraná" };
+
+export function servedUfs(): string[] {
+  const list = (process.env.LIA_SERVICE_UFS ?? "SP,RJ").split(",").map((u) => u.trim().toUpperCase()).filter(Boolean);
+  return list.length ? [...new Set(list)] : ["SP"];
+}
+
+export function isServedState(input: CoverageInput): boolean {
+  const uf = input.uf?.trim().toUpperCase() || ufFromCep(input.cep);
+  return Boolean(uf && servedUfs().includes(uf));
+}
+
+// "o estado de São Paulo" / "os estados de São Paulo e Rio de Janeiro".
+export function servedAreaLabel(): string {
+  const names = servedUfs().map((uf) => UF_NAMES[uf] ?? uf);
+  if (names.length === 1) return `o estado de ${names[0]}`;
+  return `os estados de ${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
+}
+
 export function normalizeCity(s?: string): string {
   return (s ?? "")
     .normalize("NFD")

@@ -44,6 +44,8 @@ export const STORE_MAIL_RULES: Record<string, Rule> = {
   kopenhagen: { domains: ["kopenhagen.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   mambo: { domains: ["mambo.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   americanas: { domains: ["americanas.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  prezunic: { domains: ["prezunic.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
+  zonasul: { domains: ["zonasul.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   covabra: { domains: ["covabra.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   savegnago: { domains: ["savegnago.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },
   wepink: { domains: ["wepink.com.br"], number: /\b(v?\d{8,13}[a-z]{0,4}-\d{2})\b/i, kinds: VTEX_KINDS },

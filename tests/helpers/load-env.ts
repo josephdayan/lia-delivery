@@ -90,6 +90,8 @@ for (const store of [
   "GIULIANAFLORES",
   "MAMBO",
   "AMERICANAS",
+  "PREZUNIC",
+  "ZONASUL",
   "COVABRA",
   "SAVEGNAGO",
   "WEPINK",

@@ -16,6 +16,30 @@ v3 e a vitrine "Olha o que achei 👇" pedida pelo dono em 05/10 não entrou no 
   o v3, e foi assim que o card de 3 linhas passou.
 Teste: `tests/carousel.test.ts` e `tests/carousel-card-limit.test.ts` (16/16). Publicado em 92b2f2b;
 o cron das 10h17 criou os 8 templates (PENDING, aguardando a revisão da Meta).
+## 06/10/2026 — Expansão para o Rio de Janeiro + trava "só mostra e aceita se for perto" (dono)
+
+Pergunta do dono: dá pra expandir pro RJ ou faltam produtos? Resposta medida: produto não falta —
+quase todo o elenco é e-commerce nacional (simulação de frete de cada loja em 11 CEPs de SP, Rio,
+Niterói e BH em 06/10). Decisão do dono: "se não tem downside, pode implementar. mas tem que estar
+bem redonda essa coisa de só mostrar e aceitar compra se tiver perto". **Revoga a regra de 29/09
+"fora de SP estado não põe"** para o Rio.
+- **Estados atendidos = SP + RJ** (`isServedState`/`servedAreaLabel` em `coverage.ts`;
+  `LIA_SERVICE_UFS`, padrão `SP,RJ`; `SP` volta ao corte antigo sem deploy de código). Fora disso,
+  lista de espera como antes.
+- **Loja regional tem área fixa** (`src/lib/store-areas.ts`): Mambo (SP capital, CEP 01–05/08),
+  Covabra e Swift (SP), Savegnago (SP, CEP 13–14), Zona Sul e Prezunic (RJ). Todas as outras
+  entregam no país todo. Loja regional nova = 1 linha ali.
+- **Quatro travas, mesma regra:** (1) busca do turno — loja fora da área do CEP do cliente nem
+  entra (escopo por turno lido do contexto/`User.cep`; sem CEP, nenhuma regional); (2) vitrine ao
+  vivo — fora da área sai sem consulta, e loja regional que não confirmar a entrega na simulação
+  SAI (falha fechada; nacional sem resposta continua); (3) cotação — `liveStoreFreight` devolve
+  `no-delivery` sem rede; (4) cobrança — `preflightBasket` barra antes de cobrar, com ou sem
+  simulação. Alternativas do "não deu" também filtram pela área.
+- **Zona Sul (1.091 itens) e Prezunic (2.523)** ligados pelo `add-vtex-store.mts`, mas **opt-in**
+  (`LIA_ENABLE_ZONASUL/PREZUNIC=true`): sondagem seca no Rio passou até o Pix (entrega no dia/2h),
+  falta o fechamento real (`--buy`) exigido pela regra de 25/09. Sem eles, o Rio já tem farmácia
+  em 30–60 min (Drogaria SP/Pacheco), Americanas no dia e o resto do elenco nacional.
+- Site: "São Paulo e Rio de Janeiro". Teste: `tests/store-areas.test.ts`, `coverage`, `signup-form`.
 
 ## 06/10/2026 — Cadastro no 1º contato por formulário do WhatsApp (dono)
 

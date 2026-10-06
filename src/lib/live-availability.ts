@@ -9,6 +9,7 @@
 // Puro: recebe a função de simulação (injetável nos testes) e nunca lança — falha de
 // rede mantém os candidatos como estavam (não inventa indisponibilidade).
 import { liveCheckSupported, liveItemAvailability, type LiveItemCheck } from "./live-freight";
+import { isRegionalStore, storeServesCep } from "./store-areas";
 
 export type LiveCandidate = { storeKey: string; sku: string };
 export type Simulate = (storeKey: string, skus: string[], cep: string) => Promise<Map<string, LiveItemCheck> | null>;
@@ -34,6 +35,10 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
   const checks = new Map<string, LiveItemCheck>();
   if (!cep || !candidates.length) return { kept: candidates, dropped: [], checks };
 
+  // Loja regional fora da área do CEP (06/10, expansão RJ): sai sem consultar ninguém.
+  const outOfArea = candidates.filter((c) => !storeServesCep(c.storeKey, cep));
+  if (outOfArea.length) candidates = candidates.filter((c) => storeServesCep(c.storeKey, cep));
+
   const byStore = new Map<string, T[]>();
   for (const candidate of candidates) {
     if (!supported(candidate.storeKey)) continue;
@@ -53,10 +58,14 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
   );
 
   const kept: T[] = [];
-  const dropped: T[] = [];
+  const dropped: T[] = [...outOfArea];
   for (const candidate of candidates) {
     const check = checks.get(liveKey(candidate.storeKey, candidate.sku));
     if (check && !check.available) dropped.push(candidate);
+    // Loja REGIONAL consultável que não confirmou (fora do ar, timeout, item sem eco):
+    // falha FECHADA — "só mostra se tiver perto" exige a confirmação da própria loja.
+    // Loja nacional sem resposta continua (entrega no país todo; a cotação reconfere).
+    else if (!check && isRegionalStore(candidate.storeKey) && supported(candidate.storeKey)) dropped.push(candidate);
     else kept.push(candidate);
   }
   // Confirmado pela loja vem antes do não-verificável; entre confirmados, o que chega

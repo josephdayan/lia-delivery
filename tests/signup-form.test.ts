@@ -100,6 +100,7 @@ adapter.sendFlowMessage = async (to: string, input: { body: string; cta: string;
 const VIACEP: Record<string, object> = {
   "01310100": { logradouro: "Avenida Paulista", bairro: "Bela Vista", localidade: "São Paulo", uf: "SP" },
   "20040020": { logradouro: "Rua da Assembleia", bairro: "Centro", localidade: "Rio de Janeiro", uf: "RJ" },
+  "30130010": { logradouro: "Praça Sete de Setembro", bairro: "Centro", localidade: "Belo Horizonte", uf: "MG" },
   "13560000": { logradouro: "", bairro: "", localidade: "São Carlos", uf: "SP" }
 };
 const realFetch = global.fetch;
@@ -260,15 +261,26 @@ test("nome sem sobrenome: endereço salvo, pede nome completo e CPF", async (t) 
   assert.equal(user.cpf, null);
 });
 
-test("CEP fora do estado de SP: lista de espera, sem guardar CEP nem CPF", async (t) => {
+test("CEP fora de SP e RJ: lista de espera, sem guardar CEP nem CPF", async (t) => {
   if (!dbOk) return t.skip();
   const phone = newPhone();
-  const out = await submit(phone, { ...VALID, cep: "20040020" });
-  assert.match(out, /Ainda não chego em Rio de Janeiro/);
+  const out = await submit(phone, { ...VALID, cep: "30130010" });
+  assert.match(out, /Ainda não chego em Belo Horizonte — hoje entrego só nos \*estados de São Paulo e Rio de Janeiro\*/);
   const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
   assert.equal(user.cep, null);
   assert.equal(user.cpf, null, "sem entrega, o CPF não fica");
   assert.equal(await prisma.waitlistLead.count({ where: { phone } }), 1);
+});
+
+test("CEP do Rio (06/10): atendido — salva CEP e CPF, sem lista de espera", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = newPhone();
+  const out = await submit(phone, { ...VALID, cep: "20040020" });
+  assert.doesNotMatch(out, /Ainda não chego/);
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  assert.equal(user.cep?.replace(/\D/g, ""), "20040020");
+  assert.equal(user.cpf, "52998224725");
+  assert.equal(await prisma.waitlistLead.count({ where: { phone } }), 0);
 });
 
 test("CEP que não existe: guarda nome e CPF e pede o CEP de novo", async (t) => {

@@ -207,6 +207,7 @@ export function readCtx(context: string | null): DeliveryContext {
 // escrita no meio (cancelar, outro turno) → o CAS falha → TurnSupersededError → o
 // turno velho PARA, sem gravar e sem falar mais nada.
 import { AsyncLocalStorage } from "node:async_hooks";
+import { noteShopperCep, runShopperScoped } from "./store-areas";
 
 export class TurnSupersededError extends Error {
   constructor(convoId: string) {
@@ -223,11 +224,18 @@ export const turnStore = new AsyncLocalStorage<Map<string, string | null>>();
 export const turnMeta = new AsyncLocalStorage<{ replies: number; llmUsed?: boolean }>();
 
 export function runTurnScoped<T>(fn: () => Promise<T>): Promise<T> {
-  return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false }, fn));
+  return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false }, () => runShopperScoped(fn)));
 }
 
 export function rememberCtxSnapshot(convoId: string, context: string | null) {
   turnStore.getStore()?.set(convoId, context);
+  // CEP do cliente vale para TODA busca do turno (store-areas.ts: loja regional fora da
+  // área nem aparece).
+  try {
+    noteShopperCep(context ? (JSON.parse(context) as { cep?: string }).cep : undefined);
+  } catch {
+    /* contexto ilegível: sem CEP no escopo */
+  }
 }
 
 export async function writeCtx(convoId: string, ctx: DeliveryContext) {
@@ -235,6 +243,7 @@ export async function writeCtx(convoId: string, ctx: DeliveryContext) {
   if (ctx.pending?.length) ctx.pendingSince ??= Date.now();
   else delete ctx.pendingSince;
   const next = JSON.stringify(ctx);
+  noteShopperCep(ctx.cep);
   const snapshots = turnStore.getStore();
   const snapshot = snapshots?.get(convoId);
   if (snapshots && snapshot !== undefined) {

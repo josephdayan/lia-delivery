@@ -20,7 +20,7 @@ const instrument = Instrument_Sans({
 export const metadata: Metadata = {
   title: "Lia — compras do dia a dia sem sair do WhatsApp",
   description:
-    "Pede qualquer coisa numa mensagem: a Lia mostra o total com frete e prazo reais, você paga por Pix ou cartão e ela cuida de tudo até chegar. Estado de São Paulo."
+    "Pede qualquer coisa numa mensagem: a Lia mostra o total com frete e prazo reais, você paga por Pix ou cartão e ela cuida de tudo até chegar. São Paulo e Rio de Janeiro."
 };
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_LIA_WHATSAPP_NUMBER ?? "14155238886";
@@ -175,7 +175,7 @@ const BUBBLES_RIGHT = [
 const FAQ = [
   {
     q: "Onde a Lia entrega?",
-    a: "A Lia opera somente no estado de São Paulo: capital, Grande São Paulo e cidades do interior como Campinas, Santos, Ribeirão Preto, São José dos Campos, Sorocaba e mais. Manda seu CEP no WhatsApp que eu confirmo na hora se já chego aí. 📍"
+    a: "A Lia opera nos estados de São Paulo e Rio de Janeiro: capital, Grande São Paulo e interior paulista, e no Rio a capital e a região metropolitana. Manda seu CEP no WhatsApp que eu confirmo na hora se já chego aí e quais lojas entregam no seu endereço. 📍"
   },
   {
     q: "O que dá pra pedir?",
@@ -253,7 +253,7 @@ export default function Home() {
             <p className="mt-5 max-w-[52ch] text-[17px] leading-relaxed text-white/75 lg:text-[18px]">
               Você pede qualquer coisa numa mensagem, a Lia mostra o total com frete e prazo, e você paga por
               Pix ou cartão{"\u00A0"}— <strong className="font-semibold text-white">tudo <span className="whitespace-nowrap">sem sair do WhatsApp</span></strong>. Ela
-              compra pra você e avisa a cada passo, no estado de São Paulo.
+              compra pra você e avisa a cada passo, em São Paulo e no Rio de Janeiro.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
               <a
@@ -277,7 +277,7 @@ export default function Home() {
             <PhoneMock />
           </div>
           <p className="border-t border-white/15 pt-4 text-[15px] text-white/55 lg:col-span-12">
-            <span className="whitespace-nowrap">Estado de São Paulo</span> ·{" "}
+            <span className="whitespace-nowrap">São Paulo e Rio de Janeiro</span> ·{" "}
             <span className="whitespace-nowrap">qualquer coisa, numa mensagem só</span> ·{" "}
             <span className="whitespace-nowrap">Pix ou cartão no chat</span>
           </p>

@@ -16,6 +16,8 @@
 // `faster` (04/09, dono: "tem que dar a opção de super expressa"): a entrega mais rápida
 // que a loja oferece para a cesta, quando é mais rápida que a mais barata e o extra cabe
 // em LIA_FAST_FREIGHT_MAX_EXTRA (R$ 20). Quem escolhe é o cliente (botão).
+import { storeServesCep } from "./store-areas";
+
 export type LiveFreightOutcome =
   // `unitPrices` (27/09): preço de CUSTO por unidade que a loja cobra AGORA (sellingPrice da
   // simulação), por sku da Lia — o total sai com ele, não com a foto do catálogo.
@@ -41,6 +43,8 @@ const VTEX_LIVE: Record<string, { domain: string; sku: RegExp }> = {
   naturaldaterra: { domain: "www.naturaldaterra.com.br", sku: /^naturaldaterra-(\d+)$/ },
   mambo: { domain: "www.mambo.com.br", sku: /^mambo-(\d+)$/ },
   americanas: { domain: "www.americanas.com.br", sku: /^americanas-(\d+)$/ },
+  prezunic: { domain: "www.prezunic.com.br", sku: /^prezunic-(\d+)$/ },
+  zonasul: { domain: "www.zonasul.com.br", sku: /^zonasul-(\d+)$/ },
   covabra: { domain: "www.covabra.com.br", sku: /^covabra-(\d+)$/ },
   savegnago: { domain: "www.savegnago.com.br", sku: /^savegnago-(\d+)$/ },
   wepink: { domain: "www.wepink.com.br", sku: /^wepink-(\d+)$/ },
@@ -196,6 +200,8 @@ export async function liveStoreFreight(
   items: { sku: string; qty: number }[],
   cep: string
 ): Promise<LiveFreightOutcome> {
+  // Loja regional fora da área do CEP: resposta definitiva, sem rede (store-areas.ts).
+  if (items.length && !storeServesCep(storeKey, cep)) return { kind: "no-delivery" };
   const store = VTEX_LIVE[storeKey];
   if (!liveFreightEnabled() || !store || !items.length) return { kind: "unavailable" };
 
@@ -425,6 +431,13 @@ export function __setPreflightForTests(fn: PreflightFn | null) {
 }
 
 export async function preflightBasket(items: { sku: string; qty: number; storeKey: string }[], cep: string | null | undefined): Promise<PreflightFailure | null> {
+  // Trava estática ANTES de qualquer cobrança (06/10): loja regional fora da área do CEP
+  // nunca é cobrada, consultável ou não, com ou sem simulação injetada.
+  const outOfArea = items.filter((item) => !storeServesCep(item.storeKey, cep));
+  if (outOfArea.length) {
+    const storeKey = outOfArea[0].storeKey;
+    return { storeKey, kind: "no-delivery", skus: outOfArea.filter((i) => i.storeKey === storeKey).map((i) => i.sku) };
+  }
   if (preflightOverride) return preflightOverride(items, cep ?? "");
   if (!liveFreightEnabled() || !cep || !items.length) return null;
   const byStore = new Map<string, { sku: string; qty: number }[]>();

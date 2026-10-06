@@ -1,3 +1,4 @@
+import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
 import { conciergeMatchIsStrong, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
 import { petzStore } from "./petz";
@@ -8,6 +9,8 @@ import { decathlonStore } from "./decathlon";
 import { swiftStore } from "./swift";
 import { mamboStore } from "./mambo";
 import { americanasStore } from "./americanas";
+import { prezunicStore } from "./prezunic";
+import { zonasulStore } from "./zonasul";
 import { covabraStore } from "./covabra";
 import { savegnagoStore } from "./savegnago";
 import { wepinkStore } from "./wepink";
@@ -100,6 +103,11 @@ const STORES: Record<string, StoreConnector> = {
   ...(process.env.LIA_ENABLE_MAMBO !== "false" ? { [mamboStore.key]: mamboStore } : {}),
   // 28/09/2026: Americanas fechou por API (Pix Stark Infra); mínimo R$30, entrega 2h na capital.
   ...(process.env.LIA_ENABLE_AMERICANAS !== "false" ? { [americanasStore.key]: americanasStore } : {}),
+  // 06/10/2026: mercados do Rio (expansão RJ). Só aparecem para CEP do Rio (store-areas.ts).
+  // OPT-IN até o fechamento real por API ser provado (`vtex-api-probe.mts --buy` num CEP do
+  // Rio) — regra do dono de 25/09: loja que não fecha sozinha fica fora.
+  ...(process.env.LIA_ENABLE_PREZUNIC === "true" ? { [prezunicStore.key]: prezunicStore } : {}),
+  ...(process.env.LIA_ENABLE_ZONASUL === "true" ? { [zonasulStore.key]: zonasulStore } : {}),
   ...(process.env.LIA_ENABLE_COVABRA !== "false" ? { [covabraStore.key]: covabraStore } : {}),
   ...(process.env.LIA_ENABLE_SAVEGNAGO !== "false" ? { [savegnagoStore.key]: savegnagoStore } : {}),
   ...(process.env.LIA_ENABLE_WEPINK !== "false" ? { [wepinkStore.key]: wepinkStore } : {}),
@@ -158,7 +166,7 @@ const FLOWER_HINT_RE = /\b(flor|flores|buque|buques|rosa|rosas|girassol|girassoi
 export async function pickStoreForQueries(queries: string[]): Promise<StoreConnector> {
   // Mercado Livre is a manual-concierge long-tail fallback, never the locked store
   // for the legacy one-store/automated flow.
-  const stores = listStores().filter((store) => store.key !== mercadoLivreStore.key);
+  const stores = storesForShopper(listStores()).filter((store) => store.key !== mercadoLivreStore.key);
   if (stores.length <= 1 || queries.length === 0) return stores[0] ?? getStore();
   const wins = new Map<string, number>(stores.map((s) => [s.key, 0]));
   for (const q of queries) {
@@ -226,7 +234,7 @@ async function searchSelectedStores(stores: StoreConnector[], query: string, lim
 }
 
 export async function searchAcrossStores(query: string, limitPerStore = 4) {
-  return searchSelectedStores(listStores(), query, limitPerStore);
+  return searchSelectedStores(storesForShopper(listStores()), query, limitPerStore);
 }
 
 function rankStoreCandidates(query: string, hits: StoreCandidate[]): StoreCandidate[] {
@@ -254,7 +262,7 @@ export function needsLongTailSearch(query: string, localCandidates: StoreCandida
 // coincidem na maioria dos casos.
 export async function prefetchLongTailIfNeeded(query: string): Promise<void> {
   if (!mercadoLivreEnabled()) return;
-  const localStores = listStores().filter((store) => store.key !== mercadoLivreStore.key);
+  const localStores = storesForShopper(listStores()).filter((store) => store.key !== mercadoLivreStore.key);
   const localHits = await searchSelectedStores(localStores, query, 4);
   if (needsLongTailSearch(query, rankStoreCandidates(query, localHits))) prefetchMercadoLivre(query);
 }
@@ -282,7 +290,9 @@ export async function gatherCrossStoreCandidates(
   // ("isqueiro pra charuto" → "isqueiro"); as vitrines locais continuam com a frase curta.
   options?: { onLongTailSearch?: () => void; forceLongTail?: boolean; longTailQuery?: string }
 ): Promise<StoreCandidate[]> {
-  const stores = listStores();
+  // Loja regional fora da área do cliente (mercado do Rio para quem está em SP) nem entra
+  // na busca: não ocupa vaga de candidato e não aparece em nenhum caminho (store-areas.ts).
+  const stores = storesForShopper(listStores());
   const longTail = stores.find((store) => store.key === mercadoLivreStore.key);
   const localStores = stores.filter((store) => store.key !== mercadoLivreStore.key);
   const localHits = await searchSelectedStores(localStores, query, perStore);

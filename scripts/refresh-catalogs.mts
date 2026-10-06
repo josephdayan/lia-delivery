@@ -90,6 +90,8 @@ const SOURCES: Source[] = [
   { key: "wepink", origin: "https://www.wepink.com.br", max: 1000 },
   { key: "savegnago", origin: "https://www.savegnago.com.br", max: 5000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
   { key: "covabra", origin: "https://www.covabra.com.br", max: 5000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
+  { key: "zonasul", origin: "https://www.zonasul.com.br", max: 5000 },
+  { key: "prezunic", origin: "https://www.prezunic.com.br", max: 5000 },
   { key: "mambo", origin: "https://www.mambo.com.br", max: 6000, ft: "arroz;feijao;leite;cafe;acucar;oleo;macarrao;pao;ovos;queijo;presunto;manteiga;iogurte;agua;refrigerante;cerveja;suco;biscoito;chocolate;papel higienico;detergente;sabao;amaciante;banana;tomate;cebola;batata;frango;carne;peixe" },
   { key: "epocacosmeticos", origin: "https://www.epocacosmeticos.com.br", max: 1200, rewriteHost: "www.epocacosmeticos.com.br", skuPrefix: "epoca" },
   {

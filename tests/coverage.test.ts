@@ -1,7 +1,7 @@
 import "./helpers/load-env";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { checkCoverage, isSaoPauloState, normalizeCity, coverageLabel } from "../src/lib/coverage";
+import { checkCoverage, isSaoPauloState, isServedState, normalizeCity, coverageLabel, servedAreaLabel, ufFromCep } from "../src/lib/coverage";
 
 // Guard the env we toggle so tests don't leak into each other.
 function withEnv(vars: Record<string, string | undefined>, fn: () => void) {
@@ -41,6 +41,33 @@ test("active concierge boundary accepts all SP and rejects every other state", (
   assert.equal(isSaoPauloState({ city: "Rio de Janeiro", uf: "RJ", cep: "20040000" }), false);
   assert.equal(isSaoPauloState({ cep: "13010000" }), true);
   assert.equal(isSaoPauloState({ cep: "20040000" }), false);
+});
+
+test("SP + RJ atendidos (06/10): ViaCEP manda; sem ViaCEP, a faixa do CEP decide", () => {
+  withEnv({ LIA_SERVICE_UFS: undefined }, () => {
+    assert.equal(isServedState({ city: "Rio de Janeiro", uf: "RJ", cep: "22041001" }), true);
+    assert.equal(isServedState({ city: "Niterói", uf: "rj" }), true);
+    assert.equal(isServedState({ city: "Campinas", uf: "SP", cep: "13010111" }), true);
+    assert.equal(isServedState({ city: "Belo Horizonte", uf: "MG", cep: "30130010" }), false);
+    assert.equal(isServedState({ cep: "22041001" }), true);
+    assert.equal(isServedState({ cep: "29102100" }), false);
+    assert.equal(isServedState({}), false);
+    assert.equal(servedAreaLabel(), "os estados de São Paulo e Rio de Janeiro");
+  });
+  withEnv({ LIA_SERVICE_UFS: "SP" }, () => {
+    assert.equal(isServedState({ city: "Rio de Janeiro", uf: "RJ" }), false);
+    assert.equal(servedAreaLabel(), "o estado de São Paulo");
+  });
+});
+
+test("ufFromCep: faixas dos Correios", () => {
+  assert.equal(ufFromCep("01310-100"), "SP");
+  assert.equal(ufFromCep("19999999"), "SP");
+  assert.equal(ufFromCep("20000000"), "RJ");
+  assert.equal(ufFromCep("28999999"), "RJ");
+  assert.equal(ufFromCep("29000000"), "ES");
+  assert.equal(ufFromCep("30130010"), "MG");
+  assert.equal(ufFromCep("123"), undefined);
 });
 
 test("default coverage = São Paulo capital (city known)", () => {

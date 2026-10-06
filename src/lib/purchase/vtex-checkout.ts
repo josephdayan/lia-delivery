@@ -26,6 +26,8 @@ export const VTEX_API_STORES: Record<string, { domain: string; skuPrefix: string
   // 25/09 (varredura de 80 varejistas + sondagem a seco): supermercado, beleza e farmácia.
   mambo: { domain: "www.mambo.com.br", skuPrefix: "mambo-", label: "Mambo" },
   americanas: { domain: "www.americanas.com.br", skuPrefix: "americanas-", label: "Americanas" },
+  prezunic: { domain: "www.prezunic.com.br", skuPrefix: "prezunic-", label: "Prezunic" },
+  zonasul: { domain: "www.zonasul.com.br", skuPrefix: "zonasul-", label: "Zona Sul" },
   covabra: { domain: "www.covabra.com.br", skuPrefix: "covabra-", label: "Covabra" },
   savegnago: { domain: "www.savegnago.com.br", skuPrefix: "savegnago-", label: "Savegnago" },
   wepink: { domain: "www.wepink.com.br", skuPrefix: "wepink-", label: "WePink" },

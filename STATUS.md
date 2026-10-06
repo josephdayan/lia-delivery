@@ -7,6 +7,14 @@ Os nomes v4/v5 seguem livres porque nada chegou a ser criado. Testes: `tests/car
 `tests/carousel-card-limit.test.ts` 16/16 no Postgres local; `tsc` ok. Commit 92b2f2b, deploy de
 produção READY às 10h06. Cron das 10h17: os 8 criados, todos **PENDING** (nenhum ERRO). Falta a
 Meta aprovar; com o v5 aprovado o envio troca sozinho (o log das :17 mostra o status).
+## 06/10/2026 — Rio de Janeiro ligado (SP + RJ) com trava de área por loja
+
+Regra e detalhes no topo do AGENTS.md. Medição: simulação de frete das 37 lojas em 11 CEPs — só
+Mambo, Covabra, Savegnago e Swift são regionais; sondagem seca em Copacabana: Drogaria SP e Pacheco
+30–60 min, Americanas no dia/2h, Zona Sul no dia, Prezunic 2h, Mambo não entrega. Conferência ao
+vivo sem banco: "arroz 5kg" no Rio mostra Zona Sul/Prezunic e nunca Mambo/Covabra/Swift; em SP
+nunca aparece mercado do Rio; em Guarulhos o Mambo some. Lista de espera fora de SP tinha 40
+contatos, 39 de telefones de teste dos evals (só 1 real, Vila Velha). Suíte local completa 742/742.
 
 ## 06/10/2026 — Cadastro no primeiro contato por formulário do WhatsApp
 
