@@ -1,3 +1,16 @@
+## 06/10/2026 (tarde) — Varredura de cliente novo: o que depende do dono
+
+- [ ] **Asaas** (o maior): enquanto o Pix de saída estiver recusado, a trava nova não deixa cobrar
+  — a Lia diz "agora não consigo finalizar, nada foi cobrado". Sem resolver, nenhum pedido fecha.
+- [ ] **Limite de compra automática R$ 500 por dia, somando TODOS os clientes**
+  (`reservedSpendCents`): passou disso, todo pedido seguinte espera o toque do dono e é estornado
+  em 6h se ele não tocar — o cliente não é avisado. Decidir: subir o limite ou avisar o cliente.
+- [ ] **Carrossel = template de MARKETING**: a Meta bloqueia por pessoa (131049, aconteceu com a
+  Adely) e cobra ~R$0,33 por envio. A Lia reenvia como cards, mas atrasa. Decidir se cliente novo
+  recebe cards em vez de carrossel (`LIA_CAROUSEL`).
+- [ ] **Bebida alcoólica** sem nenhuma confirmação de idade — decisão de negócio/legal.
+- [ ] Deploy (push do main) depois que os corretores em andamento entrarem.
+
 ## 06/10/2026 — Vitrine confirmada ao vivo
 
 - [x] Opção sem confirmação da loja fora da vitrine; frete da vitrine = frete cobrado.
