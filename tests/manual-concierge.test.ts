@@ -167,7 +167,7 @@ test("fechar a lista com escolha pendente pede pra ESCOLHER — e aí o total sa
   // Fecha a lista no meio das opções, sem escolher: a Lia pede pra confirmar o item
   // (regra 11/08: nada de linha livre — só item com preço entra no pedido).
   const closed = await c.send("só isso");
-  assert.match(closed, /confirma esse item primeiro/i);
+  assert.match(closed, /antes de pagar, escolhe uma das opções/i);
   assert.match(closed.toLowerCase(), /coca/, "as opções voltam pra facilitar a escolha");
   const order = await prisma.deliveryOrder.findFirst({ where: { phone: c.phone } });
   assert.equal(order, null, "sem escolha não há pedido");

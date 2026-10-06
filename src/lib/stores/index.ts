@@ -104,9 +104,9 @@ const STORES: Record<string, StoreConnector> = {
   // 28/09/2026: Americanas fechou por API (Pix Stark Infra); mínimo R$30, entrega 2h na capital.
   ...(process.env.LIA_ENABLE_AMERICANAS !== "false" ? { [americanasStore.key]: americanasStore } : {}),
   // 06/10/2026: mercados do Rio (expansão RJ). Só aparecem para CEP do Rio (store-areas.ts).
-  // Zona Sul fechou pedido real por API em Copacabana (grupo 1666863616742, Pix obtido): ligado.
-  // Prezunic: OPT-IN até o fechamento real (1ª tentativa parou no mínimo de R$80, ORD079).
-  ...(process.env.LIA_ENABLE_PREZUNIC === "true" ? { [prezunicStore.key]: prezunicStore } : {}),
+  // Zona Sul (grupo 1666863616742) e Prezunic (PZ2456030, carrinho mínimo R$80) fecharam pedido
+  // real por API em Copacabana com Pix obtido: ligados.
+  ...(process.env.LIA_ENABLE_PREZUNIC !== "false" ? { [prezunicStore.key]: prezunicStore } : {}),
   ...(process.env.LIA_ENABLE_ZONASUL !== "false" ? { [zonasulStore.key]: zonasulStore } : {}),
   ...(process.env.LIA_ENABLE_COVABRA !== "false" ? { [covabraStore.key]: covabraStore } : {}),
   ...(process.env.LIA_ENABLE_SAVEGNAGO !== "false" ? { [savegnagoStore.key]: savegnagoStore } : {}),

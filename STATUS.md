@@ -1,3 +1,27 @@
+## 06/10/2026 — Prezunic fecha pedido real por API no Rio
+
+2º `--buy` em Copacabana (2x sabão líquido 5L, acima do mínimo de R$80): pedido PZ2456030,
+R$103,88, Pix copia-e-cola obtido (recebedor Cencosud, formato Mercado Pago), não pago. Ligado no
+código e conta de compra ativa em produção. Os dois mercados do Rio só aparecem depois que o dono
+somar `zonasul,prezunic` em `LIA_AUTO_PURCHASE_STORES` e houver deploy.
+
+## 06/10/2026 — Medição: dá pra abrir outros estados? (decisão: só SP e RJ)
+
+Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (só consulta).
+- Farmácia rápida em quase todo o país: Pague Menos 1–2h em quase todas as capitais; Extrafarma
+  "Expressa" 2h no Norte/Nordeste; Drogaria SP/Pacheco 30 min–1h no Sudeste, Centro-Oeste e BA.
+  Exceção: Acre (1 dia).
+- Mercado no dia: só Americanas (R$12,90, sai da loja física) em todas as capitais menos MS, mas o
+  catálogo colhido tem só ~16 itens de mercearia básica. Supermercado de verdade só em SP e RJ.
+  Candidatos sondados a seco: **GBarbosa passou até o Pix em Aracaju e Salvador (entrega 2–4h)**;
+  Super Nosso (BH) e Giassi (SC) entregam rápido mas sem Pix (fora da arquitetura); Super Muffato
+  (Curitiba) e Rosário (Brasília) recusaram os CEPs testados; Condor e Angeloni sem catálogo
+  público; Bretas sem item disponível.
+- Pet: Cobasi 1–4h no Sudeste, Sul, Centro-Oeste e boa parte do Nordeste; 18–35 dias em AM, AP,
+  RR, AC, RO, PI e MA.
+- Lojas com algo em até 1 dia: SP 17, RJ 10, PR 8, MG 7, ES/GO/MT 6, DF/BA/PE 5, Norte 2–3.
+- Casa, moda, livros, eletro e beleza: nacionais, 2–10 dias em qualquer lugar.
+
 ## 06/10/2026 — Motivo do cancelamento
 
 Pedido cancelado pergunta o motivo (frete caro, produto caro, outro app, desisti, outro) e anota no
