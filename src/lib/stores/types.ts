@@ -244,7 +244,8 @@ const PET_INTRINSIC_RE = /\b(racao|racoes|petiscos?|bifinhos?|areia|coleiras?|ar
 // Marcas de item pet para a PENALIDADE geral. Sem o "pet" solto do PET_ANY_RE de
 // propósito: em catálogo brasileiro "PET" é a garrafa plástica ("Coca-Cola Pet 2L"),
 // então usá-lo aqui penalizava refrigerante como se fosse ração.
-const GIFT_WRAP_HEAD_RE = /^(sacolas?|embalage\w*|papel|lacos?|fitas?|caixas? presente\w*|cartao presente|vale presente|gift card)\b/;
+// Cabeça do nome, depois de até 2 palavras de marca ("Época Cosméticos Sacola Presenteável P").
+const GIFT_WRAP_HEAD_RE = /^(?:[a-z0-9]+ ){0,2}(sacolas?|embalage\w*|papel|lacos?|fitas?|caixas? presente\w*|cartao presente|vale presente|gift card)\b/;
 const GIFT_WRAP_ASK_RE = /\b(sacolas?|embalage\w*|papel|lacos?|fitas?|caixas?|cartao|vale|gift)\b/;
 // Público (menino/menina/idade) qualifica o pedido de presente/brinquedo, mas raramente está
 // no nome do produto: não conta na cobertura (06/10, A7: "brinquedo menino 5 anos" → nada).

@@ -154,6 +154,16 @@ test("A8: dose sozinha não segura relevância; remédio com outra dose sai, a d
   assert.ok(right > scoreCatalogMatch("ibuprofeno", sku("Ibuprofeno 400mg 10 Comprimidos Genérico Neo Química")));
 });
 
+// ---------- A7: presente ----------
+test("A7: a sacola de presente (com a marca na frente) nunca é o presente", async () => {
+  const { scoreCatalogMatch } = await import("../src/lib/stores/types");
+  const item = (name: string) => ({ sku: name, name, unitPrice: 5 });
+  assert.equal(scoreCatalogMatch("presente feminino", item("Época Cosméticos Sacola Presenteável P")), 0);
+  assert.equal(scoreCatalogMatch("presente", item("Sacola Para Presentes Flamengo 33x27cm")), 0);
+  assert.ok(scoreCatalogMatch("sacola de presente", item("Sacola Para Presentes Flamengo 33x27cm")) > 0, "pedida, a embalagem continua achável");
+  assert.ok(scoreCatalogMatch("kit presente", item("Kit Presentável Lola Cosmetics – Cronograma Capilar + Sacola Presenteável Kit")) > 0);
+});
+
 // ---------------- conversa (banco local) ----------------
 // Loja VTEX de mentira por sku: `drop` = sem entrega no CEP; `weight` = vendido por peso;
 // `down` = loja não responde; `slow` = simulação que estoura o tempo na 1ª tentativa.

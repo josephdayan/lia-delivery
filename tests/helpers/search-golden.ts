@@ -300,7 +300,8 @@ export const GOLDEN_CASES: GoldenCase[] = [
   },
   {
     name: "presente nunca é a sacola de presente (A7)",
-    query: "presente",
+    query: "kit presente",
+    message: "um presente pra minha mãe até R$100",
     allExclude: /^sacola|^embalage|^papel/,
     env: AUTO_ROSTER,
     deterministic: true,
