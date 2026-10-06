@@ -229,6 +229,27 @@ test("Claire: 'veja se tem de coco' busca o shampoo de coco e não repete o outr
   assert.ok(options.every((line) => /coco/i.test(line)), `só opções de coco: ${options.join(" | ")}`);
 });
 
+test("Claire: marca + característica que não existem juntas viram 'não achei', nunca outra marca", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero shampoo");
+  const out = await send(phone, "veja se tem kerasys de coco");
+  const options = out.split("\n").filter((line) => /^\*\d\)\*/.test(line));
+  assert.ok(options.every((line) => !/coco/i.test(line) || /kerasys/i.test(line)), `nenhum coco de outra marca como se fosse kerasys: ${options.join(" | ")}`);
+  assert.match(out, /kerasys coco/i, out.slice(0, 300));
+});
+
+test("Claire: dois produtos no meio da escolha trocam a escolha e enfileiram o outro", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero shampoo");
+  const out = await send(phone, "quero shampoo cuide-se bem feira oleo de coco, condicionador cuide-se bem feira oleo de coco");
+  const options = out.split("\n").filter((line) => /^\*\d\)\*/.test(line));
+  assert.ok(options.length >= 1, out.slice(0, 400));
+  assert.match(options[0] ?? "", /shampoo[\s\S]*coco/i, `escolha trocada pelo shampoo de coco: ${options.join(" | ")}`);
+  assert.match(out, /condicionador/i, "o condicionador entra na fila (ou já na cesta)");
+});
+
 test("Claire: 'qual a loja?' nomeia a loja das opções; comparação de preço é verdadeira", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();

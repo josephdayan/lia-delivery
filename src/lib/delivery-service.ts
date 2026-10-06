@@ -109,7 +109,10 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   // (rodadas 4 e 14 dos testes reais de 14/08).
   const sanitized = stripMedicineNegation(text);
   const containsTobacco = looksLikeTobacco(sanitized);
-  const extraction = await extractShoppingList(sanitized);
+  // Frase já reescrita pelo roteador da IA neste turno: é uma busca limpa, o parser
+  // determinístico dá conta e a 2ª chamada de IA só somava até 10 s (06/10).
+  const routed = turnMeta.getStore()?.routerQuery;
+  const extraction = routed && normalizeMsg(routed) === normalizeMsg(text) ? null : await extractShoppingList(sanitized);
   const deterministic = parseBasketLines(sanitized)
     .filter((line) => queryTokens(line.phrase).length)
     .filter((line) => !blocksMedicine(line.phrase))
@@ -3396,6 +3399,9 @@ async function handleChoosing(
     await confirmChosenOption(phone, convoId, ctx, userCep, store, current, tapped);
     return;
   }
+  // Mensagem com 2+ produtos ("shampoo Kerasys Coconut 1L, condicionador Kerasys Coconut
+  // 1L", 06/10, Claire) é pedido novo: não estreita nem refina as opções na mesa.
+  const multiItem = parseBasketLines(text).length >= 2;
   // "qual a diferença entre o 1 e o 2?": comparação honesta pelo que a Lia SABE
   // (nome, preço, loja) — repetir os cards sem palavra parecia ignorar (29/08 S17).
   if (/\b(qual (a )?diferenca|diferenca entre|compara(r|cao)?)\b/.test(normalizeMsg(text))) {
@@ -3457,7 +3463,9 @@ async function handleChoosing(
     const fresh = queryTokens(normalizeMsg(attrAsk)).filter((token) => !baseTokens.has(token));
     if (fresh.length && fresh.length <= 4) {
       const wanted = `${base} ${fresh.join(" ")}`;
-      if (await researchChoice(phone, convoId, ctx, current, wanted, fresh.join(" "))) return;
+      // Tudo o que o cliente pediu tem que estar no produto ("kerasys" E "coco"), não só a
+      // palavra nova — senão "Kit Skala Coco" aparecia como "shampoo kerasys coco".
+      if (await researchChoice(phone, convoId, ctx, current, wanted, queryTokens(normalizeMsg(attrAsk)).join(" "))) return;
       await reply(phone, copy.refineNoResult(wanted));
       await sendChoices(phone, current);
       return;
@@ -3470,9 +3478,9 @@ async function handleChoosing(
   // "acha outras" pages; "tem essa em azul?"/"tem de 2kg?"/"quero uma maior" refine.
   // Both are checked AFTER an explicit pick ("2", "a colgate", "mais barato") but
   // BEFORE reject→skip — "não gostei, tem outras?" should show more, not drop the item.
-  const more = wantsMoreOptions(text);
-  const refineAttrs = more ? null : parseRefinement(text);
-  let parsed = parseChoiceReply(text, current.options);
+  const more = multiItem ? false : wantsMoreOptions(text);
+  const refineAttrs = more || multiItem ? null : parseRefinement(text);
+  let parsed = multiItem ? null : parseChoiceReply(text, current.options);
   // "nenhuma dessas, mostra outras" asks for MORE — don't let the skip pattern drop the item.
   if (parsed?.type === "skip" && more) parsed = null;
   if (!parsed && !more && !refineAttrs && intent.kind === "reject") parsed = { type: "skip" } as const;
@@ -3550,9 +3558,6 @@ async function handleChoosing(
   // 04/09 (dono): texto que discrimina NUNCA escolhe sozinho — "masculino" com uma só
   // opção masculina mostrava o card e já fechava. Agora estreita para 1 e o cliente
   // confirma no botão/número, como em qualquer escolha.
-  // Mensagem com 2+ produtos ("shampoo Kerasys Coconut 1L, condicionador Kerasys Coconut
-  // 1L", 06/10, Claire) é pedido novo: não estreita nem refina as opções na mesa.
-  const multiItem = parseBasketLines(text).length >= 2;
   const narrowed = multiItem ? [] : narrowChoiceByName(text, current.options);
   if (narrowed.length >= 1 && narrowed.length < current.options.length) {
     current.options = narrowed.map((i) => current.options[i]);
@@ -3895,9 +3900,9 @@ const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|ne
 async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string, mustMatch?: string): Promise<boolean> {
   const found = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, true, ctx.cep);
   const choice = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
-  // `mustMatch` (06/10): só vale opção que tem a característica pedida ("coco"); a busca
-  // nova não pode devolver o mesmo shampoo sem coco com cabeçalho de refino.
-  if (choice && mustMatch) choice.options = choice.options.filter((o) => conciergeMatchIsStrong(mustMatch, o));
+  // `mustMatch` (06/10): só vale opção que tem TUDO o que foi pedido ("kerasys coco"); a
+  // busca nova não pode devolver outro produto com cabeçalho de refino.
+  if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
   if (!choice?.options.length) return false;
   current.baseQuery = undefined;
   current.attrs = undefined;
@@ -4035,7 +4040,8 @@ function classifyFirstEnabled(): boolean {
 // do classificador: vai direto pra busca, sem pagar a chamada de IA.
 function looksLikeProductList(text: string): boolean {
   if (parseBasketLines(text).length >= 2) return true;
-  const n = normalizeMsg(text);
+  // Saudação na frente ("Ola quero 2 cxs de…", 06/10) não muda o que a mensagem é.
+  const n = normalizeMsg(text).replace(/^(?:(?:oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)(?:\s+lia)?[\s,!.]*)+/, "");
   return /^\d+\s*x?\s+\S/.test(n) || /^(quero|queria|me ve|manda|preciso de|traz|compra)\s+\d/.test(n);
 }
 
@@ -4069,6 +4075,7 @@ async function tryLlmInterpret(
   if (verdict.action === "product_request" && verdict.productRequest) {
     // Só re-busca se a IA de fato REESCREVEU (senão vira loop do mesmo não-achado).
     if (normalizeMsg(verdict.productRequest) === normalizeMsg(text)) return false;
+    if (meta) meta.routerQuery = verdict.productRequest;
     await handleSearch(phone, convoId, userCep, ctx, verdict.productRequest, userId);
     return true;
   }

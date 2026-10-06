@@ -221,7 +221,9 @@ export const turnStore = new AsyncLocalStorage<Map<string, string | null>>();
 // Contador de RESPOSTAS do turno — a rede anti-silêncio absoluto (28/08: quatro
 // sessões terminaram um turno sem NENHUMA mensagem de volta). Se o turno fechar com
 // zero envios, handleDeliveryMessage manda um fallback pedindo reformulação.
-export const turnMeta = new AsyncLocalStorage<{ replies: number; llmUsed?: boolean }>();
+// `routerQuery` (06/10): frase de busca que o roteador da IA já reescreveu neste turno — a
+// extração não chama a IA de novo pra ela (até 10 s a menos; turnos passavam de 45 s).
+export const turnMeta = new AsyncLocalStorage<{ replies: number; llmUsed?: boolean; routerQuery?: string }>();
 
 export function runTurnScoped<T>(fn: () => Promise<T>): Promise<T> {
   return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false }, () => runShopperScoped(fn)));
