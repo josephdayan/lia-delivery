@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { opsRole, requireOpsKey } from "@/lib/auth";
+import { isAgentRequest, opsOrderActionDenied, opsRole, requireOpsKey } from "@/lib/auth";
 import { parseMoneyInput } from "@/lib/pricing";
 import {
   opsCancelRefund,
@@ -28,7 +28,7 @@ function authed(request: Request) {
 // estorno) continua sendo do dono. "Não consegui comprar → estornar" fica com ele de
 // propósito: é a saída honesta quando a loja falha, e o valor volta para o CLIENTE — não
 // há para onde desviar. Sem OPS_OPERATOR_TOKEN não existe operador e nada muda.
-const OWNER_ONLY_ACTIONS = new Set(["cancel", "refund_provider", "confirm_refund"]);
+// A lista e a regra do agente (sem ações de dinheiro) vivem em opsOrderActionDenied (auth.ts).
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   if (!authed(request)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -49,7 +49,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     etaMinutes?: number | string;
   };
   const id = params.id;
-  if (body.action && OWNER_ONLY_ACTIONS.has(body.action) && opsRole(request, { allowQuery: true }) === "operator") {
+  if (opsOrderActionDenied(body.action, opsRole(request, { allowQuery: true }), isAgentRequest(request))) {
     return NextResponse.json({ error: "Essa ação é do dono da operação. Avise pelo WhatsApp." }, { status: 403 });
   }
   try {

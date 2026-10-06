@@ -109,7 +109,31 @@ export function opsRole(request: Request, options: { allowQuery?: boolean } = {}
     if (headers.some((value) => safeEqual(value, token))) return role;
     if (cookie != null && safeEqual(cookie, opsSessionCookieValue(token))) return role;
   }
-  return null;
+  return isAgentRequest(request) ? "operator" : null;
+}
+
+// ---------- token do agente (Claude Code, dono 06/10) ----------
+// Para o agente agir no /ops sem o dono abrir o painel. Entra como OPERADOR (rotas do dono
+// barradas) e, além disso, nenhuma ação que devolva ou mova dinheiro (rota de pedidos).
+// Só pelo header x-ops-key: fica fora do login, do cookie e do ?key=, e fora de
+// opsCredentials (nunca assina link nem sessão).
+export function isAgentRequest(request: Request): boolean {
+  const agent = process.env.LIA_AGENT_OPS_TOKEN || null;
+  const header = request.headers.get("x-ops-key");
+  if (!agent || header == null) return false;
+  if (agent === opsToken() || agent === process.env.OPS_OPERATOR_TOKEN) return false;
+  return safeEqual(header, agent);
+}
+
+// Rota /api/ops/orders/[id]. Operador contratado: sem cancelar pedido pago nem estornar à
+// mão. Agente: pode abrir o estorno ("cancel" só leva o pago a refund_pending), mas nada que
+// devolva ou mova dinheiro — esse toque é sempre do dono.
+const OPERATOR_DENIED_ORDER_ACTIONS = new Set(["cancel", "refund_provider", "confirm_refund"]);
+const AGENT_DENIED_ORDER_ACTIONS = new Set(["refund_provider", "confirm_refund", "purchase_failed_refund"]);
+export function opsOrderActionDenied(action: string | undefined, role: OpsRole | null, agent: boolean): boolean {
+  if (!action) return false;
+  if (agent) return AGENT_DENIED_ORDER_ACTIONS.has(action);
+  return role === "operator" && OPERATOR_DENIED_ORDER_ACTIONS.has(action);
 }
 
 function safeEqual(a: string, b: string): boolean {

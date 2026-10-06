@@ -1,3 +1,14 @@
+## 06/10/2026 — Token do agente no /ops (dono)
+
+O dono não conseguia abrir o /ops para estornar o #5VBIXY e pediu "um jeito de você fazer isso
+quando precisar". `LIA_AGENT_OPS_TOKEN` (no `.env` local do dono e na Vercel): o agente chama as
+rotas `/api/ops/*` com o header `x-ops-key` e entra como **operador** (rotas do dono barradas).
+Na rota de pedidos ele avisa o cliente, marca compra/entrega e abre estorno (`cancel` → pedido
+pago vira `refund_pending`), mas **nunca** `refund_provider`, `confirm_refund` nem
+`purchase_failed_refund`: o dinheiro sai sempre por um toque do dono. Só header — fora do login,
+do cookie e do `?key=`. Regra em `opsOrderActionDenied`/`isAgentRequest` (`src/lib/auth.ts`);
+teste em `tests/operador-humano.test.ts`. Trocar o token = gerar outro nos dois lugares.
+
 ## 06/10/2026 — Retorno dos testadores: regras novas da conversa
 
 Conversas reais da manhã (Clara, Adely, Claire, tio Semy, Tati, Karlão, Philipe) reproduzidas

@@ -6,7 +6,7 @@ import { recordPayment } from "../src/lib/payments/ledger";
 import { ensurePurchaseJobForPaidOrder, manualQueueJobForPaidOrder, MANUAL_QUEUE_STATUS } from "../src/lib/purchase-worker";
 import { savePurchaseAccount } from "../src/lib/purchase-execution";
 import { preparationStores } from "../src/lib/purchase-preparation";
-import { createOpsLoginToken, opsLoginRole, opsRole, opsSessionCookieValue, ownerKeyMatches, requireOpsKey, requireOpsOwner } from "../src/lib/auth";
+import { createOpsLoginToken, isAgentRequest, opsLoginRole, opsOrderActionDenied, opsRole, opsSessionCookieValue, ownerKeyMatches, requireOpsKey, requireOpsOwner } from "../src/lib/auth";
 import { operatorIsHired, ownerPhones, phoneRole, withinOperatorHours } from "../src/lib/turn-runtime";
 import { ordersForOpsRole } from "../src/lib/operator-queue-view";
 import { operatorStoreItemUrl } from "../src/lib/operator-store-links";
@@ -104,6 +104,45 @@ test("painel: token do operador entra na fila e é barrado nas rotas do dono", (
   } finally {
     if (env.ops === undefined) delete process.env.OPS_TOKEN; else process.env.OPS_TOKEN = env.ops;
     if (env.op === undefined) delete process.env.OPS_OPERATOR_TOKEN; else process.env.OPS_OPERATOR_TOKEN = env.op;
+  }
+});
+
+test("token do agente: entra como operador só pelo header e nunca mexe em dinheiro (dono 06/10)", () => {
+  const env = { ops: process.env.OPS_TOKEN, op: process.env.OPS_OPERATOR_TOKEN, ag: process.env.LIA_AGENT_OPS_TOKEN };
+  try {
+    process.env.OPS_TOKEN = "segredo-do-dono";
+    delete process.env.OPS_OPERATOR_TOKEN;
+    process.env.LIA_AGENT_OPS_TOKEN = "segredo-do-agente";
+    const header = new Request("https://lia.test/api/ops/orders/x", { headers: { "x-ops-key": "segredo-do-agente" } });
+    const query = new Request("https://lia.test/api/ops/orders/x?key=segredo-do-agente");
+    const cookie = new Request("https://lia.test/api/ops/orders/x", { headers: { cookie: `ops_session=${opsSessionCookieValue("segredo-do-agente")}` } });
+
+    assert.equal(opsRole(header), "operator");
+    assert.equal(isAgentRequest(header), true);
+    assert.equal(requireOpsKey(header), null);
+    assert.equal(requireOpsOwner(header)?.status, 403);
+    assert.equal(opsRole(query, { allowQuery: true }), null, "?key= não vale para o agente");
+    assert.equal(opsRole(cookie), null, "cookie não vale para o agente");
+    assert.equal(createOpsLoginToken(Date.now(), "operator"), null, "agente não vira login de operador");
+
+    for (const action of ["refund_provider", "confirm_refund", "purchase_failed_refund"]) {
+      assert.equal(opsOrderActionDenied(action, "operator", true), true, action);
+    }
+    for (const action of ["notify", "cancel", "bought", "delivered", "set_store_cost"]) {
+      assert.equal(opsOrderActionDenied(action, "operator", true), false, action);
+    }
+    // Operador contratado continua sem cancelar pago; dono faz tudo.
+    assert.equal(opsOrderActionDenied("cancel", "operator", false), true);
+    assert.equal(opsOrderActionDenied("purchase_failed_refund", "operator", false), false);
+    assert.equal(opsOrderActionDenied("refund_provider", "owner", false), false);
+
+    // Token do agente igual ao do dono é descartado (nunca rebaixa nem promove).
+    process.env.LIA_AGENT_OPS_TOKEN = "segredo-do-dono";
+    assert.equal(isAgentRequest(new Request("https://lia.test", { headers: { "x-ops-key": "segredo-do-dono" } })), false);
+  } finally {
+    if (env.ops === undefined) delete process.env.OPS_TOKEN; else process.env.OPS_TOKEN = env.ops;
+    if (env.op === undefined) delete process.env.OPS_OPERATOR_TOKEN; else process.env.OPS_OPERATOR_TOKEN = env.op;
+    if (env.ag === undefined) delete process.env.LIA_AGENT_OPS_TOKEN; else process.env.LIA_AGENT_OPS_TOKEN = env.ag;
   }
 });
 
