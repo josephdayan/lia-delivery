@@ -206,6 +206,8 @@ export type DeliveryContext = {
   lastCanceledOrderId?: string;
   // Pergunta do motivo do cancelamento em aberto (06/10): o próximo toque/número responde.
   cancelReason?: { orderId: string; askedAt: number };
+  // Desistência de pedido PAGO esperando o "sim" (06/10): só o sim estorna; vale 30 min.
+  withdrawConfirm?: { orderId: string; askedAt: number };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;
