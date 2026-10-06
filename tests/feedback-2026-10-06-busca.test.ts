@@ -143,6 +143,17 @@ test("A4/M6: '6 ovos'/'meia dúzia' com caixa de 10 = 1 caixa; 12 ovos = 2 caixa
   assert.equal(packAdjusted("Pack 12 Latas - Coca-Cola Lata 350ml", 6, "latas de coca").qty, 1);
 });
 
+// ---------- A8: remédio errado por dose ----------
+test("A8: dose sozinha não segura relevância; remédio com outra dose sai, a dose certa sobe", async () => {
+  const { scoreCatalogMatch } = await import("../src/lib/stores/types");
+  const sku = (name: string) => ({ sku: name, name, unitPrice: 10, medicine: "mip" as const });
+  // Os candidatos vão para o rerank por IA: com score > 0, a IA escolheu o Sintocalmy.
+  assert.equal(scoreCatalogMatch("ibuprofeno 600mg", sku("Sintocalmy 600mg 30 Comprimidos Revestidos")), 0);
+  assert.equal(scoreCatalogMatch("ibuprofeno 600mg", sku("Ibuprofeno 100mg/ml Suspensão Oral Gotas 20ml Genérico Cimed")), 0);
+  const right = scoreCatalogMatch("ibuprofeno 400mg", sku("Ibuprofeno 400mg 10 Comprimidos Genérico Neo Química"));
+  assert.ok(right > scoreCatalogMatch("ibuprofeno", sku("Ibuprofeno 400mg 10 Comprimidos Genérico Neo Química")));
+});
+
 // ---------------- conversa (banco local) ----------------
 // Loja VTEX de mentira por sku: `drop` = sem entrega no CEP; `weight` = vendido por peso;
 // `down` = loja não responde; `slow` = simulação que estoura o tempo na 1ª tentativa.

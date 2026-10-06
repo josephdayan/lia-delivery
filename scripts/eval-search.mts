@@ -16,7 +16,7 @@ import "./talk-env.mts";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { conciergeMatchIsStrong, diversifyOptions, normalizeText, sameProductVariant, type CatalogItem } from "../src/lib/stores/types";
 import { extractShoppingList, rerankShoppingOptions } from "../src/lib/adapters/ai";
-import { GOLDEN_CASES, type GoldenCase } from "../tests/helpers/search-golden";
+import { GOLDEN_CASES, withCaseEnv, type GoldenCase } from "../tests/helpers/search-golden";
 
 process.env.LIA_RETAILER_TEST_SEED = process.env.LIA_RETAILER_TEST_SEED ?? "true";
 
@@ -104,12 +104,12 @@ async function main() {
   const failures: string[] = [];
 
   for (const c of GOLDEN_CASES) {
-    const det = judge(c, await deterministicShown(c.query));
+    const det = judge(c, await withCaseEnv(c, () => deterministicShown(c.query)));
     if (det.pass) detPass++;
 
     let aiCol = "  —  ";
     if (hasKey) {
-      const { shown } = await aiShown(c);
+      const { shown } = await withCaseEnv(c, () => aiShown(c));
       const ai = judge(c, shown);
       aiRan++;
       if (ai.pass) aiPass++;

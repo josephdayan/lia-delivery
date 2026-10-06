@@ -370,6 +370,9 @@ export function inferCatalogRefinement(text: string, candidates: CatalogItem[]):
 const PACK_COUNT_RE = /\b(\d{1,3})\s*(bolas?|rolos?|capsulas?|comprimidos?|saches?|folhas?|metros?|pares?|tabletes?)\b/g;
 const packUnit = (unit: string) => unit.replace(/s$/, "");
 
+// Token de medida: tamanho, volume, peso ou dose. Soma score de variante, nunca segura relevância.
+const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|un)$/;
+
 export function scoreCatalogMatch(query: string, item: CatalogItem): number {
   const tokens = queryTokens(query);
   if (!tokens.length) return 0;
@@ -409,7 +412,9 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
     // Token de TAMANHO ("2kg", "350ml") nunca segura a relevância sozinho — senão
     // "arroz 2kg" traz "Areia Higiênica 2Kg" (só o peso em comum). Ele soma score,
     // mas o produto precisa de um token de PALAVRA forte pra passar do piso.
-    const isSizeToken = /^\d+(?:[.,]\d+)?(?:kg|g|ml|l|lt|un)$/.test(token);
+    // 06/10 (A8): DOSE ("600mg", "20mcg", "400ui") também é medida, nunca identidade —
+    // "ibuprofeno 600mg" trazia "Sintocalmy 600mg" (outro princípio ativo, só a dose em comum).
+    const isSizeToken = MEASURE_TOKEN_RE.test(token);
     if (brandWords.some((word) => tokenMatchesBrand(token, word))) {
       score += 4; // explicit brand match is the strongest signal
       if (!isSizeToken) strongHit = true;
@@ -432,6 +437,15 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
   if (specAsked.length) {
     const nameCompounds = new Set(queryTokens(item.name));
     if (specAsked.some((t) => !nameCompounds.has(t) && !nameWords.some((w) => tokenMatchesWordSyn(t, w)) && !categoryWords.some((w) => tokenMatchesWord(t, w)))) return 0;
+  }
+
+  // Remédio (06/10, A8): a DOSE pedida é identidade — "ibuprofeno 600mg" nunca vira o de
+  // 100mg/ml. Item de remédio que declara dose e nenhuma bate sai; a mesma dose sobe.
+  const doseAsks = [...normalizeText(query).matchAll(/(\d+(?:[.,]\d+)?)\s*(mg|mcg)\b/g)].map((m) => `${m[1]}${m[2]}`);
+  if (doseAsks.length && item.medicine) {
+    const doses = new Set([...nameNorm.matchAll(/(\d+(?:[.,]\d+)?)\s*(mg|mcg)\b/g)].map((m) => `${m[1]}${m[2]}`));
+    if (doses.size && !doseAsks.some((d) => doses.has(d))) return 0;
+    if (doseAsks.some((d) => doses.has(d))) score += 3;
   }
 
   // Tamanho pedido ("coca 2 litros", "arroz 5kg") é sinal forte: item com o tamanho
@@ -599,7 +613,7 @@ export function conciergeMatchIsStrong(query: string, item: CatalogItem): boolea
 
   const negs = new Set(negatedWords(query));
   const wordTokens = queryTokens(query).filter(
-    (token) => !negs.has(token) && !/^\d+(?:[.,]\d+)?(?:kg|g|ml|l|lt|un)$/.test(token) && !/^\d+$/.test(token)
+    (token) => !negs.has(token) && !MEASURE_TOKEN_RE.test(token) && !/^\d+$/.test(token)
   );
   if (!wordTokens.length) return false;
 

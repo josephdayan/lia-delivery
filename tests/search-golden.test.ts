@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 
 import { gatherCrossStoreCandidates, listStores } from "../src/lib/stores";
 import { conciergeMatchIsStrong, diversifyOptions, normalizeText, sameProductVariant, type CatalogItem } from "../src/lib/stores/types";
-import { GOLDEN_CASES } from "./helpers/search-golden";
+import { GOLDEN_CASES, withCaseEnv } from "./helpers/search-golden";
 
 // Piso de regressão da busca: o pipeline determinístico (sem OpenAI) tem que passar
 // todos os casos `deterministic: true` do golden. Espelha o fallback do buildChoices
@@ -18,7 +18,7 @@ async function deterministicOptions(query: string): Promise<CatalogItem[]> {
 
 for (const c of GOLDEN_CASES.filter((c) => c.deterministic)) {
   test(`golden determinístico: ${c.name}`, async () => {
-    const items = await deterministicOptions(c.query);
+    const items = await withCaseEnv(c, () => deterministicOptions(c.query));
     const shown = items.map((item) => normalizeText(item.name));
     if (c.none) {
       assert.deepEqual(shown, [], `"${c.query}" deveria ser linha livre, mas mostrou: ${shown.join(" | ")}`);

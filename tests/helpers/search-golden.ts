@@ -41,7 +41,33 @@ export type GoldenCase = {
   // no npm test. `false` = só a camada de IA resolve (sinônimo/julgamento semântico).
   deterministic: boolean;
   note?: string;
+  // Env do caso (06/10): remédio isento ligado, ou a vitrine só com as lojas de compra
+  // automática (como em produção desde 06/10). Aplicado e restaurado por `withCaseEnv`.
+  env?: Record<string, string>;
 };
+
+// Lojas de compra automática (vitrine de produção, 06/10). Casos que só quebravam no elenco
+// real (o golden amplo ainda inclui Covabra/Savegnago/Americanas) usam `env: AUTO_ROSTER`.
+export const AUTO_ROSTER: Record<string, string> = {
+  LIA_AUTO_PURCHASE_STORES: "drogariasp,cobasi,paguemenos,swift,kopenhagen,rihappy,mambo,epocacosmeticos,drogal,casaevideo,obramax,brinox,creamy,telhanorte,zonacriativa,philco,oxford,polishop"
+};
+export const MIP_ON: Record<string, string> = { LIA_MEDICINE_MIP: "true" };
+
+export async function withCaseEnv<T>(c: GoldenCase, fn: () => Promise<T>): Promise<T> {
+  const saved: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(c.env ?? {})) {
+    saved[k] = process.env[k];
+    process.env[k] = v;
+  }
+  try {
+    return await fn();
+  } finally {
+    for (const [k, v] of Object.entries(saved)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+  }
+}
 
 export const GOLDEN_CASES: GoldenCase[] = [
   // ---- o caso que motivou tudo (06/08): forma/uso errados com palavras parecidas ----
@@ -203,5 +229,16 @@ export const GOLDEN_CASES: GoldenCase[] = [
     query: "apoio de pe para violao",
     top1Include: /apoio de p[eé]|descanso/,
     deterministic: false
-  }
+  },
+
+  // ---- teste adversarial 06/10 (relatório agB) ----
+  {
+    name: "remédio: dose sozinha nunca casa — 'ibuprofeno 600mg' não vira Sintocalmy 600mg (A8)",
+    query: "ibuprofeno 600mg",
+    none: true,
+    env: MIP_ON,
+    deterministic: true,
+    note: "o token '600mg' segurava a relevância sozinho; 600 mg não é isento (sem MIP no catálogo) → linha livre honesta"
+  },
+  { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true }
 ];
