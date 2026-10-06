@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1335,6 +1335,15 @@ async function handleDeliveryTurn(
       await reply(phone, copy.currentFee(ctx.deliveryFee));
       return;
     }
+    // "quanto fica o frete?" com opções ou cesta (06/10): a Lia já tem o frete ao vivo de
+    // cada loja — responde com o número, não com "depende da distância".
+    if (intent.topic === "fee") {
+      const fees = knownStoreFees(ctx);
+      if (fees.length) {
+        await reply(phone, copy.feeByStore(fees));
+        return;
+      }
+    }
     if (intent.topic === "stores") {
       const onTable = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0].options : [];
       await reply(phone, copy.storesAnswer(onTable.map((o) => ({ storeLabel: o.storeLabel }))));
@@ -1778,6 +1787,10 @@ async function handleDeliveryTurn(
       const method = methodFromIntent(intent);
       if (method) {
         const issued = await issueValidatedRetailerQuotePayment(order.id, method);
+        if (issued.pixOutDown) {
+          await reply(phone, copy.purchaseTemporarilyDown());
+          return;
+        }
         if (issued.unavailable) {
           await handlePreflightUnavailable(phone, convo.id, user, ctx, issued.unavailable);
           return;
@@ -1904,6 +1917,23 @@ async function handleDeliveryTurn(
     await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
     await reply(phone, copy.cartCleared());
     return;
+  }
+
+  // ---- nome + CPF fora da hora (06/10): "Teste Silva 529…" no meio da escolha virava busca
+  // ("não achei *Teste Silva 529…*"). Guarda no cadastro e devolve a conversa onde estava.
+  if (ctx.step !== "need_cpf" && !ctx.cpfDraft) {
+    const strayCpf = extractCpf(text);
+    const strayName = strayCpf ? extractFullName(text) : null;
+    if (strayCpf && strayName) {
+      await prisma.user.update({ where: { id: user.id }, data: { cpf: strayCpf, cpfName: strayName, cpfConsentAt: new Date() } });
+      if (ctx.step === "choosing" && ctx.pending?.length) {
+        await reply(phone, copy.cpfSaved(maskCpf(strayCpf)));
+        await sendChoices(phone, ctx.pending[0]);
+      } else {
+        await reply(phone, ctx.basket?.length ? copy.cpfSaved(maskCpf(strayCpf)) : copy.cpfSavedAskItems());
+      }
+      return;
+    }
   }
 
   // ---- remédio isento (29/09): nome completo + CPF para a compra sair no nome do cliente ----
@@ -2128,7 +2158,10 @@ async function handleDeliveryTurn(
       await reply(phone, copy.thanks());
       return;
     }
-    const asking = intent.kind === "free_text" && isQuestion(text);
+    // "tem açaí?" é pedido em forma de pergunta: anota o item (06/10, sumia depois do endereço).
+    const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
+    if (availability) text = availability;
+    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
@@ -2173,7 +2206,9 @@ async function handleDeliveryTurn(
       return;
     }
     // Pergunta ("o que vc consegue comprar?") se responde — NUNCA vira item anotado.
-    const asking = intent.kind === "free_text" && isQuestion(text);
+    const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
+    if (availability) text = availability;
+    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
@@ -2325,6 +2360,10 @@ async function handleDeliveryTurn(
     });
     if (quoted) {
       const result = await issueValidatedRetailerQuotePayment(quoted.id, spokenMethod);
+      if (result.pixOutDown) {
+        await reply(phone, copy.purchaseTemporarilyDown());
+        return;
+      }
       if (result.unavailable) {
         await handlePreflightUnavailable(phone, convo.id, user, ctx, result.unavailable);
         return;
@@ -2336,7 +2375,8 @@ async function handleDeliveryTurn(
   const wantsToPay =
     intent.kind === "pay" ||
     intent.kind === "done" ||
-    (intent.kind === "choose_payment" && (ctx.basket?.length ?? 0) > 0);
+    // "cartão"/"pix" com escolha aberta e cesta vazia virava busca de "cartão" (06/10).
+    (intent.kind === "choose_payment" && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0));
   const directMethod =
     intent.kind === "pay" && intent.method
       ? intent.method
@@ -3388,10 +3428,13 @@ async function confirmChosenOption(
   // ou depois ("bota 3"). O handler de choosing_quantity fica vivo só para conversas
   // que estavam no meio da pergunta durante o deploy.
   const assumedOne = current.qty === 1 && !current.qtyExplicit;
+  // "12 ovos" com a caixa de 10 escolhida = 1 caixa, não 12 caixas (testadores 06/10: R$92
+  // de ovo). A conversão já valia no auto-pick; faltava na escolha do cliente.
+  const pack = assumedOne ? { qty: current.qty } : packAdjusted(chosen.name, current.qty);
   const confirmed = assumedOne
     ? copy.choiceConfirmedAssumedOne(chosen.name, current.query)
-    : copy.choiceConfirmed(chosen.name, current.qty);
-  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, current.qty, chosenStore)]);
+    : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
+  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
     await reply(phone, confirmed);
@@ -4805,8 +4848,8 @@ async function rescueLongTail(
 // caixas de 10 = 120 ovos por R$118). Só quando o nome declara o pack e o pedido é
 // maior ou igual a ele.
 function packAdjusted(optionName: string, qty: number): { qty: number; note?: string } {
-  const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b)/i);
-  const pack = m ? Number(m[1]) : 0;
+  const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
+  const pack = m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
   if (pack >= 4 && qty >= pack) {
     const packs = Math.max(1, Math.round(qty / pack));
     return { qty: packs, note: copy.packConversionNote(qty, pack, packs) };
@@ -4902,9 +4945,37 @@ function mergeBaskets(existing: BasketItem[], incoming: BasketItem[]): BasketIte
 }
 
 // Nome de quem recebe: 2 a 60 letras/espaços; nada de número, link ou frase inteira.
+const NOT_A_NAME_RE =
+  /\b(pix|cart[aã]o|cartao|credito|debito|boleto|dinheiro|pagar|pago|paguei|pagamento|cancela\w*|desisto|desisti|sim|nao|ok|blz|beleza|oi|ola|obrigad\w*|valeu|tchau|quanto|qual|quero|pedido|frete|total|endereco|cep|ajuda|atendente|humano)\b/;
+// Frete ao vivo por loja que a conversa já conhece: lojas das opções na mesa e das já
+// escolhidas (a cesta não guarda o frete; a opção escolhida, sim).
+function knownStoreFees(ctx: DeliveryContext): { storeLabel: string; fee: number }[] {
+  const options = [
+    ...(ctx.pending ?? []).flatMap((p) => [...p.options, ...(p.shownOptions ?? [])]),
+    ...(ctx.lastChoice ? [...ctx.lastChoice.options, ...(ctx.lastChoice.shownOptions ?? [])] : [])
+  ];
+  const inBasket = new Set((ctx.basket ?? []).map((i) => i.storeKey));
+  const onTable = new Set((ctx.pending?.[0]?.options ?? []).map((o) => o.storeKey));
+  const byStore = new Map<string, number>();
+  for (const o of options) {
+    if (o.freightFee == null || !o.storeLabel || !o.storeKey) continue;
+    if (!inBasket.has(o.storeKey) && !onTable.has(o.storeKey)) continue;
+    const prev = byStore.get(o.storeLabel);
+    if (prev == null || o.freightFee < prev) byStore.set(o.storeLabel, o.freightFee);
+  }
+  return [...byStore].map(([storeLabel, fee]) => ({ storeLabel, fee }));
+}
+
 export function parseRecipientName(text: string): string | null {
-  const clean = text.replace(/\s+/g, " ").trim().replace(/^(é|eh|e|o nome é|nome:|pra|para|entrega pra|entregar pra)\s+/i, "");
+  let clean = text.replace(/\s+/g, " ").trim();
+  // "é pra Joana" tira as duas palavras, não só o "é".
+  for (let prev = ""; prev !== clean; ) {
+    prev = clean;
+    clean = clean.replace(/^(é|eh|e|o nome é|nome:|pra|para|entrega pra|entregar pra)\s+/i, "");
+  }
   if (!/^[\p{L}][\p{L}\s.'-]{1,59}$/u.test(clean) || clean.split(" ").length > 6) return null;
+  // Palavra de comando não é nome (testadores 06/10: "pix" virou "Entrega em nome de *Pix*").
+  if (NOT_A_NAME_RE.test(normalizeMsg(clean))) return null;
   return clean
     .split(" ")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())

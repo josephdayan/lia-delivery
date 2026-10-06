@@ -193,7 +193,7 @@ export function askRecipientName(): string {
   return "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.";
 }
 export function recipientNameInvalid(): string {
-  return "Manda só o nome de quem recebe (nome e sobrenome).";
+  return "Antes do pagamento preciso só do *nome de quem vai receber* (nome e sobrenome), que vai na etiqueta da loja. Ex.: _Maria Souza_";
 }
 export function recipientNameSaved(name: string): string {
   return `Entrega em nome de *${name}*.`;
@@ -1195,8 +1195,13 @@ export function refundConfirmed(): string {
   return "✅ Estorno confirmado. Qualquer dúvida sobre o prazo do banco, me chama.";
 }
 
+// Pix de saída travado (06/10): a Lia não consegue pagar a loja agora — não cobra.
+export function purchaseTemporarilyDown(): string {
+  return "Agora não consigo finalizar compras — é uma instabilidade do meu lado, e *nada foi cobrado*. Seu pedido fica guardado aqui: tenta de novo daqui a pouco respondendo *pix* ou *cartão*.";
+}
+
 export function finishChoiceFirst(): string {
-  return "Confirma esse item primeiro que aí eu fecho.";
+  return "Antes de pagar, escolhe uma das opções abaixo (toca no card ou responde o número) que aí eu fecho o total 👇";
 }
 
 // "coca" com Fanta+2 Cocas na mesa → estreitou pras que batem.
@@ -1449,10 +1454,10 @@ export function serviceAnswer(
         : `Atendo ${areaLabel} 📍 Me manda seu *CEP* que eu confirmo se chego até você.`;
     case "fee":
       if (ctx?.hasBasket)
-        return "O frete depende da distância até você 🛵 Te mostro o valor exato junto com o total quando fechar a cesta.";
+        return "O frete é o da própria loja até o seu endereço. Te mostro o valor exato junto com o total quando fechar a cesta.";
       if (ctx?.hasCep)
-        return "O frete depende da distância até você 🛵 Me diz o que precisa que eu mando o total exato.";
-      return "O frete depende da distância até você 🛵 Me diz o que precisa e seu CEP que eu mando o total exato.";
+        return "O frete é o da própria loja até o seu endereço e muda de loja pra loja. Me diz o que precisa que eu mando o total exato.";
+      return "O frete é o da própria loja até o seu endereço e muda de loja pra loja. Me diz o que precisa e seu CEP que eu mando o total exato.";
     case "eta":
       // NÃO prometer same-day: o prazo é do checkout da loja e varia por item/endereço.
       return "O prazo depende da loja e do seu endereço — tem item que chega em horas, tem item que leva alguns dias. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
@@ -1465,6 +1470,12 @@ export function serviceAnswer(
     default:
       return "Eu compro o que você precisar e entrego no seu endereço. Você paga por Pix ou cartão aqui no chat, e eu mostro o prazo antes. O que você precisa?";
   }
+}
+
+// Frete ao vivo por loja (06/10): o valor já é conhecido nas opções — dizer o número.
+export function feeByStore(fees: { storeLabel: string; fee: number }[]): string {
+  const list = fees.map((f) => `*${f.storeLabel}*: ${f.fee > 0 ? brl(f.fee) : "grátis"}`).join(" · ");
+  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.`;
 }
 
 // "qual a loja?"/"de onde vc compra?" (06/10, Clara e Claire): a resposta da IA era vaga

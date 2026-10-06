@@ -11,6 +11,8 @@ import { PaymentProviderError, cancelMercadoPagoPayment, checkoutAdapter, pixAda
 import { cardOnFileEnabled, confirmSavedCardTap, createCardAttempt as createCardAttemptRaw, expireOpenPaymentAttempts, findPendingSavedCardAttempt, getConfirmedPaymentAttempt, getOneClickCredential, hasInFlightCardAttempt } from "@/lib/payments/whatsapp-pay";
 import { prisma } from "@/lib/prisma";
 import { preflightBasket } from "./live-freight";
+import { pixOutReadiness } from "@/lib/payments/pix-out/readiness";
+import { automaticPurchaseStores, MERCADO_LIVRE_STORE_KEY } from "@/lib/purchase-policy";
 import * as copy from "@/lib/lia-copy";
 import { BasketItem, DeliveryContext, cardTotal, roundMoney } from "./conversation-types";
 import { addressOnlyCtx, markTurnReplied, mergeDecisionRequestFor, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired, withinOperatorHours } from "./turn-runtime";
@@ -436,7 +438,7 @@ export type PreflightUnavailable = { storeKey: string; storeLabel: string; items
 export async function issueValidatedRetailerQuotePayment(
   orderId: string,
   method: "pix" | "card"
-): Promise<{ expired: boolean; unavailable?: PreflightUnavailable }> {
+): Promise<{ expired: boolean; unavailable?: PreflightUnavailable; pixOutDown?: boolean }> {
   const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
   if (!order || order.status !== "awaiting_quote_confirmation") return { expired: false };
   if (!order.quoteExpiresAt || order.quoteExpiresAt.getTime() <= Date.now()) {
@@ -460,6 +462,22 @@ export async function issueValidatedRetailerQuotePayment(
       }
     });
     return { expired: false, unavailable: { storeKey: failure.storeKey, storeLabel, items: failed, remaining: basket.filter((i) => !failure.skus.includes(i.sku)) } };
+  }
+
+  // Trava do Pix de saída (06/10): loja de compra automática só é cobrada se a Lia
+  // consegue pagar a loja agora. Senão, nada é cobrado e a cotação fica de pé.
+  const auto = automaticPurchaseStores();
+  const basketStores = [...new Set(basket.map((i) => i.storeKey))];
+  if (basketStores.length && basketStores.every((k) => auto.includes(k) && k !== MERCADO_LIVRE_STORE_KEY)) {
+    const ready = await pixOutReadiness(Math.round(order.total * 100));
+    if (!ready.ok) {
+      console.error("[pix-out:preflight-blocked]", order.id, ready.reason);
+      if (!(order.notes ?? "").includes("PIX DE SAÍDA TRAVADO")) {
+        await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `⛔ PIX DE SAÍDA TRAVADO (${ready.reason}) — cliente NÃO foi cobrado.`) } });
+        await notifyOwner(`⛔ Pix de saída travado (${ready.reason === "saldo" ? "saldo do Asaas menor que o pedido" : "Asaas recusando o Pix"}). Pedido ${order.id.slice(-6).toUpperCase()} de ${copy.brl(order.total)} NÃO foi cobrado — o cliente viu "não consigo finalizar agora".`, order.phone);
+      }
+      return { expired: false, pixOutDown: true };
+    }
   }
 
   const isCard = method === "card";

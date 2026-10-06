@@ -35,6 +35,11 @@ function mapStatus(status: unknown): PixPayStatus["status"] {
   if (["SCHEDULED", "REQUESTED", "AWAITING_BALANCE_VALIDATION", "AWAITING_CRITICAL_ACTION_AUTHORIZATION", "AWAITING_CHECKOUT_RISK_ANALYSIS_REQUEST", "AWAITING_INSTANT_PAYMENT_TRANSACTION_PROCESSING", "AWAITING_REQUEST"].includes(s)) return "submitted";
   return "unknown";
 }
+// Saldo disponível para Pix de saída, em centavos (GET /v3/finance/balance).
+export async function asaasBalanceCents(): Promise<number> {
+  const r = await call("/finance/balance", { timeoutMs: 5_000 });
+  return Math.round(Number(r.balance ?? 0) * 100);
+}
 export const asaasPixOut: PixOutProvider = {
   name: "asaas",
   async decode(code): Promise<PixDecode> {
