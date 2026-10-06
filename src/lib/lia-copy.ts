@@ -932,6 +932,15 @@ export function trustAnswer(): string {
   ].join("\n");
 }
 
+// Serviço que a Lia não faz (06/10): "chama um uber" recebia "não achei, me diz outra marca".
+export function outOfScopeServiceAnswer(): string {
+  return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
+}
+// Pedido vago (06/10): "algo gostoso pra comer" virava busca da frase.
+export function vagueRequestAnswer(): string {
+  return "Me diz o que você está com vontade que eu acho 🙂 Por exemplo: _lasanha congelada_, _pizza congelada_, _chocolate_, _sorvete_, _salgadinho_ — ou o nome de um produto.";
+}
+
 // "quem é vc?", "vc é robô?" (06/10): a apresentação genérica não dizia nem "sou a Lia".
 export function identityAnswer(): string {
   return "Sou a Lia, assistente virtual da *Lia Delivery* 🤖 Eu procuro o que você precisa em lojas oficiais, mostro o total com frete e prazo, e compro pra você depois que você paga. Se preferir falar com uma pessoa, é só dizer *atendente*.";

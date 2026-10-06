@@ -1392,6 +1392,16 @@ async function handleDeliveryTurn(
     await rePresentStep();
     return;
   }
+  if (intent.kind === "out_of_scope_service") {
+    await reply(phone, copy.outOfScopeServiceAnswer());
+    await rePresentStep();
+    return;
+  }
+  if (intent.kind === "vague_request") {
+    await reply(phone, copy.vagueRequestAnswer());
+    await rePresentStep();
+    return;
+  }
   if (intent.kind === "third_party_pay") {
     await reply(phone, copy.thirdPartyPayAnswer());
     await rePresentStep();

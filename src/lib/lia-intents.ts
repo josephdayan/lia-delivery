@@ -86,6 +86,10 @@ export type Intent =
   | { kind: "trust_question" }
   // "quem é vc?", "vc é robô?" (06/10) — identidade, com a saída para uma pessoa.
   | { kind: "identity" }
+  // "chama um uber", "pagar boleto" (06/10) — serviço que a Lia não faz; "algo gostoso pra
+  // comer", "me surpreende" — pedido vago: pedir o produto, não buscar a frase.
+  | { kind: "out_of_scope_service" }
+  | { kind: "vague_request" }
   // "meu filho que vai pagar, manda pra ele?" — cobrança para terceiro (28/08 S7).
   | { kind: "third_party_pay" }
   // "emitem nota fiscal?" / "qual o CNPJ?" (28/08 S8).
@@ -1098,6 +1102,8 @@ export function detectIntent(text: string): Intent {
   if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
   // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
   if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
+  if (OUT_OF_SCOPE_SERVICE_RE.test(n)) return { kind: "out_of_scope_service" };
+  if (VAGUE_REQUEST_RE.test(n)) return { kind: "vague_request" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
   // "você faz comparativo de preços?", "como sei que é o melhor valor?" (06/10, Claire).
   if (PRICE_COMPARE_RE.test(n)) return { kind: "service_question", topic: "price_compare" };
@@ -1791,6 +1797,10 @@ export function parseAttributeAsk(text: string): string | null {
 // depois do endereço. Devolve o produto perguntado, ou null se a pergunta é sobre o serviço.
 const SERVICE_ASK_NOUNS =
   /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
+const OUT_OF_SCOPE_SERVICE_RE =
+  /\b(?:chama(?:r)? (?:um |uma )?(?:uber|99|taxi|motorista|motoboy)|pede (?:um |uma )?(?:uber|99|taxi)|encanador|eletricista|diarista|faxineira|manicure|recarga de celular|recarregar (?:o )?celular|paga(?:r)? (?:um |o |a |minha |meu )?(?:boleto|conta de luz|conta de agua|fatura)|passagem (?:de onibus|aerea)|reserva(?:r)? (?:uma )?mesa)\b/;
+const VAGUE_REQUEST_RE =
+  /^(?:(?:quero|queria|preciso de|me ve|manda|me manda)\s+)?(?:algo|alguma coisa|qualquer coisa|uma coisa)(?:\s+(?:gostos[oa]|bom|boa|legal|diferente|rapid[oa]))?\s+(?:pra|para|de)\s+(?:comer|beber|jantar|almocar|lanchar|o jantar|o almoco|hoje)\b|^me surpreend[ae]\b/;
 const SERVICE_FEE_RE =
   /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b|^(?:e|eh) (?:de graca|gratis)\b/;
 const PIX_RECEIVER_RE =

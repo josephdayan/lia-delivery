@@ -127,6 +127,12 @@ test("golpe/confiança, identidade e 'é de graça?' têm resposta própria; IA 
   assert.equal(sanitizeRouterReply("Claro! Te ajudo com isso"), "Claro! Te ajudo com isso");
 });
 
+test("serviço que a Lia não faz e pedido vago não viram busca", () => {
+  for (const q of ["chama um uber", "quero pagar um boleto", "recarga de celular"]) assert.deepEqual(detectIntent(q), { kind: "out_of_scope_service" }, q);
+  for (const q of ["algo gostoso pra comer hoje à noite", "me surpreende", "quero algo pra comer"]) assert.deepEqual(detectIntent(q), { kind: "vague_request" }, q);
+  for (const q of ["pizza congelada", "posso pagar com boleto?"]) assert.notEqual(detectIntent(q).kind, "out_of_scope_service", q);
+});
+
 // ---------- conversa (banco local) ----------
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
