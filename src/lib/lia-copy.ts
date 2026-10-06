@@ -283,6 +283,15 @@ export function askFullNameForCpf(): string {
   return "Anotei o CPF ✅ Agora seu *nome completo*.";
 }
 
+// "pra que cpf?" no cadastro (06/10): a IA dava uma resposta diferente a cada vez.
+export function whyCpf(): string {
+  return `É pra eu comprar *no seu nome* quando a loja exige — farmácia (remédio sem receita) e nota fiscal no seu CPF. Fica guardado só aqui, não uso pra mais nada (${TERMS_URL}).\n\nSe preferir não passar agora, tudo bem: me diz o que você precisa. Se quiser passar, manda assim: _Maria da Silva 123.456.789-09_`;
+}
+
+export function cpfSkipped(hasQueued: boolean): string {
+  return hasQueued ? "Sem problema, sigo sem o CPF 👍" : "Sem problema, sigo sem o CPF 👍 O que você precisa?";
+}
+
 export function askCpfAfterName(): string {
   return "Anotei o nome ✅ Agora o *CPF*.";
 }

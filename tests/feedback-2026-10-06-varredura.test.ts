@@ -15,7 +15,7 @@ import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
-import { handleDeliveryMessage, parseRecipientName } from "../src/lib/delivery-service";
+import { handleDeliveryMessage, looksLikeOnboardingName, parseRecipientName } from "../src/lib/delivery-service";
 import { detectIntent, parseAvailabilityAsk, parseBasketLines } from "../src/lib/lia-intents";
 import { pixOutReadiness, resetPixOutProbeCache } from "../src/lib/payments/pix-out/readiness";
 import * as copy from "../src/lib/lia-copy";
@@ -93,6 +93,11 @@ test("trava do Pix de saída: saldo do Asaas menor que o pedido não cobra; desl
 test("'cartão' e 'pix' continuam sendo forma de pagamento", () => {
   assert.deepEqual(detectIntent("cartão"), { kind: "choose_payment", method: "card" });
   assert.deepEqual(detectIntent("pix"), { kind: "choose_payment", method: "pix" });
+});
+
+test("nome sozinho no cadastro é nome; pedido não é", () => {
+  for (const input of ["Maria Oliveira Santos", "joana dias", "Teste Silva"]) assert.ok(looksLikeOnboardingName(input), input);
+  for (const input of ["quero leite ninho", "tem açaí?", "oi tudo bem", "pra que cpf?", "Rua Augusta 1500", "sim"]) assert.ok(!looksLikeOnboardingName(input), input);
 });
 
 // ---------- conversa (banco local) ----------
@@ -197,4 +202,27 @@ test("'tem açaí?' antes do cadastro fica anotado e é buscado depois do endere
   assert.doesNotMatch(first, /Eu compro o que você precisar/);
   const ctx = await context(phone);
   assert.match(ctx.pendingRequest ?? "", /açaí/i, "o açaí ficou guardado para depois do cadastro");
+});
+
+test("cadastro: nome numa mensagem e CPF na outra ficam guardados; 'pra que cpf?' tem resposta fixa", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_MEDICINE_MIP = "true";
+  try {
+    const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+    await send(phone, "oi");
+    const asked = await send(phone, "Avenida Paulista 1000, 01310-100");
+    assert.match(asked, /nome completo[\s\S]*CPF/i, asked.slice(0, 300));
+    const why = await send(phone, "pra que cpf?");
+    assert.match(why, /no seu nome/);
+    const name = await send(phone, "Maria Oliveira Santos");
+    assert.match(name, /Agora o \*CPF\*/);
+    const cpf = await send(phone, "529.982.247-25");
+    assert.match(cpf, /Anotado/);
+    assert.doesNotMatch(cpf, /não achei/i);
+    const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+    assert.equal(user.cpfName, "Maria Oliveira Santos");
+    assert.equal(user.cpf, "52998224725");
+  } finally {
+    delete process.env.LIA_MEDICINE_MIP;
+  }
 });

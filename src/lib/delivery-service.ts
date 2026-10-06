@@ -1939,10 +1939,41 @@ async function handleDeliveryTurn(
   // ---- remédio isento (29/09): nome completo + CPF para a compra sair no nome do cliente ----
   // Vem ANTES do CEP: um CPF nunca pode ser lido como CEP. "sem remédio" tira o remédio da
   // cesta e fecha o resto.
-  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft && !looksLikeCpfAttempt(text)) {
+  // Cadastro (06/10): "pra que cpf?" tem resposta fixa e a pergunta continua; "não quero dar"
+  // segue sem CPF; nome sozinho fica guardado e a Lia pede só o CPF (antes o nome se perdia e
+  // o CPF da mensagem seguinte virava busca de produto).
+  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft?.cpf && !looksLikeCpfAttempt(text)) {
+    const n = normalizeMsg(text);
+    if (/\b(pra|para|por)\s*(que|q)\b.*\bcpf\b|\bcpf\b.*\b(pra|para)\s*(que|q)\b|\bprecisa\s+(do|de|mesmo\s+do)\s+cpf\b|\bporque\b.*\bcpf\b/.test(n)) {
+      await reply(phone, copy.whyCpf());
+      return;
+    }
+    if (looksLikeOnboardingName(text)) {
+      ctx.cpfDraft = { name: extractFullName(text)! };
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.askCpfAfterName());
+      return;
+    }
+    if (/\b(nao|n)\s+(quero|vou)\s+(dar|passar|informar|mandar)\b|\bsem\s+cpf\b|\bprefiro\s+nao\b|\bpula(r)?\b/.test(n)) {
+      delete ctx.cpfOnboarding;
+      ctx.step = "collecting";
+      const queued = ctx.pendingRequest;
+      ctx.pendingRequest = undefined;
+      await writeCtx(convo.id, ctx);
+      if (queued) {
+        await reply(phone, copy.cpfSkipped(true));
+        await handleSearch(phone, convo.id, user.cep, ctx, queued, user.id);
+      } else {
+        await reply(phone, copy.cpfSkipped(false));
+      }
+      return;
+    }
+  }
+  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft?.cpf && !looksLikeCpfAttempt(text)) {
     // Cadastro: sem CPF na mensagem, a pergunta não segura o cliente — o que ele mandou
     // segue como mensagem normal (o CPF volta a ser pedido só no 1º remédio).
     delete ctx.cpfOnboarding;
+    delete ctx.cpfDraft;
     ctx.step = "collecting";
     const queued = ctx.pendingRequest;
     ctx.pendingRequest = undefined;
@@ -4964,6 +4995,17 @@ function knownStoreFees(ctx: DeliveryContext): { storeLabel: string; fee: number
     if (prev == null || o.freightFee < prev) byStore.set(o.storeLabel, o.freightFee);
   }
   return [...byStore].map(([storeLabel, fee]) => ({ storeLabel, fee }));
+}
+
+// Resposta ao "nome completo e CPF" do cadastro que só tem o nome: 2 a 5 palavras, sem
+// número, sem verbo de pedido. "leite ninho" passa no extractFullName; por isso o filtro.
+export function looksLikeOnboardingName(text: string): boolean {
+  if (/\d/.test(text) || !extractFullName(text)) return false;
+  const n = normalizeMsg(text);
+  const words = n.split(" ").filter(Boolean);
+  if (words.length < 2 || words.length > 5) return false;
+  if (/\b(quero|queria|preciso|precisava|manda|compra|comprar|tem|vende|pedido|pedir|oi|ola|bom|boa|tudo|obrigad\w*|cpf|sim|nao|ok)\b/.test(n)) return false;
+  return !parseAvailabilityAsk(text);
 }
 
 export function parseRecipientName(text: string): string | null {
