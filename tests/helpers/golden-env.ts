@@ -19,6 +19,11 @@ for (const store of ["CARREFOUR", "OBA", "PETZ", "BOTICARIO", "DECATHLON", "KALU
 for (const store of ["DROGARIASP", "COBASI", "PAGUEMENOS", "SWIFT", "KOPENHAGEN", "RIHAPPY", "MAMBO", "AMERICANAS", "COVABRA", "SAVEGNAGO", "WEPINK", "UNDERARMOUR", "TOKSTOK", "PBKIDS", "OSKLEN", "MOTOROLA", "LIVRARIASCURITIBA", "FILA", "FARMACIAINDIANA", "EXTRAFARMA", "DROGARIASPACHECO", "DROGARIACATARINENSE", "SANTALUZIA", "CEA", "CAPODARTE", "ARAMIS", "EPOCACOSMETICOS", "DROGAL", "BRINOX", "CREAMY", "CASAEVIDEO", "TELHANORTE", "ZONACRIATIVA", "PHILCO", "OXFORD", "POLISHOP", "OBRAMAX"]) {
   process.env[`LIA_ENABLE_${store}`] = "true";
 }
+// 06/10: mercados do Rio ficam fora do golden — o golden é a vitrine de um cliente de SP, e em
+// produção a área por loja (store-areas.ts) nunca mostra Zona Sul/Prezunic para CEP de SP.
+for (const store of ["ZONASUL", "PREZUNIC"]) {
+  process.env[`LIA_ENABLE_${store}`] = "false";
+}
 // 29/09: desligadas em produção (ORD062 no fechamento por API; as outras 7 religaram com telefone).
 for (const store of ["MARTINSFONTES", "MONDIAL"]) {
   process.env[`LIA_ENABLE_${store}`] = "false";

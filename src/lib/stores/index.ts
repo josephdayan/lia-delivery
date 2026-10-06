@@ -104,10 +104,10 @@ const STORES: Record<string, StoreConnector> = {
   // 28/09/2026: Americanas fechou por API (Pix Stark Infra); mínimo R$30, entrega 2h na capital.
   ...(process.env.LIA_ENABLE_AMERICANAS !== "false" ? { [americanasStore.key]: americanasStore } : {}),
   // 06/10/2026: mercados do Rio (expansão RJ). Só aparecem para CEP do Rio (store-areas.ts).
-  // OPT-IN até o fechamento real por API ser provado (`vtex-api-probe.mts --buy` num CEP do
-  // Rio) — regra do dono de 25/09: loja que não fecha sozinha fica fora.
+  // Zona Sul fechou pedido real por API em Copacabana (grupo 1666863616742, Pix obtido): ligado.
+  // Prezunic: OPT-IN até o fechamento real (1ª tentativa parou no mínimo de R$80, ORD079).
   ...(process.env.LIA_ENABLE_PREZUNIC === "true" ? { [prezunicStore.key]: prezunicStore } : {}),
-  ...(process.env.LIA_ENABLE_ZONASUL === "true" ? { [zonasulStore.key]: zonasulStore } : {}),
+  ...(process.env.LIA_ENABLE_ZONASUL !== "false" ? { [zonasulStore.key]: zonasulStore } : {}),
   ...(process.env.LIA_ENABLE_COVABRA !== "false" ? { [covabraStore.key]: covabraStore } : {}),
   ...(process.env.LIA_ENABLE_SAVEGNAGO !== "false" ? { [savegnagoStore.key]: savegnagoStore } : {}),
   ...(process.env.LIA_ENABLE_WEPINK !== "false" ? { [wepinkStore.key]: wepinkStore } : {}),

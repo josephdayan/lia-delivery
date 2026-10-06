@@ -1,3 +1,11 @@
+## 06/10/2026 — Zona Sul fecha pedido real por API no Rio; Prezunic pede mínimo de R$80
+
+`vtex-api-probe.mts --buy` em Copacabana com o CNPJ digitado pelo dono: Zona Sul criou o pedido
+(grupo 1666863616742, R$20,59, Pix copia-e-cola obtido, não pago) → ligado no código e conta de
+compra ativa em produção. Prezunic respondeu ORD079 (carrinho mínimo R$80); `minOrder` 80 no
+conector e novo teste acima do mínimo em andamento. Falta o dono somar as lojas em
+`LIA_AUTO_PURCHASE_STORES` (variável sensível) e o deploy.
+
 ## 06/10/2026 — Token do agente no /ops; #5VBIXY estornado
 
 #5VBIXY (Mercado Livre, R$56,43) estornado pelo dono no /ops ("Compra não realizada", MP refund

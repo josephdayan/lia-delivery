@@ -88,10 +88,13 @@ bem redonda essa coisa de só mostrar e aceitar compra se tiver perto". **Revoga
   SAI (falha fechada; nacional sem resposta continua); (3) cotação — `liveStoreFreight` devolve
   `no-delivery` sem rede; (4) cobrança — `preflightBasket` barra antes de cobrar, com ou sem
   simulação. Alternativas do "não deu" também filtram pela área.
-- **Zona Sul (1.091 itens) e Prezunic (2.523)** ligados pelo `add-vtex-store.mts`, mas **opt-in**
-  (`LIA_ENABLE_ZONASUL/PREZUNIC=true`): sondagem seca no Rio passou até o Pix (entrega no dia/2h),
-  falta o fechamento real (`--buy`) exigido pela regra de 25/09. Sem eles, o Rio já tem farmácia
-  em 30–60 min (Drogaria SP/Pacheco), Americanas no dia e o resto do elenco nacional.
+- **Zona Sul (1.091 itens) LIGADO:** fechamento real por API em Copacabana (06/10, grupo
+  1666863616742, Pix obtido no formato Mercado Pago da própria loja, não pago); conta de compra
+  `zonasul` ativa em produção. Só aparece de fato quando `zonasul` entrar em
+  `LIA_AUTO_PURCHASE_STORES` na Vercel (a vitrine só mostra loja automática; variável sensível,
+  o dono edita). **Prezunic (2.523) segue opt-in:** o 1º `--buy` parou no carrinho mínimo de R$80
+  (ORD079, agora `minOrder` 80); 2º teste acima de R$80 pendente. Sem mercado, o Rio já tem
+  farmácia em 30–60 min (Drogaria SP/Pacheco), Americanas no dia e o resto do elenco nacional.
 - Site: "São Paulo e Rio de Janeiro". Teste: `tests/store-areas.test.ts`, `coverage`, `signup-form`.
 
 ## 06/10/2026 — Cadastro no 1º contato por formulário do WhatsApp (dono)

@@ -27,11 +27,14 @@
 ## 06/10/2026 — Expansão RJ
 
 - [x] SP + RJ atendidos, área por loja regional nas 4 travas (busca, vitrine, cotação, cobrança).
-- [x] Zona Sul e Prezunic conectados e colhidos (opt-in, desligados).
+- [x] Zona Sul e Prezunic conectados e colhidos.
+- [x] Zona Sul: fechamento real por API (06/10, grupo 1666863616742), ligado no código, conta de
+  compra ativa em produção.
+- [ ] Dono: somar `,zonasul` em `LIA_AUTO_PURCHASE_STORES` na Vercel (sensível: o Claude não lê o
+  valor atual) e redeploy.
+- [ ] Prezunic: `--buy` com carrinho ≥ R$80 (`--qty 30`); se fechar, ligar, conta (script --db
+  `--stores prezunic`) e somar `,prezunic` na mesma variável.
 - [ ] Deploy (push de main).
-- [ ] Fechamento real (`vtex-api-probe.mts --domain=www.zonasul.com.br --cep=<CEP do Rio> --buy`
-  e o mesmo no Prezunic), depois `LIA_ENABLE_ZONASUL/PREZUNIC=true` e somar os dois em
-  `LIA_AUTO_PURCHASE_STORES` na Vercel + conta de compra (script --db).
 - [ ] 1º pedido real no Rio (precisa de um endereço/cliente lá).
 - [ ] Telefones de teste dos evals estão gravando `WaitlistLead` no banco de produção (39 de 40
   contatos fora de SP) — limpar e achar o teste que vaza.

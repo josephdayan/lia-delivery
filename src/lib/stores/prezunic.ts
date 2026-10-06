@@ -10,7 +10,7 @@ const ITEMS = catalogWithImages(CATALOG);
 export const prezunicStore: StoreConnector = {
   key: "prezunic",
   label: "Prezunic",
-  minOrder: Number(process.env.LIA_PREZUNIC_MIN_ORDER ?? 0),
+  minOrder: Number(process.env.LIA_PREZUNIC_MIN_ORDER ?? 80), // ORD079: carrinho mínimo R$80 (06/10)
   async searchItems(query: string, limit = 4) {
     return rankCatalog(query, ITEMS, limit);
   },
