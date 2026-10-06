@@ -4,8 +4,9 @@ O cron `/api/cron/meta-templates` dava ERRO nos 8 templates `vitrine_carrossel_v
 cada hora (Graph 400, subcode 2388245, "exceeded maximum amount of line breaks"). O card do v4 tinha
 3 quebras; agora tem 2 (a instrução "Toque abaixo para adicionar." foi para a linha do prazo).
 Os nomes v4/v5 seguem livres porque nada chegou a ser criado. Testes: `tests/carousel.test.ts` +
-`tests/carousel-card-limit.test.ts` 16/16 no Postgres local; `tsc` ok. Falta: o cron das :17
-depois do deploy criar os 8 (PENDING/APPROVED no log) e a Meta aprovar o v5.
+`tests/carousel-card-limit.test.ts` 16/16 no Postgres local; `tsc` ok. Commit 92b2f2b, deploy de
+produção READY às 10h06. Cron das 10h17: os 8 criados, todos **PENDING** (nenhum ERRO). Falta a
+Meta aprovar; com o v5 aprovado o envio troca sozinho (o log das :17 mostra o status).
 
 ## 06/10/2026 — Cadastro no primeiro contato por formulário do WhatsApp
 

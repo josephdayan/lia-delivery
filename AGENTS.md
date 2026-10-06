@@ -14,7 +14,8 @@ v3 e a vitrine "Olha o que achei 👇" pedida pelo dono em 05/10 não entrou no 
   preso: editar o reprovado ou criar prefixo novo.
 - O teste de limites do template agora monta todo prefixo que o cron cria (v3, v4, v5); antes só
   o v3, e foi assim que o card de 3 linhas passou.
-Teste: `tests/carousel.test.ts` e `tests/carousel-card-limit.test.ts` (16/16).
+Teste: `tests/carousel.test.ts` e `tests/carousel-card-limit.test.ts` (16/16). Publicado em 92b2f2b;
+o cron das 10h17 criou os 8 templates (PENDING, aguardando a revisão da Meta).
 
 ## 06/10/2026 — Cadastro no 1º contato por formulário do WhatsApp (dono)
 

@@ -1,8 +1,7 @@
 ## 06/10/2026 — Carrossel v4/v5: card com 2 quebras de linha
 
 - [x] Card v4/v5 com 2 quebras de linha; teste de limites cobre v3, v4 e v5.
-- [ ] Cron das :17 criar os 8 templates `vitrine_carrossel_v4/v5_{2..5}` (log
-  `[cron:meta-templates]` com PENDING/APPROVED em vez de ERRO).
+- [x] Cron das 10h17 (06/10) criou os 8 templates `vitrine_carrossel_v4/v5_{2..5}`: todos PENDING.
 - [ ] Meta aprovar o v5: o envio troca sozinho para "Olha o que achei 👇" (`activeCarouselPrefix`,
   cache de 10 min). Se reprovar, o motivo aparece no mesmo log.
 
