@@ -424,11 +424,20 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector)
   };
 }
 
-// Customer-facing options message (prices already marked up; no store name).
+// Nome da loja junto do prazo em TODA opção — texto, card e carrossel (dono, 06/10: "nome da
+// loja pode pôr", depois de dois testadores perguntarem "qual a loja?"). "Mambo · 1 dia útil".
+function optionDelivery(o: ChoiceOption): string | undefined {
+  const store = o.storeLabel?.trim();
+  if (!store) return o.delivery;
+  const when = o.delivery?.replace(/^prazo da loja:\s*/i, "").trim();
+  return when ? `${store} · ${when}` : store;
+}
+
+// Customer-facing options message (prices already marked up).
 function choicesTextFor(p: PendingChoice, header?: string): string {
   return copy.choicesText(
     p.query,
-    p.options.map((o) => ({ name: customerChoiceName(p, o), displayPrice: display(o.unitPrice, o.medicine), delivery: o.delivery, repeat: o.repeat })),
+    p.options.map((o) => ({ name: customerChoiceName(p, o), displayPrice: display(o.unitPrice, o.medicine), delivery: optionDelivery(o), repeat: o.repeat })),
     header ?? choicesHeaderFor(p)
   );
 }
@@ -598,7 +607,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
       name: customerChoiceName(p, o),
       displayPrice: display(o.unitPrice, o.medicine),
       imageUrl: o.imageUrl,
-      delivery: o.delivery,
+      delivery: optionDelivery(o),
       ...(o.repeat ? { badge: "Você já pediu este" } : {}),
       // Liga o botão "Ver detalhes" do card quando o produto tem página real.
       productUrl: o.productUrl,
@@ -661,7 +670,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   await reply(phone, header ?? choicesHeaderFor(p));
   for (let i = 0; i < p.options.length; i++) {
     const o = p.options[i];
-    await replyPhoto(phone, copy.choiceLine(i, o.name, display(o.unitPrice, o.medicine), o.delivery, o.repeat), o.imageUrl);
+    await replyPhoto(phone, copy.choiceLine(i, o.name, display(o.unitPrice, o.medicine), optionDelivery(o), o.repeat), o.imageUrl);
     if (gapMs > 0 && i < p.options.length - 1) await sleep(gapMs);
   }
   await reply(phone, copy.choicesAsk(p.options.length));
@@ -734,7 +743,7 @@ export async function recoverFailedCarousel(messageId: string, recipientDigits: 
       name: customerChoiceName(saved.pending, o),
       displayPrice: display(o.unitPrice, o.medicine),
       imageUrl: o.imageUrl,
-      delivery: o.delivery,
+      delivery: optionDelivery(o),
       ...(o.repeat ? { badge: "Você já pediu este" } : {}),
       productUrl: o.productUrl,
       sku: o.sku

@@ -1,14 +1,15 @@
-## 06/10/2026 — Retorno dos testadores: o que é decisão do dono
+## 06/10/2026 — Retorno dos testadores: decisões do dono (respondidas no mesmo dia)
 
-- [ ] **Nome da loja em todo card?** Dois testadores pediram. Hoje a Lia diz a loja quando
-  perguntam, mas o card não mostra, porque o preço tem a margem embutida e o cliente pode ir
-  direto à loja. Decidir: mostrar sempre, só quando perguntam (atual) ou trocar margem por taxa
-  separada.
-- [ ] **Frete caro** foi a principal desistência (R$15,90 na Mambo para R$28 de itens; R$4,90 para
-  pilha de R$11). Decidir: frete mínimo subsidiado, pedido mínimo, ou mostrar o frete já na
-  vitrine para não surpreender no total.
-- [ ] **Pix no nome pessoal** apareceu para o cliente na hora de pagar ("isso é meio estranho").
-  Conta Mercado Pago PJ com o nome da Lia.
+- [x] **Nome da loja em todo card:** dono liberou ("nome da loja pode pôr"). Feito: texto, card e
+  carrossel mostram "Mambo · 1 dia útil".
+- [x] **Frete caro:** dono decidiu deixar como está ("não tem o que fazer"). Não propor de novo.
+- [ ] **Asaas:** dono está vendo (conta bancária de saque PENDING; ver entrada acima).
+- [ ] **Pix no nome do dono:** a chave Pix do Mercado Pago já é a do CNPJ (…0195); o banco de quem
+  paga mostra o titular, e o nome legal de MEI é o nome do dono. Cartão já sai "LIA DELIVERY" na
+  fatura (`statement_descriptor`). Para o Pix: (1) cadastrar nome fantasia "Lia Delivery" no CNPJ
+  (Portal do Empreendedor, alteração cadastral, grátis) e no perfil do Mercado Pago — alguns bancos
+  passam a mostrar esse nome; (2) a solução que vale em todo banco é trocar o MEI por empresa com
+  razão social "Lia Delivery" (contador). Decisão do dono.
 
 ## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
 

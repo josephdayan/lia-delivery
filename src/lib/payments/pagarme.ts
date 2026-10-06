@@ -1,3 +1,4 @@
+import { statementDescriptor } from "./mercadopago";
 import { randomUUID } from "crypto";
 
 export type PagarmeAddress = {
@@ -225,7 +226,8 @@ export const pagarmeAdapter = {
             credit_card: {
               card_id: input.cardId,
               installments: 1,
-              operation_type: "auth_and_capture"
+              operation_type: "auth_and_capture",
+              statement_descriptor: statementDescriptor()
             }
           }],
           metadata: { delivery_order_id: input.orderId, payment_attempt_id: input.attemptId }

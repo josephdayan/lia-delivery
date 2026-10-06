@@ -1,3 +1,11 @@
+## 06/10/2026 (tarde) — Nome da loja em toda opção; cartão sai "LIA DELIVERY" na fatura
+
+Dono liberou o nome da loja: texto, card e carrossel mostram "Mambo · 1 dia útil" no lugar de
+"prazo da loja: 1 dia útil". Cobrança de cartão (Mercado Pago e Pagar.me) leva
+`statement_descriptor` "LIA DELIVERY" (`LIA_STATEMENT_DESCRIPTOR` troca). Pix: a chave já é a do
+CNPJ; o nome que o banco mostra é o do titular (MEI = nome do dono) — caminhos em PENDENCIAS.
+Frete: dono decidiu não mexer. Suíte inteira 763/763 no Postgres local.
+
 ## 06/10/2026 — Zona Sul fecha pedido real por API no Rio; Prezunic pede mínimo de R$80
 
 `vtex-api-probe.mts --buy` em Copacabana com o CNPJ digitado pelo dono: Zona Sul criou o pedido

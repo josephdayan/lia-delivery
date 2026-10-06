@@ -78,7 +78,7 @@ test("com pedido entregue de Solito: ele vem em 1º, com estrela e 'você já pe
   });
   const reply = await send(phone, "arroz");
   const first = reply.split("\n").find((l) => l.startsWith("*1)*")) ?? "";
-  assert.match(first, /^\*1\)\* ⭐ Arroz Solito Tipo 1 5Kg — R\$ ?[\d,]+ · _você já pediu_$/, reply);
+  assert.match(first, /^\*1\)\* ⭐ Arroz Solito Tipo 1 5Kg — R\$ ?[\d,]+ · _Carrefour[^_]*_ · _você já pediu_$/, reply);
   const lines = reply.split("\n").filter((l) => /^\*\d\)\*/.test(l));
   assert.equal(lines.filter((l) => l.includes("você já pediu")).length, 1, "só o já pedido ganha destaque");
   assert.ok(lines.length <= 3);

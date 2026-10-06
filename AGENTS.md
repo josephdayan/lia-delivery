@@ -1,3 +1,12 @@
+## 06/10/2026 (tarde) — Decisões do dono sobre o retorno dos testadores
+
+- **Nome da loja aparece em toda opção** (texto, card, carrossel): "Mambo · 1 dia útil"
+  (`optionDelivery` em delivery-service). Substitui a regra antiga "opções sem nome da loja".
+- **Frete fica como está** — não propor subsídio/mínimo sem pedido do dono.
+- **Cartão:** fatura "LIA DELIVERY" (`statementDescriptor()` em payments/mercadopago).
+- **Pix:** o recebedor exibido é o titular da chave do CNPJ MEI (nome do dono); não há campo no
+  código que mude isso. Caminhos em PENDENCIAS (nome fantasia ou mudar a natureza jurídica).
+
 ## 06/10/2026 — Token do agente no /ops (dono)
 
 O dono não conseguia abrir o /ops para estornar o #5VBIXY e pediu "um jeito de você fazer isso

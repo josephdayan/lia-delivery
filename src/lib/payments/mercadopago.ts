@@ -227,7 +227,10 @@ async function realCreateCheckout(input: { orderId: string; amount: number; desc
       excluded_payment_types: excludedTypesFor(input.method)
     },
     expires: true,
-    expiration_date_to: expiration
+    expiration_date_to: expiration,
+    // Nome na fatura do cartão (06/10, dono: o cliente via o nome pessoal do dono). O Pix não
+    // tem campo assim: o banco mostra o titular da chave (o MEI leva o nome do dono).
+    statement_descriptor: statementDescriptor()
   };
   // Per-preference notification_url is more reliable than the dashboard-only setting.
   if (process.env.MERCADO_PAGO_WEBHOOK_URL) body.notification_url = process.env.MERCADO_PAGO_WEBHOOK_URL;
@@ -410,4 +413,12 @@ export async function refundMercadoPagoPayment(
     /* corpo vazio */
   }
   return { refundId: String(data.id ?? ""), status: data.status ?? "unknown", amount: typeof data.amount === "number" ? data.amount : amount ?? null };
+}
+
+
+// "LIA DELIVERY" na fatura do cartão; LIA_STATEMENT_DESCRIPTOR troca (até 13 caracteres,
+// letras, números e espaço — o limite do Pagar.me, que usa o mesmo nome).
+export function statementDescriptor(): string {
+  const raw = (process.env.LIA_STATEMENT_DESCRIPTOR ?? "LIA DELIVERY").normalize("NFD").replace(/[^A-Za-z0-9 ]/g, "").trim();
+  return (raw || "LIA DELIVERY").slice(0, 13).toUpperCase();
 }

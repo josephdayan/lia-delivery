@@ -267,3 +267,13 @@ test("Tati: Euthyrox é recusado como remédio de receita, sem 'me diz outra mar
   assert.match(out, /receita/i, out);
   assert.doesNotMatch(out, /outra marca/i);
 });
+
+test("dono (06/10): toda opção mostra a loja junto do prazo", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const out = await send(phone, "quero arroz");
+  const options = out.split("\n").filter((line) => /^\*\d\)\*/.test(line));
+  assert.ok(options.length >= 1, out.slice(0, 300));
+  assert.ok(options.every((line) => / · _[A-ZÀ-Ú][^_]*_/.test(line)), `loja em cada linha: ${options.join(" | ")}`);
+  assert.ok(options.every((line) => !/prazo da loja:/.test(line)), "o rótulo genérico some quando a loja aparece");
+});

@@ -78,7 +78,7 @@ test("'preciso de arroz hoje': só quem entrega hoje aparece, com o prazo rápid
   const lines = optionLines(reply);
   assert.equal(lines.length, 1, reply);
   assert.match(lines[0], /Solito/);
-  assert.match(lines[0], /prazo da loja: 2h/);
+  assert.match(lines[0], /_Carrefour · 2h_/);
   assert.doesNotMatch(reply, /Nada chega hoje/);
 });
 
@@ -101,5 +101,5 @@ test("sem urgência, nada muda: cabeçalho normal e prazo da entrega mais barata
   const reply = await send(phone, "arroz");
   assert.match(reply, /Olha o que achei 👇/, reply.slice(0, 200));
   assert.doesNotMatch(reply, /Chega hoje|Nada chega hoje/);
-  assert.match(reply, /prazo da loja: 1 dia útil/);
+  assert.match(reply, /· 1 dia útil_/);
 });
