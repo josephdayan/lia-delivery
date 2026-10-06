@@ -11,7 +11,7 @@ Falta: o cron horário publicar o Flow na Meta e um teste real com o "cadastro" 
 
 Os botões de sugestão da 1ª conversa ("Quero um chá", "Ração pro meu cachorro"…) pareciam
 estranhos (dono). Agora é um só: **"Peça qualquer coisa 🛒"**, lido como "quero fazer um pedido"
-(`want_items`). Aplicar na Meta = `/api/ops/meta-setup?action=welcome` logado no /ops.
+(`want_items`). Aplicado na Meta pelo dono em 06/10 (`/api/ops/meta-setup?action=welcome` → ok).
 
 ## 05/10/2026 (tarde) — Remédio LIGADO em produção + 1º teste real do dono (Advil) corrigido
 
