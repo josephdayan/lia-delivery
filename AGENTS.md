@@ -7,6 +7,22 @@
 - **Pix:** o recebedor exibido é o titular da chave do CNPJ MEI (nome do dono); não há campo no
   código que mude isso. Caminhos em PENDENCIAS (nome fantasia ou mudar a natureza jurídica).
 
+## 06/10/2026 — Vitrine só com opção que a loja confirmou + frete da vitrine = frete cobrado
+
+Dois furos que sobraram do retorno dos testadores:
+- **Beco no "pagar"** (pilha da Casa & Vídeo, fita isolante da Obramax: "me sugeriu um produto que
+  não conseguia finalizar"). A checagem ao vivo MANTINHA o candidato quando a loja não respondia;
+  sem operador e cobrando só o confirmado, a cotação abortava e o pedido era cancelado. Regra:
+  com `LIA_OPERATOR_QUOTE` desligado e `LIA_CHARGE_ONLY_VERIFIED` ligado, só entra na vitrine
+  (busca, "outras", refino, resgate e troca) o que a loja confirmou para o CEP
+  (`liveConfirmationRequired` / `buyableWithoutOperator` em live-availability, `confirmOptionsLive`
+  no cérebro). Nada confirmado → "Não consigo comprar *X* agora: nenhuma loja confirmou entrega no
+  seu endereço." Log `[live-check:unconfirmed]` mostra quem caiu.
+- **Frete da vitrine ≠ frete cobrado** (Drogal: R$2,03 na vitrine, R$4,90 no total). A simulação
+  ao vivo punha todos os candidatos da loja num carrinho só e o VTEX rateia o frete entre eles.
+  Agora é uma simulação por SKU (em paralelo, mesmo timeout).
+- Fora daqui, de propósito: nome da loja e frete no card seguem a decisão pendente do dono.
+Teste: `tests/feedback-2026-10-06-vitrine-confirmada.test.ts`.
 ## 06/10/2026 — Token do agente no /ops (dono)
 
 O dono não conseguia abrir o /ops para estornar o #5VBIXY e pediu "um jeito de você fazer isso
@@ -17,6 +33,7 @@ pago vira `refund_pending`), mas **nunca** `refund_provider`, `confirm_refund` n
 `purchase_failed_refund`: o dinheiro sai sempre por um toque do dono. Só header — fora do login,
 do cookie e do `?key=`. Regra em `opsOrderActionDenied`/`isAgentRequest` (`src/lib/auth.ts`);
 teste em `tests/operador-humano.test.ts`. Trocar o token = gerar outro nos dois lugares.
+
 
 ## 06/10/2026 — Retorno dos testadores: regras novas da conversa
 

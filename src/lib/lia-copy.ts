@@ -1331,6 +1331,15 @@ export function itemsNotAvailable(items: string[]): string {
   ].join("\n");
 }
 
+// 06/10 (teste real): o item existe nas lojas, mas nenhuma confirmou estoque/entrega para o
+// CEP. Mostrar a opção virava beco no "pagar"; o honesto é dizer que não dá pra comprar agora.
+export function itemsNotBuyableNow(items: string[]): string {
+  const labels = items.map(shortNotFoundLabel);
+  return labels.length === 1
+    ? `Não consigo comprar *${labels[0]}* agora: nenhuma loja confirmou entrega no seu endereço.`
+    : `Não consigo comprar agora (nenhuma loja confirmou entrega no seu endereço): ${labels.map((l) => `*${l}*`).join(", ")}.`;
+}
+
 // Depois de escolher as opções: a lista continua aberta (diferente do fluxo legado, onde
 // escolher já ia direto pra cotação).
 export function conciergeKeepAdding(): string {

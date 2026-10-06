@@ -13,7 +13,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
-import { checkCandidatesLive, liveKey } from "@/lib/live-availability";
+import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
@@ -232,6 +232,7 @@ async function buildChoices(
       // sem estoque). Sem estoque/sem entrega no endereço sai daqui; confirmado ganha o
       // prazo real e vem antes do não-verificável.
       let noneToday = false;
+      let unconfirmed = false;
       if (cep) {
         const wrapped = candidates.map((c) => ({ storeKey: c.store.key, sku: c.item.sku, c }));
         const live = await checkCandidatesLive(wrapped, cep);
@@ -240,6 +241,17 @@ async function buildChoices(
           console.log("[live-check:dropped]", live.dropped.map((w) => `${w.storeKey}:${w.sku}`).join(","));
         }
         candidates = live.kept.map((w) => w.c);
+        // 06/10 (testers: pilha da Casa & Vídeo, fita isolante da Obramax): sem operador, opção
+        // que a loja não confirmou para o CEP é beco no "pagar" (a cotação aborta). Sai da
+        // vitrine; se nada foi confirmado, a linha vira "não consigo comprar agora".
+        if (liveConfirmationRequired()) {
+          const buyable = candidates.filter((c) => buyableWithoutOperator(c.store.key, liveChecks.get(liveKey(c.store.key, c.item.sku))));
+          if (buyable.length < candidates.length) {
+            console.log("[live-check:unconfirmed]", candidates.filter((c) => !buyable.includes(c)).map((c) => `${c.store.key}:${c.item.sku}`).join(","));
+          }
+          unconfirmed = candidates.length > 0 && buyable.length === 0;
+          candidates = buyable;
+        }
         if (urgent) {
           const today = candidates.filter((c) => {
             const check = liveChecks.get(liveKey(c.store.key, c.item.sku));
@@ -251,7 +263,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, phrase: searchPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday };
+      return { line: { ...line, phrase: searchPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
     })
   );
 
@@ -283,6 +295,7 @@ async function buildChoices(
   const pending: PendingChoice[] = [];
   const notFound: string[] = [];
   const notFoundLines: ParsedLine[] = [];
+  const unconfirmedLines = perLine.filter((entry) => entry.unconfirmed).map((entry) => entry.line.phrase);
   let firstStore: StoreConnector | undefined;
   for (const entry of perLine) {
     const { line, candidates, noneToday } = entry;
@@ -334,7 +347,8 @@ async function buildChoices(
     reranked: Boolean(rerank),
     greetingOnly: greetingOnly && autoAdded.length === 0 && pending.length === 0,
     containsMedicine,
-    containsTobacco
+    containsTobacco,
+    ...(unconfirmedLines.length ? { unconfirmed: unconfirmedLines } : {})
   };
 }
 
@@ -477,6 +491,29 @@ function toChoiceOption(
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(live?.available ? { verified: true, ...(eta != null ? { etaMinutes: eta } : {}), ...(fee != null ? { freightFee: fee } : {}) } : {})
   };
+}
+
+// Verificação ao vivo para opções montadas FORA do buildChoices (paginação, refino, resgate,
+// troca): confirmado ganha preço/prazo/frete da loja; sem operador, o que a loja não
+// confirmou sai (06/10 — a mesma regra da vitrine principal).
+async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | undefined): Promise<ChoiceOption[]> {
+  if (!cep || !pool.length) return pool;
+  const live = await checkCandidatesLive(pool.map((o) => ({ storeKey: o.storeKey ?? "", sku: o.sku, o })), cep);
+  const checked = live.kept.map((w) => {
+    const check = live.checks.get(liveKey(w.storeKey, w.sku));
+    if (!check?.available) return w.o;
+    const delivery = humanEstimate(check.estimate);
+    return {
+      ...w.o,
+      verified: true,
+      ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}),
+      ...(delivery ? { delivery } : {}),
+      ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}),
+      ...(check.fee != null ? { freightFee: check.fee } : {})
+    };
+  });
+  if (!liveConfirmationRequired()) return checked;
+  return checked.filter((o) => buyableWithoutOperator(o.storeKey, o.verified ? { sku: o.sku, available: true } : undefined));
 }
 
 async function replyPhoto(phone: string, text: string, imageUrl?: string) {
@@ -3754,15 +3791,7 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
     pool = (await store.searchItems(query, 40)).map((item) => toChoiceOption(item, { storeKey: store.key, storeLabel: store.label }));
   }
   // Paginação/refino também só mostram o que a loja confirmou para o CEP (03/09).
-  if (ctx.cep) {
-    const live = await checkCandidatesLive(pool.map((o) => ({ storeKey: o.storeKey ?? "", sku: o.sku, o })), ctx.cep);
-    pool = live.kept.map((w) => {
-      const check = live.checks.get(liveKey(w.storeKey, w.sku));
-      if (!check?.available) return w.o;
-      const delivery = humanEstimate(check.estimate);
-      return { ...w.o, verified: true, ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}), ...(delivery ? { delivery } : {}), ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}) };
-    });
-  }
+  pool = await confirmOptionsLive(pool, ctx.cep);
   // Piso de relevância TAMBÉM na paginação/refino (vistoria 10/08: "outras" de
   // "carregador de celular" devolvia Sérum Nivea "Cellular" e chip de operadora —
   // score>0 sem piso). O rerank de IA não roda aqui (resposta na hora), então o piso
@@ -3861,10 +3890,13 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
       const tokens = queryTokens(p.baseQuery ?? p.query);
       const relaxedQuery = tokens.length > 2 ? tokens.slice(0, -1).join(" ") : (p.baseQuery ?? p.query);
       try {
-        const rescue = (await gatherCrossStoreCandidates(relaxedQuery, 12, 4, { forceLongTail: true }))
-          .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
-          .filter((o) => conciergeMatchIsStrong(relaxedQuery, o) && !shown.includes(o.sku))
-          .filter((o) => p.cap == null || display(o.unitPrice, o.medicine) <= p.cap);
+        const rescue = await confirmOptionsLive(
+          (await gatherCrossStoreCandidates(relaxedQuery, 12, 4, { forceLongTail: true }))
+            .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
+            .filter((o) => conciergeMatchIsStrong(relaxedQuery, o) && !shown.includes(o.sku))
+            .filter((o) => p.cap == null || display(o.unitPrice, o.medicine) <= p.cap),
+          ctx.cep
+        );
         const rescueNext = diversifyOptions(relaxedQuery, rescue, vitrineLimit());
         if (rescueNext.length) {
           const rememberedRescue = new Set((p.shownOptions ?? p.options).map((o) => o.sku));
@@ -4301,9 +4333,15 @@ async function handleSwap(
   const candidates: StoreCandidate[] = crossStore
     ? await gatherCrossStoreCandidates(searchPhrase, 12)
     : (await store.searchItems(searchPhrase, 3)).map((item) => ({ store, item }));
-  const options = diversifyOptions(searchPhrase, candidates.map((c) => c.item), vitrineLimit())
-    .filter((item) => conciergeMatchIsStrong(searchPhrase, item))
-    .map((item) => candidates.find((c) => c.item.sku === item.sku)!);
+  // 06/10: a troca também só oferece o que a loja confirmou para o CEP (sem operador, o
+  // não confirmado é beco no "pagar").
+  const confirmed = await confirmOptionsLive(
+    candidates
+      .filter((c) => conciergeMatchIsStrong(searchPhrase, c.item))
+      .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
+    ctx.cep ?? userCep
+  );
+  const options = diversifyOptions(searchPhrase, confirmed, vitrineLimit());
 
   if (!options.length) {
     // TROCA É ATÔMICA (26/08 P1.7): sem substituto forte, o item original FICA — tirar
@@ -4316,15 +4354,15 @@ async function handleSwap(
   }
   if (options.length === 1 && !(ctx.pending?.length)) {
     const only = options[0];
-    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(toChoiceOption(only.item, { storeKey: only.store.key, storeLabel: only.store.label }), qty, only.store)]);
-    await continueAfterBasket(phone, convoId, ctx, userCep, copy.swappedFor(removedNames, only.item.name));
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, qty, only.storeKey ? getStore(only.storeKey) : store)]);
+    await continueAfterBasket(phone, convoId, ctx, userCep, copy.swappedFor(removedNames, only.name));
     return;
   }
   ctx.pending = [
     {
       query: to,
       qty,
-      options: options.map(({ store: optionStore, item }) => toChoiceOption(item, { storeKey: optionStore.key, storeLabel: optionStore.label }))
+      options
     },
     ...(ctx.pending ?? [])
   ];
@@ -4442,7 +4480,7 @@ async function handleConciergeRequest(
     const retryText = notFoundLines
       .map((line) => (line.cap != null ? `${rescuePhrase(line)} até ${line.cap} reais` : rescuePhrase(line)))
       .join(", ");
-    const retry = await buildChoicesWithSearchNotice(phone, retryText, undefined, undefined, true);
+    const retry = await buildChoicesWithSearchNotice(phone, retryText, undefined, undefined, true, ctx.cep ?? userCep);
     const rescued: PendingChoice[] = [];
     for (const choice of retry.pending) {
       const strong = retry.reranked
@@ -4501,17 +4539,30 @@ async function handleConciergeRequest(
   // Regra do dono (11/08): item sem preço nas lojas parceiras NUNCA vira espera de
   // cotação — "se não tem, fala que não tem". A linha livre saiu do fluxo do cliente:
   // só item com preço entra na cesta, e por isso todo fechamento tem total NA HORA.
-  const unavailable = notFoundLines.map((line) => (line.qty > 1 ? `${line.qty}x ${line.phrase}` : line.phrase));
+  // 06/10: linha que TINHA produto, mas nenhuma loja confirmou para o CEP, não é "não
+  // achei" — é "não consigo comprar agora" (a vitrine não mostra opção que não fecha).
+  const unconfirmedSet = new Set((raw.unconfirmed ?? []).map((phrase) => normalizeMsg(phrase)));
+  const lineLabel = (line: ParsedLine) => (line.qty > 1 ? `${line.qty}x ${line.phrase}` : line.phrase);
+  const unbuyable = notFoundLines.filter((line) => unconfirmedSet.has(normalizeMsg(line.phrase))).map(lineLabel);
+  const unavailable = notFoundLines.filter((line) => !unconfirmedSet.has(normalizeMsg(line.phrase))).map(lineLabel);
   // Remédio pelo nome que não está entre os isentos (06/10, Euthyrox): diz o porquê.
   const medicineMiss = medicineEnabled() && unavailable.length > 0 && unavailable.every(looksLikeMedicineName);
   const notFoundNote = (withOptions: boolean) =>
-    offerLongTail
-      ? copy.longTailOffer(unavailable)
-      : withOptions
-        ? copy.itemsNotAvailableWithOptions(unavailable)
-        : medicineMiss
-          ? copy.medicineNotFound(unavailable)
-          : copy.itemsNotAvailable(unavailable);
+    [
+      !unavailable.length
+        ? null
+        : offerLongTail
+          ? copy.longTailOffer(unavailable)
+          : withOptions
+            ? copy.itemsNotAvailableWithOptions(unavailable)
+            : medicineMiss
+              ? copy.medicineNotFound(unavailable)
+              : copy.itemsNotAvailable(unavailable),
+      unbuyable.length ? copy.itemsNotBuyableNow(unbuyable) : null
+    ]
+      .filter(Boolean)
+      .join("\n");
+  const hasNotFound = unavailable.length > 0 || unbuyable.length > 0;
   ctx.flow = "delivery";
   // A cesta continua pertencendo ao "concierge" mesmo quando o item veio de uma vitrine: o
   // pedido é cotado e comprado à mão, então não há uma loja dona do pedido.
@@ -4539,7 +4590,7 @@ async function handleConciergeRequest(
     const notes: string[] = [copy.autoAddedNote(added.map((i) => `${i.qty}x ${i.name}`)), ...packNotes];
     if (containsMedicine) notes.push(medicineSkippedCopy());
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
-    if (unavailable.length) notes.push(notFoundNote(false));
+    if (hasNotFound) notes.push(notFoundNote(false));
     if (rest.length) {
       await writeCtx(convoId, ctx);
       await reply(phone, notes.join("\n"));
@@ -4637,7 +4688,7 @@ async function handleConciergeRequest(
       notes.push(...packNotes);
       if (containsMedicine) notes.push(medicineSkippedCopy());
       if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
-      if (unavailable.length) notes.push(notFoundNote(false));
+      if (hasNotFound) notes.push(notFoundNote(false));
       await writeCtx(convoId, ctx);
       if (notes.length) await reply(phone, notes.join("\n"));
       await sendChoices(phone, confirm[0]);
@@ -4650,7 +4701,7 @@ async function handleConciergeRequest(
     notes.push(...packNotes);
     if (containsMedicine) notes.push(medicineSkippedCopy());
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
-    if (unavailable.length) notes.push(notFoundNote(false));
+    if (hasNotFound) notes.push(notFoundNote(false));
     await advancePending(phone, convoId, ctx, userCep, notes.join("\n"));
     return;
   }
@@ -4664,7 +4715,7 @@ async function handleConciergeRequest(
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     // Os itens sem preço são recusados ANTES das opções — mas com escopo explícito:
     // "não achei X — o resto tá abaixo" (a copy global parecia contradição, 19/08).
-    if (unavailable.length) notes.push(notFoundNote(true));
+    if (hasNotFound) notes.push(notFoundNote(true));
     if (notes.length) await reply(phone, notes.join("\n"));
     if (pending.length > 1) await reply(phone, copy.choiceSequence(pending.map((p) => p.query)));
     await sendChoices(phone, pending[0]);
@@ -4718,7 +4769,7 @@ async function rescueLongTail(
   const searchPhrase = (line: (typeof lines)[number]) => line.raw ?? line.phrase;
   for (const line of lines) prefetchMercadoLivre(splitPriceCap(searchPhrase(line)).phrase);
   const retryText = lines.map((line) => (line.cap != null ? `${searchPhrase(line)} até ${line.cap} reais` : searchPhrase(line))).join(", ");
-  const retry = await buildChoicesWithSearchNotice(phone, retryText, undefined, undefined, true);
+  const retry = await buildChoicesWithSearchNotice(phone, retryText, undefined, undefined, true, ctx.cep ?? userCep);
   const rescued: PendingChoice[] = [];
   for (const choice of retry.pending) {
     const strong = retry.reranked ? choice.options : choice.options.filter((option) => conciergeMatchIsStrong(choice.query, option));

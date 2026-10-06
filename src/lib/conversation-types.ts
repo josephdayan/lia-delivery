@@ -246,6 +246,10 @@ export type ChoicesResult = {
   greetingOnly: boolean;
   containsMedicine: boolean;
   containsTobacco: boolean;
+  // 06/10: linhas (frase já normalizada pelo split do teto) que TINHAM produto nas lojas,
+  // mas nenhuma loja confirmou ao vivo para o CEP — o cliente ouve "não consigo comprar
+  // agora", não "não achei".
+  unconfirmed?: string[];
 };
 
 // The store an in-progress order belongs to (picked when the basket was built).

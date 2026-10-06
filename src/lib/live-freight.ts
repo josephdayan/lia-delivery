@@ -343,6 +343,10 @@ export async function liveStoreFreight(
 // o fechamento corrigia para R$14,19 ("a loja mudou o preço" logo depois de escolher).
 export type LiveItemCheck = { sku: string; available: boolean; fee?: number; estimate?: string; etaMinutes?: number; fastFee?: number; fastEstimate?: string; fastEtaMinutes?: number; unitPrice?: number };
 
+// 06/10 (teste real): UMA simulação POR SKU. Com vários itens no mesmo carrinho o VTEX
+// RATEIA o frete entre eles (Drogal: R$4,90 virou 4,14 + 0,53 + 0,23) e o frete grátis
+// olha o total dos candidatos somados — o card dizia "frete R$2,03" e o total cobrava
+// R$4,90. Sozinho no carrinho, o frete do card é o mesmo que a cotação cobra por 1 unidade.
 export async function liveItemAvailability(storeKey: string, skus: string[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   const store = VTEX_LIVE[storeKey];
   if (!liveFreightEnabled() || !store || !skus.length) return null;
@@ -352,8 +356,16 @@ export async function liveItemAvailability(storeKey: string, skus: string[], cep
     if (m) ids.push({ sku, id: m[1] });
   }
   if (!ids.length) return null;
+  const partials = await Promise.all(ids.map((entry) => simulateItems(store.domain, [entry], cep)));
+  if (partials.every((p) => p === null)) return null;
+  const result = new Map<string, LiveItemCheck>();
+  for (const partial of partials) for (const [sku, check] of partial ?? []) result.set(sku, check);
+  return result;
+}
+
+async function simulateItems(domain: string, ids: { sku: string; id: string }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
-    const response = await fetch(`https://${store.domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
+    const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -8,10 +8,25 @@
 //
 // Puro: recebe a função de simulação (injetável nos testes) e nunca lança — falha de
 // rede mantém os candidatos como estavam (não inventa indisponibilidade).
-import { liveCheckSupported, liveItemAvailability, type LiveItemCheck } from "./live-freight";
+import { PER_AD_FREIGHT_STORES } from "./instant-quote";
+import { liveCheckSupported, liveFreightEnabled, liveItemAvailability, type LiveItemCheck } from "./live-freight";
 import { isRegionalStore, storeServesCep } from "./store-areas";
 
 export type LiveCandidate = { storeKey: string; sku: string };
+
+// 06/10 (teste real: "Pilha AAA" da Casa & Vídeo, fita isolante da Obramax): a vitrine
+// mostrava opção que a loja NÃO tinha confirmado para o CEP; no "pagar" a cotação
+// instantânea abortava ("sem confirmação ao vivo") e, sem operador (25/09), o cliente
+// caía num beco. A regra da cobrança é a mesma da vitrine: sem operador e cobrando só o
+// confirmado, só entra na vitrine o que a loja confirmou ao vivo (estoque + entrega +
+// frete) — ou anúncio do Mercado Livre, que tem frete próprio e compra do dono.
+export function liveConfirmationRequired(): boolean {
+  return process.env.LIA_OPERATOR_QUOTE !== "true" && process.env.LIA_CHARGE_ONLY_VERIFIED !== "false" && liveFreightEnabled();
+}
+
+export function buyableWithoutOperator(storeKey: string | undefined, check: LiveItemCheck | undefined): boolean {
+  return PER_AD_FREIGHT_STORES.has(storeKey ?? "") || check?.available === true;
+}
 export type Simulate = (storeKey: string, skus: string[], cep: string) => Promise<Map<string, LiveItemCheck> | null>;
 
 export function liveKey(storeKey: string, sku: string): string {

@@ -1,3 +1,10 @@
+## 06/10/2026 — Vitrine confirmada ao vivo
+
+- [x] Opção sem confirmação da loja fora da vitrine; frete da vitrine = frete cobrado.
+- [ ] Depois do deploy: ler `[live-check:unconfirmed]` nos logs — se Casa & Vídeo/Obramax nunca
+  confirmam da Vercel (bloqueio/timeout), elas somem da vitrine; decidir se tiram da lista automática.
+- [x] Dono: loja no card SIM (feito, "Mambo · 1 dia útil"); frete fica como está.
+
 ## 06/10/2026 — Retorno dos testadores: decisões do dono (respondidas no mesmo dia)
 
 - [x] **Nome da loja em todo card:** dono liberou ("nome da loja pode pôr"). Feito: texto, card e
