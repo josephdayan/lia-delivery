@@ -24,6 +24,11 @@ for (const [label, flow] of [["endereço", ADDRESS_FLOW_JSON], ["cadastro", SIGN
   });
 }
 
+test("formulário de cadastro: dentro do Form só campos e o botão (como no Flow de endereço publicado)", () => {
+  const form = (SIGNUP_FLOW_JSON.screens[0] as any).layout.children.find((c: any) => c.type === "Form");
+  for (const child of form.children) assert.ok(["TextInput", "Footer"].includes(child.type), child.type);
+});
+
 test("botão do formulário de cadastro cabe no limite de 20 caracteres", () => {
   assert.ok(SIGNUP_FLOW_CTA.length <= 20, SIGNUP_FLOW_CTA);
 });

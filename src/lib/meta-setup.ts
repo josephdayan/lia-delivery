@@ -98,7 +98,13 @@ export const SIGNUP_FLOW_JSON = {
       layout: {
         type: "SingleColumnLayout",
         children: [
+          // Textos FORA do Form, como no Flow de endereço já publicado (dentro do Form a Meta
+          // só tem garantido campo e Footer).
           { type: "TextBody", text: "Preencha uma vez só. Fica salvo para os próximos pedidos." },
+          {
+            type: "TextCaption",
+            text: "O CPF serve só para comprar no seu nome quando precisar (ex.: remédio). Termos: liadelivery.com.br/termos"
+          },
           {
             type: "Form",
             name: "form",
@@ -108,10 +114,6 @@ export const SIGNUP_FLOW_JSON = {
               { type: "TextInput", name: "cep", label: "CEP", required: true, "input-type": "number", "helper-text": "Só os números" },
               { type: "TextInput", name: "numero", label: "Número", required: true, "input-type": "text" },
               { type: "TextInput", name: "complemento", label: "Complemento", required: false, "input-type": "text", "helper-text": "Apto, bloco ou casa, se tiver" },
-              {
-                type: "TextCaption",
-                text: "O CPF serve só para comprar no seu nome quando precisar (ex.: remédio). Termos: liadelivery.com.br/termos"
-              },
               {
                 type: "Footer",
                 label: "Salvar cadastro",
