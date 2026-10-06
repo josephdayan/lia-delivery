@@ -7,6 +7,14 @@ Os nomes v4/v5 seguem livres porque nada chegou a ser criado. Testes: `tests/car
 `tests/carousel-card-limit.test.ts` 16/16 no Postgres local; `tsc` ok. Commit 92b2f2b, deploy de
 produção READY às 10h06. Cron das 10h17: os 8 criados, todos **PENDING** (nenhum ERRO). Falta a
 Meta aprovar; com o v5 aprovado o envio troca sozinho (o log das :17 mostra o status).
+## 06/10/2026 — Mercado Livre DESLIGADO: vitrine é só loja de compra automática (dono)
+
+Pedido #5VBIXY (R$56,43, pago 10:15) caiu no Mercado Livre e foi para a fila manual. Decisão do
+dono: "não é pra ter Mercado Livre… é só as lojas automáticas". `LIA_ENABLE_MERCADOLIVRE=false` na
+Vercel + redeploy de produção (06/10). **Revoga a exceção "Mercado Livre é exceção a preservar"**
+(item 3 da regra de 25/09). Não religar sem nova decisão datada. #5VBIXY: estornar no /ops e
+avisar o cliente que o item não está disponível.
+
 ## 06/10/2026 — Rio de Janeiro ligado (SP + RJ) com trava de área por loja
 
 Regra e detalhes no topo do AGENTS.md. Medição: simulação de frete das 37 lojas em 11 CEPs — só

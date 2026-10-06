@@ -16,6 +16,14 @@ v3 e a vitrine "Olha o que achei 👇" pedida pelo dono em 05/10 não entrou no 
   o v3, e foi assim que o card de 3 linhas passou.
 Teste: `tests/carousel.test.ts` e `tests/carousel-card-limit.test.ts` (16/16). Publicado em 92b2f2b;
 o cron das 10h17 criou os 8 templates (PENDING, aguardando a revisão da Meta).
+## 06/10/2026 — Mercado Livre DESLIGADO: vitrine é só loja de compra automática (dono)
+
+Pedido #5VBIXY (R$56,43, pago 10:15) caiu no Mercado Livre e foi para a fila manual. Decisão do
+dono: "não é pra ter Mercado Livre… é só as lojas automáticas". `LIA_ENABLE_MERCADOLIVRE=false` na
+Vercel + redeploy de produção (06/10). **Revoga a exceção "Mercado Livre é exceção a preservar"**
+(item 3 da regra de 25/09). Não religar sem nova decisão datada. #5VBIXY: estornar no /ops e
+avisar o cliente que o item não está disponível.
+
 ## 06/10/2026 — Expansão para o Rio de Janeiro + trava "só mostra e aceita se for perto" (dono)
 
 Pergunta do dono: dá pra expandir pro RJ ou faltam produtos? Resposta medida: produto não falta —
@@ -218,8 +226,8 @@ Sem Mac, sem navegador, sem operador no caminho feliz. Código: `src/lib/purchas
 
 **Vitrine = só loja que fecha por API.** Ligadas por padrão (9, ~18 mil itens): Drogaria SP,
 Drogal, Pague Menos, Cobasi, Swift, Kopenhagen, Ri Happy, Mambo, Época Cosméticos. As demais
-são opt-in por env (`src/lib/stores/index.ts` explica cada uma). Mercado Livre inalterado até
-decisão. Somar loja = checkout VTEX aberto + Pix + entrega no endereço de sondagem
+são opt-in por env (`src/lib/stores/index.ts` explica cada uma). Mercado Livre DESLIGADO em
+06/10 (dono). Somar loja = checkout VTEX aberto + Pix + entrega no endereço de sondagem
 (`scripts/vtex-api-probe.mts <loja>` a seco) → colher catálogo → conector → `VTEX_API_STORES`,
 `PURCHASE_DOMAINS`, `VTEX_LIVE`, `mailbox-policy` → conta no /ops.
 
@@ -251,7 +259,7 @@ comprar sozinha e o negócio passa a ser desenhado para não ter operador.** Reg
    da loja. Adaptador no servidor a construir (ver PENDENCIAS de 25/09).
 2. **Loja que não fecha sem humano sai da vitrine.** Cada loja restante precisa provar o
    fechamento (dry-run + um pedido real) ou é desligada.
-3. **Mercado Livre é exceção a preservar** ("um dos main drivers"): não tem API de compra, mas
+3. ~~**Mercado Livre é exceção a preservar**~~ (revogado em 06/10: ML desligado, só loja automática) ("um dos main drivers"): não tem API de compra, mas
    tem comprador próprio por navegador (`scripts/retail-buyer/mercadolivre.ts`, gate E8 pendente)
    e aceita Pix. Fica como segunda via automatizada, a provar; se não for confiável, sai.
 4. O operador (Carlos) continua até a automação estar no ar e provada com pedidos reais; depois
