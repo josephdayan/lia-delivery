@@ -179,8 +179,9 @@ test("'12 ovos' escolhido numa caixa vira caixas, não 12 caixas", async (t) => 
   const ctx = await context(phone);
   const eggs = (ctx.basket ?? []).find((i: { name: string }) => /ovo/i.test(i.name));
   assert.ok(eggs, out.slice(0, 300));
-  assert.equal(eggs.qty, pack >= 4 && 12 >= pack ? Math.max(1, Math.round(12 / pack)) : 12, `caixa de ${pack}: ${out.slice(0, 300)}`);
-  if (pack >= 4 && pack <= 12) assert.match(out, /Cada embalagem tem/);
+  // 06/10 (M6/A4): arredonda para CIMA (cobre o pedido) e caixa maior que o pedido = 1 caixa.
+  assert.equal(eggs.qty, pack >= 4 ? Math.max(1, Math.ceil(12 / pack)) : 12, `caixa de ${pack}: ${out.slice(0, 300)}`);
+  if (pack >= 4) assert.match(out, /Cada embalagem tem/);
 });
 
 test("'cartão' com a escolha aberta pede para escolher, não busca cartão", async (t) => {

@@ -1037,6 +1037,21 @@ export function noOrderToday(): string {
 }
 
 // Embalagem × unidades ("12 ovos" quando a caixa tem 10): a conversão é ANUNCIADA.
+// Item vendido POR PESO (06/10, A3): o catálogo diz "Banana Nanica Kg", mas 1 unidade do
+// carrinho são ~180 g. O nome mostrado diz o peso da unidade — "10x Pão Francês Kg" era lido
+// como 10 kg.
+export function weightLabel(kg: number): string {
+  if (kg >= 1) return `${String(Math.round(kg * 10) / 10).replace(".", ",")} kg`;
+  return `${Math.round(kg * 1000)} g`;
+}
+export function soldByWeightName(name: string, kg: number): string {
+  const base = name.replace(/\s*[-–(]?\s*\bkg\b\.?\)?\s*$/i, "").trim();
+  return `${base} (unidade ~${weightLabel(kg)})`;
+}
+export function weightConversionNote(askedKg: number, unitKg: number, units: number): string {
+  return `_Vendido por unidade de ~${weightLabel(unitKg)}: coloquei ${units} ${units === 1 ? "unidade" : "unidades"} (~${weightLabel(units * unitKg)}) pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar. Pra mudar, é só dizer o número de unidades._`;
+}
+
 export function packConversionNote(requested: number, packSize: number, packs: number): string {
   return `_Cada embalagem tem ${packSize} unidades — coloquei ${packs} ${packs === 1 ? "embalagem" : "embalagens"} (${packs * packSize} un) pro seu pedido de ${requested}. Pra mudar, é só dizer o número de embalagens._`;
 }

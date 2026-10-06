@@ -319,6 +319,16 @@ async function buildChoices(
           .sort((a, b) => (preferredSkus.get(b.item.sku) ?? 0) - (preferredSkus.get(a.item.sku) ?? 0))[0]
       : undefined;
     if (repeatPick && !options.some((o) => o.item.sku === repeatPick.item.sku)) options = [repeatPick, ...options];
+    // Embalagem exata do pedido ("12 ovos" → dúzia) entra na vitrine mesmo fora do top-3.
+    const exactPack = line.qty >= 4 && countsPackContent(line.phrase) ? candidates.find((c) => declaredPack(c.item.name) === line.qty) : undefined;
+    if (exactPack && !options.includes(exactPack)) options = [exactPack, ...options];
+    const sortedOptions = options
+      .map(({ store, item }) => {
+        const check = liveChecks.get(liveKey(store.key, item.sku));
+        const option = toChoiceOption(item, { storeKey: store.key, storeLabel: store.label }, check, urgent);
+        return preferredSkus?.has(item.sku) ? { ...option, repeat: true } : option;
+      })
+      .sort(byRepeatThenVerifiedThenEta);
     pending.push({
       query: line.phrase,
       qty: line.qty,
@@ -327,14 +337,7 @@ async function buildChoices(
       ...(line.autoPick ? { autoPick: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
-      options: options
-        .map(({ store, item }) => {
-          const check = liveChecks.get(liveKey(store.key, item.sku));
-          const option = toChoiceOption(item, { storeKey: store.key, storeLabel: store.label }, check, urgent);
-          return preferredSkus?.has(item.sku) ? { ...option, repeat: true } : option;
-        })
-        .sort(byRepeatThenVerifiedThenEta)
-        .slice(0, vitrineLimit())
+      options: exactPackFirst(line.phrase, line.qty, sortedOptions).slice(0, vitrineLimit())
     });
   }
   return {
@@ -477,12 +480,15 @@ function toChoiceOption(
   const delivery = live?.available ? humanEstimate(useFast ? live.fastEstimate : live.estimate) : undefined;
   const eta = useFast ? live!.fastEtaMinutes : live?.etaMinutes;
   const fee = useFast ? live!.fastFee : live?.fee;
+  // Vendido por peso (06/10, A3): o preço vivo é de 1 unidade de ~X g, e o nome diz isso.
+  const unitWeightKg = live?.available ? live.unitWeightKg : undefined;
   return {
     sku: o.sku,
-    name: o.name,
+    name: unitWeightKg ? copy.soldByWeightName(o.name, unitWeightKg) : o.name,
     brand: o.brand,
     // Preço da loja AGORA quando a simulação respondeu (05/10): o card e o total batem.
     unitPrice: live?.available && live.unitPrice != null ? live.unitPrice : o.unitPrice,
+    ...(unitWeightKg ? { unitWeightKg } : {}),
     imageUrl: o.imageUrl,
     productUrl: o.productUrl ?? STORE_SEARCH_URL[storeRef?.storeKey ?? ""]?.(o.name),
     ...storeRef,
@@ -503,9 +509,11 @@ async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | und
     const check = live.checks.get(liveKey(w.storeKey, w.sku));
     if (!check?.available) return w.o;
     const delivery = humanEstimate(check.estimate);
+    const weighed = check.unitWeightKg && !w.o.unitWeightKg ? { name: copy.soldByWeightName(w.o.name, check.unitWeightKg), unitWeightKg: check.unitWeightKg } : {};
     return {
       ...w.o,
       verified: true,
+      ...weighed,
       ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}),
       ...(delivery ? { delivery } : {}),
       ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}),
@@ -3555,8 +3563,8 @@ async function confirmChosenOption(
   const assumedOne = current.qty === 1 && !current.qtyExplicit;
   // "12 ovos" com a caixa de 10 escolhida = 1 caixa, não 12 caixas (testadores 06/10: R$92
   // de ovo). A conversão já valia no auto-pick; faltava na escolha do cliente.
-  const pack = assumedOne ? { qty: current.qty } : packAdjusted(chosen.name, current.qty);
-  const confirmed = assumedOne
+  const pack = packAdjusted(chosen, current.qty, current.query, { assumedOne });
+  const confirmed = assumedOne && !pack.note
     ? copy.choiceConfirmedAssumedOne(chosen.name, current.query)
     : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
   ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
@@ -4747,7 +4755,7 @@ async function handleConciergeRequest(
     for (const choice of autoPickPending) {
       const top = choice.options[0];
       const store = top.storeKey ? getStore(top.storeKey) : orderStore(ctx);
-      const adj = packAdjusted(top.name, Math.max(1, choice.qty));
+      const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       if (adj.note) packNotes.push(adj.note);
       added.push(choiceToBasketItem(top, adj.qty, store));
     }
@@ -4828,7 +4836,7 @@ async function handleConciergeRequest(
     // pra unidade — 12x de um item de R$18 entrava sozinho por R$217 (29/08 S4).
     const lineDisplayOf = (choice: PendingChoice) => {
       const top = choice.options[0];
-      const adj = packAdjusted(top.name, Math.max(1, choice.qty));
+      const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       return display(top.unitPrice, top.medicine) * adj.qty;
     };
     const auto = pending.filter((choice) => lineDisplayOf(choice) <= autopickMax);
@@ -4838,7 +4846,7 @@ async function handleConciergeRequest(
     for (const choice of auto) {
       const top = choice.options[0];
       const store = top.storeKey ? getStore(top.storeKey) : orderStore(ctx);
-      const adj = packAdjusted(top.name, Math.max(1, choice.qty));
+      const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       if (adj.note) packNotes.push(adj.note);
       added.push(choiceToBasketItem(top, adj.qty, store));
     }
@@ -4970,13 +4978,54 @@ async function rescueLongTail(
 
 // "12 ovos" quando o produto é "Ovos ... 10 Unidades": a quantidade pedida é em
 // UNIDADES, não embalagens — converte pra embalagens e ANUNCIA (28/08 S9: viraram 12
-// caixas de 10 = 120 ovos por R$118). Só quando o nome declara o pack e o pedido é
-// maior ou igual a ele.
-function packAdjusted(optionName: string, qty: number): { qty: number; note?: string } {
+// caixas de 10 = 120 ovos por R$118).
+// 06/10 (A4/M6): arredonda para CIMA (12 ovos = 2 caixas de 10, nunca 10 ovos) e converte
+// também quando o pedido é MENOR que a caixa, se o número conta o próprio conteúdo da
+// embalagem ("6 ovos", "meia dúzia de ovos" com caixa de 10 = 1 caixa, não 6).
+// 06/10 (A3): item vendido por peso ("2kg de banana", unidade de ~180 g) = 11 unidades.
+const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?)\b/i;
+export function parseWeightAskKg(query: string): number | undefined {
+  const t = normalizeMsg(query);
+  if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
+  const m = t.match(/(\d+(?:[.,]\d+)?)\s*(kg|quilos?|kilos?|g|gramas?|gr)\b/);
+  if (!m) return undefined;
+  const value = Number(m[1].replace(",", "."));
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  return /^(g|gramas?|gr)$/.test(m[2]) ? value / 1000 : value;
+}
+// Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
+export function declaredPack(optionName: string): number {
   const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
-  const pack = m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
-  if (pack >= 4 && qty >= pack) {
-    const packs = Math.max(1, Math.round(qty / pack));
+  return m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
+}
+// O pedido conta o CONTEÚDO ("6 ovos", "12 rolos") e não embalagens ("2 caixas de ovos").
+function countsPackContent(query: string | undefined): boolean {
+  return Boolean(query && PACK_CONTENT_NOUN_RE.test(query) && !/\b(caixas?|cartelas?|bandejas?|pacotes?|embalage[nm]s?|fardos?|packs?)\b/i.test(query));
+}
+// "12 ovos" / "30 ovos" (06/10, A4): a embalagem que bate EXATO com o pedido vai na frente.
+function exactPackFirst<T extends { name: string }>(query: string, qty: number, items: T[]): T[] {
+  if (qty < 4 || !countsPackContent(query)) return items;
+  const exact = items.filter((item) => declaredPack(item.name) === qty);
+  return exact.length ? [...exact, ...items.filter((item) => !exact.includes(item))] : items;
+}
+export function packAdjusted(
+  option: string | { name: string; unitWeightKg?: number },
+  qty: number,
+  query?: string,
+  opts?: { assumedOne?: boolean }
+): { qty: number; note?: string } {
+  const optionName = typeof option === "string" ? option : option.name;
+  const unitKg = typeof option === "string" ? undefined : option.unitWeightKg;
+  const askedKg = unitKg && query ? parseWeightAskKg(query) : undefined;
+  if (unitKg && askedKg) {
+    const units = Math.max(1, Math.round((askedKg / unitKg) * Math.max(1, qty)));
+    return { qty: units, note: copy.weightConversionNote(askedKg * Math.max(1, qty), unitKg, units) };
+  }
+  if (opts?.assumedOne) return { qty };
+  const pack = declaredPack(optionName);
+  const countsContent = countsPackContent(query);
+  if (pack >= 4 && (qty >= pack || (countsContent && qty > 1 && qty < pack && (!/\bfraldas?\b/i.test(query ?? "") || qty > 5)))) {
+    const packs = Math.max(1, Math.ceil(qty / pack));
     return { qty: packs, note: copy.packConversionNote(qty, pack, packs) };
   }
   return { qty };

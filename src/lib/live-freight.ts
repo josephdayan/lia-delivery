@@ -419,7 +419,19 @@ export async function liveStoreFreight(
 // `unitPrice` (05/10): preço de CUSTO que a loja cobra AGORA por 1 unidade (sellingPrice da
 // simulação). A vitrine mostra este, não a foto semanal do catálogo — o card dizia R$15,29 e
 // o fechamento corrigia para R$14,19 ("a loja mudou o preço" logo depois de escolher).
-export type LiveItemCheck = { sku: string; available: boolean; fee?: number; estimate?: string; etaMinutes?: number; fastFee?: number; fastEstimate?: string; fastEtaMinutes?: number; unitPrice?: number };
+// `unitWeightKg` (06/10, A3): item vendido POR PESO (VTEX measurementUnit kg/g + unitMultiplier):
+// 1 unidade do carrinho = ~unitWeightKg (Banana Nanica "Kg" = 0,18 kg por R$1,79, não 1 kg).
+export type LiveItemCheck = { sku: string; available: boolean; fee?: number; estimate?: string; etaMinutes?: number; fastFee?: number; fastEstimate?: string; fastEtaMinutes?: number; unitPrice?: number; unitWeightKg?: number };
+
+// Peso de 1 unidade do carrinho quando a loja vende por peso; undefined = vende por unidade.
+export function unitWeightKgOf(item: { measurementUnit?: string; unitMultiplier?: number }): number | undefined {
+  const unit = (item.measurementUnit ?? "").toLowerCase();
+  const mult = Number(item.unitMultiplier);
+  if (!Number.isFinite(mult) || mult <= 0 || mult === 1) return undefined;
+  if (unit === "kg") return mult;
+  if (unit === "g") return mult / 1000;
+  return undefined;
+}
 
 // 06/10 (teste real): UMA simulação POR SKU. Com vários itens no mesmo carrinho o VTEX
 // RATEIA o frete entre eles (Drogal: R$4,90 virou 4,14 + 0,53 + 0,23) e o frete grátis
@@ -492,10 +504,12 @@ async function simulateItems(domain: string, ids: { sku: string; id: string }[],
       });
       const fastMinutes = estimateMinutes(fastest.shippingEstimate);
       const livePrice = typeof item.sellingPrice === "number" && Number.isFinite(item.sellingPrice) && item.sellingPrice > 0 ? item.sellingPrice / 100 : undefined;
+      const unitWeightKg = unitWeightKgOf(item);
       result.set(entry.sku, {
         sku: entry.sku,
         available: true,
         ...(livePrice != null ? { unitPrice: livePrice } : {}),
+        ...(unitWeightKg ? { unitWeightKg } : {}),
         fee: cheapest.price! / 100,
         estimate: cheapest.shippingEstimate,
         ...(minutes >= 0 ? { etaMinutes: minutes } : {}),

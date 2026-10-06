@@ -40,7 +40,7 @@ export type BasketItem = {
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
 // o CEP do cliente — a única fonte que pode pôr prazo num card.
 // `repeat` (04/09): o cliente já comprou este produto — vem primeiro e com destaque.
-export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip" };
+export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number };
 
 export type StoreFulfillment = {
   storeKey: string;
