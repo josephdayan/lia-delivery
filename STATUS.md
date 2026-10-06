@@ -1,3 +1,9 @@
+## 06/10/2026 — Vitrine sem opção que não fecha; frete da vitrine igual ao cobrado
+
+Só entra na vitrine opção que a loja confirmou para o CEP (sem operador, a não confirmada virava
+beco no "pagar": Casa & Vídeo e Obramax dos testadores); nada confirmado → "não consigo comprar
+agora". Simulação ao vivo por SKU (o rateio do VTEX fazia a vitrine mostrar R$2,03 e o total
+cobrar R$4,90). Testes focados 417/417 no Postgres local; `tsc` ok. Detalhe no AGENTS.
 ## 06/10/2026 — Token do agente no /ops; #5VBIXY estornado
 
 #5VBIXY (Mercado Livre, R$56,43) estornado pelo dono no /ops ("Compra não realizada", MP refund
@@ -5,6 +11,7 @@
 pelo header `x-ops-key`, sem nenhuma ação de dinheiro). Regra no topo do AGENTS.md.
 Pendente à parte: auto-estorno do pedido `…guy4z` falhou às 10h50 ("Compra enviada ou com
 resultado desconhecido — reconcilie a loja antes de estornar").
+
 
 ## 06/10/2026 — Retorno dos testadores: 12 defeitos de conversa corrigidos (e0e7e9e, 0141ee7)
 
