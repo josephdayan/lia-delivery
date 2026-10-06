@@ -1,3 +1,15 @@
+## 06/10/2026 — Retorno dos testadores: o que é decisão do dono
+
+- [ ] **Nome da loja em todo card?** Dois testadores pediram. Hoje a Lia diz a loja quando
+  perguntam, mas o card não mostra, porque o preço tem a margem embutida e o cliente pode ir
+  direto à loja. Decidir: mostrar sempre, só quando perguntam (atual) ou trocar margem por taxa
+  separada.
+- [ ] **Frete caro** foi a principal desistência (R$15,90 na Mambo para R$28 de itens; R$4,90 para
+  pilha de R$11). Decidir: frete mínimo subsidiado, pedido mínimo, ou mostrar o frete já na
+  vitrine para não surpreender no total.
+- [ ] **Pix no nome pessoal** apareceu para o cliente na hora de pagar ("isso é meio estranho").
+  Conta Mercado Pago PJ com o nome da Lia.
+
 ## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
 
 - [ ] Dono: cadastrar/reenviar a conta bancária (saque) no Asaas — `bankAccountInfo` está

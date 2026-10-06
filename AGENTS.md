@@ -1,3 +1,34 @@
+## 06/10/2026 — Retorno dos testadores: regras novas da conversa
+
+Conversas reais da manhã (Clara, Adely, Claire, tio Semy, Tati, Karlão, Philipe) reproduzidas
+com a IA da produção. Regras que ficam:
+- **Complemento sozinho** ("apto 4", "ap 23", "bloco B apto 31", "casa 2", "20º andar") nunca é
+  produto: entra no endereço salvo em qualquer passo (`parseAddressComplement` +
+  `withAddressComplement` em lia-intents; `handleAddressComplement`), e a escolha aberta volta.
+- **Cadastro:** o 1º CEP com endereço já completo pede nome + CPF, venha o endereço junto ou antes.
+- **"só X" / "só essa"** com algo já escolhido fecha a lista com a cesta (`parseOnlyKeep`); "só
+  isso" continua sendo encerrar (DONE).
+- **"veja se tem X" / "tem de X?" / "eu pedi com X"** no meio da escolha = busca nova com a
+  característica, e só vale opção com TUDO o que foi pedido (marca + característica); sem
+  ela, "não achei …" honesto (`parseAttributeAsk`, `researchChoice(…, mustMatch)`).
+- **2+ produtos numa mensagem** no meio da escolha nunca estreitam as opções na mesa: o do
+  mesmo tipo troca a escolha, o resto vai pra fila.
+- **"qual a loja?" / "de onde vc compra?"** → resposta fixa com a loja de cada opção na tela
+  (`storesAnswer`); **"faz comparativo de preços?" / "melhor valor?"** → `priceCompareAnswer`.
+  A IA não responde mais isso (dizia "não faço comparativo", falso). Os cards seguem SEM o nome
+  da loja (preço tem a margem embutida) — decisão pendente do dono.
+- **Contagem na embalagem é identidade** no matcher ("4 bolas" × "3 bolas", "12 rolos" × "4
+  rolos" → fora). Fora da regra: "unidades" e "latas" (o cliente usa como quantidade).
+- **Remédio:** Euthyrox/Levoid na lista de receita; remédio com dose não achado → "não achei entre
+  os sem receita; de receita eu não compro", sem a 2ª busca da IA.
+- **Marca escrita pelo cliente não muda** nos prompts do roteador e da extração ("leite nude"
+  virou "leite Ninho" em produção).
+- **Pagamento:** a compra no servidor só dispara DEPOIS do "Pagamento confirmado" (o estorno de
+  uma compra que falhava em 1 s chegava antes).
+- **Demora:** frase reescrita pelo roteador não passa de novo pela extração por IA; saudação na
+  frente ("Ola quero 2 cxs…") não força o roteador.
+Teste: `tests/feedback-2026-10-06.test.ts` (17; todos falham no código anterior).
+
 ## 06/10/2026 — Carrossel v4/v5: card com no máximo 2 quebras de linha
 
 O cron horário `/api/cron/meta-templates` falhava em toda execução ao criar os 8 templates

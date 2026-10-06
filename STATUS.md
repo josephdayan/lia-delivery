@@ -1,3 +1,17 @@
+## 06/10/2026 — Retorno dos testadores: 12 defeitos de conversa corrigidos (e0e7e9e, 0141ee7)
+
+Família e grupo "Teste zap" testaram de manhã. Conversas reproduzidas localmente com a IA da
+produção (banco local, telefone de teste). Corrigido: "apto 4" virava busca de placa; CPF não
+pedido quando o CEP vinha depois da rua; "de onde vc compra?" sem resposta; "só amora" virava
+busca e "só essa" tirava a amora; "veja se tem kerasys de coco" repetia o mesmo shampoo; 2
+produtos numa mensagem eram tratados como estreitamento; "qual a loja?" vago e "faz
+comparativo?" com resposta falsa; tubo com 4 bolas trazia o de 3; Euthyrox com "me diz outra
+marca"; "leite nude" virando Ninho (prompt); estorno chegando antes do "Pagamento confirmado";
+2ª extração por IA na frase do roteador. Suíte inteira 761/761 no Postgres local; repetição com
+a IA real: 3–13 s por conversa inteira (antes, turnos de mais de 45 s).
+Já resolvido por outras sessões no mesmo dia: Mercado Livre desligado, vitrine só com loja de
+compra automática, carrossel v4/v5, diagnóstico da Asaas.
+
 ## 06/10/2026 — Asaas recusa o Pix de saída: "conta não aprovada" (bankAccountInfo PENDING)
 
 Pedido da Mambo (job cmuwozhi00005kevwy7gt5v4c, R$46,66) às 10h06: o decode do Pix da loja
