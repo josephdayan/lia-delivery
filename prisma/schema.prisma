@@ -609,3 +609,12 @@ model StoreMailSeen {
 
   @@index([seenAt])
 }
+
+// Interruptores ligados em tempo de execução, sem deploy (06/10/2026). Hoje só o
+// `offline`: a Lia responde a todo cliente com o aviso de instabilidade.
+model AppFlag {
+  key       String   @id
+  value     String
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}

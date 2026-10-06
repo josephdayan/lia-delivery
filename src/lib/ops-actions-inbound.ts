@@ -2,7 +2,8 @@
 // uma pergunta pendente de número do pedido, a próxima mensagem numérica. Qualquer outra
 // mensagem do operador segue o fluxo normal (ele também é cliente da Lia).
 import { prisma } from "./prisma";
-import { isAdminPhone } from "./turn-runtime";
+import { isAdminPhone, phoneRole } from "./turn-runtime";
+import { parseOfflineCommand, setOfflineMode } from "./offline-mode";
 import { whatsappAdapter } from "./adapters/whatsapp";
 import { parseOpsActionButton, consumeOpsAction, mirrorOpsAction } from "./ops-actions";
 import { ownerConfirmCartBought, ownerDeclineCart, ownerStoreNumber, approveCheckout, refuseReceiver, retryAfterPixFailure, approveReceiverAndPay, heldPixCode } from "./purchase-execution";
@@ -21,6 +22,12 @@ const STORE_NUMBER_RE = /^#?\s*(\d{6,20})\s*$/;
 
 export async function handleOperatorInbound(phone: string, text: string): Promise<"handled" | "ignored"> {
   if (!isAdminPhone(phone)) return "ignored";
+  const offline = parseOfflineCommand(text);
+  if (offline !== null && phoneRole(phone) === "owner") {
+    await setOfflineMode(offline, `wa:${phone}`);
+    await reply(phone, copy.ownerOfflineToggled(offline));
+    return "handled";
+  }
   const button = parseOpsActionButton(text);
   if (button) {
     await runOperatorButton(phone, button);

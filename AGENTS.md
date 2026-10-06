@@ -1,3 +1,46 @@
+## 06/10/2026 (noite) — Interruptor "Lia offline" (dono)
+
+Pedido do dono: enquanto o Asaas não libera o Pix de saída, todo cliente que escrever recebe
+"a Lia está fora do ar por instabilidade nos servidores" (`offlineNotice`), e o dono manda o
+agente "apertar o botão" quando quiser. Interruptor no BANCO (tabela `AppFlag`, chave `offline`),
+vale em ~10 s sem deploy: botão no topo do `/ops` (só dono), `POST /api/ops/offline {on}`, ou o
+dono manda **lia offline** / **lia online** no WhatsApp. Dono e admins passam direto (testar).
+`LIA_OFFLINE=true` na Vercel força ligado. Só bloqueia mensagem que chega; avisos de pedido já
+pago continuam saindo. Teste: `tests/offline-mode-2026-10-06.test.ts`.
+
+## 06/10/2026 (tarde) — Varredura de cliente novo: regras que ficam
+
+Depois do retorno ruim dos testadores, 5 agentes simularam ~600 conversas de cliente novo (IA de
+produção, lojas ao vivo, banco local) e os achados viraram correção com teste
+(`tests/feedback-2026-10-06-varredura.test.ts`, `-pos-pagamento`, e os de cadastro/escolha/busca).
+Regras:
+- **Trava do Pix de saída** (`pixOutReadiness`): loja de compra automática só é COBRADA se o Asaas
+  tem saldo ≥ pedido e, havendo recusa do Pix de saída nas últimas 6h, um teste de decode passa.
+  Travado = nada cobrado, cliente avisado ("nada foi cobrado, tenta daqui a pouco"), dono avisado.
+  `LIA_PIX_OUT_PREFLIGHT_OFF=true` desliga.
+- **Cobrança aberta não morre por mensagem solta**: só item novo reabre o pedido ("to pagando",
+  "comprovante", nome, "o link não abre" mantêm o Pix).
+- **Embalagem**: o número conta unidades — "12 ovos" com caixa de 10 = 1 caixa, com aviso
+  (`packAdjusted` também na escolha do cliente). "1 dúzia de X" multiplica.
+- **Cancelar pedido pago** (qualquer frase, inclusive "quero meu dinheiro de volta") pergunta
+  "confirma?" antes do estorno; já comprado na loja não promete estorno.
+- **Atendente e reclamação avisam o dono no WhatsApp** (antes só nota no pedido).
+- **Respostas fixas e verdadeiras** (a IA não responde mais isso e o filtro derruba o contrário):
+  serviço embutido no preço, sem taxa separada; a Lia compara preços; o Pix vai pra Lia Delivery
+  (MEI — o banco mostra o nome do responsável), não pra loja; nota fiscal sai da loja no nome da
+  Lia Delivery; "é golpe?" → resposta de segurança; "quem é vc?" → identidade.
+- **"Pagamento confirmado" não diz "separando"**: diz que a compra na loja vem agora.
+- Cadastro: nome e CPF podem vir em mensagens separadas; "pra que cpf?" tem resposta fixa; "não
+  quero dar" segue sem CPF. "tem açaí?" antes do cadastro é pedido (fica anotado).
+
+## 06/10/2026 — DECISÃO: só SP e RJ (outros estados ficam fechados)
+
+Medição nas 27 capitais (STATUS de 06/10): farmácia rápida existe no país todo, mas mercado
+completo — ~60% do que os clientes reais pedem — só em SP e RJ. Dono: "deixa então só SP e RJ".
+`LIA_SERVICE_UFS` fica no padrão `SP,RJ`. Não abrir outro estado sem um mercado com Pix fechando
+por API nele (candidato já sondado: GBarbosa em SE/BA/AL; Super Nosso e Giassi não têm Pix). Não
+repropor a expansão sem esse dado novo.
+
 ## 06/10/2026 — Pedido cancelado pergunta o motivo (testadora no grupo)
 
 Pedido da testadora: "quando cancelado faz a pergunta com algumas opções de motivo, por exemplo:
@@ -9,15 +52,6 @@ fora do Meta). A resposta vira nota `📝 Motivo do cancelamento (cliente): …`
 outra mensagem desarma e segue o fluxo normal. "cancelar" que só limpa a lista em montagem não
 pergunta (é recomeço, não desistência). `parseCancelReason` (lia-intents), `askCancelReason` /
 `recordCancelReason` (delivery-service). Teste: `tests/cancel-reason-2026-10-06.test.ts`.
-
-## 06/10/2026 — DECISÃO: só SP e RJ (outros estados ficam fechados)
-
-Medição nas 27 capitais (STATUS de 06/10): farmácia rápida existe no país todo, mas mercado
-completo — ~60% do que os clientes reais pedem — só em SP e RJ. Dono: "deixa então só SP e RJ".
-`LIA_SERVICE_UFS` fica no padrão `SP,RJ`. Não abrir outro estado sem um mercado com Pix fechando
-por API nele (candidato já sondado: GBarbosa em SE/BA/AL; Super Nosso e Giassi não têm Pix). Não
-repropor a expansão sem esse dado novo.
-
 ## 06/10/2026 (tarde) — Estorno automático em 6h; o agente nunca devolve dinheiro (dono)
 
 O dono quer que estorno aconteça sem ele. O agente (Claude Code) não executa movimentação de

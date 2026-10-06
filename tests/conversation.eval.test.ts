@@ -421,8 +421,13 @@ test("cobertura: CEP fora da área não vira pedido — entra na lista de espera
 test("cobertura: CEP de SP capital passa normal", async (t) => {
   if (!dbOk) return t.skip();
   const c = await returningCustomer();
-  const updated = await c.send("04538-132"); // Itaim Bibi, SP capital
-  assert.match(updated, /atualizado|salvo/i);
+  // 06/10 (A4): com endereço confirmado, CEP solto pergunta antes de trocar (antes gravava o
+  // CEP novo por cima da rua velha). Coberto = pergunta da troca, nunca a recusa.
+  const asked = await c.send("04538-132"); // Itaim Bibi, SP capital
+  assert.match(asked, /Quer trocar o endereço de entrega para o CEP \*04538-132\*/);
+  assert.doesNotMatch(asked, /não chego|espera/i);
+  const updated = await c.send("sim");
+  assert.match(updated, /Avenida Brigadeiro Faria Lima[\s\S]*falta só o \*número\*/i);
   const user = await prisma.user.findUnique({ where: { phone: c.phone } });
   assert.equal(user?.cep, "04538-132");
 });
@@ -455,7 +460,8 @@ test("estado-sp: Campinas é aceita (interior com loja perto)", async (t) => {
   await withPreset("estado-sp", async () => {
     const c = await returningCustomer();
     const r = await c.send("13015-000"); // Campinas centro — Petz/Boticário atendem o preset legado
-    assert.match(r, /atualizado|salvo/i);
+    assert.match(r, /Quer trocar o endereço/i, "coberto: pergunta da troca (06/10, A4), não a recusa");
+    await c.send("sim");
     const user = await prisma.user.findUnique({ where: { phone: c.phone } });
     assert.equal(user?.cep, "13015-000");
   });

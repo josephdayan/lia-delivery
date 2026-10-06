@@ -36,7 +36,8 @@ export type Intent =
   // "Vc salvou o endereço?"/"pegou meu cep?" — pergunta sobre o endereço em arquivo:
   // responde com o endereço salvo, nunca vira busca (teste real 24/08: virou busca e a
   // recusa "não consigo trazer *Vc salvou o endereço já*" saiu pro cliente).
-  | { kind: "address_question" }
+  // order=true (06/10): "pra qual endereço vai?" — o endereço DO PEDIDO, não o salvo.
+  | { kind: "address_question"; order?: boolean }
   // "quanto falta?"/"o que posso pedir pra completar?" — pergunta sobre o que falta pro
   // fechamento (pedido mínimo), nunca busca (teste real 24/08: virou busca e beco).
   | { kind: "missing_question" }
@@ -67,7 +68,13 @@ export type Intent =
   // "posso cancelar?" — pergunta sobre cancelar; explicar, não executar.
   | { kind: "cancel_question" }
   // "não recebi o código", "o pix expirou", "manda de novo" — reemitir cobrança.
-  | { kind: "resend_code"; expired: boolean }
+  // keyAsk (06/10): "qual a chave pix?" — não tem chave, é o copia-e-cola já enviado.
+  | { kind: "resend_code"; expired: boolean; keyAsk?: boolean }
+  // "quero meu dinheiro de volta"/"quero o estorno"/"quero devolver" (06/10): com pedido
+  // pago e ainda não comprado é desistência (mesmo caminho do "cancela"); depois, suporte.
+  | { kind: "refund_request" }
+  // "dinheiro"/"vale refeição"/"boleto" (06/10): só Pix ou cartão — nunca busca de produto.
+  | { kind: "unsupported_payment" }
   // "quero mudar a forma de pagamento" (sem dizer qual).
   | { kind: "switch_payment" }
   // "quero falar com um atendente/humano".
@@ -84,6 +91,12 @@ export type Intent =
   | { kind: "price_dispute" }
   // "é seguro? como sei que não é golpe?" — confiança/segurança (28/08 S7).
   | { kind: "trust_question" }
+  // "quem é vc?", "vc é robô?" (06/10) — identidade, com a saída para uma pessoa.
+  | { kind: "identity" }
+  // "chama um uber", "pagar boleto" (06/10) — serviço que a Lia não faz; "algo gostoso pra
+  // comer", "me surpreende" — pedido vago: pedir o produto, não buscar a frase.
+  | { kind: "out_of_scope_service" }
+  | { kind: "vague_request" }
   // "meu filho que vai pagar, manda pra ele?" — cobrança para terceiro (28/08 S7).
   | { kind: "third_party_pay" }
   // "emitem nota fiscal?" / "qual o CNPJ?" (28/08 S8).
@@ -114,6 +127,14 @@ export type Intent =
   // "mais três do mesmo bombom" / "mais 2 iguais" — repetir o ÚLTIMO item da cesta,
   // resolvido por sku (nunca nova busca, que podia trazer outra marca — rodada 13).
   | { kind: "add_more_same"; qty: number; noun?: string }
+  // Quantidade do item recém-escolhido por texto (06/10): "quero 2", "6x", "bota 3", "só 1"
+  // (set) e "tira um", "põe mais um" (delta). Antes viravam busca, saudação ou "carrinho limpo".
+  | { kind: "qty_adjust"; set?: number; delta?: number }
+  // "na verdade quero o 2", "troca pelo 2", "troca pelo outro" (06/10): trocar a escolha pela
+  // opção N da última lista — nunca retomar compra cancelada nem buscar "*2*".
+  | { kind: "switch_choice"; index?: number; other?: boolean }
+  // "voltar" (06/10): reabre a última lista sem tirar o item escolhido.
+  | { kind: "back" }
   // Cartão salvo (modo sem Meta Payments): toque no botão "Pagar •••• 1234" volta como
   // id `cardpay:<attemptId>`; o texto humano equivalente vem sem o id. "Outro cartão"
   // troca a credencial (novo link de cadastro).
@@ -136,15 +157,21 @@ export function normalizeMsg(input: string): string {
 
 // ---------- CEP ----------
 
+// CEP com ponto ou espaço também vale (06/10, testador: "01305 100" e "01.305-100" não eram
+// lidos). Exige as bordas: CPF (529.982.247-25), telefone (11 91234-5678) e 11 dígitos
+// seguidos não casam.
+export const CEP_RE = /\b(\d{2})\.?(\d{3})\s?-?\s?(\d{3})\b/;
+export const CEP_RE_GLOBAL = new RegExp(CEP_RE.source, "g");
+
 export function extractCep(text: string): string | undefined {
-  const m = normalizeMsg(text).match(/\b(\d{5})-?(\d{3})\b/);
-  return m ? `${m[1]}-${m[2]}` : undefined;
+  const m = normalizeMsg(text).match(CEP_RE);
+  return m ? `${m[1]}${m[2]}-${m[3]}` : undefined;
 }
 
 // "01310-100", "cep 01310100", "meu cep e 01310-100" — nothing else in the message.
 export function isBareCep(text: string): boolean {
   const n = normalizeMsg(text).replace(/\b(meu|o|cep|e|eh|é|:|novo)\b/g, " ").replace(/\s+/g, " ").trim();
-  return /^\d{5}-?\d{3}$/.test(n);
+  return new RegExp(`^${CEP_RE.source}$`).test(n);
 }
 
 // ---------- deterministic basket line splitter (fallback when OpenAI is off) ----------
@@ -238,7 +265,19 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(o |a )?(seu|dona|sr|sra|dr|dra|doutora?)\\.? [a-zà-ú]+ (aqui|falando|na linha)( .*)?",
       "aqui (e|eh|quem fala e|quem ta e) (o |a |seu |dona )?[a-zà-ú]+",
       "(sou|me chamo) (o |a |seu |dona )?[a-zà-ú]+",
-      "meu nome (e|eh) [a-zà-ú]+( [a-zà-ú]+)?"
+      "meu nome (e|eh) [a-zà-ú]+( [a-zà-ú]+)?",
+      // História pessoal no meio do pedido (06/10, testadores): "minha filha tá doente com
+      // febre desde ontem", "o pediatra falou pra dar líquido", "semana passada meu marido
+      // viajou", "fiquei sozinha com as crianças", "hoje acabou tudo aqui", "acabei de me
+      // mudar", "nada em casa", "moro em SP". Só o produto da mensagem vira item.
+      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (viajou|saiu|foi|chegou|nasceu|ficou|esta|ta|anda|caiu|quebrou|operou)\\b.*",
+      "(ele |ela |eles |elas )?(ta|esta|tava|estava|ficou|anda|andou) ((com|meio|muito|toda?|todo) )?(doente|febre|gripad\\w*|resfriad\\w*|passando mal|mal|com dor|vomitando|tossindo|internad\\w*)\\b.*",
+      "(o |a )?(pediatra|medic[oa]|doutora?|dentista|veterinari[oa]|vet|farmaceutic[oa]|enfermeir[oa]) (falou|disse|mandou|receitou|pediu|recomendou|indicou|passou)\\b.*",
+      "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",
+      "((semana|mes) passad[ao]|ontem|anteontem|hoje|agora|aqui)? ?(acab(ou|aram) (tudo|as coisas|o que tinha)|nao tem mais nada)( .*)?",
+      "(eu |a gente )?(acabei|acabamos) de (me mudar|mudar|chegar|voltar)\\b.*",
+      "(nada|quase nada) (em casa|aqui( em casa)?)",
+      "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
     ].join("|") +
     ")$"
 );
@@ -779,7 +818,7 @@ const HELP_RE = /^(ajuda|help|menu|como funciona\??|o que (voce|vc) faz\??|como 
 // must stay a product request, not a status check. A pergunta INTEIRA "e meu pedido?"
 // é status — por isso as alternativas ancoradas (^…$) no fim.
 const STATUS_RE =
-  /\b(status|cade|rastreio|rastrear|rastreamento|acompanhar|previsao( de entrega)?|quando chega|chega quando|que horas? chega|vai chegar|chega hoje|(ainda )?nao chegou|ta (vindo|chegando|a caminho)|onde (ta|esta|anda)( o| meu)? ?(pedido|entregador|motoboy)?|falta muito|ja saiu|saiu pra entrega|andamento)\b|^chegou\?+$|^e? ?(o |a )?(meu|minha) (pedido|entrega|compra)[\s!?.]*$|^como (ta|esta|anda|ficou) (o |a )?(meu |minha )?(pedido|entrega|compra)[\s!?.]*$/;
+  /\b(status|cade|rastreio|rastrear|rastreamento|acompanhar|previsao( de entrega)?|quando chega|chega quando|que horas? chega|chega que horas?|vai chegar|chega hoje|(ainda )?nao chegou|ta (vindo|chegando|a caminho)|onde (ta|esta|anda)( o| meu)? ?(pedido|entregador|motoboy)?|falta muito|ja saiu|saiu pra entrega|andamento)\b|^chegou\?+$|^e? ?(o |a )?(meu|minha) (pedido|entrega|compra)[\s!?.]*$|^como (ta|esta|anda|ficou) (o |a )?(meu |minha )?(pedido|entrega|compra)[\s!?.]*$/;
 
 const PAID_RE =
   /\b(paguei|ja paguei|acabei de pagar|pagamento (feito|realizado|efetuado)|pix (feito|enviado|pago)|fiz o pix|mandei o pix|transferi|ta pago|esta pago|caiu( o pix)?)\b|^pago[\s!.]*$/;
@@ -806,6 +845,20 @@ const DONE_RE =
 const RESEND_CODE_RE =
   /\b(nao (recebi|chegou|veio|achei)( aqui)?( o)? (codigo|pix|link|qr ?code)|perdi o (codigo|pix|link)|manda (o )?(pix|codigo|link)( de novo| novamente| dnv)?|(pix|codigo|link|qr ?code) (de novo|dnv|sumiu|nao (chegou|veio|apareceu))|reenvia\w*|reemite|manda de novo)\b/;
 const CODE_EXPIRED_RE = /\b(pix|codigo|link|qr ?code|cobranca)\s+(expirou|venceu|expirado|vencido|invalido)\b|\bexpirou\b/;
+// "qual a chave pix?" logo depois do código (06/10): a IA dizia que o Pix "aparece no total".
+// "chave de fenda" é produto: só "chave" seca ou "chave (do) pix" contam.
+const PIX_KEY_RE =
+  /\b(qual|cade|me (passa|manda|da)|manda|passa|tem)\b.*\bchave (do |de )?pix\b|^(qual|cade|me (passa|manda|da)|manda|passa)( (e|eh))?( a| sua| tua)? chave[\s?!.]*$|^chave( do| de)? pix\s*\?|^qual (e |eh )?(o )?pix[\s?!.]*$/;
+
+// Pedido de dinheiro de volta (06/10): "quero meu dinheiro de volta", "me devolve o dinheiro",
+// "quero o estorno", "estorna", "quero reembolso", "quero devolver". Antes virava reclamação
+// genérica ou busca de produto, com o pedido pago e ainda não comprado.
+const REFUND_REQUEST_RE =
+  /\b(dinheiro de volta|devolv\w* (o |meu |o meu )?dinheiro|(quero|queria|pode|faz|fazer|faca|solicit\w*|pedir) (o |um |meu )?(estorno|reembolso)|estorn(a|e|ar)( o| meu)?( pedido| dinheiro| valor| pix| pagamento)?$|^(o )?estorno\??$|^(pode|consegue|da pra|tem como) (me )?(estornar|reembolsar)\b|^(quero|queria|vou) devolver( o pedido| a compra| tudo)?[\s!.]*$)\b/;
+
+// Forma de pagamento que a Lia não aceita (06/10): "dinheiro" e "vale refeição" viravam busca.
+const UNSUPPORTED_PAY_RE =
+  /^(?:(?:e|eh|da|pode|posso|aceita\w*|tem como|da pra|vcs aceitam|voces aceitam)\s+)?(?:(?:pagar|pago|pagamento|ser)\s+)?(?:(?:em|no|na|com|de|por)\s+)?(dinheiro|especie|vale[- ]?(?:refeicao|alimentacao)|ticket(?: refeicao| alimentacao)?|sodexo|alelo|vr|boleto|paypal|picpay)(?: mesmo| vivo)?(?: na entrega)?[\s?!.]*$|^(?:(?:da|pode|posso|tem como|da pra)\s+)?(?:pagar|pago)\s+na entrega[\s?!.]*$/;
 
 // "quero mudar a forma de pagamento" (sem dizer qual) — oferecer pix e cartão de novo.
 const SWITCH_PAYMENT_RE =
@@ -823,7 +876,7 @@ const HUMAN_RE =
 // Reclamação pós-pedido: "veio errado", "faltou", "estragado" — pedir desculpa e
 // acionar o operador, nunca oferecer produto.
 const COMPLAINT_RE =
-  /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero (reclamar|meu dinheiro|reembolso)|absurdo|pessimo|horrivel|uma vergonha)\b/;
+  /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero reclamar|absurdo|pessimo|horrivel|uma vergonha)\b/;
 
 // Pergunta operacional (frete/prazo/área/pagamento) sem produto — responder com copy.
 const SERVICE_WORDS_RE =
@@ -837,6 +890,12 @@ const CHANGE_ADDRESS_RE =
 
 const REPEAT_RE =
   /\b(repete|repetir|(o )?de sempre|mesmo pedido|pedido anterior|ultimo pedido|mesma coisa( de sempre)?|manda o mesmo|(igual|mesmo|mesma) (ao?|d[oa]) (ultim[oa]|anterior|sempre)( vez)?)\b|^o mesmo$/;
+
+// "quero de novo o mesmo"/"o mesmo de novo"/"o mesmo da última vez" (06/10, cliente
+// recorrente): virava busca de "de novo o mesmo". Exige a marca de repetição — "quero o
+// mesmo shampoo da outra vez" tem produto e continua sendo busca (com o ⭐ "você já pediu").
+const REPEAT_AGAIN_RE =
+  /^(?:(?:oi|ola|opa|bom dia|boa tarde|boa noite)[,!.\s]+)?(?:eu )?(?:quero|queria|manda|me ve|pode mandar|faz|traz)?\s*(?:(?:de novo|outra vez|novamente)\s+(?:o mesmo|a mesma coisa|o mesmo pedido|a mesma compra|igual)(?:\s+(?:de sempre|da (?:ultima|outra) vez|do ultimo pedido|da ultima compra))?|(?:o mesmo|a mesma coisa|o mesmo pedido|a mesma compra)\s+(?:de novo|outra vez|novamente|da (?:ultima|outra) vez|do ultimo pedido|da ultima compra))(?:\s+(?:por favor|pfv|pf))?[\s!.]*$/;
 
 const PAY_RE =
   /\b(pagar|pagamento|finaliza|finalizar|fecha( o pedido)?|fechar( o pedido)?|fechamos|checkout|manda o pix|me manda o pix|manda o link|gera o pix)\b/;
@@ -990,7 +1049,8 @@ export function detectIntent(text: string): Intent {
   if (
     /^(?:oi[,!\s]+)?(?:quem (?:e|eh) (?:vc|voce|tu)|com quem (?:eu )?(?:to|estou|tou) falando|(?:vc|voce) (?:e|eh) (?:um |uma )?(?:robo|bot|ia|maquina|pessoa|humano|atendente)|o que (?:e|eh) (?:isso|esse numero|a lia|aqui))[\s?!.]*$/.test(n)
   ) {
-    return { kind: "help" };
+    // "quem é vc?"/"é robô?" (06/10): resposta de identidade, não o tutorial "Funciona assim".
+    return /\b(quem|robo|bot|ia|maquina|pessoa|humano|atendente|com quem)\b/.test(n) ? { kind: "identity" } : { kind: "help" };
   }
 
   // "é seguro? como sei q n é golpe?" — pergunta de CONFIANÇA na hora do dinheiro:
@@ -1007,7 +1067,8 @@ export function detectIntent(text: string): Intent {
     n.length <= 90 &&
     (/(quem (e|eh) (vc|voce|tu)\b)|(\b(e|eh|isso e|isso eh) golpe\b)|(\bgolpe\b.*\?)|(\bconfiavel\b)/.test(n))
   ) {
-    return { kind: "help" };
+    // "é golpe?"/"é confiável?" (06/10) pedem a resposta de CONFIANÇA, não o tutorial.
+    return /\bgolpe\b|\bconfiavel\b/.test(n) ? { kind: "trust_question" } : { kind: "identity" };
   }
 
   // "pera"/"espera aí, meu neto tá chorando"/"já volto": pedido de PAUSA — jamais
@@ -1028,10 +1089,20 @@ export function detectIntent(text: string): Intent {
     return { kind: "resume_where" };
   }
 
+  // Quantidade, troca de opção e "voltar" (06/10) vêm ANTES do resume_canceled: "na verdade
+  // quero 12" e "na verdade quero o 2" ressuscitavam um pedido cancelado.
+  const qtyCommand = parseQtyCommand(n);
+  if (qtyCommand) return { kind: "qty_adjust", ...qtyCommand };
+  const switchChoice = parseChoiceSwitch(n);
+  if (switchChoice) return { kind: "switch_choice", ...switchChoice };
+  if (BACK_RE.test(n)) return { kind: "back" };
+
   // "na vdd quero sim, ainda dá?" — arrependimento do cancelamento: recuperar a
   // compra, nunca buscar "na vdd sim" (28/08 S11, que virou produto pra cachorro).
+  // 06/10: só frase SEM produto nem número depois do "quero" — "pensando bem quero 2 coca
+  // cola 2l" recuperava 6 leites cancelados e cobrava R$ 52,14 por eles.
   if (
-    /^(na (vdd|verdade)|pensando (bem|melhor))[,!.\s]*(eu )?quero( sim| ainda)?\b/.test(n) ||
+    /^(na (vdd|verdade)|pensando (bem|melhor))[,!.\s]*(eu )?quero(\s+(sim|ainda|de volta|aquel[ea]( pedido| compra)?|o pedido|a compra))*([,!.\s]+ainda (da|dá))?[\s!.?,]*$/.test(n) ||
     /^ainda (da|dá)\??\s*$/.test(n) ||
     /\bmudei de ideia[,!.\s]+quero (sim|de volta|aquele)\b/.test(n)
   ) {
@@ -1041,7 +1112,7 @@ export function detectIntent(text: string): Intent {
   // "no site da loja tá mais barato, tá me cobrando a mais?" — disputa de preço:
   // resposta honesta sobre o serviço, nunca o menu de pagamento (28/08 S5).
   if (
-    /\b(no site|na loja|no mercado(?! livre))\b.*\bmais barato\b|\bcobrando (a mais|caro|errado)\b|\bpor ?que (ta|tá|esta|está) mais caro\b|\bmais caro que (o site|a loja|la)\b|\bpreco (ta|tá|esta|está) diferente\b/.test(n)
+    /\b(no site|na loja|no mercado(?! livre))\b.*\bmais barato\b|\bcobrando (a mais|caro|errado)\b|\bpor ?que (ta|tá|esta|está) mais caro\b|\bmais caro (do )?que (o site|a loja|la|no site|na loja|no app|no mercado)\b|\bpreco (ta|tá|esta|está) diferente\b/.test(n)
   ) {
     return { kind: "price_dispute" };
   }
@@ -1116,6 +1187,8 @@ export function detectIntent(text: string): Intent {
   if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
   // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
   if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
+  if (OUT_OF_SCOPE_SERVICE_RE.test(n)) return { kind: "out_of_scope_service" };
+  if (VAGUE_REQUEST_RE.test(n)) return { kind: "vague_request" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
   // "você faz comparativo de preços?", "como sei que é o melhor valor?" (06/10, Claire).
   if (PRICE_COMPARE_RE.test(n)) return { kind: "service_question", topic: "price_compare" };
@@ -1161,7 +1234,10 @@ export function detectIntent(text: string): Intent {
   if (HELP_RE.test(n)) return { kind: "help" };
   if (HUMAN_RE.test(n)) return { kind: "human" };
   if (COMPLAINT_RE.test(n)) return { kind: "complaint" };
+  if (REFUND_REQUEST_RE.test(n)) return { kind: "refund_request" };
+  if (UNSUPPORTED_PAY_RE.test(n)) return { kind: "unsupported_payment" };
   if (REFUSE_PAY_RE.test(n)) return { kind: "cancel" };
+  if (PIX_KEY_RE.test(n)) return { kind: "resend_code", expired: false, keyAsk: true };
   if (RESEND_CODE_RE.test(n) || CODE_EXPIRED_RE.test(n)) {
     return { kind: "resend_code", expired: CODE_EXPIRED_RE.test(n) };
   }
@@ -1188,6 +1264,14 @@ export function detectIntent(text: string): Intent {
     !/\d{5}/.test(n)
   ) {
     return { kind: "address_question" };
+  }
+  // "pra qual endereço vai?"/"vai entregar onde?" (06/10): pergunta do destino do pedido.
+  if (
+    n.length <= 60 &&
+    /\b(pra|para) (qual|que) endereco\b|\bqual (e |eh )?(o )?endereco (de entrega|da entrega|do pedido|que vai|que voce vai|que vc vai)\b|\bvai (pra|para) (qual|que) endereco\b|\b(vai )?entrega(r)? onde\b|\bonde (vai ser|vai|vc vai|voce vai) entreg\w*/.test(n) &&
+    !/\d{5}/.test(n)
+  ) {
+    return { kind: "address_question", order: true };
   }
 
   // "troca o arroz por leite" — swap BEFORE remove/cancel so "troca" wins.
@@ -1242,9 +1326,12 @@ export function detectIntent(text: string): Intent {
     // inteira (28/08 S15: apagou os 12 itens, inclusive 10 que não eram de limpeza).
     const categoryQualified = /^(tudo|todos|todas)\s+(o\s+|os\s+|as\s+)?(que|de|da|do|d[ao]s)\b/.test(target);
     const clearAll = !target || (/\b(tudo|todos|todas)\b/.test(target) && !categoryQualified);
+    // "cancela tudo" (06/10): com pedido pago respondia "Carrinho limpo" e o cliente achava
+    // que tinha cancelado. É o cancelar contextual (lista em montagem continua sendo limpa).
+    if (clearAll && /^(cancel|cansel)/.test(n) && /^(tudo|todos|todas)?$/.test(target.trim())) return { kind: "cancel" };
     if (clearAll) return { kind: "clear_cart" };
     // "cancela o pedido" is an order cancel, not an item removal.
-    if (/^(o\s+|a\s+|meu\s+)?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
+    if (/^(o\s+|a\s+|meu\s+|minha\s+)?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     // "cancela o pagamento/pix" é desistir da cobrança, não tirar item da cesta.
     if (/^(o\s+|a\s+)?(pagamento|pix|cobranca|boleto)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     return { kind: "remove_item", target, ...(andAdd ? { andAdd } : {}) };
@@ -1255,6 +1342,8 @@ export function detectIntent(text: string): Intent {
   const cancelItem = n.match(/\b(?:nao quero mais|quero (?:cancelar|tirar|remover)|pode (?:tirar|remover))\s+(?:o |a |os |as )?(.+)$/);
   if (cancelItem) {
     const target = cleanItemPhrase(cancelItem[1]);
+    // "quero cancelar meu pedido" (06/10) virava "não achei esse item na sua cesta".
+    if (/^(meu |minha |o |a )?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     if (target && !/^(pedido|compra|entrega|tudo|nada)$/.test(target)) return { kind: "remove_item", target };
   }
 
@@ -1264,11 +1353,13 @@ export function detectIntent(text: string): Intent {
 
   if (CLEAR_CART_RE.test(n)) return { kind: "clear_cart" };
   if (CANCEL_RE.test(n)) {
+    // "não quero cancelar"/"não cancela" (06/10): é o contrário — mantém o pedido.
+    if (/\bn(a|ã)o (quero |precisa (de )?|vou |pode |e pra |eh pra )?(cancel|desist)\w*/.test(n)) return { kind: "reject" };
     // "posso cancelar?" é pergunta — explicar como cancelar, nunca EXECUTAR o cancelamento.
     if (isQuestion(n)) return { kind: "cancel_question" };
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
-  if (REPEAT_RE.test(n)) return { kind: "repeat_last" };
+  if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n)) return { kind: "repeat_last" };
   if (STATUS_RE.test(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":
@@ -1345,7 +1436,7 @@ export function detectIntent(text: string): Intent {
   if (cep) {
     // "meu cep é 01310-100, quero arroz e leite" — o CEP não pode engolir os itens.
     const rest = n
-      .replace(/\b\d{5}-?\d{3}\b/, " ")
+      .replace(CEP_RE, " ")
       .replace(/\b(meu|o|novo|cep|endereco|e|eh|é)\b/g, " ")
       .replace(/[:,.;]+/g, " ")
       .replace(/\s+/g, " ")
@@ -1536,7 +1627,11 @@ export function parseRefinement(text: string): string[] | null {
 // ---------- choice reply parsing (customer looking at up to 3 options) ----------
 
 export type ChoiceReply =
-  | { type: "pick"; index: number }
+  // `qty` (06/10): "quero 2 do primeiro", "o 1, duas unidades" — escolha e quantidade juntas.
+  | { type: "pick"; index: number; qty?: number }
+  // "o mesmo da última vez", "o de sempre" (06/10): não é ordinal — o cérebro procura nas
+  // compras anteriores do cliente.
+  | { type: "previous" }
   // Texto que nomeia UMA opção (marca/nome): estreita, não escolhe (04/09).
   | { type: "name"; index: number }
   | { type: "any" }
@@ -1571,6 +1666,22 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
   if (/^(o|a)?\s*(de\s+)?(melhor\s+)?custo[\s-]?beneficio$/.test(n)) {
     const idx = options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0);
     return { type: "pick", index: idx };
+  }
+
+  // "o mesmo da última vez"/"o de sempre" (06/10): "última" aqui não é a última opção — a
+  // frase comprava a 3ª opção até para quem nunca tinha comprado.
+  if (PREVIOUS_PURCHASE_RE.test(n)) return { type: "previous" };
+
+  // Escolha + quantidade na mesma mensagem (06/10): "quero 2 do primeiro", "o 1, duas
+  // unidades" — a quantidade era ignorada em silêncio.
+  const withQty = splitChoiceQty(n);
+  if (withQty) {
+    const inner = parseChoiceReply(withQty.rest, options);
+    if (inner?.type === "pick") return { type: "pick", index: inner.index, qty: withQty.qty };
+    if (inner?.type === "cheapest") {
+      const idx = options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0);
+      return { type: "pick", index: idx, qty: withQty.qty };
+    }
   }
 
   const bare = n.match(/^(?:opcao\s*|op\s*|numero\s*|n[o°º]?\s*|a\s+|o\s+)?([1-9])[\s).!]*$/);
@@ -1746,7 +1857,7 @@ const COMPLEMENT_FILLER_RE =
 
 export function parseAddressComplement(text: string): string | null {
   const raw = (text ?? "").replace(/\s+/g, " ").trim();
-  if (!raw || raw.length > 48 || /\d{5}-?\d{3}/.test(raw)) return null;
+  if (!raw || raw.length > 48 || CEP_RE.test(raw)) return null;
   const cleaned = raw.replace(/^[\s,.;:-]+|[\s,.;:!?-]+$/g, "").replace(COMPLEMENT_FILLER_RE, "").trim();
   const n = normalizeMsg(cleaned).replace(/[º°ª]/g, " ").replace(/[.,;:#/-]+/g, " ").replace(/\s+/g, " ").trim();
   return n && COMPLEMENT_RE.test(n) ? cleaned : null;
@@ -1758,10 +1869,21 @@ const complementKind = (part: string) => {
   return /^(?:apto|apt|ap|apartamento)$/.test(head) ? "apto" : head;
 };
 
+const INLINE_COMPLEMENT_RE: Record<string, RegExp> = {
+  apto: /(?<![\p{L}\d])(?:apto|apt|ap|apartamento)\.?\s*(?:n[º°o.]?\s*)?\d{1,5}[a-z]?(?![\p{L}\d])/iu,
+  bloco: /(?<![\p{L}\d])(?:bloco|bl)\.?\s+(?:\d{1,3}|[a-z]{1,2})(?![\p{L}\d])/iu,
+  casa: /(?<![\p{L}\d])casa\s+\d{1,4}[a-z]?(?![\p{L}\d])/iu
+};
+
 // Põe o complemento no endereço salvo: troca o complemento do MESMO tipo ("apto 2" →
 // "apto 4"), soma depois de outro tipo ("bloco B" + "apto 4") e, sem complemento, entra
 // logo depois do número da casa.
 export function withAddressComplement(address: string, complement: string): string {
+  // Complemento do mesmo tipo NO MEIO de um trecho, sem vírgula ("… 221 ap 13 Santa Cecília",
+  // 06/10): troca no lugar. Antes somava e a etiqueta saía com dois apartamentos.
+  const kind = complementKind(complement);
+  const inline = INLINE_COMPLEMENT_RE[kind];
+  if (inline && inline.test(address)) return address.replace(inline, complement);
   const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
   const existing = parts.map((part, i) => (i > 0 && COMPLEMENT_START_RE.test(normalizeMsg(part)) ? i : -1)).filter((i) => i >= 0);
   const same = existing.find((i) => complementKind(parts[i]) === complementKind(complement));
@@ -1809,8 +1931,12 @@ export function parseAttributeAsk(text: string): string | null {
 // depois do endereço. Devolve o produto perguntado, ou null se a pergunta é sobre o serviço.
 const SERVICE_ASK_NOUNS =
   /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
+const OUT_OF_SCOPE_SERVICE_RE =
+  /\b(?:chama(?:r)? (?:um |uma )?(?:uber|99|taxi|motorista|motoboy)|pede (?:um |uma )?(?:uber|99|taxi)|encanador|eletricista|diarista|faxineira|manicure|recarga de celular|recarregar (?:o )?celular|paga(?:r)? (?:um |o |a |minha |meu )?(?:boleto|conta de luz|conta de agua|fatura)|passagem (?:de onibus|aerea)|reserva(?:r)? (?:uma )?mesa)\b/;
+const VAGUE_REQUEST_RE =
+  /^(?:(?:quero|queria|preciso de|me ve|manda|me manda)\s+)?(?:algo|alguma coisa|qualquer coisa|uma coisa)(?:\s+(?:gostos[oa]|bom|boa|legal|diferente|rapid[oa]))?\s+(?:pra|para|de)\s+(?:comer|beber|jantar|almocar|lanchar|o jantar|o almoco|hoje)\b|^me surpreend[ae]\b/;
 const SERVICE_FEE_RE =
-  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b/;
+  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b|^(?:e|eh) (?:de graca|gratis)\b/;
 const PIX_RECEIVER_RE =
   /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
 
@@ -1829,4 +1955,197 @@ export function parseAvailabilityAsk(text: string): string | null {
   const words = text.replace(/[?!.]+\s*$/g, "").trim().split(/\s+/);
   const k = item.split(" ").length;
   return words.length >= k ? words.slice(-k).join(" ") : item;
+}
+
+// ---------- escolher a opção e mexer na cesta (varredura 06/10) ----------
+
+const QTY_WORD_VALUE: Record<string, number> = {
+  um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, doze: 12
+};
+const QTY_N = "(\\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|doze)";
+const QTY_UNIT = "(\\s*(?:x|unidades?|unids?|un|vezes|pacotes?|caixas?|potes?|latas?|garrafas?|frascos?|itens?))?";
+// Marcas de correção na frente/atrás ("na verdade quero 12", "quero 2 então") e o
+// demonstrativo do item na mesa ("quero 2 desse") não mudam o que a frase pede.
+const QTY_LEAD_RE = /^(?:(?:ah+|e|entao|na verdade|na vdd|pensando bem|pensando melhor|melhor|opa|ops|mudei de ideia|nao\s*,|por favor)[,!.]?\s+)+/;
+const QTY_TAIL_RE = /(?:[,!.]?\s+(?:na verdade|na vdd|entao|por favor|pfv|pf|ai|dai|desse|dessa|deste|desta|dele|dela|do mesmo|da mesma|mesmo|ok|blz))+$/;
+const QTY_SET_RE = new RegExp(
+  `^(?:(?:eu\\s+)?(quero|queria|vou querer|coloca|colocar|poe|por|bota|botar|deixa|deixar|faz|fazer|manda|mandar|pode ser|sao|serao|leva|levo|me ve|muda pra|muda para|mudar pra|mudar para|altera pra|altera para|ajusta pra|ajusta para|pode colocar|pode por|pode botar|pode deixar)\\s+)?(?:(so|somente|apenas)\\s+)?${QTY_N}${QTY_UNIT}$`
+);
+const QTY_ADD_RE = new RegExp(
+  `^(?:(?:quero|queria|coloca|colocar|poe|por|bota|botar|adiciona|acrescenta|manda|me ve|e|pode por|pode colocar|pode botar)\\s+)?mais\\s+${QTY_N}${QTY_UNIT}$`
+);
+const QTY_SUB_RE = new RegExp(`^(?:(?:pode\\s+)?(?:tira|tirar|remove|remover|retira|retirar|diminui|diminuir)\\s+(?:mais\\s+)?|menos\\s+)${QTY_N}${QTY_UNIT}$`);
+
+function qtyValue(raw: string): number | null {
+  const v = /^\d+$/.test(raw) ? Number(raw) : QTY_WORD_VALUE[raw];
+  return v && v >= 1 && v <= MAX_QTY ? v : null;
+}
+
+function qtyCore(n: string): string {
+  return n.replace(/[!.?]+$/g, "").replace(QTY_LEAD_RE, "").replace(QTY_TAIL_RE, "").trim();
+}
+
+// Quantidade sem produto, sobre o item que acabou de entrar (06/10): "quero 2", "6x", "bota 3",
+// "muda pra 6", "quero só 1" → set; "tira um", "põe mais um", "mais 2" → delta. O número seco
+// ("2") continua sendo o intent `number`. "um"/"uma" com verbo comum ("coloca um") fica de
+// fora: costuma ser começo de pedido, não quantidade.
+export function parseQtyCommand(text: string): { set: number } | { delta: number } | null {
+  const core = qtyCore(normalizeMsg(text));
+  if (!core) return null;
+  const add = core.match(QTY_ADD_RE);
+  if (add) {
+    const v = qtyValue(add[1]);
+    return v ? { delta: v } : null;
+  }
+  const sub = core.match(QTY_SUB_RE);
+  if (sub) {
+    const v = qtyValue(sub[1]);
+    return v ? { delta: -v } : null;
+  }
+  const set = core.match(QTY_SET_RE);
+  if (!set) return null;
+  const [, verb, only, raw, unit] = set;
+  const v = qtyValue(raw);
+  if (!v) return null;
+  const isDigit = /^\d+$/.test(raw);
+  if (!verb && !only && !unit) return null; // "2" seco é o intent number; "dois" seco fica como está
+  if (!isDigit && v === 1 && !only && !unit && !/^(deixa|deixar|muda|mudar|altera|ajusta|pode deixar)/.test(verb ?? "")) return null;
+  return { set: v };
+}
+
+const CHOICE_REF = "([1-9]|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]|ultim[oa]|outr[oa])";
+const SWITCH_VERB_RE = new RegExp(
+  `^(?:troca|trocar|troque|muda|mudar|substitui|substituir)\\s+(?:pel[oa]|pr[oa]|para\\s+[oa]|pra\\s+[oa]|por\\s+[oa])\\s+(?:opcao\\s+|numero\\s+)?${CHOICE_REF}$`
+);
+const SWITCH_PICK_RE = new RegExp(
+  `^(?:(?:eu\\s+)?(quero|queria|vou querer|prefiro|vou de|vou no|vou na|fico com|me ve|pode ser|escolho|manda)\\s+)?(?:o|a)\\s+(?:opcao\\s+|numero\\s+)?${CHOICE_REF}$`
+);
+const SWITCH_MARK_LEAD_RE = /^(?:na verdade|na vdd|pensando bem|pensando melhor|mudei de ideia|melhor|nao\s*,|ah+|ops|opa|entao)\b/;
+const SWITCH_MARK_TAIL_RE = /\b(?:na verdade|na vdd|entao)$/;
+
+function choiceRefIndex(ref: string): { index?: number; other?: boolean } {
+  if (/^\d$/.test(ref)) return { index: Number(ref) - 1 };
+  if (/^outr/.test(ref)) return { other: true };
+  if (/^ultim/.test(ref)) return { index: -1 };
+  const ordinals = ["primeir", "segund", "terceir", "quart", "quint"];
+  return { index: ordinals.findIndex((o) => ref.startsWith(o)) };
+}
+
+// "na verdade quero o 2", "pensando bem quero o 1", "quero o 2 na verdade", "prefiro o 2",
+// "troca pelo 2", "troca pelo outro" (06/10): trocar pela opção N da última lista. Sem marca
+// de correção, "quero o 2" segue sendo escolha comum (a escolha aberta resolve).
+// `index: -1` = a última opção.
+export function parseChoiceSwitch(text: string): { index?: number; other?: boolean } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const viaVerb = n.match(SWITCH_VERB_RE);
+  if (viaVerb) return choiceRefIndex(viaVerb[1]);
+  const marked = SWITCH_MARK_LEAD_RE.test(n) || SWITCH_MARK_TAIL_RE.test(n);
+  const core = n.replace(QTY_LEAD_RE, "").replace(/[,\s]+(?:na verdade|na vdd|entao)$/, "").trim();
+  const pick = core.match(SWITCH_PICK_RE);
+  if (!pick) return null;
+  if (!marked && pick[1] !== "prefiro") return null;
+  return choiceRefIndex(pick[2]);
+}
+
+export const BACK_RE =
+  /^(?:(?:quero|pode|da pra|da para)\s+)?volt(?:a|ar)(?:\s+(?:pra|para|a|as|na|nas|pras)\s+(?:a\s+|as\s+)?(?:lista|opcoes|anterior|escolha))?(?:\s+atras)?(?:\s+(?:por favor|pfv|ai))?[\s!.]*$/;
+
+// "o mesmo da última vez", "igual da outra vez", "o de sempre", "o que eu comprei" (06/10).
+const PREVIOUS_PURCHASE_RE =
+  /\b(?:mesm[oa]|igual|aquel[ea])\s+(?:d[ae]\s+|da\s+|na\s+)?(?:ultima vez|outra vez|vez passada|sempre)\b|\bo de sempre\b|\bd[ae] ultima vez\b|\bque (?:eu )?(?:comprei|pedi) (?:da |na )?(?:ultima|outra) vez\b/;
+
+// "quero 2 do primeiro", "2 da opção 1", "2x o primeiro", "o 1, duas unidades", "a 2, 3x".
+function splitChoiceQty(n: string): { qty: number; rest: string } | null {
+  const front = n.match(
+    new RegExp(`^(?:(?:quero|queria|me ve|manda|vou querer|pode ser|leva|levo|coloca|poe|bota)\\s+)?${QTY_N}${QTY_UNIT}\\s+(?:d[oa]s?|de|[oa])\\s+(.+)$`)
+  );
+  if (front) {
+    const qty = qtyValue(front[1]);
+    const rest = front[3].trim();
+    if (qty) return { qty, rest: /^mais (barat|car)/.test(rest) ? `o ${rest}` : rest };
+  }
+  const back = n.match(new RegExp(`^(.+?)\\s*[,;]?\\s+${QTY_N}(\\s*(?:x|unidades?|unids?|un|vezes|pacotes?|caixas?))$`));
+  if (back) {
+    const qty = qtyValue(back[2]);
+    if (qty) return { qty, rest: back[1].replace(/[,;\s]+$/, "").trim() };
+  }
+  return null;
+}
+
+// Escolha + pagamento ou escolha + item novo numa mensagem (06/10): "quero o 1 e paga no
+// pix", "o 1, pode pagar no pix", "quero o 2 e um sabonete". A 1ª parte tem que ser uma
+// escolha de verdade (número, ordinal, "o mais barato"); senão devolve null.
+export function parseChoiceCombo(
+  text: string,
+  options: { name: string; unitPrice: number }[]
+): { reply: { type: "pick"; index: number; qty?: number }; pay?: boolean; rest?: string } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  const parts = n.match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tambem\s+)?)(.+)$/);
+  if (!parts) return null;
+  const head = parseChoiceReply(parts[1], options);
+  let reply: { type: "pick"; index: number; qty?: number } | null = null;
+  if (head?.type === "pick") reply = head;
+  else if (head?.type === "cheapest") {
+    reply = { type: "pick", index: options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0) };
+  }
+  if (!reply) return null;
+  const tail = parts[2].trim();
+  if (
+    /^(?:(?:pode|ja|e|entao|ai|dai|ja pode|quero)\s+)*(?:pagar|paga|pago|fechar|fecha|finaliza|finalizar|fecha o pedido|fechar o pedido)(?:\s+(?:no|na|com|via|pelo|por|o))?(?:\s+(?:pix|cartao|credito|debito))?(?:\s+mesmo)?$/.test(tail) ||
+    /^(?:(?:pode ser|vou pagar|pago)\s+)?(?:no |com |via )?(?:pix|cartao|credito)(?:\s+mesmo)?$/.test(tail)
+  ) {
+    return { reply, pay: true };
+  }
+  // Quantidade junto ("o 1, duas unidades") já é tratada pelo parseChoiceReply inteiro.
+  if (parseQtyCommand(tail) || !/[a-z]{3,}/.test(tail)) return null;
+  return { reply, rest: tail };
+}
+
+// "o da Mambo", "a da drogaria são paulo", "quero o da Swift" (06/10): referência à LOJA da
+// opção. Devolve o nome citado e as opções dessa loja (vazio = loja conhecida, mas nenhuma
+// opção na mesa é dela). Só vale quando o nome bate com uma loja de verdade.
+export function parseStoreReference(
+  text: string,
+  options: { storeLabel?: string }[],
+  knownLabels: string[] = []
+): { label: string; indices: number[] } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const m = n.match(/^(?:(?:quero|prefiro|pode ser|me ve|vou de|fico com|manda|escolho)\s+)?(?:o|a|os|as)?\s*(?:que\s+(?:e|eh|vem)\s+)?(?:d[oa]s?|de|na|no)\s+(?:loja\s+|farmacia\s+|mercado\s+)?(.{3,40})$/);
+  if (!m) return null;
+  const wanted = m[1].trim();
+  const matches = (label?: string) => {
+    const l = normalizeMsg(label ?? "");
+    return Boolean(l) && (l === wanted || (wanted.length >= 4 && l.includes(wanted)) || (l.length >= 4 && wanted.includes(l)));
+  };
+  const indices = options.map((o, i) => (matches(o.storeLabel) ? i : -1)).filter((i) => i >= 0);
+  if (indices.length) return { label: options[indices[0]].storeLabel!, indices };
+  const known = knownLabels.find((l) => matches(l));
+  return known ? { label: known, indices: [] } : null;
+}
+
+// "chega hoje?", "o 2 chega hoje?", "quando chega?", "qual o prazo?" com as opções na tela
+// (06/10): a resposta são os prazos das opções. Devolve o número da opção citada (se houver).
+export function parseChoiceEtaAsk(text: string): { option?: number; today: boolean } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  if (!/\b(chega|chegam|chegaria|entrega|entregam|entregaria|prazo|demora|demoram)\b/.test(n)) return null;
+  if (!/\?$/.test(n) && !/^(?:qual|quais|quando|quanto tempo|o que|que|e |o \d|a \d|qual delas)/.test(n)) return null;
+  if (n.split(" ").length > 9) return null;
+  const opt = n.match(/\b(?:o|a|opcao|numero)\s+([1-9])\b/);
+  return { ...(opt ? { option: Number(opt[1]) } : {}), today: /\bhoje\b/.test(n) };
+}
+
+// Número de opção pedido ("5", "o 5", "opção 5", "quero o 5") — para dizer "são só 3".
+export function parseChoiceNumber(text: string): number | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  const m = n.match(/^(?:(?:quero|prefiro|vou de|pode ser|escolho|manda)\s+)?(?:o\s+|a\s+)?(?:opcao\s*|numero\s*|op\s*)?([1-9]\d?)[\s).!]*$/);
+  return m ? Number(m[1]) : null;
+}
+
+// "qual o mais barato?", "qual é o mais caro?" — PERGUNTA, não escolha (06/10).
+export function asksCheapestQuestion(text: string): "cheapest" | "priciest" | null {
+  const n = normalizeMsg(text);
+  if (!isQuestion(n) || !/^(?:e\s+)?(?:qual|quais)\b/.test(n)) return null;
+  if (/\bmais (?:barat|em conta)|\bmenor preco\b/.test(n)) return "cheapest";
+  if (/\bmais car[oa]\b/.test(n)) return "priciest";
+  return null;
 }

@@ -29,8 +29,8 @@ function kind(text: string) {
 
 test("teste em massa 26/08: identidade composta, regateio, arrependimento, risada, frete", () => {
   // P1.5: identidade/golpe em frase composta vence a extração
-  assert.equal(kind("oi... quem é vc? isso é golpe?"), "help");
-  assert.equal(kind("isso é golpe?"), "help");
+  assert.equal(kind("oi... quem é vc? isso é golpe?"), "trust_question"); // 06/10: golpe → confiança
+  assert.equal(kind("isso é golpe?"), "trust_question");
   // P2.3: regateio tem resposta própria
   assert.equal(kind("faz por 10?"), "haggle");
   assert.equal(kind("tem desconto?"), "haggle");
@@ -59,10 +59,10 @@ test("2º testador (24/08): quanto falta, completar o valor e 'outro' singular",
 
 test("feedback do 1º testador (24/08): identidade, endereço salvo e colírio", () => {
   // "Quem é vc" é apresentação, nunca busca (virou o blush "Quem Disse, Berenice?").
-  assert.equal(kind("Quem é vc"), "help");
-  assert.equal(kind("quem é você?"), "help");
-  assert.equal(kind("vc é um robô?"), "help");
-  assert.equal(kind("com quem eu to falando"), "help");
+  assert.equal(kind("Quem é vc"), "identity"); // 06/10: identidade própria
+  assert.equal(kind("quem é você?"), "identity");
+  assert.equal(kind("vc é um robô?"), "identity");
+  assert.equal(kind("com quem eu to falando"), "identity");
   // Pergunta sobre o endereço em arquivo responde o endereço — não vira busca.
   assert.equal(kind("Vc salvou o endereço já"), "address_question");
   assert.equal(kind("pegou meu cep?"), "address_question");
@@ -797,7 +797,7 @@ test("28/08: pausas e retomadas nunca viram busca", () => {
 
 test("28/08 S5/S7/S8: perguntas de confiança têm intent próprio", () => {
   assert.equal(detectIntent("é seguro? como sei q n é golpe?").kind, "trust_question");
-  assert.equal(detectIntent("isso é golpe?").kind, "help");
+  assert.equal(detectIntent("isso é golpe?").kind, "trust_question");
   assert.equal(detectIntent("meu filho que vai pagar, pode mandar a cobrança pro zap dele?").kind, "third_party_pay");
   assert.deepEqual(detectIntent("vocês emitem nota fiscal?"), { kind: "fiscal_question", topic: "nf" });
   assert.deepEqual(detectIntent("qual o CNPJ de vocês?"), { kind: "fiscal_question", topic: "cnpj" });

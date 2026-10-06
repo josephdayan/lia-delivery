@@ -1,7 +1,15 @@
-## 06/10/2026 — Motivo do cancelamento
+## 06/10/2026 (tarde) — Varredura de cliente novo: ~600 conversas, correções em lotes
 
-Pedido cancelado pergunta o motivo (frete caro, produto caro, outro app, desisti, outro) e anota no
-pedido. Testes: novo 3/3 + 12 arquivos de cancelamento 324/324 no Postgres local; `tsc` ok.
+5 agentes testadores (cadastro, quantidade/busca, escolha/cesta, pagamento/pós-venda, conversa
+fora do roteiro) e 4 corretores em worktree. Corrigido e no main: 12 ovos, "pix" como nome,
+"tem açaí?", "cartão" na escolha, frete com número, CPF fora de hora, trava do Pix de saída,
+cobrança aberta que morria por mensagem solta, atendente/reclamação avisando o dono, textos
+falsos (margem, quem recebe o Pix, nota, "separando"), golpe/identidade, uber/pedido vago,
+"ok"/"sim" com cesta, cancelamento pago com confirmação, status com loja/prazo/endereço.
+Em andamento: cadastro/endereço (pedido+endereço juntos, laço do CEP, CEP solto), escolha/cesta
+(item depois do total apagava a cesta, quantidade por texto, "na verdade quero o 2" ressuscitando
+pedido cancelado), busca/frete (frete dobrado na mesma loja, produto por peso, remédio por dose,
+básicos não achados). Relatórios em scratchpad da sessão; resumo em PENDENCIAS.
 
 ## 06/10/2026 — Fora da VTEX: Magento, Wake e Salesforce sondados (seco, sem pedido)
 
@@ -46,6 +54,10 @@ Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (s
 - Lojas com algo em até 1 dia: SP 17, RJ 10, PR 8, MG 7, ES/GO/MT 6, DF/BA/PE 5, Norte 2–3.
 - Casa, moda, livros, eletro e beleza: nacionais, 2–10 dias em qualquer lugar.
 
+## 06/10/2026 — Motivo do cancelamento
+
+Pedido cancelado pergunta o motivo (frete caro, produto caro, outro app, desisti, outro) e anota no
+pedido. Testes: novo 3/3 + 12 arquivos de cancelamento 324/324 no Postgres local; `tsc` ok.
 ## 06/10/2026 (tarde) — Estorno automático: 6h sem compra (era 24h/48h)
 
 Pedido pago sem compra na loja há 6h volta sozinho ao cliente (regra no topo do AGENTS.md).

@@ -42,7 +42,7 @@ export function help(): string {
     "1. Você me diz o que precisa",
     "2. Eu mostro o total, o frete e o prazo",
     "3. Você paga por Pix ou cartão",
-    "4. Eu compro e acompanho até chegar 🛵",
+    "4. Eu compro na loja e acompanho até chegar 📦",
     "",
     "Também entendo *status*, *trocar endereço*, *tira o item X* e *repete o de sempre*.",
     "",
@@ -177,6 +177,75 @@ export function askFullDeliveryAddress(): string {
 
 export function addressSavedAskCep(): string {
   return "📍 Endereço salvo. Falta o *CEP*.";
+}
+
+// ---------- cadastro e endereço em texto (06/10, relatório do testador) ----------
+
+// Itens que vieram junto do endereço: aparecem na confirmação pra o cliente ver que não sumiram.
+export function notedItemsLine(notedItems: string[]): string {
+  return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}` : "";
+}
+
+// CEP recebido e a rua veio do ViaCEP: confirma a rua e pede SÓ o número.
+export function askHouseNumber(street: string, district: string | undefined, cep: string | undefined): string {
+  return `📍 CEP ${cep ?? ""}: *${street}*${district ? `, ${district}` : ""}.\nPra completar o endereço, falta só o *número* (e o complemento, se tiver).`.replace("CEP : ", "");
+}
+
+// Pedido do endereço quando ainda não há CEP nenhum (antes era "Falta o endereço: rua, número
+// e complemento", que soava como se o cliente tivesse esquecido algo).
+export function askAddressWithCep(): string {
+  return "Pra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍";
+}
+
+// Rua citada sem número ("moro na rua augusta perto do metrô").
+export function askNumberAndCep(hasCep: boolean): string {
+  return hasCep ? "Falta o *número* da casa (e o complemento, se tiver) 📍" : "Falta o *número* e o *CEP* 📍";
+}
+
+// "quanto tá o leite ninho?" antes do cadastro (M2): o preço depende da loja que entrega no
+// endereço — anota e promete o número logo depois.
+export function priceAfterAddress(item: string): string {
+  return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
+}
+
+export function dontKnowCep(): string {
+  return "Sem problema 🙂 Você acha o CEP pelo nome da rua em *buscacep.correios.com.br*. Depois me manda *rua, número e CEP* juntos.";
+}
+
+// Cliente com endereço confirmado mandou um CEP solto (A4): pergunta antes de trocar — o
+// endereço salvo continua valendo até ele dizer sim.
+export function confirmCepSwap(cep: string, place: { street?: string; district?: string; city?: string }, current: string): string {
+  const where = [place.street, place.district, place.city].filter(Boolean).join(", ");
+  return [
+    `Quer trocar o endereço de entrega para o CEP *${cep}*${where ? ` (${where})` : ""}?`,
+    `Responde *sim* pra trocar. Se não, sigo com o de sempre: ${current.replace(/[\s.,;]+$/, "")}.`
+  ].join("\n");
+}
+
+export function keptAddress(address: string, cep?: string): string {
+  const clean = address.replace(/[\s.,;]+$/, "");
+  return `Ok, continua o mesmo endereço 📍 ${cep && !clean.includes(cep) ? `${clean} — CEP ${cep}` : clean}`;
+}
+
+// CEP de uma cidade, endereço escrito com outra (A5): nada é salvo até o cliente confirmar.
+export function cepCityMismatch(cep: string, cepCity: string, typedCity: string): string {
+  return `Opa, o CEP *${cep}* é de *${cepCity}*, mas no endereço está *${typedCity}* 🤔\nSe o CEP estiver certo, responde *sim*. Se não, me manda o CEP certo.`;
+}
+
+export function askRightCep(): string {
+  return "Me manda o *CEP certo* (8 números) junto com rua e número 📍";
+}
+
+// Fora da área, o cliente insiste com outra coisa (M9): lembra o motivo e mostra a saída.
+export function stillOutsideArea(city: string | undefined, areaLabel: string): string {
+  // "os estados de São Paulo e Rio de Janeiro" → "São Paulo ou Rio de Janeiro".
+  const where = areaLabel.replace(/^os? estados? de /, "").replace(/ e ([^,]+)$/, " ou $1");
+  return `Ainda não entrego ${city ? `em ${city}` : "nessa região"} 😔 Se quiser mandar pra alguém em ${where}, me manda o endereço com CEP de lá.`;
+}
+
+// Nome e CPF mandados antes do endereço (M11): guardados, e o endereço continua faltando.
+export function identitySavedAskAddress(hasCep: boolean): string {
+  return `✅ Anotei seu nome e CPF. ${hasCep ? "Falta o *número* da casa (e o complemento, se tiver) 📍" : "Agora seu *endereço com CEP* — rua, número, bairro e cidade 📍"}`;
 }
 
 // UMA pergunta, não duas (feedback do dono, 16/08: "por que pede o CEP e depois o
@@ -769,7 +838,14 @@ export function resendCard(link: string): string {
   return ["Seu link de pagamento 👇", link].join("\n");
 }
 
-export function paymentSwitched(method: "pix" | "card", total: number): string {
+// renewed (06/10): "o pix expirou" com Pix gera cobrança NOVA no mesmo método — dizia
+// "Troquei pra Pix" sem ter trocado nada.
+export function paymentSwitched(method: "pix" | "card", total: number, renewed = false): string {
+  if (renewed) {
+    return method === "pix"
+      ? `Gerei um Pix novo — total *${brl(total)}*. O anterior não vale mais. Segue o código 👇`
+      : `Gerei um link novo — total *${brl(total)}*. O anterior não vale mais 👇`;
+  }
   return method === "pix"
     ? `Troquei pra Pix — total *${brl(total)}*, sem taxa. Segue o código 👇`
     : `Troquei pro cartão — total *${brl(total)}*, com taxa da maquininha. Segue o link 👇`;
@@ -810,6 +886,9 @@ export function orderStatusLine(input: {
     case "awaiting_supplier_validation":
     case "payment_issuing":
       return `${id} em confirmação na loja. Te aviso quando o carrinho estiver pronto.`;
+    case "awaiting_quote_confirmation":
+      // 06/10: caía no default "em andamento" com nenhuma cobrança gerada.
+      return `${id} com o total na mesa — a cobrança ainda não foi gerada. Responde *pix* ou *cartão* que eu mando o pagamento.`;
     case "awaiting_payment":
       return `${id} aguardando pagamento. Responde *pagar* que eu mando o código de novo.`;
     case "paid":
@@ -903,6 +982,33 @@ export function withdrawnRefunded(total: number): string {
   return `Cancelado. Estornei R$ ${total.toFixed(2).replace(".", ",")} pelo mesmo meio que você pagou; o banco leva até 7 dias úteis pra mostrar.`;
 }
 
+// Desistência de pedido PAGO com confirmação (06/10): "cancela", "cancela tudo", "desisti",
+// "quero meu dinheiro de volta" davam quatro respostas diferentes — uma estornava na hora.
+// Agora todas perguntam antes e só o "sim" estorna.
+export function withdrawConfirmAsk(input: { shortId: string; itemsPreview?: string; total: number; card?: boolean }): string {
+  const meta = input.itemsPreview ? ` (${input.itemsPreview})` : "";
+  return [
+    `Confirma o cancelamento do pedido *#${input.shortId}*${meta}?`,
+    `O valor de *${brl(input.total)}* volta pelo mesmo meio que você pagou (${input.card ? "cartão" : "Pix"}) — o banco leva até 7 dias úteis pra mostrar.`,
+    "",
+    "Responde *sim* pra cancelar ou *não* pra manter o pedido."
+  ].join("\n");
+}
+
+export function withdrawKept(shortId: string): string {
+  return `Combinado, o pedido *#${shortId}* segue normal 👍`;
+}
+
+// "quero meu dinheiro de volta" depois de um pedido cancelado SEM pagamento (06/10): a
+// resposta prometia estorno de item faltando, com nada cobrado.
+export function refundNotPaidYet(shortId: string): string {
+  return `O pedido *#${shortId}* ainda não foi pago — nada foi cobrado. Se não quiser mais, responde *cancelar*.`;
+}
+
+export function refundNothingCharged(shortId: string): string {
+  return `O pedido *#${shortId}* foi cancelado antes do pagamento — nada foi cobrado, então não tem valor pra devolver.`;
+}
+
 export function nothingToCancel(paidActive?: { shortId: string; dateLabel?: string; itemsPreview?: string }): string {
   if (paidActive) {
     const meta = [paidActive.dateLabel, paidActive.itemsPreview].filter(Boolean).join(" — ");
@@ -953,8 +1059,23 @@ export function trustAnswer(): string {
     "• Você só paga DEPOIS de ver e aprovar o total — nada é cobrado antes.",
     "• O pagamento é por Pix ou cartão com recibo; se algo não vier, o valor do item é estornado.",
     "• Eu compro no site oficial de lojas grandes (Drogaria São Paulo, Pague Menos, Cobasi, Mambo e outras) e a própria loja entrega.",
+    "• A Lia Delivery é uma empresa registrada (MEI, com CNPJ) — o Pix vai pra ela, e o banco mostra o nome do responsável.",
     "Qualquer dúvida antes de pagar, é só perguntar — sem pressa."
   ].join("\n");
+}
+
+// Serviço que a Lia não faz (06/10): "chama um uber" recebia "não achei, me diz outra marca".
+export function outOfScopeServiceAnswer(): string {
+  return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
+}
+// Pedido vago (06/10): "algo gostoso pra comer" virava busca da frase.
+export function vagueRequestAnswer(): string {
+  return "Me diz o que você está com vontade que eu acho 🙂 Por exemplo: _lasanha congelada_, _pizza congelada_, _chocolate_, _sorvete_, _salgadinho_ — ou o nome de um produto.";
+}
+
+// "quem é vc?", "vc é robô?" (06/10): a apresentação genérica não dizia nem "sou a Lia".
+export function identityAnswer(): string {
+  return "Sou a Lia, assistente virtual da *Lia Delivery* 🤖 Eu procuro o que você precisa em lojas oficiais, mostro o total com frete e prazo, e compro pra você depois que você paga. Se preferir falar com uma pessoa, é só dizer *atendente*.";
 }
 
 // "meu filho que vai pagar, manda pra ele?" — honesto: a cobrança sai aqui, mas o
@@ -1583,6 +1704,75 @@ export function medicineNotFound(labels: string[]): string {
   return `${what} eu não achei entre os remédios *sem receita*. Remédio que precisa de receita eu não consigo comprar. Os sem receita (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome.`;
 }
 
+// ---------- antes de existir cobrança / depois do pagamento (06/10) ----------
+
+// "paguei"/"já paguei"/"manda o pix de novo" antes de gerar a cobrança: respondia "em
+// andamento" ou "você ainda não tem pedidos". O cliente achava que estava tudo certo.
+export function chargeNotIssuedChooseFreight(): string {
+  return "Ainda não gerei a cobrança — nada foi pago nem cobrado. Primeiro escolhe a entrega 👇 depois eu mando o Pix ou o cartão.";
+}
+
+export function chargeNotIssuedChoosePayment(): string {
+  return "Ainda não gerei a cobrança — nada foi pago nem cobrado. Escolhe *Pix* ou *cartão* que eu mando o pagamento 👇";
+}
+
+// Tela "Mais barata / Mais rápida" (06/10): "pix", "o frete tá caro", "chega que horas?"
+// respondiam "Não peguei qual você quer".
+export function freightBeforePayment(): string {
+  return "Antes do pagamento, escolhe a entrega: responde *1* (mais barata) ou *2* (mais rápida). Em seguida eu mando o total pra pagar.";
+}
+
+export function freightFeeExplain(): string {
+  return "O frete é o que a própria loja cobra até o seu endereço. A opção *1* é a mais barata 👇";
+}
+
+export function freightEtaHeader(): string {
+  return "O prazo depende da entrega que você escolher — está em cada opção 👇";
+}
+
+// "qual a chave pix?" com o código na mão (06/10): a IA dizia que o Pix "aparece no total".
+export function pixKeyExplain(): string {
+  return "Não tem chave pra digitar: é *Pix copia e cola*. O código é a mensagem que mandei — copia ela inteira e cola no app do banco, na opção *Pix copia e cola*.";
+}
+
+export function pixKeyNoCharge(): string {
+  return "Não tem chave pra digitar: quando você fechar o pedido, eu mando um código *Pix copia e cola* pra colar no app do banco.";
+}
+
+export function unsupportedPayment(): string {
+  return "Aqui é só *Pix* ou *cartão de crédito*, tudo pelo chat — dinheiro, vale-refeição, boleto ou pagamento na entrega eu não consigo aceitar.";
+}
+
+// "ok"/"blz" logo depois do Pix (06/10): "Imagina! Qualquer coisa é só chamar" soava como
+// despedida no meio do pagamento.
+
+// Loja e prazo DO PEDIDO (06/10): "quando chega?" com pedido pago devolvia só o status.
+export function orderDeliveryInfo(input: { stores: string[]; promise?: string }): string {
+  const stores = input.stores.length ? input.stores.map((s) => `*${s}*`).join(" e ") : "";
+  const promise = input.promise ? input.promise.replace(/^pela própria loja/, "entrega pela própria loja") : "";
+  if (stores && promise) return `🚚 Loja ${stores} · ${promise}`;
+  if (stores) return `🚚 Loja ${stores}`;
+  return promise ? `🚚 ${promise.charAt(0).toUpperCase()}${promise.slice(1)}` : "";
+}
+
+export function orderStoreAnswer(shortId: string, stores: string[]): string {
+  return `Seu pedido *#${shortId}* é da loja ${stores.map((s) => `*${s}*`).join(" e ")}.`;
+}
+
+export function savedAddressAnswer(address: string, cep?: string): string {
+  return `📍 Seu endereço de entrega: ${withCep(address, cep)}`;
+}
+
+export function orderAddressAnswer(shortId: string, address: string): string {
+  return `📍 Seu pedido *#${shortId}* vai para: ${address}`;
+}
+
+// Troca de endereço DEPOIS de pagar (06/10): dizia "Endereço atualizado" e o pedido pago
+// seguia para o endereço antigo, sem aviso.
+export function paidOrderAddressKept(shortId: string, address: string): string {
+  return `Seu pedido *#${shortId}* já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
+}
+
 export function humanHandoff(): string {
   return "Avisei o responsável, ele te responde aqui mesmo. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.";
 }
@@ -1608,9 +1798,23 @@ export function orderReopened(): string {
 
 export function greetingMidOrder(step: string, itemCount: number): string {
   if (step === "awaiting_payment") return "Oi! Seu pedido só falta pagar. Responde *pagar* que eu mando o código.";
+  // 06/10: com o total na mesa ou a escolha da entrega aberta, o "oi" esquecia o pedido.
+  if (step === "awaiting_quote_confirmation") return "Oi! Seu pedido está com o total pronto — só falta escolher *Pix* ou *cartão* 👇";
+  if (step === "choosing_freight") return "Oi! Seu pedido só falta escolher a entrega 👇";
   if (itemCount > 0)
     return `Oi! Sua cesta tem ${itemCount} ${itemCount === 1 ? "item" : "itens"}. Manda mais algum, ou responde *pagar* pra fechar.`;
   return "Oi! O que você precisa hoje?";
+}
+
+// Modo offline (06/10): aviso único para todo cliente enquanto a Lia está desligada.
+export function offlineNotice(): string {
+  return "Oi! A Lia está fora do ar agora por uma instabilidade nos nossos servidores. Já estamos resolvendo e voltamos em breve. Nada foi cobrado. Te espero de volta!";
+}
+
+export function ownerOfflineToggled(on: boolean): string {
+  return on
+    ? "🔴 Lia OFFLINE. Todo cliente recebe o aviso de instabilidade. Você continua passando normal. Pra religar: *lia online*."
+    : "🟢 Lia ONLINE. Clientes voltaram a ser atendidos normalmente.";
 }
 
 export function genericError(): string {
@@ -1900,4 +2104,97 @@ export function pricesUpdatedByStore(items: Array<{ name: string; from: number; 
   return items.length === 1
     ? `A loja mudou o preço agora há pouco — ${line(items[0])}. O total abaixo já está com o preço certo.`
     : `A loja mudou alguns preços agora há pouco:\n${items.map((i) => `• ${line(i)}`).join("\n")}\nO total abaixo já está com os preços certos.`;
+}
+
+// ---------- escolher a opção e mexer na cesta (varredura 06/10) ----------
+
+// Toque repetido no MESMO card: não soma calado (06/10 — virava 2x sem aviso).
+export function alreadyInBasket(name: string, qty: number): string {
+  return `✅ *${name}* já está na cesta${qty > 1 ? ` (${qty}x)` : ""}. Pra mudar a quantidade, manda o número.`;
+}
+
+// Número fora da lista ("5" com 3 opções): a pessoa respondeu um número, dizer quantas há.
+export function choiceOutOfRange(count: number): string {
+  if (count <= 1) return "Aqui só tem *1* opção. Responde *1* pra levar ou *outras* pra ver mais.";
+  const nums = Array.from({ length: count }, (_, i) => i + 1);
+  return `São só ${count} opções: responde *${nums.slice(0, -1).join("*, *")}* ou *${nums[nums.length - 1]}* — ou *outras* pra ver mais.`;
+}
+
+// "quero 2 unidades" com a escolha aberta: guarda a quantidade e pede qual.
+export function qtyNotedPickOne(qty: number, query: string): string {
+  return `Anotei ${qty} unidades de *${query}*. Agora me diz qual 👇`;
+}
+
+// "na verdade quero o 2" depois de escolher: a troca é anunciada.
+export function choiceSwitchedOut(oldName: string): string {
+  return `Troquei: saiu *${oldName}*.`;
+}
+
+export function choiceSameAsBasket(name: string): string {
+  return `*${name}* já é o que está na sua cesta 🙂`;
+}
+
+export function switchNothingOpen(): string {
+  return "Não tenho uma lista aberta pra trocar agora. Me diz o produto que você quer que eu procuro.";
+}
+
+// "voltar" depois de escolher: a lista volta e o item escolhido fica até ele escolher outro.
+export function backToChoice(query: string, keptName?: string): string {
+  return keptName
+    ? `Voltei pras opções de *${query}* — *${keptName}* continua na cesta até você escolher outra:`
+    : `Voltei pras opções de *${query}*:`;
+}
+
+export function backNothingOpen(): string {
+  return "Não tem lista aberta pra voltar. Me diz o que você quer que eu procuro.";
+}
+
+// "qual o mais barato?" é pergunta — responde qual é, não põe na cesta (06/10).
+export function cheapestOptionAnswer(n: number, name: string, price: number, cheapest: boolean): string {
+  return `O mais ${cheapest ? "barato" : "caro"} é o *${n}*: ${name} — ${brl(price)}. Quer esse? Responde *${n}*.`;
+}
+
+// "chega hoje?"/"o 2 chega hoje?" com as opções na tela: os prazos que a loja informou.
+export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean }>, askedToday: boolean): string {
+  const known = rows.filter((r) => r.delivery);
+  if (!known.length) return "O prazo de cada loja sai no total, logo depois que você escolher. Responde o número 👇";
+  const lines = rows.map((r) => `*${r.n})* ${r.name} — ${r.delivery ?? "prazo no total"}`);
+  let head = "Prazo de cada opção:";
+  if (askedToday) {
+    const today = rows.filter((r) => r.today);
+    head =
+      rows.length === 1
+        ? today.length ? "Chega hoje sim 🙂" : "Hoje não — o prazo dessa é:"
+        : today.length
+          ? `Chega hoje: ${today.map((r) => `*${r.n}*`).join(", ")}.`
+          : "Nenhuma dessas chega hoje. Os prazos:";
+  }
+  return [head, ...lines].join("\n");
+}
+
+// "oi" no meio da escolha: lembra a lista que está esperando (06/10).
+export function greetingMidChoice(query: string): string {
+  return `Oi! 🙂 Ainda tô com as opções de *${query}* esperando — é só responder o número:`;
+}
+
+// "o da Mambo" na escolha: estreita para as opções daquela loja.
+export function storeNarrowed(label: string): string {
+  return `Da *${label}* eu tenho:`;
+}
+
+export function storeAllSame(label: string): string {
+  return `Todas essas são da *${label}* 🙂`;
+}
+
+export function storeNoneOnTable(label: string): string {
+  return `Nenhuma das opções na tela é da *${label}*. As de agora são essas:`;
+}
+
+// "o mesmo da última vez" na escolha.
+export function previousPurchaseFound(): string {
+  return "Esse é o que você já comprou com a gente:";
+}
+
+export function previousPurchaseNotHere(): string {
+  return "Não achei nenhuma dessas nas suas compras anteriores. Escolhe uma das opções 👇";
 }

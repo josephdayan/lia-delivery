@@ -19,6 +19,7 @@ import { handleDeliveryMessage, looksLikeOnboardingName, parseRecipientName } fr
 import { detectIntent, parseAvailabilityAsk, parseBasketLines } from "../src/lib/lia-intents";
 import { pixOutReadiness, resetPixOutProbeCache } from "../src/lib/payments/pix-out/readiness";
 import * as copy from "../src/lib/lia-copy";
+import { sanitizeRouterReply } from "../src/lib/adapters/ai";
 
 // ---------- puros ----------
 
@@ -112,6 +113,24 @@ test("taxa e recebedor do Pix têm resposta fixa e verdadeira", () => {
   assert.match(copy.pixReceiverAnswer(""), /não pra loja/);
   assert.doesNotMatch(copy.paymentConfirmed(), /separando/);
   assert.doesNotMatch(copy.trustAnswer(), /Carrefour|Mercado Livre/);
+});
+
+test("golpe/confiança, identidade e 'é de graça?' têm resposta própria; IA não pode negar a margem", () => {
+  for (const q of ["isso é golpe?", "é confiável?", "é seguro?"]) assert.deepEqual(detectIntent(q), { kind: "trust_question" }, q);
+  for (const q of ["vc é robô?", "quem é você?"]) assert.deepEqual(detectIntent(q), { kind: "identity" }, q);
+  assert.deepEqual(detectIntent("é de graça?"), { kind: "service_question", topic: "service_fee" });
+  assert.deepEqual(detectIntent("tá mais caro que no site"), { kind: "price_dispute" });
+  assert.match(copy.identityAnswer(), /Sou a Lia/);
+  for (const r of ["Não cobramos pelo serviço 🙂", "Sem margem extra nossa", "Não faço comparativo de preços", "O Pix é para a própria loja"]) {
+    assert.equal(sanitizeRouterReply(r), undefined, r);
+  }
+  assert.equal(sanitizeRouterReply("Claro! Te ajudo com isso"), "Claro! Te ajudo com isso");
+});
+
+test("serviço que a Lia não faz e pedido vago não viram busca", () => {
+  for (const q of ["chama um uber", "quero pagar um boleto", "recarga de celular"]) assert.deepEqual(detectIntent(q), { kind: "out_of_scope_service" }, q);
+  for (const q of ["algo gostoso pra comer hoje à noite", "me surpreende", "quero algo pra comer"]) assert.deepEqual(detectIntent(q), { kind: "vague_request" }, q);
+  for (const q of ["pizza congelada", "posso pagar com boleto?"]) assert.notEqual(detectIntent(q).kind, "out_of_scope_service", q);
 });
 
 // ---------- conversa (banco local) ----------
@@ -285,4 +304,35 @@ test("'ok' com a cesta montada mostra o total, não encerra", async (t) => {
   const out = await send(phone, "ok");
   assert.doesNotMatch(out, /Imagina!/, out.slice(0, 200));
   assert.match(out, /Total|pedido|endere|pagar/i, out.slice(0, 300));
+});
+
+test("trocar o endereço mandando rua + CEP com pedido pago avisa que esse pedido vai pro endereço antigo", async (t) => {
+  if (!dbOk) return t.skip();
+  const realFetch = global.fetch;
+  global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    if (/viacep\.com\.br\/ws\/01305100/.test(url)) return new Response(JSON.stringify({ logradouro: "Rua Augusta", bairro: "Consolação", localidade: "São Paulo", uf: "SP" }), { status: 200 });
+    return realFetch(input, init);
+  }) as typeof fetch;
+  try {
+    const phone = await customer();
+    const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+    await prisma.deliveryOrder.create({
+      data: { userId: user.id, phone, status: "paid", paidAt: new Date(), total: 30, itemsSubtotal: 25, deliveryFee: 5, items: [], storeKey: "concierge", cep: "01310-100", deliveryAddress: ADDRESS }
+    });
+    const out = await send(phone, "Rua Augusta 500, Consolação, São Paulo, 01305-100");
+    assert.match(out, /já está pago e vai para/i, out.slice(0, 400));
+  } finally {
+    global.fetch = realFetch;
+  }
+});
+
+test("'Vc tem cottage…?' com a Lia esperando o endereço fica anotado (caso real da manhã)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  await send(phone, "Bom dia queria comprar uma coisa");
+  const out = await send(phone, "Vc tem cottage da yorgus 14g proteína ?");
+  assert.match(out, /cottage/i, out.slice(0, 300));
+  const ctx = await context(phone);
+  assert.match(ctx.pendingRequest ?? "", /cottage/i);
 });
