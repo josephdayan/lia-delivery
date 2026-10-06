@@ -1,3 +1,21 @@
+## 06/10/2026 — Carrossel v4/v5: card com no máximo 2 quebras de linha
+
+O cron horário `/api/cron/meta-templates` falhava em toda execução ao criar os 8 templates
+`vitrine_carrossel_v4_{2..5}` e `_v5_{2..5}`: Graph 400, código 100, subcode 2388245 "Template
+Carousel Card exceeded maximum amount of line breaks" (log de 07:17, 08:17 e 09:17 de 06/10). O card
+do v4 tinha 3 quebras de linha; o do v3, aprovado, tem 2. Nenhum v4/v5 existia, o envio seguia no
+v3 e a vitrine "Olha o que achei 👇" pedida pelo dono em 05/10 não entrou no ar.
+- Regra: card de carrossel com no máximo 2 quebras de linha (`CAROUSEL_CARD_MAX_LINE_BREAKS`),
+  além de ≤ 160 caracteres hidratado e sem variável no começo ou no fim.
+- Card v4 (o v5 usa o mesmo): `Produto: {{1}}` / `Preço: *{{2}}*` / `Entrega pela loja: {{3}}.
+  Toque abaixo para adicionar.` A instrução foi para a linha do prazo, com as mesmas palavras fixas.
+- Nomes mantidos, sem v6: a recusa foi na criação (400 síncrono), então nenhum template v4/v5
+  chegou a existir na Meta e os nomes seguem livres. Se a Meta REPROVAR na revisão, o nome fica
+  preso: editar o reprovado ou criar prefixo novo.
+- O teste de limites do template agora monta todo prefixo que o cron cria (v3, v4, v5); antes só
+  o v3, e foi assim que o card de 3 linhas passou.
+Teste: `tests/carousel.test.ts` e `tests/carousel-card-limit.test.ts` (16/16).
+
 ## 06/10/2026 — Cadastro no 1º contato por formulário do WhatsApp (dono)
 
 Regra do dono: "precisa pedir CEP, nome e CPF" e "pode pedir tudo direto no começo". O cliente

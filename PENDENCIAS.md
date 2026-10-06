@@ -1,3 +1,11 @@
+## 06/10/2026 — Carrossel v4/v5: card com 2 quebras de linha
+
+- [x] Card v4/v5 com 2 quebras de linha; teste de limites cobre v3, v4 e v5.
+- [ ] Cron das :17 criar os 8 templates `vitrine_carrossel_v4/v5_{2..5}` (log
+  `[cron:meta-templates]` com PENDING/APPROVED em vez de ERRO).
+- [ ] Meta aprovar o v5: o envio troca sozinho para "Olha o que achei 👇" (`activeCarouselPrefix`,
+  cache de 10 min). Se reprovar, o motivo aparece no mesmo log.
+
 ## 06/10/2026 — Cadastro por formulário no 1º contato
 
 - [x] Formulário, tratamento da resposta e plano B em texto (ac79556); 21 testes; build ok.
@@ -88,7 +96,8 @@ a migration à mão no banco de produção (30/09, `prisma migrate deploy` com o
   PaymentAttempt; na próxima recusa, ler e decidir (ajuste de antifraude no Pagar.me é do dono).
 - [x] Frete de #LYAWQ8 conferido: item R$13,90 + frete da Mambo R$15,90 = R$29,80 pagos à loja;
   cliente pagou R$31,19 (+R$1,39 de margem). Correto; o "R$3,00" era outro campo da janela.
-- [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta.
+- [ ] Conferir que o template `vitrine_carrossel_v4` foi criado e aprovado pela Meta (06/10: nunca
+  foi criado, a Meta recusava o card com 3 quebras de linha; ver o topo).
 
 ## 28/09/2026 — Rotina de preços
 

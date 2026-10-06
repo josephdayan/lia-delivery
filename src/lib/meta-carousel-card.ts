@@ -18,7 +18,10 @@ export const CAROUSEL_CARD_BODY = "Produto: {{1}}\nPreço do item: *{{2}}*\nPraz
 // v4 (28/09, dono: "esse contado da compra pode tirar"): o texto não pode terminar em variável,
 // então fecha com uma instrução útil. Criado e ativado sozinho quando a Meta aprovar
 // (src/lib/meta-setup.ts ensureCarouselV4 + activeCarouselPrefix).
-export const CAROUSEL_CARD_BODY_V4 = "Produto: {{1}}\nPreço: *{{2}}*\nEntrega pela loja: {{3}}\nToque abaixo para adicionar.";
+// 06/10: a instrução ia numa 4ª linha e a Meta recusava a criação dos 8 templates v4/v5 a cada
+// hora (#100, subcode 2388245 "Template Carousel Card exceeded maximum amount of line
+// breaks"). Fica na linha do prazo; mesmas palavras fixas (proporção por variável).
+export const CAROUSEL_CARD_BODY_V4 = "Produto: {{1}}\nPreço: *{{2}}*\nEntrega pela loja: {{3}}. Toque abaixo para adicionar.";
 export function carouselCardBodyFor(prefix: string): string {
   // v5 (05/10) só mudou o corpo da mensagem; o card é o do v4.
   return /_v[45]$/.test(prefix) ? CAROUSEL_CARD_BODY_V4 : CAROUSEL_CARD_BODY;
@@ -33,9 +36,13 @@ export function compactCardDelivery(text: string): string {
 
 // Limite da Meta para o corpo hidratado de um card.
 export const CAROUSEL_CARD_BODY_LIMIT = 160;
+// Quebras de linha no texto do card: o v3 (2) foi aprovado; o v4 com 3 foi recusado na
+// criação (06/10). Parâmetro não leva quebra (templateParam troca por " · ").
+export const CAROUSEL_CARD_MAX_LINE_BREAKS = 2;
 
 // Quanto o texto FIXO do template consome — derivado do próprio texto, para o dia em que
-// alguém reescrever os rótulos e o orçamento mudar junto.
+// alguém reescrever os rótulos e o orçamento mudar junto. Esta constante é do card v3; o
+// ajuste mede o corpo que recebe (carouselCardBodyFor do prefixo enviado).
 export const CAROUSEL_CARD_FIXED_LENGTH = CAROUSEL_CARD_BODY.replace(/\{\{\d+\}\}/g, "").length;
 function fixedLengthOf(body: string): number {
   return body.replace(/\{\{\d+\}\}/g, "").length;

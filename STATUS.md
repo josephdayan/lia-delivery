@@ -1,3 +1,12 @@
+## 06/10/2026 — Carrossel v4/v5 recusado na criação: card com 3 quebras de linha
+
+O cron `/api/cron/meta-templates` dava ERRO nos 8 templates `vitrine_carrossel_v4/v5_{2..5}` a
+cada hora (Graph 400, subcode 2388245, "exceeded maximum amount of line breaks"). O card do v4 tinha
+3 quebras; agora tem 2 (a instrução "Toque abaixo para adicionar." foi para a linha do prazo).
+Os nomes v4/v5 seguem livres porque nada chegou a ser criado. Testes: `tests/carousel.test.ts` +
+`tests/carousel-card-limit.test.ts` 16/16 no Postgres local; `tsc` ok. Falta: o cron das :17
+depois do deploy criar os 8 (PENDING/APPROVED no log) e a Meta aprovar o v5.
+
 ## 06/10/2026 — Cadastro no primeiro contato por formulário do WhatsApp
 
 Commit ac79556, publicado no deploy do push de 1fad7e1. O 1º contato manda um formulário nativo

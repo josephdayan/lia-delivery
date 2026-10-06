@@ -8,7 +8,10 @@ import assert from "node:assert/strict";
 import {
   CAROUSEL_CARD_BODY,
   CAROUSEL_CARD_BODY_LIMIT,
+  CAROUSEL_CARD_BODY_V4,
   CAROUSEL_CARD_FIXED_LENGTH,
+  CAROUSEL_CARD_MAX_LINE_BREAKS,
+  carouselCardBodyFor,
   fitCarouselCardParams,
   hydrateCarouselCardBody
 } from "../src/lib/meta-carousel-card";
@@ -56,36 +59,54 @@ test("o corte fica visível e não parte palavra no meio", () => {
   assert.ok(REJECTED.name.startsWith(fitted.name.replace(/…$/, "")), fitted.name);
 });
 
-test("qualquer combinação de nome, preço e prazo cabe no limite", () => {
+test("qualquer combinação de nome, preço e prazo cabe no limite (card v3 e v4)", () => {
   const names = ["A", "Ração", "Ração Golden Fórmula Cães Adultos Raças Pequenas Carne e Arroz 15kg Premium", "x".repeat(300)];
   const prices = ["R$ 1,00", "R$ 12.345,67"];
   const deliveries = ["", "1 dia útil", "confirmo na cotação", "y".repeat(200)];
-  for (const name of names) {
-    for (const price of prices) {
-      for (const delivery of deliveries) {
-        const hydrated = hydrateCarouselCardBody(fitCarouselCardParams({ name, price, delivery }));
-        assert.ok(hydrated.length <= CAROUSEL_CARD_BODY_LIMIT, `${hydrated.length}: ${hydrated}`);
+  for (const body of [CAROUSEL_CARD_BODY, CAROUSEL_CARD_BODY_V4]) {
+    for (const name of names) {
+      for (const price of prices) {
+        for (const delivery of deliveries) {
+          const hydrated = hydrateCarouselCardBody(fitCarouselCardParams({ name, price, delivery }, CAROUSEL_CARD_BODY_LIMIT, body), body);
+          assert.ok(hydrated.length <= CAROUSEL_CARD_BODY_LIMIT, `${hydrated.length}: ${hydrated}`);
+        }
       }
     }
   }
 });
 
-test("o payload enviado à Meta respeita o limite em todos os cards", () => {
+test("o payload enviado à Meta respeita o limite em todos os cards (v2/v3, v4 e v5)", () => {
   const options = [
     { id: "optsku:a", sku: "a", name: REJECTED.name, displayPrice: 189.9, imageUrl: "https://example.com/a.jpg", delivery: "prazo da loja: até 3 dias úteis" },
     { id: "optsku:b", sku: "b", name: "Ração Premier Adulto 15kg Raças Médias Frango e Arroz Selecionado", displayPrice: 210, imageUrl: "https://example.com/b.jpg", badge: "Você já pediu este" },
     { id: "optsku:c", sku: "c", name: "Ração Royal Canin 15kg", displayPrice: 320.5, imageUrl: "https://example.com/c.jpg" }
   ];
-  const payload = buildCarouselPayload("+5511999999999", "vitrine_carrossel_v2_3", "Olha o que achei:", options) as any;
-  const cards = payload.template.components[1].cards;
-  assert.equal(cards.length, 3);
-  for (const card of cards) {
-    const params = card.components[1].parameters.map((p: any) => p.text);
-    assert.equal(params.length, 3, "o template tem 3 variáveis no corpo do card");
-    for (const text of params) assert.ok(text.length > 0, "variável vazia é recusada pelo template");
-    const hydrated = hydrateCarouselCardBody({ name: params[0], price: params[1], delivery: params[2] });
-    assert.ok(hydrated.length <= CAROUSEL_CARD_BODY_LIMIT, `card_index ${card.card_index}: ${hydrated.length}`);
+  for (const template of ["vitrine_carrossel_v2_3", "vitrine_carrossel_v4_3", "vitrine_carrossel_v5_3"]) {
+    const body = carouselCardBodyFor(template.replace(/_\d+$/, ""));
+    const payload = buildCarouselPayload("+5511999999999", template, "Olha o que achei:", options) as any;
+    // v5 não manda o componente de corpo: o carrossel é achado pelo tipo.
+    const cards = payload.template.components.find((c: any) => c.type === "carousel").cards;
+    assert.equal(cards.length, 3);
+    for (const card of cards) {
+      const params = card.components[1].parameters.map((p: any) => p.text);
+      assert.equal(params.length, 3, "o template tem 3 variáveis no corpo do card");
+      for (const text of params) assert.ok(text.length > 0, "variável vazia é recusada pelo template");
+      const hydrated = hydrateCarouselCardBody({ name: params[0], price: params[1], delivery: params[2] }, body);
+      assert.ok(hydrated.length <= CAROUSEL_CARD_BODY_LIMIT, `${template} card_index ${card.card_index}: ${hydrated.length}`);
+    }
   }
+});
+
+test("06/10: card com no máximo 2 quebras de linha (a Meta recusava os 8 templates v4/v5)", () => {
+  for (const body of [CAROUSEL_CARD_BODY, CAROUSEL_CARD_BODY_V4]) {
+    const breaks = (body.match(/\n/g) ?? []).length;
+    assert.ok(breaks <= CAROUSEL_CARD_MAX_LINE_BREAKS, `${breaks} quebras: ${JSON.stringify(body)}`);
+    assert.ok(CAROUSEL_CARD_BODY_LIMIT - body.replace(/\{\{\d+\}\}/g, "").length > 40, "sobra orçamento para as variáveis");
+  }
+  assert.equal(carouselCardBodyFor("vitrine_carrossel_v5"), CAROUSEL_CARD_BODY_V4, "v5 usa o card do v4");
+  assert.equal(carouselCardBodyFor("vitrine_carrossel_v3"), CAROUSEL_CARD_BODY);
+  const hydrated = hydrateCarouselCardBody({ name: "Lenço Huggies 48 un", price: "R$ 15,29", delivery: "amanhã, 12h–15h" }, CAROUSEL_CARD_BODY_V4);
+  assert.equal(hydrated, "Produto: Lenço Huggies 48 un\nPreço: *R$ 15,29*\nEntrega pela loja: amanhã, 12h–15h. Toque abaixo para adicionar.");
 });
 
 test("28/09: prazo agendado vai compacto no card e o template v4 não diz 'contado da compra'", async () => {

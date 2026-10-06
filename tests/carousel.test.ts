@@ -3,7 +3,8 @@
 // quando não dá (desligado, 1 opção, foto ruim, template recusado pela Meta).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CAROUSEL_CARD_COUNTS, buildCarouselTemplate, carouselTemplateName } from "../src/lib/meta-setup";
+import { CAROUSEL_CARD_COUNTS, CAROUSEL_TEMPLATE_PREFIX, CAROUSEL_V4_PREFIX, CAROUSEL_V5_PREFIX, buildCarouselTemplate, carouselTemplateName } from "../src/lib/meta-setup";
+import { CAROUSEL_CARD_MAX_LINE_BREAKS } from "../src/lib/meta-carousel-card";
 import { buildCarouselPayload, whatsappAdapter } from "../src/lib/adapters/whatsapp";
 
 const FIVE = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `optsku:s${i}`, sku: `s${i}`, name: `Relógio ${i + 1}`, displayPrice: 10 * (i + 1), imageUrl: `https://example.com/${i}.jpg` }));
@@ -13,33 +14,40 @@ const OPTIONS = [
   { id: "optsku:cobasi-3", sku: "cobasi-3", name: "Ração Royal Canin 15kg", displayPrice: 320.5, imageUrl: "https://example.com/c.jpg", delivery: "prazo da loja: 2 dias" }
 ];
 
-test("template do carrossel respeita os limites da Meta (2 e 3 cards)", () => {
+// Todo prefixo que o cron cria passa pelas mesmas regras (06/10: o card do v4 tinha 3 quebras
+// de linha e a Meta recusou os 8 templates v4/v5 a cada hora — este teste só montava o v3).
+test("template do carrossel respeita os limites da Meta (2 a 5 cards, v3/v4/v5)", () => {
   assert.deepEqual([...CAROUSEL_CARD_COUNTS], [2, 3, 4, 5]);
-  for (const cards of CAROUSEL_CARD_COUNTS) {
-    const t = buildCarouselTemplate(cards, "4::handle") as any;
-    assert.equal(t.name, carouselTemplateName(cards));
-    assert.equal(t.category, "marketing");
-    assert.equal(t.language, "pt_BR");
-    const body = t.components[0];
-    assert.ok(body.text.length <= 1024);
-    for (const text of [body.text, t.components[1].cards[0].components[1].text]) {
-      assert.doesNotMatch(text, /\{\{\d+\}\}\s*$/, `não pode terminar em variável: ${text}`);
-      assert.doesNotMatch(text, /^\s*\{\{\d+\}\}/, `não pode começar com variável: ${text}`);
-    }
-    assert.ok(body.example.body_text[0].length === (body.text.match(/\{\{\d+\}\}/g) ?? []).length);
-    const carousel = t.components[1];
-    assert.equal(carousel.cards.length, cards);
-    const first = JSON.stringify(carousel.cards[0]);
-    for (const card of carousel.cards) {
-      assert.equal(JSON.stringify(card), first, "todos os cards têm os mesmos componentes");
-      const cardBody = card.components.find((c: any) => c.type === "body");
-      assert.ok(cardBody.text.length <= 160);
-      assert.equal(cardBody.example.body_text[0].length, 3);
-      const buttons = card.components.find((c: any) => c.type === "buttons").buttons;
-      assert.ok(buttons.length <= 2);
-      for (const b of buttons) assert.ok(b.text.length <= 25, b.text);
-      assert.deepEqual(buttons.map((b: any) => b.text), ["Adicionar ao carrinho", "Outras opções"]);
-      assert.equal(card.components.find((c: any) => c.type === "header").format, "image");
+  for (const prefix of [CAROUSEL_TEMPLATE_PREFIX, CAROUSEL_V4_PREFIX, CAROUSEL_V5_PREFIX]) {
+    for (const cards of CAROUSEL_CARD_COUNTS) {
+      const t = buildCarouselTemplate(cards, "4::handle", prefix) as any;
+      assert.equal(t.name, carouselTemplateName(cards, prefix));
+      assert.equal(t.category, "marketing");
+      assert.equal(t.language, "pt_BR");
+      const body = t.components[0];
+      assert.ok(body.text.length <= 1024);
+      for (const text of [body.text, t.components[1].cards[0].components[1].text]) {
+        assert.doesNotMatch(text, /\{\{\d+\}\}\s*$/, `não pode terminar em variável: ${text}`);
+        assert.doesNotMatch(text, /^\s*\{\{\d+\}\}/, `não pode começar com variável: ${text}`);
+      }
+      // v5: corpo fixo, sem variável e sem exemplo.
+      assert.equal((body.example?.body_text?.[0] ?? []).length, (body.text.match(/\{\{\d+\}\}/g) ?? []).length);
+      const carousel = t.components[1];
+      assert.equal(carousel.cards.length, cards);
+      const first = JSON.stringify(carousel.cards[0]);
+      for (const card of carousel.cards) {
+        assert.equal(JSON.stringify(card), first, "todos os cards têm os mesmos componentes");
+        const cardBody = card.components.find((c: any) => c.type === "body");
+        assert.ok(cardBody.text.length <= 160);
+        const breaks = (cardBody.text.match(/\n/g) ?? []).length;
+        assert.ok(breaks <= CAROUSEL_CARD_MAX_LINE_BREAKS, `${t.name}: ${breaks} quebras de linha no card`);
+        assert.equal(cardBody.example.body_text[0].length, 3);
+        const buttons = card.components.find((c: any) => c.type === "buttons").buttons;
+        assert.ok(buttons.length <= 2);
+        for (const b of buttons) assert.ok(b.text.length <= 25, b.text);
+        assert.deepEqual(buttons.map((b: any) => b.text), ["Adicionar ao carrinho", "Outras opções"]);
+        assert.equal(card.components.find((c: any) => c.type === "header").format, "image");
+      }
     }
   }
 });
