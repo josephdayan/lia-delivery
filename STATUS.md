@@ -1,3 +1,22 @@
+## 06/10/2026 — Fora da VTEX: Magento, Wake e Salesforce sondados (seco, sem pedido)
+
+Pedido do dono: sondar Divinho, Havan e as plataformas "provável/talvez". Nenhuma repete a VTEX
+(convidado + Pix + sem captcha, até o fechamento):
+- **Magento:** Divinho (bebidas) tem carrinho, frete e `pagarme_pix` por API, mas reCAPTCHA
+  invisível no fechamento → alto. Havan desligou checkout de convidado (exige conta) e, no item
+  testado, só oferece retirada. Grand Cru (Next.js sobre Magento) não sondável daqui (filtro de
+  rede "álcool" + rate limit). Droga Raia/Drogasil/Riachuelo: Akamai 403. Único limpo: Drogaria
+  Minas Brasil (MG, `openpix_pix`, sem captcha, frete por transportadora) — fora de SP/RJ.
+- **Wake (ex-Linx):** um GraphQL único para todas as lojas, token público, Pix configurado em
+  todas, mas endereço/pagamento/fechamento exigem cliente logado (uma conta com CPF/CNPJ por
+  loja). Lojas achadas: Polipet, Soneda, Balaroti, moda. Sem mercado nem bebidas.
+- **Salesforce Commerce Cloud:** só a Puma vai até a lista de pagamentos com Pix (Payrails, Pix
+  nasce depois do pedido); L'Occitane exige login, Sephora tem Akamai, Cacau Show pede CPF cedo e
+  não lista Pix; Avon declara `guestCheckout:false`.
+Conclusão: a VTEX segue sendo a única base que fecha sozinha. Scripts secos para repetir:
+`scripts/magento-api-probe.mts`, `scripts/wake-api-probe.mts`, `scripts/sfcc-api-probe.mts`
+(endereço lido do config privado; JSON em `.retail-buyer/probes/`).
+
 ## 06/10/2026 — Prezunic fecha pedido real por API no Rio
 
 2º `--buy` em Copacabana (2x sabão líquido 5L, acima do mínimo de R$80): pedido PZ2456030,
