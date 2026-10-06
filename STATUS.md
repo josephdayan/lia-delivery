@@ -1,4 +1,4 @@
-## 06/10/2026 — Medição: dá pra abrir outros estados? (sem decisão)
+## 06/10/2026 — Medição: dá pra abrir outros estados? (decisão: só SP e RJ)
 
 Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (só consulta).
 - Farmácia rápida em quase todo o país: Pague Menos 1–2h em quase todas as capitais; Extrafarma

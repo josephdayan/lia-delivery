@@ -1,3 +1,11 @@
+## 06/10/2026 — DECISÃO: só SP e RJ (outros estados ficam fechados)
+
+Medição nas 27 capitais (STATUS de 06/10): farmácia rápida existe no país todo, mas mercado
+completo — ~60% do que os clientes reais pedem — só em SP e RJ. Dono: "deixa então só SP e RJ".
+`LIA_SERVICE_UFS` fica no padrão `SP,RJ`. Não abrir outro estado sem um mercado com Pix fechando
+por API nele (candidato já sondado: GBarbosa em SE/BA/AL; Super Nosso e Giassi não têm Pix). Não
+repropor a expansão sem esse dado novo.
+
 ## 06/10/2026 (tarde) — Estorno automático em 6h; o agente nunca devolve dinheiro (dono)
 
 O dono quer que estorno aconteça sem ele. O agente (Claude Code) não executa movimentação de

@@ -44,6 +44,7 @@
   `--stores prezunic`) e somar `,prezunic` na mesma variável.
 - [ ] Deploy (push de main).
 - [ ] 1º pedido real no Rio (precisa de um endereço/cliente lá).
+- [x] Outros estados: medido e decidido (06/10) — só SP e RJ até haver mercado com Pix na região.
 - [ ] Telefones de teste dos evals estão gravando `WaitlistLead` no banco de produção (39 de 40
   contatos fora de SP) — limpar e achar o teste que vaza.
 
