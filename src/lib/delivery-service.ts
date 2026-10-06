@@ -2651,6 +2651,20 @@ async function handleDeliveryTurn(
       await sendChoices(phone, ctx.pending[0]);
       return;
     }
+    // "ok"/"sim" com a cesta montada (06/10) encerrava com "Imagina! 💚" e nada era
+    // cobrado — o cliente achava que tinha fechado. Agora mostra o total para aprovar.
+    if ((ctx.basket?.length ?? 0) > 0 && (ctx.step === "collecting" || ctx.step === undefined)) {
+      await continueAfterBasket(phone, convo.id, ctx, user.cep);
+      return;
+    }
+    // Com o Pix aberto, "ok" é "vou pagar": o pagamento continua valendo.
+    if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId) {
+      const open = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { status: true, total: true } });
+      if (open?.status === "awaiting_payment") {
+        await reply(phone, copy.awaitingPaymentAck(open.total));
+        return;
+      }
+    }
     await reply(phone, copy.thanks());
     return;
   }

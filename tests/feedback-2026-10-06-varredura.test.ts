@@ -273,3 +273,15 @@ test("pedir atendente avisa o dono no WhatsApp", async (t) => {
     else process.env.LIA_OWNER_PHONE = prev;
   }
 });
+
+test("'ok' com a cesta montada mostra o total, não encerra", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero arroz");
+  await send(phone, "1");
+  const ctx = await context(phone);
+  if (ctx.step !== "collecting" || !(ctx.basket?.length > 0)) return t.skip(`cesta não montada: ${JSON.stringify(ctx).slice(0, 200)}`);
+  const out = await send(phone, "ok");
+  assert.doesNotMatch(out, /Imagina!/, out.slice(0, 200));
+  assert.match(out, /Total|pedido|endere|pagar/i, out.slice(0, 300));
+});
