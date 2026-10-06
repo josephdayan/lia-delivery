@@ -882,6 +882,34 @@ const WANT_ITEMS_RE =
 // Botão de boas-vindas do WhatsApp (05/10, dono): "Peça qualquer coisa" chega como texto.
 const ASK_ANYTHING_RE = /^(?:pe[cç]a|pedir|quero pedir) qualquer coisa\W*$/;
 
+// Pedido VAGO com saudação/enfeite (cliente real, 06/10): "bom dia queria comprar uma
+// coisa sabe pra ser legal" virou busca por "coisa" (livros com "coisa" no título). Se,
+// tirando saudação, verbo de compra, artigo, "coisa/algo" e enfeite, não sobra NENHUMA
+// palavra, é vontade de comprar sem dizer o quê → pergunta, nunca busca.
+// "outra coisa" fica de fora: na escolha aberta é recusa das opções, não vontade nova.
+// Âncora = o item vago ou o verbo de compra; "quero" sozinho não basta ("quero mais um"
+// é repetição do último item, não pedido vago).
+const VAGUE_WANT_ANCHOR_RE = /\b(comprar|pedir|encomendar|coisas?|coisinhas?|algo|negocios?|trecos?|paradas?)\b/;
+const VAGUE_WANT_WORDS = new Set(
+  (
+    // saudação
+    "oi oii oiii ola opa bom boa dia tarde noite tudo td bem lia e ai eai " +
+    // verbo de compra
+    "eu to estou tava estava vou quero queria gostaria preciso precisava precisando querer comprar pedir encomendar fazer de " +
+    // artigo + o "item" vago
+    "um uma uns umas algum alguma alguns algumas mais coisa coisas coisinha coisinhas algo negocio negocios treco trecos parada paradas " +
+    // qualificador vazio
+    "legal legais bonito bonita bonitinho bonitinha diferente especial interessante bacana maneiro massa top show gostoso gostosa " +
+    // enfeite de fala
+    "sabe ne tipo assim pra para pro ser que seja aqui hoje voce vc vcs me te por favor pf pfv entao la dai hein rs kk kkk haha eh ta"
+  ).split(" ")
+);
+function isVagueWant(n: string): boolean {
+  if (!VAGUE_WANT_ANCHOR_RE.test(n)) return false;
+  const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  return words.length > 0 && words.length <= 16 && words.every((w) => VAGUE_WANT_WORDS.has(w));
+}
+
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
   if (!n) return { kind: "free_text" };
@@ -1255,7 +1283,7 @@ export function detectIntent(text: string): Intent {
 
   // "quero" / "queria comprar" / "quero fazer um pedido" sozinho: vontade de comprar
   // sem dizer O QUÊ. Buscar isso vira "Não entendi seu pedido" — frio. Perguntamos.
-  if (WANT_ITEMS_RE.test(n) || ASK_ANYTHING_RE.test(n)) return { kind: "want_items" };
+  if (WANT_ITEMS_RE.test(n) || ASK_ANYTHING_RE.test(n) || isVagueWant(n)) return { kind: "want_items" };
 
   // Pergunta operacional (frete/prazo/área/pagamento) SEM cara de produto — responder
   // com copy de serviço; cair em busca aqui gera "sabonete pra quem pergunta de frete".

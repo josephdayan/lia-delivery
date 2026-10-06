@@ -342,6 +342,25 @@ test("'quero' sozinho é want_items — convite, não 'não entendi' (ciclo 2)",
   assert.equal(kind("mudei de ideia, quero de volta"), "resume_canceled");
 });
 
+test("pedido vago com saudação/enfeite é want_items — nunca busca por 'coisa' (cliente real 06/10)", () => {
+  for (const s of [
+    "bom dia queria comprar uma coisa sabe pra ser legal",
+    "Bom dia! Queria comprar uma coisa",
+    "quero comprar algo",
+    "quero uma coisa legal",
+    "boa tarde, preciso de umas coisas",
+    "oi lia, queria pedir um negócio",
+  ]) {
+    assert.equal(kind(s), "want_items", s);
+  }
+  // com produto ou destinatário segue lista; "mais um" e "outra coisa" mantêm o sentido
+  assert.equal(kind("queria comprar uma coisa pra minha mãe"), "free_text");
+  assert.equal(kind("quero algo bom pra comer"), "free_text");
+  assert.equal(kind("quero mais um"), "free_text");
+  assert.equal(kind("quero outra coisa"), "free_text");
+  assert.equal(kind("bom dia"), "greeting");
+});
+
 test("desabafo 'to com dor de cabeça' não vira item de busca (ciclo 2: virou 'Caneca Dosadora p/ Cães')", () => {
   const lines = parseBasketLines("to com dor de cabeça, me manda uma dipirona e um suco de laranja");
   assert.ok(!lines.some((l) => /dor de cabec/i.test(l.phrase)), JSON.stringify(lines));
