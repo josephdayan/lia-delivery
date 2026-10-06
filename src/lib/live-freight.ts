@@ -101,7 +101,7 @@ function maxLiveFee(): number {
   return Number.isFinite(value) && value > 0 ? value : 150;
 }
 
-type Sla = { name?: string; price?: number; shippingEstimate?: string; pickupStoreInfo?: { isPickupStore?: boolean }; availableDeliveryWindows?: DeliveryWindow[] };
+type Sla = { id?: string; name?: string; price?: number; shippingEstimate?: string; pickupStoreInfo?: { isPickupStore?: boolean }; availableDeliveryWindows?: DeliveryWindow[]; deliveryIds?: { warehouseId?: string; dockId?: string; courierId?: string }[] };
 export type DeliveryWindow = { startDateUtc: string; endDateUtc: string; price?: number; lisPrice?: number; tax?: number };
 
 // Entrega AGENDADA (25/09, Mambo): a SLA diz "2h" e R$12,90, mas a loja exige escolher uma janela,
@@ -121,7 +121,7 @@ export function effectiveSla<T extends Sla>(sla: T, now = new Date()): T & { del
   const hours = Math.max(1, Math.ceil((Date.parse(w.endDateUtc) - now.getTime()) / 3_600_000));
   return { ...sla, price: (sla.price ?? 0) + (w.price ?? 0), shippingEstimate: `${hours}h@${w.startDateUtc}~${w.endDateUtc}`, deliveryWindow: w };
 }
-type SimItem = { id?: string | number; quantity?: number; availability?: string; sellingPrice?: number };
+type SimItem = { id?: string | number; quantity?: number; availability?: string; sellingPrice?: number; measurementUnit?: string; unitMultiplier?: number };
 type LogisticsInfo = { itemIndex?: number; slas?: Sla[] };
 
 // Loja com checkout consultável (mapa VTEX_LIVE), independente do kill-switch — o plano B
@@ -195,6 +195,90 @@ export function slowestEstimate(estimates: (string | undefined)[]): string | und
   return best;
 }
 
+async function postSimulation(domain: string, items: { id: string; quantity: number; seller: string }[], cep: string): Promise<{ items?: SimItem[]; logisticsInfo?: LogisticsInfo[] } | null> {
+  const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+    },
+    body: JSON.stringify({ items, postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
+    signal: AbortSignal.timeout(timeoutMs())
+  });
+  if (!response.ok) return null;
+  return (await response.json()) as { items?: SimItem[]; logisticsInfo?: LogisticsInfo[] };
+}
+
+// ---------- frete da CESTA de uma loja (06/10, M2) ----------
+// O VTEX devolve o frete POR LINHA: numa cesta de uma entrega só, cada linha traz a sua FATIA
+// (Swift, arroz + feijão: 8,89 + 9,01 = 17,90 — o frete de um item sozinho). Duas falhas
+// cobravam o frete em dobro ("Entrega R$ 35,80 · pela própria loja"):
+//   1. A entrega mais barata era escolhida POR LINHA: arroz na "Agendada" e feijão no "1 dia
+//      útil" viram DUAS entregas. Uma loja = uma entrega: vale a SLA que TODAS as linhas têm,
+//      a de menor total; linhas sem SLA em comum (raro) seguem separadas, somadas.
+//   2. A mesma simulação, repetida, às vezes devolve o frete INTEIRO em cada linha (1790 +
+//      1790, mesmo armazém/doca/transportadora — medido em 06/10, ~1 em 3 respostas, também
+//      no orderForm de verdade). Sinal: ≥2 skus distintos, mesma SLA, mesmo preço em todas as
+//      linhas. Ambíguo com o rateio igual (Pacheco: 345 + 345 = 690 de um item só), então quem
+//      decide é a simulação de um item sozinho: se o item sozinho custa o mesmo P, a resposta
+//      não rateou — o frete da cesta é P, não n×P.
+export type CartLine = { sku: string; slas: (Sla & { price: number })[] };
+type CartPick = { fee: number; estimate?: string; name?: string; slaId?: string; unapportioned?: boolean };
+function slaKey(sla: Sla): string {
+  return String(sla.id ?? sla.name ?? "");
+}
+// Cesta respondida sem rateio? (todas as linhas com o mesmo preço P > 0 na SLA, ≥2 skus).
+export function looksUnapportioned(lines: { sku: string; price: number }[]): boolean {
+  if (lines.length < 2 || new Set(lines.map((l) => l.sku)).size < 2) return false;
+  const first = lines[0].price;
+  return first > 0 && lines.every((l) => l.price === first);
+}
+// Escolhe a entrega da cesta. `pick` decide entre as SLAs de cada linha (mais barata ou mais
+// rápida); `soloPrice(slaId)` = preço dessa SLA para o 1º item SOZINHO (desambigua o rateio).
+export function pickCartSla(
+  lines: CartLine[],
+  better: (a: { fee: number; minutes: number }, b: { fee: number; minutes: number }) => boolean,
+  soloPrice?: (slaId: string) => number | undefined
+): CartPick | null {
+  if (!lines.length || lines.some((l) => !l.slas.length)) return null;
+  const common = lines[0].slas.map(slaKey).filter((key) => key && lines.every((l) => l.slas.some((s) => slaKey(s) === key)));
+  let best: (CartPick & { minutes: number }) | null = null;
+  for (const key of new Set(common)) {
+    const chosen = lines.map((l) => l.slas.filter((s) => slaKey(s) === key).reduce((a, b) => (b.price < a.price ? b : a)));
+    const perLine = chosen.map((sla, i) => ({ sku: lines[i].sku, price: sla.price }));
+    const sum = perLine.reduce((total, l) => total + l.price, 0);
+    const unapportioned = looksUnapportioned(perLine) && soloPrice?.(key) === perLine[0].price;
+    const fee = unapportioned ? perLine[0].price : sum;
+    const estimate = slowestEstimate(chosen.map((s) => s.shippingEstimate));
+    const candidate = { fee, estimate, name: chosen[0].name, slaId: key, minutes: estimateMinutes(estimate), ...(unapportioned ? { unapportioned: true } : {}) };
+    if (!best || better(candidate, best)) best = candidate;
+  }
+  if (best) {
+    const { minutes: _minutes, ...pick } = best;
+    return pick;
+  }
+  // Sem SLA em comum: cada linha na sua (entregas separadas, frete somado de verdade).
+  let fee = 0;
+  const estimates: (string | undefined)[] = [];
+  const names: string[] = [];
+  for (const line of lines) {
+    const own = line.slas.map((s) => ({ fee: s.price, minutes: estimateMinutes(s.shippingEstimate), sla: s })).reduce((a, b) => (better(b, a) ? b : a));
+    fee += own.fee;
+    estimates.push(own.sla.shippingEstimate);
+    if (own.sla.name) names.push(own.sla.name);
+  }
+  return { fee, estimate: slowestEstimate(estimates), name: [...new Set(names)].join(" + ") || undefined };
+}
+const cheaper = (a: { fee: number; minutes: number }, b: { fee: number; minutes: number }) =>
+  a.fee < b.fee || (a.fee === b.fee && a.minutes >= 0 && (b.minutes < 0 || a.minutes < b.minutes));
+// Mais rápida: menor prazo; empate → mais barata. Prazo ilegível nunca vence um legível.
+const quicker = (a: { fee: number; minutes: number }, b: { fee: number; minutes: number }) => {
+  if (a.minutes < 0) return false;
+  if (b.minutes < 0) return true;
+  return a.minutes < b.minutes || (a.minutes === b.minutes && a.fee < b.fee);
+};
+
 export async function liveStoreFreight(
   storeKey: string,
   items: { sku: string; qty: number }[],
@@ -214,18 +298,8 @@ export async function liveStoreFreight(
   }
 
   try {
-    const response = await fetch(`https://${store.domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
-      },
-      body: JSON.stringify({ items: simItems, postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
-      signal: AbortSignal.timeout(timeoutMs())
-    });
-    if (!response.ok) return { kind: "unavailable" };
-    const payload = (await response.json()) as { items?: SimItem[]; logisticsInfo?: LogisticsInfo[] };
+    const payload = await postSimulation(store.domain, simItems, cep);
+    if (!payload) return { kind: "unavailable" };
     const simulated = Array.isArray(payload.items) ? payload.items : [];
     const logistics = Array.isArray(payload.logisticsInfo) ? payload.logisticsInfo : [];
     // O frete é POR ITEM no VTEX (um logisticsInfo por item). Uma resposta que não cobre
@@ -269,14 +343,11 @@ export async function liveStoreFreight(
       infoByItem.set(index, logistics[i]);
     }
 
-    let fee = 0;
-    const estimates: (string | undefined)[] = [];
-    let fastFee = 0;
-    const fastEstimates: (string | undefined)[] = [];
-    const fastNames: string[] = [];
-    for (const info of infoByItem.values()) {
+    const lines: CartLine[] = [];
+    for (const index of [...infoByItem.keys()].sort((a, b) => a - b)) {
+      const info = infoByItem.get(index)!;
       const deliveries = (info.slas ?? []).map((sla) => effectiveSla(sla)).filter(
-        (sla) =>
+        (sla): sla is typeof sla & { price: number } =>
           !sla.pickupStoreInfo?.isPickupStore &&
           !/retir/i.test(sla.name ?? "") &&
           // Preço AUSENTE não é frete grátis: sem número, não há o que cobrar com
@@ -287,33 +358,40 @@ export async function liveStoreFreight(
       );
       // Um item sem opção de entrega = a loja não entrega essa cesta nesse CEP.
       if (!deliveries.length) return { kind: "no-delivery" };
-      const cheapest = deliveries.reduce((best, sla) => (sla.price! < best.price! ? sla : best));
-      fee += cheapest.price! / 100;
-      estimates.push(cheapest.shippingEstimate);
-      // Mais rápida do item: menor prazo; empate → mais barata.
-      const fastest = deliveries.reduce((best, sla) => {
-        const a = estimateMinutes(sla.shippingEstimate);
-        const b = estimateMinutes(best.shippingEstimate);
-        if (a < 0) return best;
-        if (b < 0) return sla;
-        if (a !== b) return a < b ? sla : best;
-        return sla.price! < best.price! ? sla : best;
-      });
-      fastFee += fastest.price! / 100;
-      fastEstimates.push(fastest.shippingEstimate);
-      if (fastest.name) fastNames.push(fastest.name);
+      lines.push({ sku: String(simulated[index]?.id ?? index), slas: deliveries });
     }
-    fee = Math.round(fee * 100) / 100;
+    // Uma entrega por loja (06/10, M2): a SLA comum de menor total; resposta sem rateio é
+    // conferida com o 1º item sozinho (1 simulação a mais, só quando ambígua).
+    const ambiguous = new Set<string>();
+    const probe = (key: string) => {
+      ambiguous.add(key);
+      return undefined;
+    };
+    pickCartSla(lines, cheaper, probe);
+    pickCartSla(lines, quicker, probe);
+    let solo: Map<string, number> | null = null;
+    if (ambiguous.size) {
+      const first = simItems.find((item) => item.id === lines[0].sku) ?? simItems[0];
+      const alone = await postSimulation(store.domain, [first], cep).catch(() => null);
+      const slas = alone?.logisticsInfo?.[0]?.slas ?? [];
+      solo = new Map(slas.map((sla) => effectiveSla(sla)).filter((sla) => typeof sla.price === "number").map((sla) => [slaKey(sla), sla.price!]));
+    }
+    const soloPrice = (key: string) => solo?.get(key);
+    const cheap = pickCartSla(lines, cheaper, soloPrice);
+    const fast = pickCartSla(lines, quicker, soloPrice);
+    if (!cheap || !fast) return { kind: "no-delivery" };
+    if (cheap.unapportioned) console.log("[live-freight:unapportioned]", storeKey, cheap.slaId, `${lines.length}×${cheap.fee}`);
+    const fee = Math.round(cheap.fee) / 100;
     if (!Number.isFinite(fee) || fee < 0 || fee > maxLiveFee()) return { kind: "unavailable" };
-    const estimate = slowestEstimate(estimates);
-    fastFee = Math.round(fastFee * 100) / 100;
-    const fastEstimate = slowestEstimate(fastEstimates);
+    const estimate = cheap.estimate;
+    const fastFee = Math.round(fast.fee) / 100;
+    const fastEstimate = fast.estimate;
     const cheapMinutes = estimateMinutes(estimate);
     const fastMinutes = estimateMinutes(fastEstimate);
     const extra = Math.round((fastFee - fee) * 100) / 100;
     const faster =
       fastMinutes >= 0 && (cheapMinutes < 0 || fastMinutes < cheapMinutes) && extra >= 0 && extra <= maxFastExtra() && fastFee <= maxLiveFee()
-        ? { fee: fastFee, estimate: fastEstimate, name: [...new Set(fastNames)].join(" + ") || undefined }
+        ? { fee: fastFee, estimate: fastEstimate, name: fast.name }
         : undefined;
     const unitPrices: Record<string, number> = {};
     for (const item of items) {

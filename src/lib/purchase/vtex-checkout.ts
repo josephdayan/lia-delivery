@@ -11,7 +11,7 @@
 //     `callbackUrl`, `deviceInfo` e `an`. O `gatewayCallback` responde 428 com
 //     `paymentAuthorizationAppCollection[].appPayload` (vtex.pix-payment) = copia-e-cola.
 // Nada aqui toca o banco; a máquina de estados fica em purchase-execution.ts.
-import { effectiveSla, estimateMinutes, humanEstimate, promisedMinutes } from "../live-freight";
+import { effectiveSla, estimateMinutes, humanEstimate, looksUnapportioned, promisedMinutes } from "../live-freight";
 import { findPixCode } from "../pix-emv";
 import type { CheckoutEvidence } from "../purchase-execution";
 
@@ -208,7 +208,7 @@ export class VtexCheckoutSession {
         throw new VtexCheckoutRejected("clientProfileData", 200, "a loja não confirmou o CPF do comprador (perfil mascarado ou outro documento)");
     }
     const a = input.address;
-    const shipped = await this.orderFormCall("shippingData", `/orderForm/${orderFormId}/attachments/shippingData`, {
+    const addressBody = {
       clearAddressIfPostalCodeNotFound: false,
       selectedAddresses: [{
         addressType: "residential",
@@ -223,25 +223,45 @@ export class VtexCheckoutSession {
         state: a.state,
         ...(a.geo ? { geoCoordinates: [a.geo.lng, a.geo.lat] } : {}),
       }],
-    });
-    const messages = ((shipped.messages as Json[] | undefined) ?? []).map((m) => String(m.text ?? "")).filter(Boolean);
-    const logistics = (((shipped.shippingData as Json | undefined)?.logisticsInfo as Json[] | undefined) ?? []);
-    if (!logistics.length) throw new VtexCheckoutRejected("shippingData", 200, messages[0] ?? "loja não devolveu logística");
+    };
     const budget = promisedMinutes(input.deliveryPromise);
-    const selection = logistics.map((line) => {
-      // Entrega agendada: preço + janela mais cedo, prazo até o fim dela (mesma regra da cotação).
-      const slas = ((line.slas as Json[] | undefined) ?? []).map((s) => effectiveSla(s as never) as unknown as Json).filter((s) =>
-        s.deliveryChannel === "delivery" && typeof s.price === "number" && Number.isFinite(s.price) && (s.price as number) >= 0 && !/retir/i.test(String(s.name ?? s.id ?? "")));
-      // Mesma regra do comprador do Mac (15/09): entrega com prazo igual ou MENOR que o
-      // prometido ao cliente, a mais barata; empate → a mais rápida. Sem promessa legível,
-      // a mais barata que exista.
-      const fits = slas.filter((s) => budget == null || (estimateMinutes(String(s.shippingEstimate)) >= 0 && estimateMinutes(String(s.shippingEstimate)) <= budget));
-      fits.sort((x, y) => (x.price as number) - (y.price as number) || estimateMinutes(String(x.shippingEstimate)) - estimateMinutes(String(y.shippingEstimate)));
-      if (!fits.length) throw new VtexCheckoutRejected("sla", 200, messages[0] ?? (slas.length ? `nenhuma entrega dentro do prazo prometido (${input.deliveryPromise ?? "?"})` : "loja não entrega esse item nesse endereço"));
-      const window = (fits[0] as { deliveryWindow?: Json }).deliveryWindow;
-      return { itemIndex: Number(line.itemIndex ?? 0), selectedSla: String(fits[0].id), selectedDeliveryChannel: "delivery", ...(window ? { deliveryWindow: window } : {}) };
-    });
-    await this.orderFormCall("selectedSla", `/orderForm/${orderFormId}/attachments/shippingData`, { ...(shipped.shippingData as Json), logisticsInfo: selection });
+    // Frete sem rateio (06/10, M2): a Swift às vezes devolve o frete INTEIRO em cada linha da
+    // mesma entrega (17,90 + 17,90 no lugar de 8,89 + 9,01) — no orderForm de verdade também.
+    // A cotação cobra UM frete; aqui o endereço é reenviado (a loja recalcula) até a cesta sair
+    // com o rateio, no máximo 3 vezes. Persistindo, a conferência recusa pelo teto (revisão).
+    for (let attempt = 0; ; attempt++) {
+      const shipped = await this.orderFormCall("shippingData", `/orderForm/${orderFormId}/attachments/shippingData`, addressBody);
+      const messages = ((shipped.messages as Json[] | undefined) ?? []).map((m) => String(m.text ?? "")).filter(Boolean);
+      const logistics = (((shipped.shippingData as Json | undefined)?.logisticsInfo as Json[] | undefined) ?? []);
+      if (!logistics.length) throw new VtexCheckoutRejected("shippingData", 200, messages[0] ?? "loja não devolveu logística");
+      const perLine = logistics.map((line) => {
+        // Entrega agendada: preço + janela mais cedo, prazo até o fim dela (mesma regra da cotação).
+        const slas = ((line.slas as Json[] | undefined) ?? []).map((s) => effectiveSla(s as never) as unknown as Json).filter((s) =>
+          s.deliveryChannel === "delivery" && typeof s.price === "number" && Number.isFinite(s.price) && (s.price as number) >= 0 && !/retir/i.test(String(s.name ?? s.id ?? "")));
+        // Mesma regra do comprador do Mac (15/09): entrega com prazo igual ou MENOR que o
+        // prometido ao cliente, a mais barata; empate → a mais rápida. Sem promessa legível,
+        // a mais barata que exista.
+        const fits = slas.filter((s) => budget == null || (estimateMinutes(String(s.shippingEstimate)) >= 0 && estimateMinutes(String(s.shippingEstimate)) <= budget));
+        fits.sort((x, y) => (x.price as number) - (y.price as number) || estimateMinutes(String(x.shippingEstimate)) - estimateMinutes(String(y.shippingEstimate)));
+        if (!fits.length) throw new VtexCheckoutRejected("sla", 200, messages[0] ?? (slas.length ? `nenhuma entrega dentro do prazo prometido (${input.deliveryPromise ?? "?"})` : "loja não entrega esse item nesse endereço"));
+        return { line, fits };
+      });
+      // Uma loja = uma entrega (06/10, M2, a mesma regra da cotação): a SLA que cabe em TODAS
+      // as linhas, a de menor total; sem SLA comum, cada linha na sua mais barata.
+      const common = [...new Set(perLine[0].fits.map((s) => String(s.id)))].filter((id) => perLine.every((l) => l.fits.some((s) => String(s.id) === id)));
+      const total = (id: string) => perLine.reduce((sum, l) => sum + (l.fits.find((s) => String(s.id) === id)!.price as number), 0);
+      const shared = common.sort((x, y) => total(x) - total(y))[0];
+      const selection = perLine.map(({ line, fits }) => {
+        const chosen = (shared ? fits.find((s) => String(s.id) === shared) : undefined) ?? fits[0];
+        const window = (chosen as { deliveryWindow?: Json }).deliveryWindow;
+        return { itemIndex: Number(line.itemIndex ?? 0), selectedSla: String(chosen.id), selectedDeliveryChannel: "delivery", ...(window ? { deliveryWindow: window } : {}) };
+      });
+      const selected = await this.orderFormCall("selectedSla", `/orderForm/${orderFormId}/attachments/shippingData`, { ...(shipped.shippingData as Json), logisticsInfo: selection });
+      const prices = perLine.map(({ fits }, i) => ({ sku: String((((selected.items as Json[] | undefined) ?? [])[i] as Json | undefined)?.id ?? i), price: Number(fits.find((s) => String(s.id) === selection[i].selectedSla)?.price ?? 0) }));
+      const unapportioned = Boolean(shared) && looksUnapportioned(prices);
+      if (!unapportioned || attempt >= 2) break;
+      console.log("[vtex-checkout:unapportioned-retry]", this.storeKey, shared, prices.length);
+    }
     const value = Number(this.form!.value);
     const paid = await this.orderFormCall("paymentData", `/orderForm/${orderFormId}/attachments/paymentData`, {
       payments: [{ paymentSystem: PIX_PAYMENT_SYSTEM, referenceValue: value, value, installments: 1 }],
