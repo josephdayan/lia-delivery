@@ -139,8 +139,12 @@ const WET_WORDS = new Set(["umida", "umido", "sache", "lata", "pate"]);
 
 // Which species a set of words is ABOUT, or null if neither or BOTH (e.g. a shampoo
 // "para Cães e Gatos" serves both, so it shouldn't be excluded from either).
-function animalOf(wordList: string[]): "dog" | "cat" | null {
-  const dog = wordList.some((w) => DOG_WORDS.has(w));
+// Raça de cachorro no NOME do item também diz a espécie (06/10, A6: "Ração Premier Raças
+// Específicas Bulldog Francês" é de cachorro e aparecia para "ração premier gato 1kg").
+// Só lado do item: o cliente que fala "shih tzu" já é coberto pela busca normal.
+const DOG_BREED_WORDS = new Set(["bulldog", "buldogue", "shih", "yorkshire", "poodle", "labrador", "pinscher", "spitz", "pug", "lhasa", "maltes", "dachshund", "schnauzer", "beagle", "rottweiler", "pitbull", "chihuahua", "pastor", "border", "dogs"]);
+function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | null {
+  const dog = wordList.some((w) => DOG_WORDS.has(w) || (itemSide && DOG_BREED_WORDS.has(w)));
   const cat = wordList.some((w) => CAT_WORDS.has(w));
   if (dog === cat) return null;
   return dog ? "dog" : "cat";
@@ -300,11 +304,15 @@ const TIEBREAK_VARIANTS = new Set(["integral", "desnatado", "desnatada", "semide
 export function variantCount(query: string, item: CatalogItem): number {
   const qTokens = new Set(queryTokens(query));
   const beforeSabor = normalizeText(item.name).split(/\bsabor\b/)[0];
-  let count = words(beforeSabor).filter((w) => TIEBREAK_VARIANTS.has(w) && !qTokens.has(w)).length;
+  const nameWords = words(beforeSabor);
+  let count = nameWords.filter((w, i) => TIEBREAK_VARIANTS.has(w) && !qTokens.has(w) && nameWords[i - 1] !== "sem").length;
   // "Sem Açúcar"/"Sem Lactose" no NOME é variante não pedida — "coca" genérica prefere
   // a original. Pedir "sem açúcar" (ou o equivalente "zero"/"diet"/"light") desliga.
   for (const m of beforeSabor.matchAll(/\bsem\s+([a-z]\S*)/g)) {
     const negated = m[1];
+    // "Sem Gás" nega uma VARIANTE: é a versão básica, não outra variante (06/10: "água
+    // mineral 1,5l" punha a com gás na frente por empate).
+    if (TIEBREAK_VARIANTS.has(negated)) continue;
     const asked =
       qTokens.has(negated) ||
       (negated === "acucar" && ["zero", "diet", "light"].some((t) => qTokens.has(t)));
@@ -337,6 +345,8 @@ function normSize(s: string): string {
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/litros?|\blts?\b/g, "l")
+    // "1.5L" e "1,5L" são o mesmo tamanho (06/10, A9: "água mineral 1,5l" não achava "1.5L").
+    .replace(/(\d)\.(\d)/g, "$1,$2")
     .replace(/(\d)\s+(?=(kg|g|ml|l)\b)/g, "$1");
 }
 
@@ -371,9 +381,17 @@ const PACK_COUNT_RE = /\b(\d{1,3})\s*(bolas?|rolos?|capsulas?|comprimidos?|sache
 const packUnit = (unit: string) => unit.replace(/s$/, "");
 
 // Token de medida: tamanho, volume, peso ou dose. Soma score de variante, nunca segura relevância.
-const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|un)$/;
+const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|lts|litros?|quilos?|gramas?|un)$/;
 
+// Nome equivalente do produto conta como o próprio pedido (06/10, A9): "sabão em pó" casa
+// com "Lava Roupas em Pó Omo" — na busca, no piso do concierge e no "tira o X".
 export function scoreCatalogMatch(query: string, item: CatalogItem): number {
+  const own = scoreQuery(query, item);
+  const aliases = queryAliases(query);
+  return aliases.length ? Math.max(own, ...aliases.map((alias) => scoreQuery(alias, item))) : own;
+}
+
+function scoreQuery(query: string, item: CatalogItem): number {
   const tokens = queryTokens(query);
   if (!tokens.length) return 0;
   const nameNorm = normalizeText(item.name);
@@ -400,7 +418,7 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
 
   // Species guard: a dog request must NEVER surface cat food (or vice versa).
   const queryAnimal = animalOf(effTokens);
-  const itemAnimal = animalOf(nameWords);
+  const itemAnimal = animalOf(nameWords, true);
   if (queryAnimal && itemAnimal && queryAnimal !== itemAnimal) return 0;
   // Produto humano vs versão pet: quem pede "shampoo"/"perfume" sem falar de bicho
   // NUNCA quer a versão de cachorro/gato/aquário (nem a "para Cães e Gatos").
@@ -450,7 +468,9 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
 
   // Tamanho pedido ("coca 2 litros", "arroz 5kg") é sinal forte: item com o tamanho
   // certo sobe; item com OUTRO tamanho explícito perde força.
-  const sizeAsks = [...normalizeText(query).matchAll(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|lt|litros?)\b/g)];
+  // normSize (não normalizeText): "1,5l" continua 1,5 — normalizeText apagava a vírgula e o
+  // pedido virava "5l" (06/10, A9: "água mineral 1,5l" trazia galão de 5 L).
+  const sizeAsks = [...normSize(query).matchAll(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|lt|litros?)\b/g)];
   for (const m of sizeAsks) {
     const attr = `${m[1]}${m[2].replace(/litros?|lts?$/, "l")}`;
     if (attrMatchesItem(attr, item)) score += 3;
@@ -608,8 +628,14 @@ export function scoreCatalogMatch(query: string, item: CatalogItem): number {
 // solta invalida. Consulta longa carrega qualificadores ("escova de dente macia"), então uma
 // palavra sem correspondência é tolerada. Tokens de tamanho ("2kg", "350ml") nunca contam:
 // eles são filtro de variante, não identidade do produto.
-export function conciergeMatchIsStrong(query: string, item: CatalogItem): boolean {
-  if (scoreCatalogMatch(query, item) <= 0) return false;
+// `allTokens` (06/10, A6): cobertura TOTAL — o item responde por todas as palavras do pedido
+// (marca e espécie inclusas). Usado para decidir se um tamanho pedido pode filtrar a vitrine.
+export function conciergeMatchIsStrong(query: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
+  return [query, ...queryAliases(query)].some((q) => strongFor(q, item, opts));
+}
+
+function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
+  if (scoreQuery(query, item) <= 0) return false;
 
   const negs = new Set(negatedWords(query));
   const wordTokens = queryTokens(query).filter(
@@ -637,7 +663,26 @@ export function conciergeMatchIsStrong(query: string, item: CatalogItem): boolea
   const specMissing = wordTokens.some((token) => SPEC_TOKENS.has(token) && !nameTokens.has(token) &&
     !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
   if (specMissing) return false;
-  return wordTokens.length <= 2 ? missing === 0 : missing <= 1;
+  return wordTokens.length <= 2 || opts?.allTokens ? missing === 0 : missing <= 1;
+}
+
+// Outros nomes do MESMO produto (06/10, A9): o catálogo chama de um jeito, o cliente de outro.
+// Só equivalências de nome comercial — nunca "produto parecido". A busca roda a frase do
+// cliente E a equivalente; o rerank julga as duas listas juntas.
+const QUERY_ALIASES: Array<[RegExp, string]> = [
+  [/\bsab(?:ao|oes) (?:em )?po\b/, "lava roupas em po"],
+  [/\blava roupas? (?:em )?po\b/, "sabao em po"],
+  [/\bxampus?\b/, "shampoo"],
+  [/\bcaixas? de leite\b/, "leite longa vida"],
+  [/\bleite de caixinha\b/, "leite longa vida"]
+];
+export function queryAliases(query: string): string[] {
+  const norm = normalizeText(query);
+  const out: string[] = [];
+  for (const [re, alias] of QUERY_ALIASES) {
+    if (re.test(norm)) out.push(norm.replace(re, alias));
+  }
+  return out.filter((alias) => alias !== norm);
 }
 const SPEC_TOKENS = new Set(["usb", "usbc", "usba", "microusb", "hdmi", "bluetooth", "lightning", "wifi", "vga", "ethernet", "rj45"]);
 

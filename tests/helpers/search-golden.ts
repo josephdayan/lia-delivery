@@ -240,5 +240,36 @@ export const GOLDEN_CASES: GoldenCase[] = [
     deterministic: true,
     note: "o token '600mg' segurava a relevância sozinho; 600 mg não é isento (sem MIP no catálogo) → linha livre honesta"
   },
+  {
+    name: "sabão em pó acha o 'Lava Roupas em Pó' da vitrine de produção (A9)",
+    query: "sabao em po",
+    top1Include: /lava roupas em po|sabao em po/,
+    allExclude: /barra|pasta|dipirona/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "na vitrine de compra automática o único sabão em pó é 'Lava Roupas em Pó' (Mambo); vinha sabão em BARRA"
+  },
+  { name: "xampu é shampoo (A9)", query: "xampu", top1Include: /shampoo/, env: AUTO_ROSTER, deterministic: true },
+  { name: "caixa de leite é leite longa vida (A9)", query: "caixa de leite", top1Include: /^leite .*(1 ?l|litro)/, allExclude: /condensad|em po|de coco/, env: AUTO_ROSTER, deterministic: true },
+  {
+    name: "água mineral 1,5l é a garrafa de 1,5 L, nunca o galão de 5 L (A9)",
+    query: "agua mineral 1,5l",
+    // normalizeText: "1,5L" → "1 5l"
+    top1Include: /\b1 5\s?l\b/,
+    top1Exclude: /com gas/,
+    allExclude: /(?<!1 )\b5\s?l\b/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "normalizeText apagava a vírgula: o pedido virava '5l' e 3 galões de 5 L venciam"
+  },
+  {
+    name: "ração de GATO com peso pedido nunca vira ração de cachorro de raça (A6)",
+    query: "racao premier gato 1kg",
+    top1Include: /gato/,
+    allExclude: /bulldog|shih|yorkshire|poodle|caes|cachorro/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "'Premier Raças Específicas Bulldog Francês 1 kg' não diz 'cão' no nome — a raça diz"
+  },
   { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true }
 ];

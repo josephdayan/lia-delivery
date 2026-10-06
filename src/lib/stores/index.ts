@@ -1,6 +1,6 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
-import { conciergeMatchIsStrong, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
+import { conciergeMatchIsStrong, queryAliases, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
 import { petzStore } from "./petz";
 import { boticarioStore } from "./boticario";
 import { obaStore } from "./oba";
@@ -296,7 +296,15 @@ export async function gatherCrossStoreCandidates(
   const longTail = stores.find((store) => store.key === mercadoLivreStore.key);
   const localStores = stores.filter((store) => store.key !== mercadoLivreStore.key);
   const localHits = await searchSelectedStores(localStores, query, perStore);
-  const localRanked = rankStoreCandidates(query, localHits);
+  let localRanked = rankStoreCandidates(query, localHits);
+  // Nome equivalente do mesmo produto (06/10, A9: "sabão em pó" ↔ "lava roupas em pó",
+  // "xampu" ↔ "shampoo"): cada frase é ranqueada por ela mesma; a equivalente vem primeiro
+  // porque é o nome do catálogo (o rerank julga as duas juntas).
+  for (const alias of queryAliases(query)) {
+    const aliasRanked = rankStoreCandidates(alias, await searchSelectedStores(localStores, alias, perStore));
+    const seen = new Set(aliasRanked.map((c) => `${c.store.key}:${c.item.sku}`));
+    localRanked = [...aliasRanked, ...localRanked.filter((c) => !seen.has(`${c.store.key}:${c.item.sku}`))];
+  }
 
   // The ML actor is slow and paid. It only runs when no local candidate clears the
   // concierge relevance floor; registry order alone would still await it through

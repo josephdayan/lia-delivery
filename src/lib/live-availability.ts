@@ -12,7 +12,9 @@ import { PER_AD_FREIGHT_STORES } from "./instant-quote";
 import { liveCheckSupported, liveFreightEnabled, liveItemAvailability, type LiveItemCheck } from "./live-freight";
 import { isRegionalStore, storeServesCep } from "./store-areas";
 
-export type LiveCandidate = { storeKey: string; sku: string };
+// `qty` (06/10, M3): a vitrine confere a QUANTIDADE pedida — conferir 1 unidade e cobrar 3
+// fazia "3 cocas" falhar no "pagar" (estoque menor que o pedido).
+export type LiveCandidate = { storeKey: string; sku: string; qty?: number };
 
 // 06/10 (teste real: "Pilha AAA" da Casa & Vídeo, fita isolante da Obramax): a vitrine
 // mostrava opção que a loja NÃO tinha confirmado para o CEP; no "pagar" a cotação
@@ -27,7 +29,7 @@ export function liveConfirmationRequired(): boolean {
 export function buyableWithoutOperator(storeKey: string | undefined, check: LiveItemCheck | undefined): boolean {
   return PER_AD_FREIGHT_STORES.has(storeKey ?? "") || check?.available === true;
 }
-export type Simulate = (storeKey: string, skus: string[], cep: string) => Promise<Map<string, LiveItemCheck> | null>;
+export type Simulate = (storeKey: string, skus: string[], cep: string, qtys?: Record<string, number>) => Promise<Map<string, LiveItemCheck> | null>;
 
 export function liveKey(storeKey: string, sku: string): string {
   return `${storeKey}:${sku}`;
@@ -62,8 +64,10 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
   await Promise.all(
     [...byStore].map(async ([storeKey, list]) => {
       const skus = [...new Set(list.map((c) => c.sku))].slice(0, 12);
+      const qtys: Record<string, number> = {};
+      for (const c of list) if (c.qty && c.qty > 1) qtys[c.sku] = Math.max(qtys[c.sku] ?? 1, Math.round(c.qty));
       try {
-        const result = await simulate(storeKey, skus, cep);
+        const result = await simulate(storeKey, skus, cep, Object.keys(qtys).length ? qtys : undefined);
         if (!result) return; // loja não respondeu → desconhecido, mantém
         for (const [sku, check] of result) checks.set(liveKey(storeKey, sku), check);
       } catch {

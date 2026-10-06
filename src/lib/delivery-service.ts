@@ -12,7 +12,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
@@ -204,7 +204,13 @@ async function buildChoices(
     lines.map(async (line) => {
       // "vinho até 40 reais": o teto NÃO é termo de busca — vira filtro sobre o
       // preço exibido (com markup), senão a lista mostra item acima do que pediram.
-      const { phrase: searchPhrase, cap } = splitPriceCap(line.phrase);
+      const { phrase: rawPhrase, cap } = splitPriceCap(line.phrase);
+      // "meio quilo de queijo" / "2 quilos de batata" (06/10, A6): peso por extenso vira medida,
+      // senão "meio"/"quilo" contam como palavras do produto e nada cobre o pedido.
+      const searchPhrase = rawPhrase
+        .replace(/\bmei[oa]\s+(quilo|kilo|kg)\b/i, "500g")
+        .replace(/(\d+(?:[.,]\d+)?)\s*(quilos?|kilos?)\b/i, "$1kg")
+        .replace(/\b(um|1)\s+(quilo|kilo)\b/i, "1kg");
       let candidates: StoreCandidate[];
       if (crossStore) {
         candidates = await gatherCrossStoreCandidates(searchPhrase, 12, 4, {
@@ -218,12 +224,35 @@ async function buildChoices(
       }
       if (cap != null) candidates = candidates.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
       // Tamanho/volume pedido ("30 litros", "2kg") vale para TODOS os cards, não só a
-      // escolha (rodada 7, 4º ciclo: 1 das 3 opções não era de 30l). Se ao menos um
-      // candidato tem o atributo, os que não têm saem da vitrine.
+      // escolha (rodada 7, 4º ciclo: 1 das 3 opções não era de 30l).
+      // 06/10 (A6): o tamanho só filtra DENTRO do produto pedido — candidato que responde por
+      // todas as palavras do pedido. "ração premier gato 1kg" virava ração de cachorro de 1 kg e
+      // "meio quilo de queijo mussarela" virava canelone de 500 g só porque o peso batia. Sem o
+      // produto certo no tamanho pedido, ficam os outros tamanhos (o tamanho vira preferência).
+      // Item vendido por peso ("Tomate Italiano Kg") atende qualquer pedido em kg/g.
+      let qty = line.qty;
+      // O que a reserva (mais abaixo) também tem que respeitar: o produto e o tamanho pedidos.
+      let sizeOk: (c: StoreCandidate) => boolean = () => true;
+      const bestScore = Math.max(0, ...candidates.map((c) => scoreCatalogMatch(searchPhrase, c.item)));
       const sizeAsk = searchPhrase.match(/\d+(?:[.,]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/i)?.[0];
       if (sizeAsk) {
-        const sized = candidates.filter((c) => attrMatchesItem(sizeAsk, c.item));
-        if (sized.length) candidates = sized;
+        const relevant = candidates.filter((c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }));
+        const isWeight = /(kg|g)$/i.test(sizeAsk.replace(/\s+/g, ""));
+        const fits = (c: StoreCandidate) => attrMatchesItem(sizeAsk, c.item) || (isWeight && /\bkg\.?$/i.test(c.item.name.trim()));
+        const sized = relevant.filter(fits);
+        if (sized.length) {
+          candidates = sized;
+          sizeOk = (c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }) && fits(c);
+        }
+        else {
+          // "2 litros de leite" = 2 caixas de 1 L quando não existe a embalagem de 2 L (A9).
+          const split = splitBySize(sizeAsk, relevant.map((c) => c.item));
+          if (split) {
+            candidates = relevant.filter((c) => attrMatchesItem(split.unit, c.item));
+            qty = line.qty * split.count;
+            sizeOk = (c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }) && attrMatchesItem(split.unit, c.item);
+          }
+        }
       }
       // Recompra: o que o cliente já escolheu antes sobe (sort estável preserva o
       // ranking de relevância entre itens sem histórico).
@@ -234,20 +263,56 @@ async function buildChoices(
       let noneToday = false;
       let unconfirmed = false;
       if (cep) {
-        const wrapped = candidates.map((c) => ({ storeKey: c.store.key, sku: c.item.sku, c }));
-        const live = await checkCandidatesLive(wrapped, cep);
-        for (const [key, check] of live.checks) liveChecks.set(key, check);
-        if (live.dropped.length) {
-          console.log("[live-check:dropped]", live.dropped.map((w) => `${w.storeKey}:${w.sku}`).join(","));
-        }
-        candidates = live.kept.map((w) => w.c);
+        // Quantidade que o card confere na loja = a que vai ser cobrada (06/10, M3).
+        const qtyFor = (c: StoreCandidate) => (line.qtyExplicit || qty > 1 ? packAdjusted(c.item.name, qty, searchPhrase).qty : 1);
+        const confirm = async (pool: StoreCandidate[]) => {
+          const wrapped = pool.map((c) => ({ storeKey: c.store.key, sku: c.item.sku, qty: qtyFor(c), c }));
+          const live = await checkCandidatesLive(wrapped, cep);
+          for (const [key, check] of live.checks) liveChecks.set(key, check);
+          let kept = live.kept;
+          // Loja que não respondeu a tempo (06/10, M4: "nenhuma loja confirmou" depois de 25 s)
+          // ganha UMA nova tentativa antes de virar "não confirmado".
+          const unknown = kept.filter((w) => !live.checks.has(liveKey(w.storeKey, w.sku)) && liveCheckSupported(w.storeKey));
+          if (unknown.length && liveConfirmationRequired()) {
+            const again = await checkCandidatesLive(unknown, cep);
+            for (const [key, check] of again.checks) liveChecks.set(key, check);
+            kept = kept.filter((w) => !unknown.includes(w) || again.kept.includes(w));
+            live.dropped.push(...again.dropped);
+          }
+          if (live.dropped.length) {
+            console.log("[live-check:dropped]", live.dropped.map((w) => `${w.storeKey}:${w.sku}`).join(","));
+          }
+          return { kept: kept.map((w) => w.c), dropped: live.dropped.length };
+        };
+        const first = await confirm(candidates);
+        candidates = first.kept;
         // 06/10 (testers: pilha da Casa & Vídeo, fita isolante da Obramax): sem operador, opção
         // que a loja não confirmou para o CEP é beco no "pagar" (a cotação aborta). Sai da
         // vitrine; se nada foi confirmado, a linha vira "não consigo comprar agora".
         if (liveConfirmationRequired()) {
-          const buyable = candidates.filter((c) => buyableWithoutOperator(c.store.key, liveChecks.get(liveKey(c.store.key, c.item.sku))));
+          const buyableOf = (pool: StoreCandidate[]) => pool.filter((c) => buyableWithoutOperator(c.store.key, liveChecks.get(liveKey(c.store.key, c.item.sku))));
+          let buyable = buyableOf(candidates);
           if (buyable.length < candidates.length) {
             console.log("[live-check:unconfirmed]", candidates.filter((c) => !buyable.includes(c)).map((c) => `${c.store.key}:${c.item.sku}`).join(","));
+          }
+          // Reserva (06/10, A9): a loja derrubou os primeiros candidatos (Mambo: metade dos skus
+          // "não pode ser entregue para as coordenadas" — açúcar, detergente). Antes de dizer
+          // "não achei", confere os PRÓXIMOS candidatos relevantes, mais fundo em cada vitrine.
+          if (buyable.length < 2 && (first.dropped > 0 || buyable.length < candidates.length)) {
+            const tried = new Set([...liveChecks.keys()]);
+            let deeper = (await gatherCrossStoreCandidates(searchPhrase, 36, 12)).filter(
+              // Só o mesmo produto: relevância perto da dos primeiros (no máx. 3 pontos abaixo) e o
+              // tamanho pedido — "Leite de Rosas" não é reserva de leite.
+              (c) => !tried.has(liveKey(c.store.key, c.item.sku)) && conciergeMatchIsStrong(searchPhrase, c.item) && sizeOk(c) && scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 3
+            );
+            if (cap != null) deeper = deeper.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
+            if (deeper.length) {
+              const more = await confirm(deeper.slice(0, 12));
+              const extra = buyableOf(more.kept);
+              console.log("[live-check:deeper]", searchPhrase, `${extra.length}/${Math.min(12, deeper.length)}`);
+              candidates = [...candidates, ...more.kept];
+              buyable = [...buyable, ...extra];
+            }
           }
           unconfirmed = candidates.length > 0 && buyable.length === 0;
           candidates = buyable;
@@ -263,7 +328,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, phrase: searchPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: searchPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
     })
   );
 
@@ -4974,6 +5039,18 @@ async function rescueLongTail(
   if (ctx.basket?.length) ctx.step = "collecting";
   await writeCtx(convoId, ctx);
   await reply(phone, copy.itemsNotAvailable(unavailable));
+}
+
+// "2 litros de leite" (06/10, A9): sem embalagem de 2 L entre os produtos certos, mas com a de
+// 1 L, o pedido vira 2 × 1 L (o parser montava "leite 2litros" e a busca não achava nada).
+// Vale para volume e peso inteiros (2 L, 3 kg) e só com a unidade de 1 (L ou kg).
+export function splitBySize(sizeAsk: string, items: { name: string; brand?: string; sku: string; unitPrice: number }[]): { unit: string; count: number } | null {
+  const m = sizeAsk.toLowerCase().replace(/\s+/g, "").match(/^(\d+)(kg|l|lt|lts|litros?)$/);
+  if (!m) return null;
+  const count = Number(m[1]);
+  if (!(count >= 2 && count <= 12)) return null;
+  const unit = m[2] === "kg" ? "1kg" : "1l";
+  return items.some((item) => attrMatchesItem(unit, item)) ? { unit, count } : null;
 }
 
 // "12 ovos" quando o produto é "Ovos ... 10 Unidades": a quantidade pedida é em

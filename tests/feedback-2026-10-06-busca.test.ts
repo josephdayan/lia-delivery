@@ -159,10 +159,12 @@ test("A8: dose sozinha não segura relevância; remédio com outra dose sai, a d
 // `down` = loja não responde; `slow` = simulação que estoura o tempo na 1ª tentativa.
 type SkuRule = { drop?: boolean; weightKg?: number; priceCents?: number; maxQty?: number };
 let simulatedSkus: string[] = [];
-function mockStores(rules: Record<string, SkuRule> = {}, opts: { down?: string[]; slowOnce?: string[] } = {}) {
+function mockStores(rules: Record<string, SkuRule> = {}, opts: { down?: string[]; slowOnce?: string[]; dropFirst?: number; slowAllOnce?: boolean } = {}) {
   strictMode();
   simulatedSkus = [];
   const slowSeen = new Set<string>();
+  const firstWave = new Set<string>();
+  const laterWave = new Set<string>();
   globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
     const u = String(url);
     if (!u.includes("orderForms/simulation")) return new Response("{}", { status: 404 });
@@ -174,7 +176,9 @@ function mockStores(rules: Record<string, SkuRule> = {}, opts: { down?: string[]
       const key = `${store}:${i.id}`;
       simulatedSkus.push(`${key}x${i.quantity}`);
       const rule = rules[key] ?? {};
-      const unavailable = rule.drop || (rule.maxQty != null && i.quantity > rule.maxQty);
+      if (opts.dropFirst && !firstWave.has(key) && firstWave.size < opts.dropFirst && !laterWave.has(key)) firstWave.add(key);
+      else laterWave.add(key);
+      const unavailable = rule.drop || firstWave.has(key) || (rule.maxQty != null && i.quantity > rule.maxQty);
       return {
         id: i.id,
         quantity: i.quantity,
@@ -183,7 +187,7 @@ function mockStores(rules: Record<string, SkuRule> = {}, opts: { down?: string[]
         ...(rule.weightKg ? { measurementUnit: "kg", unitMultiplier: rule.weightKg } : { measurementUnit: "un", unitMultiplier: 1 })
       };
     });
-    if (body.items.some((i) => (opts.slowOnce ?? []).includes(`${store}:${i.id}`) && !slowSeen.has(`${store}:${i.id}`))) {
+    if (body.items.some((i) => (opts.slowAllOnce || (opts.slowOnce ?? []).includes(`${store}:${i.id}`)) && !slowSeen.has(`${store}:${i.id}`))) {
       body.items.forEach((i) => slowSeen.add(`${store}:${i.id}`));
       return new Response("timeout", { status: 504 });
     }
@@ -273,4 +277,54 @@ test("A3 (conversa): '2kg de banana' mostra a unidade de ~180 g e a escolha vira
   const basket = (await c.context()).basket ?? [];
   assert.equal(basket.find((i) => i.sku === "mambo-1260")?.qty, 11, chosen);
   assert.match(chosen, /11 unidades/, chosen);
+});
+
+test("A9 (conversa): a loja derruba os primeiros candidatos → a Lia confere os próximos antes de dizer 'não achei'", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({}, { dropFirst: 12 });
+  const c = await customer();
+  const reply = await c.send("açúcar");
+  assert.doesNotMatch(reply, /não achei|Não consigo comprar/i, reply);
+  assert.match(reply, /Açúcar/i, reply);
+  const pending = (await c.context()).pending?.[0];
+  assert.ok(pending?.options.length, reply);
+  assert.ok(simulatedSkus.length > 12, "conferiu candidatos além dos 12 primeiros");
+});
+
+test("M4 (conversa): loja que não responde na 1ª consulta ganha nova tentativa (não vira 'nenhuma loja confirmou')", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({}, { slowAllOnce: true });
+  const c = await customer();
+  const reply = await c.send("detergente");
+  assert.doesNotMatch(reply, /nenhuma loja confirmou/i, reply);
+  assert.ok((await c.context()).pending?.[0]?.options.length, reply);
+});
+
+test("M3 (conversa): a vitrine confere a QUANTIDADE pedida — '3 cocas' não mostra loja que só tem 1", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({});
+  const c = await customer();
+  await c.send("3 cocas");
+  assert.ok(simulatedSkus.some((k) => /x3$/.test(k)), `simulou com qty 3: ${simulatedSkus.slice(0, 5).join(",")}`);
+});
+
+test("A6/A9 (conversa): '2 litros de leite' sem caixa de 2 L vira 2× leite 1 L", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({});
+  const c = await customer();
+  const reply = await c.send("2 litros de leite");
+  const pending = (await c.context()).pending?.[0];
+  assert.ok(pending, reply);
+  assert.equal(pending!.qty, 2, reply);
+  assert.ok(pending!.options.every((o) => /1\s?(l|litro)\b/i.test(o.name)), pending!.options.map((o) => o.name).join(" | "));
+});
+
+test("A6 (conversa): '1kg de tomate' mostra o tomate vendido por kg, não só o orgânico de 1 kg", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({});
+  const c = await customer();
+  const reply = await c.send("1kg de tomate");
+  const names = ((await c.context()).pending?.[0]?.options ?? []).map((o) => o.name);
+  // Antes: só o que tinha "1kg" no nome (o orgânico de R$30); o tomate vendido por kg sumia.
+  assert.ok(names.some((n) => /tomate/i.test(n) && /\bkg\b|unidade/i.test(n) && !/org[aâ]nico|1\s?kg/i.test(n)), `${names.join(" | ")}\n${reply}`);
 });
