@@ -1,3 +1,12 @@
+## 06/10/2026 — Cadastro no primeiro contato por formulário do WhatsApp
+
+Commit ac79556, publicado no deploy do push de 1fad7e1. O 1º contato manda um formulário nativo
+(nome completo, CPF, CEP, número, complemento) no lugar de "endereço completo" + "nome e CPF" por
+texto. Regra e detalhes no topo do AGENTS.md. Testes: `tests/signup-form.test.ts` 21/21 e
+regressão do caminho em texto (medicine-chat, manual-concierge, lia-copy, carousel, adapter,
+compra do lenço) 148/148 no Postgres local; `next build` + guarda de emoji ok numa cópia isolada.
+Falta: o cron horário publicar o Flow na Meta e um teste real com o "cadastro" do dono.
+
 ## 06/10/2026 — Boas-vindas do WhatsApp: um convite só
 
 Os botões de sugestão da 1ª conversa ("Quero um chá", "Ração pro meu cachorro"…) pareciam

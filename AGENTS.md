@@ -1,3 +1,28 @@
+## 06/10/2026 — Cadastro no 1º contato por formulário do WhatsApp (dono)
+
+Regra do dono: "precisa pedir CEP, nome e CPF" e "pode pedir tudo direto no começo". O cliente
+novo recebe, na primeira mensagem, um formulário nativo do WhatsApp (Flow `cadastro_lia_v1`,
+botão "Fazer cadastro") com nome completo, CPF, CEP, número e complemento. Rua, bairro e cidade
+saem do CEP (ViaCEP). Código: `src/lib/signup-form.ts` (leitura e validação) e
+`handleSignupForm` em `src/lib/delivery-service.ts`.
+- O que conferiu fica salvo; só a parte que falhou volta por texto: CPF ou sobrenome → nome +
+  CPF numa mensagem; CEP inexistente → CEP; CEP sem rua (CEP geral) → rua e número. CEP fora de
+  SP → lista de espera, sem guardar o CPF.
+- Campo numérico pode perder o zero da frente: CEP de 7 dígitos e CPF de 9–10 são completados
+  (o dígito verificador do CPF confere).
+- O histórico (`Message.text`) grava "📝 Cadastro enviado pelo formulário", nunca o CPF.
+- Quem ignora o formulário e escreve recebe o formulário de novo, sem a apresentação. Quem
+  manda endereço ou CEP em texto segue pelo caminho antigo (endereço → nome + CPF).
+- Plano B automático: sem Flow publicado, fora da Meta ou com falha no envio, vale o pedido em
+  texto de antes.
+- O Flow é criado e publicado pelo cron horário `/api/cron/meta-templates` (`ensureSignupFlow`);
+  o envio acha o id publicado sozinho (`activeSignupFlowId`, cache de 10 min). `LIA_FLOW_SIGNUP_ID`
+  força um id. Ação manual: `/api/ops/meta-setup?action=flow_signup` logado no /ops.
+- Teste em produção: dono ou admin manda "cadastro" e recebe o formulário mesmo já cadastrado;
+  preencher regrava os dados dele.
+- O nome do cadastro também serve de destinatário quando o perfil do WhatsApp não tem nome.
+Teste: `tests/signup-form.test.ts` (21 casos, com banco local).
+
 ## 05/10/2026 (tarde) — Remédio LIGADO em produção + 1º teste real do dono (Advil) corrigido
 
 `LIA_MEDICINE_MIP=true` na Vercel (dono, 05/10; e-mail `contato+teste@` chegou na caixa). 1º pedido
