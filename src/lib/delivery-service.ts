@@ -5,7 +5,7 @@ import { getStore, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLong
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
-import { attrMatchesItem, conciergeMatchIsStrong, diversifyOptions, inferCatalogRefinement, queryTokens, sameProductVariant, scoreCatalogMatch } from "@/lib/stores/types";
+import { attrMatchesItem, conciergeMatchIsStrong, diversifyOptions, inferCatalogRefinement, parsePackPhrase, queryTokens, sameProductVariant, scoreCatalogMatch } from "@/lib/stores/types";
 import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
@@ -207,10 +207,15 @@ async function buildChoices(
       const { phrase: rawPhrase, cap } = splitPriceCap(line.phrase);
       // "meio quilo de queijo" / "2 quilos de batata" (06/10, A6): peso por extenso vira medida,
       // senão "meio"/"quilo" contam como palavras do produto e nada cobre o pedido.
-      const searchPhrase = rawPhrase
+      const shownPhrase = rawPhrase
         .replace(/\bmei[oa]\s+(quilo|kilo|kg)\b/i, "500g")
         .replace(/(\d+(?:[.,]\d+)?)\s*(quilos?|kilos?)\b/i, "$1kg")
         .replace(/\b(um|1)\s+(quilo|kilo)\b/i, "1kg");
+      // Pack/fardo (06/10, A5): "pack de cerveja brahma 12 latas" virava 1 lata solta. A palavra
+      // de embalagem e a contagem saem da busca (são identidade da EMBALAGEM, não do produto) e
+      // voltam como filtro: só packs; sem pack na vitrine, N unidades soltas.
+      const pack = parsePackAsk(shownPhrase);
+      const searchPhrase = pack ? pack.core : shownPhrase;
       let candidates: StoreCandidate[];
       if (crossStore) {
         candidates = await gatherCrossStoreCandidates(searchPhrase, 12, 4, {
@@ -222,6 +227,24 @@ async function buildChoices(
         const lineStore = lockedStoreKey ? getStore(lockedStoreKey) : await pickStoreForQueries([searchPhrase]);
         candidates = (await lineStore.searchItems(searchPhrase, 12)).map((item) => ({ store: lineStore, item }));
       }
+      let packQty: number | undefined;
+      let packOnly = false;
+      let packSingles: StoreCandidate[] = [];
+      if (pack && crossStore) {
+        // Pack da marca costuma não repetir o tipo ("Pack 8 Latas - Heineken 269ml"): busca
+        // também pela marca/variante sem o substantivo genérico.
+        const extra = pack.brand ? await gatherCrossStoreCandidates(`pack ${pack.brand}`, 12, 4) : [];
+        const seen = new Set(candidates.map((c) => `${c.store.key}:${c.item.sku}`));
+        const pool = [...candidates, ...extra.filter((c) => !seen.has(`${c.store.key}:${c.item.sku}`))];
+        const packs = pool.filter((c) => isPackItem(c.item.name) && (conciergeMatchIsStrong(searchPhrase, c.item) || (pack.brand ? conciergeMatchIsStrong(`pack ${pack.brand}`, c.item) || conciergeMatchIsStrong(`fardo ${pack.brand}`, c.item) : false)));
+        if (packs.length) {
+          packOnly = true;
+          packSingles = candidates.filter((c) => !isPackItem(c.item.name) && conciergeMatchIsStrong(searchPhrase, c.item));
+          candidates = pack.count ? [...packs.filter((c) => declaredPack(c.item.name) === pack.count), ...packs.filter((c) => declaredPack(c.item.name) !== pack.count)] : packs;
+        } else if (pack.count) {
+          packQty = pack.count;
+        }
+      }
       if (cap != null) candidates = candidates.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
       // Tamanho/volume pedido ("30 litros", "2kg") vale para TODOS os cards, não só a
       // escolha (rodada 7, 4º ciclo: 1 das 3 opções não era de 30l).
@@ -230,7 +253,7 @@ async function buildChoices(
       // "meio quilo de queijo mussarela" virava canelone de 500 g só porque o peso batia. Sem o
       // produto certo no tamanho pedido, ficam os outros tamanhos (o tamanho vira preferência).
       // Item vendido por peso ("Tomate Italiano Kg") atende qualquer pedido em kg/g.
-      let qty = line.qty;
+      let qty = packQty ? line.qty * packQty : line.qty;
       // O que a reserva (mais abaixo) também tem que respeitar: o produto e o tamanho pedidos.
       let sizeOk: (c: StoreCandidate) => boolean = () => true;
       const bestScore = Math.max(0, ...candidates.map((c) => scoreCatalogMatch(searchPhrase, c.item)));
@@ -303,7 +326,7 @@ async function buildChoices(
             let deeper = (await gatherCrossStoreCandidates(searchPhrase, 36, 12)).filter(
               // Só o mesmo produto: relevância perto da dos primeiros (no máx. 3 pontos abaixo) e o
               // tamanho pedido — "Leite de Rosas" não é reserva de leite.
-              (c) => !tried.has(liveKey(c.store.key, c.item.sku)) && conciergeMatchIsStrong(searchPhrase, c.item) && sizeOk(c) && scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 3
+              (c) => !tried.has(liveKey(c.store.key, c.item.sku)) && conciergeMatchIsStrong(searchPhrase, c.item) && sizeOk(c) && (!packOnly || isPackItem(c.item.name)) && scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 3
             );
             if (cap != null) deeper = deeper.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
             if (deeper.length) {
@@ -313,6 +336,14 @@ async function buildChoices(
               candidates = [...candidates, ...more.kept];
               buyable = [...buyable, ...extra];
             }
+          }
+          // Nenhum pack confirmado para o CEP: as unidades soltas, na contagem pedida (A5).
+          if (!buyable.length && packOnly && packSingles.length) {
+            const singles = await confirm(packSingles);
+            buyable = buyableOf(singles.kept);
+            candidates = [...candidates, ...singles.kept];
+            if (buyable.length && pack?.count) qty = line.qty * pack.count;
+            console.log("[pack:singles]", searchPhrase, buyable.length);
           }
           unconfirmed = candidates.length > 0 && buyable.length === 0;
           candidates = buyable;
@@ -328,7 +359,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: searchPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
     })
   );
 
@@ -5039,6 +5070,14 @@ async function rescueLongTail(
   if (ctx.basket?.length) ctx.step = "collecting";
   await writeCtx(convoId, ctx);
   await reply(phone, copy.itemsNotAvailable(unavailable));
+}
+
+// "pack de cerveja brahma 12 latas", "fardo de água", "engradado de heineken" (06/10, A5).
+export function parsePackAsk(phrase: string): { core: string; brand?: string; count?: number } | null {
+  return parsePackPhrase(phrase);
+}
+function isPackItem(name: string): boolean {
+  return /\b(fardo|pack|engradado|caixa com|kit)\b/i.test(name) || declaredPack(name) >= 4 || /\bc\/\s*\d+/i.test(name);
 }
 
 // "2 litros de leite" (06/10, A9): sem embalagem de 2 L entre os produtos certos, mas com a de

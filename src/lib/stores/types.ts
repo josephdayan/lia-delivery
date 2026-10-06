@@ -676,8 +676,27 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bcaixas? de leite\b/, "leite longa vida"],
   [/\bleite de caixinha\b/, "leite longa vida"]
 ];
+// Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
+// "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.
+const GENERIC_DRINK_RE = /\b(cervejas?|refrigerantes?|refris?|aguas?|bebidas?|latas?|latinhas?|garrafas?|long ?necks?|mineral|de|da|do)\b/g;
+export function parsePackPhrase(phrase: string): { core: string; brand?: string; count?: number } | null {
+  const norm = normalizeText(phrase);
+  if (!/\b(fardos?|packs?|engradados?)\b/.test(norm)) return null;
+  const countMatch = norm.match(/\b(?:com\s+)?(\d{1,2})\s*(latas?|latinhas?|garrafas?|unidades?|un|long ?necks?)\b/);
+  const count = countMatch ? Number(countMatch[1]) : undefined;
+  const core = norm
+    .replace(countMatch?.[0] ?? "\u0000", " ")
+    .replace(/\b(fardos?|packs?|engradados?)\b\s*(de|com|da|do)?/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const brand = core.replace(GENERIC_DRINK_RE, " ").replace(/\s+/g, " ").trim();
+  return { core: core || norm, ...(brand ? { brand } : {}), ...(count && count > 1 ? { count } : {}) };
+}
+
 export function queryAliases(query: string): string[] {
   const norm = normalizeText(query);
+  const pack = parsePackPhrase(query);
+  if (pack) return [...new Set([pack.core, ...(pack.brand ? [`pack ${pack.brand}`, `fardo ${pack.brand}`] : []), ...queryAliases(pack.core)])].filter((alias) => alias && alias !== norm);
   const out: string[] = [];
   for (const [re, alias] of QUERY_ALIASES) {
     if (re.test(norm)) out.push(norm.replace(re, alias));

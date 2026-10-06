@@ -319,6 +319,45 @@ test("A6/A9 (conversa): '2 litros de leite' sem caixa de 2 L vira 2× leite 1 L"
   assert.ok(pending!.options.every((o) => /1\s?(l|litro)\b/i.test(o.name)), pending!.options.map((o) => o.name).join(" | "));
 });
 
+test("A5 (puro): pack/fardo sai da busca e volta como identidade da embalagem", async () => {
+  const { parsePackAsk } = await import("../src/lib/delivery-service");
+  assert.deepEqual(parsePackAsk("pack de cerveja brahma 12 latas"), { core: "cerveja brahma", brand: "brahma", count: 12 });
+  assert.deepEqual(parsePackAsk("fardo de cerveja heineken"), { core: "cerveja heineken", brand: "heineken" });
+  assert.deepEqual(parsePackAsk("fardo de água"), { core: "agua" });
+  assert.equal(parsePackAsk("cerveja heineken"), null);
+});
+
+test("A5 (conversa): 'fardo de cerveja heineken' mostra só packs, nunca a lata solta", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({});
+  const c = await customer();
+  const reply = await c.send("fardo de cerveja heineken");
+  const names = ((await c.context()).pending?.[0]?.options ?? []).map((o) => o.name);
+  assert.ok(names.length, reply);
+  assert.ok(names.every((n) => /pack|fardo|\d+\s*(latas|unidades|un)\b/i.test(n)), names.join(" | "));
+  assert.ok(names.some((n) => /heineken/i.test(n)), names.join(" | "));
+});
+
+test("A5 (conversa): pack que a loja não confirma → latas soltas, nunca 'não achei'", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({ "swift:4684": { drop: true } });
+  const c = await customer();
+  const reply = await c.send("fardo de cerveja heineken");
+  const names = ((await c.context()).pending?.[0]?.options ?? []).map((o) => o.name);
+  assert.ok(names.some((n) => /heineken/i.test(n)), reply);
+});
+
+test("A5 (conversa): sem pack na vitrine, 'N latas' vira N unidades", async (t) => {
+  if (!dbOk) return t.skip();
+  mockStores({});
+  const c = await customer();
+  const reply = await c.send("pack de guaraná antarctica 6 latas");
+  const pending = (await c.context()).pending?.[0];
+  assert.ok(pending, reply);
+  const allPacks = pending!.options.every((o) => /pack|fardo|\d+\s*(latas|unidades|un)\b/i.test(o.name));
+  assert.ok(allPacks || pending!.qty === 6, `${pending!.qty}x ${pending!.options.map((o) => o.name).join(" | ")}`);
+});
+
 test("A6 (conversa): '1kg de tomate' mostra o tomate vendido por kg, não só o orgânico de 1 kg", async (t) => {
   if (!dbOk) return t.skip();
   mockStores({});
