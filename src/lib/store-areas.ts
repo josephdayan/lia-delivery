@@ -14,6 +14,7 @@
 // turno filtre pela área do cliente sem passar o CEP pelos ~10 pontos de busca do cérebro.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { ufFromCep } from "./coverage";
+import { automaticPurchaseStores } from "./purchase-policy";
 
 type StoreArea = { ufs: string[]; cepPrefixes?: string[] };
 
@@ -68,8 +69,17 @@ export function currentShopperCep(): string | undefined {
   return shopperScope.getStore()?.cep;
 }
 
+// Vitrine = só loja de compra automática (dono, 06/10: "é só as lojas automáticas"). Um
+// pedido no Mercado Livre caiu na fila manual porque a loja aparecia na busca sem estar em
+// LIA_AUTO_PURCHASE_STORES. Lista vazia (dev/testes) não filtra.
+function automaticOnly<T extends { key: string }>(stores: T[]): T[] {
+  const automatic = automaticPurchaseStores();
+  return automatic.length ? stores.filter((store) => automatic.includes(store.key)) : stores;
+}
+
 export function storesForShopper<T extends { key: string }>(stores: T[]): T[] {
   const scope = shopperScope.getStore();
-  if (!scope) return stores;
-  return stores.filter((store) => storeServesCep(store.key, scope.cep));
+  const sellable = automaticOnly(stores);
+  if (!scope) return sellable;
+  return sellable.filter((store) => storeServesCep(store.key, scope.cep));
 }

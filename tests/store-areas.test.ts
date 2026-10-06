@@ -91,3 +91,22 @@ test("cotação e cobrança: loja regional fora da área nunca passa, nem com si
     __setPreflightForTests(null);
   }
 });
+
+test("vitrine só com loja de compra automática: fora de LIA_AUTO_PURCHASE_STORES não aparece (dono 06/10)", async () => {
+  const old = process.env.LIA_AUTO_PURCHASE_STORES;
+  const stores = [{ key: "mambo" }, { key: "drogariasp" }, { key: "mercadolivre" }];
+  try {
+    process.env.LIA_AUTO_PURCHASE_STORES = "mambo,drogariasp";
+    assert.deepEqual(storesForShopper(stores).map((s) => s.key), ["mambo", "drogariasp"]);
+    await runShopperScoped(async () => {
+      noteShopperCep(PAULISTA);
+      assert.deepEqual(storesForShopper(stores).map((s) => s.key), ["mambo", "drogariasp"]);
+      noteShopperCep(COPACABANA); // Mambo é só SP capital
+      assert.deepEqual(storesForShopper(stores).map((s) => s.key), ["drogariasp"]);
+    });
+    delete process.env.LIA_AUTO_PURCHASE_STORES; // lista vazia (dev/testes) não filtra
+    assert.deepEqual(storesForShopper(stores).map((s) => s.key), ["mambo", "drogariasp", "mercadolivre"]);
+  } finally {
+    if (old === undefined) delete process.env.LIA_AUTO_PURCHASE_STORES; else process.env.LIA_AUTO_PURCHASE_STORES = old;
+  }
+});

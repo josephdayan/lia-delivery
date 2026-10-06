@@ -14,6 +14,9 @@ dono: "não é pra ter Mercado Livre… é só as lojas automáticas". `LIA_ENAB
 Vercel + redeploy de produção (06/10). **Revoga a exceção "Mercado Livre é exceção a preservar"**
 (item 3 da regra de 25/09). Não religar sem nova decisão datada. #5VBIXY: estornar no /ops e
 avisar o cliente que o item não está disponível.
+**Trava no código:** `storesForShopper` (`src/lib/store-areas.ts`) só deixa na busca loja que está
+em `LIA_AUTO_PURCHASE_STORES` (lista vazia em dev/testes não filtra). Loja nova = entrar nessa lista,
+senão não aparece. Teste em `tests/store-areas.test.ts`.
 
 ## 06/10/2026 — Rio de Janeiro ligado (SP + RJ) com trava de área por loja
 
