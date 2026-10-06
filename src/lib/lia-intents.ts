@@ -23,7 +23,7 @@ export type ParsedLine = {
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare";
+export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver";
 
 export type Intent =
   | { kind: "thanks" }
@@ -1089,6 +1089,11 @@ export function detectIntent(text: string): Intent {
 
   // "qual a loja?", "de onde vc compra?", "de que loja ela vem?", "é uma loja específica?"
   // (06/10, Clara e Claire): a ORIGEM do produto. A resposta nomeia a loja das opções.
+  // "tem taxa?", "quanto vc cobra?", "qual sua comissão?" (06/10): resposta fixa e verdadeira
+  // (o serviço vem embutido no preço) — a IA respondia só o frete e dava a entender "sem taxa".
+  if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
+  // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
+  if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
   // "você faz comparativo de preços?", "como sei que é o melhor valor?" (06/10, Claire).
   if (PRICE_COMPARE_RE.test(n)) return { kind: "service_question", topic: "price_compare" };
@@ -1782,6 +1787,11 @@ export function parseAttributeAsk(text: string): string | null {
 // depois do endereço. Devolve o produto perguntado, ou null se a pergunta é sobre o serviço.
 const SERVICE_ASK_NOUNS =
   /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
+const SERVICE_FEE_RE =
+  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b/;
+const PIX_RECEIVER_RE =
+  /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
+
 export function parseAvailabilityAsk(text: string): string | null {
   const n = normalizeMsg(text)
     .replace(/[?!.]+$/g, "")

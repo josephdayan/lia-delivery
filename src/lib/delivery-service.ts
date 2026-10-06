@@ -1358,14 +1358,19 @@ async function handleDeliveryTurn(
     );
     return;
   }
+  // "Chamei alguém da equipe" sem avisar ninguém (06/10): a nota no pedido só aparecia no
+  // /ops, e cliente sem pedido nem nota tinha. Agora o dono recebe no WhatsApp.
   if (intent.kind === "human") {
     await flagLatestOrder(user.id, `🙋 CLIENTE PEDIU ATENDIMENTO HUMANO: "${text.slice(0, 140)}"`);
+    await notifyOwner(`🙋 Cliente pediu atendimento humano: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
     await reply(phone, copy.humanHandoff());
     return;
   }
   if (intent.kind === "complaint") {
     await flagLatestOrder(user.id, `⚠️ RECLAMAÇÃO DO CLIENTE: "${text.slice(0, 140)}"`);
-    await reply(phone, copy.complaintAck());
+    await notifyOwner(`⚠️ Reclamação de cliente: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
+    const hasOrder = Boolean(await prisma.deliveryOrder.findFirst({ where: { userId: user.id }, select: { id: true } }));
+    await reply(phone, copy.complaintAck(hasOrder));
     return;
   }
 
@@ -1392,6 +1397,9 @@ async function handleDeliveryTurn(
     await reply(phone, copy.fiscalAnswer(intent.topic, businessInfo));
     // "me fala que eu te envio" não pode ser beco: sem a env, o operador é acionado
     // pra mandar os dados de verdade (29/08 S7).
+    if (intent.topic === "nf") {
+      await notifyOwner(`🧾 Cliente perguntou da nota fiscal: "${text.slice(0, 160)}" — se pedir cópia, enviar.`, phone);
+    }
     if (intent.topic === "cnpj" && !businessInfo) {
       await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
     }
@@ -2699,7 +2707,27 @@ async function handleDeliveryTurn(
   if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId && intent.kind === "free_text" && !isQuestion(text)) {
     const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } });
     if (order && order.status === "awaiting_payment") {
-      const explicitAdd = /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(normalizeMsg(text));
+      const n = normalizeMsg(text);
+      const explicitAdd = /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(n);
+      // Só item novo reabre (06/10): "to pagando", "comprovante enviado", o nome do cliente,
+      // "o link não abre" CANCELAVAM o Pix que o cliente estava pagando.
+      const productLike =
+        explicitAdd ||
+        looksLikeProductList(text) ||
+        /^(?:(?:ah+|e|ah e|ai|opa)\s+)?(?:quero|queria|preciso|precisava|me ve|manda|traz|compra|tambem|esqueci|faltou|e tambem|e um|e uma|e o|e a)\b/.test(n);
+      if (!productLike) {
+        if (/\b(link|nao abre|nao abriu|nao consigo abrir|nao carrega|erro)\b/.test(n)) {
+          await reply(phone, copy.paymentLinkTrouble());
+          return;
+        }
+        if (/\b(pagando|vou pagar|ja vou|pago ja|paguei|comprovante|transferi|transferindo|fazendo o pix|fiz o pix|enviei|mandei|aguarda|espera|um minuto|um minutinho|ja ja|calma|ok|blz|beleza|certo|ta bom|beleza)\b/.test(n)) {
+          await reply(phone, copy.awaitingPaymentAck(order.total));
+          return;
+        }
+        if (classifyFirstEnabled() && (await tryLlmInterpret(phone, convo.id, user.cep, ctx, text, user.id))) return;
+        await reply(phone, copy.awaitingPaymentAck(order.total));
+        return;
+      }
       const issuedAt = ctx.paymentIssuedAt ?? order.updatedAt.getTime();
       const chargeFresh = Date.now() - issuedAt < 10 * 60_000;
       if (!explicitAdd && !chargeFresh) {

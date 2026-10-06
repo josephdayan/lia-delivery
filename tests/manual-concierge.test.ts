@@ -1355,7 +1355,7 @@ test("27/08 S2: 'cadê meu pedido de ontem?' no meio da escolha responde o pedid
   await c.send("quero coca cola");
   const status = await c.send("cadê meu pedido de ontem?");
   assert.doesNotMatch(status, /Nenhum item fechado|Falta você escolher/i, `ignorou o 'ontem': ${status.slice(0, 300)}`);
-  assert.match(status, /confirmado, separando/i, status.slice(0, 300));
+  assert.match(status, /pago — estou fazendo a compra/i, status.slice(0, 300));
   assert.match(status, /de ontem/i, `sem âncora de data: ${status.slice(0, 300)}`);
   assert.match(status, /Escova de Dente/i, status.slice(0, 300));
 });

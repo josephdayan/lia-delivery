@@ -100,6 +100,20 @@ test("nome sozinho no cadastro é nome; pedido não é", () => {
   for (const input of ["quero leite ninho", "tem açaí?", "oi tudo bem", "pra que cpf?", "Rua Augusta 1500", "sim"]) assert.ok(!looksLikeOnboardingName(input), input);
 });
 
+test("taxa e recebedor do Pix têm resposta fixa e verdadeira", () => {
+  for (const q of ["tem taxa?", "quanto vc cobra de taxa?", "qual a sua comissão?", "quanto custa o serviço?", "vcs cobram alguma coisa a mais em cima do preço da loja?"]) {
+    assert.deepEqual(detectIntent(q), { kind: "service_question", topic: "service_fee" }, q);
+  }
+  assert.deepEqual(detectIntent("tem taxa de entrega?"), { kind: "service_question", topic: "fee" });
+  for (const q of ["quem recebe esse pix?", "por que aparece no nome de pessoa física?", "o pix tá no nome de uma pessoa"]) {
+    assert.deepEqual(detectIntent(q), { kind: "service_question", topic: "pix_receiver" }, q);
+  }
+  assert.match(copy.serviceAnswer("service_fee", "SP"), /embutido no preço/);
+  assert.match(copy.pixReceiverAnswer(""), /não pra loja/);
+  assert.doesNotMatch(copy.paymentConfirmed(), /separando/);
+  assert.doesNotMatch(copy.trustAnswer(), /Carrefour|Mercado Livre/);
+});
+
 // ---------- conversa (banco local) ----------
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -224,5 +238,38 @@ test("cadastro: nome numa mensagem e CPF na outra ficam guardados; 'pra que cpf?
     assert.equal(user.cpf, "52998224725");
   } finally {
     delete process.env.LIA_MEDICINE_MIP;
+  }
+});
+
+test("mensagem solta com o Pix aberto não cancela a cobrança", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const order = await prisma.deliveryOrder.create({
+    data: { userId: user.id, phone, status: "awaiting_payment", total: 27.69, itemsSubtotal: 20, serviceFee: 0, deliveryFee: 7.69, items: [{ sku: "x", name: "Arroz", qty: 1, unitPrice: 20, lineTotal: 20, storeKey: "swift", storeLabel: "Swift" }], storeKey: "concierge", pixId: "mockpix_1", pixCopiaECola: "000201", cep: "01310-100", deliveryAddress: ADDRESS }
+  });
+  const convo = await prisma.conversation.create({ data: { userId: user.id, context: JSON.stringify({ flow: "delivery", step: "awaiting_payment", deliveryOrderId: order.id, cep: "01310-100", paymentIssuedAt: Date.now() }) } });
+  for (const text of ["to pagando", "comprovante enviado", "Maria Souza", "o link não abre"]) {
+    const out = await send(phone, text);
+    assert.doesNotMatch(out, /Atualizei seu pedido|não vale mais/, `${text}: ${out.slice(0, 200)}`);
+    const now = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } });
+    assert.equal(now.status, "awaiting_payment", `${text} manteve a cobrança`);
+  }
+  void convo;
+});
+
+test("pedir atendente avisa o dono no WhatsApp", async (t) => {
+  if (!dbOk) return t.skip();
+  const prev = process.env.LIA_OWNER_PHONE;
+  process.env.LIA_OWNER_PHONE = "+5511900000099";
+  try {
+    const phone = await customer();
+    const start = outbox.length;
+    const out = await send(phone, "quero falar com um atendente");
+    assert.match(out, /Avisei o responsável/);
+    assert.ok(outbox.slice(start).some((m) => m.to.includes("5511900000099") && /atendimento humano/.test(m.text)), "o dono recebeu o aviso");
+  } finally {
+    if (prev === undefined) delete process.env.LIA_OWNER_PHONE;
+    else process.env.LIA_OWNER_PHONE = prev;
   }
 });
