@@ -105,7 +105,8 @@ export const GOLDEN_CASES: GoldenCase[] = [
   { name: "shampoo humano nunca vira produto pet", query: "shampoo", allExclude: /\bca(es|o)\b|cachorro|\bgatos?\b|\bpet\b/, top1Include: /shampoo|xampu/, deterministic: true },
 
   // ---- tamanho/atributo pedido ----
-  { name: "coca 2 litros traz a garrafa certa", query: "coca cola 2 litros", top1Include: /coca.*2\s*l/, deterministic: true },
+  // 06/10: "Refrigerante Pet Original 2L Coca Cola" (Savegnago) é a garrafa certa com o 2L antes da marca.
+  { name: "coca 2 litros traz a garrafa certa", query: "coca cola 2 litros", top1Include: /coca.*2\s*l|\b2\s*l\b.*coca/, deterministic: true },
   { name: "leite sem lactose respeita a negação", query: "leite sem lactose", top1Include: /(sem|zero)\s*lactose/, deterministic: true },
   { name: "café sem açúcar não traz o adoçado", query: "cafe sem acucar", allExclude: /com acucar/, deterministic: true },
 
@@ -248,6 +249,15 @@ export const GOLDEN_CASES: GoldenCase[] = [
     env: AUTO_ROSTER,
     deterministic: true,
     note: "na vitrine de compra automática o único sabão em pó é 'Lava Roupas em Pó' (Mambo); vinha sabão em BARRA"
+  },
+  {
+    name: "leite 2 litros é leite de caixinha, nunca Leite de Rosas nem refri de 2 L (A9)",
+    query: "leite 2 litros",
+    top1Include: /^leite .*\b1 ?(l|litro)\b/,
+    allExclude: /rosas|colonia|sorvete|refrigerante|leiteira/,
+    env: AUTO_ROSTER,
+    deterministic: true,
+    note: "'2 litros' separado contava 'litros' como palavra do produto e desligava as regras de pedido de uma palavra"
   },
   { name: "xampu é shampoo (A9)", query: "xampu", top1Include: /shampoo/, env: AUTO_ROSTER, deterministic: true },
   { name: "caixa de leite é leite longa vida (A9)", query: "caixa de leite", top1Include: /^leite .*(1 ?l|litro)/, allExclude: /condensad|em po|de coco/, env: AUTO_ROSTER, deterministic: true },

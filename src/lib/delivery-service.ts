@@ -323,7 +323,10 @@ async function buildChoices(
           // Reserva (06/10, A9): a loja derrubou os primeiros candidatos (Mambo: metade dos skus
           // "não pode ser entregue para as coordenadas" — açúcar, detergente). Antes de dizer
           // "não achei", confere os PRÓXIMOS candidatos relevantes, mais fundo em cada vitrine.
-          if (buyable.length < 2 && (first.dropped > 0 || buyable.length < candidates.length)) {
+          // "Bom" = relevância perto da melhor da busca: o "Porta Detergente" que sobrou depois que a
+          // Mambo derrubou os detergentes não conta como opção (o rerank o descartava → "não achei").
+          const good = (c: StoreCandidate) => scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 1;
+          if (buyable.filter(good).length < 2 && (first.dropped > 0 || buyable.length < candidates.length)) {
             const tried = new Set([...liveChecks.keys()]);
             let deeper = (await gatherCrossStoreCandidates(searchPhrase, 36, 12)).filter(
               // Só o mesmo produto: relevância perto da dos primeiros (no máx. 3 pontos abaixo) e o
@@ -336,7 +339,9 @@ async function buildChoices(
               const extra = buyableOf(more.kept);
               console.log("[live-check:deeper]", searchPhrase, `${extra.length}/${Math.min(12, deeper.length)}`);
               candidates = [...candidates, ...more.kept];
-              buyable = [...buyable, ...extra];
+              // Os bons primeiro (os da reserva antes do que sobrou fraco da 1ª leva).
+              const byScore = (a: StoreCandidate, b: StoreCandidate) => scoreCatalogMatch(searchPhrase, b.item) - scoreCatalogMatch(searchPhrase, a.item);
+              buyable = [...buyable.filter(good), ...[...extra].sort(byScore), ...buyable.filter((c) => !good(c))];
             }
           }
           // Nenhum pack confirmado para o CEP: as unidades soltas, na contagem pedida (A5).

@@ -389,11 +389,19 @@ const PACK_COUNT_RE = /\b(\d{1,3})\s*(bolas?|rolos?|capsulas?|comprimidos?|sache
 const packUnit = (unit: string) => unit.replace(/s$/, "");
 
 // Token de medida: tamanho, volume, peso ou dose. Soma score de variante, nunca segura relevância.
-const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|lts|litros?|quilos?|gramas?|un)$/;
+// Unidade solta ("leite 2 litros" vira os tokens "2" e "litros"): é medida, não produto.
+const UNIT_WORDS = new Set(["litro", "litros", "lt", "lts", "kg", "quilo", "quilos", "kilo", "kilos", "grama", "gramas", "ml", "mg", "g", "l"]);
+const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|lts|litros?|quilos?|kilos?|gramas?|un)$/;
 
 // Nome equivalente do produto conta como o próprio pedido (06/10, A9): "sabão em pó" casa
 // com "Lava Roupas em Pó Omo" — na busca, no piso do concierge e no "tira o X".
-export function scoreCatalogMatch(query: string, item: CatalogItem): number {
+// "leite 2 litros" → "leite 2litros": número + unidade é UMA medida (06/10, A9). Separados, o
+// "litros" contava como palavra do produto e "Fanta 2 Litros" vencia o leite.
+function joinMeasures(query: string): string {
+  return query.replace(/(\d+(?:[.,]\d+)?)\s+(litros?|lts?|quilos?|kilos?|kg|gramas?|ml|mg|g|l)\b/gi, "$1$2");
+}
+export function scoreCatalogMatch(rawQuery: string, item: CatalogItem): number {
+  const query = joinMeasures(rawQuery);
   const own = scoreQuery(query, item);
   const aliases = queryAliases(query);
   return aliases.length ? Math.max(own, ...aliases.map((alias) => scoreQuery(alias, item))) : own;
@@ -418,6 +426,9 @@ function scoreQuery(query: string, item: CatalogItem): number {
   const negTokens = new Set(negs);
   const effTokens = tokens.filter((t) => !negTokens.has(t));
   if (!effTokens.length) return 0;
+  // Regras de "pedido de UMA palavra" contam só palavras — "leite 2litros" é pedido de uma
+  // palavra com medida (06/10: sem isso, "Leite de Rosas" empatava com o leite de caixinha).
+  const wordEff = effTokens.filter((t) => !MEASURE_TOKEN_RE.test(t));
   for (const neg of negs) {
     if (new RegExp(`\\b${neg}\\b`).test(nameNorm) && !new RegExp(`\\b(sem|zero)\\s+${neg}\\b`).test(nameNorm)) {
       return 0;
@@ -537,11 +548,11 @@ function scoreQuery(query: string, item: CatalogItem): number {
     nameWords.some((word, i) => isSameNoun(token, word) && i > 0 && i <= 2 && !QUALIFIER_MARKERS.has(nameWords[i - 1]))
   );
   if (
-    effTokens.length === 1 &&
+    wordEff.length === 1 &&
     !headHit &&
     !categoryHit &&
     !appositionHit &&
-    !brandWords.some((w) => tokenMatchesBrand(effTokens[0], w))
+    !brandWords.some((w) => tokenMatchesBrand(wordEff[0], w))
   ) {
     return 0;
   }
@@ -564,8 +575,8 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // o head real é o outro produto e a palavra pedida é adjetivo dele. Penaliza
     // (reordena) — o hidratante de verdade passa na frente; o sabonete segue como
     // fallback honesto quando não existe o produto puro.
-    if (effTokens.length === 1) {
-      const requested = effTokens[0];
+    if (wordEff.length === 1) {
+      const requested = wordEff[0];
       const requestedIdx = nameWords.findIndex((w) => tokenMatchesWordSyn(requested, w));
       if (
         requestedIdx > 0 &&
@@ -607,21 +618,21 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // 27/09 (golden "leite"): a palavra pedida que só aparece DEPOIS de "de/com" é
     // ingrediente de outro produto — "Sorvete Doce de Leite", "Creme de Leite", "Pão de
     // Queijo" — e perde para o produto que É aquilo. Penalidade (reordena), não exclusão.
-    if (effTokens.length === 1 && !headHit) {
-      const requested = effTokens[0];
+    if (wordEff.length === 1 && !headHit) {
+      const requested = wordEff[0];
       const asIngredient = nameWords.some((w, i) => i > 0 && isSameNoun(requested, w) && (nameWords[i - 1] === "de" || nameWords[i - 1] === "com"));
       const asProduct = nameWords.some((w, i) => isSameNoun(requested, w) && (i === 0 || (nameWords[i - 1] !== "de" && nameWords[i - 1] !== "com")));
       if (asIngredient && !asProduct) score -= 3;
     }
     // "Leiteira" não é leite: casou só por prefixo com palavra MAIS LONGA (derivada), sem ser
     // o mesmo substantivo nem abreviação conhecida. Penaliza quando o pedido é a palavra inteira.
-    if (effTokens.length === 1 && effTokens[0].length >= 5) {
-      const requested = effTokens[0];
+    if (wordEff.length === 1 && wordEff[0].length >= 5) {
+      const requested = wordEff[0];
       const exactSomewhere = nameWords.some((w) => isSameNoun(requested, w));
       const derived = nameWords.some((w) => w.startsWith(requested) && w.length - requested.length >= 3 && !isSameNoun(requested, w));
       if (derived && !exactSomewhere) score -= 2;
     }
-    if (effTokens.length === 1) {
+    if (wordEff.length === 1) {
       const asked = new Set(effTokens);
       const unrequested = [...nameNorm.matchAll(/\bde\s+([a-z]{3,})\b/g)].filter(
         (m) => !asked.has(m[1]) && !words(query).includes(m[1])
@@ -653,7 +664,8 @@ function scoreQuery(query: string, item: CatalogItem): number {
 // eles são filtro de variante, não identidade do produto.
 // `allTokens` (06/10, A6): cobertura TOTAL — o item responde por todas as palavras do pedido
 // (marca e espécie inclusas). Usado para decidir se um tamanho pedido pode filtrar a vitrine.
-export function conciergeMatchIsStrong(query: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
+export function conciergeMatchIsStrong(rawQuery: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
+  const query = joinMeasures(rawQuery);
   return [query, ...queryAliases(query)].some((q) => strongFor(q, item, opts));
 }
 
@@ -662,7 +674,7 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
 
   const negs = new Set(negatedWords(query));
   const wordTokens = queryTokens(query).filter(
-    (token) => !negs.has(token) && !MEASURE_TOKEN_RE.test(token) && !/^\d+$/.test(token)
+    (token) => !negs.has(token) && !MEASURE_TOKEN_RE.test(token) && !/^\d+$/.test(token) && !UNIT_WORDS.has(token)
   );
   // Pedido de presente/brinquedo: o público (menino, 5 anos) não precisa estar no nome.
   if (/\b(brinquedos?|presentes?)\b/.test(normalizeText(query))) {
