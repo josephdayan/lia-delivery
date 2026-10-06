@@ -1,7 +1,7 @@
 import { displayPrice, serviceFeeForItems } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
-import { getStore, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
+import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1316,12 +1316,40 @@ async function handleDeliveryTurn(
       (ctx.basket?.length ?? 0) > 0 ||
       (ctx.pending?.length ?? 0) > 0
     ) {
+      // "oi" com a escolha aberta lembra a lista que está esperando (06/10).
+      if (ctx.step === "choosing" && ctx.pending?.length) {
+        await sendChoices(phone, ctx.pending[0], copy.greetingMidChoice(ctx.pending[0].query));
+        return;
+      }
       // "oi" no meio de um pedido em andamento não reapresenta a Lia do zero.
       await reply(phone, copy.greetingMidOrder(ctx.step ?? "collecting", ctx.basket?.length ?? 0));
     } else {
       await reply(phone, copy.greeting());
     }
     return;
+  }
+
+  // "chega hoje?"/"o 2 chega hoje?" com as opções na tela (06/10): os prazos das opções. Virava
+  // status ("falta você escolher…") com o prazo de cada loja já na mão.
+  if (ctx.step === "choosing" && ctx.pending?.length && (intent.kind === "status" || intent.kind === "service_question" || intent.kind === "free_text")) {
+    const etaAsk = parseChoiceEtaAsk(text);
+    if (etaAsk) {
+      const options = ctx.pending[0].options;
+      const rows = options
+        .map((o, i) => ({
+          n: i + 1,
+          name: o.name,
+          delivery: optionDelivery(o),
+          // O texto da loja manda ("hoje", "60 min", "2 horas"); sem ele, o prazo em minutos.
+          today: o.delivery ? /\bhoje\b|\bmin\b|\bhoras?\b/i.test(o.delivery) : o.etaMinutes != null && o.etaMinutes < sameDayMaxMinutes()
+        }))
+        .map((row, i) => ({ ...row, delivery: options[i].delivery ? row.delivery : undefined }))
+        .filter((row) => !etaAsk.option || row.n === etaAsk.option);
+      if (rows.length) {
+        await reply(phone, copy.choiceEtaAnswer(rows, etaAsk.today));
+        return;
+      }
+    }
   }
 
   // ---- perguntas de serviço / atendimento (funcionam em QUALQUER step) ----
@@ -1912,6 +1940,10 @@ async function handleDeliveryTurn(
         const basketEdit =
           intent.kind === "swap_item" ||
           intent.kind === "remove_item" ||
+          // Quantidade, troca de opção e "voltar" também editam a cesta (06/10).
+          intent.kind === "qty_adjust" ||
+          intent.kind === "switch_choice" ||
+          intent.kind === "back" ||
           (intent.kind === "free_text" && !isQuestion(text));
         if (!basketEdit) {
           await reply(phone, copy.paymentMethod(order.total, cardTotal(order.total)));
@@ -2290,9 +2322,13 @@ async function handleDeliveryTurn(
 
   // ---- step: customer choosing one of the (max 3) options for an ambiguous item ----
   // "tira X"/"troca X por Y" fall through to the basket-editing handlers below.
+  // "o 1, pode pagar no pix" (06/10) é escolha + pagamento: entra na escolha mesmo com o
+  // intent de pagar.
+  const choiceThenPay = ctx.step === "choosing" && ctx.pending?.length ? parseChoiceCombo(text, ctx.pending[0].options)?.pay : false;
   if (
     ctx.step === "choosing" &&
     ctx.pending?.length &&
+    (choiceThenPay || (
     intent.kind !== "remove_item" &&
     intent.kind !== "swap_item" &&
     intent.kind !== "pay" &&
@@ -2301,7 +2337,7 @@ async function handleDeliveryTurn(
     // "Ver detalhes"/"detalhes 2" respondem no handler global (que já olha os cards
     // na mesa) sem mexer na escolha — os cards continuam valendo depois do link.
     intent.kind !== "product_details" &&
-    intent.kind !== "product_details_tap"
+    intent.kind !== "product_details_tap"))
   ) {
     await handleChoosing(phone, user.id, user.cep, convo.id, ctx, text, intent);
     return;
@@ -2455,6 +2491,22 @@ async function handleDeliveryTurn(
     }
   }
 
+  // ---- quantidade / troca de opção / "voltar" depois de escolher (varredura 06/10) ----
+  // "quero 2", "6x", "tira um", "na verdade quero o 2", "troca pelo outro", "voltar": mexem no
+  // item recém-escolhido. Com o total na mesa, o pedido reabre antes (como tirar/trocar).
+  if (intent.kind === "qty_adjust" || intent.kind === "switch_choice" || intent.kind === "back") {
+    const last = ctx.lastChoice;
+    const hasLastChoice = Boolean(last);
+    if (intent.kind === "qty_adjust" || hasLastChoice) {
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+      if (intent.kind === "qty_adjust") await handleQtyAdjust(phone, convo.id, user.cep, ctx, intent, reopened);
+      else await handleChoiceSwitch(phone, convo.id, user.cep, ctx, intent.kind === "back" ? { other: true, back: true } : intent, reopened);
+      return;
+    }
+    await reply(phone, intent.kind === "back" ? copy.backNothingOpen() : copy.switchNothingOpen());
+    return;
+  }
+
   // ---- "repete o de sempre" — reorder the last basket (memory) ----
   if (intent.kind === "repeat_last") {
     const last = await prisma.deliveryOrder.findFirst({
@@ -2586,6 +2638,14 @@ async function handleDeliveryTurn(
     // Card de um carrossel que ainda está na tela (05/10: a opção escolhida não tinha
     // entrega, o cliente tocou em OUTRA do mesmo carrossel e ouviu "conversa antiga"). Sem
     // pedido em andamento, o toque vale: a vitrine é recuperada e a opção entra na cesta.
+    // Toque repetido no card que acabou de entrar (06/10): confirma de novo, sem somar — a
+    // quantidade só muda quando o cliente pede.
+    const lastSku = ctx.lastChoice?.chosenSku;
+    const again = lastSku && lastSku.toLowerCase() === intent.sku.toLowerCase() ? (ctx.basket ?? []).find((b) => b.sku === lastSku) : undefined;
+    if (again) {
+      await reply(phone, copy.alreadyInBasket(again.name, again.qty));
+      return;
+    }
     const revived = ctx.deliveryOrderId ? null : await reviveTappedOption(convo.id, ctx, intent.sku);
     if (revived) {
       ctx.pending = [revived.pending, ...(ctx.pending ?? [])];
@@ -3471,7 +3531,8 @@ async function confirmChosenOption(
   userCep: string | null | undefined,
   fallbackStore: StoreConnector,
   current: PendingChoice,
-  chosen: ChoiceOption
+  chosen: ChoiceOption,
+  opts?: { note?: string; after?: string; thenPay?: boolean }
 ) {
   const chosenStore = chosen.storeKey ? getStore(chosen.storeKey) : fallbackStore;
   ctx.pending = ctx.pending!.slice(1);
@@ -3479,8 +3540,15 @@ async function confirmChosenOption(
   // esta mesma escolha (e o novo pick substitui o item na cesta, não soma outro).
   const { replaceSku, ...lastBase } = current;
   ctx.lastChoice = { ...lastBase, chosenSku: chosen.sku };
-  if (replaceSku && replaceSku !== chosen.sku) {
+  if (replaceSku) {
+    // Escolha reaberta ("voltar", "na verdade quero o 2", "outras"): a linha antiga sai e a
+    // quantidade dela vale para a nova (06/10). Escolher o MESMO produto de novo não soma.
+    const replaced = (ctx.basket ?? []).find((item) => item.sku === replaceSku);
     ctx.basket = (ctx.basket ?? []).filter((item) => item.sku !== replaceSku);
+    if (replaced && !current.qtyExplicit && replaced.qty > 1) {
+      current.qty = replaced.qty;
+      current.qtyExplicit = true;
+    }
   }
   // Quantidade não dita = 1 e segue em frente (dono, 01/09): a rodada "quantas
   // unidades?" era uma mensagem a mais no caso comum — quem quer 3 fala "3x" na hora
@@ -3490,14 +3558,24 @@ async function confirmChosenOption(
   // "12 ovos" com a caixa de 10 escolhida = 1 caixa, não 12 caixas (testadores 06/10: R$92
   // de ovo). A conversão já valia no auto-pick; faltava na escolha do cliente.
   const pack = assumedOne ? { qty: current.qty } : packAdjusted(chosen.name, current.qty);
-  const confirmed = assumedOne
+  const confirmedBase = assumedOne
     ? copy.choiceConfirmedAssumedOne(chosen.name, current.query)
     : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
+  const confirmed = [opts?.note, confirmedBase, opts?.after].filter(Boolean).join("\n");
   ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
-    await reply(phone, confirmed);
+    await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst()}` : confirmed);
     await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(ctx.pending[0].query, ctx.pending.length));
+    return;
+  }
+  // "quero o 1 e paga no pix" (06/10): escolheu e já pediu pra fechar — segue pro total.
+  if (opts?.thenPay) {
+    ctx.pending = undefined;
+    ctx.step = "collecting";
+    ctx.cep = ctx.cep ?? userCep ?? undefined;
+    await writeCtx(convoId, ctx);
+    await continueAfterBasket(phone, convoId, ctx, userCep, confirmed);
     return;
   }
   // Quantidade assumida → o follow-up troca "Cancelar" por "Mudar quantidade".
@@ -3538,6 +3616,14 @@ async function handleChoosing(
       current.options.find((o) => o.sku.toLowerCase() === wanted) ??
       current.shownOptions?.find((o) => o.sku.toLowerCase() === wanted);
     if (!tapped) {
+      // Toque repetido no card que ACABOU de entrar na cesta (06/10): confirma de novo, sem
+      // somar e sem chamar de "conversa antiga".
+      const again = ctx.lastChoice?.chosenSku.toLowerCase() === wanted ? (ctx.basket ?? []).find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined;
+      if (again) {
+        await reply(phone, copy.alreadyInBasket(again.name, again.qty));
+        await sendChoices(phone, current, copy.nextChoiceHeader(current.query, ctx.pending!.length));
+        return;
+      }
       // Card de outro item/conversa antiga: não chuta produto — DIZ que o botão é
       // velho (27/08 S1: "não peguei qual você quer" confundia) e reapresenta a atual.
       await reply(phone, copy.staleButtonTap(true));
@@ -3545,6 +3631,92 @@ async function handleChoosing(
       return;
     }
     await confirmChosenOption(phone, convoId, ctx, userCep, store, current, tapped);
+    return;
+  }
+
+  // ---- varredura 06/10: escolha + outra coisa na mesma mensagem, troca, "voltar" ----
+  // "quero o 1 e paga no pix" / "o 1, pode pagar no pix": escolhe e segue pro total.
+  // "quero o 2 e um sabonete": escolhe o 2 e o sabonete entra na fila (virava a busca
+  // "leite quero o 2 e um sabonete").
+  const combo = parseChoiceCombo(text, current.options);
+  if (combo) {
+    const chosen = current.options[combo.reply.index];
+    if (combo.reply.qty) {
+      current.qty = combo.reply.qty;
+      current.qtyExplicit = true;
+    }
+    if (combo.pay) {
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, chosen, { thenPay: true });
+      return;
+    }
+    const added = await buildChoicesWithSearchNotice(phone, combo.rest!, undefined, undefined, undefined, ctx.cep);
+    ctx.basket = mergeBaskets(ctx.basket ?? [], added.autoAdded);
+    ctx.pending = [...(ctx.pending ?? []), ...added.pending];
+    const notes: string[] = [];
+    if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
+    if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
+    await confirmChosenOption(phone, convoId, ctx, userCep, store, current, chosen, { after: notes.join("\n") || undefined });
+    return;
+  }
+  if (intent.kind === "switch_choice") {
+    // Com a lista aberta, "na verdade quero o 3" é simplesmente escolher o 3.
+    if (intent.other) {
+      await pageMoreOptions(phone, convoId, ctx, store);
+      return;
+    }
+    const idx = intent.index === -1 ? current.options.length - 1 : (intent.index ?? -1);
+    if (idx >= 0 && idx < current.options.length) {
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[idx]);
+      return;
+    }
+    await reply(phone, copy.choiceOutOfRange(current.options.length));
+    await sendChoices(phone, current);
+    return;
+  }
+  if (intent.kind === "back") {
+    // "voltar" com a lista do item ANTERIOR ainda na memória: ela volta primeiro e esta fica
+    // na fila; o item já escolhido continua na cesta até ele escolher outro.
+    const last = ctx.lastChoice;
+    const kept = last ? (ctx.basket ?? []).find((b) => b.sku === last.chosenSku) : undefined;
+    if (last && kept) {
+      const { chosenSku, ...base } = last;
+      const restored: PendingChoice = { ...base, replaceSku: chosenSku };
+      ctx.pending = [restored, ...(ctx.pending ?? [])];
+      await writeCtx(convoId, ctx);
+      await sendChoices(phone, restored, copy.backToChoice(restored.query, kept.name));
+      return;
+    }
+    await sendChoices(phone, current);
+    return;
+  }
+  // "qual o mais barato?" é pergunta: responde qual é, sem pôr na cesta (06/10).
+  const priceAsk = asksCheapestQuestion(text);
+  if (priceAsk && current.options.length > 1) {
+    const idx = current.options.reduce(
+      (best, o, i, arr) => ((priceAsk === "cheapest" ? o.unitPrice < arr[best].unitPrice : o.unitPrice > arr[best].unitPrice) ? i : best),
+      0
+    );
+    const o = current.options[idx];
+    await reply(phone, copy.cheapestOptionAnswer(idx + 1, o.name, display(o.unitPrice, o.medicine), priceAsk === "cheapest"));
+    return;
+  }
+  // "o da Mambo", "o da drogaria são paulo": a LOJA da opção (06/10). Estreita para as opções
+  // dela — como nome/marca digitado, quem confirma é o número (regra do dono, 04/09).
+  const storeRef = parseStoreReference(text, current.options, listStores().map((s) => s.label));
+  if (storeRef) {
+    if (!storeRef.indices.length) {
+      await reply(phone, copy.storeNoneOnTable(storeRef.label));
+      await sendChoices(phone, current);
+      return;
+    }
+    if (storeRef.indices.length === current.options.length) {
+      await reply(phone, copy.storeAllSame(storeRef.label));
+      await sendChoices(phone, current);
+      return;
+    }
+    current.options = storeRef.indices.map((i) => current.options[i]);
+    await writeCtx(convoId, ctx);
+    await sendChoices(phone, current, copy.storeNarrowed(storeRef.label));
     return;
   }
   // Mensagem com 2+ produtos ("shampoo Kerasys Coconut 1L, condicionador Kerasys Coconut
@@ -3639,9 +3811,52 @@ async function handleChoosing(
     await sendChoices(phone, current, copy.narrowedChoices(current.query));
     return;
   }
+  // "o mesmo da última vez" (06/10): procura nas compras do cliente; nunca é "a última opção".
+  if (parsed?.type === "previous") {
+    const bought = await preferredSkuCounts(userId);
+    const hits = current.options.map((o, i) => ({ i, n: bought.get(o.sku) ?? 0 })).filter((h) => h.n > 0).sort((a, b) => b.n - a.n);
+    if (hits.length) {
+      current.options = [current.options[hits[0].i]];
+      await writeCtx(convoId, ctx);
+      await sendChoices(phone, current, copy.previousPurchaseFound());
+      return;
+    }
+    await reply(phone, copy.previousPurchaseNotHere());
+    await sendChoices(phone, current);
+    return;
+  }
+  if (parsed?.type === "pick" && parsed.qty) {
+    current.qty = parsed.qty;
+    current.qtyExplicit = true;
+  }
+  if (!parsed) {
+    // "5" numa lista de 3 (06/10): a pessoa respondeu um número — diz quantas opções há.
+    const asked = parseChoiceNumber(text);
+    if (asked && asked > current.options.length && (intent.kind === "number" || intent.kind === "free_text")) {
+      await reply(phone, copy.choiceOutOfRange(current.options.length));
+      await sendChoices(phone, current);
+      return;
+    }
+    // "quero 2 unidades"/"6x" com a lista aberta: guarda a quantidade e pede qual.
+    if (intent.kind === "qty_adjust" && intent.set) {
+      current.qty = intent.set;
+      current.qtyExplicit = true;
+      await writeCtx(convoId, ctx);
+      // "quero 2 desse" depois de uma foto (15/09): guarda o 2 e pergunta de qual.
+      await sendChoices(phone, current, isDemonstrativeOnly(text) ? copy.demonstrativeNeedsChoice() : copy.qtyNotedPickOne(intent.set, current.query));
+      return;
+    }
+  }
   if (parsed) {
     if (parsed.type === "skip") {
       ctx.pending = ctx.pending!.slice(1);
+      // Era o único item (06/10): "Deixei de fora" já diz o próximo passo — sem o "Não
+      // entendi" logo atrás, que contradizia.
+      if (!ctx.pending.length && !(ctx.basket?.length ?? 0)) {
+        await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
+        await reply(phone, copy.choiceSkipped(current.query));
+        return;
+      }
       await reply(phone, copy.choiceSkipped(current.query));
       await advancePending(phone, convoId, ctx, userCep);
       return;
@@ -3741,6 +3956,10 @@ async function handleChoosing(
     const strong = combined
       .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
       .filter((o) => conciergeMatchIsStrong(combinedQuery, o) && conciergeMatchIsStrong(normalizeMsg(text), o))
+      // Refino mantém o PRODUTO da escolha (06/10): com cervejas na mesa, "quero desodorante"
+      // virava "*cerveja quero desodorante*: Body Splash Cereja" — produto de outro tipo é
+      // item novo e vai pra fila logo abaixo.
+      .filter((o) => conciergeMatchIsStrong(current.baseQuery ?? current.query, o))
       // O teto da busca original continua valendo no refinamento por marca. Esse é o
       // caminho de cauda longa de "fone até 150" → "Philco" que ainda deixava um
       // anúncio caro do ML furar o orçamento depois de os primeiros cards respeitarem.
@@ -4337,6 +4556,100 @@ async function handleRemove(
     return;
   }
   await continueAfterBasket(phone, convoId, ctx, userCep, copy.removedItems(names, false));
+}
+
+// Quantidade do item recém-escolhido por texto (06/10): "quero 2", "6x", "bota 3" (set) e
+// "tira um", "põe mais um" (delta). O alvo é o último escolhido; sem ele, o último da cesta.
+async function handleQtyAdjust(
+  phone: string,
+  convoId: string,
+  userCep: string | null | undefined,
+  ctx: DeliveryContext,
+  cmd: { set?: number; delta?: number },
+  reopened: boolean
+) {
+  const basket = ctx.basket ?? [];
+  const target = (ctx.lastChoice ? basket.find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined) ?? basket[basket.length - 1];
+  if (!target) {
+    await reply(phone, copy.demonstrativeNeedsItem());
+    return;
+  }
+  const next = cmd.set ?? target.qty + (cmd.delta ?? 0);
+  if (next <= 0) {
+    // "tira um" com 1 unidade = tirar o item.
+    ctx.basket = basket.filter((b) => b !== target);
+    if (!ctx.basket.length) {
+      await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
+      await reply(phone, copy.removedItems(target.name, true));
+      return;
+    }
+    if (reopened) {
+      await continueAfterBasket(phone, convoId, ctx, userCep, copy.removedItems(target.name, false));
+      return;
+    }
+    await writeCtx(convoId, ctx);
+    await replyBasketAdjusted(phone, copy.removedItems(target.name, false), copy.removedItems(target.name, false));
+    return;
+  }
+  target.qty = Math.min(50, next);
+  target.lineTotal = Math.round(target.unitPrice * target.qty * 100) / 100;
+  if (reopened) {
+    await continueAfterBasket(phone, convoId, ctx, userCep, copy.qtyAdjustedShort(target.qty, target.name));
+    return;
+  }
+  await writeCtx(convoId, ctx);
+  await replyBasketAdjusted(phone, copy.qtyAdjustedShort(target.qty, target.name), copy.qtyAdjusted(target.qty, target.name));
+}
+
+// "na verdade quero o 2" / "troca pelo outro" / "voltar" depois de escolher (06/10): a última
+// lista volta com o item escolhido marcado para SUBSTITUIR (replaceSku) — ele só sai da cesta
+// quando o cliente escolhe outro, e a quantidade dele passa para o novo.
+async function handleChoiceSwitch(
+  phone: string,
+  convoId: string,
+  userCep: string | null | undefined,
+  ctx: DeliveryContext,
+  ask: { index?: number; other?: boolean; back?: boolean },
+  reopened: boolean
+) {
+  const last = ctx.lastChoice;
+  const kept = last ? (ctx.basket ?? []).find((b) => b.sku === last.chosenSku) : undefined;
+  if (!last || !kept) {
+    await reply(phone, ask.back ? copy.backNothingOpen() : copy.switchNothingOpen());
+    return;
+  }
+  const { chosenSku, ...base } = last;
+  const restored: PendingChoice = { ...base, replaceSku: chosenSku };
+  const others = last.options.filter((o) => o.sku !== chosenSku);
+  // "o outro" com só duas opções é inequívoco; com mais, a lista volta pra ele dizer qual.
+  const option = ask.back
+    ? undefined
+    : ask.other
+      ? others.length === 1 ? others[0] : undefined
+      : last.options[ask.index === -1 ? last.options.length - 1 : (ask.index ?? -1)];
+  ctx.pending = [restored, ...(ctx.pending ?? [])];
+  ctx.step = "choosing";
+  if (!option) {
+    await writeCtx(convoId, ctx);
+    if (!ask.back && !ask.other) await reply(phone, copy.choiceOutOfRange(last.options.length));
+    await sendChoices(phone, restored, copy.backToChoice(restored.query, kept.name));
+    return;
+  }
+  if (option.sku === chosenSku) {
+    ctx.pending = ctx.pending.slice(1);
+    if (!ctx.pending.length) {
+      ctx.pending = undefined;
+      ctx.step = "collecting";
+    }
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.choiceSameAsBasket(kept.name));
+    return;
+  }
+  const store = getStore(option.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
+  await confirmChosenOption(phone, convoId, ctx, userCep, store, restored, option, {
+    note: copy.choiceSwitchedOut(kept.name),
+    thenPay: reopened
+  });
 }
 
 async function handleSwap(
@@ -4959,6 +5272,12 @@ async function handleSearch(
     if (ctx.pending?.length) await sendChoices(phone, ctx.pending[0], copy.demonstrativeNeedsChoice());
     else await reply(phone, copy.demonstrativeNeedsItem());
     return;
+  }
+  // Item novo com o total na mesa (06/10): TODO caminho que busca reabre o pedido antes. O
+  // roteador da IA ("e também um sabonete" → "sabonete") buscava direto e a cotação nova saía
+  // só com o sabonete — o arroz sumia. Cobrança Pix aberta não entra aqui (tem bloco próprio).
+  if (ctx.deliveryOrderId && (ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight")) {
+    await reopenOrderForEdit(phone, convoId, ctx, userCep);
   }
   // Concierge mode: no catalog gate. Whatever the customer asks for becomes a free-form
   // line the operator will source and price. Breadth — "anything from anywhere" — is the

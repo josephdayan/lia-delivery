@@ -114,6 +114,14 @@ export type Intent =
   // "mais três do mesmo bombom" / "mais 2 iguais" — repetir o ÚLTIMO item da cesta,
   // resolvido por sku (nunca nova busca, que podia trazer outra marca — rodada 13).
   | { kind: "add_more_same"; qty: number; noun?: string }
+  // Quantidade do item recém-escolhido por texto (06/10): "quero 2", "6x", "bota 3", "só 1"
+  // (set) e "tira um", "põe mais um" (delta). Antes viravam busca, saudação ou "carrinho limpo".
+  | { kind: "qty_adjust"; set?: number; delta?: number }
+  // "na verdade quero o 2", "troca pelo 2", "troca pelo outro" (06/10): trocar a escolha pela
+  // opção N da última lista — nunca retomar compra cancelada nem buscar "*2*".
+  | { kind: "switch_choice"; index?: number; other?: boolean }
+  // "voltar" (06/10): reabre a última lista sem tirar o item escolhido.
+  | { kind: "back" }
   // Cartão salvo (modo sem Meta Payments): toque no botão "Pagar •••• 1234" volta como
   // id `cardpay:<attemptId>`; o texto humano equivalente vem sem o id. "Outro cartão"
   // troca a credencial (novo link de cadastro).
@@ -1006,10 +1014,20 @@ export function detectIntent(text: string): Intent {
     return { kind: "resume_where" };
   }
 
+  // Quantidade, troca de opção e "voltar" (06/10) vêm ANTES do resume_canceled: "na verdade
+  // quero 12" e "na verdade quero o 2" ressuscitavam um pedido cancelado.
+  const qtyCommand = parseQtyCommand(n);
+  if (qtyCommand) return { kind: "qty_adjust", ...qtyCommand };
+  const switchChoice = parseChoiceSwitch(n);
+  if (switchChoice) return { kind: "switch_choice", ...switchChoice };
+  if (BACK_RE.test(n)) return { kind: "back" };
+
   // "na vdd quero sim, ainda dá?" — arrependimento do cancelamento: recuperar a
   // compra, nunca buscar "na vdd sim" (28/08 S11, que virou produto pra cachorro).
+  // 06/10: só frase SEM produto nem número depois do "quero" — "pensando bem quero 2 coca
+  // cola 2l" recuperava 6 leites cancelados e cobrava R$ 52,14 por eles.
   if (
-    /^(na (vdd|verdade)|pensando (bem|melhor))[,!.\s]*(eu )?quero( sim| ainda)?\b/.test(n) ||
+    /^(na (vdd|verdade)|pensando (bem|melhor))[,!.\s]*(eu )?quero(\s+(sim|ainda|de volta|aquel[ea]( pedido| compra)?|o pedido|a compra))*([,!.\s]+ainda (da|dá))?[\s!.?,]*$/.test(n) ||
     /^ainda (da|dá)\??\s*$/.test(n) ||
     /\bmudei de ideia[,!.\s]+quero (sim|de volta|aquele)\b/.test(n)
   ) {
@@ -1514,7 +1532,11 @@ export function parseRefinement(text: string): string[] | null {
 // ---------- choice reply parsing (customer looking at up to 3 options) ----------
 
 export type ChoiceReply =
-  | { type: "pick"; index: number }
+  // `qty` (06/10): "quero 2 do primeiro", "o 1, duas unidades" — escolha e quantidade juntas.
+  | { type: "pick"; index: number; qty?: number }
+  // "o mesmo da última vez", "o de sempre" (06/10): não é ordinal — o cérebro procura nas
+  // compras anteriores do cliente.
+  | { type: "previous" }
   // Texto que nomeia UMA opção (marca/nome): estreita, não escolhe (04/09).
   | { type: "name"; index: number }
   | { type: "any" }
@@ -1549,6 +1571,22 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
   if (/^(o|a)?\s*(de\s+)?(melhor\s+)?custo[\s-]?beneficio$/.test(n)) {
     const idx = options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0);
     return { type: "pick", index: idx };
+  }
+
+  // "o mesmo da última vez"/"o de sempre" (06/10): "última" aqui não é a última opção — a
+  // frase comprava a 3ª opção até para quem nunca tinha comprado.
+  if (PREVIOUS_PURCHASE_RE.test(n)) return { type: "previous" };
+
+  // Escolha + quantidade na mesma mensagem (06/10): "quero 2 do primeiro", "o 1, duas
+  // unidades" — a quantidade era ignorada em silêncio.
+  const withQty = splitChoiceQty(n);
+  if (withQty) {
+    const inner = parseChoiceReply(withQty.rest, options);
+    if (inner?.type === "pick") return { type: "pick", index: inner.index, qty: withQty.qty };
+    if (inner?.type === "cheapest") {
+      const idx = options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0);
+      return { type: "pick", index: idx, qty: withQty.qty };
+    }
   }
 
   const bare = n.match(/^(?:opcao\s*|op\s*|numero\s*|n[o°º]?\s*|a\s+|o\s+)?([1-9])[\s).!]*$/);
@@ -1807,4 +1845,197 @@ export function parseAvailabilityAsk(text: string): string | null {
   const words = text.replace(/[?!.]+\s*$/g, "").trim().split(/\s+/);
   const k = item.split(" ").length;
   return words.length >= k ? words.slice(-k).join(" ") : item;
+}
+
+// ---------- escolher a opção e mexer na cesta (varredura 06/10) ----------
+
+const QTY_WORD_VALUE: Record<string, number> = {
+  um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, doze: 12
+};
+const QTY_N = "(\\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|doze)";
+const QTY_UNIT = "(\\s*(?:x|unidades?|unids?|un|vezes|pacotes?|caixas?|potes?|latas?|garrafas?|frascos?|itens?))?";
+// Marcas de correção na frente/atrás ("na verdade quero 12", "quero 2 então") e o
+// demonstrativo do item na mesa ("quero 2 desse") não mudam o que a frase pede.
+const QTY_LEAD_RE = /^(?:(?:ah+|e|entao|na verdade|na vdd|pensando bem|pensando melhor|melhor|opa|ops|mudei de ideia|nao\s*,|por favor)[,!.]?\s+)+/;
+const QTY_TAIL_RE = /(?:[,!.]?\s+(?:na verdade|na vdd|entao|por favor|pfv|pf|ai|dai|desse|dessa|deste|desta|dele|dela|do mesmo|da mesma|mesmo|ok|blz))+$/;
+const QTY_SET_RE = new RegExp(
+  `^(?:(?:eu\\s+)?(quero|queria|vou querer|coloca|colocar|poe|por|bota|botar|deixa|deixar|faz|fazer|manda|mandar|pode ser|sao|serao|leva|levo|me ve|muda pra|muda para|mudar pra|mudar para|altera pra|altera para|ajusta pra|ajusta para|pode colocar|pode por|pode botar|pode deixar)\\s+)?(?:(so|somente|apenas)\\s+)?${QTY_N}${QTY_UNIT}$`
+);
+const QTY_ADD_RE = new RegExp(
+  `^(?:(?:quero|queria|coloca|colocar|poe|por|bota|botar|adiciona|acrescenta|manda|me ve|e|pode por|pode colocar|pode botar)\\s+)?mais\\s+${QTY_N}${QTY_UNIT}$`
+);
+const QTY_SUB_RE = new RegExp(`^(?:(?:pode\\s+)?(?:tira|tirar|remove|remover|retira|retirar|diminui|diminuir)\\s+(?:mais\\s+)?|menos\\s+)${QTY_N}${QTY_UNIT}$`);
+
+function qtyValue(raw: string): number | null {
+  const v = /^\d+$/.test(raw) ? Number(raw) : QTY_WORD_VALUE[raw];
+  return v && v >= 1 && v <= MAX_QTY ? v : null;
+}
+
+function qtyCore(n: string): string {
+  return n.replace(/[!.?]+$/g, "").replace(QTY_LEAD_RE, "").replace(QTY_TAIL_RE, "").trim();
+}
+
+// Quantidade sem produto, sobre o item que acabou de entrar (06/10): "quero 2", "6x", "bota 3",
+// "muda pra 6", "quero só 1" → set; "tira um", "põe mais um", "mais 2" → delta. O número seco
+// ("2") continua sendo o intent `number`. "um"/"uma" com verbo comum ("coloca um") fica de
+// fora: costuma ser começo de pedido, não quantidade.
+export function parseQtyCommand(text: string): { set: number } | { delta: number } | null {
+  const core = qtyCore(normalizeMsg(text));
+  if (!core) return null;
+  const add = core.match(QTY_ADD_RE);
+  if (add) {
+    const v = qtyValue(add[1]);
+    return v ? { delta: v } : null;
+  }
+  const sub = core.match(QTY_SUB_RE);
+  if (sub) {
+    const v = qtyValue(sub[1]);
+    return v ? { delta: -v } : null;
+  }
+  const set = core.match(QTY_SET_RE);
+  if (!set) return null;
+  const [, verb, only, raw, unit] = set;
+  const v = qtyValue(raw);
+  if (!v) return null;
+  const isDigit = /^\d+$/.test(raw);
+  if (!verb && !only && !unit) return null; // "2" seco é o intent number; "dois" seco fica como está
+  if (!isDigit && v === 1 && !only && !unit && !/^(deixa|deixar|muda|mudar|altera|ajusta|pode deixar)/.test(verb ?? "")) return null;
+  return { set: v };
+}
+
+const CHOICE_REF = "([1-9]|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]|ultim[oa]|outr[oa])";
+const SWITCH_VERB_RE = new RegExp(
+  `^(?:troca|trocar|troque|muda|mudar|substitui|substituir)\\s+(?:pel[oa]|pr[oa]|para\\s+[oa]|pra\\s+[oa]|por\\s+[oa])\\s+(?:opcao\\s+|numero\\s+)?${CHOICE_REF}$`
+);
+const SWITCH_PICK_RE = new RegExp(
+  `^(?:(?:eu\\s+)?(quero|queria|vou querer|prefiro|vou de|vou no|vou na|fico com|me ve|pode ser|escolho|manda)\\s+)?(?:o|a)\\s+(?:opcao\\s+|numero\\s+)?${CHOICE_REF}$`
+);
+const SWITCH_MARK_LEAD_RE = /^(?:na verdade|na vdd|pensando bem|pensando melhor|mudei de ideia|melhor|nao\s*,|ah+|ops|opa|entao)\b/;
+const SWITCH_MARK_TAIL_RE = /\b(?:na verdade|na vdd|entao)$/;
+
+function choiceRefIndex(ref: string): { index?: number; other?: boolean } {
+  if (/^\d$/.test(ref)) return { index: Number(ref) - 1 };
+  if (/^outr/.test(ref)) return { other: true };
+  if (/^ultim/.test(ref)) return { index: -1 };
+  const ordinals = ["primeir", "segund", "terceir", "quart", "quint"];
+  return { index: ordinals.findIndex((o) => ref.startsWith(o)) };
+}
+
+// "na verdade quero o 2", "pensando bem quero o 1", "quero o 2 na verdade", "prefiro o 2",
+// "troca pelo 2", "troca pelo outro" (06/10): trocar pela opção N da última lista. Sem marca
+// de correção, "quero o 2" segue sendo escolha comum (a escolha aberta resolve).
+// `index: -1` = a última opção.
+export function parseChoiceSwitch(text: string): { index?: number; other?: boolean } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const viaVerb = n.match(SWITCH_VERB_RE);
+  if (viaVerb) return choiceRefIndex(viaVerb[1]);
+  const marked = SWITCH_MARK_LEAD_RE.test(n) || SWITCH_MARK_TAIL_RE.test(n);
+  const core = n.replace(QTY_LEAD_RE, "").replace(/[,\s]+(?:na verdade|na vdd|entao)$/, "").trim();
+  const pick = core.match(SWITCH_PICK_RE);
+  if (!pick) return null;
+  if (!marked && pick[1] !== "prefiro") return null;
+  return choiceRefIndex(pick[2]);
+}
+
+export const BACK_RE =
+  /^(?:(?:quero|pode|da pra|da para)\s+)?volt(?:a|ar)(?:\s+(?:pra|para|a|as|na|nas|pras)\s+(?:a\s+|as\s+)?(?:lista|opcoes|anterior|escolha))?(?:\s+atras)?(?:\s+(?:por favor|pfv|ai))?[\s!.]*$/;
+
+// "o mesmo da última vez", "igual da outra vez", "o de sempre", "o que eu comprei" (06/10).
+const PREVIOUS_PURCHASE_RE =
+  /\b(?:mesm[oa]|igual|aquel[ea])\s+(?:d[ae]\s+|da\s+|na\s+)?(?:ultima vez|outra vez|vez passada|sempre)\b|\bo de sempre\b|\bd[ae] ultima vez\b|\bque (?:eu )?(?:comprei|pedi) (?:da |na )?(?:ultima|outra) vez\b/;
+
+// "quero 2 do primeiro", "2 da opção 1", "2x o primeiro", "o 1, duas unidades", "a 2, 3x".
+function splitChoiceQty(n: string): { qty: number; rest: string } | null {
+  const front = n.match(
+    new RegExp(`^(?:(?:quero|queria|me ve|manda|vou querer|pode ser|leva|levo|coloca|poe|bota)\\s+)?${QTY_N}${QTY_UNIT}\\s+(?:d[oa]s?|de|[oa])\\s+(.+)$`)
+  );
+  if (front) {
+    const qty = qtyValue(front[1]);
+    const rest = front[3].trim();
+    if (qty) return { qty, rest: /^mais (barat|car)/.test(rest) ? `o ${rest}` : rest };
+  }
+  const back = n.match(new RegExp(`^(.+?)\\s*[,;]?\\s+${QTY_N}(\\s*(?:x|unidades?|unids?|un|vezes|pacotes?|caixas?))$`));
+  if (back) {
+    const qty = qtyValue(back[2]);
+    if (qty) return { qty, rest: back[1].replace(/[,;\s]+$/, "").trim() };
+  }
+  return null;
+}
+
+// Escolha + pagamento ou escolha + item novo numa mensagem (06/10): "quero o 1 e paga no
+// pix", "o 1, pode pagar no pix", "quero o 2 e um sabonete". A 1ª parte tem que ser uma
+// escolha de verdade (número, ordinal, "o mais barato"); senão devolve null.
+export function parseChoiceCombo(
+  text: string,
+  options: { name: string; unitPrice: number }[]
+): { reply: { type: "pick"; index: number; qty?: number }; pay?: boolean; rest?: string } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  const parts = n.match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tambem\s+)?)(.+)$/);
+  if (!parts) return null;
+  const head = parseChoiceReply(parts[1], options);
+  let reply: { type: "pick"; index: number; qty?: number } | null = null;
+  if (head?.type === "pick") reply = head;
+  else if (head?.type === "cheapest") {
+    reply = { type: "pick", index: options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0) };
+  }
+  if (!reply) return null;
+  const tail = parts[2].trim();
+  if (
+    /^(?:(?:pode|ja|e|entao|ai|dai|ja pode|quero)\s+)*(?:pagar|paga|pago|fechar|fecha|finaliza|finalizar|fecha o pedido|fechar o pedido)(?:\s+(?:no|na|com|via|pelo|por|o))?(?:\s+(?:pix|cartao|credito|debito))?(?:\s+mesmo)?$/.test(tail) ||
+    /^(?:(?:pode ser|vou pagar|pago)\s+)?(?:no |com |via )?(?:pix|cartao|credito)(?:\s+mesmo)?$/.test(tail)
+  ) {
+    return { reply, pay: true };
+  }
+  // Quantidade junto ("o 1, duas unidades") já é tratada pelo parseChoiceReply inteiro.
+  if (parseQtyCommand(tail) || !/[a-z]{3,}/.test(tail)) return null;
+  return { reply, rest: tail };
+}
+
+// "o da Mambo", "a da drogaria são paulo", "quero o da Swift" (06/10): referência à LOJA da
+// opção. Devolve o nome citado e as opções dessa loja (vazio = loja conhecida, mas nenhuma
+// opção na mesa é dela). Só vale quando o nome bate com uma loja de verdade.
+export function parseStoreReference(
+  text: string,
+  options: { storeLabel?: string }[],
+  knownLabels: string[] = []
+): { label: string; indices: number[] } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const m = n.match(/^(?:(?:quero|prefiro|pode ser|me ve|vou de|fico com|manda|escolho)\s+)?(?:o|a|os|as)?\s*(?:que\s+(?:e|eh|vem)\s+)?(?:d[oa]s?|de|na|no)\s+(?:loja\s+|farmacia\s+|mercado\s+)?(.{3,40})$/);
+  if (!m) return null;
+  const wanted = m[1].trim();
+  const matches = (label?: string) => {
+    const l = normalizeMsg(label ?? "");
+    return Boolean(l) && (l === wanted || (wanted.length >= 4 && l.includes(wanted)) || (l.length >= 4 && wanted.includes(l)));
+  };
+  const indices = options.map((o, i) => (matches(o.storeLabel) ? i : -1)).filter((i) => i >= 0);
+  if (indices.length) return { label: options[indices[0]].storeLabel!, indices };
+  const known = knownLabels.find((l) => matches(l));
+  return known ? { label: known, indices: [] } : null;
+}
+
+// "chega hoje?", "o 2 chega hoje?", "quando chega?", "qual o prazo?" com as opções na tela
+// (06/10): a resposta são os prazos das opções. Devolve o número da opção citada (se houver).
+export function parseChoiceEtaAsk(text: string): { option?: number; today: boolean } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  if (!/\b(chega|chegam|chegaria|entrega|entregam|entregaria|prazo|demora|demoram)\b/.test(n)) return null;
+  if (!/\?$/.test(n) && !/^(?:qual|quais|quando|quanto tempo|o que|que|e |o \d|a \d|qual delas)/.test(n)) return null;
+  if (n.split(" ").length > 9) return null;
+  const opt = n.match(/\b(?:o|a|opcao|numero)\s+([1-9])\b/);
+  return { ...(opt ? { option: Number(opt[1]) } : {}), today: /\bhoje\b/.test(n) };
+}
+
+// Número de opção pedido ("5", "o 5", "opção 5", "quero o 5") — para dizer "são só 3".
+export function parseChoiceNumber(text: string): number | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  const m = n.match(/^(?:(?:quero|prefiro|vou de|pode ser|escolho|manda)\s+)?(?:o\s+|a\s+)?(?:opcao\s*|numero\s*|op\s*)?([1-9]\d?)[\s).!]*$/);
+  return m ? Number(m[1]) : null;
+}
+
+// "qual o mais barato?", "qual é o mais caro?" — PERGUNTA, não escolha (06/10).
+export function asksCheapestQuestion(text: string): "cheapest" | "priciest" | null {
+  const n = normalizeMsg(text);
+  if (!isQuestion(n) || !/^(?:e\s+)?(?:qual|quais)\b/.test(n)) return null;
+  if (/\bmais (?:barat|em conta)|\bmenor preco\b/.test(n)) return "cheapest";
+  if (/\bmais car[oa]\b/.test(n)) return "priciest";
+  return null;
 }
