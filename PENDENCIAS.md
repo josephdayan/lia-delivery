@@ -1,3 +1,9 @@
+## 06/10/2026 — Encerrar o operador Carlos
+
+- [x] Mensagem de encerramento enviada (06/10) oferecendo R$150 pelo período 16/09–06/10.
+- [ ] Se ele recusar: oferecer R$200 (teto autorizado pelo dono).
+- [ ] Pagar por Pix assim que ele mandar a chave; tirar o acesso dele ao /ops.
+
 ## 30/09/2026 — ALERTA: migration não chegou ao banco de produção pelo build
 
 O build da Vercel roda `prisma migrate deploy` com o `DIRECT_URL` da Vercel e disse "No pending
