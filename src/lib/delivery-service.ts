@@ -1448,6 +1448,11 @@ async function handleDeliveryTurn(
     }
     // "qual o prazo de entrega?" com pedido pago ou escolha de entrega na tela (06/10): o prazo
     // DO PEDIDO, não a explicação genérica.
+    // "quanto fica o frete?" na escolha de entrega (06/10): o frete está na tela — reapresenta.
+    if (intent.topic === "fee" && ctx.step === "choosing_freight" && ctx.freightChoice) {
+      await sendFreightChoice(phone, ctx.freightChoice);
+      return;
+    }
     if (intent.topic === "eta") {
       if (ctx.step === "choosing_freight" && ctx.freightChoice) {
         await reply(phone, copy.freightEtaHeader());
@@ -3745,7 +3750,7 @@ async function handleDeliveryAddress(
   } else if (looksLikeDeliveryAddress(address)) {
     // Pedido e endereço na mesma mensagem (A1): só a rua vai pra etiqueta; o resto é pedido.
     const split = splitAddressAndItems(address);
-    finalAddress = split?.address && looksLikeDeliveryAddress(split.address) ? split.address : address;
+    finalAddress = (split?.address && looksLikeDeliveryAddress(split.address) ? split.address : address).replace(/\s+,/g, ",").replace(/,\s*,/g, ",");
     extraItems = split?.items ? onboardingNote(split.items).text || undefined : undefined;
     // Cidade escrita ≠ cidade do CEP já salvo (A5): pergunta antes de gravar.
     const typedCity = knownCep && ctx.city && !opts?.cityConfirmed ? typedCityMismatch(finalAddress, ctx.city, ctx.uf) : null;
@@ -3807,6 +3812,16 @@ async function handleDeliveryAddress(
           return;
         }
       }
+      ctx.step = "need_address";
+      await writeCtx(convoId, ctx);
+      await askStreetOrSignup(phone, ctx, userCep);
+      return;
+    }
+    // "Vc tem cottage?"/"quanto tá o leite?" esperando o endereço (06/10): é pedido em forma
+    // de pergunta — anota o produto e segue pedindo o endereço.
+    const askedItem = kind === "free_text" ? parseAvailabilityAsk(address) ?? parsePriceAsk(address) : null;
+    if (askedItem && !blocksMedicine(address)) {
+      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${askedItem}` : askedItem;
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
       await askStreetOrSignup(phone, ctx, userCep);

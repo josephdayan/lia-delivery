@@ -325,3 +325,13 @@ test("trocar o endereço mandando rua + CEP com pedido pago avisa que esse pedid
     global.fetch = realFetch;
   }
 });
+
+test("'Vc tem cottage…?' com a Lia esperando o endereço fica anotado (caso real da manhã)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  await send(phone, "Bom dia queria comprar uma coisa");
+  const out = await send(phone, "Vc tem cottage da yorgus 14g proteína ?");
+  assert.match(out, /cottage/i, out.slice(0, 300));
+  const ctx = await context(phone);
+  assert.match(ctx.pendingRequest ?? "", /cottage/i);
+});
