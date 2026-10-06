@@ -2079,3 +2079,96 @@ export function pricesUpdatedByStore(items: Array<{ name: string; from: number; 
     ? `A loja mudou o preço agora há pouco — ${line(items[0])}. O total abaixo já está com o preço certo.`
     : `A loja mudou alguns preços agora há pouco:\n${items.map((i) => `• ${line(i)}`).join("\n")}\nO total abaixo já está com os preços certos.`;
 }
+
+// ---------- escolher a opção e mexer na cesta (varredura 06/10) ----------
+
+// Toque repetido no MESMO card: não soma calado (06/10 — virava 2x sem aviso).
+export function alreadyInBasket(name: string, qty: number): string {
+  return `✅ *${name}* já está na cesta${qty > 1 ? ` (${qty}x)` : ""}. Pra mudar a quantidade, manda o número.`;
+}
+
+// Número fora da lista ("5" com 3 opções): a pessoa respondeu um número, dizer quantas há.
+export function choiceOutOfRange(count: number): string {
+  if (count <= 1) return "Aqui só tem *1* opção. Responde *1* pra levar ou *outras* pra ver mais.";
+  const nums = Array.from({ length: count }, (_, i) => i + 1);
+  return `São só ${count} opções: responde *${nums.slice(0, -1).join("*, *")}* ou *${nums[nums.length - 1]}* — ou *outras* pra ver mais.`;
+}
+
+// "quero 2 unidades" com a escolha aberta: guarda a quantidade e pede qual.
+export function qtyNotedPickOne(qty: number, query: string): string {
+  return `Anotei ${qty} unidades de *${query}*. Agora me diz qual 👇`;
+}
+
+// "na verdade quero o 2" depois de escolher: a troca é anunciada.
+export function choiceSwitchedOut(oldName: string): string {
+  return `Troquei: saiu *${oldName}*.`;
+}
+
+export function choiceSameAsBasket(name: string): string {
+  return `*${name}* já é o que está na sua cesta 🙂`;
+}
+
+export function switchNothingOpen(): string {
+  return "Não tenho uma lista aberta pra trocar agora. Me diz o produto que você quer que eu procuro.";
+}
+
+// "voltar" depois de escolher: a lista volta e o item escolhido fica até ele escolher outro.
+export function backToChoice(query: string, keptName?: string): string {
+  return keptName
+    ? `Voltei pras opções de *${query}* — *${keptName}* continua na cesta até você escolher outra:`
+    : `Voltei pras opções de *${query}*:`;
+}
+
+export function backNothingOpen(): string {
+  return "Não tem lista aberta pra voltar. Me diz o que você quer que eu procuro.";
+}
+
+// "qual o mais barato?" é pergunta — responde qual é, não põe na cesta (06/10).
+export function cheapestOptionAnswer(n: number, name: string, price: number, cheapest: boolean): string {
+  return `O mais ${cheapest ? "barato" : "caro"} é o *${n}*: ${name} — ${brl(price)}. Quer esse? Responde *${n}*.`;
+}
+
+// "chega hoje?"/"o 2 chega hoje?" com as opções na tela: os prazos que a loja informou.
+export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean }>, askedToday: boolean): string {
+  const known = rows.filter((r) => r.delivery);
+  if (!known.length) return "O prazo de cada loja sai no total, logo depois que você escolher. Responde o número 👇";
+  const lines = rows.map((r) => `*${r.n})* ${r.name} — ${r.delivery ?? "prazo no total"}`);
+  let head = "Prazo de cada opção:";
+  if (askedToday) {
+    const today = rows.filter((r) => r.today);
+    head =
+      rows.length === 1
+        ? today.length ? "Chega hoje sim 🙂" : "Hoje não — o prazo dessa é:"
+        : today.length
+          ? `Chega hoje: ${today.map((r) => `*${r.n}*`).join(", ")}.`
+          : "Nenhuma dessas chega hoje. Os prazos:";
+  }
+  return [head, ...lines].join("\n");
+}
+
+// "oi" no meio da escolha: lembra a lista que está esperando (06/10).
+export function greetingMidChoice(query: string): string {
+  return `Oi! 🙂 Ainda tô com as opções de *${query}* esperando — é só responder o número:`;
+}
+
+// "o da Mambo" na escolha: estreita para as opções daquela loja.
+export function storeNarrowed(label: string): string {
+  return `Da *${label}* eu tenho:`;
+}
+
+export function storeAllSame(label: string): string {
+  return `Todas essas são da *${label}* 🙂`;
+}
+
+export function storeNoneOnTable(label: string): string {
+  return `Nenhuma das opções na tela é da *${label}*. As de agora são essas:`;
+}
+
+// "o mesmo da última vez" na escolha.
+export function previousPurchaseFound(): string {
+  return "Esse é o que você já comprou com a gente:";
+}
+
+export function previousPurchaseNotHere(): string {
+  return "Não achei nenhuma dessas nas suas compras anteriores. Escolhe uma das opções 👇";
+}
