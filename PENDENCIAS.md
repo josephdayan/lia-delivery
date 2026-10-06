@@ -38,10 +38,9 @@
 - [x] Zona Sul e Prezunic conectados e colhidos.
 - [x] Zona Sul: fechamento real por API (06/10, grupo 1666863616742), ligado no código, conta de
   compra ativa em produção.
-- [ ] Dono: somar `,zonasul` em `LIA_AUTO_PURCHASE_STORES` na Vercel (sensível: o Claude não lê o
-  valor atual) e redeploy.
-- [ ] Prezunic: `--buy` com carrinho ≥ R$80 (`--qty 30`); se fechar, ligar, conta (script --db
-  `--stores prezunic`) e somar `,prezunic` na mesma variável.
+- [x] Prezunic: fechamento real (PZ2456030, 06/10), ligado no código, conta ativa em produção.
+- [ ] Dono: somar `,zonasul,prezunic` em `LIA_AUTO_PURCHASE_STORES` na Vercel (sensível: o Claude
+  não lê o valor atual) e redeploy.
 - [ ] Deploy (push de main).
 - [ ] 1º pedido real no Rio (precisa de um endereço/cliente lá).
 - [x] Outros estados: medido e decidido (06/10) — só SP e RJ até haver mercado com Pix na região.

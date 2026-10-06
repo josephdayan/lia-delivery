@@ -138,8 +138,8 @@ bem redonda essa coisa de só mostrar e aceitar compra se tiver perto". **Revoga
   1666863616742, Pix obtido no formato Mercado Pago da própria loja, não pago); conta de compra
   `zonasul` ativa em produção. Só aparece de fato quando `zonasul` entrar em
   `LIA_AUTO_PURCHASE_STORES` na Vercel (a vitrine só mostra loja automática; variável sensível,
-  o dono edita). **Prezunic (2.523) segue opt-in:** o 1º `--buy` parou no carrinho mínimo de R$80
-  (ORD079, agora `minOrder` 80); 2º teste acima de R$80 pendente. Sem mercado, o Rio já tem
+  o dono edita). **Prezunic (2.523) LIGADO:** fechamento real em Copacabana (06/10, PZ2456030,
+  R$103,88, Pix Cencosud obtido, não pago); carrinho mínimo R$80 (`minOrder` 80); conta ativa. Sem mercado, o Rio já tem
   farmácia em 30–60 min (Drogaria SP/Pacheco), Americanas no dia e o resto do elenco nacional.
 - Site: "São Paulo e Rio de Janeiro". Teste: `tests/store-areas.test.ts`, `coverage`, `signup-form`.
 

@@ -1,3 +1,10 @@
+## 06/10/2026 — Prezunic fecha pedido real por API no Rio
+
+2º `--buy` em Copacabana (2x sabão líquido 5L, acima do mínimo de R$80): pedido PZ2456030,
+R$103,88, Pix copia-e-cola obtido (recebedor Cencosud, formato Mercado Pago), não pago. Ligado no
+código e conta de compra ativa em produção. Os dois mercados do Rio só aparecem depois que o dono
+somar `zonasul,prezunic` em `LIA_AUTO_PURCHASE_STORES` e houver deploy.
+
 ## 06/10/2026 — Medição: dá pra abrir outros estados? (decisão: só SP e RJ)
 
 Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (só consulta).
