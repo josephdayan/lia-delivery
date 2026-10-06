@@ -1,3 +1,13 @@
+## 06/10/2026 (noite) — Interruptor "Lia offline" (dono)
+
+Pedido do dono: enquanto o Asaas não libera o Pix de saída, todo cliente que escrever recebe
+"a Lia está fora do ar por instabilidade nos servidores" (`offlineNotice`), e o dono manda o
+agente "apertar o botão" quando quiser. Interruptor no BANCO (tabela `AppFlag`, chave `offline`),
+vale em ~10 s sem deploy: botão no topo do `/ops` (só dono), `POST /api/ops/offline {on}`, ou o
+dono manda **lia offline** / **lia online** no WhatsApp. Dono e admins passam direto (testar).
+`LIA_OFFLINE=true` na Vercel força ligado. Só bloqueia mensagem que chega; avisos de pedido já
+pago continuam saindo. Teste: `tests/offline-mode-2026-10-06.test.ts`.
+
 ## 06/10/2026 (tarde) — Varredura de cliente novo: regras que ficam
 
 Depois do retorno ruim dos testadores, 5 agentes simularam ~600 conversas de cliente novo (IA de

@@ -7,7 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { handleDeliveryMessage, recoverFailedCarousel, runTurnScoped, TurnSupersededError } from "@/lib/delivery-service";
 import { notifyOperator, isAdminPhone, notifyOwner } from "@/lib/turn-runtime";
 import { startWhatsAppCardChargeWorkflow } from "@/lib/payments/whatsapp-pay-dispatch";
-import { genericError, turnStillWorking } from "@/lib/lia-copy";
+import { genericError, offlineNotice, turnStillWorking } from "@/lib/lia-copy";
+import { isOfflineMode } from "@/lib/offline-mode";
 import { whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { flowAddressToText, locationToText, reverseGeocode } from "@/lib/reverse-geocode";
 import { locationNotResolved } from "@/lib/lia-copy";
@@ -256,6 +257,19 @@ export async function POST(request: Request) {
         return NextResponse.json({ ok: true, provider: inbound.provider, operator: true });
     } catch (error) {
       console.error("[ops-action:inbound-error]", error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Modo offline (06/10): cliente comum recebe só o aviso; dono e admins seguem normal.
+  if (await isOfflineMode()) {
+    if (!isAdminPhone(inbound.phone)) {
+      console.warn("[offline-mode:customer-blocked]", inbound.phone, (inbound.text ?? "").slice(0, 80));
+      try {
+        await whatsappAdapter.sendMessage(inbound.phone, offlineNotice());
+      } catch (error) {
+        console.error("[offline-mode:notify-failed]", error instanceof Error ? error.message : error);
+      }
+      return NextResponse.json({ ok: true, provider: inbound.provider, offline: true });
     }
   }
 

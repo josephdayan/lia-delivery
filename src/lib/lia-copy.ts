@@ -1791,6 +1791,17 @@ export function greetingMidOrder(step: string, itemCount: number): string {
   return "Oi! O que você precisa hoje?";
 }
 
+// Modo offline (06/10): aviso único para todo cliente enquanto a Lia está desligada.
+export function offlineNotice(): string {
+  return "Oi! A Lia está fora do ar agora por uma instabilidade nos nossos servidores. Já estamos resolvendo e voltamos em breve. Nada foi cobrado. Te espero de volta!";
+}
+
+export function ownerOfflineToggled(on: boolean): string {
+  return on
+    ? "🔴 Lia OFFLINE. Todo cliente recebe o aviso de instabilidade. Você continua passando normal. Pra religar: *lia online*."
+    : "🟢 Lia ONLINE. Clientes voltaram a ser atendidos normalmente.";
+}
+
 export function genericError(): string {
   return "Deu um erro aqui. Manda de novo em instantes?";
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { PurchaseAccounts, PurchaseReview, type PurchaseReviewJob } from "./PurchaseControl";
+import { OfflineSwitch } from "./OfflineSwitch";
 import { hasCancelRequest, hasPendingRefund, isCardCharge, isRetailerDeliveryOrder } from "@/lib/order-flags";
 import { parseMoneyInput } from "@/lib/pricing";
 import { operatorStoreItemUrl } from "@/lib/operator-store-links";
@@ -318,6 +319,7 @@ export default function OpsBoard() {
 
   return (
     <div style={{ marginTop: 20, display: "grid", gap: 14 }}>
+      {isOwner && <OfflineSwitch />}
       {isOwner && <PurchaseAccounts />}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#667085" }}>Compras e entregas: confira os pedidos que precisam de ação.</span>
