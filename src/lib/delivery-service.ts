@@ -20,6 +20,7 @@ import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LA
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
 import { isSaoPauloState } from "@/lib/coverage";
+import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import * as copy from "@/lib/lia-copy";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
@@ -490,6 +491,42 @@ async function askAddress(phone: string, text: string) {
   await reply(phone, text);
 }
 
+// Cadastro no primeiro contato (06/10, dono: "pode pedir tudo direto no começo"): nome
+// completo, CPF, CEP, número e complemento num formulário nativo do WhatsApp (Flow
+// publicado pelo cron /api/cron/meta-templates). A resposta volta pelo webhook e cai em
+// handleSignupForm. Sem Flow publicado, fora da Meta ou com falha no envio, o plano B é o
+// pedido em texto de sempre (`fallback`): endereço, depois nome e CPF.
+async function askSignup(phone: string, body: string, fallback: () => Promise<void>) {
+  if (process.env.WHATSAPP_PROVIDER === "meta") {
+    try {
+      const { activeSignupFlowId, SIGNUP_FLOW_CTA, SIGNUP_FLOW_SCREEN } = await import("@/lib/meta-setup");
+      const flowId = await activeSignupFlowId();
+      if (flowId) {
+        markTurnReplied();
+        const sent = await whatsappAdapter.sendFlowMessage(phone, {
+          body,
+          cta: SIGNUP_FLOW_CTA,
+          flowId,
+          screen: SIGNUP_FLOW_SCREEN,
+          token: `lia-cadastro-${Date.now()}`
+        });
+        if (sent) return;
+      }
+    } catch (error) {
+      console.warn("[whatsapp:meta:signup-flow:fallback-text]", error instanceof Error ? error.message : error);
+    }
+  }
+  await fallback();
+}
+
+// Re-pedido no onboarding: sem CEP nenhum ainda, o cliente não fez o cadastro → formulário
+// de novo, sem a apresentação. Com CEP, falta só rua e número → o pedido de sempre.
+async function askStreetOrSignup(phone: string, ctx: DeliveryContext, userCep: string | null | undefined) {
+  if (ctx.cep || userCep) return askStreetAndNumber(phone, ctx);
+  const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  await askSignup(phone, copy.signupFormBody(noted, false), () => askStreetAndNumber(phone, ctx));
+}
+
 // Rua/número/complemento com o Flow de endereço (formulário dentro do chat, 04/09) quando
 // LIA_FLOW_ADDRESS_ID está configurado; CEP/rua/bairro/cidade já conhecidos vão
 // pré-preenchidos. A resposta volta pelo webhook como linha de endereço completo.
@@ -708,7 +745,7 @@ export async function recoverFailedCarousel(messageId: string, recipientDigits: 
 // CEP -> human address via ViaCEP. invalid=true means the CEP definitely doesn't
 // exist; a network failure keeps invalid=false (we save the CEP and move on). Hard
 // 4s timeout — a WhatsApp turn must never hang on a slow ViaCEP.
-async function expandCep(cep: string): Promise<{ address?: string; city?: string; uf?: string; invalid: boolean }> {
+async function expandCep(cep: string): Promise<{ address?: string; street?: string; district?: string; city?: string; uf?: string; invalid: boolean }> {
   const digits = cep.replace(/\D/g, "");
   if (digits.length !== 8) return { invalid: true };
   try {
@@ -721,6 +758,8 @@ async function expandCep(cep: string): Promise<{ address?: string; city?: string
     if (data.erro) return { invalid: true };
     return {
       address: [data.logradouro, data.bairro, data.localidade, data.uf].filter(Boolean).join(", "),
+      street: data.logradouro?.trim() || undefined,
+      district: data.bairro?.trim() || undefined,
       city: data.localidade,
       uf: data.uf,
       invalid: false
@@ -870,10 +909,15 @@ export async function handleDeliveryMessage(input: {
   // dedupe, em `understandMedia`.
   media?: InboundMedia;
   acquisition?: InboundAcquisition;
+  // Resposta de Flow (formulário dentro do chat), já parseada pelo adapter. O de cadastro
+  // (06/10) é tratado aqui; o de endereço o webhook já converteu em texto.
+  flowResponse?: Record<string, unknown>;
 }) {
   const phone = normalizePhone(input.phone);
   turnStartedAt.set(phone, Date.now());
-  const tagged = stripAcquisitionTag((input.text ?? "").trim());
+  // Formulário de cadastro: o histórico grava só um rótulo (o formulário traz o CPF).
+  const signupForm = isSignupFormReply(input.flowResponse) ? input.flowResponse : undefined;
+  const tagged = stripAcquisitionTag(signupForm ? SIGNUP_FORM_MESSAGE : (input.text ?? "").trim());
   let text = tagged.text;
   const acquisition = mergeAcquisition(input.acquisition, tagged.campaignCode);
   const { user, convo } = await getOrCreateConvo(phone, input.name);
@@ -949,6 +993,13 @@ export async function handleDeliveryMessage(input: {
     return;
   }
 
+  // Teste do formulário de cadastro em produção (06/10): o dono ou um admin manda
+  // "cadastro" e recebe o formulário mesmo já cadastrado. Preencher regrava os dados dele.
+  if (!signupForm && /^cadastro$/i.test(text) && isAdminPhone(phone)) {
+    await askSignup(phone, copy.signupFormBody(), () => reply(phone, copy.welcomeAskFullDeliveryAddress()));
+    return;
+  }
+
   // Um turno por vez por conversa (ver acquireTurnLock). O dedupe fica ANTES do lock
   // de propósito: retry do webhook sai na hora, sem esperar o turno original terminar.
   const lockToken = await acquireTurnLock(convo.id);
@@ -960,7 +1011,8 @@ export async function handleDeliveryMessage(input: {
     // primeira escrita deste turno colide com a do turno que terminou enquanto
     // esperávamos o lock e morre em falso TurnSupersededError — cliente sem resposta.
     rememberCtxSnapshot(convo.id, freshConvo.context ?? null);
-    await handleDeliveryTurn(phone, text, user, freshConvo, inboundMessageId);
+    if (signupForm) await handleSignupForm(phone, signupForm, user, freshConvo);
+    else await handleDeliveryTurn(phone, text, user, freshConvo, inboundMessageId);
     // REDE ANTI-SILÊNCIO: nenhum caminho do turno respondeu nada → fallback pedindo
     // reformulação. Silêncio absoluto é o pior desfecho possível (28/08: 4 sessões).
     if ((turnMeta.getStore()?.replies ?? 1) === 0) {
@@ -1195,7 +1247,8 @@ async function handleDeliveryTurn(
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
-      await askAddress(phone, copy.welcomeAskFullDeliveryAddress());
+      const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+      await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress()));
     } else if (!savedCep) {
       ctx.flow = "delivery";
       ctx.step = "need_cep";
@@ -2014,7 +2067,7 @@ async function handleDeliveryTurn(
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
-      await askStreetAndNumber(phone, ctx);
+      await askSignup(phone, copy.signupFormBody([], false), () => askStreetAndNumber(phone, ctx));
       return;
     }
     // Cliente que abre a conversa mandando o endereço direto (sem "oi") está respondendo
@@ -2033,7 +2086,7 @@ async function handleDeliveryTurn(
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
     const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
-    await askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted));
+    await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
     return;
   }
 
@@ -3021,7 +3074,7 @@ async function handleDeliveryAddress(
       await reply(phone, copy.serviceAnswer("generic", "o estado de São Paulo"));
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
-      await askStreetAndNumber(phone, ctx);
+      await askStreetOrSignup(phone, ctx, userCep);
       return;
     }
     // Não é endereço — mas TAMBÉM não é lixo: quem responde "preciso de um carregador"
@@ -3033,7 +3086,7 @@ async function handleDeliveryAddress(
     }
     ctx.step = "need_address";
     await writeCtx(convoId, ctx);
-    await askStreetAndNumber(phone, ctx);
+    await askStreetOrSignup(phone, ctx, userCep);
     return;
   }
 
@@ -3086,6 +3139,111 @@ async function askCpfAtOnboarding(phone: string, userId: string, convoId: string
   await writeCtx(convoId, ctx);
   await reply(phone, `${savedMsg}\n\n${copy.askCpfOnboarding()}`);
   return true;
+}
+
+// Resposta do formulário de cadastro (06/10). Ordem: CEP (existe? estado de SP?) →
+// endereço com a rua do CEP + número e complemento do formulário → nome + CPF. O que
+// conferiu fica salvo mesmo quando outra parte falha; só a parte que falhou volta a ser
+// pedida, por texto, pelos passos de sempre (need_cep / need_address / need_cpf).
+const SIGNUP_STEPS: Array<DeliveryContext["step"]> = [undefined, "collecting", "need_cep", "need_address", "need_cpf"];
+async function handleSignupForm(
+  phone: string,
+  payload: Record<string, unknown>,
+  user: Awaited<ReturnType<typeof getOrCreateConvo>>["user"],
+  convo: Awaited<ReturnType<typeof getOrCreateConvo>>["convo"]
+) {
+  const ctx = readCtx(convo.context);
+  const form = parseSignupForm(payload);
+  const identity = form.name && form.cpf ? { cpf: form.cpf, cpfName: form.name, cpfConsentAt: new Date() } : null;
+  const firstName = form.name?.split(" ")[0];
+
+  // Formulário reenviado no meio de um pedido (só acontece com o teste "cadastro" do dono):
+  // guarda nome e CPF, mas não mexe no endereço nem no passo do pedido em andamento.
+  if (!SIGNUP_STEPS.includes(ctx.step)) {
+    if (identity) await prisma.user.update({ where: { id: user.id }, data: identity });
+    await reply(phone, identity ? copy.signupIdentityOnly() : copy.cpfInvalid());
+    return;
+  }
+  ctx.flow = "delivery";
+
+  if (!form.cep) {
+    if (identity) await prisma.user.update({ where: { id: user.id }, data: identity });
+    ctx.step = "need_cep";
+    await writeCtx(convo.id, ctx);
+    await reply(phone, copy.signupCepInvalid());
+    return;
+  }
+  const place = await expandCep(form.cep);
+  if (place.invalid) {
+    if (identity) await prisma.user.update({ where: { id: user.id }, data: identity });
+    ctx.step = "need_cep";
+    await writeCtx(convo.id, ctx);
+    await reply(phone, copy.cepNotFound(form.cep));
+    return;
+  }
+  // Fora da área: guarda o lead (mapa de demanda no /ops) e NÃO guarda o CPF, porque sem
+  // entrega ele não tem uso.
+  if (!isSaoPauloState({ cep: form.cep, city: place.city, uf: place.uf })) {
+    await recordWaitlistLead({ phone, cep: form.cep, city: place.city, uf: place.uf, reason: "outside_coverage" });
+    ctx.step = "need_cep";
+    await writeCtx(convo.id, ctx);
+    await reply(phone, copy.outsideCoverage(place.city, "o estado de São Paulo"));
+    return;
+  }
+  ctx.cep = form.cep;
+  ctx.city = place.city ?? ctx.city;
+  ctx.uf = place.uf ?? ctx.uf;
+
+  // CEP geral (cidade inteira, sem rua) ou ViaCEP fora do ar: guarda o CEP e pede a rua por
+  // texto; o handleDeliveryAddress de sempre monta o endereço com ela.
+  if (!place.street || !form.numero) {
+    ctx.deliveryAddress = place.address || undefined;
+    ctx.deliveryAddressVerified = false;
+    ctx.step = "need_address";
+    await prisma.user.update({ where: { id: user.id }, data: { cep: form.cep, ...(identity ?? {}) } });
+    await writeCtx(convo.id, ctx);
+    await reply(phone, copy.signupNeedStreet());
+    return;
+  }
+
+  const address = buildSignupAddress({
+    street: place.street,
+    numero: form.numero,
+    complemento: form.complemento,
+    district: place.district,
+    city: place.city,
+    uf: place.uf
+  });
+  ctx.deliveryAddress = address;
+  ctx.deliveryAddressVerified = true;
+  await prisma.user.update({ where: { id: user.id }, data: { cep: form.cep, defaultAddress: address, ...(identity ?? {}) } });
+
+  // Endereço salvo, mas nome ou CPF não conferiu: pede os dois por texto, sem travar.
+  if (!identity) {
+    ctx.step = "need_cpf";
+    ctx.cpfOnboarding = true;
+    delete ctx.cpfDraft;
+    await writeCtx(convo.id, ctx);
+    await reply(phone, copy.signupFixCpf(address, form.cpf ? "name" : "cpf"));
+    return;
+  }
+
+  ctx.step = "collecting";
+  delete ctx.cpfOnboarding;
+  delete ctx.cpfDraft;
+  const queued = ctx.pendingRequest;
+  ctx.pendingRequest = undefined;
+  await writeCtx(convo.id, ctx);
+  if (queued) {
+    await reply(phone, copy.signupSaved(firstName, address));
+    await handleSearch(phone, convo.id, form.cep, ctx, queued, user.id);
+    return;
+  }
+  if (ctx.basket?.length) {
+    await continueAfterBasket(phone, convo.id, ctx, form.cep, copy.signupSaved(firstName, address));
+    return;
+  }
+  await reply(phone, copy.signupSavedAskItems(firstName, address));
 }
 
 // Endereço novo confirmado com um pedido AINDA na fila do operador (2ª revisão, 11/08):
@@ -4614,8 +4772,9 @@ async function continueAfterBasket(
     const basketStores = [...new Set((ctx.basket ?? []).map((i) => i.storeKey).filter(Boolean))];
     const executableBasket = basketStores.length === 1 && automaticPurchaseStores().includes(basketStores[0] as string);
     if (executableBasket && !ctx.recipientName?.trim()) {
-      const profile = await prisma.user.findFirst({ where: { phone }, select: { name: true } });
-      if (!profile?.name?.trim()) {
+      // O nome completo do cadastro (06/10) também serve de destinatário.
+      const profile = await prisma.user.findFirst({ where: { phone }, select: { name: true, cpfName: true } });
+      if (!profile?.name?.trim() && !profile?.cpfName?.trim()) {
         ctx.step = "need_recipient_name";
         await writeCtx(convoId, ctx);
         if (prefix) await reply(phone, prefix);
@@ -4716,8 +4875,8 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
   // Destinatário (11/09): nome do perfil do WhatsApp, ou o nome que o cliente informou
   // quando o perfil não tinha nome ou a entrega é para outra pessoa. A compra na loja
   // exige esse campo (checkCheckout compara com o receiverName do checkout).
-  const recipientName = ctx.recipientName?.trim() ||
-    (await prisma.user.findUnique({ where: { id: convo.userId }, select: { name: true } }))?.name?.trim() || null;
+  const profile = await prisma.user.findUnique({ where: { id: convo.userId }, select: { name: true, cpfName: true } });
+  const recipientName = ctx.recipientName?.trim() || profile?.name?.trim() || profile?.cpfName?.trim() || null;
   const acquisitionTouchId = await latestAcquisitionTouchId(convoId);
   // Remédio isento (29/09): o pedido na farmácia sai no CPF/nome do cliente. Cópia no pedido
   // pra compra não depender do perfil mudar depois; nulo = CNPJ da Lia, como sempre.

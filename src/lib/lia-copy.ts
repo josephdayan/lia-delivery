@@ -75,6 +75,48 @@ export function welcomeAskFullDeliveryAddress(notedItems?: string[]): string {
   return `${INTRO}${note}\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍`;
 }
 
+// ---------- cadastro pelo formulário (06/10, dono: "pode pedir tudo direto no começo") ----------
+// Corpo da mensagem que leva o formulário nativo do WhatsApp (botão "Fazer cadastro"). O
+// pedido em texto de antes (welcomeAskFullDeliveryAddress) continua sendo o plano B.
+export function signupFormBody(notedItems?: string[], intro = true): string {
+  const items = notedItems?.length ? notedItems.map((i) => `• ${i}`).join("\n") : "";
+  if (!intro) {
+    const note = items ? `✅ Anotei:\n${items}\n\n` : "";
+    return `${note}Pra eu comprar pra você, falta o cadastro: nome, CPF e endereço. É uma vez só 👇`;
+  }
+  const note = items ? `\n\nJá anotei:\n${items}` : "";
+  return `${INTRO}${note}\n\nAntes, um cadastro rápido: nome, CPF e endereço. É uma vez só 👇`;
+}
+
+export function signupSaved(firstName: string | undefined, address: string): string {
+  return `✅ Cadastro feito${firstName ? `, ${firstName}` : ""}!\n📍 Entrega em: ${cleanAddressForCopy(address)}\n_Pra mudar depois, é só dizer "trocar endereço"._`;
+}
+
+export function signupSavedAskItems(firstName: string | undefined, address: string): string {
+  return `${signupSaved(firstName, address)}\n\nO que você precisa?`;
+}
+
+// Endereço salvo, mas o nome ou o CPF do formulário não conferiu: pede os dois por texto,
+// numa mensagem só. Não trava (cpfOnboarding): se o cliente mandar outra coisa, segue.
+export function signupFixCpf(address: string, problem: "cpf" | "name"): string {
+  const what = problem === "name" ? "Faltou o *sobrenome*." : "O *CPF* não confere 🤔";
+  return `📍 Endereço salvo: ${cleanAddressForCopy(address)}\n\n${what} Me manda seu nome completo e CPF numa mensagem só, assim:\n_Maria da Silva 123.456.789-09_`;
+}
+
+export function signupCepInvalid(): string {
+  return "O CEP do cadastro não veio completo. Me manda seu *CEP* (8 números)? 📍";
+}
+
+// CEP geral (vale pra cidade inteira, sem rua, comum no interior) ou CEP sem consulta.
+export function signupNeedStreet(): string {
+  return "📍 Anotei o CEP, mas não achei a rua dele. Me manda a *rua e o número* (e o complemento, se tiver).";
+}
+
+// Formulário reenviado com um pedido em andamento (teste "cadastro" do dono).
+export function signupIdentityOnly(): string {
+  return "✅ Nome e CPF salvos. O pedido em andamento continua no mesmo endereço.";
+}
+
 // Fallback em texto dos botões 1 / 2 / Outra quantidade — por isso os números ficam:
 // o texto tem que espelhar as mesmas opções que o canal com botões oferece.
 export function quantityAsk(name: string): string {

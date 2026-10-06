@@ -76,6 +76,63 @@ export const ADDRESS_FLOW_JSON = {
   ]
 };
 
+// Flow de CADASTRO (06/10, dono: "precisa pedir CEP, nome e CPF" + "pode pedir tudo direto
+// no começo"): o primeiro contato recebe este formulário dentro do chat, em vez de duas
+// perguntas por texto (endereço, depois nome e CPF). A rua, o bairro e a cidade saem do CEP
+// no servidor (ViaCEP); o cliente digita só o que o CEP não diz. Terminal: o "complete"
+// volta como nfm_reply com `nome` e `cpf` (é assim que o webhook o distingue do Flow de
+// endereço). Sem `init-value` (a Meta recusa) e sem `data`: abre sempre vazio.
+// Campos numéricos (CPF, CEP) podem perder o zero à esquerda; o servidor completa
+// (signup-form.ts). Criado e publicado sozinho pelo cron /api/cron/meta-templates.
+export const SIGNUP_FLOW_NAME = "cadastro_lia_v1";
+export const SIGNUP_FLOW_SCREEN = "CADASTRO";
+export const SIGNUP_FLOW_CTA = "Fazer cadastro";
+export const SIGNUP_FLOW_JSON = {
+  version: "7.0",
+  screens: [
+    {
+      id: SIGNUP_FLOW_SCREEN,
+      title: "Seu cadastro",
+      terminal: true,
+      layout: {
+        type: "SingleColumnLayout",
+        children: [
+          { type: "TextBody", text: "Preencha uma vez só. Fica salvo para os próximos pedidos." },
+          {
+            type: "Form",
+            name: "form",
+            children: [
+              { type: "TextInput", name: "nome", label: "Nome completo", required: true, "input-type": "text" },
+              { type: "TextInput", name: "cpf", label: "CPF", required: true, "input-type": "number", "helper-text": "Só os números" },
+              { type: "TextInput", name: "cep", label: "CEP", required: true, "input-type": "number", "helper-text": "Só os números" },
+              { type: "TextInput", name: "numero", label: "Número", required: true, "input-type": "text" },
+              { type: "TextInput", name: "complemento", label: "Complemento", required: false, "input-type": "text", "helper-text": "Apto, bloco ou casa, se tiver" },
+              {
+                type: "TextCaption",
+                text: "O CPF serve só para comprar no seu nome quando precisar (ex.: remédio). Termos: liadelivery.com.br/termos"
+              },
+              {
+                type: "Footer",
+                label: "Salvar cadastro",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    nome: "${form.nome}",
+                    cpf: "${form.cpf}",
+                    cep: "${form.cep}",
+                    numero: "${form.numero}",
+                    complemento: "${form.complemento}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+};
+
 // Carrossel da vitrine (dono, 07/09: "eu quero fazer carrossel"). Na Meta, carrossel só
 // existe como TEMPLATE de MARKETING (não há carrossel livre na janela de 24h): cada envio
 // é cobrado (~R$0,33 no Brasil) e o número de cards é FIXO por template — por isso um
@@ -150,15 +207,16 @@ function creds() {
   return { token, phoneId };
 }
 
-async function graph(token: string, pathname: string, init: RequestInit & { raw?: boolean } = {}) {
+async function graph(token: string, pathname: string, init: RequestInit & { raw?: boolean; timeoutMs?: number } = {}) {
+  const { timeoutMs, raw, ...requestInit } = init;
   const res = await fetch(`${GRAPH}/${pathname}`, {
-    ...init,
+    ...requestInit,
     headers: {
       Authorization: `Bearer ${token}`,
-      ...(init.body && !init.raw ? { "Content-Type": "application/json" } : {}),
+      ...(init.body && !raw ? { "Content-Type": "application/json" } : {}),
       ...(init.headers ?? {})
     },
-    signal: AbortSignal.timeout(20_000)
+    signal: AbortSignal.timeout(timeoutMs ?? 20_000)
   });
   const text = await res.text();
   let json: unknown;
@@ -171,8 +229,8 @@ async function graph(token: string, pathname: string, init: RequestInit & { raw?
   return json as Record<string, unknown>;
 }
 
-async function ids(token: string) {
-  const dbg = (await graph(token, `debug_token?input_token=${encodeURIComponent(token)}`)) as {
+async function ids(token: string, timeoutMs?: number) {
+  const dbg = (await graph(token, `debug_token?input_token=${encodeURIComponent(token)}`, { timeoutMs })) as {
     data?: { app_id?: string; granular_scopes?: Array<{ scope: string; target_ids?: string[] }> };
   };
   const appId = dbg.data?.app_id;
@@ -184,7 +242,7 @@ async function ids(token: string) {
   return { appId, waba };
 }
 
-export type MetaSetupAction = "status" | "name" | "register" | "profile" | "picture" | "welcome" | "flow" | "flow_update" | "flow_errors" | "carousel" | "templates" | "carousel_test";
+export type MetaSetupAction = "status" | "name" | "register" | "profile" | "picture" | "welcome" | "flow" | "flow_update" | "flow_errors" | "flow_signup" | "carousel" | "templates" | "carousel_test";
 
 // Estado real do display name (25/09): o WhatsApp Manager só mostrava "In Review" e o
 // suporte da Meta não respondia. Campo a campo porque alguns são beta e um campo
@@ -205,11 +263,11 @@ async function flowErrors(token: string, flowId: string) {
 }
 
 // Atualiza o JSON de um Flow existente (multipart, asset FLOW_JSON) e tenta publicar.
-async function flowUpdateAndPublish(token: string, flowId: string) {
+async function flowUpdateAndPublish(token: string, flowId: string, flowJson: object = ADDRESS_FLOW_JSON) {
   const form = new FormData();
   form.append("name", "flow.json");
   form.append("asset_type", "FLOW_JSON");
-  form.append("file", new Blob([JSON.stringify(ADDRESS_FLOW_JSON)], { type: "application/json" }), "flow.json");
+  form.append("file", new Blob([JSON.stringify(flowJson)], { type: "application/json" }), "flow.json");
   const updated = await graph(token, `${flowId}/assets`, { method: "POST", raw: true, body: form });
   const errors = await flowErrors(token, flowId);
   const list = (errors as { validation_errors?: unknown[] }).validation_errors ?? [];
@@ -245,6 +303,7 @@ export async function runMetaSetup(action: MetaSetupAction, opts: { flowId?: str
     const registered = await graph(token, `${phoneId}/register`, { method: "POST", body: JSON.stringify({ messaging_product: "whatsapp", pin }) });
     return { registered, name: await nameStatus(token, phoneId) };
   }
+  if (action === "flow_signup") return ensureSignupFlow();
   if (action === "flow_errors" || action === "flow_update") {
     const flowId = (opts.flowId ?? process.env.LIA_FLOW_ADDRESS_ID ?? "").trim();
     if (!/^\d{6,}$/.test(flowId)) throw new Error("flow_id ausente (?flow_id=<id do Flow>)");
@@ -334,6 +393,61 @@ export async function runMetaSetup(action: MetaSetupAction, opts: { flowId?: str
   throw new Error(`ação desconhecida: ${String(action)}`);
 }
 
+
+// ---------- Flow de cadastro (06/10) ----------
+type FlowRow = { id: string; name: string; status: string };
+
+async function listFlows(token: string, timeoutMs?: number): Promise<FlowRow[]> {
+  const { waba } = await ids(token, timeoutMs);
+  if (!waba) throw new Error("WABA id não veio do debug_token");
+  const list = (await graph(token, `${waba}/flows?fields=id,name,status&limit=100`, { timeoutMs })) as { data?: FlowRow[] };
+  return list.data ?? [];
+}
+
+// Cron (de hora em hora): garante o Flow de cadastro PUBLICADO. Idempotente: publicado →
+// nada; rascunho (publish falhou antes) → regrava o JSON e tenta de novo; nenhum → cria e
+// publica. Devolve o estado, com os erros de validação da Meta quando houver.
+export async function ensureSignupFlow(): Promise<Record<string, unknown>> {
+  const { token } = creds();
+  const mine = (await listFlows(token)).filter((f) => f.name === SIGNUP_FLOW_NAME);
+  const published = mine.find((f) => f.status === "PUBLISHED");
+  if (published) return { id: published.id, status: published.status };
+  const draft = mine.find((f) => f.status === "DRAFT");
+  signupFlowCache.at = 0;
+  if (draft) return { id: draft.id, ...(await flowUpdateAndPublish(token, draft.id, SIGNUP_FLOW_JSON)) };
+  const { waba } = await ids(token);
+  try {
+    return await graph(token, `${waba}/flows`, {
+      method: "POST",
+      body: JSON.stringify({ name: SIGNUP_FLOW_NAME, categories: ["SIGN_UP"], flow_json: JSON.stringify(SIGNUP_FLOW_JSON), publish: true })
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const created = message.match(/Flow ID: (\d+)/)?.[1];
+    if (!created) throw error;
+    return { created_id: created, published: false, ...(await flowErrors(token, created)) };
+  }
+}
+
+// Envio: id do Flow de cadastro publicado. LIA_FLOW_SIGNUP_ID força um id; senão o publicado
+// com o nome SIGNUP_FLOW_NAME (cache de 10 min por instância, consulta curta porque roda no
+// primeiro contato do cliente). Null = ainda não publicado: a Lia pergunta por texto.
+const signupFlowCache: { at: number; id: string | null } = { at: 0, id: null };
+export async function activeSignupFlowId(): Promise<string | null> {
+  const forced = process.env.LIA_FLOW_SIGNUP_ID?.trim();
+  if (forced) return forced;
+  if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
+  if (Date.now() - signupFlowCache.at < 10 * 60_000) return signupFlowCache.id;
+  try {
+    const { token } = creds();
+    const flows = await listFlows(token, 3_000);
+    signupFlowCache.id = flows.find((f) => f.name === SIGNUP_FLOW_NAME && f.status === "PUBLISHED")?.id ?? null;
+  } catch (error) {
+    console.warn("[meta:signup-flow]", error instanceof Error ? error.message : error);
+  }
+  signupFlowCache.at = Date.now();
+  return signupFlowCache.id;
+}
 
 // ---------- Carrossel automático (v4 28/09, v5 05/10) ----------
 // Cron: cria na Meta os templates v4/v5 que faltam (uma vez) e devolve o status de cada um.
