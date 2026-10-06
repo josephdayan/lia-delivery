@@ -20,7 +20,9 @@
 
 ## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
 
-- [ ] Dono: cadastrar/reenviar a conta bancária (saque) no Asaas — `bankAccountInfo` está
+- [x] Conta bancária, selfie, token no app e chave Pix nova feitos pelo dono (06/10) — não destravou.
+- [ ] Suporte humano do Asaas explicar/remover o bloqueio de transferências (painel: "quando a
+  aprovação do seu cadastro for concluída"). Referência original: — `bankAccountInfo` está
   PENDING pela API — e/ou pedir ao suporte (chat "Falar com atendente") que libere o Pix da conta
   8100866-6, citando o erro `invalid_action` no `POST /v3/pix/qrCodes/decode`.
 - [ ] Conferir em `/api/ops/asaas-status` (logado no /ops): `bankAccountInfo` APPROVED e

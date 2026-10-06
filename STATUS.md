@@ -85,6 +85,11 @@ geral "Aprovado", chave Pix ativa, saldo R$608,21, nenhum aviso. Diagnóstico pe
 só de leitura `GET /api/ops/asaas-status`, commit 1799e4e): `commercialInfo/documentation/general
 = APPROVED`, **`bankAccountInfo = PENDING`**, decode de uma cobrança de R$1 ainda recusado às
 10h52. Enquanto isso, toda compra automática falha no Pix e vira estorno.
+Feito pelo dono no mesmo dia (sem efeito na API até 12h05): conta bancária MP LIA (mesmo CNPJ)
+cadastrada e "Aprovada", selfie validada (FACEMATCH), token no app ativado, chave Pix nova
+(9c0d204e…). A tela Transferências do painel diz "Você poderá solicitar transferências quando a
+aprovação do seu cadastro for concluída" (bloqueia TED também), contradizendo a Situação cadastral.
+Só o suporte humano do Asaas destrava; o robô não tem procedimento.
 
 ## 06/10/2026 — Carrossel v4/v5 recusado na criação: card com 3 quebras de linha
 
