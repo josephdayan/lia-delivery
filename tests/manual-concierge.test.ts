@@ -703,7 +703,7 @@ test("1º testador (24/08): onboarding sobrevive a 'Quem é vc', pergunta de end
   const c = { userId: "", ...driver(phone) };
   // 1ª mensagem "Quem é vc": apresentação, nunca pedido estocado.
   const who = await c.send("Quem é vc");
-  assert.match(who, /Funciona assim/i, who.slice(0, 200));
+  assert.match(who, /Sou a Lia/i, who.slice(0, 200));
   // Endereço + CEP em duas linhas salva e destrava.
   const saved = await c.send("Rua Edgar Egídio de Souza 221 São Paulo\n01233020");
   assert.match(saved, /Endereço salvo/i, saved.slice(0, 200));

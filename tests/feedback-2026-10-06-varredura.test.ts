@@ -19,6 +19,7 @@ import { handleDeliveryMessage, looksLikeOnboardingName, parseRecipientName } fr
 import { detectIntent, parseAvailabilityAsk, parseBasketLines } from "../src/lib/lia-intents";
 import { pixOutReadiness, resetPixOutProbeCache } from "../src/lib/payments/pix-out/readiness";
 import * as copy from "../src/lib/lia-copy";
+import { sanitizeRouterReply } from "../src/lib/adapters/ai";
 
 // ---------- puros ----------
 
@@ -112,6 +113,24 @@ test("taxa e recebedor do Pix têm resposta fixa e verdadeira", () => {
   assert.match(copy.pixReceiverAnswer(""), /não pra loja/);
   assert.doesNotMatch(copy.paymentConfirmed(), /separando/);
   assert.doesNotMatch(copy.trustAnswer(), /Carrefour|Mercado Livre/);
+});
+
+test("golpe/confiança, identidade e 'é de graça?' têm resposta própria; IA não pode negar a margem", () => {
+  for (const q of ["isso é golpe?", "é confiável?", "é seguro?"]) assert.deepEqual(detectIntent(q), { kind: "trust_question" }, q);
+  for (const q of ["vc é robô?", "quem é você?"]) assert.deepEqual(detectIntent(q), { kind: "identity" }, q);
+  assert.deepEqual(detectIntent("é de graça?"), { kind: "service_question", topic: "service_fee" });
+  assert.deepEqual(detectIntent("tá mais caro que no site"), { kind: "price_dispute" });
+  assert.match(copy.identityAnswer(), /Sou a Lia/);
+  for (const r of ["Não cobramos pelo serviço 🙂", "Sem margem extra nossa", "Não faço comparativo de preços", "O Pix é para a própria loja"]) {
+    assert.equal(sanitizeRouterReply(r), undefined, r);
+  }
+  assert.equal(sanitizeRouterReply("Claro! Te ajudo com isso"), "Claro! Te ajudo com isso");
+});
+
+test("serviço que a Lia não faz e pedido vago não viram busca", () => {
+  for (const q of ["chama um uber", "quero pagar um boleto", "recarga de celular"]) assert.deepEqual(detectIntent(q), { kind: "out_of_scope_service" }, q);
+  for (const q of ["algo gostoso pra comer hoje à noite", "me surpreende", "quero algo pra comer"]) assert.deepEqual(detectIntent(q), { kind: "vague_request" }, q);
+  for (const q of ["pizza congelada", "posso pagar com boleto?"]) assert.notEqual(detectIntent(q).kind, "out_of_scope_service", q);
 });
 
 // ---------- conversa (banco local) ----------
@@ -272,4 +291,16 @@ test("pedir atendente avisa o dono no WhatsApp", async (t) => {
     if (prev === undefined) delete process.env.LIA_OWNER_PHONE;
     else process.env.LIA_OWNER_PHONE = prev;
   }
+});
+
+test("'ok' com a cesta montada mostra o total, não encerra", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero arroz");
+  await send(phone, "1");
+  const ctx = await context(phone);
+  if (ctx.step !== "collecting" || !(ctx.basket?.length > 0)) return t.skip(`cesta não montada: ${JSON.stringify(ctx).slice(0, 200)}`);
+  const out = await send(phone, "ok");
+  assert.doesNotMatch(out, /Imagina!/, out.slice(0, 200));
+  assert.match(out, /Total|pedido|endere|pagar/i, out.slice(0, 300));
 });

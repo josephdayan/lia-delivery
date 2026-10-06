@@ -32,7 +32,8 @@ test("multi-intenção tira+coloca separa remove e add", () => {
 test("perguntas operacionais são service_question (antes: sabonete)", () => {
   assert.deepEqual(detectIntent("vc entrega em osasco?"), { kind: "service_question", topic: "area" });
   assert.deepEqual(detectIntent("quanto custa o frete?"), { kind: "service_question", topic: "fee" });
-  assert.equal(kind("vcs aceitam vale refeição?"), "service_question");
+  // 06/10: forma de pagamento não aceita tem intent próprio (resposta fixa "só Pix ou cartão").
+  assert.equal(kind("vcs aceitam vale refeição?"), "unsupported_payment");
 });
 
 test("status cobre as frases de ansiedade da entrega", () => {
@@ -355,7 +356,7 @@ test("pedido vago com saudação/enfeite é want_items — nunca busca por 'cois
   }
   // com produto ou destinatário segue lista; "mais um" e "outra coisa" mantêm o sentido
   assert.equal(kind("queria comprar uma coisa pra minha mãe"), "free_text");
-  assert.equal(kind("quero algo bom pra comer"), "free_text");
+  assert.equal(kind("quero algo bom pra comer"), "vague_request"); // varredura 06/10: pede o produto em vez de "não achei"
   // "quero mais um" = +1 do último item (06/10: intent próprio de quantidade, não pedido vago).
   assert.equal(kind("quero mais um"), "qty_adjust");
   assert.equal(kind("quero outra coisa"), "free_text");

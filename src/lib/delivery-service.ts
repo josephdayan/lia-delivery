@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1096,6 +1096,42 @@ async function handleDeliveryTurn(
   }
   const intent = detectIntent(text);
 
+  // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
+  // perguntar) vira nota no pedido cancelado. Pergunta vale 30 min e UMA resposta; qualquer
+  // outra mensagem desarma e segue o fluxo normal — nunca prende o cliente.
+  if (ctx.cancelReason || /^cancelmotivo:/.test(normalizeMsg(text))) {
+    const asked = ctx.cancelReason && Date.now() - ctx.cancelReason.askedAt < 30 * 60_000 ? ctx.cancelReason : undefined;
+    const reason = parseCancelReason(text, Boolean(asked));
+    const orderId = asked?.orderId ?? ctx.lastCanceledOrderId;
+    if (ctx.cancelReason) {
+      ctx.cancelReason = undefined;
+      await writeCtx(convo.id, ctx);
+    }
+    if (reason) {
+      await recordCancelReason(orderId, reason);
+      await reply(phone, copy.cancelReasonThanks());
+      return;
+    }
+    if (/^cancelmotivo:/.test(normalizeMsg(text))) return;
+  }
+
+  // Desistência de pedido PAGO esperando o "sim" (06/10). "sim"/"confirmo"/"cancela" de novo
+  // estornam; "não" mantém; qualquer outra mensagem desarma e segue o fluxo normal — o
+  // pedido continua de pé e o cliente nunca fica preso na pergunta.
+  if (ctx.withdrawConfirm) {
+    const asked = Date.now() - ctx.withdrawConfirm.askedAt < 30 * 60_000 ? ctx.withdrawConfirm : undefined;
+    ctx.withdrawConfirm = undefined;
+    await writeCtx(convo.id, ctx);
+    if (asked && (intent.kind === "affirm" || intent.kind === "cancel" || intent.kind === "refund_request")) {
+      await confirmWithdraw(phone, convo.id, user.cep, ctx, asked.orderId);
+      return;
+    }
+    if (asked && intent.kind === "reject") {
+      await reply(phone, copy.withdrawKept(asked.orderId.slice(-6).toUpperCase()));
+      return;
+    }
+  }
+
   // Auto-expire a stale cart: if the last activity was over 30 min ago, start fresh
   // (keep only the saved address) so a leftover basket from a previous session doesn't
   // bleed into a new order — the reported "old items still there" problem.
@@ -1323,6 +1359,12 @@ async function handleDeliveryTurn(
       }
       // "oi" no meio de um pedido em andamento não reapresenta a Lia do zero.
       await reply(phone, copy.greetingMidOrder(ctx.step ?? "collecting", ctx.basket?.length ?? 0));
+      // Total na mesa (06/10): o "oi" reapresenta as formas de pagamento.
+      if (ctx.step === "awaiting_quote_confirmation") await replyChargeNotIssuedButtons(phone, user.id, ctx);
+    } else if (ctx.step === "choosing_freight" && ctx.freightChoice) {
+      // "bom dia" na escolha da entrega (06/10) esquecia o pedido pendente.
+      await reply(phone, copy.greetingMidOrder("choosing_freight", 0));
+      await sendFreightChoice(phone, ctx.freightChoice);
     } else {
       await reply(phone, copy.greeting());
     }
@@ -1374,8 +1416,31 @@ async function handleDeliveryTurn(
     }
     if (intent.topic === "stores") {
       const onTable = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0].options : [];
+      // "o pedido é de qual loja?" sem opções na tela (06/10): a loja do pedido em andamento.
+      if (!onTable.length) {
+        const current = await currentOrderForQuestions(user.id, ctx);
+        const stores = current ? orderStoresOf(current) : [];
+        if (current && stores.length) {
+          await reply(phone, copy.orderStoreAnswer(current.id.slice(-6).toUpperCase(), stores));
+          return;
+        }
+      }
       await reply(phone, copy.storesAnswer(onTable.map((o) => ({ storeLabel: o.storeLabel }))));
       return;
+    }
+    // "qual o prazo de entrega?" com pedido pago ou escolha de entrega na tela (06/10): o prazo
+    // DO PEDIDO, não a explicação genérica.
+    if (intent.topic === "eta") {
+      if (ctx.step === "choosing_freight" && ctx.freightChoice) {
+        await reply(phone, copy.freightEtaHeader());
+        await sendFreightChoice(phone, ctx.freightChoice);
+        return;
+      }
+      const current = await currentOrderForQuestions(user.id, ctx);
+      if (current && (PAID_OR_IN_FULFILLMENT_STATUSES.includes(current.status) || current.status === "awaiting_quote_confirmation" || current.status === "awaiting_payment")) {
+        await handleStatus(phone, user.id, ctx, text);
+        return;
+      }
     }
     await reply(
       phone,
@@ -1401,6 +1466,12 @@ async function handleDeliveryTurn(
     await reply(phone, copy.complaintAck(hasOrder));
     return;
   }
+  // "quero meu dinheiro de volta"/"quero o estorno" (06/10): pedido pago e ainda não comprado
+  // = desistência (o mesmo "confirma?" do cancelar); sem pagamento, diz que nada foi cobrado.
+  if (intent.kind === "refund_request") {
+    await handleRefundRequest(phone, convo.id, user.id, ctx, text);
+    return;
+  }
 
   // ---- perguntas de confiança/logística: respondem em QUALQUER estado (28/08) ----
   // Depois de responder, a ETAPA em curso é reapresentada — a pergunta lateral fazia
@@ -1412,6 +1483,21 @@ async function handleDeliveryTurn(
   };
   if (intent.kind === "trust_question") {
     await reply(phone, copy.trustAnswer());
+    await rePresentStep();
+    return;
+  }
+  if (intent.kind === "identity") {
+    await reply(phone, copy.identityAnswer());
+    await rePresentStep();
+    return;
+  }
+  if (intent.kind === "out_of_scope_service") {
+    await reply(phone, copy.outOfScopeServiceAnswer());
+    await rePresentStep();
+    return;
+  }
+  if (intent.kind === "vague_request") {
+    await reply(phone, copy.vagueRequestAnswer());
     await rePresentStep();
     return;
   }
@@ -1467,6 +1553,12 @@ async function handleDeliveryTurn(
   }
   if (intent.kind === "installments_question") {
     await reply(phone, copy.installmentsAnswer());
+    await rePresentStep();
+    return;
+  }
+  // "dinheiro"/"vale refeição" (06/10) viravam busca de produto.
+  if (intent.kind === "unsupported_payment") {
+    await reply(phone, copy.unsupportedPayment());
     await rePresentStep();
     return;
   }
@@ -1556,7 +1648,20 @@ async function handleDeliveryTurn(
         await reply(phone, copy.supplierValidationPending());
         return;
       }
+      // Escolha da entrega ou total na mesa, sem cobrança ainda (06/10): "manda o pix de novo"
+      // respondia "Você ainda não tem pedidos".
+      if (await replyChargeNotIssued(phone, user.id, ctx)) return;
+      if (intent.kind === "resend_code" && intent.keyAsk) {
+        await reply(phone, copy.pixKeyNoCharge());
+        return;
+      }
       await reply(phone, (ctx.basket?.length ?? 0) > 0 ? copy.finishOrderFirst() : copy.noOrdersYet());
+      return;
+    }
+    if (intent.kind === "resend_code" && intent.keyAsk) {
+      // "qual a chave pix?" (06/10): explica o copia-e-cola e reenvia o mesmo código.
+      if (!isCardCharge(order)) await reply(phone, copy.pixKeyExplain());
+      await resendCharge(phone, order);
       return;
     }
     if (intent.kind === "switch_payment") {
@@ -1565,7 +1670,7 @@ async function handleDeliveryTurn(
       await switchPaymentMethod(phone, order, method);
     } else if (intent.expired) {
       // Pix expirado: reemitir uma cobrança NOVA em vez de reenviar o código morto.
-      await switchPaymentMethod(phone, order, isCardCharge(order) ? "card" : "pix");
+      await switchPaymentMethod(phone, order, isCardCharge(order) ? "card" : "pix", { renewed: true });
     } else {
       await resendCharge(phone, order);
     }
@@ -1714,6 +1819,19 @@ async function handleDeliveryTurn(
 
   // "Vc salvou o endereço?": confirma o que está em arquivo — nunca vira busca.
   if (intent.kind === "address_question") {
+    // "pra qual endereço vai?" (06/10): com pedido pago, o endereço DO PEDIDO.
+    if (intent.order) {
+      const current = await currentOrderForQuestions(user.id, ctx);
+      if (current?.deliveryAddress) {
+        await reply(phone, copy.orderAddressAnswer(current.id.slice(-6).toUpperCase(), current.deliveryAddress));
+        return;
+      }
+      const saved = ctx.deliveryAddress ?? user.defaultAddress;
+      if (saved) {
+        await reply(phone, copy.savedAddressAnswer(saved, ctx.cep ?? user.cep ?? undefined));
+        return;
+      }
+    }
     const saved = ctx.deliveryAddress ?? user.defaultAddress;
     if (saved) {
       await reply(phone, copy.addressUpdated(saved, ctx.cep ?? user.cep ?? undefined));
@@ -1724,6 +1842,19 @@ async function handleDeliveryTurn(
   }
 
   if (intent.kind === "change_address") {
+    // Pedido PAGO a caminho (06/10, A4): dizia "Endereço atualizado" e o pedido seguia pro
+    // endereço antigo. Avisa o destino do pedido pago, grava nota pro dono e segue a troca —
+    // o endereço novo vale para os próximos pedidos.
+    if (ctx.step !== "awaiting_payment" && ctx.step !== "payment_issuing") {
+      const paid = await latestPaidOrder(user.id);
+      if (paid && paid.deliveryAddress && !isOrderOutForDelivery(paid.status)) {
+        await prisma.deliveryOrder.update({
+          where: { id: paid.id },
+          data: { notes: appendOrderNote(paid.notes, `📍 Cliente pediu pra trocar o endereço DEPOIS de pagar ("${text.slice(0, 120)}") — este pedido segue para o endereço original; o novo vale para os próximos.`) }
+        });
+        await reply(phone, copy.paidOrderAddressKept(paid.id.slice(-6).toUpperCase(), paid.deliveryAddress));
+      }
+    }
     // Cobrança já emitida (Pix/cartão vivos): trocar o endereço agora deixaria uma
     // cobrança válida amarrada a um total de outro frete — e a conversa órfã do pedido.
     // O caminho honesto é cancelar primeiro (o cancel contextual estorna nada: não pago).
@@ -2190,7 +2321,12 @@ async function handleDeliveryTurn(
       label = "mais rápida";
     }
     if (!picked) {
-      await reply(phone, copy.choiceNotUnderstood());
+      // 06/10: "pix"/"cartão"/"pagar", "o frete tá caro" e "chega que horas?" caíam no
+      // "Não peguei qual você quer". A entrega vem antes do pagamento — nada é escolhido sozinho.
+      const asksPay = intent.kind === "choose_payment" || intent.kind === "pay" || intent.kind === "done";
+      const asksFee = /\b(frete|taxa|caro|cara|entrega)\b/.test(n) && !/\b(prazo|demora|quando|horas?|chega)\b/.test(n);
+      const asksEta = /\b(prazo|demora\w*|quando|horas?|chega\w*|tempo)\b/.test(n);
+      await reply(phone, asksPay ? copy.freightBeforePayment() : asksFee ? copy.freightFeeExplain() : asksEta ? copy.freightEtaHeader() : copy.choiceNotUnderstood());
       await sendFreightChoice(phone, choice);
       return;
     }
@@ -2711,6 +2847,25 @@ async function handleDeliveryTurn(
       await sendChoices(phone, ctx.pending[0]);
       return;
     }
+    // "ok"/"sim" com a cesta montada (06/10) encerrava com "Imagina! 💚" e nada era
+    // cobrado — o cliente achava que tinha fechado. Agora mostra o total para aprovar.
+    if ((ctx.basket?.length ?? 0) > 0 && (ctx.step === "collecting" || ctx.step === undefined)) {
+      await continueAfterBasket(phone, convo.id, ctx, user.cep);
+      return;
+    }
+    // Com o Pix aberto, "ok" é "vou pagar": o pagamento continua valendo.
+    if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId) {
+      const open = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { status: true, total: true } });
+      if (open?.status === "awaiting_payment") {
+        await reply(phone, copy.awaitingPaymentAck(open.total));
+        return;
+      }
+    }
+    // "pode mandar" com item escolhido e nada pendente (06/10): é "fecha", não "obrigado".
+    if (ctx.basket?.length && !ctx.pending?.length && /\b(mand\w*|envi\w*|fech\w*|segu\w*)\b/.test(normalizeMsg(text))) {
+      await continueAfterBasket(phone, convo.id, ctx, user.cep);
+      return;
+    }
     await reply(phone, copy.thanks());
     return;
   }
@@ -2942,7 +3097,18 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     }
     return;
   }
-  const statusLine = copy.orderStatusLine({
+  // Escolha da entrega na tela ou total esperando a forma de pagamento (06/10): "quando
+  // chega?" respondia "com o total sendo fechado"/"em andamento" com os prazos já na tela.
+  if (order.id === ctxOrder?.id && ctx.step === "choosing_freight" && ctx.freightChoice?.orderId === order.id && order.status === AWAITING_OPERATOR_QUOTE_STATUS) {
+    await reply(phone, copy.freightEtaHeader());
+    await sendFreightChoice(phone, ctx.freightChoice);
+    return;
+  }
+  if (order.status === "awaiting_quote_confirmation") {
+    await replyChargeNotIssued(phone, userId, ctx, order);
+    return;
+  }
+  let statusLine = copy.orderStatusLine({
     shortId: order.id.slice(-6).toUpperCase(),
     status: order.status,
     trackingUrl: order.courierTrackingUrl,
@@ -2950,6 +3116,11 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     dateLabel: orderDateLabel(order.createdAt),
     itemsPreview: orderItemsPreview(order.items)
   });
+  // Pedido pago (06/10): loja e prazo gravados no pedido — "quando chega?" devolvia só o status.
+  if (PAID_OR_IN_FULFILLMENT_STATUSES.includes(order.status) || order.status === "awaiting_payment") {
+    const info = orderDeliveryInfoLine(order);
+    if (info) statusLine = `${statusLine}\n${info}`;
+  }
   // "quando chega o DE HOJE?" sem pedido de hoje: diz isso antes de citar o antigo —
   // repetir só o antigo parecia que a compra de hoje tinha sido paga (28/08 S17).
   const asksToday = Boolean(text && /\b(de hoje|o de agora|pedido de hoje)\b/.test(normalizeMsg(text)));
@@ -2972,6 +3143,8 @@ async function handlePaidClaim(phone: string, convoId: string, userId: string, c
     await reply(phone, copy.noOrdersYet());
     return;
   }
+  // "paguei" antes de existir cobrança (06/10): respondia "em andamento" e a cotação vencia.
+  if (await replyChargeNotIssued(phone, userId, ctx, order)) return;
   if (order.status !== "awaiting_payment") {
     if (PAID_OR_IN_FULFILLMENT_STATUSES.includes(order.status)) {
       await reply(phone, copy.alreadyPaid());
@@ -3023,6 +3196,35 @@ async function handlePaidClaim(phone: string, convoId: string, userId: string, c
   await reply(phone, copy.pixNotSeenYet());
 }
 
+// Testadora no grupo (06/10): "quando cancelado faz a pergunta com algumas opções de motivo,
+// por exemplo: valor frete, valor produto, comprei outro app, desisti da compra". Lista de
+// tocar no Meta; fora dele (ou se falhar), a mesma lista numerada em texto.
+async function askCancelReason(phone: string) {
+  try {
+    const sent = await whatsappAdapter.sendListMessage(phone, {
+      body: copy.cancelReasonAsk(),
+      buttonText: "Escolher motivo",
+      sections: [{ rows: copy.CANCEL_REASON_OPTIONS.map((o) => ({ id: `cancelmotivo:${o.key}`, title: o.title })) }]
+    });
+    if (sent) {
+      markTurnReplied();
+      return;
+    }
+  } catch (error) {
+    console.warn("[whatsapp:cancel-reason:fallback-text]", error instanceof Error ? error.message : error);
+  }
+  await reply(phone, copy.cancelReasonAskText());
+}
+
+async function recordCancelReason(orderId: string | undefined, reason: string) {
+  const label = copy.cancelReasonLabel(reason);
+  console.log("[cancel-reason]", reason, orderId ?? "-");
+  if (!orderId) return;
+  const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
+  if (!order) return;
+  await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(order.notes, `📝 Motivo do cancelamento (cliente): ${label}`) } });
+}
+
 async function handleCancel(
   phone: string,
   convoId: string,
@@ -3068,6 +3270,8 @@ async function handleCancel(
         fresh.step = "collecting";
       }
       await writeCtx(convoId, fresh);
+      for (const key of Object.keys(ctx)) delete (ctx as Record<string, unknown>)[key];
+      Object.assign(ctx, fresh);
     }
     // Existe um pedido PAGO em andamento? A recusa nomeia ELE — sem isso o cliente do
     // teste de 26/08 ouviu "depois do pagamento não dá" sem saber de qual pedido.
@@ -3075,6 +3279,13 @@ async function handleCancel(
       where: { userId, status: { in: ACTIVE_ORDER_STATUSES }, paidAt: { not: null } },
       orderBy: { createdAt: "desc" }
     });
+    // "cancela"/"desisti" depois de pagar (06/10): respondia "não tem compra em aberto" e só
+    // "cancela o pedido" estornava. Agora é o mesmo caminho, com "confirma?". Exceção: logo
+    // depois de cancelar outro pedido nesta conversa, o "cancelar" repetido é sobre aquele.
+    if (paidActive && !ctx.lastCanceledOrderId) {
+      await askWithdraw(phone, convoId, ctx, paidActive);
+      return;
+    }
     await reply(
       phone,
       copy.nothingToCancel(
@@ -3091,17 +3302,19 @@ async function handleCancel(
   }
   // O contexto limpo LEMBRA qual pedido acabou de ser cancelado: "cadê meu pedido?"
   // em seguida fala dele primeiro (27/08 S17).
-  const canceledCtx = { ...addressOnlyCtx(ctx, userCep), lastCanceledOrderId: order.id };
+  const canceledCtx = { ...addressOnlyCtx(ctx, userCep), lastCanceledOrderId: order.id, cancelReason: { orderId: order.id, askedAt: Date.now() } };
   if (order.status === AWAITING_OPERATOR_QUOTE_STATUS) {
     await prisma.deliveryOrder.update({ where: { id: order.id }, data: { status: "canceled" } });
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
   if (order.status === "awaiting_supplier_validation" || order.status === "awaiting_quote_confirmation") {
     await cancelPendingRetailerQuote(order.id);
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
   if (order.status === "awaiting_payment") {
@@ -3117,23 +3330,159 @@ async function handleCancel(
     }
     await writeCtx(convoId, canceledCtx);
     await reply(phone, copy.canceledUnpaid());
+    await askCancelReason(phone);
     return;
   }
+  // Pedido PAGO (11/09, CDC art. 49): enquanto a compra na loja não saiu, o cliente pode
+  // desistir e o estorno é imediato pelo provedor — depois do "sim" (06/10).
+  await askWithdraw(phone, convoId, ctx, order);
+}
+
+// Pergunta "confirma?" antes de estornar (06/10). Fora de "paid" sem compra (saiu pra entrega,
+// compra em curso ou já com número na loja) explica que não dá — nunca promete o estorno.
+async function askWithdraw(
+  phone: string,
+  convoId: string,
+  ctx: DeliveryContext,
+  order: { id: string; status: string; total: number; items: unknown; notes?: string | null; pixCopiaECola?: string | null }
+) {
   if (isOrderOutForDelivery(order.status)) {
     await reply(phone, copy.cancelTooLate());
     return;
   }
-  // Pedido PAGO (11/09, CDC art. 49): enquanto a compra na loja não saiu, o cliente pode
-  // desistir e o estorno é imediato pelo provedor. Se a compra já está em curso (clique,
-  // Pix da loja, carrinho com o dono) ou já tem número na loja, vale a regra antiga.
+  const { customerCanWithdraw } = await import("./ops-lifecycle");
+  if (!(await customerCanWithdraw(order.id))) {
+    await reply(phone, copy.cancelRequestedPaid());
+    return;
+  }
+  ctx.withdrawConfirm = { orderId: order.id, askedAt: Date.now() };
+  await writeCtx(convoId, ctx);
+  await reply(
+    phone,
+    copy.withdrawConfirmAsk({
+      shortId: order.id.slice(-6).toUpperCase(),
+      itemsPreview: orderItemsPreview(order.items),
+      total: order.total,
+      card: isCardCharge(order)
+    })
+  );
+}
+
+// O "sim" da desistência: o mesmo customerWithdrawRefund que o "cancela o pedido" já usava
+// (o gate de compra em curso é refeito na transação — a compra pode ter saído no meio).
+async function confirmWithdraw(phone: string, convoId: string, userCep: string | null | undefined, ctx: DeliveryContext, orderId: string) {
+  const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
+  if (!order) {
+    await reply(phone, copy.nothingToCancel());
+    return;
+  }
+  if (order.status !== "paid") {
+    if (PAID_OR_IN_FULFILLMENT_STATUSES.includes(order.status)) await reply(phone, copy.cancelRequestedPaid());
+    else
+      await reply(
+        phone,
+        copy.orderStatusLine({ shortId: order.id.slice(-6).toUpperCase(), status: order.status, paid: Boolean(order.paidAt), itemsPreview: orderItemsPreview(order.items) })
+      );
+    return;
+  }
   const { customerWithdrawRefund } = await import("./ops-lifecycle");
   const outcome = await customerWithdrawRefund(order.id);
   if (outcome.ok) {
-    await writeCtx(convoId, canceledCtx);
+    await writeCtx(convoId, { ...addressOnlyCtx(ctx, userCep), lastCanceledOrderId: order.id, cancelReason: { orderId: order.id, askedAt: Date.now() } });
     await reply(phone, copy.withdrawnRefunded(outcome.amount));
+    await askCancelReason(phone);
     return;
   }
   await reply(phone, copy.cancelRequestedPaid());
+}
+
+async function handleRefundRequest(phone: string, convoId: string, userId: string, ctx: DeliveryContext, text: string) {
+  const paid = await latestPaidOrder(userId);
+  if (paid) {
+    await askWithdraw(phone, convoId, ctx, paid);
+    return;
+  }
+  const last = await prisma.deliveryOrder.findFirst({ where: { userId }, orderBy: { createdAt: "desc" } });
+  const shortId = last?.id.slice(-6).toUpperCase() ?? "";
+  if (last && !last.paidAt && (last.status === "canceled" || CANCELABLE_FALLBACK_STATUSES.includes(last.status))) {
+    await reply(phone, last.status === "canceled" ? copy.refundNothingCharged(shortId) : copy.refundNotPaidYet(shortId));
+    return;
+  }
+  if (last && (last.status === "refunded" || last.status === "refund_pending" || last.status === "canceled")) {
+    await reply(phone, copy.orderStatusLine({ shortId, status: last.status, paid: Boolean(last.paidAt), itemsPreview: orderItemsPreview(last.items) }));
+    return;
+  }
+  // Entregue (ou sem pedido): é suporte — mesmo caminho da reclamação.
+  await flagLatestOrder(userId, `⚠️ CLIENTE PEDIU O DINHEIRO DE VOLTA: "${text.slice(0, 140)}"`);
+  await reply(phone, copy.complaintAck());
+}
+
+// Sem cobrança gerada ainda (06/10): escolha da entrega na tela → reapresenta a escolha;
+// total na mesa → reapresenta Pix/cartão (com o prazo da loja). false quando não é o caso.
+async function replyChargeNotIssued(
+  phone: string,
+  userId: string,
+  ctx: DeliveryContext,
+  known?: { id: string; status: string; total: number; items: unknown; storeKey: string; storeLabel: string; fulfillments: unknown } | null
+): Promise<boolean> {
+  const order =
+    known ??
+    (ctx.deliveryOrderId ? await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } }) : null) ??
+    (await prisma.deliveryOrder.findFirst({ where: { userId, status: "awaiting_quote_confirmation" }, orderBy: { createdAt: "desc" } }));
+  if (!order) return false;
+  if (order.status === AWAITING_OPERATOR_QUOTE_STATUS && ctx.step === "choosing_freight" && ctx.freightChoice?.orderId === order.id) {
+    await reply(phone, copy.chargeNotIssuedChooseFreight());
+    await sendFreightChoice(phone, ctx.freightChoice);
+    return true;
+  }
+  if (order.status === "awaiting_quote_confirmation") {
+    const info = orderDeliveryInfoLine(order);
+    await reply(phone, info ? `${copy.chargeNotIssuedChoosePayment()}\n${info}` : copy.chargeNotIssuedChoosePayment());
+    const interactive = await whatsappAdapter.sendPaymentChoices(phone, order.total, cardTotal(order.total)).catch(() => null);
+    if (!interactive) await reply(phone, copy.paymentMethod(order.total, cardTotal(order.total)));
+    else markTurnReplied();
+    return true;
+  }
+  return false;
+}
+
+// Loja(s) e prazo gravados no pedido (06/10): "quando chega?", "qual loja?", "qual o prazo?".
+function orderStoresOf(order: { items: unknown; storeKey: string; storeLabel: string }): string[] {
+  const items = (order.items as unknown as BasketItem[]) ?? [];
+  const labels = items.filter((i) => i.storeLabel && i.storeKey !== CONCIERGE_STORE_KEY).map((i) => i.storeLabel as string);
+  if (!labels.length && order.storeKey !== CONCIERGE_STORE_KEY && order.storeLabel !== CONCIERGE_STORE_LABEL) labels.push(order.storeLabel);
+  return [...new Set(labels)];
+}
+
+function orderDeliveryInfoLine(order: { items: unknown; storeKey: string; storeLabel: string; fulfillments: unknown }): string {
+  const fulfillments = (Array.isArray(order.fulfillments) ? order.fulfillments : []) as Array<{ deliveryPromise?: string }>;
+  const promise = fulfillments.map((f) => f?.deliveryPromise).find(Boolean);
+  return copy.orderDeliveryInfo({ stores: orderStoresOf(order), promise });
+}
+
+// Pedido pago e ainda não entregue — assunto das perguntas de loja, prazo e endereço.
+async function latestPaidOrder(userId: string) {
+  return prisma.deliveryOrder.findFirst({
+    where: { userId, status: { in: PAID_OR_IN_FULFILLMENT_STATUSES } },
+    orderBy: { createdAt: "desc" }
+  });
+}
+
+// O pedido da conversa (se ainda vivo) ou o último pago — para "qual loja?"/"qual o prazo?".
+async function currentOrderForQuestions(userId: string, ctx: DeliveryContext) {
+  const ctxOrder = ctx.deliveryOrderId ? await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } }) : null;
+  if (ctxOrder && ACTIVE_ORDER_STATUSES.includes(ctxOrder.status)) return ctxOrder;
+  if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) return null;
+  return latestPaidOrder(userId);
+}
+
+// Só os botões Pix/cartão do total na mesa (o "oi" já disse o que falta).
+async function replyChargeNotIssuedButtons(phone: string, userId: string, ctx: DeliveryContext) {
+  const order = ctx.deliveryOrderId ? await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } }) : null;
+  if (!order || order.status !== "awaiting_quote_confirmation" || order.userId !== userId) return;
+  const interactive = await whatsappAdapter.sendPaymentChoices(phone, order.total, cardTotal(order.total)).catch(() => null);
+  if (!interactive) await reply(phone, copy.paymentMethod(order.total, cardTotal(order.total)));
+  else markTurnReplied();
 }
 
 async function handleNewCep(

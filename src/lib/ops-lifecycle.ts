@@ -532,6 +532,15 @@ export function autoRefundDecision(
 // loja e sem job em estado de compra. Carrinho nas mãos do dono (ML) só desiste se a
 // ação pendente for consumida aqui primeiro (CAS): se o dono já tocou, perde a corrida.
 const WITHDRAW_BLOCKING = ["submitting", "outcome_unknown", "awaiting_store_number", "pix_captured", "pix_submitted", "pix_paid", "store_confirmed"];
+// Só leitura (06/10): a conversa pergunta "confirma?" antes de estornar; a pergunta só sai
+// se a desistência ainda é possível. A decisão de verdade continua no customerWithdrawRefund.
+export async function customerCanWithdraw(orderId: string): Promise<boolean> {
+  const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { status: true, storeOrderNumber: true } });
+  if (!order || order.status !== "paid" || order.storeOrderNumber) return false;
+  const blocking = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: orderId, status: { in: WITHDRAW_BLOCKING } }, select: { id: true } });
+  return !blocking;
+}
+
 export async function customerWithdrawRefund(orderId: string): Promise<{ ok: true; amount: number } | { ok: false; reason: string }> {
   const gate = await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "DeliveryOrder" WHERE id = ${orderId} FOR UPDATE`;
