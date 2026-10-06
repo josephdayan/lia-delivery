@@ -41,6 +41,10 @@ Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (s
 - Lojas com algo em até 1 dia: SP 17, RJ 10, PR 8, MG 7, ES/GO/MT 6, DF/BA/PE 5, Norte 2–3.
 - Casa, moda, livros, eletro e beleza: nacionais, 2–10 dias em qualquer lugar.
 
+## 06/10/2026 — Motivo do cancelamento
+
+Pedido cancelado pergunta o motivo (frete caro, produto caro, outro app, desisti, outro) e anota no
+pedido. Testes: novo 3/3 + 12 arquivos de cancelamento 324/324 no Postgres local; `tsc` ok.
 ## 06/10/2026 (tarde) — Estorno automático: 6h sem compra (era 24h/48h)
 
 Pedido pago sem compra na loja há 6h volta sozinho ao cliente (regra no topo do AGENTS.md).
@@ -48,6 +52,7 @@ Antes do deploy, só um pedido se encaixava: #5GUY4Z (Cobasi, R$21,50, 15/09), q
 porque o Pix da loja foi pago (`pix_paid`, sem número de pedido) — **reconciliar à mão com a
 Cobasi**. Testes: manual-queue, paid-order-watchdog, plan-b, operador-humano, vtex-runner,
 purchase-execution 47/47 no Postgres local.
+
 
 ## 06/10/2026 (tarde) — Nome da loja em toda opção; cartão sai "LIA DELIVERY" na fatura
 

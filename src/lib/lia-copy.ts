@@ -769,7 +769,14 @@ export function resendCard(link: string): string {
   return ["Seu link de pagamento 👇", link].join("\n");
 }
 
-export function paymentSwitched(method: "pix" | "card", total: number): string {
+// renewed (06/10): "o pix expirou" com Pix gera cobrança NOVA no mesmo método — dizia
+// "Troquei pra Pix" sem ter trocado nada.
+export function paymentSwitched(method: "pix" | "card", total: number, renewed = false): string {
+  if (renewed) {
+    return method === "pix"
+      ? `Gerei um Pix novo — total *${brl(total)}*. O anterior não vale mais. Segue o código 👇`
+      : `Gerei um link novo — total *${brl(total)}*. O anterior não vale mais 👇`;
+  }
   return method === "pix"
     ? `Troquei pra Pix — total *${brl(total)}*, sem taxa. Segue o código 👇`
     : `Troquei pro cartão — total *${brl(total)}*, com taxa da maquininha. Segue o link 👇`;
@@ -810,6 +817,9 @@ export function orderStatusLine(input: {
     case "awaiting_supplier_validation":
     case "payment_issuing":
       return `${id} em confirmação na loja. Te aviso quando o carrinho estiver pronto.`;
+    case "awaiting_quote_confirmation":
+      // 06/10: caía no default "em andamento" com nenhuma cobrança gerada.
+      return `${id} com o total na mesa — a cobrança ainda não foi gerada. Responde *pix* ou *cartão* que eu mando o pagamento.`;
     case "awaiting_payment":
       return `${id} aguardando pagamento. Responde *pagar* que eu mando o código de novo.`;
     case "paid":
@@ -858,6 +868,32 @@ export function canceledUnpaid(): string {
   return "Cancelado. Nada foi cobrado. Quando quiser, é só pedir de novo.";
 }
 
+// Motivo do cancelamento (06/10, testadora): opções de tocar, na ordem das chaves de
+// CANCEL_REASON_KEYS (lia-intents). Título de linha de lista ≤ 24 caracteres.
+export const CANCEL_REASON_OPTIONS = [
+  { key: "frete", title: "Frete caro" },
+  { key: "preco", title: "Produto caro" },
+  { key: "outro_app", title: "Comprei em outro app" },
+  { key: "desisti", title: "Desisti da compra" },
+  { key: "outro", title: "Outro motivo" }
+] as const;
+
+export function cancelReasonAsk(): string {
+  return "Se puder, me conta por que cancelou? Isso me ajuda a melhorar.";
+}
+
+export function cancelReasonAskText(): string {
+  return [cancelReasonAsk(), ...CANCEL_REASON_OPTIONS.map((o, i) => `*${i + 1})* ${o.title}`)].join("\n");
+}
+
+export function cancelReasonLabel(key: string): string {
+  return CANCEL_REASON_OPTIONS.find((o) => o.key === key)?.title ?? key;
+}
+
+export function cancelReasonThanks(): string {
+  return "Obrigada, anotei 🙏 Quando quiser, é só pedir de novo.";
+}
+
 // Regra de 11/09 (CDC art. 49): antes de a compra na loja sair, o cliente pode desistir e
 // o estorno é na hora. Depois que a compra saiu, não dá — item faltando é estornado e
 // atraso é avisado. O texto é um só nas três entradas, de propósito.
@@ -875,6 +911,33 @@ export function cancelTooLate(): string {
 // Desistência aceita: o dinheiro volta pelo mesmo meio, sem esperar ninguém.
 export function withdrawnRefunded(total: number): string {
   return `Cancelado. Estornei R$ ${total.toFixed(2).replace(".", ",")} pelo mesmo meio que você pagou; o banco leva até 7 dias úteis pra mostrar.`;
+}
+
+// Desistência de pedido PAGO com confirmação (06/10): "cancela", "cancela tudo", "desisti",
+// "quero meu dinheiro de volta" davam quatro respostas diferentes — uma estornava na hora.
+// Agora todas perguntam antes e só o "sim" estorna.
+export function withdrawConfirmAsk(input: { shortId: string; itemsPreview?: string; total: number; card?: boolean }): string {
+  const meta = input.itemsPreview ? ` (${input.itemsPreview})` : "";
+  return [
+    `Confirma o cancelamento do pedido *#${input.shortId}*${meta}?`,
+    `O valor de *${brl(input.total)}* volta pelo mesmo meio que você pagou (${input.card ? "cartão" : "Pix"}) — o banco leva até 7 dias úteis pra mostrar.`,
+    "",
+    "Responde *sim* pra cancelar ou *não* pra manter o pedido."
+  ].join("\n");
+}
+
+export function withdrawKept(shortId: string): string {
+  return `Combinado, o pedido *#${shortId}* segue normal 👍`;
+}
+
+// "quero meu dinheiro de volta" depois de um pedido cancelado SEM pagamento (06/10): a
+// resposta prometia estorno de item faltando, com nada cobrado.
+export function refundNotPaidYet(shortId: string): string {
+  return `O pedido *#${shortId}* ainda não foi pago — nada foi cobrado. Se não quiser mais, responde *cancelar*.`;
+}
+
+export function refundNothingCharged(shortId: string): string {
+  return `O pedido *#${shortId}* foi cancelado antes do pagamento — nada foi cobrado, então não tem valor pra devolver.`;
 }
 
 export function nothingToCancel(paidActive?: { shortId: string; dateLabel?: string; itemsPreview?: string }): string {
@@ -1557,6 +1620,75 @@ export function medicineNotFound(labels: string[]): string {
   return `${what} eu não achei entre os remédios *sem receita*. Remédio que precisa de receita eu não consigo comprar. Os sem receita (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome.`;
 }
 
+// ---------- antes de existir cobrança / depois do pagamento (06/10) ----------
+
+// "paguei"/"já paguei"/"manda o pix de novo" antes de gerar a cobrança: respondia "em
+// andamento" ou "você ainda não tem pedidos". O cliente achava que estava tudo certo.
+export function chargeNotIssuedChooseFreight(): string {
+  return "Ainda não gerei a cobrança — nada foi pago nem cobrado. Primeiro escolhe a entrega 👇 depois eu mando o Pix ou o cartão.";
+}
+
+export function chargeNotIssuedChoosePayment(): string {
+  return "Ainda não gerei a cobrança — nada foi pago nem cobrado. Escolhe *Pix* ou *cartão* que eu mando o pagamento 👇";
+}
+
+// Tela "Mais barata / Mais rápida" (06/10): "pix", "o frete tá caro", "chega que horas?"
+// respondiam "Não peguei qual você quer".
+export function freightBeforePayment(): string {
+  return "Antes do pagamento, escolhe a entrega: responde *1* (mais barata) ou *2* (mais rápida). Em seguida eu mando o total pra pagar.";
+}
+
+export function freightFeeExplain(): string {
+  return "O frete é o que a própria loja cobra até o seu endereço. A opção *1* é a mais barata 👇";
+}
+
+export function freightEtaHeader(): string {
+  return "O prazo depende da entrega que você escolher — está em cada opção 👇";
+}
+
+// "qual a chave pix?" com o código na mão (06/10): a IA dizia que o Pix "aparece no total".
+export function pixKeyExplain(): string {
+  return "Não tem chave pra digitar: é *Pix copia e cola*. O código é a mensagem que mandei — copia ela inteira e cola no app do banco, na opção *Pix copia e cola*.";
+}
+
+export function pixKeyNoCharge(): string {
+  return "Não tem chave pra digitar: quando você fechar o pedido, eu mando um código *Pix copia e cola* pra colar no app do banco.";
+}
+
+export function unsupportedPayment(): string {
+  return "Aqui é só *Pix* ou *cartão de crédito*, tudo pelo chat — dinheiro, vale-refeição, boleto ou pagamento na entrega eu não consigo aceitar.";
+}
+
+// "ok"/"blz" logo depois do Pix (06/10): "Imagina! Qualquer coisa é só chamar" soava como
+// despedida no meio do pagamento.
+
+// Loja e prazo DO PEDIDO (06/10): "quando chega?" com pedido pago devolvia só o status.
+export function orderDeliveryInfo(input: { stores: string[]; promise?: string }): string {
+  const stores = input.stores.length ? input.stores.map((s) => `*${s}*`).join(" e ") : "";
+  const promise = input.promise ? input.promise.replace(/^pela própria loja/, "entrega pela própria loja") : "";
+  if (stores && promise) return `🚚 Loja ${stores} · ${promise}`;
+  if (stores) return `🚚 Loja ${stores}`;
+  return promise ? `🚚 ${promise.charAt(0).toUpperCase()}${promise.slice(1)}` : "";
+}
+
+export function orderStoreAnswer(shortId: string, stores: string[]): string {
+  return `Seu pedido *#${shortId}* é da loja ${stores.map((s) => `*${s}*`).join(" e ")}.`;
+}
+
+export function savedAddressAnswer(address: string, cep?: string): string {
+  return `📍 Seu endereço de entrega: ${withCep(address, cep)}`;
+}
+
+export function orderAddressAnswer(shortId: string, address: string): string {
+  return `📍 Seu pedido *#${shortId}* vai para: ${address}`;
+}
+
+// Troca de endereço DEPOIS de pagar (06/10): dizia "Endereço atualizado" e o pedido pago
+// seguia para o endereço antigo, sem aviso.
+export function paidOrderAddressKept(shortId: string, address: string): string {
+  return `Seu pedido *#${shortId}* já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
+}
+
 export function humanHandoff(): string {
   return "Avisei o responsável, ele te responde aqui mesmo. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.";
 }
@@ -1582,6 +1714,9 @@ export function orderReopened(): string {
 
 export function greetingMidOrder(step: string, itemCount: number): string {
   if (step === "awaiting_payment") return "Oi! Seu pedido só falta pagar. Responde *pagar* que eu mando o código.";
+  // 06/10: com o total na mesa ou a escolha da entrega aberta, o "oi" esquecia o pedido.
+  if (step === "awaiting_quote_confirmation") return "Oi! Seu pedido está com o total pronto — só falta escolher *Pix* ou *cartão* 👇";
+  if (step === "choosing_freight") return "Oi! Seu pedido só falta escolher a entrega 👇";
   if (itemCount > 0)
     return `Oi! Sua cesta tem ${itemCount} ${itemCount === 1 ? "item" : "itens"}. Manda mais algum, ou responde *pagar* pra fechar.`;
   return "Oi! O que você precisa hoje?";

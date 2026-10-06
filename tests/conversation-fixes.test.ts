@@ -32,7 +32,8 @@ test("multi-intenção tira+coloca separa remove e add", () => {
 test("perguntas operacionais são service_question (antes: sabonete)", () => {
   assert.deepEqual(detectIntent("vc entrega em osasco?"), { kind: "service_question", topic: "area" });
   assert.deepEqual(detectIntent("quanto custa o frete?"), { kind: "service_question", topic: "fee" });
-  assert.equal(kind("vcs aceitam vale refeição?"), "service_question");
+  // 06/10: forma de pagamento não aceita tem intent próprio (resposta fixa "só Pix ou cartão").
+  assert.equal(kind("vcs aceitam vale refeição?"), "unsupported_payment");
 });
 
 test("status cobre as frases de ansiedade da entrega", () => {

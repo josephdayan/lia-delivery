@@ -36,7 +36,8 @@ export type Intent =
   // "Vc salvou o endereço?"/"pegou meu cep?" — pergunta sobre o endereço em arquivo:
   // responde com o endereço salvo, nunca vira busca (teste real 24/08: virou busca e a
   // recusa "não consigo trazer *Vc salvou o endereço já*" saiu pro cliente).
-  | { kind: "address_question" }
+  // order=true (06/10): "pra qual endereço vai?" — o endereço DO PEDIDO, não o salvo.
+  | { kind: "address_question"; order?: boolean }
   // "quanto falta?"/"o que posso pedir pra completar?" — pergunta sobre o que falta pro
   // fechamento (pedido mínimo), nunca busca (teste real 24/08: virou busca e beco).
   | { kind: "missing_question" }
@@ -67,7 +68,13 @@ export type Intent =
   // "posso cancelar?" — pergunta sobre cancelar; explicar, não executar.
   | { kind: "cancel_question" }
   // "não recebi o código", "o pix expirou", "manda de novo" — reemitir cobrança.
-  | { kind: "resend_code"; expired: boolean }
+  // keyAsk (06/10): "qual a chave pix?" — não tem chave, é o copia-e-cola já enviado.
+  | { kind: "resend_code"; expired: boolean; keyAsk?: boolean }
+  // "quero meu dinheiro de volta"/"quero o estorno"/"quero devolver" (06/10): com pedido
+  // pago e ainda não comprado é desistência (mesmo caminho do "cancela"); depois, suporte.
+  | { kind: "refund_request" }
+  // "dinheiro"/"vale refeição"/"boleto" (06/10): só Pix ou cartão — nunca busca de produto.
+  | { kind: "unsupported_payment" }
   // "quero mudar a forma de pagamento" (sem dizer qual).
   | { kind: "switch_payment" }
   // "quero falar com um atendente/humano".
@@ -785,7 +792,7 @@ const HELP_RE = /^(ajuda|help|menu|como funciona\??|o que (voce|vc) faz\??|como 
 // must stay a product request, not a status check. A pergunta INTEIRA "e meu pedido?"
 // é status — por isso as alternativas ancoradas (^…$) no fim.
 const STATUS_RE =
-  /\b(status|cade|rastreio|rastrear|rastreamento|acompanhar|previsao( de entrega)?|quando chega|chega quando|que horas? chega|vai chegar|chega hoje|(ainda )?nao chegou|ta (vindo|chegando|a caminho)|onde (ta|esta|anda)( o| meu)? ?(pedido|entregador|motoboy)?|falta muito|ja saiu|saiu pra entrega|andamento)\b|^chegou\?+$|^e? ?(o |a )?(meu|minha) (pedido|entrega|compra)[\s!?.]*$|^como (ta|esta|anda|ficou) (o |a )?(meu |minha )?(pedido|entrega|compra)[\s!?.]*$/;
+  /\b(status|cade|rastreio|rastrear|rastreamento|acompanhar|previsao( de entrega)?|quando chega|chega quando|que horas? chega|chega que horas?|vai chegar|chega hoje|(ainda )?nao chegou|ta (vindo|chegando|a caminho)|onde (ta|esta|anda)( o| meu)? ?(pedido|entregador|motoboy)?|falta muito|ja saiu|saiu pra entrega|andamento)\b|^chegou\?+$|^e? ?(o |a )?(meu|minha) (pedido|entrega|compra)[\s!?.]*$|^como (ta|esta|anda|ficou) (o |a )?(meu |minha )?(pedido|entrega|compra)[\s!?.]*$/;
 
 const PAID_RE =
   /\b(paguei|ja paguei|acabei de pagar|pagamento (feito|realizado|efetuado)|pix (feito|enviado|pago)|fiz o pix|mandei o pix|transferi|ta pago|esta pago|caiu( o pix)?)\b|^pago[\s!.]*$/;
@@ -812,6 +819,20 @@ const DONE_RE =
 const RESEND_CODE_RE =
   /\b(nao (recebi|chegou|veio|achei)( aqui)?( o)? (codigo|pix|link|qr ?code)|perdi o (codigo|pix|link)|manda (o )?(pix|codigo|link)( de novo| novamente| dnv)?|(pix|codigo|link|qr ?code) (de novo|dnv|sumiu|nao (chegou|veio|apareceu))|reenvia\w*|reemite|manda de novo)\b/;
 const CODE_EXPIRED_RE = /\b(pix|codigo|link|qr ?code|cobranca)\s+(expirou|venceu|expirado|vencido|invalido)\b|\bexpirou\b/;
+// "qual a chave pix?" logo depois do código (06/10): a IA dizia que o Pix "aparece no total".
+// "chave de fenda" é produto: só "chave" seca ou "chave (do) pix" contam.
+const PIX_KEY_RE =
+  /\b(qual|cade|me (passa|manda|da)|manda|passa|tem)\b.*\bchave (do |de )?pix\b|^(qual|cade|me (passa|manda|da)|manda|passa)( (e|eh))?( a| sua| tua)? chave[\s?!.]*$|^chave( do| de)? pix\s*\?|^qual (e |eh )?(o )?pix[\s?!.]*$/;
+
+// Pedido de dinheiro de volta (06/10): "quero meu dinheiro de volta", "me devolve o dinheiro",
+// "quero o estorno", "estorna", "quero reembolso", "quero devolver". Antes virava reclamação
+// genérica ou busca de produto, com o pedido pago e ainda não comprado.
+const REFUND_REQUEST_RE =
+  /\b(dinheiro de volta|devolv\w* (o |meu |o meu )?dinheiro|(quero|queria|pode|faz|fazer|faca|solicit\w*|pedir) (o |um |meu )?(estorno|reembolso)|estorn(a|e|ar)( o| meu)?( pedido| dinheiro| valor| pix| pagamento)?$|^(o )?estorno\??$|^(pode|consegue|da pra|tem como) (me )?(estornar|reembolsar)\b|^(quero|queria|vou) devolver( o pedido| a compra| tudo)?[\s!.]*$)\b/;
+
+// Forma de pagamento que a Lia não aceita (06/10): "dinheiro" e "vale refeição" viravam busca.
+const UNSUPPORTED_PAY_RE =
+  /^(?:(?:e|eh|da|pode|posso|aceita\w*|tem como|da pra|vcs aceitam|voces aceitam)\s+)?(?:(?:pagar|pago|pagamento|ser)\s+)?(?:(?:em|no|na|com|de|por)\s+)?(dinheiro|especie|vale[- ]?(?:refeicao|alimentacao)|ticket(?: refeicao| alimentacao)?|sodexo|alelo|vr|boleto|paypal|picpay)(?: mesmo| vivo)?(?: na entrega)?[\s?!.]*$|^(?:(?:da|pode|posso|tem como|da pra)\s+)?(?:pagar|pago)\s+na entrega[\s?!.]*$/;
 
 // "quero mudar a forma de pagamento" (sem dizer qual) — oferecer pix e cartão de novo.
 const SWITCH_PAYMENT_RE =
@@ -829,7 +850,7 @@ const HUMAN_RE =
 // Reclamação pós-pedido: "veio errado", "faltou", "estragado" — pedir desculpa e
 // acionar o operador, nunca oferecer produto.
 const COMPLAINT_RE =
-  /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero (reclamar|meu dinheiro|reembolso)|absurdo|pessimo|horrivel|uma vergonha)\b/;
+  /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero reclamar|absurdo|pessimo|horrivel|uma vergonha)\b/;
 
 // Pergunta operacional (frete/prazo/área/pagamento) sem produto — responder com copy.
 const SERVICE_WORDS_RE =
@@ -843,6 +864,12 @@ const CHANGE_ADDRESS_RE =
 
 const REPEAT_RE =
   /\b(repete|repetir|(o )?de sempre|mesmo pedido|pedido anterior|ultimo pedido|mesma coisa( de sempre)?|manda o mesmo|(igual|mesmo|mesma) (ao?|d[oa]) (ultim[oa]|anterior|sempre)( vez)?)\b|^o mesmo$/;
+
+// "quero de novo o mesmo"/"o mesmo de novo"/"o mesmo da última vez" (06/10, cliente
+// recorrente): virava busca de "de novo o mesmo". Exige a marca de repetição — "quero o
+// mesmo shampoo da outra vez" tem produto e continua sendo busca (com o ⭐ "você já pediu").
+const REPEAT_AGAIN_RE =
+  /^(?:(?:oi|ola|opa|bom dia|boa tarde|boa noite)[,!.\s]+)?(?:eu )?(?:quero|queria|manda|me ve|pode mandar|faz|traz)?\s*(?:(?:de novo|outra vez|novamente)\s+(?:o mesmo|a mesma coisa|o mesmo pedido|a mesma compra|igual)(?:\s+(?:de sempre|da (?:ultima|outra) vez|do ultimo pedido|da ultima compra))?|(?:o mesmo|a mesma coisa|o mesmo pedido|a mesma compra)\s+(?:de novo|outra vez|novamente|da (?:ultima|outra) vez|do ultimo pedido|da ultima compra))(?:\s+(?:por favor|pfv|pf))?[\s!.]*$/;
 
 const PAY_RE =
   /\b(pagar|pagamento|finaliza|finalizar|fecha( o pedido)?|fechar( o pedido)?|fechamos|checkout|manda o pix|me manda o pix|manda o link|gera o pix)\b/;
@@ -923,6 +950,28 @@ function isVagueWant(n: string): boolean {
   if (!VAGUE_WANT_ANCHOR_RE.test(n)) return false;
   const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   return words.length > 0 && words.length <= 16 && words.every((w) => VAGUE_WANT_WORDS.has(w));
+}
+
+// Motivo do cancelamento (06/10, testadora no grupo: "quando cancelado faz a pergunta com
+// algumas opções de motivo"). O toque na lista volta como `cancelmotivo:<chave>`; digitado, só
+// vale número ou palavra curta do motivo — qualquer outra coisa segue o fluxo normal (um
+// pedido novo logo depois do cancelamento NUNCA pode virar motivo).
+export const CANCEL_REASON_KEYS = ["frete", "preco", "outro_app", "desisti", "outro"] as const;
+export type CancelReasonKey = (typeof CANCEL_REASON_KEYS)[number];
+export function parseCancelReason(text: string, asked: boolean): CancelReasonKey | null {
+  const n = normalizeMsg(text);
+  const tapped = /^cancelmotivo:([a-z_]+)$/.exec(n)?.[1];
+  if (tapped) return (CANCEL_REASON_KEYS as readonly string[]).includes(tapped) ? (tapped as CancelReasonKey) : null;
+  if (!asked) return null;
+  const number = /^([1-5])\s*[).]?$/.exec(n)?.[1];
+  if (number) return CANCEL_REASON_KEYS[Number(number) - 1];
+  if (n.split(" ").length > 6) return null;
+  if (/\bfrete\b/.test(n)) return "frete";
+  if (/\b(outro|outra)\s+(app|aplicativo|loja|lugar|site)\b|\b(rappi|ifood|mercado livre|amazon|shopee)\b/.test(n)) return "outro_app";
+  if (/\b(produto|preco|valor)\b.*\bcar[oa]\b|\bcar[oa]\b.*\b(produto|preco|valor)\b|^(muito |ta |achei )?car[oa]$/.test(n)) return "preco";
+  if (/\bdesist/.test(n)) return "desisti";
+  if (/^outro( motivo)?$/.test(n)) return "outro";
+  return null;
 }
 
 export function detectIntent(text: string): Intent {
@@ -1149,7 +1198,10 @@ export function detectIntent(text: string): Intent {
   if (HELP_RE.test(n)) return { kind: "help" };
   if (HUMAN_RE.test(n)) return { kind: "human" };
   if (COMPLAINT_RE.test(n)) return { kind: "complaint" };
+  if (REFUND_REQUEST_RE.test(n)) return { kind: "refund_request" };
+  if (UNSUPPORTED_PAY_RE.test(n)) return { kind: "unsupported_payment" };
   if (REFUSE_PAY_RE.test(n)) return { kind: "cancel" };
+  if (PIX_KEY_RE.test(n)) return { kind: "resend_code", expired: false, keyAsk: true };
   if (RESEND_CODE_RE.test(n) || CODE_EXPIRED_RE.test(n)) {
     return { kind: "resend_code", expired: CODE_EXPIRED_RE.test(n) };
   }
@@ -1176,6 +1228,14 @@ export function detectIntent(text: string): Intent {
     !/\d{5}/.test(n)
   ) {
     return { kind: "address_question" };
+  }
+  // "pra qual endereço vai?"/"vai entregar onde?" (06/10): pergunta do destino do pedido.
+  if (
+    n.length <= 60 &&
+    /\b(pra|para) (qual|que) endereco\b|\bqual (e |eh )?(o )?endereco (de entrega|da entrega|do pedido|que vai|que voce vai|que vc vai)\b|\bvai (pra|para) (qual|que) endereco\b|\b(vai )?entrega(r)? onde\b|\bonde (vai ser|vai|vc vai|voce vai) entreg\w*/.test(n) &&
+    !/\d{5}/.test(n)
+  ) {
+    return { kind: "address_question", order: true };
   }
 
   // "troca o arroz por leite" — swap BEFORE remove/cancel so "troca" wins.
@@ -1230,9 +1290,12 @@ export function detectIntent(text: string): Intent {
     // inteira (28/08 S15: apagou os 12 itens, inclusive 10 que não eram de limpeza).
     const categoryQualified = /^(tudo|todos|todas)\s+(o\s+|os\s+|as\s+)?(que|de|da|do|d[ao]s)\b/.test(target);
     const clearAll = !target || (/\b(tudo|todos|todas)\b/.test(target) && !categoryQualified);
+    // "cancela tudo" (06/10): com pedido pago respondia "Carrinho limpo" e o cliente achava
+    // que tinha cancelado. É o cancelar contextual (lista em montagem continua sendo limpa).
+    if (clearAll && /^(cancel|cansel)/.test(n) && /^(tudo|todos|todas)?$/.test(target.trim())) return { kind: "cancel" };
     if (clearAll) return { kind: "clear_cart" };
     // "cancela o pedido" is an order cancel, not an item removal.
-    if (/^(o\s+|a\s+|meu\s+)?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
+    if (/^(o\s+|a\s+|meu\s+|minha\s+)?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     // "cancela o pagamento/pix" é desistir da cobrança, não tirar item da cesta.
     if (/^(o\s+|a\s+)?(pagamento|pix|cobranca|boleto)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     return { kind: "remove_item", target, ...(andAdd ? { andAdd } : {}) };
@@ -1243,6 +1306,8 @@ export function detectIntent(text: string): Intent {
   const cancelItem = n.match(/\b(?:nao quero mais|quero (?:cancelar|tirar|remover)|pode (?:tirar|remover))\s+(?:o |a |os |as )?(.+)$/);
   if (cancelItem) {
     const target = cleanItemPhrase(cancelItem[1]);
+    // "quero cancelar meu pedido" (06/10) virava "não achei esse item na sua cesta".
+    if (/^(meu |minha |o |a )?(pedido|compra|entrega)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     if (target && !/^(pedido|compra|entrega|tudo|nada)$/.test(target)) return { kind: "remove_item", target };
   }
 
@@ -1252,11 +1317,13 @@ export function detectIntent(text: string): Intent {
 
   if (CLEAR_CART_RE.test(n)) return { kind: "clear_cart" };
   if (CANCEL_RE.test(n)) {
+    // "não quero cancelar"/"não cancela" (06/10): é o contrário — mantém o pedido.
+    if (/\bn(a|ã)o (quero |precisa (de )?|vou |pode |e pra |eh pra )?(cancel|desist)\w*/.test(n)) return { kind: "reject" };
     // "posso cancelar?" é pergunta — explicar como cancelar, nunca EXECUTAR o cancelamento.
     if (isQuestion(n)) return { kind: "cancel_question" };
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
-  if (REPEAT_RE.test(n)) return { kind: "repeat_last" };
+  if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n)) return { kind: "repeat_last" };
   if (STATUS_RE.test(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":

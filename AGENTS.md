@@ -6,6 +6,17 @@ completo — ~60% do que os clientes reais pedem — só em SP e RJ. Dono: "deix
 por API nele (candidato já sondado: GBarbosa em SE/BA/AL; Super Nosso e Giassi não têm Pix). Não
 repropor a expansão sem esse dado novo.
 
+## 06/10/2026 — Pedido cancelado pergunta o motivo (testadora no grupo)
+
+Pedido da testadora: "quando cancelado faz a pergunta com algumas opções de motivo, por exemplo:
+valor frete, valor produto, comprei outro app, desisti da compra". Pedido cancelado pelo cliente
+(cotação, aguardando pagamento ou desistência paga com estorno) → lista de tocar "Escolher motivo":
+Frete caro, Produto caro, Comprei em outro app, Desisti da compra, Outro motivo (texto numerado
+fora do Meta). A resposta vira nota `📝 Motivo do cancelamento (cliente): …` no pedido e log
+`[cancel-reason]`. Vale o toque, o número ou uma palavra curta, uma vez, por 30 min; qualquer
+outra mensagem desarma e segue o fluxo normal. "cancelar" que só limpa a lista em montagem não
+pergunta (é recomeço, não desistência). `parseCancelReason` (lia-intents), `askCancelReason` /
+`recordCancelReason` (delivery-service). Teste: `tests/cancel-reason-2026-10-06.test.ts`.
 ## 06/10/2026 (tarde) — Estorno automático em 6h; o agente nunca devolve dinheiro (dono)
 
 O dono quer que estorno aconteça sem ele. O agente (Claude Code) não executa movimentação de
@@ -17,6 +28,7 @@ continua fora (`opsPurchaseFailedRefund` recusa; o dono reconcilia). Override po
 de julgamento), botão de estorno em um toque no WhatsApp do dono — ainda não feito.
 **Regra do dono: "sem estoque depois de cobrar" não é para acontecer** — a Lia confere estoque
 antes de cobrar; estorno por falta de estoque é falha a corrigir, não fluxo normal.
+
 
 ## 06/10/2026 (tarde) — Decisões do dono sobre o retorno dos testadores
 
