@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1354,6 +1354,15 @@ async function handleDeliveryTurn(
       await reply(phone, copy.currentFee(ctx.deliveryFee));
       return;
     }
+    // "quanto fica o frete?" com opções ou cesta (06/10): a Lia já tem o frete ao vivo de
+    // cada loja — responde com o número, não com "depende da distância".
+    if (intent.topic === "fee") {
+      const fees = knownStoreFees(ctx);
+      if (fees.length) {
+        await reply(phone, copy.feeByStore(fees));
+        return;
+      }
+    }
     if (intent.topic === "stores") {
       const onTable = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0].options : [];
       await reply(phone, copy.storesAnswer(onTable.map((o) => ({ storeLabel: o.storeLabel }))));
@@ -1368,14 +1377,19 @@ async function handleDeliveryTurn(
     );
     return;
   }
+  // "Chamei alguém da equipe" sem avisar ninguém (06/10): a nota no pedido só aparecia no
+  // /ops, e cliente sem pedido nem nota tinha. Agora o dono recebe no WhatsApp.
   if (intent.kind === "human") {
     await flagLatestOrder(user.id, `🙋 CLIENTE PEDIU ATENDIMENTO HUMANO: "${text.slice(0, 140)}"`);
+    await notifyOwner(`🙋 Cliente pediu atendimento humano: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
     await reply(phone, copy.humanHandoff());
     return;
   }
   if (intent.kind === "complaint") {
     await flagLatestOrder(user.id, `⚠️ RECLAMAÇÃO DO CLIENTE: "${text.slice(0, 140)}"`);
-    await reply(phone, copy.complaintAck());
+    await notifyOwner(`⚠️ Reclamação de cliente: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
+    const hasOrder = Boolean(await prisma.deliveryOrder.findFirst({ where: { userId: user.id }, select: { id: true } }));
+    await reply(phone, copy.complaintAck(hasOrder));
     return;
   }
 
@@ -1402,6 +1416,9 @@ async function handleDeliveryTurn(
     await reply(phone, copy.fiscalAnswer(intent.topic, businessInfo));
     // "me fala que eu te envio" não pode ser beco: sem a env, o operador é acionado
     // pra mandar os dados de verdade (29/08 S7).
+    if (intent.topic === "nf") {
+      await notifyOwner(`🧾 Cliente perguntou da nota fiscal: "${text.slice(0, 160)}" — se pedir cópia, enviar.`, phone);
+    }
     if (intent.topic === "cnpj" && !businessInfo) {
       await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
     }
@@ -1797,6 +1814,10 @@ async function handleDeliveryTurn(
       const method = methodFromIntent(intent);
       if (method) {
         const issued = await issueValidatedRetailerQuotePayment(order.id, method);
+        if (issued.pixOutDown) {
+          await reply(phone, copy.purchaseTemporarilyDown());
+          return;
+        }
         if (issued.unavailable) {
           await handlePreflightUnavailable(phone, convo.id, user, ctx, issued.unavailable);
           return;
@@ -1925,13 +1946,61 @@ async function handleDeliveryTurn(
     return;
   }
 
+  // ---- nome + CPF fora da hora (06/10): "Teste Silva 529…" no meio da escolha virava busca
+  // ("não achei *Teste Silva 529…*"). Guarda no cadastro e devolve a conversa onde estava.
+  if (ctx.step !== "need_cpf" && !ctx.cpfDraft) {
+    const strayCpf = extractCpf(text);
+    const strayName = strayCpf ? extractFullName(text) : null;
+    if (strayCpf && strayName) {
+      await prisma.user.update({ where: { id: user.id }, data: { cpf: strayCpf, cpfName: strayName, cpfConsentAt: new Date() } });
+      if (ctx.step === "choosing" && ctx.pending?.length) {
+        await reply(phone, copy.cpfSaved(maskCpf(strayCpf)));
+        await sendChoices(phone, ctx.pending[0]);
+      } else {
+        await reply(phone, ctx.basket?.length ? copy.cpfSaved(maskCpf(strayCpf)) : copy.cpfSavedAskItems());
+      }
+      return;
+    }
+  }
+
   // ---- remédio isento (29/09): nome completo + CPF para a compra sair no nome do cliente ----
   // Vem ANTES do CEP: um CPF nunca pode ser lido como CEP. "sem remédio" tira o remédio da
   // cesta e fecha o resto.
-  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft && !looksLikeCpfAttempt(text)) {
+  // Cadastro (06/10): "pra que cpf?" tem resposta fixa e a pergunta continua; "não quero dar"
+  // segue sem CPF; nome sozinho fica guardado e a Lia pede só o CPF (antes o nome se perdia e
+  // o CPF da mensagem seguinte virava busca de produto).
+  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft?.cpf && !looksLikeCpfAttempt(text)) {
+    const n = normalizeMsg(text);
+    if (/\b(pra|para|por)\s*(que|q)\b.*\bcpf\b|\bcpf\b.*\b(pra|para)\s*(que|q)\b|\bprecisa\s+(do|de|mesmo\s+do)\s+cpf\b|\bporque\b.*\bcpf\b/.test(n)) {
+      await reply(phone, copy.whyCpf());
+      return;
+    }
+    if (looksLikeOnboardingName(text)) {
+      ctx.cpfDraft = { name: extractFullName(text)! };
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.askCpfAfterName());
+      return;
+    }
+    if (/\b(nao|n)\s+(quero|vou)\s+(dar|passar|informar|mandar)\b|\bsem\s+cpf\b|\bprefiro\s+nao\b|\bpula(r)?\b/.test(n)) {
+      delete ctx.cpfOnboarding;
+      ctx.step = "collecting";
+      const queued = ctx.pendingRequest;
+      ctx.pendingRequest = undefined;
+      await writeCtx(convo.id, ctx);
+      if (queued) {
+        await reply(phone, copy.cpfSkipped(true));
+        await handleSearch(phone, convo.id, user.cep, ctx, queued, user.id);
+      } else {
+        await reply(phone, copy.cpfSkipped(false));
+      }
+      return;
+    }
+  }
+  if (ctx.step === "need_cpf" && ctx.cpfOnboarding && !ctx.cpfDraft?.cpf && !looksLikeCpfAttempt(text)) {
     // Cadastro: sem CPF na mensagem, a pergunta não segura o cliente — o que ele mandou
     // segue como mensagem normal (o CPF volta a ser pedido só no 1º remédio).
     delete ctx.cpfOnboarding;
+    delete ctx.cpfDraft;
     ctx.step = "collecting";
     const queued = ctx.pendingRequest;
     ctx.pendingRequest = undefined;
@@ -2147,7 +2216,10 @@ async function handleDeliveryTurn(
       await reply(phone, copy.thanks());
       return;
     }
-    const asking = intent.kind === "free_text" && isQuestion(text);
+    // "tem açaí?" é pedido em forma de pergunta: anota o item (06/10, sumia depois do endereço).
+    const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
+    if (availability) text = availability;
+    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
@@ -2192,7 +2264,9 @@ async function handleDeliveryTurn(
       return;
     }
     // Pergunta ("o que vc consegue comprar?") se responde — NUNCA vira item anotado.
-    const asking = intent.kind === "free_text" && isQuestion(text);
+    const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
+    if (availability) text = availability;
+    const asking = !availability && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await reply(phone, copy.serviceAnswer("generic", servedAreaLabel()));
       ctx.flow = "delivery";
@@ -2344,6 +2418,10 @@ async function handleDeliveryTurn(
     });
     if (quoted) {
       const result = await issueValidatedRetailerQuotePayment(quoted.id, spokenMethod);
+      if (result.pixOutDown) {
+        await reply(phone, copy.purchaseTemporarilyDown());
+        return;
+      }
       if (result.unavailable) {
         await handlePreflightUnavailable(phone, convo.id, user, ctx, result.unavailable);
         return;
@@ -2355,7 +2433,8 @@ async function handleDeliveryTurn(
   const wantsToPay =
     intent.kind === "pay" ||
     intent.kind === "done" ||
-    (intent.kind === "choose_payment" && (ctx.basket?.length ?? 0) > 0);
+    // "cartão"/"pix" com escolha aberta e cesta vazia virava busca de "cartão" (06/10).
+    (intent.kind === "choose_payment" && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0));
   const directMethod =
     intent.kind === "pay" && intent.method
       ? intent.method
@@ -2591,6 +2670,20 @@ async function handleDeliveryTurn(
       await sendChoices(phone, ctx.pending[0]);
       return;
     }
+    // "ok"/"sim" com a cesta montada (06/10) encerrava com "Imagina! 💚" e nada era
+    // cobrado — o cliente achava que tinha fechado. Agora mostra o total para aprovar.
+    if ((ctx.basket?.length ?? 0) > 0 && (ctx.step === "collecting" || ctx.step === undefined)) {
+      await continueAfterBasket(phone, convo.id, ctx, user.cep);
+      return;
+    }
+    // Com o Pix aberto, "ok" é "vou pagar": o pagamento continua valendo.
+    if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId) {
+      const open = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { status: true, total: true } });
+      if (open?.status === "awaiting_payment") {
+        await reply(phone, copy.awaitingPaymentAck(open.total));
+        return;
+      }
+    }
     await reply(phone, copy.thanks());
     return;
   }
@@ -2647,7 +2740,27 @@ async function handleDeliveryTurn(
   if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId && intent.kind === "free_text" && !isQuestion(text)) {
     const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } });
     if (order && order.status === "awaiting_payment") {
-      const explicitAdd = /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(normalizeMsg(text));
+      const n = normalizeMsg(text);
+      const explicitAdd = /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(n);
+      // Só item novo reabre (06/10): "to pagando", "comprovante enviado", o nome do cliente,
+      // "o link não abre" CANCELAVAM o Pix que o cliente estava pagando.
+      const productLike =
+        explicitAdd ||
+        looksLikeProductList(text) ||
+        /^(?:(?:ah+|e|ah e|ai|opa)\s+)?(?:quero|queria|preciso|precisava|me ve|manda|traz|compra|tambem|esqueci|faltou|e tambem|e um|e uma|e o|e a)\b/.test(n);
+      if (!productLike) {
+        if (/\b(link|nao abre|nao abriu|nao consigo abrir|nao carrega|erro)\b/.test(n)) {
+          await reply(phone, copy.paymentLinkTrouble());
+          return;
+        }
+        if (/\b(pagando|vou pagar|ja vou|pago ja|paguei|comprovante|transferi|transferindo|fazendo o pix|fiz o pix|enviei|mandei|aguarda|espera|um minuto|um minutinho|ja ja|calma|ok|blz|beleza|certo|ta bom|beleza)\b/.test(n)) {
+          await reply(phone, copy.awaitingPaymentAck(order.total));
+          return;
+        }
+        if (classifyFirstEnabled() && (await tryLlmInterpret(phone, convo.id, user.cep, ctx, text, user.id))) return;
+        await reply(phone, copy.awaitingPaymentAck(order.total));
+        return;
+      }
       const issuedAt = ctx.paymentIssuedAt ?? order.updatedAt.getTime();
       const chargeFresh = Date.now() - issuedAt < 10 * 60_000;
       if (!explicitAdd && !chargeFresh) {
@@ -3440,10 +3553,13 @@ async function confirmChosenOption(
   // ou depois ("bota 3"). O handler de choosing_quantity fica vivo só para conversas
   // que estavam no meio da pergunta durante o deploy.
   const assumedOne = current.qty === 1 && !current.qtyExplicit;
+  // "12 ovos" com a caixa de 10 escolhida = 1 caixa, não 12 caixas (testadores 06/10: R$92
+  // de ovo). A conversão já valia no auto-pick; faltava na escolha do cliente.
+  const pack = assumedOne ? { qty: current.qty } : packAdjusted(chosen.name, current.qty);
   const confirmed = assumedOne
     ? copy.choiceConfirmedAssumedOne(chosen.name, current.query)
-    : copy.choiceConfirmed(chosen.name, current.qty);
-  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, current.qty, chosenStore)]);
+    : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
+  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
     await reply(phone, confirmed);
@@ -4857,8 +4973,8 @@ async function rescueLongTail(
 // caixas de 10 = 120 ovos por R$118). Só quando o nome declara o pack e o pedido é
 // maior ou igual a ele.
 function packAdjusted(optionName: string, qty: number): { qty: number; note?: string } {
-  const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b)/i);
-  const pack = m ? Number(m[1]) : 0;
+  const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
+  const pack = m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
   if (pack >= 4 && qty >= pack) {
     const packs = Math.max(1, Math.round(qty / pack));
     return { qty: packs, note: copy.packConversionNote(qty, pack, packs) };
@@ -4954,9 +5070,48 @@ function mergeBaskets(existing: BasketItem[], incoming: BasketItem[]): BasketIte
 }
 
 // Nome de quem recebe: 2 a 60 letras/espaços; nada de número, link ou frase inteira.
+const NOT_A_NAME_RE =
+  /\b(pix|cart[aã]o|cartao|credito|debito|boleto|dinheiro|pagar|pago|paguei|pagamento|cancela\w*|desisto|desisti|sim|nao|ok|blz|beleza|oi|ola|obrigad\w*|valeu|tchau|quanto|qual|quero|pedido|frete|total|endereco|cep|ajuda|atendente|humano)\b/;
+// Frete ao vivo por loja que a conversa já conhece: lojas das opções na mesa e das já
+// escolhidas (a cesta não guarda o frete; a opção escolhida, sim).
+function knownStoreFees(ctx: DeliveryContext): { storeLabel: string; fee: number }[] {
+  const options = [
+    ...(ctx.pending ?? []).flatMap((p) => [...p.options, ...(p.shownOptions ?? [])]),
+    ...(ctx.lastChoice ? [...ctx.lastChoice.options, ...(ctx.lastChoice.shownOptions ?? [])] : [])
+  ];
+  const inBasket = new Set((ctx.basket ?? []).map((i) => i.storeKey));
+  const onTable = new Set((ctx.pending?.[0]?.options ?? []).map((o) => o.storeKey));
+  const byStore = new Map<string, number>();
+  for (const o of options) {
+    if (o.freightFee == null || !o.storeLabel || !o.storeKey) continue;
+    if (!inBasket.has(o.storeKey) && !onTable.has(o.storeKey)) continue;
+    const prev = byStore.get(o.storeLabel);
+    if (prev == null || o.freightFee < prev) byStore.set(o.storeLabel, o.freightFee);
+  }
+  return [...byStore].map(([storeLabel, fee]) => ({ storeLabel, fee }));
+}
+
+// Resposta ao "nome completo e CPF" do cadastro que só tem o nome: 2 a 5 palavras, sem
+// número, sem verbo de pedido. "leite ninho" passa no extractFullName; por isso o filtro.
+export function looksLikeOnboardingName(text: string): boolean {
+  if (/\d/.test(text) || !extractFullName(text)) return false;
+  const n = normalizeMsg(text);
+  const words = n.split(" ").filter(Boolean);
+  if (words.length < 2 || words.length > 5) return false;
+  if (/\b(quero|queria|preciso|precisava|manda|compra|comprar|tem|vende|pedido|pedir|oi|ola|bom|boa|tudo|obrigad\w*|cpf|sim|nao|ok)\b/.test(n)) return false;
+  return !parseAvailabilityAsk(text);
+}
+
 export function parseRecipientName(text: string): string | null {
-  const clean = text.replace(/\s+/g, " ").trim().replace(/^(é|eh|e|o nome é|nome:|pra|para|entrega pra|entregar pra)\s+/i, "");
+  let clean = text.replace(/\s+/g, " ").trim();
+  // "é pra Joana" tira as duas palavras, não só o "é".
+  for (let prev = ""; prev !== clean; ) {
+    prev = clean;
+    clean = clean.replace(/^(é|eh|e|o nome é|nome:|pra|para|entrega pra|entregar pra)\s+/i, "");
+  }
   if (!/^[\p{L}][\p{L}\s.'-]{1,59}$/u.test(clean) || clean.split(" ").length > 6) return null;
+  // Palavra de comando não é nome (testadores 06/10: "pix" virou "Entrega em nome de *Pix*").
+  if (NOT_A_NAME_RE.test(normalizeMsg(clean))) return null;
   return clean
     .split(" ")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())

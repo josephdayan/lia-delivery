@@ -193,7 +193,7 @@ export function askRecipientName(): string {
   return "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.";
 }
 export function recipientNameInvalid(): string {
-  return "Manda só o nome de quem recebe (nome e sobrenome).";
+  return "Antes do pagamento preciso só do *nome de quem vai receber* (nome e sobrenome), que vai na etiqueta da loja. Ex.: _Maria Souza_";
 }
 export function recipientNameSaved(name: string): string {
   return `Entrega em nome de *${name}*.`;
@@ -281,6 +281,15 @@ export function cpfInvalid(): string {
 
 export function askFullNameForCpf(): string {
   return "Anotei o CPF ✅ Agora seu *nome completo*.";
+}
+
+// "pra que cpf?" no cadastro (06/10): a IA dava uma resposta diferente a cada vez.
+export function whyCpf(): string {
+  return `É pra eu comprar *no seu nome* quando a loja exige — farmácia (remédio sem receita) e nota fiscal no seu CPF. Fica guardado só aqui, não uso pra mais nada (${TERMS_URL}).\n\nSe preferir não passar agora, tudo bem: me diz o que você precisa. Se quiser passar, manda assim: _Maria da Silva 123.456.789-09_`;
+}
+
+export function cpfSkipped(hasQueued: boolean): string {
+  return hasQueued ? "Sem problema, sigo sem o CPF 👍" : "Sem problema, sigo sem o CPF 👍 O que você precisa?";
 }
 
 export function askCpfAfterName(): string {
@@ -722,7 +731,7 @@ export function cardAttemptExpired(): string {
 }
 
 export function paymentConfirmed(): string {
-  return "✅ Pagamento confirmado. Já estou separando — te aviso quando sair pra entrega.";
+  return "✅ Pagamento confirmado. Agora faço a compra na loja e te aviso aqui assim que ela confirmar o pedido.";
 }
 
 // Pix cai às 23h e quem compra é gente: "já estou separando" vira mentira por 10 horas.
@@ -804,7 +813,7 @@ export function orderStatusLine(input: {
     case "awaiting_payment":
       return `${id} aguardando pagamento. Responde *pagar* que eu mando o código de novo.`;
     case "paid":
-      return `${id} confirmado, separando os itens. Te aviso quando sair pra entrega.`;
+      return `${id} pago — estou fazendo a compra na loja. Te aviso assim que ela confirmar.`;
     // Com link de acompanhamento (o operador cola o do próprio pedido na loja/ML ao marcar
     // a compra), o cliente vê o andamento na FONTE em vez de depender de a gente marcar
     // "saiu pra entrega" — nos pedidos que a loja entrega, o operador não sabe a hora
@@ -943,7 +952,7 @@ export function trustAnswer(): string {
     "Pergunta justa 🙂 Funciona assim, na ordem que te protege:",
     "• Você só paga DEPOIS de ver e aprovar o total — nada é cobrado antes.",
     "• O pagamento é por Pix ou cartão com recibo; se algo não vier, o valor do item é estornado.",
-    "• Eu compro nas lojas oficiais (Carrefour, Mercado Livre e afins) e a entrega é rastreada.",
+    "• Eu compro no site oficial de lojas grandes (Drogaria São Paulo, Pague Menos, Cobasi, Mambo e outras) e a própria loja entrega.",
     "Qualquer dúvida antes de pagar, é só perguntar — sem pressa."
   ].join("\n");
 }
@@ -958,7 +967,7 @@ export function thirdPartyPayAnswer(): string {
 // "Lia Delivery — CNPJ 12.345.678/0001-90"); sem env, resposta honesta sem número.
 export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string): string {
   if (topic === "nf") {
-    return "Sim — a compra é feita na loja oficial e a nota fiscal sai da própria loja, no valor dos produtos. Te encaminho junto com a confirmação da compra se você quiser.";
+    return "A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você (remédio sem receita sai no seu CPF). Se precisar de uma cópia, me avisa que o responsável te envia.";
   }
   return businessInfo
     ? `Claro: ${businessInfo}. E a nota fiscal dos produtos sai da própria loja onde eu compro.`
@@ -1221,8 +1230,21 @@ export function refundConfirmed(): string {
   return "✅ Estorno confirmado. Qualquer dúvida sobre o prazo do banco, me chama.";
 }
 
+// Pix de saída travado (06/10): a Lia não consegue pagar a loja agora — não cobra.
+export function purchaseTemporarilyDown(): string {
+  return "Agora não consigo finalizar compras — é uma instabilidade do meu lado, e *nada foi cobrado*. Seu pedido fica guardado aqui: tenta de novo daqui a pouco respondendo *pix* ou *cartão*.";
+}
+
+// Mensagem solta com a cobrança aberta (06/10): o Pix continua valendo — antes ele era cancelado.
+export function awaitingPaymentAck(total: number): string {
+  return `Fico no aguardo 👍 Seu pagamento de *${brl(total)}* continua valendo — assim que cair, eu confirmo aqui. Pra somar um item, escreve _adiciona_ e o nome dele.`;
+}
+export function paymentLinkTrouble(): string {
+  return "Se o link não abrir, eu mando um *Pix copia-e-cola* no lugar: responde *pix*. Seu pedido continua guardado.";
+}
+
 export function finishChoiceFirst(): string {
-  return "Confirma esse item primeiro que aí eu fecho.";
+  return "Antes de pagar, escolhe uma das opções abaixo (toca no card ou responde o número) que aí eu fecho o total 👇";
 }
 
 // "coca" com Fanta+2 Cocas na mesa → estreitou pras que batem.
@@ -1464,7 +1486,7 @@ export function manualQuoteSummary(input: {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare",
+  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean }
 ): string {
@@ -1475,15 +1497,19 @@ export function serviceAnswer(
         : `Atendo ${areaLabel} 📍 Me manda seu *CEP* que eu confirmo se chego até você.`;
     case "fee":
       if (ctx?.hasBasket)
-        return "O frete depende da distância até você 🛵 Te mostro o valor exato junto com o total quando fechar a cesta.";
+        return "O frete é o da própria loja até o seu endereço. Te mostro o valor exato junto com o total quando fechar a cesta.";
       if (ctx?.hasCep)
-        return "O frete depende da distância até você 🛵 Me diz o que precisa que eu mando o total exato.";
-      return "O frete depende da distância até você 🛵 Me diz o que precisa e seu CEP que eu mando o total exato.";
+        return "O frete é o da própria loja até o seu endereço e muda de loja pra loja. Me diz o que precisa que eu mando o total exato.";
+      return "O frete é o da própria loja até o seu endereço e muda de loja pra loja. Me diz o que precisa e seu CEP que eu mando o total exato.";
     case "eta":
       // NÃO prometer same-day: o prazo é do checkout da loja e varia por item/endereço.
       return "O prazo depende da loja e do seu endereço — tem item que chega em horas, tem item que leva alguns dias. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
+    case "service_fee":
+      return "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
+    case "pix_receiver":
+      return pixReceiverAnswer();
     case "stores":
       return storesAnswer([]);
     case "price_compare":
@@ -1491,6 +1517,23 @@ export function serviceAnswer(
     default:
       return "Eu compro o que você precisar e entrego no seu endereço. Você paga por Pix ou cartão aqui no chat, e eu mostro o prazo antes. O que você precisa?";
   }
+}
+
+// Frete ao vivo por loja (06/10): o valor já é conhecido nas opções — dizer o número.
+export function feeByStore(fees: { storeLabel: string; fee: number }[]): string {
+  const list = fees.map((f) => `*${f.storeLabel}*: ${f.fee > 0 ? brl(f.fee) : "grátis"}`).join(" · ");
+  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.`;
+}
+
+// Quem recebe o Pix (06/10): a IA dizia "a própria loja" — falso. A Lia é MEI: o banco de
+// quem paga mostra o nome do titular do CNPJ. Dados da empresa em LIA_BUSINESS_INFO.
+export function pixReceiverAnswer(businessInfo = process.env.LIA_BUSINESS_INFO?.trim()): string {
+  return [
+    "O Pix vai pra *Lia Delivery*, não pra loja: eu recebo, compro na loja e pago a loja na hora.",
+    "A Lia é uma empresa MEI, então o seu banco mostra o *nome do responsável* pelo CNPJ — é normal.",
+    businessInfo ? `Dados da empresa: ${businessInfo}.` : "",
+    "Se a compra não sair, o valor volta inteiro pra você."
+  ].filter(Boolean).join(" ");
 }
 
 // "qual a loja?"/"de onde vc compra?" (06/10, Clara e Claire): a resposta da IA era vaga
@@ -1526,11 +1569,15 @@ export function medicineNotFound(labels: string[]): string {
 }
 
 export function humanHandoff(): string {
-  return "Chamei alguém da equipe — pode escrever aqui mesmo que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.";
+  return "Avisei o responsável, ele te responde aqui mesmo. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.";
 }
 
-export function complaintAck(): string {
-  return "Sinto muito. Já passei pra equipe. Se faltou item, estorno o valor dele; se atrasou, eu aviso.";
+// Sem pedido, sem promessa de estorno (06/10: "meu nome está errado" virava reclamação com
+// "se faltou item, estorno"). Com pedido, a promessa de 17/08 fica.
+export function complaintAck(hasOrder = true): string {
+  return hasOrder
+    ? "Sinto muito 😕 Já avisei o responsável, ele te responde aqui. Se faltou item, estorno o valor dele; me conta o que aconteceu (o que faltou, veio errado ou atrasou) que eu deixo anotado no pedido."
+    : "Sinto muito 😕 Já avisei o responsável, ele te responde aqui. Me conta o que aconteceu que eu deixo anotado.";
 }
 
 export function cancelHowTo(hasPaidOrder: boolean): string {

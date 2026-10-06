@@ -167,7 +167,7 @@ test("fechar a lista com escolha pendente pede pra ESCOLHER — e aí o total sa
   // Fecha a lista no meio das opções, sem escolher: a Lia pede pra confirmar o item
   // (regra 11/08: nada de linha livre — só item com preço entra no pedido).
   const closed = await c.send("só isso");
-  assert.match(closed, /confirma esse item primeiro/i);
+  assert.match(closed, /antes de pagar, escolhe uma das opções/i);
   assert.match(closed.toLowerCase(), /coca/, "as opções voltam pra facilitar a escolha");
   const order = await prisma.deliveryOrder.findFirst({ where: { phone: c.phone } });
   assert.equal(order, null, "sem escolha não há pedido");
@@ -1355,7 +1355,7 @@ test("27/08 S2: 'cadê meu pedido de ontem?' no meio da escolha responde o pedid
   await c.send("quero coca cola");
   const status = await c.send("cadê meu pedido de ontem?");
   assert.doesNotMatch(status, /Nenhum item fechado|Falta você escolher/i, `ignorou o 'ontem': ${status.slice(0, 300)}`);
-  assert.match(status, /confirmado, separando/i, status.slice(0, 300));
+  assert.match(status, /pago — estou fazendo a compra/i, status.slice(0, 300));
   assert.match(status, /de ontem/i, `sem âncora de data: ${status.slice(0, 300)}`);
   assert.match(status, /Escova de Dente/i, status.slice(0, 300));
 });

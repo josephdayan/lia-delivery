@@ -2,6 +2,50 @@
 
 Pedido cancelado pergunta o motivo (frete caro, produto caro, outro app, desisti, outro) e anota no
 pedido. Testes: novo 3/3 + 12 arquivos de cancelamento 324/324 no Postgres local; `tsc` ok.
+
+## 06/10/2026 — Fora da VTEX: Magento, Wake e Salesforce sondados (seco, sem pedido)
+
+Pedido do dono: sondar Divinho, Havan e as plataformas "provável/talvez". Nenhuma repete a VTEX
+(convidado + Pix + sem captcha, até o fechamento):
+- **Magento:** Divinho (bebidas) tem carrinho, frete e `pagarme_pix` por API, mas reCAPTCHA
+  invisível no fechamento → alto. Havan desligou checkout de convidado (exige conta) e, no item
+  testado, só oferece retirada. Grand Cru (Next.js sobre Magento) não sondável daqui (filtro de
+  rede "álcool" + rate limit). Droga Raia/Drogasil/Riachuelo: Akamai 403. Único limpo: Drogaria
+  Minas Brasil (MG, `openpix_pix`, sem captcha, frete por transportadora) — fora de SP/RJ.
+- **Wake (ex-Linx):** um GraphQL único para todas as lojas, token público, Pix configurado em
+  todas, mas endereço/pagamento/fechamento exigem cliente logado (uma conta com CPF/CNPJ por
+  loja). Lojas achadas: Polipet, Soneda, Balaroti, moda. Sem mercado nem bebidas.
+- **Salesforce Commerce Cloud:** só a Puma vai até a lista de pagamentos com Pix (Payrails, Pix
+  nasce depois do pedido); L'Occitane exige login, Sephora tem Akamai, Cacau Show pede CPF cedo e
+  não lista Pix; Avon declara `guestCheckout:false`.
+Conclusão: a VTEX segue sendo a única base que fecha sozinha. Scripts secos para repetir:
+`scripts/magento-api-probe.mts`, `scripts/wake-api-probe.mts`, `scripts/sfcc-api-probe.mts`
+(endereço lido do config privado; JSON em `.retail-buyer/probes/`).
+
+## 06/10/2026 — Prezunic fecha pedido real por API no Rio
+
+2º `--buy` em Copacabana (2x sabão líquido 5L, acima do mínimo de R$80): pedido PZ2456030,
+R$103,88, Pix copia-e-cola obtido (recebedor Cencosud, formato Mercado Pago), não pago. Ligado no
+código e conta de compra ativa em produção. Os dois mercados do Rio só aparecem depois que o dono
+somar `zonasul,prezunic` em `LIA_AUTO_PURCHASE_STORES` e houver deploy.
+
+## 06/10/2026 — Medição: dá pra abrir outros estados? (decisão: só SP e RJ)
+
+Simulação de frete das 39 lojas por API num CEP de cada uma das 27 capitais (só consulta).
+- Farmácia rápida em quase todo o país: Pague Menos 1–2h em quase todas as capitais; Extrafarma
+  "Expressa" 2h no Norte/Nordeste; Drogaria SP/Pacheco 30 min–1h no Sudeste, Centro-Oeste e BA.
+  Exceção: Acre (1 dia).
+- Mercado no dia: só Americanas (R$12,90, sai da loja física) em todas as capitais menos MS, mas o
+  catálogo colhido tem só ~16 itens de mercearia básica. Supermercado de verdade só em SP e RJ.
+  Candidatos sondados a seco: **GBarbosa passou até o Pix em Aracaju e Salvador (entrega 2–4h)**;
+  Super Nosso (BH) e Giassi (SC) entregam rápido mas sem Pix (fora da arquitetura); Super Muffato
+  (Curitiba) e Rosário (Brasília) recusaram os CEPs testados; Condor e Angeloni sem catálogo
+  público; Bretas sem item disponível.
+- Pet: Cobasi 1–4h no Sudeste, Sul, Centro-Oeste e boa parte do Nordeste; 18–35 dias em AM, AP,
+  RR, AC, RO, PI e MA.
+- Lojas com algo em até 1 dia: SP 17, RJ 10, PR 8, MG 7, ES/GO/MT 6, DF/BA/PE 5, Norte 2–3.
+- Casa, moda, livros, eletro e beleza: nacionais, 2–10 dias em qualquer lugar.
+
 ## 06/10/2026 (tarde) — Estorno automático: 6h sem compra (era 24h/48h)
 
 Pedido pago sem compra na loja há 6h volta sozinho ao cliente (regra no topo do AGENTS.md).
@@ -66,6 +110,11 @@ geral "Aprovado", chave Pix ativa, saldo R$608,21, nenhum aviso. Diagnóstico pe
 só de leitura `GET /api/ops/asaas-status`, commit 1799e4e): `commercialInfo/documentation/general
 = APPROVED`, **`bankAccountInfo = PENDING`**, decode de uma cobrança de R$1 ainda recusado às
 10h52. Enquanto isso, toda compra automática falha no Pix e vira estorno.
+Feito pelo dono no mesmo dia (sem efeito na API até 12h05): conta bancária MP LIA (mesmo CNPJ)
+cadastrada e "Aprovada", selfie validada (FACEMATCH), token no app ativado, chave Pix nova
+(9c0d204e…). A tela Transferências do painel diz "Você poderá solicitar transferências quando a
+aprovação do seu cadastro for concluída" (bloqueia TED também), contradizendo a Situação cadastral.
+Só o suporte humano do Asaas destrava; o robô não tem procedimento.
 
 ## 06/10/2026 — Carrossel v4/v5 recusado na criação: card com 3 quebras de linha
 

@@ -20,7 +20,9 @@
 
 ## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
 
-- [ ] Dono: cadastrar/reenviar a conta bancária (saque) no Asaas — `bankAccountInfo` está
+- [x] Conta bancária, selfie, token no app e chave Pix nova feitos pelo dono (06/10) — não destravou.
+- [ ] Suporte humano do Asaas explicar/remover o bloqueio de transferências (painel: "quando a
+  aprovação do seu cadastro for concluída"). Referência original: — `bankAccountInfo` está
   PENDING pela API — e/ou pedir ao suporte (chat "Falar com atendente") que libere o Pix da conta
   8100866-6, citando o erro `invalid_action` no `POST /v3/pix/qrCodes/decode`.
 - [ ] Conferir em `/api/ops/asaas-status` (logado no /ops): `bankAccountInfo` APPROVED e
@@ -38,12 +40,12 @@
 - [x] Zona Sul e Prezunic conectados e colhidos.
 - [x] Zona Sul: fechamento real por API (06/10, grupo 1666863616742), ligado no código, conta de
   compra ativa em produção.
-- [ ] Dono: somar `,zonasul` em `LIA_AUTO_PURCHASE_STORES` na Vercel (sensível: o Claude não lê o
-  valor atual) e redeploy.
-- [ ] Prezunic: `--buy` com carrinho ≥ R$80 (`--qty 30`); se fechar, ligar, conta (script --db
-  `--stores prezunic`) e somar `,prezunic` na mesma variável.
+- [x] Prezunic: fechamento real (PZ2456030, 06/10), ligado no código, conta ativa em produção.
+- [ ] Dono: somar `,zonasul,prezunic` em `LIA_AUTO_PURCHASE_STORES` na Vercel (sensível: o Claude
+  não lê o valor atual) e redeploy.
 - [ ] Deploy (push de main).
 - [ ] 1º pedido real no Rio (precisa de um endereço/cliente lá).
+- [x] Outros estados: medido e decidido (06/10) — só SP e RJ até haver mercado com Pix na região.
 - [ ] Telefones de teste dos evals estão gravando `WaitlistLead` no banco de produção (39 de 40
   contatos fora de SP) — limpar e achar o teste que vaza.
 

@@ -23,7 +23,7 @@ export type ParsedLine = {
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare";
+export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver";
 
 export type Intent =
   | { kind: "thanks" }
@@ -368,7 +368,12 @@ export function parseBasketLines(text: string): ParsedLine[] {
       if (weight) return { phrase: `${weight[3].trim()} ${weight[1]}${weight[2].toLowerCase()}`, qty: 1, ...flags };
 
       const m = raw.match(/^(\d+)\s*(?:x|un|unidades?)?\s+(.*)$/i);
-      if (m) return { phrase: m[2].trim(), qty: Math.min(MAX_QTY, Math.max(1, Number(m[1]))), qtyExplicit: true, ...flags };
+      if (m) {
+        // "1 dúzia de banana" / "2 dúzias de ovos": a dúzia multiplica, não vira produto.
+        const dozen = m[2].match(/^d[uú]zias?\s+(?:de\s+)?(.+)$/i);
+        if (dozen) return { phrase: dozen[1].trim(), qty: Math.min(MAX_QTY, Math.max(1, Number(m[1]) * 12)), qtyExplicit: true, ...flags };
+        return { phrase: m[2].trim(), qty: Math.min(MAX_QTY, Math.max(1, Number(m[1]))), qtyExplicit: true, ...flags };
+      }
 
       // "dois pães", "meia dúzia de ovo", "uma dúzia de banana"
       // ([\wà-ú]+) e não (\w+): "três" tem acento e \w é ASCII — sem isso "três
@@ -1106,6 +1111,11 @@ export function detectIntent(text: string): Intent {
 
   // "qual a loja?", "de onde vc compra?", "de que loja ela vem?", "é uma loja específica?"
   // (06/10, Clara e Claire): a ORIGEM do produto. A resposta nomeia a loja das opções.
+  // "tem taxa?", "quanto vc cobra?", "qual sua comissão?" (06/10): resposta fixa e verdadeira
+  // (o serviço vem embutido no preço) — a IA respondia só o frete e dava a entender "sem taxa".
+  if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
+  // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
+  if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
   // "você faz comparativo de preços?", "como sei que é o melhor valor?" (06/10, Claire).
   if (PRICE_COMPARE_RE.test(n)) return { kind: "service_question", topic: "price_compare" };
@@ -1792,4 +1802,31 @@ export function parseAttributeAsk(text: string): string | null {
   if (ask) return ask[1].trim();
   const fix = n.match(/^(?:mas\s+)?(?:eu\s+)?(?:pedi|queria|quero|era|tinha que ser|tem que ser|precisa ser)\s+(?:(?:um|uma|o|a)\s+)?((?:com|de|do|da|sem|em)\s+.{1,40})$/);
   return fix ? fix[1].trim() : null;
+}
+
+// "tem açaí?", "vcs tem fralda?", "vocês vendem ração?" ANTES do cadastro (06/10): é um
+// pedido em forma de pergunta. Virava a explicação genérica do serviço e o item sumia
+// depois do endereço. Devolve o produto perguntado, ou null se a pergunta é sobre o serviço.
+const SERVICE_ASK_NOUNS =
+  /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
+const SERVICE_FEE_RE =
+  /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b/;
+const PIX_RECEIVER_RE =
+  /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
+
+export function parseAvailabilityAsk(text: string): string | null {
+  const n = normalizeMsg(text)
+    .replace(/[?!.]+$/g, "")
+    .replace(/^(?:oi+e?|ola|opa|bom dia|boa tarde|boa noite|eai|e ai)\s*[,!.]?\s+/, "")
+    .trim();
+  const m = n.match(
+    /^(?:(?:voces?|vcs?|ce|cês|vc|voce)\s+)?(?:tem|teria|vende|vendem|vendes|trabalha(?:m)?\s+com|consegue(?:m)?\s+(?:comprar|trazer|achar|entregar)|da\s+pra\s+(?:comprar|pedir)|entrega(?:m)?)\s+(?:(?:um|uma|uns|umas|o|a)\s+)?(.{2,60})$/
+  );
+  if (!m) return null;
+  const item = m[1].trim();
+  if (SERVICE_ASK_NOUNS.test(item) || /^(?:em|no|na|pra|para|aqui|hoje|amanha|domingo|sabado)\b/.test(item)) return null;
+  // Devolve com a grafia do cliente (acento): as últimas palavras da mensagem original.
+  const words = text.replace(/[?!.]+\s*$/g, "").trim().split(/\s+/);
+  const k = item.split(" ").length;
+  return words.length >= k ? words.slice(-k).join(" ") : item;
 }
