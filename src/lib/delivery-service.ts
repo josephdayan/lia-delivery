@@ -16,7 +16,7 @@ import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -394,6 +394,24 @@ async function buildChoices(
           else noneToday = true;
         }
       }
+      // Pedido de UM item com teto: o teto é do TOTAL (produto + entrega da loja para o CEP). Entre os candidatos
+      // que SÃO o produto pedido, o que estoura com a entrega sai da vitrine — desde que outro caiba; se nenhum
+      // cabe, ficam todos e o total avisa (rodada 2, 07/10: vinho "até R$60" chegava a R$61,87). Candidato fraco
+      // nunca decide: tirar o produto certo e deixar só o parecido esvaziaria a vitrine.
+      if (cap != null && lines.length === 1 && candidates.length) {
+        const asOption = (c: StoreCandidate) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }, liveChecks.get(liveKey(c.store.key, c.item.sku)));
+        const strong = candidates.filter((c) => conciergeMatchIsStrong(searchPhrase, c.item));
+        const fitKeys = new Set(withinBudget(strong.map(asOption), { cap, capTotal: true, qty }).map((o) => `${o.storeKey}:${o.sku}`));
+        const fitsTotal = (c: StoreCandidate) => fitKeys.has(`${c.store.key}:${c.item.sku}`);
+        const anyFits = strong.some((c) => estimatedTotal(asOption(c), qty) <= cap + 0.005);
+        if (anyFits) {
+          const kept = candidates.filter((c) => !strong.includes(c) || fitsTotal(c));
+          if (kept.length < candidates.length) {
+            console.log("[budget:vitrine]", searchPhrase, `${kept.length}/${candidates.length} cabem em R$${cap} com a entrega`);
+            candidates = kept;
+          }
+        }
+      }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
       return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed, sizeSplit };
@@ -490,7 +508,7 @@ async function buildChoices(
       query: line.phrase,
       qty: line.qty,
       ...(line.qtyExplicit ? { qtyExplicit: true } : {}),
-      ...(line.cap != null ? { cap: line.cap } : {}),
+      ...(line.cap != null ? { cap: line.cap, ...(lines.length === 1 ? { capTotal: true } : {}) } : {}),
       ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
       ...(closestFalta ? { closestFalta } : {}),
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
@@ -656,6 +674,24 @@ function toChoiceOption(
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(live?.available ? { verified: true, ...(eta != null ? { etaMinutes: eta } : {}), ...(fee != null ? { freightFee: fee } : {}) } : {})
   };
+}
+
+// O produto cabe no teto do cliente (rodada 2, 07/10)? O teto é do TOTAL: produto + entrega. A entrega é a da
+// loja para o CEP quando a verificação ao vivo respondeu; sem ela, a política publicada da loja.
+function estimatedTotal(o: Pick<ChoiceOption, "unitPrice" | "medicine" | "storeKey" | "storeLabel" | "freightFee">, qty: number): number {
+  const products = roundMoney(display(o.unitPrice, o.medicine) * Math.max(1, qty));
+  const fee = o.freightFee ?? storeFreight(o.storeKey ?? CONCIERGE_STORE_KEY, o.storeLabel ?? "", roundMoney(o.unitPrice * Math.max(1, qty))).fee;
+  return roundMoney(products + fee);
+}
+
+// Aplica o teto de uma pergunta (preço do produto; e, se for o teto do TOTAL, produto + entrega). Se nada cabe
+// com a entrega mas algo cabe só no produto, mantém esses (o total avisa); nunca esvazia por causa do frete.
+function withinBudget(pool: ChoiceOption[], p: { cap?: number; capTotal?: boolean; qty?: number }): ChoiceOption[] {
+  if (p.cap == null) return pool;
+  const byProduct = pool.filter((o) => display(o.unitPrice, o.medicine) <= p.cap! + 0.005);
+  if (!p.capTotal) return byProduct;
+  const byTotal = byProduct.filter((o) => estimatedTotal(o, p.qty ?? 1) <= p.cap! + 0.005);
+  return byTotal.length ? byTotal : byProduct;
 }
 
 // Verificação ao vivo para opções montadas FORA do buildChoices (paginação, refino, resgate,
@@ -1651,6 +1687,18 @@ async function handleDeliveryTurn(
       if (parsePriceCap(text) == null) text = `${text} até ${cap} reais`;
     } else {
       ctx.budget = { ...ctx.budget, awaiting: false };
+    }
+  }
+
+  // Teto dito numa mensagem separada, com o item já na cesta ("tenho até uns R$60", "no máximo 150 com a entrega"):
+  // vira o limite do TOTAL e é conferido ao cotar (rodada 2, 07/10). Nunca vira "produto não encontrado".
+  if ((!ctx.step || ctx.step === "collecting") && !ctx.pending?.length && (ctx.basket?.length ?? 0) === 1 && !ctx.budget?.awaiting && !ctx.deliveryOrderId) {
+    const statedBudget = parseBudgetStatement(text);
+    if (statedBudget != null) {
+      ctx.budget = { cap: statedBudget, sku: ctx.basket![0].sku };
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.budgetNoted(statedBudget));
+      return;
     }
   }
 
@@ -4184,7 +4232,7 @@ function addPendingRequest(ctx: DeliveryContext, note: string) {
 
 function looksLikeDeliveryAddress(text: string): boolean {
   const address = text.trim();
-  const hasStreet = /\b(?:rua|r\.?|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
+  const hasStreet = /\b(?:rua|r(?:\.|(?=\s+[a-zà-ú]))|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
   const hasNumber = /(?:\d|\bs\/?n\b)/i.test(address);
   return address.length >= 12 && hasStreet && hasNumber;
 }
@@ -5111,19 +5159,33 @@ async function handleChoosing(
   // com markup). Nenhuma dentro do teto → resposta honesta + caminhos (barato/opções).
   const priceCap = parsePriceCap(text);
   if (priceCap != null) {
-    const within = current.options.filter((o) => display(o.unitPrice, o.medicine) <= priceCap);
+    // O teto dito agora vale para o TOTAL (produto + entrega) de um pedido de um item só, e acompanha a
+    // escolha até o fechamento (ctx.budget) — rodada 2, 07/10.
+    const single = ctx.pending!.length === 1 && !(ctx.basket?.length);
+    current.cap = priceCap;
+    if (single) current.capTotal = true;
+    else delete current.capTotal;
+    let within = withinBudget(current.options, current);
     if (!within.length) {
+      // Nada do que está na mesa cabe: procura no resto do catálogo antes de dizer que não tem.
+      const wider = await choiceCandidates(store, ctx, current).catch(() => [] as ChoiceOption[]);
+      const seen = new Set(current.options.map((o) => o.sku));
+      within = wider.filter((o) => !seen.has(o.sku)).slice(0, vitrineLimit());
+      if (within.length) {
+        const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
+        current.shownOptions = [...(current.shownOptions ?? current.options), ...within.filter((o) => !remembered.has(o.sku))];
+        current.shownSkus = [...new Set([...(current.shownSkus ?? []), ...within.map((o) => o.sku)])];
+      }
+    }
+    if (!within.length) {
+      delete current.cap;
+      delete current.capTotal;
       await reply(phone, copy.nonePriceCap(priceCap));
       await sendChoices(phone, current);
       return;
     }
-    if (within.length < current.options.length) {
-      current.options = within;
-      await writeCtx(convoId, ctx);
-      await sendChoices(phone, current, copy.narrowedChoices(current.query));
-      return;
-    }
-    // todas cabem no teto → só reapresenta confirmando
+    current.options = within;
+    await writeCtx(convoId, ctx);
     await sendChoices(phone, current, copy.narrowedChoices(current.query));
     return;
   }
@@ -5333,7 +5395,7 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
   // score>0 sem piso). O rerank de IA não roda aqui (resposta na hora), então o piso
   // léxico é a única guarda; pool que esvazia vira o honesto "essas são todas".
   pool = pool.filter((o) => conciergeMatchIsStrong(query, o));
-  if (p.cap != null) pool = pool.filter((o) => display(o.unitPrice, o.medicine) <= p.cap!);
+  pool = withinBudget(pool, p);
   pool = active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
   // O juízo da IA confere também o refino ativo ("coco", "1 L"), não só o pedido original.
   return aiApprovePool(active.length ? `${query} ${active.join(" ")}` : query, pool);
@@ -6287,6 +6349,10 @@ async function handleConciergeRequest(
       added.push(choiceToBasketItem(top, adj.qty, store));
     }
     ctx.basket = mergeBaskets(ctx.basket ?? [], added);
+    // "escolhe você, até R$60": o teto continua valendo para o total (rodada 2, 07/10).
+    if (autoPickPending.length === 1 && autoPickPending[0].cap != null && ctx.basket.length === 1) {
+      ctx.budget = { cap: autoPickPending[0].cap!, sku: ctx.basket[0].sku };
+    }
     const rest = pending.filter((choice) => !autoPickPending.includes(choice));
     ctx.pending = rest.length ? rest : undefined;
     ctx.step = rest.length ? "choosing" : "collecting";
@@ -7148,6 +7214,7 @@ async function tryPublishInstantQuote(
           }
           freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
           if (outcome.estimate) storeEstimates.push(outcome.estimate);
+          console.log("[instant-quote:estimate]", freights[i].storeKey, outcome.estimate ?? "-");
           if (outcome.faster) storeFaster.push({ index: i, cheapFee: outcome.fee, faster: outcome.faster });
         }
       }
@@ -7224,6 +7291,7 @@ async function tryPublishInstantQuote(
         serviceFee: serviceFeeForItems(items as { unitPrice: number; qty: number }[]),
         stores: freights.length,
         quotedAt: Date.now(),
+        ...(budget && !budget.override && items.length === 1 && items[0].sku === budget.sku ? { budgetCap: budget.cap } : {}),
         barato: { fee: totalFee, estimate: mlEstimate },
         rapido: { fee: rapidoFee, estimate: mlFaster.estimate }
       };
@@ -7249,6 +7317,7 @@ async function tryPublishInstantQuote(
         stores: 1,
         kind: "store" as const,
         quotedAt: Date.now(),
+        ...(budget && !budget.override && items.length === 1 && items[0].sku === budget.sku ? { budgetCap: budget.cap } : {}),
         barato: { fee: totalFee, estimate: slowestEstimate(storeEstimates) },
         rapido: { fee: roundMoney(totalFee - sf.cheapFee + sf.faster.fee), estimate: sf.faster.estimate, name: sf.faster.name }
       };

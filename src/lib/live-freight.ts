@@ -453,6 +453,18 @@ export async function liveItemAvailability(storeKey: string, skus: string[], cep
   return result;
 }
 
+// Entrega mais barata de UM item; no empate de preço vale a de menor prazo — a mesma regra que fecha a
+// cesta (`cheaper` em pickCartSla). Sem isso o card dizia "7 dias úteis" e o resumo, ao fechar, "1 dia útil"
+// para a mesma loja e o mesmo frete (rodada 2, c58: duas SLAs de R$7,90, a econômica vinha primeiro).
+export function cheapestDelivery<T extends { price?: number; shippingEstimate?: string }>(deliveries: T[]): T {
+  return deliveries.reduce((best, sla) => {
+    if (sla.price! !== best.price!) return sla.price! < best.price! ? sla : best;
+    const a = estimateMinutes(sla.shippingEstimate);
+    const b = estimateMinutes(best.shippingEstimate);
+    return a >= 0 && (b < 0 || a < b) ? sla : best;
+  });
+}
+
 async function simulateItems(domain: string, ids: { sku: string; id: string; qty?: number }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
     const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
@@ -492,7 +504,7 @@ async function simulateItems(domain: string, ids: { sku: string; id: string; qty
         result.set(entry.sku, { sku: entry.sku, available: false });
         return;
       }
-      const cheapest = deliveries.reduce((best, sla) => (sla.price! < best.price! ? sla : best));
+      const cheapest = cheapestDelivery(deliveries);
       const minutes = estimateMinutes(cheapest.shippingEstimate);
       const fastest = deliveries.reduce((best, sla) => {
         const a = estimateMinutes(sla.shippingEstimate);

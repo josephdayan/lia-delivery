@@ -304,8 +304,12 @@ async function openOrders(phone: string) {
 test("c23: 'até R$55' vale para o TOTAL — passou por R$3,79, avisa e oferece o que cabe ANTES de mostrar o total/cobrar", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();
-  await send(phone, "quero um desodorante colônia até R$ 55");
+  // O teto dito NA LINHA já filtra a vitrine pelo total (rodada 2); aqui o teto vem depois da escolha — o caminho
+  // que ainda chega ao aviso de "passou do limite" no fechamento.
+  await send(phone, "quero um desodorante colônia");
   await send(phone, "2");
+  const noted = await send(phone, "até R$ 55 no total");
+  assert.match(noted, /Anotado: \*R\$ 55,00\* no total/, noted);
   const out = await send(phone, "só isso");
   assert.match(out, /passou do seu limite de \*R\$ 55,00\* por R\$ 3,79/, out);
   assert.match(out, /Celebre Agora Masculino/, "a opção que cabe é oferecida");
@@ -320,8 +324,12 @@ test("c23: 'até R$55' vale para o TOTAL — passou por R$3,79, avisa e oferece 
 test("c23: nada cabe no teto — a Lia diz isso, não cobra e só segue com o 'pode' do cliente", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();
-  await send(phone, "quero um desodorante colônia até R$ 45");
+  // O teto dito NA LINHA já filtra a vitrine pelo total (rodada 2); aqui o teto vem depois da escolha — o caminho
+  // que ainda chega ao aviso de "passou do limite" no fechamento.
+  await send(phone, "quero um desodorante colônia");
   await send(phone, "2");
+  const noted = await send(phone, "até R$ 45 no total");
+  assert.match(noted, /Anotado: \*R\$ 45,00\* no total/, noted);
   const out = await send(phone, "só isso");
   assert.match(out, /passou do seu limite de \*R\$ 45,00\*/, out);
   assert.match(out, /nenhuma das opções que achei cabe/i, out);
@@ -333,8 +341,12 @@ test("c23: nada cabe no teto — a Lia diz isso, não cobra e só segue com o 'p
 test("c23: nada cabe e o cliente diz 'não' — o item sai da lista", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();
-  await send(phone, "quero um desodorante colônia até R$ 45");
+  // O teto dito NA LINHA já filtra a vitrine pelo total (rodada 2); aqui o teto vem depois da escolha — o caminho
+  // que ainda chega ao aviso de "passou do limite" no fechamento.
+  await send(phone, "quero um desodorante colônia");
   await send(phone, "2");
+  const noted = await send(phone, "até R$ 45 no total");
+  assert.match(noted, /Anotado: \*R\$ 45,00\* no total/, noted);
   await send(phone, "só isso");
   const out = await send(phone, "não");
   assert.match(out, /tirei da lista/i, out);
@@ -473,8 +485,12 @@ test("c30: no modo atendimento, o que o léxico não pega é decidido pela class
 test("c23: nada cabe e o cliente pede outro produto — o item que estourou sai da cesta e o teto acompanha a busca nova", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();
-  await send(phone, "quero um desodorante colônia até R$ 45");
+  // O teto dito NA LINHA já filtra a vitrine pelo total (rodada 2); aqui o teto vem depois da escolha — o caminho
+  // que ainda chega ao aviso de "passou do limite" no fechamento.
+  await send(phone, "quero um desodorante colônia");
   await send(phone, "2");
+  const noted = await send(phone, "até R$ 45 no total");
+  assert.match(noted, /Anotado: \*R\$ 45,00\* no total/, noted);
   await send(phone, "só isso");
   const out = await send(phone, "quero outro desodorante colônia");
   const ctx = await context(phone);

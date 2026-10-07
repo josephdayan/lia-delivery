@@ -85,6 +85,9 @@ export type PendingChoice = {
   // Teto de preço pedido na linha ("até R$50") — TODO caminho que repõe opções
   // (paginação, refino, mais-baratas, resgate) re-filtra por ele.
   cap?: number;
+  // O teto vale para o TOTAL (produto + entrega estimada), não só para o preço do produto — pedido de um
+  // item só (rodada 2, 07/10): paginação/refino/resgate também descartam o que estoura com o frete.
+  capTotal?: boolean;
   // Escolha REABERTA ("Outras opções" depois de já ter escolhido): o novo pick
   // SUBSTITUI esta linha da cesta em vez de somar uma segunda mochila.
   replaceSku?: string;
@@ -161,6 +164,8 @@ export type DeliveryContext = {
     // "ml": estimate é data do anúncio ("chega até sáb."); "store": SLA da loja ("60m" →
     // "prazo da loja: 60 min"). Sem kind = ml (contextos antigos).
     kind?: "ml" | "store";
+    // Limite do cliente para o TOTAL: a opção que passa dele sai marcada (rodada 2, 07/10).
+    budgetCap?: number;
     barato: { fee: number; estimate?: string };
     rapido: { fee: number; estimate?: string; name?: string };
   };

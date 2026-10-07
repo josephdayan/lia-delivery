@@ -26,7 +26,7 @@ export async function sendFreightChoice(phone: string, choice: FreightChoiceStat
   const short = (estimate?: string) => (kind === "store" ? humanEstimate(estimate)?.replace(/^prazo da loja: /, "") : estimate);
   const barato = { total: totalFor(choice.barato.fee), estimate: label(choice.barato.estimate) };
   const rapido = { total: totalFor(choice.rapido.fee), estimate: label(choice.rapido.estimate) };
-  const body = copy.shippingSpeedChoice(barato, rapido, kind);
+  const body = copy.shippingSpeedChoice(barato, rapido, kind, choice.budgetCap);
   try {
     markTurnReplied();
     const interactive = await whatsappAdapter.sendShippingChoices(phone, body, { estimate: short(choice.barato.estimate) }, { estimate: short(choice.rapido.estimate) });
