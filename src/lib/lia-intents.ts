@@ -845,7 +845,7 @@ const REFUSE_PAY_RE = /\bn(a|ã)o (vou|quero|vamos|pretendo) (pagar|comprar|leva
 // Negação/desistência SECA — a resposta mais comum do WhatsApp. Sem isto, "não" vira
 // busca de produto e casa com "Esponja NÃO Risca" no catálogo.
 const REJECT_BARE_RE =
-  /^(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|deixa( pra la| quieto)?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad\w*|valeu|brigad\w*|vlw)?[\s,!.]*$/;
+  /^(?:(?:ah+|ok|certo|entendi|beleza)[,.!\s]+)*(?:entao[,\s]+)?(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|deixa( pra la| quieto)?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad\w*|valeu|brigad\w*|vlw)?[\s,!.]*$/;
 
 // "só isso", "mais nada", "é só" — o cliente FECHOU a lista; hora de mostrar o total.
 const DONE_RE =
@@ -1744,6 +1744,22 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
     if (!leftover && idx < options.length) return { type: "pick", index: idx };
   }
 
+  // "acho que o 1 taakku" (placar r3, c12): marcador de escolha + dígito + um resto curto que não nomeia
+  // outra opção é ESCOLHA com ruído, não item novo. "quero 2 coca" (sem marcador) continua item com quantidade.
+  const marked = n.match(/\b(?:o|a|no|na|opcao|numero|n)\s*([1-9])\b/);
+  if (marked && options.length >= Number(marked[1])) {
+    const idx = Number(marked[1]) - 1;
+    const rest = n
+      .replace(marked[0], " ")
+      .replace(/\b(acho|que|vou|de|do|da|fico|com|quero|prefiro|pode|ser|entao|mesmo|esse|essa|por|favor|pfv|ai|la|ta|tá|tah|taakku|aqui|aki|taki)\b/g, " ")
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length > 1 && !/^\d+$/.test(t));
+    const otherNames = options.map((o) => normalizeMsg(o.name));
+    const namesAnother = rest.some((t) => otherNames.some((name, i) => i !== idx && t.length > 3 && name.includes(t) && !otherNames[idx].includes(t)));
+    if (rest.length <= 2 && !namesAnother) return { type: "pick", index: idx };
+  }
+
   // Brand/name match BEFORE "qualquer": "pode ser a colgate" names an option, so the
   // "pode ser" must not degrade it to "any". Filler words don't count as name tokens.
   const tokens = n.split(" ").filter((t) => t.length > 2 && !CHOICE_STOP.has(t));
@@ -2196,4 +2212,15 @@ export function parseMissFollowUp(text: string): { kind: "retry" } | { kind: "fr
   if (!content.length) return MISS_RETRY_CUE.test(n) ? { kind: "retry" } : null;
   if (content.length <= 2 && tokens.length <= 6) return { kind: "fragment", words: content.join(" ") };
   return null;
+}
+
+
+// Pedido + pergunta fiscal na MESMA mensagem ("quero protetor solar. Antes de fechar, me passa o CNPJ?",
+// placar r3 c13): a frase do CNPJ virava item "não achado". Separa: o pedido segue pra busca, a pergunta
+// vira resposta (e o dono é avisado).
+export function splitFiscalClause(text: string): { text: string; asked: boolean } {
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  const kept = sentences.filter((sentence) => !/\b(cnpj|razao social)\b/.test(normalizeMsg(sentence)));
+  if (kept.length === sentences.length || !kept.length) return { text, asked: false };
+  return { text: kept.join(" ").trim(), asked: true };
 }

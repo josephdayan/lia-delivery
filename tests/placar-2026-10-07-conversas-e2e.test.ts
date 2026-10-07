@@ -116,8 +116,9 @@ test("c36: 'não gostei dessas, quero da dove' busca o mesmo produto da marca �
   assert.equal(ctx.step, "choosing", "a escolha do desodorante continua aberta");
 });
 
-test("c12: 'acho que vou no 1, Omo 1,4kg' é escolha — 1 unidade na cesta, sem item novo", async (t) => {
+test("c12: 'acho que vou no 1, Omo 1,4kg' e 'acho que o 1 taakku' são escolha — 1 unidade na cesta, sem item novo", async (t) => {
   if (!dbOk) return t.skip();
+  for (const phrase of ["Acho que vou no 1, Omo 1,4kg.", "Acho que o 1 taakku"]) {
   const phone = await customer();
   const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
   const options = [
@@ -130,13 +131,14 @@ test("c12: 'acho que vou no 1, Omo 1,4kg' é escolha — 1 unidade na cesta, sem
       context: JSON.stringify({ flow: "delivery", step: "choosing", cep: "01310-100", deliveryAddress: ADDRESS, deliveryAddressVerified: true, storeKey: "concierge", pending: [{ query: "sabão em pó", qty: 1, options }] })
     }
   });
-  const out = await send(phone, "Acho que vou no 1, Omo 1,4kg.");
+  const out = await send(phone, phrase);
   assert.doesNotMatch(out, /Anotei \*Omo/i, out.slice(0, 300));
   const items = await basket(phone);
   assert.equal(items.length, 1);
   assert.equal(items[0].qty, 1);
   assert.match(items[0].name, /Omo/);
-  assert.equal(((await context(phone)).pending ?? []).length, 0, "nada novo na fila");
+  assert.equal(((await context(phone)).pending ?? []).length, 0, `${phrase}: nada novo na fila`);
+  }
 });
 
 test("c10: 'tira o arroz, por favor' com o total na mesa mostra o total novo — não a saudação", async (t) => {

@@ -1,3 +1,15 @@
+## 07/10/2026 (noite) — Depois do placar
+
+- [ ] **`LIA_BUSINESS_INFO` na Vercel** (ex.: "Lia Delivery — CNPJ XX.XXX.XXX/0001-XX, responsável: <nome>"): cliente
+  desconfiado pede o CNPJ e o nome do Pix antes de pagar; sem a variável a Lia só diz que o responsável manda (e te
+  avisa no WhatsApp). Com a variável ela responde na hora.
+- [ ] **Conferir `OPENAI_MODEL` e `LIA_SEARCH_RERANK_TIMEOUT_MS` na Vercel**: se estiverem fixadas no modelo/limite
+  antigos, valem em produção por cima do padrão do código (gpt-6-luna, 15 s).
+- [ ] **Crédito OpenAI**: saldo zerado = Lia sem IA = produto errado. Ativar auto-recharge.
+- [ ] Decisão de custo: `gpt-6-sol` no lugar da luna deu +4 pontos de cobertura no subconjunto difícil (88,0% → 92,1%)
+  por ~20× o custo da IA (≈ US$ 0,01 por busca contra US$ 0,0005). Ficou na luna.
+- [ ] Deploy: nada foi publicado (commits só no main local). Rodada final dos placares em `evals/results/*rodada3*`.
+
 ## 07/10/2026 — Para o dono
 
 - [ ] **Adicionar crédito na OpenAI** (platform.openai.com → Billing). Sem isso a Lia em produção usa

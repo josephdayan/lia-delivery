@@ -92,3 +92,19 @@ test("c02: 'pode tentar procurar em outra loja' depois de 'não achei' é retry,
   assert.deepEqual(parseMissFollowUp("Pode tentar procurar em outra loja?"), { kind: "retry" });
   assert.deepEqual(parseMissFollowUp("procura em outro site"), { kind: "retry" });
 });
+
+test("c12/c35: escolha com ruído curto é escolha; 'ah, entendi, então deixa' é desistência", async () => {
+  const { detectIntent, parseChoiceReply } = await import("../src/lib/lia-intents");
+  const opts = [{ name: "Lava Roupas em Pó Lavagem Perfeita Omo 1,4kg", unitPrice: 20.79 }, { name: "Lava Roupas em Pó Primavera Tixan Ypê 1,6kg", unitPrice: 28.58 }];
+  assert.deepEqual(parseChoiceReply("Acho que o 1 taakku", opts), { type: "pick", index: 0 });
+  assert.deepEqual(parseChoiceReply("o 2 pfv", opts), { type: "pick", index: 1 });
+  assert.notEqual(parseChoiceReply("quero 2 omo", opts)?.type, "pick");
+  for (const t of ["Ah, entendi. Então deixa.", "então deixa", "ah entendi, então deixa"]) assert.equal(detectIntent(t).kind, "reject", t);
+});
+
+test("c13: pergunta do CNPJ no meio do pedido sai do pedido", async () => {
+  const { splitFiscalClause } = await import("../src/lib/lia-intents");
+  assert.deepEqual(splitFiscalClause("Quero um protetor solar facial FPS 50. Antes de fechar, me passa o CNPJ da Lia Delivery pra eu conferir?"), { text: "Quero um protetor solar facial FPS 50.", asked: true });
+  assert.deepEqual(splitFiscalClause("quero leite e arroz"), { text: "quero leite e arroz", asked: false });
+  assert.deepEqual(splitFiscalClause("qual o CNPJ de vocês?"), { text: "qual o CNPJ de vocês?", asked: false });
+});
