@@ -1,0 +1,1367 @@
+{
+ "summary": {
+  "label": "atrib-antes",
+  "at": "2026-10-07T15:33:39.591Z",
+  "requests": 30,
+  "cep": "01233-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-sol",
+  "outcomes": {
+   "found": 19,
+   "miss": 1,
+   "honest_none": 4,
+   "wrong_top1": 5,
+   "found_with_wrong_extra": 1
+  },
+  "top1WrongRate": "16.7%",
+  "precisionItems": "87.5%",
+  "coverage": "76.9%",
+  "honesty": "100.0%",
+  "closestOffered": 0,
+  "medicineLeaks": "0/0",
+  "latencyMs": {
+   "p50": 8034,
+   "p90": 13164,
+   "max": 15541
+  }
+ },
+ "byCat": {
+  "mercado": {
+   "n": 17,
+   "found": 13,
+   "miss": 1,
+   "wrong": 2,
+   "honest": 1
+  },
+  "higiene": {
+   "n": 6,
+   "found": 3,
+   "miss": 0,
+   "wrong": 2,
+   "honest": 1
+  },
+  "esporte": {
+   "n": 1,
+   "found": 0,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 1
+  },
+  "pet": {
+   "n": 1,
+   "found": 0,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 1
+  },
+  "limpeza": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "bebidas": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "eletronicos": {
+   "n": 2,
+   "found": 1,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 0
+  },
+  "bebe": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  }
+ },
+ "results": [
+  {
+   "id": "a02",
+   "text": "arroz 5kg",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8583,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Camil 5kg",
+     "price": 31.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Prato Fino 5kg",
+     "price": 34.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo e Fino T1 Rerseva Especial Camil 5kg",
+     "price": 36.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Camil 5kg",
+     "price": 31.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo e Fino Tipo 1 Tio João 5 kg",
+     "price": 35.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Prato Fino 5kg",
+     "price": 34.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo e Fino T1 Rerseva Especial Camil 5kg",
+     "price": 36.98
+    }
+   ],
+   "oracleSize": 46,
+   "note": "Arroz para consumo humano em embalagem de 5 kg atende ao pedido; outros pesos, alimentos e itens relacionados não atendem."
+  },
+  {
+   "id": "a01",
+   "text": "leite sem açúcar",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 8860,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Leite em Pó Ninho Integral 575g Sachê",
+     "price": 33.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Leite em Pó Ninho Integral Lata 380g",
+     "price": 22.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Leite em Pó Molico Zero Lactose 260g",
+     "price": 24.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Leite em Pó Ninho Adulto Lata 350g",
+     "price": 24.89
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Leite Em Pó Ninho Integral Instantâneo Lata 380g",
+     "price": 23.99
+    }
+   ],
+   "oracleSize": 45,
+   "note": "Leite puro, sem açúcar adicionado, atende ao pedido; variações em pó ou sem lactose são aceitáveis. Doces, derivados e produtos de outros usos não atendem."
+  },
+  {
+   "id": "a03",
+   "text": "óleo de soja",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6758,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Soya 900ml",
+     "price": 7.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Soya 900ml",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 53,
+   "note": "Óleo de soja para uso culinário; apenas os produtos identificados como óleo de soja atendem ao pedido."
+  },
+  {
+   "id": "a04",
+   "text": "shampoo kerasys coco 1L",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 7447,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 71,
+   "note": "O pedido exige shampoo Kerasys de coco, 1 L. Nenhum produto reúne marca, tipo, fragrância e volume pedidos."
+  },
+  {
+   "id": "a05",
+   "text": "tubo de bolas de tênis com 4 bolas",
+   "cat": "esporte",
+   "origin": "atributos",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 5671,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 15,
+   "note": "O pedido exige um tubo com quatro bolas próprias para tênis; nenhum produto listado corresponde."
+  },
+  {
+   "id": "a06",
+   "text": "iogurte natural",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8926,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Bela Vista 170g",
+     "price": 3.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Whey Tradicional 14g de Proteínas Verde Campo 140g",
+     "price": 11.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Desnatado Momento Mambo 1kg",
+     "price": 27.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Integral Natural Nestlé 170g",
+     "price": 5.09
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Integral Danone 160g",
+     "price": 3.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Parcialmente Desnatado Natural Viv Vigor 150g",
+     "price": 3.29
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Desnatado Danone 160g",
+     "price": 3.89
+    }
+   ],
+   "oracleSize": 55,
+   "note": "Iogurtes naturais para consumo são adequados; versões desnatada, parcialmente desnatada e com whey diferem em atributos não especificados. Outros produtos não são iogurte natural."
+  },
+  {
+   "id": "a07",
+   "text": "açúcar refinado",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11478,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado Guarani 1kg",
+     "price": 3.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado Fit União 500g",
+     "price": 5.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado União 1kg",
+     "price": 5.09
+    },
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado Fit União 500g",
+     "price": 5.99
+    }
+   ],
+   "oracleSize": 39,
+   "note": "Aceitei açúcar refinado comum e a versão Fit; Glaçúcar tem forma diferente, e os demais não são açúcar refinado."
+  },
+  {
+   "id": "a08",
+   "text": "esmalte vermelho",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 9915,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Vermelho Diamond Gel Charlotte De Romã Metálico 9,5ml",
+     "price": 13.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Diamond Gel Vermelho Cereja Cremoso 9,5ml",
+     "price": 14.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes de unha vermelhos, inclusive tons cereja e vinho. Intensificador, removedor, tintas e produtos de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "a09",
+   "text": "bala de goma",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 8102,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bala de Goma - Kids Burgoma - Kidszone",
+     "price": 3.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Bala de goma inclui doces de goma ou gelatina; chicletes, suplementos e outros produtos não atendem ao pedido."
+  },
+  {
+   "id": "a10",
+   "text": "café torrado 500g",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7865,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Extra Forte Café Pelé 500g",
+     "price": 19.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Premium Bravo 500g",
+     "price": 24.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional Floresta 500g",
+     "price": 32.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional Bom Jesus 500g",
+     "price": 24.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional 3 Corações 500g",
+     "price": 22.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional Pilão 500g",
+     "price": 23.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional a Vácuo Melitta 500g",
+     "price": 26.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Café Torrado e Moído Tradicional a Vácuo Pilão 500g",
+     "price": 23.99
+    }
+   ],
+   "oracleSize": 71,
+   "note": "Café torrado de 500g atende ao pedido; doces, utensílios e produtos de outros usos não atendem."
+  },
+  {
+   "id": "a11",
+   "text": "água sem gás 1,5L",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9655,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Água Mineral Lindoya Verão Sem Gás 1,5L",
+     "price": 9.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Água Mineral sem Gás Ecoleve Pet 1,5L",
+     "price": 3.29,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Água Sem Gás Crystal 1,5l",
+     "price": 3.97,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Ever Nutri Sem Gás 1,5L",
+     "price": 5.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Crystal Sem Gás 1,5L",
+     "price": 8.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Natural Pureza Vital Sem Gás 1,5l",
+     "price": 5.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Natural Indaiá Sem Gás 1,5l",
+     "price": 5.59
+    },
+    {
+     "store": "Swift",
+     "name": "Água Sem Gás Crystal 1,5l",
+     "price": 3.97
+    }
+   ],
+   "oracleSize": 53,
+   "note": "Aceitei apenas água sem gás em embalagem individual de 1,5 L; água com gás, packs e outros produtos não atendem ao pedido."
+  },
+  {
+   "id": "a12",
+   "text": "refrigerante zero 2L",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7106,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Refrigerante Coca-Cola Sem Açúcar Garrafa Pet 2 Litro",
+     "price": 13.45,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Coca-Cola Zero Garrafa 2l",
+     "price": 11.97,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Refrigerante Coca Cola Sem Açúcar 2L",
+     "price": 13.49
+    },
+    {
+     "store": "Swift",
+     "name": "Coca-Cola Zero Garrafa 2l",
+     "price": 11.97
+    },
+    {
+     "store": "Mambo",
+     "name": "Refrigerante Sem Açúcar Coca-Cola Garrafa 2L",
+     "price": 14.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Refrigerante Sem Açúcar Guaraná Antarctica Pet 2L",
+     "price": 8.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Refrigerante Limonada Sem Açúcar Soda Antarctica 2L",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Aceitos apenas refrigerantes sem açúcar em garrafa de 2 L; marca e sabor não foram especificados."
+  },
+  {
+   "id": "a13",
+   "text": "sabonete líquido lavanda 250ml",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 7428,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Sabonete Líquido Lavanda Granado Bebê Refil 250ml",
+     "price": 17.9,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Sabonete Líquido Lux Botanicals Lavanda 250ml",
+     "price": 10.12,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Sabonete Líquido Lux Botanicals Lavanda 250ml",
+     "price": 10.12
+    },
+    {
+     "store": "Drogal",
+     "name": "Sabonete Líquido Lux Lavanda 250ml",
+     "price": 13.75
+    }
+   ],
+   "oracleSize": 64,
+   "note": "Exigi sabonete líquido de lavanda com 250 ml; versões para bebê, kits e itens de outro uso não atendem ao pedido."
+  },
+  {
+   "id": "a14",
+   "text": "ração golden gato castrado 10kg",
+   "cat": "pet",
+   "origin": "atributos",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 6644,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 44,
+   "note": "O pedido exige ração Golden para gatos castrados em embalagem de 10 kg; nenhum produto informa essa quantidade."
+  },
+  {
+   "id": "a15",
+   "text": "detergente neutro",
+   "cat": "limpeza",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 5835,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Detergente Gel Neutro Limpol 400g",
+     "price": 6.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Detergente Gold Neutro 5L Audax",
+     "price": 39.69,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Detergente Gel Neutro Limpol 400g",
+     "price": 6.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Kit com 6 Detergentes Líquido Neutro Limpol 500ml",
+     "price": 11.98
+    },
+    {
+     "store": "Obramax",
+     "name": "Detergente Gold Neutro 5L Audax",
+     "price": 39.69
+    }
+   ],
+   "oracleSize": 55,
+   "note": "Aceitei detergentes neutros de limpeza, inclusive em gel ou concentrados; rejeitei outros produtos, acessórios e detergentes sem indicação de serem neutros."
+  },
+  {
+   "id": "a16",
+   "text": "macarrão espaguete 500g",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6416,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Macarrão de Sêmola com Ovos Espaguete 8 Adria 500g",
+     "price": 2.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão com Ovos Espaguete 8 Camil 500g",
+     "price": 4.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Espaguete com Ovos Renata 500g Macarrão Espaguete 8 com Ovos Renata 500g",
+     "price": 5.39,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Espaguete com Ovos Barilla 500g",
+     "price": 5.47
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão de Sêmola com Ovos Espaguete 8 Adria 500g",
+     "price": 2.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Espaguete com Ovos Renata 500g",
+     "price": 5.39
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Espaguete Sem Glúten Urbano 500g",
+     "price": 4.29
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Superiore Espaguete Renata 500g",
+     "price": 12.49
+    }
+   ],
+   "oracleSize": 71,
+   "note": "Macarrão espaguete de 500g atende ao pedido; versões especiais são aceitáveis. Outros produtos, acessórios e macarrão instantâneo não atendem."
+  },
+  {
+   "id": "a18",
+   "text": "biscoito sem lactose",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7540,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Biscoito Integral Granola e Mel Sem Lactose Sou Sweet Jasmine 75g",
+     "price": 4.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Biscoito Cacau e Cereais Sou Sweet Sem Lactose Jasmine 135g",
+     "price": 7.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Biscoito Banana e Aveia Sou Sweet Sem Lactose Jasmine 135g",
+     "price": 7.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Biscoito Integral Granola e Mel Sem Lactose Sou Sweet Jasmine 75g",
+     "price": 4.99
+    }
+   ],
+   "oracleSize": 37,
+   "note": "Aceitei apenas biscoitos identificados como sem lactose; outras restrições alimentares não garantem ausência de lactose."
+  },
+  {
+   "id": "a17",
+   "text": "leite integral 1L",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8772,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Leite integral Piracanjuba 1 Litro",
+     "price": 8.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Integral A2 Italac 1L",
+     "price": 7.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Swift",
+     "name": "Leite Integral Ninho Nestlé 1l",
+     "price": 6.97,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Leite Integral Ninho Nestlé 1l",
+     "price": 6.97
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Integral Sem Lactose Italac 1L",
+     "price": 8.59
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Integral Forti+ Sem Lactose Ninho 1L",
+     "price": 8.59
+    },
+    {
+     "store": "Drogal",
+     "name": "Leite integral Piracanjuba 1 Litro",
+     "price": 8.79
+    }
+   ],
+   "oracleSize": 57,
+   "note": "Leite integral líquido de vaca em embalagem de 1 L; versões A2, fortificada e sem lactose são aceitáveis, mas leite em pó ou de cabra não."
+  },
+  {
+   "id": "a19",
+   "text": "papel higiênico folha dupla 12 rolos",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9658,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Papel Higiênico Neutro Folha Dupla Mimmo Leve 12 Pague 11",
+     "price": 25.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Papel Higiênico Deluxe Cotton Folha Dupla 20m 12 Rolos",
+     "price": 13.99
+    }
+   ],
+   "oracleSize": 11,
+   "note": "Exige papel higiênico folha dupla em pacote de 12 rolos; suportes, porta-papéis e dispensers não atendem."
+  },
+  {
+   "id": "a20",
+   "text": "desodorante rexona aerosol masculino",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8034,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Desodorante Antitranspirante Aerosol Rexona Masculino Impacto 72h 150ml",
+     "price": 14.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Desodorante Antitranspirante Aerosol Rexona Masculino Antibacterial Protection 150ml",
+     "price": 14.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Desodorante Antitranspirante Rexona Men Active Dry 72h Aerossol 150ml",
+     "price": 14.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Active Dry 72 horas 150ml",
+     "price": 14.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Rexona Men Clinical Aerosol 150ml",
+     "price": 19.29
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Sem Perfume 72 horas 150ml",
+     "price": 14.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerossol Rexona Men Active Dry 250ml",
+     "price": 22.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Extracool 72 horas 150ml",
+     "price": 14.9
+    }
+   ],
+   "oracleSize": 35,
+   "note": "São exatos os desodorantes Rexona masculinos em aerossol; fragrância e volume não foram especificados."
+  },
+  {
+   "id": "a21",
+   "text": "cerveja heineken long neck 330ml",
+   "cat": "bebidas",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6371,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Cerveja Lager Puro Malte Ultimate Sem Glúten Heineken Long Neck 330ml",
+     "price": 7.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Cerveja Lager Puro Malte Ultimate Sem Glúten Heineken Long Neck 330ml",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 40,
+   "note": "S1 e O18 são cervejas Heineken long neck de 330 ml, mas de versão não especificada no pedido; os demais não correspondem."
+  },
+  {
+   "id": "a22",
+   "text": "molho de tomate tradicional 340g",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 7495,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 48,
+   "note": "Pedido específico: molho de tomate tradicional 340g. Os molhos encontrados têm peso diferente ou ingredientes adicionais; os demais são outros produtos."
+  },
+  {
+   "id": "a23",
+   "text": "farinha de trigo 1kg",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7153,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Tradicional Sol 1kg",
+     "price": 5.19,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Dona Benta 1kg",
+     "price": 6.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Premium Anaconda 1Kg",
+     "price": 7.69,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Dona Benta 1kg",
+     "price": 6.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Tradicional Sol 1kg",
+     "price": 5.19
+    },
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Reserva Especial Dona Benta 1kg",
+     "price": 7.69
+    },
+    {
+     "store": "Mambo",
+     "name": "Farinha de Trigo Tipo 1 Extra Clara Adria Premium 1kg",
+     "price": 5.59
+    }
+   ],
+   "oracleSize": 65,
+   "note": "Aceitei farinhas de trigo comuns de 1 kg; farinha integral e produtos de outro tipo não atendem ao pedido."
+  },
+  {
+   "id": "a24",
+   "text": "pilha AA duracell 4 unidades",
+   "cat": "eletronicos",
+   "origin": "atributos",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 13164,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Pilha Duracell AA Alcalina 4 Unidades",
+     "price": 22.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Optimum Aa 4 Unidades",
+     "price": 39.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Recarregavel Aa 4 Unidades",
+     "price": 144.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilha Alcalina Duracell AA Pequena 4 Unidades",
+     "price": 33.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilha Duracell Alcalina Optium AA 4 Unidades",
+     "price": 39.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Optimum Aa 4 Unidades",
+     "price": 39.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Pilha Alcalina AA Duracell com 4 unidades",
+     "price": 27.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Pilha Alcalina AA Duracell Optimum com 4 Unidades",
+     "price": 46.98
+    }
+   ],
+   "oracleSize": 66,
+   "note": "Exigi pilhas Duracell AA em embalagem de quatro; versões alcalinas e Optimum atendem, mas recarregáveis mudam o uso."
+  },
+  {
+   "id": "a25",
+   "text": "fralda pampers tamanho G",
+   "cat": "bebe",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13306,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Supersequinha Tamanho G 60 Unidades",
+     "price": 94.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Fralda Descartável Pampers Confort Sec Tamanho G 60 Unidades",
+     "price": 109.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Confort Sec Tamanho G 92 Unidades",
+     "price": 149.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Confort Sec Tamanho G 92 Unidades",
+     "price": 149.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Pants Ajuste Total Tamanho G 90 Unidades",
+     "price": 149.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Premium Care Tamanho G  94 Unidades",
+     "price": 209.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Pants Ajuste Total Tamanho G 28 Unidades",
+     "price": 58.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Supersequinha Tamanho G 60 Unidades",
+     "price": 94.99
+    }
+   ],
+   "oracleSize": 70,
+   "note": "Fraldas infantis Pampers tamanho G atendem ao pedido; modelos tipo calça são versões aceitáveis. Fraldas para piscina, outros tamanhos e produtos para pets não atendem."
+  },
+  {
+   "id": "a26",
+   "text": "suco de laranja integral 1L sem açúcar",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15541,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Do Bem Caixa 1L",
+     "price": 12.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral 100 1L",
+     "price": 17.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral OQ 1L",
+     "price": 19.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 15,
+   "note": "Os três sucos são de laranja integral, em embalagem de 1L; os demais produtos não são suco."
+  },
+  {
+   "id": "a27",
+   "text": "queijo mussarela fatiado 150g",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7981,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Itambé 150g",
+     "price": 9.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Piracanjuba 150g",
+     "price": 9.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Président 150g",
+     "price": 14.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Président 150g",
+     "price": 14.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Piracanjuba 150g",
+     "price": 9.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Itambé 150g",
+     "price": 9.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Queijo Mussarela Fatiado Sem Lactose Tirolez 150g",
+     "price": 17.98
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Exigi queijo mussarela fatiado de 150g. Marcas não especificadas servem; versões sem lactose servem, mas mussarela de búfala e outros pesos não."
+  },
+  {
+   "id": "a28",
+   "text": "creme dental colgate 90g",
+   "cat": "higiene",
+   "origin": "atributos",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7762,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Creme Dental Colgate Total Antitártaro 90g",
+     "price": 10.09,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Creme Dental Tripla Ação Menta Original Colgate 90g",
+     "price": 6.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Creme Dental Colgate Máxima Proteção Anticáries 90g",
+     "price": 5.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Creme Dental Original Mint Colgate Total Prevenção Ativa 90g",
+     "price": 38.19
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Creme Dental Colgate Total 12 Whitening 90g",
+     "price": 12.21
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Creme Dental Colgate Total Mint Original Prevenção Ativa 90g",
+     "price": 12.21
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Creme Dental Colgate Máxima Proteção Anticáries 90g",
+     "price": 5.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Creme Dental Colgate Prevenção Ativa Fresh Mint 90g",
+     "price": 13.99
+    }
+   ],
+   "oracleSize": 75,
+   "note": "Aceitos apenas cremes dentais Colgate de 90g em unidade avulsa; kits e produtos de outros tipos não atendem ao pedido."
+  },
+  {
+   "id": "a29",
+   "text": "chocolate ao leite lacta 80g",
+   "cat": "mercado",
+   "origin": "atributos",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 8790,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Chocolate Lacta ao leite Diamante Negro 80g",
+     "price": 12.09,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chocolate ao Leite Lacta 80g",
+     "price": 7.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chocolate ao Leite Diamante Negro Lacta 80g",
+     "price": 7.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Chocolate Lacta Ao Leite 80g",
+     "price": 11.79
+    },
+    {
+     "store": "Mambo",
+     "name": "Chocolate ao Leite Lacta 80g",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Chocolate Lacta Ao Leite 80g",
+     "price": 12.09
+    }
+   ],
+   "oracleSize": 72,
+   "note": "Pedido específico: chocolate Lacta ao leite tradicional de 80g. Outras versões, marcas, tamanhos ou tipos de produto não atendem."
+  },
+  {
+   "id": "a30",
+   "text": "carregador usb c",
+   "cat": "eletronicos",
+   "origin": "atributos",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 12252,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 25W Bivolt Gracia Alumbra Módulo Carregador USB Tipo-C 25W Bivolt Branco Gracia",
+     "price": 83.9,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 10,5W Bivolt Simon19/20 Módulo Carregador USB Tipo-C 10,5W Bivolt Branco Simon19/20",
+     "price": 89.9,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Carregador de Parede USB-C 20W ELG WCPD Branco",
+     "price": 99.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 50,
+   "note": "Pedido de carregador USB-C comum: aceitos os de parede com saída USB-C; módulos de instalação, cabos e carregadores sem USB-C identificado não atendem."
+  }
+ ]
+}

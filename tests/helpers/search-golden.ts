@@ -329,5 +329,15 @@ export const GOLDEN_CASES: GoldenCase[] = [
   { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true },
   // 06/10 (testador "Vc tem cottage da yorgus 14g proteína?"): marca + atributo não fazem o
   // produto — iogurte Yorgus 14g nunca é cottage.
-  { name: "cottage com marca e atributo nunca vira iogurte da marca", query: "cottage da Yorgus 14g proteína", none: true, deterministic: true }
+  { name: "cottage com marca e atributo nunca vira iogurte da marca", query: "cottage da Yorgus 14g proteína", none: true, deterministic: true },
+
+  // 07/10 (fase 3, placar): o juízo confere os ATRIBUTOS que o cliente disse. Só a IA resolve
+  // (o scorer léxico não sabe que "baunilha" não é "natural"); medidos por scripts/eval-search.mts.
+  { name: "óleo de soja não traz girassol/milho nem óleo de outro uso", query: "óleo de soja", top1Include: /soja/, allExclude: /girassol|milho|lubrific|corporal|secante|massagem/, env: AUTO_ROSTER, deterministic: false },
+  { name: "arroz 5kg só traz pacote de 5 kg, nunca prato pronto", query: "arroz 5kg", allExclude: /carreteiro|risoto|1\s?kg|2\s?kg/, env: AUTO_ROSTER, deterministic: false },
+  { name: "leite sem açúcar não traz o saborizado", query: "leite sem açúcar", allExclude: /baunilha|chocolate|morango|achocolatado|nude/, env: AUTO_ROSTER, deterministic: false },
+  { name: "iogurte natural não traz sabor de fruta", query: "iogurte natural", allExclude: /frutas|morango|vermelhas|coco|pêssego|ameixa|mel\b/, env: AUTO_ROSTER, deterministic: false },
+  { name: "açúcar refinado não traz a versão fit/light", query: "açúcar refinado", allExclude: /\bfit\b|light|diet|glaçúcar|confeiteiro/, env: AUTO_ROSTER, deterministic: false },
+  { name: "esmalte vermelho não traz intensificador/removedor", query: "esmalte vermelho", allExclude: /intensificador|removedor|base|secante/, env: AUTO_ROSTER, deterministic: false },
+  { name: "bala de goma não traz suplemento de vinagre/vitamina", query: "bala de goma", allExclude: /vinagre|vitamina|suplemento/, env: AUTO_ROSTER, deterministic: false }
 ];
