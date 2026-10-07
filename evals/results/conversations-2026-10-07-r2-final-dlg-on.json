@@ -1,0 +1,3459 @@
+{
+ "summary": {
+  "label": "r2-final-dlg-on",
+  "at": "2026-10-07T19:11:43.853Z",
+  "scenarios": 36,
+  "judged": 36,
+  "simFailed": 0,
+  "goalReached": "75.0%",
+  "wrongProduct": "19.4%",
+  "falseClaim": "8.3%",
+  "deadEnd": "5.6%",
+  "confusing": "13.9%",
+  "slow": "5.6%",
+  "clean": "69.4%",
+  "highSeverityDefects": 20,
+  "repeat": 3,
+  "cleanAllRuns": "66.7%",
+  "goalAllRuns": "66.7%",
+  "porConjunto": {
+   "treino": {
+    "cenarios": 5,
+    "limpos": "60.0%",
+    "objetivo": "60.0%"
+   },
+   "prova": {
+    "cenarios": 7,
+    "limpos": "71.4%",
+    "objetivo": "71.4%"
+   }
+  },
+  "falhando": [
+   "c11",
+   "c20",
+   "c47",
+   "c70"
+  ]
+ },
+ "results": [
+  {
+   "id": "c11",
+   "rep": 1,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 16.227,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia disse que não encontrou o isqueiro estilo tocha, mas continuou oferecendo isqueiros comuns que não atendem ao pedido.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu isqueiros comuns (Bic e Cricket), que não servem para charuto estilo tocha.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Após o cliente rejeitar as opções e pedir outras, repetiu a mesma lista de isqueiros comuns em vez de encerrar claramente a busca sem oferecer produtos inadequados.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 50h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.9
+    },
+    {
+     "who": "cliente",
+     "text": "Nenhum desses serve, tem que ser estilo tocha pra charuto. Procura outras opções?"
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro para charuto estilo tocha*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 50h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 0,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 23.399,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia não confirmou se procurou um isqueiro maçarico/tocha nem disse claramente que não encontrou esse tipo. No turno 5, repetiu a resposta anterior após o cliente especificar o tipo necessário.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Ignorou o pedido explícito de procurar um isqueiro estilo maçarico/tocha e repetiu exatamente a resposta anterior, deixando o cliente sem um caminho útil.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 23.4
+    },
+    {
+     "who": "cliente",
+     "text": "Tenta procurar como isqueiro maçarico ou tocha, tem que ser desse tipo."
+    },
+    {
+     "who": "lia",
+     "text": "*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 17
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 2,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 5,
+   "latencyMax": 23.298,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia não encontrou o isqueiro estilo tocha, mas não encerrou com uma resposta honesta: ofereceu isqueiros de chama comum, que o cliente disse explicitamente que não serviam.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Ignorou a restrição explícita de que isqueiro comum não serve e ofereceu três modelos de chama comum.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Chamou as opções de chama comum de opções de isqueiro maçarico estilo tocha, contradizendo a própria descrição do turno 5.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "A afirmação de que aquelas eram todas as opções de tocha é confusa, pois a lista apresentada não continha nenhuma tocha.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 20.8
+    },
+    {
+     "who": "cliente",
+     "text": "Pode procurar um isqueiro maçarico, estilo tocha? Bic comum não serve."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro maçarico estilo tocha* exatamente. O mais perto que tenho é de chama comum:\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 50h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 23.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *isqueiro maçarico estilo tocha* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 0,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 16.069,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix com os quatro itens certos, incluindo arroz de 5 kg e óleo de soja. Porém, antes disso, a Lia ofereceu produtos fora das especificações pedidas e afirmou que não havia mais opções de óleo, embora depois encontrasse óleo de soja.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o pedido exigisse pacote de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, que não atende ao pedido de arroz de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, não óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleo para bolos, de gergelim e de girassol, todos fora do pedido de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleo de milho e de canola, em vez de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 17,
+      "what": "Disse que eram todas as opções de óleo disponíveis, mas no turno 19 apresentou opções de óleo de soja que não havia oferecido. A afirmação contradiz a busca posterior.",
+      "severity": "medium"
+     },
+     {
+      "turn": 19,
+      "what": "O cliente perguntou por óleo de soja em outra loja, mas a Lia apresentou opções do Mambo, sem atender claramente ao pedido por outra loja.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · 5h_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · 5h_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 5.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.7
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.6
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *óleo* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 10.7
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja em outra loja?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 19h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyh9fz0003pn7imc1uutg2o-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 2,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 14.124,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os quatro itens corretos foram adicionados e a conversa chegou ao Pix. Porém, antes de encontrar as opções adequadas, a Lia ofereceu arroz fora do tamanho pedido e óleos que não eram de soja. Também afirmou que não tinha mais opções de óleo e depois apresentou opções adicionais.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o pedido exigisse pacote de 5 kg.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, que não corresponde ao arroz pedido em pacote de 5 kg.",
+      "severity": "medium"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, não óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleo para bolos e doces, óleo de gergelim e óleo de girassol, nenhum deles óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleo de milho e óleo de canola em vez de óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 17,
+      "what": "Disse que aquelas eram todas as opções de óleo disponíveis; após o cliente pedir nova busca, apresentou opções de óleo de soja nos turnos seguintes.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · 5h_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · 5h_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 4.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *óleo* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 14.1
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja em outra loja? Pode procurar mais uma vez?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.1
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 19h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "Pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyh9nu50046n7imcbq5dxwx-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 1,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 12,
+   "latencyMax": 14.227,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A cesta não chegou ao Pix e ficou incompleta: arroz 5 kg e feijão carioca foram selecionados, mas o óleo de soja não foi encontrado nem adicionado, e o café não chegou a ser apresentado.",
+    "defects": [
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, sem confirmar que era óleo de soja; as opções seguintes também eram de outros tipos de óleo, não o pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Mostrou óleo para bolos, gergelim e girassol, que não atendem ao pedido de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Mostrou óleo de milho e de canola, também fora do tipo solicitado.",
+      "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "Após o cliente esclarecer que as opções não eram de soja, repetiu opções de milho e canola em vez de buscar o produto pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 21,
+      "what": "Ignorou o pedido explícito para procurar óleo de soja de outra marca e repetiu as mesmas opções inadequadas; a conversa ficou sem avanço para esse item.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "Disse que seguiria com arroz, feijão, óleo e “mais 1”, sem identificar o café, deixando o fluxo pouco claro; o café nunca foi apresentado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · 5h_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.4
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · 5h_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 6.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.7
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *óleo* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 13.2
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja comum? Esses aí não são de soja."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *óleo soja comum*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.2
+    },
+    {
+     "who": "cliente",
+     "text": "Tenta procurar óleo de soja de outra marca, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *óleo soja marca*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.9
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c23",
+   "rep": 1,
+   "set": "prova",
+   "title": "Presente para mãe (orçamento total R$120)",
+   "origin": "real",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 10.278,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com um perfume aceito pelo cliente; o total com frete foi R$ 101,49, dentro do orçamento de R$ 120.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um presente pra minha mãe até 120 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 10.3
+    },
+    {
+     "who": "cliente",
+     "text": "1, mas só se o total com frete ficar até R$120."
+    },
+    {
+     "who": "lia",
+     "text": "O frete ainda não foi calculado. Quer escolher a opção 1 para conferir o total com frete?",
+     "sec": 3.3
+    },
+    {
+     "who": "cliente",
+     "text": "sim, pode conferir o total com frete, desde que fique até R$120"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Perfume Feminino Parfum Brasil Escandalo 100ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 4.7
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 101,49 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 103,49 · prazo da loja: 6h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59\n\nProdutos: R$ 94,59\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 101,49*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 101,49 _(sem taxa)_\n*2)* Cartão — R$ 106,82 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 101,49* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhasqu005nn7ims08m5tae-101495204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c23",
+   "rep": 2,
+   "set": "prova",
+   "title": "Presente para mãe (orçamento total R$120)",
+   "origin": "real",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 14.362,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente selecionou uma colônia adequada, escolheu a entrega mais barata e recebeu o Pix. O total de R$ 27,99 ficou dentro do orçamento total de R$ 120.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um presente pra minha mãe até 120 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Deo Colônia Feminino Forever Ciclo 100ml — R$ 107,86 · _Drogal · 3h_\n*2)* Colônia Seiva de Alfazema Lavanda Feminina 118ml — R$ 23,09 · _Pague Menos · 1 dia útil_\n*3)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.4
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Colônia Seiva de Alfazema Lavanda Feminina 118ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 27,99 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 29,99 · prazo da loja: 2h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Colônia Seiva de Alfazema Lavanda Feminina 118ml — R$ 23,09\n\nProdutos: R$ 23,09\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 27,99*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 27,99 _(sem taxa)_\n*2)* Cartão — R$ 29,46 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 27,99* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhatwp005sn7imcvql36mm-27995204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c32",
+   "rep": 0,
+   "set": "prova",
+   "title": "Bola de futebol",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 9.481,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A cliente escolheu uma bola de futebol de campo e recebeu o Pix pelo valor total informado.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero uma bola de futebol"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x bola de futebol\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79 · _Ri Happy · 4 dias úteis_\n*2)* Bola De Futebol - Sportv - N 5 - Pvc - Azul E Vermelha - Futebol E Magia — R$ 120,89 · _Ri Happy · 4 dias úteis_\n*3)* Bola De Futebol - Manchester City - PVC - Preta - Futebol & Magia — R$ 120,99 · _Ri Happy · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.5
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 129,34 · prazo da loja: 4 dias úteis\n*2)* Mais rápida — total R$ 148,79 · prazo da loja: 3h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79\n\nProdutos: R$ 118,79\nEntrega: R$ 10,55 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 129,34*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 129,34 _(sem taxa)_\n*2)* Cartão — R$ 136,13 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 129,34* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhbga90078n7im2ws5coq7-129345204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c23",
+   "rep": 0,
+   "set": "prova",
+   "title": "Presente para mãe (orçamento total R$120)",
+   "origin": "real",
+   "expect": "reach_pix",
+   "turns": 12,
+   "latencyMax": 14.405,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente chegou ao Pix com bombons aceitos como presente. O total de R$ 25,77, incluindo a entrega, respeita o orçamento de R$ 120.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um presente pra minha mãe até 120 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 13.2
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *perfume feminino* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 10.1
+    },
+    {
+     "who": "cliente",
+     "text": "pula"
+    },
+    {
+     "who": "lia",
+     "text": "Deixei *perfume feminino* de fora. Se quiser, me diz de outro jeito que eu procuro.",
+     "sec": 1.6
+    },
+    {
+     "who": "cliente",
+     "text": "procura um kit de beleza ou bombons que fique até 120 com o frete, por favor"
+    },
+    {
+     "who": "lia",
+     "text": "Você prefere procurar um kit de beleza ou bombons?",
+     "sec": 3.5
+    },
+    {
+     "who": "cliente",
+     "text": "Bombons, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Bombom Lacta Ouro Branco 20g — R$ 2,74 · _Drogal · 3h_\n*2)* Bombom Ferrero Rocher 3 Unidades 30g — R$ 7,25 · _Pague Menos · 1 dia útil_\n*3)* Bombom Raffaello T3 Ferrero Rocher 30g — R$ 10,99 · _Casa & Vídeo · 6 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.4
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Bombom Raffaello T3 Ferrero Rocher 30g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 25,77 · prazo da loja: 6 dias úteis\n*2)* Mais rápida — total R$ 26,75 · prazo da loja: 5 dias úteis\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Bombom Raffaello T3 Ferrero Rocher 30g — R$ 10,99\n\nProdutos: R$ 10,99\nEntrega: R$ 14,78 · pela própria loja · prazo da loja: 6 dias úteis\n*Total: R$ 25,77*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 25,77 _(sem taxa)_\n*2)* Cartão — R$ 27,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 25,77* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhbdqk006xn7im37pi0ul4-25775204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c32",
+   "rep": 1,
+   "set": "prova",
+   "title": "Bola de futebol",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 12.172,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia encontrou uma bola de futebol de campo, concluiu o pedido e apresentou o Pix com o total correto.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero uma bola de futebol"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x bola de futebol\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79 · _Ri Happy · 4 dias úteis_\n*2)* Bola De Futebol - Sportv - N 5 - Pvc - Azul E Vermelha - Futebol E Magia — R$ 120,89 · _Ri Happy · 4 dias úteis_\n*3)* Bola de Futebol 420g Play&Fun Sortida — R$ 32,98 · _Casa & Vídeo · 5 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 129,34 · prazo da loja: 4 dias úteis\n*2)* Mais rápida — total R$ 148,79 · prazo da loja: 3h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79\n\nProdutos: R$ 118,79\nEntrega: R$ 10,55 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 129,34*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 129,34 _(sem taxa)_\n*2)* Cartão — R$ 136,13 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 129,34* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhbmds007sn7img2ucbl2k-129345204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c32",
+   "rep": 2,
+   "set": "prova",
+   "title": "Bola de futebol",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 9.91,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Pedido da bola de futebol de campo correta chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero uma bola de futebol"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x bola de futebol\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79 · _Ri Happy · 4 dias úteis_\n*2)* Bola De Futebol - Sportv - N 5 - Pvc - Azul E Vermelha - Futebol E Magia — R$ 120,89 · _Ri Happy · 4 dias úteis_\n*3)* Bola De Futebol - Manchester City - PVC - Preta - Futebol & Magia — R$ 120,99 · _Ri Happy · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 129,34 · prazo da loja: 4 dias úteis\n*2)* Mais rápida — total R$ 148,79 · prazo da loja: 3h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia — R$ 118,79\n\nProdutos: R$ 118,79\nEntrega: R$ 10,55 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 129,34*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 129,34 _(sem taxa)_\n*2)* Cartão — R$ 136,13 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 129,34* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhc35r008un7im4jooew7x-129345204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 0,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 11.119,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O vinho escolhido é tinto e custa R$ 43,97, mas o total com entrega chegou a R$ 61,87, acima do orçamento de cerca de R$ 60. A Lia seguiu até o Pix sem avisar nem oferecer uma opção que coubesse no total.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "O total com frete excede o orçamento indicado no cenário, mas a Lia avançou para o pagamento sem alertar ou ajustar o pedido.",
+      "severity": "high"
+     }
+    ],
+    "votes": "1/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · 5h_\n*2)* Vinho Tinto Cabernet Sauvignon Finca Magnolia 750ml — R$ 43,97 · _Swift · 1 dia útil_\n*3)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.1
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Tinto Malbec Finca Magnolia 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97\n\nProdutos: R$ 43,97\nEntrega: R$ 17,90 · pela própria loja · prazo da loja: 5h\n*Total: R$ 61,87*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 61,87 _(sem taxa)_\n*2)* Cartão — R$ 65,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 61,87* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhc9gm009en7im2ryi7gns-61875204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 1,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 9.327,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix, mas o total de R$ 61,87 ultrapassou o orçamento de aproximadamente R$ 60 sem aviso ou opção mais barata. Assim, não concluiu a compra dentro do critério pedido.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou para pagamento um total de R$ 61,87, acima do orçamento de aproximadamente R$ 60, sem avisar que não cabia nem oferecer uma opção mais barata.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · 5h_\n*2)* Vinho Tinto Cabernet Sauvignon Finca Magnolia 750ml — R$ 43,97 · _Swift · 1 dia útil_\n*3)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Tinto Malbec Finca Magnolia 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97\n\nProdutos: R$ 43,97\nEntrega: R$ 17,90 · pela própria loja · prazo da loja: 5h\n*Total: R$ 61,87*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 61,87 _(sem taxa)_\n*2)* Cartão — R$ 65,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.8
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 61,87* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhcagd009jn7imdtk2419l-61875204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 2,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 10.619,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Pedido correto chegou ao Pix: 1 garrafa de vinho tinto por R$ 28,49, com total de R$ 44,39 incluindo entrega.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · 5h_\n*2)* Vinho Tinto Brisa Cabernet Sauvignon Vistamar 750ml — R$ 54,89 · _Swift · 5h_\n*3)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 50h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.6
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Argentino Tinto Malbec Hormiga Negra 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49\n\nProdutos: R$ 28,49\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 50h (sex, 15h–18h)\n*Total: R$ 44,39*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 44,39 _(sem taxa)_\n*2)* Cartão — R$ 46,72 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 44,39* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhcsla00ain7im7temnphx-44395204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c52",
+   "rep": 1,
+   "set": "prova",
+   "title": "Shampoo e condicionador Pantene",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 9.567,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos Pantene foram adicionados à cesta e a conversa chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "shampoo e condicionador pantene"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x shampoo pantene\n• 1x condicionador pantene\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *shampoo pantene*, depois *condicionador pantene*.\n---\nOlha o que achei 👇\n*1)* Shampoo Equilibrante Pantene Equilíbrio Raiz e Pontas 510ml — R$ 46,48 · _Drogal · 3h_\n*2)* Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml — R$ 39,59 · _Pague Menos · 1 dia útil_\n*3)* Shampoo Reparador Pantene Molecular Bond Repair 510ml — R$ 41,79 · _Pague Menos · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.6
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml\n---\nAgora *condicionador pantene*.\n*1)* Condicionador Pantene Biotinamina B3 Antiqueda+ & Nutrição 510ml — R$ 40,25 · _Drogaria São Paulo · 1 dia útil_\n*2)* Condicionador Pantene Pro-V Miracles Colágeno Hidrata & Resgata 510ml — R$ 41,67 · _Drogaria São Paulo · 1 dia útil_\n*3)* Condicionador Pantene Bambu 510ml — R$ 52,79 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Condicionador Pantene Pro-V Miracles Colágeno Hidrata & Resgata 510ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml — R$ 39,59\n• 1x Condicionador Pantene Pro-V Miracles Colágeno Hidrata & Resgata 510ml — R$ 41,67\n\nProdutos: R$ 81,26\nEntrega: R$ 11,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 93,06*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 93,06 _(sem taxa)_\n*2)* Cartão — R$ 97,95 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 93,06* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhd0t900b2n7imsfx87bs5-93065204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c52",
+   "rep": 0,
+   "set": "prova",
+   "title": "Shampoo e condicionador Pantene",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 14.151,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos Pantene foram adicionados à cesta e a Lia chegou ao Pix com o total de R$ 91,64.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "shampoo e condicionador pantene"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x shampoo pantene\n• 1x condicionador pantene\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *shampoo pantene*, depois *condicionador pantene*.\n---\nOlha o que achei 👇\n*1)* Shampoo Equilibrante Pantene Equilíbrio Raiz e Pontas 510ml — R$ 46,48 · _Drogal · 3h_\n*2)* Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml — R$ 39,59 · _Pague Menos · 1 dia útil_\n*3)* Shampoo Reparador Pantene Molecular Bond Repair 510ml — R$ 41,79 · _Pague Menos · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.2
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml\n---\nAgora *condicionador pantene*.\n*1)* Condicionador Pantene Bambu Nutre e Cresce 250ml — R$ 38,82 · _Drogal · 3h_\n*2)* Condicionador Pantene Biotinamina B3 Antiqueda+ & Nutrição 510ml — R$ 40,25 · _Drogaria São Paulo · 1 dia útil_\n*3)* Condicionador Pantene Bambu 510ml — R$ 52,79 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Condicionador Pantene Biotinamina B3 Antiqueda+ & Nutrição 510ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml — R$ 39,59\n• 1x Condicionador Pantene Biotinamina B3 Antiqueda+ & Nutrição 510ml — R$ 40,25\n\nProdutos: R$ 79,84\nEntrega: R$ 11,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 91,64*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 91,64 _(sem taxa)_\n*2)* Cartão — R$ 96,45 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 91,64* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhd3by00bdn7imjc8l2s4q-91645204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c52",
+   "rep": 2,
+   "set": "prova",
+   "title": "Shampoo e condicionador Pantene",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 10.008,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos Pantene foram adicionados à cesta e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "shampoo e condicionador pantene"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x shampoo pantene\n• 1x condicionador pantene\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *shampoo pantene*, depois *condicionador pantene*.\n---\nOlha o que achei 👇\n*1)* Shampoo Pantene Pro-V Bambu Nutre e Cresce 200ml — R$ 23,60 · _Drogal · 3h_\n*2)* Shampoo Restauração Pantene 175ml — R$ 30,24 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml — R$ 39,59 · _Pague Menos · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Shampoo Restauração Pantene 175ml\n---\nAgora *condicionador pantene*.\n*1)* Condicionador Pantene Bambu Nutre e Cresce 250ml — R$ 38,82 · _Drogal · 3h_\n*2)* Condicionador Colágeno Hidrata & Resgata Pantene 250ml — R$ 38,39 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Condicionador Pantene Hidratação 400ml — R$ 32,16 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Condicionador Pantene Hidratação 400ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Shampoo Restauração Pantene 175ml — R$ 30,24\n• 1x Condicionador Pantene Hidratação 400ml — R$ 32,16\n\nProdutos: R$ 62,40\nEntrega: R$ 22,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 85,20*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 85,20 _(sem taxa)_\n*2)* Cartão — R$ 89,67 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 1.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 85,20* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhdcbz00c3n7imdesjxfxt-85205204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c58",
+   "rep": 0,
+   "set": "prova",
+   "title": "Petisco e tapete higiênico para cachorro",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 12.886,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos pedidos foram adicionados à cesta e a Lia chegou ao Pix com o total informado.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "petisco pro cachorro e tapete higienico"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x petisco pro cachorro\n• 1x tapete higienico\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *petisco cachorro*, depois *tapete higiênico*.\n---\nOlha o que achei 👇\n*1)* Petisco Joy Beef Carne para Cães 65 g — R$ 4,94 · _Cobasi · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 12.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Petisco Joy Beef Carne para Cães 65 g\n---\nAgora *tapete higiênico*.\n*1)* Tapete Higiênico Sanol Dog 60x80cm com 7 Unidades — R$ 36,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm — R$ 38,48 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Petisco Joy Beef Carne para Cães 65 g — R$ 4,94\n• 1x Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm — R$ 38,48\n\nProdutos: R$ 43,42\nEntrega: R$ 23,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 67,22*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 67,22 _(sem taxa)_\n*2)* Cartão — R$ 70,75 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 67,22* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhdpuo00cqn7im40jbzy7w-67225204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c58",
+   "rep": 1,
+   "set": "prova",
+   "title": "Petisco e tapete higiênico para cachorro",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 15.977,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos pedidos foram adicionados à cesta e a Lia chegou ao Pix com o total informado.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "petisco pro cachorro e tapete higienico"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x petisco pro cachorro\n• 1x tapete higienico\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *petisco cachorro*, depois *tapete higiênico*.\n---\nOlha o que achei 👇\n*1)* Petisco Joy Beef Carne para Cães 65 g — R$ 4,94 · _Cobasi · 1 dia útil_\n*2)* Petisco para Cães Origem Natural Cuidados Especiais Pele e Pelo 65 g — R$ 9,34 · _Cobasi · 1 dia útil_\n*3)* Petisco para Cães Origem Natural Cuidados Especiais Controle e Equilíbrio 65 g — R$ 9,34 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Petisco Joy Beef Carne para Cães 65 g\n---\nAgora *tapete higiênico*.\n*1)* Tapete Higiênico Sanol Dog 60x80cm com 7 Unidades — R$ 36,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm — R$ 38,48 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Tapete Higiênico Sanol Dog 60x80cm com 7 Unidades\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Petisco Joy Beef Carne para Cães 65 g — R$ 4,94\n• 1x Tapete Higiênico Sanol Dog 60x80cm com 7 Unidades — R$ 36,28\n\nProdutos: R$ 41,22\nEntrega: R$ 23,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 65,02*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 65,02 _(sem taxa)_\n*2)* Cartão — R$ 68,43 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 65,02* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhdst400d4n7imk4n3wk5w-65025204000053039865802BR6009SAO PAULO",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c58",
+   "rep": 2,
+   "set": "prova",
+   "title": "Petisco e tapete higiênico para cachorro",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 10.381,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos pedidos foram adicionados à cesta, o total foi apresentado e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "petisco pro cachorro e tapete higienico"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x petisco pro cachorro\n• 1x tapete higienico\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *petisco cachorro*, depois *tapete higiênico*.\n---\nOlha o que achei 👇\n*1)* Petisco Joy Beef Carne para Cães 65 g — R$ 4,94 · _Cobasi · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 10.4
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Petisco Joy Beef Carne para Cães 65 g\n---\nAgora *tapete higiênico*.\n*1)* Tapete Higiênico Sanol Dog 60x80cm com 7 Unidades — R$ 36,28 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*2)* Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm — R$ 38,48 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Petisco Joy Beef Carne para Cães 65 g — R$ 4,94\n• 1x Tapete Higiênico Dog Sanol Com 14 Unidades 60x57cm — R$ 38,48\n\nProdutos: R$ 43,42\nEntrega: R$ 23,80 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 67,22*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 67,22 _(sem taxa)_\n*2)* Cartão — R$ 70,75 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 67,22* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhdwp100din7imaujve4g4-67225204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 0,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 10.695,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O produto é um ventilador de mesa correto e a conversa chegou ao Pix, mas o total de R$ 157,88 ultrapassa o orçamento de até cerca de R$ 150 sem aviso ou confirmação.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ignorou o orçamento: o total com entrega ficou em R$ 157,88, acima dos cerca de R$ 150 informados, e apresentou o pagamento sem avisar que excedia o limite ou oferecer alternativa.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89 · _Obramax · 2 dias úteis_\n*2)* Ventilador de Mesa 140W 40cm VTR410 6 Pás Cadence Preto 127V — R$ 142,89 · _Casa & Vídeo · 4 dias úteis_\n*3)* Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V — R$ 126,39 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89\n\nProdutos: R$ 142,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 2 dias úteis\n*Total: R$ 157,88*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 157,88 _(sem taxa)_\n*2)* Cartão — R$ 166,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 157,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhecc200een7ims2a6hqbv-157885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 2,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 8.893,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o ventilador pedido, mas o total de R$ 157,88 ultrapassa o limite aproximado de R$ 150 e a Lia não avisou nem ofereceu uma opção que coubesse no orçamento.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ignorou o orçamento de até R$ 150 no total: mostrou R$ 157,88 e seguiu para o pagamento sem avisar que excedia o limite ou oferecer alternativa dentro dele.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89 · _Obramax · 2 dias úteis_\n*2)* Ventilador de Mesa Super Power com 6 Pás 30cm 60W Mondial Ventilador de Mesa Super Power Preto com 6 Pás 30cm 60w 127V — R$ 142,89 · _Obramax · 2 dias úteis_\n*3)* Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V — R$ 126,39 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89\n\nProdutos: R$ 142,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 2 dias úteis\n*Total: R$ 157,88*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 157,88 _(sem taxa)_\n*2)* Cartão — R$ 166,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 157,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhehmy00f3n7imqh5hok1d-157885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 1,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 13.796,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o ventilador correto, mas o total de R$ 157,88 ultrapassa o limite aproximado de R$ 150 sem aviso ou confirmação do cliente.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou um total acima do orçamento informado (incluindo frete) e seguiu para o pagamento sem avisar nem confirmar se o cliente aceitava.",
+      "severity": "high"
+     }
+    ],
+    "votes": "1/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89 · _Obramax · 2 dias úteis_\n*2)* Ventilador de Mesa 140W 40cm VTR410 6 Pás Cadence Preto 127V — R$ 142,89 · _Casa & Vídeo · 4 dias úteis_\n*3)* Ventilador de Mesa 40Cm 6 Pás Preto Mondial VSP40 127V — R$ 153,89 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89\n\nProdutos: R$ 142,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 2 dias úteis\n*Total: R$ 157,88*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 157,88 _(sem taxa)_\n*2)* Cartão — R$ 166,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 157,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyheg9t00eyn7imn7eias58-157885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c72",
+   "rep": 1,
+   "set": "treino",
+   "title": "Mouse sem fio e pilha AA",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 7.354,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos pedidos foram adicionados à cesta, o total foi apresentado e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "mouse sem fio e pilha aa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x mouse sem fio\n• 1x pilha aa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 2 itens. Vamos um de cada vez: *mouse sem fio*, depois *pilha aa*.\n---\nOlha o que achei 👇\n*1)* Mouse sem Fio Office Santana Preto — R$ 32,99 · _Casa & Vídeo · 4 dias úteis_\n*2)* Mouse sem Fio Slim Multi MS300 MO380 Preto — R$ 54,99 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.4
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Mouse sem Fio Office Santana Preto\n---\nAgora *pilha aa*.\n*1)* Pilha Zinco Rayovac AA 4 Unidades — R$ 13,96 · _Drogal · 3h_\n*2)* Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades — R$ 10,89 · _Obramax · 2 dias úteis_\n*3)* Pilha de Zinco Carbono AA com 4 Bolder — R$ 3,29 · _Casa & Vídeo · 5 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Pilha Zinco Rayovac AA 4 Unidades\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Mouse sem Fio Office Santana Preto — R$ 32,99\n• 1x Pilha Zinco Rayovac AA 4 Unidades — R$ 13,96\n\nProdutos: R$ 46,95\nEntrega: R$ 19,85 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 66,80*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 66,80 _(sem taxa)_\n*2)* Cartão — R$ 70,31 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 66,80* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhf0x300g8n7imkb6i57j2-66805204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c72",
+   "rep": 0,
+   "set": "treino",
+   "title": "Mouse sem fio e pilha AA",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 12.879,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois itens corretos foram adicionados à cesta e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "mouse sem fio e pilha aa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x mouse sem fio\n• 1x pilha aa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 2 itens. Vamos um de cada vez: *mouse sem fio*, depois *pilha aa*.\n---\nOlha o que achei 👇\n*1)* Mouse sem Fio Office Santana Preto — R$ 32,99 · _Casa & Vídeo · 4 dias úteis_\n*2)* Mouse sem Fio Slim Multi MS300 MO380 Preto — R$ 54,99 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Mouse sem Fio Office Santana Preto\n---\nAgora *pilha aa*.\n*1)* Pilha Duracell AA Alcalina 4 Unidades — R$ 25,29 · _Drogal · 3h_\n*2)* Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades — R$ 10,89 · _Obramax · 2 dias úteis_\n*3)* Pilha Alcalina 1,5V Tipo AA Elgin Pilha Alcalina 1.5V Tipo AA Blister com 8 unidades — R$ 17,49 · _Obramax · 2 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Mouse sem Fio Office Santana Preto — R$ 32,99\n• 1x Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades — R$ 10,89\n\nProdutos: R$ 43,88\nEntrega: R$ 29,94 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 73,82*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 73,82 _(sem taxa)_\n*2)* Cartão — R$ 77,70 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 73,82* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhf3th00gjn7imyqm5i324-73825204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c72",
+   "rep": 2,
+   "set": "treino",
+   "title": "Mouse sem fio e pilha AA",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 8.897,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os dois produtos pedidos foram adicionados à cesta e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "mouse sem fio e pilha aa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x mouse sem fio\n• 1x pilha aa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 2 itens. Vamos um de cada vez: *mouse sem fio*, depois *pilha aa*.\n---\nOlha o que achei 👇\n*1)* Mouse sem Fio Office Santana Preto — R$ 32,99 · _Casa & Vídeo · 4 dias úteis_\n*2)* Mouse sem Fio Slim Multi MS300 MO380 Preto — R$ 54,99 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Mouse sem Fio Office Santana Preto\n---\nAgora *pilha aa*.\n*1)* Pilha Zinco Rayovac AA 4 Unidades — R$ 13,96 · _Drogal · 3h_\n*2)* Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades — R$ 10,89 · _Obramax · 2 dias úteis_\n*3)* Pilha de Zinco Carbono AA com 4 Bolder — R$ 3,29 · _Casa & Vídeo · 5 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Mouse sem Fio Office Santana Preto — R$ 32,99\n• 1x Pilha Alcalina 1.5V Tipo AA Kian Pilha Alcalina 1.5V Tipo AA Blister com 4 unidades — R$ 10,89\n\nProdutos: R$ 43,88\nEntrega: R$ 29,94 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 73,82*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 73,82 _(sem taxa)_\n*2)* Cartão — R$ 77,70 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 73,82* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhf53j00grn7imqevklb9c-73825204000053039865802BR6009SAO PAULO",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c73",
+   "rep": 0,
+   "set": "treino",
+   "title": "Caderno, caneta e cola bastão",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 14.699,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os três itens corretos foram adicionados à cesta e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "caderno, caneta azul e cola bastao"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caderno\n• 1x caneta azul\n• 1x cola bastao\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nAchei os 3 itens. Vamos um de cada vez: *caderno*, depois *caneta azul* e *cola bastão*.\n---\nOlha o que achei 👇\n*1)* Caderno com Divisória Bob Esponja — R$ 164,89 · _Zona Criativa · 3 dias úteis_\n*2)* Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.7
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caderno Universitário Avengers 80 Folhas Culturama\n---\nAgora *caneta azul* — depois faltam 1.\n*1)* Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69 · _Ri Happy · 4 dias úteis_\n*2)* Caneta Esferográfica Kilométrica 1.0 2 Azul e 1 Preta Paper — R$ 4,39 · _Casa & Vídeo · 6 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC\n---\nAgora *cola bastão*.\n*1)* Cola Bastão 10G Leonora — R$ 2,19 · _Casa & Vídeo · 4 dias úteis_\n*2)* Cola em Bastão 8g Molin — R$ 7,69 · _Casa & Vídeo · 4 dias úteis_\n*3)* Cola Bastão 40g Escolar Staedtler — R$ 18,69 · _Casa & Vídeo · 6 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Cola Bastão 10G Leonora\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98\n• 1x Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69\n• 1x Cola Bastão 10G Leonora — R$ 2,19\n\nProdutos: R$ 20,86\nEntrega: R$ 27,68 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 48,54*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 48,54 _(sem taxa)_\n*2)* Cartão — R$ 51,09 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 48,54* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhfrp500hzn7imlr2qui45-48545204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c73",
+   "rep": 1,
+   "set": "treino",
+   "title": "Caderno, caneta e cola bastão",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 16.285,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os três itens pedidos foram adicionados à cesta, o total foi apresentado e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "caderno, caneta azul e cola bastao"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caderno\n• 1x caneta azul\n• 1x cola bastao\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nAchei os 3 itens. Vamos um de cada vez: *caderno*, depois *caneta azul* e *cola bastão*.\n---\nOlha o que achei 👇\n*1)* Caderno com Divisória Bob Esponja — R$ 164,89 · _Zona Criativa · 3 dias úteis_\n*2)* Caderno Diário com Cadeado Pelúcia Bob Esponja — R$ 186,89 · _Zona Criativa · 3 dias úteis_\n*3)* Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16.3
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caderno Universitário Avengers 80 Folhas Culturama\n---\nAgora *caneta azul* — depois faltam 1.\n*1)* Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69 · _Ri Happy · 4 dias úteis_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC\n---\nAgora *cola bastão*.\n*1)* Cola Bastão 10G Leonora — R$ 2,19 · _Casa & Vídeo · 4 dias úteis_\n*2)* Cola em Bastão 8g Molin — R$ 7,69 · _Casa & Vídeo · 4 dias úteis_\n*3)* Cola Bastão 40g Escolar Staedtler — R$ 18,69 · _Casa & Vídeo · 6 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Cola Bastão 10G Leonora\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98\n• 1x Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69\n• 1x Cola Bastão 10G Leonora — R$ 2,19\n\nProdutos: R$ 20,86\nEntrega: R$ 27,68 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 48,54*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 48,54 _(sem taxa)_\n*2)* Cartão — R$ 51,09 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 48,54* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhfuym00ijn7ime3yyvfyl-48545204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c73",
+   "rep": 2,
+   "set": "treino",
+   "title": "Caderno, caneta e cola bastão",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 16.19,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Os três itens solicitados foram adicionados à cesta, o total foi apresentado e a Lia forneceu o Pix. A embalagem de três canetas azuis estava explícita na opção antes da confirmação.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "caderno, caneta azul e cola bastao"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caderno\n• 1x caneta azul\n• 1x cola bastao\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nAchei os 3 itens. Vamos um de cada vez: *caderno*, depois *caneta azul* e *cola bastão*.\n---\nOlha o que achei 👇\n*1)* Caderno com Divisória Bob Esponja — R$ 164,89 · _Zona Criativa · 3 dias úteis_\n*2)* Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16.2
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caderno Universitário Avengers 80 Folhas Culturama\n---\nAgora *caneta azul* — depois faltam 1.\n*1)* Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69 · _Ri Happy · 4 dias úteis_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC\n---\nAgora *cola bastão*.\n*1)* Cola Bastão 10G Leonora — R$ 2,19 · _Casa & Vídeo · 4 dias úteis_\n*2)* Cola em Bastão 8g Molin — R$ 7,69 · _Casa & Vídeo · 4 dias úteis_\n*3)* Cola Bastão 40g Escolar Staedtler — R$ 18,69 · _Casa & Vídeo · 6 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Cola Bastão 10G Leonora\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Caderno Universitário Avengers 80 Folhas Culturama — R$ 10,98\n• 1x Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC — R$ 7,69\n• 1x Cola Bastão 10G Leonora — R$ 2,19\n\nProdutos: R$ 20,86\nEntrega: R$ 27,68 · pela própria loja (2 entregas) · prazo da loja: 4 dias úteis\n*Total: R$ 48,54*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 48,54 _(sem taxa)_\n*2)* Cartão — R$ 51,09 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 48,54* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhfwnz00ion7im4zjcxwdb-48545204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c78",
+   "rep": 0,
+   "set": "prova",
+   "title": "Perfume para namorada (total R$130)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 12.788,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com um perfume e total de R$ 101,49, dentro do orçamento de R$ 130 incluindo a entrega.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um perfume pra minha namorada, ate 130 reais no total com entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um perfume pra minha namorada até 130 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 12.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Perfume Feminino Parfum Brasil Escandalo 100ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 101,49 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 103,49 · prazo da loja: 6h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59\n\nProdutos: R$ 94,59\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 101,49*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 101,49 _(sem taxa)_\n*2)* Cartão — R$ 106,82 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 101,49* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhgfh300jnn7im8w3kxhyj-101495204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c78",
+   "rep": 1,
+   "set": "prova",
+   "title": "Perfume para namorada (total R$130)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 13.225,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A cliente chegou ao Pix com um perfume correto e total de R$ 101,49, dentro do orçamento de R$ 130 com entrega.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um perfume pra minha namorada, ate 130 reais no total com entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um perfume pra minha namorada até 130 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 13.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Perfume Feminino Parfum Brasil Escandalo 100ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 101,49 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 103,49 · prazo da loja: 6h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59\n\nProdutos: R$ 94,59\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 101,49*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 101,49 _(sem taxa)_\n*2)* Cartão — R$ 106,82 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 101,49* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhglmd00kan7imddzo3iu7-101495204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c78",
+   "rep": 2,
+   "set": "prova",
+   "title": "Perfume para namorada (total R$130)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 12.159,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente chegou ao Pix com um perfume e total de R$ 101,49, dentro do orçamento de R$ 130 incluindo a entrega.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um perfume pra minha namorada, ate 130 reais no total com entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x dar um perfume pra minha namorada até 130 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 12.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Perfume Feminino Parfum Brasil Escandalo 100ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 101,49 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 103,49 · prazo da loja: 6h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59\n\nProdutos: R$ 94,59\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 101,49*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 101,49 _(sem taxa)_\n*2)* Cartão — R$ 106,82 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 101,49* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhglr200kin7impegcfjo3-101495204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c79",
+   "rep": 0,
+   "set": "treino",
+   "title": "Bombons para amigo secreto (total R$60)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 10.855,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente escolheu uma caixa de bombons dentro do orçamento total de R$60, e a Lia apresentou o total com frete e chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "amigo secreto do trabalho, uma caixa de bombom, no maximo 60 reais com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caixa de bombom até 60 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Caixa de Bombom Lacta Grandes Sucessos 250,6g — R$ 19,79 · _Drogal · 3h_\n*2)* Caixa de Bombom Garoto Crocribe 215,2g — R$ 26,17 · _Drogal · 3h_\n*3)* Caixa de Bombom Variedades Favoritos Lacta 250,6g — R$ 12,09 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caixa de Bombom Lacta Grandes Sucessos 250,6g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 24,69 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 26,69 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Caixa de Bombom Lacta Grandes Sucessos 250,6g — R$ 19,79\n\nProdutos: R$ 19,79\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 24,69*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 24,69 _(sem taxa)_\n*2)* Cartão — R$ 25,99 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 24,69* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhh0iz00lkn7imty739vn9-24695204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c79",
+   "rep": 2,
+   "set": "treino",
+   "title": "Bombons para amigo secreto (total R$60)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 11.427,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Pedido correto de bombons ficou dentro do orçamento total de R$60 com a entrega, e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "amigo secreto do trabalho, uma caixa de bombom, no maximo 60 reais com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caixa de bombom até 60 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Caixa de Bombom Lacta Grandes Sucessos 250,6g — R$ 19,79 · _Drogal · 3h_\n*2)* Caixa de Bombom Variedades Favoritos Lacta 250,6g — R$ 12,09 · _Mambo · em até 19h (amanhã, 8h–11h)_\n*3)* Caixa de Bombom Garoto Pack 10% Sortidos 220g — R$ 19,79 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.4
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caixa de Bombom Variedades Favoritos Lacta 250,6g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Caixa de Bombom Variedades Favoritos Lacta 250,6g — R$ 12,09\n\nProdutos: R$ 12,09\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 19h (amanhã, 8h–11h)\n*Total: R$ 27,99*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 27,99 _(sem taxa)_\n*2)* Cartão — R$ 29,46 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 27,99* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhh77c00m7n7imdq1xnsun-27995204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c79",
+   "rep": 1,
+   "set": "treino",
+   "title": "Bombons para amigo secreto (total R$60)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 13.81,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A caixa de bombons foi adicionada e o pedido chegou ao Pix. Total de R$ 24,69, dentro do orçamento de R$ 60 com entrega incluída.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "amigo secreto do trabalho, uma caixa de bombom, no maximo 60 reais com a entrega"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x caixa de bombom até 60 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Caixa de Bombom Lacta Grandes Sucessos 250,6g — R$ 19,79 · _Drogal · 3h_\n*2)* Caixa de Bombom Garoto Crocribe 215,2g — R$ 26,17 · _Drogal · 3h_\n*3)* Caixa de Bombom Variedades Favoritos Lacta 250,6g — R$ 12,09 · _Mambo · em até 19h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Caixa de Bombom Lacta Grandes Sucessos 250,6g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 24,69 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 26,69 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Caixa de Bombom Lacta Grandes Sucessos 250,6g — R$ 19,79\n\nProdutos: R$ 19,79\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 24,69*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 24,69 _(sem taxa)_\n*2)* Cartão — R$ 25,99 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 24,69* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyhh93j00mfn7im0bk2cxua-24695204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  }
+ ]
+}
