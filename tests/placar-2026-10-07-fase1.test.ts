@@ -9,7 +9,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import * as copy from "../src/lib/lia-copy";
-import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, parseChoiceCombo, stripAdditiveLead } from "../src/lib/lia-intents";
+import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, parseChoiceCombo, stripAdditiveLead, splitServiceQuestions, parsePriceCap, splitPriceCap } from "../src/lib/lia-intents";
 import { __setRouterInterpreterForTests } from "../src/lib/adapters/ai";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -480,4 +480,43 @@ test("c23: nada cabe e o cliente pede outro produto — o item que estourou sai 
   const ctx = await context(phone);
   assert.equal((ctx.basket ?? []).length, 0, "o item que estourou não fica na cesta");
   assert.equal(ctx.pending?.[0]?.cap, 45, `o teto de R$45 acompanha a busca nova: ${out.slice(0, 200)}`);
+});
+
+// ---------- rodada 3: pedido + pergunta de serviço; teto dito de outros jeitos ----------
+
+test("c13/c06: pedido + pergunta de serviço na mesma mensagem — separa (puro)", () => {
+  const a = splitServiceQuestions("Queria um protetor solar facial FPS 50. Como vejo o total antes de pagar?");
+  assert.equal(a?.rest, "Queria um protetor solar facial FPS 50.");
+  assert.deepEqual(a?.questions.map((q) => (q.intent.kind === "service_question" ? q.intent.topic : q.intent.kind)), ["total_preview"]);
+  const b = splitServiceQuestions("Tem leite vegetal sem açúcar de outra marca? E como vc funciona? De onde vc compra?");
+  assert.equal(b?.rest, "Tem leite vegetal sem açúcar de outra marca?");
+  assert.equal(b?.questions.length, 2);
+  assert.equal(splitServiceQuestions("quanto é o frete?"), null, "só pergunta: nada a separar");
+  assert.equal(splitServiceQuestions("quero arroz. quero feijão."), null, "só pedido: nada a separar");
+});
+
+test("c13: 'queria um protetor solar. Como vejo o total antes de pagar?' responde a pergunta e busca só o produto", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const out = await send(phone, "Queria um desodorante colônia. Como vejo o total antes de pagar?");
+  assert.match(out, /Você vê o total \*antes de pagar\*/, out);
+  assert.match(out, /Desodorante Colônia/i, "o pedido segue para a busca");
+  assert.doesNotMatch(out, /Não achei: ver o total|eu não achei/i, out);
+});
+
+test("c06: cliente novo — 'quero leite. De onde vc compra?' responde, guarda o leite e pede o endereço", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = newPhone();
+  const out = await send(phone, "quero leite. De onde vc compra?");
+  assert.match(out, /várias lojas online/i, out);
+  assert.match(out, /endere[cç]o/i, out);
+  assert.match(String((await context(phone)).pendingRequest ?? ""), /leite/i);
+});
+
+test("c24: o teto dito como 'limite de R$80', 'teto de 80 reais' ou 'dentro de R$80' também vale", () => {
+  for (const text of ["passou do meu limite de R$80", "teto de 80 reais", "tem que ficar dentro de R$ 80 com o frete", "orçamento de R$80"]) {
+    assert.equal(parsePriceCap(text), 80, text);
+  }
+  assert.equal(splitPriceCap("presente com orçamento de 80 reais").cap, 80);
+  assert.doesNotMatch(splitPriceCap("presente com orçamento de 80 reais").phrase, /80|orcamento/);
 });

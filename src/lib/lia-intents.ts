@@ -23,7 +23,7 @@ export type ParsedLine = {
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver";
+export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview";
 
 export type Intent =
   | { kind: "thanks" }
@@ -879,6 +879,9 @@ const SWITCH_PAYMENT_RE =
 const RECIPIENT_OTHER_RE =
   /\b((e|eh|vai ser|sera) (pra|para) (outra pessoa|outro|outra|presente|um presente)|(entrega|entregar|manda|mandar|envia|enviar) (pra|para) (outra pessoa|minha|meu|meus|minhas|a |o )|quem (vai )?recebe(r)? (e|eh|nao sou eu|vai ser)|(nao|n) sou eu (que|quem) (vai )?receb\w*|(em|no) nome de outra pessoa)\b/;
 
+const TOTAL_PREVIEW_RE =
+  /^(?:e\s+)?(?:como|onde|quando)\s+(?:eu\s+)?(?:vejo|ver|sei|saberei|descubro|consigo ver|vou ver)\b.{0,30}\b(?:total|quanto (?:fica|custa|vai ficar))\b/;
+
 // "quero falar com um atendente/humano/pessoa de verdade".
 const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
@@ -1197,6 +1200,9 @@ export function detectIntent(text: string): Intent {
   if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
   // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
   if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
+  // "como vejo o total antes de pagar?" (07/10, c13): pergunta do fluxo, não produto. Só a forma
+  // interrogativa — "me passa o total antes de pagar" depois de "só isso" é fechar a lista.
+  if (TOTAL_PREVIEW_RE.test(n) && !/\bso isso\b/.test(n)) return { kind: "service_question", topic: "total_preview" };
   if (OUT_OF_SCOPE_SERVICE_RE.test(n)) return { kind: "out_of_scope_service" };
   if (VAGUE_REQUEST_RE.test(n)) return { kind: "vague_request" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
@@ -1832,7 +1838,7 @@ export function parsePriceCap(text: string): number | null {
   const n = digitizeMoneyWords(normalizeMsg(text));
   const m =
     n.match(
-      /\b(?:ate|abaixo de|menos de|no maximo|max(?:imo)?)\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)?\b/
+      /\b(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)?\b/
     ) ??
     // "um vinho DE uns 30 conto": aproximação vira teto — sem isso a busca ignora o
     // valor por completo (29/08 S18). Exige a moeda pra não pegar "uns 30 itens".
@@ -1850,7 +1856,7 @@ export function splitPriceCap(phrase: string): { phrase: string; cap: number | n
   const cap = parsePriceCap(phrase);
   if (cap == null) return { phrase, cap: null };
   const cleaned = digitizeMoneyWords(normalizeMsg(phrase))
-    .replace(/\b(?:de\s+)?(?:ate|abaixo de|menos de|no maximo|max(?:imo)?)\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)?\b/i, " ")
+    .replace(/\b(?:de\s+)?(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)?\b/i, " ")
     .replace(/\bde\s+uns\s+(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)\b/i, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -2277,6 +2283,32 @@ export function parseOptionSwitchRef(
     if (options[cheapest].price < options[currentIndex]?.price) return { index: cheapest };
   }
   return null;
+}
+
+// Pedido + pergunta de serviço na MESMA mensagem (07/10, c06/c13): "Queria um protetor solar FPS 50.
+// Como vejo o total antes de pagar?" / "Tem leite vegetal de outra marca? E como vc funciona? De onde
+// vc compra?". A pergunta de serviço era tratada como produto ("Não achei: ver o total…") ou engolia o
+// pedido. Separa as frases-pergunta de serviço (a Lia responde cada uma) do resto (segue como pedido).
+export function splitServiceQuestions(text: string): { rest: string; questions: Array<{ sentence: string; intent: Intent }> } | null {
+  const parts = text.match(/[^.!?]+(?:[.!?]+|$)/g) ?? [];
+  const sentences: string[] = [];
+  for (const part of parts) {
+    const prev = sentences[sentences.length - 1];
+    if (prev && /(?:^|[\s,])(?:av|r|rod|al|tv|pc|ap|apt|apto|bl|cj|est|jd|vl|n|no|sr|sra|dr|dra)\.$/i.test(prev.trim())) sentences[sentences.length - 1] = prev + part;
+    else sentences.push(part);
+  }
+  const trimmed = sentences.map((s) => s.trim()).filter(Boolean);
+  if (trimmed.length < 2) return null;
+  const questions: Array<{ sentence: string; intent: Intent }> = [];
+  const rest: string[] = [];
+  for (const sentence of trimmed) {
+    const intent = /\?\s*$/.test(sentence) ? detectIntent(sentence) : null;
+    if (intent && (intent.kind === "service_question" || intent.kind === "trust_question" || intent.kind === "identity")) questions.push({ sentence, intent });
+    else rest.push(sentence);
+  }
+  const remainder = rest.join(" ").trim();
+  if (!questions.length || !/[a-zà-ú]{3,}/i.test(remainder) || !parseBasketLines(remainder).length) return null;
+  return { rest: remainder, questions };
 }
 
 // ---------- modo atendimento e farmácia parceira (07/10, placar c13/c30/c31/c35) ----------

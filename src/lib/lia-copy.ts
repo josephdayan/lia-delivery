@@ -1678,7 +1678,7 @@ export function manualQuoteSummary(input: {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver",
+  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean }
 ): string {
@@ -1702,6 +1702,8 @@ export function serviceAnswer(
       return "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
     case "pix_receiver":
       return pixReceiverAnswer();
+    case "total_preview":
+      return "Você vê o total *antes de pagar*: quando fechar a lista (diz *só isso*), eu mando o resumo com produtos, entrega e prazo — só depois peço o Pix ou o cartão. Nada é cobrado antes.";
     case "stores":
       return storesAnswer([]);
     case "price_compare":
