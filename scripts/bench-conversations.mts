@@ -78,6 +78,8 @@ FATOS DO SERVIÇO (verdadeiros — não os trate como promessa falsa nem como de
 - A Lia Delivery é MEI: o Pix vai para a conta da empresa e o banco mostra o nome do responsável (pessoa física). Isso é verdade.
 - A Lia pede o endereço com CEP UMA vez antes de mostrar opções (precisa dele para conferir estoque e frete da loja), guardando o pedido já feito. Isso é o fluxo normal, não defeito — defeito é perder o pedido ou pedir o endereço de novo.
 - A Lia não vende medicamento (lei). Recusar remédio é correto.
+- O responsável responde no WhatsApp das 9h às 20h (horário de atendimento configurado). Dizer isso é verdade.
+- Estorno automático: pedido pago que a loja não confirmou é estornado sozinho em até 6 h, e o cliente é avisado. "Se algo não vier, o valor é estornado" é verdade.
 - A loja vende por embalagem: ajustar a quantidade para a embalagem disponível é aceitável SE a Lia avisar ANTES de cobrar.
 - Orçamento que o cliente disser vale para o TOTAL (produto + frete): a Lia deve respeitar ou avisar que não cabe.
 - "(sandbox: responda paguei pra simular)" e códigos MOCKPIX são do ambiente de teste — ignore.
