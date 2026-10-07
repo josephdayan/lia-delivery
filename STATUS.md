@@ -1,3 +1,24 @@
+## 07/10/2026 (madrugada) — Rodadas 2 e 3 dos placares
+
+| | baseline | rodada 2 | rodada 3 |
+|---|---|---|---|
+| **Busca** — 1ª opção errada | 1,0% | 1,6% | 1,7% |
+| precisão dos itens | 97,8% | 96,9% | 97,8% |
+| cobertura | 85,8% | 94,6% | **95,1%** |
+| honestidade | 96,3% | 96,3% | 96,4% |
+| tempo p50 | 7,0 s | 9,4 s | 9,6 s |
+| **Conversas** — limpas | 50% | 50% | **60%** |
+| objetivo cumprido | 65% | 60% | 70% |
+| becos sem saída | 22,5% | 12,5% | 20% |
+| defeitos graves | 24 | 27 | 21 |
+
+Suíte local 913/913. Corrigido depois da rodada 3 (testes verdes, ainda NÃO remedido): "acho que o 1 taakku"
+é escolha, "então deixa" é desistência, CNPJ no meio do pedido, juízo da IA em pool de 1.
+Luna × sol no subconjunto difícil: sol +4 pontos de cobertura por ~20× o custo; ficou luna.
+Ruído conhecido: o cliente simulado e o juiz variam de uma rodada para outra (compare tendências).
+O que sobra nos cenários é, em boa parte, julgamento do juiz (orçamento "R$100" somando frete; ovos arredondando
+para 20) ou busca (Kerasys coco 1 L, óleo de soja, isqueiro tocha).
+
 ## 07/10/2026 (noite) — Placar de verdade: linha de base e rodada 1 de correções
 
 **Busca** (316 pedidos, oráculo ao vivo, juiz gpt-6-sol, Lia em gpt-6-luna; `evals/results/search-2026-10-07-*.json`):
