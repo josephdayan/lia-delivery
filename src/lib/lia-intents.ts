@@ -279,6 +279,9 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",
       "((semana|mes) passad[ao]|ontem|anteontem|hoje|agora|aqui)? ?(acab(ou|aram) (tudo|as coisas|o que tinha)|nao tem mais nada)( .*)?",
       "(eu |a gente )?(acabei|acabamos) de (me mudar|mudar|chegar|voltar)\\b.*",
+      // Plano do próprio cliente de resolver em outro lugar ("vou procurar uma farmácia por aqui") — despedida,
+      // nunca item (07/10, c08). "vou querer/levar/pegar" continuam sendo pedido.
+      "(eu )?vou (procurar|buscar|tentar|ir|passar|ver|pedir|comprar)\\b[^,]*\\b(farmacia|drogaria|outr[oa]s?|por aqui|por ai|na loja|no mercado|depois|la)\\b.*",
       "(nada|quase nada) (em casa|aqui( em casa)?)",
       "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
     ].join("|") +

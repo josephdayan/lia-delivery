@@ -314,6 +314,12 @@ export function noMedicine(): string {
   return "Remédio eu não posso vender — por lei, só farmácia pode. De mercado, higiene, pet, beleza e casa eu cuido. O que você precisa?";
 }
 
+// Cliente se despede depois da recusa de remédio ("vou procurar uma farmácia, obrigada"): fecha sem
+// pedir endereço (07/10, c08).
+export function medicineFarewell(): string {
+  return "Combinado 💚 Se precisar de mercado, higiene, pet, beleza ou casa, é só me chamar.";
+}
+
 export function noMedicineAgain(): string {
   return "Sobre remédio a resposta continua a mesma: eu não vendo, nem por farmácia parceira — pra medicação, a farmácia mais perto de você é o caminho. Se precisar de outra coisa, é só me dizer.";
 }

@@ -9,7 +9,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import * as copy from "../src/lib/lia-copy";
-import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, parseChoiceCombo, stripAdditiveLead, splitServiceQuestions, parsePriceCap, splitPriceCap } from "../src/lib/lia-intents";
+import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, parseChoiceCombo, stripAdditiveLead, splitServiceQuestions, parsePriceCap, splitPriceCap, isNarrativeSegment } from "../src/lib/lia-intents";
 import { __setRouterInterpreterForTests } from "../src/lib/adapters/ai";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -519,4 +519,16 @@ test("c24: o teto dito como 'limite de R$80', 'teto de 80 reais' ou 'dentro de R
   }
   assert.equal(splitPriceCap("presente com orçamento de 80 reais").cap, 80);
   assert.doesNotMatch(splitPriceCap("presente com orçamento de 80 reais").phrase, /80|orcamento/);
+});
+
+test("c08: depois da recusa de remédio, 'vou procurar uma farmácia por aqui, obrigada' é despedida — sem item anotado e sem pedir endereço", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = newPhone();
+  await send(phone, "Ola quero 2 cxs de Euthyrox 50mg");
+  const out = await send(phone, "Tudo bem, vou procurar uma farmácia por aqui, obrigada.");
+  assert.match(out, /é só me chamar/, out);
+  assert.doesNotMatch(out, /anotei|endere[cç]o|CEP/i, out);
+  assert.equal((await context(phone)).pendingRequest, undefined);
+  assert.equal(isNarrativeSegment("vou procurar uma farmácia por aqui"), true);
+  assert.equal(isNarrativeSegment("vou querer 2 cocas"), false);
 });

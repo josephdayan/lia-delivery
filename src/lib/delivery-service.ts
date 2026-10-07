@@ -2770,6 +2770,12 @@ async function handleDeliveryTurn(
     // Só o que tem cara de produto é anotado (06/10, M1): "sou a Clara Souza", "gostaria de
     // fazer um pedido", "vi o anúncio", história pessoal e "me liga" ficam de fora.
     const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    // Despedida depois da recusa de remédio ("vou procurar uma farmácia, obrigada"): sem pedido novo, sem
+    // pedir endereço de novo (07/10, c08).
+    if (!note && intent.kind === "free_text" && !isQuestion(text) && ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000) {
+      await reply(phone, copy.medicineFarewell());
+      return;
+    }
     if (note) addPendingRequest(ctx, note);
     ctx.flow = "delivery";
     ctx.step = "need_address";
