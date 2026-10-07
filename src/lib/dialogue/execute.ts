@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { normalizeMsg, parseRefinement } from "../lia-intents";
+import { extractCep, normalizeMsg, parseRefinement } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
@@ -35,7 +35,13 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const label = steps.map(describe).join("+");
   // Pergunta/fechamento/pagamento/cancelamento/atendente/status/endereço: o roteador de
   // intenções de sempre executa (a IA só decidiu O QUE o cliente quer, não COMO se faz).
-  if (steps.length === 1 && steps[0].type === "rewrite") return { kind: "rewrite", text: steps[0].text, actions: label };
+  if (steps.length === 1 && steps[0].type === "rewrite") {
+    const step = steps[0];
+    // "trocar endereço: Rua X, 379, 01426-001" (placar c16): a IA às vezes devolve a ação sem o texto do
+    // endereço; a mensagem ORIGINAL já o traz e o fluxo de troca sabe usá-lo — nunca pedir de novo.
+    const keepOriginal = step.label === "change_address" && /\b(?:trocar|mudar|alterar|atualizar|novo)\b/i.test(env.text) && (Boolean(extractCep(env.text)) || /,\s*\d{1,5}\b/.test(env.text));
+    return { kind: "rewrite", text: keepOriginal ? env.text : step.text, actions: label };
+  }
   if (steps.length === 1 && steps[0].type === "more_options") return { kind: "rewrite", text: moreText(steps[0].sort), actions: label };
   if (steps.length === 1 && steps[0].type === "pick" && steps[0].source === "freight") {
     return { kind: "rewrite", text: steps[0].index === 0 ? "frete:barato" : "frete:rapido", actions: label };
@@ -74,6 +80,8 @@ function describe(step: Planned): string {
       return step.mode === "set" ? "set_qty" : "add_qty";
     case "reply":
       return step.kind;
+    case "fixed":
+      return step.key;
     default:
       return step.type;
   }
@@ -236,6 +244,13 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       ctx.pending = [];
       await reply(phone, copy.onlyKeepSkipped(skipped));
       await h.advancePending(phone, convoId, ctx, userCep);
+      return "done";
+    }
+
+    case "fixed": {
+      if (step.key === "medicine") await h.refuseMedicine(phone, convoId, ctx);
+      else await reply(phone, copy.outOfScopeProductAnswer());
+      if (current) await h.sendChoices(phone, current);
       return "done";
     }
 

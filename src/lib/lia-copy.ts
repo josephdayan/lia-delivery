@@ -1107,6 +1107,11 @@ export function trustAnswer(): string {
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
 }
+// Produto que a Lia não vende por natureza (07/10, c77: "vcs vendem carro 0km?" ouvia "não achei em nenhuma
+// loja, me diz outra marca"): resposta honesta, sem pedir endereço nem prometer busca.
+export function outOfScopeProductAnswer(): string {
+  return "Isso eu não consigo comprar 😅 Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?";
+}
 // Pedido vago (06/10): "algo gostoso pra comer" virava busca da frase.
 export function vagueRequestAnswer(): string {
   return "Me diz o que você está com vontade que eu acho 🙂 Por exemplo: _lasanha congelada_, _pizza congelada_, _chocolate_, _sorvete_, _salgadinho_ — ou o nome de um produto.";

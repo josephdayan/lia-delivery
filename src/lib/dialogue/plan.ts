@@ -19,7 +19,9 @@ export type Planned =
   // dropQueueOnly: "1, só amora" — escolhe a opção e larga o resto da fila (nada de confirmar/mostrar nada além do pick)
   | { type: "only_keep"; target: Target; dropQueueOnly?: boolean }
   | { type: "rewrite"; text: string; label: string }
-  | { type: "reply"; kind: "smalltalk" | "unclear"; text?: string };
+  | { type: "reply"; kind: "smalltalk" | "unclear"; text?: string }
+  // Texto FIXO do lia-copy (nunca livre da IA): produto que a Lia não vende / remédio insistente.
+  | { type: "fixed"; key: "out_of_scope" | "medicine" };
 
 export type Plan = { ok: true; steps: Planned[] } | { ok: false; reason: string };
 
@@ -64,7 +66,7 @@ function resolveTarget(state: DialogueState, target: number | undefined): Target
 }
 
 // Ações que respondem/encerram o turno sozinhas: só valem isoladas.
-const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay", "change_address", "more_options", "smalltalk", "unclear"]);
+const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay", "change_address", "more_options", "smalltalk", "unclear", "out_of_scope", "medicine"]);
 
 export function planActions(decision: DialogueDecision, state: DialogueState): Plan {
   const actions = decision.actions;
@@ -185,6 +187,10 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false):
       if (said && extractCep(said) && said.replace(/\D/g, "").length <= 8) return { type: "rewrite", text: said, label: "change_address" };
       return { type: "rewrite", text: said ? `trocar endereço: ${said}` : "trocar endereço", label: "change_address" };
     }
+    case "out_of_scope":
+      return { type: "fixed", key: "out_of_scope" };
+    case "medicine":
+      return { type: "fixed", key: "medicine" };
     case "smalltalk":
       return { type: "reply", kind: "smalltalk", text: a.text };
     case "unclear":
