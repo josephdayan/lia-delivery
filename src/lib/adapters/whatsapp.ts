@@ -386,6 +386,9 @@ export function buildListPayload(to: string, input: WhatsAppListInput) {
 // opções, booleanos).
 export type WhatsAppFlowDataValue = string | number | boolean | null | WhatsAppFlowDataValue[] | { [key: string]: WhatsAppFlowDataValue };
 
+// Id do botão "Mudar minha lista" (volta como texto e reenvia o Flow da lista).
+export const LIST_FLOW_REOPEN_ID = "mudar_lista";
+
 export type WhatsAppFlowInput = {
   body: string;
   cta: string;
@@ -776,7 +779,7 @@ export const whatsappAdapter = {
   // naturais viram botão (pedido do dono, 09/08). Os ids voltam como texto e caem nos
   // ramos que JÁ existem: "pagar" fecha a lista e cota, "adicionar_mais" pede o próximo
   // item, "cancelar" limpa a lista em montagem.
-  async sendChoiceFollowUp(to: string, body: string, opts?: { qtyButton?: boolean }) {
+  async sendChoiceFollowUp(to: string, body: string, opts?: { qtyButton?: boolean; listFlowButton?: boolean }) {
     if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
     return sendMetaSimpleButtons(to, body, [
       // Foi "Pagar"→"Ver total" (rodada 1) e voltou a "Pagar" por decisão do dono
@@ -787,9 +790,12 @@ export const whatsappAdapter = {
       // Teto Meta = 3 botões. Quando a quantidade acabou de ser assumida (1 un), o
       // terceiro vira "Mudar quantidade" (dono, 01/09) — "cancelar" digitado segue
       // funcionando em qualquer estado.
-      opts?.qtyButton
-        ? { id: "qtd_alterar", title: "Mudar quantidade" }
-        : { id: "cancelar", title: "Cancelar" }
+      // Depois do Flow da lista (07/10), o terceiro reabre o formulário com o estado atual.
+      opts?.listFlowButton
+        ? { id: LIST_FLOW_REOPEN_ID, title: "Mudar minha lista" }
+        : opts?.qtyButton
+          ? { id: "qtd_alterar", title: "Mudar quantidade" }
+          : { id: "cancelar", title: "Cancelar" }
     ]);
   },
 

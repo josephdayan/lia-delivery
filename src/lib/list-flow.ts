@@ -7,6 +7,8 @@ import type { WhatsAppFlowDataValue } from "@/lib/adapters/whatsapp";
 
 export const LIST_FLOW_MAX_SLOTS = 15;
 export const LIST_FLOW_MAX_OPTIONS = 4;
+// Rótulo gravado no histórico no lugar da resposta crua do formulário.
+export const LIST_FLOW_MESSAGE = "🛒 Lista escolhida no formulário";
 export const LIST_FLOW_SKIP_ID = "skip";
 export const LIST_FLOW_SKIP_TITLE = "Não quero este item";
 // Orçamento de miniaturas (base64) dentro do payload total de 1 MB da Meta.

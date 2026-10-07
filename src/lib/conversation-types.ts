@@ -102,6 +102,24 @@ export type PendingChoice = {
   cheapestFirst?: boolean;
 };
 
+// not_found = nenhuma loja tem; unbuyable = existe, mas nenhuma entrega no CEP. ("mais perto" e
+// "proibido" não entram: o primeiro é uma vaga do Flow, o segundo não se procura de novo.)
+export type ListMissReason = "not_found" | "unbuyable";
+export type ListMiss = { query: string; qty: number; reason: ListMissReason; at: number; retried?: boolean };
+
+export type ListFlowCtxSlot = {
+  lineKey: string;
+  query: string;
+  qty: number;
+  // Só os produtos oferecidos (sem "skip"), na ordem enviada; é contra isto que a resposta é validada.
+  skus: string[];
+  suggestedSku: string | null;
+  // As opções por trás dos skus: trocar a cesta depois não precisa de nova busca.
+  options: ChoiceOption[];
+  closestFalta?: string;
+};
+export type ListFlowCtx = { id: string; sentAt: number; basketSig: string; slots: ListFlowCtxSlot[] };
+
 export type DeliveryContext = {
   flow?: "delivery";
   step?:
@@ -182,6 +200,13 @@ export type DeliveryContext = {
   // Último pedido que NENHUMA loja tinha (07/10, placar c28/c40): "tenta de novo" e "pode ser
   // uma Wilson" falam dele. `retried` = já refizemos a busca uma vez; a 2ª vez é resposta honesta.
   lastMiss?: { query: string; qty: number; at: number; retried?: boolean };
+  // Faltantes de uma lista (07/10, Etapa 3): cada linha sem produto termina num status (ListMissReason)
+  // e fica aqui por 20 min — "tenta de novo" refaz todas; resposta curta casa com a mais parecida.
+  // Substitui `lastMiss` (que só guardava UM pedido); contextos antigos com `lastMiss` seguem lidos.
+  listMisses?: ListMiss[];
+  // Flow "Escolher minha lista" enviado (LIA_LIST_FLOW). `id` é o flow_token: a resposta só vale se
+  // o id bate e a cesta continua como estava (`basketSig`); qualquer edição por texto invalida.
+  listFlow?: ListFlowCtx;
   // Orçamento declarado na linha ("presente até R$100", "uns 80 reais") vale para o TOTAL com entrega
   // (07/10, c23/c24). `sku` = a escolha que o teto cobre (só vale com ela sozinha na cesta);
   // `warned` = já avisamos que estourou (a 2ª vez pergunta em vez de repetir a lista);

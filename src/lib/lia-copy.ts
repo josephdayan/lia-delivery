@@ -1509,6 +1509,100 @@ function shortNotFoundLabel(phrase: string): string {
   return words.length > 6 ? `${words.slice(0, 5).join(" ")}…` : phrase;
 }
 
+// ---------- Flow da lista e faltantes (07/10, Etapas 2 e 3) ----------
+// Cada linha da lista termina em UM status; o MESMO texto aparece na mensagem antes do botão,
+// no bloco "Não encontrei" do Flow (plain) e no resumo depois de confirmar.
+export type MissStatus = "closest" | "not_found" | "unbuyable";
+export type MissEntry = { status: MissStatus; label: string; qty?: number; falta?: string };
+
+export const MISS_CLOSING = "Me manda outro nome ou marca pra qualquer um desses que eu procuro de novo.";
+
+const stripMarks = (text: string) => text.replace(/[*_]/g, "");
+
+export function missLine(m: MissEntry, plain = false): string {
+  const label = `${shortNotFoundLabel(m.label)}${m.qty && m.qty > 1 ? ` (${m.qty}x)` : ""}`;
+  const line =
+    m.status === "closest"
+      ? `🔎 *${label}* — o mais perto que achei ${m.falta ?? "é diferente do pedido"}; escolha uma opção ou *Não quero*`
+      : m.status === "unbuyable"
+        ? `🚫 *${label}* — nenhuma loja entrega no seu endereço agora`
+        : `❌ *${label}* — não achei em nenhuma loja`;
+  return plain ? stripMarks(line) : line;
+}
+
+// Linhas de status + o fecho (só quando há algo a procurar de novo).
+export function missesBlock(misses: MissEntry[], plain = false): string {
+  if (!misses.length) return "";
+  const lines = misses.map((m) => missLine(m, plain));
+  if (misses.some((m) => m.status !== "closest")) lines.push(plain ? stripMarks(MISS_CLOSING) : MISS_CLOSING);
+  return lines.join("\n");
+}
+
+const FLOW_BODY_MAX = 1000;
+
+// Texto da mensagem de Flow (corpo ≤ 1024): cesta sugerida + o que faltou + o que fazer. Lista
+// longa encolhe: as primeiras linhas ficam e o resto vira "…e mais N".
+export function listFlowIntro(input: {
+  items: { qty: number; name: string; total: number }[];
+  misses: MissEntry[];
+  notes?: string[];
+  stale?: boolean;
+  reopen?: boolean;
+  overflowCount?: number;
+}): string {
+  const head = input.stale
+    ? "Essa lista mudou depois que te mandei; segue a atualizada:"
+    : input.reopen
+      ? "Sua lista do jeito que está agora:"
+      : "Montei sua lista com a minha sugestão:";
+  const tail = [
+    input.overflowCount ? `_Só as 15 primeiras linhas cabem no formulário; as outras ${input.overflowCount} ficaram pela minha sugestão (dá pra trocar por texto)._` : "",
+    "Pra trocar ou tirar algum item, toque em *Escolher minha lista*. Se já está bom, é só *Pagar*."
+  ].filter(Boolean);
+  const extras = [...(input.notes ?? []), input.misses.length ? missesBlock(input.misses) : ""].filter(Boolean);
+  const render = (count: number) => {
+    const shown = input.items.slice(0, count).map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`);
+    const rest = input.items.length - count;
+    if (rest > 0) shown.push(`• …e mais ${rest} ${rest === 1 ? "item" : "itens"}`);
+    return [head, ...shown, ...(extras.length ? ["", ...extras] : []), "", ...tail].join("\n");
+  };
+  let count = input.items.length;
+  let body = render(count);
+  while (body.length > FLOW_BODY_MAX && count > 1) {
+    count -= 1;
+    body = render(count);
+  }
+  return body.length > FLOW_BODY_MAX ? `${body.slice(0, FLOW_BODY_MAX - 1)}…` : body;
+}
+
+export function listFlowFollowUp(): string {
+  return "Se a lista estiver boa, toque em *Pagar*.";
+}
+
+export function listFlowClosed(): string {
+  return "Essa lista já foi fechada, então não mexi em nada. Pra ajustar, me diz o que trocar (ex.: _troca X por Y_) ou toque em *Adicionar mais*.";
+}
+
+// Resumo depois do formulário: itens, o que ficou de fora, faltantes de novo e o total parcial.
+export function listFlowDone(input: {
+  items: { qty: number; name: string; total: number }[];
+  leftOut: string[];
+  misses: MissEntry[];
+  produtos: number;
+}): string {
+  const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)];
+  if (!input.items.length) lines.push("_Nenhum item ficou na lista._");
+  if (input.leftOut.length) lines.push("", `Ficou de fora (sem opção escolhida): ${input.leftOut.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")}.`);
+  if (input.misses.length) lines.push("", missesBlock(input.misses));
+  if (input.items.length) lines.push("", `Produtos: ${brl(input.produtos)} _(a entrega entra no total)_`);
+  return lines.join("\n");
+}
+
+// Procurou de novo a faltante pedida e achou: o item entra como avulso.
+export function missFound(query: string): string {
+  return `Achei *${shortNotFoundLabel(query)}* 👇`;
+}
+
 export function itemsNotAvailableWithOptions(items: string[]): string {
   const labels = items.map(shortNotFoundLabel);
   if (labels.length === 1) {

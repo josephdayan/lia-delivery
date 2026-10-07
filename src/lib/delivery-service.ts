@@ -1,6 +1,6 @@
 import { displayPrice, serviceFeeForItems } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
-import { carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
+import { LIST_FLOW_REOPEN_ID, carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
@@ -16,6 +16,10 @@ import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
+import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildListFlowData, isListFlowReply, parseListFlowReply } from "@/lib/list-flow";
+import { fetchThumbs } from "@/lib/flow-thumbs";
+import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
+import { recordSearchMisses } from "@/lib/search-misses";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
@@ -35,6 +39,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 // the WhatsApp conversation state machine AND the order lifecycle the operator
 // dashboard drives. Intent detection lives in lia-intents (pure, unit-tested) and
 // every customer-facing string lives in lia-copy.
+import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-types";
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
@@ -1147,7 +1152,9 @@ export async function handleDeliveryMessage(input: {
   turnStartedAt.set(phone, Date.now());
   // Formulário de cadastro: o histórico grava só um rótulo (o formulário traz o CPF).
   const signupForm = isSignupFormReply(input.flowResponse) ? input.flowResponse : undefined;
-  const tagged = stripAcquisitionTag(signupForm ? SIGNUP_FORM_MESSAGE : (input.text ?? "").trim());
+  // Formulário da lista (07/10): o histórico grava só um rótulo; a resposta crua tem skus.
+  const listForm = !signupForm && isListFlowReply(input.flowResponse) ? input.flowResponse : undefined;
+  const tagged = stripAcquisitionTag(signupForm ? SIGNUP_FORM_MESSAGE : listForm ? LIST_FLOW_MESSAGE : (input.text ?? "").trim());
   let text = tagged.text;
   const acquisition = mergeAcquisition(input.acquisition, tagged.campaignCode);
   const { user, convo } = await getOrCreateConvo(phone, input.name);
@@ -1244,6 +1251,7 @@ export async function handleDeliveryMessage(input: {
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
     if (!currentShopperCep()) noteShopperCep(user.cep);
     if (signupForm) await handleSignupForm(phone, signupForm, user, freshConvo);
+    else if (listForm) await handleListFlowReply(phone, listForm, user, freshConvo);
     else await handleDeliveryTurn(phone, text, user, freshConvo, inboundMessageId);
     // REDE ANTI-SILÊNCIO: nenhum caminho do turno respondeu nada → fallback pedindo
     // reformulação. Silêncio absoluto é o pior desfecho possível (28/08: 4 sessões).
@@ -1473,6 +1481,12 @@ async function handleDeliveryTurn(
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
     await askAddress(phone, copy.askCepAgain());
+    return;
+  }
+
+  // Botão "Mudar minha lista" (07/10): reabre o formulário com a lista como está agora.
+  if (normalizeMsg(text) === LIST_FLOW_REOPEN_ID) {
+    if (!(await reshowListFlow(phone, convo.id, ctx, "reopen"))) await reply(phone, copy.listFlowClosed());
     return;
   }
 
@@ -3427,7 +3441,7 @@ async function handleDeliveryTurn(
   // direto pra busca (custo/latência). Sem OpenAI o roteador devolve null e nada muda.
   // "tenta de novo"/"pode tentar uma Wilson?" logo depois de um "não achei" continua o pedido
   // anterior (07/10): o classificador os tratava como pergunta ("essa eu não sei responder").
-  const continuesMiss = Boolean(ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 && parseMissFollowUp(text));
+  const continuesMiss = Boolean(freshListMisses(ctx).length && parseMissFollowUp(text));
   if (classifyFirstEnabled() && intent.kind === "free_text" && !looksLikeProductList(text) && !continuesMiss) {
     if (await tryLlmInterpret(phone, convo.id, user.cep, ctx, text, user.id)) return;
   }
@@ -5569,7 +5583,7 @@ async function advancePending(
   ctx: DeliveryContext,
   userCep?: string | null,
   prefix?: string,
-  followUpOpts?: { qtyButton?: boolean }
+  followUpOpts?: { qtyButton?: boolean; listFlowButton?: boolean }
 ) {
   if (ctx.pending?.length) {
     await writeCtx(convoId, ctx);
@@ -6044,6 +6058,55 @@ async function handleSwap(
 
 // Concierge mode request: parse the message into free-form lines (medicine still
 // filtered by law), add them to the basket and confirm — no catalog, no options step.
+// Cesta como CONJUNTO (P1.8): entre as opções aprovadas de cada linha, escolhe a combinação que
+// minimiza produtos+frete — reordena `options` (a escolhida vai à frente) e devolve o aviso de cada
+// troca. Compartilhado pelo modo lista e pelo Flow da lista.
+function runBasketComposer(pending: PendingChoice[]): string[] {
+  const composedNotes: string[] = [];
+  if (process.env.LIA_BASKET_COMPOSER_OFF !== "true" && pending.length >= 2) {
+    const composition = composeBasket(
+      pending.map((p) => ({
+        qty: Math.max(1, p.qty),
+        options: p.options.map((o) => ({
+          sku: o.sku,
+          name: o.name,
+          unitPrice: o.unitPrice,
+          storeKey: o.storeKey,
+          storeLabel: o.storeLabel
+        }))
+      })),
+      display,
+      (storeKey, storeLabel, subtotal) => storeFreight(storeKey, storeLabel ?? storeKey, subtotal).fee
+    );
+    const saved = Math.round((composition.before.total - composition.after.total) * 100) / 100;
+    if (composition.moves.length && saved >= 3) {
+      for (let i = 0; i < pending.length; i++) {
+        const pick = composition.picks[i];
+        if (pick > 0) {
+          const line = pending[i];
+          const chosen = line.options[pick];
+          line.options = [chosen, ...line.options.filter((_, j) => j !== pick)];
+        }
+      }
+      composedNotes.push(
+        copy.bundledDeliveriesNote({
+          moves: composition.moves.map((m) => ({
+            fromName: m.fromName,
+            fromStore: m.fromStore,
+            toName: m.toName,
+            toStore: m.toStore
+          })),
+          storesBefore: composition.before.stores,
+          storesAfter: composition.after.stores,
+          saved
+        })
+      );
+      console.log("[basket-composer]", `${composition.before.stores}→${composition.after.stores} lojas, -R$${saved}`);
+    }
+  }
+  return composedNotes;
+}
+
 async function handleConciergeRequest(
   phone: string,
   convoId: string,
@@ -6094,35 +6157,52 @@ async function handleConciergeRequest(
   const preferred = userId ? await preferredSkuCounts(userId) : undefined;
   // Depois de "não achei" (07/10): "tenta de novo"/"qualquer marca" refaz o pedido anterior UMA
   // vez (a 2ª é resposta honesta) e "pode tentar uma Wilson?" soma a marca ao pedido anterior.
-  const prevMiss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
+  // Com várias faltantes (`ctx.listMisses`, Etapa 3), "tenta de novo" refaz TODAS e a resposta curta
+  // casa com a faltante mais parecida e busca só ela.
+  const carriedMisses = freshListMisses(ctx);
+  let missCarry = carriedMisses;
+  let prevMiss: ListMiss | undefined;
+  let fragmentReplaced = false;
   ctx.lastMiss = undefined;
   let retriedMiss = false;
   let rawPre: ChoicesResult | undefined;
   // Pedido anterior + fragmento ("pode tentar uma Wilson?") sem nada nas duas buscas: o "não achei"
   // fala do PEDIDO COMPLETO, não do fragmento nem de "essa eu não sei responder".
   let missCombined: string | undefined;
-  const follow = prevMiss ? parseMissFollowUp(text) : null;
-  if (prevMiss && follow?.kind === "retry") {
-    if (prevMiss.retried) {
-      ctx.lastMiss = prevMiss;
+  const follow = carriedMisses.length ? parseMissFollowUp(text) : null;
+  if (carriedMisses.length && follow?.kind === "retry") {
+    if (carriedMisses.every((miss) => miss.retried)) {
+      applyListMisses(ctx, carriedMisses);
       await writeCtx(convoId, ctx);
-      await reply(phone, copy.missStillNone(prevMiss.query));
+      await reply(phone, copy.missStillNone(carriedMisses.map((miss) => miss.query).join(", ")));
       return;
     }
-    text = prevMiss.qty > 1 ? `${prevMiss.qty} ${prevMiss.query}` : prevMiss.query;
+    prevMiss = carriedMisses[carriedMisses.length - 1];
+    text = carriedMisses.map(missLabel).join(", ");
+    missCarry = [];
     retriedMiss = true;
-  } else if (prevMiss && follow?.kind === "fragment") {
-    const combined = `${prevMiss.query} ${follow.words}`;
-    const probe = await buildChoices(combined, undefined, preferred, undefined, undefined, ctx.cep ?? userCep);
-    // Só vale se o pedido combinado continua UMA linha e a marca/atributo está mesmo numa opção —
-    // senão "leite" depois de "bola de tênis" virava "bola de tênis leite".
-    const fragmentWord = normalizeMsg(follow.words);
-    const named = [...probe.pending.flatMap((p) => p.options), ...probe.autoAdded].some((o) => normalizeMsg(o.name).includes(fragmentWord));
-    if (probe.lines.length === 1 && named) {
-      text = prevMiss.qty > 1 ? `${prevMiss.qty} ${combined}` : combined;
-      rawPre = probe;
-    } else if (/\b(tent|procur|busc|pode ser|ve se|veja se)/.test(normalizeMsg(text))) {
-      missCombined = combined;
+  } else if (carriedMisses.length && follow?.kind === "fragment") {
+    const picked = pickMissForFragment(carriedMisses, follow.words);
+    if (picked) {
+      const target = picked.miss;
+      const combined = picked.replaces ? follow.words : `${target.query} ${follow.words}`;
+      const probe = await buildChoices(combined, undefined, preferred, undefined, undefined, ctx.cep ?? userCep);
+      // Só vale se o pedido combinado continua UMA linha e a marca/atributo está mesmo numa opção —
+      // senão "leite" depois de "bola de tênis" virava "bola de tênis leite". Quando o cliente
+      // reescreveu o próprio nome do item ("gelo em cubo" para "gelo"), vale o que ele escreveu.
+      const fragmentWord = normalizeMsg(follow.words);
+      const named = picked.replaces || [...probe.pending.flatMap((p) => p.options), ...probe.autoAdded].some((o) => normalizeMsg(o.name).includes(fragmentWord));
+      if (probe.lines.length === 1 && named) {
+        prevMiss = target;
+        missCarry = carriedMisses.filter((miss) => miss !== target);
+        fragmentReplaced = picked.replaces;
+        text = target.qty > 1 ? `${target.qty} ${combined}` : combined;
+        rawPre = probe;
+      } else if (/\b(tent|procur|busc|pode ser|ve se|veja se)/.test(normalizeMsg(text))) {
+        prevMiss = target;
+        missCarry = carriedMisses.filter((miss) => miss !== target);
+        missCombined = combined;
+      }
     }
   }
   const raw = rawPre ?? (mercadoLivreEnabled()
@@ -6251,7 +6331,16 @@ async function handleConciergeRequest(
   // Remédio pelo nome que não está entre os isentos (06/10, Euthyrox): diz o porquê.
   const medicineMiss = medicineEnabled() && unavailable.length > 0 && unavailable.every(looksLikeMedicineName);
   const notFoundNote = (withOptions: boolean) =>
-    [
+    // Com o Flow da lista ligado, o "o resto achei" (nota de vitrine) usa a copy única por status.
+    withOptions && listFlowEnabled() && !medicineMiss && !offerLongTail && (unavailable.length || unbuyable.length)
+      ? copy.missesBlock(
+          notFoundLines.map((line): copy.MissEntry => ({
+            status: unconfirmedSet.has(normalizeMsg(line.phrase)) ? "unbuyable" : "not_found",
+            label: line.phrase,
+            qty: line.qty
+          }))
+        )
+      : [
       !unavailable.length
         ? null
         : offerLongTail
@@ -6266,6 +6355,19 @@ async function handleConciergeRequest(
       .filter(Boolean)
       .join("\n");
   const hasNotFound = unavailable.length > 0 || unbuyable.length > 0;
+  // Faltantes desta mensagem (Etapa 3): ficam 20 min no contexto e vão para o registro do /ops.
+  // A busca refeita ("tenta de novo") não grava de novo — é a mesma demanda.
+  const turnMisses: ListMiss[] = notFoundLines
+    .filter((line) => !looksLikeMedicineName(line.phrase) && !isPrescriptionDrugName(line.phrase))
+    .map((line) => ({
+      query: line.phrase,
+      qty: line.qty,
+      reason: unconfirmedSet.has(normalizeMsg(line.phrase)) ? ("unbuyable" as const) : ("not_found" as const),
+      at: Date.now(),
+      ...(retriedMiss || fragmentReplaced ? { retried: true } : {})
+    }));
+  applyListMisses(ctx, mergeListMisses(missCarry, turnMisses));
+  if (!retriedMiss && !prevMiss && turnMisses.length) await recordSearchMisses(phone, ctx.cep ?? userCep, turnMisses);
   ctx.flow = "delivery";
   // A cesta continua pertencendo ao "concierge" mesmo quando o item veio de uma vitrine: o
   // pedido é cotado e comprado à mão, então não há uma loja dona do pedido.
@@ -6304,6 +6406,15 @@ async function handleConciergeRequest(
     return;
   }
 
+  // Flow da lista (07/10, LIA_LIST_FLOW): 2+ linhas com opção viram um formulário nativo, com a
+  // sugestão de cada uma já na cesta. Falha ou condição não atendida → segue o caminho de sempre.
+  if (pending.length >= 2) {
+    const flowNotes: string[] = [];
+    if (containsMedicine) flowNotes.push(medicineSkippedCopy());
+    if (raw.containsTobacco) flowNotes.push(copy.tobaccoRefusal());
+    if (await tryListFlow({ phone, convoId, userCep, ctx, pending, notFoundLines, unconfirmedSet, notes: flowNotes })) return;
+  }
+
   // Modo lista: 2+ itens resolvidos de uma mensagem de 3+ linhas → cesta direta com o
   // topo do ranking de cada linha (rerank/determinístico — o mesmo que "escolhe você").
   // Sem cards por item (10 cards é spam); o resumo sai com os botões de sempre e
@@ -6316,48 +6427,7 @@ async function handleConciergeRequest(
     // combinação que minimiza produtos+frete — e ANUNCIA cada troca (lição da rodada
     // 2: mudança silenciosa de produto é quebra de confiança). Só aplica quando a
     // economia é real (≥ R$3) e nunca é kill: LIA_BASKET_COMPOSER_OFF desliga.
-    const composedNotes: string[] = [];
-    if (process.env.LIA_BASKET_COMPOSER_OFF !== "true" && pending.length >= 2) {
-      const composition = composeBasket(
-        pending.map((p) => ({
-          qty: Math.max(1, p.qty),
-          options: p.options.map((o) => ({
-            sku: o.sku,
-            name: o.name,
-            unitPrice: o.unitPrice,
-            storeKey: o.storeKey,
-            storeLabel: o.storeLabel
-          }))
-        })),
-        display,
-        (storeKey, storeLabel, subtotal) => storeFreight(storeKey, storeLabel ?? storeKey, subtotal).fee
-      );
-      const saved = Math.round((composition.before.total - composition.after.total) * 100) / 100;
-      if (composition.moves.length && saved >= 3) {
-        for (let i = 0; i < pending.length; i++) {
-          const pick = composition.picks[i];
-          if (pick > 0) {
-            const line = pending[i];
-            const chosen = line.options[pick];
-            line.options = [chosen, ...line.options.filter((_, j) => j !== pick)];
-          }
-        }
-        composedNotes.push(
-          copy.bundledDeliveriesNote({
-            moves: composition.moves.map((m) => ({
-              fromName: m.fromName,
-              fromStore: m.fromStore,
-              toName: m.toName,
-              toStore: m.toStore
-            })),
-            storesBefore: composition.before.stores,
-            storesAfter: composition.after.stores,
-            saved
-          })
-        );
-        console.log("[basket-composer]", `${composition.before.stores}→${composition.after.stores} lojas, -R$${saved}`);
-      }
-    }
+    const composedNotes = runBasketComposer(pending);
     const autopickMax = Number(process.env.LIA_BULK_AUTOPICK_MAX ?? 100);
     // O teto vale pra LINHA (preço × quantidade após conversão de embalagem), não só
     // pra unidade — 12x de um item de R$18 entrava sozinho por R$217 (29/08 S4).
@@ -6437,9 +6507,17 @@ async function handleConciergeRequest(
   // virar produto (29/08: 6 sessões nesse padrão).
   // Remédio não achado já tem resposta certa: a segunda busca pela IA só atrasava (>45 s).
   if (missCombined && prevMiss && !pending.length && !containsMedicine && !raw.containsTobacco) {
-    ctx.lastMiss = { query: missCombined, qty: prevMiss.qty, at: Date.now() };
+    applyListMisses(ctx, mergeListMisses(missCarry, [{ query: missCombined, qty: prevMiss.qty, reason: "not_found", at: Date.now() }]));
     await writeCtx(convoId, ctx);
     await reply(phone, copy.itemsNotAvailable([missCombined]));
+    return;
+  }
+  if (fragmentReplaced && prevMiss && !pending.length && notFoundLines.length === 1) {
+    // Busca refeita de UMA faltante que continua sem nada (Etapa 3): "continuo sem nenhuma opção" e
+    // ela sai da lista (o "tenta de novo" geral segue valendo para as outras).
+    applyListMisses(ctx, missCarry);
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.missStillNone(prevMiss.query));
     return;
   }
   if (!containsMedicine && !raw.containsTobacco && !medicineMiss) {
@@ -6455,11 +6533,6 @@ async function handleConciergeRequest(
     await refuseMedicine(phone, convoId, ctx);
     return;
   }
-  // Guarda o pedido sem opção: o próximo "tenta de novo"/"uma Wilson" fala dele.
-  if (unavailable.length === 1 && notFoundLines.length === 1 && !containsMedicine && !medicineMiss) {
-    ctx.lastMiss = { query: notFoundLines[0].phrase, qty: notFoundLines[0].qty, at: Date.now(), ...(retriedMiss ? { retried: true } : {}) };
-    await writeCtx(convoId, ctx);
-  }
   const notes: string[] = [];
   if (containsMedicine) notes.push(medicineSkippedCopy());
   if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
@@ -6474,6 +6547,295 @@ async function handleConciergeRequest(
     }
   }
   await reply(phone, notes.join("\n"));
+}
+
+// ---------- Flow "Escolher minha lista" (07/10, Etapas 2 e 3) ----------
+// Lista com 2+ linhas que têm opção vira UMA mensagem de formulário nativo (uma vaga por item,
+// com miniaturas) em vez de uma sequência de cards. A sugestão da Lia de cada vaga já está na
+// cesta (zero espera: dá pra tocar em Pagar sem abrir nada); o formulário só troca ou tira.
+// Tudo atrás de LIA_LIST_FLOW=true; qualquer falha cai no modo lista/sequencial de sempre.
+
+function listFlowEnabled(): boolean {
+  return process.env.LIA_LIST_FLOW === "true" && process.env.WHATSAPP_PROVIDER === "meta";
+}
+
+// Foto da cesta: a resposta do formulário só vale se a cesta continua como estava quando ele foi
+// enviado — qualquer edição por texto (troca, tira, quantidade, item novo) a muda e invalida o id.
+function basketSignature(basket: BasketItem[] | undefined): string {
+  return (basket ?? []).map((item) => `${item.sku}:${item.qty}`).sort().join("|");
+}
+
+function newListFlowId(): string {
+  return `lst${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+}
+
+// A opção desta vaga que está na cesta agora (a sugestão ou a troca já aplicada); null = fora.
+function slotCurrentSku(slot: ListFlowCtxSlot, basket: BasketItem[]): string | null {
+  const inBasket = (sku: string) => basket.some((item) => item.sku === sku);
+  if (slot.suggestedSku && inBasket(slot.suggestedSku)) return slot.suggestedSku;
+  return slot.skus.find(inBasket) ?? null;
+}
+
+function basketLinesForCopy(basket: BasketItem[]) {
+  return basket.map((item) => ({ qty: item.qty, name: item.name, total: display(item.unitPrice, item.medicine) * item.qty }));
+}
+
+// Status das linhas que não viraram sugestão, na copy única (Etapa 3).
+function missEntriesFor(listMisses: ListMiss[], slots: ListFlowCtxSlot[]): copy.MissEntry[] {
+  const closest = slots
+    .filter((slot) => slot.closestFalta && !slot.suggestedSku)
+    .map((slot): copy.MissEntry => ({ status: "closest", label: slot.query, qty: slot.qty, falta: slot.closestFalta }));
+  const gone = listMisses.map((miss): copy.MissEntry => ({ status: miss.reason, label: miss.query, qty: miss.qty }));
+  return [...closest, ...gone];
+}
+
+// Monta o `data`, envia a mensagem de Flow e devolve o estado para o contexto (ou null se não
+// saiu). `slots` já vem na ordem do formulário, com a sugestão (ou não) de cada vaga.
+async function sendListFlowMessage(
+  phone: string,
+  flowId: string,
+  input: {
+    slots: ListFlowCtxSlot[];
+    items: { qty: number; name: string; total: number }[];
+    misses: copy.MissEntry[];
+    notes?: string[];
+    head?: "stale" | "reopen";
+    thumbs?: Promise<Map<string, string>>;
+  }
+): Promise<ListFlowCtx | null> {
+  const { LIST_FLOW_CTA, LIST_FLOW_SCREEN } = await import("@/lib/meta-setup");
+  const id = newListFlowId();
+  const thumbs = await (input.thumbs ?? fetchThumbs(input.slots.slice(0, LIST_FLOW_MAX_SLOTS).flatMap((slot) => slot.options)));
+  const built = buildListFlowData(
+    {
+      listaId: id,
+      slots: input.slots.map((slot) => ({
+        lineKey: slot.lineKey,
+        label: slot.query,
+        qty: slot.qty,
+        options: slot.options,
+        suggestedSku: slot.suggestedSku,
+        closestFalta: slot.closestFalta
+      })),
+      faltasTexto: input.misses.length ? copy.missesBlock(input.misses, true) : undefined,
+      thumbs
+    },
+    (price, option) => display(price, option?.medicine)
+  );
+  const body = copy.listFlowIntro({
+    items: input.items,
+    misses: input.misses,
+    notes: input.notes,
+    stale: input.head === "stale",
+    reopen: input.head === "reopen",
+    overflowCount: built.overflow.length
+  });
+  markTurnReplied();
+  const sent = await whatsappAdapter.sendFlowMessage(phone, { body, cta: LIST_FLOW_CTA, flowId, screen: LIST_FLOW_SCREEN, data: built.data, token: id });
+  if (!sent) return null;
+  const sentSlots = built.slots.map((sentSlot): ListFlowCtxSlot => {
+    const slot = input.slots.find((s) => s.lineKey === sentSlot.lineKey) as ListFlowCtxSlot;
+    return { ...slot, skus: sentSlot.skus, suggestedSku: sentSlot.suggestedSku, options: sentSlot.skus.map((sku) => slot.options.find((o) => o.sku === sku) as ChoiceOption) };
+  });
+  return { id, sentAt: Date.now(), basketSig: "", slots: sentSlots };
+}
+
+// Os botões de sempre (Pagar / Adicionar mais / Mudar minha lista) depois do formulário.
+async function sendListFlowFollowUp(phone: string, body: string) {
+  try {
+    markTurnReplied();
+    const interactive = await whatsappAdapter.sendChoiceFollowUp(phone, body, { listFlowButton: true });
+    if (interactive) return;
+  } catch (error) {
+    console.warn("[whatsapp:list-flow:followup:fallback-text]", error instanceof Error ? error.message : error);
+  }
+  await reply(phone, copy.conciergeKeepAdding());
+}
+
+// Gatilho (handleConciergeRequest): devolve true se mandou o formulário. Só mexe no contexto
+// DEPOIS de o formulário sair; sem Flow publicado, remédio isento na lista ou falha no envio, o
+// chamador segue o caminho de sempre com tudo intacto.
+async function tryListFlow(args: {
+  phone: string;
+  convoId: string;
+  userCep: string | null | undefined;
+  ctx: DeliveryContext;
+  pending: PendingChoice[];
+  notFoundLines: ParsedLine[];
+  unconfirmedSet: Set<string>;
+  notes: string[];
+}): Promise<boolean> {
+  const { phone, convoId, ctx, pending } = args;
+  if (!listFlowEnabled() || pending.length < 2) return false;
+  // Remédio isento usa cards soltos no Meta (05/10): a lista com remédio não usa o formulário.
+  if (pending.some((choice) => choice.options.some((option) => option.medicine))) return false;
+  let flowId: string | null = null;
+  try {
+    const { activeListFlowId } = await import("@/lib/meta-setup");
+    flowId = await activeListFlowId();
+  } catch (error) {
+    console.warn("[list-flow:id]", error instanceof Error ? error.message : error);
+  }
+  if (!flowId) return false;
+
+  try {
+    // Cópia: o composer reordena as opções, e se o formulário falhar o caminho antigo roda o dele.
+    const lines = pending.map((choice) => ({ ...choice, options: [...choice.options] }));
+    const composedNotes = runBasketComposer(lines);
+    const autopickMax = Number(process.env.LIA_BULK_AUTOPICK_MAX ?? 100);
+    const added: BasketItem[] = [];
+    const packNotes: string[] = [];
+    const slots: ListFlowCtxSlot[] = lines.map((choice, index) => {
+      const top = choice.options[0];
+      const qty = Math.max(1, choice.qty);
+      const adj = packAdjusted(top, qty, choice.query);
+      // "Mais próximo" ou acima do teto não entra sozinho: vaga sem sugestão ("escolha uma").
+      const suggest = !choice.closestFalta && display(top.unitPrice, top.medicine) * adj.qty <= autopickMax;
+      if (suggest) {
+        if (adj.note) packNotes.push(adj.note);
+        added.push(choiceToBasketItem(top, adj.qty, top.storeKey ? getStore(top.storeKey) : orderStore(ctx)));
+      }
+      return {
+        lineKey: `${index}:${normalizeMsg(choice.query)}`,
+        query: choice.query,
+        qty,
+        skus: choice.options.slice(0, LIST_FLOW_MAX_OPTIONS).map((o) => o.sku),
+        suggestedSku: suggest ? top.sku : null,
+        options: choice.options.slice(0, LIST_FLOW_MAX_OPTIONS),
+        ...(choice.closestFalta ? { closestFalta: choice.closestFalta } : {})
+      };
+    });
+    // O que precisa de escolha vem primeiro: só as 15 primeiras vagas cabem no formulário.
+    const ordered = [...slots.filter((s) => !s.suggestedSku), ...slots.filter((s) => s.suggestedSku)];
+    if (slots.filter((s) => !s.suggestedSku).length > LIST_FLOW_MAX_SLOTS) return false;
+
+    const misses = missEntriesFor(
+      args.notFoundLines.map((line): ListMiss => ({
+        query: line.phrase,
+        qty: line.qty,
+        reason: args.unconfirmedSet.has(normalizeMsg(line.phrase)) ? "unbuyable" : "not_found",
+        at: Date.now()
+      })),
+      ordered
+    );
+    const thumbs = fetchThumbs(ordered.slice(0, LIST_FLOW_MAX_SLOTS).flatMap((slot) => slot.options));
+    const sent = await sendListFlowMessage(phone, flowId, {
+      slots: ordered,
+      items: basketLinesForCopy(added),
+      misses,
+      notes: args.notes,
+      thumbs
+    });
+    if (!sent) return false;
+
+    ctx.basket = mergeBaskets(ctx.basket ?? [], added);
+    ctx.pending = undefined;
+    ctx.step = "collecting";
+    ctx.listFlow = { ...sent, basketSig: basketSignature(ctx.basket) };
+    await writeCtx(convoId, ctx);
+    const extra = [...composedNotes, ...packNotes];
+    if (extra.length) await reply(phone, extra.join("\n"));
+    await sendListFlowFollowUp(phone, copy.listFlowFollowUp());
+    return true;
+  } catch (error) {
+    if (error instanceof TurnSupersededError) throw error;
+    console.warn("[list-flow:send-failed:fallback]", error instanceof Error ? error.message : error);
+    return false;
+  }
+}
+
+// Reenvia o formulário com o estado atual da cesta ("Mudar minha lista" ou resposta de uma
+// lista que já mudou). False = não deu (sem formulário ativo, lista fechada, Flow fora do ar).
+async function reshowListFlow(phone: string, convoId: string, ctx: DeliveryContext, head: "stale" | "reopen"): Promise<boolean> {
+  const lf = ctx.listFlow;
+  if (!lf || !listFlowEnabled() || ctx.step !== "collecting") return false;
+  try {
+    const { activeListFlowId } = await import("@/lib/meta-setup");
+    const flowId = await activeListFlowId();
+    if (!flowId) return false;
+    const basket = ctx.basket ?? [];
+    const slots = lf.slots.map((slot) => ({ ...slot, suggestedSku: slotCurrentSku(slot, basket) }));
+    const inSlots = new Set(slots.flatMap((slot) => (slot.suggestedSku ? [slot.suggestedSku] : [])));
+    const sent = await sendListFlowMessage(phone, flowId, {
+      slots,
+      items: basketLinesForCopy(basket.filter((item) => inSlots.has(item.sku))),
+      misses: missEntriesFor(freshListMisses(ctx), slots),
+      head
+    });
+    if (!sent) return false;
+    ctx.listFlow = { ...sent, basketSig: basketSignature(basket) };
+    await writeCtx(convoId, ctx);
+    await sendListFlowFollowUp(phone, copy.listFlowFollowUp());
+    return true;
+  } catch (error) {
+    if (error instanceof TurnSupersededError) throw error;
+    console.warn("[list-flow:reshow-failed]", error instanceof Error ? error.message : error);
+    return false;
+  }
+}
+
+// Resposta do formulário (nfm_reply com `lia_lista`). Vale só se o id é o do último formulário e
+// a cesta continua como estava; senão a Lia diz que a lista mudou e manda o formulário atual.
+async function handleListFlowReply(
+  phone: string,
+  payload: Record<string, unknown>,
+  user: Awaited<ReturnType<typeof getOrCreateConvo>>["user"],
+  convo: Awaited<ReturnType<typeof getOrCreateConvo>>["convo"]
+) {
+  const ctx = readCtx(convo.context);
+  const lf = ctx.listFlow;
+  const id = String(payload.lia_lista ?? "");
+  const current = lf && lf.id === id && ctx.step === "collecting" && basketSignature(ctx.basket) === lf.basketSig;
+  if (!current) {
+    if (lf && ctx.step === "collecting" && (await reshowListFlow(phone, convo.id, ctx, "stale"))) return;
+    await reply(phone, copy.listFlowClosed());
+    return;
+  }
+
+  const parsed = parseListFlowReply(payload, lf.slots);
+  let basket = (ctx.basket ?? []).map((item) => ({ ...item }));
+  const leftOut: string[] = [];
+  const packNotes: string[] = [];
+  const slots = lf.slots.map((slot) => ({ ...slot }));
+  slots.forEach((slot, index) => {
+    const choice = parsed.choices[index];
+    const currentSku = slot.suggestedSku;
+    if (choice.kind === "skip") {
+      if (currentSku) basket = basket.filter((item) => item.sku !== currentSku);
+      slot.suggestedSku = null;
+      return;
+    }
+    if (choice.kind === "pick") {
+      const option = slot.options.find((o) => o.sku === choice.sku);
+      if (option) {
+        if (currentSku) basket = basket.filter((item) => item.sku !== currentSku);
+        const adj = packAdjusted(option, slot.qty, slot.query);
+        if (adj.note) packNotes.push(adj.note);
+        basket = mergeBaskets(basket, [choiceToBasketItem(option, adj.qty, option.storeKey ? getStore(option.storeKey) : orderStore(ctx))]);
+        slot.suggestedSku = option.sku;
+        return;
+      }
+    }
+    if (!currentSku) leftOut.push(slot.query);
+  });
+
+  ctx.basket = basket;
+  ctx.step = "collecting";
+  // O id gira: reenviar a mesma resposta depois cai em "essa lista mudou" e mostra o estado atual.
+  ctx.listFlow = { ...lf, id: newListFlowId(), sentAt: Date.now(), slots, basketSig: basketSignature(basket) };
+  const summary = copy.listFlowDone({
+    items: basketLinesForCopy(basket),
+    leftOut,
+    misses: missEntriesFor(freshListMisses(ctx), []),
+    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100
+  });
+  if (!basket.length) {
+    await writeCtx(convo.id, ctx);
+    await reply(phone, summary);
+    await reply(phone, copy.askMoreItems());
+    return;
+  }
+  await advancePending(phone, convo.id, ctx, user.cep, [summary, ...packNotes].join("\n"), { listFlowButton: true });
 }
 
 // "sim" à oferta da cauda longa: a mesma rodada de resgate que antes era automática
