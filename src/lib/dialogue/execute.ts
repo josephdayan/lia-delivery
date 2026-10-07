@@ -216,6 +216,10 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
           ctx.pending = [current];
           await reply(phone, copy.onlyKeepSkipped(skipped));
         }
+        if (step.dropQueueOnly) {
+          await writeCtx(convoId, ctx);
+          return "done";
+        }
         if (current.options.length === 1) {
           await h.confirmChosenOption(phone, convoId, ctx, userCep, store(), current, current.options[0]);
           return "done";

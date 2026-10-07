@@ -228,6 +228,9 @@ test("plano: busca em sequência vira uma linha só; remove do item da tela vira
   if (merged.ok && merged.steps[0].type === "search") assert.deepEqual(merged.steps[0].lines, [{ query: "pão", qty: 2 }, { query: "manteiga", qty: 1 }]);
   const skip = plan([act("remove", { target: 0 })], state);
   assert.ok(skip.ok && skip.steps[0].type === "skip_current");
+  const keep = plan([act("pick", { option: 1 }), act("only_keep", { target: 7 })], state);
+  assert.ok(keep.ok && keep.steps[0].type === "only_keep" && keep.steps[0].dropQueueOnly, "'1, só amora' com alvo numerado como cesta");
+  assert.equal(plan([act("only_keep", { target: 9 })], state).ok, false, "sem pick, alvo inexistente continua inválido");
   const swap = plan([act("swap", { from: 1, to: "ração premier" })], state);
   assert.ok(swap.ok && swap.steps[0].type === "swap");
   const queue = plan([act("remove", { target: 2 })], state);
@@ -430,6 +433,23 @@ test("set_qty na tela guarda a quantidade e pergunta qual; skip_current segue; o
   model(() => [act("skip_current")]);
   const skipped = await send(phone3, "nenhuma dessas serve, deixa pra lá");
   assert.match(skipped, /de fora|deixei/i, skipped.slice(0, 200));
+});
+
+test("c07: '1, só amora' = pick + only_keep: escolhe a 1 e larga a fila sem abrir o próximo item", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await withChoice(phone, {
+    pending: [
+      { query: "leite", qty: 1, options: [{ sku: "X1", name: "Leite X", unitPrice: 5, storeKey: "carrefour", storeLabel: "Carrefour" }, { sku: "X2", name: "Leite Y", unitPrice: 6, storeKey: "carrefour", storeLabel: "Carrefour" }] },
+      { query: "pão", qty: 1, options: [{ sku: "P1", name: "Pão", unitPrice: 5, storeKey: "carrefour", storeLabel: "Carrefour" }] }
+    ]
+  });
+  model(() => [act("pick", { option: 1 }), act("only_keep", { target: 0 })]);
+  const out = await send(phone, "1, só o leite");
+  const ctx = await context(phone);
+  assert.deepEqual((ctx.basket as Line[]).map((b) => b.sku), ["X1"], out.slice(0, 300));
+  assert.equal((ctx.pending ?? []).length, 0);
+  assert.doesNotMatch(out, /Agora \*?p[ãa]o|Olha o que achei/i, "não abriu o item da fila");
 });
 
 test("remove e swap resolvem o item pelo número do estado, com o total já na mesa", async (t) => {

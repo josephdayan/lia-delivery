@@ -16,7 +16,8 @@ export type Planned =
   | { type: "remove"; target: Target }
   | { type: "swap"; from: Target & { kind: "basket" }; to: string }
   | { type: "skip_current" }
-  | { type: "only_keep"; target: Target }
+  // dropQueueOnly: "1, só amora" — escolhe a opção e larga o resto da fila (nada de confirmar/mostrar nada além do pick)
+  | { type: "only_keep"; target: Target; dropQueueOnly?: boolean }
   | { type: "rewrite"; text: string; label: string }
   | { type: "reply"; kind: "smalltalk" | "unclear"; text?: string };
 
@@ -73,7 +74,7 @@ export function planActions(decision: DialogueDecision, state: DialogueState): P
   const steps: Planned[] = [];
   for (let i = 0; i < actions.length; i++) {
     const a = actions[i];
-    const step = planOne(a, state);
+    const step = planOne(a, state, actions.some((x) => x.type === "pick"));
     if (typeof step === "string") return { ok: false, reason: `${a.type}:${step}` };
     // search consecutivos viram UMA busca de várias linhas (a extração já separa itens).
     const prev = steps[steps.length - 1];
@@ -83,10 +84,19 @@ export function planActions(decision: DialogueDecision, state: DialogueState): P
       steps.push(step);
     }
   }
+  // "1, só amora" (pick + only_keep da tela, em qualquer ordem): primeiro larga a fila e só então escolhe —
+  // senão o pick abria o próximo item da fila e o only_keep rodava em cima dele.
+  const pickAt = steps.findIndex((st) => st.type === "pick" && st.source === "screen");
+  const keepAt = steps.findIndex((st) => st.type === "only_keep" && st.target.kind === "screen");
+  if (pickAt >= 0 && keepAt >= 0) {
+    const keep = steps[keepAt] as Extract<Planned, { type: "only_keep" }>;
+    const pick = steps[pickAt];
+    return { ok: true, steps: [{ ...keep, dropQueueOnly: true }, pick, ...steps.filter((_, i) => i !== pickAt && i !== keepAt)] };
+  }
   return { ok: true, steps };
 }
 
-function planOne(a: DialogueAction, state: DialogueState): Planned | string {
+function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
     case "search": {
@@ -150,7 +160,10 @@ function planOne(a: DialogueAction, state: DialogueState): Planned | string {
     case "skip_current":
       return onScreen ? { type: "skip_current" } : "sem_opcoes_na_tela";
     case "only_keep": {
-      const target = resolveTarget(state, a.target ?? (onScreen ? 0 : undefined));
+      // "1, só amora": junto de um pick da tela, o "só X" é o item que está sendo escolhido,
+      // mesmo que a IA tenha numerado o alvo como cesta (que ainda não o tem).
+      const withPick = Boolean(onScreen) && pickOnScreen;
+      const target = a.target === undefined ? (onScreen ? resolveTarget(state, 0) : null) : resolveTarget(state, a.target) || (withPick ? resolveTarget(state, 0) : null);
       if (!target || target.kind === "queue") return "alvo_invalido";
       return { type: "only_keep", target };
     }
