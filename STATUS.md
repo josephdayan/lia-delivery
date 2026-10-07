@@ -1,3 +1,30 @@
+## 07/10/2026 (noite) — Placar de verdade: linha de base e rodada 1 de correções
+
+**Busca** (316 pedidos, oráculo ao vivo, juiz gpt-6-sol, Lia em gpt-6-luna; `evals/results/search-2026-10-07-*.json`):
+
+| | baseline | + busca ao vivo (`LIA_LIVE_SEARCH=true`) |
+|---|---|---|
+| 1ª opção errada | 1,0% | 1,4% |
+| precisão dos itens | 97,8% | 97,9% |
+| cobertura (achou quando existe) | 85,8% | **92,6%** |
+| honestidade (disse "não achei" quando não existe) | 96,3% | 96,0% |
+| tempo p50 / p90 | 7,0 s / 9,7 s | 9,4 s / 12,1 s |
+
+Achado importante: a primeira rodada (14% de 1ª opção errada) foi medida com a IA da Lia FORA DO AR
+(OpenAI sem crédito → fallback determinístico). Com IA funcionando a precisão é 97,8%. **Crédito zerado = Lia
+mostrando produto errado** (bola de tênis → bola de futebol). Ficam de fora da conta os pedidos em que a IA
+falhou (`ia_indisponivel`). 11 timeouts do rerank a 6 s → agora espera 10 s.
+
+**Conversas** (40 cenários): baseline 50% limpos, 65% objetivo cumprido, 22,5% produto errado, 12,5%
+promessa falsa, 22,5% beco sem saída. Corrigidos com teste que FALHA sem a correção
+(`tests/placar-2026-10-07-conversas*.test.ts`): escolha com eco do nome ("vou no 1, Omo 1,4kg"),
+" / " separando itens (quantidade vazava), "tenta de novo"/"qualquer marca"/"pode tentar uma Wilson?"
+depois de "não achei", "não gostei dessas, quero da Dove", orçamento do presente ("uns 100 reais" se
+perdia), lugar de entrega virando item, 2º pedido de atendente repetindo o texto, "tira X, por favor"
+(virava saudação no lugar do total), "trocar endereço — <endereço>", "2 litros de leite"/"12 ovos"
+recusados pela IA, "outras" trazendo outro tipo de produto, frete mostrando "total".
+
+
 ## 07/10/2026 — Placar de verdade montado; crédito da OpenAI esgotou
 
 - Montado: `evals/` (316 pedidos de busca, 40 cenários de conversa), oráculo ao vivo, juiz gpt-5.5,

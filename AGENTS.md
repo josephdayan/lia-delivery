@@ -1,3 +1,15 @@
+## 07/10/2026 — Regras que o placar ensinou
+
+- Crédito da OpenAI zerado degrada a Lia sem erro visível (fallback sem IA mostra produto errado). Conferir
+  saldo antes de testar ou religar; os placares abortam sem crédito.
+- A IA que julga a busca recebe a MENSAGEM original: se o código reescreve o pedido (2 litros → 2× 1 litro),
+  a IA tem que receber o reescrito, senão recusa tudo. Quantidade de unidades não é atributo do produto.
+- Depois de "não achei", o contexto do pedido (`lastMiss`) continua 20 min: "tenta de novo" refaz uma vez e
+  depois diz a verdade; "uma Wilson" soma ao pedido anterior só se a marca aparece numa opção.
+- "outras"/refino/"mais barato" também passam pelo juízo da IA (`aiApprovePool`).
+- Modelo da Lia: gpt-6-luna. `LIA_AI_EFFORT=none` corta ~0,7 s/chamada (a medir antes de virar padrão).
+
+
 ## 07/10/2026 — Placar de verdade (evals/) e busca ao vivo (opt-in)
 
 Regra nova: **mudança de busca ou de conversa só entra se subir o placar** (`evals/README.md`).
