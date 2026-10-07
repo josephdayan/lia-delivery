@@ -169,7 +169,7 @@ export function preSignupModelAvailable(): boolean {
 
 // Intenções que ainda passam pela IA antes do cadastro. O resto (CEP, número, saudação, atendente,
 // reclamação, "pix"…) tem caminho inequívoco e barato.
-const CONSULTED_INTENTS = new Set<Intent["kind"]>(["free_text", "more_options", "thanks"]);
+const CONSULTED_INTENTS = new Set<Intent["kind"]>(["free_text", "more_options", "thanks", "repeat_last"]);
 // Passos em que a mensagem tem DONO (nome do destinatário, CPF, pergunta de endereço aberta…).
 const COLLECTING_STEPS = new Set<string | undefined>([undefined, "collecting", "need_address", "need_cep"]);
 

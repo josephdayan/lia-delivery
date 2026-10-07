@@ -102,11 +102,23 @@ export function __setRepeatModelForTests(fn: ((input: RepeatInput) => Promise<st
   seamActive = Boolean(fn);
 }
 
+// Confirmações curtas para o cliente que só agradece/despede/manda 👍 (c10): quando a IA não traz uma fala
+// nova, a próxima da lista que ainda não foi dita. Nada aqui promete nada.
+const SHORT_ACKS = ["👍", "Tudo certo 💚", "Por nada! 💚", "Combinado 🙂", "Fechado 💚", "Até a próxima 💚"];
+
+function shortAck(input: RepeatInput): string | null {
+  const n = canon(input.customer);
+  if (!n || n.split(" ").length > 4 || /\?/.test(input.customer)) return null;
+  return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent)) ?? null;
+}
+
 // Texto novo no lugar da repetição, ou null (a mensagem original sai como sempre saiu).
 export async function rewriteRepeated(input: RepeatInput): Promise<string | null> {
-  if (!repeatGuardEnabled() || (!seamActive && !process.env.OPENAI_API_KEY)) return null;
-  const raw = await modelImpl(input).catch(() => null);
-  const clean = sanitizeRouterReply(raw ?? undefined);
-  if (!clean || sameAsRecent(clean, input.recent)) return null;
-  return clean;
+  if (!repeatGuardEnabled()) return null;
+  if (seamActive || process.env.OPENAI_API_KEY) {
+    const raw = await modelImpl(input).catch(() => null);
+    const clean = sanitizeRouterReply(raw ?? undefined);
+    if (clean && !sameAsRecent(clean, input.recent)) return clean;
+  }
+  return shortAck(input);
 }

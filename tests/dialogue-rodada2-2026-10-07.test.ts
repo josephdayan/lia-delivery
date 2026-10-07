@@ -178,6 +178,7 @@ test("pré-cadastro: quando NÃO consulta a IA — endereço, CEP, CPF, nome, bo
   assert.equal(why("01310-100"), "intent:cep");
   assert.equal(why("cadastrar_endereco"), "botao");
   assert.equal(why("oi"), "intent:greeting");
+  assert.equal(why("Você tá repetindo a mesma coisa e ninguém me responde. Quero falar com o gerente agora."), null, "o regex lê 'repetindo' como repetir pedido — a IA decide");
   assert.equal(why("Marcos Teste", { ctx: { step: "need_recipient_name" } }), "passo");
   assert.equal(why("sim", { ctx: { cepSwap: { cep: "01310100", askedAt: 1 } } }), "pergunta_aberta");
   assert.equal(why("quero leite", { hasAddress: true }), "com_cadastro");
@@ -412,22 +413,37 @@ test("mesma fala da Lia duas vezes seguidas: a segunda sai reescrita pelo gerent
   assert.doesNotMatch(second, /Imagina/);
 });
 
-test("guarda anti-repetição: IA fora do ar ou resposta que repete = a mensagem original sai; desligada não toca em nada", async (t) => {
+test("guarda anti-repetição: IA fora do ar ou resposta que repete = a mensagem original sai (pergunta longa); desligada não toca em nada", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await registered();
+  mainModel(() => [act("out_of_scope")]);
   __setRepeatModelForTests(async () => null);
-  await send(phone, "obrigado");
-  assert.match(await send(phone, "valeu"), /Imagina/);
-  __setRepeatModelForTests(async () => "Imagina! Qualquer coisa é só chamar 💚");
-  assert.match(await send(phone, "muito obrigado"), /Imagina/);
+  await send(phone, "vocês vendem carro 0km?");
+  assert.match(await send(phone, "e uma moto 0km, vocês vendem alguma?"), /n[aã]o consigo comprar/i);
+  __setRepeatModelForTests(async () => "Isso eu não consigo comprar 😅 Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?");
+  assert.match(await send(phone, "e um barco, vocês têm algum barco à venda?"), /n[aã]o consigo comprar/i);
   process.env.LIA_DIALOGUE_LLM = "false";
   let called = false;
   __setRepeatModelForTests(async () => {
     called = true;
     return "outra";
   });
-  assert.match(await send(phone, "valeu demais"), /Imagina/);
+  mainModel(() => [act("out_of_scope")]);
+  await send(phone, "e um avião, vocês vendem avião?");
   assert.equal(called, false);
+});
+
+test("c10: 👍 / 'valeu' repetidos e a IA sem fala nova → confirmação curta diferente, sem repetir a despedida", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await registered();
+  __setRepeatModelForTests(async () => null);
+  const seen = new Set<string>([await send(phone, "obrigado")]);
+  for (const msg of ["valeu", "👍", "👍", "ok obrigado"]) {
+    const out = await send(phone, msg);
+    assert.ok(!seen.has(out), `repetiu: ${out}`);
+    assert.ok(out.length < 40, out);
+    seen.add(out);
+  }
 });
 
 test("a mesma fala só conta dentro da janela de 10 min e só se a IA do gerente está ligada", async (t) => {
