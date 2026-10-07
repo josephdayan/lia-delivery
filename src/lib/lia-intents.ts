@@ -2114,11 +2114,27 @@ function tailEchoesOption(tail: string, optionName?: string): boolean {
   return tokens.length > 0 && tokens.every((t) => name.includes(` ${t}`) || name.includes(t));
 }
 
+// Sinal de que a frase ADICIONA um item (e não reformula o da mesa). Sem "mais"/"outra" soltos:
+// "outra marca" e "mais barato" são pedidos de opções, não de item novo.
+export const ADDITIVE_CUE_RE = /\b(?:adicion\w+|acrescent\w+|tambem|alem d\w+|junto com|outro produto|outra coisa|mais (?:um|uma|dois|duas|tres|\d+)\b)/;
+
 export function parseChoiceCombo(
   text: string,
   options: { name: string; unitPrice: number }[]
 ): { reply: { type: "pick"; index: number; qty?: number }; pay?: boolean; rest?: string } | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  // "1. Vamos adicionar outro produto, pode ser 3 rações de cachorro?" (07/10, c09): número + ponto +
+  // frase que ADICIONA algo. Escolhe o número e o resto vira item novo — antes a frase inteira
+  // reabria a busca do mesmo item e a escolha do 1 sumia. Exige um sinal de adição para não
+  // confundir com lista numerada ("1. leite 2. pão").
+  const leadPick = n.match(/^(?:opcao\s*|numero\s*)?([1-9])\s*[.)\-:]\s+(.+)$/);
+  if (leadPick && Number(leadPick[1]) <= options.length && !/\n/.test(text) && ADDITIVE_CUE_RE.test(leadPick[2])) {
+    const index = Number(leadPick[1]) - 1;
+    const tail = leadPick[2].trim();
+    if (!/[a-z]{3,}/.test(tail)) return null;
+    if (tailEchoesOption(tail, options[index]?.name)) return { reply: { type: "pick", index } };
+    return { reply: { type: "pick", index }, rest: tail };
+  }
   const parts = n.match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tambem\s+)?)(.+)$/);
   if (!parts) return null;
   const head = parseChoiceReply(parts[1], options);
@@ -2225,6 +2241,34 @@ export function splitFiscalClause(text: string): { text: string; asked: boolean 
   return { text: kept.join(" ").trim(), asked: true };
 }
 
+
+// "troca pelo de R$ 34,09", "quero o de 34", "prefiro o outro" no total / escolha de entrega (07/10, c24):
+// o cliente quer OUTRA opção da última lista, apontada pelo preço ou por "o outro". Devolve o índice
+// em `options`. Exige verbo de troca/preferência e nunca aponta a opção que já está escolhida.
+export function parseOptionSwitchRef(
+  text: string,
+  options: { name: string; price: number }[],
+  currentIndex: number,
+  opts?: { priceOnly?: boolean }
+): { index: number } | null {
+  const n = normalizeMsg(text).replace(/[?!]+$/g, "").trim();
+  if (!/\b(?:troca\w*|muda\w*|prefiro|quero|pode ser|vou de|fico com|pelo|pela|ao inves)\b/.test(n)) return null;
+  const others = options.map((_, i) => i).filter((i) => i !== currentIndex);
+  const values = [...n.matchAll(/(?:r\$\s*)?(\d{1,4}(?:[.,]\d{1,2})?)(?:\s*reais)?/g)]
+    .map((m) => ({ raw: m[0], value: Number(m[1].replace(",", ".")), hasMoney: /r\$|reais|[.,]\d{2}$/.test(m[0]) }))
+    .filter((v) => Number.isFinite(v.value) && v.value > 0 && v.hasMoney);
+  for (const v of values) {
+    const hits = others.filter((i) => Math.abs(options[i].price - v.value) < 0.015);
+    if (hits.length === 1) return { index: hits[0] };
+  }
+  if (opts?.priceOnly) return null;
+  if (/\bo\s+outr[oa]\b|\bpel[oa]\s+outr[oa]\b|\boutra\s+opcao\b/.test(n) && others.length === 1) return { index: others[0] };
+  if (/\b(?:mais barat[oa]|menor preco)\b/.test(n) && others.length) {
+    const cheapest = others.reduce((best, i) => (options[i].price < options[best].price ? i : best), others[0]);
+    if (options[cheapest].price < options[currentIndex]?.price) return { index: cheapest };
+  }
+  return null;
+}
 
 // ---------- modo atendimento e farmácia parceira (07/10, placar c13/c30/c31/c35) ----------
 

@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1258,6 +1258,9 @@ function nextAttendanceAck(ctx: DeliveryContext): string {
 // Contexto "quieto": sem cesta, escolha nem pedido em andamento. Só aí o modo atendimento intercepta.
 function attendanceQuiet(ctx: DeliveryContext): boolean {
   if (ctx.pending?.length || ctx.basket?.length) return false;
+  // Pergunta binária em aberto (plano B, "o de sempre", troca de loja, juntar pedido, cobrança, teto
+  // estourado…): o "sim"/"ok" é resposta DELA, não espera pelo atendente.
+  if (ctx.planB || ctx.repeatConfirm || ctx.minSwap || ctx.mergeDecision || ctx.longTailOffer || ctx.freightChoice || ctx.budget?.awaiting || ctx.packConfirm || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) return false;
   return !ctx.step || ctx.step === "collecting" || ctx.step === "need_cep" || ctx.step === "need_address";
 }
 
@@ -1559,6 +1562,61 @@ async function handleDeliveryTurn(
       await writeCtx(convo.id, ctx);
       await reply(phone, ack);
       return;
+    }
+  }
+
+  // Orçamento estourado e nada cabe (07/10, c23/c24): "pode"/"assim mesmo" segue com o item; "não"
+  // tira da lista. Qualquer outra mensagem desarma e segue o fluxo normal (o teto deixa de valer).
+  if (ctx.budget?.awaiting && !ctx.pending?.length && (ctx.basket?.length ?? 0) === 1 && (!ctx.step || ctx.step === "collecting")) {
+    const n = normalizeMsg(text);
+    if (intent.kind === "affirm" || intent.kind === "done" || intent.kind === "pay" || /\b(assim mesmo|mesmo assim|pode fechar|pode seguir|segue assim|fecha assim|fecha mesmo)\b/.test(n)) {
+      ctx.budget = { ...ctx.budget, awaiting: false, override: true };
+      await writeCtx(convo.id, ctx);
+      await continueAfterBasket(phone, convo.id, ctx, user.cep);
+      return;
+    }
+    if (intent.kind === "reject" || intent.kind === "cancel" || intent.kind === "clear_cart") {
+      ctx.basket = [];
+      ctx.budget = undefined;
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.overBudgetDeclined());
+      return;
+    }
+    ctx.budget = { ...ctx.budget, awaiting: false };
+  }
+
+  // Trocar de produto com a escolha de entrega ou o total na mesa (07/10, c24): "troca pelo de R$ 34,09",
+  // "prefiro o outro". Reabre o pedido (nada cobrado) e põe a opção pedida no lugar — antes a Lia
+  // repetia "o frete é o da loja" e ignorava o pedido.
+  if ((ctx.step === "choosing_freight" || ctx.step === "awaiting_quote_confirmation") && ctx.lastChoice && ctx.deliveryOrderId) {
+    const last = ctx.lastChoice;
+    const currentIndex = last.options.findIndex((o) => o.sku === last.chosenSku);
+    // Na escolha de entrega "1"/"2"/"o outro" são as opções de FRETE: lá só vale o preço do produto.
+    const atFreight = ctx.step === "choosing_freight";
+    const viaIndex = atFreight ? null : parseChoiceSwitch(text);
+    const ref =
+      currentIndex >= 0
+        ? parseOptionSwitchRef(text, last.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine) })), currentIndex, { priceOnly: atFreight })
+        : null;
+    const switchTo = ref ? { index: ref.index } : viaIndex;
+    if (switchTo && currentIndex >= 0) {
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+      if (reopened) {
+        await handleChoiceSwitch(phone, convo.id, user.cep, ctx, switchTo, true);
+        return;
+      }
+    }
+    // "tem alguma opção que fique até R$ 80 com a entrega?" (07/10, c24): o cliente só agora disse o teto.
+    // Reabre e refaz a cotação com o orçamento valendo — se o total estoura, as opções que cabem voltam.
+    const statedCap = switchTo ? null : parsePriceCap(text);
+    if (statedCap != null && currentIndex >= 0) {
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+      if (reopened && (ctx.basket?.length ?? 0) === 1) {
+        ctx.budget = { cap: statedCap, sku: last.chosenSku };
+        await writeCtx(convo.id, ctx);
+        await continueAfterBasket(phone, convo.id, ctx, user.cep);
+        return;
+      }
     }
   }
 
@@ -4497,9 +4555,26 @@ async function confirmChosenOption(
   fallbackStore: StoreConnector,
   current: PendingChoice,
   chosen: ChoiceOption,
-  opts?: { note?: string; after?: string; thenPay?: boolean }
+  opts?: { note?: string; after?: string; thenPay?: boolean; packOk?: boolean }
 ) {
   const chosenStore = chosen.storeKey ? getStore(chosen.storeKey) : fallbackStore;
+  // Embalagem que não fecha com o pedido ("12 ovos" → bandeja de 20, 07/10 c28): o ajuste mudava a
+  // quantidade REAL em silêncio e só avisava depois de pôr na cesta. Agora pergunta antes; a escolha
+  // continua aberta (pending) até o "sim". Toque repetido no mesmo card conta como confirmação.
+  const packAsked = ctx.packConfirm && ctx.packConfirm.sku === chosen.sku && ctx.packConfirm.askedQty === Math.max(1, current.qty);
+  ctx.packConfirm = undefined;
+  if (!opts?.packOk && !packAsked) {
+    const askedQty = Math.max(1, current.qty);
+    const perPack = declaredPack(chosen.name);
+    const adjusted = packAdjusted(chosen, askedQty, current.query, { assumedOne: current.qty === 1 && !current.qtyExplicit });
+    const weightConversion = Boolean(chosen.unitWeightKg && current.query && parseWeightAskKg(current.query));
+    if (adjusted.note && !weightConversion && perPack >= 4 && adjusted.qty * perPack !== askedQty) {
+      ctx.packConfirm = { sku: chosen.sku, askedQty };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.packMismatchAsk(chosen.name, askedQty, perPack, adjusted.qty));
+      return;
+    }
+  }
   ctx.pending = ctx.pending!.slice(1);
   // Memória da escolha concluída: "Outras opções"/"mais barato" depois dela reabrem
   // esta mesma escolha (e o novo pick substitui o item na cesta, não soma outro).
@@ -4528,6 +4603,11 @@ async function confirmChosenOption(
     : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
   const confirmed = [opts?.note, confirmedBase, opts?.after].filter(Boolean).join("\n");
   ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
+  // Teto dito na linha ("até R$100") vale para o TOTAL com entrega (07/10, c23/c24): guardado aqui, conferido
+  // na cotação. `warned` sobrevive à troca de opção para não repetir a lista de "cabe no limite".
+  if (current.cap != null) {
+    ctx.budget = { cap: current.cap, sku: chosen.sku, ...(ctx.budget?.cap === current.cap && ctx.budget.warned ? { warned: true } : {}) };
+  }
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
     await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst()}` : confirmed);
@@ -4597,6 +4677,25 @@ async function handleChoosing(
     }
     await confirmChosenOption(phone, convoId, ctx, userCep, store, current, tapped);
     return;
+  }
+
+  // Pergunta de embalagem em aberto (07/10, c28): "sim" põe na cesta; "não"/"outras" volta às opções;
+  // qualquer outra coisa desarma e segue como escolha normal.
+  if (ctx.packConfirm) {
+    const asked = ctx.packConfirm;
+    const option = current.options.find((o) => o.sku === asked.sku);
+    const n = normalizeMsg(text);
+    if (option && (intent.kind === "affirm" || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+      return;
+    }
+    ctx.packConfirm = undefined;
+    if (option && (intent.kind === "reject" || /^(nao|n|nao quero|nao precisa)\b/.test(n))) {
+      await writeCtx(convoId, ctx);
+      await sendChoices(phone, current, copy.packMismatchDeclined());
+      return;
+    }
+    await writeCtx(convoId, ctx);
   }
 
   // ---- varredura 06/10: escolha + outra coisa na mesma mensagem, troca, "voltar" ----
@@ -5019,7 +5118,10 @@ async function handleChoosing(
     // Com 2+ produtos na mensagem (06/10, Claire), o que é do MESMO produto da escolha
     // aberta a substitui e os outros entram na fila — antes, todos iam pra fila e a Lia
     // reapresentava o shampoo antigo.
-    const clarifyIdx = multiItem ? added.pending.findIndex((pending) => sharesProductNoun(pending.query, current.query)) : -1;
+    // Com sinal de ADIÇÃO ("vamos adicionar outro produto, 3 rações…", 07/10 c09) o item é novo mesmo
+    // dividindo o substantivo: reformular apagava a escolha em aberto e trocava a quantidade.
+    const addsNew = ADDITIVE_CUE_RE.test(normalizeMsg(text));
+    const clarifyIdx = multiItem && !addsNew ? added.pending.findIndex((pending) => sharesProductNoun(pending.query, current.query)) : -1;
     if (clarifyIdx >= 0) {
       const clarified = added.pending[clarifyIdx];
       const others = added.pending.filter((_, i) => i !== clarifyIdx);
@@ -5046,7 +5148,7 @@ async function handleChoosing(
       await sendChoices(phone, current, copy.narrowedChoices(current.query));
       return;
     }
-    if (!added.autoAdded.length && added.pending.length === 1 && sharesProductNoun(added.pending[0].query, current.query)) {
+    if (!addsNew && !added.autoAdded.length && added.pending.length === 1 && sharesProductNoun(added.pending[0].query, current.query)) {
       const clarified = added.pending[0];
       current.baseQuery = undefined;
       current.attrs = undefined;
@@ -5831,7 +5933,7 @@ async function handleConciergeRequest(
   // o item exato (sku) — a busca genérica perdia o atributo ("sem lactose" virava leite
   // integral; 3º ciclo de testes 15/08, rodadas 3 e 8).
   const moreOf = normalizeMsg(text).match(
-    /^(?:(?:pode|coloca|poe|bota|adiciona|acrescenta|quero|queria|me ve|manda|e)\s+)*(?:colocar\s+|adicionar\s+)?mais\s+(.+)$/
+    /^(?:(?:pode|coloca|poe|bota|adiciona|acrescenta|quero|queria|me ve|manda|e|vamos|vou|podemos|entao|tambem)\s+)*(?:colocar\s+|adicionar\s+|acrescentar\s+|botar\s+)?mais\s+(.+)$/
   );
   if (moreOf && ctx.basket?.length) {
     const lines = parseBasketLines(moreOf[1]).filter((l) => queryTokens(l.phrase).length);
@@ -6949,6 +7051,17 @@ async function tryPublishInstantQuote(
     const totalFee = Math.round(freights.reduce((sum, f) => sum + f.fee, 0) * 100) / 100;
     const itemsSubtotal = roundMoney(items.reduce((sum, item) => sum + item.unitPrice * item.qty, 0));
     if (itemsSubtotal <= 0) return { handled: false };
+    // ORÇAMENTO = TOTAL (07/10, c23/c24): "até R$100" pedido na linha vale produto + entrega. Estourou:
+    // avisa e oferece o que cabe ANTES de qualquer cobrança — a opção mais barata do total, não do preço.
+    const budget = ctx.budget;
+    if (budget && !budget.override && convoId && items.length === 1 && items[0].sku === budget.sku) {
+      const budgetTotal = roundMoney(itemsSubtotal + serviceFeeForItems(items as { unitPrice: number; qty: number }[]) + totalFee);
+      if (budgetTotal > budget.cap + 0.005) {
+        if (prefix) await reply(phone, prefix);
+        await handleOverBudget(phone, convoId, ctx, orderId, { total: budgetTotal, fee: totalFee, storeKey: freights[0]?.storeKey });
+        return { handled: true };
+      }
+    }
     const breakdown = freightBreakdownLabel(freights);
     await prisma.deliveryOrder.update({
       where: { id: orderId },
@@ -7032,6 +7145,63 @@ async function tryPublishInstantQuote(
     console.warn("[instant-quote:fallback-manual]", error instanceof Error ? error.message : error);
     return { handled: false };
   }
+}
+
+// O total (produto + entrega) passou do teto que o cliente disse (07/10, c23/c24). Cancela a cotação
+// ainda sem cobrança, reabre a escolha só com o que cabe (total estimado = preço + entrega da loja,
+// conferida ao vivo quando dá) ou, sem nada que caiba, pergunta se segue assim mesmo.
+async function handleOverBudget(
+  phone: string,
+  convoId: string,
+  ctx: DeliveryContext,
+  orderId: string,
+  quoted: { total: number; fee: number; storeKey?: string }
+) {
+  const budget = ctx.budget!;
+  const item = ctx.basket![0];
+  const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
+  await prisma.deliveryOrder.updateMany({
+    where: { id: orderId, status: AWAITING_OPERATOR_QUOTE_STATUS },
+    data: {
+      status: "canceled",
+      notes: appendOrderNote(current?.notes ?? null, `💸 Passou do limite do cliente: total ${copy.brl(quoted.total)} > teto ${copy.brl(budget.cap)} — nada foi cobrado.`)
+    }
+  });
+  const last = ctx.lastChoice?.chosenSku === item.sku ? ctx.lastChoice : undefined;
+  const pool = last
+    ? [...new Map([...last.options, ...(last.shownOptions ?? [])].map((o) => [o.sku, o])).values()]
+        .filter((o) => o.sku !== item.sku && storeServesCep(o.storeKey ?? CONCIERGE_STORE_KEY, ctx.cep))
+    : [];
+  // Só vale a pena medir quem já cabe no teto SÓ no produto; o frete é conferido ao vivo (ou pela tabela).
+  const candidates = pool.filter((o) => display(o.unitPrice, o.medicine) * item.qty <= budget.cap).slice(0, 4);
+  const measured = await Promise.all(
+    candidates.map(async (option) => {
+      let fee = option.storeKey && option.storeKey === quoted.storeKey ? quoted.fee : storeFreight(option.storeKey ?? CONCIERGE_STORE_KEY, option.storeLabel ?? "", roundMoney(option.unitPrice * item.qty)).fee;
+      let unitPrice = option.unitPrice;
+      if (option.storeKey && option.storeKey !== quoted.storeKey && liveFreightEnabled() && ctx.cep) {
+        const outcome = await liveStoreFreight(option.storeKey, [{ sku: option.sku, qty: item.qty }], ctx.cep).catch(() => null);
+        if (outcome && (outcome.kind === "no-delivery" || outcome.kind === "item-unavailable")) return null;
+        if (outcome?.kind === "ok") {
+          fee = outcome.fee;
+          unitPrice = outcome.unitPrices?.[option.sku] ?? unitPrice;
+        }
+      }
+      return { option: { ...option, unitPrice }, total: roundMoney(display(unitPrice, option.medicine) * item.qty + fee) };
+    })
+  );
+  const ranked = measured.filter((m): m is { option: ChoiceOption; total: number } => m != null).sort((a, b) => a.total - b.total);
+  const fitting = ranked.filter((m) => m.total <= budget.cap + 0.005);
+  const base: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: ctx.basket, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}) };
+  // Já avisamos uma vez e o novo total ainda estoura: não repete a lista — pergunta se segue.
+  if (fitting.length && !budget.warned && last) {
+    const { chosenSku: _chosen, replaceSku: _replace, ...lastBase } = last;
+    const pending: PendingChoice = { ...lastBase, qty: item.qty, qtyExplicit: true, options: fitting.map((m) => m.option).slice(0, vitrineLimit()), replaceSku: item.sku, cap: budget.cap };
+    await writeCtx(convoId, { ...base, step: "choosing", pending: [pending], lastChoice: last, budget: { ...budget, warned: true } });
+    await sendChoices(phone, pending, copy.overBudgetFit(budget.cap, quoted.total, fitting[0].total));
+    return;
+  }
+  await writeCtx(convoId, { ...base, step: "collecting", ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}), budget: { ...budget, warned: true, awaiting: true } });
+  await reply(phone, copy.overBudgetNone(budget.cap, quoted.total, item.name, ranked[0]?.total));
 }
 
 // Publica a cotação instantânea. A data vem do próprio anúncio pro CEP do cliente (consulta

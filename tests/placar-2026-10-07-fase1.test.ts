@@ -9,7 +9,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import * as copy from "../src/lib/lia-copy";
-import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk } from "../src/lib/lia-intents";
+import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef } from "../src/lib/lia-intents";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
 const PREFIX = `+5508${String(Date.now()).slice(-6)}${String(process.pid).slice(-2)}`;
@@ -234,4 +234,176 @@ test("c06: refinar o pedido guardado ('leite' → 'leite integral sem açúcar')
   await send(phone, "Quero um leite integral de caixinha");
   const queued = ((await context(phone)).pendingRequest ?? "") as string;
   assert.equal(queued.split(", ").filter((x) => /leite/i.test(x)).length, 1, `leite duplicado em: ${queued}`);
+});
+
+// ---------- 5. quantidade relativa / item adicionado no meio da escolha ----------
+
+test("c09: '1. também 3 sacos de ração de gato' escolhe o 1 E enfileira o item novo — a escolha em aberto não some", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const list = await send(phone, "quero ração de cachorro");
+  assert.match(list, /Olha o que achei|Responde \*1\*/i, list.slice(0, 300));
+  const before = await context(phone);
+  const firstQuery = before.pending[0].query as string;
+  const out = await send(phone, "1. também 3 sacos de ração de gato");
+  const ctx = await context(phone);
+  assert.equal((ctx.basket ?? []).length, 1, `a ração do 1 entrou na cesta: ${out.slice(0, 300)}`);
+  assert.equal(ctx.basket[0].qty, 1, "1 unidade da ração escolhida");
+  assert.ok((ctx.pending ?? []).length >= 1, "o item novo ficou na fila");
+  assert.doesNotMatch((ctx.pending ?? []).map((p: { query: string }) => p.query).join("|"), new RegExp(`^${firstQuery}$`), "a fila não repete a escolha já feita");
+});
+
+test("c09: durante a escolha, 'adicionar também 3 rações de cachorro' enfileira em vez de reformular (não troca a quantidade nem apaga a escolha)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero ração de cachorro");
+  const first = (await context(phone)).pending[0];
+  const out = await send(phone, "adicionar também 3 rações de cachorro");
+  const ctx = await context(phone);
+  assert.ok((ctx.pending ?? []).length >= 2, `escolha antiga + item novo na fila: ${JSON.stringify((ctx.pending ?? []).map((p: { query: string }) => p.query))} / ${out.slice(0, 200)}`);
+  assert.equal(ctx.pending[0].query, first.query, "a escolha em aberto continua em primeiro");
+  assert.ok(!ctx.pending[0].qtyExplicit || ctx.pending[0].qty === first.qty, "a quantidade da escolha antiga não virou 3");
+});
+
+test("c09: 'vamos adicionar mais 3 rações' depois de escolher soma ao item da cesta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero ração de cachorro");
+  await send(phone, "1");
+  const before = (await context(phone)).basket[0];
+  await send(phone, "vamos adicionar mais 3 rações de cachorro");
+  const ctx = await context(phone);
+  const total = (ctx.basket ?? []).reduce((sum: number, i: { qty: number }) => sum + i.qty, 0);
+  assert.ok((ctx.basket ?? []).some((i: { sku: string }) => i.sku === before.sku), "o primeiro item continua na cesta");
+  assert.ok(total === 4 || (ctx.pending ?? []).length > 0, `soma 3 ao existente (cesta=${total}) ou pergunta qual produto (pending=${(ctx.pending ?? []).length})`);
+});
+
+// ---------- 3. orçamento = TOTAL com entrega ----------
+
+async function openOrders(phone: string) {
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  return prisma.deliveryOrder.findMany({ where: { userId: user.id, status: { in: ["awaiting_quote_confirmation", "awaiting_payment"] } } });
+}
+
+test("c23: 'até R$55' vale para o TOTAL — passou por R$3,79, avisa e oferece o que cabe ANTES de mostrar o total/cobrar", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia até R$ 55");
+  await send(phone, "2");
+  const out = await send(phone, "só isso");
+  assert.match(out, /passou do seu limite de \*R\$ 55,00\* por R\$ 3,79/, out);
+  assert.match(out, /Celebre Agora Masculino/, "a opção que cabe é oferecida");
+  assert.doesNotMatch(out, /Escolhe abaixo como quer pagar|Total: R\$ 58,79/, "nenhum total estourado é apresentado");
+  assert.equal((await openOrders(phone)).length, 0, "nada foi cotado nem cobrado");
+  const pick = await send(phone, "1");
+  assert.match(pick, /Celebre Agora/, pick);
+  const total = await send(phone, "só isso");
+  assert.match(total, /Total: R\$ 53,29/, total);
+});
+
+test("c23: nada cabe no teto — a Lia diz isso, não cobra e só segue com o 'pode' do cliente", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia até R$ 45");
+  await send(phone, "2");
+  const out = await send(phone, "só isso");
+  assert.match(out, /passou do seu limite de \*R\$ 45,00\*/, out);
+  assert.match(out, /nenhuma das opções que achei cabe/i, out);
+  assert.equal((await openOrders(phone)).length, 0);
+  const go = await send(phone, "pode");
+  assert.match(go, /Total: R\$ 58,79/, go);
+});
+
+test("c23: nada cabe e o cliente diz 'não' — o item sai da lista", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia até R$ 45");
+  await send(phone, "2");
+  await send(phone, "só isso");
+  const out = await send(phone, "não");
+  assert.match(out, /tirei da lista/i, out);
+  assert.equal(((await context(phone)).basket ?? []).length, 0);
+});
+
+test("c24: o teto dito só na tela do total ('fique até R$55 com a entrega') reabre e oferece o que cabe", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia");
+  await send(phone, "2");
+  const total = await send(phone, "só isso");
+  assert.match(total, /Total: R\$ 58,79/, total);
+  const out = await send(phone, "Tem alguma opção que fique até R$ 55 com a entrega?");
+  assert.match(out, /passou do seu limite de \*R\$ 55,00\*/, out);
+  assert.match(out, /Celebre Agora Masculino/, out);
+});
+
+test("c24: 'troca pelo de R$ 38,39' na tela do total troca de verdade e mostra o total novo", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia");
+  await send(phone, "2");
+  await send(phone, "só isso");
+  const out = await send(phone, "Dá pra trocar pelo de R$ 38,39 pra ficar mais barato?");
+  assert.match(out, /Celebre Agora Masculino/, out);
+  assert.match(out, /Total: R\$ 53,29/, out);
+  const orders = await openOrders(phone);
+  assert.equal(orders.length, 1, "um pedido cotado só");
+  const items = orders[0].items as unknown as { name: string; qty: number }[];
+  assert.equal(items.length, 1);
+  assert.match(items[0].name, /Celebre Agora/);
+});
+
+test("c24: apontar a opção pelo preço ou por 'o outro' (puro)", () => {
+  const options = [
+    { name: "A", price: 34.09 },
+    { name: "B", price: 76.99 },
+    { name: "C", price: 142.99 }
+  ];
+  assert.deepEqual(parseOptionSwitchRef("Dá pra trocar pelo de R$ 34,09 pra tentar ficar até R$ 80?", options, 1), { index: 0 });
+  assert.deepEqual(parseOptionSwitchRef("quero o de 34,09", options, 1), { index: 0 });
+  assert.equal(parseOptionSwitchRef("Tem alguma opção que fique até R$ 80 com a entrega?", options, 1), null, "pergunta de orçamento não é troca");
+  assert.equal(parseOptionSwitchRef("troca pelo de R$ 76,99", options, 1), null, "a opção já escolhida não é troca");
+  assert.deepEqual(parseOptionSwitchRef("prefiro o outro", options.slice(0, 2), 1), { index: 0 });
+  assert.equal(parseOptionSwitchRef("prefiro o outro", options.slice(0, 2), 1, { priceOnly: true }), null);
+});
+
+// ---------- 4. embalagem diferente da pedida ----------
+
+test("c28: '12 ovos' com embalagem de 10 — avisa a quantidade real e pergunta ANTES de pôr na cesta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "12 ovos");
+  const ctx0 = await context(phone);
+  const idx = (ctx0.pending[0].options as { name: string }[]).findIndex((o) => /\b(10|20)\s*(un|unidades)/i.test(o.name));
+  assert.ok(idx >= 0, "o catálogo de teste tem embalagem de 10/20 ovos");
+  const ask = await send(phone, String(idx + 1));
+  assert.match(ask, /vem com \*(10|20) unidades\* por embalagem e você pediu \*12\*/, ask);
+  assert.equal(((await context(phone)).basket ?? []).length, 0, "nada na cesta antes do sim");
+  assert.equal((await context(phone)).step, "choosing", "a escolha continua aberta");
+  const yes = await send(phone, "sim");
+  assert.match(yes, /✅/, yes);
+  assert.equal(((await context(phone)).basket ?? []).length, 1);
+});
+
+test("c28: 'não' na pergunta de embalagem volta às opções sem pôr nada na cesta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "12 ovos");
+  const idx = ((await context(phone)).pending[0].options as { name: string }[]).findIndex((o) => /\b(10|20)\s*(un|unidades)/i.test(o.name));
+  await send(phone, String(idx + 1));
+  const out = await send(phone, "não");
+  assert.match(out, /escolhe outra opção/i, out);
+  assert.equal(((await context(phone)).basket ?? []).length, 0);
+  assert.equal((await context(phone)).step, "choosing");
+});
+
+test("c28: embalagem que fecha o número pedido não pergunta nada", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "20 ovos");
+  const idx = ((await context(phone)).pending[0].options as { name: string }[]).findIndex((o) => /\b20\s*(un|unidades)/i.test(o.name));
+  if (idx < 0) return t.skip("sem embalagem de 20 no catálogo de teste");
+  const out = await send(phone, String(idx + 1));
+  assert.doesNotMatch(out, /mesmo assim/, out);
+  assert.equal(((await context(phone)).basket ?? []).length, 1);
 });

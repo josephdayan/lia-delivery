@@ -1195,6 +1195,16 @@ export function weightConversionNote(askedKg: number, unitKg: number, units: num
   return `_Vendido por unidade de ~${weightLabel(unitKg)}: coloquei ${units} ${units === 1 ? "unidade" : "unidades"} (~${weightLabel(units * unitKg)}) pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar. Pra mudar, é só dizer o número de unidades._`;
 }
 
+// Embalagem que NÃO fecha com o número pedido (07/10, c28): pergunta antes de pôr na cesta.
+export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
+  const total = packs * packSize;
+  return `Essa opção (*${name}*) vem com *${packSize} unidades* por embalagem e você pediu *${requested}*. ${packs === 1 ? "Levo 1 embalagem" : `Levo ${packs} embalagens`} (${total} un) mesmo assim? Responde *sim*, ou *outras* pra ver outras opções.`;
+}
+
+export function packMismatchDeclined(): string {
+  return "Sem problema — escolhe outra opção:";
+}
+
 export function packConversionNote(requested: number, packSize: number, packs: number): string {
   return `_Cada embalagem tem ${packSize} unidades — coloquei ${packs} ${packs === 1 ? "embalagem" : "embalagens"} (${packs * packSize} un) pro seu pedido de ${requested}. Pra mudar, é só dizer o número de embalagens._`;
 }
@@ -1413,6 +1423,23 @@ export function narrowedChoices(query: string): string {
 // "só isso"/"fechado" quando o pedido já está fechado e só falta a forma de pagamento —
 // nunca responder "não peguei qual você quer" (copy de escolha de produto).
 // "algum até X reais?" e nenhuma das opções na mesa cabe no teto.
+// Orçamento = TOTAL com entrega (07/10, c23/c24).
+export function overBudgetFit(cap: number, total: number, cheapestFitTotal?: number): string {
+  const over = Math.round((total - cap) * 100) / 100;
+  const hint = cheapestFitTotal != null ? ` (com a entrega ficam em torno de ${brl(cheapestFitTotal)} ou menos)` : "";
+  return `Com a entrega o total ficou em *${brl(total)}* — passou do seu limite de *${brl(cap)}* por ${brl(over)}. Estas opções cabem no limite${hint} 👇`;
+}
+
+export function overBudgetNone(cap: number, total: number, name: string, cheapestTotal?: number): string {
+  const over = Math.round((total - cap) * 100) / 100;
+  const cheaper = cheapestTotal != null && cheapestTotal < total - 0.009 ? ` A mais barata que achei ficaria em torno de ${brl(cheapestTotal)}.` : "";
+  return `Com a entrega o total ficou em *${brl(total)}* — passou do seu limite de *${brl(cap)}* por ${brl(over)}, e nenhuma das opções que achei cabe.${cheaper} Quer seguir com *${name}* assim mesmo? Responde *pode* — ou me diz outro produto ou um limite novo.`;
+}
+
+export function overBudgetDeclined(): string {
+  return "Sem problema, tirei da lista. Me diz outro produto ou um limite novo que eu procuro de novo.";
+}
+
 export function nonePriceCap(cap: number): string {
   return `Nenhuma dessas sai por até ${brl(cap)}. Responde *mais barato* ou *mais opções*.`;
 }

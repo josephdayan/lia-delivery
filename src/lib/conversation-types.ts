@@ -175,6 +175,14 @@ export type DeliveryContext = {
   // Último pedido que NENHUMA loja tinha (07/10, placar c28/c40): "tenta de novo" e "pode ser
   // uma Wilson" falam dele. `retried` = já refizemos a busca uma vez; a 2ª vez é resposta honesta.
   lastMiss?: { query: string; qty: number; at: number; retried?: boolean };
+  // Orçamento declarado na linha ("presente até R$100", "uns 80 reais") vale para o TOTAL com entrega
+  // (07/10, c23/c24). `sku` = a escolha que o teto cobre (só vale com ela sozinha na cesta);
+  // `warned` = já avisamos que estourou (a 2ª vez pergunta em vez de repetir a lista);
+  // `awaiting` = nada cabe e a Lia espera "pode"/"não"; `override` = o cliente aceitou passar.
+  budget?: { cap: number; sku: string; warned?: boolean; awaiting?: boolean; override?: boolean };
+  // Embalagem diferente da pedida (07/10, c28: "12 ovos" → caixa de 20): a Lia pergunta ANTES de pôr
+  // na cesta. Guarda a opção e a quantidade pedida; "sim" confirma, "outras" volta às opções.
+  packConfirm?: { sku: string; askedQty: number };
   // Última recusa de remédio (07/10, c35): a 2ª em pouco tempo troca de texto em vez de repetir.
   medicineRefusedAt?: number;
   // Oferta pendente de busca na cauda longa (Mercado Livre) para as linhas que as
