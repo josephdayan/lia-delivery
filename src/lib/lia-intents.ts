@@ -708,6 +708,22 @@ function meaningfulProductTokens(phrase: string): string[] {
     .map((token) => PRODUCT_TOKEN_ALIASES[token] ?? token)
     .filter((token) => token.length >= 4 && !["para", "umas", "mais", "cada"].includes(token));
 }
+// "procura óleo de soja comum, qualquer marca" ao refinar uma escolha: "qualquer marca"/"comum" não são palavras do
+// produto — entravam na busca como termos e a Lia respondia "não achei óleo soja comum qualquer marca"
+// (rodada 2, c20). Tira só a preferência vazia; sobra sempre pelo menos uma palavra de produto.
+export function stripPreferenceFiller(text: string): string {
+  const cleaned = text
+    .replace(/[,;]?\s*\b(?:pode ser |de )?(?:qualquer|tanto faz a|tanto faz|sem prefer[eê]ncia de|sem prefer[eê]ncia) marca\b/gi, " ")
+    .replace(/[,;]?\s*\b(?:pode ser |serve )?qualquer um\b/gi, " ")
+    .replace(/\b(?:comum|normal)\b/gi, (m, offset: number, whole: string) => (whole.trim().split(/\s+/).length >= 4 ? " " : m))
+    .replace(/\s+([,.;!?])/g, "$1")
+    .replace(/[,;]\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const FILLER = new Set(["quero", "queria", "pode", "ser", "serve", "tem", "pra", "para", "uma", "uns", "mas", "entao", "procura", "procure", "busca", "tenta", "ver"]);
+  return cleaned.split(/\s+/).some((w) => w.length > 2 && !FILLER.has(w.toLowerCase().replace(/[^\p{L}]/gu, ""))) ? cleaned : text;
+}
+
 // "Pode tentar outro modelo de mouse?" logo depois do "não achei mouse sem fio" (rodada 2, c72): o pedido novo
 // é a MESMA procura, e "sem fio" continua valendo — sem herdar a exigência, a Lia mostrava mouse com fio sem
 // avisar. Devolve o texto com o trecho do produto trocado pela frase completa do que não foi achado; null =

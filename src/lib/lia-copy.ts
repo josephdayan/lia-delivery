@@ -1466,6 +1466,11 @@ export function budgetNoted(cap: number): string {
   return `Anotado: *${brl(cap)}* no total, já com a entrega. Se passar eu te aviso e mostro o que cabe. Quer mais alguma coisa? Quando fechar, diz *"só isso"*.`;
 }
 
+// Opções que sobraram depois do teto dito com as opções na mesa.
+export function budgetNarrowedChoices(query: string, cap: number, total: boolean): string {
+  return total ? `Estas de *${query}* cabem em ${brl(cap)} com a entrega 👇` : `Estas de *${query}* saem por até ${brl(cap)} 👇`;
+}
+
 export function overBudgetDeclined(): string {
   return "Sem problema, tirei da lista. Me diz outro produto ou um limite novo que eu procuro de novo.";
 }

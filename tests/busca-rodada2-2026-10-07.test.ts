@@ -8,7 +8,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { __setRerankForTests, hedged, type RerankCandidate, type RerankResult } from "../src/lib/adapters/ai";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
-import { inheritMissQualifiers } from "../src/lib/lia-intents";
+import { inheritMissQualifiers, stripPreferenceFiller } from "../src/lib/lia-intents";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
 const PREFIX = `+5507${String(Date.now()).slice(-6)}${String(process.pid).slice(-2)}`;
@@ -113,8 +113,7 @@ test("retry herda o qualificador: 'outro modelo de mouse' depois de 'não achei 
   assert.equal(inheritMissQualifiers("tenta uma bateria", "mouse sem fio"), null);
 });
 
-type Verdict = { ok: boolean } | null;
-function fakeJudge(judge: (query: string, c: RerankCandidate) => Verdict) {
+function fakeJudge(judge: (query: string, c: RerankCandidate) => boolean) {
   const queries: string[] = [];
   __setRerankForTests(async (_message, lines): Promise<RerankResult> => {
     for (const l of lines) queries.push(l.query);
@@ -159,6 +158,43 @@ test("pergunta simples de atributo sem resultado ('tem de salmão?') ainda mostr
   await send(phone, "ração de cachorro");
   const out = await send(phone, "tem de salmão?");
   assert.doesNotMatch(out, /Não vou te mostrar de novo/, out);
+});
+
+test("'outras' julga com o contexto do pedido (óleo numa lista de mercado não é óleo lubrificante)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const messages: string[] = [];
+  __setRerankForTests(async (message, lines): Promise<RerankResult> => {
+    messages.push(message);
+    return { lines: lines.map((line) => ({ skus: line.candidates.map((c) => c.sku), exigencias: [], proximos: [] })) };
+  });
+  await send(phone, "desodorante colônia e ração de cachorro");
+  messages.length = 0;
+  await send(phone, "outras");
+  assert.ok(messages.some((m) => /pedido junto com/i.test(m) && /ra[cç][aã]o/i.test(m)), `sem contexto do pedido: ${messages.join(" || ")}`);
+});
+
+test("'outras' esgotado: a re-busca relaxada também passa pelo juízo da IA (não volta o que ele reprovaria)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  // O juiz só aprova Pedigree: se a re-busca de resgate pulasse o juiz, entrariam rações de outras marcas.
+  fakeJudge((_q, c) => /pedigree/i.test(c.name));
+  const shown: string[] = [];
+  let reply = await send(phone, "ração de cachorro");
+  shown.push(reply);
+  for (let i = 0; i < 6; i++) {
+    reply = await send(phone, "outras");
+    shown.push(reply);
+  }
+  const optionLines = shown.join("\n").split("\n").filter((l) => /^\*\d\)\*/.test(l));
+  assert.ok(optionLines.length >= 1, shown.join("\n---\n").slice(0, 400));
+  assert.ok(optionLines.every((l) => /pedigree/i.test(l)), `opção que a IA não aprovou foi mostrada: ${optionLines.filter((l) => !/pedigree/i.test(l)).join(" | ")}`);
+});
+
+test("refino: 'qualquer marca' e 'comum' não são palavras do produto", () => {
+  assert.equal(stripPreferenceFiller("procura óleo de soja comum, qualquer marca"), "procura óleo de soja");
+  assert.equal(stripPreferenceFiller("azul, qualquer marca"), "azul");
+  for (const text of ["qualquer marca", "comum", "pode ser qualquer um", "tem de soja?"]) assert.equal(stripPreferenceFiller(text), text);
 });
 
 // ---------- IA sem resposta no prazo: o ranking sem juízo prefere quem tem TODAS as palavras do pedido ----------

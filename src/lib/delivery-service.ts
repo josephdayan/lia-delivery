@@ -16,7 +16,7 @@ import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1702,6 +1702,21 @@ async function handleDeliveryTurn(
       ctx.budget = { cap: statedBudget, sku: ctx.basket![0].sku };
       await writeCtx(convo.id, ctx);
       await reply(phone, copy.budgetNoted(statedBudget));
+      return;
+    }
+  }
+
+  // Recusa + exigência com as opções na mesa: refino determinístico, antes do gerente de diálogo.
+  if (ctx.step === "choosing" && ctx.pending?.length && intent.kind === "free_text" && (await tryRejectedRefine(phone, convo.id, ctx, text))) return;
+
+  // Teto dito sozinho com as opções na mesa ("cerca de 60 reais com a entrega"): trata aqui, antes do gerente de
+  // diálogo — que o lia como "unclear" e perguntava de volta, deixando o total passar do limite (rodada 2).
+  if (ctx.step === "choosing" && ctx.pending?.length) {
+    const optionsBudget = parseBudgetStatement(text);
+    if (optionsBudget != null) {
+      const current = ctx.pending[0];
+      const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
+      await applyChoiceBudget(phone, convo.id, ctx, store, current, optionsBudget);
       return;
     }
   }
@@ -4800,6 +4815,37 @@ async function replyBasketAdjusted(phone: string, shortBody: string, fallbackTex
   await reply(phone, fallbackText);
 }
 
+// Teto de preço dito com as opções na mesa ("algum até 150 reais?", "no máximo 60 com a entrega"): vale para o
+// TOTAL (produto + entrega) de um pedido de um item só e acompanha a escolha até o fechamento (ctx.budget).
+// Nada na mesa cabe: procura no resto do catálogo antes de dizer que não tem (rodada 2, 07/10).
+async function applyChoiceBudget(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector, current: PendingChoice, priceCap: number) {
+  const single = ctx.pending!.length === 1 && !(ctx.basket?.length);
+  current.cap = priceCap;
+  if (single) current.capTotal = true;
+  else delete current.capTotal;
+  let within = withinBudget(current.options, current);
+  if (!within.length) {
+    const wider = await choiceCandidates(store, ctx, current).catch(() => [] as ChoiceOption[]);
+    const seen = new Set(current.options.map((o) => o.sku));
+    within = wider.filter((o) => !seen.has(o.sku)).slice(0, vitrineLimit());
+    if (within.length) {
+      const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
+      current.shownOptions = [...(current.shownOptions ?? current.options), ...within.filter((o) => !remembered.has(o.sku))];
+      current.shownSkus = [...new Set([...(current.shownSkus ?? []), ...within.map((o) => o.sku)])];
+    }
+  }
+  if (!within.length) {
+    delete current.cap;
+    delete current.capTotal;
+    await reply(phone, copy.nonePriceCap(priceCap));
+    await sendChoices(phone, current);
+    return;
+  }
+  current.options = within;
+  await writeCtx(convoId, ctx);
+  await sendChoices(phone, current, copy.budgetNarrowedChoices(current.query, priceCap, Boolean(current.capTotal)));
+}
+
 async function handleChoosing(
   phone: string,
   userId: string,
@@ -4811,6 +4857,8 @@ async function handleChoosing(
 ) {
   const current = ctx.pending![0];
   const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
+  // "qualquer marca"/"comum" dentro de um refino não são palavras do produto (rodada 2, c20).
+  if (intent.kind === "free_text") text = stripPreferenceFiller(text);
   // Toque em "Escolher esse": o id carrega o SKU do card, então mesmo um card ANTIGO
   // (de antes do "outras"/refino) escolhe exatamente o produto mostrado nele. Vem antes
   // de qualquer parser: é string de máquina, não linguagem.
@@ -5039,7 +5087,12 @@ async function handleChoosing(
       return;
     }
   }
-  const attrAsk = parseAttributeAsk(text);
+  const attrAskRaw = parseAttributeAsk(text);
+  // Orçamento junto do pedido de atributo ("óleo de soja, até uns 12 reais"): o teto vale para a escolha e sai das
+  // palavras da busca — "ate 12 reais" virava termo do produto e a Lia dizia "não achei óleo soja ate 12 reais".
+  const attrBudget = attrAskRaw ? splitPriceCap(attrAskRaw) : null;
+  const attrAsk = attrBudget?.cap != null ? attrBudget.phrase : attrAskRaw;
+  if (attrBudget?.cap != null) current.cap = attrBudget.cap;
   if (attrAsk && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
     const base = current.baseQuery ?? current.query;
     const baseTokens = new Set(queryTokens(normalizeMsg(base)));
@@ -5161,34 +5214,7 @@ async function handleChoosing(
   // com markup). Nenhuma dentro do teto → resposta honesta + caminhos (barato/opções).
   const priceCap = parsePriceCap(text);
   if (priceCap != null) {
-    // O teto dito agora vale para o TOTAL (produto + entrega) de um pedido de um item só, e acompanha a
-    // escolha até o fechamento (ctx.budget) — rodada 2, 07/10.
-    const single = ctx.pending!.length === 1 && !(ctx.basket?.length);
-    current.cap = priceCap;
-    if (single) current.capTotal = true;
-    else delete current.capTotal;
-    let within = withinBudget(current.options, current);
-    if (!within.length) {
-      // Nada do que está na mesa cabe: procura no resto do catálogo antes de dizer que não tem.
-      const wider = await choiceCandidates(store, ctx, current).catch(() => [] as ChoiceOption[]);
-      const seen = new Set(current.options.map((o) => o.sku));
-      within = wider.filter((o) => !seen.has(o.sku)).slice(0, vitrineLimit());
-      if (within.length) {
-        const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
-        current.shownOptions = [...(current.shownOptions ?? current.options), ...within.filter((o) => !remembered.has(o.sku))];
-        current.shownSkus = [...new Set([...(current.shownSkus ?? []), ...within.map((o) => o.sku)])];
-      }
-    }
-    if (!within.length) {
-      delete current.cap;
-      delete current.capTotal;
-      await reply(phone, copy.nonePriceCap(priceCap));
-      await sendChoices(phone, current);
-      return;
-    }
-    current.options = within;
-    await writeCtx(convoId, ctx);
-    await sendChoices(phone, current, copy.narrowedChoices(current.query));
+    await applyChoiceBudget(phone, convoId, ctx, store, current, priceCap);
     return;
   }
 
@@ -5229,7 +5255,7 @@ async function handleChoosing(
   if (intent.kind === "free_text" && !isQuestion(text) && addedTokens.length === 1) {
     const combinedQuery = `${current.baseQuery ?? current.query} ${normalizeMsg(text)}`.replace(/\s+/g, " ").trim();
     const combined = await gatherCrossStoreCandidates(combinedQuery, 12, 4, { forceLongTail: true });
-    const strong = combined
+    let strong = combined
       .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
       .filter((o) => conciergeMatchIsStrong(combinedQuery, o) && conciergeMatchIsStrong(normalizeMsg(text), o))
       // Refino mantém o PRODUTO da escolha (06/10): com cervejas na mesa, "quero desodorante"
@@ -5240,6 +5266,8 @@ async function handleChoosing(
       // caminho de cauda longa de "fone até 150" → "Philco" que ainda deixava um
       // anúncio caro do ML furar o orçamento depois de os primeiros cards respeitarem.
       .filter((o) => current.cap == null || display(o.unitPrice, o.medicine) <= current.cap);
+    // Idem: a busca combinada com a marca também passa pelo juízo da IA antes de ir à mesa.
+    strong = await aiApprovePool(combinedQuery, strong, orderSiblings(ctx, current));
     if (strong.length) {
       current.baseQuery = current.baseQuery ?? current.query;
       current.query = combinedQuery;
@@ -5405,17 +5433,24 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
   pool = withinBudget(pool, p);
   pool = active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
   // O juízo da IA confere também o refino ativo ("coco", "1 L"), não só o pedido original.
-  return aiApprovePool(active.length ? `${query} ${active.join(" ")}` : query, pool);
+  // O juízo precisa do CONTEXTO do pedido: "óleo" numa lista de mercado (arroz, feijão, café) é óleo de cozinha;
+  // sem isso, "outras" de "óleo" aprovava óleo lubrificante e capilar (rodada 2, c20).
+  return aiApprovePool(active.length ? `${query} ${active.join(" ")}` : query, pool, orderSiblings(ctx, p));
+}
+
+// O que mais está no pedido (cesta + outras escolhas na fila): contexto para o juízo da IA.
+function orderSiblings(ctx: DeliveryContext, p: PendingChoice): string[] {
+  return [...(ctx.basket ?? []).map((b) => b.name), ...(ctx.pending ?? []).filter((x) => x !== p).map((x) => x.query)].slice(0, 8);
 }
 
 // "Outras"/refino/mais barato também passam pelo juízo da IA (07/10, placar c20: "outras" de
 // "arroz" trazia arroz carreteiro, com brócolis e arbório — o piso léxico só vê a palavra).
 // IA fora do ar = o pool segue como estava; a ordem do ranking original é preservada.
-async function aiApprovePool(query: string, pool: ChoiceOption[]): Promise<ChoiceOption[]> {
+async function aiApprovePool(query: string, pool: ChoiceOption[], siblings: string[] = []): Promise<ChoiceOption[]> {
   if (!pool.length) return pool;
   const head = pool.slice(0, 18);
   const rerank = await rerankShoppingOptions(
-    query,
+    siblings.length ? `${query} (pedido junto com: ${siblings.join(", ")})` : query,
     [{ query, candidates: head.map((o) => ({ sku: o.sku, name: o.name, brand: o.brand, price: o.unitPrice, store: o.storeLabel ?? "" })) }],
     18
   );
@@ -5522,12 +5557,18 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
       const tokens = queryTokens(p.baseQuery ?? p.query);
       const relaxedQuery = tokens.length > 2 ? tokens.slice(0, -1).join(" ") : (p.baseQuery ?? p.query);
       try {
-        const rescue = await confirmOptionsLive(
-          (await gatherCrossStoreCandidates(relaxedQuery, 12, 4, { forceLongTail: true }))
-            .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
-            .filter((o) => conciergeMatchIsStrong(relaxedQuery, o) && !shown.includes(o.sku))
-            .filter((o) => p.cap == null || display(o.unitPrice, o.medicine) <= p.cap),
-          ctx.cep
+        // A re-busca relaxada também passa pelo juízo da IA contra o pedido de verdade: sem isso, "óleo" (que não
+        // tinha mais nada de cozinha) trazia óleo lubrificante e secante por conta só do piso léxico (rodada 2, c20).
+        const rescue = await aiApprovePool(
+          (p.attrs ?? []).length ? `${p.baseQuery ?? p.query} ${(p.attrs ?? []).join(" ")}` : p.query,
+          await confirmOptionsLive(
+            (await gatherCrossStoreCandidates(relaxedQuery, 12, 4, { forceLongTail: true }))
+              .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }))
+              .filter((o) => conciergeMatchIsStrong(relaxedQuery, o) && !shown.includes(o.sku))
+              .filter((o) => p.cap == null || display(o.unitPrice, o.medicine) <= p.cap),
+            ctx.cep
+          ),
+          orderSiblings(ctx, p)
         );
         const rescueNext = diversifyOptions(relaxedQuery, rescue, vitrineLimit());
         if (rescueNext.length) {
@@ -5581,6 +5622,8 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   // `mustMatch` (06/10): só vale opção que tem TUDO o que foi pedido ("kerasys coco"); a
   // busca nova não pode devolver outro produto com cabeçalho de refino.
   if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
+  // O teto que o cliente já disse continua valendo na busca nova.
+  if (choice && current.cap != null) choice.options = withinBudget(choice.options, current);
   if (!choice?.options.length) return false;
   current.baseQuery = undefined;
   current.attrs = undefined;
@@ -5600,7 +5643,7 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
 // O cliente RECUSOU o que está na mesa ("nenhum desses", "esses não servem", "tem que ser tocha") e a busca
 // refinada não achou nada: mostrar de novo as mesmas opções recusadas, só com o aviso "não achei", era a
 // resposta que o cliente já tinha dispensado (rodada 2, c11). Diz que não achou e devolve a escolha a ele.
-const REJECTED_SHOWN_RE = /\b(nenhum(?:a)? d(?:es|ess)[ea]s?|nao (?:servem?|serve|gostei|quero (?:ess\w*|nenhum\w*))|(?:ess\w+|est\w+) nao (?:servem?|sao)|tem que ser|precisa ser|tinha que ser|so serve)\b/;
+const REJECTED_SHOWN_RE = /\b(nenhum(?:a)? d(?:es|ess)[ea]s?|nao (?:servem?|serve|gostei|e isso|era isso|quero (?:ess\w*|nenhum\w*))|(?:ess\w+|est\w+) (?:nao (?:servem?|sao)|sao (?:comuns?|simples|normais|errad\w+|diferentes))|tem que ser|precisa ser|tinha que ser|so serve|(?:eu )?(?:preciso|precisava|quero|queria) (?:de )?(?:um|uma) (?:estilo|tipo|modelo))\b/;
 async function replyRefineMiss(phone: string, current: PendingChoice, refined: string, text?: string) {
   if (text && REJECTED_SHOWN_RE.test(normalizeMsg(text))) {
     await reply(phone, copy.refineNoResultRejected(refined));
@@ -5609,6 +5652,31 @@ async function replyRefineMiss(phone: string, current: PendingChoice, refined: s
   await reply(phone, copy.refineNoResult(refined));
   await sendChoices(phone, current);
 }
+
+// Recusou o que está na mesa dizendo O QUE EXIGE ("Nenhuma dessas, tem que ser estilo tocha", "Esses são comuns,
+// preciso de um estilo tocha"): é refino do MESMO produto com a exigência. Resolvido aqui, antes do gerente de
+// diálogo, para o "não achei" nunca devolver as opções que ele acabou de recusar (rodada 2, c11).
+const REQUIREMENT_RE = /\b(?:tem que ser|precisa ser|tinha que ser|preciso de|precisava de|preciso que seja|quero)\s+(?:um |uma |o |a )?(?:estilo |tipo |modelo |sabor )?([a-z0-9][a-z0-9/ -]{1,40})/;
+async function tryRejectedRefine(phone: string, convoId: string, ctx: DeliveryContext, text: string): Promise<boolean> {
+  const current = ctx.pending?.[0];
+  if (!current) return false;
+  const n = normalizeMsg(text);
+  if (!REJECTED_SHOWN_RE.test(n)) return false;
+  // "Não gostei, quero o 2"/"essa não, a segunda" é escolha, não exigência: quem escolhe segue o caminho de sempre.
+  if (parseChoiceReply(text, current.options)?.type === "pick" || parseChoiceCombo(text, current.options)) return false;
+  const required = n.match(REQUIREMENT_RE)?.[1];
+  if (!required) return false;
+  const base = current.baseQuery ?? current.query;
+  const baseTokens = new Set(queryTokens(normalizeMsg(base)));
+  const asked = queryTokens(required.replace(/\//g, " ").replace(/\b(?:outras?|opcoes|opcao|mais)\b/g, " "));
+  const fresh = asked.filter((token) => !baseTokens.has(token));
+  if (!fresh.length || fresh.length > 4) return false;
+  const wanted = `${base} ${fresh.join(" ")}`;
+  if (await researchChoice(phone, convoId, ctx, current, wanted, fresh.join(" "))) return true;
+  await replyRefineMiss(phone, current, wanted, text);
+  return true;
+}
+
 
 async function refineOptions(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector, attrs: string[], text?: string) {
   const p = ctx.pending![0];
