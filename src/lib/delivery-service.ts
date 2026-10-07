@@ -6865,6 +6865,16 @@ async function sendListFlowFollowUp(phone: string, body: string) {
   await reply(phone, copy.conciergeKeepAdding());
 }
 
+// Opções da linha do mais barato ao mais caro pelo total da linha (embalagem ajustada); empate
+// mantém a ordem do ranking.
+function cheapestFirstForLine(choice: PendingChoice): ChoiceOption[] {
+  const qty = Math.max(1, choice.qty);
+  return choice.options
+    .map((option, index) => ({ option, index, total: display(option.unitPrice, option.medicine) * packAdjusted(option, qty, choice.query).qty }))
+    .sort((a, b) => a.total - b.total || a.index - b.index)
+    .map(({ option }) => option);
+}
+
 // Gatilho (handleConciergeRequest): devolve true se mandou o formulário. Só mexe no contexto
 // DEPOIS de o formulário sair; sem Flow publicado, remédio isento na lista ou falha no envio, o
 // chamador segue o caminho de sempre com tudo intacto.
@@ -6893,7 +6903,9 @@ async function tryListFlow(args: {
 
   try {
     // Cópia: o composer reordena as opções, e se o formulário falhar o caminho antigo roda o dele.
-    const lines = pending.map((choice) => ({ ...choice, options: [...choice.options] }));
+    // Do mais barato ao mais caro (dono, 07/10): a sugestão é a mais em conta entre as aprovadas, e o
+    // composer só troca se juntar entregas economizar no total.
+    const lines = pending.map((choice) => ({ ...choice, options: cheapestFirstForLine(choice) }));
     const composedNotes = runBasketComposer(lines);
     const autopickMax = Number(process.env.LIA_BULK_AUTOPICK_MAX ?? 100);
     const added: BasketItem[] = [];
@@ -6915,6 +6927,7 @@ async function tryListFlow(args: {
         skus: choice.options.slice(0, LIST_FLOW_MAX_OPTIONS).map((o) => o.sku),
         suggestedSku: suggest ? top.sku : null,
         options: choice.options.slice(0, LIST_FLOW_MAX_OPTIONS),
+        ...(choice.options.length > LIST_FLOW_MAX_OPTIONS ? { extraOptions: choice.options.slice(LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_OPTIONS + 8) } : {}),
         ...(choice.closestFalta ? { closestFalta: choice.closestFalta } : {})
       };
     });
@@ -6932,11 +6945,12 @@ async function tryListFlow(args: {
       ordered
     );
     const thumbs = fetchThumbs(ordered.slice(0, LIST_FLOW_MAX_SLOTS).flatMap((slot) => slot.options));
+    // Uma mensagem só (dono, 07/10): "juntei entregas" e aviso de embalagem vão no corpo do formulário.
     const sent = await sendListFlowMessage(phone, flowId, {
       slots: ordered,
       items: basketLinesForCopy(added),
       misses,
-      notes: args.notes,
+      notes: [...args.notes, ...composedNotes, ...packNotes],
       thumbs
     });
     if (!sent) return false;
@@ -6946,8 +6960,6 @@ async function tryListFlow(args: {
     ctx.step = "collecting";
     ctx.listFlow = { ...sent, basketSig: basketSignature(ctx.basket) };
     await writeCtx(convoId, ctx);
-    const extra = [...composedNotes, ...packNotes];
-    if (extra.length) await reply(phone, extra.join("\n"));
     await sendListFlowFollowUp(phone, copy.listFlowFollowUp());
     return true;
   } catch (error) {
@@ -7010,9 +7022,16 @@ async function handleListFlowReply(
   const leftOut: string[] = [];
   const packNotes: string[] = [];
   const slots = lf.slots.map((slot) => ({ ...slot }));
+  const wantMore: ListFlowCtxSlot[] = [];
   slots.forEach((slot, index) => {
     const choice = parsed.choices[index];
     const currentSku = slot.suggestedSku;
+    if (choice.kind === "more") {
+      if (currentSku) basket = basket.filter((item) => item.sku !== currentSku);
+      slot.suggestedSku = null;
+      wantMore.push(slot);
+      return;
+    }
     if (choice.kind === "skip") {
       if (currentSku) basket = basket.filter((item) => item.sku !== currentSku);
       slot.suggestedSku = null;
@@ -7034,14 +7053,23 @@ async function handleListFlowReply(
 
   ctx.basket = basket;
   ctx.step = "collecting";
+  // "Nenhuma — ver outras": a vaga sai do formulário e vira escolha por cards (abaixo).
+  const keptSlots = slots.filter((slot) => !wantMore.includes(slot));
   // O id gira: reenviar a mesma resposta depois cai em "essa lista mudou" e mostra o estado atual.
-  ctx.listFlow = { ...lf, id: newListFlowId(), sentAt: Date.now(), slots, basketSig: basketSignature(basket) };
-  const summary = copy.listFlowDone({
-    items: basketLinesForCopy(basket),
-    leftOut,
-    misses: missEntriesFor(freshListMisses(ctx), []),
-    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100
-  });
+  ctx.listFlow = { ...lf, id: newListFlowId(), sentAt: Date.now(), slots: keptSlots, basketSig: basketSignature(basket) };
+  const summaryFor = (moreFor: string[]) =>
+    copy.listFlowDone({
+      items: basketLinesForCopy(basket),
+      leftOut,
+      misses: missEntriesFor(freshListMisses(ctx), []),
+      produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100,
+      moreFor
+    });
+  if (wantMore.length) {
+    await showListFlowMoreOptions(phone, convo.id, ctx, wantMore, (moreFor) => [summaryFor(moreFor), ...packNotes].join("\n"));
+    return;
+  }
+  const summary = summaryFor([]);
   if (!basket.length) {
     await writeCtx(convo.id, ctx);
     await reply(phone, summary);
@@ -7049,6 +7077,55 @@ async function handleListFlowReply(
     return;
   }
   await advancePending(phone, convo.id, ctx, user.cep, [summary, ...packNotes].join("\n"), { listFlowButton: true });
+}
+
+// "Nenhuma — ver outras" (dono, 07/10): cada vaga marcada assim vira uma escolha por cards, com
+// as opções aprovadas que não couberam na tela; sem elas, a mesma busca do "outras" (sem repetir
+// o que a tela mostrou). Item sem nenhuma outra opção fica fora da lista, com aviso.
+async function showListFlowMoreOptions(
+  phone: string,
+  convoId: string,
+  ctx: DeliveryContext,
+  wanted: ListFlowCtxSlot[],
+  summaryFor: (moreFor: string[]) => string
+) {
+  const limit = vitrineLimit();
+  const choices = await Promise.all(
+    wanted.map(async (slot): Promise<PendingChoice | null> => {
+      const base: PendingChoice = { query: slot.query, qty: slot.qty, qtyExplicit: true, options: slot.options, shownSkus: slot.skus, shownOptions: slot.options };
+      let next = (slot.extraOptions ?? []).filter((o) => !slot.skus.includes(o.sku)).slice(0, limit);
+      if (!next.length) {
+        try {
+          // As opções da tela vêm de várias lojas: a busca de outras também (sem storeKey = todas).
+          const store = getStore(slot.options[0]?.storeKey ?? orderStore(ctx).key);
+          const pool = (await choiceCandidates(store, { ...ctx, storeKey: undefined }, base)).filter((o) => !slot.skus.includes(o.sku));
+          next = cheapestFirstForLine({ ...base, options: pool }).slice(0, limit);
+        } catch (error) {
+          console.warn("[list-flow:more-options:search-failed]", error instanceof Error ? error.message : error);
+        }
+      }
+      if (!next.length) return null;
+      return { ...base, options: next, cheapestFirst: true, shownSkus: [...slot.skus, ...next.map((o) => o.sku)], shownOptions: [...slot.options, ...next] };
+    })
+  );
+  const ready = choices.filter((choice): choice is PendingChoice => Boolean(choice));
+  const none = wanted.filter((_, index) => !choices[index]).map((slot) => slot.query);
+  const head = [summaryFor(ready.map((choice) => choice.query)), none.length ? copy.listFlowNoOtherOptions(none) : ""].filter(Boolean).join("\n\n");
+  if (!ready.length && !ctx.basket?.length) {
+    await writeCtx(convoId, ctx);
+    await reply(phone, head);
+    await reply(phone, copy.askMoreItems());
+    return;
+  }
+  if (!ready.length) {
+    await advancePending(phone, convoId, ctx, ctx.cep, head, { listFlowButton: true });
+    return;
+  }
+  ctx.pending = [...ready, ...(ctx.pending ?? [])];
+  ctx.step = "choosing";
+  await writeCtx(convoId, ctx);
+  await reply(phone, head);
+  await sendChoices(phone, ready[0], copy.moreChoicesHeader(ready[0].query));
 }
 
 // "sim" à oferta da cauda longa: a mesma rodada de resgate que antes era automática

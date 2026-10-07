@@ -344,3 +344,61 @@ test("faltante: 'tenta de novo' refaz e, sem achar, diz a verdade e tira da list
   const second = await send(phone, "tenta de novo");
   assert.match(second, /Procurei de novo.*macarrão/i, second.slice(0, 300));
 });
+
+// Ajustes do dono (07/10, depois do teste no celular): mais barata marcada, preço crescente,
+// "Nenhuma — ver outras", tudo numa mensagem só e "Para fechar o pedido:" antes dos botões.
+test("sugestão = a mais barata entre as aprovadas, opções do mais barato ao mais caro, sem mensagem solta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const out = await send(phone, LIST);
+  assert.equal(out, "", `nada sai fora do formulário e dos botões: ${out}`);
+  const flow = lastFlow(phone);
+  const ctx = (await ctxOf(phone)) as Awaited<ReturnType<typeof ctxOf>> & {
+    listFlow: { slots: { skus: string[]; suggestedSku: string | null; options: { sku: string; unitPrice: number }[] }[] };
+  };
+  const reorganized = /Juntei entregas|Reorganizei/.test(flow.input.body);
+  for (const slot of ctx.listFlow.slots) {
+    const prices = slot.skus.map((sku) => slot.options.find((o) => o.sku === sku)!.unitPrice);
+    assert.deepEqual(prices, [...prices].sort((a, b) => a - b), `ordem por preço: ${slot.skus.join(",")}`);
+    if (!reorganized && slot.suggestedSku) assert.equal(slot.suggestedSku, slot.skus[0], "a marcada é a mais barata");
+  }
+  const fu = followUps.filter((f) => f.to === phone).at(-1)!;
+  assert.equal(fu.body, "Para fechar o pedido:");
+  assert.equal(fu.opts?.listFlowButton, true);
+  const opts = dataOf(flow).opts_1 as Array<{ id: string; title: string }>;
+  assert.deepEqual(opts.slice(-2).map((o) => o.id), ["more", "skip"]);
+});
+
+test("'Nenhuma — ver outras': tira a sugestão, resume a lista e mostra outras opções daquele item", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, LIST);
+  const flow = lastFlow(phone);
+  const slots = (await ctxOf(phone)).listFlow!.slots;
+  const target = slots.find((s) => /arroz/.test(s.query)) ?? slots[0];
+  const form: Record<string, string> = { lia_lista: String(dataOf(flow).lista_id) };
+  slots.forEach((slot, i) => (form[`item_${i + 1}`] = slot === target ? "more" : String(slot.suggestedSku)));
+  const fuStart = followUps.length;
+  const sentText = await submit(phone, form);
+  const out = [sentText, ...followUps.slice(fuStart).filter((f) => f.to === phone).map((f) => f.body)].join("\n---\n");
+  const after = await ctxOf(phone);
+  assert.ok(!after.basket!.some((i) => i.sku === target.suggestedSku), "a sugestão recusada saiu da cesta");
+  assert.equal(after.basket?.length, slots.length - 1, "as outras ficaram");
+  assert.match(out, /Lista atualizada/);
+  if (after.step === "choosing") {
+    assert.match(out, new RegExp(`Agora as outras opções de \\*${target.query}\\*`));
+    assert.equal(after.pending?.[0].query, target.query);
+    const offered = (after.pending?.[0].options ?? []) as unknown as { sku: string }[];
+    assert.ok(offered.length > 0);
+    assert.ok(offered.every((o) => !target.skus.includes(o.sku)), "nada do que a tela já mostrou");
+    assert.ok(!after.listFlow!.slots.some((s) => s.lineKey === target.lineKey), "a vaga sai do formulário");
+    // Escolher uma das novas soma o item de volta.
+    await send(phone, "1");
+    const done = await ctxOf(phone);
+    assert.equal(done.basket?.length, slots.length);
+    assert.ok(done.basket!.some((i) => i.sku === offered[0].sku));
+  } else {
+    assert.match(out, /não tenho outras opções além das que te mostrei/);
+    assert.doesNotMatch(out, /Agora as outras opções/);
+  }
+});

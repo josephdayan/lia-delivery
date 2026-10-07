@@ -15,6 +15,10 @@ sugestão marcada e "Não quero este item". Plano: `/Users/joseph/.claude/plans/
   Todo item faltante grava `SearchMiss` → `/ops/faltantes` (migration `20261007150000_search_miss`).
 - Lista com remédio isento NÃO usa a tela (regra Meta de 05/10: remédio em cards soltos). Mercado Livre fora.
 - Flags: `LIA_LIST_FLOW=true` liga; `LIA_FLOW_LIST_ID` força o id. Desligada = comportamento antigo.
+- Ajustes do dono (07/10, após teste no celular): opções em ordem crescente de preço e a marcada é a mais em conta
+  (`cheapestFirstForLine`, antes do composer); "Nenhuma — ver outras" (`more`) vira escolha por cards daquele item
+  (`showListFlowMoreOptions`) e a vaga sai do formulário; notas do composer/embalagem vão no corpo da tela (nada de
+  mensagem solta); texto dos botões = "Para fechar o pedido:".
 
 ## 07/10/2026 — Regras que o placar ensinou
 

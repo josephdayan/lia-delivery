@@ -11,6 +11,10 @@ export const LIST_FLOW_MAX_OPTIONS = 4;
 export const LIST_FLOW_MESSAGE = "🛒 Lista escolhida no formulário";
 export const LIST_FLOW_SKIP_ID = "skip";
 export const LIST_FLOW_SKIP_TITLE = "Não quero este item";
+// "Nenhuma — ver outras" (dono, 07/10): tira a sugestão e, depois de confirmar a tela, a Lia
+// manda outras opções daquele item.
+export const LIST_FLOW_MORE_ID = "more";
+export const LIST_FLOW_MORE_TITLE = "Nenhuma — ver outras";
 // Orçamento de miniaturas (base64) dentro do payload total de 1 MB da Meta.
 export const LIST_FLOW_IMAGE_BUDGET = 600_000;
 const LABEL_MAX = 30;
@@ -36,7 +40,7 @@ export type ListFlowMiss = { query: string; reason?: string };
 
 export type ListFlowSentSlot = {
   lineKey: string;
-  // Só os produtos (sem "skip"), na ordem enviada; é contra isto que a resposta é validada.
+  // Só os produtos (sem "more"/"skip"), na ordem enviada; é contra isto que a resposta é validada.
   skus: string[];
   suggestedSku: string | null;
 };
@@ -62,7 +66,7 @@ export type BuiltListFlow = {
   payloadBytes: number;
 };
 
-const DEFAULT_HEADER = "Escolha uma opção em cada item. A sugestão da Lia já vem marcada.";
+const DEFAULT_HEADER = "Escolha uma opção em cada item. Já deixei marcada a mais em conta.";
 
 function brl(value: number): string {
   return `R$ ${value.toFixed(2).replace(".", ",")}`;
@@ -153,7 +157,12 @@ export function buildListFlowData(
     const seen = new Set<string>();
     const unique = slot.options.filter((o) => (seen.has(o.sku) ? false : (seen.add(o.sku), true)));
     const suggested = slot.suggestedSku ? unique.find((o) => o.sku === slot.suggestedSku) : undefined;
-    const ordered = [...(suggested ? [suggested] : []), ...unique.filter((o) => o !== suggested)].slice(0, LIST_FLOW_MAX_OPTIONS);
+    // As 4 que vão (a sugestão sempre entre elas), exibidas do mais barato para o mais caro (dono, 07/10).
+    const ordered = [...(suggested ? [suggested] : []), ...unique.filter((o) => o !== suggested)]
+      .slice(0, LIST_FLOW_MAX_OPTIONS)
+      .map((option, index) => ({ option, index, price: display(option.unitPrice, option) }))
+      .sort((a, b) => a.price - b.price || a.index - b.index)
+      .map(({ option }) => option);
     const slotRows: FlowOptionRow[] = ordered.map((option) => {
       const title = shortOptionTitle(option.name);
       const row: FlowOptionRow = {
@@ -168,7 +177,7 @@ export function buildListFlowData(
       }
       return row;
     });
-    slotRows.push({ id: LIST_FLOW_SKIP_ID, title: LIST_FLOW_SKIP_TITLE });
+    slotRows.push({ id: LIST_FLOW_MORE_ID, title: LIST_FLOW_MORE_TITLE }, { id: LIST_FLOW_SKIP_ID, title: LIST_FLOW_SKIP_TITLE });
     rows.push(slotRows);
     sentSlots.push({ lineKey: slot.lineKey, skus: ordered.map((o) => o.sku), suggestedSku: suggested?.sku ?? null });
     labels.push(slotLabel(slot.label, slot.qty, !suggested));
@@ -207,6 +216,7 @@ export function isListFlowReply(payload: Record<string, unknown> | null | undefi
 export type ListFlowChoice =
   | { lineKey: string; kind: "keep" }
   | { lineKey: string; kind: "skip" }
+  | { lineKey: string; kind: "more" }
   | { lineKey: string; kind: "pick"; sku: string };
 
 // Por vaga, na ordem enviada: campo ausente/vazio, igual à sugestão ou com sku que não foi
@@ -219,6 +229,7 @@ export function parseListFlowReply(
     const raw = payload[`item_${index + 1}`];
     const value = typeof raw === "string" ? raw.trim() : "";
     if (value === LIST_FLOW_SKIP_ID) return { lineKey: slot.lineKey, kind: "skip" };
+    if (value === LIST_FLOW_MORE_ID) return { lineKey: slot.lineKey, kind: "more" };
     if (value && value !== slot.suggestedSku && slot.skus.includes(value)) return { lineKey: slot.lineKey, kind: "pick", sku: value };
     return { lineKey: slot.lineKey, kind: "keep" };
   });

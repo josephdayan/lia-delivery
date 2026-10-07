@@ -1597,8 +1597,17 @@ export function listFlowIntro(input: {
   return body.length > FLOW_BODY_MAX ? `${body.slice(0, FLOW_BODY_MAX - 1)}…` : body;
 }
 
+// Texto dos botões Pagar / Adicionar mais / Mudar minha lista depois do formulário (dono, 07/10).
 export function listFlowFollowUp(): string {
-  return "Se a lista estiver boa, toque em *Pagar*.";
+  return "Para fechar o pedido:";
+}
+
+// "Nenhuma — ver outras" sem nenhuma outra opção além das que a tela mostrou.
+export function listFlowNoOtherOptions(queries: string[]): string {
+  const labels = queries.map((q) => `*${shortNotFoundLabel(q)}*`).join(", ");
+  return queries.length === 1
+    ? `De ${labels} não tenho outras opções além das que te mostrei; ficou fora da lista. Se quiser uma delas, é só me dizer o nome.`
+    : `De ${labels} não tenho outras opções além das que te mostrei; ficaram fora da lista. Se quiser alguma delas, é só me dizer o nome.`;
 }
 
 export function listFlowClosed(): string {
@@ -1611,12 +1620,16 @@ export function listFlowDone(input: {
   leftOut: string[];
   misses: MissEntry[];
   produtos: number;
+  // Vagas marcadas "Nenhuma — ver outras": as opções novas vêm logo abaixo.
+  moreFor?: string[];
 }): string {
   const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)];
-  if (!input.items.length) lines.push("_Nenhum item ficou na lista._");
+  const moreFor = input.moreFor ?? [];
+  if (!input.items.length) lines.push(moreFor.length ? "_Por enquanto nenhum item na lista._" : "_Nenhum item ficou na lista._");
   if (input.leftOut.length) lines.push("", `Ficou de fora (sem opção escolhida): ${input.leftOut.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")}.`);
   if (input.misses.length) lines.push("", missesBlock(input.misses));
   if (input.items.length) lines.push("", `Produtos: ${brl(input.produtos)} _(a entrega entra no total)_`);
+  if (moreFor.length) lines.push("", `Agora as outras opções de ${moreFor.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")} 👇`);
   return lines.join("\n");
 }
 

@@ -119,6 +119,8 @@ export type ListFlowCtxSlot = {
   suggestedSku: string | null;
   // As opções por trás dos skus: trocar a cesta depois não precisa de nova busca.
   options: ChoiceOption[];
+  // Opções aprovadas que não couberam nas 4 da tela: o "Nenhuma — ver outras" começa por elas.
+  extraOptions?: ChoiceOption[];
   closestFalta?: string;
 };
 export type ListFlowCtx = { id: string; sentAt: number; basketSig: string; slots: ListFlowCtxSlot[] };

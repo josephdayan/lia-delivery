@@ -1,3 +1,14 @@
+## 07/10/2026 (noite) — Tela da lista: ajustes do dono depois do teste no celular
+
+A tela funcionou no celular do dono (com fotos). Ajustes pedidos, feitos e testados (suíte local):
+- **Preço**: as opções de cada item vão do mais barato ao mais caro; a marcada é a mais em conta entre as aprovadas
+  (o "juntei entregas" só troca se economizar ≥ R$3 no total). Nova opção **"Nenhuma — ver outras"**: tira a sugestão
+  e, depois de confirmar a tela, a Lia manda cards com outras opções daquele item (primeiro as aprovadas que não
+  couberam, senão a busca do "outras" em todas as lojas, sem repetir o que a tela mostrou). Sem nenhuma outra, avisa.
+- **Uma mensagem só**: "juntei entregas" e o aviso de embalagem vão no corpo da mensagem da tela.
+- **Fechamento**: o texto antes dos botões (Pagar / Adicionar mais / Mudar minha lista) é só "Para fechar o pedido:".
+O JSON do Flow não mudou (as opções vão no `data`): não precisa republicar.
+
 ## 07/10/2026 (noite) — Meta 100%: rodada 2 = 78% limpos / 92% objetivo (pass@3)
 
 | Placar de conversas (101 cenários × 3, juiz calibrado) | limpos nas 3 | objetivo nas 3 | limpas por execução |

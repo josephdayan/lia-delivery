@@ -43,14 +43,28 @@ test("lista: botão do Flow cabe em 20 caracteres", () => {
   assert.ok(LIST_FLOW_CTA.length <= 20, LIST_FLOW_CTA);
 });
 
-test("data: até 4 opções por vaga, sugerida primeiro, mais 'Não quero este item'", () => {
-  const { data, slots } = build([slot(1, 6, { suggestedSku: "s1-3" })]);
+test("data: até 4 opções por vaga (a sugerida sempre entre elas), do mais barato ao mais caro, mais 'ver outras' e 'Não quero este item'", () => {
+  const { data, slots } = build([slot(1, 6, { suggestedSku: "s1-5" })]);
   const opts = data.opts_1 as Array<{ id: string; title: string }>;
-  assert.equal(opts.length, LIST_FLOW_MAX_OPTIONS + 1);
-  assert.equal(opts[0].id, "s1-3");
+  assert.equal(opts.length, LIST_FLOW_MAX_OPTIONS + 2);
+  assert.deepEqual(opts.slice(0, 4).map((o) => o.id), ["s1-1", "s1-2", "s1-3", "s1-5"], "a sugerida (mais cara) entra e a ordem é por preço");
+  assert.equal(opts.at(-2)?.id, "more");
+  assert.equal(opts.at(-2)?.title, "Nenhuma — ver outras");
   assert.equal(opts.at(-1)?.id, "skip");
   assert.equal(opts.at(-1)?.title, "Não quero este item");
-  assert.deepEqual(slots[0].skus, ["s1-3", "s1-1", "s1-2", "s1-4"]);
+  assert.deepEqual(slots[0].skus, ["s1-1", "s1-2", "s1-3", "s1-5"]);
+  assert.equal(data.init_1, "s1-5");
+  assert.equal((data.init_values as Record<string, string>).item_1, "s1-5");
+});
+
+test("resposta: 'Nenhuma — ver outras' vira kind more", () => {
+  const sent = [{ lineKey: "a", skus: ["x", "y"], suggestedSku: "x" }];
+  assert.deepEqual(parseListFlowReply({ lia_lista: "lst", item_1: "more" }, sent).choices, [{ lineKey: "a", kind: "more" }]);
+});
+
+test("data: a sugestão marcada continua a do envio", () => {
+  const { data, slots } = build([slot(1, 6, { suggestedSku: "s1-3" })]);
+  assert.deepEqual(slots[0].skus, ["s1-1", "s1-2", "s1-3", "s1-4"]);
   assert.equal(data.init_1, "s1-3");
   assert.equal((data.init_values as Record<string, string>).item_1, "s1-3");
 });
