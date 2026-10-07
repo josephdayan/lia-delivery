@@ -4,9 +4,12 @@
   automática por ser produção) e conferir `validation_errors` (Form + RadioButtonsGroup + `init-value` + `image`).
 - [ ] **Teste no celular do dono** (`--send <fone>`), Android e iOS: miniaturas aparecem? sugestão vem marcada?
   Se `init-value` falhar: `LIST_FLOW_USE_INIT_VALUE=false` em `meta-setup.ts`.
-- [ ] **Aplicar a migration `20261007150000_search_miss`** antes do deploy (o registro de faltantes roda mesmo com a
-  flag desligada; sem a tabela ele só falha em silêncio).
-- [ ] Deploy + `LIA_LIST_FLOW=true` na Vercel só depois do teste no celular.
+- [x] Migration `20261007150000_search_miss` aplicada no build de produção (07/10 22:28 UTC).
+- [x] Deploy do main (07/10 noite) com `LIA_LIST_FLOW=admin` na Vercel: só dono/admins recebem a tela;
+  Lia segue OFFLINE para clientes (interruptor `AppFlag offline`, admins passam).
+- [ ] Publicar o Flow: abrir logado `https://liadelivery.com.br/api/ops/meta-setup?action=flow_list` (ou esperar o
+  cron horário :17) e testar mandando a lista do esquenta do número do dono.
+- [ ] `LIA_LIST_FLOW=true` só depois do teste no celular.
 - [ ] Bench com o cenário novo c101 "esquenta" e c07/c52/c92–c94.
 - [ ] "arroz feijão" (sem separador) continua 1 item.
 
