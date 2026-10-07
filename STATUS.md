@@ -1,3 +1,22 @@
+## 06/10/2026 (noite) — Busca, quantidade e frete (teste adversarial)
+
+Corrigido com teste (`tests/feedback-2026-10-06-busca.test.ts` + 15 casos novos no golden):
+- **Frete da cesta = uma entrega por loja**: SLA comum de menor total; a simulação da VTEX às vezes
+  devolve o frete inteiro em CADA linha (Swift: 17,90 + 17,90 — medido ~1 em 3, também no
+  orderForm) e isso agora vira um frete só (conferido com o item sozinho). O comprador escolhe a
+  mesma SLA comum e reenvia o endereço até 3x quando a cesta volta sem rateio.
+- **Vendido por peso**: o card diz "Banana Nanica (unidade ~180 g)" (VTEX `unitMultiplier`, lido
+  na checagem ao vivo); "2kg de banana" = 11 unidades com aviso. O preço mostrado é por unidade.
+- Remédio: dose sozinha não casa ("ibuprofeno 600mg" ≠ Sintocalmy 600mg); dose pedida é identidade.
+- Tamanho só filtra dentro do produto pedido (ração de gato não vira de cachorro); reserva quando
+  a loja derruba os primeiros candidatos (Mambo recusa ~metade dos skus para o CEP); sabão em pó ↔
+  lava roupas em pó, xampu, caixa de leite; "2 litros de leite" = 2× 1 L; ovos/caixas arredondam
+  para cima; pack/fardo só packs (ou N latas soltas); presente sem produto vira categoria
+  (mãe → perfume feminino, menino 5 anos → brinquedo), sacola nunca é o presente; vitrine
+  confere a quantidade pedida; loja sem resposta ganha 2ª tentativa.
+- Fica aberto: "óleo" sozinho ainda pode dar "não achei" quando a IA recusa os óleos não-cozinha
+  da 1ª leva; álcool sem confirmação de idade (decisão do dono).
+
 ## 06/10/2026 (tarde) — Varredura de cliente novo: ~600 conversas, correções em lotes
 
 5 agentes testadores (cadastro, quantidade/busca, escolha/cesta, pagamento/pós-venda, conversa

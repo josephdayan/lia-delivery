@@ -209,7 +209,7 @@ async function buildChoices(
       const { phrase: rawPhrase, cap } = splitPriceCap(line.phrase);
       // "meio quilo de queijo" / "2 quilos de batata" (06/10, A6): peso por extenso vira medida,
       // senão "meio"/"quilo" contam como palavras do produto e nada cobre o pedido.
-      const shownPhrase = rawPhrase
+      let shownPhrase = (giftSearchPhrase(rawPhrase) ?? rawPhrase)
         .replace(/\bmei[oa]\s+(quilo|kilo|kg)\b/i, "500g")
         .replace(/(\d+(?:[.,]\d+)?)\s*(quilos?|kilos?)\b/i, "$1kg")
         .replace(/\b(um|1)\s+(quilo|kilo)\b/i, "1kg");
@@ -274,7 +274,10 @@ async function buildChoices(
           const split = splitBySize(sizeAsk, relevant.map((c) => c.item));
           if (split) {
             candidates = relevant.filter((c) => attrMatchesItem(split.unit, c.item));
-            qty = line.qty * split.count;
+            // A IA às vezes já põe o 2 na quantidade ("2x leite 2 litros"): o mesmo número não multiplica.
+            qty = line.qty === split.count ? line.qty : line.qty * split.count;
+            // O rerank julga pelo pedido: "leite 2 litros" faria a IA recusar as caixas de 1 L.
+            shownPhrase = shownPhrase.replace(sizeAsk, split.unit === "1kg" ? "1kg" : "1 litro");
             sizeOk = (c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }) && attrMatchesItem(split.unit, c.item);
           }
         }
@@ -5992,6 +5995,28 @@ async function rescueLongTail(
   if (ctx.basket?.length) ctx.step = "collecting";
   await writeCtx(convoId, ctx);
   await reply(phone, copy.itemsNotAvailable(unavailable));
+}
+
+// Presente sem produto (06/10, A7): "um presente pra minha mãe de 60 anos" chegava à busca
+// como frase e virava sacola de presente ou "não achei". Sem nenhum produto na frase, vira a
+// categoria comum de presente para quem recebe. Com produto ("perfume pra minha mãe"), nada muda.
+const GIFT_FEMALE_RE = /\b(mae|mamae|esposa|namorada|noiva|tia|irma|sogra|amiga|mulher|madrinha|professora|chefe)\b/;
+const GIFT_MALE_RE = /\b(pai|papai|marido|namorado|noivo|tio|irmao|sogro|amigo|homem|padrinho|professor)\b/;
+const GIFT_CHILD_RE = /\b(menino|menina|crianca|filho|filha|neto|neta|sobrinho|sobrinha|bebe|afilhado|afilhada)\b/;
+const GIFT_FILLER = new Set(["presente", "presentinho", "lembrancinha", "aniversario", "um", "uma", "pra", "para", "pro", "minha", "meu", "de", "do", "da", "dia", "das", "dos", "anos", "ano", "com", "que", "e", "o", "a", "quero", "algo", "alguma", "coisa", "legal", "bonito", "bom", "boa", "natal", "mes", "mais"]);
+export function giftSearchPhrase(phrase: string): string | null {
+  const norm = normalizeMsg(phrase);
+  if (!/\b(presente|presentinho|lembrancinha)\b/.test(norm)) return null;
+  const leftover = norm.split(/\s+/).filter((w) => w && !GIFT_FILLER.has(w) && !/^\d+$/.test(w) && !GIFT_FEMALE_RE.test(w) && !GIFT_MALE_RE.test(w) && !GIFT_CHILD_RE.test(w));
+  if (leftover.length) return null;
+  const age = norm.match(/\b(\d{1,2})\s*anos?\b/)?.[1];
+  if (GIFT_CHILD_RE.test(norm) || (age && Number(age) <= 12)) {
+    const who = /\b(menina|filha|neta|sobrinha|afilhada)\b/.test(norm) ? "menina" : "menino";
+    return `brinquedo ${who}${age ? ` ${age} anos` : ""}`;
+  }
+  if (GIFT_FEMALE_RE.test(norm)) return "perfume feminino";
+  if (GIFT_MALE_RE.test(norm)) return "perfume masculino";
+  return null;
 }
 
 // "pack de cerveja brahma 12 latas", "fardo de água", "engradado de heineken" (06/10, A5).

@@ -164,6 +164,17 @@ test("A7: a sacola de presente (com a marca na frente) nunca é o presente", asy
   assert.ok(scoreCatalogMatch("kit presente", item("Kit Presentável Lola Cosmetics – Cronograma Capilar + Sacola Presenteável Kit")) > 0);
 });
 
+test("A7: presente sem produto vira a categoria comum de presente para quem recebe", async () => {
+  const { giftSearchPhrase } = await import("../src/lib/delivery-service");
+  assert.equal(giftSearchPhrase("presente para mae de 60 anos"), "perfume feminino");
+  assert.equal(giftSearchPhrase("um presente pra minha mãe"), "perfume feminino");
+  assert.equal(giftSearchPhrase("presente pro meu pai"), "perfume masculino");
+  assert.equal(giftSearchPhrase("presente de aniversário pra menino de 5 anos"), "brinquedo menino 5 anos");
+  assert.equal(giftSearchPhrase("presente pra minha filha de 8 anos"), "brinquedo menina 8 anos");
+  assert.equal(giftSearchPhrase("perfume de presente pra minha mãe"), null, "com produto, o pedido fica como está");
+  assert.equal(giftSearchPhrase("arroz"), null);
+});
+
 // ---------------- conversa (banco local) ----------------
 // Loja VTEX de mentira por sku: `drop` = sem entrega no CEP; `weight` = vendido por peso;
 // `down` = loja não responde; `slow` = simulação que estoura o tempo na 1ª tentativa.
