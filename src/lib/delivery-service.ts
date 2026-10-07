@@ -25,6 +25,7 @@ import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignup
 import { CEP_RE_GLOBAL } from "@/lib/lia-intents";
 import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
+import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
 // The operational brain of the remodelled Lia. One conversation = one basket of
@@ -1466,6 +1467,29 @@ async function handleDeliveryTurn(
     return;
   }
 
+
+  // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
+  // estado e escolhe uma ação de lista fechada ANTES do roteamento por regex. Inequívoco/barato (número,
+  // CEP, botões, pix/cartão, cadastro) segue determinístico; IA fora do ar ou ação inválida = caminho de hoje.
+  if (dialogueEnabled()) {
+    const dialogue = await runDialogueTurn({
+      phone,
+      convoId: convo.id,
+      userId: user.id,
+      userCep: user.cep,
+      text,
+      intent,
+      ctx,
+      hasAddress: Boolean(user.defaultAddress && savedCep),
+      looksLikeList: looksLikeProductList(text),
+      handlers: dialogueHandlers
+    });
+    if (dialogue?.kind === "handled") return;
+    if (dialogue?.kind === "rewrite") {
+      text = dialogue.text;
+      intent = detectIntent(text);
+    }
+  }
 
   // ---- social / meta (work in ANY step) ----
   if (intent.kind === "thanks") {
@@ -5392,7 +5416,8 @@ async function handleRemove(
   userCep: string | null | undefined,
   ctx: DeliveryContext,
   target: string,
-  opts?: { silentIfFound?: boolean }
+  // `exact` (gerente de diálogo): o alvo já vem resolvido por sku/pergunta — sem casar por texto.
+  opts?: { silentIfFound?: boolean; exact?: { skus?: string[]; queries?: string[] } }
 ) {
   const basket = ctx.basket ?? [];
   const pending = ctx.pending ?? [];
@@ -5403,7 +5428,8 @@ async function handleRemove(
   // "tira tudo que for de LIMPEZA": remoção por categoria — só os itens da categoria
   // saem, nunca a cesta inteira (28/08 S15: apagou os 12 itens). Categoria que a Lia
   // não sabe separar → resposta honesta pedindo os itens.
-  const categoryAsk = normalizeMsg(target).match(/^(?:tudo|todos|todas)\s+(?:o\s+|os\s+|as\s+)?(?:que\s+(?:for|seja|sao|são|e|eh)\s+)?(?:de\s+|da\s+|do\s+|d[ao]s\s+)?(.+)$/);
+  const exact = opts?.exact;
+  const categoryAsk = exact ? null : normalizeMsg(target).match(/^(?:tudo|todos|todas)\s+(?:o\s+|os\s+|as\s+)?(?:que\s+(?:for|seja|sao|são|e|eh)\s+)?(?:de\s+|da\s+|do\s+|d[ao]s\s+)?(.+)$/);
   const matchesTarget = (name: string): boolean => {
     if (!categoryAsk) return false;
     const cat = categoryAsk[1].trim();
@@ -5414,10 +5440,10 @@ async function handleRemove(
     await reply(phone, copy.categoryRemoveUnknown(categoryAsk[1].trim()));
     return;
   }
-  const keep = basket.filter((item) => (categoryAsk ? !matchesTarget(item.name) : !itemMatchesPhrase(target, item)));
+  const keep = basket.filter((item) => (exact ? !exact.skus?.includes(item.sku) : categoryAsk ? !matchesTarget(item.name) : !itemMatchesPhrase(target, item)));
   const removed = basket.filter((item) => !keep.includes(item));
   const pendingKeep = pending.filter((p) =>
-    categoryAsk ? !matchesTarget(p.query) : !itemMatchesPhrase(target, { sku: p.query, name: p.query, unitPrice: 0 })
+    exact ? !exact.queries?.includes(p.query) : categoryAsk ? !matchesTarget(p.query) : !itemMatchesPhrase(target, { sku: p.query, name: p.query, unitPrice: 0 })
   );
   const removedPending = pending.filter((p) => !pendingKeep.includes(p));
   if (!removed.length && !removedPending.length) {
@@ -5457,10 +5483,15 @@ async function handleQtyAdjust(
   userCep: string | null | undefined,
   ctx: DeliveryContext,
   cmd: { set?: number; delta?: number },
-  reopened: boolean
+  reopened: boolean,
+  // gerente de diálogo: o item já vem resolvido (senão vale o último escolhido)
+  targetSku?: string
 ) {
   const basket = ctx.basket ?? [];
-  const target = (ctx.lastChoice ? basket.find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined) ?? basket[basket.length - 1];
+  const target =
+    (targetSku ? basket.find((b) => b.sku === targetSku) : undefined) ??
+    (ctx.lastChoice ? basket.find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined) ??
+    basket[basket.length - 1];
   if (!target) {
     await reply(phone, copy.demonstrativeNeedsItem());
     return;
@@ -5551,7 +5582,9 @@ async function handleSwap(
   from: string,
   to: string,
   rawText?: string,
-  attrSwap?: boolean
+  attrSwap?: boolean,
+  // gerente de diálogo: o item trocado já vem resolvido por sku
+  exactFromSku?: string
 ) {
   const basket = ctx.basket ?? [];
   // "quero A e B; pensando bem, troca B por C" numa LISTA NOVA (cesta vazia): não há o
@@ -5577,7 +5610,7 @@ async function handleSwap(
     await reply(phone, copy.removeNotFound());
     return;
   }
-  let keep = basket.filter((item) => !itemMatchesPhrase(from, item));
+  let keep = basket.filter((item) => (exactFromSku ? item.sku !== exactFromSku : !itemMatchesPhrase(from, item)));
   let removed = basket.filter((item) => !keep.includes(item));
   // Referência à cesta ≠ busca: "não quero DE UVA" aponta pro suco de uva da cesta,
   // mas a regra de aposição da BUSCA zera "uva" contra "Suco de Uva" (qualificador
@@ -5609,7 +5642,7 @@ async function handleSwap(
   }
   // The swapped-out item may still be an unresolved pending choice, not a basket line.
   const pending = ctx.pending ?? [];
-  const pendingKeep = pending.filter((p) => !itemMatchesPhrase(from, { sku: p.query, name: p.query, unitPrice: 0 }));
+  const pendingKeep = exactFromSku ? pending : pending.filter((p) => !itemMatchesPhrase(from, { sku: p.query, name: p.query, unitPrice: 0 }));
   const removedPending = pending.filter((p) => !pendingKeep.includes(p));
   if (!removed.length && !removedPending.length) {
     await reply(phone, copy.removeNotFound());
@@ -6914,3 +6947,20 @@ async function publishInstantQuote(
     deliveryPromise: promise
   });
 }
+
+// Handlers expostos ao gerente de diálogo (src/lib/dialogue): ele escolhe a ação, ESTES executam.
+// Passados por parâmetro (sem import circular); nada aqui duplica lógica.
+export const dialogueHandlers = {
+  handleSearch,
+  buildChoicesWithSearchNotice,
+  confirmChosenOption,
+  handleChoiceSwitch,
+  refineOptions,
+  researchChoice,
+  handleQtyAdjust,
+  handleRemove,
+  handleSwap,
+  advancePending,
+  sendChoices,
+  mergeBaskets
+};
