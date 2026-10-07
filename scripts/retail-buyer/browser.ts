@@ -175,7 +175,7 @@ export async function extractAddress(original: string): Promise<Address> {
       model:
         process.env.LIA_BUYER_MODEL ??
         process.env.OPENAI_MODEL ??
-        "gpt-5.4-mini",
+        "gpt-6-luna",
       store: false,
       input: [
         {

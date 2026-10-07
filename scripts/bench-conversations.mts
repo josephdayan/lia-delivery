@@ -79,7 +79,7 @@ async function main() {
     const { handleDeliveryMessage, runTurnScoped } = await import("../src/lib/delivery-service");
     let scenarios: Scenario[] = JSON.parse(readFileSync(join(process.cwd(), "evals", "conversation-scenarios.json"), "utf8"));
     if (only) scenarios = scenarios.filter((s) => only.includes(s.id));
-    console.log(`bench-conversations "${label}" · ${scenarios.length} cenários · cliente gpt-6-luna · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-sol"}`);
+    console.log(`bench-conversations "${label}" · ${scenarios.length} cenários · cliente gpt-6-luna · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"}`);
 
     // Saída por telefone (as conversas rodam em paralelo no mesmo processo).
     const outbox = new Map<string, string[]>();
@@ -116,7 +116,7 @@ async function main() {
         if (userMsg.toUpperCase() === "FIM") { transcript.push({ who: "cliente", text: "FIM" }); break; }
       }
       const rendered = transcript.map((m, i) => `[${i}] ${m.who === "cliente" ? "CLIENTE" : `LIA (${m.sec ?? "?"}s)`}: ${m.text}`).join("\n");
-      const verdictText = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-sol", JUDGE_SYSTEM, `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${rendered}`, JUDGE_SCHEMA);
+      const verdictText = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna", JUDGE_SYSTEM, `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${rendered}`, JUDGE_SCHEMA);
       let verdict: any = null;
       try { verdict = JSON.parse(verdictText); } catch { /* juiz falhou */ }
       const ended = transcript.some((m) => m.who === "cliente" && m.text.trim().toUpperCase() === "FIM");

@@ -107,8 +107,8 @@ export async function extractShoppingList(text: string): Promise<ShoppingExtract
 
 // Modelo da Lia para texto (extração, rerank, roteador). Decisão do dono (07/10/2026):
 // gpt-6-luna — US$0,10/US$0,50 por 1M tokens (o gpt-5.4-mini custava US$0,75/US$4,50).
-// `OPENAI_MODEL` na Vercel vence o padrão. Visão (foto de produto) segue com o modelo antigo
-// até a luna ser testada com imagem.
+// `OPENAI_MODEL` na Vercel vence o padrão. Visão (foto) também usa a luna (testada com imagem em
+// 07/10). Só a transcrição de áudio é outro modelo (não é modelo de chat).
 export function liaTextModel(): string {
   return process.env.OPENAI_MODEL ?? "gpt-6-luna";
 }
@@ -428,7 +428,7 @@ export async function describeProductImage(bytes: Uint8Array, mimeType: string, 
       },
       signal: AbortSignal.timeout(Number(process.env.LIA_VISION_TIMEOUT_MS ?? 20000)),
       body: JSON.stringify({
-        model: process.env.OPENAI_VISION_MODEL ?? process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
+        model: process.env.OPENAI_VISION_MODEL ?? liaTextModel(),
         input: [
           {
             role: "system",
