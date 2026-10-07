@@ -45,7 +45,9 @@ export const ANSWER_TOPICS = [
   "installments",
   "scheduling",
   "stores",
-  "how_it_works"
+  "how_it_works",
+  "order_total",
+  "minimum_order"
 ] as const;
 export type AnswerTopic = (typeof ANSWER_TOPICS)[number];
 

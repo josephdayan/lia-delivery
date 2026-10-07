@@ -13,7 +13,7 @@ import { buildDialogueState } from "../src/lib/dialogue/state";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { ANSWER_TEXT, planActions } from "../src/lib/dialogue/plan";
 import { ANSWER_TOPICS, type DialogueAction, type DialogueDecision, type DialogueState, type ModelInput } from "../src/lib/dialogue/types";
-import { detectIntent } from "../src/lib/lia-intents";
+import { asksRunningTotal, detectIntent } from "../src/lib/lia-intents";
 import type { DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -135,12 +135,15 @@ test("cada tema de 'answer' vira uma pergunta que o roteador reconhece (texto fi
     installments: ["installments_question"],
     scheduling: ["scheduling_question"],
     stores: ["service_question"],
-    how_it_works: ["service_question"]
+    how_it_works: ["service_question"],
+    order_total: ["free_text"],
+    minimum_order: ["missing_question"]
   };
   for (const topic of ANSWER_TOPICS) {
     const intent = detectIntent(ANSWER_TEXT[topic]);
     assert.ok(expected[topic].includes(intent.kind), `${topic} -> ${ANSWER_TEXT[topic]} deu ${intent.kind}`);
   }
+  assert.ok(asksRunningTotal(ANSWER_TEXT.order_total), "order_total cai no total parcial");
 });
 
 test("frases canônicas das ações que reencaminham ao roteador: fechar, atendente, status, cancelar, pagar, outras", () => {

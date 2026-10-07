@@ -41,7 +41,10 @@ export const ANSWER_TEXT: Record<AnswerTopic, string> = {
   installments: "parcela em quantas vezes?",
   scheduling: "posso agendar a entrega?",
   stores: "de qual loja é?",
-  how_it_works: "como você funciona?"
+  how_it_works: "como você funciona?",
+  // "quanto deu tudo?": o total parcial/do pedido; "quanto falta?": o pedido mínimo da loja
+  order_total: "quanto deu tudo?",
+  minimum_order: "quanto falta?"
 };
 
 const PAY_TEXT: Record<PayMethod, string> = { pix: "pix", card: "cartão", unspecified: "quero pagar" };

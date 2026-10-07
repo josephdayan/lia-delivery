@@ -29,7 +29,7 @@ AÇÕES (campos usados; os demais ficam null):
 - skip_current: desistir do item em escolha ("esse não quero", "deixa pra lá esse") e seguir.
 - only_keep {target}: "só esse/só a amora": fica só o item target (0 = o da tela: os outros da fila saem; n da cesta: só ele fica) e fecha o resto da lista.
 - close_list: acabou de pedir ("só isso", "pode fechar", "é só"): mostrar o total. Se há 1 item na cesta e nada em escolha, "só essa" também é close_list.
-- answer {topic}: pergunta sobre o SERVIÇO; topic ∈ ${ANSWER_TOPICS.join(", ")}. O texto da resposta é fixo e verdadeiro (não escreva).
+- answer {topic}: pergunta sobre o SERVIÇO; topic ∈ ${ANSWER_TOPICS.join(", ")}. order_total = "quanto deu tudo?"; minimum_order = "quanto falta pro mínimo?". O texto da resposta é fixo e verdadeiro (não escreva).
 - human: quer falar com uma pessoa/atendente. status: pergunta pelo pedido ("cadê meu pedido?"). cancel: quer cancelar. pay {method pix|card|unspecified}: quer pagar. change_address {text}: quer trocar o endereço (text = o endereço/CEP, se ele disse).
 - smalltalk {text}: papo social/agradecimento sem pedido (text = 1 frase curta e calorosa, sem promessas). unclear {text}: não dá para saber o que ele quer (text = UMA pergunta curta de esclarecimento; nunca invente opções).
 
