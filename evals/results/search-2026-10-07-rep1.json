@@ -1,0 +1,1230 @@
+{
+ "summary": {
+  "label": "rep1",
+  "at": "2026-10-07T15:43:39.774Z",
+  "requests": 30,
+  "cep": "01233-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-sol",
+  "outcomes": {
+   "found": 17,
+   "miss": 4,
+   "medicine_ok": 2,
+   "wrong_top1": 7
+  },
+  "top1WrongRate": "25.0%",
+  "precisionItems": "79.4%",
+  "coverage": "60.7%",
+  "honesty": "n/a",
+  "closestOffered": 0,
+  "medicineLeaks": "0/2",
+  "latencyMs": {
+   "p50": 7826,
+   "p90": 10445,
+   "max": 11741
+  }
+ },
+ "byCat": {
+  "x": {
+   "n": 30,
+   "found": 17,
+   "miss": 4,
+   "wrong": 7,
+   "honest": 2
+  }
+ },
+ "results": [
+  {
+   "id": "v01",
+   "text": "pasta com elástico",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10352,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "O pedido é de pasta escolar com elástico; outros tipos de pasta e elásticos avulsos não atendem."
+  },
+  {
+   "id": "v00",
+   "text": "óleo",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10445,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Interpretei “óleo” como óleo de cozinha; aceitei variedades alimentícias e rejeitei óleos para outros usos ou alimentos conservados em óleo."
+  },
+  {
+   "id": "v02",
+   "text": "bala de goma",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 11741,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Aceitei balas de goma e balas de gelatina tipo gummy; chicletes, suplementos e outros produtos não atendem ao pedido."
+  },
+  {
+   "id": "v04",
+   "text": "vitamina c efervescente",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 9985,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 58,
+   "note": "Vitamina C efervescente é um pedido de suplemento medicinal; o serviço não deve mostrar produtos para esse pedido."
+  },
+  {
+   "id": "v03",
+   "text": "batata",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11152,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Swift",
+     "name": "Batata em Cubos Swift 1,02Kg",
+     "price": 16.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Interpretei “batata” como batata comum para cozinhar; batata-doce, salgadinhos, preparações e produtos de outro uso não atendem."
+  },
+  {
+   "id": "v05",
+   "text": "esmalte vermelho",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 9984,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes de unhas vermelhos, independentemente da marca ou acabamento; intensificador, outras cores e esmalte para pintura são produtos diferentes."
+  },
+  {
+   "id": "v07",
+   "text": "pasta com elástico",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6003,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "Pasta escolar com elástico atende ao pedido; cor e largura não foram especificadas. Produtos de outros usos não atendem."
+  },
+  {
+   "id": "v06",
+   "text": "óleo",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7917,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Interpretei “óleo” como óleo de cozinha; aceitei variedades culinárias e rejeitei óleos de outros usos ou produtos que apenas contêm óleo."
+  },
+  {
+   "id": "v08",
+   "text": "bala de goma",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 10208,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Bala de goma é doce mastigável; chicletes, suplementos em goma e produtos de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "v09",
+   "text": "batata",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6572,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Swift",
+     "name": "Batata em Cubos Swift 1,02Kg",
+     "price": 16.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "“Batata” indica batata comum para preparo; cortes simples servem. Batata-doce, salgadinhos, preparações e acessórios são outros produtos."
+  },
+  {
+   "id": "v10",
+   "text": "vitamina c efervescente",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 6766,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C Drogaria São Paulo Tripla Ação 30 Comprimidos Efervescentes",
+     "price": 32.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Bio-C+ Zinco Vitamina C 1g + Zinco 10mg União Química 30 Comprimidos Efervescente",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C, D e Zinco Redoxon Tripla Ação Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 17.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Vitamina C para consumo em comprimidos efervescentes; fórmulas com outros nutrientes são aceitáveis, mas outras formas e usos não são."
+  },
+  {
+   "id": "v11",
+   "text": "esmalte vermelho",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8355,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Diamond Gel Vermelho Cereja Cremoso 9,5ml",
+     "price": 14.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué &amp; Chilli Beans Para Te Vermelhor Metálico 8ml",
+     "price": 3.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes de unhas vermelhos, inclusive tons identificáveis como carmim, cereja e sangria; rejeitei cores incertas, intensificador e esmalte para pintura."
+  },
+  {
+   "id": "v12",
+   "text": "óleo",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7687,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "“Óleo” sem qualificação indica óleo de cozinha comum; aceito outros óleos culinários, mas não óleos de uso cosmético, técnico ou doméstico."
+  },
+  {
+   "id": "v13",
+   "text": "pasta com elástico",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6894,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "Pedido de pasta escolar com elástico, sem cor ou tamanho definidos. Apenas pastas desse tipo atendem."
+  },
+  {
+   "id": "v14",
+   "text": "bala de goma",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 6946,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Bala de goma inclui doces de goma ou gelatina; chicletes, suplementos em goma e produtos de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "v15",
+   "text": "batata",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8848,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Swift",
+     "name": "Batata em Cubos Swift 1,02Kg",
+     "price": 16.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "“Batata” indica a batata comum para cozinhar; cortes diferentes são aceitáveis, mas batata-doce, salgadinhos e produtos derivados não são."
+  },
+  {
+   "id": "v16",
+   "text": "vitamina c efervescente",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 7112,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 58,
+   "note": "Vitamina C efervescente é tratada como pedido de medicamento; o serviço não deve apresentar produtos para esse pedido."
+  },
+  {
+   "id": "v19",
+   "text": "pasta com elástico",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7134,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "O pedido é por pasta escolar com elástico; cor, tamanho e marca não foram especificados."
+  },
+  {
+   "id": "v18",
+   "text": "óleo",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8170,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Pedido genérico de óleo: aceitos óleos alimentícios para cozinhar; óleos cosméticos, industriais e produtos que apenas contêm óleo não atendem."
+  },
+  {
+   "id": "v17",
+   "text": "esmalte vermelho",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9521,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Diamond Gel Vermelho Cereja Cremoso 9,5ml",
+     "price": 14.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes para unhas vermelhos, inclusive tons de cereja e vinho; rejeitei intensificador, removedor, tinta e produtos sem cor vermelha identificável."
+  },
+  {
+   "id": "v20",
+   "text": "bala de goma",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 5779,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Bala de goma é doce mastigável; balas de gelatina equivalem ao pedido. Chicletes, suplementos e outros produtos não servem."
+  },
+  {
+   "id": "v21",
+   "text": "batata",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7383,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Pedido de batata comum para consumo; variedades frescas são aceitáveis. Batata-doce, produtos processados e itens de outro uso não atendem."
+  },
+  {
+   "id": "v22",
+   "text": "vitamina c efervescente",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 6771,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C Drogaria São Paulo Tripla Ação 30 Comprimidos Efervescentes",
+     "price": 32.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Bio-C+ Zinco Vitamina C 1g + Zinco 10mg União Química 30 Comprimidos Efervescente",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C, D e Zinco Redoxon Tripla Ação Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 17.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Aceitei vitamina C em comprimidos efervescentes, inclusive versões com outros nutrientes; outras formas de consumo e produtos de uso diferente estão errados."
+  },
+  {
+   "id": "v23",
+   "text": "esmalte vermelho",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 7417,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Cherry Mocha Snowland 8ml",
+     "price": 9.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes de unha vermelhos; intensificador de cor, removedor, tintas e produtos apenas chamados de vermelhos não atendem ao pedido."
+  },
+  {
+   "id": "v25",
+   "text": "pasta com elástico",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6026,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "Pasta com elástico é a pasta escolar para documentos; cores e espessuras não especificadas são aceitáveis. Outros usos de “pasta” ou “elástico” não servem."
+  },
+  {
+   "id": "v24",
+   "text": "óleo",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9315,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Interpretei “óleo” como óleo de cozinha; aceitei óleos alimentícios, mas não cosméticos, lubrificantes ou produtos que apenas contêm óleo."
+  },
+  {
+   "id": "v26",
+   "text": "bala de goma",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 6185,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Bala de goma inclui doces de goma ou gelatina; chicletes, suplementos e produtos de outros tipos não atendem ao pedido."
+  },
+  {
+   "id": "v27",
+   "text": "batata",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7826,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Swift",
+     "name": "Batata em Cubos Swift 1,02Kg",
+     "price": 16.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Pedido genérico de batata: aceito batata comum, inteira ou cortada; batata-doce, frita, chips, palha e outros produtos não substituem."
+  },
+  {
+   "id": "v28",
+   "text": "vitamina c efervescente",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 7359,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C Drogaria São Paulo Tripla Ação 30 Comprimidos Efervescentes",
+     "price": 32.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Bio-C+ Zinco Vitamina C 1g + Zinco 10mg União Química 30 Comprimidos Efervescente",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C, D e Zinco Redoxon Tripla Ação Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 17.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Vitamina C para consumo em comprimidos efervescentes; versões com outros nutrientes são aceitáveis. Outras formas e produtos de uso diferente são errados."
+  },
+  {
+   "id": "v29",
+   "text": "esmalte vermelho",
+   "cat": "x",
+   "origin": "rep",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 8293,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Aceitei esmaltes vermelhos para unhas, inclusive tons cereja e acabamentos variados; intensificador, removedor e tinta para superfícies não substituem esmalte."
+  }
+ ]
+}

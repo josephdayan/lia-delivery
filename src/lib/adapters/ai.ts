@@ -123,18 +123,35 @@ function liaReasoning(): { reasoning?: { effort: string } } {
 
 export type RerankCandidate = { sku: string; name: string; brand?: string; price: number; store: string };
 export type RerankLine = { query: string; candidates: RerankCandidate[] };
-export type RerankResult = { lines: { skus: string[] }[] };
+// `skus` = os que são o produto pedido E cumprem todas as exigências do cliente (ordem de
+// recomendação). `exigencias` = o que a IA leu como obrigatório no pedido. `proximos` = produtos
+// do tipo certo que falham em alguma exigência (tamanho, sabor…), do mais perto ao mais longe, com
+// a diferença em uma frase — só alimentam o "não achei X com Y; o mais perto que tenho…".
+export type RerankClosest = { sku: string; falta: string };
+// `maisBarato` = o cliente pediu explicitamente o mais barato PARA ESTE item: `skus` já vem do mais
+// barato ao mais caro (preço exibido), entre os aprovados.
+export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean };
+export type RerankResult = { lines: RerankLineResult[] };
 
-// A decisão de QUAL produto mostrar deixou de ser só léxica: o scorer de tokens conta
-// palavras em comum, então "carregador usb c" empatava com "carregador veicular 2 USB"
-// e o cliente recebia acessório de carro (caso real, 06/08). Aqui a IA — que já roda na
-// extração — passa a julgar o MATCH: recebe a mensagem do cliente e os candidatos de
-// catálogo por item, e devolve só o que um atendente humano entregaria sem reclamação.
-// Lista vazia = nenhum candidato serve (a linha vira livre e o operador cota — errar
-// pra menos é melhor que sugerir errado). Retorna null se OpenAI está off/falhou, para
-// o chamador cair no ranking determinístico de hoje. Skus são validados contra os
-// candidatos enviados: a IA nunca inventa produto.
-export async function rerankShoppingOptions(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
+// A decisão de QUAL produto mostrar não é só léxica: o scorer de tokens conta palavras em comum,
+// então "carregador usb c" empatava com "carregador veicular 2 USB" (caso real, 06/08). A IA
+// recebe a mensagem e os candidatos por item e JULGA CADA UM contra o que o cliente DISSE (07/10,
+// fase 3): primeiro as exigências (marca, tamanho, sabor, "sem X"…), depois tipo certo + cumpre
+// cada exigência. Só entra quem tem o tipo certo E todas as exigências. Lista vazia = ninguém
+// serve (a linha vira "não achei", com o mais próximo avisado quando houver). Retorna null se a
+// OpenAI está off/falhou, para o chamador cair no ranking determinístico. Skus são validados
+// contra os candidatos enviados: a IA nunca inventa produto.
+const RERANK_SYSTEM_PROMPT = (limit: number) =>
+  `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item:
+1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
+2) Julgue CADA candidato com dois testes:
+ TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
+ EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
+3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
+4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público (adulto/infantil), restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
+Se nenhum candidato serve, aprovados e proximos vazios: um operador cota o que faltar — vazio é melhor que sugestão errada. Use APENAS skus daquele item. Um resultado por item, na mesma ordem. Responda apenas JSON válido.`;
+
+async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
   if (!process.env.OPENAI_API_KEY || process.env.LIA_SEARCH_RERANK_OFF === "true") return null;
   if (!lines.length || lines.every((line) => !line.candidates.length)) return null;
   try {
@@ -151,11 +168,7 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
         model: liaTextModel(),
         ...liaReasoning(),
         input: [
-          {
-            role: "system",
-            content:
-              `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, uma lista de CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item, julgue CADA candidato e liste todos os que são REALMENTE o produto pedido, em ordem de recomendação. Regras: (1) Só inclua um candidato se um atendente humano o entregaria sem o cliente reclamar — mesmo tipo, forma e uso; palavras parecidas não bastam. Ex.: pedido 'carregador usb c' → carregador de parede/cabo USB-C serve; 'carregador veicular' (de carro) NÃO serve, a menos que o cliente tenha pedido veicular. A RECÍPROCA NÃO VALE: pedido 'cabo usb c' → um CARREGADOR não serve (carregador não é cabo) — sem cabo de verdade, devolva lista vazia. Atributo pedido (tamanho, litragem, metragem) vale para TODAS as opções que você listar, não só a primeira. KIT/COMBO que inclui produto NÃO pedido ('shampoo + condicionador') só serve se o cliente pediu kit; pedido de 1 produto = o produto avulso. QUANTIDADE DE UNIDADES NÃO É ATRIBUTO DO PRODUTO: o sistema ajusta a embalagem — '12 ovos' aceita caixa com 10, 12 ou 20; '3 coca' aceita a garrafa avulsa; só vale número que DEFINE o produto na descrição do pedido ('tubo de bolas com 4 bolas', 'pack com 12 latas', 'caixa com 30'). Pedido 'escova de dente' → 'Escova Dental' serve (mesmo produto, outro nome); 'escova de cabelo' não. (2) Atributos que o cliente pediu (tamanho, cor, sabor, marca, espécie/porte do pet, 'sem açúcar', 'sem lactose') são obrigatórios quando os candidatos os distinguem. (3) Liste TODOS os candidatos que servem — não existe limite de quantidade; quem monta a vitrine (até ${limit} cards) é o sistema, a partir da sua lista. Nunca deixe de fora um candidato que é o produto pedido só porque ele é outro sabor, cor, tamanho ou embalagem de um já listado: variante continua sendo o que o cliente pediu (o sistema põe as variantes depois dos produtos distintos). E nunca inclua algo de outro tipo ou que quebre as regras (1) e (2): se o cliente pediu uma marca, tamanho, espécie ou porte, TODOS os listados precisam ter esse atributo (pedido 'ração golden' → só Golden). Mostrar algo que não tem nada a ver é o pior erro possível. Ordem: o produto que É o pedido vem ANTES de itens que só servem como alternativa/acessório relacionado ('carregador usb c' → carregador de parede antes do cabo usb-c); depois, o mais recomendado primeiro — a versão COMUM do produto vem antes de versões para um público específico que o cliente não pediu (Mulher, Infantil, Kids, Baby, Sênior): pedido 'advil' → Advil comum antes de 'Advil Mulher'; nas primeiras posições alterne marca, loja e faixa de preço (do barato ao premium). Termo GENÉRICO de mercado = a versão básica mais comum no Brasil: 'feijão' → carioca antes do preto; 'óleo' (lista de mercado) → óleo de cozinha (soja/girassol/milho), nunca óleo mineral, corporal ou de madeira; 'macarrão' → massa seca (espaguete, parafuso, penne), não instantâneo; 'shampoo' → shampoo comum, não medicamento (cetoconazol) nem dermatológico (antiqueda); 'fralda' → infantil, nunca geriátrica/adulto ou pet sem o cliente pedir. PRESENTE: embalagem (sacola, papel, caixa presenteável, cartão-presente) NUNCA é o presente; presente de criança = brinquedo adequado à idade. (4) Se NENHUM candidato serve de verdade, devolva lista vazia para aquele item — um operador humano cota e compra qualquer coisa, então lista vazia é melhor que sugestão errada. (5) Use APENAS skus da lista daquele item; nunca invente. (6) Devolva exatamente um resultado por item, na mesma ordem dos itens. Responda apenas JSON válido.`
-          },
+          { role: "system", content: RERANK_SYSTEM_PROMPT(limit) },
           {
             role: "user",
             content: JSON.stringify({
@@ -182,9 +195,20 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
                     type: "object",
                     additionalProperties: false,
                     properties: {
-                      skus: { type: "array", items: { type: "string" } }
+                      exigencias: { type: "array", items: { type: "string" } },
+                      aprovados: { type: "array", items: { type: "string" } },
+                      maisBarato: { type: "boolean" },
+                      proximos: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          additionalProperties: false,
+                          properties: { sku: { type: "string" }, falta: { type: "string" } },
+                          required: ["sku", "falta"]
+                        }
+                      }
                     },
-                    required: ["skus"]
+                    required: ["exigencias", "aprovados", "maisBarato", "proximos"]
                   }
                 }
               },
@@ -201,13 +225,13 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
     const payload = (await response.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
     const jsonText = payload.output_text ?? payload.output?.flatMap((item) => item.content ?? []).find((content) => content.text)?.text;
     if (!jsonText) return null;
-    const parsed = JSON.parse(jsonText) as RerankResult;
+    const parsed = JSON.parse(jsonText) as { lines?: Array<{ exigencias?: string[]; aprovados?: string[]; skus?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean }> };
     if (!Array.isArray(parsed.lines) || parsed.lines.length !== lines.length) return null;
     return {
       lines: parsed.lines.map((line, i) => {
         const valid = new Set(lines[i].candidates.map((c) => c.sku));
         const seen = new Set<string>();
-        const skus = (line.skus ?? []).filter((sku) => {
+        const skus = (line.aprovados ?? line.skus ?? []).filter((sku) => {
           if (!valid.has(sku) || seen.has(sku)) return false;
           seen.add(sku);
           return true;
@@ -218,13 +242,42 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
         // numa rodada e 3 na outra (dono, 28/09: "se tem 5, mostra as 5").
         const bySku = new Map(lines[i].candidates.map((c) => [c.sku, c]));
         const approved = skus.map((sku) => bySku.get(sku)!);
-        return { skus: diversifyOptions(lines[i].query, approved, limit).map((c) => c.sku) };
+        const proximos: RerankClosest[] = [];
+        for (const p of line.proximos ?? []) {
+          const falta = p?.falta?.trim().replace(/[.:;,\s]+$/, "");
+          if (!p || !valid.has(p.sku) || seen.has(p.sku) || !falta) continue;
+          seen.add(p.sku);
+          proximos.push({ sku: p.sku, falta });
+          if (proximos.length >= 3) break;
+        }
+        // Preço pedido explicitamente: o mais barato dos aprovados primeiro, sem diversificar (a
+        // vitrine é "as mais baratas"). Só vale com 2+ aprovados — com 1 não há o que ordenar.
+        const cheapest = Boolean(line.maisBarato) && approved.length > 1;
+        const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
+        return {
+          skus: shown.map((c) => c.sku),
+          ...(cheapest ? { maisBarato: true } : {}),
+          exigencias: (line.exigencias ?? []).map((e) => String(e).trim()).filter(Boolean),
+          // Quem foi aprovado não é "mais próximo"; sem aprovados, os próximos são o que sobra.
+          proximos: skus.length ? [] : proximos
+        };
       })
     };
   } catch (error) {
     console.warn("[ai:rerank:error]", error);
     return null;
   }
+}
+
+let rerankImpl: typeof rerankShoppingOptionsReal = rerankShoppingOptionsReal;
+
+export function rerankShoppingOptions(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
+  return rerankImpl(message, lines, limit);
+}
+
+// Costura de TESTE (como a do roteador): os E2E injetam o juízo da IA sem rede.
+export function __setRerankForTests(fn: typeof rerankShoppingOptionsReal | null) {
+  rerankImpl = fn ?? rerankShoppingOptionsReal;
 }
 
 // Word-boundary match so "forma" doesn't match "informado" nor "case" "casual".

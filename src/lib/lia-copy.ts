@@ -513,6 +513,17 @@ export function refineClosest(attrs: string): string {
   return `Não achei exatamente *${attrs}*. O mais perto que tenho:`;
 }
 
+// Nenhuma opção cumpre tudo o que o cliente pediu: avisa a diferença antes de mostrar o mais
+// perto (fase 3 do plano, 07/10). `falta` completa "o mais perto que tenho …" ("é de 500 ml").
+export function closestHeader(query: string, falta: string): string {
+  return `Não achei *${query}* exatamente. O mais perto que tenho ${falta}:`;
+}
+
+// Preferência explícita de preço no pedido ("a mais barata"): a vitrine vem ordenada por preço.
+export function cheapestFirstHeader(query: string): string {
+  return `Separei as mais baratas de *${query}*, da mais barata pra mais cara:`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }

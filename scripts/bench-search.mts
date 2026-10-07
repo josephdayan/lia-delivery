@@ -57,7 +57,9 @@ async function main() {
   const db = await startBenchDb();
   try {
     const { runShopperScoped, storeServesCep } = await import("../src/lib/store-areas");
-    const { searchOptionsForPlanB } = await import("../src/lib/delivery-service");
+    const brain = (await import("../src/lib/delivery-service")) as { searchOptionsForBench?: (q: string, cep: string) => Promise<{ options: any[]; closest: any[] }>; searchOptionsForPlanB: (q: string, cep: string) => Promise<any[]> };
+    // Código antigo (sem o "mais perto") não tem searchOptionsForBench: o placar compara os dois.
+    const searchOptionsForBench = brain.searchOptionsForBench ?? (async (q: string, c: string) => ({ options: await brain.searchOptionsForPlanB(q, c), closest: [] as any[] }));
     const { automaticPurchaseStores } = await import("../src/lib/purchase-policy");
     const { VTEX_API_STORES } = await import("../src/lib/purchase/vtex-checkout");
     const { oraclePool } = await import("./bench/oracle.mts");
@@ -78,10 +80,14 @@ async function main() {
         if (!r) return;
         const t0 = Date.now();
         let shown: Shown[] = [];
+        let closest: Array<{ store: string; name: string; price: number }> = [];
         let error: string | undefined;
         const scope = { aiFailed: [] as string[] };
         try {
-          const options = await aiScope.run(scope, () => runShopperScoped(() => searchOptionsForPlanB(r.text, cep)));
+          const found = await aiScope.run(scope, () => runShopperScoped(() => searchOptionsForBench(r.text, cep)));
+          const options = found.options;
+          // "Mais próximo" (Lia avisa a diferença; o cliente escolhe): fora da conta de acerto, só listado.
+          closest = found.closest.map((o) => ({ store: o.storeLabel ?? o.storeKey ?? "", name: o.name, price: o.unitPrice }));
           shown = options.map((o, i) => ({ id: `S${i + 1}`, store: o.storeLabel ?? o.storeKey ?? "", name: o.name, brand: o.brand ?? "", price: o.unitPrice, _sku: `${o.storeKey}:${o.sku}` } as Shown));
         } catch (e) { error = e instanceof Error ? e.message.slice(0, 160) : String(e); }
         const ms = Date.now() - t0;
@@ -110,7 +116,7 @@ async function main() {
         else if (!shown.length) outcome = poolGood.length ? "miss" : "honest_none";
         else if (!good(shown[0].id)) outcome = poolGood.length || shownGood.length ? "wrong_top1" : "false_positive";
         else outcome = shown.some((s) => !good(s.id)) ? "found_with_wrong_extra" : "found";
-        results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
+        results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), closest: closest.length ? closest : undefined, oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
         process.stdout.write(`${outcome === "found" || outcome === "honest_none" || outcome === "medicine_ok" ? "." : outcome[0].toUpperCase()}`);
       }
     }
@@ -135,6 +141,7 @@ async function main() {
       precisionItems: pct(goodShown.length, allShown.length),
       coverage: pct(found.length, exists.length),
       honesty: pct(noExist.filter((r) => r.outcome === "honest_none").length, noExist.length),
+      closestOffered: results.filter((r) => r.closest?.length).length,
       medicineLeaks: `${count("medicine_leak")}/${medicine.length}`,
       latencyMs: { p50: lat[Math.floor(lat.length * 0.5)], p90: lat[Math.floor(lat.length * 0.9)], max: lat[lat.length - 1] }
     };
