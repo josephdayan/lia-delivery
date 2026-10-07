@@ -123,7 +123,7 @@ export function parsePreDecision(raw: unknown): PreDecision | null {
 }
 
 async function callPreSignupModelReal(input: PreModelInput): Promise<PreDecision | null> {
-  if (!process.env.OPENAI_API_KEY || process.env.LIA_DIALOGUE_LLM !== "true") return null;
+  if (!process.env.OPENAI_API_KEY || process.env.LIA_DIALOGUE_LLM === "false") return null;
   try {
     const effort = (process.env.LIA_DIALOGUE_EFFORT ?? process.env.LIA_AI_EFFORT ?? "low").trim();
     const response = await fetch("https://api.openai.com/v1/responses", {
@@ -287,7 +287,7 @@ export function buildPreSignupState(ctx: DeliveryContext, lastLiaText?: string):
 
 // null = a IA não foi consultada (o caminho de hoje segue, sem custo).
 export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanOutcome | null> {
-  if (process.env.LIA_DIALOGUE_LLM !== "true" || !preSignupModelAvailable()) return null;
+  if (process.env.LIA_DIALOGUE_LLM === "false" || !preSignupModelAvailable()) return null;
   const bypass = preSignupBypassReason(input);
   if (bypass) return null;
   const started = Date.now();

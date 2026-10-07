@@ -37,6 +37,8 @@ delete process.env.APIFY_API_TOKEN;
 process.env.WHATSAPP_PROVIDER = "mock";
 // Busca ao vivo nas lojas usa rede: testes ficam na cópia do catálogo.
 process.env.LIA_LIVE_SEARCH = "false";
+// Gerente de diálogo usa IA: testes ficam no caminho determinístico (os testes do dialogue ligam sozinhos).
+process.env.LIA_DIALOGUE_LLM = "false";
 process.env.OPENAI_API_KEY = "";
 process.env.LIA_RETAILER_TEST_SEED = "true";
 process.env.LIA_SEND_PHOTOS = "false";

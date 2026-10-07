@@ -19,7 +19,7 @@ export type RepeatInput = {
 };
 
 export function repeatGuardEnabled(): boolean {
-  return process.env.LIA_DIALOGUE_LLM === "true";
+  return process.env.LIA_DIALOGUE_LLM !== "false";
 }
 
 // Texto que pode ser re-enviado igual de propósito: dinheiro, link, código Pix, resumo do pedido.

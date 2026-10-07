@@ -1,4 +1,4 @@
-// Gerente de diálogo (LIA_DIALOGUE_LLM=true): para mensagem de TEXTO LIVRE nos passos de
+// Gerente de diálogo (ligado por padrão desde 07/10 — placar: 52% × 49% limpos, 79% × 74% objetivo; LIA_DIALOGUE_LLM=false desliga): para mensagem de TEXTO LIVRE nos passos de
 // montar a lista / escolher / total na mesa / escolher a entrega, a IA lê a mensagem + o estado
 // e escolhe ações de uma lista fechada ANTES do roteamento por regex. O que é inequívoco e
 // barato (número com opções na tela, CEP, botões, "pix"/"cartão", cadastro, CPF) continua
@@ -20,7 +20,7 @@ import type { PlanOutcome } from "./types";
 export { __setDialogueModelForTests } from "./model";
 
 export function dialogueEnabled(): boolean {
-  return process.env.LIA_DIALOGUE_LLM === "true";
+  return process.env.LIA_DIALOGUE_LLM !== "false";
 }
 
 const HOOK_STEPS = new Set<string | undefined>([undefined, "collecting", "choosing", "awaiting_quote_confirmation", "choosing_freight"]);

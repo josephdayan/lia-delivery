@@ -130,7 +130,7 @@ export function parseDecision(raw: unknown): DialogueDecision | null {
 }
 
 async function callDialogueModelReal(input: ModelInput): Promise<DialogueDecision | null> {
-  if (!process.env.OPENAI_API_KEY || process.env.LIA_DIALOGUE_LLM !== "true") return null;
+  if (!process.env.OPENAI_API_KEY || process.env.LIA_DIALOGUE_LLM === "false") return null;
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
