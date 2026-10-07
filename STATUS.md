@@ -1,3 +1,16 @@
+## 07/10/2026 (tarde) — Meta 100%: fase 0 pronta e fases 1–3 no main
+
+Plano: `docs/plano-conversa-100.md`. Orquestração Opus 5.5 + implementadores Sonnet 5.5 em worktrees.
+- **Fase 0 (régua)**: 100 cenários (60 treino / 40 prova) conferidos ao vivo (`scripts/bench/check-scenarios.mts`);
+  juiz com ficha de fatos, defeitos graves explícitos e voto de 3, calibrado contra 40 rótulos à mão
+  (`evals/calibracao-rotulos.json`, `scripts/bench/calibrate.mts`): 95–97,5%. `--repeat 3` (pass@3), `--set`.
+- **Linha de base nova** (código antes das fases, 100 × 3): cenários limpos nas 3 execuções **48%**, objetivo nas 3 **66%**
+  (treino 51,7% / prova 42,5%). `evals/results/conversations-2026-10-07-base100.json`.
+- **Fase 1** (textos honestos, modo atendimento `ctx.attendance`, orçamento = total com frete, embalagem pergunta antes,
+  "mais 3", pedido antes do cadastro), **fase 2** (gerente de diálogo `src/lib/dialogue/`, atrás de `LIA_DIALOGUE_LLM`),
+  **fase 3** (rerank confere atributos, "mais perto" avisado, "a mais barata" ordena): no main, suíte 986/986.
+- Medindo agora: 100 × 3 com o gerente ligado e desligado.
+
 ## 07/10/2026 — Asaas liberado: Pix de saída de volta
 
 Reanálise cadastral aberta pelo Asaas em 06/10 09h54 ("Saques bloqueados temporariamente") foi
