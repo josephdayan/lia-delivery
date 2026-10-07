@@ -19,7 +19,19 @@ export type ParsedLine = {
   // Frase COMPLETA do cliente quando a IA encurtou ("isqueiro pra charuto" → "isqueiro",
   // 06/09, pai do dono): o Mercado Livre busca com ela, porque o qualificador muda o produto.
   raw?: string;
+  // Etapa 1 (07/10): por que esta linha virou item (src/lib/list-items.ts). Ausentes quando a
+  // linha não veio de um trecho "A e B": a decisão padrão é `single`.
+  decision?: ListItemDecision;
+  reason?: string;
+  // Trecho original do cliente de onde a linha saiu ("biscoito de chocolate e morango"). Usado para
+  // reconciliar IA × determinístico por trecho e como rótulo no Flow.
+  span?: string;
 };
+
+// split = "A e B" virou dois itens; joined = continua um item só; inherited_head = a cauda só tinha
+// atributo e herdou o substantivo ("leite integral e desnatado"); brand_shared = a marca do fim
+// vale para todos ("shampoo e condicionador pantene"); single = nunca teve conjunção.
+export type ListItemDecision = "split" | "joined" | "inherited_head" | "brand_shared" | "single";
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
@@ -189,7 +201,7 @@ const MAX_QTY = 50;
 // Mantemos isto conservador: gíria ambígua não é alterada.
 function expandShoppingShorthand(text: string): string {
   return text
-    .replace(/\b(qro|qr|qero)\b/gi, "quero")
+    .replace(/\b(qro|qr|qero|kero|kero|keru)\b/gi, "quero")
     .replace(/\b(qria|keria)\b/gi, "queria")
     .replace(/\b(pf|pff+|pf+v+r?|pfr|pls)\b/gi, "por favor")
     .replace(/\b(tb|tbm|tmb|tambem)\b/gi, "tambem")
@@ -198,7 +210,7 @@ function expandShoppingShorthand(text: string): string {
 
 // Segmentos que são conversa, não produto ("bom dia", "por favor", "lista:").
 const NOISE_SEGMENT_RE =
-  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad\w*|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|(nao|n) sei( .*)?|o que .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
+  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad\w*|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|o que .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
 
 // Restrição/complemento que NUNCA é produto (15 rodadas reais, 14/08): orçamento
 // ("até uns 100 reais"), preferência vazia ("qualquer marca", "de preferência o mais
@@ -209,8 +221,8 @@ const NOISE_SEGMENT_RE =
 const MODIFIER_SEGMENT_RE = new RegExp(
   "^(" +
     [
-      "(de )?(ate|abaixo de|menos de|no maximo|max(imo)?) ?(uns |umas )?(r\\$ ?)?\\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)?( cada( uma?)?| por unidade)?",
-      "(uns|umas) \\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)( cada( uma?)?| por unidade)?",
+      "(de )?(ate|abaixo de|menos de|no maximo|max(imo)?) ?(uns |umas )?(r\\$ ?)?\\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)?( cada( uma?)?| por unidade)?( no total| total| de orcamento| com a entrega| com (o )?frete| incluindo (o )?frete)*",
+      "(uns|umas) \\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)( cada( uma?)?| por unidade)?( no total| total| de orcamento| com a entrega| com (o )?frete| incluindo (o )?frete)*",
       "(pode ser )?(de )?qualquer [a-z]+( uma?)?",
       "sem preferencia( de marca)?( nenhuma)?",
       "de preferencia .*",
@@ -283,6 +295,13 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // nunca item (07/10, c08). "vou querer/levar/pegar" continuam sendo pedido.
       "(eu )?vou (procurar|buscar|tentar|ir|passar|ver|pedir|comprar)\\b[^,]*\\b(farmacia|drogaria|outr[oa]s?|por aqui|por ai|na loja|no mercado|depois|la)\\b.*",
       "(nada|quase nada) (em casa|aqui( em casa)?)",
+      // tamanho da festa ("uns 20 convidados", "pra 15 pessoas") e pedido de não esquecer: contexto do
+      // churrasco narrado (c94), nunca item.
+      "(uns |umas |pra |para |mais ou menos |cerca de )*\\d+ (convidados|pessoas|amigos|adultos|criancas|gente)( .*)?",
+      "(a )?(familia|galera) (toda|inteira)( .*)?",
+      "(vai|vem|vao) (ter|ser) .*",
+      "(eu )?(nao|n) (esquece|esqueca|esquecer)( de)? (nada|de nada|nenhum item)",
+      "(nao esquece|nao esqueca)( nada)?",
       "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
     ].join("|") +
     ")$"
@@ -302,6 +321,13 @@ const STATE_SEGMENT_RE =
 // descarta, mas a IA às vezes devolve o contexto como item (6º ciclo, rodada 1).
 export function isRequestModifier(phrase: string): boolean {
   return MODIFIER_SEGMENT_RE.test(normalizeMsg(phrase));
+}
+
+// Trecho que o parser SEMPRE descarta (conversa, estado, narrativa, restrição): nunca pode ser
+// colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
+export function isNonItemSegment(phrase: string): boolean {
+  const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || MODIFIER_SEGMENT_RE.test(n);
 }
 
 // Urgência de ENTREGA na mensagem ("preciso pra hoje", "urgente", "o quanto antes").
@@ -330,7 +356,24 @@ export function hasUrgencySignal(text: string): boolean {
   return URGENCY_RE.test(normalizeMsg(text));
 }
 
-export function parseBasketLines(text: string): ParsedLine[] {
+// Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
+// " e " separava itens; agora quem decide se separa é o resolvedor de list-items.ts.
+const CONJUNCTION_SPLIT_RE = /\s+e\s+|\s*\+\s*|\s+\/\s+/i;
+export type ConjunctionPart = { text: string; decision?: ListItemDecision; reason?: string; span?: string };
+export type ParseBasketOptions = {
+  // Recebe cada trecho entre separadores duros (vírgula, ponto, quebra de linha) e devolve os
+  // pedaços que viram segmentos. Padrão: separa em todo " e " / " + " / " / ".
+  conjunction?: (chunk: string) => ConjunctionPart[];
+};
+
+// Token que faz parte da identidade de uma linha ao comparar "mesmo produto": 3+ letras, ou o tamanho
+// curto que DEFINE a variante ("fralda M" ≠ "fralda G", "pilha AA" ≠ "pilha AAA").
+const SHORT_SPEC_RE = /^(p|m|g|gg|xg|pp|xs|xl|c|d|aa|\d+)$/;
+function specToken(t: string): boolean {
+  return t.length >= 3 || SHORT_SPEC_RE.test(t);
+}
+
+export function parseBasketLines(text: string, opts?: ParseBasketOptions): ParsedLine[] {
   let source = expandShoppingShorthand(text);
   // Lista enumerada ("1 arroz\n2 feijão\n3 óleo"): índices sequenciais a partir de 1 em
   // 3+ linhas são NUMERAÇÃO, não quantidade — remove os índices antes de parsear.
@@ -353,18 +396,36 @@ export function parseBasketLines(text: string): ParsedLine[] {
     // protege decimais ("1,5l" / "1.5l") do split por vírgula/ponto
     .replace(/(\d),(\d)/g, "$1§$2")
     .replace(/(\d)\.(\d)/g, "$1¤$2")
+    // "…2 vodkas tenho uns 120 reais 3 sucos": o orçamento no MEIO da frase ganha vírgulas e vira o
+    // segmento "ate N reais" (teto do item anterior), em vez de colar no nome do produto.
+    .replace(
+      /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
+      ", ate $1 reais, "
+    )
     // ponto/interrogação separam sentenças ("sabao em po. ah e um refri" = 2 segmentos)
     // " / " (com espaços) também separa itens: "2 coca / 1 shampoo / 2 sabonete" virava UMA linha
     // de quantidade 2 e a quantidade vazava pros outros itens (placar 07/10, c34). "1/2 litro" não.
-    .split(/[,\n;.?]|\s+e\s+|\s*\+\s*|\s+\/\s+/i)
-    .map((raw) =>
-      raw
+    .split(/[,\n;.?]/)
+    .flatMap((chunk): ConjunctionPart[] =>
+      opts?.conjunction ? opts.conjunction(chunk) : chunk.split(CONJUNCTION_SPLIT_RE).map((text) => ({ text }))
+    )
+    .map((part) => ({
+      meta: part,
+      raw: part.text
         .replace(/§/g, ",")
         .replace(/¤/g, ".")
         .trim()
         .replace(/^((oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)( lia)?[\s,!.?]*)+/i, "")
         .replace(/^(tudo (bem|bom)|td bem|como vai)[\s,!.?]*/i, "")
         .replace(/^(ah+|hm+|hmm+|dai|tipo|ne|entao|ok+|okay|blz|beleza|ta|certo)\s+/i, "")
+        // gíria/vocativo antes do pedido ("mn qro 2 coca", "galera vou fazer um churrasco"): tira só o
+        // prefixo, o resto segue (c92/c94). Não vira quantidade nem produto.
+        .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
+        // "tenho uns 120 reais" é ORÇAMENTO da frase, nunca item: vira o "até N reais" que o
+        // restante do parser já trata como teto (c23/c24).
+        .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
+        // "copo descartável pra todo mundo": o destinatário do churrasco não é parte do produto
+        .replace(/\s+(?:pra|para)\s+(?:todo mundo|todos|todas|a galera|galera|geral|a familia toda|a familia)\s*$/i, "")
         // sujeito-parente ("meu neto quer um violão", "minha filha pediu suco"): o
         // pedido é o OBJETO — o parente sai, o produto fica (27/08 r3 S15: a query
         // virou "meu neto quer um violão" inteira). ANTES do vocativo, que comeria só
@@ -390,23 +451,28 @@ export function parseBasketLines(text: string): ParsedLine[] {
         .replace(/\s+qualquer(\s+uma?)?\s*$/i, "\u0002")
         // "to sem café" é jeito real de PEDIR café — o item é o que falta
         .replace(/^(?:eu\s+)?(?:t[oô]|tou|estou)\s+sem\s+/i, "")
+        // "coca zero de 2l" → "coca zero 2l": o "de" antes de uma medida é só fala (c92)
+        .replace(/\bde\s+(\d+(?:[.,]\d+)?\s?(?:l|lt|litros?|ml|kg|g)\b)/gi, "$1")
         .replace(/\s+/g, " ")
         .trim()
-    )
+    }))
     .filter(
-      (raw) =>
+      ({ raw }) =>
         raw.length > 1 &&
         !NOISE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !STATE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !NARRATIVE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw))
     )
-    .map((rawWithFlags): ParsedLine => {
+    .map(({ raw: rawWithFlags, meta }): ParsedLine => {
       // Sentinelas dos passos anteriores: \u0001 = segmento aditivo ("mais/outro"),
       // \u0002 = "qualquer" (a Lia pode escolher sozinha).
       const flags = {
         ...(rawWithFlags.includes("\u0001") ? { additive: true as const } : {}),
-        ...(rawWithFlags.includes("\u0002") ? { autoPick: true as const } : {})
+        ...(rawWithFlags.includes("\u0002") ? { autoPick: true as const } : {}),
+        ...(meta.decision ? { decision: meta.decision } : {}),
+        ...(meta.reason ? { reason: meta.reason } : {}),
+        ...(meta.span ? { span: meta.span } : {})
       };
       const raw = rawWithFlags.replace(/[\u0001\u0002]/g, "").trim();
       // Peso/volume NÃO é quantidade: "2kg de arroz" = 1× "arroz 2kg" (o tamanho vai pro
@@ -449,8 +515,8 @@ export function parseBasketLines(text: string): ParsedLine[] {
     return tTokens.some((t) => pTokens.has(t) || pTokens.has(`${t}s`) || (t.endsWith("s") && pTokens.has(t.slice(0, -1))));
   };
   const sameSpec = (a: string, b: string) => {
-    const at = normalizeMsg(a).split(" ").filter((t) => t.length >= 3).sort();
-    const bt = normalizeMsg(b).split(" ").filter((t) => t.length >= 3).sort();
+    const at = normalizeMsg(a).split(" ").filter(specToken).sort();
+    const bt = normalizeMsg(b).split(" ").filter(specToken).sort();
     if (!at.length || at.length !== bt.length) return false;
     return at.every((t, i) => t === bt[i] || `${t}s` === bt[i] || t === `${bt[i]}s`);
   };
@@ -618,6 +684,14 @@ function meaningfulProductTokens(phrase: string): string[] {
 export function sharesProductNoun(a: string, b: string): boolean {
   const aTokens = meaningfulProductTokens(a);
   const bTokens = new Set(meaningfulProductTokens(b));
+  // Frases só de palavras curtas ("sal", "mel", "ovo") não têm token de 4+ letras: antes nunca
+  // contavam como o mesmo produto e a linha entrava duplicada ("sal e pimenta" com IA ligada).
+  // Só vale igualdade da frase inteira — "pão de sal" não é "sal".
+  if (!aTokens.length && !bTokens.size) {
+    const flat = (x: string) => normalizeMsg(x).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean).map((t) => (t.length >= 4 ? t.replace(/s$/, "") : t)).join(" ");
+    const fa = flat(a);
+    return fa.length > 0 && fa === flat(b);
+  }
   return aTokens.some((token) => bTokens.has(token));
 }
 
@@ -626,7 +700,7 @@ export function sharesProductNoun(a: string, b: string): boolean {
 // (29/08 S4: o caminho com IA mantinha "ovo x6" + "ovos x6" e o cliente terminou com
 // 6 EMBALAGENS de 10 = 60 ovos).
 export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
-  const tokensOf = (p: string) => normalizeMsg(p).split(" ").filter((t) => t.length >= 3).sort();
+  const tokensOf = (p: string) => normalizeMsg(p).split(" ").filter(specToken).sort();
   const sameSpec = (a: string, b: string) => {
     const at = tokensOf(a);
     const bt = tokensOf(b);
@@ -646,8 +720,70 @@ export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
   return out;
 }
 
-export function mergeShoppingLines(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedLine[] {
-  if (!ai.length) return deterministic;
+// Tokens (3+ letras, sem conectivos) de um trecho: base para saber a que trecho "A e B" uma linha da IA
+// pertence. Diferente de meaningfulProductTokens de propósito — "sal", "mel", "gel" contam aqui.
+const SPAN_CONNECTORS = new Set(["com", "sem", "uma", "uns", "umas", "para", "pra", "dos", "das", "mais"]);
+function spanTokens(text: string): Set<string> {
+  return new Set(
+    normalizeMsg(text)
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length >= 3 && !SPAN_CONNECTORS.has(t))
+      .map((t) => (t.length >= 5 ? t.replace(/s$/, "") : t))
+  );
+}
+
+// IA × determinístico no MESMO trecho ("A e B"): quando discordam da CONTAGEM, a IA não vence por
+// ser IA. A contagem do determinístico já carrega a evidência do catálogo (list-items.ts, regras
+// 1–5), então as linhas da IA daquele trecho são trocadas pelas dele. Concordando (mesmo número de
+// linhas), nada muda e a IA segue canonizando sinônimos.
+function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedLine[] {
+  const groups = new Map<string, ParsedLine[]>();
+  for (const d of deterministic) {
+    if (!d.span || !d.decision || d.decision === "single") continue;
+    groups.set(d.span, [...(groups.get(d.span) ?? []), d]);
+  }
+  if (!groups.size) return ai;
+  let out = [...ai];
+  for (const [span, lines] of groups) {
+    const tokens = spanTokens(span);
+    const overlap: number[] = [];
+    out.forEach((line, i) => {
+      // sinônimo ("creme dental" ↔ "pasta de dente") ou palavra em comum, inclusive curta ("sal")
+      if (sharesProductNoun(line.phrase, span)) {
+        overlap.push(i);
+        return;
+      }
+      for (const t of spanTokens(line.phrase)) {
+        if (tokens.has(t)) {
+          overlap.push(i);
+          return;
+        }
+      }
+    });
+    if (!overlap.length || overlap.length === lines.length) continue;
+    const first = overlap[0];
+    const next: ParsedLine[] = [];
+    out.forEach((line, i) => {
+      if (i === first) next.push(...lines.map((l) => ({ ...l })));
+      else if (!overlap.includes(i)) next.push(line);
+    });
+    out = next;
+  }
+  return out;
+}
+
+// "sal" (determinístico) já está coberto por "sal grosso" (IA): a palavra curta é a CABEÇA da outra.
+function shortHeadCovered(short: string, other: string): boolean {
+  const flat = (x: string) => normalizeMsg(x).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const a = flat(short);
+  const b = flat(other);
+  return a.length === 1 && a[0].length <= 3 && b.length > 1 && b[0] === a[0];
+}
+
+export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLine[]): ParsedLine[] {
+  if (!aiRaw.length) return deterministic;
+  const ai = reconcileBySpan(aiRaw, deterministic);
   const meaningful = meaningfulProductTokens;
   const sameProduct = sharesProductNoun;
   // "um presente pra minha namorada, tipo um perfume": o LLM já transformou a
@@ -712,7 +848,7 @@ export function mergeShoppingLines(ai: ParsedLine[], deterministic: ParsedLine[]
     // IA descartou de propósito não volta (rodada 27/08 S3/S20 — o resgate desfazia o
     // descarte certo da IA e a narrativa virava "item não achado").
     if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase)) continue;
-    if (!merged.some((candidate) => sameProduct(line.phrase, candidate.phrase))) merged.push(line);
+    if (!merged.some((candidate) => sameProduct(line.phrase, candidate.phrase) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
 }
