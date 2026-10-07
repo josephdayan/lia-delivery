@@ -136,6 +136,100 @@ export const SIGNUP_FLOW_JSON = {
   ]
 };
 
+// Flow da LISTA (07/10, dono: "2 ou mais itens → uma tela só com até 4 opções por item"):
+// 15 vagas fixas `item_1..item_15`, cada uma um RadioButtonsGroup cujo rótulo, opções e
+// visibilidade vêm do `data` enviado com a mensagem (list-flow.ts monta). Escolhas de projeto
+// que PRECISAM de validação no celular (a Graph valida o JSON, o aparelho valida o resto):
+// - Form: os grupos ficam DENTRO de um Form (como no Flow de endereço publicado) porque
+//   `${form.item_i}` no payload e `init-value` só existem com Form; os TextBody ficam fora.
+// - init-value: pré-seleciona a sugestão da Lia (`${data.init_i}`). A Meta recusou init-value
+//   no TextInput (04/09); se recusar aqui também, LIST_FLOW_USE_INIT_VALUE=false publica sem
+//   ele e a sugestão vira só a 1ª opção (campo ausente na resposta = mantém a sugestão).
+// - Todo campo de `data` tem __example__ (a Meta recusa o publish sem). O exemplo de opts_i
+//   leva `image` (PNG 1x1) porque o schema com image declarado costuma exigir exemplo coerente.
+// - Terminal: o "complete" volta como nfm_reply com `lia_lista` (é assim que o webhook o
+//   distingue dos demais Flows).
+export const LIST_FLOW_NAME = "lista_lia_v1";
+export const LIST_FLOW_SCREEN = "LISTA";
+export const LIST_FLOW_CTA = "Escolher minha lista";
+export const LIST_FLOW_SLOTS = 15;
+export const LIST_FLOW_USE_INIT_VALUE = true;
+const LIST_FLOW_EXAMPLE_IMAGE = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const listSlotNumbers = Array.from({ length: LIST_FLOW_SLOTS }, (_, i) => i + 1);
+export const LIST_FLOW_JSON = {
+  version: "7.0",
+  screens: [
+    {
+      id: LIST_FLOW_SCREEN,
+      title: "Sua lista",
+      terminal: true,
+      data: {
+        lista_id: { type: "string", __example__: "lst-abc123" },
+        cabecalho: { type: "string", __example__: "Escolha uma opção em cada item. A sugestão da Lia já vem marcada." },
+        faltas_texto: { type: "string", __example__: "Não achei: gelo" },
+        faltas_visible: { type: "boolean", __example__: true },
+        ...Object.fromEntries(
+          listSlotNumbers.flatMap((i) => [
+            [`label_${i}`, { type: "string", __example__: "Vodka · 2x" }],
+            [`visible_${i}`, { type: "boolean", __example__: true }],
+            [`init_${i}`, { type: "string", __example__: "sku-1" }],
+            [
+              `opts_${i}`,
+              {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    title: { type: "string" },
+                    description: { type: "string" },
+                    image: { type: "string" },
+                    "alt-text": { type: "string" }
+                  }
+                },
+                __example__: [{ id: "sku-1", title: "Vodka Smirnoff 998ml", description: "R$ 39,90 · Carrefour · entrega hoje", image: LIST_FLOW_EXAMPLE_IMAGE, "alt-text": "Vodka Smirnoff 998ml" }]
+              }
+            ]
+          ])
+        )
+      },
+      layout: {
+        type: "SingleColumnLayout",
+        children: [
+          { type: "TextBody", text: "${data.cabecalho}" },
+          { type: "TextBody", text: "${data.faltas_texto}", visible: "${data.faltas_visible}" },
+          {
+            type: "Form",
+            name: "form",
+            children: [
+              ...listSlotNumbers.map((i) => ({
+                type: "RadioButtonsGroup",
+                name: `item_${i}`,
+                label: `\${data.label_${i}}`,
+                required: false,
+                visible: `\${data.visible_${i}}`,
+                "data-source": `\${data.opts_${i}}`,
+                ...(LIST_FLOW_USE_INIT_VALUE ? { "init-value": `\${data.init_${i}}` } : {})
+              })),
+              {
+                type: "Footer",
+                label: "Confirmar",
+                "on-click-action": {
+                  name: "complete",
+                  payload: {
+                    lia_lista: "${data.lista_id}",
+                    ...Object.fromEntries(listSlotNumbers.map((i) => [`item_${i}`, `\${form.item_${i}}`]))
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+};
+
 // Carrossel da vitrine (dono, 07/09: "eu quero fazer carrossel"). Na Meta, carrossel só
 // existe como TEMPLATE de MARKETING (não há carrossel livre na janela de 24h): cada envio
 // é cobrado (~R$0,33 no Brasil) e o número de cards é FIXO por template — por isso um
@@ -245,7 +339,7 @@ async function ids(token: string, timeoutMs?: number) {
   return { appId, waba };
 }
 
-export type MetaSetupAction = "status" | "name" | "register" | "profile" | "picture" | "welcome" | "flow" | "flow_update" | "flow_errors" | "flow_signup" | "carousel" | "templates" | "carousel_test";
+export type MetaSetupAction = "status" | "name" | "register" | "profile" | "picture" | "welcome" | "flow" | "flow_update" | "flow_errors" | "flow_signup" | "flow_list" | "carousel" | "templates" | "carousel_test";
 
 // Estado real do display name (25/09): o WhatsApp Manager só mostrava "In Review" e o
 // suporte da Meta não respondia. Campo a campo porque alguns são beta e um campo
@@ -307,6 +401,7 @@ export async function runMetaSetup(action: MetaSetupAction, opts: { flowId?: str
     return { registered, name: await nameStatus(token, phoneId) };
   }
   if (action === "flow_signup") return ensureSignupFlow();
+  if (action === "flow_list") return ensureListFlow();
   if (action === "flow_errors" || action === "flow_update") {
     const flowId = (opts.flowId ?? process.env.LIA_FLOW_ADDRESS_ID ?? "").trim();
     if (!/^\d{6,}$/.test(flowId)) throw new Error("flow_id ausente (?flow_id=<id do Flow>)");
@@ -450,6 +545,50 @@ export async function activeSignupFlowId(): Promise<string | null> {
   }
   signupFlowCache.at = Date.now();
   return signupFlowCache.id;
+}
+
+// ---------- Flow da lista (07/10) ----------
+// Mesmo ciclo do cadastro: publicado → nada; rascunho → regrava e publica; nenhum → cria.
+export async function ensureListFlow(): Promise<Record<string, unknown>> {
+  const { token } = creds();
+  const mine = (await listFlows(token)).filter((f) => f.name === LIST_FLOW_NAME);
+  const published = mine.find((f) => f.status === "PUBLISHED");
+  if (published) return { id: published.id, status: published.status };
+  const draft = mine.find((f) => f.status === "DRAFT");
+  listFlowCache.at = 0;
+  if (draft) return { id: draft.id, ...(await flowUpdateAndPublish(token, draft.id, LIST_FLOW_JSON)) };
+  const { waba } = await ids(token);
+  try {
+    return await graph(token, `${waba}/flows`, {
+      method: "POST",
+      body: JSON.stringify({ name: LIST_FLOW_NAME, categories: ["OTHER"], flow_json: JSON.stringify(LIST_FLOW_JSON), publish: true })
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const created = message.match(/Flow ID: (\d+)/)?.[1];
+    if (!created) throw error;
+    return { created_id: created, published: false, ...(await flowErrors(token, created)) };
+  }
+}
+
+// Envio: id do Flow da lista publicado. LIA_FLOW_LIST_ID força; senão o publicado com o nome
+// LIST_FLOW_NAME (cache de 10 min por instância). Null = ainda não publicado: o chamador usa
+// o caminho sem Flow.
+const listFlowCache: { at: number; id: string | null } = { at: 0, id: null };
+export async function activeListFlowId(): Promise<string | null> {
+  const forced = process.env.LIA_FLOW_LIST_ID?.trim();
+  if (forced) return forced;
+  if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
+  if (Date.now() - listFlowCache.at < 10 * 60_000) return listFlowCache.id;
+  try {
+    const { token } = creds();
+    const flows = await listFlows(token, 3_000);
+    listFlowCache.id = flows.find((f) => f.name === LIST_FLOW_NAME && f.status === "PUBLISHED")?.id ?? null;
+  } catch (error) {
+    console.warn("[meta:list-flow]", error instanceof Error ? error.message : error);
+  }
+  listFlowCache.at = Date.now();
+  return listFlowCache.id;
 }
 
 // ---------- Carrossel automático (v4 28/09, v5 05/10) ----------

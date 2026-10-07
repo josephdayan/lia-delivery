@@ -8,7 +8,7 @@ export const maxDuration = 60;
 // Configuração do número na Meta (perfil, boas-vindas, Flow de endereço) executada de
 // dentro da Vercel, onde o token vive. Só com a sessão do /ops (mesma guarda das outras
 // rotas de operação). GET = status (leitura); POST { action } = grava.
-const ACTIONS: MetaSetupAction[] = ["status", "name", "register", "profile", "picture", "welcome", "flow", "flow_update", "flow_errors", "flow_signup", "carousel", "templates", "carousel_test"];
+const ACTIONS: MetaSetupAction[] = ["status", "name", "register", "profile", "picture", "welcome", "flow", "flow_update", "flow_errors", "flow_signup", "flow_list", "carousel", "templates", "carousel_test"];
 
 // GET sem `action` = status. GET ?action=profile|picture|flow|welcome executa a ação —
 // estado por GET de propósito: o operador (ou o Codex) roda tudo abrindo URLs no navegador
