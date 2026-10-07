@@ -48,6 +48,7 @@ export async function extractShoppingList(text: string): Promise<ShoppingExtract
       signal: AbortSignal.timeout(Number(process.env.LIA_AI_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
         model: liaTextModel(),
+        ...liaReasoning(),
         input: [
           {
             role: "system",
@@ -112,6 +113,13 @@ export function liaTextModel(): string {
   return process.env.OPENAI_MODEL ?? "gpt-6-luna";
 }
 
+// Esforço de raciocínio (LIA_AI_EFFORT=none|low|medium|high). Sem a variável, o padrão do modelo.
+// "none" corta ~0,7 s por chamada na luna (medido 07/10); só vira padrão se o placar não piorar.
+function liaReasoning(): { reasoning?: { effort: string } } {
+  const effort = process.env.LIA_AI_EFFORT?.trim();
+  return effort ? { reasoning: { effort } } : {};
+}
+
 export type RerankCandidate = { sku: string; name: string; brand?: string; price: number; store: string };
 export type RerankLine = { query: string; candidates: RerankCandidate[] };
 export type RerankResult = { lines: { skus: string[] }[] };
@@ -140,11 +148,12 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
       signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
         model: liaTextModel(),
+        ...liaReasoning(),
         input: [
           {
             role: "system",
             content:
-              `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, uma lista de CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item, julgue CADA candidato e liste todos os que são REALMENTE o produto pedido, em ordem de recomendação. Regras: (1) Só inclua um candidato se um atendente humano o entregaria sem o cliente reclamar — mesmo tipo, forma e uso; palavras parecidas não bastam. Ex.: pedido 'carregador usb c' → carregador de parede/cabo USB-C serve; 'carregador veicular' (de carro) NÃO serve, a menos que o cliente tenha pedido veicular. A RECÍPROCA NÃO VALE: pedido 'cabo usb c' → um CARREGADOR não serve (carregador não é cabo) — sem cabo de verdade, devolva lista vazia. Atributo pedido (tamanho, litragem, metragem) vale para TODAS as opções que você listar, não só a primeira. Pedido 'escova de dente' → 'Escova Dental' serve (mesmo produto, outro nome); 'escova de cabelo' não. (2) Atributos que o cliente pediu (tamanho, cor, sabor, marca, espécie/porte do pet, 'sem açúcar', 'sem lactose') são obrigatórios quando os candidatos os distinguem. (3) Liste TODOS os candidatos que servem — não existe limite de quantidade; quem monta a vitrine (até ${limit} cards) é o sistema, a partir da sua lista. Nunca deixe de fora um candidato que é o produto pedido só porque ele é outro sabor, cor, tamanho ou embalagem de um já listado: variante continua sendo o que o cliente pediu (o sistema põe as variantes depois dos produtos distintos). E nunca inclua algo de outro tipo ou que quebre as regras (1) e (2): se o cliente pediu uma marca, tamanho, espécie ou porte, TODOS os listados precisam ter esse atributo (pedido 'ração golden' → só Golden). Mostrar algo que não tem nada a ver é o pior erro possível. Ordem: o mais recomendado primeiro — a versão COMUM do produto vem antes de versões para um público específico que o cliente não pediu (Mulher, Infantil, Kids, Baby, Sênior): pedido 'advil' → Advil comum antes de 'Advil Mulher'; nas primeiras posições alterne marca, loja e faixa de preço (do barato ao premium). Termo GENÉRICO de mercado = a versão básica mais comum no Brasil: 'feijão' → carioca antes do preto; 'óleo' (lista de mercado) → óleo de cozinha (soja/girassol/milho), nunca óleo mineral, corporal ou de madeira; 'macarrão' → massa seca (espaguete, parafuso, penne), não instantâneo; 'shampoo' → shampoo comum, não medicamento (cetoconazol) nem dermatológico (antiqueda); 'fralda' → infantil, nunca geriátrica/adulto ou pet sem o cliente pedir. PRESENTE: embalagem (sacola, papel, caixa presenteável, cartão-presente) NUNCA é o presente; presente de criança = brinquedo adequado à idade. (4) Se NENHUM candidato serve de verdade, devolva lista vazia para aquele item — um operador humano cota e compra qualquer coisa, então lista vazia é melhor que sugestão errada. (5) Use APENAS skus da lista daquele item; nunca invente. (6) Devolva exatamente um resultado por item, na mesma ordem dos itens. Responda apenas JSON válido.`
+              `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, uma lista de CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item, julgue CADA candidato e liste todos os que são REALMENTE o produto pedido, em ordem de recomendação. Regras: (1) Só inclua um candidato se um atendente humano o entregaria sem o cliente reclamar — mesmo tipo, forma e uso; palavras parecidas não bastam. Ex.: pedido 'carregador usb c' → carregador de parede/cabo USB-C serve; 'carregador veicular' (de carro) NÃO serve, a menos que o cliente tenha pedido veicular. A RECÍPROCA NÃO VALE: pedido 'cabo usb c' → um CARREGADOR não serve (carregador não é cabo) — sem cabo de verdade, devolva lista vazia. Atributo pedido (tamanho, litragem, metragem) vale para TODAS as opções que você listar, não só a primeira. QUANTIDADE DE UNIDADES NÃO É ATRIBUTO DO PRODUTO: o sistema ajusta a embalagem — '12 ovos' aceita caixa com 10, 12 ou 20; '3 coca' aceita a garrafa avulsa; só vale número que DEFINE o produto na descrição do pedido ('tubo de bolas com 4 bolas', 'pack com 12 latas', 'caixa com 30'). Pedido 'escova de dente' → 'Escova Dental' serve (mesmo produto, outro nome); 'escova de cabelo' não. (2) Atributos que o cliente pediu (tamanho, cor, sabor, marca, espécie/porte do pet, 'sem açúcar', 'sem lactose') são obrigatórios quando os candidatos os distinguem. (3) Liste TODOS os candidatos que servem — não existe limite de quantidade; quem monta a vitrine (até ${limit} cards) é o sistema, a partir da sua lista. Nunca deixe de fora um candidato que é o produto pedido só porque ele é outro sabor, cor, tamanho ou embalagem de um já listado: variante continua sendo o que o cliente pediu (o sistema põe as variantes depois dos produtos distintos). E nunca inclua algo de outro tipo ou que quebre as regras (1) e (2): se o cliente pediu uma marca, tamanho, espécie ou porte, TODOS os listados precisam ter esse atributo (pedido 'ração golden' → só Golden). Mostrar algo que não tem nada a ver é o pior erro possível. Ordem: o mais recomendado primeiro — a versão COMUM do produto vem antes de versões para um público específico que o cliente não pediu (Mulher, Infantil, Kids, Baby, Sênior): pedido 'advil' → Advil comum antes de 'Advil Mulher'; nas primeiras posições alterne marca, loja e faixa de preço (do barato ao premium). Termo GENÉRICO de mercado = a versão básica mais comum no Brasil: 'feijão' → carioca antes do preto; 'óleo' (lista de mercado) → óleo de cozinha (soja/girassol/milho), nunca óleo mineral, corporal ou de madeira; 'macarrão' → massa seca (espaguete, parafuso, penne), não instantâneo; 'shampoo' → shampoo comum, não medicamento (cetoconazol) nem dermatológico (antiqueda); 'fralda' → infantil, nunca geriátrica/adulto ou pet sem o cliente pedir. PRESENTE: embalagem (sacola, papel, caixa presenteável, cartão-presente) NUNCA é o presente; presente de criança = brinquedo adequado à idade. (4) Se NENHUM candidato serve de verdade, devolva lista vazia para aquele item — um operador humano cota e compra qualquer coisa, então lista vazia é melhor que sugestão errada. (5) Use APENAS skus da lista daquele item; nunca invente. (6) Devolva exatamente um resultado por item, na mesma ordem dos itens. Responda apenas JSON válido.`
           },
           {
             role: "user",
@@ -272,6 +281,7 @@ async function interpretCustomerMessageReal(input: RouterInput): Promise<RouterV
       signal: AbortSignal.timeout(Number(process.env.LIA_AI_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
         model: liaTextModel(),
+        ...liaReasoning(),
         input: [
           {
             role: "system",

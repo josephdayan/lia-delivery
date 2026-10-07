@@ -60,3 +60,12 @@ test("c23: o orçamento da mensagem sobrevive quando a IA troca 'presente' pelo 
   const two = mergeShoppingLines([{ phrase: "arroz", qty: 1 }, { phrase: "feijão", qty: 1 }], parseBasketLines("arroz até 30 reais, feijão"));
   assert.equal(splitPriceCap(two[1].phrase).cap, null);
 });
+
+test("c10: 'por favor' não é cláusula de comando ('tira a fita crepe, por favor' é UMA ordem)", async () => {
+  const { splitCommandClauses } = await import("../src/lib/lia-intents");
+  assert.deepEqual(splitCommandClauses("Tira a fita crepe, por favor."), ["tira a fita crepe, por favor."]);
+  assert.deepEqual(splitCommandClauses("tira o arroz, por enquanto"), ["tira o arroz, por enquanto"]);
+  // ordens compostas de verdade continuam separadas
+  assert.deepEqual(splitCommandClauses("tira o café e bota 2 leites"), ["tira o cafe", "bota 2 leites"]);
+  assert.equal(splitCommandClauses("troca o arroz por integral, tira o café, por favor").length, 2);
+});

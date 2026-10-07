@@ -138,3 +138,31 @@ test("c12: 'acho que vou no 1, Omo 1,4kg' é escolha — 1 unidade na cesta, sem
   assert.match(items[0].name, /Omo/);
   assert.equal(((await context(phone)).pending ?? []).length, 0, "nada novo na fila");
 });
+
+test("c10: 'tira o arroz, por favor' com o total na mesa mostra o total novo — não a saudação", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero 4 carne");
+  await send(phone, "1");
+  await send(phone, "quero arroz");
+  await send(phone, "1");
+  const quote = await send(phone, "pagar");
+  assert.match(quote, /Seu pedido/, quote.slice(0, 400));
+  const out = await send(phone, "Tira o arroz, por favor.");
+  assert.doesNotMatch(out, /Oi! Sou a Lia/i, out.slice(0, 400));
+  assert.match(out, /Tirei/i);
+  assert.match(out, /Total|Seu pedido/i, out.slice(0, 400));
+  assert.match(out, /Carne/i, "a carne ficou no novo total");
+  assert.doesNotMatch(out.split("Tirei")[1] ?? "", /• .*Arroz/i, "o arroz saiu do novo total");
+});
+
+test("c16: 'trocar endereço — <endereço completo>' usa o endereço da própria mensagem", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero arroz");
+  await send(phone, "1");
+  await send(phone, "pagar");
+  const out = await send(phone, "trocar endereço — Rua Oscar Freire, 379, apto 12, 01426-001");
+  assert.doesNotMatch(out, /Manda o \*endereço novo/i, out.slice(0, 300));
+  assert.match(out, /Endereço atualizado/i, out.slice(0, 300));
+});

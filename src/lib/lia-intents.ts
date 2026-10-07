@@ -795,7 +795,9 @@ export function looksLikeSymptomAsk(text: string): boolean {
 // "troca o arroz por integral, tira o café e bota 2 leites" — UMA mensagem com vários
 // comandos de cesta. Divide nas fronteiras "(,|;| e ) + verbo de comando" para o
 // roteador executar em sequência (28/08 S4: virou UMA busca e nada foi feito).
-const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece";
+// "por" é verbo ("por o arroz"), mas "por favor"/"por enquanto" é cortesia — virava uma cláusula de busca
+// ("Tira a fita crepe, por favor." → greeting no lugar do novo total; placar c10).
+const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece";
 
 export function splitCommandClauses(text: string): string[] {
   const n = normalizeMsg(text);
@@ -2178,7 +2180,7 @@ export function asksCheapestQuestion(text: string): "cheapest" | "priciest" | nu
 // PRODUTO ("*tenta de novo* eu não achei") ou caíam no "endereço salvo". `retry` = refazer o
 // pedido anterior; `fragment` = só uma marca/atributo, a juntar ao pedido anterior.
 const MISS_FILLER = new Set(
-  "pode ser tentar tenta tente procura procure procurar busca busque buscar pesquisa pesquise ver veja ve de novo novamente outra outro vez qualquer marca marcas versao modelo tanto faz sem preferencia pra mim por favor pf pfv uma um uns umas da do das dos de a o e se ai la entao mas que seja tipo ou algum alguma alguns algumas".split(" ")
+  "pode ser tentar tenta tente procura procure procurar busca busque buscar pesquisa pesquise ver veja ve de novo novamente outra outro vez qualquer marca marcas versao modelo tanto faz sem preferencia pra mim por favor pf pfv uma um uns umas da do das dos de a o e se ai la entao mas que seja tipo ou algum alguma alguns algumas tem mas porem so somente apenas".split(" ")
 );
 const MISS_RETRY_CUE = /\b(tent|procur|busc|pesquis|novo|novamente|qualquer|tanto faz|outra marca|outro|sem preferencia)/;
 const MISS_NEW_REQUEST = /\b(quero|queria|preciso|precisava|me manda|me ve|vou querer|cancela|cancelar|pagar|pix|cartao|status|oi|ola|obrigad)/;

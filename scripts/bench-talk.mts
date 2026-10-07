@@ -14,7 +14,7 @@ try {
   const { handleDeliveryMessage, runTurnScoped } = await import("../src/lib/delivery-service");
   const phone = "+5500994123456";
   const out: string[] = [];
-  (whatsappAdapter as any).sendMessage = async (_to: string, text: string) => { out.push(text); return {}; };
+  (whatsappAdapter as any).sendMessage = async (_to: string, text: string) => { out.push(text); if (process.env.BENCH_TRACE && text.includes(process.env.BENCH_TRACE)) console.log("   TRACE:", new Error().stack?.split("\n").slice(2, 9).join("\n   ")); return {}; };
   (whatsappAdapter as any).sendMedia = async (_to: string, text: string) => { out.push(text); return {}; };
   let n = 0;
   for (const text of process.argv.slice(2)) {

@@ -64,7 +64,7 @@ async function main() {
     const { judge } = await import("./bench/judge.mts");
     const cep = benchCep();
     const stores = automaticPurchaseStores().filter((k) => storeServesCep(k, cep) && VTEX_API_STORES[k]).map((k) => ({ key: k, domain: VTEX_API_STORES[k].domain, label: VTEX_API_STORES[k].label, prefix: VTEX_API_STORES[k].skuPrefix }));
-    let reqs: Req[] = JSON.parse(readFileSync(join(process.cwd(), "evals", "search-requests.json"), "utf8"));
+    let reqs: Req[] = JSON.parse(readFileSync(join(process.cwd(), "evals", arg("file", "search-requests.json")!), "utf8"));
     if (onlyCat) reqs = reqs.filter((r) => r.cat === onlyCat);
     if (only) reqs = reqs.filter((r) => r.text.toLowerCase().includes(only.toLowerCase()));
     if (limit) reqs = reqs.slice(0, limit);

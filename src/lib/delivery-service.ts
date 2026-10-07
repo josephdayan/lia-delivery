@@ -191,7 +191,9 @@ async function buildChoices(
     }
   }
 
+  const perfStart = Date.now();
   const { lines, greetingOnly, containsMedicine, containsTobacco } = await extractLines(text);
+  const perfExtracted = Date.now();
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
   // hoje, o cabeçalho diz isso e mostra o mais rápido.
@@ -258,6 +260,7 @@ async function buildChoices(
       let qty = packQty ? line.qty * packQty : line.qty;
       // O que a reserva (mais abaixo) também tem que respeitar: o produto e o tamanho pedidos.
       let sizeOk: (c: StoreCandidate) => boolean = () => true;
+      let sizeSplit = false;
       const bestScore = Math.max(0, ...candidates.map((c) => scoreCatalogMatch(searchPhrase, c.item)));
       const sizeAsk = searchPhrase.match(/\d+(?:[.,]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/i)?.[0];
       if (sizeAsk) {
@@ -273,6 +276,7 @@ async function buildChoices(
           // "2 litros de leite" = 2 caixas de 1 L quando não existe a embalagem de 2 L (A9).
           const split = splitBySize(sizeAsk, relevant.map((c) => c.item));
           if (split) {
+            sizeSplit = true;
             candidates = relevant.filter((c) => attrMatchesItem(split.unit, c.item));
             // A IA às vezes já põe o 2 na quantidade ("2x leite 2 litros"): o mesmo número não multiplica.
             qty = line.qty === split.count ? line.qty : line.qty * split.count;
@@ -369,7 +373,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed, sizeSplit };
     })
   );
 
@@ -377,10 +381,14 @@ async function buildChoices(
   // produto pedido, em que ordem — e lista vazia quando nada serve (a linha vira
   // livre/não-achei, que é o resultado honesto). IA off/falhou → null → ranking
   // determinístico de sempre, diversificado.
+  const perfSearched = Date.now();
   const withCandidates = perLine.filter((entry) => entry.candidates.length);
   const rerank = withCandidates.length
     ? await rerankShoppingOptions(
-        text,
+        // "2 litros de leite" virou "2× leite 1 litro": a mensagem original ("2 litros") contradiz o
+        // pedido que a IA julga e ela recusava todas as caixas de 1 L (placar c27) — com o tamanho
+        // reescrito, a IA recebe os pedidos já reescritos.
+        withCandidates.some((entry) => entry.sizeSplit) ? withCandidates.map((entry) => entry.line.phrase).join(", ") : text,
         withCandidates.map((entry) => ({
           query: entry.line.phrase,
           candidates: entry.candidates.map((c) => ({
@@ -394,6 +402,7 @@ async function buildChoices(
         vitrineLimit()
       )
     : null;
+  console.log(`[perf:buildChoices] extract=${perfExtracted - perfStart}ms search+live=${perfSearched - perfExtracted}ms rerank=${Date.now() - perfSearched}ms lines=${lines.length}`);
   const rerankedSkus = new Map<(typeof perLine)[number], string[]>();
   if (rerank) withCandidates.forEach((entry, i) => rerankedSkus.set(entry, rerank.lines[i].skus));
 
@@ -2021,6 +2030,15 @@ async function handleDeliveryTurn(
     ctx.step = "need_cep";
     if (!keepOrder) ctx.deliveryOrderId = undefined;
     await writeCtx(convo.id, ctx);
+    // "trocar endereço — Rua Oscar Freire, 379, apto 12, 01426-001": o endereço já veio junto
+    // (placar c16) — usa-o em vez de pedir de novo.
+    const embedded = text
+      .replace(/^.*?\b(?:trocar|mudar|alterar|atualizar|novo)\s+(?:o\s+|meu\s+)*endere[cç]o\b[\s:—–\-,.]*/i, "")
+      .trim();
+    if (embedded.length > 8 && (extractCep(embedded) || looksLikeDeliveryAddress(embedded))) {
+      await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, embedded);
+      return;
+    }
     await reply(phone, copy.askNewCep());
     return;
   }
