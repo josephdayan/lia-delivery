@@ -1227,7 +1227,13 @@ async function handleDeliveryTurn(
     ctx.deliveryAddress = user.defaultAddress;
     ctx.deliveryAddressVerified = true;
   }
-  const intent = detectIntent(text);
+  let intent = detectIntent(text);
+  // "só essa" com o item já na cesta e nada em escolha (07/10, c07): é fechar a lista — não "a qual produto
+  // você se refere?" (o cliente então digitava o nome e o mesmo item entrava de novo: 2x).
+  if (intent.kind === "free_text" && !(ctx.pending?.length) && (ctx.basket?.length ?? 0) > 0 && ctx.step === "collecting") {
+    const only = parseOnlyKeep(text);
+    if (only && "demonstrative" in only) intent = { kind: "done" };
+  }
 
   // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
   // perguntar) vira nota no pedido cancelado. Pergunta vale 30 min e UMA resposta; qualquer

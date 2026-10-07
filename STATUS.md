@@ -1,3 +1,13 @@
+## 07/10/2026 (manhã) — Tudo em gpt-6-luna e o placar de conversas com juiz luna
+
+Lia, visão, comprador local, juiz e cliente simulado: `gpt-6-luna`. Achados: (1) a luna como juiz é mais rigorosa
+que o sol (as mesmas transcrições da rodada 3 caíram de 60% para 55% limpas — não comparar números de juízes
+diferentes); (2) a luna como CLIENTE SIMULADO desistia na 1ª resposta (cenários caíam sem a Lia ter errado) —
+prompt com regra "FIM só no Pix/recusa/travado" + guarda no script; (3) rate limit do juiz deixava vereditos
+vazios: o script agora tenta 6 vezes e tem `--rejudge <arquivo>`. Com tudo isso: Lia atual 50% limpas (juiz luna)
+contra 55% da rodada 3 re-julgada — dentro do ruído. Corrigido: "só essa" com o item na cesta fecha a lista.
+Resultados: `evals/results/conversations-2026-10-07-luna-total2.json`.
+
 ## 07/10/2026 (madrugada) — Rodadas 2 e 3 dos placares
 
 | | baseline | rodada 2 | rodada 3 |

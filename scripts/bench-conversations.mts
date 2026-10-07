@@ -28,7 +28,7 @@ type Scenario = {
 };
 
 async function llm(model: string, system: string, user: string, schema?: object): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 6; attempt++) {
     try {
       const res = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
@@ -36,11 +36,19 @@ async function llm(model: string, system: string, user: string, schema?: object)
         signal: AbortSignal.timeout(120_000),
         body: JSON.stringify({ model, ...(model.includes("terra") || model.includes("sol") || model.includes("5.5") ? { reasoning: { effort: "low" } } : {}), input: [{ role: "system", content: system }, { role: "user", content: user }], ...(schema ? { text: { format: { type: "json_schema", name: "out", strict: true, schema } } } : {}) })
       });
-      if (!res.ok) { await new Promise((r) => setTimeout(r, 2000 * (attempt + 1))); continue; }
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        if (body.includes("insufficient_quota")) { console.error("\n✖ OpenAI sem crédito — abortando."); process.exit(3); }
+        console.error(`[llm:${model}] HTTP ${res.status} (tentativa ${attempt + 1}) ${body.slice(0, 120)}`);
+        await new Promise((r) => setTimeout(r, 3000 * (attempt + 1)));
+        continue;
+      }
       const p = (await res.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
       const t = p.output_text ?? p.output?.flatMap((o) => o.content ?? []).find((c) => c.text)?.text;
       if (t) return t;
-    } catch { /* retry */ }
+    } catch (error) {
+      console.error(`[llm:${model}] ${error instanceof Error ? error.message.slice(0, 100) : error} (tentativa ${attempt + 1})`);
+    }
   }
   return "";
 }
@@ -50,7 +58,7 @@ Persona: ${s.persona}
 Objetivo: ${s.goal}
 Seus dados (só dê quando a Lia pedir): nome ${s.name}; CPF ${s.cpf}; endereço de entrega ${s.address}.
 ${s.traps ? `Comportamentos a testar durante a conversa (faça no momento natural): ${s.traps}` : ""}
-Regras: responda só o que a Lia perguntou ou ofereceu. Quando a Lia mostrar opções, escolha pelo número ou descrevendo (como uma pessoa faria). Quando perguntar a forma de pagamento, escolha Pix. Quando a Lia enviar o código Pix copia-e-cola (ou disser que gerou a cobrança), responda exatamente FIM. Se o objetivo for impossível (a Lia disse que não achou/não tem), reaja como uma pessoa (pode tentar outra coisa uma vez) e depois diga FIM. Se estiver confuso, irritado ou em loop depois de 2 tentativas, diga FIM. Nunca diga que é uma IA nem fale de teste.`;
+Regras: responda só o que a Lia perguntou ou ofereceu. Quando a Lia mostrar opções, escolha pelo número ou descrevendo (como uma pessoa faria). Quando perguntar a forma de pagamento, escolha Pix. Quando a Lia enviar o código Pix copia-e-cola (ou disser que gerou a cobrança), responda exatamente FIM. Se o objetivo for impossível (a Lia disse que não achou/não tem), reaja como uma pessoa (pode tentar outra coisa uma vez) e depois diga FIM. Se estiver confuso, irritado ou em loop depois de 2 tentativas, diga FIM. REGRA DE OURO: FIM só vale quando (a) apareceu o código Pix, ou (b) a Lia disse que não tem/não pode e você já tentou uma alternativa, ou (c) você ficou travado depois de 2 tentativas. NUNCA diga FIM na 1ª ou 2ª resposta da Lia: se ela pediu seu endereço, mande o endereço; se mostrou opções, escolha uma. Nunca diga que é uma IA nem fale de teste.`;
 
 const JUDGE_SYSTEM = `Você é um auditor rigoroso de qualidade de um serviço de compras no WhatsApp (a "Lia"). Recebe o CENÁRIO (objetivo e comportamento esperado do cliente) e a TRANSCRIÇÃO (cliente × Lia, com tempo de resposta em segundos). Avalie friamente, como um cliente exigente:
 - goalReached: o objetivo foi cumprido? (expect=reach_pix: chegou ao Pix com os produtos certos; honest_not_found: disse com clareza que não achou e não vendeu nada errado; cancel_ok: cancelou/limpou certo; answer_only: respondeu corretamente a pergunta).
@@ -70,7 +78,44 @@ const JUDGE_SCHEMA = {
   }
 };
 
+function renderTranscript(transcript: Array<{ who: string; text: string; sec?: number }>) {
+  return transcript.map((m, i) => `[${i}] ${m.who === "cliente" ? "CLIENTE" : `LIA (${m.sec ?? "?"}s)`}: ${m.text}`).join("\n");
+}
+async function judgeScenario(s: Scenario, transcript: Array<{ who: string; text: string; sec?: number }>) {
+  const text = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna", JUDGE_SYSTEM, `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${renderTranscript(transcript)}`, JUDGE_SCHEMA);
+  try { return JSON.parse(text); } catch { return null; }
+}
+
+// --rejudge <arquivo>: julga de novo só as conversas que ficaram sem veredito (rate limit etc.).
+async function rejudge(file: string) {
+  const scenarios: Scenario[] = JSON.parse(readFileSync(join(process.cwd(), "evals", "conversation-scenarios.json"), "utf8"));
+  const data = JSON.parse(readFileSync(file, "utf8"));
+  for (const r of data.results) {
+    if (r.verdict) continue;
+    const sc = scenarios.find((x) => x.id === r.id)!;
+    r.verdict = await judgeScenario(sc, r.transcript);
+    process.stdout.write(r.verdict ? "." : "?");
+  }
+  const judged = data.results.filter((r: any) => r.verdict);
+  const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)}%` : "n/a");
+  const clean = (r: any) => r.verdict.goalReached && !r.verdict.wrongProduct && !r.verdict.falseClaim && !r.verdict.deadEnd;
+  data.summary = { ...data.summary, judged: judged.length,
+    goalReached: pct(judged.filter((r: any) => r.verdict.goalReached).length, judged.length),
+    wrongProduct: pct(judged.filter((r: any) => r.verdict.wrongProduct).length, judged.length),
+    falseClaim: pct(judged.filter((r: any) => r.verdict.falseClaim).length, judged.length),
+    deadEnd: pct(judged.filter((r: any) => r.verdict.deadEnd).length, judged.length),
+    confusing: pct(judged.filter((r: any) => r.verdict.confusing).length, judged.length),
+    slow: pct(judged.filter((r: any) => r.verdict.slow).length, judged.length),
+    clean: pct(judged.filter(clean).length, judged.length),
+    highSeverityDefects: judged.reduce((n: number, r: any) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0) };
+  writeFileSync(file, JSON.stringify(data, null, 1));
+  console.log("\n" + JSON.stringify(data.summary, null, 1));
+  process.exit(0);
+}
+
 async function main() {
+  const rejudgeFile = arg("rejudge");
+  if (rejudgeFile) return rejudge(rejudgeFile);
   await (await import("./bench/preflight.mts")).assertOpenAiAlive();
   const db = await startBenchDb();
   try {
@@ -112,13 +157,16 @@ async function main() {
         const history = transcript.map((m) => `${m.who === "cliente" ? "VOCÊ" : "LIA"}: ${m.text}`).join("\n");
         const reply = (await llm(process.env.BENCH_SIM_MODEL ?? "gpt-6-luna", SIM_SYSTEM(s), `Conversa até agora:\n${history}\n\nSua próxima mensagem (ou FIM):`)).trim().replace(/^"|"$/g, "");
         userMsg = reply || "FIM";
+        // Cliente simulado desistindo cedo demais é falha do simulador, não da Lia: pede de novo uma vez.
+        if (userMsg.trim().toUpperCase() === "FIM" && turn < 2 && !/00020126|copia e cola|copia-e-cola/i.test(replies.join(" "))) {
+          const again = (await llm(process.env.BENCH_SIM_MODEL ?? "gpt-6-luna", SIM_SYSTEM(s), `Conversa até agora:\n${history}\n\nA conversa mal começou: NÃO diga FIM. Responda ao que a Lia pediu ou ofereceu (endereço, escolha etc.):`)).trim().replace(/^"|"$/g, "");
+          if (again && again.toUpperCase() !== "FIM") userMsg = again;
+        }
         if (/c[oó]pia e cola|copia e cola|00020126/i.test(replies.join(" "))) userMsg = "FIM";
         if (userMsg.toUpperCase() === "FIM") { transcript.push({ who: "cliente", text: "FIM" }); break; }
       }
-      const rendered = transcript.map((m, i) => `[${i}] ${m.who === "cliente" ? "CLIENTE" : `LIA (${m.sec ?? "?"}s)`}: ${m.text}`).join("\n");
-      const verdictText = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna", JUDGE_SYSTEM, `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${rendered}`, JUDGE_SCHEMA);
-      let verdict: any = null;
-      try { verdict = JSON.parse(verdictText); } catch { /* juiz falhou */ }
+      const rendered = renderTranscript(transcript);
+      const verdict: any = await judgeScenario(s, transcript);
       const ended = transcript.some((m) => m.who === "cliente" && m.text.trim().toUpperCase() === "FIM");
       results.push({ id: s.id, title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
       if (verbose) console.log(`\n=== ${s.id} ${s.title}\n${rendered}\n→ ${JSON.stringify(verdict)}`);

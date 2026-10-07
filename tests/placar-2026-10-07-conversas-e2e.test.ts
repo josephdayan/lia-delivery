@@ -179,3 +179,15 @@ test("c31: 'cadê meu pedido?' sem pedido nenhum — a 2ª vez não repete a mes
   assert.notEqual(one, two);
   assert.match(two, /avisei o responsável/i);
 });
+
+test("c07: 'só essa' com o item na cesta fecha a lista (total), não pergunta 'a qual produto'", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero arroz");
+  await send(phone, "1");
+  const out = await send(phone, "so essa");
+  assert.doesNotMatch(out, /a qual produto/i, out.slice(0, 300));
+  assert.match(out, /Seu pedido|nome de quem|Entrega|Total|forma/i, out.slice(0, 300));
+  const items = await basket(phone);
+  assert.ok(items.every((i) => i.qty === 1), "nenhum item dobrou");
+});
