@@ -165,4 +165,15 @@ test("c16: 'trocar endereço — <endereço completo>' usa o endereço da própr
   const out = await send(phone, "trocar endereço — Rua Oscar Freire, 379, apto 12, 01426-001");
   assert.doesNotMatch(out, /Manda o \*endereço novo/i, out.slice(0, 300));
   assert.match(out, /Endereço atualizado/i, out.slice(0, 300));
+  assert.equal((await context(phone)).cep, "01426-001", "o CEP novo da mensagem vale — não o antigo");
+});
+
+test("c31: 'cadê meu pedido?' sem pedido nenhum — a 2ª vez não repete a mesma resposta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const one = await send(phone, "cadê meu pedido de ontem?");
+  const two = await send(phone, "mas eu fiz um pedido ontem, onde está?");
+  assert.match(one, /ainda não tem pedidos/i);
+  assert.notEqual(one, two);
+  assert.match(two, /avisei o responsável/i);
 });

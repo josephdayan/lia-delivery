@@ -69,3 +69,26 @@ test("c10: 'por favor' não é cláusula de comando ('tira a fita crepe, por fav
   assert.deepEqual(splitCommandClauses("tira o café e bota 2 leites"), ["tira o cafe", "bota 2 leites"]);
   assert.equal(splitCommandClauses("troca o arroz por integral, tira o café, por favor").length, 2);
 });
+
+test("c13: 'vou aguardar essas informações' não é pedido", async () => {
+  const { detectIntent } = await import("../src/lib/lia-intents");
+  for (const t of ["vou aguardar essas informações", "Ok, vou esperar o responsável", "fico aguardando"]) assert.deepEqual(detectIntent(t), { kind: "thanks" }, t);
+  for (const t of ["vou querer arroz", "vou esperar chegar pra pedir o leite?"]) assert.notDeepEqual(detectIntent(t), { kind: "thanks" }, t);
+});
+
+test("c14: 'o mais barato que tiver' é pedido, não pergunta de comparação de preço", async () => {
+  const { detectIntent, parseBasketLines } = await import("../src/lib/lia-intents");
+  assert.equal(detectIntent("Um desodorante, o mais barato que tiver.").kind, "free_text");
+  assert.deepEqual(parseBasketLines("Um desodorante, o mais barato que tiver.").map((l) => l.phrase), ["desodorante"]);
+  // a pergunta de comparação de verdade continua
+  assert.deepEqual(detectIntent("você faz comparativo de preços?"), { kind: "service_question", topic: "price_compare" });
+  const { priceCompareAnswer } = await import("../src/lib/lia-copy");
+  assert.doesNotMatch(priceCompareAnswer(false), /Responde \*mais barato\*/);
+  assert.match(priceCompareAnswer(true), /Responde \*mais barato\*/);
+});
+
+test("c02: 'pode tentar procurar em outra loja' depois de 'não achei' é retry, não produto", async () => {
+  const { parseMissFollowUp } = await import("../src/lib/lia-intents");
+  assert.deepEqual(parseMissFollowUp("Pode tentar procurar em outra loja?"), { kind: "retry" });
+  assert.deepEqual(parseMissFollowUp("procura em outro site"), { kind: "retry" });
+});

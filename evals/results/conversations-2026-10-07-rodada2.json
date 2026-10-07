@@ -1,0 +1,3800 @@
+{
+ "summary": {
+  "label": "rodada2",
+  "at": "2026-10-07T03:30:07.698Z",
+  "scenarios": 40,
+  "judged": 40,
+  "goalReached": "60.0%",
+  "wrongProduct": "17.5%",
+  "falseClaim": "15.0%",
+  "deadEnd": "12.5%",
+  "confusing": "45.0%",
+  "slow": "10.0%",
+  "clean": "50.0%",
+  "highSeverityDefects": 27
+ },
+ "results": [
+  {
+   "id": "c01",
+   "title": "Cottage Yorgus 14g (testador: sugeriu iogurte)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 30.096,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": true,
+    "summary": "Lia informou que não encontrou o cottage Yorgus 14 g nem outra opção de cottage com 14 g, sem oferecer iogurte comum. Cumpriu o objetivo de informar a indisponibilidade, mas pediu o endereço antes de verificar o produto e repetiu um pedido de alternativa após o cliente já ter ampliado a busca.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Pediu endereço completo antes de verificar se havia o produto solicitado.",
+      "severity": "low"
+     },
+     {
+      "turn": 3,
+      "what": "Demorou 30,1 segundos para responder.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Pediu outra marca ou versão novamente, embora o cliente já tivesse autorizado qualquer marca de cottage com 14 g.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Vc tem cottage da yorgus 14g proteína ?"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x cottage da yorgus 14g proteína\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\n*cottage Yorgus com 14 g…* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 30.1
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar outra marca de cottage com 14g, mas não quero iogurte comum."
+    },
+    {
+     "who": "lia",
+     "text": "*queijo cottage com 14 g…* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 7.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c02",
+   "title": "Tubo de bolas de tênis Babolat com 4 (testador)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 21.535,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia informou que não encontrou o produto e não ofereceu um tubo com 3 bolas. Porém, quando o cliente pediu uma busca em outra loja e reforçou que precisava de 4 bolas, ela tratou o pedido de busca como se fosse o nome do produto e repetiu a resposta anterior.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Resposta demorou 21,5 segundos, acima do limite de 20 segundos.",
+      "severity": "low"
+     },
+     {
+      "turn": 5,
+      "what": "Interpretou «Pode tentar procurar em outra loja» como produto, ignorou a exigência de 4 bolas e repetiu a resposta sem avançar na busca solicitada.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Tubo de bolas de tênis babolat gold com 4 bolas"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x Tubo de bolas de tênis babolat gold com 4 bolas\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\n*tubo bolas de tênis Babolat…* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 21.5
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar procurar em outra loja? Preciso que seja com 4 bolas."
+    },
+    {
+     "who": "lia",
+     "text": "*Pode tentar procurar em outra loja* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 17.9
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c04",
+   "title": "Pilha AAA (testador: não finalizou)",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 13.889,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia ofereceu pilhas AAA, confirmou a opção escolhida e chegou ao código Pix com o total do pedido.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Pilha AAA"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x Pilha AAA\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Pilha Alcalina 1,5V Tipo AAA Elgin Pilha Alcalina 1.5V Tipo AAA Blister com 4 unidades — R$ 10,89 · _Obramax · 1 dia útil_\n*2)* Pilha Palito AAA Zinco com 4 Unidades 1.5V Alfacell — R$ 4,39 · _Casa & Vídeo · 4 dias úteis_\n*3)* Pilha Palito AAA Zinco com 4 Maxprint — R$ 5,49 · _Casa & Vídeo · 5 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Pilha Alcalina 1,5V Tipo AAA Elgin Pilha Alcalina 1.5V Tipo AAA Blister com 4 unidades\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Pilha Alcalina 1,5V Tipo AAA Elgin Pilha Alcalina 1.5V Tipo AAA Blister com 4 unidades — R$ 10,89\n\nProdutos: R$ 10,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 25,88*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 25,88 _(sem taxa)_\n*2)* Cartão — R$ 27,24 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 25,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjgl16001aincc74bnqdt9-25885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c03",
+   "title": "Fita isolante preta 3M (testador: não finalizou)",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 14.053,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia chegou ao Pix com uma fita isolante 3M escolhida pelo cliente. Nenhuma resposta levou mais de 20 segundos.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "O título da opção 1 aparece duplicado e não explicita que a fita é preta, embora essa fosse uma exigência do pedido.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Quero comprar fita isolante preta da 3M"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x fita isolante preta da 3M\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Fita Isolante Imperial Slim 18mm 10 Metros 3M Fita Isolante Imperial Slim 18mm 3M 10 Metros — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Fita Isolante 18mmx5m preta 3M™ Imperial® — R$ 5,82 · _Telhanorte · 2 dias úteis_\n*3)* Fita Isolante 3M 18mmx5m — R$ 7,25 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.1
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Fita Isolante Imperial Slim 18mm 10 Metros 3M Fita Isolante Imperial Slim 18mm 3M 10 Metros\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Fita Isolante Imperial Slim 18mm 10 Metros 3M Fita Isolante Imperial Slim 18mm 3M 10 Metros — R$ 6,59\n\nProdutos: R$ 6,59\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 21,58*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 21,58 _(sem taxa)_\n*2)* Cartão — R$ 22,71 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 21,58* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjgmbz001iincc3dwbzkcl-21585204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c06",
+   "title": "Leite nude",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 10,
+   "latencyMax": 15.126,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix, mas não confirmou que o Leite de Aveia Cremoso Nude era sem açúcar, condição explícita do pedido. Também duplicou o item e pediu novamente um endereço já informado.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Respondeu de onde compra, mas não explicou como o serviço funciona, embora o cliente tenha feito as duas perguntas.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Registrou “leite nude” e “Nude sem açúcar” como dois itens e pediu novamente o endereço completo já fornecido no turno 2.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Ofereceu a versão Barista sem verificar se atende ao requisito sem açúcar.",
+      "severity": "medium"
+     },
+     {
+      "turn": 9,
+      "what": "Apresentou versões Baunilha, Cacau e Cremoso sem confirmar quais são sem açúcar.",
+      "severity": "medium"
+     },
+     {
+      "turn": 15,
+      "what": "Levou ao pagamento o Leite de Aveia Cremoso Nude sem confirmar que é sem açúcar; portanto, não garantiu o produto solicitado.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "oii quero pedir leite nude"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x leite nude\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Antes, como vc funciona? E de onde vc compra? Meu endereço é Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001."
+    },
+    {
+     "who": "lia",
+     "text": "Eu compro em dezenas de lojas online — mercado, farmácia, pet, beleza e casa — sempre uma que entrega no seu endereço.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Beleza, quero o Nude sem açúcar."
+    },
+    {
+     "who": "lia",
+     "text": "✅ Anotei:\n• 1x leite nude\n• 1x o Nude sem açúcar\n\nPra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nOlha o que achei 👇\n*1)* Leite de Aveia Barista Nude 1L — R$ 20,88 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 15.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *leite nude*:\n*1)* Leite de Aveia Baunilha Nude 1L — R$ 20,88 · _Mambo · em até 61h (sex, 10h–13h)_\n*2)* Leite de Aveia Cacau Nude 1L — R$ 20,88 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Leite de Aveia Cremoso Nude 1L — R$ 20,88 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.4
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Leite de Aveia Cremoso Nude 1L\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Leite de Aveia Cremoso Nude 1L — R$ 20,88\n\nProdutos: R$ 20,88\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 61h (sex, 10h–13h)\n*Total: R$ 36,78*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 36,78 _(sem taxa)_\n*2)* Cartão — R$ 38,71 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 36,78* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjhm01002winccqvqk6jnm-36785204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c05",
+   "title": "Shampoo Kerasys coco 1L",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 16.201,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix. Mesmo após o cliente especificar a versão de coco de 1 litro, Lia continuou oferecendo outras versões e chegou a mostrar um shampoo de outra marca. Só ao final informou que não encontrou o produto.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Não respondeu se compara preços nem deu andamento ao pedido pela versão de coco.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Após receber o nome e o volume exatos, voltou a oferecer Kerasys Propolis 450 ml, que não atende ao pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 9,
+      "what": "Ofereceu Vichy Dercos 200 ml, de outra marca, e Kerasys Mise En Scène 530 ml; nenhum é a versão de coco de 1 litro.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Interpretou a rejeição das opções erradas como pedido para deixar o shampoo de fora, embora o cliente tivesse reiterado o produto exato.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Quero comprar shampoo kerasys"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x shampoo kerasys\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Shampoo Kerasys Mise En Scène Perfect Serum 530ml — R$ 139,69 · _Drogaria São Paulo · 1 dia útil_\n*2)* Shampoo Kerasys Propolis Hair Bonding Pro Repair 450ml — R$ 175,89 · _Pague Menos · 1 dia útil_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.6
+    },
+    {
+     "who": "cliente",
+     "text": "Outras. Qual loja é essa busca e vc compara preços? Queria a versão de coco."
+    },
+    {
+     "who": "lia",
+     "text": "Cada opção é de uma loja: *1)* Drogaria São Paulo · *2)* Pague Menos. Eu compro em dezenas de lojas online — mercado, farmácia, pet, beleza e casa — sempre uma que entrega no seu endereço.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Pode procurar o Kerasys Coconut Oil Repair Moist de 1L?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *shampoo Kerasys*:\n*1)* Shampoo Kerasys Propolis Hair Bonding Pro Repair 450ml — R$ 175,89 · _Pague Menos · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *shampoo Kerasys*:\n*1)* Refil Shampoo Repositor Vichy Dercos Kera-Solutions 200ml — R$ 92,06 · _Drogal · 3h_\n*2)* Shampoo Kerasys Mise En Scène Perfect Serum 530ml — R$ 139,69 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.6
+    },
+    {
+     "who": "cliente",
+     "text": "Nenhuma dessas. Quero exatamente o Kerasys Coconut Oil Repair Moist de 1L, consegue procurar por esse?"
+    },
+    {
+     "who": "lia",
+     "text": "Deixei *shampoo Kerasys* de fora. Se quiser, me diz de outro jeito que eu procuro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Procura por shampoo Kerasys Coconut Oil Repair Moist, versão de coco de 1 litro."
+    },
+    {
+     "who": "lia",
+     "text": "*shampoo Kerasys Coconut Oil Repair…* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 16.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c08",
+   "title": "Remédio de tireoide (Euthyrox)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 11.111,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Lia informou que não encontrou Euthyrox nem a levotiroxina genérica e não ofereceu outro produto. Porém, disse que não podia vender remédios e, ao mesmo tempo, convidou o cliente a pedir outra marca ou versão, deixando incerto se uma alternativa poderia ser comprada.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Afirmou que não pode vender remédios, mas pediu outra marca ou versão para tentar novamente; as orientações são contraditórias.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Repetiu o convite para tentar outra marca ou versão, sem esclarecer a restrição à venda de remédios que havia informado.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Ola quero 2 cxs de Euthyrox 50mg"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 2x cxs de Euthyrox 50mg\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\n_Remédio eu não posso vender, então deixei ele de fora._\n*2x cxs de Euthyrox 50mg* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 6.5
+    },
+    {
+     "who": "cliente",
+     "text": "Tem levotiroxina genérica 50 mcg?"
+    },
+    {
+     "who": "lia",
+     "text": "*levotiroxina genérica 50 mcg* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 11.1
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c07",
+   "title": "Amora e framboesa, depois só amora",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 13,
+   "latencyMax": 14.986,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix, mas o pedido terminou com 2 unidades de amora, embora a cliente quisesse apenas uma. A Lia também voltou a oferecer framboesa depois de receber a instrução de ficar só com amora e não entendeu “so essa” como fechamento do pedido.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Não retirou a framboesa quando a cliente disse pela primeira vez “so amora”.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Ofereceu framboesa apesar da instrução de comprar só amora.",
+      "severity": "medium"
+     },
+     {
+      "turn": 11,
+      "what": "Não reconheceu “so essa” como referência à amora já escolhida; pediu o nome do produto novamente.",
+      "severity": "medium"
+     },
+     {
+      "turn": 13,
+      "what": "Reabriu a busca de amora já confirmada, levando a uma segunda seleção desnecessária.",
+      "severity": "medium"
+     },
+     {
+      "turn": 21,
+      "what": "Apresentou 2 unidades de amora no pedido, em vez de uma, e levou a quantidade errada até o Pix.",
+      "severity": "high"
+     },
+     {
+      "turn": 21,
+      "what": "Informou R$ 30,58 por 2 unidades, valor incompatível com o preço anunciado de R$ 16,39 por unidade.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Quero amora e framboesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x amora\n• 1x framboesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nAchei os 2 itens. Vamos um de cada vez: *amora*, depois *framboesa*.\n---\nOlha o que achei 👇\n*1)* Amoras Inteiras Swift 300g — R$ 16,39 · _Swift · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 9
+    },
+    {
+     "who": "cliente",
+     "text": "so amora"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *amora*:\n*1)* Amoras Inteiras Swift 300g — R$ 16,39 · _Swift · 1 dia útil_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Amoras Inteiras Swift 300g\n---\nAgora *framboesa*.\n*1)* Framboesas Congeladas Prático 300g — R$ 39,58 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "so amora"
+    },
+    {
+     "who": "lia",
+     "text": "Fechado, fica só o que você escolheu. Tirei da lista: *framboesa*.\n---\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "so essa"
+    },
+    {
+     "who": "lia",
+     "text": "Não sei a qual produto você se refere 🙂 Me diz o nome dele que eu procuro.",
+     "sec": 3.6
+    },
+    {
+     "who": "cliente",
+     "text": "amora"
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Amoras Inteiras Swift 300g — R$ 16,39 · _Swift · 1 dia útil_\n*2)* Amora Congelada Prático 400g — R$ 22,54 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Amoras Congelada Momento Mambo 500g — R$ 39,58 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Amoras Inteiras Swift 300g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 46,48 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 48,48 · prazo da loja: em até 8h (hoje, 6h–8h)\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 2x Amoras Inteiras Swift 300g — R$ 30,58\n\nProdutos: R$ 30,58\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 46,48*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 46,48 _(sem taxa)_\n*2)* Cartão — R$ 48,92 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 46,48* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjita5004ainccqf35edsn-46485204000053039865802BR6009SAO PAULO",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c09",
+   "title": "Ração para cachorro + mais 3",
+   "origin": "tester-09/16",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 10.372,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Lia adicionou a ração escolhida e mais três unidades do mesmo produto, confirmou quatro unidades no total e enviou o código Pix. Nenhuma resposta ultrapassou 20 segundos.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Ração pro meu cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x Ração pro meu cachorro\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Ração Golden Formula Cães Adultos Raças Pequenas Carne, Arroz e Vegetais Mini Bits 1 kg — R$ 25,29 · _Cobasi · 7 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.4
+    },
+    {
+     "who": "cliente",
+     "text": "1, e vamos adicionar mais 3 rações de cachorro, pode ser?"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ração de Carne com Vegetais Pedigree 900g\n---\nAgora *ração cachorro*.\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 131,99 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 3x Ração de Carne com Vegetais Pedigree 900g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 4x Ração de Carne com Vegetais Pedigree 900g — R$ 98,96\n\nProdutos: R$ 98,96\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 114,86*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 114,86 _(sem taxa)_\n*2)* Cartão — R$ 120,89 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 114,86* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjj7wz0050incc0zsu5j0o-114865204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c10",
+   "title": "Lista com remoção e frete caro (tester)",
+   "origin": "tester-06/10",
+   "expect": "cancel_ok",
+   "turns": 11,
+   "latencyMax": 16.882,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia retirou a fita crepe e recalculou o frete para R$ 4,90. O cliente escolheu Pix; não pediu para desistir. Portanto, o cancelamento esperado no cenário não ocorreu, mas a transcrição não mostra falha da Lia em atender a um pedido de cancelamento.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Quero shampoo granado de bebê, sabonete líquido granado e fita crepe"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x shampoo granado de bebê\n• 1x sabonete líquido granado\n• 1x fita crepe\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 3 itens. Vamos um de cada vez: *shampoo bebê Granado*, depois *sabonete líquido Granado* e *fita crepe*.\n---\nOlha o que achei 👇\n*1)* Shampoo Granado Bebê Tradicional 250ml — R$ 23,05 · _Drogal · 3h_\n*2)* Shampoo Granado Bebê Calêndula 250ml — R$ 23,05 · _Drogal · 3h_\n*3)* Shampoo Granado Bebê Extrato Camomila 250ml — R$ 23,05 · _Drogal · 3h_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Shampoo Granado Bebê Tradicional 250ml\n---\nAgora *sabonete líquido Granado* — depois faltam 1.\n*1)* Refil Sabonete Líquido Granado de Glicerina Tradicional 300ml — R$ 25,91 · _Drogal · 3h_\n*2)* Sabonete Líquido Granado Tradicional 300ml — R$ 32,40 · _Drogal · 3h_\n*3)* Sabonete Líquido Granado Glicerinado Tradicional Refil 300ml — R$ 26,39 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Sabonete Líquido Granado Tradicional 300ml\n---\nAgora *fita crepe*.\n*1)* Fita Crepe Branca 18mmx50m Tekbond — R$ 6,49 · _Obramax · 1 dia útil_\n*2)* Fita Crepe Branca 24mmx50m Tekbond — R$ 8,69 · _Obramax · 1 dia útil_\n*3)* Fita crepe uso geral bege adere 423s 24mm x 50m vare — R$ 9,35 · _Telhanorte · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Fita Crepe Branca 18mmx50m Tekbond\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Shampoo Granado Bebê Tradicional 250ml — R$ 23,05\n• 1x Sabonete Líquido Granado Tradicional 300ml — R$ 32,40\n• 1x Fita Crepe Branca 18mmx50m Tekbond — R$ 6,49\n\nProdutos: R$ 61,94\nEntrega: R$ 19,89 · pela própria loja (2 entregas) · prazo da loja: 1 dia útil\n*Total: R$ 81,83*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 81,83 _(sem taxa)_\n*2)* Cartão — R$ 86,13 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "tira a fita crepe"
+    },
+    {
+     "who": "lia",
+     "text": "Atualizei seu pedido. O total anterior não vale mais — segue o novo 👇\n---\nTirei Fita Crepe Branca 18mmx50m Tekbond.\n---\nQual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 60,35 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 62,35 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Shampoo Granado Bebê Tradicional 250ml — R$ 23,05\n• 1x Sabonete Líquido Granado Tradicional 300ml — R$ 32,40\n\nProdutos: R$ 55,45\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 60,35*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 60,35 _(sem taxa)_\n*2)* Cartão — R$ 63,52 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 60,35* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjjs30005vinccp1cksmsc-60355204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 9,
+   "latencyMax": 22.429,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia não encontrou um isqueiro tocha para charuto, mas ofereceu um maçarico culinário como se atendesse ao pedido. O cliente acabou recebendo um Pix para o produto errado, em vez de uma resposta clara de que o item desejado não foi encontrado.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Demorou 22,4 s para responder, acima do limite de 20 s.",
+      "severity": "low"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu um maçarico multiuso para glacê, não um isqueiro tocha para charuto, apesar de o cliente ter rejeitado isqueiros inadequados.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Descreveu o maçarico para glacê como opção de 'isqueiro maçarico estilo tocha, não comum', atribuindo ao produto uma adequação ao pedido que não foi demonstrada.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Prosseguiu com o produto errado no pedido e apresentou o total para pagamento, em vez de informar que não encontrou o isqueiro solicitado.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 22.4
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar um isqueiro maçarico, estilo tocha? Não quero isqueiro comum."
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul — R$ 60,49 · _Brinox · 4 dias úteis_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 9.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *isqueiro maçarico estilo tocha, não comum* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 2.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul — R$ 60,49\n\nProdutos: R$ 60,49\nEntrega: R$ 11,81 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 72,30*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 72,30 _(sem taxa)_\n*2)* Cartão — R$ 76,10 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 72,30* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjkfgx006uinccwkizjcoa-72305204000053039865802BR6009SAO PAULO",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c13",
+   "title": "É golpe? Como funciona?",
+   "origin": "tester-06/10",
+   "expect": "answer_only",
+   "turns": 7,
+   "latencyMax": 0.017,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou o CNPJ nem o nome que apareceria no Pix. Depois de prometer que um responsável enviaria os dados, tratou a espera do cliente como pedido de compra e insistiu no endereço. O cliente ficou sem as informações necessárias para decidir se confiava no serviço.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Respondeu sobre a nota fiscal, mas ignorou a pergunta sobre quem receberia o Pix.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Não forneceu o nome exibido no Pix nem o CNPJ; afirmou ter pedido os dados a um responsável, sem que a conversa mostre esse encaminhamento.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Tratou «vou aguardar essas informações» como produto e pediu endereço, ignorando que o cliente queria verificar a empresa antes de prosseguir.",
+      "severity": "high"
+     },
+     {
+      "turn": 9,
+      "what": "Registrou trechos da cobrança pelo CNPJ e nome no Pix como itens e repetiu o pedido de endereço após a recusa explícita.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Repetiu que havia pedido os dados ao responsável, sem entregá-los nem oferecer uma forma concreta de conferi-los; a conversa terminou em impasse.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quem é vc? isso é golpe?"
+    },
+    {
+     "who": "lia",
+     "text": "Pergunta justa 🙂 Funciona assim, na ordem que te protege:\n• Você só paga DEPOIS de ver e aprovar o total — nada é cobrado antes.\n• O pagamento é por Pix ou cartão com recibo; se algo não vier, o valor do item é estornado.\n• Eu compro no site oficial de lojas grandes (Drogaria São Paulo, Pague Menos, Cobasi, Mambo e outras) e a própria loja entrega.\n• A Lia Delivery é uma empresa registrada (MEI, com CNPJ) — o Pix vai pra ela, e o banco mostra o nome do responsável.\nQualquer dúvida antes de pagar, é só perguntar — sem pressa.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Entendi. Mas o Pix vai pra quem exatamente? E tem nota fiscal?"
+    },
+    {
+     "who": "lia",
+     "text": "A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você (remédio sem receita sai no seu CPF). Se precisar de uma cópia, me avisa que o responsável te envia.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Mas qual nome aparece no Pix e qual é o CNPJ? Prefiro confirmar antes de seguir."
+    },
+    {
+     "who": "lia",
+     "text": "A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo. A nota fiscal dos produtos sai da própria loja onde eu compro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Tá bom, vou aguardar essas informações antes de seguir."
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x vou aguardar essas informações antes de seguir\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ainda tô aguardando o CNPJ e o nome que aparece no Pix. Prefiro confirmar isso antes de passar meu endereço."
+    },
+    {
+     "who": "lia",
+     "text": "✅ Anotei:\n• 1x vou aguardar essas informações antes de seguir\n• 1x Ainda tô aguardando o CNPJ\n• 1x o nome que aparece no Pix\n• 1x Prefiro confirmar isso antes de passar meu endereço\n\nPra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Não vou passar meu endereço antes de receber o CNPJ e o nome que aparece no Pix."
+    },
+    {
+     "who": "lia",
+     "text": "A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo. A nota fiscal dos produtos sai da própria loja onde eu compro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c12",
+   "title": "Pedido vago: 'queria comprar uma coisa'",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 10,
+   "latencyMax": 13.733,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia chegou ao código Pix com o sabão em pó escolhido. Antes disso, exagerou ao dizer que comprava “qualquer coisa”, interpretou parte da pergunta como produto e não avançou quando o cliente disse “só isso”.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Prometeu comprar e entregar “qualquer coisa”, afirmação ampla demais para um serviço sujeito a região e disponibilidade.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Tratou “quais opções” como se fosse um produto não encontrado, embora fosse parte da pergunta sobre sabão em pó.",
+      "severity": "medium"
+     },
+     {
+      "turn": 11,
+      "what": "Após “Só isso, acho”, respondeu apenas “Combinado!” em vez de avançar para o fechamento; o cliente precisou mandar outra mensagem.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Bom dia queria comprar uma coisa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ah, vc consegue comprar qualquer coisa mesmo? Tipo produto de mercado?"
+    },
+    {
+     "who": "lia",
+     "text": "Consigo ajudar com produtos de mercado, sim, conforme a disponibilidade nas lojas. Atendo São Paulo e Rio de Janeiro.\n---\nPra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍",
+     "sec": 3.8
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar depois, é só dizer \"trocar endereço\"._\n\nO que você quer?",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "Tem sabão em pó? Quais opções?"
+    },
+    {
+     "who": "lia",
+     "text": "*Quais opções* eu não achei — o resto achei e tá logo abaixo.\n---\nOlha o que achei 👇\n*1)* Lava Roupas em Pó Puro Cuidado Omo 800g — R$ 9,79 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Lava Roupas em Pó Primavera Tixan Ypê 2,2kg — R$ 24,09 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Lava Roupas em Pó Puro Cuidado Omo 800g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Só isso, acho 😅"
+    },
+    {
+     "who": "lia",
+     "text": "Combinado! 😊",
+     "sec": 2.9
+    },
+    {
+     "who": "cliente",
+     "text": "Beleza, obrigada!"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Lava Roupas em Pó Puro Cuidado Omo 800g — R$ 9,79\n\nProdutos: R$ 9,79\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 25,69*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 25,69 _(sem taxa)_\n*2)* Cartão — R$ 27,04 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.8
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 25,69* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjkwqe007tinccup94amwr-25695204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c15",
+   "title": "Desistir depois do total (motivo)",
+   "origin": "tester-06/10",
+   "expect": "cancel_ok",
+   "turns": 9,
+   "latencyMax": 9.033,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A cliente viu o total, desistiu e informou que o motivo era o frete caro. A Lia confirmou o cancelamento e registrou o motivo.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero pasta de dente"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x pasta de dente\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Creme Dental Colgate Máxima Proteção Anticáries 50g — R$ 3,29 · _Drogal · 3h_\n*2)* Creme Dental Tripla Limpeza Completa Sorriso 120g — R$ 5,15 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Creme Dental Tripla Ação Menta Original Colgate 90g — R$ 7,03 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Creme Dental Colgate Máxima Proteção Anticáries 50g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 8,19 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 10,19 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Creme Dental Colgate Máxima Proteção Anticáries 50g — R$ 3,29\n\nProdutos: R$ 3,29\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 8,19*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 8,19 _(sem taxa)_\n*2)* Cartão — R$ 8,62 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "desisti"
+    },
+    {
+     "who": "lia",
+     "text": "Cancelado. Nada foi cobrado. Quando quiser, é só pedir de novo.\n---\nSe puder, me conta por que cancelou? Isso me ajuda a melhorar.\n*1)* Frete caro\n*2)* Produto caro\n*3)* Comprei em outro app\n*4)* Desisti da compra\n*5)* Outro motivo",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "Obrigada, anotei 🙏 Quando quiser, é só pedir de novo.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c16",
+   "title": "Troca de endereço no meio",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 10.238,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o desodorante escolhido, mas para o endereço novo com CEP errado. A Lia manteve o CEP antigo (01310-100) em vez do informado pelo cliente (01426-001); portanto, o pedido não ficou correto antes do pagamento.",
+    "defects": [
+     {
+      "turn": 11,
+      "what": "Ao trocar o endereço, salvou Rua Oscar Freire, 379, apto 12 com o CEP antigo, 01310-100, apesar de o cliente ter informado 01426-001.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Gerou o Pix sem corrigir o CEP errado no endereço do pedido.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero desodorante"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x desodorante\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Desodorante Aerosol AXE Black 150ml — R$ 14,28 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Desodorante Aerosol Dark Temptation Axe 96g — R$ 15,38 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Desodorante Aerosol Dry Impact Nivea 150ml — R$ 16,39 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.2
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Desodorante Aerosol Dry Impact Nivea 150ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Desodorante Aerosol Dry Impact Nivea 150ml — R$ 16,39\n\nProdutos: R$ 16,39\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 32,29*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 32,29 _(sem taxa)_\n*2)* Cartão — R$ 33,99 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "trocar endereço: Rua Oscar Freire, 379, apto 12, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "Cancelei o total do endereço antigo — nada foi cobrado. Já refaço com o endereço novo 📍\n---\n📍 Endereço atualizado: Rua Oscar Freire, 379, apto 12 — CEP 01310-100\n---\n🛒 *Seu pedido:*\n• 1x Desodorante Aerosol Dry Impact Nivea 150ml — R$ 16,39\n\nProdutos: R$ 16,39\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 32,29*\n\n📍 Rua Oscar Freire, 379, apto 12\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 32,29 _(sem taxa)_\n*2)* Cartão — R$ 33,99 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 32,29* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjm48l00a4inccgxox5f96-32295204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c14",
+   "title": "Pergunta se compara preços",
+   "origin": "tester-06/10",
+   "expect": "answer_only",
+   "turns": 12,
+   "latencyMax": 16.139,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia respondeu que compara preços e concluiu a compra do desodorante, mas não explicou como o cliente poderia confirmar que aquele era o melhor valor. Também perdeu o contexto do pedido e exigiu reformulações desnecessárias.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Afirmou que compara preços, mas não explicou como o cliente pode verificar se o valor mostrado é o melhor.",
+      "severity": "medium"
+     },
+     {
+      "turn": 3,
+      "what": "Após o cliente responder “mais barato”, reiniciou a apresentação e pediu endereço sem dar continuidade à busca prometida.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Quando o cliente pediu o desodorante mais barato, repetiu a resposta inicial em vez de procurar o produto.",
+      "severity": "medium"
+     },
+     {
+      "turn": 9,
+      "what": "Pediu marca ou tamanho apesar de o cliente ter dito que aceitava o desodorante mais barato.",
+      "severity": "medium"
+     },
+     {
+      "turn": 11,
+      "what": "Tratou “o mais barato mesmo” como nome de produto, disse não tê-lo encontrado e pediu outra marca, ignorando que qualquer marca servia.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Apresentou opções fora de ordem de preço, sem demonstrar que a opção de R$ 16,39 era o menor valor disponível.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Voce faz comparativo de precos? Como sei que este é o melhor valor?"
+    },
+    {
+     "who": "lia",
+     "text": "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma. Quer ver as mais baratas? Responde *mais barato*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Mais barato"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar depois, é só dizer \"trocar endereço\"._\n\nO que você quer?",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "Um desodorante, o mais barato que tiver."
+    },
+    {
+     "who": "lia",
+     "text": "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma. Quer ver as mais baratas? Responde *mais barato*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "mais barato"
+    },
+    {
+     "who": "lia",
+     "text": "Me diz de outro jeito — marca, tamanho — que eu procuro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Pode ser qualquer marca, o mais barato mesmo."
+    },
+    {
+     "who": "lia",
+     "text": "*o mais barato mesmo* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 16.1
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar um desodorante aerosol básico, qualquer marca."
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Desodorante Antitranspirante Dove Original 72h Aerossol 250ml — R$ 27,49 · _Pague Menos · 1 dia útil_\n*2)* Kit Dove 2 Uni Desodorante Antitranspirante Original 72h Aerossol 150ml Cada — R$ 37,40 · _Pague Menos · 1 dia útil_\n*3)* Desodorante Antitranspirante Aerossol Original Protect Nivea Men 150ml — R$ 16,39 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.5
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Desodorante Antitranspirante Aerossol Original Protect Nivea Men 150ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Desodorante Antitranspirante Aerossol Original Protect Nivea Men 150ml — R$ 16,39\n\nProdutos: R$ 16,39\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 61h (sex, 10h–13h)\n*Total: R$ 32,29*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 32,29 _(sem taxa)_\n*2)* Cartão — R$ 33,99 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 32,29* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjm2wv009zinccb9cs4mtp-32295204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c17",
+   "title": "Quantidades: 3 e depois tira 1",
+   "origin": "real-08/28",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 12.626,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A cliente escolheu um sabonete, ajustou a quantidade de 3 para 2 unidades e recebeu o código Pix com o total correspondente.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero sabonete"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x sabonete\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Sabonete em Barra Hidratante Erva Doce Nivea 85g — R$ 4,61 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Sabonete em Barra Raiz Oriente Phebo 90g — R$ 7,25 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Sabonete em Barra Nectarina da Andaluzia Phebo 100g — R$ 8,68 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Sabonete em Barra Hidratante Erva Doce Nivea 85g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "quero 3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ajustei: 3x Sabonete em Barra Hidratante Erva Doce Nivea 85g. Quer mais alguma coisa? Quando fechar, diz *\"só isso\"*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "tira um"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ajustei: 2x Sabonete em Barra Hidratante Erva Doce Nivea 85g. Quer mais alguma coisa? Quando fechar, diz *\"só isso\"*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 2x Sabonete em Barra Hidratante Erva Doce Nivea 85g — R$ 9,22\n\nProdutos: R$ 9,22\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 25,12*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 25,12 _(sem taxa)_\n*2)* Cartão — R$ 26,44 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 25,12* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjms3j00b9incc5tlq6wey-25125204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c18",
+   "title": "Só 'oi' e pergunta o que vende",
+   "origin": "real",
+   "expect": "reach_pix",
+   "turns": 10,
+   "latencyMax": 11.595,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "O cliente escolheu um fio dental e recebeu o código Pix com o produto e o total corretos. A busca, porém, trouxe uma frase contraditória antes das opções.",
+    "defects": [
+     {
+      "turn": 7,
+      "what": "Disse que não achou “Tem alguma opção”, tratando parte da pergunta do cliente como se fosse um produto, embora tenha listado três opções de fio dental em seguida.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "oi"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "O que você vende ou consegue comprar pra mim?"
+    },
+    {
+     "who": "lia",
+     "text": "Você pode pedir por aqui os produtos que quiser; eu comparo opções entre lojas e mostro o total para você aprovar. Depois, paga por Pix ou cartão e acompanha a entrega da própria loja 😊\n---\nPra eu te atender, me manda seu *endereço com CEP* — rua, número, bairro e cidade 📍",
+     "sec": 3.3
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar depois, é só dizer \"trocar endereço\"._\n\nO que você quer?",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "Queria comprar fio dental. Tem alguma opção?"
+    },
+    {
+     "who": "lia",
+     "text": "*Tem alguma opção* eu não achei — o resto achei e tá logo abaixo.\n---\nOlha o que achei 👇\n*1)* Fio Dental Premium Oral Nexter Extra Fino Menta 100m — R$ 9,89 · _Drogal · 3h_\n*2)* Fio Dental Dauf Menta 100m 1 Unidade — R$ 10,99 · _Pague Menos · 1 dia útil_\n*3)* Fio Dental Ever Care 100m + 25m 1 Unidade — R$ 11,65 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Fio Dental Premium Oral Nexter Extra Fino Menta 100m\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 14,79 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 16,79 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Fio Dental Premium Oral Nexter Extra Fino Menta 100m — R$ 9,89\n\nProdutos: R$ 9,89\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 14,79*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 14,79 _(sem taxa)_\n*2)* Cartão — R$ 15,57 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 14,79* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjmw7u00bnincc6aw2muva-14795204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c19",
+   "title": "Recusa dar CPF",
+   "origin": "tester-06/10",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 8.727,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o creme dental escolhido, sem pedir CPF.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "preciso de creme dental"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x creme dental\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Creme Dental Colgate Máxima Proteção Anticáries 50g — R$ 3,29 · _Drogal · 3h_\n*2)* Creme Dental Tripla Limpeza Completa Sorriso 120g — R$ 5,15 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Creme Dental 4 em 1 Menta Fresca Oral-B 70g — R$ 5,49 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Creme Dental Colgate Máxima Proteção Anticáries 50g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 8,19 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 10,19 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Creme Dental Colgate Máxima Proteção Anticáries 50g — R$ 3,29\n\nProdutos: R$ 3,29\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 8,19*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 8,19 _(sem taxa)_\n*2)* Cartão — R$ 8,62 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 8,19* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjnanr00cgincczrm808f6-8195204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c21",
+   "title": "iPhone (inexistente)",
+   "origin": "synthetic",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 21.627,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou claramente que não encontrou o iPhone 15 Pro Max e não ofereceu outro produto como se fosse o pedido. Também informou que não encontrou o iPhone 15 Pro quando o cliente perguntou. Uma resposta demorou mais de 20 segundos.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Demorou 21,6 segundos para responder à pergunta sobre o iPhone 15 Pro.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um iphone 15 pro max"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x iphone 15 pro max\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\n*iPhone 15 Pro Max* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 18.4
+    },
+    {
+     "who": "cliente",
+     "text": "E o iPhone 15 Pro, tem?"
+    },
+    {
+     "who": "lia",
+     "text": "*iPhone 15 Pro* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 21.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 16.049,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix com arroz 5 kg, feijão carioca, óleo de soja e café em pó. O caminho foi desnecessariamente longo: Lia não esclareceu as especificações e ofereceu produtos incompatíveis antes de encontrar os itens certos.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Não perguntou o tamanho do arroz; o arroz 5 kg só apareceu após duas solicitações de outras opções.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Ofereceu Arroz Carreteiro Swift 300g como opção para comprar arroz de mercado; é um prato pronto, não arroz para cozinhar.",
+      "severity": "medium"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto em vez de óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleos para doces, de gergelim e de girassol em vez de óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 15,
+      "what": "Continuou oferecendo outra variedade de óleo sem verificar qual tipo o cliente queria.",
+      "severity": "medium"
+     },
+     {
+      "turn": 17,
+      "what": "Ofereceu lubrificante, secante e óleo corporal para uma compra de alimentos.",
+      "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "Só apresentou óleo de soja depois de o cliente perguntar explicitamente, apesar de tê-lo disponível.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 8h (hoje, 6h–8h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 5,93 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 16
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 8h (hoje, 6h–8h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 4.6
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Carreteiro Swift 300g — R$ 21,89 · _Swift · em até 8h (hoje, 6h–8h)_\n*2)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 31,88 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.8
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 5.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Lubrificante 100ml Moriá — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Óleo Secante Color — R$ 8,79 · _Drogaria São Paulo · 1 dia útil_\n*3)* Óleo Corporal Paixão Tentadora Ameixa Rubi 100ml — R$ 14,84 · _Pague Menos · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.2
+    },
+    {
+     "who": "cliente",
+     "text": "tem óleo de soja?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 31,88\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 74,75\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 99,65*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 99,65 _(sem taxa)_\n*2)* Cartão — R$ 104,88 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 99,65* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjouek00e3inccqln7s1cc-99655204000053039865802BR6009SAO PAULO",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c22",
+   "title": "Cerveja (álcool)",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 13.502,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia confirmou 6 latas de Skol, apresentou o total e enviou o código Pix. O objetivo foi cumprido.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero 6 latas de skol"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 6x latas de skol\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nOlha o que achei 👇\n*1)* Cerveja Pilsen Skol Lata 269ml — R$ 3,62 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 13.5
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 6x Cerveja Pilsen Skol Lata 269ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\n🛒 *Seu pedido:*\n• 6x Cerveja Pilsen Skol Lata 269ml — R$ 21,72\n\nProdutos: R$ 21,72\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 61h (sex, 10h–13h)\n*Total: R$ 37,62*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 37,62 _(sem taxa)_\n*2)* Cartão — R$ 39,60 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 37,62* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjoyb600ehinccqj9mea4r-37625204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c23",
+   "title": "Presente para mãe",
+   "origin": "real",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 12.767,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Lia chegou ao Pix com um perfume, mas o total de R$ 101,49 ultrapassou o limite de R$ 100 informado pelo cliente.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ofereceu duas opções de entrega com totais acima do orçamento de R$ 100, sem avisar ou buscar uma alternativa dentro do limite.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "Incluiu entre as sugestões um produto de R$ 107,86, acima do orçamento mesmo antes da entrega.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dar um presente pra minha mãe, uns 100 reais"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x dar um presente pra minha mãe até 100 reais\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Deo Colônia Feminino Forever Ciclo 100ml — R$ 107,86 · _Drogal · 3h_\n*2)* Colônia Seiva de Alfazema Lavanda Feminina 118ml — R$ 23,09 · _Pague Menos · 1 dia útil_\n*3)* Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.8
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Perfume Feminino Parfum Brasil Escandalo 100ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 101,49 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 103,49 · prazo da loja: 14h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Perfume Feminino Parfum Brasil Escandalo 100ml — R$ 94,59\n\nProdutos: R$ 94,59\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 101,49*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 101,49 _(sem taxa)_\n*2)* Cartão — R$ 106,82 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 101,49* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjpgf500f7incc1robw8o6-101495204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c24",
+   "title": "Presente criança 5 anos",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 13.038,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com um presente, mas o total de R$ 87,31 ultrapassou o limite de R$ 80 do objetivo do cliente.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ofereceu entregas que elevavam o total a R$ 87,31 ou R$ 99,00, sem apresentar uma opção dentro do limite de R$ 80.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Gerou o Pix de R$ 87,31, acima do orçamento do cliente.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "preciso de presente pro meu sobrinho de 5 anos"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x presente pro meu sobrinho de 5 anos\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Brinquedo Interativo - Minimi - Centopeia Pula Pula - Modelos Sortidos - Jxp Brink — R$ 34,09 · _Ri Happy · 3 dias úteis_\n*2)* Jogo Educativo - O Show da Luna - Laboratório Criativo - Nig Brinquedos — R$ 76,99 · _Ri Happy · 3 dias úteis_\n*3)* Brinquedo Musical - Boombox Karaokê - Homem-Aranha - Candide — R$ 142,99 · _Ri Happy · 3 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Jogo Educativo - O Show da Luna - Laboratório Criativo - Nig Brinquedos\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 87,31 · prazo da loja: 3 dias úteis\n*2)* Mais rápida — total R$ 99,00 · prazo da loja: hoje\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Jogo Educativo - O Show da Luna - Laboratório Criativo - Nig Brinquedos — R$ 76,99\n\nProdutos: R$ 76,99\nEntrega: R$ 10,32 · pela própria loja · prazo da loja: 3 dias úteis\n*Total: R$ 87,31*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 87,31 _(sem taxa)_\n*2)* Cartão — R$ 91,90 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 87,31* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjpje100flinccdxqjwmxi-87315204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c25",
+   "title": "Sabão em pó + amaciante",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 17.594,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com sabão em pó Omo e amaciante escolhidos pelo cliente, com total informado.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero sabão em pó omo e amaciante"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x sabão em pó omo\n• 1x amaciante\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nAchei os 2 itens. Vamos um de cada vez: *sabão em pó omo*, depois *amaciante*.\n---\nOlha o que achei 👇\n*1)* Lava Roupas em Pó Puro Cuidado Omo 800g — R$ 9,79 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Lava Roupas em Pó Omo Perfect White 720g — R$ 23,08 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 17.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Lava Roupas em Pó Puro Cuidado Omo 800g\n---\nAgora *amaciante*.\n*1)* Amaciante Concentrado Perfume Sofisticado L'Occitane au Brésil Ypê 1L — R$ 18,59 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Amaciante Concentrado Comfort Brisa Elegante 500 ml — R$ 18,68 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Amaciante Concentrado Comfort Brisa Elegante 500 ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Lava Roupas em Pó Puro Cuidado Omo 800g — R$ 9,79\n• 1x Amaciante Concentrado Comfort Brisa Elegante 500 ml — R$ 18,68\n\nProdutos: R$ 28,47\nEntrega: R$ 18,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 47,37*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 47,37 _(sem taxa)_\n*2)* Cartão — R$ 49,86 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "Pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 47,37* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjq8ow00gtinccwpriavai-47375204000053039865802BR6009SAO PAULO",
+     "sec": 1.1
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c26",
+   "title": "Ração gato castrado + areia",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 13.933,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com a ração para gato castrado e a areia sanitária escolhidas pelo cliente. O total confere com os valores apresentados, e nenhuma resposta passou de 20 segundos.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "ração pra gato castrado e areia sanitária"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x ração pra gato castrado\n• 1x areia sanitária\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 2 itens. Vamos um de cada vez: *ração gato castrado*, depois *areia sanitária*.\n---\nOlha o que achei 👇\n*1)* Racao Para Gato Adulto Castrado Sabor Peixe Whiskas Dry 900g — R$ 24,18 · _Mambo · em até 61h (sex, 10h–13h)_\n*2)* Ração para Gatos Castrados Sabor Carne Whiskas 900g — R$ 24,18 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Ração para Gatos Castrados Adultos Mix de Carnes Friskies Purina 850g — R$ 26,94 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.9
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ração para Gatos Castrados Sabor Carne Whiskas 900g\n---\nAgora *areia sanitária*.\n*1)* Areia Higiênica Pipicat Classic Kelco Pacote 4kg — R$ 12,08 · _Mambo · em até 61h (sex, 10h–13h)_\n*2)* Areia para Gato Mitzi Granulado Sanitário Kelco 4kg — R$ 17,59 · _Cobasi · 7 dias úteis_\n*3)* Areia Pipicat Multi-Cat Odor Block para Gatos 12 kg — R$ 51,70 · _Cobasi · 7 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Areia Higiênica Pipicat Classic Kelco Pacote 4kg\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Paulo Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Paulo Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ração para Gatos Castrados Sabor Carne Whiskas 900g — R$ 24,18\n• 1x Areia Higiênica Pipicat Classic Kelco Pacote 4kg — R$ 12,08\n\nProdutos: R$ 36,26\nEntrega: R$ 18,90 · pela própria loja · prazo da loja: em até 61h (sex, 10h–13h)\n*Total: R$ 55,16*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 55,16 _(sem taxa)_\n*2)* Cartão — R$ 58,06 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.9
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 55,16* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjq9f400gyincc17s33tvq-55165204000053039865802BR6009SAO PAULO",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c27",
+   "title": "2 litros de leite",
+   "origin": "real-06/10",
+   "expect": "reach_pix",
+   "turns": 6,
+   "latencyMax": 11.034,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia encontrou leite integral de 1 litro, mas interpretou partes das respostas do cliente como novos itens de busca. Mesmo após o cliente repetir que queria duas unidades, não confirmou a quantidade no carrinho nem chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou «1x leite 2litros» sem confirmar se o cliente queria uma embalagem de 2 litros ou duas de 1 litro.",
+      "severity": "low"
+     },
+     {
+      "turn": 5,
+      "what": "Após o cliente escolher 2 unidades do item 2, confirmou «2x», mas disse não ter achado «de 1 litro», embora o produto selecionado seja de 1 litro.",
+      "severity": "medium"
+     },
+     {
+      "turn": 7,
+      "what": "Tratou «marca» como item não encontrado e reapresentou as mesmas opções, ignorando que o cliente só esclarecia sua preferência.",
+      "severity": "medium"
+     },
+     {
+      "turn": 9,
+      "what": "Após nova escolha explícita de duas unidades, confirmou o produto sem quantidade e disse não ter achado «unidades de 1 litro». O cliente terminou sem confirmação confiável do pedido nem caminho até o Pix.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero 2 litros de leite"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x leite 2litros\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Leite Integral Ninho Nestlé 1l — R$ 7,67 · _Swift · 1 dia útil_\n*2)* Leite Longa Vida Integral Italac 1L — R$ 6,04 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Leite Integral Longa Vida Parmalat 1 Litro — R$ 7,25 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.9
+    },
+    {
+     "who": "cliente",
+     "text": "2, quero 2 unidades de 1 litro"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 2x Leite Longa Vida Integral Italac 1L\n_Não achei: de 1 litro. Me fala de outro jeito que eu procuro._\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 5.1
+    },
+    {
+     "who": "cliente",
+     "text": "pode ser outra marca, só precisa ser integral de 1 litro"
+    },
+    {
+     "who": "lia",
+     "text": "*marca* eu não achei — o resto achei e tá logo abaixo.\n---\nOlha o que achei 👇\n*1)* Leite Integral Ninho Nestlé 1l — R$ 7,67 · _Swift · 1 dia útil_\n*2)* Leite Longa Vida Integral Italac 1L — R$ 6,04 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Leite Integral Longa Vida Parmalat 1 Litro — R$ 7,25 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11
+    },
+    {
+     "who": "cliente",
+     "text": "2, duas unidades de 1 litro"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Leite Longa Vida Integral Italac 1L\n_Não achei: unidades de 1 litro. Me fala de outro jeito que eu procuro._\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 8.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c28",
+   "title": "12 ovos",
+   "origin": "real-06/10",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 13.624,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A cliente queria uma dúzia de ovos, mas a Lia não encontrou uma opção de 12 unidades nem chegou ao Pix. Mesmo após o esclarecimento, ofereceu produtos irrelevantes e não conseguiu ajustar a quantidade de embalagens.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Para um pedido de 12 ovos, apresentou apenas embalagens de 10 e 20 unidades, sem opção de uma dúzia.",
+      "severity": "medium"
+     },
+     {
+      "turn": 9,
+      "what": "Após a cliente pedir explicitamente outra marca com 12 ovos, exibiu massinha de modelar e repetiu opções de 10 e 20 ovos.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Adicionou duas embalagens de 10 ovos (20 no total), apesar de a cliente ter acabado de reforçar que queria 12.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Interpretou o pedido para reduzir a uma embalagem de ovos como uma busca por embalagens avulsas e não ajustou a cesta.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Mesmo após a correção explícita da cliente, repetiu as opções de embalagens que não contêm ovos, deixando-a sem caminho para concluir a compra.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "12 ovos"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 12x ovos\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Ovos Jumbo Brancos Queen Eggs Graciana com 10 Unidades — R$ 7,69 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Ovos Brancos Gourmet Momento Mambo com 20 Unidades — R$ 14,28 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Ovos Caipira Ito country com 10 Unidades — R$ 15,38 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.2
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ovos Brancos Gourmet Momento Mambo com 20 Unidades\n_Cada embalagem tem 20 unidades — coloquei 1 embalagem (20 un) pro seu pedido de 12. Pra mudar, é só dizer o número de embalagens._\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Tem como pegar só 12 ovos?"
+    },
+    {
+     "who": "lia",
+     "text": "*1x ovos brancos gourmet momento mambo com 12 unidades* eu não achei em nenhuma loja. Mantive *Ovos Brancos Gourmet Momento Mambo com 20 Unidades* na cesta — me diz outra marca ou versão que eu troco.",
+     "sec": 4.6
+    },
+    {
+     "who": "cliente",
+     "text": "Pode ser outra marca, queria uma dúzia mesmo, com 12 ovos."
+    },
+    {
+     "who": "lia",
+     "text": "Esses eu não achei: marca, 12x mesmo.\nO resto achei e tá logo abaixo.\n---\nOlha o que achei 👇\n*1)* Massinha de Modelar Acrilex Soft 12 Unidades — R$ 7,98 · _Drogal · 3h_\n*2)* Ovos Jumbo Brancos Queen Eggs Graciana com 10 Unidades — R$ 7,69 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Ovos Brancos Gourmet Momento Mambo com 20 Unidades — R$ 14,28 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.5
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 2x Ovos Jumbo Brancos Queen Eggs Graciana com 10 Unidades\n_Cada embalagem tem 10 unidades — coloquei 2 embalagens (20 un) pro seu pedido de 12. Pra mudar, é só dizer o número de embalagens._\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1 embalagem só, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Embalagem Cartucho - Não acompanha os produtos — R$ 4,29 · _Kopenhagen · 1 dia útil_\n*2)* Embalagem para 3 Tabletes - Não acompanha os Produtos — R$ 7,59 · _Kopenhagen · 1 dia útil_\n*3)* Embalagem Big Bag para Transporte 1m3 Construmarcas — R$ 132,99 · _Obramax · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.6
+    },
+    {
+     "who": "cliente",
+     "text": "Quis dizer 1 embalagem dos ovos, não embalagem de presente."
+    },
+    {
+     "who": "lia",
+     "text": "Anotei *ovos* — a gente escolhe em seguida.\n---\nOlha o que achei 👇\n*1)* Embalagem Cartucho - Não acompanha os produtos — R$ 4,29 · _Kopenhagen · 1 dia útil_\n*2)* Embalagem para 3 Tabletes - Não acompanha os Produtos — R$ 7,59 · _Kopenhagen · 1 dia útil_\n*3)* Embalagem Big Bag para Transporte 1m3 Construmarcas — R$ 132,99 · _Obramax · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c29",
+   "title": "Vago: 'algo bom pra comer'",
+   "origin": "real-06/10",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 10.272,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix com um pão de queijo escolhido pelo cliente. A Lia, porém, não respondeu diretamente ao pedido de sugestão: tratou a frase do cliente como item anotado e exibiu resultados de busca pouco criteriosos.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Em vez de sugerir um lanche, registrou «me sugere um lanche gostoso aí» como se fosse um produto e pediu o endereço.",
+      "severity": "medium"
+     },
+     {
+      "turn": 5,
+      "what": "Apresentou uma lista de resultados sem explicar qual lanche recomendava; a primeira opção era um iogurte infantil, pouco alinhado ao pedido de um lanche gostoso.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero algo bom pra comer"
+    },
+    {
+     "who": "lia",
+     "text": "Me diz o que você está com vontade que eu acho 🙂 Por exemplo: _lasanha congelada_, _pizza congelada_, _chocolate_, _sorvete_, _salgadinho_ — ou o nome de um produto.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "não sei, me sugere um lanche gostoso aí 🙂"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x me sugere um lanche gostoso aí 🙂\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Iogurte Morango Toy Story 5 Danoninho Lancheira Danone Squeeze 70g — R$ 5,05 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Pão de Queijo Lanche Congelado Momento Mambo 400g — R$ 21,98 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Pão de Queijo Congelado Lanche Forno de Minas 820g — R$ 43,98 · _Mambo · em até 16h (hoje, 13h–16h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.3
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Pão de Queijo Lanche Congelado Momento Mambo 400g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Pão de Queijo Lanche Congelado Momento Mambo 400g — R$ 21,98\n\nProdutos: R$ 21,98\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 16h (hoje, 13h–16h)\n*Total: R$ 37,88*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 37,88 _(sem taxa)_\n*2)* Cartão — R$ 39,87 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 37,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjry1x00irincchvv3c8cw-37885204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c30",
+   "title": "Quer falar com humano",
+   "origin": "real",
+   "expect": "answer_only",
+   "turns": 3,
+   "latencyMax": 0.014,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Lia informou que avisou o responsável e orientou o cliente a aguardar na conversa, mas nenhum atendente humano respondeu até o fim da transcrição.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "O cliente queria falar com um humano, mas a conversa terminou sem resposta de um atendente.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero falar com uma pessoa"
+    },
+    {
+     "who": "lia",
+     "text": "Avisei o responsável, ele te responde aqui mesmo. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "beleza, vou aguardar o atendente aqui."
+    },
+    {
+     "who": "lia",
+     "text": "Já avisei o responsável e ele ainda não respondeu — costuma retornar das 9h às 20h. Deixa aqui o que você precisa, com todos os detalhes, que ele já vê tudo e te responde direto nesta conversa.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c31",
+   "title": "Pedido anterior não chegou (sem pedido)",
+   "origin": "real-08/28",
+   "expect": "answer_only",
+   "turns": 3,
+   "latencyMax": 0.017,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "Lia informou que não havia pedidos, mas, quando o cliente contestou e pediu uma conferência, repetiu a mesma resposta e tentou iniciar uma compra. A reclamação ficou sem encaminhamento.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Após a pergunta sobre um pedido não entregue, desviou para montar uma nova compra, sem orientar como verificar o ocorrido.",
+      "severity": "medium"
+     },
+     {
+      "turn": 3,
+      "what": "Repetiu a resposta anterior apesar da contestação e não ofereceu um caminho para conferir o pedido ou encaminhar a reclamação.",
+      "severity": "high"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "cadê meu pedido de ontem?"
+    },
+    {
+     "who": "lia",
+     "text": "Você ainda não tem pedidos. Me diz o que precisa que eu monto o primeiro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Mas eu fiz um pedido ontem, não chegou. Confere pra mim?"
+    },
+    {
+     "who": "lia",
+     "text": "Você ainda não tem pedidos. Me diz o que precisa que eu monto o primeiro.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c32",
+   "title": "Bola de futebol",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 10.393,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A cliente escolheu uma bola de futebol tamanho 5, confirmou o pedido e chegou ao código Pix com o produto e o total corretos.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero uma bola de futebol"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x bola de futebol\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Bola de Futebol - Real Madrid - Tamanho 5 - Maccabi — R$ 85,79 · _Ri Happy · 3 dias úteis_\n*2)* Bola de Futebol N°2 Mizpa MZ-101 — R$ 17,58 · _Casa & Vídeo · 4 dias úteis_\n*3)* Bola de Futebol 420g Play&Fun Sortida — R$ 32,98 · _Casa & Vídeo · 5 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.4
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Bola de Futebol - Real Madrid - Tamanho 5 - Maccabi\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 96,16 · prazo da loja: 3 dias úteis\n*2)* Mais rápida — total R$ 107,80 · prazo da loja: hoje\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Bola de Futebol - Real Madrid - Tamanho 5 - Maccabi — R$ 85,79\n\nProdutos: R$ 85,79\nEntrega: R$ 10,37 · pela própria loja · prazo da loja: 3 dias úteis\n*Total: R$ 96,16*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 96,16 _(sem taxa)_\n*2)* Cartão — R$ 101,21 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 96,16* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjsjfo00jwincc5da1cbv2-96165204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c33",
+   "title": "Coca zero 2L x6",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 8.844,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia selecionou 6 Coca-Cola Zero de 2 litros, confirmou o total e enviou o código Pix. Nenhuma resposta passou de 20 segundos.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero 6 coca cola zero 2 litros"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 6x coca cola zero 2 litros\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Refrigerante Coca-Cola Sem Açúcar Garrafa Pet 2 Litro — R$ 15,28 · _Drogal · 3h_\n*2)* Coca-Cola Zero Garrafa 2l — R$ 13,17 · _Swift · 1 dia útil_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.8
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 6x Coca-Cola Zero Garrafa 2l\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 94,92 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 96,92 · prazo da loja: em até 8h (hoje, 6h–8h)\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 6x Coca-Cola Zero Garrafa 2l — R$ 79,02\n\nProdutos: R$ 79,02\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 94,92*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 94,92 _(sem taxa)_\n*2)* Cartão — R$ 99,91 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 94,92* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjsmhu00kainccs9lh5xp3-94925204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c35",
+   "title": "Dipirona (remédio comum)",
+   "origin": "real-08/28",
+   "expect": "honest_not_found",
+   "turns": 3,
+   "latencyMax": 0.014,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Lia deixou claro que não vende dipirona nem outros remédios e não ofereceu um produto errado. Porém, repetiu a mesma resposta quando o cliente perguntou especificamente sobre remédio para dor.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Repetiu a resposta anterior palavra por palavra, sem responder de forma específica à pergunta sobre outros remédios para dor.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero dipirona"
+    },
+    {
+     "who": "lia",
+     "text": "Remédio eu não posso vender — por lei, só farmácia pode. Fora isso eu trago de tudo. O que mais você precisa?",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ah, então não tem como trazer nenhum remédio pra dor?"
+    },
+    {
+     "who": "lia",
+     "text": "Remédio eu não posso vender — por lei, só farmácia pode. Fora isso eu trago de tudo. O que mais você precisa?",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c34",
+   "title": "Lista com quantidades",
+   "origin": "real-08/28",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 12.389,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix com as quantidades pedidas, mas o item escolhido para shampoo era um kit com condicionador, não apenas um shampoo. Por isso, não chegou ao Pix com os produtos certos.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Ofereceu um kit de shampoo com condicionador para o pedido de 1 shampoo, sem destacar que incluía um produto não solicitado.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Adicionou o kit com condicionador ao pedido como se atendesse ao item shampoo.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Pediu que o cliente enviasse a lista inteira em uma mensagem para tentar baratear o frete, embora ele já tivesse feito exatamente isso.",
+      "severity": "low"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "2 coca cola / 1 shampoo / 2 sabonete"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 2x coca cola\n• 1x shampoo\n• 2x sabonete\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo — CEP 01451-001\n---\nAchei os 3 itens. Vamos um de cada vez: *Coca-Cola*, depois *shampoo* e *sabonete*.\n---\nOlha o que achei 👇\n*1)* Refrigerante Coca-Cola Garrafa Pet 600ml — R$ 7,58 · _Drogal · 3h_\n*2)* Coca-Cola Lata 350ml — R$ 4,92 · _Swift · 1 dia útil_\n*3)* Refrigerante Coca-Cola Lata 310ml — R$ 5,16 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.4
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 2x Refrigerante Coca-Cola Garrafa Pet 600ml\n---\nAgora *shampoo* — depois faltam 1.\n*1)* Kit Dove Bond Intense Repair Shampoo 350ml + Condicionador 150ml — R$ 31,45 · _Drogaria São Paulo · 14h_\n*2)* Shampoo Bambu Nutre & Cresce Pantene 200ml — R$ 30,24 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Shampoo Óleo Extraordinário Elseve 200ml — R$ 30,78 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Kit Dove Bond Intense Repair Shampoo 350ml + Condicionador 150ml\n---\nAgora *sabonete*.\n*1)* Sabonete Líquido Zeta Skin Sensi Clean Pele Sensível 300ml — R$ 20,89 · _Drogal · 3h_\n*2)* Sabonete em Barra Hidratante Erva Doce Nivea 85g — R$ 4,61 · _Mambo · em até 61h (sex, 10h–13h)_\n*3)* Sabonete em Barra Raiz Oriente Phebo 90g — R$ 7,25 · _Mambo · em até 61h (sex, 10h–13h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 2x Sabonete em Barra Hidratante Erva Doce Nivea 85g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 2x Refrigerante Coca-Cola Garrafa Pet 600ml — R$ 15,16\n• 1x Kit Dove Bond Intense Repair Shampoo 350ml + Condicionador 150ml — R$ 31,45\n• 2x Sabonete em Barra Hidratante Erva Doce Nivea 85g — R$ 9,22\n\nProdutos: R$ 55,83\nEntrega: R$ 29,70 · pela própria loja (3 entregas) · prazo da loja: em até 61h (sex, 10h–13h)\n*Total: R$ 85,53*\n\n📍 Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 85,53 _(sem taxa)_\n*2)* Cartão — R$ 90,02 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.\n---\n💡 Essa cesta saiu em 3 entregas e o frete pesou. Se quiser, me manda a lista inteira numa mensagem só que eu monto de novo juntando as entregas pra baratear.",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 85,53* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjt58p00lcincclo4wqdgn-85535204000053039865802BR6009SAO PAULO",
+     "sec": 1.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c36",
+   "title": "Não quero essa marca",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 10.468,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Após o cliente recusar as opções iniciais, Lia apresentou alternativas Dove, adicionou a opção escolhida e chegou ao código Pix com o produto e o total corretos.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero desodorante"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x desodorante\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nOlha o que achei 👇\n*1)* Desodorante Aerosol AXE Black 150ml — R$ 14,28 · _Mambo · em até 16h (hoje, 13h–16h)_\n*2)* Desodorante Aerosol Dry Impact Nivea 150ml — R$ 16,39 · _Mambo · em até 16h (hoje, 13h–16h)_\n*3)* Desodorante Antitranspirante Aerossol Dove Original 250 ml — R$ 25,95 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.5
+    },
+    {
+     "who": "cliente",
+     "text": "não gostei dessas, quero da dove"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *desodorante dove*:\n*1)* Desodorante Antitranspirante Aerosol Dove Original 72 Horas 150ml — R$ 18,58 · _Drogal · 3h_\n*2)* Desodorante Antitranspirante Dove Original 72h Aerossol 150ml — R$ 23,09 · _Pague Menos · 1 dia útil_\n*3)* Kit Dove 2 Uni Desodorante Antitranspirante Original 72h Aerossol 150ml Cada — R$ 37,40 · _Pague Menos · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Desodorante Antitranspirante Aerosol Dove Original 72 Horas 150ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 23,48 · prazo da loja: 3h\n*2)* Mais rápida — total R$ 25,48 · prazo da loja: 30 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Desodorante Antitranspirante Aerosol Dove Original 72 Horas 150ml — R$ 18,58\n\nProdutos: R$ 18,58\nEntrega: R$ 4,90 · pela própria loja · prazo da loja: 3h\n*Total: R$ 23,48*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 23,48 _(sem taxa)_\n*2)* Cartão — R$ 24,71 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 23,48* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjtlql00lzinccd95lzfkf-23485204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c37",
+   "title": "A mais barata",
+   "origin": "real-08/28",
+   "expect": "reach_pix",
+   "turns": 8,
+   "latencyMax": 9.669,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia selecionou o papel higiênico de menor preço entre as opções mostradas, ofereceu a entrega mais barata e chegou ao código Pix com o produto correto.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "papel higiênico, a mais barata"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x papel higiênico\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Papel Higiênico Neve Supreme Com 4 Unidades — R$ 16,49 · _Pague Menos · 1 dia útil_\n*2)* Papel Higiênico Deluxe Cotton Folha Dupla 20m 12 Rolos — R$ 15,39 · _Drogaria São Paulo · 1 dia útil_\n*3)* Papel Higiênico Neve Toque de Seda 4 Rolos — R$ 17,59 · _Drogaria São Paulo · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.7
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Papel Higiênico Deluxe Cotton Folha Dupla 20m 12 Rolos\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 22,29 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 24,29 · prazo da loja: 60 min\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 1x Papel Higiênico Deluxe Cotton Folha Dupla 20m 12 Rolos — R$ 15,39\n\nProdutos: R$ 15,39\nEntrega: R$ 6,90 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 22,29*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 22,29 _(sem taxa)_\n*2)* Cartão — R$ 23,46 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 22,29* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjtp0v00mgincctvyi8zoe-22295204000053039865802BR6009SAO PAULO",
+     "sec": 1.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c38",
+   "title": "Fora de cobertura (BH)",
+   "origin": "real-09/01",
+   "expect": "honest_not_found",
+   "turns": 3,
+   "latencyMax": 0.447,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia informou claramente que não entrega em Belo Horizonte e não tentou vender a escova. Porém, prometeu avisar o cliente quando passar a atender a região, sem base na conversa para garantir esse contato.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Disse que anotou o contato e que chamará o cliente quando atender Belo Horizonte, prometendo um aviso futuro sem garantia apresentada.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero escova de dente, entrega em belo horizonte"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x escova de dente\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Afonso Pena, 1000, Belo Horizonte - MG, 30130-010"
+    },
+    {
+     "who": "lia",
+     "text": "Ainda não chego em Belo Horizonte — hoje entrego só nos *estados de São Paulo e Rio de Janeiro* 😔\n\nAnotei seu contato: quando eu chegar na sua região, te chamo.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c39",
+   "title": "Pede carregador USB-C",
+   "origin": "real-08/07",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 11.702,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia ofereceu um carregador de parede USB-C, confirmou o item e chegou ao Pix com o produto correto.",
+    "defects": []
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "preciso de um carregador usb c"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x carregador usb c\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Carregador de Parede USB-C 20W ELG WCPD Branco — R$ 109,89 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 11.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Carregador de Parede USB-C 20W ELG WCPD Branco\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Carregador de Parede USB-C 20W ELG WCPD Branco — R$ 109,89\n\nProdutos: R$ 109,89\nEntrega: R$ 15,42 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 125,31*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 125,31 _(sem taxa)_\n*2)* Cartão — R$ 131,89 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 125,31* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuxjua4f00nginccl2irwbtx-125315204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c40",
+   "title": "Bola de tênis simples",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 4,
+   "latencyMax": 12.989,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia informou que não encontrou bolas de tênis, inclusive da marca Wilson. Não ofereceu produto errado, mas a compra não chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Após a tentativa com a marca Wilson, não encontrou o produto; a compra terminou sem chegar ao Pix.",
+      "severity": "medium"
+     }
+    ]
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero bola de tenis"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.\n\nJá anotei:\n• 1x bola de tenis\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\n*bola de tênis* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 13
+    },
+    {
+     "who": "cliente",
+     "text": "Tenta bola de tênis Wilson, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "*bola de tênis Wilson* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 6.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  }
+ ]
+}

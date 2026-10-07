@@ -2036,7 +2036,11 @@ async function handleDeliveryTurn(
       .replace(/^.*?\b(?:trocar|mudar|alterar|atualizar|novo)\s+(?:o\s+|meu\s+)*endere[cç]o\b[\s:—–\-,.]*/i, "")
       .trim();
     if (embedded.length > 8 && (extractCep(embedded) || looksLikeDeliveryAddress(embedded))) {
-      await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, embedded);
+      // Com CEP novo na mensagem, o fluxo do CEP roda primeiro (senão o endereço novo era gravado com o
+      // CEP ANTIGO — placar rodada 2, c16).
+      const typed = detectIntent(embedded);
+      if (typed.kind === "cep") await handleNewCep(phone, user.id, convo.id, ctx, typed.cep, Boolean(savedCep), typed.rest, embedded);
+      else await handleDeliveryAddress(phone, user.id, convo.id, ctx, null, embedded);
       return;
     }
     await reply(phone, copy.askNewCep());
@@ -3184,6 +3188,22 @@ function asksPastOrder(text?: string): boolean {
   );
 }
 
+// Cliente que insiste "cadê meu pedido?" sem nenhum pedido neste número (07/10, c31): a 2ª vez não repete
+// "você ainda não tem pedidos" — pede o dado que falta e chama o responsável. Melhor esforço (memória do
+// processo); a nota/alerta ao dono é o que fica.
+const noOrderAskedAt = new Map<string, number>();
+async function replyNoOrders(phone: string, userId: string, text?: string) {
+  const last = noOrderAskedAt.get(phone);
+  noOrderAskedAt.set(phone, Date.now());
+  if (last && Date.now() - last < 30 * 60_000) {
+    await notifyOwner(`🔎 Cliente diz que fez um pedido, mas não há pedido neste número: "${(text ?? "").slice(0, 160)}" — conferir (outro número? pedido de teste?).`, phone);
+    await reply(phone, copy.noOrdersEscalated());
+    return;
+  }
+  void userId;
+  await reply(phone, copy.noOrdersYet());
+}
+
 async function handleStatus(phone: string, userId: string, ctx: DeliveryContext, text?: string) {
   if (asksPastOrder(text)) {
     const past =
@@ -3213,7 +3233,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
       );
       return;
     }
-    await reply(phone, copy.noOrdersYet());
+    await replyNoOrders(phone, userId, text);
     return;
   }
   // A COMPRA EM ANDAMENTO na conversa vence qualquer pedido velho: "quanto ficou? e
@@ -3272,7 +3292,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     if (text && /\b(chega|demora|horas|prazo|falta)\b/.test(normalizeMsg(text))) {
       await reply(phone, copy.serviceAnswer("eta", servedAreaLabel()));
     } else {
-      await reply(phone, copy.noOrdersYet());
+      await replyNoOrders(phone, userId, text);
     }
     return;
   }
@@ -4559,6 +4579,24 @@ async function handleChoosing(
       ctx.pending = [];
       await reply(phone, copy.onlyKeepSkipped(skipped));
       await advancePending(phone, convoId, ctx, userCep);
+      return;
+    }
+  }
+
+  // "só amora" / "só essa" ENQUANTO escolhe o 1º de vários itens (07/10, c07): o cliente fecha a lista
+  // no item da mesa — os outros saem da fila; "só essa" com uma opção só já escolhe ela.
+  if (only && (ctx.pending?.length ?? 0) > 1) {
+    const namesCurrent = "demonstrative" in only ? current.options.length === 1 : sharesProductNoun(only.target, current.query);
+    if (namesCurrent) {
+      const skipped = ctx.pending!.slice(1).map((pending) => pending.query);
+      ctx.pending = [current];
+      await reply(phone, copy.onlyKeepSkipped(skipped));
+      if ("demonstrative" in only) {
+        await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[0]);
+        return;
+      }
+      await writeCtx(convoId, ctx);
+      await sendChoices(phone, current);
       return;
     }
   }

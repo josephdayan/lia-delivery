@@ -29,7 +29,7 @@ try {
       const user = await prisma.user.findUnique({ where: { phone } });
       const convo = user ? await prisma.conversation.findFirst({ where: { userId: user.id }, orderBy: { updatedAt: "desc" } }) : null;
       const c = JSON.parse(convo?.context ?? "{}");
-      console.log("   ctx:", JSON.stringify({ step: c.step, pendingRequest: c.pendingRequest, cpfOnboarding: c.cpfOnboarding, lastMiss: c.lastMiss, notFound: c.notFound, pending: c.pending?.map((p: any) => p.query), basket: c.basket?.length }));
+      console.log("   ctx:", JSON.stringify({ cep: c.cep, addr: c.deliveryAddress, step: c.step, pendingRequest: c.pendingRequest, cpfOnboarding: c.cpfOnboarding, lastMiss: c.lastMiss, notFound: c.notFound, pending: c.pending?.map((p: any) => p.query), basket: c.basket?.length }));
     }
   }
 } finally {

@@ -1240,6 +1240,9 @@ export function detectIntent(text: string): Intent {
   if (cep && isBareCep(n)) return { kind: "cep", cep, bare: true };
 
   if (THANKS_RE.test(n)) return { kind: "thanks" };
+  // "vou aguardar essas informações", "fico esperando": o cliente espera a resposta de alguém — não é
+  // pedido (virava item e a Lia pedia o endereço de novo; placar c13).
+  if (/^(?:ok[,.! ]*|certo[,.! ]*|tudo bem[,.! ]*|beleza[,.! ]*)?(?:eu )?(?:vou|vamos|fico|to|tou|estou)\s+(?:aguardar|esperar|aguardando|esperando)\b[^?]{0,60}$/.test(n)) return { kind: "thanks" };
   if (GREETING_RE.test(n)) return { kind: "greeting" };
   if (HELP_RE.test(n)) return { kind: "help" };
   if (HUMAN_RE.test(n)) return { kind: "human" };
@@ -1853,7 +1856,7 @@ const STORE_SOURCE_RE =
   /\b(?:qual|que|quais)\s+(?:e\s+|eh\s+)?(?:a\s+|as\s+)?(?:loja|lojas|mercado|farmacia|site)\b(?!\s+fisica)|\bde\s+(?:que|qual|quais)\s+(?:loja|lojas|mercado|farmacia|site)\b|\bde\s+onde\s+(?:(?:vc|voce|vcs|voces|tu|ce|c)\s+)?(?:compra\w*|vem|veio|e|eh|sai|tira\w*|pega\w*)\b|\bonde\s+(?:vc|voce|vcs|voces)\s+compra\w*\b|\bloja\s+especifica\b/;
 
 const PRICE_COMPARE_RE =
-  /\b(?:compar\w*|pesquis\w*|cotac\w*)\s+(?:de\s+|os\s+|o\s+)?(?:precos?|valor(?:es)?)\b|\b(?:faz|fazem|faria)\s+(?:um\s+)?(?:comparativo|comparacao|pesquisa)\b|\b(?:melhor|menor)\s+(?:preco|valor|oferta)\b|\bmais\s+barat\w+\s+(?:que|do\s+que)\b/;
+  /\b(?:compar\w*|pesquis\w*|cotac\w*)\s+(?:de\s+|os\s+|o\s+)?(?:precos?|valor(?:es)?)\b|\b(?:faz|fazem|faria)\s+(?:um\s+)?(?:comparativo|comparacao|pesquisa)\b|\b(?:melhor|menor)\s+(?:preco|valor|oferta)\b|\bmais\s+barat\w+\s+(?:que|do\s+que)\b(?!\s+(?:tiver|tem|houver|voce|vc|achar|encontrar|der|existir|conseguir|puder|rolar))/;
 
 // Complemento do endereço numa mensagem sozinha ("apto 4", "ap 23", "bloco B apto 31",
 // "casa 2", "sou do apto 4") — Clara mandou "apto 4" logo depois do endereço e a Lia
@@ -2180,9 +2183,9 @@ export function asksCheapestQuestion(text: string): "cheapest" | "priciest" | nu
 // PRODUTO ("*tenta de novo* eu não achei") ou caíam no "endereço salvo". `retry` = refazer o
 // pedido anterior; `fragment` = só uma marca/atributo, a juntar ao pedido anterior.
 const MISS_FILLER = new Set(
-  "pode ser tentar tenta tente procura procure procurar busca busque buscar pesquisa pesquise ver veja ve de novo novamente outra outro vez qualquer marca marcas versao modelo tanto faz sem preferencia pra mim por favor pf pfv uma um uns umas da do das dos de a o e se ai la entao mas que seja tipo ou algum alguma alguns algumas tem mas porem so somente apenas".split(" ")
+  "pode ser tentar tenta tente procura procure procurar busca busque buscar pesquisa pesquise ver veja ve de novo novamente outra outro vez qualquer marca marcas versao modelo tanto faz sem preferencia pra mim por favor pf pfv uma um uns umas da do das dos de a o e se ai la entao mas que seja tipo ou algum alguma alguns algumas tem mas porem so somente apenas em no na nos nas loja lojas lugar site outro".split(" ")
 );
-const MISS_RETRY_CUE = /\b(tent|procur|busc|pesquis|novo|novamente|qualquer|tanto faz|outra marca|outro|sem preferencia)/;
+const MISS_RETRY_CUE = /\b(tent|procur|busc|pesquis|novo|novamente|qualquer|tanto faz|outra marca|outro|outra loja|sem preferencia)/;
 const MISS_NEW_REQUEST = /\b(quero|queria|preciso|precisava|me manda|me ve|vou querer|cancela|cancelar|pagar|pix|cartao|status|oi|ola|obrigad)/;
 
 export function parseMissFollowUp(text: string): { kind: "retry" } | { kind: "fragment"; words: string } | null {

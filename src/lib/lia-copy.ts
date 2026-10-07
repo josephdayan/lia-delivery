@@ -929,6 +929,11 @@ export function orderStatusLine(input: {
   }
 }
 
+// 2ª vez que o cliente pergunta de um pedido que não existe neste número (07/10).
+export function noOrdersEscalated(): string {
+  return "Não achei nenhum pedido neste número de WhatsApp. Se você pediu por outro número ou já tem um código do pedido, me manda aqui — já avisei o responsável pra conferir e ele te responde nesta conversa.";
+}
+
 export function noOrdersYet(): string {
   return "Você ainda não tem pedidos. Me diz o que precisa que eu monto o primeiro.";
 }
@@ -1655,7 +1660,7 @@ export function serviceAnswer(
     case "stores":
       return storesAnswer([]);
     case "price_compare":
-      return priceCompareAnswer();
+      return priceCompareAnswer(Boolean(ctx?.hasBasket));
     default:
       return "Eu compro o que você precisar e entrego no seu endereço. Você paga por Pix ou cartão aqui no chat, e eu mostro o prazo antes. O que você precisa?";
   }
@@ -1693,8 +1698,12 @@ export function storesAnswer(onTable: { storeLabel?: string }[]): string {
 
 // "você faz comparativo de preços?"/"como sei que é o melhor valor?" (06/10, Claire): a IA
 // respondia "não faço comparativo de preços" — falso. A busca roda em todas as lojas.
-export function priceCompareAnswer(): string {
-  return "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma. Quer ver as mais baratas? Responde *mais barato*.";
+// "Responde mais barato" só faz sentido com opções na mesa; sem produto era beco (placar c14).
+export function priceCompareAnswer(withOptions = true): string {
+  const base = "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma";
+  return withOptions
+    ? `${base}. Quer ver as mais baratas? Responde *mais barato*.`
+    : `${base}. Me diz o que você quer (pode escrever "o mais barato") que eu mostro agora.`;
 }
 
 // "só amora" na vez da framboesa (06/10, Adely): fecha a lista com o que já foi escolhido.
