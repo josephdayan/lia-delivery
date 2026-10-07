@@ -16,7 +16,7 @@ import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -466,9 +466,13 @@ async function buildChoices(
     const { line, candidates, noneToday } = entry;
     const bySku = new Map(candidates.map((c) => [c.item.sku, c]));
     const chosen = rerankedSkus.get(entry);
+    // Sem o juízo da IA (fora do ar/prazo): quem tem TODAS as palavras do pedido (marca, "sem fio", tamanho)
+    // vem na frente do que só se parece; se ninguém tem, segue o ranking de sempre.
+    const exactWords = chosen ? [] : candidates.filter((c) => conciergeMatchIsStrong(line.phrase, c.item, { allTokens: true }));
+    const fallbackPool = exactWords.length ? exactWords : candidates;
     let options: StoreCandidate[] = chosen
       ? chosen.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c))
-      : diversifyOptions(line.phrase, candidates.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
+      : diversifyOptions(line.phrase, fallbackPool.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
     // Ninguém cumpre tudo o que o cliente pediu (tamanho, sabor…) mas há produto do tipo certo:
     // vira escolha com o aviso da diferença; nunca entra na cesta sem o cliente tocar.
     let closestFalta: string | undefined;
@@ -4873,7 +4877,7 @@ async function handleChoosing(
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, chosen);
       return;
     }
-    const added = await buildChoicesWithSearchNotice(phone, combo.rest, undefined, undefined, undefined, ctx.cep);
+    const added = await buildChoicesWithSearchNotice(phone, withMissQualifiers(ctx, combo.rest), undefined, undefined, undefined, ctx.cep);
     ctx.basket = mergeBaskets(ctx.basket ?? [], added.autoAdded);
     ctx.pending = [...(ctx.pending ?? []), ...added.pending];
     const notes: string[] = [];
@@ -5031,8 +5035,7 @@ async function handleChoosing(
     const fresh = queryTokens(wantedTail).filter((token) => !baseTokens.has(token));
     if (fresh.length && fresh.length <= 4) {
       if (await researchChoice(phone, convoId, ctx, current, `${base} ${fresh.join(" ")}`, fresh.join(" "))) return;
-      await reply(phone, copy.refineNoResult(`${base} ${fresh.join(" ")}`));
-      await sendChoices(phone, current);
+      await replyRefineMiss(phone, current, `${base} ${fresh.join(" ")}`, text);
       return;
     }
   }
@@ -5046,8 +5049,7 @@ async function handleChoosing(
       // Tudo o que o cliente pediu tem que estar no produto ("kerasys" E "coco"), não só a
       // palavra nova — senão "Kit Skala Coco" aparecia como "shampoo kerasys coco".
       if (await researchChoice(phone, convoId, ctx, current, wanted, queryTokens(normalizeMsg(attrAsk)).join(" "))) return;
-      await reply(phone, copy.refineNoResult(wanted));
-      await sendChoices(phone, current);
+      await replyRefineMiss(phone, current, wanted, text);
       return;
     }
   }
@@ -5142,7 +5144,7 @@ async function handleChoosing(
     return;
   }
   if (refineAttrs) {
-    await refineOptions(phone, convoId, ctx, store, refineAttrs);
+    await refineOptions(phone, convoId, ctx, store, refineAttrs, text);
     return;
   }
 
@@ -5213,7 +5215,7 @@ async function handleChoosing(
   const shortReply = !multiItem && queryTokens(normalizeMsg(text)).length <= 3;
   const catalogAttrs = shortReply ? await contextualCatalogAttrs(store, ctx, current, text) : null;
   if (catalogAttrs) {
-    await refineOptions(phone, convoId, ctx, store, catalogAttrs);
+    await refineOptions(phone, convoId, ctx, store, catalogAttrs, text);
     return;
   }
 
@@ -5261,8 +5263,7 @@ async function handleChoosing(
         .filter((item) => conciergeMatchIsStrong(token, item));
       const brandOnly = solo.length > 0 && solo.every((item) => normalizeMsg(item.brand ?? "").includes(token));
       if (brandOnly) {
-        await reply(phone, copy.refineNoResult(combinedQuery));
-        await sendChoices(phone, current);
+        await replyRefineMiss(phone, current, combinedQuery, text);
         return;
       }
     } catch (error) {
@@ -5274,7 +5275,7 @@ async function handleChoosing(
   // Questions about the shown options ("qual é a desnatada?") must NOT be searched
   // as new products — re-show the options instead.
   if (intent.kind === "free_text" && !isQuestion(text)) {
-    const added = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, undefined, ctx.cep);
+    const added = await buildChoicesWithSearchNotice(phone, withMissQualifiers(ctx, text), undefined, undefined, undefined, ctx.cep);
     // "Isqueiro maçarico" enquanto escolhe "isqueiro" (06/09): nada nas vitrines → busca
     // direto no Mercado Livre com a frase nova e troca as opções, sem oferecer/perguntar.
     if (!added.autoAdded.length && !added.pending.length && sharesProductNoun(text, current.query) && mercadoLivreEnabled()) {
@@ -5363,6 +5364,12 @@ async function handleChoosing(
   await sendChoices(phone, current);
 }
 
+// "Tenta outro modelo de mouse" depois do "não achei mouse sem fio": a procura continua com o "sem fio".
+function withMissQualifiers(ctx: DeliveryContext, text: string): string {
+  const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
+  return (miss && inheritMissQualifiers(text, miss.query)) || text;
+}
+
 async function contextualCatalogAttrs(store: StoreConnector, ctx: DeliveryContext, current: PendingChoice, text: string): Promise<string[] | null> {
   const candidates = await choiceCandidates(store, ctx, current);
   return inferCatalogRefinement(text, candidates);
@@ -5412,7 +5419,12 @@ async function aiApprovePool(query: string, pool: ChoiceOption[]): Promise<Choic
     [{ query, candidates: head.map((o) => ({ sku: o.sku, name: o.name, brand: o.brand, price: o.unitPrice, store: o.storeLabel ?? "" })) }],
     18
   );
-  if (!rerank) return pool;
+  if (!rerank) {
+    // IA sem resposta no prazo: o piso léxico sozinho deixa passar "óleo lubrificante" para "óleo". Pelo menos
+    // exige TODAS as palavras do pedido (e a marca/o atributo escrito) quando alguém as tem.
+    const strict = pool.filter((o) => conciergeMatchIsStrong(query, o, { allTokens: true }));
+    return strict.length ? strict : pool;
+  }
   const approved = new Set(rerank.lines[0].skus);
   return head.filter((o) => approved.has(o.sku));
 }
@@ -5585,7 +5597,20 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   return true;
 }
 
-async function refineOptions(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector, attrs: string[]) {
+// O cliente RECUSOU o que está na mesa ("nenhum desses", "esses não servem", "tem que ser tocha") e a busca
+// refinada não achou nada: mostrar de novo as mesmas opções recusadas, só com o aviso "não achei", era a
+// resposta que o cliente já tinha dispensado (rodada 2, c11). Diz que não achou e devolve a escolha a ele.
+const REJECTED_SHOWN_RE = /\b(nenhum(?:a)? d(?:es|ess)[ea]s?|nao (?:servem?|serve|gostei|quero (?:ess\w*|nenhum\w*))|(?:ess\w+|est\w+) nao (?:servem?|sao)|tem que ser|precisa ser|tinha que ser|so serve)\b/;
+async function replyRefineMiss(phone: string, current: PendingChoice, refined: string, text?: string) {
+  if (text && REJECTED_SHOWN_RE.test(normalizeMsg(text))) {
+    await reply(phone, copy.refineNoResultRejected(refined));
+    return;
+  }
+  await reply(phone, copy.refineNoResult(refined));
+  await sendChoices(phone, current);
+}
+
+async function refineOptions(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector, attrs: string[], text?: string) {
   const p = ctx.pending![0];
   const base = p.baseQuery ?? p.query;
   const refined = `${base} ${attrs.join(" ")}`;
@@ -5600,8 +5625,7 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
     closest = matches.length > 0;
   }
   if (!matches.length) {
-    await reply(phone, copy.refineNoResult(refined));
-    await sendChoices(phone, p);
+    await replyRefineMiss(phone, p, refined, text);
     return;
   }
   p.baseQuery = base;
@@ -6164,6 +6188,8 @@ async function handleConciergeRequest(
   // fala do PEDIDO COMPLETO, não do fragmento nem de "essa eu não sei responder".
   let missCombined: string | undefined;
   const follow = prevMiss ? parseMissFollowUp(text) : null;
+  // "Pode tentar outro modelo de mouse?" depois de "não achei mouse sem fio": o "sem fio" continua valendo.
+  if (prevMiss && !follow) text = withMissQualifiers({ ...ctx, lastMiss: prevMiss }, text);
   if (prevMiss && follow?.kind === "retry") {
     if (prevMiss.retried) {
       ctx.lastMiss = prevMiss;
@@ -6334,6 +6360,11 @@ async function handleConciergeRequest(
   ctx.storeKey = CONCIERGE_STORE_KEY;
   ctx.cep = ctx.cep ?? userCep ?? undefined;
   ctx.notFound = undefined;
+  // Um item sem opção no meio de uma lista com escolhas ("mouse sem fio" + "pilha"): guarda o que não foi achado
+  // para o "tenta outro modelo de mouse" seguinte continuar procurando "mouse sem fio" (rodada 2, c72).
+  if (pending.length && unavailable.length === 1 && notFoundLines.length === 1 && !containsMedicine && !medicineMiss) {
+    ctx.lastMiss = { query: notFoundLines[0].phrase, qty: notFoundLines[0].qty, at: Date.now() };
+  }
 
   // "escolhe vc"/"qualquer um": a linha marcada auto-escolhe o topo do ranking, com
   // confirmação do que entrou (28/08 S6 — "escolhe vc" virava item não-achado).

@@ -547,6 +547,11 @@ export function cheapestFirstHeader(query: string): string {
   return `Separei as mais baratas de *${query}*, da mais barata pra mais cara:`;
 }
 
+// Recusou as opções e pediu algo que ninguém tem: honesto, sem repetir o que ele dispensou.
+export function refineNoResultRejected(refined: string): string {
+  return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }

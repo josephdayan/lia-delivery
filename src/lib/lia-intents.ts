@@ -246,6 +246,8 @@ const MODIFIER_SEGMENT_RE = new RegExp(
     [
       // ORÇAMENTO sozinho no segmento (todas as formas de dizer o teto — ver BUDGET_* acima).
       BUDGET_SEGMENT_SRC,
+      // Ocasião do presente ("amigo secreto do trabalho", "pro amigo oculto da firma") descreve o pedido, não é item.
+      "(?:e |pra |para |p )?(?:o |um |do )?amigo (?:secreto|oculto)(?: (?:do|da|de|dos|das|no|na) [a-zà-ú ]+)?",
       // "...mas com o frete" / "no total": só confirma que o teto é do TOTAL (vira ruído, nunca item).
       `(?:mas |e |isso )?(?:no total|(?:com )?frete (?:incluso|incluido)|entrega (?:inclusa|incluida)|com (?:a )?entrega|com (?:o )?frete|incluindo (?:a |o )?(?:entrega|frete)|contando (?:a |o )?(?:entrega|frete)|ao todo)`,
       "(pode ser )?(de )?qualquer [a-z]+( uma?)?",
@@ -413,7 +415,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   const parsedLines = source
@@ -460,7 +462,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
           ""
         )
         // vocativo ("minha filha, quero…", "amiga, me vê…", "lia,…") não é produto
-        .replace(/^((minha|meu)\s+(filha?|filho|querid[ao]|amor|anjo|bem)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|lia)[\s,!.]+/i, "")
+        .replace(/^((minha|meu)\s+(filha?|filho|querid[ao]|amor|anjo|bem)|querid[ao]|amig[ao](?!\s+(?:secret|oculto))|amigona|mo[cç][ao]|lia)[\s,!.]+/i, "")
         // "mais um refri"/"outro leite" é ADIÇÃO relativa: marca com sentinela antes de
         // limpar — só segmento aditivo pode se dobrar na linha anterior (28/08 S9).
         .replace(/^(e\s+)?(mais|outr[oa]s?)\s+/i, "\u0001")
@@ -706,6 +708,53 @@ function meaningfulProductTokens(phrase: string): string[] {
     .map((token) => PRODUCT_TOKEN_ALIASES[token] ?? token)
     .filter((token) => token.length >= 4 && !["para", "umas", "mais", "cada"].includes(token));
 }
+// "Pode tentar outro modelo de mouse?" logo depois do "não achei mouse sem fio" (rodada 2, c72): o pedido novo
+// é a MESMA procura, e "sem fio" continua valendo — sem herdar a exigência, a Lia mostrava mouse com fio sem
+// avisar. Devolve o texto com o trecho do produto trocado pela frase completa do que não foi achado; null =
+// não é continuação (o cliente já disse outro atributo, relaxou o pedido, ou nem falou do mesmo produto).
+export function inheritMissQualifiers(text: string, missQuery: string): string | null {
+  const miss = normalizeMsg(missQuery).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  if (miss.length < 2) return null;
+  const n = normalizeMsg(text);
+  if (/\b(qualquer|tanto faz|sem preferencia|pode ser (?:com|de|sem)|mesmo (?:com|sem)|serve)\b/.test(n)) return null;
+  // Só continua o pedido quando o cliente PEDE para tentar de novo/outro ("tenta outro modelo", "procura mais um").
+  if (!/\b(tent\w*|procur\w*|busc\w*|pesquis\w*|outr[oa]s?|novamente|de novo|mais um|mais uma)\b/.test(n)) return null;
+  const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const stem = (w: string) => (w.length >= 4 ? w.replace(/s$/, "") : w);
+  const missStems = miss.map(stem);
+  const textStems = words.map(stem);
+  // O texto já traz algum token que a frase perdida tinha, mas não os qualificadores: mouse × (sem fio).
+  const hitIdx = missStems.map((w, i) => (textStems.includes(w) ? i : -1)).filter((i) => i >= 0);
+  if (!hitIdx.length || hitIdx.length === miss.length) return null;
+  // Os tokens do produto têm que ser contíguos na frase perdida ("mouse", "tinta spray") e o resto, qualificador.
+  const first = hitIdx[0];
+  const last = hitIdx[hitIdx.length - 1];
+  if (last - first + 1 !== hitIdx.length) return null;
+  // Qualificador (sem fio, azul, 5kg) vem DEPOIS do produto ou antes ("pilha recarregável"); nenhum token dele
+  // pode estar no texto — se aparece, o cliente está falando do atributo (relaxando ou trocando).
+  const qualifiers = missStems.filter((_, i) => i < first || i > last);
+  if (qualifiers.some((q) => textStems.includes(q))) return null;
+  // O produto é o trecho contíguo do texto: troca esse trecho pela frase inteira.
+  const productWords = missStems.slice(first, last + 1);
+  const rawWords = text.split(/(\s+)/);
+  const norm = (w: string) => stem(normalizeMsg(w).replace(/[^a-z0-9]/g, ""));
+  for (let i = 0; i < rawWords.length; i++) {
+    if (!rawWords[i].trim() || norm(rawWords[i]) !== productWords[0]) continue;
+    let j = i;
+    let matched = 1;
+    while (matched < productWords.length) {
+      j += 1;
+      while (j < rawWords.length && !rawWords[j].trim()) j += 1;
+      if (j >= rawWords.length || norm(rawWords[j]) !== productWords[matched]) break;
+      matched += 1;
+    }
+    if (matched !== productWords.length) continue;
+    const trailing = rawWords[j].match(/[^\p{L}\p{N}]+$/u)?.[0] ?? "";
+    return `${rawWords.slice(0, i).join("")}${missQuery.trim()}${trailing}${rawWords.slice(j + 1).join("")}`.replace(/\s+/g, " ").trim();
+  }
+  return null;
+}
+
 export function sharesProductNoun(a: string, b: string): boolean {
   const aTokens = meaningfulProductTokens(a);
   const bTokens = new Set(meaningfulProductTokens(b));
