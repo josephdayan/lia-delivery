@@ -81,7 +81,15 @@ FATOS DO SERVIÇO (verdadeiros — não os trate como promessa falsa nem como de
 - A loja vende por embalagem: ajustar a quantidade para a embalagem disponível é aceitável SE a Lia avisar ANTES de cobrar.
 - Orçamento que o cliente disser vale para o TOTAL (produto + frete): a Lia deve respeitar ou avisar que não cabe.
 - "(sandbox: responda paguei pra simular)" e códigos MOCKPIX são do ambiente de teste — ignore.
-- "Me pede qualquer coisa" na saudação é exagero: conte como falseClaim leve só se a conversa depois contradisser (ex.: recusar algo comum sem explicar).`;
+- "Me pede qualquer coisa" na saudação é exagero: conte como falseClaim leve só se a conversa depois contradisser (ex.: recusar algo comum sem explicar).
+
+DEFEITOS GRAVES (gravidade "high", mesmo que o objetivo tenha sido cumprido):
+- A Lia trata pedaço de frase do cliente como produto ("*Você consegue qualquer coisa* eu não achei", "*prático* eu não achei", "*Pode tentar de qualquer marca…* eu não achei").
+- Ignora uma preferência EXPLÍCITA do cliente: "o mais barato" (as opções devem vir com a mais barata primeiro ou a Lia escolher a mais barata), marca, tamanho, "sem açúcar", orçamento.
+- Pede de novo um dado que o cliente já deu (endereço, produto), ou duplica um item na cesta, ou muda a quantidade sem o cliente pedir.
+- Repete a MESMA resposta duas vezes seguidas para mensagens diferentes do cliente.
+- Ignora um pedido de troca/alteração feito pelo cliente.
+Produto que cumpre a função pedida com nome técnico diferente (ex.: "módulo carregador USB-C de tomada" para "carregador usb c") é aceitável, não é produto errado.`;
 
 const JUDGE_SCHEMA = {
   type: "object", additionalProperties: false, required: ["goalReached", "wrongProduct", "falseClaim", "deadEnd", "confusing", "slow", "defects", "summary"],
@@ -92,8 +100,9 @@ const JUDGE_SCHEMA = {
   }
 };
 
+// "Limpa" (07/10): objetivo cumprido, sem produto errado, sem promessa falsa, sem beco e SEM defeito grave.
 function isClean(v: any) {
-  return Boolean(v && v.goalReached && !v.wrongProduct && !v.falseClaim && !v.deadEnd);
+  return Boolean(v && v.goalReached && !v.wrongProduct && !v.falseClaim && !v.deadEnd && !(v.defects ?? []).some((d: any) => d.severity === "high"));
 }
 function passAtN(results: any[]) {
   const by = new Map<string, any[]>();
@@ -129,7 +138,7 @@ async function rejudge(file: string) {
   }
   const judged = data.results.filter((r: any) => r.verdict);
   const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)}%` : "n/a");
-  const clean = (r: any) => r.verdict.goalReached && !r.verdict.wrongProduct && !r.verdict.falseClaim && !r.verdict.deadEnd;
+  const clean = (r: any) => isClean(r.verdict);
   data.summary = { ...data.summary, judged: judged.length,
     goalReached: pct(judged.filter((r: any) => r.verdict.goalReached).length, judged.length),
     wrongProduct: pct(judged.filter((r: any) => r.verdict.wrongProduct).length, judged.length),
@@ -205,7 +214,7 @@ async function main() {
       const ended = transcript.some((m) => m.who === "cliente" && m.text.trim().toUpperCase() === "FIM");
       results.push({ id: s.id, rep, set: s.set ?? "treino", title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
       if (verbose) console.log(`\n=== ${s.id} ${s.title}\n${rendered}\n→ ${JSON.stringify(verdict)}`);
-      process.stdout.write(verdict ? (verdict.goalReached && !verdict.wrongProduct && !verdict.falseClaim && !verdict.deadEnd ? "." : "F") : "?");
+      process.stdout.write(verdict ? (isClean(verdict) ? "." : "F") : "?");
       // limpeza do telefone de teste
       const user = await prisma.user.findUnique({ where: { phone } });
       if (user) {
@@ -230,7 +239,7 @@ async function main() {
       deadEnd: pct(judged.filter((r) => r.verdict.deadEnd).length, judged.length),
       confusing: pct(judged.filter((r) => r.verdict.confusing).length, judged.length),
       slow: pct(judged.filter((r) => r.verdict.slow).length, judged.length),
-      clean: pct(judged.filter((r) => r.verdict.goalReached && !r.verdict.wrongProduct && !r.verdict.falseClaim && !r.verdict.deadEnd).length, judged.length),
+      clean: pct(judged.filter((r) => isClean(r.verdict)).length, judged.length),
       highSeverityDefects: judged.reduce((n, r) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0),
       // pass@N: o cenário só conta se TODAS as execuções dele forem limpas / cumprirem o objetivo.
       repeat,
