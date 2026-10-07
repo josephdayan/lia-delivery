@@ -668,8 +668,8 @@ export function shippingSpeedChoice(
     estimate ? (kind === "store" ? estimate : `chega até ${estimate}`) : kind === "store" ? "sem prazo informado" : "sem data publicada";
   return [
     "Tem duas formas de entrega. Qual você prefere?",
-    `*1)* Mais barata — ${brl(barato.total)} · ${quando(barato.estimate)}`,
-    `*2)* Mais rápida — ${brl(rapido.total)} · ${quando(rapido.estimate)}`,
+    `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}`,
+    `*2)* Mais rápida — total ${brl(rapido.total)} · ${quando(rapido.estimate)}`,
     "",
     "Toca no botão ou responde *1* ou *2*."
   ].join("\n");

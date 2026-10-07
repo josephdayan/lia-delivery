@@ -215,8 +215,8 @@ test("escolha de entrega: mostra TOTAL de cada opção com a data, e cobre anún
     { total: 365.88, estimate: "25/08" },
     { total: 376.88, estimate: "20/08" }
   );
-  assert.match(texto, /Mais barata — R\$ 365,88 · chega até 25\/08/);
-  assert.match(texto, /Mais rápida — R\$ 376,88 · chega até 20\/08/);
+  assert.match(texto, /Mais barata — total R\$ 365,88 · chega até 25\/08/);
+  assert.match(texto, /Mais rápida — total R\$ 376,88 · chega até 20\/08/);
   assert.match(texto, /Toca no botão ou responde \*1\* ou \*2\*/);
 
   // Sem data publicada a Lia não inventa prazo — regra antiga do projeto.

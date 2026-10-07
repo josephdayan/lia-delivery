@@ -137,7 +137,7 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
       },
       // O webhook do WhatsApp precisa responder; sem resposta em 6s, seguimos com o
       // ranking determinístico em vez de deixar o cliente no vácuo.
-      signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 6000)),
+      signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
         model: liaTextModel(),
         input: [

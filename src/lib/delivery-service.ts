@@ -4929,7 +4929,24 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
   // léxico é a única guarda; pool que esvazia vira o honesto "essas são todas".
   pool = pool.filter((o) => conciergeMatchIsStrong(query, o));
   if (p.cap != null) pool = pool.filter((o) => display(o.unitPrice, o.medicine) <= p.cap!);
-  return active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
+  pool = active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
+  return aiApprovePool(query, pool);
+}
+
+// "Outras"/refino/mais barato também passam pelo juízo da IA (07/10, placar c20: "outras" de
+// "arroz" trazia arroz carreteiro, com brócolis e arbório — o piso léxico só vê a palavra).
+// IA fora do ar = o pool segue como estava; a ordem do ranking original é preservada.
+async function aiApprovePool(query: string, pool: ChoiceOption[]): Promise<ChoiceOption[]> {
+  if (pool.length < 2) return pool;
+  const head = pool.slice(0, 18);
+  const rerank = await rerankShoppingOptions(
+    query,
+    [{ query, candidates: head.map((o) => ({ sku: o.sku, name: o.name, brand: o.brand, price: o.unitPrice, store: o.storeLabel ?? "" })) }],
+    18
+  );
+  if (!rerank) return pool;
+  const approved = new Set(rerank.lines[0].skus);
+  return head.filter((o) => approved.has(o.sku));
 }
 
 // "acha outras" (ou o botão "Outras opções"): show the NEXT 3 catalog matches for the
