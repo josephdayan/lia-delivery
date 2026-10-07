@@ -68,7 +68,7 @@ async function main() {
     if (onlyCat) reqs = reqs.filter((r) => r.cat === onlyCat);
     if (only) reqs = reqs.filter((r) => r.text.toLowerCase().includes(only.toLowerCase()));
     if (limit) reqs = reqs.slice(0, limit);
-    console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-5.5"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-5.4-mini"}`);
+    console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-5.6-terra"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-5.6-luna"}`);
 
     const results: any[] = [];
     let next = 0;
@@ -85,7 +85,7 @@ async function main() {
           shown = options.map((o, i) => ({ id: `S${i + 1}`, store: o.storeLabel ?? o.storeKey ?? "", name: o.name, brand: o.brand ?? "", price: o.unitPrice, _sku: `${o.storeKey}:${o.sku}` } as Shown));
         } catch (e) { error = e instanceof Error ? e.message.slice(0, 160) : String(e); }
         const ms = Date.now() - t0;
-        const pool = (await oraclePool(r.text, stores, 8)).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
+        const pool = (await oraclePool(r.text, stores, Number(process.env.BENCH_ORACLE_PER_STORE ?? 5))).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
         const items = [...shown.map((s) => ({ id: s.id, store: s.store, name: s.name, brand: s.brand, price: s.price })), ...pool.map((p) => ({ id: p.jid, store: p.store, name: p.name, brand: p.brand, price: p.price }))];
         const verdict = await judge({ request: r.text, items });
         const v = verdict?.verdicts ?? {};
@@ -120,7 +120,7 @@ async function main() {
     const lat = results.map((r) => r.ms).sort((a, b) => a - b);
     const summary = {
       label, at: new Date().toISOString(), requests: results.length, cep: cep.slice(0, 5) + "-***", stores: stores.length,
-      liaModel: process.env.OPENAI_MODEL ?? "gpt-5.4-mini", judgeModel: process.env.BENCH_JUDGE_MODEL ?? "gpt-5.5",
+      liaModel: process.env.OPENAI_MODEL ?? "gpt-5.6-luna", judgeModel: process.env.BENCH_JUDGE_MODEL ?? "gpt-5.6-terra",
       outcomes: Object.fromEntries([...new Set(results.map((r) => r.outcome))].map((o) => [o, count(o)])),
       top1WrongRate: pct(count("wrong_top1") + count("false_positive"), nonMed.length),
       precisionItems: pct(goodShown.length, allShown.length),

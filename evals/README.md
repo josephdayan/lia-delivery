@@ -12,7 +12,7 @@ de produção (Postgres embutido próprio, porta 54339/54340, pasta `.local-pg-b
 - Sistema testado: `searchOptionsForPlanB` (extração → candidatos → checagem ao vivo no CEP → rerank),
   o mesmo caminho da produção, no CEP do `.retail-buyer/config.json` (ou `BENCH_CEP`).
 - Oráculo: busca inteligente ao vivo de cada loja da vitrine (seller "1", com estoque) →
-  `scripts/bench/oracle.mts`. Juiz: `gpt-5.5` (`BENCH_JUDGE_MODEL`) dá exact/acceptable/wrong para o
+  `scripts/bench/oracle.mts`. Juiz: `gpt-5.6-terra` com raciocínio baixo (`BENCH_JUDGE_MODEL`, `BENCH_JUDGE_EFFORT`) dá exact/acceptable/wrong para o
   que a Lia mostrou e para o que as lojas têm (`scripts/bench/judge.mts`).
 - Números: **top1WrongRate** (1ª opção errada — o erro que o cliente vê), **precisionItems**,
   **coverage** (achou quando existe), **honesty** (disse que não tem quando não existe),
@@ -26,7 +26,7 @@ LIA_LIVE_SEARCH=true npx tsx scripts/bench-search.mts --label depois-busca-ao-vi
 
 ## Placar de conversas — `scripts/bench-conversations.mts`
 40 cenários (`evals/conversation-scenarios.json`) nascidos de conversas reais e reclamações dos
-testadores. Um cliente simulado (gpt-5.4) conversa com a Lia de verdade até o Pix aparecer (nunca paga);
+testadores. Um cliente simulado (gpt-5.6-luna) conversa com a Lia de verdade até o Pix aparecer (nunca paga);
 o juiz lê a transcrição: objetivo cumprido, produto errado, promessa falsa, beco sem saída, confuso,
 lento. `npx tsx scripts/bench-conversations.mts --label antes [--only c01,c02] [--verbose]`.
 
@@ -39,3 +39,9 @@ lento. `npx tsx scripts/bench-conversations.mts --label antes [--only c01,c02] [
 - `evals/results/search-2026-10-07-parcial-sem-credito.json`: 1ª rodada, **parcial** — o crédito da
   OpenAI acabou no meio (≈ 60 pedidos com a IA da Lia em fallback e 45 sem nota do juiz). Serve para
   ler os defeitos qualitativos, **não** como linha de base numérica.
+
+## Custo (preços por 1M tokens, 07/10)
+Lia: `gpt-5.6-luna` US$0,20 / US$1,20 (era gpt-5.4-mini US$0,75 / US$4,50). Juiz: `gpt-5.6-terra`
+US$2 / US$12 (o gpt-5.5 do 1º run custa US$5 / US$30 e gastou ~US$20 em ~270 pedidos). Rodada completa
+dos dois placares estimada em ~US$5–10. O juiz precisa ser mais forte que a Lia: se a Lia subir de
+modelo, suba o juiz (`BENCH_JUDGE_MODEL=gpt-5.6-sol`).

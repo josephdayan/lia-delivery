@@ -47,7 +47,7 @@ export async function extractShoppingList(text: string): Promise<ShoppingExtract
       // teto, a chamada aborta e o fluxo cai no determinístico que já existe.
       signal: AbortSignal.timeout(Number(process.env.LIA_AI_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
+        model: liaTextModel(),
         input: [
           {
             role: "system",
@@ -104,6 +104,14 @@ export async function extractShoppingList(text: string): Promise<ShoppingExtract
   }
 }
 
+// Modelo da Lia para texto (extração, rerank, roteador). Decisão do dono (07/10/2026):
+// gpt-5.6-luna — US$0,20/US$1,20 por 1M tokens (o gpt-5.4-mini custava US$0,75/US$4,50).
+// `OPENAI_MODEL` na Vercel vence o padrão. Visão (foto de produto) segue com o modelo antigo
+// até a luna ser testada com imagem.
+export function liaTextModel(): string {
+  return process.env.OPENAI_MODEL ?? "gpt-5.6-luna";
+}
+
 export type RerankCandidate = { sku: string; name: string; brand?: string; price: number; store: string };
 export type RerankLine = { query: string; candidates: RerankCandidate[] };
 export type RerankResult = { lines: { skus: string[] }[] };
@@ -131,7 +139,7 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
       // ranking determinístico em vez de deixar o cliente no vácuo.
       signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 6000)),
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
+        model: liaTextModel(),
         input: [
           {
             role: "system",
@@ -263,7 +271,7 @@ async function interpretCustomerMessageReal(input: RouterInput): Promise<RouterV
       },
       signal: AbortSignal.timeout(Number(process.env.LIA_AI_TIMEOUT_MS ?? 10000)),
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
+        model: liaTextModel(),
         input: [
           {
             role: "system",

@@ -1,4 +1,4 @@
-// JUIZ independente da busca: um modelo MAIS FORTE que o da Lia (gpt-5.5 por padrão,
+// JUIZ independente da busca: um modelo MAIS FORTE que o da Lia (gpt-5.6-terra por padrão,
 // BENCH_JUDGE_MODEL troca) classifica cada item como exact / acceptable / wrong para o
 // pedido do cliente. Mesmo juiz para o que a Lia mostrou e para o oráculo das lojas.
 export type Verdict = "exact" | "acceptable" | "wrong";
@@ -15,7 +15,7 @@ Responda só o JSON pedido, com um veredito para cada id recebido e uma nota cur
 
 export async function judge(input: JudgeInput): Promise<JudgeOutput | null> {
   if (!input.items.length) return { kind: "product", verdicts: {}, note: "sem itens" };
-  const model = process.env.BENCH_JUDGE_MODEL ?? "gpt-5.5";
+  const model = process.env.BENCH_JUDGE_MODEL ?? "gpt-5.6-terra";
   const ids = input.items.map((i) => i.id);
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -25,6 +25,7 @@ export async function judge(input: JudgeInput): Promise<JudgeOutput | null> {
         signal: AbortSignal.timeout(120_000),
         body: JSON.stringify({
           model,
+          reasoning: { effort: process.env.BENCH_JUDGE_EFFORT ?? "low" },
           input: [
             { role: "system", content: SYSTEM },
             { role: "user", content: JSON.stringify({ pedido: input.request, produtos: input.items.map((i) => ({ id: i.id, loja: i.store, nome: i.name, marca: i.brand, preco: i.price })) }) }
