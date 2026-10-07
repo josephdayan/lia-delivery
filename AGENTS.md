@@ -9,7 +9,7 @@ outro tipo em vez de devolver vazio ("bola de tênis" → bola inflável/futebol
 desligado: `src/lib/stores/live-search.ts` (busca inteligente da própria loja VTEX em paralelo à
 cópia, seller "1", sem remédio, farmácia só nas categorias liberadas) — liga com
 `LIA_LIVE_SEARCH=true`; vira padrão só depois do placar. A Lia segue OFFLINE até o dono mandar.
-**Modelo da Lia (dono, 07/10): `gpt-5.6-luna`** (`liaTextModel()` em ai.ts; `OPENAI_MODEL` na Vercel vence o padrão — conferir que não está fixada no antigo). Visão segue no modelo antigo até testar a luna com imagem. Juiz dos placares: `gpt-5.6-terra`.
+**Modelo da Lia (dono, 07/10): `gpt-6-luna`** (`liaTextModel()` em ai.ts; `OPENAI_MODEL` na Vercel vence o padrão — conferir que não está fixada no antigo). Visão segue no modelo antigo até testar a luna com imagem. Juiz dos placares: `gpt-6-sol`. (Corrigido: o modelo é `gpt-6-luna`, US$0,10/US$0,50 por 1M — não o 5.6.)
 
 
 ## 06/10/2026 (noite) — Interruptor "Lia offline" (dono)

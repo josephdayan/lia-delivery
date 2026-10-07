@@ -68,7 +68,7 @@ async function main() {
     if (onlyCat) reqs = reqs.filter((r) => r.cat === onlyCat);
     if (only) reqs = reqs.filter((r) => r.text.toLowerCase().includes(only.toLowerCase()));
     if (limit) reqs = reqs.slice(0, limit);
-    console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-5.6-terra"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-5.6-luna"}`);
+    console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-sol"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-6-luna"}`);
 
     const results: any[] = [];
     let next = 0;
@@ -120,7 +120,7 @@ async function main() {
     const lat = results.map((r) => r.ms).sort((a, b) => a - b);
     const summary = {
       label, at: new Date().toISOString(), requests: results.length, cep: cep.slice(0, 5) + "-***", stores: stores.length,
-      liaModel: process.env.OPENAI_MODEL ?? "gpt-5.6-luna", judgeModel: process.env.BENCH_JUDGE_MODEL ?? "gpt-5.6-terra",
+      liaModel: process.env.OPENAI_MODEL ?? "gpt-6-luna", judgeModel: process.env.BENCH_JUDGE_MODEL ?? "gpt-6-sol",
       outcomes: Object.fromEntries([...new Set(results.map((r) => r.outcome))].map((o) => [o, count(o)])),
       top1WrongRate: pct(count("wrong_top1") + count("false_positive"), nonMed.length),
       precisionItems: pct(goodShown.length, allShown.length),

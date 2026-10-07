@@ -105,11 +105,11 @@ export async function extractShoppingList(text: string): Promise<ShoppingExtract
 }
 
 // Modelo da Lia para texto (extração, rerank, roteador). Decisão do dono (07/10/2026):
-// gpt-5.6-luna — US$0,20/US$1,20 por 1M tokens (o gpt-5.4-mini custava US$0,75/US$4,50).
+// gpt-6-luna — US$0,10/US$0,50 por 1M tokens (o gpt-5.4-mini custava US$0,75/US$4,50).
 // `OPENAI_MODEL` na Vercel vence o padrão. Visão (foto de produto) segue com o modelo antigo
 // até a luna ser testada com imagem.
 export function liaTextModel(): string {
-  return process.env.OPENAI_MODEL ?? "gpt-5.6-luna";
+  return process.env.OPENAI_MODEL ?? "gpt-6-luna";
 }
 
 export type RerankCandidate = { sku: string; name: string; brand?: string; price: number; store: string };
