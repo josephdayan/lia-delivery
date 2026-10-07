@@ -1092,7 +1092,7 @@ export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string): strin
   }
   return businessInfo
     ? `Claro: ${businessInfo}. E a nota fiscal dos produtos sai da própria loja onde eu compro.`
-    : "Somos um serviço registrado e a nota fiscal dos produtos sai da própria loja onde eu compro. Se quiser os dados completos da empresa, me fala que eu te envio certinho.";
+    : "A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo. A nota fiscal dos produtos sai da própria loja onde eu compro.";
 }
 
 // "quem faz a entrega?"
@@ -1502,6 +1502,12 @@ export function minimumSwapDone(pairs?: SwapPair[]): string {
   return ["Troquei de loja — sem pedido mínimo:", ...swapPairLines(pairs), "Fechando seu total:"].join("\n");
 }
 
+// Já refizemos a busca e continua sem nada (07/10): resposta honesta com saída, nunca o mesmo
+// "não achei" em laço.
+export function missStillNone(query: string): string {
+  return `Procurei de novo e continuo sem nenhuma opção de *${shortNotFoundLabel(query)}* nas lojas que entregam aí. Se quiser, me diz um produto parecido ou outro item que eu busco agora.`;
+}
+
 export function itemsNotAvailable(items: string[]): string {
   const labels = items.map(shortNotFoundLabel);
   if (labels.length === 1) {
@@ -1771,6 +1777,11 @@ export function orderAddressAnswer(shortId: string, address: string): string {
 // seguia para o endereço antigo, sem aviso.
 export function paidOrderAddressKept(shortId: string, address: string): string {
   return `Seu pedido *#${shortId}* já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
+}
+
+// 2º pedido de atendente em pouco tempo (07/10, c30): o mesmo texto de novo parecia travado.
+export function humanHandoffAgain(): string {
+  return "Já avisei o responsável e ele ainda não respondeu — costuma retornar das 9h às 20h. Deixa aqui o que você precisa, com todos os detalhes, que ele já vê tudo e te responde direto nesta conversa.";
 }
 
 export function humanHandoff(): string {

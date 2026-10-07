@@ -159,6 +159,11 @@ export type DeliveryContext = {
   };
   storeKey?: string;
   notFound?: string[];
+  // Último pedido que NENHUMA loja tinha (07/10, placar c28/c40): "tenta de novo" e "pode ser
+  // uma Wilson" falam dele. `retried` = já refizemos a busca uma vez; a 2ª vez é resposta honesta.
+  // Quando o cliente pediu atendente (07/10): o 2º pedido seguido não repete o mesmo texto.
+  humanAskedAt?: number;
+  lastMiss?: { query: string; qty: number; at: number; retried?: boolean };
   // Oferta pendente de busca na cauda longa (Mercado Livre) para as linhas que as
   // vitrines locais não cobriram (revisão 02/09). "sim" dispara a busca; "não" limpa.
   longTailOffer?: { lines: Array<{ phrase: string; qty: number; qtyExplicit?: boolean; cap?: number; raw?: string }> };

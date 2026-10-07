@@ -226,6 +226,9 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "o quanto antes",
       "urgente(mente)?",
       "(entrega|entregam|entregue|entregando) (hoje|amanha|rapida|rapido)( .*)?",
+      // LUGAR de entrega ("entrega em belo horizonte", "pra entregar na minha casa") descreve o
+      // destino, nunca é item — virava "Já anotei • 1x entrega em belo horizonte" (placar c38).
+      "(e |mas |pra |para |vou |quero |queria |preciso )*(entrega|entregar|entregue|entregam|entregando|mandar|enviar|receber)( isso| tudo| o pedido| as compras)? (em|na|no|pra|para|pro|ate) (?!hoje|amanha)[a-zà-ú][a-zà-ú ]*",
       // aposto classificador ("coisa simples de farmácia", "coisinhas básicas de
       // mercado") — descreve a LISTA, nunca é item (rodada 27/08 S20)
       "(umas? |so |apenas )?(coisa|coisinha)s? (simples|basica|rapida)s?( (de|do|da) [a-zà-ú]+)?",
@@ -348,7 +351,9 @@ export function parseBasketLines(text: string): ParsedLine[] {
     .replace(/(\d),(\d)/g, "$1§$2")
     .replace(/(\d)\.(\d)/g, "$1¤$2")
     // ponto/interrogação separam sentenças ("sabao em po. ah e um refri" = 2 segmentos)
-    .split(/[,\n;.?]|\s+e\s+|\s*\+\s*/i)
+    // " / " (com espaços) também separa itens: "2 coca / 1 shampoo / 2 sabonete" virava UMA linha
+    // de quantidade 2 e a quantidade vazava pros outros itens (placar 07/10, c34). "1/2 litro" não.
+    .split(/[,\n;.?]|\s+e\s+|\s*\+\s*|\s+\/\s+/i)
     .map((raw) =>
       raw
         .replace(/§/g, ",")
@@ -680,7 +685,10 @@ export function mergeShoppingLines(ai: ParsedLine[], deterministic: ParsedLine[]
     // instrução): sem re-anexar, "até R$25 cada" era ordenação e as opções passavam
     // do limite (rodada 10, 4º ciclo: card de R$29,69 com teto de R$25).
     const twin = deterministic.find((d) => sameProduct(d.phrase, line.phrase));
-    const twinCap = twin ? parsePriceCap(twin.phrase) : null;
+    // Uma linha só de cada lado, mas a IA trocou o substantivo ("presente pra minha mãe, uns 100
+    // reais" → "perfume feminino"): o orçamento é da MENSAGEM e continua valendo (placar c23).
+    const capTwin = twin ?? (foldedAi.length === 1 && deterministic.length === 1 ? deterministic[0] : undefined);
+    const twinCap = capTwin ? parsePriceCap(capTwin.phrase) : null;
     const phrase = twinCap != null && parsePriceCap(line.phrase) == null ? `${line.phrase} até ${twinCap} reais` : line.phrase;
     // "escolhe vc" também vive no gêmeo determinístico (28/08 S6).
     // A IA encurta a frase ("isqueiro pra charuto" → "isqueiro"); a versão determinística
@@ -1723,7 +1731,7 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
   if (digitAnywhere) {
     const leftover = n
       .replace(/\b[1-9]\b/, " ")
-      .replace(/\b(quero|prefiro|vou|de|do|da|querer|me|ve|manda|pode|ser|opcao|op|numero|n|o|a|esse|essa|essa ai|ai|por|favor|pf+v?|mesmo|entao|acho|que|vai|fico|com)\b/g, " ")
+      .replace(/\b(quero|prefiro|vou|de|do|da|no|na|querer|me|ve|manda|pode|ser|opcao|op|numero|n|o|a|esse|essa|essa ai|ai|por|favor|pf+v?|mesmo|entao|acho|que|vai|fico|com)\b/g, " ")
       .replace(/[^a-z0-9\s]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
@@ -2075,6 +2083,16 @@ function splitChoiceQty(n: string): { qty: number; rest: string } | null {
 // Escolha + pagamento ou escolha + item novo numa mensagem (06/10): "quero o 1 e paga no
 // pix", "o 1, pode pagar no pix", "quero o 2 e um sabonete". A 1ª parte tem que ser uma
 // escolha de verdade (número, ordinal, "o mais barato"); senão devolve null.
+// Toda palavra/medida da cauda aparece no nome da opção (pontuação ignorada): "omo 1,4kg" ⊂
+// "Lava Roupas em Pó Lavagem Perfeita Omo 1,4kg".
+function tailEchoesOption(tail: string, optionName?: string): boolean {
+  if (!optionName) return false;
+  const flat = (v: string) => normalizeMsg(v).replace(/[^a-z0-9]+/g, " ").trim();
+  const name = ` ${flat(optionName)} `;
+  const tokens = flat(tail).split(" ").filter((t) => t.length > 1 && !CHOICE_STOP.has(t));
+  return tokens.length > 0 && tokens.every((t) => name.includes(` ${t}`) || name.includes(t));
+}
+
 export function parseChoiceCombo(
   text: string,
   options: { name: string; unitPrice: number }[]
@@ -2098,6 +2116,9 @@ export function parseChoiceCombo(
   }
   // Quantidade junto ("o 1, duas unidades") já é tratada pelo parseChoiceReply inteiro.
   if (parseQtyCommand(tail) || !/[a-z]{3,}/.test(tail)) return null;
+  // A cauda que só REPETE a opção escolhida ("acho que vou no 1, Omo 1,4kg") é confirmação,
+  // não item novo — virava busca de "Omo 1,4kg" e uma 2ª unidade na cesta (placar 07/10, c12).
+  if (tailEchoesOption(tail, options[reply.index]?.name)) return { reply };
   return { reply, rest: tail };
 }
 
@@ -2147,5 +2168,27 @@ export function asksCheapestQuestion(text: string): "cheapest" | "priciest" | nu
   if (!isQuestion(n) || !/^(?:e\s+)?(?:qual|quais)\b/.test(n)) return null;
   if (/\bmais (?:barat|em conta)|\bmenor preco\b/.test(n)) return "cheapest";
   if (/\bmais car[oa]\b/.test(n)) return "priciest";
+  return null;
+}
+
+
+// ---------- depois de "não achei" (07/10, placar c28/c40/c02) ----------
+// A resposta "me diz outra marca ou versão que eu tento de novo" convida a continuar, mas
+// "tenta de novo", "pode ser qualquer marca" e "pode tentar uma Wilson?" eram buscados como
+// PRODUTO ("*tenta de novo* eu não achei") ou caíam no "endereço salvo". `retry` = refazer o
+// pedido anterior; `fragment` = só uma marca/atributo, a juntar ao pedido anterior.
+const MISS_FILLER = new Set(
+  "pode ser tentar tenta tente procura procure procurar busca busque buscar pesquisa pesquise ver veja ve de novo novamente outra outro vez qualquer marca marcas versao modelo tanto faz sem preferencia pra mim por favor pf pfv uma um uns umas da do das dos de a o e se ai la entao mas que seja tipo ou algum alguma alguns algumas".split(" ")
+);
+const MISS_RETRY_CUE = /\b(tent|procur|busc|pesquis|novo|novamente|qualquer|tanto faz|outra marca|outro|sem preferencia)/;
+const MISS_NEW_REQUEST = /\b(quero|queria|preciso|precisava|me manda|me ve|vou querer|cancela|cancelar|pagar|pix|cartao|status|oi|ola|obrigad)/;
+
+export function parseMissFollowUp(text: string): { kind: "retry" } | { kind: "fragment"; words: string } | null {
+  const n = normalizeMsg(text).replace(/[?!.,;]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 60 || MISS_NEW_REQUEST.test(n) || /\d/.test(n)) return null;
+  const tokens = n.split(" ");
+  const content = tokens.filter((t) => !MISS_FILLER.has(t));
+  if (!content.length) return MISS_RETRY_CUE.test(n) ? { kind: "retry" } : null;
+  if (content.length <= 2 && tokens.length <= 6) return { kind: "fragment", words: content.join(" ") };
   return null;
 }

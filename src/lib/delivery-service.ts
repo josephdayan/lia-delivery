@@ -15,7 +15,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -1591,7 +1591,10 @@ async function handleDeliveryTurn(
   if (intent.kind === "human") {
     await flagLatestOrder(user.id, `🙋 CLIENTE PEDIU ATENDIMENTO HUMANO: "${text.slice(0, 140)}"`);
     await notifyOwner(`🙋 Cliente pediu atendimento humano: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
-    await reply(phone, copy.humanHandoff());
+    const again = ctx.humanAskedAt != null && Date.now() - ctx.humanAskedAt < 30 * 60_000;
+    ctx.humanAskedAt = Date.now();
+    await writeCtx(convo.id, ctx);
+    await reply(phone, again ? copy.humanHandoffAgain() : copy.humanHandoff());
     return;
   }
   if (intent.kind === "complaint") {
@@ -3134,7 +3137,10 @@ async function handleDeliveryTurn(
   // casava com intent, e frase/pergunta virava produto ("seu Jorge aqui" → Imagem de São
   // Jorge). Frase solta passa pelo roteador primeiro; lista de compras evidente vai
   // direto pra busca (custo/latência). Sem OpenAI o roteador devolve null e nada muda.
-  if (classifyFirstEnabled() && intent.kind === "free_text" && !looksLikeProductList(text)) {
+  // "tenta de novo"/"pode tentar uma Wilson?" logo depois de um "não achei" continua o pedido
+  // anterior (07/10): o classificador os tratava como pergunta ("essa eu não sei responder").
+  const continuesMiss = Boolean(ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 && parseMissFollowUp(text));
+  if (classifyFirstEnabled() && intent.kind === "free_text" && !looksLikeProductList(text) && !continuesMiss) {
     if (await tryLlmInterpret(phone, convo.id, user.cep, ctx, text, user.id)) return;
   }
   // Item novo com cotação na mesa ("adiciona um óleo" em awaiting_quote_confirmation):
@@ -4431,7 +4437,11 @@ async function handleChoosing(
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, chosen, { thenPay: true });
       return;
     }
-    const added = await buildChoicesWithSearchNotice(phone, combo.rest!, undefined, undefined, undefined, ctx.cep);
+    if (!combo.rest) {
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, chosen);
+      return;
+    }
+    const added = await buildChoicesWithSearchNotice(phone, combo.rest, undefined, undefined, undefined, ctx.cep);
     ctx.basket = mergeBaskets(ctx.basket ?? [], added.autoAdded);
     ctx.pending = [...(ctx.pending ?? []), ...added.pending];
     const notes: string[] = [];
@@ -4558,6 +4568,24 @@ async function handleChoosing(
   // característica nova. Busca nova com ela e só mostra o que tem a característica; sem
   // nada, diz que não achou. Antes, o refino achava "kerasys" e repetia a mesma opção
   // ("Ficou entre essas") — "ele insiste no outro produto".
+  // "não gostei dessas, quero da Dove" (07/10, c36): recusa + o que quer no lugar. É busca nova
+  // do MESMO produto com a marca/atributo — nunca "deixei o item de fora".
+  const rejectThen = normalizeMsg(text).match(REJECT_THEN_RE);
+  if (rejectThen) {
+    const wantedTail = rejectThen[1]
+      .replace(/^(?:quero|queria|prefiro|procura|procure|ve se tem|veja se tem|tem|pode ser|me ve|manda)\s+/, "")
+      .replace(/^(?:uma?|d[aeo]s?)\s+/, "")
+      .trim();
+    const base = current.baseQuery ?? current.query;
+    const baseTokens = new Set(queryTokens(normalizeMsg(base)));
+    const fresh = queryTokens(wantedTail).filter((token) => !baseTokens.has(token));
+    if (fresh.length && fresh.length <= 4) {
+      if (await researchChoice(phone, convoId, ctx, current, `${base} ${fresh.join(" ")}`, fresh.join(" "))) return;
+      await reply(phone, copy.refineNoResult(`${base} ${fresh.join(" ")}`));
+      await sendChoices(phone, current);
+      return;
+    }
+  }
   const attrAsk = parseAttributeAsk(text);
   if (attrAsk && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
     const base = current.baseQuery ?? current.query;
@@ -5035,6 +5063,8 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
 // under a dishonest header. No match → say so and re-show what exists.
 // "estes não são bons" (rejeição) opcional + "tem que ser / estilo / tipo X".
 const REJECT_PREFIX = "(?:(?:estes|esses|essas|estas|isso|esse|essa|nenhum|nenhuma)\\s+(?:nao|não)\\s+(?:sao|são|servem?|prestam?|e|eh|da|dao)\\s*(?:bons|boas|bom|boa|legal|legais|isso)?[\\s.!,]*)?";
+// Recusa das opções + o que a pessoa quer no lugar ("não gostei dessas, quero da dove").
+const REJECT_THEN_RE = /^(?:nao gostei|nao curti|nao gosto|nao quero (?:essas?|esses|nenhum[ao]?)|nenhum[ao]s? d[eo]ss[ea]s?)(?: d[eo]ss[ea]s?)?\s*[,;.]\s*(?:mas\s+|e\s+|entao\s+)?(.{3,60})$/;
 const STYLE_ASK_RE = new RegExp(`^${REJECT_PREFIX}(?:tem que ser|precisa ser|tinha que ser|teria que ser|tem de ser|quero (?:um |uma )?(?:do |de )?(?:estilo|tipo|modelo)|estilo|tipo|modelo) (.{2,40})$`);
 const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|nenhum|nenhuma)\\s+(?:nao|não)\\s+(?:sao|são|servem?|prestam?|e|eh|da|dao)\\s*(?:bons|boas|bom|boa|legal|legais|isso)?[\\s.!,]*$`);
 
@@ -5619,9 +5649,42 @@ async function handleConciergeRequest(
   // Memória do cliente: o que ele já comprou sobe no ranking. Estava ligado só no fluxo
   // legado — no concierge nunca rodou (revisão 02/09).
   const preferred = userId ? await preferredSkuCounts(userId) : undefined;
-  const raw = mercadoLivreEnabled()
+  // Depois de "não achei" (07/10): "tenta de novo"/"qualquer marca" refaz o pedido anterior UMA
+  // vez (a 2ª é resposta honesta) e "pode tentar uma Wilson?" soma a marca ao pedido anterior.
+  const prevMiss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
+  ctx.lastMiss = undefined;
+  let retriedMiss = false;
+  let rawPre: ChoicesResult | undefined;
+  // Pedido anterior + fragmento ("pode tentar uma Wilson?") sem nada nas duas buscas: o "não achei"
+  // fala do PEDIDO COMPLETO, não do fragmento nem de "essa eu não sei responder".
+  let missCombined: string | undefined;
+  const follow = prevMiss ? parseMissFollowUp(text) : null;
+  if (prevMiss && follow?.kind === "retry") {
+    if (prevMiss.retried) {
+      ctx.lastMiss = prevMiss;
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.missStillNone(prevMiss.query));
+      return;
+    }
+    text = prevMiss.qty > 1 ? `${prevMiss.qty} ${prevMiss.query}` : prevMiss.query;
+    retriedMiss = true;
+  } else if (prevMiss && follow?.kind === "fragment") {
+    const combined = `${prevMiss.query} ${follow.words}`;
+    const probe = await buildChoices(combined, undefined, preferred, undefined, undefined, ctx.cep ?? userCep);
+    // Só vale se o pedido combinado continua UMA linha e a marca/atributo está mesmo numa opção —
+    // senão "leite" depois de "bola de tênis" virava "bola de tênis leite".
+    const fragmentWord = normalizeMsg(follow.words);
+    const named = [...probe.pending.flatMap((p) => p.options), ...probe.autoAdded].some((o) => normalizeMsg(o.name).includes(fragmentWord));
+    if (probe.lines.length === 1 && named) {
+      text = prevMiss.qty > 1 ? `${prevMiss.qty} ${combined}` : combined;
+      rawPre = probe;
+    } else if (/\b(tent|procur|busc|pode ser|ve se|veja se)/.test(normalizeMsg(text))) {
+      missCombined = combined;
+    }
+  }
+  const raw = rawPre ?? (mercadoLivreEnabled()
     ? await buildChoicesWithSearchNotice(phone, text, undefined, preferred, undefined, ctx.cep ?? userCep)
-    : await buildChoices(text, undefined, preferred, undefined, undefined, ctx.cep ?? userCep);
+    : await buildChoices(text, undefined, preferred, undefined, undefined, ctx.cep ?? userCep));
   // Piso de relevância próprio do concierge: opção que não responde pelo que o cliente
   // escreveu é descartada e a linha volta a ser livre. Sugerir errado é pior que não
   // sugerir, porque a linha livre resolve o pedido de verdade.
@@ -5921,18 +5984,31 @@ async function handleConciergeRequest(
 
   // Nada com preço nesta mensagem: recusa honesta na hora; a cesta que já existia fica
   // exatamente como estava.
-  if (hadBasket) ctx.step = "collecting";
+  // Endereço já confirmado = o passo de endereço acabou (07/10: depois do 1º "não achei" no
+  // cadastro o passo ficava em need_address e a próxima frase virava "Endereço salvo…").
+  if (hadBasket || (ctx.deliveryAddress && ctx.deliveryAddressVerified && (ctx.step === "need_address" || ctx.step === "need_cep"))) ctx.step = "collecting";
   await writeCtx(convoId, ctx);
   // NADA achou preço: o roteador LLM tenta entender a mensagem (pergunta? "uma 51"?
   // edição?) antes do eco de não-achado — o eco fazia "posso agendar a entrega pra…"
   // virar produto (29/08: 6 sessões nesse padrão).
   // Remédio não achado já tem resposta certa: a segunda busca pela IA só atrasava (>45 s).
+  if (missCombined && prevMiss && !pending.length && !containsMedicine && !raw.containsTobacco) {
+    ctx.lastMiss = { query: missCombined, qty: prevMiss.qty, at: Date.now() };
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.itemsNotAvailable([missCombined]));
+    return;
+  }
   if (!containsMedicine && !raw.containsTobacco && !medicineMiss) {
     if (await tryLlmInterpret(phone, convoId, userCep, ctx, text, userId)) return;
     if (isQuestion(text)) {
       await reply(phone, copy.questionNotUnderstood());
       return;
     }
+  }
+  // Guarda o pedido sem opção: o próximo "tenta de novo"/"uma Wilson" fala dele.
+  if (unavailable.length === 1 && notFoundLines.length === 1 && !containsMedicine && !medicineMiss) {
+    ctx.lastMiss = { query: notFoundLines[0].phrase, qty: notFoundLines[0].qty, at: Date.now(), ...(retriedMiss ? { retried: true } : {}) };
+    await writeCtx(convoId, ctx);
   }
   const notes: string[] = [];
   if (containsMedicine) notes.push(medicineSkippedCopy());
