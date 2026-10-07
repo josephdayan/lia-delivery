@@ -1820,5 +1820,26 @@
   "probe": [
    "pilha aa"
   ]
+ },
+ {
+  "id": "c101",
+  "title": "Esquenta: 2 vodkas, 3 sucos, 3 red bull e gelo",
+  "origin": "plano-07/10",
+  "persona": "anfitrião de esquenta, mensagem corrida",
+  "goal": "comprar para o esquenta 2 vodkas, 3 sucos de laranja, 3 Red Bull e gelo; se alguma loja não tiver o gelo ele segue sem ele; confere a lista, troca uma opção se quiser e vai até o Pix; os itens achados ficam na cesta com as quantidades pedidas (2, 3 e 3)",
+  "opening": "2 vodkas, 3 sucos de laranja, 3 red bull e gelo",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "se a Lia disser que não achou o gelo, ela deve dizer isso claramente e oferecer procurar de novo; o cliente responde 'gelo em cubo' uma vez; o resto da lista não pode se perder",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "bebidas",
+  "probe": [
+   "vodka",
+   "suco de laranja",
+   "red bull",
+   "gelo"
+  ]
  }
 ]
