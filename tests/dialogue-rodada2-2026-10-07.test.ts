@@ -483,3 +483,16 @@ test("a mesma fala só conta dentro da janela de 10 min e só se a IA do gerente
   await setCtx(phone, ctx);
   assert.match(await send(phone, "valeu"), /Imagina/, "fora da janela, repete igual");
 });
+
+
+test("fala nova da IA no assunto do atendimento vale (só o texto precisa diferir); idêntica às anteriores não", async () => {
+  const ack0 = attendanceAck(0, true);
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setRepeatModelForTests(async () => "Entendo, sinto muito pela experiência. Sua reclamação já está com o responsável, que te responde aqui, das 9h às 20h.");
+  const { rewriteRepeated } = await import("../src/lib/dialogue/repeat");
+  const fresh = await rewriteRepeated({ customer: "Isso não é retorno de verdade", said: attendanceAck(1, true), recent: [ack0] });
+  assert.match(fresh ?? "", /sinto muito/);
+  __setRepeatModelForTests(async () => ack0);
+  const same = await rewriteRepeated({ customer: "Isso não é retorno de verdade, quero resposta do gerente", said: attendanceAck(1, true), recent: [ack0] });
+  assert.equal(same, null);
+});

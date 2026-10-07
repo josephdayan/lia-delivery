@@ -45,11 +45,13 @@ function gistFamily(text: string): string | null {
   return null;
 }
 
-export function sameAsRecent(text: string, recent: string[]): boolean {
+// `gist` = conta também a mesma família de resposta (detecção da repetição). A fala NOVA escrita pela IA só precisa
+// diferir das anteriores no texto — ela pode, sim, continuar no assunto do atendimento.
+export function sameAsRecent(text: string, recent: string[], gist = true): boolean {
   const key = canon(text);
   if (!key) return false;
   const stripped = withoutHighlights(text);
-  const family = gistFamily(text);
+  const family = gist ? gistFamily(text) : null;
   return recent.some(
     (previous) =>
       canon(previous) === key ||
@@ -132,7 +134,7 @@ const SHORT_ACKS = ["👍", "Tudo certo 💚", "Por nada! 💚", "Combinado 🙂
 function shortAck(input: RepeatInput): string | null {
   const n = canon(input.customer);
   if (!n || n.split(" ").length > 4 || /\?/.test(input.customer)) return null;
-  return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent)) ?? null;
+  return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent, false)) ?? null;
 }
 
 // Texto novo no lugar da repetição, ou null (a mensagem original sai como sempre saiu).
@@ -141,7 +143,7 @@ export async function rewriteRepeated(input: RepeatInput): Promise<string | null
   if (seamActive || process.env.OPENAI_API_KEY) {
     const raw = await modelImpl(input).catch(() => null);
     const clean = sanitizeRouterReply(raw ?? undefined);
-    if (clean && !sameAsRecent(clean, input.recent)) return clean;
+    if (clean && !sameAsRecent(clean, input.recent, false)) return clean;
   }
   return shortAck(input);
 }
