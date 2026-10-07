@@ -618,3 +618,19 @@ model AppFlag {
   updatedBy String?
   updatedAt DateTime @updatedAt
 }
+
+// O que o cliente pediu e a Lia não achou (07/10/2026): alimenta a lista "Itens que o cliente
+// pediu e não tínhamos" do /ops — demanda real para escolher lojas e catálogo. Só o hash do
+// telefone e o prefixo do CEP (nunca o número nem o endereço). Gravação best-effort.
+model SearchMiss {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  phoneHash String
+  query     String
+  // not_found | unbuyable (ver ListMissReason em conversation-types.ts)
+  reason    String
+  cepPrefix String?
+
+  @@index([createdAt])
+  @@index([query])
+}
