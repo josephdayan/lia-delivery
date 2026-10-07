@@ -159,11 +159,24 @@ export type DeliveryContext = {
   };
   storeKey?: string;
   notFound?: string[];
+  // MODO ATENDIMENTO (07/10, placar c13/c30/c31): o dono já foi avisado (atendente, reclamação,
+  // pedido sumido, CNPJ/nota). Enquanto vale, mensagem que não é pedido de produto ("vou esperar",
+  // "e aí?") recebe uma confirmação CURTA e DIFERENTE da anterior, sem pedir endereço nem produto;
+  // pedido de produto sai do modo e segue o fluxo normal. Substitui `humanAskedAt` e o Map
+  // `noOrderAskedAt` (memória do processo, perdida a cada deploy).
+  attendance?: {
+    kind: "human" | "complaint" | "order_missing" | "invoice";
+    // Quando o modo começou / quando o dono foi avisado pela última vez (epoch ms).
+    since: number;
+    notifiedAt: number;
+    // Confirmações curtas já enviadas depois da 1ª (escolhe a variação seguinte).
+    acks: number;
+  };
   // Último pedido que NENHUMA loja tinha (07/10, placar c28/c40): "tenta de novo" e "pode ser
   // uma Wilson" falam dele. `retried` = já refizemos a busca uma vez; a 2ª vez é resposta honesta.
-  // Quando o cliente pediu atendente (07/10): o 2º pedido seguido não repete o mesmo texto.
-  humanAskedAt?: number;
   lastMiss?: { query: string; qty: number; at: number; retried?: boolean };
+  // Última recusa de remédio (07/10, c35): a 2ª em pouco tempo troca de texto em vez de repetir.
+  medicineRefusedAt?: number;
   // Oferta pendente de busca na cauda longa (Mercado Livre) para as linhas que as
   // vitrines locais não cobriram (revisão 02/09). "sim" dispara a busca; "não" limpa.
   longTailOffer?: { lines: Array<{ phrase: string; qty: number; qtyExplicit?: boolean; cap?: number; raw?: string }> };

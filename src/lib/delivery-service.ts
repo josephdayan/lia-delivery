@@ -15,10 +15,10 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
-import { extractCpf, extractFullName, hasMip, isMipItem, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
+import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
@@ -36,7 +36,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
-import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole } from "./turn-runtime";
+import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -92,10 +92,22 @@ function rewriteGroceryOil(lines: ParsedLine[]): ParsedLine[] {
 // segue como pedido normal e só existe nas vitrines das farmácias (catálogo MIP). Desligado,
 // qualquer remédio é barrado, como sempre foi.
 function blocksMedicine(text: string): boolean {
-  return medicineEnabled() ? looksLikePrescriptionRequest(text) : looksLikeMedicine(text);
+  // 07/10 (c08): remédio pelo NOME ("Euthyrox 50mg") também é remédio com a flag desligada — a
+  // lista de palavras só tinha genéricos e o pedido virava "anotei… me manda o endereço".
+  return medicineEnabled()
+    ? looksLikePrescriptionRequest(text)
+    : looksLikeMedicine(text) || (isPrescriptionDrugName(text) && parseBasketLines(text).length <= 1);
 }
 function noMedicineCopy(): string {
   return medicineEnabled() ? copy.prescriptionRefusal() : copy.noMedicine();
+}
+// A recusa de remédio repetida em pouco tempo muda de texto (07/10, c35): a mesma frase duas vezes
+// parecia travada, e "tem farmácia parceira?" não é pedido — é pergunta.
+async function refuseMedicine(phone: string, convoId: string, ctx: DeliveryContext) {
+  const again = ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 30 * 60_000;
+  ctx.medicineRefusedAt = Date.now();
+  await writeCtx(convoId, ctx);
+  await reply(phone, again && !medicineEnabled() ? copy.noMedicineAgain() : noMedicineCopy());
 }
 function medicineSkippedCopy(): string {
   return medicineEnabled() ? copy.prescriptionSkippedNote() : copy.medicineSkippedNote();
@@ -1210,6 +1222,45 @@ export async function handleDeliveryMessage(input: {
   }
 }
 
+// ---------- modo atendimento (07/10, placar c13/c30/c31) ----------
+// O dono já foi avisado (atendente, reclamação, pedido sumido, CNPJ). O estado vive no contexto
+// (`ctx.attendance`), não em memória do processo. `notifiedAt === 0` = a Lia só registrou que o
+// cliente perguntou de um pedido inexistente, sem avisar ninguém ainda (a 2ª pergunta avisa).
+const ATTENDANCE_TTL_MS = 12 * 60 * 60_000;
+const ATTENDANCE_RENOTIFY_MS = 30 * 60_000;
+
+function attendanceLive(ctx: DeliveryContext): NonNullable<DeliveryContext["attendance"]> | undefined {
+  const att = ctx.attendance;
+  return att && Date.now() - att.since < ATTENDANCE_TTL_MS ? att : undefined;
+}
+
+// Entra (ou renova) o modo. `notify` = avisar o dono agora (1ª vez, assunto novo ou 30 min depois).
+function enterAttendance(ctx: DeliveryContext, kind: NonNullable<DeliveryContext["attendance"]>["kind"]): { notify: boolean; repeat: boolean } {
+  const now = Date.now();
+  const cur = attendanceLive(ctx);
+  if (!cur || cur.notifiedAt === 0) {
+    ctx.attendance = { kind, since: cur?.since ?? now, notifiedAt: now, acks: 0 };
+    return { notify: true, repeat: false };
+  }
+  const notify = cur.kind !== kind || now - cur.notifiedAt >= ATTENDANCE_RENOTIFY_MS;
+  ctx.attendance = { ...cur, kind, notifiedAt: notify ? now : cur.notifiedAt };
+  return { notify, repeat: true };
+}
+
+// Próxima confirmação curta (nunca igual à anterior).
+function nextAttendanceAck(ctx: DeliveryContext): string {
+  const att = ctx.attendance;
+  const n = att?.acks ?? 0;
+  if (att) att.acks = n + 1;
+  return copy.attendanceAck(n, withinOperatorHours());
+}
+
+// Contexto "quieto": sem cesta, escolha nem pedido em andamento. Só aí o modo atendimento intercepta.
+function attendanceQuiet(ctx: DeliveryContext): boolean {
+  if (ctx.pending?.length || ctx.basket?.length) return false;
+  return !ctx.step || ctx.step === "collecting" || ctx.step === "need_cep" || ctx.step === "need_address";
+}
+
 async function handleDeliveryTurn(
   phone: string,
   text: string,
@@ -1461,11 +1512,55 @@ async function handleDeliveryTurn(
   // pergunta de quantidade "também queria dipirona" virava "responde o número").
   // "sem remédio, quero X" segue como pedido (negação já tratada na extração).
   if (blocksMedicine(text) && !/^sem\s/.test(normalizeMsg(text))) {
-    await reply(phone, noMedicineCopy());
+    await refuseMedicine(phone, convo.id, ctx);
+    if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+    return;
+  }
+  // ENDEREÇO + PERGUNTA na mesma mensagem, antes do cadastro (07/10, c06): "…, 01451-001. E como vc
+  // funciona? De onde vc compra?" era engolida pela pergunta — o endereço nunca era salvo e o pedido
+  // guardado se perdia. Responde a pergunta e segue só com o endereço.
+  if ((!user.defaultAddress || ctx.step === "need_address" || ctx.step === "need_cep") && ["service_question", "trust_question", "identity", "help", "free_text"].includes(intent.kind) && looksLikeDeliveryAddress(text) && /\?/.test(text)) {
+    const split = splitAddressAndItems(text);
+    if (split?.items && /\?/.test(split.items) && looksLikeDeliveryAddress(split.address)) {
+      const askIntent = detectIntent(split.items);
+      if (askIntent.kind === "service_question") await reply(phone, copy.serviceAnswer(askIntent.topic, servedAreaLabel(), { hasCep: false, hasBasket: false }));
+      else await answerOnboardingQuestion(phone, split.items);
+      text = split.address;
+      intent = detectIntent(text);
+    }
+  }
+
+  // "tem alguma farmácia parceira que venda?" logo depois da recusa de remédio (07/10, c35): é
+  // pergunta, com resposta fixa — não pede endereço nem vira busca de "farmácia".
+  if (
+    looksLikePharmacyPartnerAsk(text) &&
+    (looksLikeMedicine(text) || /\b(?:remedios?|medicamentos?|receita)\b/.test(normalizeMsg(text)) || (ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000))
+  ) {
+    await reply(phone, copy.pharmacyPartnerAnswer(medicineEnabled()));
     if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
     return;
   }
 
+
+  // MODO ATENDIMENTO (07/10, c13/c30/c31): o dono já foi avisado e o cliente só espera ou cobra
+  // ("vou esperar", "e aí?", "preciso falar com alguém mesmo", "conseguem procurar pelo meu CPF?").
+  // Confirmação CURTA e diferente da anterior, sem pedir endereço nem produto. Pedido de produto
+  // não casa com o léxico e segue o fluxo normal.
+  {
+    const att = attendanceLive(ctx);
+    if (
+      att &&
+      att.notifiedAt > 0 &&
+      attendanceQuiet(ctx) &&
+      ["free_text", "thanks", "greeting", "hold", "resume_where", "affirm"].includes(intent.kind) &&
+      isAttendanceFollowUp(text)
+    ) {
+      const ack = nextAttendanceAck(ctx);
+      await writeCtx(convo.id, ctx);
+      await reply(phone, ack);
+      return;
+    }
+  }
 
   // ---- social / meta (work in ANY step) ----
   if (intent.kind === "thanks") {
@@ -1588,7 +1683,7 @@ async function handleDeliveryTurn(
       }
       const current = await currentOrderForQuestions(user.id, ctx);
       if (current && (PAID_OR_IN_FULFILLMENT_STATUSES.includes(current.status) || current.status === "awaiting_quote_confirmation" || current.status === "awaiting_payment")) {
-        await handleStatus(phone, user.id, ctx, text);
+        await handleStatus(phone, user.id, ctx, text, convo.id);
         return;
       }
     }
@@ -1604,19 +1699,24 @@ async function handleDeliveryTurn(
   // "Chamei alguém da equipe" sem avisar ninguém (06/10): a nota no pedido só aparecia no
   // /ops, e cliente sem pedido nem nota tinha. Agora o dono recebe no WhatsApp.
   if (intent.kind === "human") {
-    await flagLatestOrder(user.id, `🙋 CLIENTE PEDIU ATENDIMENTO HUMANO: "${text.slice(0, 140)}"`);
-    await notifyOwner(`🙋 Cliente pediu atendimento humano: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
-    const again = ctx.humanAskedAt != null && Date.now() - ctx.humanAskedAt < 30 * 60_000;
-    ctx.humanAskedAt = Date.now();
+    const { notify, repeat } = enterAttendance(ctx, "human");
+    if (notify) {
+      await flagLatestOrder(user.id, `🙋 CLIENTE PEDIU ATENDIMENTO HUMANO: "${text.slice(0, 140)}"`);
+      await notifyOwner(`🙋 Cliente pediu atendimento humano: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
+    }
+    const answer = repeat ? nextAttendanceAck(ctx) : copy.humanHandoff(withinOperatorHours());
     await writeCtx(convo.id, ctx);
-    await reply(phone, again ? copy.humanHandoffAgain() : copy.humanHandoff());
+    await reply(phone, answer);
     return;
   }
   if (intent.kind === "complaint") {
     await flagLatestOrder(user.id, `⚠️ RECLAMAÇÃO DO CLIENTE: "${text.slice(0, 140)}"`);
-    await notifyOwner(`⚠️ Reclamação de cliente: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
+    const { notify, repeat } = enterAttendance(ctx, "complaint");
+    if (notify) await notifyOwner(`⚠️ Reclamação de cliente: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
     const hasOrder = Boolean(await prisma.deliveryOrder.findFirst({ where: { userId: user.id }, select: { id: true } }));
-    await reply(phone, copy.complaintAck(hasOrder));
+    const answer = repeat ? nextAttendanceAck(ctx) : copy.complaintAck(hasOrder, withinOperatorHours());
+    await writeCtx(convo.id, ctx);
+    await reply(phone, answer);
     return;
   }
   // "quero meu dinheiro de volta"/"quero o estorno" (06/10): pedido pago e ainda não comprado
@@ -1661,14 +1761,22 @@ async function handleDeliveryTurn(
   }
   if (intent.kind === "fiscal_question") {
     const businessInfo = process.env.LIA_BUSINESS_INFO?.trim() || undefined;
+    // CNPJ sem a env (07/10, c13): o dono é avisado e entra o modo atendimento — a 2ª pergunta não
+    // repete o mesmo texto nem avisa o dono de novo.
+    if (intent.topic === "cnpj" && !businessInfo) {
+      const { notify, repeat } = enterAttendance(ctx, "invoice");
+      if (notify) await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
+      const answer = repeat ? nextAttendanceAck(ctx) : copy.fiscalAnswer("cnpj", businessInfo, withinOperatorHours());
+      await writeCtx(convo.id, ctx);
+      await reply(phone, answer);
+      await rePresentStep();
+      return;
+    }
     await reply(phone, copy.fiscalAnswer(intent.topic, businessInfo));
     // "me fala que eu te envio" não pode ser beco: sem a env, o operador é acionado
     // pra mandar os dados de verdade (29/08 S7).
     if (intent.topic === "nf") {
       await notifyOwner(`🧾 Cliente perguntou da nota fiscal: "${text.slice(0, 160)}" — se pedir cópia, enviar.`, phone);
-    }
-    if (intent.topic === "cnpj" && !businessInfo) {
-      await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
     }
     await rePresentStep();
     return;
@@ -1877,7 +1985,7 @@ async function handleDeliveryTurn(
     }
   }
   if (intent.kind === "status") {
-    await handleStatus(phone, user.id, ctx, text);
+    await handleStatus(phone, user.id, ctx, text, convo.id);
     return;
   }
   if (intent.kind === "paid_claim") {
@@ -2430,7 +2538,7 @@ async function handleDeliveryTurn(
     // (endereço de alguém na área); o produto pedido fica anotado pra depois.
     if (ctx.outsideArea) {
       const note = isQuestion(text) ? "" : onboardingNote(text).text;
-      if (note) ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
+      if (note) addPendingRequest(ctx, note);
       await writeCtx(convo.id, ctx);
       await reply(phone, copy.stillOutsideArea(ctx.outsideArea.city, servedAreaLabel()));
       return;
@@ -2536,7 +2644,7 @@ async function handleDeliveryTurn(
   // ---- onboarding: save the complete delivery address once, before the first basket ----
   if (!user.defaultAddress) {
     if (blocksMedicine(text)) {
-      await reply(phone, noMedicineCopy());
+      await refuseMedicine(phone, convo.id, ctx);
       return;
     }
     if (intent.kind === "reject") {
@@ -2569,9 +2677,7 @@ async function handleDeliveryTurn(
     // Só o que tem cara de produto é anotado (06/10, M1): "sou a Clara Souza", "gostaria de
     // fazer um pedido", "vi o anúncio", história pessoal e "me liga" ficam de fora.
     const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
-    if (note) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
-    }
+    if (note) addPendingRequest(ctx, note);
     ctx.flow = "delivery";
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
@@ -2586,7 +2692,7 @@ async function handleDeliveryTurn(
   // sem opções nem preço): guarda o texto cru e roda a busca normal depois do CEP.
   if (!savedCep) {
     if (blocksMedicine(text)) {
-      await reply(phone, noMedicineCopy());
+      await refuseMedicine(phone, convo.id, ctx);
       return;
     }
     const alreadyAsked = ctx.step === "need_cep";
@@ -2611,9 +2717,7 @@ async function handleDeliveryTurn(
     }
     const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
     const lines = note ? parseBasketLines(note) : [];
-    if (note) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
-    }
+    if (note) addPendingRequest(ctx, note);
     ctx.flow = "delivery";
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
@@ -3197,20 +3301,31 @@ function asksPastOrder(text?: string): boolean {
 // Cliente que insiste "cadê meu pedido?" sem nenhum pedido neste número (07/10, c31): a 2ª vez não repete
 // "você ainda não tem pedidos" — pede o dado que falta e chama o responsável. Melhor esforço (memória do
 // processo); a nota/alerta ao dono é o que fica.
-const noOrderAskedAt = new Map<string, number>();
-async function replyNoOrders(phone: string, userId: string, text?: string) {
-  const last = noOrderAskedAt.get(phone);
-  noOrderAskedAt.set(phone, Date.now());
-  if (last && Date.now() - last < 30 * 60_000) {
-    await notifyOwner(`🔎 Cliente diz que fez um pedido, mas não há pedido neste número: "${(text ?? "").slice(0, 160)}" — conferir (outro número? pedido de teste?).`, phone);
-    await reply(phone, copy.noOrdersEscalated());
+// Guardado em `ctx.attendance` (era um Map em memória). 1ª pergunta: só registra; 2ª: avisa o dono e
+// vira modo atendimento; depois: confirmação curta e diferente.
+async function replyNoOrders(phone: string, convoId: string, ctx: DeliveryContext, text?: string) {
+  const cur = attendanceLive(ctx);
+  if (cur && cur.notifiedAt > 0) {
+    const { notify } = enterAttendance(ctx, cur.kind);
+    if (notify) await notifyOwner(`🔎 Cliente segue sem pedido neste número: "${(text ?? "").slice(0, 160)}" — conferir.`, phone);
+    const ack = nextAttendanceAck(ctx);
+    await writeCtx(convoId, ctx);
+    await reply(phone, ack);
     return;
   }
-  void userId;
+  if (cur && cur.kind === "order_missing" && Date.now() - cur.since < ATTENDANCE_RENOTIFY_MS) {
+    enterAttendance(ctx, "order_missing");
+    await notifyOwner(`🔎 Cliente diz que fez um pedido, mas não há pedido neste número: "${(text ?? "").slice(0, 160)}" — conferir (outro número? pedido de teste?).`, phone);
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.noOrdersEscalated(withinOperatorHours()));
+    return;
+  }
+  ctx.attendance = { kind: "order_missing", since: Date.now(), notifiedAt: 0, acks: 0 };
+  await writeCtx(convoId, ctx);
   await reply(phone, copy.noOrdersYet());
 }
 
-async function handleStatus(phone: string, userId: string, ctx: DeliveryContext, text?: string) {
+async function handleStatus(phone: string, userId: string, ctx: DeliveryContext, text?: string, convoId?: string) {
   if (asksPastOrder(text)) {
     const past =
       (await prisma.deliveryOrder.findFirst({
@@ -3239,7 +3354,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
       );
       return;
     }
-    await replyNoOrders(phone, userId, text);
+    await replyNoOrders(phone, convoId ?? "", ctx, text);
     return;
   }
   // A COMPRA EM ANDAMENTO na conversa vence qualquer pedido velho: "quanto ficou? e
@@ -3298,7 +3413,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     if (text && /\b(chega|demora|horas|prazo|falta)\b/.test(normalizeMsg(text))) {
       await reply(phone, copy.serviceAnswer("eta", servedAreaLabel()));
     } else {
-      await replyNoOrders(phone, userId, text);
+      await replyNoOrders(phone, convoId ?? "", ctx, text);
     }
     return;
   }
@@ -3883,6 +3998,24 @@ async function handleNewCep(
 // logradouro + número é o menor sinal confiável, sem tentar parsing frágil. Serve às
 // duas pontas: aceitar o endereço e — no caminho do CEP — não confundir a rua com item.
 // "Al. Santos 1000" (06/10) também é endereço.
+// Pedido guardado para depois do cadastro (07/10, c06): "leite nude" e depois "um leite Nude de origem
+// vegetal sem açúcar" são o MESMO pedido refinado — o mais completo substitui o curto em vez de somar
+// (o resumo saía com o leite duplicado).
+function addPendingRequest(ctx: DeliveryContext, note: string) {
+  const segments = (ctx.pendingRequest ?? "").split(", ").filter(Boolean);
+  const wanted = new Set(queryTokens(note));
+  const same = segments.findIndex((segment) => {
+    const tokens = queryTokens(segment);
+    return tokens.length > 0 && wanted.size > 0 && (tokens.every((t) => wanted.has(t)) || [...wanted].every((t) => tokens.includes(t)));
+  });
+  if (same >= 0) {
+    if (queryTokens(note).length >= queryTokens(segments[same]).length) segments[same] = note;
+  } else {
+    segments.push(note);
+  }
+  ctx.pendingRequest = segments.join(", ") || undefined;
+}
+
 function looksLikeDeliveryAddress(text: string): boolean {
   const address = text.trim();
   const hasStreet = /\b(?:rua|r\.?|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
@@ -3983,7 +4116,7 @@ async function handleDeliveryAddress(
     // de pergunta — anota o produto e segue pedindo o endereço.
     const askedItem = kind === "free_text" ? parseAvailabilityAsk(address) ?? parsePriceAsk(address) : null;
     if (askedItem && !blocksMedicine(address)) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${askedItem}` : askedItem;
+      addPendingRequest(ctx, askedItem);
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
       await askStreetOrSignup(phone, ctx, userCep);
@@ -4013,7 +4146,7 @@ async function handleDeliveryAddress(
     // ("1500") e cortesia ("sou a Clara") também não (06/10).
     const note = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
     if (note && queryTokens(note).length && !blocksMedicine(address)) {
-      ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${note}` : note;
+      addPendingRequest(ctx, note);
     }
     ctx.step = "need_address";
     await writeCtx(convoId, ctx);
@@ -4027,7 +4160,7 @@ async function handleDeliveryAddress(
   ctx.deliveryAddressVerified = true;
   ctx.cepCityCheck = undefined;
   await prisma.user.update({ where: { id: userId }, data: { defaultAddress: finalAddress } });
-  if (extraItems) ctx.pendingRequest = ctx.pendingRequest ? `${ctx.pendingRequest}, ${extraItems}` : extraItems;
+  if (extraItems) addPendingRequest(ctx, extraItems);
 
   if (!ctx.cep && userCep) ctx.cep = userCep;
   if (!ctx.cep) {
@@ -5862,7 +5995,7 @@ async function handleConciergeRequest(
   }
   if (!pending.length && !notFoundLines.length) {
     if (containsMedicine) {
-      await reply(phone, noMedicineCopy());
+      await refuseMedicine(phone, convoId, ctx);
     } else if (raw.containsTobacco) {
       await reply(phone, copy.tobaccoRefusal());
     } else {
@@ -6084,6 +6217,12 @@ async function handleConciergeRequest(
       return;
     }
   }
+  // Remédio pelo nome que ninguém tem (07/10, c08): depois de "remédio eu não vendo", "não achei em
+  // nenhuma loja, me diz outra marca" convida a procurar à toa. Só a recusa — e sem 2ª busca.
+  if (!medicineEnabled() && unavailable.length > 0 && !unbuyable.length && unavailable.every((label) => looksLikeMedicineName(label) || isPrescriptionDrugName(label))) {
+    await refuseMedicine(phone, convoId, ctx);
+    return;
+  }
   // Guarda o pedido sem opção: o próximo "tenta de novo"/"uma Wilson" fala dele.
   if (unavailable.length === 1 && notFoundLines.length === 1 && !containsMedicine && !medicineMiss) {
     ctx.lastMiss = { query: notFoundLines[0].phrase, qty: notFoundLines[0].qty, at: Date.now(), ...(retriedMiss ? { retried: true } : {}) };
@@ -6303,7 +6442,7 @@ async function handleSearch(
   const fiscal = splitFiscalClause(text);
   if (fiscal.asked) {
     const businessInfo = process.env.LIA_BUSINESS_INFO?.trim() || undefined;
-    await reply(phone, copy.fiscalAnswer("cnpj", businessInfo));
+    await reply(phone, copy.fiscalAnswer("cnpj", businessInfo, withinOperatorHours()));
     if (!businessInfo) await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa junto com um pedido — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
     text = fiscal.text;
   }

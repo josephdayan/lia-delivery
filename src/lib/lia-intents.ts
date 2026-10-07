@@ -2224,3 +2224,38 @@ export function splitFiscalClause(text: string): { text: string; asked: boolean 
   if (kept.length === sentences.length || !kept.length) return { text, asked: false };
   return { text: kept.join(" ").trim(), asked: true };
 }
+
+
+// ---------- modo atendimento e farmácia parceira (07/10, placar c13/c30/c31/c35) ----------
+
+// Depois que a Lia avisou o dono, o que o cliente escreve para ESPERAR ou COBRAR a resposta ("vou
+// esperar", "e aí?", "preciso falar com alguém mesmo", "consegue procurar pelo meu CPF?", "ok") não é
+// pedido de produto e não pode virar busca nem pergunta de endereço. Lexicon fechado de conversa
+// sobre a espera — nunca decide sozinho: o chamador só usa com o modo atendimento ativo, sem cesta
+// nem escolha abertas. Lista de compras evidente ou pedido com produto fica de fora.
+export function isAttendanceFollowUp(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[?!.,;]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 140 || n.split(" ").length > 18) return false;
+  // Quantidade na frente ("2 leites") é lista de compras; vírgula sozinha não ("não tenho o código, mas…").
+  if (/^\d+\s*x?\s+\S/.test(n) || /\b\d+\s*(?:x|un|unidades?|kg|g|l|ml)\b/.test(n)) return false;
+  // Pedido com verbo de compra e produto ("quero arroz") não é espera; "quero falar/saber/que confiram" é.
+  if (/^(?:quero|queria|preciso(?: de)?|me ve|manda|traz|compra|adiciona|coloca|bota|vou querer)\s+(?!que\b|so\b|apenas\b|falar\b|conversar\b|saber\b|ver\b|uma pessoa\b|alguem\b|um atendente\b|o responsavel\b|o dono\b|a resposta\b)\S/.test(n)) return false;
+  if (/^(?:ok|okay|certo|combinado|beleza|blz|tudo bem|tranquilo|fechado|entendi|ta bom|ta|pode ser|sim|isso|aham)$/.test(n)) return true;
+  if (/^e ?a[ie]+\b/.test(n)) return true;
+  return (
+    /\b(?:vou|vamos|fico|to|tou|estou|sigo)\s+(?:no\s+)?(?:aguardar|esperar|aguardando|esperando|aguardo)\b|\bno aguardo\b/.test(n) ||
+    /\b(?:falar|conversar|chamar|chama|passa|pede|pedir|manda|avisa)\b.{0,30}\b(?:alguem|atendente|responsavel|humano|pessoa|dono|gerente)\b|\b(?:tem|ha) alguem\b|^alguem\b|\b(?:atendente|responsavel|humano|pessoa de verdade)\b/.test(n) ||
+    /\b(?:cnpj|cpf|codigo do pedido|numero do pedido|nome que aparece)\b/.test(n) ||
+    /\b(?:confer\w+|verific\w+|localiz\w+|procurar pelo|consegu\w+ (?:procurar|ver|achar|localizar))\b/.test(n) ||
+    /\b(?:nao chegou|nao veio|meu pedido|pedido de ontem|ja fiz o pedido|ainda nao (?:respond|me respond|chegou)|ninguem (?:respond|me respond)|demora|urgente|quanto tempo)\b/.test(n)
+  );
+}
+
+// "tem alguma farmácia parceira que venda?" / "vocês vendem em farmácia?": pergunta SOBRE farmácia
+// e remédio, não pedido de produto. A resposta é fixa (não vendemos remédio por parceiro nenhum).
+export function looksLikePharmacyPartnerAsk(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!/\b(?:farmacias?|drogarias?)\b/.test(n)) return false;
+  if (!(isQuestion(text) || /\b(?:vc|voce|voces|vcs)\b/.test(n))) return false;
+  return /\b(?:parceir\w*|vend\w*|trabalh\w*|conveni\w*|tem|tenha|atend\w*)\b/.test(n);
+}

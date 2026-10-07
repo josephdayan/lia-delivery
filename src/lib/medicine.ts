@@ -45,6 +45,21 @@ const PRESCRIPTION_DOSE_RE = /\b(omeprazol\s*(20|40)\s*mg|pantoprazol\s*40\s*mg|
 const PRESCRIPTION_BRAND_RE =
   /\b(ozempic|wegovy|mounjaro|saxenda|victoza|trulicity|rivotril|frontal|lexotan|apraz|ritalina|venvanse|concerta|viagra|cialis|roacutan|tramal|zoloft|prozac|lexapro|pristiq|wellbutrin|seroquel|zyprexa|depakote|tegretol|lyrica|neurontin|xarelto|eliquis|marevan|glifage|diamicron|jardiance|forxiga|januvia|galvus|puran t4|synthroid|euthyrox|levoid|meticorten|predsim|decadron|celestone|diane 35|yasmin|selene|tamisa|microvlar|ciclo 21|amoxil|clavulin|keflex|zitromax|flagyl)\b/i;
 
+// Marcas que também são palavra comum ("frontal", "selene"): só barram por aqui quando a flag do
+// remédio isento está ligada e o pedido inteiro é examinado — nunca para recusar sozinhas.
+const AMBIGUOUS_BRANDS = new Set(["frontal", "selene", "concerta", "apraz", "diane 35", "ciclo 21"]);
+
+// Nome de remédio de receita pelo princípio ativo, dose ou marca (07/10, c08): vale com a flag do
+// remédio isento DESLIGADA, quando "Euthyrox 50mg" precisa ser barrado ainda no primeiro pedido.
+// Mais estreita que `isPrescriptionText`: sem "ampola"/"injetável" (ampola capilar é cosmético) e
+// sem as marcas ambíguas.
+export function isPrescriptionDrugName(text: string): boolean {
+  const t = text ?? "";
+  if (PRESCRIPTION_ACTIVE_RE.test(t) || PRESCRIPTION_DOSE_RE.test(t)) return true;
+  const brand = t.match(PRESCRIPTION_BRAND_RE);
+  return Boolean(brand) && !AMBIGUOUS_BRANDS.has(brand![0].toLowerCase());
+}
+
 export function isPrescriptionText(text: string): boolean {
   const t = text ?? "";
   return PRESCRIPTION_WORDS_RE.test(t) || PRESCRIPTION_ACTIVE_RE.test(t) || PRESCRIPTION_DOSE_RE.test(t) || PRESCRIPTION_BRAND_RE.test(t);

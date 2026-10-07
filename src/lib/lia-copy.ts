@@ -27,8 +27,12 @@ export type CopyBasketItem = { qty: number; name: string; displayLineTotal: numb
 
 // ---------- social ----------
 
+// Apresentação (07/10, placar: o juiz chamou "me pede qualquer coisa" de promessa ampla — remédio,
+// por exemplo, a Lia não compra). Diz o que ela FAZ, sem prometer o que não faz.
+const PITCH = "Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.";
+
 export function greeting(): string {
-  return "Oi! Sou a Lia 💚 Me pede qualquer coisa que eu compro e entrego para você.";
+  return `Oi! Sou a Lia 💚 ${PITCH}`;
 }
 
 export function thanks(): string {
@@ -63,7 +67,7 @@ export function askWhatYouWant(): string {
 
 // A apresentação é a MESMA da `greeting` (sem o 💚, que fica só na saudação pura), pra
 // Lia não se apresentar de três jeitos diferentes dependendo do caminho de entrada.
-const INTRO = "Oi! Sou a Lia. Me pede qualquer coisa que eu compro e entrego para você.";
+const INTRO = `Oi! Sou a Lia. ${PITCH}`;
 
 export function welcomeAskCep(notedItems?: string[]): string {
   const note = notedItems?.length ? `\n\nJá anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}` : "";
@@ -304,8 +308,21 @@ export function searching(): string {
   return "🔎 Procurando…";
 }
 
+// 07/10 (placar c08/c35): sem "fora isso eu trago de tudo" (promessa ampla) e, se o cliente insiste
+// ou pergunta de farmácia parceira, a resposta muda — repetir a mesma frase parecia travado.
 export function noMedicine(): string {
-  return "Remédio eu não posso vender — por lei, só farmácia pode. Fora isso eu trago de tudo. O que mais você precisa?";
+  return "Remédio eu não posso vender — por lei, só farmácia pode. De mercado, higiene, pet, beleza e casa eu cuido. O que você precisa?";
+}
+
+export function noMedicineAgain(): string {
+  return "Sobre remédio a resposta continua a mesma: eu não vendo, nem por farmácia parceira — pra medicação, a farmácia mais perto de você é o caminho. Se precisar de outra coisa, é só me dizer.";
+}
+
+// "tem alguma farmácia parceira que venda?" (07/10, c35): resposta direta, sem pedir endereço.
+export function pharmacyPartnerAnswer(otcEnabled = false): string {
+  return otcEnabled
+    ? "Os remédios *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome; os de receita eu não consigo comprar. Pra esses, a farmácia mais perto de você é o caminho."
+    : "Não tenho farmácia parceira que venda remédio por mim: remédio eu não vendo — por lei, só a farmácia pode. Pra medicação, a farmácia mais perto de você é o caminho. De mercado, higiene, pet, beleza e casa eu cuido — o que você precisa?";
 }
 
 export function medicineSkippedNote(): string {
@@ -930,8 +947,8 @@ export function orderStatusLine(input: {
 }
 
 // 2ª vez que o cliente pergunta de um pedido que não existe neste número (07/10).
-export function noOrdersEscalated(): string {
-  return "Não achei nenhum pedido neste número de WhatsApp. Se você pediu por outro número ou já tem um código do pedido, me manda aqui — já avisei o responsável pra conferir e ele te responde nesta conversa.";
+export function noOrdersEscalated(inside = true): string {
+  return `Não achei nenhum pedido neste número de WhatsApp. Se você pediu por outro número ou já tem um código do pedido, me manda aqui — já avisei o responsável pra conferir e ele te responde nesta conversa, ${attendanceWhen(inside)}.`;
 }
 
 export function noOrdersYet(): string {
@@ -1091,13 +1108,13 @@ export function thirdPartyPayAnswer(): string {
 
 // Nota fiscal / CNPJ. Os dados da empresa vêm da env LIA_BUSINESS_INFO (ex.:
 // "Lia Delivery — CNPJ 12.345.678/0001-90"); sem env, resposta honesta sem número.
-export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string): string {
+export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string, inside = true): string {
   if (topic === "nf") {
     return "A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você (remédio sem receita sai no seu CPF). Se precisar de uma cópia, me avisa que o responsável te envia.";
   }
   return businessInfo
     ? `Claro: ${businessInfo}. E a nota fiscal dos produtos sai da própria loja onde eu compro.`
-    : "A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo. A nota fiscal dos produtos sai da própria loja onde eu compro.";
+    : `A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo, ${attendanceWhen(inside)}. A nota fiscal dos produtos sai da própria loja onde eu compro.`;
 }
 
 // "quem faz a entrega?"
@@ -1662,7 +1679,7 @@ export function serviceAnswer(
     case "price_compare":
       return priceCompareAnswer(Boolean(ctx?.hasBasket));
     default:
-      return "Eu compro o que você precisar e entrego no seu endereço. Você paga por Pix ou cartão aqui no chat, e eu mostro o prazo antes. O que você precisa?";
+      return "Eu procuro o que você pedir nas lojas que entregam no seu endereço, mostro o total e o prazo antes, e você paga por Pix ou cartão aqui no chat. Eu compro pra você depois que pagar. O que você precisa?";
   }
 }
 
@@ -1685,7 +1702,7 @@ export function pixReceiverAnswer(businessInfo = process.env.LIA_BUSINESS_INFO?.
 
 // "qual a loja?"/"de onde vc compra?" (06/10, Clara e Claire): a resposta da IA era vaga
 // ("lojas oficiais parceiras"). Com opções na tela, diz a loja de cada uma.
-const STORES_GENERAL = "Eu compro em dezenas de lojas online — mercado, farmácia, pet, beleza e casa — sempre uma que entrega no seu endereço.";
+const STORES_GENERAL = "Eu compro em várias lojas online — mercado, farmácia, pet, beleza e casa — e mostro só as que entregam no seu endereço.";
 export function storesAnswer(onTable: { storeLabel?: string }[]): string {
   const labeled = onTable.filter((o) => o.storeLabel);
   if (!labeled.length) return STORES_GENERAL;
@@ -1700,7 +1717,7 @@ export function storesAnswer(onTable: { storeLabel?: string }[]): string {
 // respondia "não faço comparativo de preços" — falso. A busca roda em todas as lojas.
 // "Responde mais barato" só faz sentido com opções na mesa; sem produto era beco (placar c14).
 export function priceCompareAnswer(withOptions = true): string {
-  const base = "Comparo, sim: procuro o produto em dezenas de lojas ao mesmo tempo e te mostro as opções com o preço de cada uma";
+  const base = "Comparo, sim: procuro o produto em várias lojas ao mesmo tempo e te mostro as opções com o preço de cada uma";
   return withOptions
     ? `${base}. Quer ver as mais baratas? Responde *mais barato*.`
     : `${base}. Me diz o que você quer (pode escrever "o mais barato") que eu mostro agora.`;
@@ -1788,21 +1805,38 @@ export function paidOrderAddressKept(shortId: string, address: string): string {
   return `Seu pedido *#${shortId}* já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
 }
 
-// 2º pedido de atendente em pouco tempo (07/10, c30): o mesmo texto de novo parecia travado.
-export function humanHandoffAgain(): string {
-  return "Já avisei o responsável e ele ainda não respondeu — costuma retornar das 9h às 20h. Deixa aqui o que você precisa, com todos os detalhes, que ele já vê tudo e te responde direto nesta conversa.";
+// ---------- modo atendimento (07/10, placar c13/c30/c31) ----------
+// Depois de avisar o dono, a Lia confirma UMA vez com o prazo honesto e, nas mensagens seguintes que
+// não são pedido de produto, responde curto e DIFERENTE da anterior (repetir o mesmo texto parecia
+// travado). O prazo é o horário em que o dono responde; fora dele, "a partir das 9h".
+function attendanceWhen(inside: boolean): string {
+  return inside ? "das 9h às 20h" : "a partir das 9h";
 }
 
-export function humanHandoff(): string {
-  return "Avisei o responsável, ele te responde aqui mesmo. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.";
+export function humanHandoff(inside = true): string {
+  return `Avisei o responsável — ele te responde aqui mesmo, ${attendanceWhen(inside)}. Enquanto isso, pode escrever o que precisa que a mensagem chega. Se for sobre um pedido, responde *status* que eu já adianto.`;
+}
+
+// Confirmação curta das mensagens seguintes. `n` = quantas já foram dadas; a variação sempre
+// difere da anterior (ciclo de 4) e a primeira começa com "Já avisei o responsável".
+export function attendanceAck(n: number, inside = true): string {
+  const when = attendanceWhen(inside);
+  const variants = [
+    `Já avisei o responsável — ele responde aqui, ${when}. Se quiser adiantar, deixa os detalhes por escrito que ele já vê tudo.`,
+    `Anotado 🙂 Pode ficar tranquilo(a): ele responde nesta conversa, ${when}.`,
+    `Sigo por aqui. Se precisar de alguma compra, é só me dizer o produto; o resto fica com o responsável, que te responde ${when}.`,
+    `Está com ele — não precisa mandar de novo. A resposta vem aqui, ${when}.`
+  ];
+  return variants[((n % variants.length) + variants.length) % variants.length];
 }
 
 // Sem pedido, sem promessa de estorno (06/10: "meu nome está errado" virava reclamação com
 // "se faltou item, estorno"). Com pedido, a promessa de 17/08 fica.
-export function complaintAck(hasOrder = true): string {
+export function complaintAck(hasOrder = true, inside = true): string {
+  const when = attendanceWhen(inside);
   return hasOrder
-    ? "Sinto muito 😕 Já avisei o responsável, ele te responde aqui. Se faltou item, estorno o valor dele; me conta o que aconteceu (o que faltou, veio errado ou atrasou) que eu deixo anotado no pedido."
-    : "Sinto muito 😕 Já avisei o responsável, ele te responde aqui. Me conta o que aconteceu que eu deixo anotado.";
+    ? `Sinto muito 😕 Já avisei o responsável, ele te responde aqui, ${when}. Se faltou item, estorno o valor dele; me conta o que aconteceu (o que faltou, veio errado ou atrasou) que eu deixo anotado no pedido.`
+    : `Sinto muito 😕 Já avisei o responsável, ele te responde aqui, ${when}. Me conta o que aconteceu que eu deixo anotado.`;
 }
 
 export function cancelHowTo(hasPaidOrder: boolean): string {
