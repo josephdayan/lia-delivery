@@ -9,7 +9,8 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import * as copy from "../src/lib/lia-copy";
-import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef } from "../src/lib/lia-intents";
+import { isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, parseChoiceCombo, stripAdditiveLead } from "../src/lib/lia-intents";
+import { __setRouterInterpreterForTests } from "../src/lib/adapters/ai";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
 const PREFIX = `+5508${String(Date.now()).slice(-6)}${String(process.pid).slice(-2)}`;
@@ -158,17 +159,18 @@ test("c30: no modo atendimento, pedido de produto volta ao fluxo normal", async 
   assert.doesNotMatch(out, /avisei o responsável/i, out);
 });
 
-test("c31: pedido que não existe — 1ª pergunta registra, 2ª avisa o dono, depois confirmação curta sem pedir endereço", async (t) => {
+test("c31: 'cadê meu pedido de ontem?' sem pedido nenhum — avisa o dono já na 1ª vez, depois confirmação curta sem pedir endereço", async (t) => {
   if (!dbOk) return t.skip();
   const phone = newPhone();
   const before = ownerAlerts();
   const first = await send(phone, "cadê meu pedido de ontem?");
-  assert.match(first, /ainda não tem pedidos/i, first);
-  assert.equal(ownerAlerts() - before, 0, "1ª pergunta não avisa ninguém");
+  assert.match(first, /não achei nenhum pedido/i, first);
+  assert.match(first, /avisei o responsável/i, first);
+  assert.match(first, /9h/, first);
+  assert.equal(ownerAlerts() - before, 1, "reclamação concreta de pedido sumido avisa o dono na hora");
   const second = await send(phone, "Mas eu já fiz o pedido ontem, queria saber onde tá.");
-  assert.match(second, /avisei o responsável/i, second);
-  assert.match(second, /9h/, second);
-  assert.equal(ownerAlerts() - before, 1);
+  assert.doesNotMatch(second, /endere[cç]o|CEP|cadastro/i, second);
+  assert.notEqual(second, first);
   const third = await send(phone, "Não tenho o código, mas conseguem procurar pelo meu CPF?");
   assert.doesNotMatch(third, /endere[cç]o|CEP|cadastro/i, third);
   assert.notEqual(third, second);
@@ -176,6 +178,20 @@ test("c31: pedido que não existe — 1ª pergunta registra, 2ª avisa o dono, d
   assert.doesNotMatch(fourth, /endere[cç]o|CEP|cadastro/i, fourth);
   assert.notEqual(fourth, third);
   assert.equal(ownerAlerts() - before, 1, "dono avisado uma vez só");
+});
+
+test("c31: 'cadê meu pedido?' simples — 1ª só registra, a 2ª avisa o dono (estado no contexto, não na memória do processo)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = newPhone();
+  const before = ownerAlerts();
+  const first = await send(phone, "cadê meu pedido?");
+  assert.match(first, /ainda não tem pedidos/i, first);
+  assert.equal(ownerAlerts() - before, 0);
+  assert.equal((await context(phone)).attendance?.notifiedAt, 0);
+  const second = await send(phone, "e meu pedido?");
+  assert.match(second, /avisei o responsável/i, second);
+  assert.equal(ownerAlerts() - before, 1);
+  assert.ok((await context(phone)).attendance?.notifiedAt > 0);
 });
 
 test("c13: CNPJ sem LIA_BUSINESS_INFO — resposta com prazo, dono avisado uma vez e a espera não repete o texto", async (t) => {
@@ -406,4 +422,62 @@ test("c28: embalagem que fecha o número pedido não pergunta nada", async (t) =
   const out = await send(phone, String(idx + 1));
   assert.doesNotMatch(out, /mesmo assim/, out);
   assert.equal(((await context(phone)).basket ?? []).length, 1);
+});
+
+// ---------- rodada 2 (placar real, mesmo dia) ----------
+
+test("c35/c08: pedir indicação/contato de farmácia — resposta fixa honesta, sem pedir endereço, mesmo com o remédio na frase", async (t) => {
+  if (!dbOk) return t.skip();
+  for (const ask of ["ah, não consegue indicar uma farmácia que entregue?", "Consegue me passar o contato de alguma farmácia?", "consegue indicar uma farmácia que entregue dipirona nesse endereço?"]) {
+    assert.equal(looksLikePharmacyPartnerAsk(ask), true, ask);
+    const phone = newPhone();
+    await send(phone, "quero dipirona");
+    const out = await send(phone, ask);
+    assert.match(out, /Não tenho farmácia parceira/, `${ask}: ${out}`);
+    assert.doesNotMatch(out, /endere[cç]o|CEP|Atendo os estados/i, `${ask}: ${out}`);
+  }
+});
+
+test("c13: a nota fiscal não promete CPF de remédio quando o remédio isento está desligado", () => {
+  assert.doesNotMatch(copy.fiscalAnswer("nf"), /remédio|CPF/i);
+  assert.match(copy.fiscalAnswer("nf", undefined, true, true), /remédio sem receita sai no seu CPF/);
+});
+
+test("c09: 'vamos adicionar outro produto, pode ser 3 rações' — o enquadramento sai e só o item vai à busca (puro)", () => {
+  assert.equal(stripAdditiveLead("vamos adicionar outro produto, pode ser 3 racoes de cachorro?"), "3 racoes de cachorro?");
+  assert.equal(stripAdditiveLead("quero 3 rações"), "quero 3 rações");
+  const combo = parseChoiceCombo("2, e vamos adicionar outro produto, pode ser 3 rações de cachorro", [
+    { name: "Ração A", unitPrice: 10 },
+    { name: "Ração B", unitPrice: 20 }
+  ]);
+  assert.equal(combo?.reply.index, 1);
+  assert.equal(combo?.rest, "3 racoes de cachorro");
+});
+
+test("c30: no modo atendimento, o que o léxico não pega é decidido pela classificação (suporte = espera; produto = fluxo normal)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero falar com uma pessoa");
+  __setRouterInterpreterForTests(async () => ({ action: "support" }) as never);
+  try {
+    const out = await send(phone, "Não tenho mais detalhes, só preciso que fulano me retorne agora");
+    assert.doesNotMatch(out, /endere[cç]o|anotei|Oi! Sou a Lia/i, out);
+    assert.match(out, /9h/, out);
+  } finally {
+    __setRouterInterpreterForTests(null as never);
+  }
+  const product = await send(phone, "quero arroz");
+  assert.match(product, /Arroz/i, product);
+});
+
+test("c23: nada cabe e o cliente pede outro produto — o item que estourou sai da cesta e o teto acompanha a busca nova", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "quero um desodorante colônia até R$ 45");
+  await send(phone, "2");
+  await send(phone, "só isso");
+  const out = await send(phone, "quero outro desodorante colônia");
+  const ctx = await context(phone);
+  assert.equal((ctx.basket ?? []).length, 0, "o item que estourou não fica na cesta");
+  assert.equal(ctx.pending?.[0]?.cap, 45, `o teto de R$45 acompanha a busca nova: ${out.slice(0, 200)}`);
 });

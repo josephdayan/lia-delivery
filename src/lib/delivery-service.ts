@@ -1511,6 +1511,18 @@ async function handleDeliveryTurn(
     return;
   }
 
+  // "tem alguma farmácia parceira que venda?" / "consegue indicar uma farmácia que entregue dipirona?"
+  // (07/10, c35/c08): é pergunta, com resposta fixa — não pede endereço, não vira busca de "farmácia"
+  // e vem ANTES da guarda de remédio (que repetiria a recusa em vez de responder).
+  if (
+    looksLikePharmacyPartnerAsk(text) &&
+    (looksLikeMedicine(text) || isPrescriptionDrugName(text) || /\b(?:remedios?|medicamentos?|receita)\b/.test(normalizeMsg(text)) || (ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000))
+  ) {
+    await reply(phone, copy.pharmacyPartnerAnswer(medicineEnabled()));
+    if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+    return;
+  }
+
   // GUARDA DE REMÉDIO GLOBAL (26/08 P1.6: 2/4 — a recusa dependia da etapa; na
   // pergunta de quantidade "também queria dipirona" virava "responde o número").
   // "sem remédio, quero X" segue como pedido (negação já tratada na extração).
@@ -1533,18 +1545,6 @@ async function handleDeliveryTurn(
     }
   }
 
-  // "tem alguma farmácia parceira que venda?" logo depois da recusa de remédio (07/10, c35): é
-  // pergunta, com resposta fixa — não pede endereço nem vira busca de "farmácia".
-  if (
-    looksLikePharmacyPartnerAsk(text) &&
-    (looksLikeMedicine(text) || /\b(?:remedios?|medicamentos?|receita)\b/.test(normalizeMsg(text)) || (ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000))
-  ) {
-    await reply(phone, copy.pharmacyPartnerAnswer(medicineEnabled()));
-    if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
-    return;
-  }
-
-
   // MODO ATENDIMENTO (07/10, c13/c30/c31): o dono já foi avisado e o cliente só espera ou cobra
   // ("vou esperar", "e aí?", "preciso falar com alguém mesmo", "conseguem procurar pelo meu CPF?").
   // Confirmação CURTA e diferente da anterior, sem pedir endereço nem produto. Pedido de produto
@@ -1555,13 +1555,21 @@ async function handleDeliveryTurn(
       att &&
       att.notifiedAt > 0 &&
       attendanceQuiet(ctx) &&
-      ["free_text", "thanks", "greeting", "hold", "resume_where", "affirm"].includes(intent.kind) &&
-      isAttendanceFollowUp(text)
+      ["free_text", "thanks", "greeting", "hold", "resume_where", "affirm"].includes(intent.kind)
     ) {
-      const ack = nextAttendanceAck(ctx);
-      await writeCtx(convo.id, ctx);
-      await reply(phone, ack);
-      return;
+      // O léxico pega a espera comum; o resto ("só preciso que alguém me atenda agora") a classificação
+      // decide: suporte/conversa é espera, pedido de produto segue o fluxo normal.
+      let waiting = isAttendanceFollowUp(text);
+      if (!waiting && intent.kind === "free_text" && !isQuestion(text)) {
+        const verdict = await interpretCustomerMessage({ text, state: "o responsável humano já foi avisado e o cliente aguarda atendimento; nenhuma compra em andamento" }).catch(() => null);
+        waiting = verdict?.action === "support" || verdict?.action === "smalltalk";
+      }
+      if (waiting) {
+        const ack = nextAttendanceAck(ctx);
+        await writeCtx(convo.id, ctx);
+        await reply(phone, ack);
+        return;
+      }
     }
   }
 
@@ -1582,7 +1590,17 @@ async function handleDeliveryTurn(
       await reply(phone, copy.overBudgetDeclined());
       return;
     }
-    ctx.budget = { ...ctx.budget, awaiting: false };
+    // Pedido de outro produto ("tem algum perfume que fique até 100 com entrega?"): o item que estourou
+    // SAI da cesta (era ele que não cabia) e o teto acompanha a busca nova — sem somar os dois no total.
+    if (intent.kind === "free_text") {
+      const cap = ctx.budget.cap;
+      ctx.basket = [];
+      ctx.budget = undefined;
+      ctx.lastChoice = undefined;
+      if (parsePriceCap(text) == null) text = `${text} até ${cap} reais`;
+    } else {
+      ctx.budget = { ...ctx.budget, awaiting: false };
+    }
   }
 
   // Trocar de produto com a escolha de entrega ou o total na mesa (07/10, c24): "troca pelo de R$ 34,09",
@@ -1830,7 +1848,7 @@ async function handleDeliveryTurn(
       await rePresentStep();
       return;
     }
-    await reply(phone, copy.fiscalAnswer(intent.topic, businessInfo));
+    await reply(phone, copy.fiscalAnswer(intent.topic, businessInfo, undefined, medicineEnabled()));
     // "me fala que eu te envio" não pode ser beco: sem a env, o operador é acionado
     // pra mandar os dados de verdade (29/08 S7).
     if (intent.topic === "nf") {
@@ -3363,6 +3381,16 @@ function asksPastOrder(text?: string): boolean {
 // vira modo atendimento; depois: confirmação curta e diferente.
 async function replyNoOrders(phone: string, convoId: string, ctx: DeliveryContext, text?: string) {
   const cur = attendanceLive(ctx);
+  // "cadê meu pedido de ONTEM?" sem pedido nenhum é uma reclamação concreta (outro número? pedido de
+  // teste?): avisa o dono já na 1ª vez em vez de pedir que o cliente "monte o primeiro" (placar c31).
+  const claimsPastOrder = asksPastOrder(text);
+  if ((!cur || cur.notifiedAt === 0) && claimsPastOrder) {
+    enterAttendance(ctx, "order_missing");
+    await notifyOwner(`🔎 Cliente diz que fez um pedido (${(text ?? "").slice(0, 120)}), mas não há pedido neste número — conferir (outro número? pedido de teste?).`, phone);
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.noOrdersEscalated(withinOperatorHours()));
+    return;
+  }
   if (cur && cur.notifiedAt > 0) {
     const { notify } = enterAttendance(ctx, cur.kind);
     if (notify) await notifyOwner(`🔎 Cliente segue sem pedido neste número: "${(text ?? "").slice(0, 160)}" — conferir.`, phone);

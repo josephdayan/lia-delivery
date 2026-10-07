@@ -2118,6 +2118,15 @@ function tailEchoesOption(tail: string, optionName?: string): boolean {
 // "outra marca" e "mais barato" são pedidos de opções, não de item novo.
 export const ADDITIVE_CUE_RE = /\b(?:adicion\w+|acrescent\w+|tambem|alem d\w+|junto com|outro produto|outra coisa|mais (?:um|uma|dois|duas|tres|\d+)\b)/;
 
+// "vamos adicionar outro produto, pode ser 3 rações de cachorro" → "3 rações de cachorro" (07/10, c09):
+// o enquadramento da frase não é produto — virava "Não achei: vamos adicionar outro produto".
+export function stripAdditiveLead(text: string): string {
+  const lead = /^\s*(?:e\s+)?(?:(?:vamos|vou|vai|podemos|pode|quero|queria|bora)\s+)*(?:adicionar|acrescentar|incluir|colocar|botar|por)\s+(?:(?:mais\s+)?(?:um|o)\s+)?(?:outro\s+produto|outra\s+coisa|outro\s+item|produto\s+novo)\s*[,.;:\-]*\s*/i;
+  if (!lead.test(text)) return text;
+  const cleaned = text.replace(lead, "").replace(/^\s*(?:pode ser|quero|queria|seria|sao)\s+(?=\d)/i, "").trim();
+  return cleaned || text;
+}
+
 export function parseChoiceCombo(
   text: string,
   options: { name: string; unitPrice: number }[]
@@ -2133,7 +2142,7 @@ export function parseChoiceCombo(
     const tail = leadPick[2].trim();
     if (!/[a-z]{3,}/.test(tail)) return null;
     if (tailEchoesOption(tail, options[index]?.name)) return { reply: { type: "pick", index } };
-    return { reply: { type: "pick", index }, rest: tail };
+    return { reply: { type: "pick", index }, rest: stripAdditiveLead(tail) };
   }
   const parts = n.match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tambem\s+)?)(.+)$/);
   if (!parts) return null;
@@ -2156,7 +2165,7 @@ export function parseChoiceCombo(
   // A cauda que só REPETE a opção escolhida ("acho que vou no 1, Omo 1,4kg") é confirmação,
   // não item novo — virava busca de "Omo 1,4kg" e uma 2ª unidade na cesta (placar 07/10, c12).
   if (tailEchoesOption(tail, options[reply.index]?.name)) return { reply };
-  return { reply, rest: tail };
+  return { reply, rest: stripAdditiveLead(tail) };
 }
 
 // "o da Mambo", "a da drogaria são paulo", "quero o da Swift" (06/10): referência à LOJA da
@@ -2288,7 +2297,7 @@ export function isAttendanceFollowUp(text: string): boolean {
   if (/^e ?a[ie]+\b/.test(n)) return true;
   return (
     /\b(?:vou|vamos|fico|to|tou|estou|sigo)\s+(?:no\s+)?(?:aguardar|esperar|aguardando|esperando|aguardo)\b|\bno aguardo\b/.test(n) ||
-    /\b(?:falar|conversar|chamar|chama|passa|pede|pedir|manda|avisa)\b.{0,30}\b(?:alguem|atendente|responsavel|humano|pessoa|dono|gerente)\b|\b(?:tem|ha) alguem\b|^alguem\b|\b(?:atendente|responsavel|humano|pessoa de verdade)\b/.test(n) ||
+    /\b(?:falar|conversar|chamar|chama|passa|pede|pedir|manda|avisa)\b.{0,30}\b(?:alguem|atendente|responsavel|humano|pessoa|dono|gerente)\b|\b(?:tem|ha) alguem\b|^alguem\b|\balguem (?:me )?(?:atend|respond|fal|ajud|ligu)\w*|\bme atend\w*|\batendimento\b|\b(?:atendente|responsavel|humano|pessoa de verdade)\b/.test(n) ||
     /\b(?:cnpj|cpf|codigo do pedido|numero do pedido|nome que aparece)\b/.test(n) ||
     /\b(?:confer\w+|verific\w+|localiz\w+|procurar pelo|consegu\w+ (?:procurar|ver|achar|localizar))\b/.test(n) ||
     /\b(?:nao chegou|nao veio|meu pedido|pedido de ontem|ja fiz o pedido|ainda nao (?:respond|me respond|chegou)|ninguem (?:respond|me respond)|demora|urgente|quanto tempo)\b/.test(n)
@@ -2300,6 +2309,6 @@ export function isAttendanceFollowUp(text: string): boolean {
 export function looksLikePharmacyPartnerAsk(text: string): boolean {
   const n = normalizeMsg(text);
   if (!/\b(?:farmacias?|drogarias?)\b/.test(n)) return false;
-  if (!(isQuestion(text) || /\b(?:vc|voce|voces|vcs)\b/.test(n))) return false;
-  return /\b(?:parceir\w*|vend\w*|trabalh\w*|conveni\w*|tem|tenha|atend\w*)\b/.test(n);
+  if (!(isQuestion(text) || /\b(?:vc|voce|voces|vcs|consegue\w*|pode|poderia|tem como)\b/.test(n))) return false;
+  return /\b(?:parceir\w*|vend\w*|trabalh\w*|conveni\w*|tem|tenha|atend\w*|indic\w*|recomend\w*|sugir\w*|sugere|passa\w*|contato|telefone|endereco|perto|proxim\w*|entreg\w*|conhec\w*)\b/.test(n);
 }

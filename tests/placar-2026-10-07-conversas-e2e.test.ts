@@ -175,9 +175,11 @@ test("c31: 'cadê meu pedido?' sem pedido nenhum — a 2ª vez não repete a mes
   const phone = await customer();
   const one = await send(phone, "cadê meu pedido de ontem?");
   const two = await send(phone, "mas eu fiz um pedido ontem, onde está?");
-  assert.match(one, /ainda não tem pedidos/i);
+  // 07/10 (Fase 1): pedido "de ontem" que não existe é reclamação concreta — o dono é avisado já na 1ª vez
+  // e a 2ª pergunta recebe uma confirmação curta DIFERENTE (modo atendimento no contexto).
+  assert.match(one, /avisei o responsável/i);
   assert.notEqual(one, two);
-  assert.match(two, /avisei o responsável/i);
+  assert.match(two, /responsável/i);
 });
 
 test("c07: 'só essa' com o item na cesta fecha a lista (total), não pergunta 'a qual produto'", async (t) => {

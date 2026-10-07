@@ -322,7 +322,7 @@ export function noMedicineAgain(): string {
 export function pharmacyPartnerAnswer(otcEnabled = false): string {
   return otcEnabled
     ? "Os remédios *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome; os de receita eu não consigo comprar. Pra esses, a farmácia mais perto de você é o caminho."
-    : "Não tenho farmácia parceira que venda remédio por mim: remédio eu não vendo — por lei, só a farmácia pode. Pra medicação, a farmácia mais perto de você é o caminho. De mercado, higiene, pet, beleza e casa eu cuido — o que você precisa?";
+    : "Não tenho farmácia parceira que venda remédio por mim e também não consigo indicar uma unidade: remédio eu não vendo — por lei, só a farmácia pode. Pra medicação, a farmácia mais perto de você é o caminho. De mercado, higiene, pet, beleza e casa eu cuido — o que você precisa?";
 }
 
 export function medicineSkippedNote(): string {
@@ -1108,9 +1108,10 @@ export function thirdPartyPayAnswer(): string {
 
 // Nota fiscal / CNPJ. Os dados da empresa vêm da env LIA_BUSINESS_INFO (ex.:
 // "Lia Delivery — CNPJ 12.345.678/0001-90"); sem env, resposta honesta sem número.
-export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string, inside = true): string {
+export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string, inside = true, otcOnCpf = false): string {
   if (topic === "nf") {
-    return "A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você (remédio sem receita sai no seu CPF). Se precisar de uma cópia, me avisa que o responsável te envia.";
+    // O trecho do CPF só vale com o remédio isento ligado (07/10, c13: o juiz chamou de promessa falsa).
+    return `A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você${otcOnCpf ? " (remédio sem receita sai no seu CPF)" : ""}. Se precisar de uma cópia, me avisa que o responsável te envia.`;
   }
   return businessInfo
     ? `Claro: ${businessInfo}. E a nota fiscal dos produtos sai da própria loja onde eu compro.`
