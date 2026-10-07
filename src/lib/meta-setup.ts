@@ -168,6 +168,13 @@ export const LIST_FLOW_JSON = {
         cabecalho: { type: "string", __example__: "Escolha uma opção em cada item. A sugestão da Lia já vem marcada." },
         faltas_texto: { type: "string", __example__: "Não achei: gelo" },
         faltas_visible: { type: "boolean", __example__: true },
+        // Pré-seleção vai no Form (`init-values`): a Meta recusa init-value no RadioButtonsGroup
+        // (07/10, validation_errors INVALID_PROPERTY_KEY).
+        init_values: {
+          type: "object",
+          properties: Object.fromEntries(listSlotNumbers.map((i) => [`item_${i}`, { type: "string" }])),
+          __example__: { item_1: "sku-1" }
+        },
         ...Object.fromEntries(
           listSlotNumbers.flatMap((i) => [
             [`label_${i}`, { type: "string", __example__: "Vodka · 2x" }],
@@ -201,6 +208,7 @@ export const LIST_FLOW_JSON = {
           {
             type: "Form",
             name: "form",
+            ...(LIST_FLOW_USE_INIT_VALUE ? { "init-values": "${data.init_values}" } : {}),
             children: [
               ...listSlotNumbers.map((i) => ({
                 type: "RadioButtonsGroup",
@@ -208,8 +216,7 @@ export const LIST_FLOW_JSON = {
                 label: `\${data.label_${i}}`,
                 required: false,
                 visible: `\${data.visible_${i}}`,
-                "data-source": `\${data.opts_${i}}`,
-                ...(LIST_FLOW_USE_INIT_VALUE ? { "init-value": `\${data.init_${i}}` } : {})
+                "data-source": `\${data.opts_${i}}`
               })),
               {
                 type: "Footer",

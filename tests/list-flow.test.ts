@@ -52,6 +52,7 @@ test("data: até 4 opções por vaga, sugerida primeiro, mais 'Não quero este i
   assert.equal(opts.at(-1)?.title, "Não quero este item");
   assert.deepEqual(slots[0].skus, ["s1-3", "s1-1", "s1-2", "s1-4"]);
   assert.equal(data.init_1, "s1-3");
+  assert.equal((data.init_values as Record<string, string>).item_1, "s1-3");
 });
 
 test("data: rótulo, título e descrição respeitam os limites da Meta", () => {

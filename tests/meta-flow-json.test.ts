@@ -15,8 +15,8 @@ for (const [label, flow] of [["endereço", ADDRESS_FLOW_JSON], ["cadastro", SIGN
           if (n.type === "TextInput") assert.ok(n.label.length <= 20, `${n.name}: "${n.label}" (${n.label.length})`);
           if (n.type === "TextInput" && n["helper-text"]) assert.ok(n["helper-text"].length <= 80, n.name);
           if (n.type === "Footer") assert.ok(n.label.length <= 35, n.label);
-          // O Flow da lista pré-seleciona a sugestão com init-value em RadioButtonsGroup (dentro
-          // de Form); a Meta recusou init-value só no TextInput. Pendente de validação real.
+          // A Meta recusa init-value no TextInput (04/09) e no RadioButtonsGroup (07/10): a
+          // pré-seleção da lista vai no Form (`init-values`).
           if (!(label === "lista" && n.type === "RadioButtonsGroup")) {
             assert.equal("init-value" in n, false, `${n.type} ${n.name ?? ""}: init-value não é aceito pela Meta`);
           }

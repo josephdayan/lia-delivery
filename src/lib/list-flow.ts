@@ -191,6 +191,10 @@ export function buildListFlowData(
     data[`init_${i}`] = used ? inits[i - 1] : PLACEHOLDER_ID;
     data[`opts_${i}`] = used ? rows[i - 1] : [{ id: PLACEHOLDER_ID, title: "-" }];
   }
+  // Pré-seleção pelo Form (`init-values`): só as vagas com sugestão; vaga sem sugestão abre vazia.
+  data.init_values = Object.fromEntries(
+    sent.map((_, idx) => [`item_${idx + 1}`, inits[idx]]).filter(([, v]) => Boolean(v))
+  );
   return { data, slots: sentSlots, overflow, imageBytes, payloadBytes: Buffer.byteLength(JSON.stringify(data)) };
 }
 
