@@ -1,7 +1,8 @@
 // Cadastro e endereço em texto livre (06/10, relatório do testador): o que é endereço, o que
 // é pedido e o que é cortesia numa mensagem só. Tudo puro (sem banco, sem rede) — testado em
 // tests/feedback-2026-10-06-cadastro.test.ts.
-import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, normalizeMsg, parseAddressComplement, parseBasketLines, type ParsedLine } from "@/lib/lia-intents";
+import { resolveListItems } from "@/lib/list-items";
+import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, normalizeMsg, parseAddressComplement, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
 // "praça", "estrada") só com a palavra seguinte em maiúscula — "calça larga" não é endereço.
@@ -327,7 +328,7 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   // Marcador de lista ("- sabonete dove") não é parte do produto.
   const courtesy = stripCourtesy((raw ?? "").replace(NAME_AT_START_RE, "").replace(/^\s*[-•*–]\s+/gm, ""));
   const cleaned = courtesy.text.replace(URL_RE, (url) => ` ${urlSlug(url)} `).replace(REMINDER_RE, "");
-  const lines = parseBasketLines(cleaned).filter((line) => {
+  const lines = resolveListItems(cleaned).filter((line) => {
     const n = normalizeMsg(line.phrase);
     return !PHONE_ONLY_RE.test(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
   });

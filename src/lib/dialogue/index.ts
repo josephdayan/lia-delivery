@@ -6,6 +6,7 @@
 // o caminho de hoje assume (nunca deixa o cliente sem resposta).
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
+import { resolveListItems } from "../list-items";
 import { normalizeMsg } from "../lia-intents";
 import { extractCpf } from "../medicine";
 import { prisma } from "../prisma";
@@ -57,7 +58,12 @@ const CHATTER_RE = /\b(pode|poderia|consegue|queria|gostaria|tava|estava|pensand
 export function isPlainShoppingList(text: string): boolean {
   const n = normalizeMsg(text);
   if (n.length > 120 || /[?]/.test(text) || CHATTER_RE.test(n)) return false;
-  const segments = text.split(/[\n,;]+|\s+e\s+/i).map((x) => x.trim()).filter(Boolean);
+  // Segmentos = os itens que o resolvedor único de contagem enxerga (list-items.ts): "romeu e julieta"
+  // é UM segmento, "arroz e feijão" são dois. Sem item reconhecível, a regex antiga decide.
+  const items = resolveListItems(text);
+  const segments = items.length
+    ? items.map((item) => item.phrase)
+    : text.split(/[\n,;]+|\s+e\s+/i).map((x) => x.trim()).filter(Boolean);
   return segments.length >= 1 && segments.every((seg) => seg.split(/\s+/).length <= 5);
 }
 
