@@ -262,6 +262,11 @@ test("quando NÃO consulta a IA: número, CEP, botões, pix/cartão, cadastro, C
   assert.equal(why("sim", { ctx: { ...ctx, minSwap: { fromStoreKey: "x", replacements: [] } } }), "pergunta_aberta");
   assert.equal(why("2 leites, 1 pão", { ctx: { flow: "delivery", step: "collecting" }, looksLikeList: true }), "lista_nova");
   assert.equal(why("2 leites, 1 pão", { ctx: { ...ctx, step: "choosing" }, looksLikeList: true }), null, "com escolha aberta a IA decide");
+  const fresh: DeliveryContext = { flow: "delivery", step: "collecting" };
+  assert.equal(why("quero arroz, feijão e café", { ctx: fresh, looksLikeList: true }), "lista_nova");
+  // conversa no meio da "lista" (c12): o regex via duas linhas e um pedaço virava produto — a IA decide
+  assert.equal(why("Ah legal, queria um sabão em pó, pode ser daqueles mais em conta", { ctx: fresh, looksLikeList: true }), null);
+  assert.equal(why("outras opções"), "intent:more_options");
 });
 
 // ---------------------------------------------------------------- E2E (banco local, IA simulada)
@@ -477,6 +482,34 @@ test("ação inválida, IA fora do ar ou erro do modelo: o caminho de hoje respo
   });
   const boom = await send(phone, "hmm o segundo");
   assert.ok(boom.length > 0);
+});
+
+test("c12/c05: pedaço de frase não vira produto — a IA manda só o produto (search) ou só o atributo (refine)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  model(() => [act("search", { query: "sabão em pó" })]);
+  const out = await send(phone, "Você consegue comprar qualquer coisa? Tava pensando em sabão em pó.");
+  assert.doesNotMatch(out, /Você consegue|eu não achei/i, out.slice(0, 300));
+  assert.match(out, /Pó|Lava|Sabão/i, out.slice(0, 300));
+  assert.equal((await context(phone)).pending?.[0]?.query.includes("consegue") ?? false, false);
+
+  const phone2 = await customer();
+  await withChoice(phone2);
+  model(() => [act("refine", { attribute: "integral 1L" })]);
+  const refined = await send(phone2, "Consegue tentar procurar em outra loja? Quero exatamente esse integral de 1L.");
+  assert.doesNotMatch(refined, /Anotei|Consegue tentar/i, refined.slice(0, 300));
+  assert.equal((await context(phone2)).step, "choosing", "a escolha continua aberta");
+});
+
+test("c40: depois de 'não achei', 'pode tentar de qualquer marca' é retry (a frase não vira produto)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  model(() => null);
+  await send(phone, "quero bola de tenis");
+  model(() => [act("search", { query: "bola de tenis", retry: true })]);
+  const out = await send(phone, "Pode tentar de qualquer marca, não precisa ser uma específica.");
+  assert.match(out, /eu não achei/i, out.slice(0, 300));
+  assert.doesNotMatch(out, /Pode tentar de qualquer/i, out.slice(0, 300));
 });
 
 test("variável desligada (padrão): a IA do gerente nunca é consultada", async (t) => {

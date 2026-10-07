@@ -48,7 +48,7 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
 
   for (let i = 0; i < steps.length; i++) {
     const nextIsSearch = steps[i + 1]?.type === "search";
-    const result = await runStep(env, steps[i], { reopened, nextIsSearch });
+    const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick" });
     if (result === "invalid") {
       // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
       // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
@@ -89,7 +89,7 @@ function locate(ctx: DeliveryContext, target: Target): BasketItem | undefined {
   return basket.find((item) => item.name.slice(0, 90) === target.name);
 }
 
-async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean }): Promise<StepResult> {
+async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean; nextIsPick: boolean }): Promise<StepResult> {
   const { ctx, phone, convoId, userCep, userId, h } = env;
   const choosing = ctx.step === "choosing" && Boolean(ctx.pending?.length);
   const current = choosing ? ctx.pending![0] : undefined;
@@ -221,7 +221,8 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
           return "done";
         }
         await writeCtx(convoId, ctx);
-        await h.sendChoices(phone, current);
+        // "só amora, a 1": o pick vem logo a seguir — não reapresenta a lista antes dele.
+        if (!opts.nextIsPick) await h.sendChoices(phone, current);
         return "done";
       }
       const kept = locate(ctx, step.target);

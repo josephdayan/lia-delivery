@@ -6,6 +6,7 @@
 // o caminho de hoje assume (nunca deixa o cliente sem resposta).
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
+import { normalizeMsg } from "../lia-intents";
 import { extractCpf } from "../medicine";
 import { prisma } from "../prisma";
 import { turnMeta } from "../turn-runtime";
@@ -49,7 +50,16 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "charge_complaint"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
-const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart"]);
+const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
+
+// "arroz, feijão e 2 cafés" / "quero 3 leites": segmentos curtos, sem pergunta, sem fala de conversa.
+const CHATTER_RE = /\b(pode|poderia|consegue|queria|gostaria|tava|estava|pensando|legal|daquel[ae]s?|daquilo|mais em conta|recomenda|sugere|talvez|tipo|ou seja|tambem|alem)\b/;
+export function isPlainShoppingList(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (n.length > 120 || /[?]/.test(text) || CHATTER_RE.test(n)) return false;
+  const segments = text.split(/[\n,;]+|\s+e\s+/i).map((x) => x.trim()).filter(Boolean);
+  return segments.length >= 1 && segments.every((seg) => seg.split(/\s+/).length <= 5);
+}
 
 export type BypassInput = {
   text: string;
@@ -74,9 +84,12 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (DETERMINISTIC_INTENTS.has(i.intent.kind)) return `intent:${i.intent.kind}`;
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
-  // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca.
+  // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
+  // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
+  // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto
+  // "não achado" — essa a IA decide.
   const fresh = !ctx.pending?.length && !(ctx.basket?.length) && !ctx.lastMiss && !ctx.lastChoice && (ctx.step === undefined || ctx.step === "collecting");
-  if (fresh && i.looksLikeList) return "lista_nova";
+  if (fresh && i.looksLikeList && isPlainShoppingList(text)) return "lista_nova";
   return null;
 }
 
