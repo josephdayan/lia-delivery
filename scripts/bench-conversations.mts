@@ -15,6 +15,8 @@ const args = process.argv.slice(2);
 const arg = (name: string, fallback?: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : fallback; };
 const label = arg("label", "run")!;
 const only = arg("only")?.split(",");
+const onlySet = arg("set"); // treino | prova
+const repeat = Math.max(1, Number(arg("repeat", "1")));
 const concurrency = Number(arg("concurrency", "2"));
 const verbose = args.includes("--verbose");
 const MAX_TURNS = Number(arg("turns", "18"));
@@ -25,6 +27,7 @@ process.env.LIA_AUTO_PURCHASE_STORES ??=
 type Scenario = {
   id: string; title: string; origin: string; persona: string; goal: string; opening: string;
   name: string; cpf: string; address: string; traps?: string; expect: "reach_pix" | "honest_not_found" | "cancel_ok" | "answer_only";
+  set?: "treino" | "prova";
 };
 
 async function llm(model: string, system: string, user: string, schema?: object): Promise<string> {
@@ -67,7 +70,18 @@ const JUDGE_SYSTEM = `Você é um auditor rigoroso de qualidade de um serviço d
 - deadEnd: o cliente ficou sem caminho (laço, mesma pergunta repetida, "não entendi" seguido, erro técnico, sem resposta)?
 - confusing: respostas longas demais, redundantes, ignorou o que o cliente disse, perguntou o que já sabia, tom ruim.
 - slow: alguma resposta demorou mais de 20 s?
-Liste cada defeito concreto em "defects" (turno, descrição curta, gravidade high/medium/low). Seja específico e não elogie por educação.`;
+Liste cada defeito concreto em "defects" (turno, descrição curta, gravidade high/medium/low). Seja específico e não elogie por educação.
+
+FATOS DO SERVIÇO (verdadeiros — não os trate como promessa falsa nem como defeito):
+- Quando o cliente pede atendente, reclama, pede CNPJ/dados da empresa ou diz que um pedido sumiu, o sistema AVISA o responsável no WhatsApp dele na hora. "Avisei o responsável" é verdade. A resposta humana chega fora desta conversa de teste: NÃO conte como falha a ausência de resposta humana na transcrição; conte como falha se a Lia repetir a mesma frase, prometer prazo que não existe ou ignorar o que o cliente disse.
+- Fora de SP e RJ o contato entra numa lista de espera por cidade (o dono vê e chama quando abrir). "Anotei seu contato e te chamo quando chegar aí" é verdade.
+- A Lia Delivery é MEI: o Pix vai para a conta da empresa e o banco mostra o nome do responsável (pessoa física). Isso é verdade.
+- A Lia pede o endereço com CEP UMA vez antes de mostrar opções (precisa dele para conferir estoque e frete da loja), guardando o pedido já feito. Isso é o fluxo normal, não defeito — defeito é perder o pedido ou pedir o endereço de novo.
+- A Lia não vende medicamento (lei). Recusar remédio é correto.
+- A loja vende por embalagem: ajustar a quantidade para a embalagem disponível é aceitável SE a Lia avisar ANTES de cobrar.
+- Orçamento que o cliente disser vale para o TOTAL (produto + frete): a Lia deve respeitar ou avisar que não cabe.
+- "(sandbox: responda paguei pra simular)" e códigos MOCKPIX são do ambiente de teste — ignore.
+- "Me pede qualquer coisa" na saudação é exagero: conte como falseClaim leve só se a conversa depois contradisser (ex.: recusar algo comum sem explicar).`;
 
 const JUDGE_SCHEMA = {
   type: "object", additionalProperties: false, required: ["goalReached", "wrongProduct", "falseClaim", "deadEnd", "confusing", "slow", "defects", "summary"],
@@ -77,6 +91,23 @@ const JUDGE_SCHEMA = {
     defects: { type: "array", items: { type: "object", additionalProperties: false, required: ["turn", "what", "severity"], properties: { turn: { type: "integer" }, what: { type: "string" }, severity: { type: "string", enum: ["high", "medium", "low"] } } } }
   }
 };
+
+function isClean(v: any) {
+  return Boolean(v && v.goalReached && !v.wrongProduct && !v.falseClaim && !v.deadEnd);
+}
+function passAtN(results: any[]) {
+  const by = new Map<string, any[]>();
+  for (const r of results) (by.get(r.id) ?? by.set(r.id, []).get(r.id)!).push(r);
+  const ids = [...by.keys()];
+  const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)}%` : "n/a");
+  const cleanIds = ids.filter((id) => by.get(id)!.every((r) => isClean(r.verdict)));
+  const goalIds = ids.filter((id) => by.get(id)!.every((r) => r.verdict?.goalReached));
+  const sets = ["treino", "prova"].map((set) => {
+    const inSet = ids.filter((id) => by.get(id)![0].set === set);
+    return [set, { cenarios: inSet.length, limpos: pct(inSet.filter((id) => cleanIds.includes(id)).length, inSet.length), objetivo: pct(inSet.filter((id) => goalIds.includes(id)).length, inSet.length) }];
+  });
+  return { cleanAllRuns: pct(cleanIds.length, ids.length), goalAllRuns: pct(goalIds.length, ids.length), porConjunto: Object.fromEntries(sets), falhando: ids.filter((id) => !cleanIds.includes(id)) };
+}
 
 function renderTranscript(transcript: Array<{ who: string; text: string; sec?: number }>) {
   return transcript.map((m, i) => `[${i}] ${m.who === "cliente" ? "CLIENTE" : `LIA (${m.sec ?? "?"}s)`}: ${m.text}`).join("\n");
@@ -107,7 +138,8 @@ async function rejudge(file: string) {
     confusing: pct(judged.filter((r: any) => r.verdict.confusing).length, judged.length),
     slow: pct(judged.filter((r: any) => r.verdict.slow).length, judged.length),
     clean: pct(judged.filter(clean).length, judged.length),
-    highSeverityDefects: judged.reduce((n: number, r: any) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0) };
+    highSeverityDefects: judged.reduce((n: number, r: any) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0),
+    ...passAtN(data.results) };
   writeFileSync(file, JSON.stringify(data, null, 1));
   console.log("\n" + JSON.stringify(data.summary, null, 1));
   process.exit(0);
@@ -124,7 +156,10 @@ async function main() {
     const { handleDeliveryMessage, runTurnScoped } = await import("../src/lib/delivery-service");
     let scenarios: Scenario[] = JSON.parse(readFileSync(join(process.cwd(), "evals", "conversation-scenarios.json"), "utf8"));
     if (only) scenarios = scenarios.filter((s) => only.includes(s.id));
-    console.log(`bench-conversations "${label}" · ${scenarios.length} cenários · cliente gpt-6-luna · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"}`);
+    if (onlySet) scenarios = scenarios.filter((s) => (s.set ?? "treino") === onlySet);
+    // Unidades de execução: cada cenário roda `repeat` vezes (o cliente simulado varia).
+    const units = scenarios.flatMap((s) => Array.from({ length: repeat }, (_, rep) => ({ s, rep })));
+    console.log(`bench-conversations "${label}" · ${scenarios.length} cenários × ${repeat} · cliente gpt-6-luna · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"}`);
 
     // Saída por telefone (as conversas rodam em paralelo no mesmo processo).
     const outbox = new Map<string, string[]>();
@@ -134,7 +169,7 @@ async function main() {
     const results: any[] = [];
     let next = 0;
     let seq = 0;
-    async function runScenario(s: Scenario, index: number) {
+    async function runScenario(s: Scenario, index: number, rep = 0) {
       const phone = `+5500994${String(100000 + index * 7 + (Date.now() % 7)).slice(-6)}${String(process.pid % 100).padStart(2, "0")}`;
       const key = phone.replace(/\D/g, "");
       const transcript: Array<{ who: "cliente" | "lia"; text: string; sec?: number }> = [];
@@ -168,7 +203,7 @@ async function main() {
       const rendered = renderTranscript(transcript);
       const verdict: any = await judgeScenario(s, transcript);
       const ended = transcript.some((m) => m.who === "cliente" && m.text.trim().toUpperCase() === "FIM");
-      results.push({ id: s.id, title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
+      results.push({ id: s.id, rep, set: s.set ?? "treino", title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
       if (verbose) console.log(`\n=== ${s.id} ${s.title}\n${rendered}\n→ ${JSON.stringify(verdict)}`);
       process.stdout.write(verdict ? (verdict.goalReached && !verdict.wrongProduct && !verdict.falseClaim && !verdict.deadEnd ? "." : "F") : "?");
       // limpeza do telefone de teste
@@ -181,7 +216,7 @@ async function main() {
         await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       }
     }
-    async function worker() { for (;;) { const i = next++; const s = scenarios[i]; if (!s) return; await runScenario(s, i); } }
+    async function worker() { for (;;) { const i = next++; const u = units[i]; if (!u) return; await runScenario(u.s, i, u.rep); } }
     await Promise.all(Array.from({ length: concurrency }, worker));
     console.log("\n");
 
@@ -196,7 +231,10 @@ async function main() {
       confusing: pct(judged.filter((r) => r.verdict.confusing).length, judged.length),
       slow: pct(judged.filter((r) => r.verdict.slow).length, judged.length),
       clean: pct(judged.filter((r) => r.verdict.goalReached && !r.verdict.wrongProduct && !r.verdict.falseClaim && !r.verdict.deadEnd).length, judged.length),
-      highSeverityDefects: judged.reduce((n, r) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0)
+      highSeverityDefects: judged.reduce((n, r) => n + r.verdict.defects.filter((d: any) => d.severity === "high").length, 0),
+      // pass@N: o cenário só conta se TODAS as execuções dele forem limpas / cumprirem o objetivo.
+      repeat,
+      ...passAtN(results)
     };
     mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
     const file = join(process.cwd(), "evals", "results", `conversations-${new Date().toISOString().slice(0, 10)}-${label}.json`);
