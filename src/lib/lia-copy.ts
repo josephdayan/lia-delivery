@@ -1718,7 +1718,7 @@ export function exactItemNotFound(item: string): string {
 export function missStillNone(query: string, info?: MissInfo): string {
   if (isOutKind(info)) return outOfCatalogItem(query, info!);
   const label = shortNotFoundLabel(query);
-  if (info?.exigente) return `Procurei de novo e continuo sem nenhuma opção de *${label}* nas lojas que entregam aí. Se precisar de outra coisa, é só me pedir.`;
+  if (info?.exigente) return `Conferi de novo todas as lojas que entregam aí e continuo sem *${label}*. Se precisar de outra coisa, é só me pedir.`;
   return `Procurei de novo e continuo sem nenhuma opção de *${label}* nas lojas que entregam aí. Se quiser, me diz um produto parecido ou outro item que eu busco agora.`;
 }
 

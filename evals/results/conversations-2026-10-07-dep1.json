@@ -1,0 +1,977 @@
+{
+ "summary": {
+  "label": "dep1",
+  "at": "2026-10-07T20:25:28.653Z",
+  "scenarios": 12,
+  "judged": 12,
+  "simFailed": 0,
+  "goalReached": "91.7%",
+  "wrongProduct": "8.3%",
+  "falseClaim": "0.0%",
+  "deadEnd": "0.0%",
+  "confusing": "33.3%",
+  "slow": "58.3%",
+  "clean": "58.3%",
+  "highSeverityDefects": 8,
+  "repeat": 3,
+  "cleanAllRuns": "25.0%",
+  "goalAllRuns": "75.0%",
+  "porConjunto": {
+   "treino": {
+    "cenarios": 4,
+    "limpos": "25.0%",
+    "objetivo": "75.0%"
+   },
+   "prova": {
+    "cenarios": 0,
+    "limpos": "n/a",
+    "objetivo": "n/a"
+   }
+  },
+  "falhando": [
+   "c01",
+   "c09",
+   "c11"
+  ]
+ },
+ "results": [
+  {
+   "id": "c01",
+   "rep": 1,
+   "set": "treino",
+   "title": "Cottage Yorgus 14g (testador: sugeriu iogurte)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 24.178,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou claramente que não encontrou o cottage Yorgus 14g em nenhuma loja que entrega no endereço. Não ofereceu substitutos. A resposta do turno 3 demorou mais de 20 segundos.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Repetiu essencialmente a resposta de que não encontrou o produto, sem acrescentar informação sobre a tentativa de buscar em mais lojas.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Vc tem cottage da yorgus 14g proteína ?"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x cottage da yorgus 14g proteína\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2.9
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\n*cottage Yorgus 14g de proteína* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 24.2
+    },
+    {
+     "who": "cliente",
+     "text": "Entendi, consegue tentar em mais alguma loja? Só quero esse Yorgus 14g mesmo."
+    },
+    {
+     "who": "lia",
+     "text": "Entendi, você quer só esse Yorgus 14g. Não achei em nenhuma loja que entrega aí; se precisar de outra coisa, é só me pedir.",
+     "sec": 16.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c01",
+   "rep": 0,
+   "set": "treino",
+   "title": "Cottage Yorgus 14g (testador: sugeriu iogurte)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 27.246,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou que não encontrou o cottage Yorgus com 14 g de proteína, sem oferecer produto substituto. Porém, repetiu praticamente a mesma resposta quando o cliente perguntou se podia conferir em mais lojas.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Repetiu praticamente a mesma resposta de não encontrado após o cliente pedir para conferir em mais lojas.",
+      "severity": "high"
+     }
+    ],
+    "votes": "1/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Vc tem cottage da yorgus 14g proteína ?"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x cottage da yorgus 14g proteína\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 3
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\n*cottage Yorgus com 14 g…* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 27.2
+    },
+    {
+     "who": "cliente",
+     "text": "Consegue conferir em mais alguma loja?"
+    },
+    {
+     "who": "lia",
+     "text": "Você quer que eu confira em mais lojas, mas não achei esse cottage Yorgus em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 17
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c01",
+   "rep": 2,
+   "set": "treino",
+   "title": "Cottage Yorgus 14g (testador: sugeriu iogurte)",
+   "origin": "tester-06/10",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 22.755,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou com clareza que não encontrou o cottage Yorgus 14g e, após o pedido, confirmou que também procurou em outras lojas. Não ofereceu produto substituto.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Vc tem cottage da yorgus 14g proteína ?"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x cottage da yorgus 14g proteína\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 4.2
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\n*cottage Yorgus 14g proteína* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 22.8
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar em outras lojas?"
+    },
+    {
+     "who": "lia",
+     "text": "Já procurei em outras lojas que entregam aí e não achei esse cottage Yorgus 14g proteína. Se precisar de outra coisa, é só me pedir.",
+     "sec": 13.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c09",
+   "rep": 0,
+   "set": "treino",
+   "title": "Ração para cachorro + mais 3",
+   "origin": "tester-09/16",
+   "expect": "reach_pix",
+   "turns": 12,
+   "latencyMax": 17.495,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "O pedido chegou ao Pix com 4 unidades da ração escolhida. A Lia anotou 6 unidades antes de corrigir e depois deu uma mensagem confusa sobre deixar a ração de fora, embora o pedido final ainda a incluísse.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Anotou 6 unidades, embora o pedido fosse 1 unidade já escolhida mais 3 adicionais (4 no total).",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Disse que deixou a ração de fora, mas o pedido final continuou com 4 unidades; isso contradiz o estado da cesta e pode confundir o cliente.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Ração pro meu cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ração cachorro\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 1.9
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n*3)* Ração Origens Class Cães Adultos Carne e Frango 10,1kg — R$ 131,89 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.3
+    },
+    {
+     "who": "cliente",
+     "text": "2. vamos adicionar outro produto, pode ser 3 rações de cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n*3)* Ração Origens Class Cães Adultos Carne e Frango 10,1kg — R$ 131,89 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 17.5
+    },
+    {
+     "who": "cliente",
+     "text": "2, mais 3 unidades dessa ração, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "Você quer escolher a opção 2 e acrescentar mais 3 unidades à ração que já está na cesta?",
+     "sec": 5.4
+    },
+    {
+     "who": "cliente",
+     "text": "Sim, isso mesmo: mais 3 unidades da opção 2, além da que já está na cesta."
+    },
+    {
+     "who": "lia",
+     "text": "Anotei 6 unidades de *ração cachorro*. Agora me diz qual 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n*3)* Ração Origens Class Cães Adultos Carne e Frango 10,1kg — R$ 131,89 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 1.5
+    },
+    {
+     "who": "cliente",
+     "text": "Não, são 4 unidades no total da opção 2: a que já está na cesta mais 3 adicionais."
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ajustei: 4x Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg. Quer mais alguma coisa? Quando fechar, diz *\"só isso\"*.\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n*3)* Ração Origens Class Cães Adultos Carne e Frango 10,1kg — R$ 131,89 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.4
+    },
+    {
+     "who": "cliente",
+     "text": "pula"
+    },
+    {
+     "who": "lia",
+     "text": "Deixei *ração cachorro* de fora. Se quiser, me diz de outro jeito que eu procuro.\n---\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 2.3
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 453,16 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 463,06 · prazo da loja: 4h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 4x Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 453,16\n\nProdutos: R$ 453,16\nEntrega: R$ 0,00 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 453,16*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 453,16 _(sem taxa)_\n*2)* Cartão — R$ 476,96 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 453,16* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyjyjfs001ynr2x15ocfcy1-453165204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c09",
+   "rep": 1,
+   "set": "treino",
+   "title": "Ração para cachorro + mais 3",
+   "origin": "tester-09/16",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 13.955,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "O pedido chegou ao Pix com 4 unidades da ração escolhida. Porém, a Lia informou uma quantidade incorreta e precisou que o cliente a corrigisse.",
+    "defects": [
+     {
+      "turn": 7,
+      "what": "Informou 3 unidades e, na mesma resposta, ajustou para 7x sem que o cliente pedisse essa quantidade. O cliente precisou esclarecer que queria 4 no total.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Ração pro meu cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ração cachorro\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 1.5
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*3)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.5
+    },
+    {
+     "who": "cliente",
+     "text": "1, vamos adicionar outro produto, pode ser 3 rações de cachorro."
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ração de Carne com Vegetais Pedigree 900g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*3)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14
+    },
+    {
+     "who": "cliente",
+     "text": "1, mais 3 unidades dessa ração de carne com vegetais, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "✅ 3x Ração de Carne com Vegetais Pedigree 900g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.\n---\n✅ Ajustei: 7x Ração de Carne com Vegetais Pedigree 900g. Quer mais alguma coisa? Quando fechar, diz *\"só isso\"*.",
+     "sec": 6.1
+    },
+    {
+     "who": "cliente",
+     "text": "Não, são 4 no total: mantém a primeira e adiciona mais 3, por favor."
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ajustei: 4x Ração de Carne com Vegetais Pedigree 900g. Quer mais alguma coisa? Quando fechar, diz *\"só isso\"*.",
+     "sec": 1.4
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\n🛒 *Seu pedido:*\n• 4x Ração de Carne com Vegetais Pedigree 900g — R$ 98,96\n\nProdutos: R$ 98,96\nEntrega: R$ 15,90 · pela própria loja · prazo da loja: em até 18h (amanhã, 8h–11h)\n*Total: R$ 114,86*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 114,86 _(sem taxa)_\n*2)* Cartão — R$ 120,89 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 114,86* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyjz4e7002onr2x0try3w79-114865204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 0,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 8,
+   "latencyMax": 21.899,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "O objetivo era encontrar um isqueiro maçarico/tocha para charuto ou dizer claramente que não havia. A Lia ofereceu maçaricos portáteis multiuso, não um isqueiro próprio para charuto, e levou o produto ao Pix. A resposta do turno 5 demorou 21,9 s.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Ofereceu maçaricos portáteis multiuso (Flame Gun, MAPP Torch e maçarico para glacê) como se fossem isqueiro maçarico para charuto.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Adicionou à cesta o maçarico multiuso escolhido, em vez de confirmar que era um isqueiro para charuto ou informar que não encontrou esse produto.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Apresentou total e opções de pagamento para o produto inadequado.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Gerou o Pix para concluir a compra do produto inadequado.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 3.4
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 16.1
+    },
+    {
+     "who": "cliente",
+     "text": "E um isqueiro maçarico estilo tocha, tem?"
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Maçarico Compacto Portátil Flame Gun 21cm à Gás 047002 Guepardo Maçarico Portátil Automático à Gás c/gatilho 047002 Flame Gun GUEPARDO — R$ 47,19 · _Obramax · 2 dias úteis_\n*2)* Maçarico Portátil MAPP Torch Automático Aço Inox 280498 Nautika — R$ 164,89 · _Obramax · 2 dias úteis_\n*3)* Maçarico Multiuso Brinox Descomplica com Regulagem de Chama Glacê 17cm Azul — R$ 60,49 · _Brinox · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 21.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Maçarico Compacto Portátil Flame Gun 21cm à Gás 047002 Guepardo Maçarico Portátil Automático à Gás c/gatilho 047002 Flame Gun GUEPARDO\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Maçarico Compacto Portátil Flame Gun 21cm à Gás 047002 Guepardo Maçarico Portátil Automático à Gás c/gatilho 047002 Flame Gun GUEPARDO — R$ 47,19\n\nProdutos: R$ 47,19\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 2 dias úteis\n*Total: R$ 62,18*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 62,18 _(sem taxa)_\n*2)* Cartão — R$ 65,45 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 62,18* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyk0kaa003mnr2x364sg0u4-62185204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c09",
+   "rep": 2,
+   "set": "treino",
+   "title": "Ração para cachorro + mais 3",
+   "origin": "tester-09/16",
+   "expect": "reach_pix",
+   "turns": 11,
+   "latencyMax": 31.941,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": true,
+    "summary": "O pedido chegou ao Pix com 4 unidades da ração escolhida: a primeira permaneceu na cesta e foram adicionadas mais 3. Houve demora nas respostas dos turnos 3 e 9, e a Lia pediu novamente uma escolha que o cliente já havia indicado.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "O cliente já havia escolhido a opção 3 e pedido mais 3 unidades, mas a Lia disse que não entendeu e pediu o número novamente, repetindo a lista.",
+      "severity": "low"
+     }
+    ],
+    "votes": "2/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Ração pro meu cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ração cachorro\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 1.6
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Augusta, 1500, apto 31, Consolação, São Paulo — CEP 01304-001\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n*3)* Ração Origens Class Cães Adultos Carne e Frango 10,1kg — R$ 131,89 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 31.9
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "vamos adicionar outro produto, pode ser 3 rações de cachorro"
+    },
+    {
+     "who": "lia",
+     "text": "Olha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*3)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15.2
+    },
+    {
+     "who": "cliente",
+     "text": "3, pode colocar mais 3 dessa."
+    },
+    {
+     "who": "lia",
+     "text": "Não peguei qual você quer. Responde o número.\n---\nOlha o que achei 👇\n*1)* Ração de Carne com Vegetais Pedigree 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*2)* Ração Carne e Frango Adultos Médios e Grandes Dog Chow Purina 900g — R$ 24,74 · _Mambo · em até 18h (amanhã, 8h–11h)_\n*3)* Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 113,29 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 24.9
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ 3x Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Ana Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Ana Teste*.\n---\nTem duas formas de entrega. Qual você prefere?\n*1)* Mais barata — total R$ 453,16 · prazo da loja: 1 dia útil\n*2)* Mais rápida — total R$ 463,06 · prazo da loja: 4h\n\nToca no botão ou responde *1* ou *2*.",
+     "sec": 0.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "🛒 *Seu pedido:*\n• 4x Ração GranPlus Choice Cães Adultos Frango e Carne 10,1 kg — R$ 453,16\n\nProdutos: R$ 453,16\nEntrega: R$ 0,00 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 453,16*\n\n📍 Rua Augusta, 1500, apto 31, Consolação, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 453,16 _(sem taxa)_\n*2)* Cartão — R$ 476,96 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 453,16* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyk0u8e0040nr2xvudhuuxp-453165204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 1,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 20.764,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou claramente que não encontrou o isqueiro estilo maçarico/tocha; não ofereceu um isqueiro comum. As respostas demoraram mais de 20 segundos.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2.7
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 20.5
+    },
+    {
+     "who": "cliente",
+     "text": "Tem algum estilo maçarico/tocha? Isqueiro comum não serve."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei o estilo maçarico/tocha em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 20.8
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 2,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 23.826,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia confirmou que não encontrou o isqueiro tipo tocha e não ofereceu um isqueiro comum. A resposta ao turno 2 demorou 23,8 s.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 23.8
+    },
+    {
+     "who": "cliente",
+     "text": "Vê se acha um isqueiro maçarico tipo tocha, não pode ser comum."
+    },
+    {
+     "who": "lia",
+     "text": "Entendi, você precisa que seja maçarico tipo tocha, não comum. Não achei esse tipo em nenhuma loja que entrega aí; se precisar de outra coisa, é só me pedir.",
+     "sec": 19.9
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c97",
+   "rep": 0,
+   "set": "treino",
+   "title": "Sofá de 3 lugares",
+   "origin": "synthetic",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 19.174,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia explicou claramente que não compra móveis grandes e não ofereceu outro produto no lugar do sofá. Depois, respondeu à pergunta sobre a mesinha lateral. Porém, pediu o endereço antes de informar que não vende o sofá.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Pediu o endereço para um pedido que depois explicou estar fora do que vende, fazendo o cliente fornecer dados sem necessidade para esse item.",
+      "severity": "low"
+     }
+    ],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "queria um sofa de 3 lugares"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x sofa de 3 lugares\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*sofá 3 lugares* eu não consigo comprar: móveis grandes (sofá, cama, guarda-roupa…) não estão entre os produtos que eu compro. Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?",
+     "sec": 18.1
+    },
+    {
+     "who": "cliente",
+     "text": "E uma mesinha lateral pequena, vocês conseguem?"
+    },
+    {
+     "who": "lia",
+     "text": "*mesinha lateral pequena* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.",
+     "sec": 19.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c97",
+   "rep": 1,
+   "set": "treino",
+   "title": "Sofá de 3 lugares",
+   "origin": "synthetic",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 15.424,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia explicou claramente que não compra sofás, inclusive menores ou dobráveis, e não ofereceu outro produto no lugar.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "queria um sofa de 3 lugares"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x sofa de 3 lugares\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*sofá 3 lugares* eu não consigo comprar: móveis grandes (sofá, cama, guarda-roupa…) não estão entre os produtos que eu compro. Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?",
+     "sec": 13.4
+    },
+    {
+     "who": "cliente",
+     "text": "Não tem nenhum sofá menor ou dobrável que vocês consigam comprar?"
+    },
+    {
+     "who": "lia",
+     "text": "Entendi que você procura um sofá menor ou dobrável, mas eu não compro móveis grandes, incluindo sofás.",
+     "sec": 15.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c97",
+   "rep": 2,
+   "set": "treino",
+   "title": "Sofá de 3 lugares",
+   "origin": "synthetic",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 18.735,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia informou claramente que não consegue comprar sofás, inclusive o de 2 lugares, e não ofereceu outro produto como substituto.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "queria um sofa de 3 lugares"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x sofa de 3 lugares\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 2.9
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*sofá 3 lugares* eu não consigo comprar: móveis grandes (sofá, cama, guarda-roupa…) não estão entre os produtos que eu compro. Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?",
+     "sec": 12.4
+    },
+    {
+     "who": "cliente",
+     "text": "ah, nem um sofá menor de 2 lugares você consegue comprar?"
+    },
+    {
+     "who": "lia",
+     "text": "Mesmo sendo menor, sofá é móvel grande e eu não consigo comprar.",
+     "sec": 18.7
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  }
+ ]
+}
