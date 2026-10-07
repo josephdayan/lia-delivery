@@ -87,9 +87,9 @@ DEFEITOS GRAVES (gravidade "high", mesmo que o objetivo tenha sido cumprido):
 - A Lia trata pedaço de frase do cliente como produto ("*Você consegue qualquer coisa* eu não achei", "*prático* eu não achei", "*Pode tentar de qualquer marca…* eu não achei").
 - Ignora uma preferência EXPLÍCITA do cliente: "o mais barato" (as opções devem vir com a mais barata primeiro ou a Lia escolher a mais barata), marca, tamanho, "sem açúcar", orçamento.
 - Pede de novo um dado que o cliente já deu (endereço, produto), ou duplica um item na cesta, ou muda a quantidade sem o cliente pedir.
-- Repete a MESMA resposta duas vezes seguidas para mensagens diferentes do cliente.
+- Repete a MESMA resposta duas vezes seguidas para mensagens diferentes do cliente. (Dizer "não achei" de novo para um produto NOVO/diferente que o cliente pediu NÃO é repetição.)
 - Ignora um pedido de troca/alteração feito pelo cliente.
-Produto que cumpre a função pedida com nome técnico diferente (ex.: "módulo carregador USB-C de tomada" para "carregador usb c") é aceitável, não é produto errado.`;
+Lentidão (> 20 s) vai só no campo "slow" — nunca é defeito grave por si só. Produto que cumpre a função pedida com nome técnico diferente (ex.: "módulo carregador USB-C de tomada" para "carregador usb c") é aceitável, não é produto errado.`;
 
 const JUDGE_SCHEMA = {
   type: "object", additionalProperties: false, required: ["goalReached", "wrongProduct", "falseClaim", "deadEnd", "confusing", "slow", "defects", "summary"],
@@ -121,9 +121,20 @@ function passAtN(results: any[]) {
 function renderTranscript(transcript: Array<{ who: string; text: string; sec?: number }>) {
   return transcript.map((m, i) => `[${i}] ${m.who === "cliente" ? "CLIENTE" : `LIA (${m.sec ?? "?"}s)`}: ${m.text}`).join("\n");
 }
+// Voto da maioria entre N julgamentos (07/10: o mesmo juiz deu 95% e 85% de concordância em duas passadas).
+// O veredito devolvido é o primeiro que concorda com a maioria em "limpa".
 async function judgeScenario(s: Scenario, transcript: Array<{ who: string; text: string; sec?: number }>) {
-  const text = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna", JUDGE_SYSTEM, `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${renderTranscript(transcript)}`, JUDGE_SCHEMA);
-  try { return JSON.parse(text); } catch { return null; }
+  const votes = Number(process.env.BENCH_JUDGE_VOTES ?? 3);
+  const prompt = `CENÁRIO\nTítulo: ${s.title}\nObjetivo do cliente: ${s.goal}\nComportamento esperado (expect): ${s.expect}\n${s.traps ? `Armadilhas: ${s.traps}\n` : ""}\nTRANSCRIÇÃO\n${renderTranscript(transcript)}`;
+  const verdicts = (await Promise.all(Array.from({ length: votes }, async () => {
+    const text = await llm(process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna", JUDGE_SYSTEM, prompt, JUDGE_SCHEMA);
+    try { return JSON.parse(text); } catch { return null; }
+  }))).filter(Boolean);
+  if (!verdicts.length) return null;
+  const cleanVotes = verdicts.filter((v) => isClean(v)).length;
+  const majorityClean = cleanVotes * 2 > verdicts.length;
+  const chosen = verdicts.find((v) => isClean(v) === majorityClean) ?? verdicts[0];
+  return { ...chosen, votes: `${cleanVotes}/${verdicts.length} limpa` };
 }
 
 // --rejudge <arquivo>: julga de novo só as conversas que ficaram sem veredito (rate limit etc.).

@@ -5,14 +5,14 @@
   "scenarios": 40,
   "judged": 40,
   "goalReached": "70.0%",
-  "wrongProduct": "17.5%",
-  "falseClaim": "15.0%",
-  "deadEnd": "15.0%",
-  "confusing": "45.0%",
+  "wrongProduct": "20.0%",
+  "falseClaim": "20.0%",
+  "deadEnd": "10.0%",
+  "confusing": "35.0%",
   "slow": "7.5%",
-  "clean": "45.0%",
-  "highSeverityDefects": 31,
-  "cleanAllRuns": "45.0%",
+  "clean": "50.0%",
+  "highSeverityDefects": 28,
+  "cleanAllRuns": "50.0%",
   "goalAllRuns": "70.0%",
   "porConjunto": {
    "treino": {
@@ -28,18 +28,15 @@
   },
   "falhando": [
    "c02",
-   "c01",
    "c06",
    "c05",
    "c08",
    "c07",
    "c09",
    "c10",
-   "c11",
    "c13",
    "c12",
    "c14",
-   "c21",
    "c20",
    "c23",
    "c24",
@@ -47,6 +44,7 @@
    "c29",
    "c31",
    "c35",
+   "c37",
    "c39",
    "c40"
   ]
@@ -67,19 +65,15 @@
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "A Lia informou que não encontrou o produto original, mas não tratou corretamente o pedido de outra versão Babolat com 4 bolas: respondeu como se o cliente tivesse pedido uma raquete.",
+    "summary": "A Lia informou que não encontrou o produto original, mas, ao receber o pedido de outra versão Babolat com 4 bolas, respondeu sobre uma raquete que o cliente não pediu. Não concluiu corretamente a busca solicitada.",
     "defects": [
      {
       "turn": 5,
-      "what": "Tratou o pedido de outra versão Babolat com 4 bolas como “raquete Babolat com 4 bolas”, um produto diferente do solicitado.",
-      "severity": "high"
-     },
-     {
-      "turn": 5,
-      "what": "Repetiu essencialmente a resposta anterior de produto não encontrado e pedido de outra marca/versão, sem considerar a nova opção e a exigência de 4 bolas.",
+      "what": "Interpretou o pedido por outra versão Babolat com 4 bolas como uma busca por “raquete Babolat com 4 bolas”, produto não solicitado.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -128,21 +122,11 @@
     "wrongProduct": false,
     "falseClaim": false,
     "deadEnd": false,
-    "confusing": true,
+    "confusing": false,
     "slow": true,
-    "summary": "A Lia informou que não encontrou o cottage Yorgus e não ofereceu iogurte comum. Porém, demorou mais de 20 segundos e repetiu praticamente a mesma resposta após o cliente pedir outra versão.",
-    "defects": [
-     {
-      "turn": 3,
-      "what": "A resposta demorou 33,2 segundos.",
-      "severity": "medium"
-     },
-     {
-      "turn": 5,
-      "what": "Repetiu praticamente a mesma resposta do turno 3 para uma nova solicitação, sem esclarecer o resultado da tentativa de outra versão.",
-      "severity": "high"
-     }
-    ]
+    "summary": "A Lia informou que não encontrou o cottage Yorgus, inclusive em outra versão, e não ofereceu iogurte comum. A resposta ao turno 2 demorou 33,2 segundos.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -193,8 +177,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido chegou ao Pix com a fita isolante 3M selecionada. A opção escolhida não informa a cor, mas a transcrição não confirma que seja de outra cor.",
-    "defects": []
+    "summary": "O cliente chegou ao Pix com a fita 3M escolhida e o total informado. Nenhuma resposta demorou mais de 20 segundos.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -272,8 +257,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido de pilhas AAA correto; a Lia apresentou o Pix com o total e o código de pagamento.",
-    "defects": []
+    "summary": "Pedido de pilha AAA selecionado corretamente e fluxo chegou ao Pix com total informado.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -346,39 +332,25 @@
    "ended": true,
    "verdict": {
     "goalReached": true,
-    "wrongProduct": true,
+    "wrongProduct": false,
     "falseClaim": false,
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Chegou ao Pix e o item escolhido era leite Nude de aveia. Porém, a Lia duplicou temporariamente o pedido, pediu novamente um endereço já fornecido e ofereceu uma opção de baunilha incompatível com o pedido sem açúcar.",
+    "summary": "O pedido chegou ao Pix com leite de aveia Nude. Porém, a Lia duplicou o item no pedido e pediu novamente um endereço que o cliente já havia informado.",
     "defects": [
      {
-      "turn": 3,
-      "what": "Respondeu de onde compra, mas ignorou a pergunta sobre como funciona; o cliente precisou perguntar de novo.",
-      "severity": "medium"
+      "turn": 7,
+      "what": "Duplicou o item no pedido: manteve “1x leite nude” e acrescentou “1x leite Nude de origem vegetal sem açúcar”. Também pediu novamente o endereço completo, já fornecido no turno 2.",
+      "severity": "high"
      },
      {
       "turn": 5,
-      "what": "Perguntou o que o cliente precisava, embora o pedido de leite Nude já estivesse informado.",
+      "what": "Perguntou “O que você precisa?” embora o cliente já tivesse informado que queria leite Nude; a pergunta era sobre como fechar o pedido.",
       "severity": "medium"
-     },
-     {
-      "turn": 7,
-      "what": "Repetiu o leite na lista do pedido após a clarificação do cliente, deixando dois itens de leite na anotação.",
-      "severity": "high"
-     },
-     {
-      "turn": 7,
-      "what": "Pediu novamente o endereço com CEP, que o cliente já havia fornecido no turno 2.",
-      "severity": "high"
-     },
-     {
-      "turn": 9,
-      "what": "Ofereceu leite de aveia Nude de baunilha apesar do pedido explícito de leite sem açúcar.",
-      "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -479,33 +451,49 @@
    "verdict": {
     "goalReached": false,
     "wrongProduct": true,
-    "falseClaim": false,
+    "falseClaim": true,
     "deadEnd": true,
     "confusing": true,
     "slow": true,
-    "summary": "Não chegou ao Pix. Após o cliente pedir exatamente o Kerasys Coconut Oil Repair Moist de 1L, a Lia não encontrou o produto; quando ele pediu para tentar outra loja, ela voltou a oferecer duas versões diferentes, sem concluir a busca.",
+    "summary": "Não chegou ao Pix. A Lia informou que não encontrou a versão exata, mas depois voltou a exibir shampoos de outras versões, apesar do pedido explícito por coco 1L.",
     "defects": [
      {
-      "turn": 5,
-      "what": "Respondeu quais lojas consultou, mas não esclareceu se compara preços, apesar de o cliente perguntar diretamente.",
+      "turn": 1,
+      "what": "Promete que compra “qualquer coisa”, mas depois não consegue atender ao pedido de um shampoo comum; a promessa é abrangente demais.",
       "severity": "low"
      },
      {
-      "turn": 7,
-      "what": "A resposta demorou 20,8 segundos, mais de 20 segundos.",
+      "turn": 5,
+      "what": "Responde quais lojas consultou, mas não responde se compara preços.",
       "severity": "medium"
      },
      {
-      "turn": 9,
-      "what": "Depois do pedido explícito pelo produto exato e de tentar outra loja, ofereceu Kerasys de outras versões e tamanhos. Ignorou a preferência explícita e mostrou produtos errados.",
+      "turn": 7,
+      "what": "Pede outra marca ou versão logo após o cliente dizer que quer exatamente aquela, sem similares.",
       "severity": "high"
      },
      {
       "turn": 9,
-      "what": "Tratou «Consegue tentar procurar em outra loja» como se fosse um produto não encontrado e pediu para o cliente dizer de outro jeito, sem efetivamente atender ao pedido de busca.",
+      "what": "Trata “Consegue tentar procurar em outra loja?” como se fosse o nome de um produto e diz que não encontrou essa frase.",
       "severity": "high"
+     },
+     {
+      "turn": 9,
+      "what": "Volta a oferecer duas versões diferentes de shampoo, ignorando o pedido explícito por Kerasys Coconut Oil Repair Moist 1L.",
+      "severity": "high"
+     },
+     {
+      "turn": 9,
+      "what": "Repete as opções incompatíveis com o pedido e não oferece um caminho para buscar a versão exata em outra loja.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "A resposta demorou 20,8 segundos.",
+      "severity": "low"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -571,22 +559,28 @@
     "goalReached": true,
     "wrongProduct": false,
     "falseClaim": true,
-    "deadEnd": true,
+    "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "A Lia deixou o remédio fora e informou corretamente que não pode vendê-lo, mas depois ofereceu tentar outras marcas e repetiu a mesma orientação quando o cliente sugeriu Puran T4.",
+    "summary": "A Lia informou que não pode vender remédios e deixou o Euthyrox de fora, atendendo ao objetivo de não vender algo errado. Porém, depois convidou o cliente a tentar outra marca e respondeu que não encontrou Puran T4, sem esclarecer que também não pode vender esse medicamento.",
     "defects": [
      {
+      "turn": 1,
+      "what": "A saudação promete que pode comprar “qualquer coisa”, mas a conversa depois mostra que não pode vender medicamentos.",
+      "severity": "low"
+     },
+     {
       "turn": 3,
-      "what": "Depois de dizer que não pode vender remédios, pediu outra marca ou versão para tentar novamente, sugerindo um caminho que não pode cumprir.",
+      "what": "Após dizer que não pode vender remédios, afirma que não encontrou o Euthyrox e pede outra marca, sugerindo que uma alternativa medicamentosa poderia ser comprada.",
       "severity": "medium"
      },
      {
       "turn": 5,
-      "what": "Repetiu a mesma resposta diante da sugestão de Puran T4, mantendo o cliente num caminho sem saída e reiterando que tentaria outra marca apesar de não poder vender remédios.",
-      "severity": "high"
+      "what": "Diz que não encontrou Puran T4 em vez de esclarecer que não pode vender medicamentos; isso mantém a impressão confusa de que outra marca poderia funcionar.",
+      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -633,23 +627,34 @@
    "verdict": {
     "goalReached": false,
     "wrongProduct": false,
-    "falseClaim": false,
+    "falseClaim": true,
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Chegou ao Pix, mas o pedido ficou com 2 unidades de amora, embora a cliente tivesse escolhido uma e dito “só essa”.",
+    "summary": "Chegou ao Pix, mas o pedido ficou com 2 unidades da amora, embora o cliente tivesse escolhido uma e dito “só essa”. Além disso, o total dos produtos não corresponde ao preço exibido para o item.",
     "defects": [
      {
       "turn": 9,
-      "what": "Não entendeu “só essa” no contexto e pediu o nome de um produto que a cliente já havia selecionado.",
+      "what": "Não entendeu “só essa” como confirmação de que queria apenas o item já escolhido e pediu que o cliente identificasse o produto novamente.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Após o cliente repetir o nome do item, apresentou a mesma amora para nova confirmação, criando a oportunidade de duplicar o produto.",
       "severity": "high"
      },
      {
       "turn": 13,
-      "what": "Após a cliente repetir o nome e confirmar, adicionou a amora novamente; o pedido terminou com 2 unidades em vez de 1.",
+      "what": "Adicionou novamente a mesma amora; o pedido terminou com 2 unidades, apesar de o cliente ter escolhido uma e indicado “só essa”.",
       "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "Informou 2 unidades por R$ 30,58, mas o preço exibido para cada unidade era R$ 16,39; os valores não batem.",
+      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -770,21 +775,17 @@
     "wrongProduct": false,
     "falseClaim": false,
     "deadEnd": false,
-    "confusing": true,
+    "confusing": false,
     "slow": false,
-    "summary": "Chegou ao Pix, mas o pedido não inclui a primeira ração selecionada; o objetivo de somar essa ração a mais 3 não foi cumprido.",
+    "summary": "O pedido não chegou ao Pix com todos os itens solicitados: a ração escolhida inicialmente não aparece no carrinho final; só aparecem 3 unidades da segunda opção.",
     "defects": [
      {
-      "turn": 5,
-      "what": "Ignorou a seleção “1” e não adicionou a ração Pedigree antes de buscar a outra. No fechamento, ficou apenas 3x GranPlus, sem a ração inicial.",
-      "severity": "high"
-     },
-     {
       "turn": 7,
-      "what": "Confirmou 3 unidades da nova ração sem esclarecer se eram adicionais à primeira ou se substituíam o item já selecionado.",
-      "severity": "medium"
+      "what": "Após o cliente escolher a opção 1 inicial e pedir mais 3 rações, confirmou apenas 3 unidades da segunda escolha. A ração inicial escolhida foi perdida do pedido.",
+      "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -880,8 +881,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "A fita crepe foi removida corretamente e o frete recalculado ficou em R$ 4,90. A conversa termina no Pix, sem o cliente dizer que desistiu nem a Lia cancelar o pedido; portanto, o objetivo cancel_ok não foi demonstrado.",
-    "defects": []
+    "summary": "A fita foi removida e, após a escolha da entrega mais barata, o frete caiu para R$ 4,90. A conversa seguiu até o Pix e não contém o pedido final de desistência; portanto, não há cancelamento para confirmar.",
+    "defects": [],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -993,16 +995,11 @@
     "wrongProduct": false,
     "falseClaim": false,
     "deadEnd": false,
-    "confusing": true,
+    "confusing": false,
     "slow": false,
-    "summary": "A Lia informou claramente que não encontrou o isqueiro-tocha e não ofereceu um isqueiro comum. Porém, repetiu a mesma resposta de indisponibilidade após o cliente reformular o pedido.",
-    "defects": [
-     {
-      "turn": 5,
-      "what": "Repetiu a resposta de indisponibilidade já dada no turno 3, apenas ajustando a descrição do produto.",
-      "severity": "high"
-     }
-    ]
+    "summary": "A Lia informou claramente que não encontrou o isqueiro maçarico tipo tocha e não ofereceu um isqueiro comum.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1053,24 +1050,25 @@
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Não concluiu a checagem: a pergunta sobre quem aparece como destinatário do Pix ficou sem resposta exata, e o CNPJ também ficou pendente. Além disso, a Lia repetiu a mesma resposta após o cliente apenas dizer que aguardaria.",
+    "summary": "O Pix foi identificado como sendo pago à empresa, mas o cliente ainda aguardava o CNPJ e o nome exibido no Pix para decidir se confiava na compra. A conversa também contém afirmações sobre estorno e venda de medicamento que não são compatíveis com os fatos do serviço.",
     "defects": [
      {
+      "turn": 1,
+      "what": "Promete que o valor do item será estornado se algo não vier, sem essa garantia constar nos fatos do serviço.",
+      "severity": "medium"
+     },
+     {
       "turn": 3,
-      "what": "Não respondeu quem aparece como destinatário do Pix. Ainda afirmou que atende compra de remédio sem receita, embora a Lia não venda medicamentos.",
+      "what": "Afirma que vende remédio sem receita e que ele sai no CPF do cliente, contradizendo a regra de que a Lia não vende medicamentos.",
       "severity": "high"
      },
      {
       "turn": 7,
-      "what": "Repetiu integralmente a resposta do turno 5, sem considerar que o cliente apenas confirmou que aguardaria o CNPJ e o nome do Pix.",
+      "what": "Repete exatamente a resposta do turno 5 depois de o cliente apenas dizer que vai aguardar; não fornece o CNPJ nem o nome do Pix e não avança a conversa.",
       "severity": "high"
-     },
-     {
-      "turn": 3,
-      "what": "Incluiu a informação sobre remédio sem receita, irrelevante à pergunta sobre nota fiscal e potencialmente confusa.",
-      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -1130,14 +1128,15 @@
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Chegou ao Pix com o sabão em pó escolhido. Porém, tratou parte da pergunta do cliente como se fosse um produto procurado.",
+    "summary": "O pedido de sabão em pó chegou ao Pix, mas a Lia tratou parte da pergunta do cliente como se fosse um produto e respondeu que não o encontrou.",
     "defects": [
      {
       "turn": 5,
-      "what": "Tratou “Você consegue qualquer coisa” como produto pedido e disse que não achou; isso desvia a interpretação do pedido explícito de sabão em pó.",
+      "what": "Tratou “Você consegue qualquer coisa” — parte da pergunta do cliente — como produto não encontrado.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -1222,21 +1221,22 @@
     "wrongProduct": false,
     "falseClaim": true,
     "deadEnd": false,
-    "confusing": true,
+    "confusing": false,
     "slow": false,
-    "summary": "A Lia afirmou que compara preços, mas apresentou desodorantes diferentes, não uma comparação que permita verificar o melhor valor. Também não colocou primeiro a opção mais barata, apesar do pedido explícito.",
+    "summary": "A Lia respondeu que compara preços em dezenas de lojas, uma capacidade não sustentada pelos fatos do serviço. Ao listar opções, também ignorou a preferência explícita pelo desodorante mais barato ao não apresentar primeiro o menor preço.",
     "defects": [
      {
       "turn": 1,
-      "what": "Afirmou que pesquisa em dezenas de lojas e mostraria opções para comparar, mas a resposta não explicou que não garantia o melhor valor nem distinguiu comparação do mesmo produto de uma lista de produtos diferentes.",
-      "severity": "medium"
+      "what": "Afirmou que compara o produto em dezenas de lojas ao mesmo tempo, sem base para essa alegação; a resposta sobre como saber o melhor valor não é confiável.",
+      "severity": "high"
      },
      {
       "turn": 5,
-      "what": "Ignorou o pedido explícito de mostrar o desodorante mais barato primeiro: listou R$ 48,39 e R$ 25,95 antes da opção de R$ 14,28.",
+      "what": "Ignorou a preferência explícita por “o mais barato”: apresentou primeiro opções de R$ 48,39 e R$ 25,95, embora houvesse uma de R$ 14,28.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -1323,8 +1323,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido cancelado antes do pagamento, e o motivo informado (frete caro) foi registrado.",
-    "defects": []
+    "summary": "Pedido cancelado após a desistência, sem cobrança; a Lia perguntou o motivo e registrou que o frete era caro.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1420,8 +1421,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O endereço foi trocado antes do pagamento e a Lia recalculou o pedido, mantendo o desodorante correto e apresentando o Pix para o novo endereço.",
-    "defects": []
+    "summary": "O endereço foi atualizado antes do pagamento, o desodorante foi mantido no pedido e a Lia chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1508,8 +1510,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido foi ajustado de 3 para 2 sabonetes e chegou ao Pix com o produto correto.",
-    "defects": []
+    "summary": "A cesta foi ajustada para 3 sabonetes e depois para 2, como pedido. A Lia apresentou o total correto e chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1605,8 +1608,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O cliente escolheu fio dental, concluiu o pedido e recebeu o Pix. A resposta apresentou opções de fio dental, atendendo à pergunta no contexto da compra.",
-    "defects": []
+    "summary": "O fio dental escolhido foi adicionado e o fluxo chegou ao Pix. A resposta também mostrou opções de fio dental, atendendo ao pedido concreto.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1702,8 +1706,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido de creme dental correto concluído até o Pix. A Lia não pediu CPF.",
-    "defects": []
+    "summary": "O creme dental solicitado foi adicionado e o fluxo chegou ao Pix. A Lia não pediu CPF.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1790,19 +1795,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": true,
-    "summary": "A Lia informou claramente que não encontrou o iPhone 15 Pro Max. Porém, demorou mais de 20 segundos e repetiu a mesma resposta padronizada após o cliente sugerir outra versão.",
-    "defects": [
-     {
-      "turn": 3,
-      "what": "Resposta demorou 22,1 segundos.",
-      "severity": "medium"
-     },
-     {
-      "turn": 5,
-      "what": "Repetiu a mesma resposta de não encontrado para a nova versão sugerida pelo cliente, sem diferenciar a busca.",
-      "severity": "high"
-     }
-    ]
+    "summary": "Informou claramente que não encontrou o iPhone 15 Pro Max nem a alternativa pedida, sem vender outro produto. A primeira resposta após o endereço demorou mais de 20 segundos.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1853,8 +1848,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido de 6 latas de Skol confirmado e Pix apresentado pelo total informado.",
-    "defects": []
+    "summary": "Chegou ao Pix com 6 latas de Skol, como pedido. Não há defeitos identificados.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -1928,11 +1924,11 @@
    "verdict": {
     "goalReached": true,
     "wrongProduct": true,
-    "falseClaim": false,
+    "falseClaim": true,
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Chegou ao Pix com os quatro itens pedidos, incluindo arroz de 5 kg e óleo de soja. Durante a busca, porém, exibiu opções fora do pedido e, ao receber “qualquer marca barata”, tratou essa frase como se fosse um produto não encontrado.",
+    "summary": "Chegou ao Pix com os quatro itens certos, mas foram exibidas opções claramente inadequadas e a resposta sobre óleo de soja contradisse as opções apresentadas logo em seguida.",
     "defects": [
      {
       "turn": 3,
@@ -1941,30 +1937,31 @@
      },
      {
       "turn": 5,
-      "what": "Ofereceu arroz arbóreo de 500 g, em vez do arroz de 5 kg pedido.",
+      "what": "Ofereceu arroz arbóreo de 500 g, que não correspondia ao arroz de 5 kg pedido.",
       "severity": "medium"
      },
      {
       "turn": 7,
-      "what": "Além da opção correta de 5 kg, ofereceu arroz carreteiro de 300 g e arroz de 1 kg.",
-      "severity": "medium"
-     },
-     {
-      "turn": 13,
-      "what": "Ofereceu óleos de girassol, milho e canola, em vez de óleo de soja.",
-      "severity": "medium"
+      "what": "Ofereceu arroz carreteiro pronto, que não corresponde ao arroz de 5 kg pedido.",
+      "severity": "high"
      },
      {
       "turn": 15,
-      "what": "Ofereceu óleo lubrificante, secante e corporal, que não são óleo de soja para consumo.",
+      "what": "Ofereceu óleo lubrificante, secante e corporal como opções para o item de mercado “óleo”; são produtos de tipo errado.",
       "severity": "high"
      },
      {
       "turn": 19,
-      "what": "Tratou “qualquer marca barata” como produto não encontrado (“Não achei: qualquer marca barata”), apesar de ser uma preferência. A resposta é confusa; depois apresentou corretamente óleo de soja Soya e Liza.",
+      "what": "Tratou “qualquer marca barata” como se fosse o produto não encontrado (“Não achei: qualquer marca barata”), embora em seguida listasse dois óleos de soja baratos. Interpretação errada e resposta contraditória.",
       "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "Afirmou que não achou a opção descrita, mas apresentou imediatamente opções que atendiam ao pedido; alegação contraditória.",
+      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2123,19 +2120,15 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Chegou ao Pix com um perfume, mas o total de R$ 101,49 ultrapassa o orçamento de R$ 100 sem avisar que não cabia.",
+    "summary": "Chegou ao Pix com um perfume adequado, mas o total de R$ 101,49 ultrapassou o limite de R$ 100 sem avisar que o orçamento não cabia.",
     "defects": [
      {
-      "turn": 3,
-      "what": "Ofereceu uma opção de R$ 107,86 apesar do limite de R$ 100.",
-      "severity": "high"
-     },
-     {
       "turn": 11,
-      "what": "Fechou o pedido em R$ 101,49, acima do orçamento total de R$ 100, sem avisar ou oferecer uma alternativa dentro do limite.",
+      "what": "Fechou o pedido por R$ 101,49, acima do orçamento total de R$ 100, sem alertar o cliente ou oferecer uma opção dentro do limite.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2217,29 +2210,35 @@
    "ended": true,
    "verdict": {
     "goalReached": false,
-    "wrongProduct": false,
+    "wrongProduct": true,
     "falseClaim": false,
     "deadEnd": true,
     "confusing": true,
     "slow": false,
-    "summary": "Não chegou ao Pix. O cliente pediu um total de até R$ 80 e depois solicitou trocar pelo brinquedo de R$ 34,09; a Lia manteve a opção de R$ 87,31 e repetiu a mesma resposta, sem efetuar a troca.",
+    "summary": "Não chegou ao Pix: o total mais barato excedia o limite de R$ 80 e a Lia não resolveu isso nem após o pedido de troca.",
     "defects": [
      {
+      "turn": 3,
+      "what": "Ofereceu o brinquedo de R$ 142,99, acima do orçamento total de R$ 80 para o presente.",
+      "severity": "high"
+     },
+     {
+      "turn": 9,
+      "what": "Apresentou opções de entrega com totais de R$ 87,31 e R$ 99,00, ambas acima do orçamento total.",
+      "severity": "high"
+     },
+     {
       "turn": 11,
-      "what": "Ignorou o limite explícito de R$ 80 para produto + frete: apresentou novamente a opção mais barata, de R$ 87,31, sem avisar que o orçamento não cabia nem buscar uma alternativa.",
+      "what": "Não respondeu se havia opção até R$ 80; apenas repetiu os preços que excediam o limite.",
       "severity": "high"
      },
      {
       "turn": 13,
-      "what": "Ignorou o pedido de troca pelo brinquedo de R$ 34,09 e repetiu a mesma resposta enviada no turno 11, mantendo o total de R$ 87,31.",
-      "severity": "high"
-     },
-     {
-      "turn": 13,
-      "what": "Repetiu a mesma resposta para uma mensagem diferente do cliente, deixando-o sem caminho para ajustar o pedido.",
+      "what": "Ignorou o pedido para trocar pelo brinquedo de R$ 34,09 e repetiu a mesma resposta da mensagem anterior, deixando o cliente sem caminho para ajustar o pedido.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2326,8 +2325,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido correto montado e Pix apresentado.",
-    "defects": []
+    "summary": "O pedido correto chegou à opção de pagamento por Pix. Nenhum defeito identificado.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -2414,8 +2414,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido correto foi montado e a Lia chegou ao Pix.",
-    "defects": []
+    "summary": "O pedido chegou ao Pix com ração para gato castrado e areia sanitária selecionadas.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -2502,8 +2503,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Pedido de 2 litros de leite integral concluído com 2 unidades de 1 litro e Pix apresentado.",
-    "defects": []
+    "summary": "Pedido de 2 litros de leite integral montado com 2 unidades de 1 litro e Pix apresentado.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -2581,8 +2583,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido chegou ao Pix. A embalagem escolhida contém 20 ovos, e a Lia avisou sobre a quantidade antes de cobrar.",
-    "defects": []
+    "summary": "Chegou ao Pix com ovos. A embalagem escolhida contém 20 unidades, e a Lia avisou disso antes da cobrança e permitiu alterar a quantidade de embalagens.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -2669,19 +2672,20 @@
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "O responsável foi avisado, mas a Lia repetiu uma resposta idêntica e informou um horário de retorno sem respaldo nos fatos do serviço.",
+    "summary": "O responsável foi avisado, atendendo ao pedido de contato humano. Porém, a Lia repetiu a mesma resposta para mensagens diferentes e afirmou um horário de retorno sem respaldo nos fatos do serviço.",
     "defects": [
      {
       "turn": 3,
-      "what": "Afirma que o responsável costuma retornar das 9h às 20h, um horário de retorno não confirmado pelo serviço.",
+      "what": "Afirma que o responsável costuma retornar das 9h às 20h, horário não confirmado pelos fatos do serviço.",
       "severity": "medium"
      },
      {
       "turn": 5,
-      "what": "Repete exatamente a resposta do turno 3 diante de uma nova solicitação, sem confirmar que pediu ao responsável para chamar o cliente.",
+      "what": "Repete exatamente a resposta do turno 3, sem responder especificamente ao pedido para solicitar que o atendente chame o cliente assim que puder.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2732,14 +2736,20 @@
     "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "Chegou ao Pix, mas não cumpriu o objetivo: tratou palavras do pedido como produtos separados e incluiu um palitinho salgado que o cliente não pediu.",
+    "summary": "Chegou ao Pix, mas a busca tratou “prático” como se fosse um produto e incluiu uma opção gerada a partir dessa interpretação errada; portanto, não concluiu com segurança o pedido correto.",
     "defects": [
      {
       "turn": 7,
-      "what": "Tratou “prático” como produto e transformou o pedido por um lanche salgado tipo hambúrguer em dois itens separados. Ofereceu e depois adicionou um palitinho salgado não solicitado.",
+      "what": "Tratou o fragmento “prático” como produto (“prático eu não achei”) e organizou a busca como se “algo salgado” e “hambúrguer” fossem itens separados. Isso gerou uma opção fora do pedido interpretado corretamente.",
       "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "O cliente pediu uma sugestão de lanche, mas a Lia respondeu com uma apresentação genérica e perguntou o que precisava, sem atender ao pedido de recomendação.",
+      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2829,40 +2839,36 @@
    "latencyMax": 5.824,
    "ended": true,
    "verdict": {
-    "goalReached": false,
+    "goalReached": true,
     "wrongProduct": false,
     "falseClaim": true,
-    "deadEnd": true,
+    "deadEnd": false,
     "confusing": true,
     "slow": false,
-    "summary": "A reclamação não foi resolvida: após dizer que avisou o responsável, a Lia desviou para o fluxo de novo pedido e voltou a repetir a resposta sem avançar a conferência.",
+    "summary": "A Lia informou que não encontrou pedido nesse número e avisou o responsável, mas desviou a conversa para um fluxo de cadastro/compra e prometeu uma resposta humana nesta conversa sem garantia disso.",
     "defects": [
      {
-      "turn": 1,
-      "what": "Em vez de tratar a reclamação sobre o pedido de ontem, direciona o cliente a montar um primeiro pedido.",
-      "severity": "medium"
-     },
-     {
       "turn": 3,
-      "what": "Afirma que o responsável responderá nesta conversa, embora a resposta humana não chegue nesta conversa de teste.",
+      "what": "Prometeu que o responsável responderia nesta conversa; o serviço garante que ele será avisado, não que responderá por aqui.",
       "severity": "medium"
      },
      {
       "turn": 5,
-      "what": "Pede endereço com CEP, dado irrelevante para localizar o pedido reclamado, e desvia para o fluxo de compra.",
-      "severity": "high"
+      "what": "Em vez de continuar tratando a reclamação, pediu endereço com CEP para seguir com um cadastro sem relação com a consulta do pedido.",
+      "severity": "medium"
      },
      {
       "turn": 7,
-      "what": "Depois de receber o endereço, muda para perguntar o que o cliente quer, sem dar seguimento à reclamação.",
+      "what": "Depois de receber o endereço, perguntou o que o cliente queria, embora a solicitação de conferir o pedido já estivesse clara.",
       "severity": "medium"
      },
      {
       "turn": 9,
-      "what": "Repete a resposta anterior quando o cliente pede novamente que confiram o pedido; não informa nenhum avanço e deixa a reclamação sem caminho claro.",
+      "what": "Repetiu a promessa de que o responsável responderia nesta conversa, sem garantia disso.",
       "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -2931,8 +2937,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O cliente escolheu uma bola de futebol de campo e chegou ao Pix com esse produto na cesta.",
-    "defects": []
+    "summary": "A bola de futebol de campo foi adicionada e o fluxo chegou ao Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -3019,8 +3026,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido de 6 Coca-Cola Zero de 2 litros chegou à etapa do Pix com o produto e o total corretos.",
-    "defects": []
+    "summary": "Chegou ao Pix com 6 Coca-Cola Zero de 2 litros; o total está correto.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -3107,8 +3115,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido com as quantidades corretas chegou à etapa de Pix.",
-    "defects": []
+    "summary": "Pedido correto montado nas quantidades solicitadas e Pix apresentado. Nenhum defeito concreto identificado.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -3189,30 +3198,26 @@
    "latencyMax": 3.979,
    "ended": true,
    "verdict": {
-    "goalReached": true,
+    "goalReached": false,
     "wrongProduct": false,
-    "falseClaim": true,
+    "falseClaim": false,
     "deadEnd": true,
     "confusing": true,
     "slow": false,
-    "summary": "A Lia deixou claro que não vende medicamentos e não vendeu nada errado, mas não respondeu se havia farmácia parceira e desviou a conversa para um fluxo de compra.",
+    "summary": "A Lia não respondeu se havia uma farmácia parceira que vendesse dipirona. Pediu novamente o produto já informado e, depois, apenas repetiu que não pode vender remédios.",
     "defects": [
      {
       "turn": 3,
-      "what": "Afirmou que compara preços entre lojas e que poderia verificar farmácia disponível, sem depois cumprir essa consulta.",
-      "severity": "medium"
-     },
-     {
-      "turn": 3,
-      "what": "Pediu novamente qual produto o cliente procurava, embora ele já tivesse informado dipirona.",
+      "what": "Perguntou qual produto o cliente procurava, embora ele já tivesse pedido dipirona. Também não respondeu se havia farmácia parceira e pediu o endereço sem esclarecer essa questão.",
       "severity": "high"
      },
      {
       "turn": 7,
-      "what": "Repetiu a recusa sem responder ao pedido específico para verificar se havia uma farmácia parceira; a consulta prometida ficou sem encaminhamento.",
-      "severity": "high"
+      "what": "Repetiu a recusa de venda de remédios sem responder à pergunta sobre farmácia parceira.",
+      "severity": "medium"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {
@@ -3272,8 +3277,15 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "Chegou ao Pix com papel higiênico, escolhendo a opção mais barata entre as apresentadas. O total inclui a entrega informada.",
-    "defects": []
+    "summary": "Chegou ao Pix com o papel higiênico mais barato entre as opções apresentadas. Porém, a opção mais barata não foi listada primeiro, apesar da preferência explícita do cliente.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ignorou a preferência explícita por “a mais barata” ao apresentar primeiro uma opção mais cara (R$ 16,49), em vez da opção mais barata (R$ 15,39).",
+      "severity": "high"
+     }
+    ],
+    "votes": "1/3 limpa"
    },
    "transcript": [
     {
@@ -3360,8 +3372,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "A Lia apresentou opções da Dove após o pedido de troca de marca, adicionou a escolhida e levou o cliente até o Pix.",
-    "defects": []
+    "summary": "Encontrou opções da marca Dove, adicionou a escolhida e levou o pedido até o Pix.",
+    "defects": [],
+    "votes": "3/3 limpa"
    },
    "transcript": [
     {
@@ -3457,8 +3470,9 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "A Lia informou claramente que não entrega em Belo Horizonte. Depois, o cliente forneceu voluntariamente um endereço em São Paulo e concluiu a compra da escova pedida para esse endereço alternativo.",
-    "defects": []
+    "summary": "A Lia informou claramente que não entrega em Belo Horizonte. Após o cliente aceitar a alternativa de enviar para um endereço em São Paulo, vendeu a escova solicitada para esse endereço; não concluiu a entrega em BH.",
+    "defects": [],
+    "votes": "2/3 limpa"
    },
    "transcript": [
     {
@@ -3563,14 +3577,15 @@
     "deadEnd": false,
     "confusing": false,
     "slow": false,
-    "summary": "O pedido chegou ao Pix com o carregador de parede USB-C correto. Porém, também foram oferecidos dois módulos USB-C de instalação elétrica, que não são carregadores de parede de tomada.",
+    "summary": "O cliente escolheu o carregador de parede USB-C correto e chegou ao Pix. As duas primeiras opções eram módulos de carregamento para instalação na parede, não carregadores de parede plug-in.",
     "defects": [
      {
       "turn": 3,
-      "what": "Ofereceu módulos carregadores USB-C de instalação elétrica como opções para quem pediu um carregador de parede de tomada; são produtos diferentes.",
+      "what": "Ofereceu dois módulos de carregamento para instalação na parede como opções para quem pediu um carregador de parede plug-in USB-C.",
       "severity": "medium"
      }
-    ]
+    ],
+    "votes": "1/3 limpa"
    },
    "transcript": [
     {
@@ -3643,19 +3658,20 @@
    "ended": true,
    "verdict": {
     "goalReached": false,
-    "wrongProduct": false,
+    "wrongProduct": true,
     "falseClaim": false,
     "deadEnd": true,
     "confusing": true,
     "slow": false,
-    "summary": "Não chegou ao Pix: após o cliente aceitar qualquer marca, a Lia tratou a frase como se fosse um produto e voltou a pedir outra marca ou versão.",
+    "summary": "A compra não chegou ao Pix. Depois de o cliente autorizar qualquer marca, a Lia tratou essa frase como se fosse o nome de um produto e voltou a pedir outra marca ou versão.",
     "defects": [
      {
       "turn": 5,
-      "what": "Interpretou “Pode tentar de qualquer marca” como um produto a pesquisar e ignorou a resposta do cliente; repetiu que não encontrou e pediu outra marca ou versão, deixando a conversa sem avanço.",
+      "what": "Tratou “Pode tentar de qualquer marca” como produto e respondeu que não o encontrou, ignorando a autorização explícita para buscar qualquer marca. Isso bloqueou a compra e deixou o cliente sem um caminho útil.",
       "severity": "high"
      }
-    ]
+    ],
+    "votes": "0/3 limpa"
    },
    "transcript": [
     {

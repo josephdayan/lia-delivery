@@ -44,3 +44,9 @@ lento. `npx tsx scripts/bench-conversations.mts --label antes [--only c01,c02] [
 Tudo em `gpt-6-luna` (US$0,10 entrada / US$0,50 saída; o gpt-5.4-mini custava 0,75 / 4,50 = 7,5–9× mais; o gpt-5.5 do
 1º run, 5 / 30 = 50–60× mais). Rodada completa dos dois placares ≈ US$1. Ressalva: com o juiz e a Lia no mesmo
 modelo o juiz deixa de ser "mais forte que a Lia"; para auditoria rigorosa use `BENCH_JUDGE_MODEL=gpt-6-sol`.
+
+## Juiz calibrado (07/10)
+`evals/calibracao-rotulos.json` tem 40 conversas rotuladas à mão. `npx tsx scripts/bench/calibrate.mts <arquivo>` mede a
+concordância do juiz (meta ≥ 95%; atual 95–97,5% em passadas diferentes). O juiz recebe a ficha de fatos do serviço,
+lista explícita de defeitos graves e vota 3 vezes (`BENCH_JUDGE_VOTES`); "limpa" = objetivo + sem produto errado,
+promessa falsa, beco ou defeito grave. `--repeat 3` roda cada cenário 3 vezes (pass@3); `--set treino|prova`.
