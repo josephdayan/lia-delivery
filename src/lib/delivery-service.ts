@@ -31,6 +31,8 @@ import { CEP_RE_GLOBAL } from "@/lib/lia-intents";
 import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
+import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
+import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
 // The operational brain of the remodelled Lia. One conversation = one basket of
@@ -43,7 +45,7 @@ import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-type
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
-import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -1248,6 +1250,15 @@ export async function handleDeliveryMessage(input: {
     // primeira escrita deste turno colide com a do turno que terminou enquanto
     // esperávamos o lock e morre em falso TurnSupersededError — cliente sem resposta.
     rememberCtxSnapshot(convo.id, freshConvo.context ?? null);
+    {
+      // Guarda anti-repetição: o que o cliente disse e as últimas falas da Lia (até 10 min atrás).
+      const meta = turnMeta.getStore();
+      const lastSent = readCtx(freshConvo.context ?? null).lastSent;
+      if (meta) {
+        meta.inboundText = text;
+        meta.prevSent = lastSent && Date.now() - lastSent.at < REPEAT_WINDOW_MS ? lastSent.texts : [];
+      }
+    }
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
     if (!currentShopperCep()) noteShopperCep(user.cep);
     if (signupForm) await handleSignupForm(phone, signupForm, user, freshConvo);
@@ -1260,6 +1271,7 @@ export async function handleDeliveryMessage(input: {
       await reply(phone, copy.fallbackNoAnswer());
     }
   } finally {
+    await persistSentTexts(convo.id);
     await releaseTurnLock(convo.id, lockToken);
   }
 }
@@ -1706,19 +1718,40 @@ async function handleDeliveryTurn(
   // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
   // estado e escolhe uma ação de lista fechada ANTES do roteamento por regex. Inequívoco/barato (número,
   // CEP, botões, pix/cartão, cadastro) segue determinístico; IA fora do ar ou ação inválida = caminho de hoje.
-  if (dialogueEnabled()) {
-    const dialogue = await runDialogueTurn({
-      phone,
-      convoId: convo.id,
-      userId: user.id,
-      userCep: user.cep,
-      text,
-      intent,
-      ctx,
-      hasAddress: Boolean(user.defaultAddress && savedCep),
-      looksLikeList: looksLikeProductList(text),
-      handlers: dialogueHandlers
-    });
+  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue) {
+    const hasAddress = Boolean(user.defaultAddress && savedCep);
+    const dialogue = hasAddress
+      ? await runDialogueTurn({
+          phone,
+          convoId: convo.id,
+          userId: user.id,
+          userCep: user.cep,
+          text,
+          intent,
+          ctx,
+          hasAddress,
+          looksLikeList: looksLikeProductList(text),
+          handlers: dialogueHandlers
+        })
+      : // Antes do cadastro (rodada 2 do plano 100): a IA extrai itens/orçamento/perguntas; o endereço segue determinístico.
+        await runPreSignupTurn({
+          phone,
+          convoId: convo.id,
+          userId: user.id,
+          text,
+          intent,
+          ctx,
+          hasAddress,
+          lastLiaText: turnMeta.getStore()?.prevSent?.slice(-1)[0],
+          addressLike:
+            looksLikeDeliveryAddress(text) ||
+            Boolean(extractCep(text)) ||
+            Boolean(extractCpf(text)) ||
+            looksLikeCpfAttempt(text) ||
+            looksLikePersonName(text) ||
+            Boolean(ctx.cepPlace?.street && parseHouseNumberReply(text, { ...ctx.cepPlace, city: ctx.city })),
+          handlers: preSignupHandlers
+        });
     if (dialogue?.kind === "handled") return;
     if (dialogue?.kind === "rewrite") {
       text = dialogue.text;
@@ -7731,6 +7764,37 @@ async function publishInstantQuote(
 
 // Handlers expostos ao gerente de diálogo (src/lib/dialogue): ele escolhe a ação, ESTES executam.
 // Passados por parâmetro (sem import circular); nada aqui duplica lógica.
+// Handlers do gerente de diálogo ANTES do cadastro (dialogue/presignup.ts).
+async function attendanceWait(phone: string, convoId: string, ctx: DeliveryContext) {
+  const att = attendanceLive(ctx);
+  if (att && att.notifiedAt > 0) {
+    const ack = nextAttendanceAck(ctx);
+    await writeCtx(convoId, ctx);
+    await reply(phone, ack);
+    return;
+  }
+  await reply(phone, copy.holdAck());
+}
+
+// Pergunta do serviço junto de um pedido: o roteador de sempre responde a pergunta canônica (texto fixo) e o
+// contexto que ele deixou volta para o turno em curso, que segue com o pedido.
+async function answerCanonical(phone: string, userId: string, convoId: string, ctx: DeliveryContext, canonical: string) {
+  const [user, convo] = await Promise.all([prisma.user.findUniqueOrThrow({ where: { id: userId } }), prisma.conversation.findUniqueOrThrow({ where: { id: convoId } })]);
+  const meta = turnMeta.getStore();
+  const before = meta?.skipDialogue;
+  if (meta) meta.skipDialogue = true;
+  try {
+    await handleDeliveryTurn(phone, canonical, user, convo);
+  } finally {
+    if (meta) meta.skipDialogue = before;
+  }
+  const fresh = readCtx((await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true } }))?.context ?? null);
+  for (const key of Object.keys(ctx)) delete (ctx as Record<string, unknown>)[key];
+  Object.assign(ctx, fresh);
+}
+
+export const preSignupHandlers: PreHandlers = { refuseMedicine, attendanceWait, answerCanonical };
+
 export const dialogueHandlers = {
   handleSearch,
   buildChoicesWithSearchNotice,
@@ -7743,5 +7807,6 @@ export const dialogueHandlers = {
   handleSwap,
   advancePending,
   sendChoices,
-  mergeBaskets
+  mergeBaskets,
+  refuseMedicine
 };

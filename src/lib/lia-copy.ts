@@ -321,7 +321,7 @@ export function medicineFarewell(): string {
 }
 
 export function noMedicineAgain(): string {
-  return "Sobre remédio a resposta continua a mesma: eu não vendo, nem por farmácia parceira — pra medicação, a farmácia mais perto de você é o caminho. Se precisar de outra coisa, é só me dizer.";
+  return "Sobre remédio a resposta continua a mesma, mesmo com receita: eu não vendo. Se precisar de mercado, higiene, pet, beleza ou casa, é só me dizer.";
 }
 
 // "tem alguma farmácia parceira que venda?" (07/10, c35): resposta direta, sem pedir endereço.
@@ -1106,6 +1106,11 @@ export function trustAnswer(): string {
 // Serviço que a Lia não faz (06/10): "chama um uber" recebia "não achei, me diz outra marca".
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
+}
+// Produto que a Lia não vende por natureza (07/10, c77: "vcs vendem carro 0km?" ouvia "não achei em nenhuma
+// loja, me diz outra marca"): resposta honesta, sem pedir endereço nem prometer busca.
+export function outOfScopeProductAnswer(): string {
+  return "Isso eu não consigo comprar 😅 Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí. Precisa de algo dessas áreas?";
 }
 // Pedido vago (06/10): "algo gostoso pra comer" virava busca da frase.
 export function vagueRequestAnswer(): string {

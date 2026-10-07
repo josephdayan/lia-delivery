@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, normalizeMsg } from "../lia-intents";
 import { extractCpf } from "../medicine";
 import { prisma } from "../prisma";
 import { turnMeta } from "../turn-runtime";
@@ -90,6 +90,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (DETERMINISTIC_INTENTS.has(i.intent.kind)) return `intent:${i.intent.kind}`;
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
+  // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
+  // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto

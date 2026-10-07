@@ -22,6 +22,10 @@ export const ACTION_TYPES = [
   "pay",
   "change_address",
   "smalltalk",
+  // Produto/serviço que a Lia não vende (carro, imóvel…) e pedido/insistência de remédio:
+  // a resposta é o texto FIXO do lia-copy (nunca texto livre da IA).
+  "out_of_scope",
+  "medicine",
   "unclear"
 ] as const;
 export type ActionType = (typeof ACTION_TYPES)[number];

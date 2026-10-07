@@ -6,6 +6,7 @@ import { displayPrice, serviceFeeForItems } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
 import { DeliveryContext } from "./conversation-types";
+import { isRepeatableVerbatim, mergeSent, repeatGuardEnabled, rewriteRepeated, sameAsRecent } from "./dialogue/repeat";
 
 // The active product: a WhatsApp concierge with breadth — the customer asks
 // for anything from anywhere, the operator sources, prices and buys it by hand, and a
@@ -223,10 +224,21 @@ export const turnStore = new AsyncLocalStorage<Map<string, string | null>>();
 // zero envios, handleDeliveryMessage manda um fallback pedindo reformulação.
 // `routerQuery` (06/10): frase de busca que o roteador da IA já reescreveu neste turno — a
 // extração não chama a IA de novo pra ela (até 10 s a menos; turnos passavam de 45 s).
-export const turnMeta = new AsyncLocalStorage<{ replies: number; llmUsed?: boolean; routerQuery?: string }>();
+// Guarda anti-repetição (rodada 2 do plano 100): `inboundText` = o que o cliente disse neste turno;
+// `prevSent` = últimas falas da Lia (turnos anteriores, até 10 min); `sent` = o que saiu NESTE turno por reply().
+// `skipDialogue` = resposta de pergunta reencaminhada pelo gerente (não consulta a IA de novo).
+export const turnMeta = new AsyncLocalStorage<{
+  replies: number;
+  llmUsed?: boolean;
+  routerQuery?: string;
+  inboundText?: string;
+  prevSent?: string[];
+  sent?: string[];
+  skipDialogue?: boolean;
+}>();
 
 export function runTurnScoped<T>(fn: () => Promise<T>): Promise<T> {
-  return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false }, () => runShopperScoped(fn)));
+  return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false, sent: [] }, () => runShopperScoped(fn)));
 }
 
 export function rememberCtxSnapshot(convoId: string, context: string | null) {
@@ -329,7 +341,34 @@ export async function mergeDecisionRequestFor(order: { id: string; conversationI
 export async function reply(phone: string, text: string) {
   const meta = turnMeta.getStore();
   if (meta) meta.replies += 1;
-  await whatsappAdapter.sendMessage(phone, text);
+  let out = text;
+  // Mesma mensagem duas vezes seguidas para falas diferentes do cliente (placar c02/c10/c24/c38/c64):
+  // o gerente de diálogo escreve outra, sabendo o que já foi dito. Só prosa de conversa; dinheiro, link e Pix saem iguais.
+  if (meta?.inboundText && meta.prevSent?.length && repeatGuardEnabled() && !isRepeatableVerbatim(text) && sameAsRecent(text, meta.prevSent)) {
+    const recent = [...meta.prevSent, ...(meta.sent ?? [])].slice(-4);
+    const alt = await rewriteRepeated({ customer: meta.inboundText, said: text, recent });
+    console.log(`[dialogue:repeat] ${alt ? "reescrita" : "mantida (sem IA)"} said=${JSON.stringify(text.slice(0, 60))}`);
+    if (alt) out = alt;
+  }
+  meta?.sent?.push(out);
+  await whatsappAdapter.sendMessage(phone, out);
+}
+
+// Fim do turno: guarda as últimas falas da Lia no contexto (a guarda anti-repetição lê no turno seguinte).
+// Direto no banco, com compare-and-swap: se o contexto mudou por baixo, simplesmente não grava.
+export async function persistSentTexts(convoId: string): Promise<void> {
+  const meta = turnMeta.getStore();
+  if (!meta?.sent?.length || !repeatGuardEnabled()) return;
+  try {
+    const row = await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true } });
+    const ctx = readCtx(row?.context ?? null);
+    const merged = mergeSent(ctx.lastSent, meta.sent.map((t) => t.slice(0, 600)));
+    if (!merged) return;
+    ctx.lastSent = merged;
+    await prisma.conversation.updateMany({ where: { id: convoId, context: row?.context ?? null }, data: { context: JSON.stringify(ctx) } });
+  } catch (error) {
+    console.warn("[dialogue:repeat:persist-failed]", error instanceof Error ? error.message : error);
+  }
 }
 
 // Envios que não passam pelo reply() (cards, botões, resumos interativos) também

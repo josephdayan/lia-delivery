@@ -317,7 +317,7 @@ function urlSlug(url: string): string {
 }
 const PHONE_ONLY_RE = /^\+?[\d\s().-]{8,}$/;
 const ONBOARDING_NOISE_RE =
-  /^(?:me liga\w*|me ligue|liga (?:pra|para) mim|me chama(?: no zap| no whats\w*)?|tchau\w*|ate (?:mais|logo|amanha|depois)|flw|falou|fui|bjs?|beijos?|abracos?|me surpreend\w*|surpreende(?: me)?|(?:algo|alguma coisa|qualquer coisa|coisas?|umas coisas)(?:\s.*)?|chama (?:um )?(?:uber|taxi|99|motoboy).*|kk+|rs+|haha\w*)$/;
+  /^(?:me liga\w*|me ligue|liga (?:pra|para) mim|me chama(?: no zap| no whats\w*)?|tchau\w*|ate (?:mais|logo|amanha|depois)|flw|falou|fui|bjs?|beijos?|abracos?|me surpreend\w*|surpreende(?: me)?|(?:algo|alguma coisa|qualquer coisa|coisas?|umas coisas)(?:\s.*)?|chama (?:um )?(?:uber|taxi|99|motoboy).*|kk+|rs+|haha\w*|(?:no\s+|pago\s+no\s+|pagar\s+no\s+|pagamento\s+(?:no\s+|em\s+)?)?(?:pix|cartao|dinheiro))$/;
 const REMINDER_RE = /\bme\s+lembr\w*\s+(?:(?:amanh[aã]|depois|mais tarde|hoje|(?:na|no|de)\s+\p{L}+)\s+)?(?:de\s+)?(?:comprar\s+|pedir\s+)?/giu;
 const NAME_AT_START_RE = /^\s*\p{Lu}\p{Ll}+(?:\s+\p{Lu}\p{Ll}+)?\s+(?:aqui|falando)\b[\s,.!]*/u;
 
