@@ -321,7 +321,7 @@ export function medicineFarewell(): string {
 }
 
 export function noMedicineAgain(): string {
-  return "Sobre remédio a resposta continua a mesma: eu não vendo, nem por farmácia parceira — pra medicação, a farmácia mais perto de você é o caminho. Se precisar de outra coisa, é só me dizer.";
+  return "Sobre remédio a resposta continua a mesma, mesmo com receita: eu não vendo. Se precisar de mercado, higiene, pet, beleza ou casa, é só me dizer.";
 }
 
 // "tem alguma farmácia parceira que venda?" (07/10, c35): resposta direta, sem pedir endereço.

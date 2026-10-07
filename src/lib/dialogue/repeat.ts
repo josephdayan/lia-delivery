@@ -30,9 +30,32 @@ export function isRepeatableVerbatim(text: string): boolean {
 
 const canon = (text: string) => normalizeMsg(text).replace(/\s+/g, " ").trim();
 
+// Mesma frase com outro nome de produto ("*tubo bolas…* eu não achei em nenhuma loja agora…"): sem o trecho em
+// negrito/itálico o resto é o mesmo modelo de resposta. Só vale para prosa longa — "Anotei *leite*" é curto.
+function withoutHighlights(text: string): string {
+  return canon(text.replace(/\*[^*\n]+\*|_[^_\n]+_/g, " "));
+}
+
+// Família de "o responsável foi avisado" (modo atendimento): as quatro variantes de confirmação dizem a mesma coisa
+// para o cliente que reclama de novo; a segunda deve responder ao que ele disse agora.
+function gistFamily(text: string): string | null {
+  const n = canon(text);
+  if (/\brespons[aá]vel\b/.test(n) && /\brespond/.test(n)) return "atendimento";
+  if (/\bele (?:te )?responde\b|\bresposta vem aqui\b/.test(n)) return "atendimento";
+  return null;
+}
+
 export function sameAsRecent(text: string, recent: string[]): boolean {
   const key = canon(text);
-  return Boolean(key) && recent.some((previous) => canon(previous) === key);
+  if (!key) return false;
+  const stripped = withoutHighlights(text);
+  const family = gistFamily(text);
+  return recent.some(
+    (previous) =>
+      canon(previous) === key ||
+      (stripped.length >= 40 && withoutHighlights(previous) === stripped) ||
+      (family !== null && gistFamily(previous) === family)
+  );
 }
 
 // Guarda as últimas falas: junta as deste turno às anteriores e fica com as KEEP mais recentes.

@@ -13,6 +13,8 @@ import { executePlan, type ExecEnv } from "../src/lib/dialogue/execute";
 import { __setPreSignupModelForTests, parsePreDecision, planPreSignup, preSignupBypassReason, itemsText, type PreDecision, type PreModelInput } from "../src/lib/dialogue/presignup";
 import { __setRepeatModelForTests, isRepeatableVerbatim, mergeSent, sameAsRecent } from "../src/lib/dialogue/repeat";
 import { detectIntent } from "../src/lib/lia-intents";
+import { attendanceAck, noMedicineAgain } from "../src/lib/lia-copy";
+import { onboardingNote } from "../src/lib/address-parse";
 import type { DialogueAction, ModelInput } from "../src/lib/dialogue/types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -192,6 +194,30 @@ test("guarda anti-repetição: só prosa se repete; dinheiro, link e Pix saem ig
   const merged = mergeSent({ texts: ["a", "b", "c"], at: Date.now() }, ["d", "e"]);
   assert.deepEqual(merged?.texts, ["b", "c", "d", "e"]);
   assert.deepEqual(mergeSent({ texts: ["velha"], at: Date.now() - 3_600_000 }, ["nova"])?.texts, ["nova"], "fala de 1 h atrás não conta");
+});
+
+test("guarda anti-repetição: mesmo modelo de resposta com outro produto, e as variantes de 'responsável avisado', contam como repetição", () => {
+  const miss = (name: string) => `*${name}…* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.`;
+  assert.equal(sameAsRecent(miss("bolas de tênis Babolat Gold"), [miss("tubo bolas de tênis Babolat")]), true, "c02");
+  assert.equal(sameAsRecent("Anotei *leite* 🙂", ["Anotei *pão* 🙂"]), false, "frase curta com produto diferente não é repetição");
+  const acks = [0, 1, 2, 3].map((n) => attendanceAck(n, true));
+  assert.equal(sameAsRecent(acks[1], [acks[0]]), true, "c64: 'Anotado… ele responde' depois de 'Já avisei o responsável'");
+  assert.equal(sameAsRecent(acks[3], [acks[2]]), true);
+  assert.equal(sameAsRecent("Pix confirmado, o pedido segue para a loja.", [acks[0]]), false);
+});
+
+test("onboardingNote: 'Pix' / 'no cartão' junto do endereço novo não vira produto (c16)", () => {
+  assert.equal(onboardingNote("Pix").text, "");
+  assert.equal(onboardingNote("pagar no pix").text, "");
+  assert.equal(onboardingNote("2 leites, pix").text, "2 leites");
+  assert.equal(onboardingNote("cartão de natal").text, "cartão de natal", "produto de verdade continua");
+});
+
+test("recusa de remédio repetida é curta e não manda procurar farmácia", () => {
+  const again = noMedicineAgain();
+  assert.match(again, /continua a mesma/);
+  assert.doesNotMatch(again, /farm[aá]cia mais perto/);
+  assert.ok(again.length < 170);
 });
 
 test("change_address sem o texto do endereço: a mensagem ORIGINAL segue no rewrite (placar c16)", async () => {
