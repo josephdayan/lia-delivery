@@ -296,7 +296,7 @@ export function outsideCoverage(city: string | undefined, areaLabel: string): st
   return [
     `Ainda não chego ${onde} — hoje entrego só ${where.replace(/^(nos?|em) (.*)$/, "$1 *$2*")} 😔`,
     "",
-    "Anotei seu contato: quando eu chegar na sua região, te chamo."
+    "Anotei sua cidade: é assim que eu decido onde chego primeiro. Ainda não tenho data nem previsão pra sua região."
   ].join("\n");
 }
 
@@ -1685,22 +1685,64 @@ export function minimumSwapDone(pairs?: SwapPair[]): string {
   return ["Troquei de loja — sem pedido mínimo:", ...swapPairLines(pairs), "Fechando seu total:"].join("\n");
 }
 
-// Já refizemos a busca e continua sem nada (07/10): resposta honesta com saída, nunca o mesmo
-// "não achei" em laço.
-export function missStillNone(query: string): string {
-  return `Procurei de novo e continuo sem nenhuma opção de *${shortNotFoundLabel(query)}* nas lojas que entregam aí. Se quiser, me diz um produto parecido ou outro item que eu busco agora.`;
+// Juízo do "não achei" (rodada 3, 07/10): a IA só classifica; o texto é sempre este.
+// `fora` = categoria que a Lia não compra (sofá, geladeira, carro); `exigente` = o cliente fixou
+// marca/versão/uso — sugerir "outra marca ou versão" ignorava o que ele disse (c01, c11, c97).
+export type MissInfo = { fora?: "moveis_grandes" | "eletrodomestico_grande" | "veiculo" | "imovel" | "nenhum"; exigente?: boolean };
+
+const OUT_KIND_PHRASE: Record<string, string> = {
+  moveis_grandes: "móveis grandes (sofá, cama, guarda-roupa…)",
+  eletrodomestico_grande: "eletrodomésticos grandes (geladeira, fogão, máquina de lavar…)",
+  veiculo: "veículos",
+  imovel: "imóveis"
+};
+const OUT_AREAS = "Eu trabalho com mercado, farmácia (sem remédio), casa, pet, beleza, eletrônicos e presentes — e a loja entrega aí.";
+
+function isOutKind(info?: MissInfo): boolean {
+  return Boolean(info?.fora && info.fora !== "nenhum" && OUT_KIND_PHRASE[info.fora]);
 }
 
-export function itemsNotAvailable(items: string[]): string {
+// Produto de uma categoria que a Lia não compra: recusa clara, sem prometer busca nem pedir "outra marca".
+export function outOfCatalogItem(item: string, info: MissInfo): string {
+  const label = shortNotFoundLabel(item);
+  return `*${label}* eu não consigo comprar: ${OUT_KIND_PHRASE[info.fora ?? "moveis_grandes"]} não estão entre os produtos que eu compro. ${OUT_AREAS} Precisa de algo dessas áreas?`;
+}
+
+// Cliente fixou marca/versão/uso e nenhuma loja tem: diz isso sem empurrar outra marca.
+export function exactItemNotFound(item: string): string {
+  return `*${shortNotFoundLabel(item)}* eu não achei em nenhuma loja que entrega aí. Se precisar de outra coisa, é só me pedir.`;
+}
+
+// Já refizemos a busca e continua sem nada (07/10): resposta honesta com saída, nunca o mesmo
+// "não achei" em laço.
+export function missStillNone(query: string, info?: MissInfo): string {
+  if (isOutKind(info)) return outOfCatalogItem(query, info!);
+  const label = shortNotFoundLabel(query);
+  if (info?.exigente) return `Conferi de novo todas as lojas que entregam aí e continuo sem *${label}*. Se precisar de outra coisa, é só me pedir.`;
+  return `Procurei de novo e continuo sem nenhuma opção de *${label}* nas lojas que entregam aí. Se quiser, me diz um produto parecido ou outro item que eu busco agora.`;
+}
+
+export function itemsNotAvailable(items: string[], info?: MissInfo[]): string {
   const labels = items.map(shortNotFoundLabel);
   if (labels.length === 1) {
+    if (isOutKind(info?.[0])) return outOfCatalogItem(items[0], info![0]);
+    if (info?.[0]?.exigente) return exactItemNotFound(items[0]);
     return `*${labels[0]}* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.`;
   }
+  const outIdx = items.map((_, i) => i).filter((i) => isOutKind(info?.[i]));
+  if (outIdx.length) {
+    const kinds = [...new Set(outIdx.map((i) => OUT_KIND_PHRASE[info![i].fora!]))].join(" e ");
+    const lines = [`Não consigo comprar ${outIdx.map((i) => `*${labels[i]}*`).join(", ")}: ${kinds} não estão entre os produtos que eu compro. ${OUT_AREAS}`];
+    const restIdx = items.map((_, i) => i).filter((i) => !outIdx.includes(i));
+    if (restIdx.length) lines.push("", itemsNotAvailable(restIdx.map((i) => items[i]), restIdx.map((i) => info![i])));
+    return lines.join("\n");
+  }
+  const allExact = Boolean(info) && labels.every((_, i) => info![i]?.exigente);
   return [
     "Esses eu não achei em nenhuma loja agora:",
     ...labels.map((i) => `• ${i}`),
     "",
-    "Me diz outras marcas ou versões que eu tento de novo."
+    allExact ? "Se precisar de outra coisa, é só me pedir." : "Me diz outras marcas ou versões que eu tento de novo."
   ].join("\n");
 }
 

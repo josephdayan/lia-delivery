@@ -141,14 +141,14 @@ export type RerankResult = { lines: RerankLineResult[] };
 // serve (a linha vira "não achei", com o mais próximo avisado quando houver). Retorna null se a
 // OpenAI está off/falhou, para o chamador cair no ranking determinístico. Skus são validados
 // contra os candidatos enviados: a IA nunca inventa produto.
-const RERANK_SYSTEM_PROMPT = (limit: number) =>
+export const RERANK_SYSTEM_PROMPT = (limit: number) =>
   `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item:
-1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. Leia a MENSAGEM inteira, não só o texto do item: uma marca ou atributo escrito no fim de 'A e B' vale para todos os itens que o aceitam ('shampoo e condicionador Pantene' → Pantene nos dois). A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
+1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, USO ('isqueiro pra charuto', 'tomada pra viagem'), DESTINATÁRIO ('perfume pra namorada/mãe/esposa' = feminino; 'pro namorado/pai/marido' = masculino; 'pro meu filho de 3 anos' = infantil; 'presente pra minha sogra' = feminino adulto) e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. Leia a MENSAGEM inteira, não só o texto do item: uma marca ou atributo escrito no fim de 'A e B' vale para todos os itens que o aceitam ('shampoo e condicionador Pantene' → Pantene nos dois). A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
 2) Julgue CADA candidato com dois testes:
- TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
- EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
+ TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: ferramenta, utensílio ou equipamento de obra, cozinha ou indústria que só compartilha a técnica/função com o item de uso pessoal pedido (maçarico de solda, de cozinha ou de glacê não é isqueiro, mesmo acendendo com gás), acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
+ EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. USO: se o pedido diz para que o produto serve, ele precisa ser FEITO para esse uso — o nome ou a natureza do produto mostram (isqueiro 'pra charuto' é tocha/maçarico ou isqueiro de charuto; um isqueiro comum de bolso ou de fogão NÃO cumpre; 'mochila pra notebook' pede compartimento/capa de notebook). Produto genérico cujo nome não indica o uso e que não é feito para ele NÃO cumpre; só vale se o uso não muda o produto ('pilha pro controle' aceita pilha AA/AAA comum). DESTINATÁRIO/PÚBLICO: o gênero ou a idade do destinatário é exigência — perfume/colônia/desodorante/roupa/cosmético 'masculino', 'homme', 'for men', 'barba' NÃO servem para namorada, mãe, esposa, irmã; 'feminino', 'woman', 'she' NÃO servem para namorado, pai, marido; unissex serve aos dois; linha infantil só para criança. Na dúvida sobre o público do nome, NÃO cumpre. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
 3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; o tamanho/numeração padrão antes de miniatura, reduzido ou numeração infantil (bola nº 5 antes de nº 2 ou mini; garrafa padrão antes de miniatura); nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
-4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público (adulto/infantil), restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
+4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público ou destinatário (adulto/infantil/masculino/feminino), uso, restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
 Se nenhum candidato serve, aprovados e proximos vazios: um operador cota o que faltar — vazio é melhor que sugestão errada. Use APENAS skus daquele item. Um resultado por item, na mesma ordem. Responda apenas JSON válido.`;
 
 // Chamada "coberta" (hedged request) para a cauda lenta da IA (rodada 2, 07/10): o rerank leva de 5 a 15 s
@@ -331,6 +331,91 @@ export function __setRerankForTests(fn: typeof rerankShoppingOptionsReal | null)
   rerankImpl = fn ?? rerankShoppingOptionsReal;
 }
 
+// ---------- juízo do "não achei" (rodada 3, 07/10) ----------
+// Quando NENHUMA loja tem o item, o texto de recusa precisa ser honesto sobre o PORQUÊ: (a) a Lia não
+// compra aquela categoria (sofá, geladeira, carro) — dizer "não achei agora, tenta outra marca" prometia
+// busca que nunca vai dar; (b) o cliente exigiu marca/versão/uso — sugerir "outra marca ou versão" ignora
+// o que ele disse. A IA só CLASSIFICA (enum fechado); o texto é fixo no lia-copy. Só roda depois de um
+// "não achei" confirmado: produto que alguma loja vende (TV, p.ex.) nunca chega aqui. IA fora do ar → null
+// e o texto de sempre sai.
+export const MISS_OUT_KINDS = ["moveis_grandes", "eletrodomestico_grande", "veiculo", "imovel", "nenhum"] as const;
+export type MissOutKind = (typeof MISS_OUT_KINDS)[number];
+export type MissJudgement = { fora: MissOutKind; exigente: boolean };
+
+const MISS_SYSTEM_PROMPT = `Você é a Lia, concierge de compras no WhatsApp: compra em lojas online de mercado, farmácia (sem remédio), casa e construção, pet, beleza, eletrônicos, brinquedos e presentes, e a loja entrega. Recebe a MENSAGEM do cliente e uma lista de ITENS que NENHUMA loja tinha. Para cada item (mesma ordem):
+- "fora": a categoria que a Lia NÃO compra por natureza, em vez de só "não tem agora": "moveis_grandes" (sofá, cama, guarda-roupa, mesa de jantar, rack, estante grande, poltrona de sala, colchão grande), "eletrodomestico_grande" (geladeira, fogão, máquina de lavar, freezer, ar-condicionado), "veiculo" (carro, moto, bicicleta elétrica, barco), "imovel" (casa, apartamento, terreno). Qualquer outro produto — mesmo raro, de marca específica ou fora de estoque (queijo, isqueiro, bola, cabo, perfume) — é "nenhum".
+- "exigente": true se o cliente fixou o que quer — marca, modelo, versão, tamanho, teor, uso ('pra charuto') ou disse que tem que ser exatamente aquilo (na frase do item ou em outra parte da MENSAGEM); false se o pedido é genérico e qualquer opção do tipo serviria.
+Responda apenas JSON válido.`;
+
+async function classifyMissesReal(message: string, queries: string[]): Promise<MissJudgement[] | null> {
+  if (!process.env.OPENAI_API_KEY || process.env.LIA_MISS_JUDGE_OFF === "true" || !queries.length) return null;
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(Number(process.env.LIA_MISS_JUDGE_TIMEOUT_MS ?? 6000)),
+      body: JSON.stringify({
+        model: liaTextModel(),
+        reasoning: { effort: (process.env.LIA_DIALOGUE_EFFORT ?? process.env.LIA_AI_EFFORT ?? "low").trim() },
+        input: [
+          { role: "system", content: MISS_SYSTEM_PROMPT },
+          { role: "user", content: JSON.stringify({ mensagem: message, itens: queries }) }
+        ],
+        text: {
+          format: {
+            type: "json_schema",
+            name: "miss_judgement",
+            strict: true,
+            schema: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                itens: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: { fora: { type: "string", enum: [...MISS_OUT_KINDS] }, exigente: { type: "boolean" } },
+                    required: ["fora", "exigente"]
+                  }
+                }
+              },
+              required: ["itens"]
+            }
+          }
+        }
+      })
+    });
+    if (!response.ok) {
+      console.warn("[ai:miss-judge:fallback]", response.status);
+      return null;
+    }
+    const payload = (await response.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
+    const jsonText = payload.output_text ?? payload.output?.flatMap((item) => item.content ?? []).find((content) => content.text)?.text;
+    if (!jsonText) return null;
+    const parsed = JSON.parse(jsonText) as { itens?: Array<{ fora?: string; exigente?: boolean }> };
+    if (!Array.isArray(parsed.itens) || parsed.itens.length !== queries.length) return null;
+    return parsed.itens.map((item) => ({
+      fora: (MISS_OUT_KINDS as readonly string[]).includes(item.fora ?? "") ? (item.fora as MissOutKind) : "nenhum",
+      exigente: item.exigente === true
+    }));
+  } catch (error) {
+    console.warn("[ai:miss-judge:error]", error instanceof Error ? error.message : error);
+    return null;
+  }
+}
+
+let missJudgeImpl: typeof classifyMissesReal = classifyMissesReal;
+
+export function classifyMisses(message: string, queries: string[]): Promise<MissJudgement[] | null> {
+  return missJudgeImpl(message, queries);
+}
+
+// Costura de TESTE: os E2E injetam o juízo da IA sem rede.
+export function __setMissJudgeForTests(fn: typeof classifyMissesReal | null) {
+  missJudgeImpl = fn ?? classifyMissesReal;
+}
+
 // Word-boundary match so "forma" doesn't match "informado" nor "case" "casual".
 // ---------- roteador LLM de fallback (ciclo 30/08) ----------
 //
@@ -357,7 +442,7 @@ export type RouterVerdict = {
 // Promessas que a IA está PROIBIDA de fazer. Se a resposta livre contiver qualquer
 // uma, ela é descartada e o chamador usa a copy segura de sempre.
 const FORBIDDEN_REPLY_RE =
-  /(desconto|gr[aá]tis|de gra[cç]a|cortesia|estorn(ei|ado|amos)|reembols(ei|ado)|cancelei (o|seu) pedido|chega (hoje|amanh[ãa])|entrego (hoje|amanh[ãa])|prometo|pode pagar depois|fiado|100%|cupom|\b(pagamento|pix|cart[aã]o|cobran[cç]a).{0,30}\b(confirmad[oa]|aprova[doa]|recebid[oa]|processad[oa]|conclu[ií]d[oa])\b|\b(j[aá] )?(recebi|recebemos|confirmo|confirmamos) (o )?(pagamento|pix)\b|n[aã]o cobr(o|amos|a) (nada|pelo servi[cç]o)|sem (margem|taxa|acr[eé]scimo)|mesmo pre[cç]o d[ao] (site|loja)|n[aã]o (fa[cç]o|fazemos|consigo fazer) (compara|pesquisa)|n[aã]o consigo ver (os )?pre[cç]os|(pix|pagamento) (vai |[eé] )?(para|pra|da) (a )?(pr[oó]pria )?loja|hor[aá]rio de (funcionamento|atendimento) [eé])/i;
+  /(desconto|gr[aá]tis|de gra[cç]a|cortesia|estorn(ei|ado|amos)|reembols(ei|ado)|cancelei (o|seu) pedido|chega (hoje|amanh[ãa])|entrego (hoje|amanh[ãa])|prometo|pode pagar depois|fiado|100%|cupom|\b(pagamento|pix|cart[aã]o|cobran[cç]a).{0,30}\b(confirmad[oa]|aprova[doa]|recebid[oa]|processad[oa]|conclu[ií]d[oa])\b|\b(j[aá] )?(recebi|recebemos|confirmo|confirmamos) (o )?(pagamento|pix)\b|n[aã]o cobr(o|amos|a) (nada|pelo servi[cç]o)|sem (margem|taxa|acr[eé]scimo)|mesmo pre[cç]o d[ao] (site|loja)|(te|vou te|posso te) (avis(o|ar|arei)|cham(o|ar|arei)|mand(o|ar|arei) (uma )?mensagem).{0,40}(quando|assim que|se).{0,30}(chegar|atender|entregar|abrir|expandir|dispon[ií]vel)|n[aã]o (fa[cç]o|fazemos|consigo fazer) (compara|pesquisa)|n[aã]o consigo ver (os )?pre[cç]os|(pix|pagamento) (vai |[eé] )?(para|pra|da) (a )?(pr[oó]pria )?loja|hor[aá]rio de (funcionamento|atendimento) [eé])/i;
 
 export function sanitizeRouterReply(reply: string | undefined): string | undefined {
   if (!reply) return undefined;

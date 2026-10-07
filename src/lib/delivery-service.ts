@@ -10,7 +10,7 @@ import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
 
-import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage } from "@/lib/adapters/ai";
+import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
 import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
@@ -541,6 +541,13 @@ async function buildChoices(
     containsTobacco,
     ...(unconfirmedLines.length ? { unconfirmed: unconfirmedLines } : {})
   };
+}
+
+// Juízo do "não achei" (rodada 3): a categoria que a Lia não compra (sofá, geladeira, carro) e se o cliente
+// fixou marca/versão/uso viram texto próprio. IA fora do ar → undefined e o texto de sempre sai.
+async function judgeMisses(message: string, queries: string[]): Promise<copy.MissInfo[] | undefined> {
+  const verdict = await classifyMisses(message, queries.map((q) => q.replace(/^\d+x\s+/, ""))).catch(() => null);
+  return verdict ?? undefined;
 }
 
 async function buildChoicesWithSearchNotice(
@@ -6366,7 +6373,8 @@ async function handleConciergeRequest(
     if (carriedMisses.every((miss) => miss.retried)) {
       applyListMisses(ctx, carriedMisses);
       await writeCtx(convoId, ctx);
-      await reply(phone, copy.missStillNone(carriedMisses.map((miss) => miss.query).join(", ")));
+      const stillQuery = carriedMisses.map((miss) => miss.query).join(", ");
+      await reply(phone, copy.missStillNone(stillQuery, (await judgeMisses(text, [stillQuery]))?.[0]));
       return;
     }
     prevMiss = carriedMisses[carriedMisses.length - 1];
@@ -6541,11 +6549,12 @@ async function handleConciergeRequest(
             ? copy.itemsNotAvailableWithOptions(unavailable)
             : medicineMiss
               ? copy.medicineNotFound(unavailable)
-              : copy.itemsNotAvailable(unavailable),
+              : copy.itemsNotAvailable(unavailable, missInfo),
       unbuyable.length ? copy.itemsNotBuyableNow(unbuyable) : null
     ]
       .filter(Boolean)
       .join("\n");
+  const missInfo = unavailable.length && !medicineMiss && !offerLongTail ? await judgeMisses(text, unavailable) : undefined;
   const hasNotFound = unavailable.length > 0 || unbuyable.length > 0;
   // Faltantes desta mensagem (Etapa 3): ficam 20 min no contexto e vão para o registro do /ops.
   // A busca refeita ("tenta de novo") não grava de novo — é a mesma demanda.
@@ -6710,7 +6719,7 @@ async function handleConciergeRequest(
   if (missCombined && prevMiss && !pending.length && !containsMedicine && !raw.containsTobacco) {
     applyListMisses(ctx, mergeListMisses(missCarry, [{ query: missCombined, qty: prevMiss.qty, reason: "not_found", at: Date.now() }]));
     await writeCtx(convoId, ctx);
-    await reply(phone, copy.itemsNotAvailable([missCombined]));
+    await reply(phone, copy.itemsNotAvailable([missCombined], await judgeMisses(text, [missCombined])));
     return;
   }
   if (fragmentReplaced && prevMiss && !pending.length && notFoundLines.length === 1) {
@@ -6718,7 +6727,7 @@ async function handleConciergeRequest(
     // ela sai da lista (o "tenta de novo" geral segue valendo para as outras).
     applyListMisses(ctx, missCarry);
     await writeCtx(convoId, ctx);
-    await reply(phone, copy.missStillNone(prevMiss.query));
+    await reply(phone, copy.missStillNone(prevMiss.query, (await judgeMisses(text, [prevMiss.query]))?.[0]));
     return;
   }
   if (!containsMedicine && !raw.containsTobacco && !medicineMiss) {
@@ -7086,7 +7095,7 @@ async function rescueLongTail(
   }
   if (ctx.basket?.length) ctx.step = "collecting";
   await writeCtx(convoId, ctx);
-  await reply(phone, copy.itemsNotAvailable(unavailable));
+  await reply(phone, copy.itemsNotAvailable(unavailable, await judgeMisses(retryText, unavailable)));
 }
 
 // Presente sem produto (06/10, A7): "um presente pra minha mãe de 60 anos" chegava à busca
