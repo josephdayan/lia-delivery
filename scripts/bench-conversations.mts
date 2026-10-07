@@ -49,6 +49,9 @@ async function llm(model: string, system: string, user: string, schema?: object)
       const p = (await res.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
       const t = p.output_text ?? p.output?.flatMap((o) => o.content ?? []).find((c) => c.text)?.text;
       if (t) return t;
+      // 200 sem texto (acontece sob carga): conta como falha e tenta de novo — antes virava "FIM" do cliente.
+      console.error(`[llm:${model}] resposta vazia (tentativa ${attempt + 1})`);
+      await new Promise((r) => setTimeout(r, 2000 * (attempt + 1)));
     } catch (error) {
       console.error(`[llm:${model}] ${error instanceof Error ? error.message.slice(0, 100) : error} (tentativa ${attempt + 1})`);
     }
@@ -180,7 +183,19 @@ async function main() {
     if (only) scenarios = scenarios.filter((s) => only.includes(s.id));
     if (onlySet) scenarios = scenarios.filter((s) => (s.set ?? "treino") === onlySet);
     // Unidades de execução: cada cenário roda `repeat` vezes (o cliente simulado varia).
-    const units = scenarios.flatMap((s) => Array.from({ length: repeat }, (_, rep) => ({ s, rep })));
+    let units = scenarios.flatMap((s) => Array.from({ length: repeat }, (_, rep) => ({ s, rep })));
+    // --retry-from <arquivo>: refaz só as execuções em que o CLIENTE SIMULADO falhou (sem resposta, ou "FIM"
+    // logo depois da 1ª resposta da Lia sem Pix/recusa) e grava de volta no mesmo arquivo.
+    const retryFrom = arg("retry-from");
+    let retryData: any = null;
+    if (retryFrom) {
+      retryData = JSON.parse(readFileSync(retryFrom, "utf8"));
+      const bad = (r: any) => r.simFailed || (r.expect !== "answer_only" && (r.transcript?.length ?? 0) <= 4 && r.transcript?.[2]?.text?.trim().toUpperCase() === "FIM" && !/00020126|não (vendo|posso|entrego|chego)|ainda não/i.test(r.transcript?.[1]?.text ?? ""));
+      const want = new Set(retryData.results.filter(bad).map((r: any) => `${r.id}#${r.rep ?? 0}`));
+      const byId = new Map(scenarios.map((sc) => [sc.id, sc]));
+      units = [...want].map((key) => { const [id, rep] = key.split("#"); return { s: byId.get(id)!, rep: Number(rep) }; }).filter((u) => u.s);
+      console.log(`refazendo ${units.length} execuções com falha do cliente simulado`);
+    }
     console.log(`bench-conversations "${label}" · ${scenarios.length} cenários × ${repeat} · cliente gpt-6-luna · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"}`);
 
     // Saída por telefone (as conversas rodam em paralelo no mesmo processo).
@@ -197,6 +212,7 @@ async function main() {
       const transcript: Array<{ who: "cliente" | "lia"; text: string; sec?: number }> = [];
       let userMsg = s.opening;
       let latencyMax = 0;
+      let simFailed = false;
       for (let turn = 0; turn < MAX_TURNS; turn++) {
         transcript.push({ who: "cliente", text: userMsg });
         outbox.set(key, []);
@@ -213,7 +229,9 @@ async function main() {
         if (userMsg.trim().toUpperCase() === "FIM") break;
         const history = transcript.map((m) => `${m.who === "cliente" ? "VOCÊ" : "LIA"}: ${m.text}`).join("\n");
         const reply = (await llm(process.env.BENCH_SIM_MODEL ?? "gpt-6-luna", SIM_SYSTEM(s), `Conversa até agora:\n${history}\n\nSua próxima mensagem (ou FIM):`)).trim().replace(/^"|"$/g, "");
-        userMsg = reply || "FIM";
+        // Cliente simulado sem resposta = falha da régua, não da Lia: a execução é marcada e refeita.
+        if (!reply) { simFailed = true; break; }
+        userMsg = reply;
         // Cliente simulado desistindo cedo demais é falha do simulador, não da Lia: pede de novo uma vez.
         if (userMsg.trim().toUpperCase() === "FIM" && turn < 2 && !/00020126|copia e cola|copia-e-cola/i.test(replies.join(" "))) {
           const again = (await llm(process.env.BENCH_SIM_MODEL ?? "gpt-6-luna", SIM_SYSTEM(s), `Conversa até agora:\n${history}\n\nA conversa mal começou: NÃO diga FIM. Responda ao que a Lia pediu ou ofereceu (endereço, escolha etc.):`)).trim().replace(/^"|"$/g, "");
@@ -223,11 +241,14 @@ async function main() {
         if (userMsg.toUpperCase() === "FIM") { transcript.push({ who: "cliente", text: "FIM" }); break; }
       }
       const rendered = renderTranscript(transcript);
-      const verdict: any = await judgeScenario(s, transcript);
+      const verdict: any = simFailed ? null : await judgeScenario(s, transcript);
       const ended = transcript.some((m) => m.who === "cliente" && m.text.trim().toUpperCase() === "FIM");
-      results.push({ id: s.id, rep, set: s.set ?? "treino", title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
+      if (simFailed) {
+        results.push({ id: s.id, rep, set: s.set ?? "treino", title: s.title, expect: s.expect, simFailed: true, transcript, verdict: null });
+        process.stdout.write("x");
+      } else results.push({ id: s.id, rep, set: s.set ?? "treino", title: s.title, origin: s.origin, expect: s.expect, turns: transcript.filter((m) => m.who === "cliente").length, latencyMax, ended, verdict, transcript });
       if (verbose) console.log(`\n=== ${s.id} ${s.title}\n${rendered}\n→ ${JSON.stringify(verdict)}`);
-      process.stdout.write(verdict ? (isClean(verdict) ? "." : "F") : "?");
+      if (!simFailed) process.stdout.write(verdict ? (isClean(verdict) ? "." : "F") : "?");
       // limpeza do telefone de teste
       const user = await prisma.user.findUnique({ where: { phone } });
       if (user) {
@@ -242,10 +263,16 @@ async function main() {
     await Promise.all(Array.from({ length: concurrency }, worker));
     console.log("\n");
 
+    if (retryData) {
+      const fresh = new Map(results.map((r) => [`${r.id}#${r.rep}`, r]));
+      retryData.results = retryData.results.map((r: any) => fresh.get(`${r.id}#${r.rep ?? 0}`) ?? r);
+      results.length = 0;
+      results.push(...retryData.results);
+    }
     const judged = results.filter((r) => r.verdict);
     const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)}%` : "n/a");
     const summary = {
-      label, at: new Date().toISOString(), scenarios: results.length, judged: judged.length,
+      label: retryData?.summary?.label ?? label, at: new Date().toISOString(), scenarios: results.length, judged: judged.length, simFailed: results.filter((r) => r.simFailed).length,
       goalReached: pct(judged.filter((r) => r.verdict.goalReached).length, judged.length),
       wrongProduct: pct(judged.filter((r) => r.verdict.wrongProduct).length, judged.length),
       falseClaim: pct(judged.filter((r) => r.verdict.falseClaim).length, judged.length),
@@ -259,7 +286,7 @@ async function main() {
       ...passAtN(results)
     };
     mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
-    const file = join(process.cwd(), "evals", "results", `conversations-${new Date().toISOString().slice(0, 10)}-${label}.json`);
+    const file = retryFrom ?? join(process.cwd(), "evals", "results", `conversations-${new Date().toISOString().slice(0, 10)}-${label}.json`);
     writeFileSync(file, JSON.stringify({ summary, results }, null, 1));
     console.log(JSON.stringify(summary, null, 1));
     console.log(`\nArquivo: ${file}`);

@@ -3,15 +3,15 @@
   "label": "base100",
   "at": "2026-10-07T16:14:02.941Z",
   "scenarios": 300,
-  "judged": 253,
-  "goalReached": "85.8%",
-  "wrongProduct": "16.2%",
-  "falseClaim": "11.9%",
-  "deadEnd": "5.5%",
-  "confusing": "34.4%",
+  "judged": 300,
+  "goalReached": "72.3%",
+  "wrongProduct": "17.3%",
+  "falseClaim": "14.0%",
+  "deadEnd": "7.3%",
+  "confusing": "39.3%",
   "slow": "4.7%",
-  "clean": "63.6%",
-  "highSeverityDefects": 154,
+  "clean": "53.7%",
+  "highSeverityDefects": 186,
   "repeat": 3,
   "cleanAllRuns": "48.0%",
   "goalAllRuns": "66.0%",
@@ -23375,7 +23375,33 @@
    "turns": 4,
    "latencyMax": 62.528,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": true,
+    "summary": "Não chegou ao Pix: após o cliente escolher a opção 1 e pedir 3 unidades, a Lia tratou a quantidade como uma busca por um produto novo e disse que não encontrou o espaguete, embora tivesse acabado de oferecê-lo.",
+    "defects": [
+     {
+      "turn": 5,
+      "what": "Ignorou a escolha da opção 1 e interpretou “quero 3” como uma busca por 3 unidades; deveria adicionar 3 pacotes do produto escolhido.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Afirmou que não encontrou o produto em nenhuma loja, apesar de tê-lo acabado de listar como disponível no Mambo.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "A resposta demorou 62,5 segundos (mais de 20 s).",
+      "severity": "low"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23420,7 +23446,17 @@
    "turns": 2,
    "latencyMax": 0.005,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A conversa terminou antes de o cliente informar ou corrigir o endereço; não chegou ao Pix. A Lia pediu o endereço completo uma vez, conforme o fluxo esperado.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23447,7 +23483,17 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A conversa terminou antes de o cliente informar e corrigir o endereço. Não houve opções nem chegada ao Pix.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23474,7 +23520,17 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O pedido de shampoo foi registrado, mas a conversa terminou antes de o cliente enviar e corrigir o endereço; não chegou ao Pix.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23501,7 +23557,23 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não respondeu em quanto tempo o pedido chegaria e não avançou até a compra e o Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou a pergunta sobre o prazo de entrega e pediu produto e CEP sem esclarecer quando chegaria.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23528,7 +23600,23 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix. A Lia pediu produto e CEP para calcular o total, mas não respondeu nem esclareceu a pergunta sobre prazo de entrega.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não respondeu à pergunta sobre em quanto tempo a entrega chega, nem explicou se poderia informar o prazo após receber o CEP.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23555,7 +23643,23 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou o prazo de entrega e não deu uma estimativa de frete; a conversa terminou antes da compra e do Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não respondeu quanto tempo a entrega demora; apenas pediu o produto e o CEP para calcular o total.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23582,7 +23686,17 @@
    "turns": 2,
    "latencyMax": 0.002,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia respondeu corretamente sobre cartão e parcelamento, mas a conversa terminou antes de o cliente pedir a pasta de dente e chegar ao Pix.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23609,7 +23723,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia respondeu corretamente sobre cartão e parcelamento, mas o cliente encerrou a conversa antes de pedir a pasta de dente ou iniciar a compra por Pix.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23636,7 +23760,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia respondeu corretamente sobre cartão, parcelamento e Pix, mas a compra da pasta de dente não aconteceu; o cliente encerrou a conversa sem escolher o Pix ou pedir o produto.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23663,7 +23797,23 @@
    "turns": 2,
    "latencyMax": 0.002,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia explicou formas de pagamento e dados da empresa, mas não respondeu por que precisa do CPF nem esclareceu diretamente se é seguro informá-lo. O cliente encerrou sem fornecer o CPF e a compra não chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não explicou para que o CPF é necessário nem respondeu diretamente à preocupação sobre sua segurança, deixando a dúvida essencial sem solução e impedindo o avanço da compra.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23690,7 +23840,23 @@
    "turns": 2,
    "latencyMax": 0.002,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não explicou por que precisa do CPF. O objetivo não foi cumprido: a conversa terminou sem o CPF, o desodorante ou o Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não respondeu à pergunta direta sobre para que o CPF é necessário; falou de pagamento e da empresa, mas não explicou o uso do dado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23717,7 +23883,23 @@
    "turns": 2,
    "latencyMax": 0.002,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia respondeu com informações gerais sobre pagamento e a empresa, mas não explicou por que precisa do CPF. O cliente não prosseguiu com o CPF nem com a compra do desodorante.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não respondeu à pergunta sobre por que o CPF é necessário; trouxe garantias gerais que não esclarecem o uso do dado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23744,7 +23926,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente encerrou antes de informar o endereço e antes de ver o total ou pedir o cancelamento. A Lia não confirmou cancelamento nem houve cobrança.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23771,7 +23963,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente encerrou a conversa antes de informar o endereço, ver o total ou pedir o cancelamento. A Lia não confirmou cancelamento, então o objetivo não foi cumprido; não há defeito concreto da Lia na transcrição.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23798,7 +24000,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A conversa terminou antes de a Lia mostrar o total ou o cliente pedir o cancelamento; não houve confirmação de cancelamento.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23825,7 +24037,17 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A conversa terminou antes de aparecer o total e antes de o cliente desistir ou pedir cancelamento; não é possível considerar o objetivo cumprido.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23852,7 +24074,17 @@
    "turns": 2,
    "latencyMax": 0.002,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O objetivo não foi cumprido: a conversa terminou antes de aparecer o total e antes de o cliente desistir ou pedir cancelamento. A Lia registrou os três produtos e pediu o endereço uma vez, conforme o fluxo normal.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -23879,7 +24111,17 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O cliente encerrou a conversa antes de informar o endereço, ver o total ou pedir o cancelamento. Assim, o objetivo não foi cumprido, mas a transcrição não mostra falha da Lia.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24124,7 +24366,28 @@
    "turns": 4,
    "latencyMax": 24.365,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia selecionou os produtos pedidos, mas tratou o nome e o CPF como itens não encontrados. A conversa termina após “FIM”, sem total nem Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou “sou Ana Teste, cpf 529.982.247-25” como produtos que não encontrou, em vez de reconhecer os dados pessoais enviados. Isso também é uma afirmação enganosa de busca de itens.",
+      "severity": "high"
+     },
+     {
+      "turn": 6,
+      "what": "Não respondeu a “FIM”; não enviou o total nem avançou para o Pix.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24169,7 +24432,23 @@
    "turns": 2,
    "latencyMax": 0.008,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix. A Lia registrou a Coca Zero como “mn 2 coca zero de 2l” e com quantidade 1, embora o pedido fosse por 2; só o Ruffles foi registrado corretamente.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou a Coca Zero como “mn 2 coca zero de 2l”, tratando a abreviação “mn” como parte do produto, e anotou 1 unidade em vez das 2 pedidas.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24196,7 +24475,23 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix: a Lia registrou apenas 1 Coca-Cola Zero de 2 L, quando foram pedidas 2, e incluiu “mn” no nome do produto. O cliente encerrou a conversa antes de enviar o endereço.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou 1 Coca-Cola Zero de 2 L em vez das 2 pedidas e incorporou “mn” ao nome do produto, tratando a gíria como parte do item.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24223,7 +24518,23 @@
    "turns": 2,
    "latencyMax": 0.005,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia não chegou ao Pix e registrou a Coca Zero de forma incorreta: interpretou “mn” como parte do produto e deixou a quantidade como 1, em vez de 2.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou “mn” (abreviação/gíria) como parte do nome de um produto e registrou apenas 1x Coca Zero de 2L, não as 2 unidades pedidas.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24250,7 +24561,17 @@
    "turns": 2,
    "latencyMax": 0.005,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A conversa terminou antes de a Lia receber o endereço e poder mostrar opções ou chegar ao Pix. Ela registrou os dois pedidos e solicitou o endereço uma vez, conforme o fluxo normal.",
+    "defects": [],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24277,7 +24598,28 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não reconheceu os erros de digitação: colocou na cesta os textos literais “kero pasta de dentii” e “iscova de dente”, em vez de pasta de dente e escova. Não chegou ao Pix com os produtos certos.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Adicionou à cesta os textos digitados como se fossem produtos, sem identificar a pasta de dente e a escova solicitadas.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A lista da cesta mostra nomes de produto incompreensíveis, deixando confuso o que foi realmente adicionado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24304,7 +24646,23 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia registrou os erros de digitação como nomes dos produtos, em vez de identificar pasta de dente e escova. Os itens corretos não chegaram à cesta nem ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou “kero pasta de dentii” e “iscova de dente” como produtos literais, adicionando itens que não correspondem ao pedido; deveria ter entendido pasta de dente e escova.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24331,7 +24689,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix. A Lia adicionou trechos da mensagem como produtos e registrou apenas 1 espeto, em vez dos 100 previstos no cenário.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou trechos da narrativa (“galera vou fazer um churrasco...” e “uns 20 convidados”) como produtos e os adicionou à cesta.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Registrou 1 espeto de bambu, embora o pedido do cenário seja de 100.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24358,7 +24737,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não chegou ao Pix nem montou a cesta correta: registrou itens que não foram pedidos como produtos e colocou apenas 1 espeto, em vez dos 100 solicitados.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou trechos da mensagem (“galera... em casa”, “uns 20 convidados” e “pra todo mundo sem nada”) como produtos na cesta.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Registrou apenas 1 espeto de bambu, não os 100 solicitados.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24385,7 +24785,33 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix. A Lia registrou frases do cliente como produtos e deixou o espeto na quantidade 1, em vez dos 100 esperados.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Tratou trechos da mensagem (“galera vou fazer um churrasco...” e “uns 20 convidados”) como produtos e os adicionou à cesta.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Registrou apenas 1 espeto de bambu, mas o cenário pede 100.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A lista confusa ainda anexou “sem nada” ao item copo descartável.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24412,7 +24838,28 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": true,
+    "confusing": false,
+    "slow": false,
+    "summary": "A Lia não informa que não atende Curitiba nem oferece a lista de espera; em vez disso, pede o endereço como se pudesse entregar.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignora que a entrega é para Curitiba e pede o endereço, sem explicar que não atende a cidade nem oferecer a lista de espera.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A saudação promete comprar e entregar “qualquer coisa”, mas a resposta segue como se pudesse atender Curitiba, contrariando a limitação de área.",
+      "severity": "low"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24439,7 +24886,28 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não entrega em Curitiba nem ofereceu a lista de espera; pediu o endereço como se pudesse seguir com a compra.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Não esclareceu que Curitiba está fora da área de entrega nem ofereceu anotar o contato na lista de espera.",
+      "severity": "medium"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu o endereço completo sem necessidade, apesar de a cidade informada já estar fora da área atendida.",
+      "severity": "low"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24466,7 +24934,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não atende Curitiba nem ofereceu a lista de espera. Em vez disso, afirmou que entrega e pediu o endereço completo.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Afirmou que compra e entrega qualquer coisa, apesar de Curitiba estar fora da área atendida.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Ignorou que o cliente informou Curitiba; deveria explicar que não entrega lá e oferecer a lista de espera, não pedir o endereço completo.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24493,7 +24982,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não informou claramente que não entrega em Porto Alegre nem ofereceu a lista de espera; pediu CEP apesar de a cidade já estar informada.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Disse que atende apenas SP e RJ, mas pediu o CEP para confirmar se chega até Porto Alegre, sugerindo que a entrega ainda poderia ser possível.",
+      "severity": "medium"
+     },
+     {
+      "turn": 1,
+      "what": "Não explicou que Porto Alegre está fora da área nem ofereceu a lista de espera por cidade.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24520,7 +25030,23 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não informou claramente que não entrega em Porto Alegre nem ofereceu a lista de espera; pediu um CEP para confirmar apesar de já saber a cidade.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Pediu o CEP em vez de esclarecer que não atende Porto Alegre e oferecer a lista de espera, deixando o cliente sem a solução esperada.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24547,7 +25073,33 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não informou claramente que não entrega em Porto Alegre nem ofereceu a lista de espera. Pediu CEP apesar de já saber a cidade e de ter dito que atende apenas SP e RJ.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Disse que confirmaria a entrega pelo CEP, embora Porto Alegre esteja fora da área atendida, criando uma expectativa enganosa.",
+      "severity": "medium"
+     },
+     {
+      "turn": 1,
+      "what": "Não ofereceu a lista de espera nem indicou um caminho para o cliente seguir.",
+      "severity": "medium"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu CEP após o cliente já informar Porto Alegre, contrariando a própria informação de que só atende SP e RJ.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24574,7 +25126,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não vende móveis grandes; em vez disso, registrou o sofá e pediu o endereço como se pudesse atender ao pedido.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Deu a entender que pode fornecer o sofá, registrou-o no pedido e pediu o endereço, embora não venda móveis grandes. Não cumpriu o objetivo de informar claramente que não vende esse produto.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A saudação “Me pede qualquer coisa” é contradita pelo fluxo que sugere que esse sofá pode ser comprado pela Lia.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24601,7 +25174,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não vende sofás. Ao registrar o sofá e pedir o endereço, deu a entender que poderia comprá-lo e entregá-lo.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou o sofá e pediu o endereço como se pudesse atender ao pedido, embora não venda móveis grandes.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu dados de entrega para um produto que não pode fornecer, deixando o fluxo confuso.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24628,7 +25222,28 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não informou que não vende móveis grandes. Em vez disso, afirmou que compra “qualquer coisa”, registrou o sofá como item e pediu o endereço, dando a entender que pode concluir a compra.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Afirmou que compra qualquer coisa e registrou como disponível um sofá de 3 lugares que a loja não vende, sem informar essa limitação.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu o endereço para uma compra que não pode atender, reforçando a impressão de que o sofá está disponível.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24655,7 +25270,23 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não esclareceu o que o cliente queria depois de “quero o de sempre”; pediu o endereço sem histórico ou produto definido. Não chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou o pedido ambíguo de “o de sempre” e não perguntou qual produto o cliente queria; pediu o endereço antes de esclarecer o pedido.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24682,7 +25313,23 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não perguntou o que o cliente queria dizer com “o de sempre” e pediu o endereço antes de identificar o produto. A conversa não avançou até a pasta de dente nem ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou o pedido ambíguo de “o de sempre” e pediu o endereço sem antes perguntar quais produtos o cliente queria.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24709,7 +25356,23 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não perguntou o que o cliente queria dizer com “o de sempre” e pediu o endereço sem esclarecer o produto. Não chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou o pedido de “o de sempre” sem histórico e pediu o endereço, em vez de perguntar qual produto o cliente queria.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24736,7 +25399,28 @@
    "turns": 2,
    "latencyMax": 0.003,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não vende TVs. Em vez disso, disse que poderia comprar qualquer coisa, registrou a TV no pedido e pediu o endereço.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Afirmou que compraria qualquer coisa e registrou uma TV, embora não venda televisões; deveria ter dito claramente que não tinha o produto.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu o endereço para seguir com a compra de um produto que não vende, dando a entender que o pedido poderia ser atendido.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24763,7 +25447,38 @@
    "turns": 2,
    "latencyMax": 0.004,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não vende TV: registrou o produto e pediu endereço para seguir com uma compra que não pode atender.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou uma TV de 50 polegadas como item da cesta, embora não venda TVs.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Afirmou que pode comprar e entregar qualquer coisa e iniciou o fluxo de compra da TV, criando uma promessa falsa.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu endereço para um produto que não vende, sem esclarecer que não pode atender ao pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A conversa ficou sem resposta clara sobre a disponibilidade da TV e sem um caminho válido para concluir o pedido.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24790,7 +25505,33 @@
    "turns": 2,
    "latencyMax": 0.028,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não informou que não vende televisões; registrou a TV como item do pedido e pediu o endereço.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Registrou uma TV de 50 polegadas como produto que compraria, embora não venda TVs.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "A promessa de que compra qualquer coisa é contradita ao tratar a TV indisponível como item do pedido.",
+      "severity": "medium"
+     },
+     {
+      "turn": 1,
+      "what": "Pediu endereço antes de esclarecer que não vende o produto solicitado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24817,7 +25558,28 @@
    "turns": 2,
    "latencyMax": 0.005,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não avançou com o pedido de pilha AA nem reconheceu a preferência pelo menor preço; o cliente encerrou a conversa antes de chegar ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou o pedido de pilha AA e a preferência explícita pela mais barata, perguntando novamente o que o cliente precisava. Não apresentou opções nem escolheu a mais barata.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Resposta genérica e redundante: pede o endereço, mas também pergunta o que o cliente precisa, embora o produto já tenha sido informado.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24844,7 +25606,28 @@
    "turns": 2,
    "latencyMax": 0.005,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não reconheceu o pedido de pilhas AA nem a preferência pelo menor preço; não apresentou opções nem chegou ao Pix.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou a preferência explícita por pilha AA mais barata e perguntou novamente o que o cliente precisava.",
+      "severity": "high"
+     },
+     {
+      "turn": 1,
+      "what": "Não confirmou nem retomou o produto já pedido antes de solicitar o endereço, deixando incerto se registrou o pedido.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
@@ -24871,7 +25654,23 @@
    "turns": 2,
    "latencyMax": 0.006,
    "ended": true,
-   "verdict": null,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não apresentou opções de pilha AA nem identificou a mais barata, então o cliente não conseguiu escolher nem chegar ao Pix. Pedir o endereço com CEP antes das opções é o fluxo normal; o problema foi ignorar o pedido já informado.",
+    "defects": [
+     {
+      "turn": 1,
+      "what": "Ignorou a preferência explícita por pilha AA mais barata e perguntou novamente o que o cliente precisava, embora ele já tivesse informado o produto.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
    "transcript": [
     {
      "who": "cliente",
