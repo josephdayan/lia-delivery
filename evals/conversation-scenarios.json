@@ -4,260 +4,362 @@
   "title": "Cottage Yorgus 14g (testador: sugeriu iogurte)",
   "origin": "tester-06/10",
   "persona": "adulto fitness, objetivo claro",
-  "goal": "comprar cottage da marca Yorgus 14g de proteína; se não houver exatamente isso, não aceitar iogurte comum",
+  "goal": "comprar cottage da marca Yorgus com 14g de proteína; essa marca/versão não existe nas lojas, então o cliente NÃO aceita iogurte comum nem outro cottage; se a Lia disser que não achou, ele agradece e encerra",
   "opening": "Vc tem cottage da yorgus 14g proteína ?",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
-  "traps": "",
-  "expect": "honest_not_found"
+  "traps": "se a Lia mostrar iogurte comum ou cottage de outra marca como se fosse o pedido, reclamar: eu pedi Yorgus 14g",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "cottage yorgus"
+  ]
  },
  {
   "id": "c02",
   "title": "Tubo de bolas de tênis Babolat com 4 (testador)",
   "origin": "tester-06/10",
   "persona": "pai que joga tênis",
-  "goal": "comprar um tubo de bolas de tênis Babolat Gold com 4 bolas; tubo com 3 bolas não serve",
+  "goal": "comprar um tubo de bolas de tênis Babolat Gold com 4 bolas; nenhuma loja tem isso, então tubo com 3 bolas ou bola de brinquedo NÃO serve; se a Lia disser que não achou, ele encerra",
   "opening": "Tubo de bolas de tênis babolat gold com 4 bolas",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
-  "traps": "se a Lia mostrar tubo com 3 bolas, reclamar: eu pedi com 4",
-  "expect": "honest_not_found"
+  "traps": "se a Lia mostrar tubo com 3 bolas ou outra marca, reclamar: eu pedi Babolat com 4",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "esporte",
+  "probe": [
+   "babolat"
+  ]
  },
  {
   "id": "c03",
   "title": "Fita isolante preta 3M (testador: não finalizou)",
   "origin": "tester-06/10",
   "persona": "morador consertando fiação",
-  "goal": "comprar uma fita isolante preta da 3M",
+  "goal": "comprar uma fita isolante preta da 3M; aceita qualquer metragem",
   "opening": "Quero comprar fita isolante preta da 3M",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "ferramentas",
+  "probe": [
+   "fita isolante preta 3m"
+  ]
  },
  {
   "id": "c04",
   "title": "Pilha AAA (testador: não finalizou)",
   "origin": "tester-06/10",
   "persona": "pessoa com controle remoto sem pilha",
-  "goal": "comprar pilha AAA",
+  "goal": "comprar pilha AAA (palito); aceita qualquer marca, pacote com 4 já serve",
   "opening": "Pilha AAA",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "eletronicos",
+  "probe": [
+   "pilha aaa"
+  ]
  },
  {
   "id": "c05",
-  "title": "Shampoo Kerasys coco 1L",
+  "title": "Shampoo Kerasys (testador: perguntou da loja)",
   "origin": "tester-06/10",
   "persona": "cliente exigente com marca",
-  "goal": "comprar shampoo Kerasys Coconut Oil Repair Moist 1L",
+  "goal": "comprar um shampoo da marca Kerasys; aceita qualquer versão que a Lia mostrar, mesmo cara; não exige versão de coco",
   "opening": "Quero comprar shampoo kerasys",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
-  "traps": "perguntar qual a loja e se a Lia compara preços; depois pedir a versão de coco",
-  "expect": "reach_pix"
+  "traps": "antes de escolher, perguntar qual a loja e se a Lia compara preços; depois escolher a opção Kerasys mostrada",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "higiene",
+  "probe": [
+   "shampoo kerasys"
+  ]
  },
  {
   "id": "c06",
-  "title": "Leite nude",
+  "title": "Leite de aveia Nude",
   "origin": "tester-06/10",
   "persona": "pessoa casual",
-  "goal": "comprar um leite nude (leite de origem vegetal/zero lactose, sem açúcar)",
+  "goal": "comprar um leite vegetal da marca Nude (leite de aveia 1 litro); aceita qualquer sabor da marca",
   "opening": "oii quero pedir leite nude",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "antes de tudo perguntar 'como vc funciona?' e 'de onde vc compra?'",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mercado",
+  "probe": [
+   "nude 1l"
+  ]
  },
  {
   "id": "c07",
-  "title": "Amora e framboesa, depois só amora",
+  "title": "Banana e maçã, depois só maçã",
   "origin": "tester-06/10",
   "persona": "pessoa casual",
-  "goal": "comprar frutas: amora e framboesa; depois mudar de ideia para só amora",
-  "opening": "Quero amora e framboesa",
+  "goal": "comprar frutas: banana e maçã; depois das opções mudar de ideia e ficar só com a maçã (a banana sai da cesta)",
+  "opening": "Quero banana e maçã",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
-  "traps": "depois das opções dizer 'so amora' e 'so essa'",
-  "expect": "reach_pix"
+  "traps": "depois das opções dizer 'so a maçã' e 'so essa'; o pedido final deve ter apenas maçã",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "hortifruti",
+  "probe": [
+   "banana prata",
+   "maca fuji"
+  ]
  },
  {
   "id": "c08",
   "title": "Remédio de tireoide (Euthyrox)",
   "origin": "tester-06/10",
   "persona": "senhora com receita",
-  "goal": "comprar 2 caixas de Euthyrox 50mg",
+  "goal": "comprar 2 caixas de Euthyrox 50mg (remédio de tireoide); a Lia NÃO vende medicamento, então a conversa só cumpre o objetivo se ela recusar com clareza e sem prometer procurar em outra loja; o cliente aceita e encerra",
   "opening": "Ola quero 2 cxs de Euthyrox 50mg",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "honest_not_found"
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "remedio"
  },
  {
   "id": "c09",
   "title": "Ração para cachorro + mais 3",
   "origin": "tester-09/16",
   "persona": "dono de cachorro",
-  "goal": "comprar ração para o cachorro e depois somar mais 3 rações",
+  "goal": "comprar ração para o cachorro e depois somar mais 3 rações: o pedido final deve ter 4 unidades NO TOTAL (a 1ª escolhida continua na cesta, não pode ser apagada)",
   "opening": "Ração pro meu cachorro",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
-  "traps": "depois de ver as opções, 'vamos adicionar outro produto, pode ser 3 rações de cachorro'",
-  "expect": "reach_pix"
+  "traps": "depois de escolher uma ração, dizer 'vamos adicionar outro produto, pode ser 3 rações de cachorro'",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pet",
+  "probe": [
+   "racao para caes"
+  ]
  },
  {
   "id": "c10",
   "title": "Lista com remoção e frete caro (tester)",
   "origin": "tester-06/10",
   "persona": "cliente curioso",
-  "goal": "pedir shampoo granado de bebê, sabonete líquido granado e fita crepe; tirar a fita crepe; se o frete for caro (>R$12) desistir",
+  "goal": "pedir shampoo Granado de bebê, sabonete líquido Granado e fita crepe; tirar a fita crepe da cesta; quando aparecer o TOTAL, o cliente DESISTE e cancela por causa do frete (diz que o frete está caro, quer cancelar tudo)",
   "opening": "Quero shampoo granado de bebê, sabonete líquido granado e fita crepe",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
-  "traps": "depois do total: 'tira a fita crepe'; no fim 'não quero mais, o frete tá muito caro'",
-  "expect": "cancel_ok"
+  "traps": "depois do total: 'tira a fita crepe'; no total seguinte, SEMPRE desistir: 'não quero mais, o frete tá muito caro, cancela'",
+  "expect": "cancel_ok",
+  "set": "treino",
+  "type": "desistir",
+  "probe": [
+   "shampoo granado bebe",
+   "sabonete liquido granado",
+   "fita crepe"
+  ]
  },
  {
   "id": "c11",
   "title": "Isqueiro estilo tocha para charuto",
   "origin": "real-09/06",
   "persona": "cliente exigente",
-  "goal": "comprar isqueiro maçarico/tocha para charuto",
+  "goal": "comprar isqueiro maçarico/tocha para charuto; isqueiro comum (Bic) NÃO serve; se a Lia disser que não achou tocha, ele encerra",
   "opening": "Queria um isqueiro pra charuto",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "rejeitar isqueiros comuns: tem que ser estilo tocha",
-  "expect": "honest_not_found"
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "presente",
+  "probe": [
+   "isqueiro tocha",
+   "isqueiro macarico"
+  ]
  },
  {
   "id": "c12",
   "title": "Pedido vago: 'queria comprar uma coisa'",
   "origin": "tester-06/10",
   "persona": "cliente indeciso",
-  "goal": "descobrir o que a Lia faz e então pedir sabão em pó",
+  "goal": "não sabe o que dizer no começo; descobre o que a Lia faz e então pede sabão em pó (qualquer marca)",
   "opening": "Bom dia queria comprar uma coisa",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "vago",
+  "probe": [
+   "lava roupas em po"
+  ]
  },
  {
   "id": "c13",
   "title": "É golpe? Como funciona?",
   "origin": "tester-06/10",
   "persona": "desconfiado",
-  "goal": "entender se é confiável antes de comprar; só comprar se se sentir seguro",
+  "goal": "entender se a Lia é confiável antes de comprar; não precisa comprar nada; cumpre o objetivo se a Lia responder com honestidade quem é, para onde vai o Pix e se tem nota fiscal",
   "opening": "quem é vc? isso é golpe?",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "perguntar: o Pix vai pra quem? tem nota fiscal?",
-  "expect": "answer_only"
+  "expect": "answer_only",
+  "set": "treino",
+  "type": "pergunta"
  },
  {
   "id": "c14",
   "title": "Pergunta se compara preços",
   "origin": "tester-06/10",
   "persona": "econômico",
-  "goal": "saber se a Lia compara preços e então comprar um desodorante",
+  "goal": "perguntar se a Lia compara preços e como saber que é o melhor valor; depois da resposta, comprar um desodorante (qualquer marca) até o Pix",
   "opening": "Voce faz comparativo de precos? Como sei que este é o melhor valor?",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "",
-  "expect": "answer_only"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "pergunta",
+  "probe": [
+   "desodorante"
+  ]
  },
  {
   "id": "c15",
   "title": "Desistir depois do total (motivo)",
   "origin": "tester-06/10",
   "persona": "cliente que desiste",
-  "goal": "pedir uma pasta de dente, ver o total, desistir e informar o motivo quando perguntarem",
+  "goal": "pedir uma pasta de dente, ver o total, DESISTIR e cancelar, e responder o motivo (frete caro) quando a Lia perguntar",
   "opening": "quero pasta de dente",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
-  "traps": "depois do total: 'desisti'; responder o motivo quando a Lia perguntar (frete caro)",
-  "expect": "cancel_ok"
+  "traps": "depois do total: 'desisti, não quero'; responder o motivo quando a Lia perguntar: frete caro",
+  "expect": "cancel_ok",
+  "set": "prova",
+  "type": "desistir",
+  "probe": [
+   "pasta de dente"
+  ]
  },
  {
   "id": "c16",
   "title": "Troca de endereço no meio",
   "origin": "synthetic",
   "persona": "pessoa que mudou de casa",
-  "goal": "pedir desodorante, mas antes de pagar trocar o endereço para outro em São Paulo",
+  "goal": "pedir desodorante (qualquer marca), mas antes de pagar trocar o endereço de entrega para a Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001; só vale se a Lia confirmar o novo endereço e chegar ao Pix",
   "opening": "quero desodorante",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "depois de ver o total, mandar 'trocar endereço' com Rua Oscar Freire, 379, apto 12, 01426-001",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "endereco",
+  "probe": [
+   "desodorante"
+  ]
  },
  {
   "id": "c17",
   "title": "Quantidades: 3 e depois tira 1",
   "origin": "real-08/28",
   "persona": "cliente organizado",
-  "goal": "pedir sabonete, escolher 3 unidades e depois tirar uma",
+  "goal": "pedir sabonete, escolher uma opção, pedir 3 unidades e depois tirar uma: o pedido final tem 2 unidades",
   "opening": "quero sabonete",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "depois de escolher: 'quero 3', depois 'tira um'",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "edicao",
+  "probe": [
+   "sabonete"
+  ]
  },
  {
   "id": "c18",
   "title": "Só 'oi' e pergunta o que vende",
   "origin": "real",
   "persona": "curioso",
-  "goal": "descobrir o que dá pra pedir e comprar fio dental",
+  "goal": "mandar só 'oi', perguntar o que a Lia vende/faz, e depois pedir fio dental (qualquer marca) até o Pix",
   "opening": "oi",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "perguntar o que a Lia vende/faz antes de pedir",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "vago",
+  "probe": [
+   "fio dental"
+  ]
  },
  {
   "id": "c19",
   "title": "Recusa dar CPF",
   "origin": "tester-06/10",
   "persona": "reservado",
-  "goal": "pedir creme dental, mas não querer dar o CPF; se a Lia insistir muito, desistir",
+  "goal": "pedir creme dental (qualquer marca); quando pedirem o CPF, estranhar e recusar uma vez; depois que a Lia explicar para que serve, CEDER e dar o CPF e seguir até o Pix",
   "opening": "preciso de creme dental",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
-  "traps": "quando pedirem CPF: 'pra que cpf?' e depois 'não quero dar'",
-  "expect": "reach_pix"
+  "traps": "quando pedirem CPF: 'pra que cpf?' e 'não quero dar'; na explicação da Lia, ceder e dar o CPF",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pergunta",
+  "probe": [
+   "creme dental",
+   "pasta de dente"
+  ]
  },
  {
   "id": "c20",
   "title": "Mercado básico: 4 itens",
   "origin": "synthetic",
   "persona": "dona de casa",
-  "goal": "comprar arroz 5kg, feijão carioca, óleo de soja e café em pó",
+  "goal": "comprar arroz (pacote de 5kg), feijão carioca, óleo de soja e café em pó (torrado e moído); os 4 itens precisam estar na cesta",
   "opening": "quero arroz, feijão, óleo e café",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "arroz 5kg",
+   "feijao carioca",
+   "oleo de soja",
+   "cafe torrado e moido"
+  ]
  },
  {
   "id": "c21",
@@ -270,253 +372,1453 @@
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "",
-  "expect": "honest_not_found"
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "inexistente",
+  "probe": [
+   "iphone 15 pro max"
+  ]
  },
  {
   "id": "c22",
   "title": "Cerveja (álcool)",
   "origin": "synthetic",
   "persona": "adulto",
-  "goal": "comprar 6 latas de cerveja Skol",
+  "goal": "comprar 6 latas de cerveja Skol (a quantidade final precisa ser 6)",
   "opening": "quero 6 latas de skol",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "bebidas",
+  "probe": [
+   "skol lata"
+  ]
  },
  {
   "id": "c23",
-  "title": "Presente para mãe",
+  "title": "Presente para mãe (orçamento total R$120)",
   "origin": "real",
   "persona": "filho",
-  "goal": "comprar um presente para a mãe até R$100; aceitar perfume ou similar",
-  "opening": "quero dar um presente pra minha mãe, uns 100 reais",
+  "goal": "comprar um presente para a mãe com orçamento TOTAL de R$120 já incluindo o frete (se o total passar de R$120 ele reclama e pede algo mais barato); aceita perfume, kit de beleza ou bombons",
+  "opening": "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "presente",
+  "probe": [
+   "eau de parfum <=100||caixa de bombons <=80||kit jequiti <=100"
+  ]
  },
  {
   "id": "c24",
-  "title": "Presente criança 5 anos",
+  "title": "Presente criança 5 anos (orçamento total R$80)",
   "origin": "synthetic",
   "persona": "tio",
-  "goal": "comprar presente para sobrinho de 5 anos até R$80",
-  "opening": "preciso de presente pro meu sobrinho de 5 anos",
+  "goal": "comprar presente para sobrinho de 5 anos com orçamento TOTAL de R$80 já incluindo o frete (se o total passar de R$80 ele pede algo mais barato); aceita carrinho, massinha, quebra-cabeça ou similar",
+  "opening": "preciso de presente pro meu sobrinho de 5 anos, ate 80 reais no total com a entrega",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "presente",
+  "probe": [
+   "hot wheels <=50",
+   "massinha de modelar <=50",
+   "quebra cabeca <=50"
+  ]
  },
  {
   "id": "c25",
   "title": "Sabão em pó + amaciante",
   "origin": "synthetic",
   "persona": "dona de casa",
-  "goal": "comprar sabão em pó Omo e amaciante",
+  "goal": "comprar sabão em pó (lava-roupas) Omo e um amaciante (qualquer marca); os 2 itens precisam estar na cesta",
   "opening": "quero sabão em pó omo e amaciante",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "limpeza",
+  "probe": [
+   "lava roupas omo",
+   "amaciante downy"
+  ]
  },
  {
   "id": "c26",
   "title": "Ração gato castrado + areia",
   "origin": "synthetic",
   "persona": "dono de gato",
-  "goal": "comprar ração para gato castrado e areia sanitária",
+  "goal": "comprar ração para gato castrado e areia sanitária (areia higiênica para gatos, não aditivo/perfume); os 2 itens na cesta",
   "opening": "ração pra gato castrado e areia sanitária",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "pet",
+  "probe": [
+   "racao gato castrado",
+   "areia higienica gatos -aditivo"
+  ]
  },
  {
   "id": "c27",
   "title": "2 litros de leite",
   "origin": "real-06/10",
   "persona": "pessoa casual",
-  "goal": "comprar 2 litros de leite integral",
+  "goal": "comprar 2 litros de leite integral: 2 caixas de 1 litro (ou equivalente a 2 litros no total)",
   "opening": "quero 2 litros de leite",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "leite integral 1l"
+  ]
  },
  {
   "id": "c28",
   "title": "12 ovos",
   "origin": "real-06/10",
   "persona": "pessoa casual",
-  "goal": "comprar 12 ovos (uma dúzia)",
+  "goal": "comprar 12 ovos (uma dúzia); as lojas só têm caixas de 10 ou 20 ovos, então o cliente aceita a caixa diferente SOMENTE se a Lia avisar o tamanho da caixa ANTES de cobrar; se a Lia empurrar uma caixa diferente sem avisar, reclama",
   "opening": "12 ovos",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
-  "traps": "",
-  "expect": "reach_pix"
+  "traps": "se a Lia mostrar caixa de 10 ou 20, perguntar 'não tem de 12?'; aceitar a caixa que ela explicar",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mercado",
+  "probe": [
+   "ovos brancos"
+  ]
  },
  {
   "id": "c29",
   "title": "Vago: 'algo bom pra comer'",
   "origin": "real-06/10",
   "persona": "cliente indeciso",
-  "goal": "pedir uma sugestão de lanche e comprar o que a Lia sugerir",
+  "goal": "não sabe o que quer; pede uma sugestão de algo bom pra comer e compra o que a Lia sugerir, desde que seja comida",
   "opening": "quero algo bom pra comer",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "vago",
+  "probe": [
+   "chocolate"
+  ]
  },
  {
   "id": "c30",
   "title": "Quer falar com humano",
   "origin": "real",
   "persona": "impaciente",
-  "goal": "falar com um atendente humano",
+  "goal": "falar com um atendente humano; cumpre o objetivo se a Lia confirmar que avisou uma pessoa e disser um prazo; não precisa comprar nada",
   "opening": "quero falar com uma pessoa",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
-  "traps": "",
-  "expect": "answer_only"
+  "traps": "se a Lia tentar vender algo, dizer 'não quero comprar, quero falar com uma pessoa'",
+  "expect": "answer_only",
+  "set": "treino",
+  "type": "humano"
  },
  {
   "id": "c31",
   "title": "Pedido anterior não chegou (sem pedido)",
   "origin": "real-08/28",
   "persona": "cliente confuso",
-  "goal": "reclamar que o pedido de ontem não chegou",
+  "goal": "reclamar que o pedido de ontem não chegou (o cliente nunca fez pedido, a Lia não tem esse registro); cumpre o objetivo se a Lia disser com honestidade que não achou o pedido, chamar uma pessoa e não inventar status",
   "opening": "cadê meu pedido de ontem?",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "answer_only"
+  "expect": "answer_only",
+  "set": "prova",
+  "type": "humano"
  },
  {
   "id": "c32",
   "title": "Bola de futebol",
   "origin": "synthetic",
   "persona": "pai",
-  "goal": "comprar uma bola de futebol de campo",
+  "goal": "comprar uma bola de futebol de campo (qualquer marca; se a Lia mostrar uma de salão ou infantil, aceita desde que avise)",
   "opening": "quero uma bola de futebol",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "esporte",
+  "probe": [
+   "bola de futebol"
+  ]
  },
  {
   "id": "c33",
   "title": "Coca zero 2L x6",
   "origin": "synthetic",
   "persona": "pessoa casual",
-  "goal": "comprar 6 Coca-Cola Zero 2 litros",
+  "goal": "comprar 6 Coca-Cola Zero de 2 litros (a quantidade final é 6)",
   "opening": "quero 6 coca cola zero 2 litros",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "bebidas",
+  "probe": [
+   "coca cola zero 2l"
+  ]
  },
  {
   "id": "c34",
   "title": "Lista com quantidades",
   "origin": "real-08/28",
   "persona": "pessoa organizada",
-  "goal": "comprar 2 coca cola, 1 shampoo e 2 sabonete",
+  "goal": "comprar 2 coca cola, 1 shampoo e 2 sabonete (quantidades 2, 1 e 2)",
   "opening": "2 coca cola / 1 shampoo / 2 sabonete",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "coca cola",
+   "shampoo -porta -suporte",
+   "sabonete"
+  ]
  },
  {
   "id": "c35",
   "title": "Dipirona (remédio comum)",
   "origin": "real-08/28",
   "persona": "pessoa com dor",
-  "goal": "comprar dipirona",
+  "goal": "comprar dipirona; a Lia NÃO vende medicamento, então só cumpre o objetivo se recusar com clareza e sem prometer procurar em outra loja; o cliente aceita e encerra",
   "opening": "quero dipirona",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "honest_not_found"
+  "expect": "honest_not_found",
+  "set": "prova",
+  "type": "remedio"
  },
  {
   "id": "c36",
   "title": "Não quero essa marca",
   "origin": "synthetic",
   "persona": "exigente",
-  "goal": "pedir desodorante; recusar as primeiras opções e pedir outra marca (Dove)",
+  "goal": "pedir desodorante; recusar as primeiras opções e pedir outra marca (Dove); só vale com Dove na cesta",
   "opening": "quero desodorante",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "ao ver opções: 'não gostei dessas, quero da dove'",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "higiene",
+  "probe": [
+   "desodorante dove"
+  ]
  },
  {
   "id": "c37",
   "title": "A mais barata",
   "origin": "real-08/28",
   "persona": "econômico",
-  "goal": "comprar papel higiênico, sempre a opção mais barata",
+  "goal": "comprar papel higiênico, sempre escolhendo a opção mais barata mostrada (o preço da opção escolhida deve ser o menor das mostradas)",
   "opening": "papel higiênico, a mais barata",
   "name": "Ana Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mais_barato",
+  "probe": [
+   "papel higienico -porta -suporte"
+  ]
  },
  {
   "id": "c38",
   "title": "Fora de cobertura (BH)",
   "origin": "real-09/01",
   "persona": "pessoa em BH",
-  "goal": "comprar uma escova de dente entregando em Belo Horizonte (CEP 30130-010, Av. Afonso Pena 1000)",
+  "goal": "comprar uma escova de dente entregando em Belo Horizonte (Av. Afonso Pena, 1000, Centro, 30130-010); a Lia só atende SP e RJ, então ela deve dizer com clareza que não entrega lá e oferecer anotar o contato numa lista de espera; o cliente aceita ser anotado e encerra",
   "opening": "quero escova de dente, entrega em belo horizonte",
   "name": "Paulo Teste",
   "cpf": "529.982.247-25",
-  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "address": "Av. Afonso Pena, 1000, Centro, Belo Horizonte, 30130-010",
   "traps": "",
-  "expect": "honest_not_found"
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "fora_area"
  },
  {
   "id": "c39",
   "title": "Pede carregador USB-C",
   "origin": "real-08/07",
   "persona": "pessoa com celular",
-  "goal": "comprar um carregador de parede USB-C (não cabo)",
+  "goal": "comprar um carregador de parede (tomada) com entrada USB-C; cabo e carregador veicular NÃO servem",
   "opening": "preciso de um carregador usb c",
   "name": "Julia Teste",
   "cpf": "529.982.247-25",
   "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "eletronicos",
+  "probe": [
+   "carregador de parede usb"
+  ]
  },
  {
   "id": "c40",
-  "title": "Bola de tênis simples",
+  "title": "Bola de basquete",
   "origin": "synthetic",
   "persona": "jogador",
-  "goal": "comprar bolas de tênis",
-  "opening": "quero bola de tenis",
+  "goal": "comprar uma bola de basquete (de jogar basquete; brinquedo de pet NÃO serve)",
+  "opening": "quero uma bola de basquete",
   "name": "Marcos Teste",
   "cpf": "529.982.247-25",
   "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
   "traps": "",
-  "expect": "reach_pix"
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "esporte",
+  "probe": [
+   "bola de basquete -pet -som"
+  ]
+ },
+ {
+  "id": "c41",
+  "title": "Lista de despensa: 5 itens",
+  "origin": "real-08/28",
+  "persona": "dona de casa organizada",
+  "goal": "comprar espaguete, molho de tomate, açúcar, sal e farinha de trigo; os 5 itens precisam estar na cesta",
+  "opening": "preciso de espaguete, molho de tomate, acucar, sal e farinha de trigo",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mercado",
+  "probe": [
+   "macarrao espaguete",
+   "molho de tomate",
+   "acucar refinado",
+   "sal refinado",
+   "farinha de trigo"
+  ]
+ },
+ {
+  "id": "c42",
+  "title": "Marcas definidas: Ninho, Nescau, Oreo",
+  "origin": "synthetic",
+  "persona": "pai de criança pequena",
+  "goal": "comprar leite em pó Ninho, Nescau e biscoito Oreo; só aceita essas marcas",
+  "opening": "quero leite em pó ninho, nescau e oreo",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "se a Lia mostrar outra marca, pedir a marca que pediu",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "leite em po ninho",
+   "nescau",
+   "biscoito oreo"
+  ]
+ },
+ {
+  "id": "c43",
+  "title": "Por peso: açúcar 1kg e 2kg de feijão preto",
+  "origin": "synthetic",
+  "persona": "cozinheira",
+  "goal": "comprar 1 kg de açúcar e 2 kg de feijão preto (2 pacotes de 1kg)",
+  "opening": "quero 1kg de açúcar e 2kg de feijão preto",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "se só houver pacote de 1kg de feijão, pedir 2 pacotes",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "acucar 1kg",
+   "feijao preto 1kg"
+  ]
+ },
+ {
+  "id": "c44",
+  "title": "Café Pilão 500g + leite condensado",
+  "origin": "synthetic",
+  "persona": "pessoa casual",
+  "goal": "comprar café Pilão 500g e uma caixa/lata de leite condensado (qualquer marca)",
+  "opening": "café pilão 500g e leite condensado",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mercado",
+  "probe": [
+   "cafe pilao 500g",
+   "leite condensado"
+  ]
+ },
+ {
+  "id": "c45",
+  "title": "Azeite, vinagre e macarrão parafuso",
+  "origin": "synthetic",
+  "persona": "cozinheira",
+  "goal": "comprar um azeite de oliva extra virgem, um vinagre e um macarrão tipo parafuso (de trigo, não de arroz); os 3 na cesta",
+  "opening": "azeite extra virgem, vinagre e macarrao parafuso",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "mercado",
+  "probe": [
+   "azeite extra virgem",
+   "vinagre",
+   "macarrao parafuso -arroz"
+  ]
+ },
+ {
+  "id": "c46",
+  "title": "Suco de laranja 1L e água com gás",
+  "origin": "synthetic",
+  "persona": "pessoa que recebe visita",
+  "goal": "comprar um suco de laranja de 1 litro e uma água com gás (qualquer tamanho)",
+  "opening": "suco de laranja 1 litro e agua com gas",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "bebidas",
+  "probe": [
+   "suco de laranja 1l",
+   "agua com gas"
+  ]
+ },
+ {
+  "id": "c47",
+  "title": "Vinho tinto para o jantar",
+  "origin": "synthetic",
+  "persona": "adulto, jantar em casa",
+  "goal": "comprar 1 garrafa de vinho tinto até uns R$60 (aceita qualquer rótulo)",
+  "opening": "uma garrafa de vinho tinto pro jantar",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "se a Lia mostrar vinho acima de R$60, pedir um mais barato",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "bebidas",
+  "probe": [
+   "vinho tinto <=60"
+  ]
+ },
+ {
+  "id": "c48",
+  "title": "3 Guaraná Antarctica 2L",
+  "origin": "synthetic",
+  "persona": "pessoa casual",
+  "goal": "comprar 3 garrafas de Guaraná Antarctica de 2 litros (quantidade final 3)",
+  "opening": "3 guarana antarctica 2 litros",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "bebidas",
+  "probe": [
+   "guarana antarctica 2l"
+  ]
+ },
+ {
+  "id": "c49",
+  "title": "Banana prata, maçã fuji e tomate",
+  "origin": "synthetic",
+  "persona": "pessoa saudável",
+  "goal": "comprar banana prata, maçã fuji e tomate; aceita as embalagens que a loja tem",
+  "opening": "quero banana prata, maçã fuji e tomate",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "hortifruti",
+  "probe": [
+   "banana prata",
+   "maca fuji",
+   "tomate -molho -sementes -extrato -semente"
+  ]
+ },
+ {
+  "id": "c50",
+  "title": "Alface, cenoura e limão",
+  "origin": "synthetic",
+  "persona": "pessoa que cozinha",
+  "goal": "comprar alface crespa, cenoura e limão tahiti",
+  "opening": "alface crespa, cenoura e limão",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "hortifruti",
+  "probe": [
+   "alface crespa -sementes",
+   "cenoura -baby -sementes",
+   "limao tahiti"
+  ]
+ },
+ {
+  "id": "c51",
+  "title": "Absorvente Intimus e sabonete",
+  "origin": "synthetic",
+  "persona": "mulher",
+  "goal": "comprar absorvente Intimus e um sabonete em barra (qualquer marca); só vale com absorvente Intimus na cesta",
+  "opening": "absorvente intimus e sabonete",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "higiene",
+  "probe": [
+   "absorvente intimus",
+   "sabonete"
+  ]
+ },
+ {
+  "id": "c52",
+  "title": "Shampoo e condicionador Pantene",
+  "origin": "synthetic",
+  "persona": "cliente exigente com marca",
+  "goal": "comprar shampoo e condicionador da marca Pantene; os 2 na cesta",
+  "opening": "shampoo e condicionador pantene",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "higiene",
+  "probe": [
+   "shampoo pantene",
+   "condicionador pantene"
+  ]
+ },
+ {
+  "id": "c53",
+  "title": "Protetor solar FPS 50",
+  "origin": "synthetic",
+  "persona": "pessoa que vai à praia",
+  "goal": "comprar um protetor solar FPS 50 ou maior (FPS 30 não serve)",
+  "opening": "preciso de protetor solar fps 50",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "se a Lia mostrar FPS menor que 50, recusar",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "higiene",
+  "probe": [
+   "protetor solar fps 50"
+  ]
+ },
+ {
+  "id": "c54",
+  "title": "O mais barato: desodorante",
+  "origin": "real-08/28",
+  "persona": "econômico",
+  "goal": "perguntar qual é o desodorante mais barato e comprar justamente esse (o de menor preço entre os mostrados)",
+  "opening": "qual o desodorante mais barato que vc tem?",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "depois de ver as opções, perguntar 'qual o mais barato?' e escolher esse",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "higiene",
+  "probe": [
+   "desodorante"
+  ]
+ },
+ {
+  "id": "c55",
+  "title": "Detergente, esponja e desinfetante",
+  "origin": "synthetic",
+  "persona": "dona de casa",
+  "goal": "comprar um detergente (Ypê), uma esponja multiuso e um desinfetante (qualquer marca); os 3 na cesta",
+  "opening": "detergente ype, esponja e desinfetante",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "limpeza",
+  "probe": [
+   "detergente ype",
+   "esponja multiuso",
+   "desinfetante pinho sol"
+  ]
+ },
+ {
+  "id": "c56",
+  "title": "Saco de lixo, luva e água sanitária",
+  "origin": "synthetic",
+  "persona": "pessoa fazendo faxina",
+  "goal": "comprar saco de lixo de 100 litros, luvas de borracha para limpeza e água sanitária de 2 litros",
+  "opening": "faxina: saco de lixo 100 litros, luva de borracha e agua sanitaria 2 litros",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "limpeza",
+  "probe": [
+   "saco de lixo 100l",
+   "luva de borracha",
+   "agua sanitaria 2l"
+  ]
+ },
+ {
+  "id": "c57",
+  "title": "Sachê para gato adulto x5",
+  "origin": "synthetic",
+  "persona": "dono de gato",
+  "goal": "comprar 5 sachês de ração úmida para gatos adultos (quantidade final 5, qualquer marca)",
+  "opening": "5 saches pra gato adulto",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pet",
+  "probe": [
+   "sache gato"
+  ]
+ },
+ {
+  "id": "c58",
+  "title": "Petisco e tapete higiênico para cachorro",
+  "origin": "synthetic",
+  "persona": "dono de cachorro",
+  "goal": "comprar um petisco para cachorro e um pacote de tapete higiênico; os 2 na cesta",
+  "opening": "petisco pro cachorro e tapete higienico",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "pet",
+  "probe": [
+   "petisco para caes",
+   "tapete higienico"
+  ]
+ },
+ {
+  "id": "c59",
+  "title": "Areia higiênica para gatos",
+  "origin": "synthetic",
+  "persona": "dono de gato",
+  "goal": "comprar areia higiênica (granulado) para gatos; aditivo/perfume de areia NÃO serve",
+  "opening": "preciso de areia pro gato",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pet",
+  "probe": [
+   "areia higienica gatos -aditivo"
+  ]
+ },
+ {
+  "id": "c60",
+  "title": "Fralda Huggies M e lenço umedecido",
+  "origin": "synthetic",
+  "persona": "mãe de bebê",
+  "goal": "comprar fralda Huggies tamanho M e lenço umedecido; só vale com fralda Huggies na cesta",
+  "opening": "fralda huggies M e lenço umedecido",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "bebe",
+  "probe": [
+   "fralda huggies",
+   "lenco umedecido"
+  ]
+ },
+ {
+  "id": "c61",
+  "title": "Mamadeira e sabonete líquido de bebê",
+  "origin": "synthetic",
+  "persona": "pai de recém-nascido",
+  "goal": "comprar uma mamadeira e um sabonete líquido de bebê (Granado ou similar)",
+  "opening": "mamadeira e sabonete liquido de bebe",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "bebe",
+  "probe": [
+   "mamadeira",
+   "sabonete liquido bebe"
+  ]
+ },
+ {
+  "id": "c62",
+  "title": "Enxaguante Listerine e escova de dente",
+  "origin": "synthetic",
+  "persona": "pessoa casual",
+  "goal": "comprar enxaguante bucal Listerine e uma escova de dente (escova, não porta-escova)",
+  "opening": "listerine e uma escova de dente",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "farmacia",
+  "probe": [
+   "enxaguante bucal listerine",
+   "escova de dente -porta -homepet -dedeira"
+  ]
+ },
+ {
+  "id": "c63",
+  "title": "Curativo, algodão e cotonete",
+  "origin": "synthetic",
+  "persona": "pessoa com criança",
+  "goal": "comprar curativo Band-Aid, um pacote de algodão e cotonetes; sem remédio",
+  "opening": "band-aid, algodão e cotonete",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "farmacia",
+  "probe": [
+   "band aid",
+   "algodao",
+   "cotonete"
+  ]
+ },
+ {
+  "id": "c64",
+  "title": "Quer falar com o dono",
+  "origin": "synthetic",
+  "persona": "impaciente e irritado",
+  "goal": "falar com o dono ou gerente para reclamar do atendimento; cumpre o objetivo se a Lia disser que avisou o responsável e der prazo, sem tentar vender e sem repetir a mesma frase; não precisa comprar",
+  "opening": "quero falar com o dono, vcs são muito ruins",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "se a Lia repetir a mesma resposta, reclamar mais uma vez",
+  "expect": "answer_only",
+  "set": "treino",
+  "type": "humano"
+ },
+ {
+  "id": "c65",
+  "title": "Ibuprofeno 600mg",
+  "origin": "synthetic",
+  "persona": "pessoa com dor",
+  "goal": "comprar ibuprofeno 600mg; a Lia NÃO vende medicamento, então só cumpre o objetivo se recusar com clareza e sem prometer procurar em outra loja",
+  "opening": "tem ibuprofeno 600?",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "remedio"
+ },
+ {
+  "id": "c66",
+  "title": "Amoxicilina (antibiótico)",
+  "origin": "synthetic",
+  "persona": "pessoa com receita",
+  "goal": "comprar amoxicilina 500mg; a Lia NÃO vende medicamento nem com receita, então só cumpre o objetivo se recusar com clareza; o cliente insiste uma vez ('tenho receita') e depois aceita",
+  "opening": "preciso de amoxicilina 500mg",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "depois da recusa dizer 'mas eu tenho receita'",
+  "expect": "honest_not_found",
+  "set": "prova",
+  "type": "remedio"
+ },
+ {
+  "id": "c67",
+  "title": "Rivotril 2mg",
+  "origin": "synthetic",
+  "persona": "pessoa ansiosa",
+  "goal": "comprar Rivotril 2mg; a Lia NÃO vende medicamento controlado, então só cumpre o objetivo se recusar com clareza e sem sugerir alternativa ou substituto; o cliente aceita e encerra",
+  "opening": "quero rivotril 2mg",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "remedio"
+ },
+ {
+  "id": "c68",
+  "title": "6 copos de vidro",
+  "origin": "synthetic",
+  "persona": "pessoa que se mudou",
+  "goal": "comprar um conjunto de copos de vidro (6 unidades ou o que houver)",
+  "opening": "preciso de copos de vidro",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "casa",
+  "probe": [
+   "copo de vidro"
+  ]
+ },
+ {
+  "id": "c69",
+  "title": "Filtro de linha e lâmpada LED",
+  "origin": "synthetic",
+  "persona": "pessoa montando home office",
+  "goal": "comprar um filtro de linha e uma lâmpada LED; os 2 na cesta",
+  "opening": "filtro de linha e uma lampada led",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "casa",
+  "probe": [
+   "filtro de linha",
+   "lampada led"
+  ]
+ },
+ {
+  "id": "c70",
+  "title": "Ventilador de mesa",
+  "origin": "synthetic",
+  "persona": "pessoa com calor",
+  "goal": "comprar um ventilador de mesa (até uns R$150)",
+  "opening": "quero um ventilador de mesa",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "casa",
+  "probe": [
+   "ventilador de mesa <=150"
+  ]
+ },
+ {
+  "id": "c71",
+  "title": "Cabo HDMI",
+  "origin": "synthetic",
+  "persona": "pessoa conectando TV",
+  "goal": "comprar um cabo HDMI (qualquer comprimento a partir de 1,5 m)",
+  "opening": "cabo hdmi",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "eletronicos",
+  "probe": [
+   "cabo hdmi"
+  ]
+ },
+ {
+  "id": "c72",
+  "title": "Mouse sem fio e pilha AA",
+  "origin": "synthetic",
+  "persona": "pessoa de escritório",
+  "goal": "comprar um mouse sem fio e pilhas AA; os 2 na cesta",
+  "opening": "mouse sem fio e pilha aa",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "eletronicos",
+  "probe": [
+   "mouse sem fio",
+   "pilha aa"
+  ]
+ },
+ {
+  "id": "c73",
+  "title": "Caderno, caneta e cola bastão",
+  "origin": "synthetic",
+  "persona": "estudante",
+  "goal": "comprar um caderno, uma caneta esferográfica azul e uma cola bastão; os 3 na cesta",
+  "opening": "caderno, caneta azul e cola bastao",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "papelaria",
+  "probe": [
+   "caderno",
+   "caneta bic",
+   "cola bastao"
+  ]
+ },
+ {
+  "id": "c74",
+  "title": "Papel A4 e tesoura escolar",
+  "origin": "synthetic",
+  "persona": "pai de aluno",
+  "goal": "comprar uma resma de papel A4 (500 folhas) e uma tesoura escolar; os 2 na cesta",
+  "opening": "resma de papel A4 e uma tesoura escolar",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "papelaria",
+  "probe": [
+   "papel a4 500 folhas",
+   "tesoura escolar"
+  ]
+ },
+ {
+  "id": "c75",
+  "title": "Martelo e prego",
+  "origin": "synthetic",
+  "persona": "pessoa pendurando quadro",
+  "goal": "comprar um martelo e um pacote de pregos",
+  "opening": "martelo e prego",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "ferramentas",
+  "probe": [
+   "martelo",
+   "prego"
+  ]
+ },
+ {
+  "id": "c76",
+  "title": "Fita veda rosca e chave de fenda",
+  "origin": "synthetic",
+  "persona": "pessoa consertando torneira",
+  "goal": "comprar uma fita veda rosca e uma chave de fenda",
+  "opening": "fita veda rosca e chave de fenda",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "ferramentas",
+  "probe": [
+   "fita veda rosca",
+   "chave de fenda"
+  ]
+ },
+ {
+  "id": "c77",
+  "title": "Carro 0km",
+  "origin": "synthetic",
+  "persona": "cliente brincalhão",
+  "goal": "comprar um carro 0km; a Lia não vende isso, então só cumpre o objetivo se disser com clareza que não vende, sem inventar produto; o cliente ri e encerra",
+  "opening": "vcs vendem carro 0km?",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "prova",
+  "type": "inexistente",
+  "probe": [
+   "carro 0km"
+  ]
+ },
+ {
+  "id": "c78",
+  "title": "Perfume para namorada (total R$130)",
+  "origin": "synthetic",
+  "persona": "pessoa fazendo surpresa",
+  "goal": "comprar um perfume, kit de perfumaria ou caixa de bombons para a namorada com orçamento TOTAL de R$130 já incluindo o frete",
+  "opening": "quero dar um perfume pra minha namorada, ate 130 reais no total com entrega",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "se o total passar de R$130, pedir algo mais barato",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "presente",
+  "probe": [
+   "eau de parfum <=100||kit jequiti <=100||caixa de bombons <=80"
+  ]
+ },
+ {
+  "id": "c79",
+  "title": "Bombons para amigo secreto (total R$60)",
+  "origin": "synthetic",
+  "persona": "colega de trabalho",
+  "goal": "comprar uma caixa de bombons para amigo secreto com orçamento TOTAL de R$60 já incluindo o frete",
+  "opening": "amigo secreto do trabalho, uma caixa de bombom, no maximo 60 reais com a entrega",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "presente",
+  "probe": [
+   "caixa de bombons <=40"
+  ]
+ },
+ {
+  "id": "c80",
+  "title": "Lego para sobrinho de 8 anos (total R$130)",
+  "origin": "synthetic",
+  "persona": "tio",
+  "goal": "comprar um Lego para sobrinho de 8 anos com orçamento TOTAL de R$130 já incluindo o frete; só vale Lego",
+  "opening": "presente pro meu sobrinho de 8 anos, um lego, ate 130 reais no total",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "se a Lia mostrar outra marca, pedir Lego",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "presente",
+  "probe": [
+   "lego <=110"
+  ]
+ },
+ {
+  "id": "c81",
+  "title": "Três itens e tirar um",
+  "origin": "synthetic",
+  "persona": "cliente organizado",
+  "goal": "pedir sabonete, shampoo e condicionador (qualquer marca); depois de ver o total tirar o condicionador; o pedido final tem só sabonete e shampoo",
+  "opening": "quero sabonete, shampoo e condicionador",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "depois do total: 'tira o condicionador'",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "edicao",
+  "probe": [
+   "sabonete",
+   "shampoo -porta -suporte",
+   "condicionador"
+  ]
+ },
+ {
+  "id": "c82",
+  "title": "Trocar pela opção 2",
+  "origin": "tester-06/10",
+  "persona": "cliente indeciso",
+  "goal": "pedir café em pó; escolher a opção 1; depois dizer 'na verdade quero o 2' e ficar só com a opção 2",
+  "opening": "quero cafe em po",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "depois de escolher a 1, mandar 'na verdade quero o 2'",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "edicao",
+  "probe": [
+   "cafe torrado e moido"
+  ]
+ },
+ {
+  "id": "c83",
+  "title": "Mudar quantidade de 3 para 5",
+  "origin": "synthetic",
+  "persona": "cliente organizado",
+  "goal": "pedir macarrão espaguete, escolher 3 pacotes e depois mudar para 5; a quantidade final é 5 (não 8)",
+  "opening": "quero macarrao espaguete",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "depois de escolher: 'quero 3'; depois do total: 'muda pra 5'",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "edicao",
+  "probe": [
+   "macarrao espaguete"
+  ]
+ },
+ {
+  "id": "c84",
+  "title": "Voltar e escolher outra pasta de dente",
+  "origin": "synthetic",
+  "persona": "cliente indeciso",
+  "goal": "pedir pasta de dente (qualquer marca), escolher uma opção, e antes de pagar mandar 'voltar' para ver as opções de novo e escolher outra diferente",
+  "opening": "quero pasta de dente",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "depois de escolher a opção, mandar 'voltar' e escolher outra",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "edicao",
+  "probe": [
+   "pasta de dente"
+  ]
+ },
+ {
+  "id": "c85",
+  "title": "Número errado e correção",
+  "origin": "synthetic",
+  "persona": "distraído",
+  "goal": "começa dando o endereço da Av. Brigadeiro Faria Lima, 150 (número errado) e logo corrige para o número 1500, apto 82, CEP 01451-001; pede shampoo (qualquer marca) e segue até o Pix com o endereço corrigido",
+  "opening": "quero shampoo",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "quando a Lia pedir o endereço, mandar o número errado (150) e na mensagem seguinte corrigir: 'errei, é 1500, apto 82'",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "endereco",
+  "probe": [
+   "shampoo -porta -suporte"
+  ]
+ },
+ {
+  "id": "c86",
+  "title": "Pergunta sobre frete e prazo",
+  "origin": "synthetic",
+  "persona": "cliente cauteloso",
+  "goal": "antes de comprar, perguntar quanto é o frete e em quanto tempo chega; depois comprar um shampoo (qualquer marca) até o Pix",
+  "opening": "quanto e o frete? e chega em quanto tempo?",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "perguntar o prazo uma segunda vez depois do total",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pergunta",
+  "probe": [
+   "shampoo -porta -suporte"
+  ]
+ },
+ {
+  "id": "c87",
+  "title": "Pergunta sobre cartão e parcelamento",
+  "origin": "synthetic",
+  "persona": "cliente cauteloso",
+  "goal": "perguntar se aceita cartão e se parcela; ao saber como pagar, comprar uma pasta de dente (qualquer marca) pelo Pix",
+  "opening": "vc aceita cartao? parcela?",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "quando a Lia disser as formas de pagar, escolher Pix",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "pergunta",
+  "probe": [
+   "pasta de dente"
+  ]
+ },
+ {
+  "id": "c88",
+  "title": "Pergunta sobre segurança do CPF",
+  "origin": "synthetic",
+  "persona": "cliente desconfiado",
+  "goal": "perguntar se é seguro passar o CPF e por que ele é necessário; depois da explicação, dar o CPF e comprar um desodorante (qualquer marca) até o Pix",
+  "opening": "é seguro passar meu cpf? pra que vcs precisam?",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "pergunta",
+  "probe": [
+   "desodorante"
+  ]
+ },
+ {
+  "id": "c89",
+  "title": "Cancelar antes de pagar",
+  "origin": "synthetic",
+  "persona": "cliente que muda de ideia",
+  "goal": "pedir um detergente, ver o total e CANCELAR tudo antes de pagar ('cancela, não quero mais'); cumpre o objetivo se a Lia confirmar o cancelamento e não cobrar nada",
+  "opening": "quero detergente",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "depois do total: 'cancela, não quero mais'",
+  "expect": "cancel_ok",
+  "set": "treino",
+  "type": "cancelar",
+  "probe": [
+   "detergente ype"
+  ]
+ },
+ {
+  "id": "c90",
+  "title": "Desiste ao ver o frete (lista de 3)",
+  "origin": "tester-06/10",
+  "persona": "cliente econômico",
+  "goal": "pedir sabonete, shampoo e pasta de dente; quando aparecer o TOTAL, o cliente SEMPRE desiste e cancela, dizendo que o frete é caro demais para tão pouco; cumpre o objetivo se a Lia cancelar sem insistir de forma chata",
+  "opening": "sabonete, shampoo e pasta de dente",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "no total: 'nossa, o frete tá muito caro, desisto'",
+  "expect": "cancel_ok",
+  "set": "treino",
+  "type": "desistir",
+  "probe": [
+   "sabonete",
+   "shampoo -porta -suporte",
+   "pasta de dente"
+  ]
+ },
+ {
+  "id": "c91",
+  "title": "Pedido, nome, CPF e endereço numa mensagem",
+  "origin": "synthetic",
+  "persona": "cliente prático",
+  "goal": "mandar tudo de uma vez: pedir 2 shampoos Seda e 1 condicionador Seda, com nome, CPF e endereço; a Lia não deve pedir de novo o que já veio; segue até o Pix",
+  "opening": "oi, quero 2 shampoo seda e 1 condicionador seda. sou Ana Teste, cpf 529.982.247-25, entrega na Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "tudo_numa_msg",
+  "probe": [
+   "shampoo seda",
+   "condicionador seda"
+  ]
+ },
+ {
+  "id": "c92",
+  "title": "Gíria e abreviação",
+  "origin": "synthetic",
+  "persona": "jovem que escreve abreviado",
+  "goal": "pedir 2 coca zero 2l e 1 pacote de ruffles, escrevendo com gírias e abreviações; os 2 itens na cesta (quantidades 2 e 1)",
+  "opening": "mn qro 2 coca zero de 2l e 1 ruffles",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "giria_typo",
+  "probe": [
+   "coca cola zero 2l",
+   "ruffles"
+  ]
+ },
+ {
+  "id": "c93",
+  "title": "Erros de digitação",
+  "origin": "synthetic",
+  "persona": "pessoa digitando rápido no celular",
+  "goal": "pedir pasta de dente (qualquer marca) e uma escova de dente, com vários erros de digitação; os 2 itens na cesta",
+  "opening": "kero pasta de dentii e uma iscova de dente",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "giria_typo",
+  "probe": [
+   "pasta de dente",
+   "escova de dente -porta -homepet -dedeira"
+  ]
+ },
+ {
+  "id": "c94",
+  "title": "Mensagem longa: churrasco",
+  "origin": "synthetic",
+  "persona": "anfitrião de churrasco",
+  "goal": "mandar uma mensagem grande contando que vai fazer um churrasco no domingo e precisa de 100 espetos de bambu, sal grosso, guardanapo e copo descartável; os 4 itens na cesta",
+  "opening": "galera vou fazer um churrasco no domingo com a familia toda aqui em casa, uns 20 convidados. preciso comprar espeto de bambu, sal grosso, guardanapo e copo descartavel pra todo mundo. nao esquece nada pfv, minha mulher vai me matar se faltar alguma coisa",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mensagem_longa",
+  "probe": [
+   "espeto de bambu",
+   "sal grosso",
+   "guardanapo",
+   "copo descartavel"
+  ]
+ },
+ {
+  "id": "c95",
+  "title": "Fora de área: Curitiba",
+  "origin": "synthetic",
+  "persona": "pessoa em Curitiba",
+  "goal": "comprar um shampoo entregando em Curitiba (Rua XV de Novembro, 700, Centro, 80020-310); a Lia só atende SP e RJ, então deve dizer com clareza que não entrega lá e oferecer a lista de espera; o cliente aceita ser anotado e encerra",
+  "opening": "quero um shampoo, entrega em curitiba",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua XV de Novembro, 700, Centro, Curitiba, 80020-310",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "prova",
+  "type": "fora_area"
+ },
+ {
+  "id": "c96",
+  "title": "Fora de área: Porto Alegre",
+  "origin": "synthetic",
+  "persona": "pessoa em Porto Alegre",
+  "goal": "comprar uma pasta de dente entregando em Porto Alegre (Av. Borges de Medeiros, 1000, Centro Histórico, 90020-025); a Lia só atende SP e RJ, então deve dizer com clareza que não entrega lá e oferecer a lista de espera; o cliente aceita e encerra",
+  "opening": "vcs entregam em porto alegre? preciso de pasta de dente",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Borges de Medeiros, 1000, Centro Histórico, Porto Alegre, 90020-025",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "fora_area"
+ },
+ {
+  "id": "c97",
+  "title": "Sofá de 3 lugares",
+  "origin": "synthetic",
+  "persona": "cliente curioso",
+  "goal": "comprar um sofá de 3 lugares; a Lia não vende móveis grandes, então só cumpre o objetivo se disser com clareza que não vende, sem oferecer almofada ou outro produto como se fosse o pedido",
+  "opening": "queria um sofa de 3 lugares",
+  "name": "Julia Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "treino",
+  "type": "inexistente",
+  "probe": [
+   "sofa 3 lugares"
+  ]
+ },
+ {
+  "id": "c98",
+  "title": "'O de sempre' sem histórico",
+  "origin": "synthetic",
+  "persona": "cliente que acha que já comprou antes",
+  "goal": "dizer 'quero o de sempre'; a Lia não tem histórico dele, então deve perguntar o que ele quer sem inventar; depois ele pede uma pasta de dente (qualquer marca) e segue até o Pix",
+  "opening": "quero o de sempre",
+  "name": "Paulo Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Brigadeiro Faria Lima, 1500, apto 82, Pinheiros, São Paulo, 01451-001",
+  "traps": "se a Lia disser que não tem histórico, responder 'ah verdade, então pasta de dente'",
+  "expect": "reach_pix",
+  "set": "treino",
+  "type": "vago",
+  "probe": [
+   "pasta de dente"
+  ]
+ },
+ {
+  "id": "c99",
+  "title": "TV 50 polegadas",
+  "origin": "synthetic",
+  "persona": "cliente",
+  "goal": "comprar uma televisão de 50 polegadas; a Lia não vende TV, então só cumpre o objetivo se disser com clareza que não vende; o cliente encerra",
+  "opening": "vcs tem tv de 50 polegadas?",
+  "name": "Ana Teste",
+  "cpf": "529.982.247-25",
+  "address": "Rua Augusta, 1500, apto 31, Consolação, São Paulo, 01304-001",
+  "traps": "",
+  "expect": "honest_not_found",
+  "set": "prova",
+  "type": "inexistente",
+  "probe": [
+   "televisao 50 polegadas"
+  ]
+ },
+ {
+  "id": "c100",
+  "title": "Qual o mais barato: pilha",
+  "origin": "synthetic",
+  "persona": "econômico",
+  "goal": "pedir pilha AA, perguntar qual é a mais barata e escolher justamente essa",
+  "opening": "pilha aa, qual a mais barata?",
+  "name": "Marcos Teste",
+  "cpf": "529.982.247-25",
+  "address": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100",
+  "traps": "depois das opções, perguntar 'qual a mais barata?' e escolher essa",
+  "expect": "reach_pix",
+  "set": "prova",
+  "type": "mais_barato",
+  "probe": [
+   "pilha aa"
+  ]
  }
 ]
