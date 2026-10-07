@@ -1,3 +1,9 @@
+## 07/10/2026 (noite) — Tela de escolha da lista (WhatsApp Flow): pronta no main, desligada
+
+Resolvedor único de contagem de itens + Flow "Escolher minha lista" + faltantes por status + `/ops/faltantes`.
+Suíte completa 1083/1083 no worktree; focados 101/101 no main. Nada publicado: Flow não foi enviado à Meta,
+migration `SearchMiss` não aplicada, sem deploy. Falta o teste no celular do dono (ver PENDENCIAS).
+
 ## 07/10/2026 (tarde) — Meta 100%: fase 0 pronta e fases 1–3 no main
 
 Plano: `docs/plano-conversa-100.md`. Orquestração Opus 5.5 + implementadores Sonnet 5.5 em worktrees.

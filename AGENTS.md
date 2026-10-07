@@ -1,3 +1,21 @@
+## 07/10/2026 (noite) — Lista com 2+ itens vira tela de escolha (WhatsApp Flow), atrás de flag
+
+Decisão do dono: pedido com 2 ou mais itens responde com a tela "Escolher minha lista" (Flow `lista_lia_v1`,
+`src/lib/meta-setup.ts`), todos os itens numa tela, até 4 opções por item com miniatura (sharp, 96×96 base64),
+sugestão marcada e "Não quero este item". Plano: `/Users/joseph/.claude/plans/t-assim-a-outra-snug-scott.md`.
+- **Contagem de itens tem um dono só**: `src/lib/list-items.ts` (`resolveListItems`/`countDistinctItems`), com motivo
+  por item (`[list-split]`) e tabela-ouro `tests/list-items-golden.test.ts`. Regras: nome composto curado → 1;
+  cauda só de atributo herda o substantivo ("leite integral e desnatado" = 2 leites); marca no fim vale pros dois;
+  catálogo local decide o resto; na dúvida separa (no Flow, item a mais custa um toque). Não chamar
+  `parseBasketLines` direto para contar itens. Pendente: "arroz feijão" sem separador continua 1 item.
+- **Cesta pré-montada**: a sugestão já entra na cesta; Pagar funciona sem abrir a tela. "Mais perto" e item acima
+  do teto ficam sem pré-seleção. Resposta da tela só vale se o id e a cesta forem os mesmos do envio.
+- **Faltantes**: status único por item (achado / mais perto / não existe / sem entrega no CEP / proibido), mesma copy
+  na mensagem, na tela e no resumo. `ctx.listMisses[]` substitui `lastMiss` (espelhado para o `dialogue`).
+  Todo item faltante grava `SearchMiss` → `/ops/faltantes` (migration `20261007150000_search_miss`).
+- Lista com remédio isento NÃO usa a tela (regra Meta de 05/10: remédio em cards soltos). Mercado Livre fora.
+- Flags: `LIA_LIST_FLOW=true` liga; `LIA_FLOW_LIST_ID` força o id. Desligada = comportamento antigo.
+
 ## 07/10/2026 — Regras que o placar ensinou
 
 - Crédito da OpenAI zerado degrada a Lia sem erro visível (fallback sem IA mostra produto errado). Conferir

@@ -1,3 +1,15 @@
+## 07/10/2026 (noite) — Tela de escolha da lista
+
+- [ ] **Liberar a publicação do Flow** (`npx tsx scripts/list-flow-spike.mts --publish`; foi bloqueada pela permissão
+  automática por ser produção) e conferir `validation_errors` (Form + RadioButtonsGroup + `init-value` + `image`).
+- [ ] **Teste no celular do dono** (`--send <fone>`), Android e iOS: miniaturas aparecem? sugestão vem marcada?
+  Se `init-value` falhar: `LIST_FLOW_USE_INIT_VALUE=false` em `meta-setup.ts`.
+- [ ] **Aplicar a migration `20261007150000_search_miss`** antes do deploy (o registro de faltantes roda mesmo com a
+  flag desligada; sem a tabela ele só falha em silêncio).
+- [ ] Deploy + `LIA_LIST_FLOW=true` na Vercel só depois do teste no celular.
+- [ ] Bench com o cenário novo c101 "esquenta" e c07/c52/c92–c94.
+- [ ] "arroz feijão" (sem separador) continua 1 item.
+
 ## 07/10/2026 (noite) — Depois do placar
 
 - [ ] **`LIA_BUSINESS_INFO` na Vercel** (ex.: "Lia Delivery — CNPJ XX.XXX.XXX/0001-XX, responsável: <nome>"): cliente
