@@ -1,0 +1,743 @@
+{
+ "summary": {
+  "label": "r2c-dlg-on",
+  "at": "2026-10-07T18:55:01.318Z",
+  "scenarios": 6,
+  "judged": 6,
+  "simFailed": 0,
+  "goalReached": "33.3%",
+  "wrongProduct": "83.3%",
+  "falseClaim": "33.3%",
+  "deadEnd": "50.0%",
+  "confusing": "83.3%",
+  "slow": "33.3%",
+  "clean": "16.7%",
+  "highSeverityDefects": 23,
+  "repeat": 3,
+  "cleanAllRuns": "0.0%",
+  "goalAllRuns": "0.0%",
+  "porConjunto": {
+   "treino": {
+    "cenarios": 2,
+    "limpos": "0.0%",
+    "objetivo": "0.0%"
+   },
+   "prova": {
+    "cenarios": 0,
+    "limpos": "n/a",
+    "objetivo": "n/a"
+   }
+  },
+  "falhando": [
+   "c11",
+   "c20"
+  ]
+ },
+ "results": [
+  {
+   "id": "c11",
+   "rep": 2,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 20.442,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou que não encontrou o isqueiro maçarico/tocha solicitado. A resposta do turno 5 demorou 20,4 segundos.",
+    "defects": [],
+    "votes": "2/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 17.3
+    },
+    {
+     "who": "cliente",
+     "text": "Tenta procurar por isqueiro maçarico ou tocha, tem que ser chama tipo tocha pra charuto. Bic comum não serve."
+    },
+    {
+     "who": "lia",
+     "text": "*isqueiro maçarico para charuto chama tocha* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 20.4
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 0,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 26.359,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": true,
+    "summary": "Não cumpriu o objetivo de encerrar com uma resposta honesta de que não encontrou uma tocha. Mostrou isqueiros comuns e, após o cliente rejeitá-los e pedir outras opções, repetiu a mesma lista.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu isqueiros comuns (Bic e Cricket), que não atendem ao pedido de isqueiro estilo tocha para charuto.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "A resposta demorou 26,4 segundos.",
+      "severity": "low"
+     },
+     {
+      "turn": 5,
+      "what": "Ignorou a exigência explícita de estilo maçarico/tocha e o pedido para buscar outras opções: repetiu os mesmos isqueiros comuns já rejeitados.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Repetiu a lista rejeitada sem oferecer um caminho útil, deixando o pedido sem solução.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 26.4
+    },
+    {
+     "who": "cliente",
+     "text": "Nenhuma dessas, tem que ser estilo maçarico/tocha pra charuto. Busca outras."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro para charuto estilo macarico tocha*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 1,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 5,
+   "latencyMax": 14.424,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia afirmou que não encontrou uma tocha, mas continuou oferecendo isqueiros comuns, que o cliente já havia rejeitado. Não cumpriu honest_not_found.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu isqueiros comuns, embora o pedido fosse um isqueiro para charuto; esses produtos não atendem ao objetivo informado no cenário.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Após o cliente esclarecer que precisava de estilo tocha/maçarico, voltou a oferecer exatamente os isqueiros comuns que não servem.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Repetiu a oferta dos mesmos isqueiros comuns após o cliente reiterar que não serviam e perguntar por maçarico de butano tipo tocha.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.4
+    },
+    {
+     "who": "cliente",
+     "text": "Esses são comuns, preciso de um estilo tocha/maçarico. outras"
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro para charuto estilo tocha macarico*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13.1
+    },
+    {
+     "who": "cliente",
+     "text": "Tem algum maçarico de butano tipo tocha? Isqueiro comum não serve."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro para charuto macarico butano tipo tocha*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.1
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 1,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 9,
+   "latencyMax": 15.754,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A cesta não chegou ao Pix: só arroz e feijão foram confirmados. Não foi oferecido arroz de 5 kg até a terceira rodada, as opções de óleo não eram de soja e o café não foi apresentado. A afirmação de que os 4 itens foram encontrados não se confirma na conversa.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Disse que encontrou os 4 itens, mas apresentou arroz de 1 kg, contrariando o pacote de 5 kg pedido; também deixou o cliente sem saber que ainda faltavam itens.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, que não atende ao arroz de 5 kg pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Incluiu arroz de 1 kg entre as opções, embora o pedido fosse de 5 kg. A opção de 5 kg dessa mesma mensagem era adequada.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, não óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleo para bolos, de gergelim e de girassol; nenhum era óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleo de milho e de canola, não óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "A conversa terminou sem apresentar nem confirmar café em pó torrado e moído, sem concluir os quatro itens e sem chegar ao Pix.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "A mensagem diz que serão vistos arroz, feijão, óleo e “mais 1”, mas não identifica esse quarto item, embora o pedido incluísse café.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15.8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 5.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.9
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 0,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 11,
+   "latencyMax": 12.233,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": false,
+    "summary": "Não chegou ao Pix nem completou a cesta. O arroz de 5 kg e o feijão foram escolhidos, mas a Lia ofereceu óleos que não são de soja; após o pedido explícito por óleo de soja, repetiu alternativas incompatíveis. O café também não foi apresentado.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o objetivo fosse um pacote de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, que não corresponde ao arroz de 5 kg pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, que não é óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "As opções de óleo oferecidas (para bolos, gergelim e girassol) não correspondem ao óleo de soja pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleo de milho e de canola, em vez de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "Após o cliente especificar óleo de soja de outra marca, a Lia não atende à especificação e repete opções de milho e canola já apresentadas.",
+      "severity": "high"
+     },
+     {
+      "turn": 19,
+      "what": "A resposta repete alternativas incompatíveis sem oferecer um caminho para obter o óleo de soja; a conversa fica bloqueada antes de completar os itens restantes e chegar ao Pix.",
+      "severity": "medium"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 6.1
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.9
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.2
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *óleo* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 11.5
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja de outra marca?"
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *óleo soja marca*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 2,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 14.525,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": true,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Os quatro itens corretos foram adicionados à cesta e o fluxo chegou ao Pix. Porém, foram oferecidas opções que não atendiam aos atributos pedidos: arroz fora do pacote de 5 kg e óleos que não eram de soja. A Lia também afirmou que aquelas eram todas as opções de óleo e depois encontrou óleo de soja.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o pedido exigisse pacote de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, fora do tipo e do tamanho pedidos.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Ofereceu arroz de 1 kg, fora do tamanho pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleos para bolos, de gergelim e de girassol, em vez de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleos de milho e de canola, em vez de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 17,
+      "what": "Disse que aquelas eram todas as opções de óleo, mas após o cliente pedir outra busca apresentou opções de óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 3,
+      "what": "A mensagem diz que seguiria arroz, feijão, óleo e “mais 1”, formulação confusa para os quatro itens já listados.",
+      "severity": "low"
+     }
+    ],
+    "votes": "1/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.5
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 4.4
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.4
+    },
+    {
+     "who": "cliente",
+     "text": "2"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.6
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Essas são todas as opções de *óleo* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.",
+     "sec": 11.1
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja? Pode procurar mais uma vez?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 11.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 20h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygvql9003jtl239m1x070h-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  }
+ ]
+}

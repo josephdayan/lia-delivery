@@ -547,6 +547,11 @@ export function cheapestFirstHeader(query: string): string {
   return `Separei as mais baratas de *${query}*, da mais barata pra mais cara:`;
 }
 
+// Recusou as opções e pediu algo que ninguém tem: honesto, sem repetir o que ele dispensou.
+export function refineNoResultRejected(refined: string): string {
+  return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }
@@ -695,15 +700,17 @@ export function minimumOrder(input: {
 export function shippingSpeedChoice(
   barato: { total: number; estimate?: string },
   rapido: { total: number; estimate?: string },
-  kind: "ml" | "store" = "ml"
+  kind: "ml" | "store" = "ml",
+  budgetCap?: number
 ): string {
+  const over = (total: number) => (budgetCap != null && total > budgetCap + 0.005 ? ` · passa do seu limite de ${brl(budgetCap)}` : "");
   // ML: data do anúncio ("chega até sáb."). Loja: SLA dela ("prazo da loja: 60 min").
   const quando = (estimate?: string) =>
     estimate ? (kind === "store" ? estimate : `chega até ${estimate}`) : kind === "store" ? "sem prazo informado" : "sem data publicada";
   return [
     "Tem duas formas de entrega. Qual você prefere?",
-    `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}`,
-    `*2)* Mais rápida — total ${brl(rapido.total)} · ${quando(rapido.estimate)}`,
+    `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}${over(barato.total)}`,
+    `*2)* Mais rápida — total ${brl(rapido.total)} · ${quando(rapido.estimate)}${over(rapido.total)}`,
     "",
     "Toca no botão ou responde *1* ou *2*."
   ].join("\n");
@@ -1457,6 +1464,16 @@ export function overBudgetNone(cap: number, total: number, name: string, cheapes
   const over = Math.round((total - cap) * 100) / 100;
   const cheaper = cheapestTotal != null && cheapestTotal < total - 0.009 ? ` A mais barata que achei ficaria em torno de ${brl(cheapestTotal)}.` : "";
   return `Com a entrega o total ficou em *${brl(total)}* — passou do seu limite de *${brl(cap)}* por ${brl(over)}, e nenhuma das opções que achei cabe.${cheaper} Quer seguir com *${name}* assim mesmo? Responde *pode* — ou me diz outro produto ou um limite novo.`;
+}
+
+// Teto dito depois de já ter o item na cesta: a Lia confere no total e só então avisa se não cabe.
+export function budgetNoted(cap: number): string {
+  return `Anotado: *${brl(cap)}* no total, já com a entrega. Se passar eu te aviso e mostro o que cabe. Quer mais alguma coisa? Quando fechar, diz *"só isso"*.`;
+}
+
+// Opções que sobraram depois do teto dito com as opções na mesa.
+export function budgetNarrowedChoices(query: string, cap: number, total: boolean): string {
+  return total ? `Estas de *${query}* cabem em ${brl(cap)} com a entrega 👇` : `Estas de *${query}* saem por até ${brl(cap)} 👇`;
 }
 
 export function overBudgetDeclined(): string {

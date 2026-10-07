@@ -143,17 +143,68 @@ export type RerankResult = { lines: RerankLineResult[] };
 // contra os candidatos enviados: a IA nunca inventa produto.
 const RERANK_SYSTEM_PROMPT = (limit: number) =>
   `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item:
-1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
+1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. Leia a MENSAGEM inteira, não só o texto do item: uma marca ou atributo escrito no fim de 'A e B' vale para todos os itens que o aceitam ('shampoo e condicionador Pantene' → Pantene nos dois). A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
 2) Julgue CADA candidato com dois testes:
  TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
  EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
-3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
+3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; o tamanho/numeração padrão antes de miniatura, reduzido ou numeração infantil (bola nº 5 antes de nº 2 ou mini; garrafa padrão antes de miniatura); nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
 4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público (adulto/infantil), restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
 Se nenhum candidato serve, aprovados e proximos vazios: um operador cota o que faltar — vazio é melhor que sugestão errada. Use APENAS skus daquele item. Um resultado por item, na mesma ordem. Responda apenas JSON válido.`;
+
+// Chamada "coberta" (hedged request) para a cauda lenta da IA (rodada 2, 07/10): o rerank leva de 5 a 15 s
+// com o MESMO pedido, e o corte em 15 s jogava ~1 em cada 6 buscas no ranking sem IA — onde "óleo
+// lubrificante" aparecia para "óleo" e "mouse com fio" para "mouse sem fio". Dispara a 2ª chamada igual se a
+// 1ª passou de `hedgeMs` (ou falhou antes disso) e fica com a primeira que responder; `deadlineMs` encerra
+// as duas. Custo: uma chamada a mais só nos casos lentos.
+export async function hedged<T>(run: (signal: AbortSignal) => Promise<T | null>, opts: { hedgeMs: number; deadlineMs: number; max?: number }): Promise<T | null> {
+  const max = opts.max ?? 2;
+  const controllers: AbortController[] = [];
+  return new Promise<T | null>((resolve) => {
+    let launched = 0;
+    let settled = 0;
+    let done = false;
+    let hedgeTimer: ReturnType<typeof setTimeout> | undefined;
+    const finish = (value: T | null) => {
+      if (done) return;
+      done = true;
+      if (hedgeTimer) clearTimeout(hedgeTimer);
+      clearTimeout(deadlineTimer);
+      for (const controller of controllers) controller.abort();
+      resolve(value);
+    };
+    const deadlineTimer = setTimeout(() => finish(null), opts.deadlineMs);
+    const launch = () => {
+      if (done || launched >= max) return;
+      launched++;
+      const controller = new AbortController();
+      controllers.push(controller);
+      run(controller.signal)
+        .catch(() => null)
+        .then((value) => {
+          settled++;
+          if (value != null) return finish(value);
+          if (done) return;
+          if (launched < max) return launch(); // falhou cedo: tenta de novo na hora
+          if (settled >= launched) finish(null);
+        });
+      if (launched < max) hedgeTimer = setTimeout(launch, opts.hedgeMs);
+    };
+    launch();
+  });
+}
 
 async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
   if (!process.env.OPENAI_API_KEY || process.env.LIA_SEARCH_RERANK_OFF === "true") return null;
   if (!lines.length || lines.every((line) => !line.candidates.length)) return null;
+  const result = await hedged((signal) => rerankOnce(message, lines, limit, signal), {
+    hedgeMs: Number(process.env.LIA_SEARCH_RERANK_HEDGE_MS ?? 9000),
+    deadlineMs: Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 22000)
+  });
+  if (!result) console.warn("[ai:rerank:error]", "sem resposta utilizável da IA no prazo");
+  return result;
+}
+
+async function rerankOnce(message: string, lines: RerankLine[], limit: number, signal: AbortSignal): Promise<RerankResult | null> {
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -161,9 +212,8 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json"
       },
-      // O webhook do WhatsApp precisa responder; sem resposta em 6s, seguimos com o
-      // ranking determinístico em vez de deixar o cliente no vácuo.
-      signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 15000)),
+      // O webhook do WhatsApp precisa responder: o prazo total é o `deadlineMs` do hedged acima.
+      signal,
       body: JSON.stringify({
         model: liaTextModel(),
         ...liaReasoning(),
@@ -264,7 +314,8 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
       })
     };
   } catch (error) {
-    console.warn("[ai:rerank:error]", error);
+    // Chamada cancelada porque a outra (ou o prazo) já decidiu: não é falha.
+    if (!signal.aborted) console.warn("[ai:rerank:error]", error);
     return null;
   }
 }

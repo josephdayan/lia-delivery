@@ -212,6 +212,29 @@ function expandShoppingShorthand(text: string): string {
 const NOISE_SEGMENT_RE =
   /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad\w*|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|o que .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
 
+// ORÇAMENTO (rodada 2 de 07/10): as formas reais de dizer o teto — "até uns R$60", "cerca de 60", "por volta
+// de R$150", "no máximo 150", "tenho uns 120 reais", "R$120 no total com entrega". Uma só fonte para o
+// parser do teto (parsePriceCap/splitPriceCap) e para o segmento-modificador, pra nunca divergirem.
+// O teto vale para o TOTAL (produto + entrega): os marcadores "no total / com a entrega / com frete"
+// só confirmam isso e saem da frase de busca junto com o valor.
+const BUDGET_NUM = String.raw`(\d+(?:[.,]\d{1,2})?)`;
+const BUDGET_CUR = String.raw`(?:reais|real|conto|contos|pila|pilas|mangos?)`;
+const BUDGET_TOTAL_MARK = String.raw`(?:no total|total|de orcamento|(?:com )?frete (?:incluso|incluido)|entrega (?:inclusa|incluida)|com (?:a )?entrega|com (?:o )?frete|com tudo|incluindo (?:a |o )?(?:entrega|frete)|contando (?:a |o )?(?:entrega|frete)|mais (?:a |o )?(?:entrega|frete)|pra tudo|para tudo|ao todo|no maximo)`;
+const BUDGET_TRAIL = String.raw`(?:\s+${BUDGET_TOTAL_MARK})*`;
+const BUDGET_EACH = String.raw`(?:\s+(?:cada(?: uma?)?|por unidade|por item))?`;
+// "forte" = já diz que é limite; vale até sem a palavra "reais" (a partir de R$10).
+const BUDGET_STRONG_LEAD = String.raw`(?:no maximo|maximo|max|limite|teto|orcamento|cerca de|por volta de|em torno de|na faixa de|perto de|nao passa de|nao passar de|nao pode passar de|nao quero gastar mais de|gastar ate|gastar no maximo|dentro d[eo])`;
+// "fraca" = ambígua sozinha ("até 2", "uns 12 ovos"): só conta com dinheiro explícito.
+const BUDGET_WEAK_LEAD = String.raw`(?:ate|abaixo de|menos de|de uns|de umas|uns|umas|tenho|so tenho|posso gastar|gasto)`;
+const BUDGET_LINK = String.raw`(?:\s*(?:e|eh|sao|fica em|:)\s*)?(?:\s+de\s+)?`;
+const BUDGET_SEGMENT_SRC =
+  "(?:de |com |meu |o |que )?(?:" +
+  `(?:${BUDGET_STRONG_LEAD}|${BUDGET_WEAK_LEAD})${BUDGET_LINK}(?:\\s*(?:uns|umas|ate|cerca de))*\\s*(?:r\\$ ?${BUDGET_NUM}|${BUDGET_NUM} ?${BUDGET_CUR})` +
+  `|${BUDGET_STRONG_LEAD}${BUDGET_LINK}\\s*${BUDGET_NUM}` +
+  `|ate ${BUDGET_NUM}` +
+  `|(?:r\\$ ?${BUDGET_NUM}|${BUDGET_NUM} ?${BUDGET_CUR})(?:\\s+(?:${BUDGET_TOTAL_MARK}))+` +
+  `)${BUDGET_EACH}${BUDGET_TRAIL}`;
+
 // Restrição/complemento que NUNCA é produto (15 rodadas reais, 14/08): orçamento
 // ("até uns 100 reais"), preferência vazia ("qualquer marca", "de preferência o mais
 // barato"), condição ("se tiver") e urgência de entrega ("queria receber hoje se der").
@@ -221,8 +244,12 @@ const NOISE_SEGMENT_RE =
 const MODIFIER_SEGMENT_RE = new RegExp(
   "^(" +
     [
-      "(de )?(ate|abaixo de|menos de|no maximo|max(imo)?) ?(uns |umas )?(r\\$ ?)?\\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)?( cada( uma?)?| por unidade)?( no total| total| de orcamento| com a entrega| com (o )?frete| incluindo (o )?frete)*",
-      "(uns|umas) \\d+([.,]\\d{1,2})? ?(reais|real|conto|contos|pila|pilas)( cada( uma?)?| por unidade)?( no total| total| de orcamento| com a entrega| com (o )?frete| incluindo (o )?frete)*",
+      // ORÇAMENTO sozinho no segmento (todas as formas de dizer o teto — ver BUDGET_* acima).
+      BUDGET_SEGMENT_SRC,
+      // Ocasião do presente ("amigo secreto do trabalho", "pro amigo oculto da firma") descreve o pedido, não é item.
+      "(?:e |pra |para |p )?(?:o |um |do )?amigo (?:secreto|oculto)(?: (?:do|da|de|dos|das|no|na) [a-zà-ú ]+)?",
+      // "...mas com o frete" / "no total": só confirma que o teto é do TOTAL (vira ruído, nunca item).
+      `(?:mas |e |isso )?(?:no total|(?:com )?frete (?:incluso|incluido)|entrega (?:inclusa|incluida)|com (?:a )?entrega|com (?:o )?frete|incluindo (?:a |o )?(?:entrega|frete)|contando (?:a |o )?(?:entrega|frete)|ao todo)`,
       "(pode ser )?(de )?qualquer [a-z]+( uma?)?",
       "sem preferencia( de marca)?( nenhuma)?",
       "de preferencia .*",
@@ -388,7 +415,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   const parsedLines = source
@@ -435,7 +462,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
           ""
         )
         // vocativo ("minha filha, quero…", "amiga, me vê…", "lia,…") não é produto
-        .replace(/^((minha|meu)\s+(filha?|filho|querid[ao]|amor|anjo|bem)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|lia)[\s,!.]+/i, "")
+        .replace(/^((minha|meu)\s+(filha?|filho|querid[ao]|amor|anjo|bem)|querid[ao]|amig[ao](?!\s+(?:secret|oculto))|amigona|mo[cç][ao]|lia)[\s,!.]+/i, "")
         // "mais um refri"/"outro leite" é ADIÇÃO relativa: marca com sentinela antes de
         // limpar — só segmento aditivo pode se dobrar na linha anterior (28/08 S9).
         .replace(/^(e\s+)?(mais|outr[oa]s?)\s+/i, "\u0001")
@@ -681,6 +708,69 @@ function meaningfulProductTokens(phrase: string): string[] {
     .map((token) => PRODUCT_TOKEN_ALIASES[token] ?? token)
     .filter((token) => token.length >= 4 && !["para", "umas", "mais", "cada"].includes(token));
 }
+// "procura óleo de soja comum, qualquer marca" ao refinar uma escolha: "qualquer marca"/"comum" não são palavras do
+// produto — entravam na busca como termos e a Lia respondia "não achei óleo soja comum qualquer marca"
+// (rodada 2, c20). Tira só a preferência vazia; sobra sempre pelo menos uma palavra de produto.
+export function stripPreferenceFiller(text: string): string {
+  const cleaned = text
+    .replace(/[,;]?\s*\b(?:pode ser |de )?(?:qualquer|tanto faz a|tanto faz|sem prefer[eê]ncia de|sem prefer[eê]ncia) marca\b/gi, " ")
+    .replace(/[,;]?\s*\b(?:pode ser |serve )?qualquer um\b/gi, " ")
+    .replace(/\b(?:comum|normal)\b/gi, (m, offset: number, whole: string) => (whole.trim().split(/\s+/).length >= 4 ? " " : m))
+    .replace(/\s+([,.;!?])/g, "$1")
+    .replace(/[,;]\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const FILLER = new Set(["quero", "queria", "pode", "ser", "serve", "tem", "pra", "para", "uma", "uns", "mas", "entao", "procura", "procure", "busca", "tenta", "ver"]);
+  return cleaned.split(/\s+/).some((w) => w.length > 2 && !FILLER.has(w.toLowerCase().replace(/[^\p{L}]/gu, ""))) ? cleaned : text;
+}
+
+// "Pode tentar outro modelo de mouse?" logo depois do "não achei mouse sem fio" (rodada 2, c72): o pedido novo
+// é a MESMA procura, e "sem fio" continua valendo — sem herdar a exigência, a Lia mostrava mouse com fio sem
+// avisar. Devolve o texto com o trecho do produto trocado pela frase completa do que não foi achado; null =
+// não é continuação (o cliente já disse outro atributo, relaxou o pedido, ou nem falou do mesmo produto).
+export function inheritMissQualifiers(text: string, missQuery: string): string | null {
+  const miss = normalizeMsg(missQuery).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  if (miss.length < 2) return null;
+  const n = normalizeMsg(text);
+  if (/\b(qualquer|tanto faz|sem preferencia|pode ser (?:com|de|sem)|mesmo (?:com|sem)|serve)\b/.test(n)) return null;
+  // Só continua o pedido quando o cliente PEDE para tentar de novo/outro ("tenta outro modelo", "procura mais um").
+  if (!/\b(tent\w*|procur\w*|busc\w*|pesquis\w*|outr[oa]s?|novamente|de novo|mais um|mais uma)\b/.test(n)) return null;
+  const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const stem = (w: string) => (w.length >= 4 ? w.replace(/s$/, "") : w);
+  const missStems = miss.map(stem);
+  const textStems = words.map(stem);
+  // O texto já traz algum token que a frase perdida tinha, mas não os qualificadores: mouse × (sem fio).
+  const hitIdx = missStems.map((w, i) => (textStems.includes(w) ? i : -1)).filter((i) => i >= 0);
+  if (!hitIdx.length || hitIdx.length === miss.length) return null;
+  // Os tokens do produto têm que ser contíguos na frase perdida ("mouse", "tinta spray") e o resto, qualificador.
+  const first = hitIdx[0];
+  const last = hitIdx[hitIdx.length - 1];
+  if (last - first + 1 !== hitIdx.length) return null;
+  // Qualificador (sem fio, azul, 5kg) vem DEPOIS do produto ou antes ("pilha recarregável"); nenhum token dele
+  // pode estar no texto — se aparece, o cliente está falando do atributo (relaxando ou trocando).
+  const qualifiers = missStems.filter((_, i) => i < first || i > last);
+  if (qualifiers.some((q) => textStems.includes(q))) return null;
+  // O produto é o trecho contíguo do texto: troca esse trecho pela frase inteira.
+  const productWords = missStems.slice(first, last + 1);
+  const rawWords = text.split(/(\s+)/);
+  const norm = (w: string) => stem(normalizeMsg(w).replace(/[^a-z0-9]/g, ""));
+  for (let i = 0; i < rawWords.length; i++) {
+    if (!rawWords[i].trim() || norm(rawWords[i]) !== productWords[0]) continue;
+    let j = i;
+    let matched = 1;
+    while (matched < productWords.length) {
+      j += 1;
+      while (j < rawWords.length && !rawWords[j].trim()) j += 1;
+      if (j >= rawWords.length || norm(rawWords[j]) !== productWords[matched]) break;
+      matched += 1;
+    }
+    if (matched !== productWords.length) continue;
+    const trailing = rawWords[j].match(/[^\p{L}\p{N}]+$/u)?.[0] ?? "";
+    return `${rawWords.slice(0, i).join("")}${missQuery.trim()}${trailing}${rawWords.slice(j + 1).join("")}`.replace(/\s+/g, " ").trim();
+  }
+  return null;
+}
+
 export function sharesProductNoun(a: string, b: string): boolean {
   const aTokens = meaningfulProductTokens(a);
   const bTokens = new Set(meaningfulProductTokens(b));
@@ -1973,33 +2063,90 @@ function digitizeMoneyWords(n: string): string {
   );
 }
 
+// Procura o orçamento na frase (já normalizada, com números por extenso em dígitos). Devolve o valor
+// e o trecho [start, end) que o ocupa — valor + marcadores de total ("no total com entrega").
+const BUDGET_LEAD_RE = new RegExp(
+  String.raw`\b(?:de\s+)?(?<lead>${BUDGET_STRONG_LEAD}|${BUDGET_WEAK_LEAD})${BUDGET_LINK}(?:\s*(?:uns|umas|ate|cerca de))*\s*(?<rs>r\$\s*)?${BUDGET_NUM}(?:\s*(?<cur>${BUDGET_CUR}))?\b${BUDGET_EACH}${BUDGET_TRAIL}`,
+  "g"
+);
+const BUDGET_BARE_RE = new RegExp(
+  String.raw`\b(?:r\$\s*${BUDGET_NUM}|${BUDGET_NUM}\s*${BUDGET_CUR})(?:\s+${BUDGET_TOTAL_MARK})+`,
+  "g"
+);
+const BUDGET_STRONG_ONLY_RE = new RegExp(`^${BUDGET_STRONG_LEAD}$`);
+const TIME_WORDS_RE = /\b(?:hoje|amanha|hora|horas|h|dia|dias|semana|mes|meses|segunda|terca|quarta|quinta|sexta|sabado|domingo|natal|pascoa|ano)\b/;
+// O que sobra depois do valor pode ser só pontuação ou um "por favor" — senão "uns 12 ovos" viraria teto.
+const BUDGET_REST_OK_RE = /^\s*(?:(?:por favor|pfv?|se possivel|se der|obrigad[oa])\s*)?[,.;!?]*\s*$/;
+
+function findBudget(n: string): { value: number; start: number; end: number } | null {
+  const toValue = (raw: string) => {
+    const v = Number(raw.replace(",", "."));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  };
+  BUDGET_LEAD_RE.lastIndex = 0;
+  for (let m = BUDGET_LEAD_RE.exec(n); m; m = BUDGET_LEAD_RE.exec(n)) {
+    const lead = m.groups?.lead ?? "";
+    const value = toValue(m[3] ?? "");
+    if (value == null) continue;
+    const hasCurrency = Boolean(m.groups?.rs) || Boolean(m.groups?.cur);
+    if (!hasCurrency) {
+      // Sem "reais"/"R$": só as formas inequívocas, e só no fim da frase.
+      const restOk = BUDGET_REST_OK_RE.test(n.slice(m.index + m[0].length));
+      const strong = BUDGET_STRONG_ONLY_RE.test(lead);
+      const okValue = strong ? value >= 10 : lead === "ate" && value >= 20 && !TIME_WORDS_RE.test(n);
+      if (!restOk || !okValue) continue;
+    }
+    // "de" que abre o trecho ("um vinho DE uns 30 conto") sai junto; os demais "de" são da frase.
+    return { value, start: m.index, end: m.index + m[0].length };
+  }
+  BUDGET_BARE_RE.lastIndex = 0;
+  const bare = BUDGET_BARE_RE.exec(n);
+  if (bare) {
+    const value = toValue(bare[1] ?? bare[2] ?? "");
+    if (value != null) return { value, start: bare.index, end: bare.index + bare[0].length };
+  }
+  // "vinho 60 reais" / "ventilador R$150" no fim da frase: valor solto depois do produto é o teto —
+  // menos depois de "de/por/com…" ("pizza de 40 reais" também é preço, mas "mais 5 reais" não é teto).
+  const tail = n.match(new RegExp(String.raw`(?:^|\s)(?<pre>\S+\s+)(?:r\$\s*${BUDGET_NUM}|${BUDGET_NUM}\s*${BUDGET_CUR})\s*[.!?]*$`));
+  if (tail && tail.index != null && !/^(?:de|por|com|mais|menos|e|ou|a|uns|umas|ate)\s$/.test(tail.groups?.pre ?? "")) {
+    const value = toValue(tail[2] ?? tail[3] ?? "");
+    if (value != null) return { value, start: tail.index + (tail[0].startsWith(" ") ? 1 : 0) + (tail.groups?.pre.length ?? 0), end: tail.index + tail[0].length };
+  }
+  return null;
+}
+
+// A mensagem inteira é só um orçamento ("até uns R$60", "no máximo 150 com a entrega", "meu limite é 80")?
+// Devolve o valor. Usada quando o cliente diz o teto numa mensagem separada, depois do pedido.
+export function parseBudgetStatement(text: string): number | null {
+  let n = digitizeMoneyWords(normalizeMsg(text))
+    .replace(/^(?:(?:ah|e|mas|so que|na verdade|entao|olha|ola|oi|opa|alias|pensando bem)[\s,]+)+/, "")
+    .replace(/\s+(?:por favor|pfv?|obrigad[oa])\s*$/, "");
+  const lead = /^(?:eu\s+)?(?:so\s+)?(?:(?:quero|queria|pretendo|posso|vou)\s+gastar|(?:o\s+|meu\s+)?(?:orcamento|limite|teto)\s+(?:e|eh|ta|esta|fica)|gasto|tenho|to com|tou com|estou com)\s+/;
+  const hadLead = lead.test(n);
+  n = n.replace(lead, "").replace(/^(?:que\s+)?(?:fique|seja|custe|saia|ficar|ser|custar)\s+/, "");
+  if (!n) return null;
+  if (new RegExp(String.raw`^(?:${BUDGET_SEGMENT_SRC})[\s.!?]*$`).test(n)) return findBudget(n)?.value ?? parsePriceCap(`ate ${n}`);
+  // "meu limite é 150" / "quero gastar 80": o verbo já diz que é orçamento, o valor pode vir solto.
+  if (hadLead) {
+    const bare = n.match(new RegExp(String.raw`^(?:r\$\s*)?${BUDGET_NUM}(?:\s*${BUDGET_CUR})?${BUDGET_TRAIL}[\s.!?]*$`));
+    const value = bare ? Number(bare[1].replace(",", ".")) : NaN;
+    if (Number.isFinite(value) && value >= 10) return value;
+  }
+  return null;
+}
+
 export function parsePriceCap(text: string): number | null {
-  const n = digitizeMoneyWords(normalizeMsg(text));
-  const m =
-    n.match(
-      /\b(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)?\b/
-    ) ??
-    // "um vinho DE uns 30 conto": aproximação vira teto — sem isso a busca ignora o
-    // valor por completo (29/08 S18). Exige a moeda pra não pegar "uns 30 itens".
-    n.match(/\bde\s+uns\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)\b/);
-  if (!m) return null;
-  const hasCurrency = Boolean(m[2]) || /r\$/.test(n);
-  if (!hasCurrency) return null;
-  const value = Number(m[1].replace(",", "."));
-  return Number.isFinite(value) && value > 0 ? value : null;
+  return findBudget(digitizeMoneyWords(normalizeMsg(text)))?.value ?? null;
 }
 
 // "vinho até 40 reais" no PEDIDO inicial: o teto sai da frase de busca (senão "ate 40
 // reais" vira token de busca) e vira filtro de preço aplicado ao preço EXIBIDO.
 export function splitPriceCap(phrase: string): { phrase: string; cap: number | null } {
-  const cap = parsePriceCap(phrase);
-  if (cap == null) return { phrase, cap: null };
-  const cleaned = digitizeMoneyWords(normalizeMsg(phrase))
-    .replace(/\b(?:de\s+)?(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)?\b/i, " ")
-    .replace(/\bde\s+uns\s+(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)\b/i, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return { phrase: cleaned || phrase, cap };
+  const n = digitizeMoneyWords(normalizeMsg(phrase));
+  const found = findBudget(n);
+  if (!found) return { phrase, cap: null };
+  const cleaned = `${n.slice(0, found.start)} ${n.slice(found.end)}`.replace(/\s+/g, " ").trim();
+  return { phrase: cleaned || phrase, cap: found.value };
 }
 
 // "quanto deu tudo?", "qual o total?", "resumo" — pergunta pelo PARCIAL da cesta,

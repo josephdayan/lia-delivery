@@ -1,0 +1,1360 @@
+{
+ "summary": {
+  "label": "r2b-dlg-on",
+  "at": "2026-10-07T18:48:40.873Z",
+  "scenarios": 12,
+  "judged": 12,
+  "simFailed": 0,
+  "goalReached": "33.3%",
+  "wrongProduct": "41.7%",
+  "falseClaim": "0.0%",
+  "deadEnd": "8.3%",
+  "confusing": "41.7%",
+  "slow": "16.7%",
+  "clean": "8.3%",
+  "highSeverityDefects": 21,
+  "repeat": 3,
+  "cleanAllRuns": "0.0%",
+  "goalAllRuns": "25.0%",
+  "porConjunto": {
+   "treino": {
+    "cenarios": 2,
+    "limpos": "0.0%",
+    "objetivo": "50.0%"
+   },
+   "prova": {
+    "cenarios": 2,
+    "limpos": "0.0%",
+    "objetivo": "0.0%"
+   }
+  },
+  "falhando": [
+   "c11",
+   "c20",
+   "c47",
+   "c70"
+  ]
+ },
+ "results": [
+  {
+   "id": "c11",
+   "rep": 0,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 20.095,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": true,
+    "summary": "A Lia informou claramente que não encontrou o isqueiro tipo tocha pedido e não ofereceu um isqueiro comum. A resposta do turno 3 demorou mais de 20 segundos.",
+    "defects": [],
+    "votes": "3/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 20.1
+    },
+    {
+     "who": "cliente",
+     "text": "Pode tentar um isqueiro maçarico tipo tocha? Isqueiro comum não serve."
+    },
+    {
+     "who": "lia",
+     "text": "*isqueiro maçarico tipo tocha para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 16
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 1,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 18.016,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "A Lia não encontrou a tocha, mas voltou a oferecer os mesmos isqueiros comuns que o cliente já havia rejeitado. Portanto, não cumpriu o objetivo de informar claramente que não encontrou sem oferecer produtos errados.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu isqueiros comuns, que não atendem ao pedido de isqueiro estilo tocha para charuto.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Após o cliente rejeitar explicitamente os isqueiros comuns e pedir outras opções, repetiu a mesma lista em vez de encerrar com a informação de que não encontrou uma tocha.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15.7
+    },
+    {
+     "who": "cliente",
+     "text": "Nenhum desses, tem que ser tipo maçarico/tocha pra charuto. Procura outras."
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *isqueiro para charuto tipo macarico tocha*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Isqueiro Bic Maxi Sortido 1 Unidade — R$ 6,55 · _Drogal · 3h_\n*2)* Isqueiro Clássico Sortido Cricket — R$ 9,78 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Isqueiro Chama Maxi Bic — R$ 13,18 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 18
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c11",
+   "rep": 2,
+   "set": "treino",
+   "title": "Isqueiro estilo tocha para charuto",
+   "origin": "real-09/06",
+   "expect": "honest_not_found",
+   "turns": 4,
+   "latencyMax": 21.002,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": true,
+    "confusing": true,
+    "slow": true,
+    "summary": "A Lia não confirmou se procurou um modelo estilo maçarico/tocha e repetiu a resposta genérica de que não encontrou um isqueiro para charuto. O cliente ficou sem uma resposta clara sobre o produto pedido.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "A resposta demorou 21 segundos.",
+      "severity": "low"
+     },
+     {
+      "turn": 5,
+      "what": "Repetiu exatamente a resposta anterior e ignorou a especificação explícita de que precisa ser estilo maçarico/tocha; não confirmou se esse modelo foi procurado nem disse claramente que não encontrou.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "Queria um isqueiro pra charuto"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x isqueiro pra charuto\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.1
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\n*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 21
+    },
+    {
+     "who": "cliente",
+     "text": "Tem que ser tipo maçarico/tocha, isqueiro comum não serve. Consegue procurar esse modelo?"
+    },
+    {
+     "who": "lia",
+     "text": "*isqueiro para charuto* eu não achei em nenhuma loja agora. Me diz outra marca ou versão que eu tento de novo.",
+     "sec": 16.9
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 0,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 14.193,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Os quatro itens corretos foram adicionados e a Lia chegou ao Pix. Porém, antes disso, ofereceu arroz fora do pacote solicitado de 5 kg e vários produtos que não correspondiam ao óleo de soja do pedido, incluindo óleos não comestíveis.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o pedido exigisse pacote de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz Arborio de 500 g, fora do tamanho pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Ofereceu arroz carreteiro pronto de 300 g, além de opções de 1 kg; não correspondem ao pacote de arroz de 5 kg solicitado.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "Ofereceu óleo composto, não óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 13,
+      "what": "Ofereceu óleo para bolos, gergelim e girassol, em vez do óleo de soja do pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 15,
+      "what": "Ofereceu óleos de milho e canola, em vez de óleo de soja.",
+      "severity": "high"
+     },
+     {
+      "turn": 17,
+      "what": "Ofereceu lubrificante, óleo secante e produto de limpeza como opções de óleo; são produtos alheios ao pedido de mercado.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "Disse que encontrou os quatro itens, mas apresentou apenas arroz e descreveu a sequência de forma confusa como “óleo e mais 1”.",
+      "severity": "low"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.2
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 7.2
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Carreteiro Swift 300g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 4.8
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Lubrificante 100ml Moriá — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Óleo Secante Color — R$ 8,79 · _Drogaria São Paulo · 1 dia útil_\n*3)* Óleo Dimy para Limpeza Folicular 100 ml — R$ 13,19 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.4
+    },
+    {
+     "who": "cliente",
+     "text": "Tem óleo de soja?"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 20h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygluy2003pmu11iu10x2zc-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 2,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 16,
+   "latencyMax": 14.58,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Chegou ao Pix com os quatro itens certos na cesta e os valores apresentados. Porém, antes de selecionar os itens corretos, a Lia ofereceu opções incompatíveis com o pedido: arroz fora do tamanho de 5 kg e vários óleos que não eram de soja, inclusive produtos não alimentícios.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Ofereceu arroz de 1 kg, embora o pedido exigisse pacote de 5 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 5,
+      "what": "Ofereceu arroz arbóreo de 500 g, incompatível com o arroz de 5 kg pedido.",
+      "severity": "high"
+     },
+     {
+      "turn": 7,
+      "what": "Além da opção correta de 5 kg, ofereceu arroz carreteiro de 300 g e arroz de 1 kg.",
+      "severity": "high"
+     },
+     {
+      "turn": 11,
+      "what": "A opção apresentada para óleo era óleo composto, não óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 13,
+      "what": "Mostrou opções de óleo para bolos, gergelim e girassol em vez do óleo de soja pedido no cenário.",
+      "severity": "medium"
+     },
+     {
+      "turn": 15,
+      "what": "Mostrou óleos de milho e canola, não óleo de soja.",
+      "severity": "medium"
+     },
+     {
+      "turn": 17,
+      "what": "Ofereceu óleo lubrificante, óleo secante e produto de limpeza como opções de óleo comestível.",
+      "severity": "high"
+     },
+     {
+      "turn": 3,
+      "what": "A sequência termina com “óleo e mais 1”, sem nomear o café; a indicação do próximo item fica imprecisa.",
+      "severity": "low"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 14.6
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 6.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Carreteiro Swift 300g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.1
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 5.3
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Lubrificante 100ml Moriá — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Óleo Secante Color — R$ 8,79 · _Drogaria São Paulo · 1 dia útil_\n*3)* Óleo Dimy para Limpeza Folicular 100 ml — R$ 13,19 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8.9
+    },
+    {
+     "who": "cliente",
+     "text": "procura óleo de soja, por favor"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 12
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 20h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuyglxug0049mu11uq5s7033-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.6
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c20",
+   "rep": 1,
+   "set": "treino",
+   "title": "Mercado básico: 4 itens",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 18,
+   "latencyMax": 15.716,
+   "ended": true,
+   "verdict": {
+    "goalReached": true,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": true,
+    "slow": false,
+    "summary": "Os quatro itens corretos chegaram à cesta e a Lia apresentou o Pix. No entanto, durante a busca por óleo, ofereceu produtos sem relação com óleo de cozinha e, após o pedido específico por óleo de soja até R$ 12, repetiu essas opções, incluindo uma acima do limite.",
+    "defects": [
+     {
+      "turn": 3,
+      "what": "Diz que vai buscar arroz, feijão, óleo e “mais 1”, sem identificar o café; a sequência fica confusa.",
+      "severity": "low"
+     },
+     {
+      "turn": 17,
+      "what": "Oferece óleo lubrificante, secante de unhas e produto de limpeza como opções para o pedido de óleo de cozinha.",
+      "severity": "medium"
+     },
+     {
+      "turn": 21,
+      "what": "Após o pedido explícito por óleo de soja comum até R$ 12, reapresenta produtos que não são óleo de cozinha; uma opção custa R$ 13,19, acima do limite informado.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero arroz, feijão, óleo e café"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x arroz\n• 1x feijão\n• 1x óleo\n• 1x café\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Av. Paulista, 1000, apto 52, Bela Vista, São Paulo, 01310-100"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Av. Paulista, 1000, apto 52, Bela Vista, São Paulo — CEP 01310-100\n---\nAchei os 4 itens. Vamos um de cada vez: *arroz*, depois *feijão*, *óleo* e mais 1.\n---\nOlha o que achei 👇\n*1)* Arroz Branco Swift 1kg — R$ 4,37 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Tio João 1kg — R$ 6,37 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 1kg — R$ 7,25 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15.7
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Arborio Italiano La Pastina 500g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 5.2
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *arroz*:\n*1)* Arroz Carreteiro Swift 300g — R$ 21,89 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Arroz Polido Tipo 1 Prato Fino 1kg — R$ 8,46 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.9
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Arroz Polido Longo Fino Tipo 1 Camil 5kg\n---\nAgora *feijão* — depois faltam 2.\n*1)* Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Feijão Carioca Tipo 1 Kicaldo 1kg — R$ 13,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Feijão Carioca Swift 1kg — R$ 9,32 · _Swift · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Feijão Carioca Tipo 1 Camil 1kg\n---\nAgora *óleo* — depois faltam 1.\n*1)* Óleo Composto Maria Pet 500ml — R$ 19,78 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* pra confirmar, *outras* pra ver mais, ou *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Especial para Bolos e Doces Liza 500ml — R$ 14,28 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo Gergelim Miyako 100g — R$ 39,04 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Óleo de Girassol Liza Especiais 900ml — R$ 16,49 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 8
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo de Milho Liza Especiais 900ml — R$ 21,98 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Óleo de Canola Liza Especiais 900ml — R$ 24,18 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "Mais opções de *óleo*:\n*1)* Óleo Lubrificante 100ml Moriá — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Óleo Secante Color — R$ 8,79 · _Drogaria São Paulo · 1 dia útil_\n*3)* Óleo Dimy para Limpeza Folicular 100 ml — R$ 13,19 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.9
+    },
+    {
+     "who": "cliente",
+     "text": "outras"
+    },
+    {
+     "who": "lia",
+     "text": "De *óleo* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "procura óleo de soja comum, pode ser qualquer marca, até uns 12 reais"
+    },
+    {
+     "who": "lia",
+     "text": "Não achei *óleo soja comum ate 12 reais*. O que eu tenho é isso:\n---\nOlha o que achei 👇\n*1)* Óleo Lubrificante 100ml Moriá — R$ 6,59 · _Obramax · 1 dia útil_\n*2)* Óleo Secante Color — R$ 8,79 · _Drogaria São Paulo · 1 dia útil_\n*3)* Óleo Dimy para Limpeza Folicular 100 ml — R$ 13,19 · _Cobasi · 1 dia útil_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 13
+    },
+    {
+     "who": "cliente",
+     "text": "procura óleo de soja sem limite de preço, por favor"
+    },
+    {
+     "who": "lia",
+     "text": "Ficou entre essas de *óleo de soja*:\n*1)* Óleo de Soja Soya 900ml — R$ 8,79 · _Mambo · em até 20h (amanhã, 8h–11h)_\n*2)* Óleo de Soja Liza 900ml — R$ 10,88 · _Mambo · em até 20h (amanhã, 8h–11h)_\n\nResponde *1* ou *2* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.8
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Óleo de Soja Soya 900ml\n---\nAgora *café*.\n*1)* Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*2)* Café Torrado e Moído Tradicional Pilão 500g — R$ 26,39 · _Mambo · em até 19h (amanhã, 7h–10h)_\n*3)* Café Torrado e Moído Tradicional a Vácuo Melitta 500g — R$ 29,69 · _Mambo · em até 19h (amanhã, 7h–10h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Café Torrado e Moído Tradicional 3 Corações 500g\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Marcos Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Marcos Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Arroz Polido Longo Fino Tipo 1 Camil 5kg — R$ 34,64\n• 1x Feijão Carioca Tipo 1 Camil 1kg — R$ 8,79\n• 1x Óleo de Soja Soya 900ml — R$ 8,79\n• 1x Café Torrado e Moído Tradicional 3 Corações 500g — R$ 25,29\n\nProdutos: R$ 77,51\nEntrega: R$ 24,90 · pela própria loja · prazo da loja: em até 20h (amanhã, 8h–11h)\n*Total: R$ 102,41*\n\n📍 Av. Paulista, 1000, apto 52, Bela Vista, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 102,41 _(sem taxa)_\n*2)* Cartão — R$ 107,79 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.4
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 102,41* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygm7vn004qmu11m62wjhmm-102415204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 0,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 10.392,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": true,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "O vinho escolhido é do tipo pedido, mas o total com entrega ficou em R$ 61,87, acima do limite aproximado de R$ 60. A compra chegou ao Pix, porém não cumpriu o orçamento do objetivo.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou um total de R$ 61,87 — acima do orçamento de cerca de R$ 60 — sem oferecer uma opção que coubesse no total.",
+      "severity": "high"
+     }
+    ],
+    "votes": "1/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Vinho Tinto Cabernet Sauvignon Finca Magnolia 750ml — R$ 43,97 · _Swift · 1 dia útil_\n*3)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 10.4
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Tinto Malbec Finca Magnolia 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97\n\nProdutos: R$ 43,97\nEntrega: R$ 17,90 · pela própria loja · prazo da loja: em até 1h (hoje, 14h–16h)\n*Total: R$ 61,87*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 61,87 _(sem taxa)_\n*2)* Cartão — R$ 65,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 61,87* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygmnr2005mmu113lh2j4hj-61875204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 1,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 7.654,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com vinho tinto, mas o total de R$ 61,87 excedeu o orçamento de cerca de R$ 60 sem oferecer uma opção que coubesse nele.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou total acima do orçamento informado sem avisar que não cabia nem oferecer alternativa mais barata.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 51h (sex, 15h–18h)_\n*3)* Vinho Espanhol Tinto Gran Reserva Soto Rojo 750ml — R$ 54,89 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.7
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Tinto Malbec Finca Magnolia 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97\n\nProdutos: R$ 43,97\nEntrega: R$ 17,90 · pela própria loja · prazo da loja: em até 1h (hoje, 14h–16h)\n*Total: R$ 61,87*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 61,87 _(sem taxa)_\n*2)* Cartão — R$ 65,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 61,87* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygmo9w005rmu11ygd2a34j-61875204000053039865802BR6009SAO PAULO",
+     "sec": 0.8
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c47",
+   "rep": 2,
+   "set": "prova",
+   "title": "Vinho tinto para o jantar",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 6.604,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o vinho correto, mas o total de R$ 61,87 ultrapassou o limite aproximado de R$ 60 sem oferecer uma opção que coubesse no orçamento.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ignorou o orçamento de até cerca de R$ 60: o total com entrega ficou em R$ 61,87, e a Lia seguiu para o pagamento sem avisar nem buscar uma alternativa dentro do limite.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "uma garrafa de vinho tinto pro jantar"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x garrafa de vinho tinto pro jantar\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001."
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97 · _Swift · em até 1h (hoje, 14h–16h)_\n*2)* Vinho Tinto Cabernet Sauvignon Finca Magnolia 750ml — R$ 43,97 · _Swift · 1 dia útil_\n*3)* Vinho Argentino Tinto Malbec Hormiga Negra 750ml — R$ 28,49 · _Mambo · em até 51h (sex, 15h–18h)_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 6.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Vinho Tinto Malbec Finca Magnolia 750ml\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Vinho Tinto Malbec Finca Magnolia 750ml — R$ 43,97\n\nProdutos: R$ 43,97\nEntrega: R$ 17,90 · pela própria loja · prazo da loja: em até 1h (hoje, 14h–16h)\n*Total: R$ 61,87*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 61,87 _(sem taxa)_\n*2)* Cartão — R$ 65,12 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 61,87* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygmzjv006hmu11qdcdcv5u-61875204000053039865802BR6009SAO PAULO",
+     "sec": 0.5
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 0,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 15.642,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o ventilador pedido, mas o total de R$ 157,88 excedeu o limite aproximado de R$ 150 sem aviso ou confirmação.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou total de R$ 157,88, acima do orçamento informado de até uns R$ 150, e seguiu para pagamento sem avisar nem confirmar se o cliente aceitava excedê-lo.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89 · _Obramax · 1 dia útil_\n*2)* Ventilador de Mesa 140W 40cm VTR410 6 Pás Cadence Preto 127V — R$ 142,89 · _Casa & Vídeo · 4 dias úteis_\n*3)* Ventilador de Mesa 40Cm 6 Pás Preto Mondial VSP40 127V — R$ 153,89 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 15.6
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89\n\nProdutos: R$ 142,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 157,88*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 157,88 _(sem taxa)_\n*2)* Cartão — R$ 166,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 157,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygnhrq007omu11t7dg351u-157885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 1,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 9.859,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o ventilador correto, mas o total de R$ 155,98 ultrapassou o orçamento aproximado de R$ 150 sem aviso.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Ignorou o orçamento de até cerca de R$ 150: apresentou total de R$ 155,98 sem avisar que excedia o limite nem buscar uma opção dentro dele.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Super Power com 6 Pás 30cm 60W Mondial Ventilador de Mesa Super Power Preto com 6 Pás 30cm 60w 127V — R$ 142,89 · _Obramax · 1 dia útil_\n*2)* Ventilador de Mesa 140W 40cm VTR410 6 Pás Cadence Preto 127V — R$ 142,89 · _Casa & Vídeo · 4 dias úteis_\n*3)* Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V — R$ 126,39 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 9.9
+    },
+    {
+     "who": "cliente",
+     "text": "3"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V — R$ 126,39\n\nProdutos: R$ 126,39\nEntrega: R$ 29,59 · pela própria loja · prazo da loja: 4 dias úteis\n*Total: R$ 155,98*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 155,98 _(sem taxa)_\n*2)* Cartão — R$ 164,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 155,98* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygnhay007gmu11z4y7s6dy-155985204000053039865802BR6009SAO PAULO",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  },
+  {
+   "id": "c70",
+   "rep": 2,
+   "set": "prova",
+   "title": "Ventilador de mesa",
+   "origin": "synthetic",
+   "expect": "reach_pix",
+   "turns": 7,
+   "latencyMax": 7.894,
+   "ended": true,
+   "verdict": {
+    "goalReached": false,
+    "wrongProduct": false,
+    "falseClaim": false,
+    "deadEnd": false,
+    "confusing": false,
+    "slow": false,
+    "summary": "Chegou ao Pix com o ventilador escolhido, mas o total foi R$ 157,88, acima do limite aproximado de R$ 150; havia uma opção que cabia no limite incluindo frete.",
+    "defects": [
+     {
+      "turn": 9,
+      "what": "Apresentou o total de R$ 157,88 sem avisar que ultrapassava o orçamento de cerca de R$ 150 nem ajustar a opção.",
+      "severity": "high"
+     }
+    ],
+    "votes": "0/3 limpa"
+   },
+   "transcript": [
+    {
+     "who": "cliente",
+     "text": "quero um ventilador de mesa"
+    },
+    {
+     "who": "lia",
+     "text": "Oi! Sou a Lia. Me diz o que você precisa — eu procuro nas lojas que entregam aí, mostro o total e compro pra você.\n\nJá anotei:\n• 1x ventilador de mesa\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Rua Oscar Freire, 379, apto 12, Jardins, São Paulo, 01426-001"
+    },
+    {
+     "who": "lia",
+     "text": "📍 Endereço salvo: Rua Oscar Freire, 379, apto 12, Jardins, São Paulo — CEP 01426-001\n---\nOlha o que achei 👇\n*1)* Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89 · _Obramax · 1 dia útil_\n*2)* Ventilador de Mesa 140W 40cm VTR410 6 Pás Cadence Preto 127V — R$ 142,89 · _Casa & Vídeo · 4 dias úteis_\n*3)* Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V — R$ 126,39 · _Casa & Vídeo · 4 dias úteis_\n\nResponde *1*, *2* ou *3* — ou *outras* pra ver mais, *pula* pra deixar de fora.",
+     "sec": 7.9
+    },
+    {
+     "who": "cliente",
+     "text": "1"
+    },
+    {
+     "who": "lia",
+     "text": "✅ Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V\nQuer mais alguma coisa? Quando fechar, diz *\"só isso\"* que eu mando o total.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "só isso"
+    },
+    {
+     "who": "lia",
+     "text": "Qual o *nome de quem vai receber*? Vai na etiqueta da entrega.",
+     "sec": 0
+    },
+    {
+     "who": "cliente",
+     "text": "Julia Teste"
+    },
+    {
+     "who": "lia",
+     "text": "Entrega em nome de *Julia Teste*.\n---\n🛒 *Seu pedido:*\n• 1x Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V — R$ 142,89\n\nProdutos: R$ 142,89\nEntrega: R$ 14,99 · pela própria loja · prazo da loja: 1 dia útil\n*Total: R$ 157,88*\n\n📍 Rua Oscar Freire, 379, apto 12, Jardins, São Paulo\n_Pra mudar, diz \"trocar endereço\"._\n\nEscolhe abaixo como quer pagar.\n---\nComo prefere pagar?\n*1)* Pix — R$ 157,88 _(sem taxa)_\n*2)* Cartão — R$ 166,17 _(com taxa da maquininha)_\n\nResponde *pix* ou *cartão*.",
+     "sec": 0.3
+    },
+    {
+     "who": "cliente",
+     "text": "pix"
+    },
+    {
+     "who": "lia",
+     "text": "Total *R$ 157,88* no Pix.\n\nO código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇\n\n_(sandbox: responda *paguei* pra simular)_\n---\n00020126MOCKPIX-cmuygnjjo007zmu11feu7ujl1-157885204000053039865802BR6009SAO PAULO",
+     "sec": 0.2
+    },
+    {
+     "who": "cliente",
+     "text": "FIM"
+    }
+   ]
+  }
+ ]
+}
