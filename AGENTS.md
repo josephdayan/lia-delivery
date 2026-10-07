@@ -1,3 +1,11 @@
+## REGRA VIGENTE — Remédio: a Lia VENDE remédio isento (MIP) desde 05/10/2026
+
+`LIA_MEDICINE_MIP=true` em produção (dono, 05/10). A Lia vende remédio isento de prescrição (dipirona, Advil, Dorflex,
+ibuprofeno, paracetamol, omeprazol, colírio, pomada de assadura, vitaminas…) no CPF do cliente, pelo preço da farmácia
++ taxa de serviço, e produtos de saúde em geral. Só recusa remédio de receita/controlado (antibiótico, tarja, Euthyrox).
+A entrada de 29/09 ("implementado, DESLIGADO") é histórica. **Não dizer nem assumir "a Lia não vende remédio".**
+Placares (`scripts/bench-search.mts`, `bench-conversations.mts`) e juízes medem com MIP ligado desde 07/10 (noite).
+
 ## 07/10/2026 (noite) — Lista com 2+ itens vira tela de escolha (WhatsApp Flow), atrás de flag
 
 Decisão do dono: pedido com 2 ou mais itens responde com a tela "Escolher minha lista" (Flow `lista_lia_v1`,
@@ -303,7 +311,7 @@ regra que ficou:
   carrinho" responde só "✅ produto" com os botões embaixo; ajuste de quantidade = "✅ 2x produto".
 Teste: `tests/compra-lenco-2026-10-05.test.ts` (reproduz a conversa de produção).
 
-## 29/09/2026 — Remédio isento no chat, no CPF do cliente (implementado, DESLIGADO por padrão)
+## 29/09/2026 — Remédio isento no chat, no CPF do cliente (histórico: LIGADO em produção em 05/10)
 
 Decisão do dono: remédio sem receita dentro do WhatsApp, sem contrato com farmácia. Tudo atrás
 de `LIA_MEDICINE_MIP=true`; desligado, a Lia recusa remédio exatamente como antes. Análise

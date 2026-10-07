@@ -10,8 +10,10 @@
 - [ ] Conserto proposto 2: alias "leite (em pó) para/de bebê" → "fórmula infantil" (`QUERY_ALIASES`).
 - [ ] Conserto proposto 3: no rerank, USO só exclui quando o produto é de outro tipo/uso (bucha plástica É de
   parede); hoje a regra exige o uso no nome.
-- [ ] Decisões do dono: pomada de assadura (bloquear como remédio ou liberar cosméticos?); vitamina C efervescente
-  (fica bloqueada pela guarda "comprimidos"); juiz contar bicicleta infantil como errada no pedido genérico.
+- [x] Placar e juízes corrigidos para a regra vigente (a Lia vende remédio isento): remedir categoria remedio/farmacia.
+- [ ] Rede do ambiente liberada pelo dono (07/10). Falta `OPENAI_API_KEY` como segredo do ambiente (dono pega a
+  chave em platform.openai.com → API keys). Sem ela o placar não roda: a IA da Lia e o juiz são a OpenAI.
+- [ ] Conferir se a guarda por nome ("comprimidos"/"mg" = remédio) esconde vitamina C com MIP ligado; se sim, é bug.
 - [ ] Suíte local completa nesta sessão: 1150/1151 — a única falha é `conversation.eval.test.ts` "CEP de SP capital"
   (ViaCEP bloqueado pela rede do ambiente), não é regressão.
 

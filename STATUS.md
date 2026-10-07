@@ -15,9 +15,11 @@ ViaCEP, e não há `OPENAI_API_KEY`. Em vez disso, comparei as 4 rodadas (baseli
   "parede" (mesma regra que acerta o isqueiro de charuto).
 - **Erro de julgamento da IA no top-1** (4 casos, todos repetidos): esmalte "Intensificador de Vermelho", cabo no
   lugar de carregador USB-C, bala de goma que é suplemento (R$71,98), macarrão parafuso para "parafuso".
-- **Decisão do dono**: "pomada para assadura" (Hipoglós é MIP; Desitin/Cetrilan são cosméticos) — o juiz conta como
-  remédio e a Lia mostra; "vitamina C efervescente" o juiz quer e a guarda ANVISA por nome ("comprimidos") bloqueia;
-  "bicicleta" genérica com só a infantil da Ri Happy. Nenhum é bug de busca.
+- **O placar media a Lia errada**: rodava com remédio isento DESLIGADO e o juiz achava que "a Lia não vende remédio"
+  (regra de antes de 05/10). Por isso "pomada para assadura" contava como vazamento e os 9 pedidos de "remedio" como
+  acerto por recusa. Corrigido 07/10 (noite): `LIA_MEDICINE_MIP=true` no placar e juízes só condenam receita/controlado.
+  Esses números (medicineLeaks, categoria remedio/farmacia) têm que ser remedidos. "Bicicleta" genérica com só a
+  infantil da Ri Happy é critério do juiz, não bug.
 Nada disso foi alterado: mudança de busca só entra medida (`evals/README.md`). Pendências e o que liberar para
 medir daqui estão em PENDENCIAS.md.
 

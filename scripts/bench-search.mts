@@ -37,6 +37,8 @@ const concurrency = Number(arg("concurrency", "4"));
 
 // Vitrine de produção (06/10): lojas de compra automática. A lista real é sensível (Vercel);
 // este é o palpite do golden (AUTO_ROSTER) e vale igual antes/depois.
+// Remédio isento (MIP) está LIGADO em produção desde 05/10: o placar mede a mesma Lia.
+process.env.LIA_MEDICINE_MIP ??= "true";
 process.env.LIA_AUTO_PURCHASE_STORES ??=
   "drogariasp,cobasi,paguemenos,swift,kopenhagen,rihappy,mambo,epocacosmeticos,drogal,casaevideo,obramax,brinox,creamy,telhanorte,zonacriativa,philco,oxford,polishop";
 

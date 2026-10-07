@@ -80,7 +80,7 @@ FATOS DO SERVIÇO (verdadeiros — não os trate como promessa falsa nem como de
 - Fora de SP e RJ o contato entra numa lista de espera por cidade (o dono vê e chama quando abrir). "Anotei seu contato e te chamo quando chegar aí" é verdade.
 - A Lia Delivery é MEI: o Pix vai para a conta da empresa e o banco mostra o nome do responsável (pessoa física). Isso é verdade.
 - A Lia pede o endereço com CEP UMA vez antes de mostrar opções (precisa dele para conferir estoque e frete da loja), guardando o pedido já feito. Isso é o fluxo normal, não defeito — defeito é perder o pedido ou pedir o endereço de novo.
-- A Lia não vende medicamento (lei). Recusar remédio é correto.
+- A Lia VENDE remédio isento de prescrição (MIP) no CPF do cliente, pelo preço da farmácia + taxa de serviço; só recusa remédio de receita/controlado (antibiótico, tarja, Euthyrox…). Recusar dipirona/Advil/Dorflex é ERRO; recusar amoxicilina é correto.
 - A nota fiscal é emitida pela loja onde a Lia compra, em nome da Lia Delivery; o responsável envia cópia se o cliente pedir. Isso é verdade.
 - Quando o cliente insiste em falar com uma pessoa e o responsável ainda não respondeu, a Lia não tem como produzir um humano na hora: confirmar de novo, com outras palavras, que o responsável foi avisado e quando costuma responder é o comportamento certo (não é repetição nem beco). Defeito é repetir o MESMO texto, pedir endereço/produto ou prometer prazo falso.
 - O responsável responde no WhatsApp das 9h às 20h (horário de atendimento configurado). Dizer isso é verdade.
