@@ -1,3 +1,17 @@
+## 06/10/2026 (fim da tarde) — Varredura concluída: tudo no main, suíte 887/887
+
+Entraram os 4 corretores (pós-pagamento, cadastro/endereço, escolha/cesta, busca/frete) e a
+rodada final ao vivo. Além da entrada de cima: pedido + endereço na mesma mensagem separa os
+dois; CEP solto de cliente cadastrado pergunta antes de trocar; cidade do CEP divergente pede
+confirmação; CEP com espaço/ponto; item depois do total soma (não apaga a cesta); quantidade
+por texto ("quero 3", "6x", "tira um"); "na verdade quero o 2" troca a opção e não ressuscita
+pedido cancelado; frete de uma loja = uma entrega (VTEX devolvia frete inteiro por linha);
+produto por peso mostra a unidade (~180 g) e kg vira unidades; remédio não casa só pela dose;
+básicos (detergente, açúcar, sabão em pó) com reserva quando a Mambo derruba SKUs; pack/fardo;
+presente; matcher exige o produto (1ª palavra) — "cottage Yorgus" não vira iogurte.
+Testes: `tests/feedback-2026-10-06-{varredura,pos-pagamento,cadastro,escolha,busca}.test.ts`,
+golden 51/51. Ainda não deployado.
+
 ## 06/10/2026 (noite) — Busca, quantidade e frete (teste adversarial)
 
 Corrigido com teste (`tests/feedback-2026-10-06-busca.test.ts` + 15 casos novos no golden):

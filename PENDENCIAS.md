@@ -1,3 +1,19 @@
+## 06/10/2026 (fim da tarde) — Varredura: mudanças que o dono precisa saber antes do deploy
+
+- [ ] **Deploy**: tudo está no main local, 887/887. Falta push (aguardando o dono).
+- [ ] **"cancela o pedido" com pedido pago agora pergunta "confirma?"** antes de estornar
+  (antes estornava na hora).
+- [ ] **Ovos arredondam pra cima**: "12 ovos" com caixa de 10 = 2 caixas (20 ovos); a vitrine
+  põe a dúzia/caixa exata na frente quando existe.
+- [ ] **Pack sem pack confirmado vira N unidades soltas** ("pack 12 latas" → 12 latas).
+- [ ] **Comprador VTEX**: escolhe a mesma entrega para todos os itens da loja e reenvia o
+  endereço quando a loja devolve frete sem rateio — mudança no caminho do dinheiro, só testada
+  com mock; conferir no 1º pedido real de 2+ itens da mesma loja.
+- [ ] **Golden `AUTO_ROSTER`** é um palpite da lista `LIA_AUTO_PURCHASE_STORES` da Vercel
+  (sensível, o Claude não lê) — conferir.
+- [ ] Ainda fraco: "óleo" sozinho não acha; tocar em OUTRO card da mesma lista depois de
+  escolher soma um 2º produto (decidir: somar ou trocar).
+
 ## 06/10/2026 (tarde) — Varredura de cliente novo: o que depende do dono
 
 - [ ] **Asaas** (o maior): enquanto o Pix de saída estiver recusado, a trava nova não deixa cobrar
