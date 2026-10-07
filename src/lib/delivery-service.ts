@@ -27,6 +27,7 @@ import { CEP_RE_GLOBAL } from "@/lib/lia-intents";
 import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
+import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
 // The operational brain of the remodelled Lia. One conversation = one basket of
@@ -38,7 +39,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
-import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -1242,6 +1243,15 @@ export async function handleDeliveryMessage(input: {
     // esperávamos o lock e morre em falso TurnSupersededError — cliente sem resposta.
     rememberCtxSnapshot(convo.id, freshConvo.context ?? null);
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
+    {
+      // Guarda anti-repetição: o que o cliente disse e as últimas falas da Lia (até 10 min atrás).
+      const meta = turnMeta.getStore();
+      const lastSent = readCtx(freshConvo.context ?? null).lastSent;
+      if (meta) {
+        meta.inboundText = text;
+        meta.prevSent = lastSent && Date.now() - lastSent.at < REPEAT_WINDOW_MS ? lastSent.texts : [];
+      }
+    }
     if (!currentShopperCep()) noteShopperCep(user.cep);
     if (signupForm) await handleSignupForm(phone, signupForm, user, freshConvo);
     else await handleDeliveryTurn(phone, text, user, freshConvo, inboundMessageId);
@@ -1253,6 +1263,7 @@ export async function handleDeliveryMessage(input: {
     }
   } finally {
     await releaseTurnLock(convo.id, lockToken);
+    await persistSentTexts(convo.id);
   }
 }
 

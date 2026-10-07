@@ -190,6 +190,11 @@ export type DeliveryContext = {
   // Embalagem diferente da pedida (07/10, c28: "12 ovos" → caixa de 20): a Lia pergunta ANTES de pôr
   // na cesta. Guarda a opção e a quantidade pedida; "sim" confirma, "outras" volta às opções.
   packConfirm?: { sku: string; askedQty: number };
+  // Últimas falas da Lia (07/10, rodada 2 do plano 100): base da guarda anti-repetição — a mesma
+  // mensagem não sai duas vezes seguidas para falas diferentes do cliente (src/lib/dialogue/repeat.ts).
+  lastSent?: { texts: string[]; at: number };
+  // Orçamento dito ANTES do cadastro, sem produto ainda ("tenho uns 120 reais"): vale para o 1º pedido.
+  preBudget?: number;
   // Última recusa de remédio (07/10, c35): a 2ª em pouco tempo troca de texto em vez de repetir.
   medicineRefusedAt?: number;
   // Oferta pendente de busca na cauda longa (Mercado Livre) para as linhas que as
