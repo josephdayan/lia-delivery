@@ -1,3 +1,15 @@
+## 07/10/2026 (noite) — Meta 100%: rodada 2 = 78% limpos / 92% objetivo (pass@3)
+
+| Placar de conversas (101 cenários × 3, juiz calibrado) | limpos nas 3 | objetivo nas 3 | limpas por execução |
+|---|---|---|---|
+| r1 gerente desligado | 49% | 74% | 59,7% |
+| r1 gerente ligado | 52% | 79% | 63,7% |
+| **r2** (pré-cadastro pela IA, anti-repetição, orçamento, atributos, gerente ligado por padrão) | **78,2%** | **92,1%** | **86,1%** |
+
+Treino 82% / prova 72,5% limpos. Régua corrigida no caminho: resposta vazia do cliente simulado virava "FIM" (15–31% das
+execuções contaminadas) → agora é refeita (`--retry-from`). Gerente de diálogo ligado por padrão (`LIA_DIALOGUE_LLM=false`
+desliga). Rodada 3 em andamento: edição da cesta/cadastro e busca/não-achei/fora de escopo (prova só por classe).
+
 ## 07/10/2026 (noite) — Tela de escolha da lista (WhatsApp Flow): pronta no main, desligada
 
 Resolvedor único de contagem de itens + Flow "Escolher minha lista" + faltantes por status + `/ops/faltantes`.
