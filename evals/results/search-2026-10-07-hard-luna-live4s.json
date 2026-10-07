@@ -1,0 +1,5136 @@
+{
+ "summary": {
+  "label": "hard-luna-live4s",
+  "at": "2026-10-07T04:39:04.227Z",
+  "requests": 111,
+  "cep": "01233-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-sol",
+  "outcomes": {
+   "found": 86,
+   "miss": 8,
+   "medicine_ok": 4,
+   "honest_none": 4,
+   "found_with_wrong_extra": 5,
+   "wrong_top1": 2,
+   "medicine_leak": 1,
+   "false_positive": 1
+  },
+  "top1WrongRate": "2.8%",
+  "precisionItems": "94.8%",
+  "coverage": "90.1%",
+  "honesty": "80.0%",
+  "medicineLeaks": "1/5",
+  "latencyMs": {
+   "p50": 10323,
+   "p90": 14300,
+   "max": 21297
+  }
+ },
+ "byCat": {
+  "higiene": {
+   "n": 10,
+   "found": 10,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "eletronicos": {
+   "n": 10,
+   "found": 8,
+   "miss": 2,
+   "wrong": 0,
+   "honest": 0
+  },
+  "mercado": {
+   "n": 18,
+   "found": 16,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 1
+  },
+  "farmacia": {
+   "n": 8,
+   "found": 5,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 2
+  },
+  "casa": {
+   "n": 10,
+   "found": 9,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 0
+  },
+  "limpeza": {
+   "n": 8,
+   "found": 8,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "remedio": {
+   "n": 2,
+   "found": 0,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 2
+  },
+  "bebe": {
+   "n": 5,
+   "found": 3,
+   "miss": 1,
+   "wrong": 1,
+   "honest": 0
+  },
+  "livros": {
+   "n": 1,
+   "found": 0,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 1
+  },
+  "bebidas": {
+   "n": 3,
+   "found": 3,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "hortifruti": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "acougue": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "beleza": {
+   "n": 3,
+   "found": 2,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 0
+  },
+  "pet": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "esporte": {
+   "n": 9,
+   "found": 7,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 1
+  },
+  "papelaria": {
+   "n": 7,
+   "found": 5,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 1
+  },
+  "eletro": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "ferramentas": {
+   "n": 2,
+   "found": 1,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 0
+  },
+  "presente": {
+   "n": 6,
+   "found": 6,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "roupas": {
+   "n": 1,
+   "found": 0,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 0
+  }
+ },
+ "results": [
+  {
+   "id": "r001",
+   "text": "escova de dente",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 18144,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Escova de Dente Colgate Slim Soft Gold Ultramacia 2 Unidades",
+     "price": 18.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Escova Dental Ever Care Sensitive 3 Unidades",
+     "price": 64.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Escova de Dente Colgate Slim Soft Black 4 unidades",
+     "price": 29.69
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Escova de Dente Oral-B Sensitive Iconic 3 Unidades",
+     "price": 35.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Escova Dental Colgate Slim Soft Black Infusão de Carvão Cerdas Macia 4 Unidades",
+     "price": 23.19
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova Dental Oral-B 3D White Carvão Macia 2 Unidades",
+     "price": 19.29
+    }
+   ],
+   "oracleSize": 53,
+   "note": "Pedido genérico de escova de dente: aceito escovas dentais adultas, inclusive elétrica; rejeito versões infantis, interdentais, para pets e acessórios."
+  },
+  {
+   "id": "r004",
+   "text": "carregador usb c",
+   "cat": "eletronicos",
+   "origin": "real",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 20911,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 10,5W Bivolt Simon 35",
+     "price": 119.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 10,5W Bivolt Simon19/20",
+     "price": 89.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 25W Bivolt Módulopro Alumbra",
+     "price": 83.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 25W Bivolt Gracia Alumbra",
+     "price": 83.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Módulo Carregador USB-C 25W Bivolt Gracia Plus Alumbra",
+     "price": 83.9
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Aceitei carregadores com saída USB-C, inclusive módulos de tomada; cabos e carregadores sem USB-C especificado não atendem ao pedido."
+  },
+  {
+   "id": "r012",
+   "text": "arroz",
+   "cat": "mercado",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 21297,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Arroz Branco Polido Seleções Oeste Camil 1kg",
+     "price": 8.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Camil 1kg",
+     "price": 5.39
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Tipo 1 Tio João 1kg",
+     "price": 5.79
+    },
+    {
+     "store": "Mambo",
+     "name": "Arroz Polido Longo Fino Tipo 1 Camil 5kg",
+     "price": 28.98
+    }
+   ],
+   "oracleSize": 51,
+   "note": "Arroz em grãos para preparo atende ao pedido; pratos prontos, alimentos com arroz e utensílios não atendem."
+  },
+  {
+   "id": "r016",
+   "text": "colírio systane complete",
+   "cat": "farmacia",
+   "origin": "real",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 2553,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 49,
+   "note": "Colírio é medicamento; o serviço não pode vendê-lo, portanto nenhum produto deve ser mostrado."
+  },
+  {
+   "id": "r015",
+   "text": "rexona",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11840,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Desodorante Power Dry Aerosol Rexona 150ml",
+     "price": 23.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Antitranspirante Rexona Men Active Dry 150 ml",
+     "price": 23.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Antitranspirante Feminino Bambu Rexona 150 ml",
+     "price": 23.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Feminino Rexona Clinical Classic Aerosol 150ml",
+     "price": 17.98
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Active Dry 72 horas 150ml",
+     "price": 14.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Sem Perfume 72 horas 150ml",
+     "price": 14.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Rexona Men Clinical Aerosol 150ml",
+     "price": 19.89
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Desodorante Antitranspirante Rexona Men Active Dry 72h Aerossol 150ml",
+     "price": 14.99
+    }
+   ],
+   "oracleSize": 51,
+   "note": "Interpretei “rexona” como desodorante da marca Rexona; forma, fragrância e tamanho não foram especificados. Sabonete e produtos de outros tipos são errados."
+  },
+  {
+   "id": "r017",
+   "text": "isqueiro pra charuto",
+   "cat": "casa",
+   "origin": "real",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 10441,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Isqueiro Clássico Sortido Cricket",
+     "price": 8.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Isqueiro Chama Maxi Bic",
+     "price": 11.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Isqueiro Chama Mini Bic",
+     "price": 9.59
+    },
+    {
+     "store": "Drogal",
+     "name": "Acendedor Isqueiro Bic Ez Reach 1 Unidade",
+     "price": 17.55
+    },
+    {
+     "store": "Drogal",
+     "name": "Isqueiro Bic Maxi 1 Unidade",
+     "price": 10.85
+    }
+   ],
+   "oracleSize": 72,
+   "note": "Aceitei isqueiros que podem acender charuto, mesmo sem indicação específica; os demais produtos não atendem ao pedido."
+  },
+  {
+   "id": "r019",
+   "text": "sabonete",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10445,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Sabonete em Barra Hidratante Erva Doce Nivea 85g",
+     "price": 4.19,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Sabonete em Barra Raiz Oriente Phebo 90g",
+     "price": 6.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Sabonete em Barra Nectarina da Andaluzia Phebo 100g",
+     "price": 7.89,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sabonete Líquido Hidratante Banho a Banho Original 250ml",
+     "price": 13.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sabonete Líquido Hidratante Banho a Banho Original 500ml Refil",
+     "price": 18.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sabonete Líquido Óleo Banho a Banho Original 250ml",
+     "price": 29.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Kit Sabonete em Barra Dove Original Hidratante 90g 6 Unidades",
+     "price": 26.09
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Sabonete Líquido Palmolive Naturals Nutritivo Melancia E Lichia Refil 200ml",
+     "price": 5.49
+    }
+   ],
+   "oracleSize": 44,
+   "note": "Sabonete comum em barra é exato; versões líquidas e kits comuns são aceitáveis. Produtos íntimos, infantis, veterinários, industriais e acessórios não atendem ao pedido."
+  },
+  {
+   "id": "r020",
+   "text": "shampoo",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8810,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Shampoo Óleo Extraordinário Elseve 200ml",
+     "price": 27.98,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Pantene Pro-V Miracles Queratina Preenche & Blinda 510ml",
+     "price": 35.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Época Cosméticos",
+     "name": "Wella Professionals Ultimate Repair Miniatura Shampoo 50ml",
+     "price": 29.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Reparação Profunda com Peptídeos Vichy Dercos Collagen Repair 17 390g",
+     "price": 179.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Antiqueda Estimulante com Aminexil 1.5% Vichy Dercos Energy+ 400g",
+     "price": 169.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Reparação Profunda com Peptídeos Vichy Dercos Collagen Repair 17 200g",
+     "price": 129.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa para Cabelos Normais a Oleosos Vichy Dercos DS 300g",
+     "price": 139.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Anticaspa Clear Men Limpeza Diária 2 em 1 400ml",
+     "price": 26.99
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Aceitei shampoos capilares comuns de diferentes marcas e versões; excluí medicamento, produtos infantis ou para pets, shampoo a seco, kits e acessórios."
+  },
+  {
+   "id": "r022",
+   "text": "detergente neutro",
+   "cat": "limpeza",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7758,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Detergente Gel Neutro Limpol 400g",
+     "price": 6.98,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Obramax",
+     "name": "Detergente Gold Neutro 5L Audax",
+     "price": 39.69,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Detergente Gel Neutro Limpol 400g",
+     "price": 6.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Kit com 6 Detergentes Líquido Neutro Limpol 500ml",
+     "price": 11.98
+    },
+    {
+     "store": "Obramax",
+     "name": "Detergente Gold Neutro 5L Audax",
+     "price": 39.69
+    }
+   ],
+   "oracleSize": 55,
+   "note": "Aceitei detergentes neutros, inclusive em gel, concentrados e kits; excluí produtos de outro uso, acessórios e detergentes sem indicação de neutro."
+  },
+  {
+   "id": "r024",
+   "text": "saco de lixo reforçado de 30 l",
+   "cat": "limpeza",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6608,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Saco de Lixo 30 Litros Reforçado Azul Wecycle 20 unidades",
+     "price": 18.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Saco Lixo Embalixo Reforcado Alca Preto 30L 30 Sacos",
+     "price": 24.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Telhanorte",
+     "name": "Saco Lixo Embalixo Reforcado Alca Preto 30L 30 Sacos",
+     "price": 24.9
+    }
+   ],
+   "oracleSize": 13,
+   "note": "O pedido exige saco de lixo reforçado de 30 L; outras capacidades ou produtos sem indicação de reforço não atendem."
+  },
+  {
+   "id": "r028",
+   "text": "euthyrox 50mg",
+   "cat": "remedio",
+   "origin": "real",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 4351,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 44,
+   "note": "Euthyrox é medicamento; o serviço não pode vender remédios, portanto nenhum produto deve ser mostrado."
+  },
+  {
+   "id": "r023",
+   "text": "esponja de cozinha",
+   "cat": "limpeza",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11107,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Esponja Multiuso Scotch Brite Leve 4 Pague 3",
+     "price": 10.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Esponja Scotch Brite Não Risca Laranja com 3 unidades",
+     "price": 10.98,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Esponja Multiuso unitária amarelo e verde Scotch-Brite",
+     "price": 7.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Esponja Multiuso Scotch Brite Leve 4 Pague 3",
+     "price": 10.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Esponja Louças Delicadas Scotch Brite com 3 Unidades",
+     "price": 10.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Esponja Scotch Brite Não Risca Laranja com 3 unidades",
+     "price": 10.98
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Esponja Multiuso unitária amarelo e verde Scotch-Brite",
+     "price": 7.9
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Esponjas multiuso de cozinha são exatas; versões para louças são aceitáveis. Outros usos, acessórios e esponjas de aço não substituem a esponja comum."
+  },
+  {
+   "id": "r029",
+   "text": "pilha AAA",
+   "cat": "eletronicos",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10612,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Pilha Duracell Alcalina Palito AAA com 4",
+     "price": 22.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Pilha Alcalina 1,5V Tipo AAA Elgin Pilha Alcalina 1.5V Tipo AAA Blister com 4 unidades",
+     "price": 9.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Pilha Alcalina 1.5V Tipo AAA Kian Pilha Alcalina 1.5V Tipo AAA Blister com 4 unidades",
+     "price": 9.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilha Duracell Palito AAA com 2 Unidades",
+     "price": 21.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilha Alcalina Duracell AAA Palito 4 Unidades",
+     "price": 33.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilha Alcalina Panasonic AAA 4 Unidades",
+     "price": 31.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pilhas Duracell Optimum AAA 4 4 Unidades",
+     "price": 39.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Palito Com 2 Unidades",
+     "price": 24.99
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Pilhas AAA comuns atendem exatamente ao pedido, independentemente de marca ou quantidade; recarregáveis são versões aceitáveis. Acessórios e outros produtos não atendem."
+  },
+  {
+   "id": "r039",
+   "text": "shampoo kerasys",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10973,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Kerasys Mise En Scène Perfect Serum 530ml",
+     "price": 126.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Kerasys Propolis Hair Bonding Pro Repair 450ml",
+     "price": 159.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Kerasys Propolis Hair Bonding Pro Repair 450ml",
+     "price": 159.9
+    }
+   ],
+   "oracleSize": 47,
+   "note": "O pedido é de shampoo da marca Kerasys; máscaras, shampoos de outras marcas e acessórios não atendem."
+  },
+  {
+   "id": "r030",
+   "text": "shampoo granado de bebê",
+   "cat": "bebe",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11526,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Shampoo Granado Bebê Tradicional 250ml",
+     "price": 20.95,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Shampoo Granado Bebê Calêndula 250ml",
+     "price": 20.95,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Infantil Granado Bebê Tradicional Refil 250ml",
+     "price": 16.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Relaxante Granado Bebê Extrato de Camomila 250ml Refil",
+     "price": 16.41
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Suave Granado Bebê 250ml Refil",
+     "price": 16.41
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Granado Bebê 250ml",
+     "price": 20.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Granado Relaxante Bebe Extrato Camomila 250ml",
+     "price": 20.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Infantil Granado Bebê Tradicional 250ml",
+     "price": 16.99
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Shampoo Granado para bebê: versão tradicional é exata; outras versões e refis são aceitáveis. Kits, shampoos para pets e outros produtos são errados."
+  },
+  {
+   "id": "r047",
+   "text": "livro crime e castigo",
+   "cat": "livros",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 12069,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 65,
+   "note": "O pedido é pelo livro Crime e Castigo; nenhum produto listado corresponde a esse título."
+  },
+  {
+   "id": "r048",
+   "text": "escova de dente mercado livre",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12415,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Escova de Dente Sanifill Pocket Macia 1 Unidade",
+     "price": 5.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova de Dente Oral-B Advanced 5 Ações com Carvão Pack Família 4 Unidades",
+     "price": 53.85,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Escova Dental Colgate Classic Clean Cerdas Macia Cores Sortidas 3 Unidades",
+     "price": 10.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Escova Dental Oral-B Clean Indicator Color Collection Escovas Dental 4 Unidades",
+     "price": 23.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova Dental Oral-B Iconic Sensitive Ultra Macia 1 Unidade",
+     "price": 20.69
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova Dental Colgate Total Whitening 2 Unidades",
+     "price": 23.45
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova de Dente Colgate Sensitive 1 Unidade",
+     "price": 19.25
+    },
+    {
+     "store": "Drogal",
+     "name": "Escova de Dente Colgate Gum Therapy 1 Unidade",
+     "price": 26.95
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Pedido de escova de dente comum; “Mercado Livre” indica o canal de compra, não uma marca. Excluí versões infantis, para pets, interdentais e acessórios."
+  },
+  {
+   "id": "r041",
+   "text": "cottage da yorgus 14g proteína",
+   "cat": "mercado",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 15967,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 73,
+   "note": "Pedido de cottage Yorgus com 14 g de proteína; barras e bebidas proteicas não substituem cottage, e outras marcas não atendem."
+  },
+  {
+   "id": "s057",
+   "text": "açúcar refinado",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 12347,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado Guarani 1kg",
+     "price": 3.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado Fit União 500g",
+     "price": 5.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Açúcar Refinado União 1kg",
+     "price": 5.09
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Aceitei apenas açúcar refinado comum; versões Fit e Glaçúcar têm composição ou uso diferente. Os demais itens não são açúcar refinado."
+  },
+  {
+   "id": "s064",
+   "text": "milho verde em lata",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10069,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Milho Verde Quero Lata 170g",
+     "price": 2.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Milho Verde Bonduelle Lata 285g",
+     "price": 27.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Milho Verde Quero Lata 170g",
+     "price": 2.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Milho Verde Bonduelle Lata 285g",
+     "price": 27.98
+    }
+   ],
+   "oracleSize": 67,
+   "note": "Aceitei apenas milho verde em lata; espigas, salgadinhos e produtos que apenas mencionam “verde” ou “lata” não atendem ao pedido."
+  },
+  {
+   "id": "s060",
+   "text": "óleo",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10553,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Óleo Composto Maria Pet 500ml",
+     "price": 17.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Óleo de Soja Liza 900ml",
+     "price": 9.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Coco Extra Virgem Empório Nut's Vidro 200ml",
+     "price": 28.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Girassol Liza Especiais 900ml",
+     "price": 14.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Óleo de Milho Mazola 900ml",
+     "price": 23.49
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Pedido genérico de óleo: aceitos óleos alimentícios para cozinhar; óleos cosméticos, essenciais, lubrificantes e produtos que apenas contêm óleo não atendem."
+  },
+  {
+   "id": "s071",
+   "text": "aveia em flocos",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 5831,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Aveia em Flocos Nestlé 170g",
+     "price": 6.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Aveia em Flocos Regulares Embalagem Econômica Quaker 450g Aveia em Flocos Embalagem Econômica Quaker 450g",
+     "price": 14.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Aveia Flocos Finos Nestlé 170g",
+     "price": 4.47,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Aveia Flocos Finos Nestlé 170g",
+     "price": 4.47
+    },
+    {
+     "store": "Mambo",
+     "name": "Aveia em Flocos Nestlé 170g",
+     "price": 6.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Aveia em Flocos Finos Integral Vegano Jasmine 400g",
+     "price": 14.98
+    }
+   ],
+   "oracleSize": 40,
+   "note": "Aveia em flocos comum é exact; versões finas ou sem glúten são acceptable. Produtos que não são aveia alimentícia são wrong."
+  },
+  {
+   "id": "s073",
+   "text": "leite condensado",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 5920,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Italac 395g",
+     "price": 6.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Itambé Lata 395g",
+     "price": 10.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Tradicional Moça Lata 395g",
+     "price": 14.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Leite Condensado Semidesnatado Piracanjuba 395g",
+     "price": 5.97
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Integral Moça Preço Especial Nestlé Lata 395g",
+     "price": 8.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Semidesnatado Moça 395g",
+     "price": 6.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Tradicional Moça Lata 395g",
+     "price": 14.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Leite Condensado Caixinha Sem Lactose Moça 395g",
+     "price": 12.98
+    }
+   ],
+   "oracleSize": 38,
+   "note": "Leite condensado comum é exato; versões semidesnatada ou sem lactose são aceitáveis. Produtos com esse sabor ou nome, mas de outro tipo, estão errados."
+  },
+  {
+   "id": "s068",
+   "text": "biscoito recheado",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9183,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Biscoito Recheado Passatempo Sabor Chocolate 130g",
+     "price": 3.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Biscoito Recheado Chocolate Passatempo Nestlé 130g",
+     "price": 3.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Biscoito Recheado Bono Nestlé 126g Chocolate",
+     "price": 3.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Biscoito Recheado Oreo Original 90g",
+     "price": 7.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Biscoito Recheado Mini Oreo original 35g",
+     "price": 6.71
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Biscoito Recheado Oreo Mini Sabor Chocolate e Baunilha 35g",
+     "price": 3.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Biscoito Recheado Oreo Original Sabor Chocolate e Baunilha 36g",
+     "price": 3.39
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Biscoito Recheado Passatempo Sabor Chocolate 130g",
+     "price": 3.39
+    }
+   ],
+   "oracleSize": 47,
+   "note": "Biscoitos recheados comuns atendem ao pedido; versões mini e multipack são aceitáveis. Wafer, outros biscoitos e produtos não alimentícios não atendem."
+  },
+  {
+   "id": "s074",
+   "text": "creme de leite",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8336,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Creme de Leite Tradicional Nestlé Lata 300g",
+     "price": 6.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Creme de Leite Nestlé 200g",
+     "price": 4.47,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Creme de Leite Nestlé 200g",
+     "price": 4.47
+    },
+    {
+     "store": "Mambo",
+     "name": "Creme de Leite Tradicional Nestlé Lata 300g",
+     "price": 6.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Creme de Leite Fresco Tipo A Sem Glúten Xandô 300g",
+     "price": 26.98
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Creme de leite culinário atende ao pedido; a versão fresca é aceitável. Produtos de higiene, para pets e outros itens não atendem."
+  },
+  {
+   "id": "s078",
+   "text": "presunto fatiado",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9694,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Presunto Levíssimo Fatiado Seara (unidade ~200 g)",
+     "price": 9.19,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Presunto Cozido Fatiado Seara 180g",
+     "price": 13.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Presunto Cozido Soltíssimo Fatiado Sadia 200g",
+     "price": 18.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Presunto Cozido sem Capa Fatiado Perdigão Kg",
+     "price": 41.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Presunto Cozido Sem Capa Fatiado Sadia Kg",
+     "price": 44.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Presunto Levíssimo Fatiado Seara Kg",
+     "price": 45.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Presunto Royal Fatiado Seara Gourmet Kg",
+     "price": 59.9
+    }
+   ],
+   "oracleSize": 44,
+   "note": "Presunto fatiado comum é exato; versões fatiadas não especificadas são aceitáveis. Alimentos com presunto e itens de outros tipos estão errados."
+  },
+  {
+   "id": "s079",
+   "text": "iogurte natural",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11551,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Bela Vista 170g",
+     "price": 3.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Whey Tradicional 14g de Proteínas Verde Campo 140g",
+     "price": 11.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Desnatado Momento Mambo 1kg",
+     "price": 27.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Integral Natural Nestlé 170g",
+     "price": 5.09
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Integral Danone 160g",
+     "price": 3.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Parcialmente Desnatado Natural Viv Vigor 150g",
+     "price": 3.29
+    },
+    {
+     "store": "Mambo",
+     "name": "Iogurte Natural Desnatado Danone 160g",
+     "price": 3.89
+    }
+   ],
+   "oracleSize": 55,
+   "note": "Aceitei iogurtes alimentícios naturais, inclusive versões desnatada e com whey; rejeitei outros alimentos e produtos não alimentícios."
+  },
+  {
+   "id": "s093",
+   "text": "bala de goma",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 8412,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balas de Goma Gummy Vinagre de Maçã Emana 150g",
+     "price": 71.98,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bala de Goma - Kids Burgoma - Kidszone",
+     "price": 3.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bala de Goma - Kids Burgoma - Kidszone",
+     "price": 3.99
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Aceitei balas de goma e de gelatina; rejeitei chicletes, suplementos e produtos de outros tipos."
+  },
+  {
+   "id": "s092",
+   "text": "chocolate em barra ao leite",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 14163,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Chocolate em Barra ao Leite Danke 90g",
+     "price": 14.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chocolate Barra ao Leite Swiss Classic Lindt 100g",
+     "price": 38.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Chocolate Ao Leite Suflair Nestlé 50g",
+     "price": 6.47,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Chocolate Ao Leite Goldko Zero Açúcar 20g",
+     "price": 13.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Chocolate Luckau ao Leite Sem Glúten Sem Lactose Sem Açúcar 20g",
+     "price": 9.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Chocolate Lacta Ao Leite 80g",
+     "price": 11.79
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Chocolate Lacta Ao Leite Oreo 90g",
+     "price": 11.79
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Chocolate Diamante Negro Ao Leite Crocante 80g",
+     "price": 11.79
+    }
+   ],
+   "oracleSize": 65,
+   "note": "Aceitei tabletes de chocolate ao leite e suas variações; rejeitei barras proteicas, wafers, bombons e produtos de outros usos."
+  },
+  {
+   "id": "s085",
+   "text": "macarrão instantâneo miojo",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 18880,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Macarrão Instantâneo Sabor Legumes Nissin Lámen 85g",
+     "price": 3.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Instantâneo Sabor Frango Assado Nissin Lámen 85g",
+     "price": 3.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Macarrão Instantâneo Lámen Canja de Galinha Turma do Chico Bento Nissin 75g",
+     "price": 3.59,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Macarrão Instantâneo Sabor Legumes Nissin Lámen 85g",
+     "price": 3.59
+    },
+    {
+     "store": "Drogal",
+     "name": "Macarrão Instantâneo Nissin Lámen Sabor Galinha Caipira 85g",
+     "price": 4.29
+    }
+   ],
+   "oracleSize": 44,
+   "note": "Miojo é macarrão instantâneo; sabores e formatos variados são aceitos, mas versões infantis e itens de outro uso não atendem ao pedido."
+  },
+  {
+   "id": "s098",
+   "text": "guaraná antarctica 2 litros",
+   "cat": "bebidas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9223,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Refrigerante de Guaraná Antarctica Pet 2L",
+     "price": 8.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Refrigerante Sem Açúcar Guaraná Antarctica Pet 2L",
+     "price": 8.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Refrigerante de Guaraná Antarctica Pet 2L",
+     "price": 8.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Refrigerante Sem Açúcar Guaraná Antarctica Pet 2L",
+     "price": 8.99
+    }
+   ],
+   "oracleSize": 68,
+   "note": "Pedido de refrigerante Guaraná Antarctica 2 litros; a versão sem açúcar é aceitável, mas outras marcas, volumes e tipos são errados."
+  },
+  {
+   "id": "s100",
+   "text": "cerveja lata skol",
+   "cat": "bebidas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12129,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Cerveja Pilsen Skol Lata 269ml",
+     "price": 3.29,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Cerveja Pilsen Skol Lata 269ml",
+     "price": 3.29
+    },
+    {
+     "store": "Mambo",
+     "name": "Cerveja Pilsen Skol Lata 350ml",
+     "price": 4.29
+    }
+   ],
+   "oracleSize": 67,
+   "note": "Aceitei cerveja Skol em lata, sem exigir volume específico; a versão sem álcool não corresponde ao pedido comum."
+  },
+  {
+   "id": "s104",
+   "text": "chá mate gelado",
+   "cat": "bebidas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 14307,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Chá Matte Leão Natural 450ml",
+     "price": 9.25,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chá Mate Limão Matte Leão Garrafa 450ml",
+     "price": 5.59,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chá Mate Original Sem Açúcar Matte Leão Garrafa 1,5L",
+     "price": 9.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Chá Matte Ice Tea Leão Pêssego 450ml",
+     "price": 9.25
+    },
+    {
+     "store": "Drogal",
+     "name": "Chá Matte Ice Tea Leão Limão 450ml",
+     "price": 9.25
+    },
+    {
+     "store": "Drogal",
+     "name": "Chá Matte Leão Natural 450ml",
+     "price": 9.25
+    }
+   ],
+   "oracleSize": 67,
+   "note": "Aceitei chá mate pronto para beber gelado; sabores e volumes não foram especificados. Sachês e chás de outras plantas não atendem ao pedido."
+  },
+  {
+   "id": "s106",
+   "text": "banana",
+   "cat": "hortifruti",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9186,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Banana Nanica (unidade ~180 g)",
+     "price": 1.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Prata (unidade ~190 g)",
+     "price": 2.46,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Prata Turma da Mônica 750g",
+     "price": 10.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Banana Prata Kg",
+     "price": 12.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Nanica Kg",
+     "price": 9.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Nanica Orgânica Qualyban 600g",
+     "price": 11.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Prata Orgânica Kg",
+     "price": 12.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Banana Nanica Orgânica Kg",
+     "price": 9.49
+    }
+   ],
+   "oracleSize": 42,
+   "note": "Pedido de banana in natura; variedades, pesos e versões orgânicas servem. Doces, alimentos preparados e outros produtos não substituem a fruta."
+  },
+  {
+   "id": "s110",
+   "text": "batata",
+   "cat": "hortifruti",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9988,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Batata Bolinha Swift 1,02Kg",
+     "price": 8.9
+    },
+    {
+     "store": "Swift",
+     "name": "Batata em Cubos Swift 1,02Kg",
+     "price": 16.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Batata Lavada Especial Kg",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Pedido genérico por batata comum; aceito batata in natura ou em cubos, não batata-doce, salgadinhos, preparações ou acessórios."
+  },
+  {
+   "id": "s118",
+   "text": "linguiça toscana",
+   "cat": "acougue",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8612,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Linguiça Suína Toscana Aurora (unidade ~700 g)",
+     "price": 12.58,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Linguiça Suína Toscana Sadia (unidade ~700 g)",
+     "price": 18.18,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Linguiça Toscana Swift 700g",
+     "price": 18.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Linguiça Toscana Fina Swift 500g",
+     "price": 21.9
+    },
+    {
+     "store": "Swift",
+     "name": "Linguiça Toscana Swift 700g",
+     "price": 18.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Linguiça Suína Toscana Aurora Kg",
+     "price": 17.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Linguiça Toscana Nanica Rocca Kg",
+     "price": 29.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Linguiça Suína Toscana Sadia Kg",
+     "price": 25.98
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Linguiça toscana comum é exata; versões fina, nanica ou congelada são aceitáveis, pois esses atributos não foram especificados."
+  },
+  {
+   "id": "s119",
+   "text": "filé de tilápia",
+   "cat": "acougue",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7815,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Swift 400g",
+     "price": 21.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Imp Swift 800g",
+     "price": 32.9
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Swift 400g",
+     "price": 21.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Filé de Tilápia Congelada Carapreta 500g",
+     "price": 44.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Filé de Saint Peter Fresco Mambo Kg",
+     "price": 59.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Filé de Tilápia Fresca Mambo Kg",
+     "price": 79.98
+    }
+   ],
+   "oracleSize": 34,
+   "note": "Aceitei filés de tilápia sem preparo especial, inclusive Saint Peter; empanado, ração e produtos de outros tipos não atendem ao pedido."
+  },
+  {
+   "id": "s121",
+   "text": "shampoo anticaspa",
+   "cat": "higiene",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10427,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Head & Shoulders Anticaspa Limpeza Refrescante 400ml",
+     "price": 22.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Shampoo Anticaspa Head & Shoulders Men 3 em 1 400ml",
+     "price": 24.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa Clear Hidratação Intensa 400ml",
+     "price": 26.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Mantecorp Anticaspa Skincare Pielus DI 400ml",
+     "price": 133.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa Clear Men Ice Cool Menthol 400ml",
+     "price": 25.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa Clear Men Limpeza Diária 2 em 1 400ml Grátis 70ml",
+     "price": 24.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa Intensivo Darrow Doctar Plus 240ml",
+     "price": 98.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Shampoo Anticaspa Ducray Kelual DS 100ml",
+     "price": 86.99
+    }
+   ],
+   "oracleSize": 37,
+   "note": "Shampoos anticaspa comuns atendem ao pedido; versões masculinas ou especiais são aceitáveis. Medicamentos, produtos pet, brinquedos e porta-shampoo não atendem."
+  },
+  {
+   "id": "s129",
+   "text": "desodorante aerosol masculino",
+   "cat": "higiene",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9803,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Desodorante Aerossol Antitranspirante Masculino Adidas Sport Fresh 150ml",
+     "price": 14.69,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Masculino Bozzano Invisible 200ml Aerossol",
+     "price": 13.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Active Dry 72 horas 150ml",
+     "price": 14.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Active Dry 72 horas 150ml",
+     "price": 14.9
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerossol Dove Men+Care Invisible Dry 250 ml",
+     "price": 23.09
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerossol Nívea Men Black&White Invisible 200ml",
+     "price": 15.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Dove Men+Care Sem Perfume 150ml Aerosol",
+     "price": 16.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Desodorante Antitranspirante Aerosol Masculino Rexona Sem Perfume 72 horas 150ml",
+     "price": 14.9
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Aceitei desodorantes aerossóis masculinos para uso corporal; produtos para os pés e de outras categorias não atendem ao pedido."
+  },
+  {
+   "id": "s127",
+   "text": "enxaguante bucal",
+   "cat": "higiene",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12462,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Enxaguante Bucal Controle de Odor Plax Colgate 500ml",
+     "price": 16.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Enxaguante Bucal Colgate Plax Fresh Mint 60ml",
+     "price": 5.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Enxaguante Bucal Colgate Plax Melancia 500ml Leve Mais Pague Menos",
+     "price": 14.44,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Enxaguante Bucal Colgate PerioGard Uso Diário Sem Álcool 500ml",
+     "price": 50.09
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Enxaguante Bucal Listerine Cool Mint Suave Sem Álcool 500ml",
+     "price": 18.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Enxaguante Bucal Colgate Plax Odor Control Zero Álcool 750ml",
+     "price": 21.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Enxaguante Bucal Listerine Cool Mint Suave Sem Álcool 1L",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Enxaguante Bucal Listerine Cool Mint Intenso 1L",
+     "price": 30.99
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Enxaguantes bucais comuns para pessoas atendem ao pedido; versões veterinárias, infantis, de uso terapêutico específico e itens não relacionados não atendem."
+  },
+  {
+   "id": "s135",
+   "text": "algodão",
+   "cat": "higiene",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11081,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Algodão Hidrófilo em Rolo Triane 25g",
+     "price": 6.29,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Algodão Hidrófilo Family Care Cotton Line 50g",
+     "price": 5.09,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Algodão Ever Care Zig Zag 50g",
+     "price": 8.59,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Discos de Algodão Ever Care 100 Unidades",
+     "price": 17.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Algodão Quadrado Ever Care 250 Unidades",
+     "price": 22.59
+    },
+    {
+     "store": "Cobasi",
+     "name": "Algodão Alvejado Uso Geral Cotlín",
+     "price": 12.9
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Algodão Choices Beauty Disco Leve 100 Pague 80 Unidades",
+     "price": 13.12
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Algodão Dauf Disco 50 Unidades",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Algodão comum atende ao pedido; formatos não especificados são aceitáveis. Versões para bebês ou pets e produtos que apenas mencionam algodão não atendem."
+  },
+  {
+   "id": "s136",
+   "text": "fralda pampers tamanho m",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9399,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Fralda Pampers Super Sequinha Mega M 40 Unidades",
+     "price": 50.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Fraldas Pampers Confort Sec Max M 112 Unidades",
+     "price": 173.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Supersequinha Tamanho M 68 Unidades",
+     "price": 94.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Confort Sec Tamanho M 108 Unidades",
+     "price": 149.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Fralda Pampers Supersequinha Tamanho M 68 Unidades",
+     "price": 94.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Fralda Pampers Premium Care M 80 Unidades",
+     "price": 147.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Fralda Pampers Premium Care M com 34 Unidades",
+     "price": 125.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Fralda Confort Sec M Pampers com 44 Unidades",
+     "price": 133.98
+    }
+   ],
+   "oracleSize": 62,
+   "note": "Aceitei fraldas Pampers convencionais tamanho M; fraldas tipo calça, para nadar, de outras marcas ou de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "s137",
+   "text": "lenço umedecido",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11416,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Lenço Umedecido Turma da Mônica Huggies com 48 unidades",
+     "price": 12.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Lenço Umedecido Amorável Baby Aloe Vera 48 Unidades",
+     "price": 12.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Lenços Umedecidos com 40 Unidades Meu Bebê Minha Vida Nutriex",
+     "price": 7.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Lenço Umedecido Ever Baby Sem Perfume 4 pacotes 48 Unidades",
+     "price": 40.84
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Lenço Umedecido Pampers Aloe Vera 4 Pacotes com 48 Unidades",
+     "price": 45.07
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Lenço Umedecido Pampers Cuidado do Bebê 4 Pacotes com 48 Unidades",
+     "price": 45.07
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Lenços Umedecidos João e Maria Bebê Glicerina Hipoalergênico Sem Fragrância 45 Unidades",
+     "price": 13.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Kit Lenço Umedecido João E Maria Com Fragrância Bebê Pacote 4 Und 45 Unidades Cada Leve 4 Pague 3",
+     "price": 38.99
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Lenços umedecidos comuns para bebês atendem ao pedido genérico; marcas, versões e quantidades variam. Lenços de uso íntimo, higiênico, corporal ou pet não atendem."
+  },
+  {
+   "id": "s139",
+   "text": "pomada para assadura",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "medicine_leak",
+   "kind": "medicine",
+   "ms": 8692,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Pomada Protetora Contra Assaduras Desitin Máxima Proteção 57g",
+     "price": 82.55,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pomada para Assadura Babymed Óleo de Amêndoas 40g",
+     "price": 8.99,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pomada para Assadura Cetrilan Creme Protetor 40g",
+     "price": 34.39,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 71,
+   "note": "Pedido de pomada para assadura é tratado como pedido de medicamento; o serviço não deve mostrar nenhum produto."
+  },
+  {
+   "id": "s141",
+   "text": "leite em pó para bebê",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 10854,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 2 800g",
+     "price": 71.75
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 1 800g",
+     "price": 68.95
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Profutura Gold 1 800g",
+     "price": 119.49
+    }
+   ],
+   "oracleSize": 74,
+   "note": "Leite em pó para bebê é fórmula infantil; leite em pó comum, fórmulas de 1 a 3 anos e acessórios não atendem ao pedido."
+  },
+  {
+   "id": "s142",
+   "text": "tinta de cabelo castanho",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10190,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Tinta de Cabelo Biocolor Mini Kit Castanho Médio Nada Básico 4.0",
+     "price": 15.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Tinta de Cabelo Koleston Castanho Médio 40",
+     "price": 32.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tinta De Cabelo Casting Creme Gloss De L’oréal Paris 400 Castanho Natural 246g",
+     "price": 42.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Coloração Semipermanente Creme Henna Surya Castanho Escuro 70ml",
+     "price": 43.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 30 Castanho Escuro",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 40 Castanho Médio",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo L’Oréal Paris Casting Creme Gloss 400 Castanho Natural",
+     "price": 41.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 50 Castanho Claro",
+     "price": 29.99
+    }
+   ],
+   "oracleSize": 73,
+   "note": "Aceitei tintas e colorações de cabelo em tons castanhos; produtos de outros usos ou cores são inadequados."
+  },
+  {
+   "id": "s143",
+   "text": "esmalte vermelho",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 9636,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Colorama Verniz & Cor 40 Graus Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Pedido de esmalte vermelho para unhas; intensificador, removedor, tinta para superfícies e produtos sem indicação confiável da cor vermelha não atendem."
+  },
+  {
+   "id": "s148",
+   "text": "perfume feminino",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 14423,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Perfume Feminino Eau de Parfum Adidas Vibes Get Comfy 50ml",
+     "price": 138.55,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Perfume Feminino Eua de Parfum Nautica For Her Jasmine Coast 50ml",
+     "price": 149.75,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Perfume Feminino Parfum Brasil Escandalo 100ml",
+     "price": 85.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Perfume Feminino Gabriela Sabatini Eau De Toilette 30ml + Nécessaire",
+     "price": 104.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Perfume Miss Gabriela Sabatini Eau de Toilette 30ml",
+     "price": 117.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Perfume Feminino Parfum Brasil Escandalo 100ml",
+     "price": 85.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Perfume Mon Bourjois La Fantastique Eau de Parfum Feminino 50ml",
+     "price": 87.75
+    },
+    {
+     "store": "Drogal",
+     "name": "Perfume Eau de Toilette Feminino Chanson D'Eau Vanilla Les Eaux du Monde Polynesia 100ml",
+     "price": 181.39
+    }
+   ],
+   "oracleSize": 33,
+   "note": "Perfumes de uso pessoal feminino atendem ao pedido; kits com perfume são aceitáveis. Produtos para pets, ambientes ou de outras categorias não atendem."
+  },
+  {
+   "id": "s152",
+   "text": "água sanitária",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9381,
+   "shown": [
+    {
+     "store": "Cobasi",
+     "name": "Água Sanitária Daclor com Cloro Ativo Sanol 2 L",
+     "price": 9.5,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Cobasi",
+     "name": "Água Sanitária Daclor com Cloro Ativo Sanol",
+     "price": 9.5
+    },
+    {
+     "store": "Mambo",
+     "name": "Água Sanitária Super Candida 2 Litros",
+     "price": 6.29
+    },
+    {
+     "store": "Mambo",
+     "name": "Água Sanitária Super Candida 5 Litros",
+     "price": 16.98
+    }
+   ],
+   "oracleSize": 51,
+   "note": "Água sanitária de qualquer marca ou volume atende ao pedido; os demais produtos têm outro uso."
+  },
+  {
+   "id": "s154",
+   "text": "multiuso veja",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15364,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Gold Lavanda e Álcool 10% de Desconto Veja 500ml",
+     "price": 7.09,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Banheiro AntiBac Veja Refil 400ml",
+     "price": 14.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Banheiro AntiBac Veja Refil 400ml",
+     "price": 14.49
+    }
+   ],
+   "oracleSize": 43,
+   "note": "Aceitos apenas limpadores multiuso da marca Veja; versões, fragrâncias, volumes e embalagens não foram especificados."
+  },
+  {
+   "id": "s163",
+   "text": "luva de borracha",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11567,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Luva Multiuso Média Limppano",
+     "price": 7.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Luva Bompack Multiuso Fina 10 Unidades Tamanho G",
+     "price": 12.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Cobasi",
+     "name": "Luva Látex Plus Multiuso Sanro P",
+     "price": 11.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Cobasi",
+     "name": "Luva de Látex Multiuso Top Sanro Amarela",
+     "price": 14.9
+    },
+    {
+     "store": "Cobasi",
+     "name": "Luva Látex Plus Multiuso Sanro",
+     "price": 11.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Luva Látex Amarela Forrada Imbat",
+     "price": 3.06
+    },
+    {
+     "store": "Obramax",
+     "name": "Luva Látex Azul/Amarela Slim Volk",
+     "price": 7.55
+    },
+    {
+     "store": "Obramax",
+     "name": "Luva Látex Amarela Silver Volk",
+     "price": 5.55
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Considerei luvas de borracha ou látex para uso doméstico; luvas de procedimento, esportivas, de segurança e acessórios têm outro uso."
+  },
+  {
+   "id": "s164",
+   "text": "inseticida",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 7303,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Inseticida Aerossol Pro Inset Multi-Inseticida 250ml",
+     "price": 6.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Multi Inseticida Spray SBP 285ml",
+     "price": 18.85,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Inseticida Forth",
+     "price": 42.9,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Multi Inseticida Repelex 280ml Spray",
+     "price": 14.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Multi Inseticida SBP Proteção Imediata 285ml Aerossol",
+     "price": 18.59
+    },
+    {
+     "store": "Mambo",
+     "name": "Inseticida Aerosol Base de Água Multi-Insetos Raid Leve Mais Pague Menos 420ml",
+     "price": 17.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Inseticida Aerossol SBP Ação Magnética 360ml",
+     "price": 26.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Inseticida Aerossol Leve+ Pague- SBP Multi 450ml",
+     "price": 25.98
+    }
+   ],
+   "oracleSize": 24,
+   "note": "Pedido genérico: aceito inseticidas domésticos multi-insetos; produtos para pragas específicas, jardinagem, repelentes e medicamentos não substituem a versão comum."
+  },
+  {
+   "id": "s165",
+   "text": "repelente",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9022,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Repelente Spray Above Protect 200ml",
+     "price": 12.65,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Repelente Propex Family Spray 200ml",
+     "price": 13.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Repelente Spray Xô Inseto Deet 200ml",
+     "price": 21.35,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Repelente Ever Care Icaridina Spray 100ml",
+     "price": 49.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Repelente Off! Family 200ml Loção",
+     "price": 26.9
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Repelente OFF! Family Aloe Vera Loção 200ml",
+     "price": 21.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Repelente Dauf Inseto Spray 100ml",
+     "price": 16.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Repelente De Insetos Off! Toque Leve Água Purificada Sem Perfume Spray 100ml",
+     "price": 36.99
+    }
+   ],
+   "oracleSize": 34,
+   "note": "Pedido genérico de repelente corporal contra insetos; versões comuns servem, mas produtos infantis, elétricos, para tecidos ou de outros usos não."
+  },
+  {
+   "id": "s167",
+   "text": "ração para cachorro filhote",
+   "cat": "pet",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12905,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Ração para Cães Filhotes Carne, Frango, Frutas e Leite Dog Chow Purina 900g",
+     "price": 22.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Cobasi",
+     "name": "Ração Golden Formula Cães Filhotes Raças Pequenas Carne, Arroz e Vegetais 1 kg",
+     "price": 24.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Cobasi",
+     "name": "Ração GranPlus Menu Cães Filhotes Carne e Arroz 3 kg",
+     "price": 66.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Cobasi",
+     "name": "Ração Fórmula Natural Fresh Meat Cães Filhotes Portes Mini e Pequeno Frango",
+     "price": 70.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Ração para Cães Filhotes Carne, Frango, Frutas e Leite Dog Chow Purina 900g",
+     "price": 22.49
+    }
+   ],
+   "oracleSize": 63,
+   "note": "Ração comum para cães filhotes atende ao pedido; porte não especificado é aceitável. Ração úmida é uma versão aceitável; outras espécies, idades ou usos não atendem."
+  },
+  {
+   "id": "s170",
+   "text": "coleira para cachorro",
+   "cat": "pet",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11960,
+   "shown": [
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Simba Rei Leão - Disney P",
+     "price": 34.93,
+     "verdict": "exact"
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Garfield P",
+     "price": 34.93,
+     "verdict": "exact"
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Stitch - Disney P",
+     "price": 44.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Simba Rei Leão - Disney",
+     "price": 34.93
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Stitch - Disney",
+     "price": 44.9
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriaativa Pets A Dama e o Vagabundo - Disney",
+     "price": 49.9
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Coleira Para Cachorro Zonacriativa Pets Garfield",
+     "price": 34.93
+    }
+   ],
+   "oracleSize": 69,
+   "note": "Coleiras comuns para cachorro atendem ao pedido; coleiras antipulgas ou antiparasitárias têm outro uso, e guias não são coleiras."
+  },
+  {
+   "id": "s176",
+   "text": "bola de futebol",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7789,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia",
+     "price": 107.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bola De Futebol - Sportv - N 5 - Pvc - Azul E Vermelha - Futebol E Magia",
+     "price": 109.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bola de Futebol 420g Play&Fun Sortida",
+     "price": 29.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Bola de Futebol de Campo - Corinthians - Número 5 - Futebol e Magia",
+     "price": 107.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bola De Futebol - Sportv - N 5 - Pvc - Azul  E Vermelha - Futebol E Magia",
+     "price": 109.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bola de Futebol 280g Play&Fun Sortida",
+     "price": 29.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bola de Futebol N°5 Mizpa MZ-100",
+     "price": 19.98
+    }
+   ],
+   "oracleSize": 72,
+   "note": "Bolas próprias para jogar futebol atendem ao pedido; brinquedos para pets, futebol americano e produtos apenas temáticos não atendem."
+  },
+  {
+   "id": "s178",
+   "text": "bola de basquete",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9694,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Bola - Basquete - Pantera Negra - Marvel",
+     "price": 89.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bola de Basquete - Streetball - Laranja - Spalding - Tamanho 7",
+     "price": 113.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bola de Basquete Spider BR8",
+     "price": 59.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Bola de Basquete - Streetball - Laranja - Spalding - Tamanho 7",
+     "price": 113.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bola de Basquete Spider BR8",
+     "price": 59.98
+    }
+   ],
+   "oracleSize": 72,
+   "note": "Bolas próprias para jogar basquete atendem ao pedido; bola para pet e versão para bebê não atendem."
+  },
+  {
+   "id": "s179",
+   "text": "corda de pular",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 15006,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Corda de Pular Ligth Kikos Branca",
+     "price": 19.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Corda de Pular com Luz Princesas EtiToys YD-341",
+     "price": 39.98,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Corda de Pular T95 Acte Sports Preta",
+     "price": 19.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Corda de Pular Ligth Kikos Branca",
+     "price": 19.98
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Corda de Pular T95 Acte Sports Preta",
+     "price": 19.98
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Aceitei cordas de pular comuns; versões infantis e cordas para outros usos não atendem ao pedido."
+  },
+  {
+   "id": "s180",
+   "text": "garrafa térmica esportiva",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11262,
+   "shown": [
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Térmica Max Emborrachada 500ml Lilás – Zonacriativa",
+     "price": 49.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Térmica Max Emborrachada 500ml Off White – Zonacriativa",
+     "price": 49.9
+    }
+   ],
+   "oracleSize": 67,
+   "note": "Aceitei garrafas térmicas portáteis adequadas ao uso esportivo; rejeitei modelos infantis, de café e produtos de outro tipo."
+  },
+  {
+   "id": "s183",
+   "text": "bomba de ar para bola",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9227,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bomba De Ar Manual Para Bolas Yins",
+     "price": 19.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Bomba de Ar Manual para Bolas Yins",
+     "price": 19.99
+    }
+   ],
+   "oracleSize": 66,
+   "note": "O pedido é de uma bomba de ar para encher bolas; bombas para água, vácuo ou outros usos não servem."
+  },
+  {
+   "id": "s184",
+   "text": "luva de goleiro",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 9113,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 51,
+   "note": "O pedido é por luvas esportivas de goleiro; nenhum produto listado tem esse uso."
+  },
+  {
+   "id": "s185",
+   "text": "copo descartável",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6457,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Rosa Regina C/50",
+     "price": 12.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Transparente Copobrás 180ml com 100 unidades",
+     "price": 16.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Transparente Copobras 200ml com 100 unidades",
+     "price": 18.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Transparente Copobrás 300ml com 100 unidades",
+     "price": 29.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Transparente Copobrás 180ml com 100 unidades",
+     "price": 16.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Copo Descartável Azul Regina 200ml com 50 Unidades",
+     "price": 12.98
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Aceitei copos descartáveis para beber, inclusive de papel; diferenças de cor, capacidade e quantidade não foram especificadas."
+  },
+  {
+   "id": "s186",
+   "text": "prato descartável",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11697,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Prato Raso Descartável Branco Copobrás 17,5cm com 10 unidades",
+     "price": 10.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Prato de Papel Feliz Aniversário Silver Plastic 18cm 10 Unidades",
+     "price": 13.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Raso Descartável Branco Copobrás 17,5cm com 10 unidades",
+     "price": 10.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Plástico Aniversário 15cm Azul Regina 10 unidades",
+     "price": 3.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Papel 18cm C 10 Unidades",
+     "price": 13.49
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Aceitos pratos descartáveis de papel ou plástico; refeições prontas, pratos reutilizáveis e outros itens não atendem ao pedido."
+  },
+  {
+   "id": "s187",
+   "text": "lâmpada led 9w",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10061,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Lâmpada LED Bulbo A60 Luz Branca E27 Bivolt LedBee Lâmpada de Led Bulbo A60 9W E27 810 Lúmens Luz Branca",
+     "price": 1.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Lâmpada LED Bulbo A60 9W 6500K Bivolt Black Decker Lampada Led Bulbo A60 9W 6500K Bivolt Black Decker",
+     "price": 3.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Lâmpada Led 9W Kian Branca Bivolt",
+     "price": 2.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Lâmpada Led 9W Kian Branca Bivolt",
+     "price": 2.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Lâmpada Led 9W Kian Amarela Bivolt",
+     "price": 2.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Lâmpada Led 9W Avant Bivolt Branca",
+     "price": 2.99
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Lâmpada Led  9W Branca E27 Bivolt Ledvance",
+     "price": 3.79
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Lâmpada LED Bulbo A60 9W 6500K Bivolt Black Decker",
+     "price": 3.9
+    }
+   ],
+   "oracleSize": 55,
+   "note": "Lâmpadas LED comuns de 9W atendem ao pedido; formatos tubulares, modelos especiais e outras potências não."
+  },
+  {
+   "id": "s189",
+   "text": "pilhas recarregáveis",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 7178,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Recarregavel Aa 4 Unidades",
+     "price": 144.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Pilha Recarregável Econômica Rayovac AAA (Palito) - Cartela com 2 unidades",
+     "price": 33.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pilha Recarregável Pequena com 2 Unidades 2300mAh Alfacell",
+     "price": 29.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pilha Recarregável Pequena com 2 Unidades 1350mAh Rayovac",
+     "price": 39.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Pilha Recarregável 1000MHA Tipo AAA Elgin",
+     "price": 29.9
+    }
+   ],
+   "oracleSize": 40,
+   "note": "Aceitas apenas pilhas recarregáveis; pilhas comuns, bateria 9V, carregadores e outros produtos não atendem ao pedido."
+  },
+  {
+   "id": "s193",
+   "text": "tesoura",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10645,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Tesoura Multiuso Curvo Aço Inox Vonder",
+     "price": 14.3,
+     "verdict": "exact"
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 7\" 17,8cm Aço Inox Preto",
+     "price": 10.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 8 1/4\" 21cm Aço Inox Preto",
+     "price": 12.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Tesoura Multiuso Cor Preta Mozcada 20cm",
+     "price": 25.98
+    },
+    {
+     "store": "Obramax",
+     "name": "Tesoura Multiuso Curvo Aço Inox Vonder",
+     "price": 14.3
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 7\" 17,8cm Aço Inox",
+     "price": 10.99
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 8 1/4\" 21cm Aço Inox",
+     "price": 12.99
+    }
+   ],
+   "oracleSize": 42,
+   "note": "Pedido genérico de tesoura: aceitas apenas tesouras multiuso comuns; modelos para usos específicos e produtos diferentes não atendem."
+  },
+  {
+   "id": "s190",
+   "text": "extensão elétrica 3 metros",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12243,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Extensao 3 Tomadas Tripolar Com Plugue De 90° - 3 Metros 10A Preto Forceline",
+     "price": 34.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Extensão 3 Tomadas 3m Bipolar 10A Fiolux Preta",
+     "price": 14.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Extensão 3 Tomadas 3m Tripolar 10A Fiolux XConnect Plus Preta",
+     "price": 19.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Filtro de Linha com 5 Tomadas 10A 3 Metros Force Line",
+     "price": 45.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Filtro de Linha com 3 Tomadas 20A 3 Metros Force Line",
+     "price": 79.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Extensão elétrica Hardwork 2 pinus 3 metros 20A/205V laranja Daneva",
+     "price": 98.9
+    }
+   ],
+   "oracleSize": 63,
+   "note": "Extensões elétricas de 3 metros atendem ao pedido; filtros de linha com cabo de 3 metros são alternativas aceitáveis. Outros comprimentos ou usos não atendem."
+  },
+  {
+   "id": "s194",
+   "text": "cola branca",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8306,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Cola PVA Branco 1Kg Cola Branca PVA 1Kg",
+     "price": 28.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Cola PVA Extra Branco 1KG Cascorez",
+     "price": 42.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cola branca pva extra 500gTekbond",
+     "price": 21.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cola Branca 90G Leonora",
+     "price": 5.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cola Adesiva Tekbond 500g Branca",
+     "price": 24.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cola Branca 40g Escolar Imex",
+     "price": 3.49
+    },
+    {
+     "store": "Obramax",
+     "name": "Cola PVA Extra Branco 1KG Cascorez",
+     "price": 42.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cola branca pva extra 1kg Tekbond",
+     "price": 36.9
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Cola branca comum ou PVA atende; adesivos específicos para outros usos e produtos apenas brancos não atendem."
+  },
+  {
+   "id": "s195",
+   "text": "caneta bic azul",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7948,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC",
+     "price": 6.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caneta Cristal Dura+ Bic com 4 Azul",
+     "price": 8.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Canetas Esferográficas - Cristal Fina - 3 Unidades - Azul - BIC",
+     "price": 6.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caneta Cristal Dura+ Bic com 4 Azul",
+     "price": 8.99
+    }
+   ],
+   "oracleSize": 76,
+   "note": "Aceitei canetas BIC exclusivamente azuis; kits com outras cores e produtos que não são canetas azuis estão errados."
+  },
+  {
+   "id": "s198",
+   "text": "papel sulfite a4",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10380,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Papel Ofício Report Premium A4 75g 500 Folhas Suzano Branco",
+     "price": 34.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 35,
+   "note": "Papel sulfite A4 é papel para impressão; apenas S1 corresponde. Os demais são outros tipos de produto ou papel para outros usos."
+  },
+  {
+   "id": "s197",
+   "text": "caderno espiral 10 matérias",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 13702,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 74,
+   "note": "Apenas O34 é um caderno espiral de 10 matérias; os demais são outros produtos ou não atendem à especificação."
+  },
+  {
+   "id": "s199",
+   "text": "pasta com elástico",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9099,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Azul",
+     "price": 9.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Pasta Escolar Dello com Elástico 5.5cm Preta",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 64,
+   "note": "O pedido é de pasta escolar com elástico; tamanhos e cores não especificados são aceitáveis. Outros sentidos de “pasta” ou “elástico” não servem."
+  },
+  {
+   "id": "s200",
+   "text": "marca texto",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 11954,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Marca Texto Pastel Glitter C2 742028 Maped",
+     "price": 19.98
+    }
+   ],
+   "oracleSize": 42,
+   "note": "Pedido de marca-texto para destacar texto; apenas O27 corresponde. Os demais são produtos de outros tipos."
+  },
+  {
+   "id": "s204",
+   "text": "cabo lightning",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11836,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cabo Lightning 1.5m Easy Mobile Premium Preto",
+     "price": 59.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Cabo Lightning I2GO Certificado MFi 1,2m 2,4A PVC Flexível Flat Branco 1 Unidade",
+     "price": 103.99
+    }
+   ],
+   "oracleSize": 49,
+   "note": "Aceitos cabos com conector Lightning; cabos de outros tipos e itens que apenas mencionam “cabo” ou “cubo” estão errados."
+  },
+  {
+   "id": "s208",
+   "text": "mouse sem fio",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8876,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Mouse sem Fio Office Santana Preto",
+     "price": 29.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Mouse sem Fio Slim Multi MS300 MO380 Preto",
+     "price": 49.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Mouse sem Fio Office Santana Preto",
+     "price": 29.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Mouse sem Fio Slim Multi MS300 MO380 Preto",
+     "price": 49.99
+    }
+   ],
+   "oracleSize": 55,
+   "note": "O pedido é de mouse sem fio; apenas os produtos identificados como mouse sem fio atendem."
+  },
+  {
+   "id": "s211",
+   "text": "cartão de memória 128gb",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11291,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cartão de Memória 128GB com Adaptador MicroSD Hoopson SD-128",
+     "price": 179.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cartão de Memória 128GB com Adaptador MicroSD Hoopson SD-128",
+     "price": 179.9
+    }
+   ],
+   "oracleSize": 55,
+   "note": "O pedido é por cartão de memória de 128 GB; os cartões microSD dessa capacidade atendem. Os demais produtos são de outro tipo."
+  },
+  {
+   "id": "s214",
+   "text": "caixa de som bluetooth",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10343,
+   "shown": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caixa Acústica Bluetooth 60W Slim Box Sumay",
+     "price": 119.77,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caixa de Som Bluetooth CM300 Xsound Mondial Preta",
+     "price": 329.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caixa de Som Acústica Bluetooth 500W Xsound Mondial CM500",
+     "price": 429.49,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Caixa De Som - Bluetooth - Speaker - Guerreiras Do K-Pop - Bateria Recarregável - Candide",
+     "price": 169.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Caixa de Som Bluetooth Boombox 200W Aiwa Plus BBS-01B Preta",
+     "price": 1599.9
+    }
+   ],
+   "oracleSize": 71,
+   "note": "Caixas de som com Bluetooth atendem ao pedido; produtos de outras funções, mesmo com Bluetooth ou “som” no nome, não atendem."
+  },
+  {
+   "id": "s215",
+   "text": "ventilador de mesa",
+   "cat": "eletro",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11093,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Ventilador de Mesa Super Power com 6 Pás 30cm 60W Mondial Ventilador de Mesa Super Power Preto com 6 Pás 30cm 60w 127V",
+     "price": 129.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Ventilador de Mesa Breeze com 7 Pás 40cm 140W Elgin Ventilador de Mesa Breeze Preto com 7 Pás 40cm 140w 127V",
+     "price": 129.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V",
+     "price": 114.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa 40cm 6 Pás Britânia Super Turbo BVT405 150W Preto 127V",
+     "price": 144.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa Arno 40cm 6 Pás Essential VE2E Preto 127V",
+     "price": 219.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa 40cm 6 Pás Maxx Force Britânia BVT400 Preto com Prata 127V",
+     "price": 149.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa 40Cm 6 Pás Preto Mondial VSP40 127V",
+     "price": 139.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Ventilador de Mesa 30cm 6 Pás Preto Mondial 127V",
+     "price": 114.9
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Ventiladores próprios para mesa são exatos; modelos também utilizáveis na parede ou como coluna são aceitáveis. Os demais produtos não atendem ao pedido."
+  },
+  {
+   "id": "s220",
+   "text": "air fryer",
+   "cat": "eletro",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10316,
+   "shown": [
+    {
+     "store": "Philco",
+     "name": "Air Fryer Oven Philco 15L Redstone 10 Funções PAF15C 127V",
+     "price": 579.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Philco",
+     "name": "Air Fryer Philco 9,5L Visor Glass Redstone 1800W PAF95A 127V",
+     "price": 609.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Philco",
+     "name": "Air Fryer Oven Philco 16L 4 em 1 Painel Digital PAF16A 127V",
+     "price": 909.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Fritadeira Air Fryer Oven 12L Mondial AFON-12L-BI 127V",
+     "price": 549.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Fritadeira Air Fryer Oven 11L BAF11A Britânia Preta 127V",
+     "price": 449.9
+    },
+    {
+     "store": "Philco",
+     "name": "Air Fryer Oven Philco 15L Redstone 10 Funções PAF15C",
+     "price": 579.9
+    }
+   ],
+   "oracleSize": 48,
+   "note": "Air fryers e fritadeiras elétricas sem óleo atendem ao pedido; brinquedos, alimentos, limpadores e outros produtos não atendem."
+  },
+  {
+   "id": "s223",
+   "text": "frigideira antiaderente",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10849,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Frigideira Antiaderente Cor Preta Oikos 20x4cm",
+     "price": 57.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Frigideira Antiaderente Cor Preta Oikos 22x5cm",
+     "price": 69.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Brinox",
+     "name": "Frigideira Brinox Suprema Antiaderente Ceramic Life Ø20cm 950ml Vanilla Vanilla",
+     "price": 39.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Frigideira Antiaderente Piemonte Tramontina 20cm 0,9 L",
+     "price": 136.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Frigideira Antiaderente Cor Preta Oikos 22x5cm",
+     "price": 69.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Frigideira Antiaderente Cor Preta Oikos 20x4cm",
+     "price": 57.49
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Frigideira de Ovo Antiaderente Cereja Luz",
+     "price": 19.99
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Aceitei frigideiras antiaderentes de marcas e tamanhos não especificados; rejeitei utensílios, eletrodomésticos e outros tipos de panela."
+  },
+  {
+   "id": "s228",
+   "text": "garrafa de água",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13039,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Água Mineral sem Gás São Lourenço 300ml",
+     "price": 2.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Água Mineral sem Gás Ecoleve Pet 1,5L",
+     "price": 3.29,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Água Sem Gás Crystal 500ml",
+     "price": 2.27,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Kopenhagen",
+     "name": "Garrafa em Vidro e Bambu com Cristais 500ml",
+     "price": 89.9
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Garrafa de água - Retratil - 1L - Branca e preta - Sortida - Maccabi",
+     "price": 69.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Garrafa de água - 1 litro - Laranja - Maccabi",
+     "price": 79.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Água Mineral Lindoya Verão Sem Gás 900ml",
+     "price": 5.79
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Considerei água mineral em garrafa como exata; garrafas reutilizáveis para água, aceitáveis. Bebidas diferentes, acessórios e itens infantis são errados."
+  },
+  {
+   "id": "s235",
+   "text": "cabide",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11751,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Cabide Triplo Arthi para Calças com Cava Cromado",
+     "price": 14.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Kit Cabide de Madeira 60 Unidades",
+     "price": 319.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Conjunto de Cabides SP Útil 141 Preto Leve 5 Pague 4",
+     "price": 8.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Conjunto Cabides com 5 Unidades 5032 Dasplast Preta",
+     "price": 9.98
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cabide Triplo Arthi para Calças com Cava Cromado",
+     "price": 14.9
+    }
+   ],
+   "oracleSize": 33,
+   "note": "Cabide, sem especificações, indica peça para pendurar roupas; modelos para calças são aceitáveis. Cabides de banheiro e outros produtos têm outro uso."
+  },
+  {
+   "id": "s236",
+   "text": "organizador de gaveta",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13972,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Organizador de Gaveta Transparente com Tampa Preta Arqplast",
+     "price": 29.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Organizador Cesto Gaveta 1,2L 345x107x45mm Cristal Arthi",
+     "price": 39.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Organizador De Gaveta Branco Secalux",
+     "price": 35.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Kit Organizador de Gavetas Block Cazza Branco",
+     "price": 9.98
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Organizador de Gaveta Transparente com Tampa Preta Arqplast",
+     "price": 29.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Organizador Cesto Gaveta 6,3L 345x225x95mm Cristal Arthi",
+     "price": 68.9
+    }
+   ],
+   "oracleSize": 66,
+   "note": "Aceitei organizadores identificados como próprios para gavetas; cestos, potes, gaveteiros e organizadores de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "s241",
+   "text": "chave de fenda",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9356,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Chave Fenda Crv com Imã Sparta Chave Fenda 1/8\" X 4\" Crv com Imã Sparta",
+     "price": 4.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Chave Isolada Fenda 1000V Tramontina Pro Chave Isolada Fenda 1000V 3X150mm Tramontina Pro",
+     "price": 14.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Chave Fenda Aço Carbono sem Imã Tramontina",
+     "price": 6.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Chave Isolada Fenda 1000V Tramontina Pro",
+     "price": 14.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Chave de Fenda Tramontina Ponta Chata 1/8x4\" Amarela",
+     "price": 5.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Chave de fenda 3/16X6\" com ponta chata amarela Tramontina",
+     "price": 9.9
+    }
+   ],
+   "oracleSize": 51,
+   "note": "Chaves de fenda avulsas atendem ao pedido; jogos, chaves Phillips e produtos de outros usos não."
+  },
+  {
+   "id": "s246",
+   "text": "bucha para parede",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 9674,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Bucha Plástica com Aba Sforplast",
+     "price": 7.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon com Aba Sforplast",
+     "price": 23.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Plástica Sforplast",
+     "price": 7.19
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon sem Aba Sforplast",
+     "price": 24.89
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon sem Anel com Parafuso Cabeça Chata Fischer",
+     "price": 45.9
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Bucha para parede é peça de fixação; esponjas, buchas de banho e produtos que apenas mencionam parede não atendem ao pedido."
+  },
+  {
+   "id": "s259",
+   "text": "carrinho de brinquedo",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10062,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Carrinho City Police Car 1 Unidade",
+     "price": 8.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinho Royal Toys Speed Turbo 1 Unidade",
+     "price": 9.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinho Monster Truck Sports 4WD Power 1 Unidade",
+     "price": 10.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Carrinho Monster Truck Sports 4WD Power 1 Unidade",
+     "price": 10.59
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinhos Colecionáveis Hot Wheels Sortidos",
+     "price": 18.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinho City Engenheiro Trator Super Construção 1 Unidade",
+     "price": 8.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinho City Car 1 Unidade",
+     "price": 8.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Carrinho City Police Car 1 Unidade",
+     "price": 8.99
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Aceitos apenas carrinhos de brinquedo em miniatura; veículos de passeio, carrinhos utilitários e produtos sem relação são de outro tipo."
+  },
+  {
+   "id": "s260",
+   "text": "jogo de tabuleiro",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9813,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Hamburgueria Maluca - Grow",
+     "price": 36.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Bloqueio - Preto - Grow",
+     "price": 43.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Mercado da Bola - Nig Brinquedos",
+     "price": 48.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Mercado da Bola - Nig Brinquedos",
+     "price": 48.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Bloqueio - Preto - Grow",
+     "price": 43.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Banco Imobiliário - Estrela",
+     "price": 105.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo de Tabuleiro - Hamburgueria Maluca - Grow",
+     "price": 36.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Jogo De Tabuleiro -  War - O Jogo Da Estratégia - Grow",
+     "price": 109.99
+    }
+   ],
+   "oracleSize": 57,
+   "note": "Aceitei jogos de tabuleiro; jogos de cartas, de blocos e de bebida, além de outros produtos chamados “jogo”, não atendem ao pedido."
+  },
+  {
+   "id": "s254",
+   "text": "presente para mãe",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "vague_gift",
+   "ms": 15361,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Perfume Feminino Eau de Parfum Adidas Vibes Get Comfy 50ml",
+     "price": 138.55,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Perfume Feminino Eua de Parfum Nautica For Her Jasmine Coast 50ml",
+     "price": 149.75,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Perfume Feminino Parfum Brasil Escandalo 100ml",
+     "price": 85.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Kopenhagen",
+     "name": "Kit Presentes para Agradar",
+     "price": 201.6
+    },
+    {
+     "store": "Kopenhagen",
+     "name": "Kit Presentes Especiais",
+     "price": 139.7
+    },
+    {
+     "store": "Kopenhagen",
+     "name": "Kit Presentes que Marcam",
+     "price": 211.6
+    },
+    {
+     "store": "Kopenhagen",
+     "name": "Combo Te amo Para Sempre",
+     "price": 254.8
+    },
+    {
+     "store": "Mambo",
+     "name": "Lata de coração para presente Lindt Lindor Chocolate Ao Leite 50g com 4 unidades",
+     "price": 55.98
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Aceitei perfumes, chocolates, kits e itens de autocuidado ou presentes domésticos plausíveis; rejeitei embalagens, remédios, acessórios e itens utilitários avulsos."
+  },
+  {
+   "id": "s262",
+   "text": "balão de festa",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9197,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Balão de Latéx Globo Liso N°07 Cores Sortidas Regina 8 Unidades",
+     "price": 5.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 5",
+     "price": 8.89,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 5",
+     "price": 8.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 3",
+     "price": 8.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 6",
+     "price": 8.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 2",
+     "price": 8.89
+    },
+    {
+     "store": "Mambo",
+     "name": "Balão Metalizado com canudo Prata 16 Nº 4",
+     "price": 8.89
+    }
+   ],
+   "oracleSize": 46,
+   "note": "Balões decorativos de festa atendem ao pedido; doces, acessórios hidráulicos e demais produtos não são balões de festa."
+  },
+  {
+   "id": "s266",
+   "text": "ursinho de pelúcia",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 14553,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Pelúcia - Ursinho Tie Dye - Jellyros - Modelos Sortidos - Toyng",
+     "price": 49.91,
+     "verdict": "exact"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Pelúcia - Ursinho Camarada - 25cm - Sortido - Fanfun",
+     "price": 99.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Pelúcia Puffy Ursinho Pooh – Disney",
+     "price": 124.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Zona Criativa",
+     "name": "Pelúcia Ursinho Pooh Baby Fruit – Disney",
+     "price": 169.9
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Pelúcia Puffy Ursinho Pooh – Disney",
+     "price": 124.9
+    }
+   ],
+   "oracleSize": 28,
+   "note": "Aceitei ursinhos de pelúcia comuns; rejeitei brinquedos para pets, versão infantil de atividades e produtos que não são ursinhos de pelúcia avulsos."
+  },
+  {
+   "id": "s265",
+   "text": "buquê de flores",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 14300,
+   "shown": [
+    {
+     "store": "Cobasi",
+     "name": "Buquê Rotterdam com Flores Naturais Único",
+     "price": 89.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Cobasi",
+     "name": "Buquê Haia com Flores Naturais Único",
+     "price": 99.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Cobasi",
+     "name": "Buquê Amsterdam com Flores Naturais Único",
+     "price": 104.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Cobasi",
+     "name": "Buquê Amsterdam com Flores Naturais",
+     "price": 104.9
+    },
+    {
+     "store": "Cobasi",
+     "name": "Buquê Haia com Flores Naturais",
+     "price": 99.9
+    }
+   ],
+   "oracleSize": 54,
+   "note": "O pedido é por um buquê de flores; os buquês naturais correspondem. Produtos apenas com nomes ou estampas florais não correspondem."
+  },
+  {
+   "id": "s274",
+   "text": "chinelo havaianas",
+   "cat": "roupas",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 9876,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 37/38 1 Par",
+     "price": 31.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 47/48 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 33/34 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 35/36 1 Par",
+     "price": 29.99
+    }
+   ],
+   "oracleSize": 42,
+   "note": "O pedido exige chinelo da marca Havaianas; modelos e tamanhos não foram especificados."
+  },
+  {
+   "id": "s278",
+   "text": "álcool em gel",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7772,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Álcool em Gel Coperalcool 500g",
+     "price": 18.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Álcool Gel Higienizador Coperalcool 400ml",
+     "price": 22.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Antisseptico Pague Menos 140ml",
+     "price": 9.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Gel Higienizante Giovanna Baby Blue 60g",
+     "price": 6.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Gel Higienizante Giovanna Baby Blue 70% Álcool 500ml",
+     "price": 22.36
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Higienizante Para As Mãos Giovanna Baby Classic 500ml",
+     "price": 20.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Higienização Para Mãos Giovanna Baby Blue 500ml",
+     "price": 20.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Para Higiene Das Mãos Pague Menos 60ml 1 Unidade",
+     "price": 6.99
+    }
+   ],
+   "oracleSize": 39,
+   "note": "Aceitei álcool em gel para higienização; géis higienizantes sem álcool explícito são aceitáveis. Excluí acendedores, produtos para pets e outros usos."
+  },
+  {
+   "id": "s276",
+   "text": "termômetro digital",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 10323,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Termômetro Clínico Digital Biopress Rosa",
+     "price": 19.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Termômetro Clínico Digital G-Tech Urso Flex com Ponta Flexível 1 Unidade",
+     "price": 26.25,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Termômetro Digital MedLevensohn ML01",
+     "price": 17.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Digital Ever Care",
+     "price": 22.13
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Clínico Digital G-Tech Ponta Flexível 1 Unidade",
+     "price": 19.5
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Clínico Digital G-tech Branco 1 Unidade",
+     "price": 20.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Digital Multilaser Hc148",
+     "price": 14.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Termômetro Digital Pague Menos",
+     "price": 23.99
+    }
+   ],
+   "oracleSize": 38,
+   "note": "Aceitei termômetros digitais para medir temperatura corporal, inclusive versões de testa; modelos infantis, de aquário e outros aparelhos não atendem ao pedido."
+  },
+  {
+   "id": "s279",
+   "text": "máscara descartável",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13877,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Máscara Respiratória com Valvula Wps1350 PFF2 CA38507 Deltaplus",
+     "price": 1.79,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Obramax",
+     "name": "Máscara Respiratória com Válvula Carvão Ativado PFF2 CA38507 Deltaplus Máscara Respiratória Valv-Carvao Ativ Wps1750 PFF2 CA38507 Deltaplus",
+     "price": 2.29,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Máscara Descartável PFF2 Com Válvula Delta Plus",
+     "price": 2.39,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Cirurgica Descartável Ever Care 10 Unidades",
+     "price": 11.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Descartável Nexcare 3M P2 1 Unidade",
+     "price": 13.45
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Cirurgica Descartável Ever Care 50 Unidades",
+     "price": 51.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Máscara Descartável Pague Menos Tripla Cor Black Com 10 Unidades",
+     "price": 9.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Máscara Cirúrgica Descartável Tripla Descarpack com Clipe Nasal 50 Unidades",
+     "price": 21.19
+    }
+   ],
+   "oracleSize": 37,
+   "note": "Aceitas máscaras descartáveis de proteção facial, inclusive respiradores PFF. Máscaras de tecido, infantis ou de outros usos não atendem ao pedido."
+  },
+  {
+   "id": "s281",
+   "text": "preservativo",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7782,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Preservativo Prudence Cores e Sabores Morango 8 Unidades",
+     "price": 14.09,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Preservativos Prudence Lubrificados 8 unidades",
+     "price": 14.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Preservativo Prudence Lubrificado 8 Unidades",
+     "price": 9.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Prudence Lubrificado 8 Unidades",
+     "price": 11.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Lubrificado Olla Sensitive 8 Unidades",
+     "price": 24.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Skyn Original 8 Unidades",
+     "price": 30.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Prudence Masculino Lubrificado Super Sensitive 8 Unidades",
+     "price": 25.21
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Prudence Ultra Sensível 6 Unidades",
+     "price": 16.79
+    }
+   ],
+   "oracleSize": 10,
+   "note": "Preservativos lubrificados comuns atendem exatamente ao pedido genérico; sabores, modelos sensíveis e tamanhos especiais são variações aceitáveis."
+  },
+  {
+   "id": "s280",
+   "text": "soro fisiológico",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8890,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Soro Fisiológico LBS 100ml",
+     "price": 4.79,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Soro Fisiológico LBS 250ml",
+     "price": 7.79,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care Bico Dosador 500ml",
+     "price": 10.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care 500ml",
+     "price": 10.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ampola Ever Care 5ml",
+     "price": 8.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care Bico Dosador 100ml",
+     "price": 7.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico ADV 0,9% 500ml",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 40,
+   "note": "Soro fisiológico comum atende ao pedido; ampolas e bico dosador são versões aceitáveis. Concentração 0,09% não corresponde ao soro fisiológico usual."
+  },
+  {
+   "id": "s285",
+   "text": "paracetamol",
+   "cat": "remedio",
+   "origin": "synthetic",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 1745,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 15,
+   "note": "Paracetamol é medicamento; o serviço não deve oferecer nenhum dos produtos listados."
+  },
+  {
+   "id": "s282",
+   "text": "teste de gravidez",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 6625,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care 1 Tira + Coletor",
+     "price": 8.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care Caneta 1 Unidade",
+     "price": 16.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste Gravidez Confira Tira + Coletor 1 Unidade",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Ever Care Em Tira 2 Unidades",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Caneta Confira Pratic 1 Unidade",
+     "price": 17.59
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Testes de gravidez atendem ao pedido; testes de ovulação e de outras finalidades não atendem."
+  },
+  {
+   "id": "s292",
+   "text": "whey protein chocolate",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7395,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Whey Protein sabor Chocolate Parmalat 450g",
+     "price": 92.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Whey Protein Tradicional Chocolate +Mu 450g",
+     "price": 148.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Whey Protein Chocolate Swift Pro&Fit 900g",
+     "price": 129.97,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Whey Protein Pro Max Titanium Pó Chocolate 1kg",
+     "price": 109.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Whey Protein 100% Max Titanium Chocolate 900g Refil",
+     "price": 179.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Whey Protein Probiótica 100% Pure Whey Sabor Chocolate 30g",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Whey Protein Integralmedica 100% Pure Chocolate 907g",
+     "price": 207.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Whey 100% Pure Integral Chocolate 900g",
+     "price": 159.99
+    }
+   ],
+   "oracleSize": 44,
+   "note": "Whey protein sabor chocolate atende ao pedido, independentemente de marca ou tamanho. Chocolate branco, shake pronto e produtos de outro tipo não atendem."
+  },
+  {
+   "id": "s283",
+   "text": "vitamina c efervescente",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 13870,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 58,
+   "note": "Vitamina C efervescente é tratada como medicamento; o serviço não deve oferecer nenhum dos produtos listados."
+  },
+  {
+   "id": "s293",
+   "text": "barra de proteína",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11273,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Barra de Proteína Whey Protein Ovomaltine Integralmedica 45g",
+     "price": 9.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Barra de Proteína Cacau e Maca Peruana Protein biO2 45g",
+     "price": 14.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Barra de Proteína Chocolate Cappuccino 3 Corações 50g",
+     "price": 18.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra De Proteina Probiótica Whey Cookies & Cream 11g de Proteínas 38g",
+     "price": 6.88
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Proteína Max Power Protein Crispy Dark Chocolate Truffle 44g",
+     "price": 8.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Proteína Max Power Protein Crisp Cookies 44g",
+     "price": 8.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Proteína Dr. Peanut Doctor Bar Cookies & Cream com Pedaços de Amendoim 62g",
+     "price": 17.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Barra de Proteína Dux Human Health Caramelo Salgado 60g",
+     "price": 16.9
+    }
+   ],
+   "oracleSize": 66,
+   "note": "Pedido genérico: barras alimentícias de proteína atendem, independentemente de marca, sabor ou tamanho; demais produtos não atendem."
+  },
+  {
+   "id": "s296",
+   "text": "tapioca",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8144,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Tapioca da Terrinha 500g",
+     "price": 6.97,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Tapioca na Medida Da Terrinha 490g",
+     "price": 13.97,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Tapioca na Medida Da Terrinha 490g",
+     "price": 13.97
+    },
+    {
+     "store": "Swift",
+     "name": "Tapioca da Terrinha 500g",
+     "price": 6.97
+    },
+    {
+     "store": "Mambo",
+     "name": "Goma Pronta para Tapioca Sem Glúten Da Terrinha 500g",
+     "price": 5.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Goma Pronta para Tapioca Sem Glúten Terrinha 1kg",
+     "price": 17.98
+    }
+   ],
+   "oracleSize": 18,
+   "note": "Tapioca comum e goma pronta atendem ao pedido; preparações, derivados, utensílios e materiais de construção não atendem."
+  },
+  {
+   "id": "s305",
+   "text": "carvão para churrasco",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8298,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Carvão Especial Vegetal Ecológico Momento Mambo 3kg",
+     "price": 33.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Carvão Vegetal Swift 5kg",
+     "price": 39.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Carvão Especial Vegetal Ecológico Momento Mambo 5kg",
+     "price": 54.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Carvão Especial Vegetal Ecológico Momento Mambo 3kg",
+     "price": 33.98
+    }
+   ],
+   "oracleSize": 72,
+   "note": "Carvão vegetal próprio para churrasco atende ao pedido; produtos com carvão em outra composição ou acessórios não atendem."
+  },
+  {
+   "id": "s308",
+   "text": "sacola reutilizável",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10225,
+   "shown": [
+    {
+     "store": "Swift",
+     "name": "Sacola Retornável Respeito ao Planeta Swift",
+     "price": 9.97,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Sacola Retornável Térmica Rafia Swift",
+     "price": 15.97,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sacola Retornável Eu Carrego Minhas Escolhas 1 Unidade",
+     "price": 5.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sacola Retornável Eu Carrego Minhas Escolhas 1 Unidade",
+     "price": 16.99
+    },
+    {
+     "store": "Swift",
+     "name": "Sacola Retornável Térmica Rafia Swift",
+     "price": 15.97
+    },
+    {
+     "store": "Swift",
+     "name": "Sacola Retornável Respeito ao Planeta Swift",
+     "price": 9.97
+    },
+    {
+     "store": "Mambo",
+     "name": "Sacola Retornável Estação da Luz Momento Mambo 35X40X18cm",
+     "price": 9.59
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Sacolas retornáveis atendem ao pedido; versões térmicas reutilizáveis são aceitáveis. Sacolas de presente e sacos para outros usos não atendem."
+  },
+  {
+   "id": "s309",
+   "text": "filtro de café",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11266,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel 103 Melitta com 30 unidades",
+     "price": 3.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel para Cafeteira Elétrica Nº 2 Melitta com 30 unidades",
+     "price": 6.19,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel 103 Melitta com 30 unidades",
+     "price": 3.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel 102 Melitta com 30 unidades",
+     "price": 3.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel 103 3 Corações com 30 unidades",
+     "price": 3.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel 102 3 Corações com 30 unidades",
+     "price": 3.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Filtro de Papel para Cafeteira Elétrica Nº 2 Melitta com 30 unidades",
+     "price": 6.19
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Filtros de papel para preparar café atendem ao pedido; tamanho e tipo de cafeteira não foram especificados. Suportes e outros produtos não atendem."
+  },
+  {
+   "id": "s315",
+   "text": "bicicleta",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "false_positive",
+   "kind": "product",
+   "ms": 13273,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+     "price": 299.95,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Branco e Pink - TK3 Track",
+     "price": 299.95,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 14,
+   "note": "Pedido genérico de bicicleta não indica modelo infantil nem ergométrico; cadeados são acessórios, não bicicletas."
+  },
+  {
+   "id": "s316",
+   "text": "patinete",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11544,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Patinete - Skatenet - Led - Dobrável - Bandeirante",
+     "price": 399.95,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas Led Extreme Play&Fun Azul",
+     "price": 79.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas Unicórnio Play&Fun Rosa",
+     "price": 79.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas com Cesta Luz e Som Happy Pet Play&Fun",
+     "price": 149.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas com Cesta Som e Luz Extreme Play&Fun",
+     "price": 149.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas Dobrável Action Race Play&Fun",
+     "price": 99.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Patinete 3 Rodas com Cesta Unicórnio Mágico Play&Fun Rosa",
+     "price": 129.9
+    }
+   ],
+   "oracleSize": 30,
+   "note": "O pedido é genérico; todos os patinetes listados atendem. Os demais produtos são de outro tipo."
+  },
+  {
+   "id": "s319",
+   "text": "adaptador de tomada",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8463,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Tomada T Adaptador Monobloco 2P+T 20A 250V Ilumi ADAPTADOR TRES SAIDAS MONOBLOCO 2P+T 20A 250V -BR",
+     "price": 19.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador para tomada reverso 2 polos 15A 250V Daneva",
+     "price": 10.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador para tomada redondo 10A 250V Kit-Flex",
+     "price": 16.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador para tomada reverso 2 polos 15A 250V Daneva",
+     "price": 10.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador para Tomada 2 Polos Branco Bivolt Pial",
+     "price": 23.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador para Tomada 2 Polos Preto Bivolt Pial",
+     "price": 26.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Adaptador Universal 4 Tomadas 2P T 10A 250V Key West",
+     "price": 49.9
+    }
+   ],
+   "oracleSize": 39,
+   "note": "Aceitos apenas adaptadores elétricos para tomada; carregadores, acessórios para outros usos e demais produtos não atendem ao pedido."
+  },
+  {
+   "id": "s317",
+   "text": "cadeira de praia",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10107,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Cadeira de Praia Alta Alumínio NE Bel Nordeste",
+     "price": 89.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cadeira de praia alta cor sortida alumínio Mor",
+     "price": 89.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cadeira de Praia Alta Botafogo Lar & Lazer Alumínio 047 Sortida",
+     "price": 89.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cadeira de Praia Alta Botafogo Lar & Lazer Alumínio 047 Sortida",
+     "price": 89.99
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cadeira de Praia 4 Posições Alumínio CAD0641 Botafogo Sortida",
+     "price": 109.9
+    },
+    {
+     "store": "Casa & Vídeo",
+     "name": "Cadeira de Praia Reclinável Alumínio Botafogo Ipanema CAD0328 Azul",
+     "price": 279.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cadeira de Praia Alta cor sortida Alumínio Mor",
+     "price": 89.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cadeira de Praia Alta Alumínio NE Bel Nordeste",
+     "price": 89.9
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Cadeiras de praia para adultos atendem ao pedido; a versão infantil e os demais produtos não atendem."
+  },
+  {
+   "id": "s320",
+   "text": "cabo de rede",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8830,
+   "shown": [
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT5E 4Px24AWG 100MHz CMX Cinza por Metro Condutti Cabo de Rede UTP CAT5E 4Px24AWG 100MHz CMX Cinza Condutti por Metro",
+     "price": 3.94,
+     "verdict": "exact"
+    },
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT6 4P CMX 250MHz por Metro Condutti Cabo de Rede UTP CAT6 4P CMX 250MHz Cinza Condutti por Metro",
+     "price": 4.46,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cabo De Rede 2 Metros Force Line",
+     "price": 12.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT6 4P CMX 250MHz por Metro Condutti",
+     "price": 4.46
+    },
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT5E 4Px24AWG 100MHz CMX Azul 305 Metros Condutti",
+     "price": 759.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT6 4P CMX 250MHz 100 Metros Condutti",
+     "price": 444.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT6 4P CMX 250MHz 305 Metros Condutti",
+     "price": 1059.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Cabo de Rede UTP CAT5E 4Px24AWG 100MHz CMX Cinza por Metro Condutti",
+     "price": 3.94
+    }
+   ],
+   "oracleSize": 48,
+   "note": "Cabos de rede atendem ao pedido; conectores, cabos de outros usos e produtos sem relação não atendem."
+  }
+ ]
+}

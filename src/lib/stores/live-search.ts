@@ -29,7 +29,7 @@ export function liveSearchEnabled(): boolean {
 
 function timeoutMs(): number {
   const value = Number(process.env.LIA_LIVE_SEARCH_TIMEOUT_MS);
-  return Number.isFinite(value) && value >= 500 ? value : 2000;
+  return Number.isFinite(value) && value >= 500 ? value : 3000;
 }
 
 // Farmácias: o produto ao vivo só entra se estiver numa categoria que a colheita liberou.
