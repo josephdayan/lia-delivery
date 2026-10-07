@@ -25,8 +25,13 @@ LIA_LIVE_SEARCH=true npx tsx scripts/bench-search.mts --label depois-busca-ao-vi
 ```
 
 ## Placar de conversas — `scripts/bench-conversations.mts`
-40 cenários (`evals/conversation-scenarios.json`) nascidos de conversas reais e reclamações dos
-testadores. Um cliente simulado (gpt-6-luna) conversa com a Lia de verdade até o Pix aparecer (nunca paga);
+100 cenários (`evals/conversation-scenarios.json`): 60 `treino` + 40 `prova` (`--set`), estratificados por
+`type`; os c01–c40 nasceram de conversas reais e reclamações dos testadores, c41–c100 cobrem o resto do
+dia a dia. Todo `reach_pix`/`cancel_ok` tem `probe` (as buscas que o cliente vai precisar) e só entra se
+`npx tsx scripts/bench/check-scenarios.mts` confirmar item comprável AO VIVO no CEP do cenário (estoque + entrega
+da própria loja); `honest_not_found` com `probe` falha se o item EXISTE. Sintaxe do probe: `-palavra` exclui,
+`<=N` limita preço, `a||b` aceita qualquer alternativa; `--q "busca1|busca2"` sonda buscas soltas. Orçamento no
+`goal` é sempre TOTAL com frete. Um cliente simulado (gpt-6-luna) conversa com a Lia de verdade até o Pix aparecer (nunca paga);
 o juiz lê a transcrição: objetivo cumprido, produto errado, promessa falsa, beco sem saída, confuso,
 lento. `npx tsx scripts/bench-conversations.mts --label antes [--only c01,c02] [--verbose]`.
 
