@@ -1,3 +1,16 @@
+## 07/10/2026 — Placar de verdade montado; crédito da OpenAI esgotou
+
+- Montado: `evals/` (316 pedidos de busca, 40 cenários de conversa), oráculo ao vivo, juiz gpt-5.5,
+  Postgres embutido próprio. Smoke: busca "carregador usb c" mostrou só cabos (existia carregador).
+- 1ª rodada (parcial): 1ª opção errada em ~14% dos pedidos, honestidade 53% (mostra algo quando não
+  existe), 1 vazamento de remédio (pomada p/ assadura). Detalhe e causas em
+  `evals/results/search-2026-10-07-parcial-sem-credito.json`.
+- **A conta OpenAI ficou sem crédito no meio** (`insufficient_quota`): vale também para a Lia em
+  produção (extração e rerank caem no fallback). Sem crédito não dá para fechar a linha de base nem
+  medir o conserto.
+- Pronto e testado (7 testes): busca ao vivo opt-in `LIA_LIVE_SEARCH`.
+
+
 ## 06/10/2026 (fim da tarde) — Varredura concluída: tudo no main, suíte 887/887
 
 Entraram os 4 corretores (pós-pagamento, cadastro/endereço, escolha/cesta, busca/frete) e a

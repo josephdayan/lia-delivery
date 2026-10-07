@@ -1,0 +1,1898 @@
+[
+ {
+  "id": "r001",
+  "text": "escova de dente",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r002",
+  "text": "chocolate",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r003",
+  "text": "pasta de dente",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r004",
+  "text": "carregador usb c",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r005",
+  "text": "carregador de celular",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r006",
+  "text": "2 cadernos universitários",
+  "cat": "papelaria",
+  "origin": "real"
+ },
+ {
+  "id": "r007",
+  "text": "vedante pra torneira",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "r008",
+  "text": "coca cola",
+  "cat": "bebidas",
+  "origin": "real"
+ },
+ {
+  "id": "r009",
+  "text": "cotonete",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r010",
+  "text": "leite",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r011",
+  "text": "refrigerante",
+  "cat": "bebidas",
+  "origin": "real"
+ },
+ {
+  "id": "r012",
+  "text": "arroz",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r014",
+  "text": "desodorante",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r015",
+  "text": "rexona",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r016",
+  "text": "colírio systane complete",
+  "cat": "farmacia",
+  "origin": "real"
+ },
+ {
+  "id": "r017",
+  "text": "isqueiro pra charuto",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "r018",
+  "text": "isqueiro maçarico",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "r019",
+  "text": "sabonete",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r020",
+  "text": "shampoo",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r021",
+  "text": "leite sem lactose",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r022",
+  "text": "detergente neutro",
+  "cat": "limpeza",
+  "origin": "real"
+ },
+ {
+  "id": "r023",
+  "text": "esponja de cozinha",
+  "cat": "limpeza",
+  "origin": "real"
+ },
+ {
+  "id": "r024",
+  "text": "saco de lixo reforçado de 30 l",
+  "cat": "limpeza",
+  "origin": "real"
+ },
+ {
+  "id": "r025",
+  "text": "ice tea chá de pêssego",
+  "cat": "bebidas",
+  "origin": "real"
+ },
+ {
+  "id": "r026",
+  "text": "chapéu cowboy",
+  "cat": "roupas",
+  "origin": "real"
+ },
+ {
+  "id": "r027",
+  "text": "ração pro meu cachorro",
+  "cat": "pet",
+  "origin": "real"
+ },
+ {
+  "id": "r028",
+  "text": "euthyrox 50mg",
+  "cat": "remedio",
+  "origin": "real"
+ },
+ {
+  "id": "r029",
+  "text": "pilha AAA",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r030",
+  "text": "shampoo granado de bebê",
+  "cat": "bebe",
+  "origin": "real"
+ },
+ {
+  "id": "r031",
+  "text": "sabonete líquido granado",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r032",
+  "text": "fita crepe",
+  "cat": "papelaria",
+  "origin": "real"
+ },
+ {
+  "id": "r033",
+  "text": "tubo de bolas de tênis babolat gold com 4 bolas",
+  "cat": "esporte",
+  "origin": "real"
+ },
+ {
+  "id": "r035",
+  "text": "leite nude",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r036",
+  "text": "lubrificante íntimo",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r038",
+  "text": "fita isolante preta da 3M",
+  "cat": "ferramentas",
+  "origin": "real"
+ },
+ {
+  "id": "r039",
+  "text": "shampoo kerasys",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r040",
+  "text": "kerasys de coco",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r041",
+  "text": "cottage da yorgus 14g proteína",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r042",
+  "text": "dymatize ISO100 fudge brownie",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r043",
+  "text": "dipirona",
+  "cat": "remedio",
+  "origin": "real"
+ },
+ {
+  "id": "r044",
+  "text": "advil",
+  "cat": "remedio",
+  "origin": "real"
+ },
+ {
+  "id": "r045",
+  "text": "camisa branca social",
+  "cat": "roupas",
+  "origin": "real"
+ },
+ {
+  "id": "r046",
+  "text": "camiseta preta",
+  "cat": "roupas",
+  "origin": "real"
+ },
+ {
+  "id": "r047",
+  "text": "livro crime e castigo",
+  "cat": "livros",
+  "origin": "real"
+ },
+ {
+  "id": "r048",
+  "text": "escova de dente mercado livre",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r049",
+  "text": "quero chocolate",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r052",
+  "text": "sabonete até 5 reais",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "s054",
+  "text": "arroz branco 5kg",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s055",
+  "text": "feijão carioca",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s056",
+  "text": "macarrão espaguete",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s057",
+  "text": "açúcar refinado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s058",
+  "text": "sal refinado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s059",
+  "text": "óleo de soja",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s060",
+  "text": "óleo",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s061",
+  "text": "café em pó",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s062",
+  "text": "farinha de trigo",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s063",
+  "text": "molho de tomate",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s064",
+  "text": "milho verde em lata",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s065",
+  "text": "extrato de tomate",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s066",
+  "text": "atum em lata",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s067",
+  "text": "sardinha em lata",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s068",
+  "text": "biscoito recheado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s069",
+  "text": "bolacha maizena",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s070",
+  "text": "cereal matinal",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s071",
+  "text": "aveia em flocos",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s072",
+  "text": "granola",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s073",
+  "text": "leite condensado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s074",
+  "text": "creme de leite",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s075",
+  "text": "margarina",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s076",
+  "text": "manteiga",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s077",
+  "text": "queijo mussarela fatiado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s078",
+  "text": "presunto fatiado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s079",
+  "text": "iogurte natural",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s080",
+  "text": "requeijão",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s081",
+  "text": "ovos",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s082",
+  "text": "pão de forma",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s083",
+  "text": "pão francês",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s084",
+  "text": "pão de queijo congelado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s085",
+  "text": "macarrão instantâneo miojo",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s086",
+  "text": "farofa pronta",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s087",
+  "text": "azeite de oliva extra virgem",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s088",
+  "text": "vinagre",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s089",
+  "text": "maionese",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s090",
+  "text": "ketchup",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s091",
+  "text": "mostarda",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s092",
+  "text": "chocolate em barra ao leite",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s093",
+  "text": "bala de goma",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s094",
+  "text": "batata chips",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s095",
+  "text": "amendoim torrado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s096",
+  "text": "água mineral 1,5 litro",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s097",
+  "text": "água com gás",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s098",
+  "text": "guaraná antarctica 2 litros",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s099",
+  "text": "suco de laranja integral",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s100",
+  "text": "cerveja lata skol",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s101",
+  "text": "cerveja heineken long neck",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s102",
+  "text": "vinho tinto",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s103",
+  "text": "energético red bull",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s104",
+  "text": "chá mate gelado",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s105",
+  "text": "água de coco",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s106",
+  "text": "banana",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s107",
+  "text": "maçã fuji",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s108",
+  "text": "tomate",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s109",
+  "text": "cebola",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s110",
+  "text": "batata",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s111",
+  "text": "alface",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s112",
+  "text": "limão",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s113",
+  "text": "cenoura",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s114",
+  "text": "abacate",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s115",
+  "text": "mamão papaya",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s116",
+  "text": "peito de frango",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s117",
+  "text": "carne moída",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s118",
+  "text": "linguiça toscana",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s119",
+  "text": "filé de tilápia",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s120",
+  "text": "bacon",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s121",
+  "text": "shampoo anticaspa",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s122",
+  "text": "condicionador",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s123",
+  "text": "sabonete em barra dove",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s124",
+  "text": "papel higiênico folha dupla",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s125",
+  "text": "absorvente com abas",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s126",
+  "text": "fio dental",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s127",
+  "text": "enxaguante bucal",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s128",
+  "text": "creme dental sensodyne",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s129",
+  "text": "desodorante aerosol masculino",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s130",
+  "text": "protetor solar fps 50",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s131",
+  "text": "hidratante corporal",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s132",
+  "text": "creme para as mãos",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s133",
+  "text": "lâmina de barbear gillette",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s134",
+  "text": "espuma de barbear",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s135",
+  "text": "algodão",
+  "cat": "higiene",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s136",
+  "text": "fralda pampers tamanho m",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s137",
+  "text": "lenço umedecido",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s138",
+  "text": "mamadeira",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s139",
+  "text": "pomada para assadura",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s140",
+  "text": "fralda descartável",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s141",
+  "text": "leite em pó para bebê",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s142",
+  "text": "tinta de cabelo castanho",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s143",
+  "text": "esmalte vermelho",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s144",
+  "text": "batom matte",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s145",
+  "text": "máscara de cílios",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s146",
+  "text": "base líquida",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s147",
+  "text": "perfume masculino",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s148",
+  "text": "perfume feminino",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s149",
+  "text": "detergente líquido",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s150",
+  "text": "sabão em pó omo",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s151",
+  "text": "amaciante",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s152",
+  "text": "água sanitária",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s153",
+  "text": "desinfetante",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s154",
+  "text": "multiuso veja",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s155",
+  "text": "esponja de aço",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s156",
+  "text": "saco de lixo 50 litros",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s157",
+  "text": "papel toalha",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s158",
+  "text": "limpa vidros",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s159",
+  "text": "lustra móveis",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s160",
+  "text": "vassoura",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s161",
+  "text": "rodo",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s162",
+  "text": "pano de chão",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s163",
+  "text": "luva de borracha",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s164",
+  "text": "inseticida",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s165",
+  "text": "repelente",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s166",
+  "text": "ração para gato castrado",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s167",
+  "text": "ração para cachorro filhote",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s168",
+  "text": "areia sanitária para gato",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s169",
+  "text": "petisco para cachorro",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s170",
+  "text": "coleira para cachorro",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s171",
+  "text": "shampoo para cachorro",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s172",
+  "text": "brinquedo para gato",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s173",
+  "text": "tapete higiênico",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s174",
+  "text": "comedouro para cachorro",
+  "cat": "pet",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s175",
+  "text": "bola de tênis",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s176",
+  "text": "bola de futebol",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s177",
+  "text": "raquete de tênis",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s178",
+  "text": "bola de basquete",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s179",
+  "text": "corda de pular",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s180",
+  "text": "garrafa térmica esportiva",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s181",
+  "text": "tênis de corrida masculino 42",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s182",
+  "text": "bola de vôlei",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s183",
+  "text": "bomba de ar para bola",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s184",
+  "text": "luva de goleiro",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s185",
+  "text": "copo descartável",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s186",
+  "text": "prato descartável",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s187",
+  "text": "lâmpada led 9w",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s188",
+  "text": "pilha alcalina AA",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s189",
+  "text": "pilhas recarregáveis",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s190",
+  "text": "extensão elétrica 3 metros",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s191",
+  "text": "filtro de linha",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s192",
+  "text": "fita adesiva transparente",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s193",
+  "text": "tesoura",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s194",
+  "text": "cola branca",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s195",
+  "text": "caneta bic azul",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s196",
+  "text": "lápis de cor",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s197",
+  "text": "caderno espiral 10 matérias",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s198",
+  "text": "papel sulfite a4",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s199",
+  "text": "pasta com elástico",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s200",
+  "text": "marca texto",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s201",
+  "text": "grampeador",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s202",
+  "text": "cabo hdmi",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s203",
+  "text": "cabo usb c",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s204",
+  "text": "cabo lightning",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s205",
+  "text": "fone de ouvido com fio",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s206",
+  "text": "fone bluetooth",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s207",
+  "text": "carregador de parede usb",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s208",
+  "text": "mouse sem fio",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s209",
+  "text": "teclado",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s210",
+  "text": "pen drive 64gb",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s211",
+  "text": "cartão de memória 128gb",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s212",
+  "text": "capa de celular iphone 13",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s213",
+  "text": "película de vidro para celular",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s214",
+  "text": "caixa de som bluetooth",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s215",
+  "text": "ventilador de mesa",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s216",
+  "text": "liquidificador",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s217",
+  "text": "ferro de passar",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s218",
+  "text": "chaleira elétrica",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s219",
+  "text": "cafeteira",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s220",
+  "text": "air fryer",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s221",
+  "text": "batedeira",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s222",
+  "text": "secador de cabelo",
+  "cat": "eletro",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s223",
+  "text": "frigideira antiaderente",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s224",
+  "text": "panela de pressão",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s225",
+  "text": "jogo de facas",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s226",
+  "text": "tábua de corte",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s227",
+  "text": "pote hermético",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s228",
+  "text": "garrafa de água",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s229",
+  "text": "toalha de banho",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s230",
+  "text": "lençol casal",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s231",
+  "text": "travesseiro",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s232",
+  "text": "cobertor",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s233",
+  "text": "cortina",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s234",
+  "text": "tapete de banheiro",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s235",
+  "text": "cabide",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s236",
+  "text": "organizador de gaveta",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s237",
+  "text": "vela aromática",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s238",
+  "text": "porta-retrato",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s239",
+  "text": "furadeira",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s240",
+  "text": "martelo",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s241",
+  "text": "chave de fenda",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s242",
+  "text": "alicate",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s243",
+  "text": "trena 5 metros",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s244",
+  "text": "fita métrica",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s245",
+  "text": "parafuso",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s246",
+  "text": "bucha para parede",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s247",
+  "text": "tinta branca parede",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s248",
+  "text": "rolo de pintura",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s249",
+  "text": "cadeado",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s250",
+  "text": "lanterna",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s251",
+  "text": "fita veda rosca",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s252",
+  "text": "cola instantânea super bonder",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s253",
+  "text": "presente para criança de 5 anos",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s254",
+  "text": "presente para mãe",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s255",
+  "text": "presente para namorada",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s256",
+  "text": "quebra-cabeça",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s257",
+  "text": "lego",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s258",
+  "text": "boneca",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s259",
+  "text": "carrinho de brinquedo",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s260",
+  "text": "jogo de tabuleiro",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s261",
+  "text": "cartão de aniversário",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s262",
+  "text": "balão de festa",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s263",
+  "text": "vela de aniversário",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s264",
+  "text": "caixa de chocolates",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s265",
+  "text": "buquê de flores",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s266",
+  "text": "ursinho de pelúcia",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s267",
+  "text": "livro infantil",
+  "cat": "livros",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s268",
+  "text": "dicionário",
+  "cat": "livros",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s269",
+  "text": "caderno de desenho",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s270",
+  "text": "meia social masculina",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s271",
+  "text": "cueca boxer",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s272",
+  "text": "camiseta básica branca",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s273",
+  "text": "pijama",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s274",
+  "text": "chinelo havaianas",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s275",
+  "text": "protetor auricular",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s276",
+  "text": "termômetro digital",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s277",
+  "text": "curativo band-aid",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s278",
+  "text": "álcool em gel",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s279",
+  "text": "máscara descartável",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s280",
+  "text": "soro fisiológico",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s281",
+  "text": "preservativo",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s282",
+  "text": "teste de gravidez",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s283",
+  "text": "vitamina c efervescente",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s284",
+  "text": "ibuprofeno",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s285",
+  "text": "paracetamol",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s286",
+  "text": "omeprazol",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s287",
+  "text": "amoxicilina",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s288",
+  "text": "dorflex",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s289",
+  "text": "algo pra dor de cabeça",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s290",
+  "text": "cerveja sem álcool",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s291",
+  "text": "pasta de amendoim",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s292",
+  "text": "whey protein chocolate",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s293",
+  "text": "barra de proteína",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s294",
+  "text": "leite de aveia",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s295",
+  "text": "queijo cottage",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s296",
+  "text": "tapioca",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s297",
+  "text": "castanha de caju",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s298",
+  "text": "mel",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s299",
+  "text": "geleia de morango",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s300",
+  "text": "sorvete de chocolate",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s301",
+  "text": "pizza congelada",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s302",
+  "text": "hambúrguer congelado",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s303",
+  "text": "lasanha congelada",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s304",
+  "text": "gelo",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s305",
+  "text": "carvão para churrasco",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s306",
+  "text": "acendedor de churrasqueira",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s307",
+  "text": "saco de gelo",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s308",
+  "text": "sacola reutilizável",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s309",
+  "text": "filtro de café",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s310",
+  "text": "adoçante",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s311",
+  "text": "fermento em pó",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s312",
+  "text": "chocolate em pó",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s313",
+  "text": "gás de cozinha",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s314",
+  "text": "violão",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s315",
+  "text": "bicicleta",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s316",
+  "text": "patinete",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s317",
+  "text": "cadeira de praia",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s318",
+  "text": "bateria 9v",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s319",
+  "text": "adaptador de tomada",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s320",
+  "text": "cabo de rede",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s321",
+  "text": "carregador veicular",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s322",
+  "text": "suporte de celular para carro",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ }
+]

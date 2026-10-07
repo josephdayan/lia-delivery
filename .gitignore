@@ -33,3 +33,7 @@ docs/obsidian/.obsidian/
 
 # Perfis autenticados e configuração local do comprador
 .retail-buyer/
+
+# Bancos e caches dos benchmarks (evals/)
+.local-pg-bench/
+evals/cache/

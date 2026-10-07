@@ -1,3 +1,16 @@
+## 07/10/2026 — Placar de verdade (evals/) e busca ao vivo (opt-in)
+
+Regra nova: **mudança de busca ou de conversa só entra se subir o placar** (`evals/README.md`).
+`scripts/bench-search.mts` mede produto certo / cobertura / honestidade contra o catálogo ao vivo
+das lojas, com juiz gpt-5.5; `scripts/bench-conversations.mts` roda 40 cenários de cliente (nascidos
+de reclamações reais) com juiz. Os dois abortam sem crédito OpenAI. Diagnóstico medido: a busca
+procura numa CÓPIA do catálogo (produto fora da cópia nunca aparece) e o rerank aprova produto de
+outro tipo em vez de devolver vazio ("bola de tênis" → bola inflável/futebol). Conserto 1 pronto e
+desligado: `src/lib/stores/live-search.ts` (busca inteligente da própria loja VTEX em paralelo à
+cópia, seller "1", sem remédio, farmácia só nas categorias liberadas) — liga com
+`LIA_LIVE_SEARCH=true`; vira padrão só depois do placar. A Lia segue OFFLINE até o dono mandar.
+
+
 ## 06/10/2026 (noite) — Interruptor "Lia offline" (dono)
 
 Pedido do dono: enquanto o Asaas não libera o Pix de saída, todo cliente que escrever recebe

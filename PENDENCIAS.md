@@ -1,3 +1,13 @@
+## 07/10/2026 — Para o dono
+
+- [ ] **Adicionar crédito na OpenAI** (platform.openai.com → Billing). Sem isso a Lia em produção usa
+  só o fallback determinístico (sem IA) e os placares não rodam. Estimativa de uma rodada completa
+  dos dois placares: dezenas de dólares (juiz gpt-5.5 + ~316 buscas + 40 conversas).
+- [ ] Depois do crédito: rodar `scripts/bench-search.mts --label antes` e
+  `scripts/bench-conversations.mts --label antes` (linha de base limpa), depois com
+  `LIA_LIVE_SEARCH=true`, e decidir o que vai pro ar. A Lia continua offline até o dono mandar.
+
+
 ## 06/10/2026 (fim da tarde) — Varredura: mudanças que o dono precisa saber antes do deploy
 
 - [ ] **Deploy**: tudo está no main local, 887/887. Falta push (aguardando o dono).
