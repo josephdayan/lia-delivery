@@ -200,7 +200,7 @@ test("Clara: 'de onde vc compra' no cadastro tem resposta", async (t) => {
   const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
   await send(phone, "oi");
   const out = await send(phone, "mas de onde vc compra");
-  assert.match(out, /dezenas de lojas online/);
+  assert.match(out, /várias lojas online/);
   assert.doesNotMatch(out, /Falta o \*endereço\*/);
 });
 

@@ -194,7 +194,9 @@ test("'12 ovos' escolhido numa caixa vira caixas, não 12 caixas", async (t) => 
   const boxIndex = options.findIndex((line) => /\b(\d{1,2})\s*(un|unidades|ovos)\b/i.test(line));
   if (boxIndex < 0) return t.skip(`catálogo de teste sem caixa de ovos: ${options.join(" | ")}`);
   const pack = Number(options[boxIndex].match(/\b(\d{1,2})\s*(?:un|unidades|ovos)\b/i)![1]);
-  const out = await send(phone, String(boxIndex + 1));
+  let out = await send(phone, String(boxIndex + 1));
+  // 07/10 (c28): embalagem que não fecha o número pedido pergunta ANTES de pôr na cesta; o "sim" confirma.
+  if (/mesmo assim/.test(out)) out = await send(phone, "sim");
   const ctx = await context(phone);
   const eggs = (ctx.basket ?? []).find((i: { name: string }) => /ovo/i.test(i.name));
   assert.ok(eggs, out.slice(0, 300));

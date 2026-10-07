@@ -23,7 +23,7 @@ export type ParsedLine = {
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver";
+export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview";
 
 export type Intent =
   | { kind: "thanks" }
@@ -279,6 +279,9 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",
       "((semana|mes) passad[ao]|ontem|anteontem|hoje|agora|aqui)? ?(acab(ou|aram) (tudo|as coisas|o que tinha)|nao tem mais nada)( .*)?",
       "(eu |a gente )?(acabei|acabamos) de (me mudar|mudar|chegar|voltar)\\b.*",
+      // Plano do próprio cliente de resolver em outro lugar ("vou procurar uma farmácia por aqui") — despedida,
+      // nunca item (07/10, c08). "vou querer/levar/pegar" continuam sendo pedido.
+      "(eu )?vou (procurar|buscar|tentar|ir|passar|ver|pedir|comprar)\\b[^,]*\\b(farmacia|drogaria|outr[oa]s?|por aqui|por ai|na loja|no mercado|depois|la)\\b.*",
       "(nada|quase nada) (em casa|aqui( em casa)?)",
       "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
     ].join("|") +
@@ -879,6 +882,9 @@ const SWITCH_PAYMENT_RE =
 const RECIPIENT_OTHER_RE =
   /\b((e|eh|vai ser|sera) (pra|para) (outra pessoa|outro|outra|presente|um presente)|(entrega|entregar|manda|mandar|envia|enviar) (pra|para) (outra pessoa|minha|meu|meus|minhas|a |o )|quem (vai )?recebe(r)? (e|eh|nao sou eu|vai ser)|(nao|n) sou eu (que|quem) (vai )?receb\w*|(em|no) nome de outra pessoa)\b/;
 
+const TOTAL_PREVIEW_RE =
+  /^(?:e\s+)?(?:como|onde|quando)\s+(?:eu\s+)?(?:vejo|ver|sei|saberei|descubro|consigo ver|vou ver)\b.{0,30}\b(?:total|quanto (?:fica|custa|vai ficar))\b/;
+
 // "quero falar com um atendente/humano/pessoa de verdade".
 const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
@@ -1197,6 +1203,9 @@ export function detectIntent(text: string): Intent {
   if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
   // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
   if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
+  // "como vejo o total antes de pagar?" (07/10, c13): pergunta do fluxo, não produto. Só a forma
+  // interrogativa — "me passa o total antes de pagar" depois de "só isso" é fechar a lista.
+  if (TOTAL_PREVIEW_RE.test(n) && !/\bso isso\b/.test(n)) return { kind: "service_question", topic: "total_preview" };
   if (OUT_OF_SCOPE_SERVICE_RE.test(n)) return { kind: "out_of_scope_service" };
   if (VAGUE_REQUEST_RE.test(n)) return { kind: "vague_request" };
   if (STORE_SOURCE_RE.test(n)) return { kind: "service_question", topic: "stores" };
@@ -1832,7 +1841,7 @@ export function parsePriceCap(text: string): number | null {
   const n = digitizeMoneyWords(normalizeMsg(text));
   const m =
     n.match(
-      /\b(?:ate|abaixo de|menos de|no maximo|max(?:imo)?)\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)?\b/
+      /\b(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila|pilas|mangos?)?\b/
     ) ??
     // "um vinho DE uns 30 conto": aproximação vira teto — sem isso a busca ignora o
     // valor por completo (29/08 S18). Exige a moeda pra não pegar "uns 30 itens".
@@ -1850,7 +1859,7 @@ export function splitPriceCap(phrase: string): { phrase: string; cap: number | n
   const cap = parsePriceCap(phrase);
   if (cap == null) return { phrase, cap: null };
   const cleaned = digitizeMoneyWords(normalizeMsg(phrase))
-    .replace(/\b(?:de\s+)?(?:ate|abaixo de|menos de|no maximo|max(?:imo)?)\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)?\b/i, " ")
+    .replace(/\b(?:de\s+)?(?:ate|abaixo de|menos de|no maximo|max(?:imo)?|limite de|teto de|orcamento de|dentro d[eo])\s*(?:uns\s+|umas\s+)?(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)?\b/i, " ")
     .replace(/\bde\s+uns\s+(?:r\$\s*)?\d+(?:[.,]\d{1,2})?\s*(?:reais|real|conto|contos|pila|pilas|mangos?)\b/i, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -2114,11 +2123,36 @@ function tailEchoesOption(tail: string, optionName?: string): boolean {
   return tokens.length > 0 && tokens.every((t) => name.includes(` ${t}`) || name.includes(t));
 }
 
+// Sinal de que a frase ADICIONA um item (e não reformula o da mesa). Sem "mais"/"outra" soltos:
+// "outra marca" e "mais barato" são pedidos de opções, não de item novo.
+export const ADDITIVE_CUE_RE = /\b(?:adicion\w+|acrescent\w+|tambem|alem d\w+|junto com|outro produto|outra coisa|mais (?:um|uma|dois|duas|tres|\d+)\b)/;
+
+// "vamos adicionar outro produto, pode ser 3 rações de cachorro" → "3 rações de cachorro" (07/10, c09):
+// o enquadramento da frase não é produto — virava "Não achei: vamos adicionar outro produto".
+export function stripAdditiveLead(text: string): string {
+  const lead = /^\s*(?:e\s+)?(?:(?:vamos|vou|vai|podemos|pode|quero|queria|bora)\s+)*(?:adicionar|acrescentar|incluir|colocar|botar|por)\s+(?:(?:mais\s+)?(?:um|o)\s+)?(?:outro\s+produto|outra\s+coisa|outro\s+item|produto\s+novo)\s*[,.;:\-]*\s*/i;
+  if (!lead.test(text)) return text;
+  const cleaned = text.replace(lead, "").replace(/^\s*(?:pode ser|quero|queria|seria|sao)\s+(?=\d)/i, "").trim();
+  return cleaned || text;
+}
+
 export function parseChoiceCombo(
   text: string,
   options: { name: string; unitPrice: number }[]
 ): { reply: { type: "pick"; index: number; qty?: number }; pay?: boolean; rest?: string } | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  // "1. Vamos adicionar outro produto, pode ser 3 rações de cachorro?" (07/10, c09): número + ponto +
+  // frase que ADICIONA algo. Escolhe o número e o resto vira item novo — antes a frase inteira
+  // reabria a busca do mesmo item e a escolha do 1 sumia. Exige um sinal de adição para não
+  // confundir com lista numerada ("1. leite 2. pão").
+  const leadPick = n.match(/^(?:opcao\s*|numero\s*)?([1-9])\s*[.)\-:]\s+(.+)$/);
+  if (leadPick && Number(leadPick[1]) <= options.length && !/\n/.test(text) && ADDITIVE_CUE_RE.test(leadPick[2])) {
+    const index = Number(leadPick[1]) - 1;
+    const tail = leadPick[2].trim();
+    if (!/[a-z]{3,}/.test(tail)) return null;
+    if (tailEchoesOption(tail, options[index]?.name)) return { reply: { type: "pick", index } };
+    return { reply: { type: "pick", index }, rest: stripAdditiveLead(tail) };
+  }
   const parts = n.match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tambem\s+)?)(.+)$/);
   if (!parts) return null;
   const head = parseChoiceReply(parts[1], options);
@@ -2140,7 +2174,7 @@ export function parseChoiceCombo(
   // A cauda que só REPETE a opção escolhida ("acho que vou no 1, Omo 1,4kg") é confirmação,
   // não item novo — virava busca de "Omo 1,4kg" e uma 2ª unidade na cesta (placar 07/10, c12).
   if (tailEchoesOption(tail, options[reply.index]?.name)) return { reply };
-  return { reply, rest: tail };
+  return { reply, rest: stripAdditiveLead(tail) };
 }
 
 // "o da Mambo", "a da drogaria são paulo", "quero o da Swift" (06/10): referência à LOJA da
@@ -2223,4 +2257,93 @@ export function splitFiscalClause(text: string): { text: string; asked: boolean 
   const kept = sentences.filter((sentence) => !/\b(cnpj|razao social)\b/.test(normalizeMsg(sentence)));
   if (kept.length === sentences.length || !kept.length) return { text, asked: false };
   return { text: kept.join(" ").trim(), asked: true };
+}
+
+
+// "troca pelo de R$ 34,09", "quero o de 34", "prefiro o outro" no total / escolha de entrega (07/10, c24):
+// o cliente quer OUTRA opção da última lista, apontada pelo preço ou por "o outro". Devolve o índice
+// em `options`. Exige verbo de troca/preferência e nunca aponta a opção que já está escolhida.
+export function parseOptionSwitchRef(
+  text: string,
+  options: { name: string; price: number }[],
+  currentIndex: number,
+  opts?: { priceOnly?: boolean }
+): { index: number } | null {
+  const n = normalizeMsg(text).replace(/[?!]+$/g, "").trim();
+  if (!/\b(?:troca\w*|muda\w*|prefiro|quero|pode ser|vou de|fico com|pelo|pela|ao inves)\b/.test(n)) return null;
+  const others = options.map((_, i) => i).filter((i) => i !== currentIndex);
+  const values = [...n.matchAll(/(?:r\$\s*)?(\d{1,4}(?:[.,]\d{1,2})?)(?:\s*reais)?/g)]
+    .map((m) => ({ raw: m[0], value: Number(m[1].replace(",", ".")), hasMoney: /r\$|reais|[.,]\d{2}$/.test(m[0]) }))
+    .filter((v) => Number.isFinite(v.value) && v.value > 0 && v.hasMoney);
+  for (const v of values) {
+    const hits = others.filter((i) => Math.abs(options[i].price - v.value) < 0.015);
+    if (hits.length === 1) return { index: hits[0] };
+  }
+  if (opts?.priceOnly) return null;
+  if (/\bo\s+outr[oa]\b|\bpel[oa]\s+outr[oa]\b|\boutra\s+opcao\b/.test(n) && others.length === 1) return { index: others[0] };
+  if (/\b(?:mais barat[oa]|menor preco)\b/.test(n) && others.length) {
+    const cheapest = others.reduce((best, i) => (options[i].price < options[best].price ? i : best), others[0]);
+    if (options[cheapest].price < options[currentIndex]?.price) return { index: cheapest };
+  }
+  return null;
+}
+
+// Pedido + pergunta de serviço na MESMA mensagem (07/10, c06/c13): "Queria um protetor solar FPS 50.
+// Como vejo o total antes de pagar?" / "Tem leite vegetal de outra marca? E como vc funciona? De onde
+// vc compra?". A pergunta de serviço era tratada como produto ("Não achei: ver o total…") ou engolia o
+// pedido. Separa as frases-pergunta de serviço (a Lia responde cada uma) do resto (segue como pedido).
+export function splitServiceQuestions(text: string): { rest: string; questions: Array<{ sentence: string; intent: Intent }> } | null {
+  const parts = text.match(/[^.!?]+(?:[.!?]+|$)/g) ?? [];
+  const sentences: string[] = [];
+  for (const part of parts) {
+    const prev = sentences[sentences.length - 1];
+    if (prev && /(?:^|[\s,])(?:av|r|rod|al|tv|pc|ap|apt|apto|bl|cj|est|jd|vl|n|no|sr|sra|dr|dra)\.$/i.test(prev.trim())) sentences[sentences.length - 1] = prev + part;
+    else sentences.push(part);
+  }
+  const trimmed = sentences.map((s) => s.trim()).filter(Boolean);
+  if (trimmed.length < 2) return null;
+  const questions: Array<{ sentence: string; intent: Intent }> = [];
+  const rest: string[] = [];
+  for (const sentence of trimmed) {
+    const intent = /\?\s*$/.test(sentence) ? detectIntent(sentence) : null;
+    if (intent && (intent.kind === "service_question" || intent.kind === "trust_question" || intent.kind === "identity")) questions.push({ sentence, intent });
+    else rest.push(sentence);
+  }
+  const remainder = rest.join(" ").trim();
+  if (!questions.length || !/[a-zà-ú]{3,}/i.test(remainder) || !parseBasketLines(remainder).length) return null;
+  return { rest: remainder, questions };
+}
+
+// ---------- modo atendimento e farmácia parceira (07/10, placar c13/c30/c31/c35) ----------
+
+// Depois que a Lia avisou o dono, o que o cliente escreve para ESPERAR ou COBRAR a resposta ("vou
+// esperar", "e aí?", "preciso falar com alguém mesmo", "consegue procurar pelo meu CPF?", "ok") não é
+// pedido de produto e não pode virar busca nem pergunta de endereço. Lexicon fechado de conversa
+// sobre a espera — nunca decide sozinho: o chamador só usa com o modo atendimento ativo, sem cesta
+// nem escolha abertas. Lista de compras evidente ou pedido com produto fica de fora.
+export function isAttendanceFollowUp(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[?!.,;]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 140 || n.split(" ").length > 18) return false;
+  // Quantidade na frente ("2 leites") é lista de compras; vírgula sozinha não ("não tenho o código, mas…").
+  if (/^\d+\s*x?\s+\S/.test(n) || /\b\d+\s*(?:x|un|unidades?|kg|g|l|ml)\b/.test(n)) return false;
+  // Pedido com verbo de compra e produto ("quero arroz") não é espera; "quero falar/saber/que confiram" é.
+  if (/^(?:quero|queria|preciso(?: de)?|me ve|manda|traz|compra|adiciona|coloca|bota|vou querer)\s+(?!que\b|so\b|apenas\b|falar\b|conversar\b|saber\b|ver\b|uma pessoa\b|alguem\b|um atendente\b|o responsavel\b|o dono\b|a resposta\b)\S/.test(n)) return false;
+  if (/^(?:ok|okay|certo|combinado|beleza|blz|tudo bem|tranquilo|fechado|entendi|ta bom|ta|pode ser|sim|isso|aham)$/.test(n)) return true;
+  if (/^e ?a[ie]+\b/.test(n)) return true;
+  return (
+    /\b(?:vou|vamos|fico|to|tou|estou|sigo)\s+(?:no\s+)?(?:aguardar|esperar|aguardando|esperando|aguardo)\b|\bno aguardo\b/.test(n) ||
+    /\b(?:falar|conversar|chamar|chama|passa|pede|pedir|manda|avisa)\b.{0,30}\b(?:alguem|atendente|responsavel|humano|pessoa|dono|gerente)\b|\b(?:tem|ha) alguem\b|^alguem\b|\balguem (?:me )?(?:atend|respond|fal|ajud|ligu)\w*|\bme atend\w*|\batendimento\b|\b(?:atendente|responsavel|humano|pessoa de verdade)\b/.test(n) ||
+    /\b(?:cnpj|cpf|codigo do pedido|numero do pedido|nome que aparece)\b/.test(n) ||
+    /\b(?:confer\w+|verific\w+|localiz\w+|procurar pelo|consegu\w+ (?:procurar|ver|achar|localizar))\b/.test(n) ||
+    /\b(?:nao chegou|nao veio|meu pedido|pedido de ontem|ja fiz o pedido|ainda nao (?:respond|me respond|chegou)|ninguem (?:respond|me respond)|demora|urgente|quanto tempo)\b/.test(n)
+  );
+}
+
+// "tem alguma farmácia parceira que venda?" / "vocês vendem em farmácia?": pergunta SOBRE farmácia
+// e remédio, não pedido de produto. A resposta é fixa (não vendemos remédio por parceiro nenhum).
+export function looksLikePharmacyPartnerAsk(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!/\b(?:farmacias?|drogarias?)\b/.test(n)) return false;
+  if (!(isQuestion(text) || /\b(?:vc|voce|voces|vcs|consegue\w*|pode|poderia|tem como)\b/.test(n))) return false;
+  return /\b(?:parceir\w*|vend\w*|trabalh\w*|conveni\w*|tem|tenha|atend\w*|indic\w*|recomend\w*|sugir\w*|sugere|passa\w*|contato|telefone|endereco|perto|proxim\w*|entreg\w*|conhec\w*)\b/.test(n);
 }
