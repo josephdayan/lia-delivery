@@ -15,7 +15,8 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parseBasketLines, parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { countDistinctItems, resolveListItems } from "@/lib/list-items";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
 import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
@@ -97,7 +98,7 @@ function blocksMedicine(text: string): boolean {
   // lista de palavras só tinha genéricos e o pedido virava "anotei… me manda o endereço".
   return medicineEnabled()
     ? looksLikePrescriptionRequest(text)
-    : looksLikeMedicine(text) || (isPrescriptionDrugName(text) && parseBasketLines(text).length <= 1);
+    : looksLikeMedicine(text) || (isPrescriptionDrugName(text) && countDistinctItems(text) <= 1);
 }
 function noMedicineCopy(): string {
   return medicineEnabled() ? copy.prescriptionRefusal() : copy.noMedicine();
@@ -128,7 +129,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   // determinístico dá conta e a 2ª chamada de IA só somava até 10 s (06/10).
   const routed = turnMeta.getStore()?.routerQuery;
   const extraction = routed && normalizeMsg(routed) === normalizeMsg(text) ? null : await extractShoppingList(sanitized);
-  const deterministic = parseBasketLines(sanitized)
+  const deterministic = resolveListItems(sanitized, { log: true })
     .filter((line) => queryTokens(line.phrase).length)
     .filter((line) => !blocksMedicine(line.phrase))
     .filter((line) => !looksLikeTobacco(line.phrase));
@@ -144,7 +145,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     const kept = [...items.map((item) => item.query), ...deterministic.map((line) => line.phrase)];
     const llmDroppedSomething =
       !medicineEnabled() ||
-      parseBasketLines(sanitized)
+      resolveListItems(sanitized)
         .filter((line) => queryTokens(line.phrase).length && !looksLikeTobacco(line.phrase))
         .some((line) => !kept.some((query) => queryTokens(query).some((token) => queryTokens(line.phrase).includes(token))));
     return {
@@ -154,7 +155,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
       containsTobacco
     };
   }
-  const raw = parseBasketLines(sanitized).filter((line) => queryTokens(line.phrase).length);
+  const raw = resolveListItems(sanitized).filter((line) => queryTokens(line.phrase).length);
   const safe = deterministic;
   return {
     lines: rewriteGroceryOil(safe),
@@ -207,7 +208,7 @@ async function buildChoices(
   const crossStore = !lockedStoreKey;
   if (crossStore && !forceLongTail && mercadoLivreEnabled() && !longTailOptInEnabled()) {
     const sanitized = stripMedicineNegation(text);
-    for (const line of parseBasketLines(sanitized)) {
+    for (const line of resolveListItems(sanitized)) {
       if (!queryTokens(line.phrase).length || blocksMedicine(line.phrase)) continue;
       void prefetchLongTailIfNeeded(splitPriceCap(line.phrase).phrase).catch(() => {});
     }
@@ -740,7 +741,7 @@ async function askSignup(phone: string, body: string, fallback: () => Promise<vo
 // de novo, sem a apresentação. Com CEP, falta só rua e número → o pedido de sempre.
 async function askStreetOrSignup(phone: string, ctx: DeliveryContext, userCep: string | null | undefined) {
   if (ctx.cep || userCep) return askStreetAndNumber(phone, ctx);
-  const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
   // Sem CEP nenhum, o texto pede o endereço COM CEP (06/10: "Falta o endereço: rua, número e
   // complemento" saía para quem nem tinha mandado endereço e soava como cobrança).
   await askSignup(phone, copy.signupFormBody(noted, false), () =>
@@ -1725,7 +1726,7 @@ async function handleDeliveryTurn(
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
-      const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+      const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
       await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress()));
     } else if (!savedCep) {
       ctx.flow = "delivery";
@@ -2837,7 +2838,7 @@ async function handleDeliveryTurn(
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
     if (priceAsk && note) await reply(phone, copy.priceAfterAddress(priceAsk));
-    const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+    const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
     await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
     return;
   }
@@ -2871,12 +2872,12 @@ async function handleDeliveryTurn(
       return;
     }
     const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
-    const lines = note ? parseBasketLines(note) : [];
+    const lines = note ? resolveListItems(note) : [];
     if (note) addPendingRequest(ctx, note);
     ctx.flow = "delivery";
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
-    const noted = ctx.pendingRequest ? parseBasketLines(ctx.pendingRequest).map((l) => `${l.qty}x ${l.phrase}`) : [];
+    const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((l) => `${l.qty}x ${l.phrase}`) : [];
     await reply(
       phone,
       alreadyAsked
@@ -3144,7 +3145,7 @@ async function handleDeliveryTurn(
         const adjusts: typeof frees = [];
         const searches: typeof frees = [];
         for (const part of frees) {
-          const clauseLines = parseBasketLines(part.clause);
+          const clauseLines = resolveListItems(part.clause);
           const single = clauseLines.length === 1 ? clauseLines[0] : undefined;
           const existing = single?.qtyExplicit
             ? (ctx.basket ?? []).find((item) => itemMatchesPhrase(single.phrase, item))
@@ -3158,7 +3159,7 @@ async function handleDeliveryTurn(
         }
         for (const part of adjusts) {
           // "bota 2 leites" com leite já na cesta = ajuste de quantidade (28/08 S4).
-          const single = parseBasketLines(part.clause)[0];
+          const single = resolveListItems(part.clause)[0];
           const existing = (ctx.basket ?? []).find((item) => itemMatchesPhrase(single.phrase, item));
           if (existing) {
             existing.qty = Math.max(1, single.qty);
@@ -4131,7 +4132,7 @@ async function handleNewCep(
   // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
   // 01310-100") ou antes (06/10, Clara mandou rua e número, depois o CEP: o CPF nunca foi pedido).
   // Os itens guardados aparecem na confirmação: o cliente vê que não sumiram.
-  const noted = queued ? parseBasketLines(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = queued ? resolveListItems(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
   const savedWithNoted = noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg;
   if (completingSignup && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedWithNoted, queued))) return;
   if (queued) {
@@ -4331,7 +4332,7 @@ async function handleDeliveryAddress(
   if (!ctx.cep) {
     ctx.step = "need_cep";
     await writeCtx(convoId, ctx);
-    const noted = extraItems ? parseBasketLines(extraItems).map((line) => `${line.qty}x ${line.phrase}`) : [];
+    const noted = extraItems ? resolveListItems(extraItems).map((line) => `${line.qty}x ${line.phrase}`) : [];
     await reply(phone, noted.length ? `${copy.addressSavedAskCep()}\n\n${copy.notedItemsLine(noted)}` : copy.addressSavedAskCep());
     return;
   }
@@ -4342,7 +4343,7 @@ async function handleDeliveryAddress(
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
   const savedMsg = copy.addressSavedPrefix(finalAddress, ctx.cep);
-  const noted = queued ? parseBasketLines(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = queued ? resolveListItems(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
   if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg, queued))) return;
   if (queued) {
     await reply(phone, `${copy.addressUpdated(finalAddress, ctx.cep)}${await paidOrderAddressNotice(userId, finalAddress)}`);
@@ -4896,7 +4897,7 @@ async function handleChoosing(
   }
   // Mensagem com 2+ produtos ("shampoo Kerasys Coconut 1L, condicionador Kerasys Coconut
   // 1L", 06/10, Claire) é pedido novo: não estreita nem refina as opções na mesa.
-  const multiItem = parseBasketLines(text).length >= 2;
+  const multiItem = countDistinctItems(text) >= 2;
   // "qual a diferença entre o 1 e o 2?": comparação honesta pelo que a Lia SABE
   // (nome, preço, loja) — repetir os cards sem palavra parecia ignorar (29/08 S17).
   if (/\b(qual (a )?diferenca|diferenca entre|compara(r|cao)?)\b/.test(normalizeMsg(text))) {
@@ -5646,7 +5647,7 @@ function classifyFirstEnabled(): boolean {
 // Lista de compras evidente (2+ linhas, ou quantidade numérica na frente) não precisa
 // do classificador: vai direto pra busca, sem pagar a chamada de IA.
 function looksLikeProductList(text: string): boolean {
-  if (parseBasketLines(text).length >= 2) return true;
+  if (countDistinctItems(text) >= 2) return true;
   // Saudação na frente ("Ola quero 2 cxs de…", 06/10) não muda o que a mensagem é.
   const n = normalizeMsg(text).replace(/^(?:(?:oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)(?:\s+lia)?[\s,!.]*)+/, "");
   return /^\d+\s*x?\s+\S/.test(n) || /^(quero|queria|me ve|manda|preciso de|traz|compra)\s+\d/.test(n);
@@ -5923,7 +5924,7 @@ async function handleSwap(
   // (3º ciclo de testes 15/08, rodada 3: respondia "não achei pra tirar").
   if (!basket.length && !(ctx.pending?.length)) {
     const before = (rawText ?? "").split(/\b(?:troca|trocar|substitui|substituir|muda|mudar)\b/i)[0] ?? "";
-    const keptLines = parseBasketLines(before).filter(
+    const keptLines = resolveListItems(before).filter(
       (l) => queryTokens(l.phrase).length && !itemMatchesPhrase(from, { sku: l.phrase, name: l.phrase, unitPrice: 0 })
     );
     const corrected = [...keptLines.map((l) => (l.qtyExplicit && l.qty > 1 ? `${l.qty} ${l.phrase}` : l.phrase)), to]
@@ -6064,7 +6065,7 @@ async function handleConciergeRequest(
     /^(?:(?:pode|coloca|poe|bota|adiciona|acrescenta|quero|queria|me ve|manda|e|vamos|vou|podemos|entao|tambem)\s+)*(?:colocar\s+|adicionar\s+|acrescentar\s+|botar\s+)?mais\s+(.+)$/
   );
   if (moreOf && ctx.basket?.length) {
-    const lines = parseBasketLines(moreOf[1]).filter((l) => queryTokens(l.phrase).length);
+    const lines = resolveListItems(moreOf[1]).filter((l) => queryTokens(l.phrase).length);
     if (lines.length === 1) {
       const target = [...ctx.basket].reverse().find((item) => itemMatchesPhrase(lines[0].phrase, item));
       if (target) {
