@@ -1,3 +1,26 @@
+## 07/10/2026 (noite) — Placar de busca: leitura offline das 4 rodadas de 316 pedidos
+
+Última medição (rodada 3, juiz gpt-6-sol): **1ª opção errada 1,7%, precisão dos itens 97,8%, cobertura 95,1%,
+honestidade 96,4%**, 1 vazamento de remédio em 11. A meta do dono (>95% de precisão) está batida na última rodada;
+o 14% de "produto errado" do diagnóstico antigo era a rodada SEM crédito da OpenAI. A busca ao vivo é padrão desde
+07/10 (`LIA_LIVE_SEARCH !== "false"`).
+Não deu para REMEDIR da sessão na nuvem: a rede do ambiente nega `api.openai.com`, os domínios das lojas e o
+ViaCEP, e não há `OPENAI_API_KEY`. Em vez disso, comparei as 4 rodadas (baseline, live-search, r2, r3):
+**15 pedidos falham em todas** — defeito determinístico, não ruído do juiz. Causas, lidas no código:
+- **Farmácia ao vivo só entra em categoria que a cópia já tinha** (`mergeLiveWithSnapshot`, 43 categorias de
+  beleza/higiene): derruba teste de gravidez, chinelo Havaianas (Drogaria SP), pilhas (Pague Menos). O remédio já
+  tem 2 guardas (categoria "Medicamentos" da loja + ANVISA por nome); a allowlist é a 3ª e custa cobertura.
+- **Sinônimo do catálogo faltando**: "leite em pó para bebê" ↔ "Fórmula Infantil" (score léxico 0, nunca vira candidato).
+- **Regra de USO do rerank exagera**: "bucha para parede" rejeita "Bucha Plástica com Aba" porque o nome não diz
+  "parede" (mesma regra que acerta o isqueiro de charuto).
+- **Erro de julgamento da IA no top-1** (4 casos, todos repetidos): esmalte "Intensificador de Vermelho", cabo no
+  lugar de carregador USB-C, bala de goma que é suplemento (R$71,98), macarrão parafuso para "parafuso".
+- **Decisão do dono**: "pomada para assadura" (Hipoglós é MIP; Desitin/Cetrilan são cosméticos) — o juiz conta como
+  remédio e a Lia mostra; "vitamina C efervescente" o juiz quer e a guarda ANVISA por nome ("comprimidos") bloqueia;
+  "bicicleta" genérica com só a infantil da Ri Happy. Nenhum é bug de busca.
+Nada disso foi alterado: mudança de busca só entra medida (`evals/README.md`). Pendências e o que liberar para
+medir daqui estão em PENDENCIAS.md.
+
 ## 07/10/2026 (noite) — Tela da lista: ajustes do dono depois do teste no celular
 
 A tela funcionou no celular do dono (com fotos). Ajustes pedidos, feitos e testados (suíte local):

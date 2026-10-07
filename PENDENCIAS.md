@@ -1,3 +1,20 @@
+## 07/10/2026 (noite) — Para remedir o placar de busca da sessão na nuvem
+
+- [ ] **Dono: liberar a rede do ambiente da nuvem** (menu do ambiente → Edit → Network access): `api.openai.com`,
+  `viacep.com.br`, `brasilapi.com.br` e os 41 domínios de `VTEX_API_STORES` (src/lib/purchase/vtex-checkout.ts), ou
+  acesso amplo. E `OPENAI_API_KEY` como segredo do ambiente. Sem isso o placar aborta no preflight.
+- [ ] Rodar primeiro só os 15 que falham em todas as rodadas (`--only` por texto; ids r004 r017 s093 s139 s141 s143
+  s189 s192 s200 s245 s246 s274 s282 s283 s315): é a prova rápida (minutos) de cada conserto; os 316 só no fim.
+- [ ] Conserto proposto 1 (precisa medir): farmácia ao vivo por **blocklist** (categoria "Medicamentos" + ANVISA),
+  não allowlist da cópia. Ganha teste de gravidez, Havaianas, pilhas; risco = item de saúde não-remédio aparecer.
+- [ ] Conserto proposto 2: alias "leite (em pó) para/de bebê" → "fórmula infantil" (`QUERY_ALIASES`).
+- [ ] Conserto proposto 3: no rerank, USO só exclui quando o produto é de outro tipo/uso (bucha plástica É de
+  parede); hoje a regra exige o uso no nome.
+- [ ] Decisões do dono: pomada de assadura (bloquear como remédio ou liberar cosméticos?); vitamina C efervescente
+  (fica bloqueada pela guarda "comprimidos"); juiz contar bicicleta infantil como errada no pedido genérico.
+- [ ] Suíte local completa nesta sessão: 1150/1151 — a única falha é `conversation.eval.test.ts` "CEP de SP capital"
+  (ViaCEP bloqueado pela rede do ambiente), não é regressão.
+
 ## 07/10/2026 (noite) — Tela de escolha da lista
 
 - [ ] **Liberar a publicação do Flow** (`npx tsx scripts/list-flow-spike.mts --publish`; foi bloqueada pela permissão
