@@ -6,8 +6,8 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-export type PoolItem = { id: string; storeKey: string; store: string; name: string; brand: string; price: number };
-type Store = { key: string; domain: string; label: string };
+export type PoolItem = { id: string; sku: string; storeKey: string; store: string; name: string; brand: string; price: number };
+type Store = { key: string; domain: string; label: string; prefix?: string };
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";
 const CACHE = join(process.cwd(), "evals", "cache");
@@ -25,7 +25,7 @@ async function fetchStore(store: Store, query: string, count: number): Promise<P
         for (const item of p.items ?? []) {
           const own = (item.sellers ?? []).find((s) => s.sellerId === "1" && (s.commertialOffer?.AvailableQuantity ?? 0) > 0 && (s.commertialOffer?.Price ?? 0) > 0);
           if (!own) continue;
-          out.push({ id: `${store.key}:${item.itemId}`, storeKey: store.key, store: store.label, name: p.productName ?? item.name ?? "", brand: p.brand ?? "", price: own.commertialOffer!.Price! });
+          out.push({ id: `${store.key}:${item.itemId}`, sku: `${store.prefix ?? `${store.key}-`}${item.itemId}`, storeKey: store.key, store: store.label, name: p.productName ?? item.name ?? "", brand: p.brand ?? "", price: own.commertialOffer!.Price! });
           break; // um SKU por produto basta (variações de cor/tamanho não mudam o tipo)
         }
       }
@@ -37,7 +37,7 @@ async function fetchStore(store: Store, query: string, count: number): Promise<P
 
 export async function oraclePool(query: string, stores: Store[], perStore = 8): Promise<PoolItem[]> {
   mkdirSync(CACHE, { recursive: true });
-  const key = createHash("sha1").update(`${query}|${perStore}|${stores.map((s) => s.key).sort().join(",")}`).digest("hex").slice(0, 16);
+  const key = createHash("sha1").update(`v2|${query}|${perStore}|${stores.map((s) => s.key).sort().join(",")}`).digest("hex").slice(0, 16);
   const file = join(CACHE, `oracle-${key}.json`);
   if (existsSync(file)) {
     const cached = JSON.parse(readFileSync(file, "utf8")) as { at: number; pool: PoolItem[] };

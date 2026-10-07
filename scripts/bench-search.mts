@@ -91,7 +91,16 @@ async function main() {
         const v = verdict?.verdicts ?? {};
         const good = (id: string) => v[id] === "exact" || v[id] === "acceptable";
         const shownGood = shown.filter((s) => good(s.id));
-        const poolGood = pool.filter((p) => good(p.jid));
+        // "Existe" = existe E entrega no CEP: o oráculo só conta item que a simulação ao vivo da própria
+        // loja confirma para o endereço (Swift/Mambo regionais, estoque por CEP).
+        let poolGood = pool.filter((p) => good(p.jid));
+        if (poolGood.length) {
+          const { checkCandidatesLive, liveKey } = await import("../src/lib/live-availability");
+          const probe = poolGood.slice(0, 6);
+          const live = await checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep);
+          const alive = new Set(live.kept.map((c) => liveKey(c.storeKey, c.sku)));
+          poolGood = probe.filter((p) => alive.has(liveKey(p.storeKey, p.sku)));
+        }
         const kind = verdict?.kind ?? "product";
         let outcome: string;
         if (!verdict) outcome = "judge_failed";

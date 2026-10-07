@@ -114,7 +114,8 @@ export function liaTextModel(): string {
 }
 
 // Esforço de raciocínio (LIA_AI_EFFORT=none|low|medium|high). Sem a variável, o padrão do modelo.
-// "none" corta ~0,7 s por chamada na luna (medido 07/10); só vira padrão se o placar não piorar.
+// "none" corta ~0,7 s por chamada na luna (medido 07/10), MAS piorou a precisão (1ª opção errada 1,9% → 4,7%):
+// o padrão do modelo fica. Espera do rerank 15 s: timeout = fallback sem IA = produto errado.
 function liaReasoning(): { reasoning?: { effort: string } } {
   const effort = process.env.LIA_AI_EFFORT?.trim();
   return effort ? { reasoning: { effort } } : {};
@@ -145,7 +146,7 @@ export async function rerankShoppingOptions(message: string, lines: RerankLine[]
       },
       // O webhook do WhatsApp precisa responder; sem resposta em 6s, seguimos com o
       // ranking determinístico em vez de deixar o cliente no vácuo.
-      signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 10000)),
+      signal: AbortSignal.timeout(Number(process.env.LIA_SEARCH_RERANK_TIMEOUT_MS ?? 15000)),
       body: JSON.stringify({
         model: liaTextModel(),
         ...liaReasoning(),

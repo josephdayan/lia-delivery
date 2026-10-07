@@ -21,15 +21,15 @@ const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
 const CACHE_TTL_MS = 10 * 60_000;
 const CACHE_MAX = 600;
 
-// OPT-IN até o placar (scripts/bench-search.mts) provar o ganho: só liga com
-// `LIA_LIVE_SEARCH=true`. Testes e produção seguem como antes enquanto a variável não existir.
+// Padrão LIGADO desde o placar de 07/10 (cobertura 85,8% → 92,6% com a mesma precisão); desliga
+// com `LIA_LIVE_SEARCH=false`. Testes e golden desligam em tests/helpers (sem rede).
 export function liveSearchEnabled(): boolean {
-  return process.env.LIA_LIVE_SEARCH === "true";
+  return process.env.LIA_LIVE_SEARCH !== "false";
 }
 
 function timeoutMs(): number {
   const value = Number(process.env.LIA_LIVE_SEARCH_TIMEOUT_MS);
-  return Number.isFinite(value) && value >= 500 ? value : 2500;
+  return Number.isFinite(value) && value >= 500 ? value : 2000;
 }
 
 // Farmácias: o produto ao vivo só entra se estiver numa categoria que a colheita liberou.

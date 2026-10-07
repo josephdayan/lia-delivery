@@ -72,11 +72,11 @@ test("busca ao vivo: falha ou timeout = lista vazia (a cópia responde sozinha);
   assert.deepEqual(await liveSearchItems("loja-que-nao-existe", "leite", 12, ok), []);
 });
 
-test("opt-in: só liga com LIA_LIVE_SEARCH=true", () => {
+test("padrão ligado; LIA_LIVE_SEARCH=false desliga", () => {
   const saved = process.env.LIA_LIVE_SEARCH;
   try {
     delete process.env.LIA_LIVE_SEARCH;
-    assert.equal(liveSearchEnabled(), false);
+    assert.equal(liveSearchEnabled(), true);
     process.env.LIA_LIVE_SEARCH = "false";
     assert.equal(liveSearchEnabled(), false);
     process.env.LIA_LIVE_SEARCH = "true";
@@ -84,5 +84,5 @@ test("opt-in: só liga com LIA_LIVE_SEARCH=true", () => {
   } finally {
     if (saved === undefined) delete process.env.LIA_LIVE_SEARCH; else process.env.LIA_LIVE_SEARCH = saved;
   }
-  assert.equal(categorySlug(["/Dermocosméticos/Shampoo/"]), "dermocosmeticos shampoo");
+    assert.equal(categorySlug(["/Dermocosméticos/Shampoo/"]), "dermocosmeticos shampoo");
 });

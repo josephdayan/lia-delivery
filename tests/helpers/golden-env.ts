@@ -7,6 +7,8 @@
 // Seguro porque o node --test roda cada arquivo em processo próprio.
 process.env.OPENAI_API_KEY = "";
 process.env.WHATSAPP_PROVIDER = "mock";
+// Busca ao vivo nas lojas usa rede: testes ficam na cópia do catálogo.
+process.env.LIA_LIVE_SEARCH = "false";
 process.env.LIA_RETAILER_TEST_SEED = "true";
 process.env.LIA_SEND_PHOTOS = "false";
 // 27/09/2026: o golden mede a busca no ELENCO DE PRODUÇÃO — as lojas com compra por API (as
