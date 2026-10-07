@@ -69,15 +69,16 @@
   passam a mostrar esse nome; (2) a solução que vale em todo banco é trocar o MEI por empresa com
   razão social "Lia Delivery" (contador). Decisão do dono.
 
-## 06/10/2026 — Asaas bloqueou o Pix de saída (compra automática parada)
+## 06/10/2026 — Asaas bloqueou o Pix de saída (RESOLVIDO 07/10)
 
 - [x] Conta bancária, selfie, token no app e chave Pix nova feitos pelo dono (06/10) — não destravou.
-- [ ] Suporte humano do Asaas explicar/remover o bloqueio de transferências (painel: "quando a
-  aprovação do seu cadastro for concluída"). Referência original: — `bankAccountInfo` está
-  PENDING pela API — e/ou pedir ao suporte (chat "Falar com atendente") que libere o Pix da conta
-  8100866-6, citando o erro `invalid_action` no `POST /v3/pix/qrCodes/decode`.
-- [ ] Conferir em `/api/ops/asaas-status` (logado no /ops): `bankAccountInfo` APPROVED e
-  `decode.http` 200. Só então a compra automática volta a fechar.
+- [x] Asaas LIBEROU em 07/10 12h52 (atendente Luana Almeida, chat protocolo 1802413, após ligação
+  do dono e mensagem com a explicação do negócio + NF da Mambo). Reanálise "regulamentada pelo
+  BACEN"; durante ela só se recebe, não se movimenta saldo.
+- [x] Conferido 07/10 13h23 em `/api/ops/asaas-status`: os 4 status APPROVED, `decode` 200
+  (`canBePaid: true`), saldo R$608,21; compra automática não pausada; nenhum pedido parado.
+- [ ] Plano B se voltar a acontecer: Woovi (paga QR por API, R$1/Pix, Pix Out liberado pelo time
+  deles) — pesquisa de 06/10; não foi aberta conta.
 
 ## 06/10/2026 — Carrossel v4/v5: card com 2 quebras de linha
 

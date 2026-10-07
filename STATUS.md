@@ -1,3 +1,17 @@
+## 07/10/2026 — Asaas liberado: Pix de saída de volta
+
+Reanálise cadastral aberta pelo Asaas em 06/10 09h54 ("Saques bloqueados temporariamente") foi
+concluída em 07/10 12h52 (chat, Luana Almeida). `/api/ops/asaas-status` 13h23: commercialInfo,
+bankAccountInfo, documentation e general APPROVED; decode de cobrança de R$1 → 200,
+`canBePaid: true`; saldo R$608,21. `/api/ops/purchase-accounts`: `paused: false`. Nenhum pedido
+ficou parado (o único afetado, Mambo 06/10, foi estornado sozinho). O que destravou, na ordem:
+ligação ao 0800 respondendo às perguntas de segurança, conta bancária cadastrada (mesmo CNPJ),
+selfie/token no app, chave Pix nova e mensagem no chat explicando o negócio com NF da Mambo.
+Lição: o painel "Situação cadastral" pode mostrar tudo aprovado enquanto a reanálise bloqueia
+saques; quem diz a verdade é `GET /v3/myAccount/status` + o decode. Cada chamada a
+`/api/ops/asaas-status` cria uma cobrança de R$1 no MP (e um e-mail "Pague com PIX") — usar com
+parcimônia.
+
 ## 07/10/2026 (manhã) — Tudo em gpt-6-luna e o placar de conversas com juiz luna
 
 Lia, visão, comprador local, juiz e cliente simulado: `gpt-6-luna`. Achados: (1) a luna como juiz é mais rigorosa
