@@ -93,6 +93,10 @@ export type PendingChoice = {
   exhausted?: boolean;
   // "qualquer um, escolhe vc": a Lia auto-escolhe o topo do ranking (28/08 S6).
   autoPick?: boolean;
+  // Nenhum candidato cumpria tudo o que o cliente pediu (tamanho, sabor…): estas opções são o
+  // MAIS PRÓXIMO, do tipo certo, e `closestFalta` diz a diferença ("é de 500 ml"). Nunca
+  // entram na cesta sem o cliente escolher (sem autoPick, sem modo lista, fora do plano B).
+  closestFalta?: string;
 };
 
 export type DeliveryContext = {

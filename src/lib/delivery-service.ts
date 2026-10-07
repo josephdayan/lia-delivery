@@ -168,6 +168,15 @@ function dedupeBasket(items: BasketItem[]): BasketItem[] {
   return out;
 }
 
+// Os "mais próximos" do rerank: o primeiro e os que falham na MESMA coisa (mesma frase de
+// diferença). Misturar "é de 500 ml" com "é de 250 ml" sob um aviso só seria impreciso.
+function closestFromRerank(proximos: { sku: string; falta: string }[] | undefined): { skus: string[]; falta: string } | null {
+  if (!proximos?.length) return null;
+  const falta = proximos[0].falta;
+  const same = proximos.filter((p) => normalizeMsg(p.falta) === normalizeMsg(falta));
+  return { skus: same.map((p) => p.sku), falta };
+}
+
 async function buildChoices(
   text: string,
   lockedStoreKey?: string,
@@ -404,7 +413,14 @@ async function buildChoices(
     : null;
   console.log(`[perf:buildChoices] extract=${perfExtracted - perfStart}ms search+live=${perfSearched - perfExtracted}ms rerank=${Date.now() - perfSearched}ms lines=${lines.length}`);
   const rerankedSkus = new Map<(typeof perLine)[number], string[]>();
-  if (rerank) withCandidates.forEach((entry, i) => rerankedSkus.set(entry, rerank.lines[i].skus));
+  const rerankedClosest = new Map<(typeof perLine)[number], { skus: string[]; falta: string }>();
+  if (rerank) {
+    withCandidates.forEach((entry, i) => {
+      rerankedSkus.set(entry, rerank.lines[i].skus);
+      const closest = closestFromRerank(rerank.lines[i].proximos);
+      if (closest) rerankedClosest.set(entry, closest);
+    });
+  }
 
   const autoAdded: BasketItem[] = [];
   const pending: PendingChoice[] = [];
@@ -419,6 +435,14 @@ async function buildChoices(
     let options: StoreCandidate[] = chosen
       ? chosen.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c))
       : diversifyOptions(line.phrase, candidates.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
+    // Ninguém cumpre tudo o que o cliente pediu (tamanho, sabor…) mas há produto do tipo certo:
+    // vira escolha com o aviso da diferença; nunca entra na cesta sem o cliente tocar.
+    let closestFalta: string | undefined;
+    const closest = rerankedClosest.get(entry);
+    if (!options.length && closest) {
+      options = closest.skus.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c));
+      closestFalta = options.length ? closest.falta : undefined;
+    }
     if (!options.length) {
       notFound.push(line.phrase);
       notFoundLines.push(line);
@@ -428,14 +452,14 @@ async function buildChoices(
     // "O de sempre" (dono, 04/09): quem já comprou um produto vê ele PRIMEIRO e com
     // destaque quando pede de novo — mesmo que a IA/diversificação não o tenha posto
     // no top-3 (só não entra se a verificação ao vivo o tirou dos candidatos).
-    const repeatPick = preferredSkus?.size
+    const repeatPick = preferredSkus?.size && !closestFalta
       ? candidates
           .filter((c) => preferredSkus.has(c.item.sku))
           .sort((a, b) => (preferredSkus.get(b.item.sku) ?? 0) - (preferredSkus.get(a.item.sku) ?? 0))[0]
       : undefined;
     if (repeatPick && !options.some((o) => o.item.sku === repeatPick.item.sku)) options = [repeatPick, ...options];
     // Embalagem exata do pedido ("12 ovos" → dúzia) entra na vitrine mesmo fora do top-3.
-    const exactPack = line.qty >= 4 && countsPackContent(line.phrase) ? candidates.find((c) => declaredPack(c.item.name) === line.qty) : undefined;
+    const exactPack = !closestFalta && line.qty >= 4 && countsPackContent(line.phrase) ? candidates.find((c) => declaredPack(c.item.name) === line.qty) : undefined;
     if (exactPack && !options.includes(exactPack)) options = [exactPack, ...options];
     const sortedOptions = options
       .map(({ store, item }) => {
@@ -449,7 +473,8 @@ async function buildChoices(
       qty: line.qty,
       ...(line.qtyExplicit ? { qtyExplicit: true } : {}),
       ...(line.cap != null ? { cap: line.cap } : {}),
-      ...(line.autoPick ? { autoPick: true } : {}),
+      ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
+      ...(closestFalta ? { closestFalta } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
       options: exactPackFirst(line.phrase, line.qty, sortedOptions).slice(0, vitrineLimit())
@@ -750,6 +775,7 @@ function vitrineLimit(): number {
 }
 
 function choicesHeaderFor(p: PendingChoice): string {
+  if (p.closestFalta) return copy.closestHeader(p.query, p.closestFalta);
   if (p.urgent) return copy.choicesHeaderToday(p.query);
   if (p.noneToday) return copy.noneTodayHeader(p.query);
   return copy.choicesHeader(p.query);
@@ -4992,7 +5018,8 @@ async function choiceCandidates(store: StoreConnector, ctx: DeliveryContext, p: 
   pool = pool.filter((o) => conciergeMatchIsStrong(query, o));
   if (p.cap != null) pool = pool.filter((o) => display(o.unitPrice, o.medicine) <= p.cap!);
   pool = active.length ? pool.filter((o) => active.every((a) => attrMatchesItem(a, o))) : pool;
-  return aiApprovePool(query, pool);
+  // O juízo da IA confere também o refino ativo ("coco", "1 L"), não só o pedido original.
+  return aiApprovePool(active.length ? `${query} ${active.join(" ")}` : query, pool);
 }
 
 // "Outras"/refino/mais barato também passam pelo juízo da IA (07/10, placar c20: "outras" de
@@ -5050,6 +5077,7 @@ async function showPriceSortedOptions(
   p.shownOptions = [...(p.shownOptions ?? p.options), ...picked.filter((o) => !remembered.has(o.sku))];
   p.shownSkus = [...new Set([...(p.shownSkus ?? p.options.map((o) => o.sku)), ...picked.map((o) => o.sku)])];
   p.options = picked;
+  p.closestFalta = undefined;
   await writeCtx(convoId, ctx);
   await sendChoices(phone, p, copy.priceSortedHeader(p.query, dir === "asc"));
 }
@@ -5131,6 +5159,7 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
   const remembered = new Set((p.shownOptions ?? p.options).map((o) => o.sku));
   p.shownOptions = [...(p.shownOptions ?? p.options), ...next.filter((o) => !remembered.has(o.sku))];
   p.options = next;
+  p.closestFalta = undefined;
   p.shownSkus = [...shown, ...next.map((o) => o.sku)];
   await writeCtx(convoId, ctx);
   await sendChoices(phone, p, copy.moreChoicesHeader(p.query));
@@ -5152,13 +5181,16 @@ const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|ne
 // false quando nada aparece — o chamador segue o caminho de sempre.
 async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string, mustMatch?: string): Promise<boolean> {
   const found = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, true, ctx.cep);
-  const choice = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
+  const picked = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
+  // Busca nova que só achou o "mais próximo" não serve de refino (o cabeçalho diria o contrário).
+  const choice = picked?.closestFalta ? undefined : picked;
   // `mustMatch` (06/10): só vale opção que tem TUDO o que foi pedido ("kerasys coco"); a
   // busca nova não pode devolver outro produto com cabeçalho de refino.
   if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
   if (!choice?.options.length) return false;
   current.baseQuery = undefined;
   current.attrs = undefined;
+  current.closestFalta = undefined;
   current.query = choice.query;
   const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
   current.shownOptions = [...(current.shownOptions ?? current.options), ...choice.options.filter((o) => !remembered.has(o.sku))];
@@ -5192,6 +5224,7 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
   p.baseQuery = base;
   p.attrs = attrs;
   p.query = refined;
+  p.closestFalta = undefined;
   // O que JÁ estava na mesa antes do refino — capturado antes de sobrescrever p.options.
   const previouslyShownSkus = p.shownSkus ?? p.options.map((o) => o.sku);
   const previouslyShown = p.shownOptions ?? p.options;
@@ -6002,8 +6035,9 @@ async function handleConciergeRequest(
       const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       return display(top.unitPrice, top.medicine) * adj.qty;
     };
-    const auto = pending.filter((choice) => lineDisplayOf(choice) <= autopickMax);
-    const confirm = pending.filter((choice) => lineDisplayOf(choice) > autopickMax);
+    // "Mais próximo" (sem o tamanho/sabor pedido) nunca entra sozinho: o cliente escolhe.
+    const auto = pending.filter((choice) => !choice.closestFalta && lineDisplayOf(choice) <= autopickMax);
+    const confirm = pending.filter((choice) => !auto.includes(choice));
     const added: BasketItem[] = [];
     const packNotes: string[] = [];
     for (const choice of auto) {
@@ -6273,7 +6307,20 @@ export async function searchOptionsForPlanB(query: string, cep: string): Promise
   const fromAuto: ChoiceOption[] = result.autoAdded.map((b) => ({
     sku: b.sku, name: b.name, brand: b.brand, unitPrice: b.unitPrice, productUrl: b.productUrl, storeKey: b.storeKey, storeLabel: b.storeLabel, freeShipping: b.freeShipping
   }));
-  return [...fromAuto, ...result.pending.flatMap((p) => p.options)];
+  return [...fromAuto, ...result.pending.filter((p) => !p.closestFalta).flatMap((p) => p.options)];
+}
+
+// Placar da busca: igual ao plano B, mas devolve à parte o que a Lia mostraria COMO "mais
+// próximo" (com aviso da diferença) — não entra na conta de acerto, só é contado.
+export async function searchOptionsForBench(query: string, cep: string): Promise<{ options: ChoiceOption[]; closest: ChoiceOption[] }> {
+  const result = await buildChoices(query, undefined, undefined, undefined, false, cep);
+  const fromAuto: ChoiceOption[] = result.autoAdded.map((b) => ({
+    sku: b.sku, name: b.name, brand: b.brand, unitPrice: b.unitPrice, productUrl: b.productUrl, storeKey: b.storeKey, storeLabel: b.storeLabel, freeShipping: b.freeShipping
+  }));
+  return {
+    options: [...fromAuto, ...result.pending.filter((p) => !p.closestFalta).flatMap((p) => p.options)],
+    closest: result.pending.filter((p) => p.closestFalta).flatMap((p) => p.options)
+  };
 }
 
 async function handleSearch(
