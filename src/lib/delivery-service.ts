@@ -6524,7 +6524,7 @@ async function handleConciergeRequest(
   const medicineMiss = medicineEnabled() && unavailable.length > 0 && unavailable.every(looksLikeMedicineName);
   const notFoundNote = (withOptions: boolean) =>
     // Com o Flow da lista ligado, o "o resto achei" (nota de vitrine) usa a copy única por status.
-    withOptions && listFlowEnabled() && !medicineMiss && !offerLongTail && (unavailable.length || unbuyable.length)
+    withOptions && listFlowEnabled(phone) && !medicineMiss && !offerLongTail && (unavailable.length || unbuyable.length)
       ? copy.missesBlock(
           notFoundLines.map((line): copy.MissEntry => ({
             status: unconfirmedSet.has(normalizeMsg(line.phrase)) ? "unbuyable" : "not_found",
@@ -6756,8 +6756,11 @@ async function handleConciergeRequest(
 // cesta (zero espera: dá pra tocar em Pagar sem abrir nada); o formulário só troca ou tira.
 // Tudo atrás de LIA_LIST_FLOW=true; qualquer falha cai no modo lista/sequencial de sempre.
 
-function listFlowEnabled(): boolean {
-  return process.env.LIA_LIST_FLOW === "true" && process.env.WHATSAPP_PROVIDER === "meta";
+// LIA_LIST_FLOW=admin: só os telefones de LIA_ADMIN_PHONES/dono recebem o formulário (teste ao vivo).
+function listFlowEnabled(phone: string): boolean {
+  if (process.env.WHATSAPP_PROVIDER !== "meta") return false;
+  const mode = process.env.LIA_LIST_FLOW;
+  return mode === "true" || (mode === "admin" && isAdminPhone(phone));
 }
 
 // Foto da cesta: a resposta do formulário só vale se a cesta continua como estava quando ele foi
@@ -6867,7 +6870,7 @@ async function tryListFlow(args: {
   notes: string[];
 }): Promise<boolean> {
   const { phone, convoId, ctx, pending } = args;
-  if (!listFlowEnabled() || pending.length < 2) return false;
+  if (!listFlowEnabled(phone) || pending.length < 2) return false;
   // Remédio isento usa cards soltos no Meta (05/10): a lista com remédio não usa o formulário.
   if (pending.some((choice) => choice.options.some((option) => option.medicine))) return false;
   let flowId: string | null = null;
@@ -6949,7 +6952,7 @@ async function tryListFlow(args: {
 // lista que já mudou). False = não deu (sem formulário ativo, lista fechada, Flow fora do ar).
 async function reshowListFlow(phone: string, convoId: string, ctx: DeliveryContext, head: "stale" | "reopen"): Promise<boolean> {
   const lf = ctx.listFlow;
-  if (!lf || !listFlowEnabled() || ctx.step !== "collecting") return false;
+  if (!lf || !listFlowEnabled(phone) || ctx.step !== "collecting") return false;
   try {
     const { activeListFlowId } = await import("@/lib/meta-setup");
     const flowId = await activeListFlowId();
