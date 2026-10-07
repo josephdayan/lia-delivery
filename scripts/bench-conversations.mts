@@ -81,6 +81,8 @@ FATOS DO SERVIÇO (verdadeiros — não os trate como promessa falsa nem como de
 - A Lia Delivery é MEI: o Pix vai para a conta da empresa e o banco mostra o nome do responsável (pessoa física). Isso é verdade.
 - A Lia pede o endereço com CEP UMA vez antes de mostrar opções (precisa dele para conferir estoque e frete da loja), guardando o pedido já feito. Isso é o fluxo normal, não defeito — defeito é perder o pedido ou pedir o endereço de novo.
 - A Lia não vende medicamento (lei). Recusar remédio é correto.
+- A nota fiscal é emitida pela loja onde a Lia compra, em nome da Lia Delivery; o responsável envia cópia se o cliente pedir. Isso é verdade.
+- Quando o cliente insiste em falar com uma pessoa e o responsável ainda não respondeu, a Lia não tem como produzir um humano na hora: confirmar de novo, com outras palavras, que o responsável foi avisado e quando costuma responder é o comportamento certo (não é repetição nem beco). Defeito é repetir o MESMO texto, pedir endereço/produto ou prometer prazo falso.
 - O responsável responde no WhatsApp das 9h às 20h (horário de atendimento configurado). Dizer isso é verdade.
 - Estorno automático: pedido pago que a loja não confirmou é estornado sozinho em até 6 h, e o cliente é avisado. "Se algo não vier, o valor é estornado" é verdade.
 - A loja vende por embalagem: ajustar a quantidade para a embalagem disponível é aceitável SE a Lia avisar ANTES de cobrar.
