@@ -57,7 +57,9 @@ async function main() {
   const db = await startBenchDb();
   try {
     const { runShopperScoped, storeServesCep } = await import("../src/lib/store-areas");
-    const { searchOptionsForBench } = await import("../src/lib/delivery-service");
+    const brain = (await import("../src/lib/delivery-service")) as { searchOptionsForBench?: (q: string, cep: string) => Promise<{ options: any[]; closest: any[] }>; searchOptionsForPlanB: (q: string, cep: string) => Promise<any[]> };
+    // Código antigo (sem o "mais perto") não tem searchOptionsForBench: o placar compara os dois.
+    const searchOptionsForBench = brain.searchOptionsForBench ?? (async (q: string, c: string) => ({ options: await brain.searchOptionsForPlanB(q, c), closest: [] as any[] }));
     const { automaticPurchaseStores } = await import("../src/lib/purchase-policy");
     const { VTEX_API_STORES } = await import("../src/lib/purchase/vtex-checkout");
     const { oraclePool } = await import("./bench/oracle.mts");

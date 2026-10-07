@@ -128,7 +128,9 @@ export type RerankLine = { query: string; candidates: RerankCandidate[] };
 // do tipo certo que falham em alguma exigência (tamanho, sabor…), do mais perto ao mais longe, com
 // a diferença em uma frase — só alimentam o "não achei X com Y; o mais perto que tenho…".
 export type RerankClosest = { sku: string; falta: string };
-export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[] };
+// `maisBarato` = o cliente pediu explicitamente o mais barato PARA ESTE item: `skus` já vem do mais
+// barato ao mais caro (preço exibido), entre os aprovados.
+export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean };
 export type RerankResult = { lines: RerankLineResult[] };
 
 // A decisão de QUAL produto mostrar não é só léxica: o scorer de tokens conta palavras em comum,
@@ -143,9 +145,9 @@ const RERANK_SYSTEM_PROMPT = (limit: number) =>
   `Você é a Lia, concierge de compras no WhatsApp. Recebe a MENSAGEM do cliente e, para cada ITEM pedido, CANDIDATOS do catálogo (sku, nome, marca, preço, loja). Para cada item:
 1) "exigencias": o que o cliente DISSE que o produto precisa ter — marca, tamanho/peso/volume, sabor/variedade/tipo ('de soja', 'natural', 'refinado'), cor, 'sem X'/'zero X', espécie/porte do pet, público, e a contagem que faz parte do produto ('tubo com 4 bolas', 'pack com 12 latas'). Só o que está escrito, nada inferido; pedido genérico = []. A quantidade a comprar NÃO é exigência: o sistema ajusta a embalagem ('12 ovos' aceita caixa de 10, 12 ou 20; '3 coca' aceita a garrafa avulsa).
 2) Julgue CADA candidato com dois testes:
- TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
+ TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
  EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
-3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; nas primeiras posições alterne marca, loja e faixa de preço.
+3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
 4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público (adulto/infantil), restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
 Se nenhum candidato serve, aprovados e proximos vazios: um operador cota o que faltar — vazio é melhor que sugestão errada. Use APENAS skus daquele item. Um resultado por item, na mesma ordem. Responda apenas JSON válido.`;
 
@@ -195,6 +197,7 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
                     properties: {
                       exigencias: { type: "array", items: { type: "string" } },
                       aprovados: { type: "array", items: { type: "string" } },
+                      maisBarato: { type: "boolean" },
                       proximos: {
                         type: "array",
                         items: {
@@ -205,7 +208,7 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
                         }
                       }
                     },
-                    required: ["exigencias", "aprovados", "proximos"]
+                    required: ["exigencias", "aprovados", "maisBarato", "proximos"]
                   }
                 }
               },
@@ -222,7 +225,7 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
     const payload = (await response.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
     const jsonText = payload.output_text ?? payload.output?.flatMap((item) => item.content ?? []).find((content) => content.text)?.text;
     if (!jsonText) return null;
-    const parsed = JSON.parse(jsonText) as { lines?: Array<{ exigencias?: string[]; aprovados?: string[]; skus?: string[]; proximos?: RerankClosest[] }> };
+    const parsed = JSON.parse(jsonText) as { lines?: Array<{ exigencias?: string[]; aprovados?: string[]; skus?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean }> };
     if (!Array.isArray(parsed.lines) || parsed.lines.length !== lines.length) return null;
     return {
       lines: parsed.lines.map((line, i) => {
@@ -247,8 +250,13 @@ async function rerankShoppingOptionsReal(message: string, lines: RerankLine[], l
           proximos.push({ sku: p.sku, falta });
           if (proximos.length >= 3) break;
         }
+        // Preço pedido explicitamente: o mais barato dos aprovados primeiro, sem diversificar (a
+        // vitrine é "as mais baratas"). Só vale com 2+ aprovados — com 1 não há o que ordenar.
+        const cheapest = Boolean(line.maisBarato) && approved.length > 1;
+        const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
         return {
-          skus: diversifyOptions(lines[i].query, approved, limit).map((c) => c.sku),
+          skus: shown.map((c) => c.sku),
+          ...(cheapest ? { maisBarato: true } : {}),
           exigencias: (line.exigencias ?? []).map((e) => String(e).trim()).filter(Boolean),
           // Quem foi aprovado não é "mais próximo"; sem aprovados, os próximos são o que sobra.
           proximos: skus.length ? [] : proximos

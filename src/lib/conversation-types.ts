@@ -97,6 +97,9 @@ export type PendingChoice = {
   // MAIS PRÓXIMO, do tipo certo, e `closestFalta` diz a diferença ("é de 500 ml"). Nunca
   // entram na cesta sem o cliente escolher (sem autoPick, sem modo lista, fora do plano B).
   closestFalta?: string;
+  // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
+  // cabeçalho diz isso (preferência explícita de preço, 07/10).
+  cheapestFirst?: boolean;
 };
 
 export type DeliveryContext = {

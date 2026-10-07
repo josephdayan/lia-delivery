@@ -1,0 +1,182 @@
+[
+ {
+  "id": "a01",
+  "text": "leite sem açúcar",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a02",
+  "text": "arroz 5kg",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a03",
+  "text": "óleo de soja",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a04",
+  "text": "shampoo kerasys coco 1L",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a05",
+  "text": "tubo de bolas de tênis com 4 bolas",
+  "cat": "esporte",
+  "origin": "atributos"
+ },
+ {
+  "id": "a06",
+  "text": "iogurte natural",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a07",
+  "text": "açúcar refinado",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a08",
+  "text": "esmalte vermelho",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a09",
+  "text": "bala de goma",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a10",
+  "text": "café torrado 500g",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a11",
+  "text": "água sem gás 1,5L",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a12",
+  "text": "refrigerante zero 2L",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a13",
+  "text": "sabonete líquido lavanda 250ml",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a14",
+  "text": "ração golden gato castrado 10kg",
+  "cat": "pet",
+  "origin": "atributos"
+ },
+ {
+  "id": "a15",
+  "text": "detergente neutro",
+  "cat": "limpeza",
+  "origin": "atributos"
+ },
+ {
+  "id": "a16",
+  "text": "macarrão espaguete 500g",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a17",
+  "text": "leite integral 1L",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a18",
+  "text": "biscoito sem lactose",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a19",
+  "text": "papel higiênico folha dupla 12 rolos",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a20",
+  "text": "desodorante rexona aerosol masculino",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a21",
+  "text": "cerveja heineken long neck 330ml",
+  "cat": "bebidas",
+  "origin": "atributos"
+ },
+ {
+  "id": "a22",
+  "text": "molho de tomate tradicional 340g",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a23",
+  "text": "farinha de trigo 1kg",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a24",
+  "text": "pilha AA duracell 4 unidades",
+  "cat": "eletronicos",
+  "origin": "atributos"
+ },
+ {
+  "id": "a25",
+  "text": "fralda pampers tamanho G",
+  "cat": "bebe",
+  "origin": "atributos"
+ },
+ {
+  "id": "a26",
+  "text": "suco de laranja integral 1L sem açúcar",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a27",
+  "text": "queijo mussarela fatiado 150g",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a28",
+  "text": "creme dental colgate 90g",
+  "cat": "higiene",
+  "origin": "atributos"
+ },
+ {
+  "id": "a29",
+  "text": "chocolate ao leite lacta 80g",
+  "cat": "mercado",
+  "origin": "atributos"
+ },
+ {
+  "id": "a30",
+  "text": "carregador usb c",
+  "cat": "eletronicos",
+  "origin": "atributos"
+ }
+]

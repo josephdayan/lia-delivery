@@ -414,9 +414,11 @@ async function buildChoices(
   console.log(`[perf:buildChoices] extract=${perfExtracted - perfStart}ms search+live=${perfSearched - perfExtracted}ms rerank=${Date.now() - perfSearched}ms lines=${lines.length}`);
   const rerankedSkus = new Map<(typeof perLine)[number], string[]>();
   const rerankedClosest = new Map<(typeof perLine)[number], { skus: string[]; falta: string }>();
+  const askedCheapest = new Set<(typeof perLine)[number]>();
   if (rerank) {
     withCandidates.forEach((entry, i) => {
       rerankedSkus.set(entry, rerank.lines[i].skus);
+      if (rerank.lines[i].maisBarato) askedCheapest.add(entry);
       const closest = closestFromRerank(rerank.lines[i].proximos);
       if (closest) rerankedClosest.set(entry, closest);
     });
@@ -452,7 +454,8 @@ async function buildChoices(
     // "O de sempre" (dono, 04/09): quem já comprou um produto vê ele PRIMEIRO e com
     // destaque quando pede de novo — mesmo que a IA/diversificação não o tenha posto
     // no top-3 (só não entra se a verificação ao vivo o tirou dos candidatos).
-    const repeatPick = preferredSkus?.size && !closestFalta
+    const cheapestFirst = askedCheapest.has(entry) && !closestFalta;
+    const repeatPick = preferredSkus?.size && !closestFalta && !cheapestFirst
       ? candidates
           .filter((c) => preferredSkus.has(c.item.sku))
           .sort((a, b) => (preferredSkus.get(b.item.sku) ?? 0) - (preferredSkus.get(a.item.sku) ?? 0))[0]
@@ -467,7 +470,8 @@ async function buildChoices(
         const option = toChoiceOption(item, { storeKey: store.key, storeLabel: store.label }, check, urgent);
         return preferredSkus?.has(item.sku) ? { ...option, repeat: true } : option;
       })
-      .sort(byRepeatThenVerifiedThenEta);
+      // Preço pedido explicitamente manda na ordem (desempate: confirmado ao vivo e prazo).
+      .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta);
     pending.push({
       query: line.phrase,
       qty: line.qty,
@@ -475,9 +479,10 @@ async function buildChoices(
       ...(line.cap != null ? { cap: line.cap } : {}),
       ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
       ...(closestFalta ? { closestFalta } : {}),
+      ...(cheapestFirst ? { cheapestFirst: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
-      options: exactPackFirst(line.phrase, line.qty, sortedOptions).slice(0, vitrineLimit())
+      options: (cheapestFirst ? sortedOptions : exactPackFirst(line.phrase, line.qty, sortedOptions)).slice(0, vitrineLimit())
     });
   }
   return {
@@ -776,6 +781,7 @@ function vitrineLimit(): number {
 
 function choicesHeaderFor(p: PendingChoice): string {
   if (p.closestFalta) return copy.closestHeader(p.query, p.closestFalta);
+  if (p.cheapestFirst) return copy.cheapestFirstHeader(p.query);
   if (p.urgent) return copy.choicesHeaderToday(p.query);
   if (p.noneToday) return copy.noneTodayHeader(p.query);
   return copy.choicesHeader(p.query);
@@ -5112,7 +5118,10 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
   // Quem pediu "outras" dispensou o que está na mesa: variante do dispensado não é
   // "outra opção". Só volta a valer se não sobrar mais nada de distinto.
   const fresh = pool.filter((o) => !p.options.some((cur) => sameProductVariant(p.query, cur, o)));
-  const next = diversifyOptions(p.query, fresh.length ? fresh : pool, vitrineLimit());
+  // Quem pediu "a mais barata" segue vendo as próximas mais baratas (não a diversificação).
+  const next = p.cheapestFirst
+    ? [...pool].sort((x, y) => display(x.unitPrice, x.medicine) - display(y.unitPrice, y.medicine)).slice(0, vitrineLimit())
+    : diversifyOptions(p.query, fresh.length ? fresh : pool, vitrineLimit());
   // "Outras" tem que vir com 3 de verdade (pedido do dono, 11/08): completa com o que
   // sobrou no pool — variante repetida ainda atende melhor que uma opção solitária.
   for (const option of pool) {
@@ -5191,6 +5200,7 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   current.baseQuery = undefined;
   current.attrs = undefined;
   current.closestFalta = undefined;
+  current.cheapestFirst = choice.cheapestFirst;
   current.query = choice.query;
   const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
   current.shownOptions = [...(current.shownOptions ?? current.options), ...choice.options.filter((o) => !remembered.has(o.sku))];
@@ -5225,6 +5235,7 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
   p.attrs = attrs;
   p.query = refined;
   p.closestFalta = undefined;
+  p.cheapestFirst = undefined;
   // O que JÁ estava na mesa antes do refino — capturado antes de sobrescrever p.options.
   const previouslyShownSkus = p.shownSkus ?? p.options.map((o) => o.sku);
   const previouslyShown = p.shownOptions ?? p.options;

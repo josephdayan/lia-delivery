@@ -47,7 +47,10 @@ before(async () => {
     if (process.env.LIA_REQUIRE_DB) throw error;
   }
 });
-afterEach(() => __setRerankForTests(null));
+afterEach(() => {
+  __setRerankForTests(null);
+  cheapestAsked = false;
+});
 after(async () => {
   if (dbOk) await wipe();
   await prisma.$disconnect();
@@ -67,6 +70,7 @@ async function ctxOf(phone: string) {
 }
 
 type Verdict = { ok: boolean } | { near: string } | null;
+let cheapestAsked = false;
 // Juiz determinístico no lugar da IA: `judge(query, candidato)` diz se serve, se é o "mais perto"
 // (com a diferença) ou se não é o produto. Registra cada chamada para os testes inspecionarem.
 function fakeJudge(judge: (query: string, c: RerankCandidate) => Verdict) {
@@ -78,7 +82,7 @@ function fakeJudge(judge: (query: string, c: RerankCandidate) => Verdict) {
         const verdicts = line.candidates.map((c) => ({ c, v: judge(line.query, c) }));
         const skus = verdicts.filter((x) => x.v && "ok" in x.v).map((x) => x.c.sku);
         const proximos = skus.length ? [] : verdicts.filter((x) => x.v && "near" in x.v).map((x) => ({ sku: x.c.sku, falta: (x.v as { near: string }).near }));
-        return { skus, exigencias: [], proximos };
+        return { skus, exigencias: [], proximos, ...(cheapestAsked && skus.length ? { maisBarato: true } : {}) };
       })
     };
   });
@@ -149,4 +153,27 @@ test("'outras opções' passa pelo mesmo juízo: o que a IA reprova não volta n
   assert.doesNotMatch(more, /carreteiro|risoto|arbório|brócolis/i, more.slice(0, 500));
   assert.ok(calls.length >= 2, "a paginação também consultou o juízo");
   assert.ok(calls.at(-1)!.queries.every((q) => /arroz/i.test(q)));
+});
+
+test("'a mais barata' no pedido: vitrine ordenada do mais barato, cabeçalho diz isso, 'outras' segue o preço", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  cheapestAsked = true;
+  // A IA devolve fora de ordem de preço; quem ordena é o código.
+  fakeJudge((_q, c) => (/papel higi[eê]nico/i.test(c.name) ? { ok: true } : null));
+  const reply = await send(phone, "papel higiênico, a mais barata");
+  assert.match(reply, /Separei as mais baratas de \*papel higi[eê]nico\*, da mais barata pra mais cara/i, reply.slice(0, 300));
+  const prices = optionLines(reply).map((l) => Number((l.match(/R\$\s*([\d.]+,\d{2})/)?.[1] ?? "0").replace(".", "").replace(",", ".")));
+  assert.ok(prices.length >= 2, reply);
+  assert.deepEqual(prices, [...prices].sort((a, b) => a - b), `fora de ordem de preço: ${prices.join(", ")}`);
+  const ctx = await ctxOf(phone);
+  assert.equal((ctx.pending?.[0] as { cheapestFirst?: boolean }).cheapestFirst, true);
+});
+
+test("sem preferência de preço o cabeçalho de sempre fica", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  fakeJudge((_q, c) => (/papel higi[eê]nico/i.test(c.name) ? { ok: true } : null));
+  const reply = await send(phone, "papel higiênico");
+  assert.doesNotMatch(reply, /Separei as mais baratas/);
 });

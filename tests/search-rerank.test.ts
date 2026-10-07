@@ -175,11 +175,39 @@ test("rerank: o pedido à IA manda o esquema por candidato e o prompt não cita 
   }) as typeof fetch;
   await rerankShoppingOptions("x", KERASYS);
   const parsed = JSON.parse(body) as { input: { content: string }[]; text: { format: { schema: { properties: { lines: { items: { required: string[] } } } } } } };
-  assert.deepEqual(parsed.text.format.schema.properties.lines.items.required, ["exigencias", "aprovados", "proximos"]);
+  assert.deepEqual(parsed.text.format.schema.properties.lines.items.required, ["exigencias", "aprovados", "maisBarato", "proximos"]);
   const system = parsed.input[0].content;
   assert.match(system, /exigencias/);
   assert.match(system, /TIPO/);
   assert.match(system, /EXIGÊNCIAS/);
   // Princípio do projeto: nada de regra por produto/marca no juízo (os exemplos são ilustração de classe).
   assert.doesNotMatch(system, /kerasys|nude|havaianas|golden/i);
+});
+
+// Preferência explícita de preço ("a mais barata"): quem decide que foi pedida é a IA (lê a
+// mensagem); a ORDEM é do código — mais barato primeiro entre os aprovados, sem diversificar.
+const PAPEL: RerankLine[] = [
+  {
+    query: "papel higiênico",
+    candidates: [
+      { sku: "P-CARO", name: "Papel Higiênico Neve Folha Tripla 12un", price: 32, store: "Mambo" },
+      { sku: "P-MEIO", name: "Papel Higiênico Personal Folha Dupla 8un", price: 18, store: "Swift" },
+      { sku: "P-BARATO", name: "Papel Higiênico Mili Folha Simples 4un", price: 7.5, store: "Drogal" },
+      { sku: "P-LIXA", name: "Lixa de Parede", price: 3, store: "Obramax" }
+    ]
+  }
+];
+
+test("rerank: 'a mais barata' pedida → aprovados saem do mais barato ao mais caro", async () => {
+  mockResponse({ lines: [{ exigencias: [], aprovados: ["P-CARO", "P-MEIO", "P-BARATO"], maisBarato: true, proximos: [] }] });
+  const out = await rerankShoppingOptions("papel higiênico, a mais barata", PAPEL, 5);
+  assert.deepEqual(out?.lines[0].skus, ["P-BARATO", "P-MEIO", "P-CARO"]);
+  assert.equal(out?.lines[0].maisBarato, true);
+});
+
+test("rerank: sem preferência de preço, a ordem da IA (com diversificação) é mantida", async () => {
+  mockResponse({ lines: [{ exigencias: [], aprovados: ["P-CARO", "P-MEIO", "P-BARATO"], maisBarato: false, proximos: [] }] });
+  const out = await rerankShoppingOptions("papel higiênico", PAPEL, 5);
+  assert.equal(out?.lines[0].skus[0], "P-CARO");
+  assert.equal(out?.lines[0].maisBarato, undefined);
 });

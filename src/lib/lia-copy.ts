@@ -519,6 +519,11 @@ export function closestHeader(query: string, falta: string): string {
   return `Não achei *${query}* exatamente. O mais perto que tenho ${falta}:`;
 }
 
+// Preferência explícita de preço no pedido ("a mais barata"): a vitrine vem ordenada por preço.
+export function cheapestFirstHeader(query: string): string {
+  return `Separei as mais baratas de *${query}*, da mais barata pra mais cara:`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }
