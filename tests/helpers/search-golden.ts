@@ -326,5 +326,8 @@ export const GOLDEN_CASES: GoldenCase[] = [
     deterministic: true,
     note: "com a Ri Happy no ar a Lia dizia 'não achei': 'menino'/'anos' contavam como palavras do produto"
   },
-  { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true }
+  { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true },
+  // 06/10 (testador "Vc tem cottage da yorgus 14g proteína?"): marca + atributo não fazem o
+  // produto — iogurte Yorgus 14g nunca é cottage.
+  { name: "cottage com marca e atributo nunca vira iogurte da marca", query: "cottage da Yorgus 14g proteína", none: true, deterministic: true }
 ];

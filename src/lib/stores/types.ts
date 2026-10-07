@@ -687,15 +687,18 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   const brandWords = words(item.brand ?? "");
   const categoryWords = words(item.category ?? "");
   const nameCompounds = new Set(queryTokens(item.name));
-  const covered = wordTokens.filter(
-    (token) =>
-      nameCompounds.has(token) ||
-      nameWords.some((word) => tokenMatchesWordSyn(token, word)) ||
-      brandWords.some((word) => tokenMatchesWord(token, word)) ||
-      categoryWords.some((word) => tokenMatchesWord(token, word))
-  ).length;
+  const isCovered = (token: string) =>
+    nameCompounds.has(token) ||
+    nameWords.some((word) => tokenMatchesWordSyn(token, word)) ||
+    brandWords.some((word) => tokenMatchesWord(token, word)) ||
+    categoryWords.some((word) => tokenMatchesWord(token, word));
+  const covered = wordTokens.filter(isCovered).length;
 
   const missing = wordTokens.length - covered;
+  // 06/10 (testador: "cottage da Yorgus 14g proteína" → iogurte Yorgus 14g): a palavra que
+  // falta não pode ser a 1ª — em português o pedido começa pelo produto ("cottage", "leite",
+  // "ração"); marca e atributos sozinhos não fazem o produto.
+  if (wordTokens.length > 2 && !opts?.allTokens && missing === 1 && !isCovered(wordTokens[0])) return false;
   // 27/09 (golden "cabo usb c 2 metros"): especificação técnica pedida é identidade do
   // produto, nunca qualificador tolerável — "cabo usb" não pode virar cabo elétrico de obra.
   // O nome também passa pelos compostos: "Cabo Tipo C" vira "usbc", como o pedido.
