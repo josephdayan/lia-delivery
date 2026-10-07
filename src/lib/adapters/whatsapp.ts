@@ -382,12 +382,16 @@ export function buildListPayload(to: string, input: WhatsAppListInput) {
   };
 }
 
+// Valores do `data` do Flow: string (endereço, cadastro) ou JSON (Flow da lista: arrays de
+// opções, booleanos).
+export type WhatsAppFlowDataValue = string | number | boolean | null | WhatsAppFlowDataValue[] | { [key: string]: WhatsAppFlowDataValue };
+
 export type WhatsAppFlowInput = {
   body: string;
   cta: string;
   flowId: string;
   screen: string;
-  data?: Record<string, string>;
+  data?: Record<string, WhatsAppFlowDataValue>;
   token?: string;
   header?: string;
   footer?: string;

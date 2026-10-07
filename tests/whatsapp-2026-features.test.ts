@@ -76,6 +76,14 @@ test("flow: interactive flow com navigate, tela e dados pré-preenchidos", () =>
   assert.equal(p.flow_cta, "Preencher endereço");
 });
 
+test("flow: data aceita JSON (array, objeto, booleano) sem tocar nos chamadores de string", () => {
+  const data = { lista_id: "lst-1", faltas_visible: true, opts_1: [{ id: "a", title: "Vodka", image: "QUJD" }] };
+  const payload = buildFlowPayload("5511999999999", { body: "Sua lista", cta: "Escolher minha lista", flowId: "9", screen: "LISTA", data, token: "lst-1" }) as any;
+  assert.deepEqual(payload.interactive.action.parameters.flow_action_payload, { screen: "LISTA", data });
+  assert.equal(payload.interactive.action.parameters.flow_token, "lst-1");
+  assert.deepEqual(JSON.parse(JSON.stringify(payload)).interactive.action.parameters.flow_action_payload.data.opts_1, data.opts_1);
+});
+
 test("webhook: localização, boas-vindas e resposta de flow são reconhecidas", () => {
   const loc = whatsappAdapter.parseInbound({ entry: [{ changes: [{ value: { messages: [{ from: "5511999999999", id: "wamid.l", type: "location", location: { latitude: -23.55, longitude: -46.63, address: "Av. Paulista, 1000" } }] } }] }] });
   assert.deepEqual(loc.location, { latitude: -23.55, longitude: -46.63, address: "Av. Paulista, 1000", name: undefined });

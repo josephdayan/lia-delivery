@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
-import { ensureCarouselV4, ensureSignupFlow } from "@/lib/meta-setup";
+import { ensureCarouselV4, ensureListFlow, ensureSignupFlow } from "@/lib/meta-setup";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -24,7 +24,9 @@ export async function GET(request: Request) {
   const failed = (error: unknown) => ({ error: error instanceof Error ? error.message : String(error) });
   const status = await ensureCarouselV4().catch(failed);
   const signup = await ensureSignupFlow().catch(failed);
+  const listFlow = await ensureListFlow().catch(failed);
   console.log("[cron:meta-templates]", status);
   console.log("[cron:meta-templates:signup-flow]", JSON.stringify(signup).slice(0, 1500));
-  return NextResponse.json({ ...status, signupFlow: signup });
+  console.log("[cron:meta-templates:list-flow]", JSON.stringify(listFlow).slice(0, 1500));
+  return NextResponse.json({ ...status, signupFlow: signup, listFlow });
 }
