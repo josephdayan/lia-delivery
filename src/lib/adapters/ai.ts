@@ -146,7 +146,8 @@ export type RerankLine = { query: string; candidates: RerankCandidate[] };
 export type RerankClosest = { sku: string; falta: string };
 // `maisBarato` = o cliente pediu explicitamente o mais barato PARA ESTE item: `skus` já vem do mais
 // barato ao mais caro (preço exibido), entre os aprovados.
-export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean };
+// `exatos` = dos skus, os que a IA marcou como o produto básico pedido (abrem a vitrine; 08/10).
+export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean; exatos?: string[] };
 export type RerankResult = { lines: RerankLineResult[] };
 
 // A decisão de QUAL produto mostrar não é só léxica: o scorer de tokens conta palavras em comum,
@@ -332,6 +333,7 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
         return {
           skus: shown.map((c) => c.sku),
           ...(cheapest ? { maisBarato: true } : {}),
+          ...(exact.length && !cheapest ? { exatos: exact.map((c) => c.sku) } : {}),
           exigencias: (line.exigencias ?? []).map((e) => String(e).trim()).filter(Boolean),
           // Quem foi aprovado não é "mais próximo"; sem aprovados, os próximos são o que sobra.
           proximos: skus.length ? [] : proximos

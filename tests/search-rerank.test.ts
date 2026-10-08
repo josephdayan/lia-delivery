@@ -200,6 +200,8 @@ test("rerank: exatos abrem a vitrine, variantes depois; exato que não foi aprov
   mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA", "OUTRO"], exatos: ["MAIZENA", "OUTRO", "FANTASMA"], proximos: [] }] });
   const out = await rerankShoppingOptions("bolacha maizena", BISCOITO);
   assert.deepEqual(out?.lines[0].skus, ["MAIZENA", "OUTRO", "CHOCO"]);
+  // O conjunto segue para a vitrine, que ordena exato antes do prazo de entrega.
+  assert.deepEqual(out?.lines[0].exatos, ["MAIZENA", "OUTRO"]);
   // Sem "exatos" (resposta antiga), a ordem continua a da IA.
   mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA"], proximos: [] }] });
   const old = await rerankShoppingOptions("bolacha maizena", BISCOITO);

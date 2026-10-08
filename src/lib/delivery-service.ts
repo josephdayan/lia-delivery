@@ -491,11 +491,13 @@ async function buildChoices(
     : null;
   console.log(`[perf:buildChoices] extract=${perfExtracted - perfStart}ms search+live=${perfSearched - perfExtracted}ms rerank=${Date.now() - perfSearched}ms lines=${lines.length}`);
   const rerankedSkus = new Map<(typeof perLine)[number], string[]>();
+  const rerankedExact = new Map<(typeof perLine)[number], Set<string>>();
   const rerankedClosest = new Map<(typeof perLine)[number], { skus: string[]; falta: string }>();
   const askedCheapest = new Set<(typeof perLine)[number]>();
   if (rerank) {
     withCandidates.forEach((entry, i) => {
       rerankedSkus.set(entry, rerank.lines[i].skus);
+      if (rerank.lines[i].exatos?.length) rerankedExact.set(entry, new Set(rerank.lines[i].exatos));
       if (rerank.lines[i].maisBarato) askedCheapest.add(entry);
       const closest = closestFromRerank(rerank.lines[i].proximos);
       if (closest) rerankedClosest.set(entry, closest);
@@ -567,7 +569,9 @@ async function buildChoices(
         return preferredSkus?.has(item.sku) ? { ...option, repeat: true } : option;
       })
       // Preço pedido explicitamente manda na ordem (desempate: confirmado ao vivo e prazo).
-      .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta);
+      // Exato antes de variante (08/10): o que a IA marcou como o produto básico vem antes do prazo de
+      // entrega — senão a variante da loja mais rápida (tilápia empanada infantil) passava o filé comum.
+      .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenExactThenEta(rerankedExact.get(entry)));
     pending.push({
       query: line.phrase,
       qty: line.qty,
@@ -649,12 +653,19 @@ export function byVerifiedThenEta(a: ChoiceOption, b: ChoiceOption): number {
   return a.unitPrice + a.freightFee - (b.unitPrice + b.freightFee);
 }
 
-// Já comprado vem antes de tudo; entre iguais, confirmado ao vivo e depois o prazo.
-function byRepeatThenVerifiedThenEta(a: ChoiceOption, b: ChoiceOption): number {
-  const ra = a.repeat ? 1 : 0;
-  const rb = b.repeat ? 1 : 0;
-  if (ra !== rb) return rb - ra;
-  return byVerifiedThenEta(a, b);
+// Já comprado; depois o produto básico pedido (marcado pela IA); entre iguais, confirmado ao vivo e o prazo.
+function byRepeatThenExactThenEta(exact?: Set<string>) {
+  return (a: ChoiceOption, b: ChoiceOption): number => {
+    const ra = a.repeat ? 1 : 0;
+    const rb = b.repeat ? 1 : 0;
+    if (ra !== rb) return rb - ra;
+    if (exact) {
+      const ea = exact.has(a.sku) ? 1 : 0;
+      const eb = exact.has(b.sku) ? 1 : 0;
+      if (ea !== eb) return eb - ea;
+    }
+    return byVerifiedThenEta(a, b);
+  };
 }
 
 // A free-form concierge line: whatever the customer asked for, verbatim. No catalog
