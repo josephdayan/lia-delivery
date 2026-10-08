@@ -1,0 +1,924 @@
+{
+ "summary": {
+  "label": "r4-remedio-marcas-depois",
+  "at": "2026-10-08T03:31:00.686Z",
+  "requests": 20,
+  "cep": "01310-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "outcomes": {
+   "wrong_top1": 2,
+   "found": 11,
+   "found_with_wrong_extra": 1,
+   "medicine_ok": 4,
+   "medicine_leak": 1,
+   "miss": 1
+  },
+  "top1WrongRate": "13.3%",
+  "precisionItems": "83.7%",
+  "coverage": "80.0%",
+  "honesty": "n/a",
+  "closestOffered": 0,
+  "medicineLeaks": "1/5",
+  "latencyMs": {
+   "p50": 13465,
+   "p90": 17486,
+   "max": 21087
+  }
+ },
+ "byCat": {
+  "remedio": {
+   "n": 20,
+   "found": 12,
+   "miss": 1,
+   "wrong": 3,
+   "honest": 4
+  }
+ },
+ "results": [
+  {
+   "id": "m03",
+   "text": "neosaldina",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Muscular/Max",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 13465,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Neosaldina Dipirona Blister 4 Drágeas",
+     "price": 7.39,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 10 Drágeas",
+     "price": 19.89,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 30 Comprimidos Revestidos",
+     "price": 45.59,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 20 Drágeas",
+     "price": 34.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 30 Comprimidos Revestidos",
+     "price": 45.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 10 Drágeas",
+     "price": 19.89
+    }
+   ],
+   "oracleSize": 10,
+   "note": "Neosaldina é um MIP; a formulação muscular e as versões apenas com dipirona não correspondem à apresentação padrão."
+  },
+  {
+   "id": "m02",
+   "text": "advil",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de 12h/Mulher",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 16410,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Advil 400mg 12 Cápsulas Moles",
+     "price": 26.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 12 Cápsulas Liquidas",
+     "price": 32.14,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Advil Extra Alívio 400mg 20 Cápsulas Líquidas",
+     "price": 27.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 20 Cápsulas",
+     "price": 36.34
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 12h 600mg 12 Comprimidos",
+     "price": 36.62
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 12 Cápsulas Liquidas",
+     "price": 32.14
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 3 Cápsulas",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Analgésico Advil 400mg 3 Cápsulas + Leite de Magnésia EnoMagno Hortelã 10ml",
+     "price": 9.9
+    }
+   ],
+   "oracleSize": 16,
+   "note": "Advil é medicamento isento de prescrição; versões e quantidades não especificadas são aceitáveis."
+  },
+  {
+   "id": "m01",
+   "text": "tylenol",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Sinus/DC/Bebê",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 17486,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico Tylenol 750mg 10 Comprimidos",
+     "price": 26.7,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 200mg/ml 15ml Gotas",
+     "price": 31.27,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol 500mg Múltiplas Dores 20 Comprimidos",
+     "price": 36.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 200mg/ml 15ml Gotas",
+     "price": 31.27
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 750mg 20 Comprimidos",
+     "price": 41.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol 200mg/ml Solução Oral Gotas 15ml",
+     "price": 35.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Tylenol Gotas 200mg/ml Solução Oral 15ml",
+     "price": 24.9
+    }
+   ],
+   "oracleSize": 15,
+   "note": "Pedido genérico por Tylenol; aceito versões adultas analgésicas, mas não variantes para sinusite ou formulações pediátricas."
+  },
+  {
+   "id": "m04",
+   "text": "buscopan",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Composto/Pediátrico",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 9383,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan 10mg/ml Solução Gotas 20ml",
+     "price": 24.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+     "price": 7.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+     "price": 24.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan 10mg 20 Drágeas",
+     "price": 28.19
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Buscopan 20 drágeas",
+     "price": 24.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan 10mg/ml Solução Gotas 20ml",
+     "price": 24.99
+    }
+   ],
+   "oracleSize": 10,
+   "note": "Buscopan simples é aceitável em qualquer forma; versões Composto ou Duo têm composição diferente e não correspondem ao pedido genérico."
+  },
+  {
+   "id": "m05",
+   "text": "dorflex",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de DIP/Max",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10240,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Relaxante Muscular, Analgésico e Antitérmico Dorflex 300mg + 35mg + 50mg 10 Comprimidos",
+     "price": 8.51,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Dorflex Analgésico e Relaxante Muscular 10 comprimidos Dorflex 10 Comprimidos",
+     "price": 7.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex DIP 1g 10 Comprimidos",
+     "price": 10.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex DIP 1g 10 Comprimidos",
+     "price": 10.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 36 Comprimidos",
+     "price": 17.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Relaxante Muscular e Antitérmico Dorflex Max 600mg + 70mg + 100mg 16 Comprimidos",
+     "price": 23.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 50 Comprimidos",
+     "price": 24.74
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 24 Comprimidos",
+     "price": 17.99
+    }
+   ],
+   "oracleSize": 22,
+   "note": "Dorflex é medicamento isento de prescrição; a versão padrão corresponde ao pedido, e variantes de formulação ou quantidade são aceitáveis."
+  },
+  {
+   "id": "m06",
+   "text": "novalgina",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13490,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Novalgina 1G Dipirona 10 Comprimidos para Dores Intensas e Febre",
+     "price": 22.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 10 comprimidos",
+     "price": 22.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Novalgina 1G Dipirona Sabor Limão 10 Comprimidos Efervescentes para Dores Intensas e Febre",
+     "price": 29.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 20 comprimidos",
+     "price": 37.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 10 comprimidos",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 10 Comprimidos Efervescentes",
+     "price": 32.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 500mg/ml Dipirona 20ml Gotas",
+     "price": 29.19
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Novalgina 1G Dipirona 10 Comprimidos para Dores Intensas e Febre",
+     "price": 22.99
+    }
+   ],
+   "oracleSize": 15,
+   "note": "Novalgina é medicamento isento de prescrição; versões infantis não foram solicitadas e a versão com cafeína é outro produto."
+  },
+  {
+   "id": "m07",
+   "text": "allegra",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → adulto antes de Pediátrico",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13529,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Antialérgico Allegra 60mg 10 Comprimidos",
+     "price": 23.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Allegra 60mg 10 Comprimidos Revestidos",
+     "price": 32.42,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Antialérgico Allegra 120mg 10 Comprimidos",
+     "price": 53.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Allegra 60mg 10 Comprimidos Revestidos",
+     "price": 32.42
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Allegra 120mg 10 Comprimidos Revestidos",
+     "price": 59.9
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Antialérgico Allegra 60mg 10 Comprimidos",
+     "price": 23.99
+    }
+   ],
+   "oracleSize": 26,
+   "note": "Allegra é antialérgico isento de prescrição; versões pediátricas ou Allegra D não correspondem ao pedido genérico."
+  },
+  {
+   "id": "m08",
+   "text": "luftal",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Max",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8928,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Luftal 75mg/ml Sabor Cereja Gotas 15ml",
+     "price": 26.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigases Luftal 75mg/ml 15ml Gotas",
+     "price": 33.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Luftal 40mg 20 Comprimidos",
+     "price": 45.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigases Luftal Gel Caps 125mg 10 Cápsulas Gelatinosas Moles",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigases Luftal 75mg/ml 15ml Gotas",
+     "price": 33.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Luftal 75mg/ml Sabor Cereja Gotas 15ml",
+     "price": 26.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Luftal Gel Caps Simeticona Antigases 125mg 10 Cápsulas Gelatinosas",
+     "price": 26.99
+    }
+   ],
+   "oracleSize": 20,
+   "note": "Luftal é simeticona isenta de prescrição; como a apresentação não foi especificada, aceito versões adultas da marca."
+  },
+  {
+   "id": "m09",
+   "text": "benegrip",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9924,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico e Antialérgico Benegrip 500mg + 30mg + 2mg 6 Comprimidos Revestidos",
+     "price": 16.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Benegrip Multi Noite Antigripal Analgésico e Descongestionante Blister 4 Comprimidos",
+     "price": 10.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico, Antialérgico e Descongestionante Benegrip Multi Noite 800mg + 20mg + 4mg 4 Comprimidos",
+     "price": 12.62,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico e Antialérgico Benegrip 500mg + 30mg + 2mg 12 Comprimidos Revestidos",
+     "price": 29.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico e Antialérgico Benegrip 500mg + 30mg + 2mg 6 Comprimidos Revestidos",
+     "price": 16.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico e Antialérgico Benegrip 500mg + 30mg + 2mg 20 Comprimidos Revestidos",
+     "price": 47.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico, Antialérgico e Descongestionante Benegrip Multi Noite 800mg + 20mg + 4mg 20 Comprimidos",
+     "price": 41.57
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antigripal, Analgésico, Antitérmico e Descongestionante Benegrip Multi Dia 800mg + 20mg 20 Comprimidos",
+     "price": 41.57
+    }
+   ],
+   "oracleSize": 15,
+   "note": "Benegrip é um antigripal isento de prescrição; versões Multi e Chá são alternativas de apresentação não especificada."
+  },
+  {
+   "id": "m10",
+   "text": "tylenol sinus",
+   "cat": "remedio",
+   "origin": "dono 08/10: a extensão pedida tem que vir",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 21087,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Descongestionante Tylenol Sinus 24 Comprimidos Revestidos",
+     "price": 19.2,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Descongestionante Tylenol Sinus 24 Comprimidos Revestidos",
+     "price": 19.2
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico Tylenol Sinus Paracetamol 500mg + Cloridrato de Pseudoefedrina 30mg 36 Comprimidos",
+     "price": 28.5
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol Sinus 24 Comprimidos",
+     "price": 18.79
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol Sinus 36 Comprimidos Revestidos",
+     "price": 28.29
+    },
+    {
+     "store": "Drogal",
+     "name": "Tylenol Sinus 24 Comprimidos Revestidos",
+     "price": 17.9
+    }
+   ],
+   "oracleSize": 31,
+   "note": "Tylenol Sinus é medicamento isento de prescrição; versões de 24 ou 36 comprimidos correspondem ao pedido genérico."
+  },
+  {
+   "id": "m11",
+   "text": "buscopan composto",
+   "cat": "remedio",
+   "origin": "dono 08/10: a extensão pedida tem que vir",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 14118,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+     "price": 7.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 6,67mg/ml + 333,4mg/ml Solução Gotas 20ml",
+     "price": 27.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 20 Comprimidos Revestido",
+     "price": 26.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 20 Comprimidos Revestido",
+     "price": 26.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 4 Comprimidos Revestido",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+     "price": 24.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 6,67mg/ml + 333,4mg/ml Solução Gotas 20ml",
+     "price": 27.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto Com 20 Comprimidos",
+     "price": 26.99
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Buscopan Composto é um medicamento isento de prescrição; diferenças de forma ou apresentação não especificadas são aceitáveis."
+  },
+  {
+   "id": "m12",
+   "text": "paracetamol",
+   "cat": "remedio",
+   "origin": "dono 08/10: genérico",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11368,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 200mg/ml Sabor Tutti-Frutti Solução Gotas 15ml Genérico EMS",
+     "price": 4.69,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 500mg 20 Comprimidos Genérico Prati-Donaduzzi",
+     "price": 12.29,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol Dor e Febre 500mg 10 Comprimidos Revestidos",
+     "price": 19.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 200mg/ml Sabor Tutti-Frutti Solução Gotas 15ml Genérico EMS",
+     "price": 4.69
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 500mg 20 Comprimidos Genérico Prati-Donaduzzi",
+     "price": 12.29
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 750mg 20 Comprimidos Genérico Prati Donaduzzi",
+     "price": 10.39
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Paracetamol 750mg 10 Comprimidos Revestidos Genérico Prati-Donaduzzi",
+     "price": 7.19
+    },
+    {
+     "store": "Drogal",
+     "name": "Paracetamol 200mg/ml Geolab Solução Oral Gotas Sabor Laranja 15ml",
+     "price": 7.39
+    }
+   ],
+   "oracleSize": 15,
+   "note": "Pedido genérico de paracetamol aceita marcas, concentrações e formas comuns; versões infantis e combinações com outros princípios ativos não correspondem ao pedido."
+  },
+  {
+   "id": "m15",
+   "text": "rivotril",
+   "cat": "remedio",
+   "origin": "dono 08/10: receita — tem que dizer que precisa de receita",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 3368,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 12,
+   "note": "Rivotril (clonazepam) é controlado e exige receita; nenhum item deve ser mostrado."
+  },
+  {
+   "id": "m16",
+   "text": "losartana 50mg",
+   "cat": "remedio",
+   "origin": "dono 08/10: receita",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 1477,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 54,
+   "note": "Losartana é medicamento de receita; o correto é não mostrar nenhum produto."
+  },
+  {
+   "id": "m14",
+   "text": "fexofenadina",
+   "cat": "remedio",
+   "origin": "dono 08/10: genérico",
+   "outcome": "medicine_leak",
+   "kind": "medicine",
+   "ms": 14750,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato De Fexofenadina 120mg 10 Comprimidos Revestidos Genérico Ems",
+     "price": 16.99,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato de Fexofenadina 6mg/ml Sabor Framboesa Suspensão Oral 60ml Genérico Vitamedic",
+     "price": 24.29,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Fexofenadina 6mg/ml Genérico Vitamedic 60ml Suspensão Oral",
+     "price": 25.5,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 15,
+   "note": "Fexofenadina exige prescrição médica; pela regra, não se deve oferecer nenhum dos itens listados."
+  },
+  {
+   "id": "m13",
+   "text": "ibuprofeno 400mg",
+   "cat": "remedio",
+   "origin": "dono 08/10: genérico com dose",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 16030,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Ibuprofeno 400mg 10 Cápsulas Moles Genérico Cimed",
+     "price": 13.69,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Ibuprofeno 400mg Genérico Cimed 10 Cápsulas Líquidas",
+     "price": 19.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Ibuprofeno 400mg 10 Comprimidos Genérico Neo Química",
+     "price": 22.29,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Ibuprofeno 400mg Genérico Cimed 10 Cápsulas Líquidas",
+     "price": 19.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Anti-inflamatório Ibuprofeno 400mg Genérico Medley 10 Cápsulas",
+     "price": 10.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Anti-inflamatório e Antitérmico Buscofem 400mg 10 Cápsulas",
+     "price": 26.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Ibuflex 400mg 8 Cápsulas",
+     "price": 8.28
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 20 Cápsulas",
+     "price": 36.34
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Ibuprofeno 400 mg é medicamento isento de prescrição; aceitam-se formas e marcas comuns nessa dose."
+  },
+  {
+   "id": "m17",
+   "text": "amoxicilina 500mg",
+   "cat": "remedio",
+   "origin": "dono 08/10: receita",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 1864,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 57,
+   "note": "Amoxicilina é antibiótico de receita; não se deve mostrar nenhum dos produtos listados."
+  },
+  {
+   "id": "m18",
+   "text": "anticoncepcional yasmin",
+   "cat": "remedio",
+   "origin": "dono 08/10: receita",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 2371,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 23,
+   "note": "Anticoncepcional Yasmin exige receita; nenhum produto deve ser mostrado."
+  },
+  {
+   "id": "m19",
+   "text": "omeprazol",
+   "cat": "remedio",
+   "origin": "placar r4: miss (guarda trata 20mg como receita)",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 7756,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Omeprazol 20mg Genérico Cimed 56 Cápsulas",
+     "price": 15.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Omeprazol 20mg Teuto Genérico 56 Capsulas",
+     "price": 18.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Omeprazol 20mg Genérico União Química 28 Cápsulas",
+     "price": 12.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Omeprazol 20mg Genérico Cimed 28 Cápsulas",
+     "price": 16.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Omeprazol 10mg Genérico Medley 14 Cápsulas",
+     "price": 14.99
+    }
+   ],
+   "oracleSize": 20,
+   "note": "Omeprazol é MIP; o pedido não especifica dose, marca ou quantidade. Produtos veterinários não servem para este pedido genérico."
+  },
+  {
+   "id": "m20",
+   "text": "aspirina",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → genérico AAS se faltar",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13939,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Aspirina 500mg 10 Comprimidos",
+     "price": 11.39,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Aspirina 500mg 20 Comprimidos",
+     "price": 15.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Aspirina 500mg 10 comprimidos",
+     "price": 11.19,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Aspirina Adulto 500mg 10 Comprimidos",
+     "price": 12.3
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Aspirina 500mg 20 comprimidos",
+     "price": 16.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Aspirina 500mg 10 comprimidos",
+     "price": 11.19
+    },
+    {
+     "store": "Drogal",
+     "name": "Aspirina 500mg 20 Comprimidos",
+     "price": 15.9
+    },
+    {
+     "store": "Drogal",
+     "name": "Aspirina 500mg 10 Comprimidos",
+     "price": 11.39
+    }
+   ],
+   "oracleSize": 20,
+   "note": "Aspirina é medicamento isento de prescrição; o pedido genérico corresponde à apresentação analgésica comum, não à versão Prevent."
+  }
+ ]
+}
