@@ -1,0 +1,1952 @@
+[
+ {
+  "id": "r01",
+  "text": "tô com muita fome",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "lanche pronto",
+   "salgadinho",
+   "pizza congelada",
+   "biscoito",
+   "barra de cereal",
+   "macarrão instantâneo"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "fome",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r02",
+  "text": "to morrendo de fome, oq tem pra comer rapido?",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "lanche pronto",
+   "pizza congelada",
+   "sanduíche",
+   "salgadinho",
+   "biscoito"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "fome",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r03",
+  "text": "to com fome mas sem dinheiro, ate 30 reais",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "biscoito",
+   "pão",
+   "macarrão instantâneo",
+   "salgadinho",
+   "iogurte"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 30"
+  ],
+  "need": "fome",
+  "criteria": [
+   "fast",
+   "cheap"
+  ],
+  "urgency": true,
+  "budget": 30
+ },
+ {
+  "id": "r04",
+  "text": "tô com fome e sou vegetariana",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "lanche vegetariano",
+   "salgadinho",
+   "barra de cereal",
+   "pão",
+   "fruta",
+   "biscoito"
+  ],
+  "mustNot": [
+   "remedio",
+   "carne",
+   "frango",
+   "presunto"
+  ],
+  "constraints": [
+   "vegetariano"
+  ],
+  "need": "fome",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r05",
+  "text": "to com sedee, quero algo pra beber",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "água",
+   "suco",
+   "refrigerante",
+   "isotônico",
+   "água de coco"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "sede",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r06",
+  "text": "mt calor e sede, queria algo bem gelado pra beber sem alcool",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "água",
+   "água de coco",
+   "isotônico",
+   "suco",
+   "refrigerante",
+   "chá gelado"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "cerveja",
+   "remedio"
+  ],
+  "constraints": [
+   "sem álcool"
+  ],
+  "need": "sede e calor",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r07",
+  "text": "tá um frio danado aqui, queria algo quentinho",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "chocolate quente",
+   "achocolatado",
+   "chá",
+   "café",
+   "sopa instantânea"
+  ],
+  "mustNot": [
+   "remedio",
+   "sorvete"
+  ],
+  "constraints": [],
+  "need": "frio",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r08",
+  "text": "frio e sem nada em casa, sem cafeina pq to gravida",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "chá de ervas",
+   "chocolate quente",
+   "sopa instantânea",
+   "leite",
+   "biscoito"
+  ],
+  "mustNot": [
+   "café",
+   "energético",
+   "chá preto",
+   "chá mate",
+   "remedio"
+  ],
+  "constraints": [
+   "sem cafeína"
+  ],
+  "need": "frio",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r09",
+  "text": "tô morrendo de sono e preciso estudar até tarde",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "café",
+   "chá mate",
+   "chocolate",
+   "guaraná natural",
+   "energético",
+   "barra de cereal"
+  ],
+  "mustNot": [
+   "remedio",
+   "bebida_alcoolica"
+  ],
+  "constraints": [],
+  "need": "sono",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r10",
+  "text": "cansadoo demais, preciso de energia mas sem energético",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "café",
+   "chocolate",
+   "barra de cereal",
+   "banana",
+   "castanhas",
+   "suco"
+  ],
+  "mustNot": [
+   "energético",
+   "remedio",
+   "bebida_alcoolica"
+  ],
+  "constraints": [
+   "sem energético"
+  ],
+  "need": "cansaço",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r11",
+  "text": "ressaca braba hj, me ajuda",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "água de coco",
+   "isotônico",
+   "suco",
+   "salgadinho",
+   "biscoito",
+   "pão"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "cerveja",
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "ressaca",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r12",
+  "text": "bateu a larica de madrugada, o q vcs tem?",
+  "form": "need",
+  "category": "estado",
+  "expectShelfKinds": [
+   "salgadinho",
+   "bolacha recheada",
+   "pipoca",
+   "chocolate",
+   "sorvete",
+   "macarrão instantâneo"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "larica",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r13",
+  "text": "quero algo doce",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "chocolate",
+   "bombom",
+   "sorvete",
+   "bolo",
+   "biscoito recheado",
+   "doce de leite"
+  ],
+  "mustNot": [
+   "remedio",
+   "salgadinho"
+  ],
+  "constraints": [],
+  "need": "algo doce",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r14",
+  "text": "tô muito a fim de um salgadinho",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "salgadinho",
+   "pipoca",
+   "amendoim",
+   "batata chips",
+   "biscoito salgado"
+  ],
+  "mustNot": [
+   "remedio",
+   "doce"
+  ],
+  "constraints": [],
+  "need": "algo salgado",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r15",
+  "text": "queria algo gelado",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "sorvete",
+   "picolé",
+   "água",
+   "suco",
+   "refrigerante",
+   "açaí"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "algo gelado",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r16",
+  "text": "quero algo leve pro jantar",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "salada",
+   "sopa",
+   "iogurte",
+   "pão integral",
+   "queijo cottage",
+   "fruta"
+  ],
+  "mustNot": [
+   "remedio",
+   "fritura"
+  ],
+  "constraints": [],
+  "need": "algo leve",
+  "criteria": [
+   "healthy"
+  ]
+ },
+ {
+  "id": "r17",
+  "text": "queria comer algo saudavel",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "fruta",
+   "granola",
+   "iogurte natural",
+   "castanhas",
+   "barra de cereal",
+   "pão integral"
+  ],
+  "mustNot": [
+   "remedio",
+   "refrigerante",
+   "salgadinho"
+  ],
+  "constraints": [],
+  "need": "algo saudável",
+  "criteria": [
+   "healthy"
+  ]
+ },
+ {
+  "id": "r18",
+  "text": "quero uma coisa gostosa pra comer hj, me surpreende",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "chocolate",
+   "sorvete",
+   "pizza",
+   "biscoito",
+   "bolo",
+   "salgadinho"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "algo gostoso",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r19",
+  "text": "algo doce mas sem chocolate",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "sorvete de frutas",
+   "goiabada",
+   "doce de leite",
+   "bolo",
+   "biscoito",
+   "gelatina",
+   "picolé"
+  ],
+  "mustNot": [
+   "chocolate",
+   "bombom",
+   "achocolatado",
+   "brigadeiro",
+   "remedio"
+  ],
+  "constraints": [
+   "sem chocolate"
+  ],
+  "need": "algo doce",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r20",
+  "text": "quero algo salgado sem glúten",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "pipoca",
+   "salgadinho de milho",
+   "chips de batata",
+   "mandioca frita",
+   "castanhas"
+  ],
+  "mustNot": [
+   "remedio",
+   "pão",
+   "macarrão",
+   "biscoito de trigo"
+  ],
+  "constraints": [
+   "sem glúten"
+  ],
+  "need": "algo salgado",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r21",
+  "text": "algo doce zero açúcar pq sou diabetica",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "chocolate zero",
+   "gelatina zero",
+   "sorvete diet",
+   "biscoito sem açúcar",
+   "goiabada diet"
+  ],
+  "mustNot": [
+   "remedio",
+   "açúcar",
+   "chocolate comum"
+  ],
+  "constraints": [
+   "zero açúcar"
+  ],
+  "need": "algo doce",
+  "criteria": [
+   "healthy"
+  ]
+ },
+ {
+  "id": "r22",
+  "text": "queria uma sobremesa ate 30 reais",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "sorvete",
+   "pudim",
+   "mousse",
+   "bolo",
+   "chocolate",
+   "doce"
+  ],
+  "mustNot": [
+   "remedio",
+   "salgadinho"
+  ],
+  "constraints": [
+   "orçamento total até R$ 30"
+  ],
+  "need": "sobremesa",
+  "criteria": [
+   "good",
+   "cheap"
+  ],
+  "budget": 30
+ },
+ {
+  "id": "r23",
+  "text": "quero algo saudavel e vegano",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "fruta",
+   "castanhas",
+   "barra de cereal vegana",
+   "granola",
+   "bebida vegetal",
+   "hummus"
+  ],
+  "mustNot": [
+   "carne",
+   "leite",
+   "queijo",
+   "ovo",
+   "mel",
+   "remedio"
+  ],
+  "constraints": [
+   "vegano"
+  ],
+  "need": "algo saudável",
+  "criteria": [
+   "healthy"
+  ]
+ },
+ {
+  "id": "r24",
+  "text": "algo gelado e doce, sem lactose",
+  "form": "need",
+  "category": "vontade",
+  "expectShelfKinds": [
+   "picolé de fruta",
+   "sorbet",
+   "sorvete sem lactose",
+   "açaí",
+   "gelatina"
+  ],
+  "mustNot": [
+   "sorvete de creme comum",
+   "leite",
+   "remedio"
+  ],
+  "constraints": [
+   "sem lactose"
+  ],
+  "need": "algo gelado e doce",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r25",
+  "text": "churrasco pra 8 pessoas",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "carne bovina",
+   "linguiça",
+   "carvão",
+   "pão de alho",
+   "bebida",
+   "farofa",
+   "sal grosso"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "churrasco pra 8 pessoas",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r26",
+  "text": "vou fazer um churrasco pra 12, sem porco",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "carne bovina",
+   "frango",
+   "carvão",
+   "pão de alho",
+   "farofa",
+   "refrigerante",
+   "cerveja"
+  ],
+  "mustNot": [
+   "linguiça de porco",
+   "bacon",
+   "costela suína",
+   "remedio"
+  ],
+  "constraints": [
+   "sem porco"
+  ],
+  "need": "churrasco pra 12 pessoas",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r27",
+  "text": "café da manhã pra 4 pessoas",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "pão",
+   "leite",
+   "café",
+   "queijo",
+   "presunto",
+   "manteiga",
+   "frutas",
+   "suco"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "café da manhã pra 4 pessoas",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r28",
+  "text": "cafe da manha pra 4, todo mundo sem lactose",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "pão",
+   "leite sem lactose",
+   "café",
+   "fruta",
+   "geleia",
+   "suco",
+   "margarina"
+  ],
+  "mustNot": [
+   "leite comum",
+   "queijo comum",
+   "manteiga",
+   "iogurte comum",
+   "remedio"
+  ],
+  "constraints": [
+   "sem lactose"
+  ],
+  "need": "café da manhã pra 4 pessoas",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r29",
+  "text": "festa infantil em casa, 20 crianças de 6 anos",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "salgadinho",
+   "refrigerante",
+   "suco",
+   "doces",
+   "descartáveis",
+   "balões",
+   "bolo"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "festa infantil pra 20 crianças",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r30",
+  "text": "festinha de aniversario pra 15 pessoas ate 300 reais",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "salgadinho",
+   "refrigerante",
+   "bolo",
+   "docinhos",
+   "descartáveis",
+   "suco",
+   "cerveja"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 300"
+  ],
+  "need": "festa de aniversário pra 15 pessoas",
+  "criteria": [
+   "good",
+   "cheap"
+  ],
+  "budget": 300
+ },
+ {
+  "id": "r31",
+  "text": "noite de filme com a namorada",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "pipoca",
+   "chocolate",
+   "refrigerante",
+   "sorvete",
+   "vinho",
+   "bombom"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "noite de filme",
+  "recipient": "namorada",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r32",
+  "text": "noite de filme, quero besteira, ate 60 reais",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "pipoca",
+   "salgadinho",
+   "chocolate",
+   "refrigerante",
+   "sorvete",
+   "bolacha recheada"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 60"
+  ],
+  "need": "noite de filme",
+  "criteria": [
+   "good",
+   "cheap"
+  ],
+  "budget": 60
+ },
+ {
+  "id": "r33",
+  "text": "preciso fazer uma limpeza geral na casa",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "desinfetante",
+   "detergente",
+   "multiuso",
+   "esponja",
+   "pano de chão",
+   "água sanitária",
+   "sabão em pó"
+  ],
+  "mustNot": [
+   "remedio",
+   "bebida_alcoolica"
+  ],
+  "constraints": [],
+  "need": "limpeza geral da casa",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r34",
+  "text": "vou pra praia amanha cedo",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "protetor solar",
+   "água",
+   "biscoito",
+   "snacks",
+   "repelente",
+   "sanduíche",
+   "isotônico"
+  ],
+  "mustNot": [
+   "remedio",
+   "bebida_alcoolica"
+  ],
+  "constraints": [],
+  "need": "ida à praia",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r35",
+  "text": "viagem de carro de 6 horas com 2 criancas, nada de amendoim (alergia)",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "snacks",
+   "água",
+   "suco",
+   "biscoito",
+   "lenço umedecido",
+   "jogo de viagem",
+   "fruta"
+  ],
+  "mustNot": [
+   "amendoim",
+   "paçoca",
+   "pé de moleque",
+   "remedio"
+  ],
+  "constraints": [
+   "sem amendoim"
+  ],
+  "need": "viagem de carro com crianças",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r36",
+  "text": "chegou um bebe aqui em casa, preciso do basico",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "fralda",
+   "lenço umedecido",
+   "pomada de assadura",
+   "sabonete de bebê",
+   "algodão",
+   "cotonete"
+  ],
+  "mustNot": [
+   "produto_adulto",
+   "bebida_alcoolica"
+  ],
+  "constraints": [],
+  "need": "enxoval básico de bebê",
+  "recipient": "bebê",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r37",
+  "text": "adotei um gatinho hj, o que preciso?",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "ração para gatinho",
+   "areia sanitária",
+   "caixa de areia",
+   "comedouro",
+   "brinquedo para gato"
+  ],
+  "mustNot": [
+   "ração para cachorro",
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "gato novo",
+  "recipient": "gato",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r38",
+  "text": "ganhei um cachorro filhote, preciso de tudo, ate 200",
+  "form": "need",
+  "category": "ocasiao",
+  "expectShelfKinds": [
+   "ração para filhote",
+   "tapete higiênico",
+   "coleira",
+   "comedouro",
+   "brinquedo para cachorro",
+   "shampoo pet"
+  ],
+  "mustNot": [
+   "ração para gato",
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 200"
+  ],
+  "need": "cachorro filhote novo",
+  "recipient": "cachorro",
+  "criteria": [
+   "good"
+  ],
+  "budget": 200
+ },
+ {
+  "id": "r39",
+  "text": "presente pra minha mãe até 100",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "perfume",
+   "kit de banho",
+   "bombons",
+   "caixa de chocolate",
+   "creme hidratante",
+   "vela aromática"
+  ],
+  "mustNot": [
+   "remedio",
+   "brinquedo"
+  ],
+  "constraints": [
+   "orçamento total até R$ 100"
+  ],
+  "need": "presente",
+  "recipient": "mãe",
+  "criteria": [
+   "good"
+  ],
+  "budget": 100
+ },
+ {
+  "id": "r40",
+  "text": "preciso de um presente pro meu pai, ele ama churrasco",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "kit churrasco",
+   "avental",
+   "tábua de carne",
+   "faca",
+   "cerveja",
+   "carvão",
+   "tempero"
+  ],
+  "mustNot": [
+   "remedio",
+   "maquiagem"
+  ],
+  "constraints": [],
+  "need": "presente",
+  "recipient": "pai",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r41",
+  "text": "presente de namoro pra minha namorada, uns 150",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "perfume",
+   "kit de beleza",
+   "bombons",
+   "maquiagem",
+   "hidratante",
+   "pelúcia"
+  ],
+  "mustNot": [
+   "remedio",
+   "produto_masculino"
+  ],
+  "constraints": [
+   "orçamento total até R$ 150"
+  ],
+  "need": "presente",
+  "recipient": "namorada",
+  "criteria": [
+   "good"
+  ],
+  "budget": 150
+ },
+ {
+  "id": "r42",
+  "text": "presente pro meu namorado, ate 80 reais",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "perfume masculino",
+   "cerveja",
+   "kit de barba",
+   "chocolate",
+   "camiseta",
+   "caneca"
+  ],
+  "mustNot": [
+   "maquiagem",
+   "perfume feminino",
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 80"
+  ],
+  "need": "presente",
+  "recipient": "namorado",
+  "criteria": [
+   "good"
+  ],
+  "budget": 80
+ },
+ {
+  "id": "r43",
+  "text": "presente pra criança de 3 anos",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "brinquedo de encaixe",
+   "pelúcia",
+   "massinha de modelar",
+   "livro infantil",
+   "carrinho",
+   "blocos de montar"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "brinquedo para maiores de 8 anos",
+   "peças pequenas",
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "presente",
+  "recipient": "criança 3 anos",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r44",
+  "text": "presente pro meu sobrinho de 10 anos, ate 120",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "lego",
+   "jogo de tabuleiro",
+   "carrinho",
+   "bola",
+   "quebra-cabeça",
+   "kit de ciências"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "brinquedo de bebê",
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 120"
+  ],
+  "need": "presente",
+  "recipient": "menino 10 anos",
+  "criteria": [
+   "good"
+  ],
+  "budget": 120
+ },
+ {
+  "id": "r45",
+  "text": "presente pra uma menina de 7 anos",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "boneca",
+   "kit de pintura",
+   "livro infantil",
+   "quebra-cabeça",
+   "pelúcia",
+   "kit de brincar"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "maquiagem adulta",
+   "remedio"
+  ],
+  "constraints": [],
+  "need": "presente",
+  "recipient": "menina 7 anos",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r46",
+  "text": "amigo secreto do trabalho, 50 reais",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "chocolate",
+   "caneca",
+   "vela",
+   "kit de chá",
+   "vinho",
+   "bombons",
+   "necessaire"
+  ],
+  "mustNot": [
+   "remedio",
+   "produto_intimo"
+  ],
+  "constraints": [
+   "orçamento total até R$ 50"
+  ],
+  "need": "amigo secreto",
+  "criteria": [
+   "good"
+  ],
+  "budget": 50
+ },
+ {
+  "id": "r47",
+  "text": "amigo secreto da familia, valor 30, sem bebida alcoolica",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "chocolate",
+   "caneca",
+   "meia",
+   "vela",
+   "kit de chá",
+   "bombons"
+  ],
+  "mustNot": [
+   "bebida_alcoolica",
+   "vinho",
+   "cerveja",
+   "remedio"
+  ],
+  "constraints": [
+   "sem bebida alcoólica",
+   "orçamento total até R$ 30"
+  ],
+  "need": "amigo secreto",
+  "criteria": [
+   "good",
+   "cheap"
+  ],
+  "budget": 30
+ },
+ {
+  "id": "r48",
+  "text": "presente pra minha sogra",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "bombons",
+   "caixa de chocolate",
+   "kit de banho",
+   "chá",
+   "creme",
+   "vela aromática"
+  ],
+  "mustNot": [
+   "remedio",
+   "produto_intimo",
+   "brinquedo"
+  ],
+  "constraints": [],
+  "need": "presente",
+  "recipient": "sogra",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r49",
+  "text": "lembrancinha pra professora, nada caro",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "chocolate",
+   "caneca",
+   "planta",
+   "bombons",
+   "caderno",
+   "kit de chá"
+  ],
+  "mustNot": [
+   "remedio",
+   "bebida_alcoolica"
+  ],
+  "constraints": [
+   "barato"
+  ],
+  "need": "lembrancinha",
+  "recipient": "professora",
+  "criteria": [
+   "good",
+   "cheap"
+  ]
+ },
+ {
+  "id": "r50",
+  "text": "presente de casamento pra uma amiga, uns 200",
+  "form": "need",
+  "category": "presente",
+  "expectShelfKinds": [
+   "jogo de taças",
+   "utensílios de cozinha",
+   "panela",
+   "jogo de toalhas",
+   "porta-retrato",
+   "kit de cozinha"
+  ],
+  "mustNot": [
+   "remedio",
+   "brinquedo"
+  ],
+  "constraints": [
+   "orçamento total até R$ 200"
+  ],
+  "need": "presente de casamento",
+  "recipient": "amiga",
+  "criteria": [
+   "good"
+  ],
+  "budget": 200
+ },
+ {
+  "id": "r51",
+  "text": "to com dor de barriga",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "antiespasmódico isento",
+   "simeticona",
+   "carvão ativado",
+   "soro de reidratação",
+   "chá de camomila"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "anti-inflamatório",
+   "controlado"
+  ],
+  "constraints": [],
+  "need": "dor de barriga",
+  "symptom": "dor de barriga",
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true
+ },
+ {
+  "id": "r52",
+  "text": "dor de cabeça, mas sou alérgica a dipirona",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "paracetamol",
+   "ibuprofeno",
+   "chá",
+   "compressa"
+  ],
+  "mustNot": [
+   "dipirona",
+   "novalgina",
+   "antibiótico",
+   "controlado"
+  ],
+  "constraints": [
+   "sem dipirona (alergia)"
+  ],
+  "need": "dor de cabeça",
+  "symptom": "dor de cabeça",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r53",
+  "text": "tô com azia horrivel",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "antiácido",
+   "sal de fruta",
+   "leite de magnésia",
+   "omeprazol isento"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "anti-inflamatório",
+   "controlado"
+  ],
+  "constraints": [],
+  "need": "azia",
+  "symptom": "azia",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r54",
+  "text": "muito gás, barriga estufada",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "simeticona",
+   "carvão ativado",
+   "chá de erva-doce",
+   "chá de hortelã"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "controlado"
+  ],
+  "constraints": [],
+  "need": "gases",
+  "symptom": "gases",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r55",
+  "text": "garganta arranhando e dói pra engolir",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "pastilha para garganta",
+   "spray para garganta",
+   "mel",
+   "própolis",
+   "chá",
+   "gengibre"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "controlado",
+   "corticoide"
+  ],
+  "constraints": [],
+  "need": "dor de garganta",
+  "symptom": "dor de garganta",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r56",
+  "text": "nariz entupido a noite toda",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "soro nasal",
+   "spray nasal isento",
+   "vaporizador",
+   "pomada mentolada",
+   "chá"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "controlado",
+   "corticoide"
+  ],
+  "constraints": [],
+  "need": "nariz entupido",
+  "symptom": "nariz entupido",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r57",
+  "text": "tosse seca que nao para",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "xarope isento",
+   "pastilha",
+   "mel",
+   "própolis",
+   "chá"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "codeína",
+   "controlado"
+  ],
+  "constraints": [],
+  "need": "tosse seca",
+  "symptom": "tosse seca",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r58",
+  "text": "dor nas costas de ficar sentado o dia todo",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "gel ou pomada analgésica",
+   "adesivo térmico",
+   "compressa quente",
+   "relaxante muscular isento"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "controlado",
+   "opioide"
+  ],
+  "constraints": [],
+  "need": "dor nas costas",
+  "symptom": "dor nas costas",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r59",
+  "text": "picada de mosquito coçando muito",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "pomada antialérgica",
+   "gel pós-picada",
+   "repelente",
+   "compressa fria"
+  ],
+  "mustNot": [
+   "antibiótico",
+   "controlado",
+   "corticoide"
+  ],
+  "constraints": [],
+  "need": "coceira de picada",
+  "symptom": "coceira de picada",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r60",
+  "text": "cólica menstrual forte mas sem ibuprofeno",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [
+   "antiespasmódico isento",
+   "paracetamol",
+   "compressa térmica",
+   "chá"
+  ],
+  "mustNot": [
+   "ibuprofeno",
+   "antibiótico",
+   "controlado",
+   "anticoncepcional"
+  ],
+  "constraints": [
+   "sem ibuprofeno"
+  ],
+  "need": "cólica menstrual",
+  "symptom": "cólica menstrual",
+  "criteria": [
+   "fast"
+  ]
+ },
+ {
+  "id": "r61",
+  "text": "dor de barriga com sangue nas fezes",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor de barriga com sangue",
+  "symptom": "dor de barriga com sangue",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "sangue"
+ },
+ {
+  "id": "r62",
+  "text": "a pior dor de cabeça da minha vida, veio de repente",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor de cabeça súbita e intensa",
+  "symptom": "dor de cabeça súbita e intensa",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "dor forte e súbita"
+ },
+ {
+  "id": "r63",
+  "text": "meu bebe de 3 meses ta com febre e vomitando",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "febre em bebê",
+  "symptom": "febre em bebê",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "bebê"
+ },
+ {
+  "id": "r64",
+  "text": "tô grávida de 6 semanas e com dor forte na barriga",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor forte na barriga na gravidez",
+  "symptom": "dor forte na barriga na gravidez",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "gestante, dor forte"
+ },
+ {
+  "id": "r65",
+  "text": "febre de 40 faz 3 dias, o que compro?",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "febre alta há 3 dias",
+  "symptom": "febre alta há 3 dias",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "febre alta"
+ },
+ {
+  "id": "r66",
+  "text": "dor no peito e falta de ar",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor no peito",
+  "symptom": "dor no peito",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "dor no peito"
+ },
+ {
+  "id": "r67",
+  "text": "to vomitando sangue",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "vômito com sangue",
+  "symptom": "vômito com sangue",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "sangue"
+ },
+ {
+  "id": "r68",
+  "text": "estou gravida e com dor de cabeça, o que posso tomar?",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor de cabeça na gravidez",
+  "symptom": "dor de cabeça na gravidez",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "gestante"
+ },
+ {
+  "id": "r69",
+  "text": "meu bebe de 5 meses ta com diarreia ha 2 dias",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "diarreia em bebê",
+  "symptom": "diarreia em bebê",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "bebê"
+ },
+ {
+  "id": "r70",
+  "text": "dor insuportável embaixo do lado direito da barriga",
+  "form": "need",
+  "category": "sintoma",
+  "expectShelfKinds": [],
+  "mustNot": [
+   "remedio",
+   "medicamento",
+   "antiespasmódico",
+   "analgésico",
+   "antitérmico"
+  ],
+  "constraints": [],
+  "need": "dor forte na barriga lado direito",
+  "symptom": "dor forte na barriga lado direito",
+  "redFlag": true,
+  "criteria": [
+   "fast"
+  ],
+  "urgency": true,
+  "redFlagReason": "dor forte (possível apendicite)"
+ },
+ {
+  "id": "r71",
+  "text": "me recomenda um chocolate bom",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "chocolate"
+  ],
+  "mustNot": [
+   "remedio"
+  ],
+  "constraints": [],
+  "product": "chocolate",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r72",
+  "text": "qual o melhor shampoo pra cabelo cacheado",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "shampoo para cabelo cacheado",
+   "shampoo para cachos"
+  ],
+  "mustNot": [
+   "shampoo para cabelo liso",
+   "shampoo anticaspa",
+   "remedio"
+  ],
+  "constraints": [
+   "cabelo cacheado"
+  ],
+  "product": "shampoo cabelo cacheado",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r73",
+  "text": "qual ração vale a pena pro meu gato?",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "ração para gato"
+  ],
+  "mustNot": [
+   "ração para cachorro",
+   "remedio"
+  ],
+  "constraints": [
+   "gato"
+  ],
+  "product": "ração para gato",
+  "recipient": "gato",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r74",
+  "text": "me indica um café bom, de coador",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "café em pó",
+   "café torrado e moído"
+  ],
+  "mustNot": [
+   "café solúvel",
+   "cápsula",
+   "remedio"
+  ],
+  "constraints": [
+   "coador"
+  ],
+  "product": "café em pó",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r75",
+  "text": "qual o melhor protetor solar pra pele oleosa",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "protetor solar facial oil free",
+   "protetor solar toque seco"
+  ],
+  "mustNot": [
+   "protetor solar corporal oleoso",
+   "bronzeador",
+   "remedio"
+  ],
+  "constraints": [
+   "pele oleosa"
+  ],
+  "product": "protetor solar pele oleosa",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r76",
+  "text": "queria um vinho bom e barato, ate 80",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "vinho tinto",
+   "vinho branco",
+   "vinho rosé"
+  ],
+  "mustNot": [
+   "cerveja",
+   "remedio"
+  ],
+  "constraints": [
+   "orçamento total até R$ 80"
+  ],
+  "product": "vinho",
+  "criteria": [
+   "good",
+   "cheap"
+  ],
+  "budget": 80
+ },
+ {
+  "id": "r77",
+  "text": "qual detergente rende mais?",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "detergente líquido",
+   "detergente concentrado"
+  ],
+  "mustNot": [
+   "sabão em pó",
+   "amaciante",
+   "remedio"
+  ],
+  "constraints": [],
+  "product": "detergente",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r78",
+  "text": "me indica um sorvete gostoso sem lactose",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "sorvete sem lactose",
+   "sorbet"
+  ],
+  "mustNot": [
+   "sorvete de creme comum",
+   "remedio"
+  ],
+  "constraints": [
+   "sem lactose"
+  ],
+  "product": "sorvete sem lactose",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r79",
+  "text": "qual fralda é melhor pra recem nascido?",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "fralda recém-nascido",
+   "fralda RN"
+  ],
+  "mustNot": [
+   "fralda geriátrica",
+   "fralda tamanho G ou XG",
+   "remedio"
+  ],
+  "constraints": [
+   "recém-nascido"
+  ],
+  "product": "fralda recém-nascido",
+  "recipient": "bebê",
+  "criteria": [
+   "good"
+  ]
+ },
+ {
+  "id": "r80",
+  "text": "qual pasta de dente é boa pra dente sensivel?",
+  "form": "product_judged",
+  "category": "produto_julgado",
+  "expectShelfKinds": [
+   "creme dental para dentes sensíveis"
+  ],
+  "mustNot": [
+   "pasta clareadora comum",
+   "remedio"
+  ],
+  "constraints": [
+   "dentes sensíveis"
+  ],
+  "product": "creme dental dente sensível",
+  "criteria": [
+   "good"
+  ]
+ }
+]
