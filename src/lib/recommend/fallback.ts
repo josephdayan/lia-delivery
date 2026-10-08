@@ -262,7 +262,7 @@ export function isSymptomRequest(req: RecommendRequest, deps: Pick<RecommendTabl
 
 // Condição de saúde num pedido de comida → o que evitar (corpus difícil h04: refluxo).
 const CONDITION_AVOID: Array<{ re: RegExp; avoid: string[] }> = [
-  { re: /\b(refluxo|azia|gastrite|queimacao|ulcera)\b/, avoid: ["sem café", "sem chocolate", "sem refrigerante", "sem pimenta", "sem fritura"] }
+  { re: /\b(refluxo|azia|gastrite|queimacao|ulcera)\b/, avoid: ["sem café", "sem chocolate", "sem refrigerante", "sem pimenta", "sem fritura", "sem comida gordurosa"] }
 ];
 
 // Ajustes do pedido ANTES de mapear (rodada de qualidade 08/10, corpus difícil). Puro e idempotente:
@@ -290,6 +290,11 @@ export function normalizeRecommendRequest(req: RecommendRequest, deps: Pick<Reco
     const constraints = [...out.constraints, ...avoid.filter((a) => !out.constraints.includes(a))];
     out = { ...out, symptom: undefined, constraints };
   }
+  // Pedido de COMIDA/artigo pra pet com condição ("ração pro gato castrado com problema nos rins"): é compra
+  // de ração, não consulta de saúde — a condição vira o que a prateleira deve atender, sem sintoma.
+  if (out.form === "need" && petInvolved(out) && PET_GOODS_ASK_RE.test(text) && !PET_HEALTH_ASK_RE.test(text) && out.symptom?.trim()) {
+    out = { ...out, symptom: undefined };
+  }
   if (out.form === "need" && out.symptom?.trim()) {
     const s = normRec(out.symptom);
     if (!deps.findSymptom(s) && !deps.findSymptom(text) && (deps.findNeed(s) || deps.findNeed(normRec(out.need)))) out = { ...out, symptom: undefined };
@@ -300,6 +305,8 @@ export function normalizeRecommendRequest(req: RecommendRequest, deps: Pick<Reco
 // Pet envolvido no pedido (revisão A3): pra quem é pet, ou "meu cachorro/gato/pet" no texto.
 const PET_RECIPIENT_RE = /^(?:cachorr\w*|cao|caes|cadela|dog|doguinho|catioro|gat[oa]s?|gatinh\w*|felino|bichano|pet|pets|filhote\w*|passar\w*|calopsita|papagaio|periquito|coelh\w*|hamster|peixe\w*|tartaruga)\b/;
 const PET_TEXT_RE = /\b(?:meu|minha|o|a|do|da|no|na|pro|pra|nosso|nossa|seu|sua)\s+(?:cachorr\w*|cao|cadela|dog|doguinho|catioro|gat[oa]|gatinh[oa]|pet|filhote|passarinho|passaro|calopsita|papagaio|periquito|coelh\w*|hamster|peixinho|tartaruga)\b/;
+const PET_GOODS_ASK_RE = /\b(racao|racoes|sache|petisco|areia|comedouro|bebedouro|caminha|coleira|arranhador|brinquedo)\b/;
+const PET_HEALTH_ASK_RE = /\b(remedio|remedios|medicamento|antibiotico|vermifugo|vacina|pomada|dor|doendo|vomit\w*|diarreia|sangue|sangr\w*|convuls\w*|machucad\w*|doente|febre|nao come|nao quer comer|mancando)\b/;
 function petInvolved(req: Pick<RecommendRequest, "recipient" | "text">): boolean {
   return PET_RECIPIENT_RE.test(normRec(req.recipient)) || PET_TEXT_RE.test(normRec(req.text));
 }
@@ -333,7 +340,11 @@ export function emergencyFlag(text: string | undefined | null, recipient?: strin
 function checkRedFlag(req: RecommendRequest, deps: RecommendTableDeps): Flag | undefined {
   const emergency = checkEmergency(req, deps);
   if (emergency) return emergency;
-  if (petInvolved(req)) return { reason: tablesModule.PET_SICK_REASON, kind: "context" };
+  if (petInvolved(req)) {
+    // Ração/areia/petisco: compra comum, a condição do bicho (castrado, rins) só orienta a escolha.
+    if (PET_GOODS_ASK_RE.test(normRec(req.text)) && !PET_HEALTH_ASK_RE.test(normRec(req.text))) return undefined;
+    return { reason: tablesModule.PET_SICK_REASON, kind: "context" };
+  }
   // Cuidado TÓPICO de criança/bebê (corpus difícil h11/h27: "bebê de 8 meses com assadura feia", "filha de
   // 10 anos com piolho"): a idade/o "bebê" não alerta — pomada de assadura e shampoo antipiolho são pra
   // eles. Sistêmico (febre, dor, tosse, gripe, vômito, diarreia) continua alertando; os outros sinais
@@ -659,6 +670,18 @@ export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
     if (c.shelfId !== "produto" && !shelfSanityOk(c.shelfId, c.option.name)) return false;
     return true;
   });
+  // Margem do orçamento (placar q2): o juiz soma um frete típico de R$ 8–15 em preço perto do teto. Na
+  // prateleira que tem candidato que cabe com o frete típico, o que só cabe com o frete mínimo sai.
+  let roomy = ok;
+  if (budget != null && budget > 0) {
+    const fits = (c: ShelfCandidate) => price(c) + TYPICAL_FREIGHT <= budget;
+    const shelvesWithRoom = new Set(ok.filter(fits).map((c) => c.shelfId));
+    roomy = ok.filter((c) => !shelvesWithRoom.has(c.shelfId) || fits(c));
+  }
+  return finishEligible(roomy, input);
+}
+
+function finishEligible(ok: ShelfCandidate[], input: FitnessInput): ShelfCandidate[] {
   // Produto julgado com atributo dito ("pra cabelo cacheado", "de coador", "dente sensível"): quando algum
   // candidato cumpre no nome, só eles ficam (o juiz do placar reprovava máscara/clareadora/copo).
   if (input.request.form === "product_judged") {

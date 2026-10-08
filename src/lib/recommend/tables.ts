@@ -80,6 +80,17 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("frios.iogurte", "iogurte", "leve e pronto pra comer"),
     p("snacks.amendoim_castanhas", "mix de castanhas", "petisco que sustenta")
   ], ["fast"]),
+  // Rodada de qualidade (08/10, noite; corpus difícil h04 e main r16): jantar LEVE / comer de noite com
+  // refluxo — banana, iogurte natural, sopa, aveia, chá. Nada de fritura, café, chocolate ou castanha.
+  need(["jantar leve", "algo leve pro jantar", "algo leve pra jantar", "janta leve", "ceia leve", "algo leve pra comer de noite", "comer de noite",
+    "algo para comer de noite", "algo para comer de noite sem passar mal", "jantar leve pra quem tem refluxo", "comida leve pra noite",
+    "o que posso comer de noite"], [
+    p("hortifruti.frutas", "banana", "fruta leve, fácil de digerir"),
+    p("frios.iogurte", "iogurte natural", "leve, sem frituras nem gordura"),
+    p("mercado.sopa", "sopa", "quente, leve e fácil de digerir"),
+    p("mercado.cereal_matinal", "aveia", "aveia em flocos, leve e saciante"),
+    p("mercado.cha", "cha de camomila | cha de erva doce", "chá morno pra acompanhar")
+  ], ["healthy"]),
   need(["jantar rapido", "jantar pronto", "algo pra jantar", "almoco rapido", "comida pronta", "refeicao pronta", "nao quero cozinhar",
     "preguica de cozinhar", "sem tempo pra cozinhar", "janta", "jantar"], [
     p("congelados.pratos_prontos", "lasanha congelada", "fica pronto em minutos no micro-ondas"),
@@ -376,7 +387,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   ], ["good"]),
   need(["queda de cabelo", "cabelo caindo", "cabelo ta caindo", "cabelo caindo muito", "antiqueda", "cabelo fraco"], [
     p("beleza.shampoo", "shampoo antiqueda", "shampoo antiqueda"),
-    p("beleza.tratamento_capilar", "tonico capilar antiqueda | ampola antiqueda | tonico capilar", "tônico pro couro cabeludo"),
+    p("beleza.tratamento_capilar", "tonico capilar antiqueda | ampola antiqueda | tratamento antiqueda", "tônico pro couro cabeludo"),
     p("beleza.condicionador", "condicionador antiqueda | condicionador fortalecedor", "fortalece os fios")
   ], ["good"]),
   need(["caspa", "cabelo com caspa", "coceira no couro cabeludo", "couro cabeludo descamando"], [

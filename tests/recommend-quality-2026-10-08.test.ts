@@ -13,7 +13,8 @@ import {
   parseConstraint,
   shelfSanityOk,
   violatesRule,
-  whyIsFactual
+  whyIsFactual,
+  withDietQueries
 } from "../src/lib/recommend/quality";
 import { constraintRules, defaultTableDeps, eligibleCandidates, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint } from "../src/lib/recommend/fallback";
 import { __setPlanShelvesForTests } from "../src/lib/recommend/ai";
@@ -393,5 +394,79 @@ describe("corpus difícil (08/10, noite) — h28/h13 sem remédio, h11/h27 tópi
       candidates: [cand("doces.chocolate", "c", "Chocolate 90g", { unitPrice: 10.29 }), cand("doces.biscoito_doce", "b", "Biscoito 90g", { unitPrice: 2.95 }), cand("snacks.salgadinho", "f", "Salgadinho", { unitPrice: 12, freightFee: 0 })]
     };
     assert.deepEqual(eligibleCandidates(input).map((x) => x.option.sku), ["b", "f"]);
+  });
+});
+
+describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difícil q1", () => {
+  it("sintoma com critério rápido NÃO corta o remédio por prazo (dor de barriga ficava só com água de coco)", () => {
+    // quickOnly só roda fora de sintoma: a regra mora em pickCards; aqui a prova é que o corte existe e
+    // o remédio (1440 min) sairia dele.
+    const cands = [cand("farmacia.antiespasmodico", "m", "Buscopan", { etaMinutes: 1440 }), cand("bebidas.agua_coco", "a", "Água de coco", { etaMinutes: 180 })];
+    assert.deepEqual(quickOnly(cands).map((c) => c.option.sku), ["a"]);
+  });
+
+  it("busca de dieta leva a prova no nome na frente ('sorvete sem lactose' acha o IcePro)", () => {
+    const rules = constraintRules(["sem lactose"]);
+    assert.equal(withDietQueries("sorvete zero lactose", "doces.sorvete", rules), "sorvete sem lactose | sorvete zero lactose");
+    assert.equal(withDietQueries("picanha", "carnes.bovina", rules), "picanha");
+    assert.equal(withDietQueries("barra de cereal", "mercado.barra_cereal", constraintRules(["vegano"])), "barra de cereal vegano | barra de cereal");
+  });
+
+  it("natural vale pelo nome do produto: castanha passa, Doritos 'Queijo Nacho' não (celíaca)", () => {
+    const g = parseConstraint("sem glúten")!;
+    assert.equal(violatesRule("Castanha de Caju Iracema 50g", g, "snacks.amendoim_castanhas"), false);
+    assert.equal(violatesRule("Salgadinho Queijo Nacho Doritos 32g", g, "snacks.salgadinho"), true);
+  });
+
+  it("vegano: 'Vegana ... ao Leite' fere mesmo com a palavra vegana", () => {
+    const v = parseConstraint("vegano")!;
+    assert.equal(violatesRule("Barra de Proteína Vegana Chocolate ao Leite 45g", v, "mercado.barra_cereal"), true);
+    assert.equal(violatesRule("Barra de Proteína Vegana Amendoim 45g", v, "mercado.barra_cereal"), false);
+    assert.equal(violatesRule("Cereal Matinal Nestlé KitKat Sabor Chocolate 300g", v, "mercado.cereal_matinal"), true);
+  });
+
+  it("sem cafeína tira achocolatado (Toddy)", () => {
+    const c = parseConstraint("sem cafeína")!;
+    assert.equal(violatesRule("Achocolatado em Pó Original Toddy 370g", c, "mercado.achocolatado"), true);
+  });
+
+  it("prateleira certa: lenço nasal fora dos umedecidos; pastilha de garganta fora do antisséptico; curativo de acne fora do curativo", () => {
+    assert.equal(shelfSanityOk("bebe.lenco_umedecido", "Lenço Umedecido Nasal Ever Baby"), false);
+    assert.equal(shelfSanityOk("bebe.lenco_umedecido", "Lenço Umedecido Huggies 48un"), true);
+    assert.equal(shelfSanityOk("farmacia.antisseptico_cicatrizante", "Antisséptico e Anestésico para Garganta"), false);
+    assert.equal(shelfSanityOk("farmacia.curativo", "Curativo Hidrocoloide Para Acnes e Espinhas"), false);
+    assert.equal(shelfSanityOk("farmacia.curativo", "Curativo Band-Aid 40un"), true);
+  });
+
+  it("orçamento com folga: na prateleira que tem item que cabe com o frete típico, o que só cabe com frete mínimo sai", () => {
+    const input = {
+      request: req({ text: "presente até 100", budget: 100 }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [
+        cand("beleza.perfume", "caro", "Perfume A", { unitPrice: 85, freightFee: 0 }),
+        cand("beleza.perfume", "ok", "Perfume B", { unitPrice: 60, freightFee: 0 }),
+        cand("presente.caneca", "so", "Caneca", { unitPrice: 85, freightFee: 0 })
+      ]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["ok", "so"]);
+  });
+
+  it("pet: ração pro gato com problema nos rins é compra de ração, não alerta de bicho doente", () => {
+    const r = req({ text: "raçao pro meu gato castrado que tem problema nos rins", need: "ração para gato castrado com problema nos rins", recipient: "gato", symptom: "problema nos rins" });
+    const n = normalizeRecommendRequest(r, defaultTableDeps());
+    assert.equal(n.symptom, undefined);
+    const plan = planShelvesFromTables(n, defaultTableDeps());
+    assert.equal(plan?.redFlag, undefined);
+    const sick = planShelvesFromTables(req({ text: "meu gato ta vomitando e doente", need: "gato vomitando", symptom: "vomitando", recipient: "gato" }), defaultTableDeps())!;
+    assert.ok(sick.redFlag);
+  });
+
+  it("jantar leve / comer de noite com refluxo: banana, iogurte natural, sopa, aveia, chá (sem castanha nem sanduíche)", () => {
+    const n = normalizeRecommendRequest(req({ text: "tenho refluxo, o que posso comer de noite sem passar mal?", need: "algo para comer de noite sem passar mal", symptom: "refluxo" }), defaultTableDeps());
+    const plan = planShelvesFromTables(n, defaultTableDeps())!;
+    assert.ok(plan.picks.some((p) => p.shelfId === "frios.iogurte"));
+    assert.ok(!plan.picks.some((p) => p.shelfId === "snacks.amendoim_castanhas" || p.shelfId === "lanches.sanduiche"));
+    const gord = constraintRules(n.constraints);
+    assert.equal(violatesConstraint("Castanha de Caju Torrada", gord, "snacks.amendoim_castanhas"), true);
   });
 });

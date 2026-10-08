@@ -34,7 +34,7 @@ const RISK: Record<DietKind, RegExp> = {
   gluten:
     /^(padaria\.|doces\.(bolo|biscoito_doce|chocolate|chocolate_presente|doces|sorvete)$|snacks\.|congelados\.|lanches\.|mercado\.(macarrao|macarrao_instantaneo|cereal_matinal|barra_cereal|sopa|farinha|confeitaria)$|bebidas\.cerveja$|frios\.frios$)/,
   vegan:
-    /^(frios\.|carnes\.|doces\.|padaria\.|congelados\.|lanches\.|snacks\.(biscoito_salgado|salgadinho)$|mercado\.(sopa|achocolatado|barra_cereal|mel_geleia|confeitaria|macarrao_instantaneo)$|hortifruti\.ovos$|bebe\.(formula_infantil|papinha)$|farmacia\.suplementos$)/,
+    /^(frios\.|carnes\.|doces\.|padaria\.|congelados\.|lanches\.|snacks\.(biscoito_salgado|salgadinho)$|mercado\.(sopa|achocolatado|cereal_matinal|barra_cereal|mel_geleia|confeitaria|macarrao_instantaneo)$|hortifruti\.ovos$|bebe\.(formula_infantil|papinha)$|farmacia\.suplementos$)/,
   vegetarian: /^(carnes\.|frios\.frios$|congelados\.(pratos_prontos|empanados|salgados|pizza)$|lanches\.|mercado\.(sopa|enlatados|macarrao_instantaneo)$)/,
   sugar:
     /^(doces\.|bebidas\.(refrigerante|suco|energetico|isotonico)$|mercado\.(achocolatado|cereal_matinal|barra_cereal|mel_geleia|confeitaria)$|frios\.iogurte$|padaria\.)/
@@ -58,6 +58,16 @@ const NATURAL: Partial<Record<DietKind, RegExp>> = {
   // castanha, pipoca, arroz, tapioca, mandioca, batata.
   gluten: /\b(pipoca|pipocas|castanhas?|amendoas?|nozes|macadamia|pistaches?|mandioca|tapioca|biscoitos? de arroz|bolachas? de arroz|chips de banana|frutas?|banana|maca|iogurte natural|queijos?|ovos?|arroz|batata|polvilho|pao de queijo)\b/
 };
+
+// Natural vale pelo NOME do produto (as 2 primeiras palavras): "Castanha de Caju" é natural, "Salgadinho
+// Queijo Nacho Doritos" não é (placar difícil q1: o "queijo" do sabor liberava o Doritos pra celíaca).
+const PROCESSED_HEAD_RE = /^(salgadinh\w*|biscoit\w*|bolach\w*|barra|barrinha|snack|snacks|bolo|torta|cereal|sanduich\w*|pizza|empanad\w*|nuggets|macarrao|massa|lasanha)\b/;
+function naturallyFree(kind: DietKind, text: string): boolean {
+  const re = NATURAL[kind];
+  if (!re) return false;
+  if (PROCESSED_HEAD_RE.test(text)) return false;
+  return re.test(text.split(" ").slice(0, 3).join(" "));
+}
 
 // O que fere a restrição em QUALQUER prateleira.
 const VIOLATES: Record<DietKind, RegExp> = {
@@ -100,7 +110,7 @@ const WORD_FAMILIES: Array<{ key: RegExp; family: RegExp; allow?: RegExp }> = [
   },
   {
     key: /\b(cafeina|cafe)\b/,
-    family: /\b(cafe|cafes|cafeina|espresso|expresso|cappuccino|capuccino|energetic\w*|red bull|monster|cha preto|cha verde|cha mate|chimarrao|mate|matte|coca cola|coca|pepsi|guarana em po|chocolate amargo)\b/,
+    family: /\b(cafe|cafes|cafeina|espresso|expresso|cappuccino|capuccino|energetic\w*|red bull|monster|cha preto|cha verde|cha mate|chimarrao|mate|matte|coca cola|coca|pepsi|achocolatad\w*|toddy|nescau|ovomaltine|guarana em po|chocolate amargo)\b/,
     allow: /\b(descafeinado|sem cafeina|decaf|zero cafeina)\b/
   },
   { key: /\b(energetic\w*)\b/, family: /\b(energetic\w*|energy drink|red bull|monster|tnt|burn|fusion|reign)\b/ },
@@ -122,6 +132,7 @@ const WORD_FAMILIES: Array<{ key: RegExp; family: RegExp; allow?: RegExp }> = [
   { key: /\b(acucar)\b/, family: /\b(acucar|leite condensado|brigadeiro|doce de leite|xarope de glicose)\b/, allow: PROOF.sugar },
   { key: /\b(leite)\b/, family: VIOLATES.lactose, allow: PROOF.lactose },
   { key: /\b(carne|carnes)\b/, family: VIOLATES.vegetarian, allow: PROOF.vegetarian },
+  { key: /\b(gorduros\w*)\b/, family: /\b(castanhas?|amendoim|amendoins|nozes|salgadinhos?|chips|frit[oa]s?|bacon|salame|calabresa|pizza|hamburguer|empanad\w*|coxinha|pastel|nuggets|torresmo|maionese|requeijao)\b/ },
   { key: /\b(fritura|frituras|frito|fritos)\b/, family: /\b(chips|batata frita|salgadinho|salgadinhos|frit[oa]s?|empanad\w*|nuggets|coxinha|pastel|pasteis|torresmo|doritos|ruffles|pringles|cheetos|fandangos)\b/ },
   { key: /\b(pimenta|picante|apimentad\w*)\b/, family: /\b(pimenta|picante|apimentad\w*|hot|chilli|chili|jalapeno|sriracha|calabresa)\b/ },
   { key: /\b(refrigerante|refrigerantes|refri)\b/, family: /\b(refrigerantes?|refri|coca cola|guarana|soda|fanta|sprite|pepsi|tonica)\b/ }
@@ -173,8 +184,10 @@ export function violatesRule(textRaw: string, rule: ConstraintRuleQ, shelfId?: s
     if (shelfId && RISK.vegetarian.test(shelfId)) return !proven;
     return false;
   }
+  // "Vegana ... ao Leite" (placar difícil q1): a palavra que fere no nome vale mais que a prova.
+  if (kind === "vegan" && /\b(ao leite|whey|leite em po|com leite|colageno)\b/.test(text)) return true;
   if (proven) return false;
-  if (shelfId && RISK[kind].test(shelfId)) return !(NATURAL[kind]?.test(text) && !VIOLATES[kind].test(text) && !COATED_RE.test(text));
+  if (shelfId && RISK[kind].test(shelfId)) return !(naturallyFree(kind, text) && !VIOLATES[kind].test(text) && !COATED_RE.test(text));
   if (kind === "lactose" && /\bchocolate\b/.test(text) && /\b(amargo|70%|80%|85%|meio amargo)\b/.test(text) && !/\bao leite\b/.test(text)) return false;
   return VIOLATES[kind].test(text);
 }
@@ -246,6 +259,9 @@ const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
   { shelf: /^doces\.(doces|bolo|biscoito_doce|balas)$/, forbid: /\b(picole|sorvete|acai)\b/ },
   // Brinquedo só na prateleira de brinquedo/bebê/pet (placar q1: "Boneca Minnie" em acessórios de moda).
   { shelf: /^(?!brinquedo\.|bebe\.|pet\.|festa\.|livraria\.)/, forbid: /\b(boneca|bonecas|boneco|bonecos|brinquedo|brinquedos|pelucia|lego)\b/ },
+  { shelf: /^bebe\.lenco_umedecido$/, forbid: /\b(nasal|nasais|nariz)\b/ },
+  { shelf: /^farmacia\.antisseptico_cicatrizante$/, forbid: /\b(garganta|bucal|pastilha|pastilhas|anestesic\w*|spray bucal)\b/ },
+  { shelf: /^farmacia\.curativo$/, forbid: /\b(acne|acnes|espinha|espinhas|cravos?)\b/ },
   { shelf: /^higiene\.absorvente$/, forbid: /\b(fraldas?|geriatric\w*|infantil)\b/ },
   { shelf: /^bebe\.higiene_bebe$/, forbid: /\b(kids|minions|teen|adulto)\b/ }
 ];
@@ -298,4 +314,36 @@ export function baseProductName(name: string): string {
     .filter(Boolean)
     .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w));
   return [...new Set(words)].sort().join(" ");
+}
+
+// ---------------------------------------------------------------- busca com a prova da dieta
+
+const DIET_QUERY: Partial<Record<DietKind, string[]>> = {
+  lactose: ["sem lactose"],
+  gluten: ["sem gluten"],
+  vegan: ["vegano"],
+  sugar: ["zero acucar"]
+};
+
+// Rodada q2 (08/10): "sorvete zero lactose" trazia Kibon comum e adoçante e o sorvete SEM lactose ficava
+// fora dos 14 candidatos. Em prateleira de risco, a consulta ganha as variantes com a prova da dieta
+// ("sorvete sem lactose | sorvete zero lactose") — a busca acha quem prova no nome.
+export function withDietQueries(query: string, shelfId: string, rules: readonly ConstraintRuleQ[]): string {
+  const alts = query.split("|").map((q) => q.trim()).filter(Boolean);
+  if (!alts.length) return query;
+  const extra: string[] = [];
+  for (const rule of rules) {
+    if (rule.kind === "word" || rule.kind === "no_medicine" || rule.kind === "vegetarian") continue;
+    if (!RISK[rule.kind].test(shelfId)) continue;
+    for (const alt of alts.slice(0, 2)) {
+      const head = normQ(alt).replace(/\b(sem|zero|livre de|0) (lactose|gluten|acucar)\b|\b(vegano|vegana|vegetal|diet|lac free)\b/g, " ").replace(/\s+/g, " ").trim();
+      if (!head) continue;
+      for (const proof of DIET_QUERY[rule.kind] ?? []) extra.push(`${head} ${proof}`);
+    }
+  }
+  // A prova da dieta vai ANTES: a busca enche os candidatos pela 1ª consulta ("sorvete zero lactose" trazia
+  // picolé comum e adoçante "zero").
+  const out: string[] = [];
+  for (const q of [...extra, ...alts]) if (!out.some((o) => normQ(o) === normQ(q))) out.push(q);
+  return out.slice(0, 6).join(" | ");
 }

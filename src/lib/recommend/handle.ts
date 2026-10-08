@@ -42,7 +42,7 @@ import {
   type RecommendTableDeps
 } from "./fallback";
 import { suggestComplement, type ComplementSuggestion } from "./complement";
-import { attributeRules, baseProductName, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
+import { attributeRules, baseProductName, withDietQueries, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
 import { loadCustomerMemory, memoryWantsHealthy, type LoadedMemory } from "./memory";
 import { recommendEnabled } from "./types";
 import type { RecommendCard, RecommendCriterion, RecommendOutcome, RecommendRequest, ShelfCandidate, ShelfPick, ShelfPlan } from "./types";
@@ -206,7 +206,9 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
   const judged: RecommendRequest =
     memoryWantsHealthy(memory) && !isSymptomPlan(req, plan) && !req.criteria.includes("healthy") ? { ...req, criteria: [...req.criteria, "healthy"] } : req;
   const fast = wantsFast(judged.criteria, judged.urgency);
-  let candidates = fast ? quickOnly(candidatesIn) : candidatesIn;
+  // Sintoma não é fome: o remédio chega em 1 dia e é a resposta certa — quickOnly só vale em comida/coisa
+  // (placar q2: dor de barriga "rápido" ficava só com água de coco).
+  let candidates = fast && !isSymptomPlan(req, plan) ? quickOnly(candidatesIn) : candidatesIn;
   if (req.form === "product_judged") candidates = productTypeOnly(req, candidates);
   const input = { request: judged, plan, candidates, hour, ...(memory ? { memory } : {}) };
   // Sintoma (rodada de qualidade 08/10): o juiz é a REGRA do remédio (apresentação básica, mais vendido,
@@ -281,6 +283,8 @@ export function productTypeOnly(req: RecommendRequest, candidates: ShelfCandidat
   const attrs = attributeRules(req.constraints);
   if (attrs.length) keep((c) => meetsAttributes(c.option.name, attrs));
   if (!/\b(kit|kits|combo|conjunto)\b/.test(ask)) keep((c) => !/\b(kit|kits|combo|conjunto)\b/.test(normRec(c.option.name)));
+  // Repelente/produto pra BEBÊ (placar difícil q1): "Off Kids" é de criança maior — linha baby/bebê primeiro.
+  if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask)) keep((c) => !/\bkids?\b/.test(normRec(c.option.name)));
   if (!KID_RE.test(ask)) keep((c) => !/\b(infantil|kids?|baby|bebe|junior|teen)\b/.test(normRec(c.option.name)));
   return out;
 }
@@ -443,7 +447,11 @@ async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketName
   if (plan.redFlag) return { plan, picks: [], candidates: [], cards: [], emptyShelves: [], timings: { mapMs: t1 - t0, searchMs: 0, judgeMs: 0 } };
   // Refino positivo ("de morango"): a palavra entra na busca de cada prateleira e vira exigência no nome.
   const must = normRec(opts.mustHave);
-  const picks = plan.picks.slice(0, MAX_PICKS).map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p));
+  const dietRules = constraintRules(req.constraints, opts.memory);
+  const picks = plan.picks
+    .slice(0, MAX_PICKS)
+    .map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p))
+    .map((p) => (dietRules.length && p.shelfId !== "produto" ? { ...p, query: withDietQueries(p.query, p.shelfId, dietRules) } : p));
   const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs(), req.form === "product_judged");
   let candidates = searched.candidates;
   if (must) {
