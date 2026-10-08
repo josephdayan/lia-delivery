@@ -23,7 +23,7 @@ export type DetectOptions = {
   basketNames?: string[];
 };
 
-type Role = "noise" | "budget" | "constraint" | "symptom" | "need" | "judge" | "recipient" | "criteria" | "group";
+type Role = "noise" | "budget" | "constraint" | "symptom" | "need" | "judge" | "recipient" | "criteria" | "group" | "medclass";
 
 type Tok = { orig: string; norm: string; start: number; comma: boolean; role?: Role };
 
@@ -216,6 +216,9 @@ const SERVICE = new Set(
 );
 
 const NUMBER_WORDS = "um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|quinze|vinte|trinta|quarenta|cinquenta";
+// Quantidade dita por extenso (sem "um/uma", que é artigo) e número/pronome que nunca é produto.
+const QTY_WORD_RE = /^(?:dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|quinze|vinte|trinta|duzia|duzias|meia)$/;
+const NUMBER_ONLY_RE = new RegExp(`^(?:${NUMBER_WORDS}|ambos|ambas|eles|elas|primeiro|segundo|terceiro)$`);
 const NUMBER_VALUE: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, onze: 11, doze: 12, quinze: 15, vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50 };
 
 // ---------- pra quem ----------
@@ -286,7 +289,16 @@ const DIET_RE = rx(
 
 // ---------- sintomas (normalizados, com acento na exibição) ----------
 const SYMPTOMS: [string, string][] = [
-  ["dor no peito", "dor(?:es)? no peito|aperto no peito"],
+  // EMERGÊNCIA (revisão A2, 08/10): viram necessidade com sintoma (nunca busca literal) para a etapa
+  // MAPEAR responder o alerta. "tô com falta de ar" virava aparelho de saúde; "peito apertado e suando
+  // frio", sopa/chá. "sem ar condicionado" e "Sangue de Boi" (vinho) ficam de fora.
+  ["dor no peito", "dor(?:es)? no peito|(?:aperto|pressao|pontada|queimacao) no peito|peito (?:ta |esta )?(?:apertado|doendo|apertando|pesado)|dor no braco esquerdo"],
+  ["falta de ar", "falta de ar|sem ar(?! condicionado)|dificuldade (?:pra|para|de) respirar|nao (?:consigo|consegue|to conseguindo|ta conseguindo) respirar|respirando mal|chiado no peito|sufocad[oa]|sufocando"],
+  ["desmaio", "desmaiei|desmaiou|desmaiando|desmaio|desmaiar|convulsao|convulsoes|convulsionando|convulsionou|perdi a consciencia|perdeu a consciencia"],
+  ["suor frio", "suando frio|suor frio"],
+  ["sangramento", "sangrando|sangramento|sangrou|sangue(?! de boi| bom)"],
+  ["confusão mental", "confusao mental|desorientad[oa]|fala enrolada|boca torta|rosto torto"],
+  ["inchaço", "garganta fechando|choque anafilatico|(?:rosto|boca|labios?|lingua|garganta) (?:ta |esta )?(?:inchad[oa]s?|inchando|inchou)"],
   ["dor de barriga", "dor(?:es)?(?: (?:muito |bem )?(?:forte|fortissima|horrivel|terrivel|chata|leve|insuportavel))? (?:de|na|no) barriga|dor(?:es)?(?: [a-z]+){1,5} (?:da|na|no|de) barriga|barriga (?:ta |esta )?(?:doendo|ruim|dolorida|estranha)|barriga (?:ta |esta )?(?:doendo|ruim|dolorida|estranha)|mal estar na barriga|colica intestinal"],
   ["dor de estômago", "dor(?:es)? (?:de|no) estomago|estomago (?:ta |esta )?(?:doendo|ruim|embrulhado|virado)|mal estar estomacal"],
   ["diarreia", "diarreia|diarreica|caganeira|desarranjo|intestino solto|disenteria|soltura"],
@@ -320,8 +332,28 @@ const SYMPTOM_RES = SYMPTOMS.map(([canon, src]) => [canon, rx(`${SYMPTOM_LEAD}(?
 const SYMPTOM_CONTEXT = new Set(
   ("remedio remedios remedinho medicamento medicamentos medicacao comprimido comprimidos forte fortissima horrivel insuportavel pior sangue sangrando dias dia semana semanas faz ha desde ontem anteontem " +
     "gravida gestante gravidez amamentando meses idade velho idosa idoso sentindo aliviar alivia melhorar passar curar resolver ajudar ajuda bom boa posso tomo " +
-    "doi doendo engolir respirar tossir dormir falta ar fezes urina xixi coco vomito cocando coca coceira ficar sentado sentada pe vida veio repente embaixo lado direito esquerdo cima baixo toda todo nao para").split(" ")
+    "doi doendo engolir respirar tossir dormir falta ar fezes urina xixi coco vomito cocando coca coceira ficar sentado sentada pe vida veio repente embaixo lado direito esquerdo cima baixo toda todo nao para " +
+    // comorbidade, remédio contínuo e combinações (revisão A4, 08/10): a MAPEAR decide o alerta.
+    "uso usa usando toma tomando anticoagulante anticoagulantes marevan xarelto ulcera ulceras gastrite pressao alta hipertenso hipertensa hipertensao diabetico diabetica diabetes " +
+    "asma asmatico asmatica bronquite renal rim rins figado hepatite cardiaco cardiaca coracao urinar mijar pescoco nuca duro dura rigido travado").split(" ")
 );
+
+// ---------- classe terapêutica nomeada (revisão A1, 08/10) ----------
+// "qual o melhor antitérmico pro meu bebê", "me recomenda um analgésico pra criança": com sintoma ou pra
+// quem, vira NECESSIDADE com sintoma (a MAPEAR checa o alerta: bebê/criança/idoso…); sem nenhum dos
+// dois, continua produto julgado e a MAPEAR passa pela porta do remédio (prateleira mip → alerta).
+const MED_CLASSES: [symptom: string, src: string][] = [
+  ["febre", "anti[- ]?termicos?|antifebril"],
+  ["dor", "analgesicos?"],
+  ["dor", "anti[- ]?inflamatorios?"],
+  ["azia", "anti[- ]?acidos?"],
+  ["prisão de ventre", "laxantes?"],
+  ["nariz entupido", "descongestionantes?(?: nasa(?:l|is))?"],
+  ["alergia", "anti[- ]?alergicos?|anti[- ]?histaminicos?"],
+  ["gripe", "anti[- ]?gripa(?:l|is)"],
+  ["mal-estar", "remedios?|remedinhos?|medicamentos?|medicacao"]
+];
+const MED_CLASS_RES = MED_CLASSES.map(([symptom, src]) => [symptom, rx(src)] as const);
 
 // ---------- estados ----------
 const STATE_LEAD = "(?:(?:to|tou|cm|a|estou|ta|tamo|tamos|estamos|fiquei|ando|acordei|bateu|me deu|deu|que|com|uma|um|muita|muito|mt|mto|mta|maior|baita|tanta|tanto|super|mega|morrendo de|mort[oa] de|varad[oa] de|cheio de|cheia de)\\s+)*";
@@ -336,7 +368,13 @@ const STATES: [string, string, string, boolean][] = [
   ["calor", "calor", "calor|calorzao|derretendo", true],
   ["sono", "sono", "sono|sonolent[oa]", true],
   ["cansaço", "cansaco", "cansad[oa]+|exaust[oa]|sem energia|mort[oa] de cansaco|moid[oa]|acabad[oa]", false],
-  ["preguiça de cozinhar", "preguica de cozinhar", "preguica de (?:cozinhar|fazer comida|fazer janta|fazer o jantar)|sem (?:vontade|saco) de cozinhar|nao (?:quero|to a fim de|to afim de) cozinhar", false]
+  ["preguiça de cozinhar", "preguica de cozinhar", "preguica de (?:cozinhar|fazer comida|fazer janta|fazer o jantar)|sem (?:vontade|saco) de cozinhar|nao (?:quero|to a fim de|to afim de) cozinhar", false],
+  // Revisão C2 (08/10): estado sem produto virava o "produto" ("dieta", "ansioso"). Agora é necessidade:
+  // dieta → algo leve (saudável); ansioso/estressado → relaxar; triste → um mimo; entediado → filme.
+  ["algo leve", "algo leve", "de dieta|fazendo dieta|em dieta|na dieta|dieta|de regime|regime", false],
+  ["relaxar", "relaxar", "ansios[oa]|estressad[oa]|nervos[oa]|agitad[oa]|com ansiedade|ansiedade|estresse|stress", false],
+  ["um mimo", "um mimo", "triste|tristinh[oa]|chatead[oa]|desanimad[oa]|na bad", false],
+  ["noite de filme", "noite de filme", "entediad[oa]|sem nada pra fazer|tedio", false]
 ];
 // Exige o "tô com", menos no começo da mensagem ("frio e sem nada em casa").
 const STATE_RES = STATES.map(([display, key, src, lead]) => [display, key, lead ? new RegExp(`(?:^(?:${src})(?=\\s|$)|(?:^|\\s)${STATE_LEAD_REQUIRED}(?:${src})(?=\\s|$))`, "g") : rx(`${STATE_LEAD}(?:${src})`)] as const);
@@ -370,7 +408,9 @@ const PURPOSES: [string, string][] = [
   ["café da manhã", "o cafe da manha|cafe da manha|o cafe|tomar cafe|o desjejum"],
   ["beliscar", "beliscar|petiscar|acompanhar a cerveja|acompanhar a bebida|o happy hour"],
   ["sobremesa", "sobremesa|a sobremesa"],
-  ["acordar", "acordar|despertar|ficar acordad[oa]|dar energia|ter energia|dar uma animada"]
+  ["acordar", "acordar|despertar|ficar acordad[oa]|dar energia|ter energia|dar uma animada"],
+  // "me indica algo pra dormir" (revisão B1, 08/10): era o produto "dormir" (pijama).
+  ["dormir", "dormir|dormir melhor|conseguir dormir|pegar no sono"]
 ];
 const PURPOSE_SRC = PURPOSES.map(([, src]) => src).join("|");
 const VONTADE_RE = rx(
@@ -464,6 +504,9 @@ type Analysis = {
   needs: NeedHit[];
   judge: boolean;
   explicitVerb: boolean;
+  // Julgamento que não é só adjetivo ("vale a pena", "compensa", "rende mais") — revisão C1.
+  strongJudge: boolean;
+  medClass?: { display: string; symptom: string };
   scan: Scan;
   criteria: Set<RecommendCriterion>;
   constraints: string[];
@@ -542,6 +585,14 @@ function analyze(text: string): Analysis {
   for (const [canon, re] of SYMPTOM_RES) {
     scan.take(re, "symptom", (_m, r) => {
       needs.push({ kind: "symptom", display: canon, key: normalizeMsg(canon), at: r[0] });
+    });
+  }
+
+  // Classe terapêutica nomeada (A1): consumida como "medclass"; quem decide se é produto é a API.
+  let medClass: Analysis["medClass"];
+  for (const [symptom, re] of MED_CLASS_RES) {
+    scan.take(re, "medclass", (_m, r) => {
+      medClass = medClass ?? { display: scan.origOf(r), symptom };
     });
   }
 
@@ -645,6 +696,7 @@ function analyze(text: string): Analysis {
   for (const [display, key, re] of STATE_RES) {
     scan.take(re, "need", () => {
       needs.push({ kind: "state", display, key });
+      if (key === "algo leve") criteria.add("healthy");
       if (key === "fome" || key === "larica" || key === "sede") {
         criteria.add("fast");
         urgency = true;
@@ -690,7 +742,14 @@ function analyze(text: string): Analysis {
     explicitVerb = true;
   }
   if (scan.take(GOOD_BEFORE_RE, "judge") > 0) judge = true;
-  if (scan.take(GOOD_AFTER_RE, "judge", (_m, r) => r[0] > 0 || scan.toks.length === 1) > 0) judge = true;
+  let strongJudge = false;
+  if (
+    scan.take(GOOD_AFTER_RE, "judge", (m, r) => {
+      if (!(r[0] > 0 || scan.toks.length === 1)) return false;
+      if (/vale|compensa|presta|rende|dura|resistente|limpa|funciona|melhor|recomenda|indica|sugere|gosta|acha bom|avaliad|confiave/.test(m[0])) strongJudge = true;
+    }) > 0
+  )
+    judge = true;
 
   // Pra quem.
   const takeRecipient = (m: RegExpMatchArray) => {
@@ -703,7 +762,7 @@ function analyze(text: string): Analysis {
   scan.take(rx(`${FAST_WORDS}|ja`), "criteria");
   scan.take(rx(HEALTHY_WORDS), "criteria");
 
-  return { needs, judge, explicitVerb, scan, criteria, constraints: [...new Set(constraints)], recipient, urgency, budget: budget ?? undefined };
+  return { needs, judge, explicitVerb, strongJudge, ...(medClass ? { medClass } : {}), scan, criteria, constraints: [...new Set(constraints)], recipient, urgency, budget: budget ?? undefined };
 }
 
 function occasionRecipient(said: string): string | undefined {
@@ -748,9 +807,15 @@ export function detectRecommendation(text: string, opts: DetectOptions = {}): Re
 
   // O que sobrou: conteúdo (produto) ou enfeite.
   const hasSymptom = a.needs.some((x) => x.kind === "symptom");
+  // Classe terapêutica + sintoma ou pra quem = necessidade de saúde (A1); senão, a classe é o produto.
+  const medAsNeed = Boolean(a.medClass) && (hasSymptom || Boolean(a.recipient));
   const content: number[] = [];
   for (let i = 0; i < scan.toks.length; i++) {
     const t = scan.toks[i];
+    if (t.role === "medclass") {
+      if (!medAsNeed) content.push(i);
+      continue;
+    }
     if (t.role) continue;
     if (SERVICE.has(t.norm)) return null;
     if (REFERENCE.has(t.norm)) {
@@ -775,6 +840,15 @@ export function detectRecommendation(text: string, opts: DetectOptions = {}): Re
     source: "regex" as const
   };
 
+  if (medAsNeed) {
+    // Remédio NOMEADO junto ("tem remédio tipo dipirona pra dor?"): a porta do remédio decide, não a recomendação.
+    const leftover = content.map((i) => scan.toks[i].orig).join(" ");
+    if (leftover && looksLikeMedicine(leftover)) return null;
+    if (opts.hasPendingChoice && !hasSymptom && !a.explicitVerb) return null;
+    const symptom = pickNeed(a.needs.filter((x) => x.kind === "symptom"))?.display ?? a.medClass!.symptom;
+    return { form: "need", need: hasSymptom ? best?.display ?? symptom : a.medClass!.display, ...base, symptom };
+  }
+
   if (!content.length) {
     if (!best) return null;
     // Com opções na tela, só necessidade inequívoca e nova; "me surpreende"/"o que você sugere"
@@ -787,6 +861,15 @@ export function detectRecommendation(text: string, opts: DetectOptions = {}): Re
   // Sobrou produto: só é recomendação com pedido de julgamento.
   if (!a.judge) return null;
   if (opts.hasPendingChoice && !a.explicitVerb) return null;
+  // Revisão C1 (08/10): "bom/boa" só como adjetivo, sem verbo de recomendação, sem "melhor", sem pergunta,
+  // junto de QUANTIDADE ("manda 2 pacotes de arroz bom", "quero 6 cervejas boas") ou de "bom pra X"
+  // ("quero uma pizza boa pro jantar") é pedido de produto: busca de sempre, quantidade preservada.
+  const question = /\?/.test(raw) || scan.toks.some((t) => /^(?:qual|quais)$/.test(t.norm));
+  if (!a.explicitVerb && !a.strongJudge && !question) {
+    const qty = scan.toks.some((t) => !t.role && (/^\d+$/.test(t.norm) || QTY_WORD_RE.test(t.norm)));
+    const fitFor = /(?:^|\s)(?:bom|boa|bons|boas)\s+(?:pra|pro|para|p)\s/.test(normalizeMsg(raw));
+    if (qty || fitFor) return null;
+  }
   if (content.length > 6) return null;
   const first = content[0];
   let last = content[content.length - 1];
@@ -809,7 +892,7 @@ export function detectRecommendation(text: string, opts: DetectOptions = {}): Re
   }
   const product = scan.toks
     .slice(first, last + 1)
-    .filter((t) => !t.role || t.role === "recipient" || t.role === "need" || t.role === "symptom")
+    .filter((t) => !t.role || t.role === "recipient" || t.role === "need" || t.role === "symptom" || t.role === "medclass")
     .map((t) => t.orig.toLowerCase())
     .join(" ")
     .replace(/\b(?:minha|meu|minhas|meus|nossa|nosso)\s+/g, "")
@@ -817,7 +900,8 @@ export function detectRecommendation(text: string, opts: DetectOptions = {}): Re
     .replace(/^(?:marcas?|tipos?|modelos?|opção|opções)\s+(?:de|do|da)\s+/, "")
     .replace(/(?:\s+(?:pra|para|pro|de|do|da|e|que|com|mais|pf|pfv))+$/, "")
     .trim();
-  if (!product || product.length > 60 || content.every((i) => /^\d+$/.test(scan.toks[i].norm))) return null;
+  // Numeral/pronome isolado nunca é produto ("qual dos dois é melhor" — revisão C2).
+  if (!product || product.length > 60 || content.every((i) => /^\d+$/.test(scan.toks[i].norm) || NUMBER_ONLY_RE.test(scan.toks[i].norm))) return null;
   // Medicamento nomeado ("qual a melhor dipirona") nunca vira recomendação: a porta do remédio decide.
   if (looksLikeMedicine(product)) return null;
   // Produto que já está na cesta, sem verbo de recomendação ("o vinho é bom?"): pergunta sobre o escolhido.

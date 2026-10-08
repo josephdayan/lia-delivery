@@ -123,7 +123,8 @@ describe("recomendação — MAPEAR pelas tabelas (sem IA)", () => {
   it("sinal de alerta → plano vazio com o motivo", () => {
     process.env.LIA_MEDICINE_MIP = "true";
     const plan = planShelvesFromTables(req({ text: "dor de barriga com sangue", need: "dor de barriga", symptom: "dor de barriga" }), deps);
-    assert.deepEqual(plan, { picks: [], redFlag: "sangue nas fezes", source: "table" });
+    // redFlagKind (08/10, revisão A2): regra sem `kind` = sinal de contexto.
+    assert.deepEqual(plan, { picks: [], redFlag: "sangue nas fezes", redFlagKind: "context", source: "table" });
   });
 
   it("produto + julgamento → a prateleira do produto (por query/alias); sem prateleira → pick 'produto'", () => {

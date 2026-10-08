@@ -11,6 +11,7 @@ import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
 import { looksLikeMedicine, parsePriceCap, type Intent } from "../lia-intents";
 import { isPrescriptionDrugName } from "../medicine";
+import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled } from "../recommend/types";
 import { reply, turnMeta, writeCtx } from "../turn-runtime";
 import { ANSWER_TEXT } from "./plan";
@@ -206,6 +207,8 @@ export function preSignupBypassReason(i: PreBypassInput): string | null {
 
 export type PreStep =
   | { type: "fixed"; key: "out_of_scope" | "farewell" | "vague" | "budget_only" }
+  // Sinal de EMERGÊNCIA (revisão A2, 08/10): o alerta sai NA HORA, sem pedir CEP e sem guardar pedido.
+  | { type: "fixed"; key: "red_flag"; reason: string }
   | { type: "medicine" }
   | { type: "wait" }
   | { type: "answer"; topics: AnswerTopic[] }
@@ -242,6 +245,10 @@ export function recommendText(text: string, budget: number | null): string {
 
 // `text` = a mensagem original (a recomendação guarda a frase inteira, não um item extraído).
 export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?: string } = {}): PrePlan {
+  // Emergência (dor no peito, falta de ar, desmaio, sangue…) vale mais que tudo na mensagem, decida a IA
+  // o que decidir: responde o alerta já, nada de "me passa o CEP" (revisão A2, 08/10).
+  const emergency = emergencyFlag(opts.text);
+  if (emergency) return { ok: true, steps: [{ type: "fixed", key: "red_flag", reason: emergency }], label: "red_flag" };
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
   const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
   const medicine = d.medicine || items.length !== d.items.length;
@@ -289,6 +296,11 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
 
 // ---------- execução ----------
 
+// Copy do alerta de saúde: a mesma da recomendação (lia-copy.recommendRedFlag).
+function redFlagText(reason: string): string {
+  return copy.recommendRedFlag(reason);
+}
+
 export type PreHandlers = {
   refuseMedicine: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
   attendanceWait: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
@@ -316,10 +328,21 @@ export function buildPreSignupState(ctx: DeliveryContext, lastLiaText?: string):
 
 // null = a IA não foi consultada (o caminho de hoje segue, sem custo).
 export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanOutcome | null> {
-  if (process.env.LIA_DIALOGUE_LLM === "false" || !preSignupModelAvailable()) return null;
+  if (process.env.LIA_DIALOGUE_LLM === "false") return null;
   const bypass = preSignupBypassReason(input);
-  if (bypass) return null;
   const started = Date.now();
+  // Emergência (revisão A2, 08/10): o alerta não espera a IA (nem gasta a chamada, nem depende dela) e
+  // vale também quando o roteador leu a frase como reclamação/saudação ("dor no peito horrível").
+  // Passo com dono (endereço, CPF, pergunta aberta) ou cliente já cadastrado seguem os caminhos deles.
+  if (!bypass || bypass.startsWith("intent:") || bypass === "tamanho") {
+    const emergency = emergencyFlag(input.text);
+    if (emergency) {
+      await reply(input.phone, redFlagText(emergency));
+      console.log(`[dialogue:pre] ação=red_flag ms=${Date.now() - started} resultado=handled motivo=${JSON.stringify(emergency)}`);
+      return { kind: "handled", actions: "red_flag" };
+    }
+  }
+  if (bypass || !preSignupModelAvailable()) return null;
   const meta = turnMeta.getStore();
   const { ctx, phone, convoId, userId, handlers: h } = input;
 
@@ -369,7 +392,8 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           break;
         }
         case "fixed":
-          if (step.key === "out_of_scope") await reply(phone, copy.outOfScopeProductAnswer());
+          if (step.key === "red_flag") await reply(phone, redFlagText(step.reason));
+          else if (step.key === "out_of_scope") await reply(phone, copy.outOfScopeProductAnswer());
           else if (step.key === "farewell") await reply(phone, copy.medicineFarewell());
           // Só com LIA_RECOMMEND=false: ligada, o pedido vago/de recomendação vira o pedido guardado (acima).
           else if (step.key === "vague") await reply(phone, copy.vagueRequestAnswer());

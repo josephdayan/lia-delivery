@@ -4,6 +4,7 @@
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { extractCep, parseBudgetStatement, parsePriceCap } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
+import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
 import { RECOMMEND_CRITERIA, type AnswerTopic, type DialogueAction, type DialogueDecision, type DialogueState, type PayMethod, type Sort } from "./types";
 
@@ -229,9 +230,11 @@ function planRecommend(a: DialogueAction, state: DialogueState, text: string): P
   if (!recommendEnabled()) return form === "product_judged" ? { type: "search", lines: [{ query: product!, qty: 1 }] } : "recomendacao_desligada";
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   const signals = text ? detectRecommendation(text, { hasPendingChoice: Boolean(onScreen) }) : null;
-  // Opções na tela + mensagem curta que nem as regras leem como recomendação ("mais barato", "sem açúcar",
-  // "outras"): é refino/mais opções da tela — o caminho de hoje decide, não a recomendação.
-  if (onScreen && !signals && text.trim().split(/\s+/).length <= 4) return "recomendacao_na_tela";
+  // Opções na tela + mensagem que nem as regras leem como recomendação ("mais barato", "sem açúcar",
+  // "outras", "qual desses você indica pra presente?"): é refino/mais opções/pergunta sobre a tela — o
+  // caminho de hoje decide, não a recomendação. Revisão C4 (08/10): vale para frase de QUALQUER tamanho
+  // (antes só ≤ 4 palavras); só passa com sintoma dito ou emergência (o alerta não pode esperar).
+  if (onScreen && !signals && !symptom && !emergencyFlag(text)) return "recomendacao_na_tela";
   const criteria = [...new Set<RecommendCriterion>([...(a.criteria ?? []), ...(signals?.criteria ?? [])])].filter((c) => (RECOMMEND_CRITERIA as readonly string[]).includes(c));
   if (form === "product_judged" && !criteria.length) criteria.push("good");
   const constraints = [...new Set([...(a.constraints ?? []), ...(signals?.constraints ?? [])].map((c) => c.toLowerCase()))].slice(0, 6);

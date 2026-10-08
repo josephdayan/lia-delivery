@@ -16,7 +16,7 @@ import { __setPreSignupModelForTests, PRESIGNUP_SCHEMA, PRESIGNUP_SYSTEM_PROMPT,
 import { buildDialogueState } from "../src/lib/dialogue/state";
 import type { DialogueAction, DialogueState } from "../src/lib/dialogue/types";
 import { detectIntent } from "../src/lib/lia-intents";
-import { vagueRequestAnswer } from "../src/lib/lia-copy";
+import { recommendRedFlag, vagueRequestAnswer } from "../src/lib/lia-copy";
 import type { DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -205,6 +205,39 @@ test("plano: com opções na tela, 'mais barato'/'sem açúcar'/'outras' nunca v
   assert.ok(p.ok && p.steps[0].type === "recommend");
 });
 
+test("plano (revisão C4, 08/10): com opções na tela e sem sinal das regras, recommend cai em QUALQUER tamanho; sintoma e emergência passam", () => {
+  const state = choosingState();
+  const long = "e qual desses aí você acha que fica melhor pra dar de presente pra alguém";
+  assert.deepEqual(planActions({ actions: [rec({ form: "need", need: "presente" })] }, state, { text: long }), { ok: false, reason: "recommend:recomendacao_na_tela" });
+  // sintoma dito pela IA passa (a MAPEAR decide o alerta)
+  const sym = planActions({ actions: [rec({ form: "need", need: "dor de cabeça", symptom: "dor de cabeça" })] }, state, { text: "nossa, bateu uma dor de cabeça agora" });
+  assert.ok(sym.ok && sym.steps[0].type === "recommend");
+  // emergência passa mesmo se a IA não marcou sintoma
+  const em = planActions({ actions: [rec({ form: "need", need: "algo quente" })] }, state, { text: "tô com o peito apertado e suando frio" });
+  assert.ok(em.ok && em.steps[0].type === "recommend");
+});
+
+test("prompts (revisão C1/C2/BAIXO): quantidade + 'bom' é search; estado é need; insistir em remédio depois do alerta é medicine", () => {
+  assert.match(DIALOGUE_SYSTEM_PROMPT, /Quantidade \+ produto = search/);
+  assert.match(DIALOGUE_SYSTEM_PROMPT, /"manda 2 pacotes de arroz bom" -> search "arroz" qty=2/);
+  assert.match(DIALOGUE_SYSTEM_PROMPT, /"tô de dieta, o que você indica" -> need="algo leve"/);
+  assert.match(DIALOGUE_SYSTEM_PROMPT, /"mas quero um remédio mesmo".* = medicine/);
+});
+
+test("pré-cadastro (revisão A2): frase com emergência responde o alerta NA HORA (sem CEP), decida a IA o que decidir", () => {
+  for (const decision of [D({ recommend: true }), D({ items: [{ query: "sopa", qty: 1, cheapest: false }] }), D({ human: true }), D({ smalltalk: "oi!" })]) {
+    const plan = planPreSignup(decision, { text: "tô com o peito apertado e suando frio" });
+    assert.deepEqual(plan, { ok: true, steps: [{ type: "fixed", key: "red_flag", reason: "dor no peito" }], label: "red_flag" });
+  }
+  const air = planPreSignup(D({ recommend: true }), { text: "tô com falta de ar" });
+  assert.ok(air.ok && air.steps[0].type === "fixed" && air.steps[0].key === "red_flag" && air.steps[0].reason === "falta de ar");
+  // sem emergência: o caminho de sempre
+  const normal = planPreSignup(D({ recommend: true }), { text: "tô com dor de barriga" });
+  assert.ok(normal.ok && normal.steps[0].type === "recommend");
+  const wine = planPreSignup(D({ items: [{ query: "vinho sangue de boi", qty: 1, cheapest: false }] }), { text: "um vinho sangue de boi" });
+  assert.ok(wine.ok && wine.steps[0].type === "items");
+});
+
 test("plano: LIA_RECOMMEND=false — produto julgado vira a busca de sempre; necessidade cai no caminho de hoje", () => {
   process.env.LIA_RECOMMEND = "false";
   const judged = planActions({ actions: [rec({ form: "product_judged", product: "chocolate" })] }, fresh, { text: "me recomenda um chocolate bom" });
@@ -341,4 +374,19 @@ test("E2E pré-cadastro: sintoma vira rewrite com a mensagem original e o fluxo 
   assert.ok(logs.some((l) => /\[dialogue:pre\] ação=recommend .*resultado=rewrite/.test(l)), logs.join("\n"));
   assert.match(out, /endere[cç]o|CEP/i, out);
   assert.ok(!out.includes(vagueRequestAnswer()), "não responde a copy fixa de pedido vago");
+});
+
+test("E2E pré-cadastro (revisão A2): emergência responde o alerta na hora — sem pedir endereço/CEP e sem chamar a IA", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await newcomer();
+  let called = false;
+  __setPreSignupModelForTests(async () => {
+    called = true;
+    return D({ recommend: true });
+  });
+  const { result: out, logs } = await withLogs(() => send(phone, "tô com o peito apertado e suando frio"));
+  assert.equal(called, false, "a IA nem foi chamada");
+  assert.ok(logs.some((l) => /\[dialogue:pre\] ação=red_flag .*resultado=handled/.test(l)), logs.join("\n"));
+  assert.ok(out.includes(recommendRedFlag("dor no peito")), out);
+  assert.doesNotMatch(out, /CEP|endere[cç]o/i);
 });

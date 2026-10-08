@@ -6,7 +6,7 @@ import "./helpers/load-env";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { NEED_TABLE, RED_FLAGS, SYMPTOM_TABLE, findNeed, findRedFlag, findSymptom } from "../src/lib/recommend/tables";
+import { NEED_TABLE, PET_SICK_REASON, RED_FLAGS, SYMPTOM_TABLE, findEmergencyFlag, findNeed, findRedFlag, findSymptom, symptomKeyAllowed } from "../src/lib/recommend/tables";
 import { normalizeText } from "../src/lib/stores/types";
 import { isPrescriptionText } from "../src/lib/medicine";
 
@@ -128,15 +128,21 @@ test("findSymptom: sintoma → classe isenta mais indicada em primeiro", () => {
   assert.equal(findSymptom("quero um chocolate"), null);
 });
 
-test("dor de barriga: começa por antiespasmódico/antidiarreico; cuidado sem remédio", () => {
+// Regra mudada na revisão adversarial de 08/10 (A6): loperamida só com diarreia dita; dor de barriga
+// genérica = antiespasmódico, antigases, probiótico, antiácido.
+test("dor de barriga: começa por antiespasmódico, SEM antidiarreico; loperamida só em diarreia; cuidado sem remédio", () => {
   const entry = findSymptom("dor de barriga")!;
-  assert.ok(["farmacia.antiespasmodico", "farmacia.antidiarreico"].includes(entry.picks[0].shelfId));
+  assert.equal(entry.picks[0].shelfId, "farmacia.antiespasmodico");
   const ids = entry.picks.map((p) => p.shelfId);
-  assert.ok(ids.includes("farmacia.antidiarreico") && ids.includes("farmacia.antiespasmodico") && ids.includes("farmacia.antigases"));
+  assert.ok(!ids.includes("farmacia.antidiarreico"), "loperamida fora da dor de barriga genérica");
+  assert.ok(ids.includes("farmacia.antiespasmodico") && ids.includes("farmacia.antigases") && ids.includes("farmacia.probiotico") && ids.includes("farmacia.antiacido"));
   for (const pick of entry.picks) assert.ok(pick.mipClass, `${pick.shelfId} sem mipClass`);
   assert.ok((entry.care ?? []).length > 0);
   for (const c of entry.care ?? []) assert.equal(c.mipClass, undefined);
-  assert.match(entry.picks.find((p) => p.shelfId === "farmacia.antidiarreico")!.query, /loperamida/);
+  for (const pick of entry.picks) assert.doesNotMatch(pick.query, /loperamida|imosec|diasec/i);
+  const diarreia = findSymptom("diarreia")!;
+  assert.equal(diarreia.picks[0].shelfId, "farmacia.antidiarreico");
+  assert.match(diarreia.picks[0].query, /loperamida/);
 });
 
 const RED: [string, string][] = [
@@ -175,4 +181,87 @@ test("findRedFlag: sintomas comuns sem alerta", () => {
     "quero um chocolate", "presente pra minha mãe", ""]) {
     assert.equal(findRedFlag(normalizeText(phrase)), null, `alerta indevido: "${phrase}"`);
   }
+});
+
+// ---------------------------------------------------------------- revisão adversarial (08/10)
+
+
+test("revisão A2: emergência separada do contexto; emergência casa frase fora de saúde", () => {
+  const EMERG: [string, string][] = [
+    ["to com o peito apertado e suando frio", "dor no peito"],
+    ["to com falta de ar", "falta de ar"],
+    ["suando frio do nada", "suor frio"],
+    ["meu pai desmaiou", "desmaio ou convulsão"],
+    ["vomitei sangue", "sangue"],
+    ["garganta fechando depois do camarão", "alergia grave ou inchaço"]
+  ];
+  for (const [phrase, reason] of EMERG) {
+    const flag = findEmergencyFlag(normalizeText(phrase));
+    assert.equal(flag?.reason, reason, phrase);
+    assert.equal(flag?.kind, "emergency", phrase);
+  }
+  // contexto NUNCA é emergência
+  for (const phrase of ["meu bebê de 8 meses com febre", "sou grávida e to com azia", "diarreia há 3 dias", "tenho pressão alta", "minha mãe tá confusa"]) {
+    assert.equal(findEmergencyFlag(normalizeText(phrase)), null, phrase);
+    assert.equal(findRedFlag(normalizeText(phrase))?.kind, "context", phrase);
+  }
+  // padrões estreitos: "sem ar condicionado", o vinho "Sangue de Boi", "sangue bom"
+  for (const phrase of ["ventilador pra casa sem ar condicionado", "um vinho sangue de boi", "ele é sangue bom", "apaguei no sofá ontem"]) {
+    assert.equal(findEmergencyFlag(normalizeText(phrase)), null, phrase);
+  }
+  // emergência vem antes do contexto em findRedFlag
+  assert.equal(findRedFlag(normalizeText("meu filho tá com falta de ar"))?.reason, "falta de ar");
+});
+
+test("revisão A3/A4: pet doente, criança, idoso, comorbidade e combinações de sintoma", () => {
+  const CTX: [string, string][] = [
+    ["meu cachorro tá com diarreia, o que dar", PET_SICK_REASON],
+    ["meu filho de 2 anos tá com febre", "criança"],
+    ["meu filho tá com febre", "criança"],
+    ["meu neto de 4 anos tá com tosse", "criança"],
+    ["meu pai de 75 anos tá com dor", "idoso"],
+    ["minha avó tá com dor de cabeça", "idoso"],
+    ["tô com dor de cabeça e uso anticoagulante", "uso de anticoagulante"],
+    ["tenho úlcera e tô com dor de cabeça", "úlcera ou gastrite"],
+    ["dor de barriga e febre", "dor na barriga com febre"],
+    ["dor de barriga do lado direito", "dor no lado direito da barriga"],
+    ["dor de cabeça com febre e pescoço duro", "febre com pescoço duro"],
+    ["tenho pressão alta e tô gripado", "pressão alta"],
+    ["sou diabético e tô com dor de cabeça", "diabetes"],
+    ["dor ao urinar", "dor ao urinar"],
+    ["tenho asma e tô gripada", "asma"]
+  ];
+  for (const [phrase, reason] of CTX) {
+    assert.equal(findRedFlag(normalizeText(phrase))?.reason, reason, phrase);
+  }
+  // criança de 12+ e adulto: sem alerta de criança
+  assert.equal(findRedFlag(normalizeText("minha filha de 25 anos tá com dor de cabeça")), null);
+  assert.equal(findRedFlag(normalizeText("meu filho de 14 anos tá com dor de cabeça")), null);
+  // negativos da revisão (findRedFlag puro; "presente pra mãe gestante" e "ração pra cachorro" são
+  // negativos no PLANO, que só aplica contexto a pedido de saúde — ver recommend-review-2026-10-08)
+  for (const phrase of ["dor de barriga leve", "assadura do bebê", "assadura no bebe do meu filho"]) {
+    assert.equal(findRedFlag(normalizeText(phrase)), null, phrase);
+  }
+});
+
+test("revisão C3: chave de sintoma de 1 palavra ambígua exige contexto de saúde", () => {
+  assert.equal(findSymptom(normalizeText("corte de carne pro churrasco")), null);
+  assert.equal(findSymptom(normalizeText("botijão de gás")), null);
+  assert.equal(findSymptom(normalizeText("fungo pro jardim")), null);
+  assert.equal(findSymptom(normalizeText("tô com um corte no dedo"))?.picks[0].shelfId, "farmacia.antisseptico_cicatrizante");
+  assert.equal(findSymptom(normalizeText("tô com gases"))?.picks[0].shelfId, "farmacia.antigases");
+  assert.equal(findSymptom(normalizeText("algo pra afta"))?.picks[0].shelfId, "farmacia.boca");
+  assert.equal(findSymptom("afta")?.picks[0].shelfId, "farmacia.boca", "a mensagem inteira vale");
+  assert.equal(symptomKeyAllowed("corte", "corte de carne pro churrasco"), false);
+  assert.equal(symptomKeyAllowed("gripe", "qualquer coisa"), true, "chave não ambígua passa");
+});
+
+test("revisão A6: ressaca só hidratação (sem Engov/AAS, AINE, paracetamol); antigripal avisa pressão alta", () => {
+  const ressaca = findSymptom("to de ressaca")!;
+  const all = [...ressaca.picks, ...(ressaca.care ?? [])];
+  assert.deepEqual(ressaca.picks.map((p) => p.shelfId), ["farmacia.hidratacao_oral"]);
+  assert.deepEqual((ressaca.care ?? []).map((p) => p.shelfId).sort(), ["bebidas.agua", "bebidas.agua_coco", "bebidas.isotonico"]);
+  for (const p of all) assert.doesNotMatch(`${p.shelfId} ${p.query}`, /engov|aas|aspirina|dipirona|paracetamol|ibuprofeno|analgesico|anti_inflamatorio|sonrisal/i);
+  const gripe = findSymptom("to gripado")!;
+  assert.match(gripe.picks.find((p) => p.shelfId === "farmacia.antigripal")!.why, /pressão alta/);
 });

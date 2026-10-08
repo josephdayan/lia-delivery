@@ -3,7 +3,11 @@
 // (`deps`) ou, por padrão, de tables.ts/shelf-map.ts.
 //
 // Redes de segurança que valem COM e SEM IA:
-//   - sinal de alerta em pedido de saúde sai ANTES de tudo (nem chama a IA): `{ picks: [], redFlag }`;
+//   - sinal de EMERGÊNCIA (dor no peito, falta de ar, desmaio, sangue…) em QUALQUER pedido sai antes de
+//     tudo (nem chama a IA); sinal de CONTEXTO (bebê, criança, idoso, gestante, comorbidade, pet doente…)
+//     em pedido de saúde, ou quando o plano tem prateleira de remédio (mip): `{ picks: [], redFlag }`
+//     (revisão adversarial 08/10, A1–A4);
+//   - IA só escolhe remédio dentro da tabela do sintoma; sem sintoma, nenhuma prateleira mip (A5);
 //   - sintoma só aceita prateleira mip/care; porta do remédio fechada (LIA_MEDICINE_MIP ou
 //     LIA_RECOMMEND_MEDICINE) tira as mip e fica só o cuidado;
 //   - restrição dita ("sem lactose", "sem chocolate", "vegano") tira prateleira e candidato por palavra;
@@ -54,16 +58,19 @@ export type RecommendTableDeps = {
   shelfById: (id: string) => ShelfNode | null | undefined;
   // Mapa inteiro (para achar a prateleira de um produto nomeado). Padrão: SHELF_MAP.shelves.
   shelves?: ShelfNode[];
+  // Só os sinais de EMERGÊNCIA (revisão A2, 08/10). Ausente: findRedFlag filtrado por `kind: "emergency"`.
+  findEmergency?: (textNorm: string) => RedFlagRule | string | null | undefined;
 };
 
 // Casamento de chave curada contra o texto normalizado: igualdade ou palavra(s) inteira(s) dentro
 // do texto; vence a chave mais longa (mais específica).
-function bestKeyMatch<T extends { keys: string[] }>(table: readonly T[], textNorm: string): T | undefined {
+function bestKeyMatch<T extends { keys: string[] }>(table: readonly T[], textNorm: string, keyOk?: (key: string, text: string) => boolean): T | undefined {
   let best: { entry: T; len: number } | undefined;
   for (const entry of table) {
     for (const key of entry.keys) {
       const k = normRec(key);
       if (!k) continue;
+      if (keyOk && !keyOk(k, textNorm)) continue;
       const hit = textNorm === k || new RegExp(`(^| )${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}( |$)`).test(textNorm);
       if (hit && (!best || k.length > best.len)) best = { entry, len: k.length };
     }
@@ -78,6 +85,7 @@ type TablesFns = Partial<{
   findNeed: RecommendTableDeps["findNeed"];
   findSymptom: RecommendTableDeps["findSymptom"];
   findRedFlag: RecommendTableDeps["findRedFlag"];
+  findEmergencyFlag: NonNullable<RecommendTableDeps["findEmergency"]>;
   shelfById: RecommendTableDeps["shelfById"];
   shelvesForPrompt: () => string;
 }>;
@@ -91,8 +99,9 @@ export function tableDepsFrom(map: ShelfMap, tables: { NEED_TABLE: readonly Need
   const byId = new Map(map.shelves.map((s) => [s.id, s]));
   return {
     findNeed: (t) => bestKeyMatch(tables.NEED_TABLE, normRec(t)),
-    findSymptom: (t) => bestKeyMatch(tables.SYMPTOM_TABLE, normRec(t)),
+    findSymptom: (t) => bestKeyMatch(tables.SYMPTOM_TABLE, normRec(t), tablesModule.symptomKeyAllowed),
     findRedFlag: (t) => tables.RED_FLAGS.find((r) => r.pattern.test(t)),
+    findEmergency: (t) => tables.RED_FLAGS.find((r) => r.kind === "emergency" && r.pattern.test(t)),
     shelfById: (id) => byId.get(id),
     shelves: map.shelves
   };
@@ -108,6 +117,7 @@ export function defaultTableDeps(): RecommendTableDeps {
     findNeed: tablesFns.findNeed ?? local.findNeed,
     findSymptom: tablesFns.findSymptom ?? local.findSymptom,
     findRedFlag: tablesFns.findRedFlag ?? local.findRedFlag,
+    findEmergency: tablesFns.findEmergencyFlag ?? local.findEmergency,
     shelfById: tablesFns.shelfById ?? local.shelfById,
     shelves: SHELF_MAP.shelves
   };
@@ -117,10 +127,16 @@ function defaultShelvesPrompt(shelves: ShelfNode[]): string {
   return tablesFns.shelvesForPrompt && shelves === SHELF_MAP.shelves ? tablesFns.shelvesForPrompt() : shelvesPromptFrom(shelves);
 }
 
-function redFlagReason(hit: RedFlagRule | string | null | undefined): string | undefined {
+type Flag = { reason: string; kind: "emergency" | "context" };
+
+function flagOf(hit: RedFlagRule | string | null | undefined, fallbackKind: Flag["kind"]): Flag | undefined {
   if (!hit) return undefined;
-  if (typeof hit === "string") return hit.trim() || "sinal de alerta";
-  return hit.reason || "sinal de alerta";
+  if (typeof hit === "string") return { reason: hit.trim() || "sinal de alerta", kind: fallbackKind };
+  return { reason: hit.reason || "sinal de alerta", kind: hit.kind ?? fallbackKind };
+}
+
+function redFlagPlan(flag: Flag): ShelfPlan {
+  return { picks: [], redFlag: flag.reason, redFlagKind: flag.kind, source: "table" };
 }
 
 // ---------- restrições ----------
@@ -202,7 +218,9 @@ function hasFlag(shelf: ShelfNode | null | undefined, flag: string): boolean {
 }
 
 // Filtro comum aos planos (IA e tabela): restrição, cesta, porta do remédio; e, em sintoma, só mip/care.
-function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendTableDeps, opts: { symptom: boolean; basketNames?: string[]; memory?: CustomerMemory }): ShelfPick[] {
+// `tableShelves` (08/10): prateleiras da entrada CURADA do sintoma — o cuidado da tabela (ex.: água mineral
+// na dor de cabeça e na ressaca) vale mesmo sem a flag care no mapa; fora dela, sintoma só aceita mip/care.
+function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendTableDeps, opts: { symptom: boolean; basketNames?: string[]; memory?: CustomerMemory; tableShelves?: Set<string> }): ShelfPick[] {
   const rules = constraintRules(req.constraints, opts.memory);
   const seen = new Set<string>();
   const out: ShelfPick[] = [];
@@ -210,7 +228,7 @@ function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendT
     if (seen.has(pick.shelfId)) continue;
     const shelf = deps.shelfById(pick.shelfId);
     const mip = hasFlag(shelf, "mip");
-    if (opts.symptom && !mip && !hasFlag(shelf, "care")) continue;
+    if (opts.symptom && !mip && !hasFlag(shelf, "care") && !opts.tableShelves?.has(pick.shelfId)) continue;
     if (mip && !medicineGateOpen()) continue;
     if (rules.length && violatesConstraint(`${pick.query} ${shelf?.label ?? ""}`, rules)) continue;
     if (inBasket(pick.query, opts.basketNames)) continue;
@@ -221,9 +239,12 @@ function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendT
   return out;
 }
 
-// Pedido de saúde? (decide se o sinal de alerta vale e se o plano fica só em mip/care)
+// Pedido de saúde? (decide se o sinal de alerta de CONTEXTO vale e se o plano fica só em mip/care)
 const HEALTH_CUE_RE = /\b(dor|dores|doendo|febre|vomit\w*|enjoo|enjoad\w*|nausea|diarreia|tosse|gripe|gripad\w*|resfriad\w*|azia|colica|ressaca|alergia|coceira|garganta|sangue|sangr\w*|machuc\w*|queimadura|intestino|prisao de ventre|constipad\w*|insonia|mal estar|passando mal|tontura)\b/;
 
+// (08/10, revisão C3) A chave de sintoma de 1 palavra ambígua ("corte", "gás", "afta"…) só conta com
+// contexto de saúde: a checagem mora em tables.symptomKeyAllowed (usada por findSymptom e pelo
+// casamento local de tableDepsFrom), então "corte de carne pro churrasco" não é mais sintoma.
 export function isSymptomRequest(req: RecommendRequest, deps: Pick<RecommendTableDeps, "findSymptom">): boolean {
   if (req.form !== "need") return false;
   if (req.symptom?.trim()) return true;
@@ -231,35 +252,147 @@ export function isSymptomRequest(req: RecommendRequest, deps: Pick<RecommendTabl
   return Boolean(deps.findSymptom(text)) || HEALTH_CUE_RE.test(text);
 }
 
-function checkRedFlag(req: RecommendRequest, deps: RecommendTableDeps): string | undefined {
-  for (const t of [req.text, req.symptom, req.need]) {
-    const reason = redFlagReason(t ? deps.findRedFlag(normRec(t)) : undefined);
-    if (reason) return reason;
+// Pet envolvido no pedido (revisão A3): pra quem é pet, ou "meu cachorro/gato/pet" no texto.
+const PET_RECIPIENT_RE = /^(?:cachorr\w*|cao|caes|cadela|dog|doguinho|catioro|gat[oa]s?|gatinh\w*|felino|bichano|pet|pets|filhote\w*|passar\w*|calopsita|papagaio|periquito|coelh\w*|hamster|peixe\w*|tartaruga)\b/;
+const PET_TEXT_RE = /\b(?:meu|minha|o|a|do|da|no|na|pro|pra|nosso|nossa|seu|sua)\s+(?:cachorr\w*|cao|cadela|dog|doguinho|catioro|gat[oa]|gatinh[oa]|pet|filhote|passarinho|passaro|calopsita|papagaio|periquito|coelh\w*|hamster|peixinho|tartaruga)\b/;
+function petInvolved(req: Pick<RecommendRequest, "recipient" | "text">): boolean {
+  return PET_RECIPIENT_RE.test(normRec(req.recipient)) || PET_TEXT_RE.test(normRec(req.text));
+}
+
+// EMERGÊNCIA (revisão A2): vale em QUALQUER forma de pedido e roda antes de tudo, inclusive da IA.
+// Pet com sinal de emergência ("meu cachorro tá sangrando") = veterinário, não SAMU.
+function checkEmergency(req: RecommendRequest, deps: RecommendTableDeps): Flag | undefined {
+  const find =
+    deps.findEmergency ??
+    ((t: string) => {
+      const hit = deps.findRedFlag(t);
+      return hit && typeof hit !== "string" && hit.kind === "emergency" ? hit : null;
+    });
+  for (const t of [req.text, req.symptom, req.need, req.product]) {
+    const flag = flagOf(t ? find(normRec(t)) : undefined, "emergency");
+    if (flag) return petInvolved(req) ? { reason: tablesModule.PET_SICK_REASON, kind: "emergency" } : { ...flag, kind: "emergency" };
   }
   return undefined;
 }
 
-// Prateleira de um produto nomeado: query igual > query dentro do produto (a mais longa) > alias >
-// produto dentro da query/rótulo.
+// Emergência numa frase solta (sem contrato de pedido): para o pré-cadastro e a guarda de tela do
+// gerente de diálogo, e para quem precisar checar ANTES de pedir o CEP. null = sem emergência.
+export function emergencyFlag(text: string | undefined | null, recipient?: string): string | null {
+  const raw = (text ?? "").trim();
+  if (!raw) return null;
+  return checkEmergency({ form: "need", text: raw, criteria: [], constraints: [], source: "regex", ...(recipient ? { recipient } : {}) }, defaultTableDeps())?.reason ?? null;
+}
+
+// Alerta completo (emergência + contexto). Só chamado em pedido de saúde ou com prateleira mip no plano.
+// Olha também `recipient` ("filho 2 anos", "pai 75 anos", "bebê 6 meses", "cachorro") — revisão A4.
+function checkRedFlag(req: RecommendRequest, deps: RecommendTableDeps): Flag | undefined {
+  const emergency = checkEmergency(req, deps);
+  if (emergency) return emergency;
+  if (petInvolved(req)) return { reason: tablesModule.PET_SICK_REASON, kind: "context" };
+  // O pra quem vai junto do texto (as exceções do texto valem: "assadura do bebê" não alerta).
+  for (const t of [req.text, req.symptom, req.need, req.product, req.recipient ? `${req.text} ${req.recipient}` : undefined]) {
+    const flag = flagOf(t ? deps.findRedFlag(normRec(t)) : undefined, "context");
+    if (flag) return flag;
+  }
+  return undefined;
+}
+
+// Plano já filtrado com prateleira de remédio num pedido que não passou pela checagem de saúde
+// (produto julgado "qual o melhor anti-inflamatório", IA/tabela com mip): a porta do remédio também
+// exige o sinal de alerta de contexto (revisão A1).
+function guardMip(plan: ShelfPlan, req: RecommendRequest, deps: RecommendTableDeps, alreadyChecked: boolean): ShelfPlan {
+  if (alreadyChecked || !plan.picks.some((p) => hasFlag(deps.shelfById(p.shelfId), "mip"))) return plan;
+  const flag = checkRedFlag(req, deps);
+  return flag ? redFlagPlan(flag) : plan;
+}
+
+// ---------- prateleira de um produto nomeado (revisão B1, 08/10) ----------
+// Antes: palpite pela 1ª palavra ("ração pro cachorro" → aquário, "areia pra gato" → construção,
+// "pomada pra assadura" → analgésico tópico, "algo pra dormir" → pijama, "creme pra espinhas" →
+// tratamento capilar). Agora: tokens sem preposição/artigo/possessivo, COBERTURA dos tokens do produto
+// no (query + aliases + rótulo) da prateleira, bônus por espécie e domínio, e só aceita cobertura ≥ 2
+// ou o substantivo principal do produto sendo o substantivo da prateleira. Sem prateleira → undefined
+// (o chamador usa a busca textual "produto"), nunca um palpite de 1ª palavra.
+const SHELF_STOP = new Set("a o as os um uma uns umas de do da dos das pra pro pras pros para p por com e em no na nos nas meu minha meus minhas seu sua nosso nossa algo alguma algum coisa que tipo".split(" "));
+const SHELF_SYN: Record<string, string> = {
+  cao: "cachorro", caes: "cachorro", cadela: "cachorro", cachorra: "cachorro", cachorrinho: "cachorro", cachorrinha: "cachorro", dog: "cachorro", doguinho: "cachorro", catioro: "cachorro", canino: "cachorro",
+  gata: "gato", gatinho: "gato", gatinha: "gato", felino: "gato", bichano: "gato",
+  passarinho: "passaro", passaros: "passaro", calopsita: "passaro", peixinho: "peixe", peixes: "peixe",
+  espinha: "acne", espinhas: "acne", cravo: "acne", cravos: "acne", bombons: "bombom"
+};
+const SPECIES = ["cachorro", "gato", "peixe", "passaro"];
+const PET_WORDS = new Set(["pet", "racao", "petisco", "coleira", "sache", "arranhador", "comedouro", "areia", ...SPECIES]);
+
+function shelfTokens(text: string | undefined): string[] {
+  return normRec(text)
+    .split(" ")
+    .filter((w) => w && !SHELF_STOP.has(w))
+    .map((w) => SHELF_SYN[w] ?? w)
+    .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w))
+    .map((w) => SHELF_SYN[w] ?? w);
+}
+
 export function findShelfForProduct(product: string, shelves: readonly ShelfNode[]): ShelfNode | undefined {
-  const p = normRec(product);
-  if (!p) return undefined;
+  const q = shelfTokens(product);
+  if (!q.length) return undefined;
+  const qset = new Set(q);
+  const head = q[0];
+  const qSpecies = SPECIES.filter((sp) => qset.has(sp));
+  const petQuery = q.some((t) => PET_WORDS.has(t));
+  const entries = shelves.map((shelf) => {
+    const terms = [shelf.query, ...(shelf.aliases ?? [])].map(shelfTokens).filter((t) => t.length);
+    const label = shelfTokens(shelf.label);
+    const bag = new Set([...terms.flat(), ...label]);
+    const nouns = new Set([...terms.map((t) => t[0]), label[0]].filter(Boolean));
+    return { shelf, terms, bag, nouns };
+  });
+  // O substantivo principal (1ª palavra do produto) manda: só disputam as prateleiras que o têm.
+  const withHead = entries.filter((e) => e.bag.has(head));
+  const pool = withHead.length ? withHead : entries;
   let best: { shelf: ShelfNode; score: number } | undefined;
-  const consider = (shelf: ShelfNode, score: number) => {
-    if (!best || score > best.score) best = { shelf, score };
-  };
-  for (const shelf of shelves) {
-    const terms = [shelf.query, ...(shelf.aliases ?? [])].map(normRec).filter(Boolean);
-    for (const [i, term] of terms.entries()) {
-      const alias = i > 0 ? 0 : 0.5;
-      if (term === p) consider(shelf, 1000 + alias);
-      else if (wordRe(term).test(p) || new RegExp(`(^| )${term}( |$)`).test(p)) consider(shelf, 500 + term.length + alias);
-      else if (new RegExp(`(^| )${p}( |$)`).test(term)) consider(shelf, 200 - term.length + alias);
+  for (const e of pool) {
+    const coverage = new Set(q.filter((t) => e.bag.has(t))).size;
+    const headNoun = e.nouns.has(head);
+    if (coverage < 2 && !(coverage === 1 && headNoun)) continue;
+    let score = coverage * 100 + (headNoun ? 40 : 0);
+    for (const t of e.terms) {
+      if (t.length === qset.size && t.every((w) => qset.has(w))) score += 500;
+      else if (t.every((w) => qset.has(w))) score += 30 * t.length;
     }
-    const label = normRec(shelf.label);
-    if (label && new RegExp(`(^| )${p.split(" ")[0]}(s|es)?( |$)`).test(label)) consider(shelf, 50);
+    const shelfSpecies = SPECIES.filter((sp) => e.bag.has(sp));
+    if (qSpecies.length) {
+      if (shelfSpecies.some((sp) => qSpecies.includes(sp))) score += 80;
+      else if (shelfSpecies.length) score -= 1000;
+    }
+    if (e.shelf.domain === "pet") score += petQuery ? 30 : -50;
+    if (score > 0 && (!best || score > best.score)) best = { shelf: e.shelf, score };
   }
   return best?.shelf;
+}
+
+// Entrada da tabela de sintomas do pedido (pelo sintoma, pela necessidade, pelo texto).
+function symptomEntry(req: RecommendRequest, deps: RecommendTableDeps): SymptomTableEntry | undefined {
+  return deps.findSymptom(normRec(req.symptom ?? req.need ?? req.text)) ?? deps.findSymptom(normRec(req.text)) ?? undefined;
+}
+
+// A5 (revisão 08/10): a IA não escolhe classe de remédio fora da tabela. Com entrada da tabela de
+// sintomas: só prateleiras da entrada (isentos + cuidado). Sintoma sem entrada: nada de mip (só cuidado).
+// Necessidade sem sintoma: nenhuma mip. Produto julgado: mip só se a prateleira do PRÓPRIO produto é mip.
+function restrictAiPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendTableDeps, symptom: boolean): ShelfPick[] {
+  const isMip = (id: string) => hasFlag(deps.shelfById(id), "mip");
+  if (req.form === "product_judged") {
+    const own = findShelfForProduct(req.product ?? req.text, deps.shelves ?? []);
+    const ownMip = Boolean(own && hasFlag(own, "mip"));
+    return picks.filter((p) => !isMip(p.shelfId) || (ownMip && p.shelfId === own!.id));
+  }
+  if (symptom) {
+    const entry = symptomEntry(req, deps);
+    if (entry) {
+      const allowed = new Set([...entry.picks, ...(entry.care ?? [])].map((p) => p.shelfId));
+      return picks.filter((p) => allowed.has(p.shelfId));
+    }
+  }
+  return picks.filter((p) => !isMip(p.shelfId));
 }
 
 // ---------- MAPEAR sem IA ----------
@@ -268,10 +401,12 @@ export function findShelfForProduct(product: string, shelves: readonly ShelfNode
 // shelfId "produto" e query = o produto (a execução trata como busca textual da prateleira
 // "produto" — não existe no mapa de propósito; ela nunca chega à IA).
 export function planShelvesFromTables(req: RecommendRequest, deps: RecommendTableDeps, opts: { basketNames?: string[]; memory?: CustomerMemory } = {}): ShelfPlan | null {
+  const emergency = checkEmergency(req, deps);
+  if (emergency) return redFlagPlan(emergency);
   const symptom = isSymptomRequest(req, deps);
   if (symptom) {
-    const redFlag = checkRedFlag(req, deps);
-    if (redFlag) return { picks: [], redFlag, source: "table" };
+    const flag = checkRedFlag(req, deps);
+    if (flag) return redFlagPlan(flag);
   }
   if (req.form === "product_judged") {
     const product = (req.product ?? req.text).trim();
@@ -280,19 +415,23 @@ export function planShelvesFromTables(req: RecommendRequest, deps: RecommendTabl
     // why "" de propósito: o juiz escreve o fato do item escolhido ("dos mais vendidos", "o mais em conta").
     const pick: ShelfPick = { shelfId: shelf?.id ?? "produto", query: product, why: "" };
     const picks = shelf ? filterPicks([pick], req, deps, { symptom: false, ...opts }) : [pick];
-    return { picks, source: "table" };
+    return guardMip({ picks, source: "table" }, req, deps, symptom);
   }
   let entryPicks: ShelfPick[] | undefined;
+  let tableShelves: Set<string> | undefined;
   if (symptom) {
-    const entry = deps.findSymptom(normRec(req.symptom ?? req.need ?? req.text)) ?? deps.findSymptom(normRec(req.text));
-    if (entry) entryPicks = [...entry.picks, ...(entry.care ?? [])];
+    const entry = symptomEntry(req, deps);
+    if (entry) {
+      entryPicks = [...entry.picks, ...(entry.care ?? [])];
+      tableShelves = new Set(entryPicks.map((p) => p.shelfId));
+    }
   }
   if (!entryPicks) {
     const entry = deps.findNeed(normRec(req.need ?? req.text)) ?? deps.findNeed(normRec(req.text));
     if (entry) entryPicks = entry.picks;
   }
   if (!entryPicks) return null;
-  return { picks: filterPicks(entryPicks, req, deps, { symptom, ...opts }), source: "table" };
+  return guardMip({ picks: filterPicks(entryPicks, req, deps, { symptom, ...opts, tableShelves }), source: "table" }, req, deps, symptom);
 }
 
 export type PlanShelvesOptions = {
@@ -304,14 +443,18 @@ export type PlanShelvesOptions = {
   shelvesPrompt?: string;
 };
 
-// Orquestra MAPEAR: alerta → IA (se ligada) → tabelas. Sempre devolve um plano (picks pode ser []).
+// Orquestra MAPEAR: emergência → alerta de saúde → IA (se ligada) → tabelas. Sempre devolve um plano
+// (picks pode ser []).
 export async function planShelves(req: RecommendRequest, opts: PlanShelvesOptions = {}): Promise<ShelfPlan> {
   const deps = opts.deps ?? defaultTableDeps();
+  // Emergência em QUALQUER pedido, antes da IA (revisão A2).
+  const emergency = checkEmergency(req, deps);
+  if (emergency) return redFlagPlan(emergency);
   const symptom = isSymptomRequest(req, deps);
-  // Sinal de alerta SEMPRE primeiro, com ou sem IA: não recomenda.
+  // Sinal de alerta de saúde SEMPRE antes da IA: não recomenda.
   if (symptom) {
-    const redFlag = checkRedFlag(req, deps);
-    if (redFlag) return { picks: [], redFlag, source: "table" };
+    const flag = checkRedFlag(req, deps);
+    if (flag) return redFlagPlan(flag);
   }
   const shelves = deps.shelves ?? [];
   const shelfIds = new Set(shelves.map((s) => s.id));
@@ -322,14 +465,21 @@ export async function planShelves(req: RecommendRequest, opts: PlanShelvesOption
     : null;
   if (ai?.picks?.length) {
     // Revalida (a costura/IA pode trazer id fora do mapa) e aplica as redes de segurança.
-    let picks = ai.picks.filter((p) => p && shelfIds.has(p.shelfId) && String(p.query ?? "").trim());
+    let picks = restrictAiPicks(
+      ai.picks.filter((p) => p && shelfIds.has(p.shelfId) && String(p.query ?? "").trim()),
+      req,
+      deps,
+      symptom
+    );
+    let tableShelves: Set<string> | undefined;
     if (symptom) {
-      const entry = deps.findSymptom(normRec(req.symptom ?? req.need ?? req.text)) ?? deps.findSymptom(normRec(req.text));
+      const entry = symptomEntry(req, deps);
+      if (entry) tableShelves = new Set([...entry.picks, ...(entry.care ?? [])].map((p) => p.shelfId));
       const tableClass = new Map([...(entry?.picks ?? []), ...(entry?.care ?? [])].filter((p) => p.mipClass).map((p) => [p.shelfId, p.mipClass!]));
       picks = picks.map((p) => (p.mipClass || !tableClass.has(p.shelfId) ? p : { ...p, mipClass: tableClass.get(p.shelfId) }));
     }
-    picks = filterPicks(picks, req, deps, { symptom, basketNames: opts.basketNames, memory: opts.memory });
-    if (picks.length) return { picks, source: "ai" };
+    picks = filterPicks(picks, req, deps, { symptom, basketNames: opts.basketNames, memory: opts.memory, tableShelves });
+    if (picks.length) return guardMip({ picks, source: "ai" }, req, deps, symptom);
   }
   return planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory }) ?? { picks: [], source: "table" };
 }
@@ -375,7 +525,8 @@ function goodCmp(group: ShelfCandidate[]): Cmp {
 type JudgeMode = "symptom" | RecommendCriterion | "default";
 
 function judgeModes(input: FitnessInput): JudgeMode[] {
-  const symptomPlan = input.plan.picks.some((p) => p.mipClass) || Boolean(input.request.symptom?.trim());
+  // Sintoma vindo da IA num produto julgado sem remédio no plano não força o modo "symptom" (revisão 08/10).
+  const symptomPlan = input.plan.picks.some((p) => p.mipClass) || (input.request.form === "need" && Boolean(input.request.symptom?.trim()));
   if (symptomPlan) return ["symptom"];
   const modes: JudgeMode[] = [];
   // Preço pedido explicitamente vence; urgência implica "rápido".
@@ -480,7 +631,8 @@ function validateVerdict(verdict: FitnessVerdict | null, input: FitnessInput): F
 export async function judgeFitness(input: FitnessInput, deps?: Pick<RecommendTableDeps, "shelfById">): Promise<FitnessVerdict> {
   const eligible = eligibleCandidates(input);
   if (!eligible.length) return { cards: [], source: "rule" };
-  const ai = validateVerdict(await judgeFitnessWithAi(input), input);
+  // O juiz de IA só vê o que pode virar card (restrição, orçamento, porta do remédio já aplicados).
+  const ai = validateVerdict(await judgeFitnessWithAi({ ...input, candidates: eligible }), input);
   if (ai && ai.cards.length) return ai;
   return judgeFitnessByRules(input, deps ?? defaultTableDeps());
 }

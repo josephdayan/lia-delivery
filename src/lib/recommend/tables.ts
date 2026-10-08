@@ -11,6 +11,17 @@
 // Todo `shelfId` aqui existe em shelf-map.ts (tests/recommend-shelf-map.test.ts confere). Os `why`
 // são fatos curtos ("alivia cólica e gases"), nunca promessa de cura.
 // Funções puras, sem rede e sem banco.
+//
+// REVISÃO PENDENTE (dono/advogado sanitário) — itens que a revisão adversarial de 08/10 marcou e que
+// ficam na tabela até a decisão, sempre atrás da porta do remédio (LIA_MEDICINE_MIP +
+// LIA_RECOMMEND_MEDICINE) e dos sinais de alerta:
+//   - loperamida (Imosec/Diasec): só na entrada "diarreia" (fora de "dor de barriga" genérica);
+//   - aciclovir creme (herpes labial);
+//   - melatonina (insônia leve);
+//   - cetoconazol creme (aparece no alias da prateleira de antifúngico);
+//   - descongestionantes (gripe/nariz entupido): contraindicados para pressão alta — a comorbidade
+//     "pressão alta" já vira alerta (RED_FLAGS) e o antigripal leva o aviso no `why`.
+// Ressaca (08/10): sem AAS/Engov, sem AINE e sem paracetamol depois de álcool — só hidratação.
 import { normalizeText } from "../stores/types";
 import { SHELF_MAP } from "./shelf-map";
 import type { NeedTableEntry, RecommendCriterion, RedFlagRule, ShelfDomain, ShelfNode, ShelfPick, SymptomTableEntry } from "./types";
@@ -327,7 +338,9 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("bebidas.espumante", "espumante", "pra brindar"),
     p("casa.vela_aromatizador", "vela aromatica", "clima")
   ], ["good"]),
-  need(["dormir melhor", "relaxar", "quero relaxar", "noite tranquila", "desestressar"], [
+  // "algo pra dormir" (revisão B1, 08/10): era a busca literal "dormir" (pijama); "ansioso"/"estressado"
+  // chegam aqui como "relaxar" (detect.ts, revisão C2).
+  need(["dormir melhor", "relaxar", "quero relaxar", "noite tranquila", "desestressar", "algo pra dormir", "pra dormir", "ajudar a dormir"], [
     p("mercado.cha", "cha de camomila", "bebida quente e calmante"),
     p("casa.vela_aromatizador", "vela aromatica", "ambiente relaxante"),
     p("casa.cama", "travesseiro", "conforto pra dormir"),
@@ -494,11 +507,13 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   {
     keys: ["dor de barriga", "dor na barriga", "barriga doendo", "colica intestinal", "colica na barriga", "colica abdominal",
       "dor abdominal", "barriga doi", "to com dor de barriga"],
+    // Revisão A6 (08/10): loperamida só com diarreia dita (entrada "diarreia"); dor de barriga genérica
+    // fica em antiespasmódico, antigases, probiótico e antiácido.
     picks: [
       mip("farmacia.antiespasmodico", "buscopan | butilescopolamina | buscopan composto", "alivia a cólica abdominal"),
-      mip("farmacia.antidiarreico", "loperamida | Imosec | Diasec | floratil", "segura o intestino solto"),
       mip("farmacia.antigases", "simeticona | luftal", "alivia gases e estufamento"),
-      mip("farmacia.probiotico", "probiotico | floratil | enterogermina", "ajuda a flora intestinal")
+      mip("farmacia.probiotico", "probiotico | floratil | enterogermina", "ajuda a flora intestinal"),
+      mip("farmacia.antiacido", "sal de fruta | eno | estomazil", "alivia o estômago embrulhado")
     ],
     care: [
       p("mercado.cha", "cha de camomila | cha de erva doce", "chá morno conforta a barriga"),
@@ -635,7 +650,9 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
     keys: ["gripe", "gripado", "gripada", "resfriado", "resfriada", "constipado", "constipada", "to gripado", "to resfriado",
       "sintomas de gripe", "virose"],
     picks: [
-      mip("farmacia.antigripal", "cimegripe | benegrip | resfenol | naldecon", "alivia os sintomas da gripe"),
+      // Revisão A6 (08/10): antigripal com descongestionante — o aviso vai no motivo; quem diz "pressão
+      // alta" cai no alerta antes (RED_FLAGS).
+      mip("farmacia.antigripal", "cimegripe | benegrip | resfenol | naldecon", "alivia sintomas da gripe; não indicado para pressão alta"),
       mip("farmacia.antitermico", "paracetamol | dipirona", "baixa a febre e a dor"),
       mip("farmacia.descongestionante", "soro nasal | sorine | rinosoro", "desentope o nariz"),
       mip("farmacia.garganta", "strepsils | pastilha para garganta", "alivia a garganta")
@@ -668,15 +685,12 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   },
   {
     keys: ["ressaca", "de ressaca", "to de ressaca", "bebi demais", "exagerei na bebida", "remedio pra ressaca"],
-    picks: [
-      mip("farmacia.hidratacao_oral", "soro de reidratacao | hidraplex", "repõe líquido e sais"),
-      mip("farmacia.antiacido", "engov | sonrisal | sal de fruta | eno", "alivia o estômago e a dor de cabeça"),
-      mip("farmacia.analgesico", "dipirona | engov", "alivia a dor de cabeça"),
-      mip("farmacia.hepatoprotetor", "epocler | eparema", "ajuda na má digestão")
-    ],
+    // Revisão A6 (08/10): Engov tem AAS; analgésico/anti-inflamatório depois de álcool não. Ressaca = só hidratação.
+    picks: [mip("farmacia.hidratacao_oral", "soro de reidratacao | hidraplex", "repõe líquido e sais")],
     care: [
-      p("bebidas.isotonico", "isotonico", "hidratação"),
-      p("bebidas.agua_coco", "agua de coco", "hidratação")
+      p("bebidas.isotonico", "isotonico", "repõe sais"),
+      p("bebidas.agua_coco", "agua de coco", "hidrata"),
+      p("bebidas.agua", "agua mineral", "hidratação")
     ]
   },
   {
@@ -762,23 +776,58 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
 
 // ---------------------------------------------------------------------------
 // SINAIS DE ALERTA (texto normalizado: sem acento, minúsculas, pontuação vira espaço)
+// Revisão adversarial (08/10) A2/A3/A4: dois tipos.
+//   - EMERGÊNCIA: vale em QUALQUER pedido (não só saúde) e sai antes de tudo, inclusive da IA ("tô com o
+//     peito apertado e suando frio" virava sopa/chá). Padrões estreitos de propósito: "sem ar
+//     condicionado", o vinho "Sangue de Boi" e "apaguei no sofá" não são emergência.
+//   - CONTEXTO: só pesa em pedido de saúde ou quando o plano tem prateleira de remédio (mip): pet
+//     doente, bebê/criança, idoso, gestante, comorbidade, há N dias, combinação de sintomas.
+// A ordem importa: findRedFlag devolve o PRIMEIRO que casa (emergência antes).
 // ---------------------------------------------------------------------------
 
-export const RED_FLAGS: RedFlagRule[] = [
-  { pattern: /\bdor(es)?\b[a-z ]{0,20}\b(muito forte|forte demais|forte|fortissima|insuportavel|intensa|horrivel|absurda)\b|\b(muita|mta) dor\b|\bpior dor\b|\bnao (aguento|suporto)\b[a-z ]{0,15}\bdor\b/, reason: "dor forte" },
-  { pattern: /\b(sangue|sangrando|sangramento|sangrou|sanguinolent[oa])\b|\bfezes? pretas?\b|\bcoco preto\b|\bvomit\w* (com )?borra\b/, reason: "sangue" },
-  { pattern: /\b(nao para de vomitar|vomitando muito|vomitei (varias|muitas) vezes|vomitando sem parar|desidratad[oa])\b/, reason: "vômito persistente" },
-  { pattern: /\bfebre (muito )?alta\b|\bfebre\b[a-z ]{0,20}\b(39|4[0-2])\b|\b(39|4[0-2])( [0-9])?( graus)? de febre\b|\bfebre (ha|faz) (3|tres|4|quatro|5|cinco|varios) dias\b/, reason: "febre alta" },
-  { pattern: /\b(ha|faz|tem|desde|uns|umas|mais de|por)\b[a-z ]{0,12}\b(\d+|dois|duas|tres|quatro|cinco|seis|sete|varios|varias|muitos|alguns) dias\b|\b(\d+|uma|duas|tres|1|2|3) semanas?\b|\b(ha|faz|tem) (uma )?semana\b|\bdias seguidos\b|\bnao (passa|melhora|para)\b|\bsempre volta\b/, reason: "há vários dias" },
-  { pattern: /\b(gravida|gestante|gestacao|amamentando|amamento|lactante)\b|\b(na|durante a|em) gravidez\b|\bestou de \d+ (semanas|meses) de gravidez\b/, reason: "gestante ou amamentando" },
-  { pattern: /^(?!.*\bassadura).*\b(recem nascido|recem nascida|bebe|bebes|nenem|lactente)\b|\b(\d|1\d|2[0-3]) mes(es)?\b|\b(filh[oa]|crianca|menin[oa]|sobrinh[oa])\b[a-z ]{0,10}\b(1|um) ano\b/, reason: "bebê ou criança pequena" },
-  { pattern: /\b(falta de ar|sem ar|dificuldade (para|pra|de) respirar|nao consigo respirar|respirando mal|respiracao curta|chiado no peito|cansaco pra respirar)\b/, reason: "falta de ar" },
-  { pattern: /\b(dor|aperto|pressao|pontada) no peito\b|\bpeito (doendo|apertado)\b|\bdor no braco esquerdo\b/, reason: "dor no peito" },
-  { pattern: /\b(desmai\w*|apaguei|perdi a consciencia|perdeu a consciencia|convuls\w*)\b/, reason: "desmaio ou convulsão" },
-  { pattern: /\b(confus[oa]|confusao mental|desorientad[oa]|nao fala coisa com coisa|fala enrolada|boca torta|rosto torto|nao reconhece)\b/, reason: "confusão mental" },
-  { pattern: /\bja tomei\b|\b(posso|pode|da pra) (misturar|tomar junto|tomar com|tomar os dois)\b|\bmisturar (com|remedio|remedios)\b|\b(tomando|tomo) (outro|outros|varios) remedios?\b|\btomei [a-z]+ e [a-z]+\b/, reason: "mistura de remédios" },
-  { pattern: /\b(inchaco|inchad[oa]s?|inchou|inchando)\b[a-z ]{0,20}\b(rosto|boca|labio|labios|lingua|garganta|olho|olhos|palpebra)\b|\b(rosto|boca|labios?|lingua|garganta|olhos?) (inchad[oa]s?|inchando|inchou)\b|\b(choque anafilatico|anafilax\w*|alergia grave|garganta fechando|empolad\w* (no corpo todo|inteir\w*))\b/, reason: "alergia grave ou inchaço" }
+export const PET_SICK_REASON = "pet doente: só veterinário";
+
+const EMERGENCY_FLAGS: RedFlagRule[] = [
+  { kind: "emergency", reason: "dor no peito", pattern: /\b(dor|dores|aperto|pressao|pontada|queimacao) no peito\b|\bpeito (doendo|apertado|apertando|pesado)\b|\bdor no braco esquerdo\b/ },
+  { kind: "emergency", reason: "falta de ar", pattern: /\b(falta de ar|dificuldade (para|pra|de) respirar|nao (consigo|consegue|to conseguindo|ta conseguindo) respirar|respirando mal|respiracao curta|chiado no peito|cansaco pra respirar|sufocad[oa]|sufocando)\b|\bsem ar\b(?! condicionado)/ },
+  { kind: "emergency", reason: "desmaio ou convulsão", pattern: /\b(desmai\w*|perdi a consciencia|perdeu a consciencia|convuls\w*|ataque epileptico)\b/ },
+  { kind: "emergency", reason: "sangue", pattern: /\bsangue\b(?! de boi| bom)|\b(sangrando|sangramento|sangrou|sanguinolent[oa])\b|\bfezes? pretas?\b|\bcoco preto\b|\bvomit\w* (com )?borra\b/ },
+  { kind: "emergency", reason: "confusão mental", pattern: /\b(confusao mental|desorientad[oa]|nao fala coisa com coisa|fala enrolada|boca torta|rosto torto|nao reconhece)\b/ },
+  { kind: "emergency", reason: "alergia grave ou inchaço", pattern: /\b(inchaco|inchad[oa]s?|inchou|inchando)\b[a-z ]{0,20}\b(rosto|boca|labio|labios|lingua|garganta)\b|\b(rosto|boca|labios?|lingua|garganta) (inchad[oa]s?|inchando|inchou)\b|\b(choque anafilatico|anafilax\w*|alergia grave|garganta fechando|empolad\w* (no corpo todo|inteir\w*))\b/ },
+  { kind: "emergency", reason: "suor frio", pattern: /\b(suando frio|suor frio)\b/ }
 ];
+
+const CONTEXT_FLAGS: RedFlagRule[] = [
+  // A3: pet doente nunca recebe remédio humano (nem recomendação de remédio): só veterinário.
+  { kind: "context", reason: PET_SICK_REASON, pattern: /\b(?:meu|minha|o|a|do|da|no|na|pro|pra|nosso|nossa|seu|sua)\s+(?:cachorr\w*|cao|cadela|dog|doguinho|catioro|gat[oa]|gatinh[oa]|pet|filhote|passarinho|passaro|calopsita|papagaio|periquito|coelh\w*|hamster|peixinho|tartaruga)\b/ },
+  { kind: "context", reason: "dor forte", pattern: /\bdor(es)?\b[a-z ]{0,20}\b(muito forte|forte demais|forte|fortissima|insuportavel|intensa|horrivel|absurda)\b|\b(muita|mta) dor\b|\bpior dor\b|\bnao (aguento|suporto)\b[a-z ]{0,15}\bdor\b/ },
+  { kind: "context", reason: "vômito persistente", pattern: /\b(nao para de vomitar|vomitando muito|vomitei (varias|muitas) vezes|vomitando sem parar|desidratad[oa])\b/ },
+  { kind: "context", reason: "febre alta", pattern: /\bfebre (muito )?alta\b|\bfebre\b[a-z ]{0,20}\b(39|4[0-2])\b|\b(39|4[0-2])( [0-9])?( graus)? de febre\b|\bfebre (ha|faz) (3|tres|4|quatro|5|cinco|varios) dias\b/ },
+  { kind: "context", reason: "há vários dias", pattern: /\b(ha|faz|tem|desde|uns|umas|mais de|por)\b[a-z ]{0,12}\b(\d+|dois|duas|tres|quatro|cinco|seis|sete|varios|varias|muitos|alguns) dias\b|\b(\d+|uma|duas|tres|1|2|3) semanas?\b|\b(ha|faz|tem) (uma )?semana\b|\bdias seguidos\b|\bnao (passa|melhora|para)\b|\bsempre volta\b/ },
+  { kind: "context", reason: "gestante ou amamentando", pattern: /\b(gravida|gestante|gestacao|amamentando|amamento|lactante)\b|\b(na|durante a|em) gravidez\b|\bestou de \d+ (semanas|meses) de gravidez\b/ },
+  { kind: "context", reason: "bebê ou criança pequena", pattern: /^(?!.*\bassadura).*\b(recem nascido|recem nascida|bebe|bebes|nenem|lactente)\b|\b(\d|1\d|2[0-3]) mes(es)?\b|\b(filh[oa]|crianca|menin[oa]|sobrinh[oa])\b[a-z ]{0,10}\b(1|um) ano\b/ },
+  // A4: criança com menos de 12 anos ou sem idade — remédio infantil é com o pediatra.
+  { kind: "context", reason: "criança", pattern: /^(?!.*\bassadura).*\b(filh[oa]|filhinh[oa]|crianca|net[oa]|netinh[oa]|menin[oa]|garot[oa]|sobrinh[oa]|entead[oa]|afilhad[oa])s?\b(?!\s+(?:de |com |tem |que tem )?(?:1[2-9]|[2-9]\d)\s+anos)/ },
+  // A4: idoso (60+ ou avô/avó).
+  { kind: "context", reason: "idoso", pattern: /\b(idos[oa]s?|terceira idade)\b|\b(?:meu|minha|pro|pra|do|da|o|a|nosso|nossa)\s+(?:avo|avos|vovo|vo)\b|\b(?:[6-9]\d|1[01]\d) anos\b/ },
+  // A4: comorbidades e remédio de uso contínuo.
+  { kind: "context", reason: "pressão alta", pattern: /\b(hipertens\w*|pressao alta|tenho pressao|problema de pressao)\b/ },
+  { kind: "context", reason: "diabetes", pattern: /\bdiabet\w*/ },
+  { kind: "context", reason: "úlcera ou gastrite", pattern: /\b(ulcera|ulceras|gastrite)\b/ },
+  { kind: "context", reason: "uso de anticoagulante", pattern: /\b(anticoagula\w*|marevan|xarelto|varfarina|warfarina|eliquis|clopidogrel)\b/ },
+  { kind: "context", reason: "asma", pattern: /\b(asma|asmatic[oa]|bronquite)\b/ },
+  { kind: "context", reason: "problema nos rins", pattern: /\b(renal|renais|insuficiencia renal|hemodialise|dialise|problema (?:nos|no|de) rins?)\b/ },
+  { kind: "context", reason: "problema no fígado", pattern: /\b(hepat(?:ite|ica|ico)|cirrose|figado)\b/ },
+  // A4: combinações de sintoma que pedem médico.
+  { kind: "context", reason: "dor na barriga com febre", pattern: /^(?=.*\bfebre\b)(?=.*\b(barriga|abdominal|abdomen)\b)/ },
+  { kind: "context", reason: "dor no lado direito da barriga", pattern: /^(?=.*\blado direito\b)(?=.*\b(dor|dores|doendo|doi|barriga|abdominal|abdomen|colica)\b)/ },
+  { kind: "context", reason: "febre com pescoço duro", pattern: /^(?=.*\bfebre\b)(?=.*\b(pescoco|nuca)\b[a-z ]{0,10}\b(dur[oa]|rigid[oa]|travad[oa])\b)/ },
+  { kind: "context", reason: "dor ao urinar", pattern: /\b(dor|dores|ardencia|ardendo|arde|ardor|queimacao|queimando|queima|doi|doendo)\b[a-z ]{0,12}\b(urinar|xixi|mijar|urina)\b|\b(xixi|urina)\b[a-z ]{0,10}\b(ardendo|doendo|escura)\b/ },
+  { kind: "context", reason: "mistura de remédios", pattern: /\bja tomei\b|\b(posso|pode|da pra) (misturar|tomar junto|tomar com|tomar os dois)\b|\bmisturar (com|remedio|remedios)\b|\b(tomando|tomo) (outro|outros|varios) remedios?\b|\btomei [a-z]+ e [a-z]+\b/ },
+  { kind: "context", reason: "confusão mental", pattern: /\bconfus[oa]\b/ }
+];
+
+export const RED_FLAGS: RedFlagRule[] = [...EMERGENCY_FLAGS, ...CONTEXT_FLAGS];
 
 // ---------------------------------------------------------------------------
 // Funções puras
@@ -810,7 +859,21 @@ function keyScore(text: string, words: Set<string>, key: string): number {
   return 0;
 }
 
-function bestEntry<T extends { keys: string[] }>(table: readonly T[], text: string): T | null {
+// Chave de sintoma de 1 palavra ambígua (revisão C3, 08/10): "corte de carne pro churrasco" virava
+// curativo, "botijão de gás" virava antigases. Só casa se for a mensagem inteira ou com contexto de
+// saúde colado ("tô com afta", "algo pra gases", "dor", "remédio").
+const AMBIGUOUS_SYMPTOM_KEYS = new Set(["corte", "gas", "afta", "aftas", "fungo", "catarro"]);
+const SYMPTOM_CONTEXT_RE = new RegExp(
+  "\\b(?:to|tou|estou|ta|esta|tava|fiquei|ando|acordei) com (?:muito |muita |uns |umas |um |uma |essa |esse )?(?:gas|gases|afta|aftas|catarro|fungo|fungos|corte|cortes)\\b" +
+    "|\\b(?:remedio|remedinho|dor|dores|doendo|doi|machuc\\w*|sangr\\w*|ferid\\w*|curativo|alivi\\w*|sintomas?|inflamad\\w*|infeccionad\\w*)\\b" +
+    "|\\b(?:pra|para|contra) (?:o |a |os |as |essa |esse |minha |meu |um |uma )?(?:corte|cortes|gas|gases|afta|aftas|fungo|fungos|catarro)\\b"
+);
+export function symptomKeyAllowed(keyNorm: string, textNorm: string): boolean {
+  if (!AMBIGUOUS_SYMPTOM_KEYS.has(keyNorm)) return true;
+  return textNorm === keyNorm || SYMPTOM_CONTEXT_RE.test(textNorm);
+}
+
+function bestEntry<T extends { keys: string[] }>(table: readonly T[], text: string, keyOk?: (key: string, text: string) => boolean): T | null {
   const t = norm(text);
   if (!t) return null;
   const words = new Set(t.split(" ").map(stem));
@@ -818,7 +881,11 @@ function bestEntry<T extends { keys: string[] }>(table: readonly T[], text: stri
   let bestScore = 0;
   for (const entry of table) {
     let score = 0;
-    for (const key of entry.keys) score = Math.max(score, keyScore(t, words, norm(key)));
+    for (const key of entry.keys) {
+      const k = norm(key);
+      if (keyOk && !keyOk(k, t)) continue;
+      score = Math.max(score, keyScore(t, words, k));
+    }
     if (score > bestScore) {
       best = entry;
       bestScore = score;
@@ -834,7 +901,7 @@ export function findNeed(needNorm: string): NeedTableEntry | null {
 
 /** Sintoma → entrada da SYMPTOM_TABLE (mesmo casamento de findNeed). */
 export function findSymptom(textNorm: string): SymptomTableEntry | null {
-  return bestEntry(SYMPTOM_TABLE, textNorm);
+  return bestEntry(SYMPTOM_TABLE, textNorm, symptomKeyAllowed);
 }
 
 /** Primeiro sinal de alerta presente no texto (normalizado aqui de novo, por garantia). */
@@ -842,6 +909,13 @@ export function findRedFlag(textNorm: string): RedFlagRule | null {
   const t = norm(textNorm);
   if (!t) return null;
   return RED_FLAGS.find((rule) => rule.pattern.test(t)) ?? null;
+}
+
+/** Só os sinais de EMERGÊNCIA (valem em qualquer pedido, saúde ou não). */
+export function findEmergencyFlag(textNorm: string): RedFlagRule | null {
+  const t = norm(textNorm);
+  if (!t) return null;
+  return EMERGENCY_FLAGS.find((rule) => rule.pattern.test(t)) ?? null;
 }
 
 const BY_ID = new Map<string, ShelfNode>(SHELF_MAP.shelves.map((s) => [s.id, s]));

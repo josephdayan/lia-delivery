@@ -141,6 +141,27 @@ const NEED: Row[] = [
   ["meu bebe de 3 meses ta com febre e vomitando", { form: "need", symptom: "febre", recipient: "bebê 3 meses" }],
   ["tô grávida de 6 semanas e com dor forte na barriga", { form: "need", symptom: "dor de barriga" }],
   ["a pior dor de cabeça da minha vida, veio de repente", { form: "need", symptom: "dor de cabeça" }],
+  // revisão adversarial 08/10 — saúde vira necessidade com sintoma (a MAPEAR decide o alerta)
+  // A1: classe terapêutica + pra quem/sintoma
+  ["qual o melhor antitérmico pro meu bebê de 6 meses", { form: "need", symptom: "febre", recipient: "bebê 6 meses" }],
+  ["me recomenda um analgésico pra criança", { form: "need", symptom: "dor", recipient: "criança" }],
+  // A2: emergência nunca é busca literal
+  ["tô com o peito apertado e suando frio", { form: "need", symptom: "dor no peito" }],
+  ["tô com falta de ar", { form: "need", symptom: "falta de ar" }],
+  // A3/A4: pet doente, comorbidade e combinações
+  ["meu cachorro tá com diarreia, o que dar", { form: "need", symptom: "diarreia", recipient: "cachorro" }],
+  ["meu filho de 2 anos tá com febre", { form: "need", symptom: "febre", recipient: "filho 2 anos" }],
+  ["meu pai de 75 anos tá com dor", { form: "need", symptom: "dor", recipient: "pai 75 anos" }],
+  ["tô com dor de cabeça e uso anticoagulante", { form: "need", symptom: "dor de cabeça" }],
+  ["tenho úlcera e tô com dor de cabeça", { form: "need", symptom: "dor de cabeça" }],
+  ["tenho pressão alta e tô gripado", { form: "need", symptom: "gripe" }],
+  ["dor de cabeça com febre e pescoço duro", { form: "need", symptom: "dor de cabeça" }],
+  ["dor ao urinar", { form: "need", symptom: "dor" }],
+  // C2: estado sem produto
+  ["tô de dieta, o que você indica", { form: "need", need: "algo leve", key: "algo leve", criteria: ["healthy"] }],
+  ["tô muito ansioso, o que você recomenda", { form: "need", need: "relaxar", key: "relaxar" }],
+  // B1: "algo pra dormir" não é o produto "dormir"
+  ["me indica algo pra dormir", { form: "need", need: "algo pra dormir", key: "algo pra dormir" }],
   // beleza/cuidado (com gatilho)
   ["o que é bom pra cabelo ressecado", { form: "need", key: "cabelo ressecado" }],
   ["algo pra caspa", { form: "need", key: "caspa" }],
@@ -185,6 +206,8 @@ const JUDGED: Row[] = [
   ["qual detergente rende mais?", { form: "product_judged", product: "detergente" }],
   ["me indica um sorvete gostoso sem lactose", { form: "product_judged", product: "sorvete", constraints: ["sem lactose"] }],
   ["me recomenda uma cerveja boa pra hoje", { form: "product_judged", product: "cerveja", criteria: ["good", "fast"] }],
+  // A1: classe terapêutica sem pra quem nem sintoma continua produto julgado (a MAPEAR passa pela porta do remédio)
+  ["qual o melhor anti-inflamatório", { form: "product_judged", product: "anti-inflamatório" }],
   // com opções na tela, só com verbo explícito ("me recomenda", "qual o melhor X")
   ["me recomenda um chocolate bom", { form: "product_judged", product: "chocolate" }, TELA]
 ];
@@ -269,6 +292,16 @@ const PRODUCT: Row[] = [
   ["tem de chocolate bom?", "product", TELA],
   ["me surpreende", "product", TELA],
   ["sem chocolate", "product", TELA],
+  // revisão C1 (08/10): quantidade + "bom" adjetivo, ou "bom pra X" sem pergunta, é pedido de produto
+  ["manda 2 pacotes de arroz bom", "product"],
+  ["quero 6 cervejas boas", "product"],
+  ["quero uma pizza boa pro jantar", "product"],
+  // revisão C2: numeral/pronome nunca é produto
+  ["qual dos dois é melhor", "product"],
+  // revisão C3/A2: "corte" de carne não é sintoma; "sem ar condicionado" não é falta de ar
+  ["corte de carne pro churrasco", "product"],
+  ["ventilador pra casa sem ar condicionado", "product"],
+  ["ração pra cachorro com estômago sensível", "product"],
   // pergunta sobre o item já escolhido
   ["o vinho é bom?", "product", { basketNames: ["Vinho Tinto Casillero del Diablo 750ml"] }]
 ];

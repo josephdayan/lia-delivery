@@ -231,21 +231,22 @@ export function listStores(): StoreConnector[] {
 // moat — the three active verticals spread automatically through this registry.
 // Cópia do catálogo + prateleira ao vivo da loja (live-search.ts), em paralelo. Sem ao vivo
 // (desligado, loja não-VTEX, falha/timeout) o resultado é exatamente o da cópia, como antes.
-async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number): Promise<CatalogItem[]> {
+async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number, liveLimiter?: FetchLimiter): Promise<CatalogItem[]> {
   const wantLive = liveSearchEnabled() && Boolean(VTEX_API_STORES[store.key]);
-  const [snapshot, live] = await Promise.all([
+  const live = () => liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3));
+  const [snapshot, liveItems] = await Promise.all([
     store.searchItems(query, limitPerStore),
-    wantLive ? liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3)) : Promise.resolve([] as CatalogItem[])
+    wantLive ? (liveLimiter ? liveLimiter.run(live) : live()) : Promise.resolve([] as CatalogItem[])
   ]);
-  if (!live.length) return snapshot;
-  const pool = mergeLiveWithSnapshot(store.key, snapshot, live);
+  if (!liveItems.length) return snapshot;
+  const pool = mergeLiveWithSnapshot(store.key, snapshot, liveItems);
   return rankCatalog(query, pool, limitPerStore);
 }
 
-async function searchSelectedStores(stores: StoreConnector[], query: string, limitPerStore: number) {
+async function searchSelectedStores(stores: StoreConnector[], query: string, limitPerStore: number, liveLimiter?: FetchLimiter) {
   const perStore = await Promise.all(
     stores.map(async (store) => {
-      const items = await searchStoreItems(store, query, limitPerStore);
+      const items = await searchStoreItems(store, query, limitPerStore, liveLimiter);
       return items.map((item) => ({ store, item }));
     })
   );
@@ -309,8 +310,10 @@ export async function gatherCrossStoreCandidates(
   // ("isqueiro pra charuto" → "isqueiro"); as vitrines locais continuam com a frase curta.
   // `noLongTail` (08/10, recomendação): o Mercado Livre nem entra — recomendação só mostra o que a
   // Lia compra sozinha. `onlyStores`: restringe a busca a essas lojas (prateleira do mapa).
-  options?: { onLongTailSearch?: () => void; forceLongTail?: boolean; longTailQuery?: string; noLongTail?: boolean; onlyStores?: readonly string[] }
+  // `liveLimiter` (08/10, revisão C5): teto de buscas AO VIVO em voo, compartilhado (recomendação).
+  options?: { onLongTailSearch?: () => void; forceLongTail?: boolean; longTailQuery?: string; noLongTail?: boolean; onlyStores?: readonly string[]; liveLimiter?: FetchLimiter }
 ): Promise<StoreCandidate[]> {
+  const lim = options?.liveLimiter;
   // Loja regional fora da área do cliente (mercado do Rio para quem está em SP) nem entra
   // na busca: não ocupa vaga de candidato e não aparece em nenhum caminho (store-areas.ts).
   const allowed = options?.onlyStores?.length ? new Set(options.onlyStores) : null;
@@ -319,13 +322,13 @@ export async function gatherCrossStoreCandidates(
   );
   const longTail = options?.noLongTail ? undefined : stores.find((store) => store.key === mercadoLivreStore.key);
   const localStores = stores.filter((store) => store.key !== mercadoLivreStore.key);
-  const localHits = await searchSelectedStores(localStores, query, perStore);
+  const localHits = await searchSelectedStores(localStores, query, perStore, lim);
   let localRanked = rankStoreCandidates(query, localHits);
   // Nome equivalente do mesmo produto (06/10, A9: "sabão em pó" ↔ "lava roupas em pó",
   // "xampu" ↔ "shampoo"): cada frase é ranqueada por ela mesma; a equivalente vem primeiro
   // porque é o nome do catálogo (o rerank julga as duas juntas).
   for (const alias of queryAliases(query)) {
-    const aliasRanked = rankStoreCandidates(alias, await searchSelectedStores(localStores, alias, perStore));
+    const aliasRanked = rankStoreCandidates(alias, await searchSelectedStores(localStores, alias, perStore, lim));
     const seen = new Set(aliasRanked.map((c) => `${c.store.key}:${c.item.sku}`));
     localRanked = [...aliasRanked, ...localRanked.filter((c) => !seen.has(`${c.store.key}:${c.item.sku}`))];
   }
@@ -336,7 +339,7 @@ export async function gatherCrossStoreCandidates(
   const equivalent = medicineEnabled() ? medicineEquivalentFor(query) : null;
   if (equivalent) {
     const have = new Set(localRanked.map((c) => `${c.store.key}:${c.item.sku}`));
-    const perQuery = await Promise.all(equivalent.queries.map(async (eqQuery) => rankStoreCandidates(eqQuery, await searchSelectedStores(localStores, eqQuery, perStore))));
+    const perQuery = await Promise.all(equivalent.queries.map(async (eqQuery) => rankStoreCandidates(eqQuery, await searchSelectedStores(localStores, eqQuery, perStore, lim))));
     for (const c of perQuery.flat()) {
       const key = `${c.store.key}:${c.item.sku}`;
       if (have.has(key) || c.item.medicine !== "mip" || !equivalent.matches(c.item.name)) continue;
@@ -385,7 +388,44 @@ export async function gatherCrossStoreCandidates(
 //   outra prateleira (inclusive pick sem prateleira conhecida) nunca devolve remédio;
 // - sem duplicata (`loja:sku`), ordem = pick.query, depois aliases, depois a prateleira inteira.
 const SHELF_MAX_QUERIES = 6;
+// Revisão C5 (08/10): rajada de buscas. Ampliando (a pick deu pouco), no máximo 3 consultas por
+// prateleira no total; e um teto GLOBAL de buscas ao vivo em voo (VTEX), compartilhado por todas as
+// prateleiras e recomendações simultâneas (6 prateleiras × 6 consultas × N lojas virava centenas de fetch).
+const SHELF_WIDEN_MAX_QUERIES = 3;
 const SHELF_CATEGORY_RESERVE = 4;
+
+export type FetchLimiter = { run<T>(task: () => Promise<T>): Promise<T>; readonly active: number; readonly queued: number };
+
+// Semáforo simples: no máximo `max` tarefas rodando; o resto espera na fila (FIFO). Nunca lança por si.
+export function createFetchLimiter(max: number): FetchLimiter {
+  const limit = Math.max(1, Math.floor(max) || 1);
+  let active = 0;
+  const waiting: (() => void)[] = [];
+  const release = () => {
+    active--;
+    const next = waiting.shift();
+    if (next) next();
+  };
+  return {
+    get active() {
+      return active;
+    },
+    get queued() {
+      return waiting.length;
+    },
+    async run<T>(task: () => Promise<T>): Promise<T> {
+      if (active >= limit) await new Promise<void>((resolve) => waiting.push(resolve));
+      active++;
+      try {
+        return await task();
+      } finally {
+        release();
+      }
+    }
+  };
+}
+
+const shelfLiveLimiter = createFetchLimiter(Number(process.env.LIA_SHELF_MAX_INFLIGHT ?? 12));
 const normShelf = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
 
 export function shelfQueryAlternatives(query: string): string[] {
@@ -426,7 +466,7 @@ export async function gatherShelfCandidates(
   // Lojas da busca: as da prateleira (ou todas) que entregam no CEP. Lista vazia = nada a buscar.
   const searchKeys = shelfStores ? shelfStores.filter(storeOk) : cepDigits ? listStores().map((store) => store.key).filter(storeOk) : undefined;
   if (searchKeys && !searchKeys.length) return [];
-  const gather = (query: string) => gatherCrossStoreCandidates(query, Math.max(limit, 12), perStore, { noLongTail: true, onlyStores: searchKeys });
+  const gather = (query: string) => gatherCrossStoreCandidates(query, Math.max(limit, 12), perStore, { noLongTail: true, onlyStores: searchKeys, liveLimiter: shelfLiveLimiter });
   const accept = (candidate: StoreCandidate) =>
     storeOk(candidate.store.key) &&
     (mip ? candidate.item.medicine === "mip" : !candidate.item.medicine && !isMedicine(candidate.item));
@@ -456,7 +496,7 @@ export async function gatherShelfCandidates(
       paths.map(async ([key, path]) => {
         const store = listStores().find((s) => s.key === key);
         if (!store) return [] as StoreCandidate[];
-        const items = await liveSearchByCategory(key, path, Math.max(12, perStore * 3));
+        const items = await shelfLiveLimiter.run(() => liveSearchByCategory(key, path, Math.max(12, perStore * 3)));
         const hits = items.map((item) => ({ store, item }));
         // Ordem dentro da prateleira: quem mais casa com a consulta da pick primeiro (zeros ficam, na ordem da loja).
         return hits
@@ -474,7 +514,8 @@ export async function gatherShelfCandidates(
   primaryLists.forEach(push);
   // Consultas da prateleira que a pick não cobre; se a pick sozinha deu pouco, amplia também com as cobertas.
   const widen = merged.length < limit;
-  const secondary = (widen ? shelfTerms.filter((term, index) => term.trim() && shelfTerms.findIndex((other) => normShelf(other) === normShelf(term)) === index && !primary.some((p) => normShelf(p) === normShelf(term))) : extraTerms).slice(0, Math.max(0, SHELF_MAX_QUERIES - primary.length));
+  const maxQueries = widen ? SHELF_WIDEN_MAX_QUERIES : SHELF_MAX_QUERIES;
+  const secondary = (widen ? shelfTerms.filter((term, index) => term.trim() && shelfTerms.findIndex((other) => normShelf(other) === normShelf(term)) === index && !primary.some((p) => normShelf(p) === normShelf(term))) : extraTerms).slice(0, Math.max(0, maxQueries - primary.length));
   const secondaryLists = await Promise.all(secondary.map((query) => gather(query)));
   secondaryLists.forEach(push);
 

@@ -93,6 +93,11 @@ export type ShelfPlan = {
   // Sintoma com sinal de alerta (dor forte, sangue, febre alta, gestante, bebê…): NÃO recomenda;
   // a copy de alerta sai e o cliente compra só se nomear o isento. `redFlag` = o motivo curto.
   redFlag?: string;
+  // (08/10, revisão adversarial A2) "emergency" = sinal de emergência (dor no peito, falta de ar,
+  // desmaio, sangue…), vale em QUALQUER pedido e sai antes de tudo; "context" = sinal que só pesa em
+  // pedido de saúde/remédio (bebê, criança, idoso, gestante, comorbidade, há N dias, pet doente).
+  // Opcional (compatível): ausente = "context".
+  redFlagKind?: "emergency" | "context";
   source: "ai" | "table";
 };
 
@@ -121,6 +126,8 @@ export type RedFlagRule = {
   // Regex (sobre texto normalizado) que marca sinal de alerta.
   pattern: RegExp;
   reason: string;
+  // (08/10, revisão A2) emergência vale em todo pedido; contexto só em saúde/remédio. Ausente = "context".
+  kind?: "emergency" | "context";
 };
 
 // ---------- BUSCAR ----------
