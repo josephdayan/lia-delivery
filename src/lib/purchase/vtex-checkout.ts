@@ -11,6 +11,7 @@
 //     `callbackUrl`, `deviceInfo` e `an`. O `gatewayCallback` responde 428 com
 //     `paymentAuthorizationAppCollection[].appPayload` (vtex.pix-payment) = copia-e-cola.
 // Nada aqui toca o banco; a máquina de estados fica em purchase-execution.ts.
+import { storeFetch } from "../store-relay";
 import { effectiveSla, estimateMinutes, humanEstimate, looksUnapportioned, promisedMinutes } from "../live-freight";
 import { findPixCode } from "../pix-emv";
 import type { CheckoutEvidence } from "../purchase-execution";
@@ -106,7 +107,7 @@ export class VtexCheckoutSession {
   private readonly jar = new Map<string, string>();
   readonly base: string;
   private form: Json | null = null;
-  constructor(readonly storeKey: string, private readonly fetchImpl: FetchLike = fetch, private readonly timeoutMs = 30_000) {
+  constructor(readonly storeKey: string, private readonly fetchImpl: FetchLike = storeFetch as unknown as FetchLike, private readonly timeoutMs = 30_000) {
     const store = VTEX_API_STORES[storeKey];
     if (!store) throw new Error(`Loja sem checkout VTEX por API: ${storeKey}`);
     this.base = `https://${store.domain}/api/checkout/pub`;
