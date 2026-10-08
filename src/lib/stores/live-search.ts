@@ -26,6 +26,7 @@
 // do MIP — nunca como produto comum. Com a flag desligada, nada muda: remédio fica fora.
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { storeFetch } from "../store-relay";
+import { withStoreSlot } from "../store-throttle";
 import { isMedicine, mipOnly, withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
 import { MIP_STORE_KEYS, isPrescriptionDrugName, isPrescriptionText, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
 import { MIP_CATALOG as DSP_MIP_CATALOG } from "./drogariasp-mip-catalog";
@@ -210,13 +211,31 @@ async function fetchLiveProducts(storeKey: string, url: string, key: string, fet
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.items;
   // Requisição + leitura do corpo sob o MESMO prazo duro (o corpo é que travava, ver withDeadline).
-  const work = (async (): Promise<CatalogItem[] | null> => {
-    const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { products?: IsProduct[] };
-    return parseLiveProducts(storeKey, data.products ?? []);
-  })();
-  const items = await withDeadline(work, timeoutMs() + HARD_DEADLINE_SLACK_MS, null);
+  // Fila (store-throttle.ts, main 08/10): o slot cobre requisição + corpo e o prazo nasce DENTRO dele,
+  // então o timeout conta da SAÍDA da fila. Timeout/abort da requisição (08/10: "não tinha gin"): UMA
+  // nova tentativa — um estouro isolado não pode virar "não achei". Corpo travado (prazo duro) e
+  // resposta não-OK não tentam de novo.
+  type Attempt = { items: CatalogItem[] } | { retry: true } | null;
+  const once = (): Promise<Attempt> =>
+    withStoreSlot(() =>
+      withDeadline<Attempt>(
+        (async (): Promise<Attempt> => {
+          try {
+            const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
+            if (!res.ok) return null;
+            const data = (await res.json()) as { products?: IsProduct[] };
+            return { items: parseLiveProducts(storeKey, data.products ?? []) };
+          } catch (error) {
+            return error instanceof Error && /abort|timeout/i.test(error.name) ? { retry: true } : null;
+          }
+        })(),
+        timeoutMs() + HARD_DEADLINE_SLACK_MS,
+        null
+      )
+    );
+  let result = await once();
+  if (result && "retry" in result) result = await once();
+  const items = result && "items" in result ? result.items : null;
   if (!items) return []; // falha/timeout não entra no cache: a próxima tentativa pode dar certo
   if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value as string);
   cache.set(key, { at: Date.now(), items });

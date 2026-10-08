@@ -17,6 +17,7 @@
 // que a loja oferece para a cesta, quando é mais rápida que a mais barata e o extra cabe
 // em LIA_FAST_FREIGHT_MAX_EXTRA (R$ 20). Quem escolhe é o cliente (botão).
 import { storeFetch } from "./store-relay";
+import { withStoreSlot } from "./store-throttle";
 import { storeServesCep } from "./store-areas";
 
 export type LiveFreightOutcome =
@@ -468,16 +469,19 @@ export function cheapestDelivery<T extends { price?: number; shippingEstimate?: 
 
 async function simulateItems(domain: string, ids: { sku: string; id: string; qty?: number }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
-    const response = await storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
-      },
-      body: JSON.stringify({ items: ids.map((x) => ({ id: x.id, quantity: Math.max(1, x.qty ?? 1), seller: "1" })), postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
-      signal: AbortSignal.timeout(timeoutMs())
-    });
+    // Fila (store-throttle.ts, 08/10): uma simulação por SKU × 4 linhas estourava o timeout de todas.
+    const response = await withStoreSlot(() =>
+      storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+        },
+        body: JSON.stringify({ items: ids.map((x) => ({ id: x.id, quantity: Math.max(1, x.qty ?? 1), seller: "1" })), postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
+        signal: AbortSignal.timeout(timeoutMs())
+      })
+    );
     if (!response.ok) return null;
     const payload = (await response.json()) as { items?: SimItem[]; logisticsInfo?: LogisticsInfo[] };
     const simulated = Array.isArray(payload.items) ? payload.items : [];

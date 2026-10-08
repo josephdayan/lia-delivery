@@ -38,6 +38,56 @@ prova é descartado (`whyClaimsUnproven`); motivo de dieta natural ("fruta, natu
 `cold`; "gelado e doce" = sorvete/iogurte; (6) ressaca sem o soro mip; unha encravada = Povidine + curativo; jantar leve sem sopa; (7) dieta com prova
 buscável: a prateleira de risco não sai do plano pela palavra (busca "sorvete sem lactose"), e as de risco vão DEPOIS das livres. Sem solução:
 r77 (detergente — Mambo marca todos indisponíveis pro CEP no check ao vivo), h17 (alergia a amendoim em salgadinho: copy honesta, por desenho).
+## 08/10/2026 (noite, 2ª) — Tempo da lista: índice do catálogo (CPU 7 s → 1 s), thread livre, retry da busca ao vivo
+
+Depois das três correções abaixo, o dono pediu que "nunca mais" aconteça e mandou consertar o tempo. Medido
+no repro local da lista de 4 itens: a PONTUAÇÃO da cópia dos catálogos (`rankCatalog`/`scoreCatalogMatch`,
+~90 mil itens em 39 vitrines) custava **~1,8 s de CPU por linha** — 4 linhas = 7 s com a thread travada,
+e as respostas das lojas (busca ao vivo, simulação) esperavam na fila de eventos com o timeout correndo.
+Era o segundo motivo do "não tinha gin" e a maior fatia dos 17 s de "search+live" do turno de produção.
+- **Índice do catálogo** (`candidateItems` em `src/lib/stores/types.ts`): por catálogo (identidade do array,
+  WeakMap), palavra → itens; a consulta casa os tokens (frase + aliases) contra o vocabulário com os MESMOS
+  casadores (`isSameNoun`/`tokenMatchesWordSyn`/`tokenMatchesWord`, memoizados) e só os itens apontados
+  passam pelo `scoreCatalogMatch` inteiro. Condição necessária, nunca suficiente: resultado **idêntico** ao
+  da varredura (teste de equivalência `tests/catalog-index-2026-10-08.test.ts`: 316 pedidos reais do placar +
+  60 casos de borda × 5 catálogos grandes, top-12 igual). 4 linhas × 39 lojas: **7,1 s → 1,1 s** (com a
+  construção do índice; quente, 2,2 s → 0,14 s em 5 catálogos). Regra: mexeu em `scoreQuery` de um jeito
+  que possa pontuar SEM casar palavra do nome/marca/categoria, o índice tem que acompanhar (o teste acusa).
+  `__setCatalogFullScanForTests(true)` volta à varredura.
+- **Thread livre entre lojas**: `searchStoreItems` cede a vez (`setImmediate`) antes de pontuar cada loja,
+  para as respostas de rede entrarem no meio.
+- **Busca ao vivo tenta de novo UMA vez no timeout** (`liveSearchItems`): estouro isolado não vira "não achei".
+Fica para medir em produção: o turno de 4 linhas tinha extração 4 s + busca/checagem 17 s + juiz 8 s;
+a parte de busca/checagem deve cair para poucos segundos. Juiz e extração são IA (`gpt-6-luna`); o
+`LIA_AI_EFFORT=none` segue "a medir antes de virar padrão".
+
+## 08/10/2026 (noite) — Teste da lista pelo dono: gin "não achei", lista reenviada, "cancelei por inatividade"
+
+Conversa real (16:44 UTC, lista "2 vodkas absolute / suco de laranja / gin / 4 red bull"), reconstruída
+pelos logs da Vercel e pelo banco. Três causas, três regras:
+- **Fila de chamadas às lojas** (`src/lib/store-throttle.ts`, `withStoreSlot`, `LIA_STORE_FETCH_CONCURRENCY`=32).
+  Lista de 4 itens = ~150 chamadas simultâneas (busca ao vivo em ~40 lojas × 4 linhas + simulação por
+  SKU); no repro local TODAS as 39 buscas ao vivo do "gin" estouravam o timeout de 3 s, e a Mambo
+  sozinha responde em 0,8 s. Como a cópia local não tem os gins da Mambo, a linha virava "não achei";
+  um turno depois, com uma linha só, a mesma busca achava Seagers/Apogee. Com a fila, o timeout de
+  cada chamada conta da SAÍDA da fila (o `AbortSignal` nasce dentro do slot) e o gin aparece com as
+  mesmas 4 linhas. Vale para `liveSearchItems` e `simulateItems`. Não subir o timeout no lugar da fila.
+- **Lista reenviada é ignorada** (`isRecentDuplicateInbound`, `LIA_DUPLICATE_INBOUND_MS`=3 min). A mesma
+  lista chegou duas vezes em 23 s (wamids diferentes: o dono reenviou enquanto o 1º turno, de 37 s,
+  ainda buscava); o 2º turno esperou o lock e virou `search+swap+search(retry)` em cima do formulário,
+  com três carrosséis — o "mandou os cards e também a lista". Texto idêntico ao inbound anterior, em
+  menos de 3 min, com cara de pedido de produto (`looksLikeProductList`) = silêncio total, antes do
+  lock. "1"/"ok" repetidos não entram no dedupe.
+- **Pedido parado + pedido novo = missão nova em silêncio.** O "Cancelei o pedido #X por inatividade"
+  (`staleQuoteRestart`) saiu do TTL de abandono: o pedido velho morre em silêncio e a mensagem segue.
+  E a regra do Pix (04/09) vale agora para total/entrega na mesa: cotação há **10+ min**
+  (`LIA_NEW_MISSION_AFTER_MS`) + pedido de produto do nada sem "adiciona" = cotação cancelada em
+  silêncio (nada cobrado), cesta velha NÃO volta, mensagem vira pedido novo — fica antes do gerente de
+  diálogo, que tratava a lista como edição ("Atualizei seu pedido"). Até 10 min continua reabrindo
+  (mesmo pedido). `staleQuoteRestart` só sobrevive no toque num botão de frete vencido.
+Teste: `tests/feedback-2026-10-08-lista.test.ts` (3 dos 7 falham no código anterior); `manual-concierge`
+ajustado. Pendente (não é regra): o turno de 4 linhas ainda leva ~30 s em produção (extração 4 s +
+busca/checagem 17 s + rerank 8 s + miniaturas); a fila tira as falhas, não o tempo.
 
 ## 08/10/2026 — Nomes: projeto Vercel `lia-delivery` (repositório GitHub também vai para `lia-delivery`)
 

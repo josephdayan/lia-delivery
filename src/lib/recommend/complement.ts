@@ -7,6 +7,7 @@
 // Regras: no máximo 1 sugestão; nunca algo que já está na cesta; nunca o que o cliente recusou nesta
 // conversa; NUNCA com remédio isento na cesta (nem complemento de remédio, nem nada junto dele); nunca
 // prateleira de remédio; gelo não existe nos catálogos (fora da tabela). Ordem da tabela = prioridade.
+import { recommendEnabled } from "./types";
 import type { ShelfNode } from "./types";
 
 export type ComplementBasketItem = { name: string; brand?: string; storeKey?: string; sku: string; medicine?: "mip" };
@@ -113,6 +114,7 @@ export function suggestComplement(
   return null;
 }
 
+// Segue o portão da recomendação (08/10, noite): em LIA_RECOMMEND=test só dono/admins recebem a oferta.
 export function complementEnabled(): boolean {
-  return process.env.LIA_RECOMMEND_COMPLEMENT !== "false";
+  return process.env.LIA_RECOMMEND_COMPLEMENT !== "false" && recommendEnabled();
 }

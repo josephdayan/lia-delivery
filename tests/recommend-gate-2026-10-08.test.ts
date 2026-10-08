@@ -34,3 +34,14 @@ test("modo all liga para todos; false desliga até para admin", () => {
   withMode("true", () => inTurn("5511888880000", () => assert.equal(recommendEnabled(), true)));
   withMode("false", () => inTurn("5511999990000", () => assert.equal(recommendEnabled(), false)));
 });
+
+test("complemento segue o portão: cliente comum em modo test não recebe oferta", async () => {
+  const { complementEnabled } = await import("../src/lib/recommend/complement");
+  process.env.LIA_RECOMMEND_COMPLEMENT = "true"; // a suíte antiga roda com o complemento desligado
+  process.env.LIA_ADMIN_PHONES = "5511999990000";
+  withMode("test", () => {
+    inTurn("5511888880000", () => assert.equal(complementEnabled(), false));
+    inTurn("5511999990000", () => assert.equal(complementEnabled(), true));
+  });
+});
+test.after(() => { process.env.LIA_RECOMMEND_COMPLEMENT = "false"; });

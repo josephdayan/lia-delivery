@@ -262,6 +262,10 @@ export function __clearSnapshotSearchCacheForTests(): void {
 }
 
 async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number, liveLimiter?: FetchLimiter): Promise<CatalogItem[]> {
+  // Devolve a vez à fila de eventos entre uma loja e outra (main, 08/10): as 39 pontuações de catálogo
+  // rodavam em sequência sem soltar a thread, e as respostas das lojas (busca ao vivo,
+  // simulação) esperavam todas acabarem — com o timeout delas correndo.
+  await new Promise<void>((resolve) => setImmediate(resolve));
   const wantLive = liveSearchEnabled() && Boolean(VTEX_API_STORES[store.key]);
   const live = () => liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3));
   const [snapshot, liveItems] = await Promise.all([
