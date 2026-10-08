@@ -224,7 +224,8 @@ test("cliente fora da janela de 24h: com template configurado o aviso vai por te
     const toCustomer = templates.filter((m) => m.to === stale.phone);
     const toOperator = templates.filter((m) => m.to !== stale.phone);
     assert.equal(toCustomer.length, 1);
-    assert.equal(toCustomer[0].params[0], stale.orderId.slice(-6).toUpperCase());
+    // {{1}} = rótulo do item, nunca o número do pedido (dono, 08/10 noite).
+    assert.equal(toCustomer[0].params[0], "de Ice Tea Pêssego Zero");
     assert.match(toCustomer[0].params[1], /pedido/i);
     assert.equal(toOperator.length, 1);
     assert.equal(toOperator[0].params[0], "operador");
