@@ -21,6 +21,10 @@ model User {
   cpf                    String?
   cpfName                String?
   cpfConsentAt           DateTime?
+  // Memória do cliente (08/10, recomendação fase 2): SÓ o que ele DISSE sobre si, com data —
+  // restrições ("sem lactose", "diabético", quem da casa), pet e pessoas em casa. Formato em
+  // src/lib/recommend/memory.ts (StoredPreferences). Marcas e prateleiras vêm dos pedidos pagos.
+  preferences            Json?
   createdAt              DateTime                @default(now())
   conversations          Conversation[]
   deliveryOrders         DeliveryOrder[]
@@ -644,7 +648,7 @@ model RecommendLog {
   createdAt    DateTime @default(now())
   phone        String
   userId       String?
-  // dialogue | regex | presignup (RecommendSource)
+  // dialogue | regex | presignup (RecommendSource) | complement (oferta no fechamento, fase 4)
   source       String
   // need | product_judged
   form         String
@@ -660,7 +664,7 @@ model RecommendLog {
   cardSkus     Json
   emptyShelves Json
   chosenSku    String?
-  // shown | chosen | none | red_flag
+  // shown | chosen | none | red_flag; complemento no fechamento (source "complement", 08/10): shown | accepted | declined
   outcome      String?
   mapMs        Int
   searchMs     Int

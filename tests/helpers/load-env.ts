@@ -48,6 +48,10 @@ delete process.env.LIA_MEDICINE_MIP;
 // CPF do cliente). A suíte antiga foi escrita com a margem embutida e fica nela; o modelo novo tem
 // teste próprio (tests/service-fee-mode.test.ts), que liga sozinho.
 process.env.LIA_PRICING_MODE ??= "markup";
+// Complemento no fechamento (08/10, recomendação fase 4): em produção vem LIGADO ("quem leva carvão
+// costuma levar pão de alho" antes do total). A suíte antiga fecha a lista esperando o total direto e
+// fica sem ele; tests/recommend-complement-2026-10-08.test.ts liga sozinho.
+process.env.LIA_RECOMMEND_COMPLEMENT ??= "false";
 // Frete ao vivo consulta a rede (checkout das lojas) — nos testes fica desligado para
 // os E2E de cotação instantânea serem determinísticos (tabela semeada).
 process.env.LIA_LIVE_FREIGHT_OFF = "true";

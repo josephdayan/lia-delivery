@@ -1214,15 +1214,66 @@ export function recommendMedicineCare(): string {
   return "São remédios *isentos de receita*. Leia a bula; se não melhorar em 1–2 dias ou piorar, procure um médico.";
 }
 
-// Sinal de alerta no pedido de saúde: não recomenda; compra só se o cliente nomear o isento.
-export function recommendRedFlag(reason: string): string {
+// Sinal de alerta: não recomenda. Tom por tipo (revisão de segurança 08/10):
+//   - emergência (dor no peito, falta de ar, sangue…): abre pelo SAMU 192 / pronto-socorro, sem oferta de compra;
+//   - contexto (bebê, criança, gestante, idoso, comorbidade, há dias…): médico/pediatra/farmacêutico, e a Lia
+//     compra o isento se o cliente nomear o que o profissional indicou;
+//   - pet doente (tables.PET_SICK_REASON): veterinário; remédio de gente pra pet nunca — sem SAMU.
+// Sem `kind`, o tipo sai do motivo (a lista de emergência espelha tables.EMERGENCY_FLAGS).
+export type RedFlagCopyKind = "emergency" | "context" | "pet";
+const EMERGENCY_REASONS = new Set(["dor no peito", "falta de ar", "desmaio ou convulsão", "sangue", "confusão mental", "alergia grave ou inchaço", "suor frio"]);
+export function recommendRedFlag(reason: string, kind?: "emergency" | "context" | "pet"): string {
   const why = trimRec(reason) || "esse sinal";
-  return `Com *${why}*, o certo é falar com um médico ou farmacêutico antes de tomar qualquer coisa — se for forte ou piorar, procure atendimento (emergência: SAMU 192). Se um profissional já indicou um remédio *sem receita*, me diz o nome que eu compro.`;
+  const type: RedFlagCopyKind = /^pet doente/i.test(why) || kind === "pet" ? "pet" : kind ?? (EMERGENCY_REASONS.has(why) ? "emergency" : "context");
+  if (type === "pet") {
+    return "Pra bichinho doente o certo é o *veterinário* 🐾 Remédio de gente pra pet eu não indico — pode fazer mal a ele. Se o veterinário já receitou algo, me manda o nome que eu procuro.";
+  }
+  if (type === "emergency") {
+    return `Com *${why}*, procure atendimento *agora*: ligue *192 (SAMU)* ou vá ao pronto-socorro mais perto. Não é caso de remédio por conta própria 🙏`;
+  }
+  const who = /beb[eê]|crian[cç]a/i.test(why) ? "o *pediatra*" : "um *médico* ou *farmacêutico*";
+  return `Com *${why}*, o certo é falar com ${who} antes de tomar qualquer coisa — eu não indico remédio nesse caso. Se um profissional já indicou um remédio *sem receita*, me diz o nome que eu compro. Se piorar, procure atendimento.`;
 }
 
 // "outras" depois de mostrar todas as ideias que tinham entrega.
 export function recommendMoreNone(): string {
   return "Essas eram as ideias que eu tinha com entrega aí. Me diz um produto que eu procuro 🙂 Ou responde o número de uma das opções.";
+}
+
+// ---- memória do cliente (08/10, recomendação fase 2) ----
+
+const joinPt = (list: string[]) => list.filter(Boolean).join(", ").replace(/, ([^,]*)$/, " e $1");
+
+// Cliente disse algo sobre si ("sou intolerante a lactose", "tenho um cachorro grande") e a mensagem era só isso.
+export function preferenceSaved(saved: string[]): string {
+  return `Anotado: ${joinPt(saved.map((s) => `*${s}*`))} 👍 Vou lembrar nas próximas recomendações.`;
+}
+
+// "esquece minhas preferências" / "não sou mais vegano".
+export function preferencesForgotten(removed: string[]): string {
+  if (!removed.length) return "Pronto, não tenho nada anotado sobre você 👍";
+  return `Pronto, esqueci ${joinPt(removed.map((s) => `*${s}*`))} 👍`;
+}
+
+// Linha antes dos cards quando a restrição lembrada tirou alguma opção.
+export function recommendMemoryNote(restrictions: string[]): string {
+  return `Lembrei: ${joinPt(restrictions.map((s) => `*${s}*`))} — já deixei de fora o que não serve 👍`;
+}
+
+// Motivo do card que subiu pela marca que o cliente costuma comprar.
+export function usualBrandWhy(): string {
+  return "a marca que você costuma levar";
+}
+
+// ---- complemento no fechamento (08/10, recomendação fase 4) ----
+
+// `why` = a frase da tabela ("Quem leva carvão costuma levar pão de alho 🧄").
+export function complementOffer(name: string, price: number, why: string): string {
+  return `${why.trim()} Quer adicionar o *${name}* por ${brl(price)}? Responde *sim* ou *não*.`;
+}
+
+export function complementAdded(name: string): string {
+  return `✅ Adicionei *${name}*.`;
 }
 
 // "quem é vc?", "vc é robô?" (06/10): a apresentação genérica não dizia nem "sou a Lia".

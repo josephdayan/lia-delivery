@@ -268,6 +268,14 @@ export type DeliveryContext = {
   // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
   // o `pendingRequest` separa por ", " e só guarda o que parece produto. Depois do CEP vira recomendação.
   pendingRecommend?: string;
+  // Complemento no fechamento (08/10, recomendação fase 4): no "só isso", UMA oferta do que costuma ir
+  // junto ("quem leva carvão costuma levar pão de alho"). `complementOffer` = a oferta na mesa (sim → entra
+  // na cesta e segue pro total; não/"só isso" → total sem insistir); `complementAsked` = já perguntou NESTE
+  // pedido (skus da cesta na hora: cesta sem nenhum deles = pedido novo, pode perguntar de novo);
+  // `complementDeclined` = consultas/prateleiras recusadas nesta conversa (nunca oferece de novo).
+  complementOffer?: { option: ChoiceOption; query: string; shelfId: string; why: string; trigger: string; logId?: string; at: number };
+  complementAsked?: { skus: string[]; at: number };
+  complementDeclined?: string[];
   cep?: string;
   city?: string;
   uf?: string;

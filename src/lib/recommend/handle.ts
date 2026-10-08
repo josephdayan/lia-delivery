@@ -15,7 +15,7 @@
 // delivery-service (confirmOptionsLive, a mesma de paginação/refino) dão os candidatos compráveis no
 // CEP; quem escolhe entre eles é o juiz de aptidão (1 chamada só, com fallback por regras).
 import type { CatalogItem } from "../stores/types";
-import type { ChoiceOption, DeliveryContext, PendingChoice, RecommendationState } from "../conversation-types";
+import type { BasketItem, ChoiceOption, DeliveryContext, PendingChoice, RecommendationState } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { normalizeMsg } from "../lia-intents";
 import * as copy from "../lia-copy";
@@ -24,7 +24,21 @@ import { medicineEnabled } from "../medicine";
 import { reply, writeCtx } from "../turn-runtime";
 import { gatherShelfCandidates } from "../stores";
 import { conciergeMatchIsStrong } from "../stores/types";
-import { defaultTableDeps, judgeFitness, judgeFitnessByRules, normRec, planShelves, type RecommendTableDeps } from "./fallback";
+import {
+  constraintRules,
+  defaultTableDeps,
+  eligibleCandidates,
+  emergencyFlag,
+  judgeFitness,
+  judgeFitnessByRules,
+  normRec,
+  planShelves,
+  planShelvesFromTables,
+  violatesConstraint,
+  type RecommendTableDeps
+} from "./fallback";
+import { suggestComplement, type ComplementSuggestion } from "./complement";
+import { loadCustomerMemory, memoryWantsHealthy, type LoadedMemory } from "./memory";
 import { recommendEnabled } from "./types";
 import type { RecommendCard, RecommendCriterion, RecommendOutcome, RecommendRequest, ShelfCandidate, ShelfPick, ShelfPlan } from "./types";
 
@@ -141,9 +155,14 @@ function toCard(c: ShelfCandidate, why: string): RecommendCard {
 
 // Cards na ordem do juiz (1 por prateleira). Produto julgado (1 a 3 prateleiras) completa até o teto
 // com os próximos melhores da(s) mesma(s) prateleira(s), pelo MESMO critério (regras, sem IA).
-async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidates: ShelfCandidate[], hour: number, td: RecommendTableDeps, max: number, opts: { rulesOnly?: boolean } = {}): Promise<RecommendCard[]> {
+async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidates: ShelfCandidate[], hour: number, td: RecommendTableDeps, max: number, opts: { rulesOnly?: boolean; memory?: LoadedMemory } = {}): Promise<RecommendCard[]> {
   if (!candidates.length) return [];
-  const input = { request: req, plan, candidates, hour };
+  const memory = opts.memory;
+  // Memória (fase 2, 08/10): diabetes/"não como açúcar" dito pelo cliente pede o critério "saudável"
+  // (zero/diet primeiro) — só no julgamento, a copy do pedido não muda. Nunca em sintoma.
+  const judged: RecommendRequest =
+    memoryWantsHealthy(memory) && !isSymptomPlan(req, plan) && !req.criteria.includes("healthy") ? { ...req, criteria: [...req.criteria, "healthy"] } : req;
+  const input = { request: judged, plan, candidates, hour, ...(memory ? { memory } : {}) };
   const verdict = opts.rulesOnly ? judgeFitnessByRules(input, td) : await judgeFitness(input, td);
   const byKey = new Map(candidates.map((c) => [`${c.shelfId}|${keyOf(c.option)}`, c]));
   const cards: RecommendCard[] = [];
@@ -164,7 +183,48 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidates: She
       if (cards.length === before) break;
     }
   }
-  return cards;
+  return preferUsualBrand(cards, input, max);
+}
+
+function isSymptomPlan(req: RecommendRequest, plan: ShelfPlan): boolean {
+  return Boolean(req.symptom?.trim()) || plan.picks.some((p) => p.mipClass);
+}
+
+// "A marca de sempre" (fase 2, 08/10): marca que o cliente comprou 2+ vezes NA MESMA prateleira sobe pra
+// 1º dentro da prateleira, com o motivo "a marca que você costuma levar". Só quando o critério é "bom"
+// ou nenhum (preço, pressa e saudável mandam mais que o hábito) e nunca em sintoma/remédio. O candidato
+// precisa passar pelas MESMAS regras do juiz (restrição, orçamento, porta do remédio).
+function preferUsualBrand(cards: RecommendCard[], input: { request: RecommendRequest; plan: ShelfPlan; candidates: ShelfCandidate[]; memory?: LoadedMemory }, max: number): RecommendCard[] {
+  const memory = input.memory;
+  const req = input.request;
+  if (!memory?.brands.length || !cards.length || isSymptomPlan(req, input.plan) || req.urgency) return cards;
+  // `req` já é o pedido julgado: diabetes lembrada pôs "healthy" — aí a ordem saudável manda, não o hábito.
+  if (req.criteria.some((c) => c !== "good")) return cards;
+  const eligible = eligibleCandidates({ request: req, plan: input.plan, candidates: input.candidates, memory });
+  const brandOf = (c: ShelfCandidate) => normRec(c.option.brand);
+  const usual = (c: ShelfCandidate) =>
+    memory.brands.find((b) => {
+      if (b.shelfId ? b.shelfId !== c.shelfId : c.shelfId !== "produto") return false;
+      const brand = normRec(b.brand);
+      if (!brand) return false;
+      return brandOf(c) === brand || new RegExp(`\\b${brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(normRec(c.option.name));
+    });
+  const out = [...cards];
+  const shelves = [...new Set(out.map((c) => c.shelfId))];
+  for (const shelfId of shelves) {
+    const best = eligible.filter((c) => c.shelfId === shelfId && usual(c)).sort((a, b) => (usual(b)?.count ?? 0) - (usual(a)?.count ?? 0))[0];
+    if (!best) continue;
+    const card = toCard(best, copy.usualBrandWhy());
+    const firstIdx = out.findIndex((c) => c.shelfId === shelfId);
+    // Produto julgado (todos os cards na mesma prateleira): a marca vai pro 1º lugar e a linha que ela
+    // ocupava (o mesmo item ou um de mesmo nome) sai; prateleiras diferentes: troca o card da prateleira.
+    const same = out.findIndex((c) => keyOf(c) === keyOf(best.option) || sameName(c, best.option));
+    const singleShelf = shelves.length === 1;
+    if (same >= 0) out.splice(same, 1);
+    else if (!singleShelf) out.splice(firstIdx, 1);
+    out.splice(Math.min(firstIdx, out.length), 0, card);
+  }
+  return out.slice(0, max);
 }
 
 // ---------------------------------------------------------------- cadeia
@@ -178,11 +238,12 @@ type Chain = {
   timings: { mapMs: number; searchMs: number; judgeMs: number };
 };
 
-async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?: string[]; mustHave?: string; hour?: number } = {}): Promise<Chain> {
+async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?: string[]; mustHave?: string; hour?: number; memory?: LoadedMemory } = {}): Promise<Chain> {
   const td = tableDeps();
   const hour = opts.hour ?? saoPauloHour();
   const t0 = Date.now();
-  const plan = await planShelves(req, { hour, basketNames: opts.basketNames, deps: td });
+  // Memória (fase 2): restrições ditas entram nos filtros e no prompt do plano (fallback.ts/ai.ts).
+  const plan = await planShelves(req, { hour, basketNames: opts.basketNames, deps: td, ...(opts.memory ? { memory: opts.memory } : {}) });
   const t1 = Date.now();
   if (plan.redFlag) return { plan, picks: [], candidates: [], cards: [], emptyShelves: [], timings: { mapMs: t1 - t0, searchMs: 0, judgeMs: 0 } };
   // Refino positivo ("de morango"): a palavra entra na busca de cada prateleira e vira exigência no nome.
@@ -206,7 +267,7 @@ async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?
   }
   const emptyShelves = picks.map((p) => p.shelfId).filter((id) => !candidates.some((c) => c.shelfId === id));
   const t2 = Date.now();
-  const cards = await pickCards(req, { ...plan, picks }, candidates, hour, td, recommendMaxCards());
+  const cards = await pickCards(req, { ...plan, picks }, candidates, hour, td, recommendMaxCards(), { memory: opts.memory });
   const t3 = Date.now();
   return { plan: { ...plan, picks }, picks, candidates, cards, emptyShelves, timings: { mapMs: t1 - t0, searchMs: t2 - t1, judgeMs: t3 - t2 } };
 }
@@ -214,6 +275,39 @@ async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?
 function shelfLabels(ids: string[]): string[] {
   const td = tableDeps();
   return ids.map((id) => td.shelfById(id)?.label ?? "").filter(Boolean);
+}
+
+// Memória do cliente pra cadeia (cacheada 5 min em memory.ts; erro = vazia). Sem userId: nenhuma.
+async function memoryFor(env: Pick<RecommendEnv, "userId">): Promise<LoadedMemory | undefined> {
+  if (!env.userId) return undefined;
+  return loadCustomerMemory(env.userId, { shelves: tableDeps().shelves });
+}
+
+// Quais restrições LEMBRADAS de fato tiraram algo desta recomendação: algum candidato buscado que o juiz
+// descartou por elas, ou alguma prateleira que o plano das tabelas (sem memória) teria e que elas cortam.
+// Restrição que o cliente repetiu no próprio pedido não conta (ele acabou de dizer).
+export function memoryActedOn(memory: LoadedMemory | undefined, req: RecommendRequest, chain: Pick<Chain, "candidates">, td: RecommendTableDeps = tableDeps()): string[] {
+  if (!memory?.said.length) return [];
+  const own = constraintRules(req.constraints).map((r) => JSON.stringify(r));
+  let tablePicks: ShelfPick[] = [];
+  try {
+    tablePicks = planShelvesFromTables({ ...req, constraints: req.constraints }, td)?.picks ?? [];
+  } catch {
+    tablePicks = [];
+  }
+  const out: string[] = [];
+  for (const s of memory.said) {
+    const rules = constraintRules(s.filters).filter((r) => !own.includes(JSON.stringify(r)));
+    if (!rules.length) continue;
+    const hitCandidate = chain.candidates.some((c) => violatesConstraint(`${c.option.name} ${c.option.brand ?? ""}`, rules));
+    const hitShelf = tablePicks.some((p) => violatesConstraint(`${p.query} ${td.shelfById(p.shelfId)?.label ?? ""}`, rules));
+    if (hitCandidate || hitShelf) out.push(s.whoLabel ? `${s.label} (${s.whoLabel})` : s.label);
+  }
+  return out;
+}
+
+function withMemoryNote(header: string, acted: string[]): string {
+  return acted.length ? `${copy.recommendMemoryNote(acted)}\n${header}` : header;
 }
 
 function cardOption(card: RecommendCard): ChoiceOption {
@@ -302,6 +396,16 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
     return;
   }
   const cep = env.userCep ?? ctx.cep;
+  // Emergência (revisão de segurança 08/10): dor no peito, falta de ar, sangue… sai NA HORA, antes de
+  // pedir CEP — o cliente cadastrado sem CEP recebia o alerta só depois de mandar o endereço.
+  const emergency = emergencyFlag(req.text, req.recipient);
+  if (emergency) {
+    const plan: ShelfPlan = { picks: [], redFlag: emergency, redFlagKind: "emergency", source: "table" };
+    console.log(`[recommend] form=${req.form} emergency=${JSON.stringify(emergency)} (antes do CEP)`);
+    await reply(phone, copy.recommendRedFlag(emergency, "emergency"));
+    await recordRecommendation({ env, req, plan, cards: [], emptyShelves: [], outcome: "red_flag", timings: { mapMs: 0, searchMs: 0, judgeMs: 0 } });
+    return;
+  }
   if (!cep) {
     // Sem CEP não há estoque nem prazo (dono, 08/10): guarda a frase inteira e pede o CEP.
     ctx.pendingRecommend = req.text;
@@ -312,11 +416,12 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
     return;
   }
   const started = Date.now();
-  const chain = await runChain(req, cep, { basketNames: ctx.basket?.map((b) => b.name) });
+  const memory = await memoryFor(env);
+  const chain = await runChain(req, cep, { basketNames: ctx.basket?.map((b) => b.name), memory });
   const max = recommendMaxCards();
   if (chain.plan.redFlag) {
     logLine(req, chain, 0, Date.now() - started);
-    await reply(phone, copy.recommendRedFlag(chain.plan.redFlag));
+    await reply(phone, copy.recommendRedFlag(chain.plan.redFlag, chain.plan.redFlagKind));
     await recordRecommendation({ env, req, plan: chain.plan, cards: [], emptyShelves: [], outcome: "red_flag", timings: chain.timings });
     return;
   }
@@ -350,7 +455,7 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
   ctx.pending = [pending, ...(ctx.pending ?? [])];
   ctx.pendingSince = Date.now();
   await writeCtx(convoId, ctx);
-  await showRecommendation(phone, pending, copy.recommendIntro(req));
+  await showRecommendation(phone, pending, withMemoryNote(copy.recommendIntro(req), memoryActedOn(memory, req, chain)));
 }
 
 // Cards + (remédio isento) a copy de cuidado ANTES deles. O CPF é pedido no fluxo de sempre quando
@@ -381,8 +486,9 @@ export async function recommendMore(env: RecommendEnv, current: PendingChoice): 
   const shown = new Set([...(current.shownOptions ?? []), ...current.options].map(keyOf));
   const fresh = (rec.candidates ?? []).filter((c) => !shown.has(keyOf(c.option)));
   const unshownShelves = fresh.filter((c) => !rec.shownShelfIds.includes(c.shelfId));
-  let next = unshownShelves.length ? await pickCards(rec.request, rec.plan, unshownShelves, hour, td, max, { rulesOnly: true }) : [];
-  if (!next.length && fresh.length) next = await pickCards(rec.request, rec.plan, fresh, hour, td, max, { rulesOnly: true });
+  const memory = await memoryFor(env);
+  let next = unshownShelves.length ? await pickCards(rec.request, rec.plan, unshownShelves, hour, td, max, { rulesOnly: true, memory }) : [];
+  if (!next.length && fresh.length) next = await pickCards(rec.request, rec.plan, fresh, hour, td, max, { rulesOnly: true, memory });
   // Variante do que já está na mesa não é "outra ideia".
   next = next.filter((card) => !current.options.some((o) => sameName(o, card))).slice(0, max);
   if (!next.length) {
@@ -404,7 +510,7 @@ export async function recommendByPrice(env: RecommendEnv, current: PendingChoice
   const criteria: RecommendCriterion[] = dir === "asc" ? ["cheap"] : ["good"];
   const req: RecommendRequest = { ...rec.request, criteria };
   const pool = rec.candidates?.length ? rec.candidates : current.options.map((option) => ({ shelfId: "produto", option }));
-  const cards = await pickCards(req, rec.plan, pool, saoPauloHour(), td, recommendMaxCards(), { rulesOnly: dir === "desc" });
+  const cards = await pickCards(req, rec.plan, pool, saoPauloHour(), td, recommendMaxCards(), { rulesOnly: dir === "desc", memory: await memoryFor(env) });
   const price = (o: ChoiceOption) => o.unitPrice;
   const sorted = [...cards]
     .sort((a, b) => (dir === "asc" ? price(a) - price(b) : price(b) - price(a)))
@@ -446,7 +552,8 @@ export async function recommendRefine(env: RecommendEnv, current: PendingChoice,
   const basketNames = env.ctx.basket?.map((b) => b.name);
   // O re-plano usa a necessidade/produto ORIGINAL (é o que casa nas tabelas e no mapa); a palavra
   // pedida ("morango") entra na busca de cada prateleira e vira exigência no nome.
-  const chain = await runChain({ ...req, need: rec.request.need, product: rec.request.product }, cep, { basketNames, mustHave: want });
+  const memory = await memoryFor(env);
+  const chain = await runChain({ ...req, need: rec.request.need, product: rec.request.product }, cep, { basketNames, mustHave: want, memory });
   const shown = chain.cards.slice(0, recommendMaxCards());
   logLine(req, chain, shown.length, Date.now() - started);
   if (!shown.length) {
@@ -463,7 +570,7 @@ export async function recommendRefine(env: RecommendEnv, current: PendingChoice,
   // Plano novo: só as prateleiras desta tela contam como mostradas.
   rec.shownShelfIds = [...new Set(shown.map((c) => c.shelfId))];
   await writeCtx(env.convoId, env.ctx);
-  await showRecommendation(env.phone, current, copy.recommendIntro(req), { care: false });
+  await showRecommendation(env.phone, current, withMemoryNote(copy.recommendIntro(req), memoryActedOn(memory, req, chain)), { care: false });
 }
 
 // Texto de refino sobre uma recomendação na tela. Só é chamado com `recommendation` na escolha
@@ -520,4 +627,102 @@ export async function recommendRefineFromAttribute(env: RecommendEnv, current: P
 export async function recommendForBench(req: RecommendRequest, cep: string): Promise<RecommendOutcome> {
   const chain = await runChain(req, cep);
   return { request: req, plan: chain.plan, cards: chain.cards.slice(0, recommendMaxCards()), emptyShelves: chain.emptyShelves, timings: chain.timings };
+}
+
+// ---------------------------------------------------------------- COMPLEMENTO NO FECHAMENTO (fase 4)
+
+// No fechamento ("só isso"), UM item que costuma ir junto do que está na cesta (complement.ts escolhe a
+// prateleira pela tabela), pelo MESMO funil da recomendação: busca da prateleira no CEP → conferência ao
+// vivo → melhor pelas regras (critério "bom", restrições lembradas valendo). Nada comprável ou mais de
+// `timeoutMs` (4 s) = null e o fechamento segue direto pro total.
+export type ComplementFound = { suggestion: ComplementSuggestion; option: ChoiceOption; ms: number };
+
+export async function findComplement(input: {
+  cep: string;
+  basket: readonly BasketItem[];
+  declined?: readonly string[];
+  userId?: string;
+  timeoutMs?: number;
+}): Promise<ComplementFound | null> {
+  const td = tableDeps();
+  const suggestion = suggestComplement(input.basket, { shelfById: td.shelfById, recentlyDeclined: input.declined });
+  if (!suggestion) return null;
+  const started = Date.now();
+  const work = (async (): Promise<ComplementFound | null> => {
+    const pick: ShelfPick = { shelfId: suggestion.shelfId, query: suggestion.query, why: suggestion.why };
+    const inBasket = new Set(input.basket.map((b) => `${b.storeKey ?? ""}:${b.sku}`));
+    const basketSkus = new Set(input.basket.map((b) => b.sku));
+    const candidates = (await searchPick(pick, input.cep, td)).filter((c) => !inBasket.has(keyOf(c.option)) && !basketSkus.has(c.option.sku) && c.option.medicine !== "mip");
+    if (!candidates.length) return null;
+    const memory = input.userId ? await loadCustomerMemory(input.userId, { shelves: td.shelves }) : undefined;
+    const req: RecommendRequest = { form: "product_judged", text: suggestion.query, product: suggestion.query, criteria: [], constraints: [], source: "regex" };
+    // Mesmas regras do juiz (restrição lembrada, porta do remédio); a escolha é o BÁSICO da prateleira:
+    // conferido ao vivo, mais vendido, preço perto da mediana — complemento não é hora de item premium.
+    const eligible = eligibleCandidates({ request: req, plan: { picks: [pick], source: "table" }, candidates, ...(memory ? { memory } : {}) });
+    if (!eligible.length) return null;
+    const prices = eligible.map((c) => c.option.unitPrice).sort((a, b) => a - b);
+    const median = prices[Math.floor((prices.length - 1) / 2)];
+    const pop = (c: ShelfCandidate) => c.popularity ?? Number.POSITIVE_INFINITY;
+    const chosen = [...eligible].sort(
+      (a, b) =>
+        Number(Boolean(b.option.verified)) - Number(Boolean(a.option.verified)) ||
+        (pop(a) === pop(b) ? 0 : pop(a) === Number.POSITIVE_INFINITY ? 1 : pop(b) === Number.POSITIVE_INFINITY ? -1 : pop(a) - pop(b)) ||
+        Math.abs(a.option.unitPrice - median) - Math.abs(b.option.unitPrice - median) ||
+        a.option.unitPrice - b.option.unitPrice
+    )[0];
+    return { suggestion, option: chosen.option, ms: Date.now() - started };
+  })();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), input.timeoutMs ?? 4000);
+  });
+  try {
+    const found = await Promise.race([work.catch(() => null), timeout]);
+    if (!found && Date.now() - started >= (input.timeoutMs ?? 4000)) console.warn("[recommend:complement:timeout]", suggestion.trigger);
+    return found;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+// RecommendLog do complemento: source "complement", outcome shown → accepted/declined.
+export async function recordComplementOffer(env: { phone: string; userId?: string }, found: ComplementFound): Promise<string | undefined> {
+  try {
+    const row = await prisma.recommendLog.create({
+      data: {
+        phone: env.phone,
+        userId: env.userId ?? null,
+        source: "complement",
+        form: "need",
+        need: `complemento de ${found.suggestion.trigger}`,
+        product: found.suggestion.query,
+        symptom: null,
+        criteria: ["good"],
+        constraints: [],
+        planSource: "table",
+        redFlag: null,
+        shelfIds: [found.suggestion.shelfId],
+        cardSkus: [`${found.option.storeKey ?? ""}:${found.option.sku}`],
+        emptyShelves: [],
+        outcome: "shown",
+        mapMs: 0,
+        searchMs: found.ms,
+        judgeMs: 0
+      },
+      select: { id: true }
+    });
+    return row.id;
+  } catch (error) {
+    console.warn("[recommend:complement:log:error]", error instanceof Error ? error.message : error);
+    return undefined;
+  }
+}
+
+export async function markComplementOutcome(logId: string | undefined, outcome: "accepted" | "declined", chosenSku?: string): Promise<void> {
+  if (!logId) return;
+  try {
+    await prisma.recommendLog.update({ where: { id: logId }, data: { outcome, ...(chosenSku ? { chosenSku } : {}) } });
+  } catch (error) {
+    console.warn("[recommend:complement:log:outcome:error]", error instanceof Error ? error.message : error);
+  }
 }

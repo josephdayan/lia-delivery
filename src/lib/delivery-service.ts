@@ -34,7 +34,9 @@ import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { detectRecommendation } from "@/lib/recommend/detect";
-import { handleRecommend, markRecommendChosen, recommendByPrice, recommendFollowUp, recommendMore, recommendRefineFromAttribute, setRecommendDeps, type RecommendEnv } from "@/lib/recommend/handle";
+import { findComplement, handleRecommend, markComplementOutcome, markRecommendChosen, recommendByPrice, recommendFollowUp, recommendMore, recommendRefineFromAttribute, recordComplementOffer, setRecommendDeps, type RecommendEnv } from "@/lib/recommend/handle";
+import { complementEnabled } from "@/lib/recommend/complement";
+import { forgetPreferences, isStatementOnly, parseForget, parseStatements, rememberStatement } from "@/lib/recommend/memory";
 import { recommendEnabled } from "@/lib/recommend/types";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
@@ -1645,6 +1647,13 @@ async function handleDeliveryTurn(
       return;
     }
   }
+
+  // Complemento no fechamento (08/10, recomendação fase 4): resposta à oferta "quer adicionar o X?".
+  if (ctx.complementOffer && (await handleComplementAnswer(phone, convo.id, user, ctx, text, intent))) return;
+
+  // Memória do cliente (08/10, recomendação fase 2): "sou intolerante a lactose", "tenho um cachorro
+  // grande", "somos 4 em casa" ficam guardados; "esquece minhas preferências" apaga.
+  if (await handlePreferenceStatement(phone, convo.id, user, ctx, text)) return;
 
   // Botão "Mudar quantidade" do follow-up (dono, 01/09: mudar quantidade tem que ser
   // botão). Reabre os botões 1/2/Outra da pergunta clássica para o ÚLTIMO item; o
@@ -3264,7 +3273,8 @@ async function handleDeliveryTurn(
         return;
       }
       if ((ctx.basket?.length ?? 0) > 0) {
-        await continueAfterBasket(phone, convo.id, ctx, user.cep);
+        // Complemento no fechamento (08/10, fase 4): 1 oferta antes do total; sem oferta, o total de sempre.
+        await closeListOrOfferComplement(phone, convo.id, ctx, user.cep, user.id);
         return;
       }
       const openOrder = await prisma.deliveryOrder.findFirst({
@@ -4983,7 +4993,8 @@ async function confirmChosenOption(
     ctx.step = "collecting";
     ctx.cep = ctx.cep ?? userCep ?? undefined;
     await writeCtx(convoId, ctx);
-    await continueAfterBasket(phone, convoId, ctx, userCep, confirmed);
+    // "o 1, pode fechar" também é fechar a lista: complemento antes do total (fase 4, 08/10).
+    await closeListOrOfferComplement(phone, convoId, ctx, userCep, undefined, confirmed);
     return;
   }
   // Quantidade assumida → o follow-up troca "Cancelar" por "Mudar quantidade".
@@ -7589,6 +7600,151 @@ export function parseRecipientName(text: string): string | null {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
 }
+// ---------- complemento no fechamento (08/10, recomendação fase 4) ----------
+
+// Fechou a lista ("só isso", "pagar", "o 1 e pode fechar"): antes do total, UMA oferta do que costuma
+// ir junto (recommend/complement.ts + o funil da recomendação no CEP). Só uma vez por pedido, nunca com
+// remédio na cesta, nunca com teto de orçamento valendo, no máximo 4 s; sem item comprável segue calado.
+async function closeListOrOfferComplement(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined, userId?: string, prefix?: string) {
+  if (await maybeOfferComplement(phone, convoId, ctx, userCep, userId, prefix)) return;
+  await continueAfterBasket(phone, convoId, ctx, userCep, prefix);
+}
+
+async function maybeOfferComplement(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined, userId?: string, prefix?: string): Promise<boolean> {
+  if (!complementEnabled()) return false;
+  const basket = ctx.basket ?? [];
+  const cep = ctx.cep ?? userCep;
+  if (!basket.length || ctx.pending?.length || !cep || ctx.deliveryOrderId || ctx.budget || ctx.repeatConfirm) return false;
+  if (ctx.step && ctx.step !== "collecting" && ctx.step !== "choosing") return false;
+  if (hasMip(basket)) return false;
+  // Já perguntou neste pedido (a cesta ainda tem algum item de quando perguntou).
+  if (ctx.complementAsked?.skus.some((sku) => basket.some((b) => b.sku === sku))) return false;
+  ctx.complementAsked = { skus: basket.map((b) => b.sku), at: Date.now() };
+  const found = await findComplement({ cep, basket, declined: ctx.complementDeclined, ...(userId ? { userId } : {}) }).catch(() => null);
+  if (!found) {
+    await writeCtx(convoId, ctx);
+    return false;
+  }
+  const logId = await recordComplementOffer({ phone, ...(userId ? { userId } : {}) }, found);
+  ctx.complementOffer = {
+    option: found.option,
+    query: found.suggestion.query,
+    shelfId: found.suggestion.shelfId,
+    why: found.suggestion.why,
+    trigger: found.suggestion.trigger,
+    ...(logId ? { logId } : {}),
+    at: Date.now()
+  };
+  ctx.step = "collecting";
+  await writeCtx(convoId, ctx);
+  if (prefix) await reply(phone, prefix);
+  const body = copy.complementOffer(found.option.name, display(found.option.unitPrice, found.option.medicine), found.suggestion.why);
+  // Botões sim/não no canal Meta (o toque volta como `complemento_sim`/`complemento_nao`). O adaptador
+  // não tem método próprio de sim/não para o cliente: `sendOperatorButtons` é o envio genérico de botões
+  // (ids livres; só `op1.…` é rota do operador). Fora do Meta, o texto já pede "sim ou não".
+  if (process.env.WHATSAPP_PROVIDER === "meta") {
+    try {
+      markTurnReplied();
+      const sent = await whatsappAdapter.sendOperatorButtons(phone, body, [
+        { id: "complemento_sim", title: "Sim, adiciona" },
+        { id: "complemento_nao", title: "Não, só isso" }
+      ]);
+      if (sent) return true;
+    } catch (error) {
+      console.warn("[whatsapp:complement:fallback-text]", error instanceof Error ? error.message : error);
+    }
+  }
+  await reply(phone, body);
+  return true;
+}
+
+// Resposta à oferta. "sim" → entra na cesta e segue pro total; "não"/"só isso"/"pix" → total sem
+// insistir. Qualquer OUTRA mensagem conta como recusa e segue o fluxo normal (decisão 08/10: "ah, e
+// uma coca" tem que entrar na cesta, não ir pro total) — o próximo "só isso" não pergunta de novo.
+async function handleComplementAnswer(
+  phone: string,
+  convoId: string,
+  user: { id: string; cep: string | null },
+  ctx: DeliveryContext,
+  text: string,
+  intent: Intent
+): Promise<boolean> {
+  const offer = ctx.complementOffer!;
+  ctx.complementOffer = undefined;
+  const stale = Date.now() - offer.at > 30 * 60_000 || !ctx.basket?.length || Boolean(ctx.pending?.length) || (ctx.step != null && ctx.step !== "collecting");
+  if (stale) {
+    await writeCtx(convoId, ctx);
+    return false;
+  }
+  const n = normalizeMsg(text);
+  const closing = intent.kind === "done" || intent.kind === "pay" || intent.kind === "choose_payment" || /\b(fecha\w*|so isso|pagar|paga|total)\b/.test(n);
+  // "sim, pode fechar" = adiciona e fecha; "pode fechar"/"ok, fecha" sozinho = fecha sem o item.
+  const yes =
+    n === "complemento_sim" ||
+    (n.length <= 40 && !/\bnao\b/.test(n) && /^(sim|s|ss|claro|aceito|uhum|opa)\b/.test(n)) ||
+    // "quero"/"bota" só sozinhos ou com enfeite — "quero um refri também" é pedido novo, não o "sim".
+    /^(quero|manda|bota|coloca|adiciona|acrescenta|pode adicionar|pode colocar|pode por)( (sim|ele|esse|essa|isso|tambem|pode|por favor|pf|pfv|entao|ai|junto))*$/.test(n) ||
+    (!closing && (intent.kind === "affirm" || (n.length <= 30 && !/\bnao\b/.test(n) && /^(pode|ok|isso|beleza|blz|bora|vai)\b/.test(n))));
+  const no =
+    !yes &&
+    (n === "complemento_nao" ||
+      closing ||
+      intent.kind === "reject" ||
+      (n.length <= 40 && /^(nao|n|nn|dispenso|deixa|so isso|obrigad\w*|valeu|nem|agora nao|dessa vez nao|nao precisa|nao quero)\b/.test(n)));
+  if (yes) {
+    const store = getStore(offer.option.storeKey ?? orderStore(ctx).key);
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(offer.option, 1, store)]);
+    await markComplementOutcome(offer.logId, "accepted", `${offer.option.storeKey ?? ""}:${offer.option.sku}`);
+    await writeCtx(convoId, ctx);
+    await continueAfterBasket(phone, convoId, ctx, user.cep, copy.complementAdded(offer.option.name));
+    return true;
+  }
+  ctx.complementDeclined = [...new Set([...(ctx.complementDeclined ?? []), offer.query, offer.shelfId])].slice(-20);
+  await markComplementOutcome(offer.logId, "declined");
+  await writeCtx(convoId, ctx);
+  if (no) {
+    await continueAfterBasket(phone, convoId, ctx, user.cep);
+    return true;
+  }
+  return false;
+}
+
+// ---------- memória do cliente (08/10, recomendação fase 2) ----------
+
+// Declaração sobre si: grava (com data, sem duplicar). Mensagem que é SÓ a declaração, de cliente com
+// endereço, recebe "Anotado…"; junto de um pedido, grava e o pedido segue sem resposta extra (a
+// recomendação deste mesmo turno já lê a memória nova). "esquece minhas preferências" apaga tudo;
+// "não sou mais vegano"/"voltei a comer carne" tira só aquela.
+async function handlePreferenceStatement(
+  phone: string,
+  convoId: string,
+  user: { id: string; defaultAddress: string | null },
+  ctx: DeliveryContext,
+  text: string
+): Promise<boolean> {
+  if (ctx.step === "need_cpf" || ctx.step === "need_recipient_name") return false;
+  const forget = parseForget(text);
+  if (forget) {
+    const { removed } = "all" in forget ? await forgetPreferences(user.id) : await forgetPreferences(user.id, { keys: forget.keys, ...(forget.pet ? { pet: true } : {}) });
+    if ("all" in forget || normalizeMsg(text).length <= 40) {
+      await reply(phone, copy.preferencesForgotten(removed));
+      return true;
+    }
+    return false;
+  }
+  const { statements } = parseStatements(text);
+  if (!statements.length) return false;
+  const { saved } = await rememberStatement(user.id, text);
+  if (!user.defaultAddress || !isStatementOnly(text)) return false;
+  const labels = saved.length
+    ? saved
+    : statements.map((st) => (st.kind === "restriction" ? (st.whoLabel ? `${st.label} (${st.whoLabel})` : st.label) : st.kind === "pet" ? st.species : `${st.people} em casa`));
+  await reply(phone, copy.preferenceSaved(labels));
+  // Opções na mesa continuam valendo: lembra delas.
+  if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+  return true;
+}
+
 async function continueAfterBasket(
   phone: string,
   convoId: string,
@@ -7814,7 +7970,10 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     ...addressOnlyCtx(ctx),
     deliveryOrderId: order.id,
     step: AWAITING_OPERATOR_QUOTE_STATUS,
-    ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {})
+    ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+    // Complemento (08/10, fase 4): "editar itens" reabre ESTE pedido — não pergunta de novo nem oferece o recusado.
+    ...(ctx.complementAsked ? { complementAsked: ctx.complementAsked } : {}),
+    ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {})
   });
 
   let holdupItem: string | undefined;
