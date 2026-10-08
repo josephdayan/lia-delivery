@@ -1193,6 +1193,12 @@ export function recommendIntro(req: RecommendCopyReq): string {
   return `Pra *${trimRec(req.need) || "isso"}*, olha o que achei 👇`;
 }
 
+// Urgência sem entrega na hora (rodada de qualidade 08/10, corpus difícil): o melhor prazo REAL, honesto.
+export function recommendFastestNote(minutes: number): string {
+  const label = minutes < 24 * 60 ? `${Math.max(1, Math.round(minutes / 60))}h` : minutes < 48 * 60 ? "1 dia" : `${Math.round(minutes / (24 * 60))} dias`;
+  return `Entrega na hora eu não tenho aí — o mais rápido que achei chega em *${label}*.`;
+}
+
 // Item da lista "Já anotei:" do onboarding (o pedido de recomendação inteiro, até o CEP).
 export function recommendNoted(req: RecommendCopyReq): string {
   const label = recommendLabel(req);

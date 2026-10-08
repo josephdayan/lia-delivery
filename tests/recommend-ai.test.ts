@@ -151,7 +151,7 @@ describe("recomendação — planShelves (IA por costura + redes de segurança)"
     assert.equal(plan.picks[0].shelfId, "doces.chocolate");
   });
 
-  it("IA com parte válida → fica só a parte válida, fonte ai", async () => {
+  it("IA com parte válida → fica só a parte válida, fonte ai (e o plano curto ganha as prateleiras da tabela, 08/10)", async () => {
     __setPlanShelvesForTests(async () => ({
       picks: [
         { shelfId: "doces.sorvete", query: "sorvete pote", why: "gelado" },
@@ -162,10 +162,26 @@ describe("recomendação — planShelves (IA por costura + redes de segurança)"
     }));
     const plan = await planShelves(req({ text: "algo doce", need: "algo doce" }), { deps });
     assert.equal(plan.source, "ai");
-    assert.deepEqual(plan.picks.map((p) => p.shelfId), ["doces.sorvete", "doces.bolo"]);
+    // Rodada de qualidade (08/10, noite): plano da IA com < 5 prateleiras completa com a tabela, na ordem dela.
+    assert.deepEqual(plan.picks.map((p) => p.shelfId), ["doces.sorvete", "doces.bolo", "doces.chocolate", "doces.biscoito"]);
+    assert.equal(plan.picks[0].query, "sorvete pote");
   });
 
-  it("sintoma: picks da IA fora de mip/care são filtrados e a mipClass da tabela é injetada", async () => {
+  it("sintoma COM entrada na tabela → plano da tabela, na ordem de indicação, sem chamar a IA (08/10, noite)", async () => {
+    process.env.LIA_MEDICINE_MIP = "true";
+    let called = false;
+    __setPlanShelvesForTests(async () => {
+      called = true;
+      return { picks: [{ shelfId: "doces.chocolate", query: "chocolate", why: "conforto" }], source: "ai" };
+    });
+    const plan = await planShelves(req({ text: "tô com dor de barriga", need: "dor de barriga", symptom: "dor de barriga" }), { deps });
+    assert.equal(called, false);
+    assert.equal(plan.source, "table");
+    assert.deepEqual(plan.picks.map((p) => p.shelfId), ["farmacia.antidiarreico", "farmacia.antigases", "farmacia.soro"]);
+    assert.equal(plan.picks[1].mipClass, "antigases");
+  });
+
+  it("sintoma SEM entrada na tabela: a IA escolhe, mas só cuidado (nada de remédio nem comida comum)", async () => {
     process.env.LIA_MEDICINE_MIP = "true";
     __setPlanShelvesForTests(async () => ({
       picks: [
@@ -175,10 +191,9 @@ describe("recomendação — planShelves (IA por costura + redes de segurança)"
       ],
       source: "ai"
     }));
-    const plan = await planShelves(req({ text: "tô com dor de barriga", need: "dor de barriga", symptom: "dor de barriga" }), { deps });
+    const plan = await planShelves(req({ text: "tô com dor no joelho", need: "dor no joelho", symptom: "dor no joelho" }), { deps });
     assert.equal(plan.source, "ai");
-    assert.deepEqual(plan.picks.map((p) => p.shelfId), ["farmacia.antigases", "farmacia.soro"]);
-    assert.equal(plan.picks[0].mipClass, "antigases");
+    assert.deepEqual(plan.picks.map((p) => p.shelfId), ["farmacia.soro"]);
   });
 
   it("sinal de alerta sai ANTES da IA (a IA nem é chamada)", async () => {
@@ -266,13 +281,13 @@ describe("recomendação — JULGAR por regras", () => {
     assert.equal(v.cards.find((c) => c.shelfId === "doces.sorvete")?.sku, "s-2");
   });
 
-  it("fast → menor prazo por prateleira; cards prontos-pra-comer primeiro e por prazo; motivo = prazo real", () => {
+  it("fast → menor prazo por prateleira; cards prontos-pra-comer primeiro e por prazo; motivo = papel (o prazo fica no card, 08/10)", () => {
     const v = judgeFitnessByRules(input({ criteria: ["fast"] }), deps);
     assert.equal(v.cards.find((c) => c.shelfId === "doces.chocolate")?.sku, "c-rapido");
     // sorvete (ready, 60 min) → chocolate (ready, 90 min) → bolo (sem flag ready, 30 min)
     assert.deepEqual(v.cards.map((c) => c.shelfId), ["doces.sorvete", "doces.chocolate", "doces.bolo"]);
-    assert.equal(v.cards[0].why, "chega em 1h");
-    assert.equal(v.cards[2].why, "chega em 30 min");
+    assert.equal(v.cards[0].why, "doce e gelado");
+    assert.equal(v.cards[2].why, "fatia na hora");
   });
 
   it("urgência sem critério também ordena por prazo", () => {
@@ -292,8 +307,8 @@ describe("recomendação — JULGAR por regras", () => {
     assert.equal(v.cards.find((c) => c.shelfId === "doces.bolo")?.sku, "b-1");
   });
 
-  it("orçamento total corta o que estoura (preço + frete)", () => {
-    const v = judgeFitnessByRules(input({ budget: 20, criteria: ["good"] }), deps);
+  it("orçamento total corta o que estoura (preço + frete; frete desconhecido conta R$ 10, 08/10)", () => {
+    const v = judgeFitnessByRules(input({ budget: 30, criteria: ["good"] }), deps);
     assert.equal(v.cards.find((c) => c.shelfId === "doces.sorvete")?.sku, "s-2");
   });
 

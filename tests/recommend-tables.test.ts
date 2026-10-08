@@ -130,12 +130,13 @@ test("findSymptom: sintoma → classe isenta mais indicada em primeiro", () => {
 
 // Regra mudada na revisão adversarial de 08/10 (A6): loperamida só com diarreia dita; dor de barriga
 // genérica = antiespasmódico, antigases, probiótico, antiácido.
-test("dor de barriga: começa por antiespasmódico, SEM antidiarreico; loperamida só em diarreia; cuidado sem remédio", () => {
+test("dor de barriga: antiespasmódico e antigases (classes diretas), SEM antidiarreico; loperamida só em diarreia; cuidado sem remédio", () => {
   const entry = findSymptom("dor de barriga")!;
   assert.equal(entry.picks[0].shelfId, "farmacia.antiespasmodico");
   const ids = entry.picks.map((p) => p.shelfId);
   assert.ok(!ids.includes("farmacia.antidiarreico"), "loperamida fora da dor de barriga genérica");
-  assert.ok(ids.includes("farmacia.antiespasmodico") && ids.includes("farmacia.antigases") && ids.includes("farmacia.probiotico") && ids.includes("farmacia.antiacido"));
+  // Rodada de qualidade (08/10, noite): só as classes diretas (cólica e gases); probiótico e antiácido saíram.
+  assert.deepEqual(ids, ["farmacia.antiespasmodico", "farmacia.antigases"]);
   for (const pick of entry.picks) assert.ok(pick.mipClass, `${pick.shelfId} sem mipClass`);
   assert.ok((entry.care ?? []).length > 0);
   for (const c of entry.care ?? []) assert.equal(c.mipClass, undefined);

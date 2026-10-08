@@ -22,6 +22,7 @@ import * as copy from "../lia-copy";
 import { prisma } from "../prisma";
 import { medicineEnabled } from "../medicine";
 import { reply, writeCtx } from "../turn-runtime";
+import { noteShopperCep } from "../store-areas";
 import { gatherShelfCandidates } from "../stores";
 import { withDeadline } from "../stores/live-search";
 import { shelfHeadMatch } from "../stores/types";
@@ -32,6 +33,8 @@ import {
   emergencyFlag,
   judgeFitness,
   judgeFitnessByRules,
+  normalizeRecommendRequest,
+  TYPICAL_FREIGHT,
   normRec,
   planShelves,
   planShelvesFromTables,
@@ -39,6 +42,7 @@ import {
   type RecommendTableDeps
 } from "./fallback";
 import { suggestComplement, type ComplementSuggestion } from "./complement";
+import { attributeRules, baseProductName, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
 import { loadCustomerMemory, memoryWantsHealthy, type LoadedMemory } from "./memory";
 import { recommendEnabled } from "./types";
 import type { RecommendCard, RecommendCriterion, RecommendOutcome, RecommendRequest, ShelfCandidate, ShelfPick, ShelfPlan } from "./types";
@@ -122,15 +126,24 @@ export function shelfFloorTerms(pick: Pick<ShelfPick, "query">, shelf?: { query?
   return [...pick.query.split("|"), shelf?.query ?? "", ...(shelf?.aliases ?? [])].map((q) => q.trim()).filter(Boolean);
 }
 
-async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps): Promise<ShelfCandidate[]> {
+async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps, wide = false): Promise<ShelfCandidate[]> {
   const d = recommendDeps();
   // shelfId "produto": produto julgado sem prateleira no mapa — busca textual, nunca remédio.
   const shelf = pick.shelfId === "produto" ? undefined : td.shelfById(pick.shelfId) ?? undefined;
   try {
-    const all = await gatherShelfCandidates(pick, shelf, { limit: KEEP_PER_SHELF, perStore: 3, cep });
+    // Produto julgado (1 prateleira, 4 cards de marcas diferentes com o atributo pedido): busca mais larga.
+    const all = await gatherShelfCandidates(pick, shelf, { limit: wide ? 14 : KEEP_PER_SHELF, perStore: wide ? 5 : 3, cep });
     // O que veio da prateleira inteira da loja (categoria VTEX) já é da prateleira e passa direto.
     const terms = shelfFloorTerms(pick, shelf);
-    const found = all.filter((c) => Boolean(shelf?.categoryPaths?.[c.store.key]) || terms.some((q) => shelfHeadMatch(q, c.item)));
+    const floor = all.filter((c) => Boolean(shelf?.categoryPaths?.[c.store.key]) || terms.some((q) => shelfHeadMatch(q, c.item)));
+    // (08/10, rodada de qualidade) O que responde à consulta DA PICK vem antes do que só casa com um alias
+    // da prateleira: "carvão" no churrasco não pode virar churrasqueira elétrica de R$ 400 (alias
+    // "churrasqueira"), "picanha" não vira carne moída. Só os alias quando a pick não achou nada.
+    const pickTerms = pick.query.split("|").map((q) => q.trim()).filter(Boolean);
+    const own = floor.filter((c) => pickTerms.some((q) => shelfHeadMatch(q, c.item)));
+    // Com 1 só resposta da pick, os alias ficam: o juiz escolhe. Produto julgado (busca larga) não corta —
+    // o atributo pedido decide depois ("café em pó pra coador" casava só com os solúveis).
+    const found = !wide && own.length >= 2 ? own : floor;
     if (!found.length) return [];
     const popularity = new Map(found.map((c) => [`${c.store.key}:${c.item.sku}`, c.item.popularity]));
     const options = found.map((c) => d.toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
@@ -142,11 +155,11 @@ async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps):
   }
 }
 
-async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps, deadline = Date.now() + recommendSearchBudgetMs()): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
+async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps, deadline = Date.now() + recommendSearchBudgetMs(), wide = false): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
   const perPick = await Promise.all(
     picks.map((pick) => {
       const ms = Math.min(PICK_BUDGET_MS, deadline - Date.now());
-      return withDeadline(searchPick(pick, cep, td), ms, [] as ShelfCandidate[], () => console.warn(`[recommend:search:timeout] ${pick.shelfId} passou de ${ms} ms; prateleira conta como vazia`));
+      return withDeadline(searchPick(pick, cep, td, wide && picks.length <= 2), ms, [] as ShelfCandidate[], () => console.warn(`[recommend:search:timeout] ${pick.shelfId} passou de ${ms} ms; prateleira conta como vazia`));
     })
   );
   const seen = new Set<string>();
@@ -177,35 +190,182 @@ function toCard(c: ShelfCandidate, why: string): RecommendCard {
 
 // Cards na ordem do juiz (1 por prateleira). Produto julgado (1 a 3 prateleiras) completa até o teto
 // com os próximos melhores da(s) mesma(s) prateleira(s), pelo MESMO critério (regras, sem IA).
-async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidates: ShelfCandidate[], hour: number, td: RecommendTableDeps, max: number, opts: { rulesOnly?: boolean; memory?: LoadedMemory } = {}): Promise<RecommendCard[]> {
-  if (!candidates.length) return [];
+//
+// Rodada de qualidade (08/10, noite), tudo determinístico e testado em tests/recommend-quality-2026-10-08:
+//   - URGÊNCIA (fome, "agora", "hoje"): havendo item que chega em até 6 h, o que leva um dia sai antes do
+//     juiz (se sobrarem ≥ 2 prateleiras) e os cards vão do menor prazo ao maior;
+//   - necessidade: o juiz de IA que devolveu poucos cards é completado pelas regras nas prateleiras que
+//     ficaram de fora; no máximo 2 cards da mesma loja quando a prateleira tem outra loja;
+//   - produto julgado: marcas/linhas diferentes antes de repetir (Pampers RN 20 e RN 36 é o mesmo);
+//   - motivo: só fato que o card sustenta (finalizeWhys).
+async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: ShelfCandidate[], hour: number, td: RecommendTableDeps, max: number, opts: { rulesOnly?: boolean; memory?: LoadedMemory } = {}): Promise<RecommendCard[]> {
+  if (!candidatesIn.length) return [];
   const memory = opts.memory;
   // Memória (fase 2, 08/10): diabetes/"não como açúcar" dito pelo cliente pede o critério "saudável"
   // (zero/diet primeiro) — só no julgamento, a copy do pedido não muda. Nunca em sintoma.
   const judged: RecommendRequest =
     memoryWantsHealthy(memory) && !isSymptomPlan(req, plan) && !req.criteria.includes("healthy") ? { ...req, criteria: [...req.criteria, "healthy"] } : req;
+  const fast = wantsFast(judged.criteria, judged.urgency);
+  let candidates = fast ? quickOnly(candidatesIn) : candidatesIn;
+  if (req.form === "product_judged") candidates = productTypeOnly(req, candidates);
   const input = { request: judged, plan, candidates, hour, ...(memory ? { memory } : {}) };
-  const verdict = opts.rulesOnly ? judgeFitnessByRules(input, td) : await judgeFitness(input, td);
+  // Sintoma (rodada de qualidade 08/10): o juiz é a REGRA do remédio (apresentação básica, mais vendido,
+  // preço) na ordem da tabela — determinístico, sem os 5–11 s do juiz de IA (que caía no prazo no placar).
+  const verdict = opts.rulesOnly || isSymptomPlan(req, plan) ? judgeFitnessByRules(input, td) : await judgeFitness(input, td);
   const byKey = new Map(candidates.map((c) => [`${c.shelfId}|${keyOf(c.option)}`, c]));
-  const cards: RecommendCard[] = [];
-  const add = (shelfId: string, sku: string, storeKey: string, why: string) => {
+  let cards: RecommendCard[] = [];
+  const brandOf = (o: ChoiceOption) => normRec(o.brand) || normRec(o.name).split(" ").slice(0, 2).join(" ");
+  const add = (shelfId: string, sku: string, storeKey: string, why: string, brandCap = Number.POSITIVE_INFINITY): boolean => {
     const c = byKey.get(`${shelfId}|${storeKey}:${sku}`);
-    if (!c || cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option))) return;
-    cards.push(toCard(c, why || plan.picks.find((p) => p.shelfId === shelfId)?.why || ""));
-  };
-  for (const card of verdict.cards) add(card.shelfId, card.sku, card.storeKey, card.why);
-  if (req.form === "product_judged") {
-    for (let round = 0; round < max && cards.length < max; round++) {
-      const rest = candidates.filter((c) => !cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)));
-      if (!rest.length) break;
-      const more = judgeFitnessByRules({ ...input, candidates: rest }, td).cards;
-      if (!more.length) break;
-      const before = cards.length;
-      for (const card of more) if (cards.length < max) add(card.shelfId, card.sku, card.storeKey, card.why);
-      if (cards.length === before) break;
+    if (!c || cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option))) return false;
+    if (req.form === "product_judged") {
+      const base = baseProductName(c.option.name);
+      if (cards.some((x) => baseProductName(x.name) === base)) return false;
+      if (cards.filter((x) => brandOf(x) === brandOf(c.option)).length >= brandCap) return false;
     }
+    cards.push(toCard(c, why || plan.picks.find((p) => p.shelfId === shelfId)?.why || ""));
+    return true;
+  };
+  for (const card of verdict.cards) add(card.shelfId, card.sku, card.storeKey, card.why, req.form === "product_judged" ? 1 : Number.POSITIVE_INFINITY);
+  if (req.form === "product_judged") {
+    // 1ª volta: marcas novas; 2ª: até 2 da mesma marca (linha diferente).
+    for (const brandCap of [1, 2]) {
+      for (let round = 0; round < max && cards.length < max; round++) {
+        const rest = candidates.filter((c) => !cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)));
+        if (!rest.length) break;
+        const more = rankAll({ ...input, candidates: rest }, td);
+        const before = cards.length;
+        for (const card of more) if (cards.length < max) add(card.shelfId, card.sku, card.storeKey, "", brandCap);
+        if (cards.length === before) break;
+      }
+    }
+  } else {
+    // O juiz de IA deixou prateleira com candidato elegível de fora e mostrou pouco: completa pelas regras.
+    const eligibleShelves = [...new Set(eligibleCandidates(input).map((c) => c.shelfId))];
+    const target = Math.min(max, 3, eligibleShelves.length);
+    if (cards.length < target && verdict.source === "ai") {
+      const covered = new Set(cards.map((c) => c.shelfId));
+      const rest = candidates.filter((c) => !covered.has(c.shelfId));
+      for (const card of judgeFitnessByRules({ ...input, candidates: rest }, td).cards) {
+        if (cards.length >= target) break;
+        add(card.shelfId, card.sku, card.storeKey, card.why);
+      }
+    }
+    cards = capPerStore(cards, input, td, fast);
   }
-  return preferUsualBrand(cards, input, max);
+  if (isSymptomPlan(req, plan)) {
+    // Sintoma: a ordem é a da tabela (classe mais indicada primeiro, cuidado no fim), nunca a do prazo.
+    const order = (c: RecommendCard) => {
+      const i = plan.picks.findIndex((p) => p.shelfId === c.shelfId);
+      return i < 0 ? plan.picks.length : i;
+    };
+    cards = cards.map((c, i) => ({ c, i })).sort((a, b) => order(a.c) - order(b.c) || a.i - b.i).map((x) => x.c);
+  } else if (fast) {
+    const eta = (c: RecommendCard) => c.etaMinutes ?? Number.POSITIVE_INFINITY;
+    cards = cards.map((c, i) => ({ c, i })).sort((a, b) => (eta(a.c) === eta(b.c) ? a.i - b.i : eta(a.c) - eta(b.c))).map((x) => x.c);
+  }
+  return preferUsualBrand(finalizeWhys(fitKitBudget(cards.slice(0, max), judged), judged, plan, memory), input, max);
+}
+
+// Produto julgado (rodada de qualidade 08/10): o card é do produto pedido, com o atributo pedido. Cada corte
+// só vale se sobrar candidato: (1) atributo no nome ("cacheado", "de coador", "sensível"); (2) kit/combo só
+// se o cliente pediu kit ("Kit Máscara + Shampoo" não é shampoo); (3) infantil só pra criança.
+const KID_RE = /\b(crianc\w*|bebe|bebes|filh\w*|infantil|kids?|menin\w*|sobrinh\w*|recem nascid\w*|rn)\b/;
+export function productTypeOnly(req: RecommendRequest, candidates: ShelfCandidate[]): ShelfCandidate[] {
+  const ask = normRec(`${req.product ?? ""} ${req.text} ${req.recipient ?? ""} ${req.constraints.join(" ")}`);
+  let out = candidates;
+  const keep = (f: (c: ShelfCandidate) => boolean) => {
+    const kept = out.filter(f);
+    if (kept.length) out = kept;
+  };
+  const attrs = attributeRules(req.constraints);
+  if (attrs.length) keep((c) => meetsAttributes(c.option.name, attrs));
+  if (!/\b(kit|kits|combo|conjunto)\b/.test(ask)) keep((c) => !/\b(kit|kits|combo|conjunto)\b/.test(normRec(c.option.name)));
+  if (!KID_RE.test(ask)) keep((c) => !/\b(infantil|kids?|baby|bebe|junior|teen)\b/.test(normRec(c.option.name)));
+  return out;
+}
+
+// Todos os candidatos de uma volta das regras, 1 por prateleira (a 1ª escolha de cada).
+function rankAll(input: Parameters<typeof judgeFitnessByRules>[0], td: RecommendTableDeps) {
+  return judgeFitnessByRules(input, td).cards;
+}
+
+// Urgência: só o que chega no prazo curto, se sobrarem ≥ 2 prateleiras (ou todas as que havia).
+export function quickOnly(candidates: ShelfCandidate[]): ShelfCandidate[] {
+  const cutoff = fastEtaCutoff(candidates.map((c) => c.option.etaMinutes));
+  if (cutoff == null) return candidates;
+  const quick = candidates.filter((c) => (c.option.etaMinutes ?? Number.POSITIVE_INFINITY) <= cutoff);
+  // Placar q1: misturar "chega em 3h" com "amanhã" fazia o juiz reprovar a fome; com o plano de urgência
+  // largo (até 6 prateleiras), basta 1 prateleira que chegue no dia.
+  return quick.length ? quick : candidates;
+}
+
+// Kit com orçamento (placar q1: "filhote, preciso de tudo, até 200" somava R$ 194 + frete): os cards somados
+// + frete típico cabem no teto; sai o card de menor prioridade (o último) até caber. Presente = alternativas.
+export function fitKitBudget(cards: RecommendCard[], req: RecommendRequest): RecommendCard[] {
+  const budget = req.budget;
+  if (!budget || req.form !== "need" || /\b(presente|presentes|lembranc\w*|amigo secreto|amigo oculto)\b/.test(normRec(`${req.need ?? ""} ${req.text}`))) return cards;
+  const out = [...cards];
+  const total = () => out.reduce((sum, c) => sum + c.unitPrice, 0) + TYPICAL_FREIGHT;
+  while (out.length > 1 && total() > budget) out.pop();
+  return out;
+}
+
+// No máximo `cap` cards da mesma loja quando a prateleira tem item de outra loja (mesma regra do juiz por
+// regras; em urgência, a troca não pode chegar mais de 1 h depois).
+export function capPerStore(cards: RecommendCard[], input: Parameters<typeof judgeFitnessByRules>[0], td: RecommendTableDeps, fast: boolean, cap = 2): RecommendCard[] {
+  const out = [...cards];
+  const eligible = eligibleCandidates(input);
+  const storeOf = (o: { storeKey?: string }) => o.storeKey ?? "";
+  for (let i = 0; i < out.length; i++) {
+    const store = storeOf(out[i]);
+    if (out.slice(0, i).filter((c) => storeOf(c) === store).length < cap) continue;
+    const eta = out[i].etaMinutes ?? Number.POSITIVE_INFINITY;
+    const alts = eligible.filter(
+      (c) =>
+        c.shelfId === out[i].shelfId &&
+        storeOf(c.option) !== store &&
+        out.filter((x) => storeOf(x) === storeOf(c.option)).length < cap &&
+        !out.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)) &&
+        (!fast || (c.option.etaMinutes ?? Number.POSITIVE_INFINITY) <= eta + 60)
+    );
+    if (!alts.length) continue;
+    const best = judgeFitnessByRules({ ...input, candidates: alts }, td).cards[0];
+    const chosen = best && alts.find((c) => c.option.sku === best.sku && storeOf(c.option) === best.storeKey);
+    if (chosen) out[i] = toCard(chosen, "");
+  }
+  return out;
+}
+
+// Motivo do card (rodada de qualidade 08/10): só FATO que o card sustenta. Remédio: a classe ("alivia
+// cólica"). Comida/coisa: a restrição provada no nome ("zero lactose no rótulo"), o atributo pedido
+// ("linha pra dente sensível"), "o mais em conta dos N" só no card mais barato quando o critério é preço,
+// ou o papel da prateleira ("pra assar", "pronto pra comer"). Popularidade, liderança e prazo prometido
+// saem (o card mostra o prazo; o juiz do placar marcava "o mais vendido" como falso).
+export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan: ShelfPlan, memory?: LoadedMemory): RecommendCard[] {
+  const rules = constraintRules(req.constraints, memory);
+  const attrs = req.form === "product_judged" ? attributeRules(req.constraints) : [];
+  // "o mais em conta" só quando preço é O critério (o 1º); num kit de tipos diferentes a comparação confunde.
+  const cheap = req.criteria[0] === "cheap" && cards.length >= 2 ? [...cards].sort((a, b) => a.unitPrice - b.unitPrice)[0] : undefined;
+  // Alergia (corpus difícil h17): o nome não prova ausência de traços — o motivo avisa.
+  const allergen = rules.find(isAllergenRule);
+  const allergenWord = allergen && allergen.kind === "word" ? allergen.word.replace(/\s*\(.*$/, "") : undefined;
+  // Urgência (h02/h20/h24): o card que chega ANTES de todos os outros diz isso (o card mostra o prazo).
+  const eta = (c: RecommendCard) => c.etaMinutes ?? Number.POSITIVE_INFINITY;
+  const sorted = [...cards].sort((a, b) => eta(a) - eta(b));
+  const fastest = wantsFast(req.criteria, req.urgency) && sorted.length >= 2 && eta(sorted[0]) < eta(sorted[1]) ? sorted[0] : undefined;
+  return cards.map((card) => {
+    const pickWhy = plan.picks.find((p) => p.shelfId === card.shelfId)?.why;
+    const own = whyIsFactual(card.why) ? card.why : "";
+    const fromPlan = whyIsFactual(pickWhy) ? pickWhy! : "";
+    let why: string;
+    if (card.medicine === "mip") why = own || fromPlan;
+    else if (allergenWord) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
+    else if (cheap && keyOf(card) === keyOf(cheap)) why = `o mais em conta dos ${cards.length}`;
+    else if (fastest && keyOf(card) === keyOf(fastest)) why = "o que chega mais rápido daqui";
+    else why = dietProofWhy(card.name, rules) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? (own || fromPlan);
+    return { ...card, why };
+  });
 }
 
 function isSymptomPlan(req: RecommendRequest, plan: ShelfPlan): boolean {
@@ -260,9 +420,22 @@ type Chain = {
   timings: { mapMs: number; searchMs: number; judgeMs: number };
 };
 
-async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?: string[]; mustHave?: string; hour?: number; memory?: LoadedMemory } = {}): Promise<Chain> {
+// "pra hoje", "agora", "rápido", "urgente" no texto = urgência (rodada de qualidade 08/10: "me surpreende
+// hj" recebia só item de amanhã). O detector nem sempre marca; a cadeia confere de novo.
+const URGENT_TEXT_RE = /\b(hj|hoje|agora|rapido|rapidinho|urgente|urgencia|correndo|madrugada|chegue logo|chega logo|pro jantar|pra janta|pro almoco|hoje a noite)\b|\bem (1|uma|meia|2|duas) horas?\b|\bem \d+ ?min/;
+
+async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketNames?: string[]; mustHave?: string; hour?: number; memory?: LoadedMemory } = {}): Promise<Chain> {
   const td = tableDeps();
+  // Mesmos ajustes que o MAPEAR faz (sintoma × comida, pet com pulga, produto que é sintoma): o JULGAR e o
+  // filtro de candidatos precisam ver o mesmo pedido.
+  const norm = normalizeRecommendRequest(reqIn, td);
+  const req: RecommendRequest = !norm.urgency && URGENT_TEXT_RE.test(normRec(norm.text)) ? { ...norm, urgency: true } : norm;
   const hour = opts.hour ?? saoPauloHour();
+  // (08/10, rodada de qualidade) O CEP da cadeia vale também para o escopo do turno: sem ele,
+  // `storesForShopper` (cópia/ao vivo) tirava TODA loja regional (Mambo, Swift) — carne, pão, pão de
+  // alho, cerveja e sanduíche chegavam vazios (placar: churrasco/café da manhã só com refrigerante).
+  // Fora de escopo é no-op; dentro, é o mesmo CEP que o turno já anotaria.
+  noteShopperCep(cep);
   const t0 = Date.now();
   // Memória (fase 2): restrições ditas entram nos filtros e no prompt do plano (fallback.ts/ai.ts).
   const plan = await planShelves(req, { hour, basketNames: opts.basketNames, deps: td, ...(opts.memory ? { memory: opts.memory } : {}) });
@@ -271,7 +444,7 @@ async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?
   // Refino positivo ("de morango"): a palavra entra na busca de cada prateleira e vira exigência no nome.
   const must = normRec(opts.mustHave);
   const picks = plan.picks.slice(0, MAX_PICKS).map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p));
-  const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs());
+  const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs(), req.form === "product_judged");
   let candidates = searched.candidates;
   if (must) {
     // Tem a palavra pedida E continua sendo da prateleira ("sorvete morango" não aceita a fruta solta).
@@ -478,7 +651,16 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
   ctx.pending = [pending, ...(ctx.pending ?? [])];
   ctx.pendingSince = Date.now();
   await writeCtx(convoId, ctx);
-  await showRecommendation(phone, pending, withMemoryNote(copy.recommendIntro(req), memoryActedOn(memory, req, chain)));
+  await showRecommendation(phone, pending, withFastestNote(withMemoryNote(copy.recommendIntro(req), memoryActedOn(memory, req, chain)), req, shown));
+}
+
+// Urgência sem entrega na hora (corpus difícil h02/h20/h24): a copy diz o MELHOR prazo real, sem prometer.
+function withFastestNote(header: string, req: RecommendRequest, cards: RecommendCard[]): string {
+  const urgent = wantsFast(req.criteria, req.urgency) || URGENT_TEXT_RE.test(normRec(req.text));
+  const etas = cards.map((c) => c.etaMinutes).filter((m): m is number => typeof m === "number" && m > 0);
+  if (!urgent || !etas.length) return header;
+  const min = Math.min(...etas);
+  return min >= 60 ? `${copy.recommendFastestNote(min)}\n${header}` : header;
 }
 
 // Cards + (remédio isento) a copy de cuidado ANTES deles. O CPF é pedido no fluxo de sempre quando
@@ -539,7 +721,7 @@ export async function recommendByPrice(env: RecommendEnv, current: PendingChoice
     .sort((a, b) => (dir === "asc" ? price(a) - price(b) : price(b) - price(a)))
     .slice(0, recommendMaxCards())
     // "o mais em conta" só é verdade no primeiro; nos outros o motivo do plano (ou nenhum).
-    .map((card, i) => (dir === "asc" && i > 0 && card.why === "o mais em conta" ? { ...card, why: rec.plan.picks.find((p) => p.shelfId === card.shelfId)?.why ?? "" } : card));
+    .map((card, i) => (dir === "asc" && i > 0 && card.why.startsWith("o mais em conta") ? { ...card, why: rec.plan.picks.find((p) => p.shelfId === card.shelfId)?.why ?? "" } : card));
   if (!sorted.length) {
     await recommendDeps().sendChoices(env.phone, current);
     return;
@@ -668,6 +850,7 @@ export async function findComplement(input: {
   timeoutMs?: number;
 }): Promise<ComplementFound | null> {
   const td = tableDeps();
+  noteShopperCep(input.cep);
   const suggestion = suggestComplement(input.basket, { shelfById: td.shelfById, recentlyDeclined: input.declined });
   if (!suggestion) return null;
   const started = Date.now();

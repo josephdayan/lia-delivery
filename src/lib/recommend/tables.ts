@@ -61,19 +61,19 @@ const FOME_KEYS = [
 export const NEED_TABLE: NeedTableEntry[] = [
   // ======================= ESTADOS =======================
   need(["fome de doce", "fome doce", "fome algo doce", "fome de algo doce", "larica doce"], [
-    p("doces.chocolate", "chocolate", "pronto pra comer na hora"),
+    p("doces.chocolate", "chocolate", "pronto pra comer"),
     p("doces.biscoito_doce", "biscoito recheado", "pacote pronto pra matar a fome"),
     p("doces.bolo", "bolinho", "bolinho pronto, individual"),
     p("doces.sorvete", "sorvete", "gelado e pronto pra comer")
   ], ["fast"]),
   need(["fome de salgado", "fome salgada", "fome algo salgado", "larica salgada"], [
-    p("snacks.salgadinho", "salgadinho", "pronto pra comer na hora"),
+    p("snacks.salgadinho", "salgadinho", "pronto pra comer"),
     p("lanches.sanduiche", "sanduiche pronto", "lanche pronto, sem preparo"),
     p("snacks.biscoito_salgado", "biscoito salgado", "pacote pronto pra beliscar"),
     p("snacks.amendoim_castanhas", "amendoim", "petisco pronto e que sustenta")
   ], ["fast"]),
   need(FOME_KEYS, [
-    p("snacks.salgadinho", "salgadinho", "pronto pra comer na hora"),
+    p("snacks.salgadinho", "salgadinho", "pronto pra comer"),
     p("doces.chocolate", "chocolate", "pronto pra comer e dá energia rápida"),
     p("lanches.sanduiche", "sanduiche pronto", "lanche pronto, sem preparo"),
     p("doces.biscoito_doce", "biscoito recheado", "pacote pronto pra beliscar"),
@@ -85,7 +85,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("congelados.pratos_prontos", "lasanha congelada", "fica pronto em minutos no micro-ondas"),
     p("congelados.pizza", "pizza congelada", "vai direto ao forno"),
     p("congelados.empanados", "nuggets", "prontos em poucos minutos"),
-    p("mercado.macarrao_instantaneo", "macarrao instantaneo", "pronto em 3 minutos"),
+    p("mercado.macarrao_instantaneo", "macarrao instantaneo", "prático de preparar"),
     p("lanches.sanduiche", "sanduiche pronto", "lanche pronto, sem preparo")
   ], ["fast"]),
   need(["sede", "com sede", "to com sede", "morrendo de sede", "calor", "to com calor", "muito calor", "que calor", "refrescar",
@@ -135,7 +135,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   // ======================= VONTADES =======================
   need(["doce", "algo doce", "coisa doce", "um doce", "docinho", "vontade de doce", "vontade de comer doce", "sobremesa",
     "algo docinho", "adocar a boca", "comer um doce", "pra adocar"], [
-    p("doces.chocolate", "chocolate", "o doce mais pedido"),
+    p("doces.chocolate", "chocolate", "doce pronto pra comer"),
     p("doces.sorvete", "sorvete", "doce e gelado"),
     p("doces.bolo", "bolo pronto", "pronto pra comer"),
     p("doces.biscoito_doce", "biscoito recheado", "pacote pronto"),
@@ -159,7 +159,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   ], ["healthy"]),
   need(["algo gostoso", "coisa gostosa", "qualquer coisa gostosa", "me surpreende", "um mimo", "me mimar", "algo especial",
     "me agradar", "um agrado"], [
-    p("doces.chocolate", "chocolate", "o mimo mais pedido"),
+    p("doces.chocolate", "chocolate", "mimo doce pra dar"),
     p("doces.sorvete", "sorvete", "doce e gelado"),
     p("doces.chocolate_presente", "trufas", "chocolate fino"),
     p("doces.bolo", "bolo pronto", "pronto pra comer"),
@@ -176,7 +176,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   // ======================= OCASIÕES =======================
   need(["churrasco", "churras", "fazer churrasco", "churrasquinho", "churrasco com os amigos", "assar uma carne", "carne pra assar"], [
     p("casa.churrasco", "carvao", "sem carvão não tem churrasco"),
-    p("carnes.bovina", "picanha", "o corte mais pedido no churrasco"),
+    p("carnes.bovina", "picanha", "corte clássico de churrasco"),
     p("carnes.linguica", "linguica toscana", "clássico da grelha"),
     p("padaria.pao_de_alho", "pao de alho", "acompanhamento da grelha"),
     p("bebidas.cerveja", "cerveja", "a bebida do churrasco"),
@@ -191,7 +191,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("hortifruti.frutas", "frutas", "fruta fresca")
   ]),
   need(["noite de filme", "ver filme", "assistir filme", "ver um filme", "maratona de serie", "maratonar", "cinema em casa", "filme"], [
-    p("snacks.salgadinho", "pipoca de micro-ondas", "o clássico do filme"),
+    p("snacks.salgadinho", "pipoca de micro-ondas", "salgadinho pra comer no filme"),
     p("doces.chocolate", "chocolate", "doce pra acompanhar"),
     p("bebidas.refrigerante", "refrigerante", "bebida do cinema"),
     p("doces.balas", "bala de goma", "beliscar durante o filme"),
@@ -315,12 +315,12 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("pet.transporte", "caixa de transporte", "pra levar ao veterinário")
   ], ["good"]),
   need(["mimo pro cachorro", "presente pro cachorro", "agradar o cachorro", "agradar meu cachorro", "petisco pro cachorro"], [
-    p("pet.petisco_cachorro", "petisco cachorro", "o mimo preferido"),
+    p("pet.petisco_cachorro", "petisco cachorro", "petisco pro mimo"),
     p("pet.brinquedo", "brinquedo para cachorro", "diversão"),
     p("pet.cama", "cama para cachorro", "conforto")
   ]),
   need(["mimo pro gato", "presente pro gato", "agradar o gato", "agradar meu gato", "petisco pro gato"], [
-    p("pet.petisco_gato", "petisco gato", "o mimo preferido"),
+    p("pet.petisco_gato", "petisco gato", "petisco pro mimo"),
     p("pet.brinquedo", "brinquedo para gato", "diversão"),
     p("pet.cama", "cama para gato", "conforto")
   ]),
@@ -357,6 +357,40 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("beleza.condicionador", "condicionador", "desembaraça e hidrata"),
     p("beleza.tratamento_capilar", "mascara capilar", "hidratação profunda"),
     p("beleza.tratamento_capilar", "creme de pentear", "define e controla o frizz")
+  ], ["good"]),
+
+  // ======================= PELE, CABELO E PET (corpus difícil, 08/10 noite) =======================
+  // Dermocosmético e higiene — nunca remédio (sem mip). Marcas que as farmácias da vitrine têm (CeraVe,
+  // Cetaphil, Effaclar) nas consultas alternativas.
+  need(["dermatite atopica", "dermatite", "pele atopica", "eczema", "pele muito seca", "pele sensivel", "pele irritada"], [
+    p("beleza.hidratante_corporal", "hidratante pele atopica | cerave locao hidratante | cetaphil restoraderm | hidratante pele extra seca", "hidratação pra pele atópica"),
+    p("higiene.sabonete", "sabonete pele sensivel | cetaphil | cerave sabonete | sabonete syndet", "limpeza suave, sem ressecar"),
+    p("beleza.skincare_facial", "cerave creme hidratante | hidratante facial pele sensivel", "hidratante pro rosto sensível"),
+    p("beleza.protetor_solar", "protetor solar pele sensivel", "protege a pele sensível do sol")
+  ], ["good"]),
+  need(["acne", "espinha", "espinhas", "cravos", "pele oleosa", "pele oleosa com espinha", "pele oleosa e cheia de espinha", "cuidar da pele oleosa"], [
+    p("beleza.skincare_facial", "gel de limpeza pele oleosa | effaclar gel | sabonete facial acne | acido salicilico", "limpeza pra pele oleosa e acne"),
+    p("higiene.sabonete", "sabonete acne | sabonete antiacne | sabonete pele oleosa", "sabonete pra pele com espinha"),
+    p("beleza.protetor_solar", "protetor solar oil free | protetor solar toque seco | protetor solar pele oleosa", "protetor que não engordura"),
+    p("beleza.hidratante_corporal", "hidratante facial oil free | effaclar duo", "hidratação sem oleosidade")
+  ], ["good"]),
+  need(["queda de cabelo", "cabelo caindo", "cabelo ta caindo", "cabelo caindo muito", "antiqueda", "cabelo fraco"], [
+    p("beleza.shampoo", "shampoo antiqueda", "shampoo antiqueda"),
+    p("beleza.tratamento_capilar", "tonico capilar antiqueda | ampola antiqueda | tonico capilar", "tônico pro couro cabeludo"),
+    p("beleza.condicionador", "condicionador antiqueda | condicionador fortalecedor", "fortalece os fios")
+  ], ["good"]),
+  need(["caspa", "cabelo com caspa", "coceira no couro cabeludo", "couro cabeludo descamando"], [
+    p("beleza.shampoo", "shampoo anticaspa", "shampoo anticaspa"),
+    p("beleza.condicionador", "condicionador anticaspa", "condicionador anticaspa")
+  ], ["good"]),
+  need(["pulga no cachorro", "pulga", "pulgas", "carrapato", "carrapatos", "cachorro com pulga", "cachorro cheio de pulga"], [
+    p("pet.higiene", "shampoo antipulgas cachorro | shampoo para cachorro", "banho ajuda a tirar as pulgas"),
+    p("pet.coleira", "coleira antipulgas | coleira para cachorro", "coleira pro dia a dia"),
+    p("pet.cama", "cama para cachorro", "trocar a caminha ajuda na limpeza")
+  ], ["good"]),
+  need(["pulga no gato", "gato com pulga", "gato cheio de pulga"], [
+    p("pet.higiene", "shampoo antipulgas gato | shampoo para gato", "banho ajuda a tirar as pulgas"),
+    p("pet.coleira", "coleira antipulgas gato | coleira para gato", "coleira pro dia a dia")
   ], ["good"]),
 
   // ======================= PRESENTES =======================
@@ -451,7 +485,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   ], ["good"]),
   need(["presente menino", "presente pra menino", "presente pro meu filho", "presente pro sobrinho", "presente pro meu sobrinho",
     ...ages(["menino", "garoto", "filho", "sobrinho"], 2, 7)], [
-    p("brinquedo.carrinho", "carrinho de brinquedo", "carrinhos e pistas fazem sucesso nessa idade"),
+    p("brinquedo.carrinho", "carrinho de brinquedo", "carrinhos e pistas pra essa idade"),
     p("brinquedo.lego_blocos", "lego", "blocos de montar"),
     p("brinquedo.boneco", "boneco super heroi", "heróis e personagens"),
     p("brinquedo.ar_livre", "bola", "brincadeira ao ar livre"),
@@ -459,7 +493,7 @@ export const NEED_TABLE: NeedTableEntry[] = [
   ], ["good"]),
   need(["presente menina", "presente pra menina", "presente pra minha filha", "presente pra sobrinha", "presente pra minha sobrinha",
     ...ages(["menina", "garota", "filha", "sobrinha"], 2, 7)], [
-    p("brinquedo.boneca", "boneca", "a mais pedida nessa idade"),
+    p("brinquedo.boneca", "boneca", "boneca pra essa idade"),
     p("brinquedo.faz_de_conta", "cozinha de brinquedo", "faz de conta"),
     p("brinquedo.arte", "massinha de modelar", "massinha e arte"),
     p("brinquedo.pelucia", "pelucia", "presente fofo"),
@@ -507,13 +541,12 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   {
     keys: ["dor de barriga", "dor na barriga", "barriga doendo", "colica intestinal", "colica na barriga", "colica abdominal",
       "dor abdominal", "barriga doi", "to com dor de barriga"],
-    // Revisão A6 (08/10): loperamida só com diarreia dita (entrada "diarreia"); dor de barriga genérica
-    // fica em antiespasmódico, antigases, probiótico e antiácido.
+    // Revisão A6 (08/10): loperamida só com diarreia dita (entrada "diarreia"). Rodada de qualidade (08/10,
+    // noite): só as classes DIRETAS da dor de barriga — antiespasmódico (cólica) e antigases; probiótico
+    // (flora) e antiácido (azia) não foram pedidos e o juiz do placar os marcou como fora do sintoma.
     picks: [
       mip("farmacia.antiespasmodico", "buscopan | butilescopolamina | buscopan composto", "alivia a cólica abdominal"),
-      mip("farmacia.antigases", "simeticona | luftal", "alivia gases e estufamento"),
-      mip("farmacia.probiotico", "probiotico | floratil | enterogermina", "ajuda a flora intestinal"),
-      mip("farmacia.antiacido", "sal de fruta | eno | estomazil", "alivia o estômago embrulhado")
+      mip("farmacia.antigases", "simeticona | luftal", "alivia gases e estufamento")
     ],
     care: [
       p("mercado.cha", "cha de camomila | cha de erva doce", "chá morno conforta a barriga"),
@@ -533,11 +566,16 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
       p("bebidas.isotonico", "isotonico", "repõe sais")
     ]
   },
+  // Rodada de qualidade (08/10, noite): azia/queimação/refluxo = só antiácido (o juiz do placar marcou
+  // hepatoprotetor e antigases como fora do sintoma); má digestão/"comi demais" segue com os três.
   {
-    keys: ["azia", "queimacao", "queimacao no estomago", "ma digestao", "estomago queimando", "refluxo", "dor no estomago",
-      "estomago embrulhado", "comi demais", "empachado", "gastrite"],
+    keys: ["azia", "queimacao", "queimacao no estomago", "estomago queimando", "refluxo", "dor no estomago", "gastrite", "azia forte"],
+    picks: [mip("farmacia.antiacido", "sal de fruta | eno | estomazil | gaviscon | mylanta | hidroxido de aluminio", "neutraliza a acidez do estômago")]
+  },
+  {
+    keys: ["ma digestao", "estomago embrulhado", "comi demais", "empachado", "estufado de tanto comer", "comi muito"],
     picks: [
-      mip("farmacia.antiacido", "sal de fruta | eno | estomazil | gaviscon | mylanta | hidroxido de aluminio", "neutraliza a acidez do estômago"),
+      mip("farmacia.antiacido", "sal de fruta | eno | estomazil", "alivia o estômago embrulhado"),
       mip("farmacia.hepatoprotetor", "epocler | eparema", "ajuda na má digestão"),
       mip("farmacia.antigases", "simeticona | luftal", "alivia o estufamento")
     ],
@@ -545,11 +583,9 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   },
   {
     keys: ["gases", "gas", "estufamento", "estufado", "estufada", "barriga inchada", "flatulencia", "barriga estufada"],
-    picks: [
-      mip("farmacia.antigases", "simeticona | luftal", "alivia gases e estufamento"),
-      mip("farmacia.antiespasmodico", "buscopan | butilescopolamina", "alivia a cólica dos gases"),
-      mip("farmacia.probiotico", "probiotico | floratil", "ajuda a flora intestinal")
-    ],
+    // Rodada de qualidade (08/10, noite): gases = antigases (simeticona), a classe direta; antiespasmódico e
+    // probiótico saíram (o juiz do placar marcou como não direcionados a gases/estufamento).
+    picks: [mip("farmacia.antigases", "simeticona | luftal", "alivia gases e estufamento")],
     care: [p("mercado.cha", "cha de erva doce | cha de camomila", "chá morno alivia o desconforto")]
   },
   {
@@ -607,6 +643,11 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
       mip("farmacia.relaxante_muscular", "dorflex | miorrelax", "relaxa o músculo travado"),
       mip("farmacia.analgesico_topico", "salonpas | gelol | cataflam emulgel", "alívio local nas costas"),
       mip("farmacia.anti_inflamatorio", "ibuprofeno | advil", "alivia dor e inflamação")
+    ],
+    // Corpus difícil h28 (08/10, noite): "sem remédio" fica só com isto.
+    care: [
+      p("casa.almofada", "almofada apoio lombar | almofada lombar", "apoio pra lombar na cadeira"),
+      p("beleza.hidratante_corporal", "creme massageador | gel massageador arnica", "pra massagear a região")
     ]
   },
   {
@@ -671,17 +712,20 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
     ],
     care: [p("limpeza.papel_toalha", "lenco de papel", "lenço de papel macio")]
   },
+  // Rodada de qualidade (08/10, noite): picada/coceira separada da rinite — soro nasal e lenço não tratam
+  // coceira de picada (o juiz do placar marcou o Sorine como fora do sintoma).
   {
-    keys: ["alergia", "crise de alergia", "rinite", "rinite alergica", "espirrando", "espirro", "coceira", "comichao", "pele cocando",
-      "olho cocando", "urticaria", "picada de inseto", "picada de mosquito"],
+    keys: ["alergia", "crise de alergia", "rinite", "rinite alergica", "espirrando", "espirro", "olho cocando"],
     picks: [
       mip("farmacia.antialergico", "loratadina | desloratadina | fexofenadina | allegra", "alivia espirro, coriza e coceira"),
       mip("farmacia.descongestionante", "soro nasal | sorine", "limpa o nariz")
     ],
-    care: [
-      p("limpeza.papel_toalha", "lenco de papel", "lenço de papel macio"),
-      p("farmacia.repelente", "repelente", "evita novas picadas")
-    ]
+    care: [p("limpeza.papel_toalha", "lenco de papel", "lenço de papel macio")]
+  },
+  {
+    keys: ["coceira", "comichao", "pele cocando", "urticaria", "picada de inseto", "picada de mosquito", "picada", "picadas de mosquito"],
+    picks: [mip("farmacia.antialergico", "loratadina | desloratadina | fexofenadina | allegra", "antialérgico alivia a coceira")],
+    care: [p("farmacia.repelente", "repelente", "evita novas picadas")]
   },
   {
     keys: ["ressaca", "de ressaca", "to de ressaca", "bebi demais", "exagerei na bebida", "remedio pra ressaca"],
@@ -761,7 +805,21 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   },
   {
     keys: ["piolho", "piolhos", "lendea", "cabeca cocando de piolho"],
-    picks: [mip("farmacia.piolho", "permetrina | deltametrina | pioletal", "elimina piolhos e lêndeas")]
+    picks: [mip("farmacia.piolho", "permetrina | deltametrina | pioletal | shampoo antipiolho", "elimina piolhos e lêndeas")],
+    // Corpus difícil h27 (08/10, noite): pente fino junto.
+    care: [p("beleza.acessorios_cabelo", "pente fino", "pente fino tira as lêndeas")]
+  },
+  {
+    // Corpus difícil h21 (08/10, noite): conjuntivite = colírio LUBRIFICANTE (alívio); com secreção/dor forte
+    // alerta (RED_FLAGS); antibiótico/corticoide nunca.
+    keys: ["conjuntivite", "olho com conjuntivite", "conjuntivite viral"],
+    picks: [mip("farmacia.colirio", "colirio lubrificante | lacrifilm | systane | lagrima artificial", "lubrifica e alivia a irritação")]
+  },
+  {
+    // Corpus difícil h23 (08/10, noite): unha encravada = limpar e proteger; inflamou/pus = alerta.
+    keys: ["unha encravada", "unha encravada doendo", "unha inflamada", "unha do pe encravada"],
+    picks: [mip("farmacia.antisseptico_cicatrizante", "antisseptico | merthiolate | povidine", "limpa e protege a região")],
+    care: [p("farmacia.curativo", "curativo | band aid", "protege a unha do atrito")]
   },
   {
     keys: ["intolerancia a lactose", "intolerante a lactose", "lactose me faz mal"],
@@ -803,7 +861,9 @@ const CONTEXT_FLAGS: RedFlagRule[] = [
   { kind: "context", reason: "dor forte", pattern: /\bdor(es)?\b[a-z ]{0,20}\b(muito forte|forte demais|forte|fortissima|insuportavel|intensa|horrivel|absurda)\b|\b(muita|mta) dor\b|\bpior dor\b|\bnao (aguento|suporto)\b[a-z ]{0,15}\bdor\b/ },
   { kind: "context", reason: "vômito persistente", pattern: /\b(nao para de vomitar|vomitando muito|vomitei (varias|muitas) vezes|vomitando sem parar|desidratad[oa])\b/ },
   { kind: "context", reason: "febre alta", pattern: /\bfebre (muito )?alta\b|\bfebre\b[a-z ]{0,20}\b(39|4[0-2])\b|\b(39|4[0-2])( [0-9])?( graus)? de febre\b|\bfebre (ha|faz) (3|tres|4|quatro|5|cinco|varios) dias\b/ },
-  { kind: "context", reason: "há vários dias", pattern: /\b(ha|faz|tem|desde|uns|umas|mais de|por)\b[a-z ]{0,12}\b(\d+|dois|duas|tres|quatro|cinco|seis|sete|varios|varias|muitos|alguns) dias\b|\b(\d+|uma|duas|tres|1|2|3) semanas?\b|\b(ha|faz|tem) (uma )?semana\b|\bdias seguidos\b|\bnao (passa|melhora|para)\b|\bsempre volta\b/ },
+  // Rodada de qualidade (08/10, noite): "tosse (seca) que não para" é tosse forte AGORA (corpus do placar), não
+  // "há dias" — fica fora do "não para"; "não passa"/"não melhora" e "há N dias" seguem alertando, com tosse ou não.
+  { kind: "context", reason: "há vários dias", pattern: /\b(ha|faz|tem|desde|uns|umas|mais de|por)\b[a-z ]{0,12}\b(\d+|dois|duas|tres|quatro|cinco|seis|sete|varios|varias|muitos|alguns) dias\b|\b(\d+|uma|duas|tres|1|2|3) semanas?\b|\b(ha|faz|tem) (uma )?semana\b|\bdias seguidos\b|\bnao (passa|melhora)\b|\bsempre volta\b|^(?!.*\btosse\b).*\bnao para\b/ },
   { kind: "context", reason: "gestante ou amamentando", pattern: /\b(gravida|gestante|gestacao|amamentando|amamento|lactante)\b|\b(na|durante a|em) gravidez\b|\bestou de \d+ (semanas|meses) de gravidez\b/ },
   { kind: "context", reason: "bebê ou criança pequena", pattern: /^(?!.*\bassadura).*\b(recem nascido|recem nascida|bebe|bebes|nenem|lactente)\b|\b(\d|1\d|2[0-3]) mes(es)?\b|\b(filh[oa]|crianca|menin[oa]|sobrinh[oa])\b[a-z ]{0,10}\b(1|um) ano\b/ },
   // A4: criança com menos de 12 anos ou sem idade — remédio infantil é com o pediatra.
@@ -824,7 +884,11 @@ const CONTEXT_FLAGS: RedFlagRule[] = [
   { kind: "context", reason: "febre com pescoço duro", pattern: /^(?=.*\bfebre\b)(?=.*\b(pescoco|nuca)\b[a-z ]{0,10}\b(dur[oa]|rigid[oa]|travad[oa])\b)/ },
   { kind: "context", reason: "dor ao urinar", pattern: /\b(dor|dores|ardencia|ardendo|arde|ardor|queimacao|queimando|queima|doi|doendo)\b[a-z ]{0,12}\b(urinar|xixi|mijar|urina)\b|\b(xixi|urina)\b[a-z ]{0,10}\b(ardendo|doendo|escura)\b/ },
   { kind: "context", reason: "mistura de remédios", pattern: /\bja tomei\b|\b(posso|pode|da pra) (misturar|tomar junto|tomar com|tomar os dois)\b|\bmisturar (com|remedio|remedios)\b|\b(tomando|tomo) (outro|outros|varios) remedios?\b|\btomei [a-z]+ e [a-z]+\b/ },
-  { kind: "context", reason: "confusão mental", pattern: /\bconfus[oa]\b/ }
+  { kind: "context", reason: "confusão mental", pattern: /\bconfus[oa]\b/ },
+  // Corpus difícil (08/10, noite): olho com secreção/pus/dor forte ou visão embaçada = médico; unha
+  // encravada com pus/inflamação = médico/podólogo.
+  { kind: "context", reason: "olho com secreção ou dor", pattern: /^(?=.*\b(olho|olhos|conjuntivite)\b)(?=.*\b(secrecao|pus|remela amarela|amarelad\w*|dor forte|muita dor|visao embacada|enxergando mal|nao enxergo)\b)/ },
+  { kind: "context", reason: "unha inflamada com pus", pattern: /^(?=.*\bunha\b)(?=.*\b(pus|infeccionad\w*|inchad\w*|vermelh\w* e quente)\b)/ }
 ];
 
 export const RED_FLAGS: RedFlagRule[] = [...EMERGENCY_FLAGS, ...CONTEXT_FLAGS];

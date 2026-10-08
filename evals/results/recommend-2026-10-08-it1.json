@@ -1,0 +1,2579 @@
+{
+ "summary": {
+  "label": "it1",
+  "at": "2026-10-08T17:23:13.119Z",
+  "cep": "01310-***",
+  "requests": 28,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "judgeVotes": 1,
+  "outcomes": {
+   "atende": 20,
+   "card_errado": 3,
+   "ia_indisponivel": 1,
+   "nao_atende": 3,
+   "sem_cards": 1
+  },
+  "excluded": 1,
+  "atende": "81.5%",
+  "variedade": "96.2%",
+  "cardErrado": "11.5%",
+  "respeitaRestricao": "100.0%",
+  "whyVerdadeiro": "84.6%",
+  "perguntaDesnecessaria": "0.0%",
+  "redFlagRecomendou": "0/0",
+  "redFlagPlanoMarcou": "n/a",
+  "semCards": "3.7%",
+  "notaMedia": 6.96,
+  "latenciaTimingsMs": {
+   "p50": 10845,
+   "p95": 18608
+  },
+  "latenciaParedeMs": {
+   "p50": 10847,
+   "p95": 18609
+  },
+  "custoUSD": {
+   "juiz": 0.0068,
+   "liaEstimado": 0.028,
+   "total": 0.0348,
+   "juizTokens": {
+    "entrada": 39867,
+    "saida": 5689,
+    "chamadas": 26
+   },
+   "nota": "juiz: tokens reais (luna US$0,10/0,50 por 1M); Lia: estimativa fixa por pedido (BENCH_LIA_COST_PER_REQ)"
+  },
+  "metas": "atende ≥ 90% · variedade ≥ 80% · cardErrado ≤ 5% · redFlagRecomendou = 0 · semCards ≤ 10% · respeitaRestricao 100%"
+ },
+ "byCat": {
+  "estado": {
+   "n": 6,
+   "atende": 4,
+   "naoAtende": 2,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "vontade": {
+   "n": 1,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "ocasiao": {
+   "n": 2,
+   "atende": 1,
+   "naoAtende": 1,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "presente": {
+   "n": 4,
+   "atende": 3,
+   "naoAtende": 0,
+   "cardErrado": 1,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "sintoma": {
+   "n": 8,
+   "atende": 5,
+   "naoAtende": 0,
+   "cardErrado": 2,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 1
+  },
+  "produto_julgado": {
+   "n": 7,
+   "atende": 6,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 1,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  }
+ },
+ "results": [
+  {
+   "id": "r02",
+   "text": "to morrendo de fome, oq tem pra comer rapido?",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 15679,
+   "timingMs": 15660,
+   "timings": {
+    "mapMs": 2223,
+    "searchMs": 8645,
+    "judgeMs": 4792
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto para comer"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "prato pronto",
+      "why": "refeição prática e completa"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "doce pronto para beliscar"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "salgado crocante para comer"
+     },
+     {
+      "shelfId": "doces.chocolate",
+      "query": "chocolate",
+      "why": "pronto pra comer e dá energia rápida"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Passatempo Sabor Alpino 90g",
+     "brand": "Passatempo",
+     "store": "Drogal",
+     "price": 2.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "biscoito recheado pronto pra comer",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Elma Chips Fandangos Sabor Presunto 35g",
+     "brand": "Elma Chips",
+     "store": "Drogal",
+     "price": 5.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "salgadinho pronto pra comer",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.chocolate",
+     "name": "Chocolate Chocotrio Nestlé Avelã 90g",
+     "brand": "Nestle",
+     "store": "Drogal",
+     "price": 10.29,
+     "delivery": "prazo da loja: 3h",
+     "why": "chocolate em pacote de 90 g",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Há opções variadas e prontas para comer, com entrega em 3 horas; porém, são snacks e doces, não uma refeição que mate bem a fome.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r03",
+   "text": "to com fome mas sem dinheiro, ate 30 reais",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "orçamento total até R$ 30"
+   ],
+   "budget": 30,
+   "outcome": "atende",
+   "ms": 17367,
+   "timingMs": 17367,
+   "timings": {
+    "mapMs": 4200,
+    "searchMs": 5687,
+    "judgeMs": 7480
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto para comer"
+     },
+     {
+      "shelfId": "mercado.barra_cereal",
+      "query": "barra de cereal",
+      "why": "opção rápida e prática"
+     },
+     {
+      "shelfId": "snacks.biscoito_salgado",
+      "query": "biscoito salgado",
+      "why": "crocante para beliscar"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "banana",
+      "why": "fruta pronta para comer"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer na hora"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Cronn's Sabor Bacon 60g",
+     "brand": "Cronns",
+     "store": "Drogal",
+     "price": 2.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "pronto pra comer",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "lanches.sanduiche",
+     "name": "Sanduíche Hot Pocket X-Burguer Sadia 145g",
+     "brand": "Sadia",
+     "store": "Mambo",
+     "price": 13.49,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "sanduíche Hot Pocket 145g",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.barra_cereal",
+     "name": "Barra Cereais Cranbery Nuts &Joy 30g",
+     "brand": "Agtal",
+     "store": "Mambo",
+     "price": 4.59,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "barra de cereal 30g",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "snacks.biscoito_salgado",
+     "name": "Biscoito Água e Sal Adria 170g",
+     "brand": "Adria",
+     "store": "Mambo",
+     "price": 3.69,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "biscoito água e sal 170g",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 6,
+    "comentario": "Há opções variadas e dentro do orçamento, mas só o salgadinho chega hoje; os demais chegam amanhã e não resolvem a fome agora.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r04",
+   "text": "tô com fome e sou vegetariana",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "vegetariano"
+   ],
+   "outcome": "nao_atende",
+   "ms": 13820,
+   "timingMs": 13820,
+   "timings": {
+    "mapMs": 2760,
+    "searchMs": 8451,
+    "judgeMs": 2609
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche vegetariano pronto",
+      "why": "lanche pronto para comer"
+     },
+     {
+      "shelfId": "congelados.pizza",
+      "query": "pizza vegetariana congelada",
+      "why": "refeição rápida no forno"
+     },
+     {
+      "shelfId": "congelados.salgados",
+      "query": "salgados vegetarianos",
+      "why": "opções salgadas para aquecer"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "frutas frescas",
+      "why": "alternativa leve sem preparo"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer na hora"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "congelados.pizza",
+     "name": "Pizza Margherita Congelada Seara Gourmet 360g",
+     "brand": "Seara",
+     "store": "Mambo",
+     "price": 19.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "pizza margherita com mussarela",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "hortifruti.frutas",
+     "name": "Maçã Turma da Mônica Pacote 1kg",
+     "brand": "Fischer Frutas",
+     "store": "Mambo",
+     "price": 16.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "maçã fresca pronta para comer",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Crunchy Super Cheddar Cheetos 160g Salgadinho Super Cheddar Crunch Cheetos 160g",
+     "brand": "Cheetos",
+     "store": "Mambo",
+     "price": 11.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "pacote de salgadinho 160g",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 4,
+    "comentario": "As opções são vegetarianas e variadas, mas chegam só amanhã; esse prazo não resolve fome imediata.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r05",
+   "text": "to com sedee, quero algo pra beber",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 13743,
+   "timingMs": 13742,
+   "timings": {
+    "mapMs": 3378,
+    "searchMs": 5165,
+    "judgeMs": 5199
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "bebidas.agua",
+      "query": "agua mineral",
+      "why": "mata a sede sem preparo"
+     },
+     {
+      "shelfId": "bebidas.agua_coco",
+      "query": "agua de coco",
+      "why": "bebida gelada e refrescante"
+     },
+     {
+      "shelfId": "bebidas.suco",
+      "query": "suco gelado",
+      "why": "opção frutada pronta"
+     },
+     {
+      "shelfId": "bebidas.isotonico",
+      "query": "isotonico",
+      "why": "bebida com eletrólitos"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante gelado",
+      "why": "bebida gaseificada pronta"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "bebidas.agua",
+     "name": "Água Mineral Lindoya Verão Sem Gás 510ml",
+     "brand": "Lindoya",
+     "store": "Drogal",
+     "price": 5.39,
+     "delivery": "prazo da loja: 3h",
+     "why": "Água mineral pronta para beber",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.agua_coco",
+     "name": "Água de Coco Integral Sococo 330ml",
+     "brand": "Sococo",
+     "store": "Drogal",
+     "price": 7.45,
+     "delivery": "prazo da loja: 3h",
+     "why": "Água de coco integral",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebidas.suco",
+     "name": "Suco Natural One 100% Sabor Uva 180ml",
+     "brand": "Natural One",
+     "store": "Drogal",
+     "price": 8.85,
+     "delivery": "prazo da loja: 3h",
+     "why": "Suco 100% de uva",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.isotonico",
+     "name": "Isotônico Powerade Sabor Uva 500ml",
+     "brand": "Powerade",
+     "store": "Drogal",
+     "price": 7.65,
+     "delivery": "prazo da loja: 3h",
+     "why": "Isotônico Powerade de uva",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Boa variedade de bebidas apropriadas para matar a sede, com prazo informado de 3 horas e motivos fiéis aos produtos.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r09",
+   "text": "tô morrendo de sono e preciso estudar até tarde",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "nao_atende",
+   "ms": 18609,
+   "timingMs": 18608,
+   "timings": {
+    "mapMs": 3980,
+    "searchMs": 7313,
+    "judgeMs": 7315
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "mercado.cafe",
+      "query": "café solúvel",
+      "why": "preparo rápido para estudar"
+     },
+     {
+      "shelfId": "bebidas.energetico",
+      "query": "energético",
+      "why": "bebida pronta para levar"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "chá preto",
+      "why": "opção quente para a pausa"
+     },
+     {
+      "shelfId": "doces.chocolate",
+      "query": "chocolate",
+      "why": "energia rápida"
+     },
+     {
+      "shelfId": "mercado.barra_cereal",
+      "query": "barra de cereal",
+      "why": "lanche rápido que dá energia"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.chocolate",
+     "name": "Chocolate Chocotrio Nestlé Sabor Chocolate 90g",
+     "brand": "Nestle",
+     "store": "Drogal",
+     "price": 10.29,
+     "delivery": "prazo da loja: 3h",
+     "why": "90 g para comer durante o estudo",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "mercado.cafe",
+     "name": "Café Solúvel Matinal Sachê Nescafé 40g",
+     "brand": "Nescafé",
+     "store": "Mambo",
+     "price": 9.69,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "café solúvel em sachê de 40 g",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebidas.energetico",
+     "name": "Energético Energy Drink Red Bull 250ml Energético Red Bull Energy Drink 250ml",
+     "brand": "Red Bull",
+     "store": "Mambo",
+     "price": 8.49,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "energético pronto em lata de 250 ml",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "mercado.cha",
+     "name": "Chá Preto Leão 16g",
+     "brand": "Leão",
+     "store": "Mambo",
+     "price": 6.59,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "chá preto para uma pausa quente",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 4,
+    "comentario": "Há opções variadas com cafeína, mas chegam amanhã; o chocolate em 3h não resolve bem a sonolência para estudar até tarde.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r12",
+   "text": "bateu a larica de madrugada, o q vcs tem?",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 8778,
+   "timingMs": 8777,
+   "timings": {
+    "mapMs": 2476,
+    "searchMs": 1896,
+    "judgeMs": 4405
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto para comer"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "crocante para beliscar"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "doce rápido para comer"
+     },
+     {
+      "shelfId": "snacks.amendoim_castanhas",
+      "query": "amendoim",
+      "why": "petisco pronto e crocante"
+     },
+     {
+      "shelfId": "doces.chocolate",
+      "query": "chocolate",
+      "why": "pronto pra comer e dá energia rápida"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Elma Chips Fandangos Sabor Presunto 35g",
+     "brand": "Elma Chips",
+     "store": "Drogal",
+     "price": 5.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Salgadinho de presunto 35g",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Passatempo Sabor Alpino 90g",
+     "brand": "Passatempo",
+     "store": "Drogal",
+     "price": 2.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "Biscoito recheado sabor Alpino",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "snacks.amendoim_castanhas",
+     "name": "Amendoim Japonês Mendorato Santa Helena 90g",
+     "brand": "Mendorato",
+     "store": "Drogal",
+     "price": 6.19,
+     "delivery": "prazo da loja: 3h",
+     "why": "Amendoim japonês 90g",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "doces.chocolate",
+     "name": "Chocolate Snickers Branco 40g",
+     "brand": "Snickers",
+     "store": "Drogal",
+     "price": 5.09,
+     "delivery": "prazo da loja: 3h",
+     "why": "Chocolate Snickers branco 40g",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Boa variedade de lanches prontos para beliscar, todos com prazo de 3h; os motivos descrevem corretamente os produtos.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r18",
+   "text": "quero uma coisa gostosa pra comer hj, me surpreende",
+   "category": "vontade",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 14671,
+   "timingMs": 14670,
+   "timings": {
+    "mapMs": 4056,
+    "searchMs": 6271,
+    "judgeMs": 4343
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche salgado pronto"
+     },
+     {
+      "shelfId": "doces.sorvete",
+      "query": "sorvete",
+      "why": "doce gelado"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "crocante pra beliscar"
+     },
+     {
+      "shelfId": "doces.bolo",
+      "query": "bolo pronto",
+      "why": "doce macio para comer"
+     },
+     {
+      "shelfId": "snacks.amendoim_castanhas",
+      "query": "castanhas",
+      "why": "petisco crocante e seco"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.sorvete",
+     "name": "Sorvete Kibon Mini Bombons Eskibon 92g",
+     "brand": "Eskibon",
+     "store": "Drogal",
+     "price": 15.99,
+     "delivery": "prazo da loja: 30 min",
+     "why": "mini bombons Eskibon",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.amendoim_castanhas",
+     "name": "Castanha de Caju Torrada e Salgada Brasil Frutt 200g",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 24.97,
+     "delivery": "prazo da loja: em até 2h (hoje, 14h–16h)",
+     "why": "castanha torrada e salgada",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Elma Chips Fandangos Sabor Presunto 35g",
+     "brand": "Elma Chips",
+     "store": "Drogal",
+     "price": 5.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Elma Chips sabor presunto",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções variadas e apetitosas; sorvete chega em 30 minutos, embora os outros lanches demorem mais.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r26",
+   "text": "vou fazer um churrasco pra 12, sem porco",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem porco"
+   ],
+   "outcome": "atende",
+   "ms": 11838,
+   "timingMs": 11838,
+   "timings": {
+    "mapMs": 2293,
+    "searchMs": 4726,
+    "judgeMs": 4819
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "carnes.bovina",
+      "query": "picanha | fraldinha | alcatra",
+      "why": "cortes para assar na brasa"
+     },
+     {
+      "shelfId": "casa.churrasco",
+      "query": "carvao",
+      "why": "para preparar a brasa"
+     },
+     {
+      "shelfId": "padaria.pao_de_alho",
+      "query": "pao de alho",
+      "why": "acompanhamento para assar"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante",
+      "why": "bebida para acompanhar"
+     },
+     {
+      "shelfId": "bebidas.cerveja",
+      "query": "cerveja",
+      "why": "a bebida do churrasco"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "carnes.bovina",
+     "name": "Picanha Swift Legado 1855 de 0,9kg a 1,8kg (unidade ~1,8 kg)",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 161.82,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "picanha bovina para assar na brasa",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "casa.churrasco",
+     "name": "Carvão Vegetal Swift 5kg",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 39.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "carvão vegetal de 5 kg",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "padaria.pao_de_alho",
+     "name": "Pão de Alho Tradicional Santa Massa 400g",
+     "brand": "Santa Massa",
+     "store": "Mambo",
+     "price": 19.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "pacote de 400 g para dividir",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.refrigerante",
+     "name": "Refrigerante Coca-Cola Garrafa Pet 2 Litros",
+     "brand": "Coca Cola",
+     "store": "Drogal",
+     "price": 13.55,
+     "delivery": "prazo da loja: 3h",
+     "why": "garrafa de 2 litros para dividir",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Boa seleção de carne, carvão e acompanhamentos sem porco; faltam quantidade suficiente para 12 e uma opção de cerveja.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r30",
+   "text": "festinha de aniversario pra 15 pessoas ate 300 reais",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "orçamento total até R$ 300"
+   ],
+   "budget": 300,
+   "outcome": "nao_atende",
+   "ms": 10847,
+   "timingMs": 10845,
+   "timings": {
+    "mapMs": 2771,
+    "searchMs": 5482,
+    "judgeMs": 2592
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho para festa",
+      "why": "petisco para dividir"
+     },
+     {
+      "shelfId": "doces.bolo",
+      "query": "bolo de aniversário",
+      "why": "bolo para comemorar"
+     },
+     {
+      "shelfId": "doces.doces",
+      "query": "brigadeiro para festa",
+      "why": "docinhos para servir"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante",
+      "why": "bebida para acompanhar"
+     },
+     {
+      "shelfId": "casa.descartaveis",
+      "query": "pratos e copos descartáveis",
+      "why": "para servir a festa"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho de Milho com Toque de Sal Marinho Tostitos 110g",
+     "brand": "Olitalia",
+     "store": "Mambo",
+     "price": 7.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "o mais em conta dos 5",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "doces.bolo",
+     "name": "Bolo de Laranja Panco 300g",
+     "brand": "Panco",
+     "store": "Mambo",
+     "price": 14.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "bolo de laranja de 300g",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.doces",
+     "name": "Picole Kibonbon Brigadeiro",
+     "brand": "Kibon",
+     "store": "Pague Menos",
+     "price": 9.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "docinhos para servir",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.refrigerante",
+     "name": "Refrigerante Coca-Cola Garrafa Pet 2 Litros",
+     "brand": "Coca Cola",
+     "store": "Drogal",
+     "price": 13.55,
+     "delivery": "prazo da loja: 3h",
+     "why": "garrafa de 2 litros para dividir",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": false,
+    "nota": 3,
+    "comentario": "Há variedade, mas as porções são insuficientes para 15 pessoas; o picolé não é docinho, e “o mais em conta dos 5” não é comprovável.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r43",
+   "text": "presente pra criança de 3 anos",
+   "category": "presente",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "card_errado",
+   "ms": 20567,
+   "timingMs": 20566,
+   "timings": {
+    "mapMs": 4423,
+    "searchMs": 8502,
+    "judgeMs": 7641
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "brinquedo.pelucia",
+      "query": "pelúcia infantil 3 anos",
+      "why": "presente macio para abraçar"
+     },
+     {
+      "shelfId": "livraria.infantil",
+      "query": "livro infantil 3 anos",
+      "why": "leitura adequada à idade"
+     },
+     {
+      "shelfId": "beleza.perfume",
+      "query": "perfume",
+      "why": "presente que agrada"
+     },
+     {
+      "shelfId": "doces.chocolate_presente",
+      "query": "caixa de bombons",
+      "why": "chocolate fino"
+     },
+     {
+      "shelfId": "presente.flores",
+      "query": "buque de flores",
+      "why": "flores entregues"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "presente.flores"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "brinquedo.pelucia",
+     "name": "Pelúcia - Patrulha Canina - Skye - 30 cm - Sunny",
+     "brand": "Sunny",
+     "store": "Ri Happy",
+     "price": 75.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "Pelúcia de 30 cm para abraçar",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "livraria.infantil",
+     "name": "Livro Magnético Infantil - Princesas - Janod",
+     "brand": "JANOD",
+     "store": "Ri Happy",
+     "price": 100.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "leitura adequada à idade",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "beleza.perfume",
+     "name": "Colonia Granado Cardamomo & Gengibre 230ml",
+     "brand": "Granado",
+     "store": "Pague Menos",
+     "price": 66.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "presente que agrada",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": false,
+    "why_verdadeiro": false,
+    "nota": 5,
+    "comentario": "Pelúcia e livro podem funcionar, mas colônia é inadequada para uma criança de 3 anos; “presente que agrada” também é uma promessa sem fundamento.",
+    "cards_errados": [
+     "C3"
+    ],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r44",
+   "text": "presente pro meu sobrinho de 10 anos, ate 120",
+   "category": "presente",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "orçamento total até R$ 120"
+   ],
+   "budget": 120,
+   "outcome": "atende",
+   "ms": 15968,
+   "timingMs": 15967,
+   "timings": {
+    "mapMs": 3848,
+    "searchMs": 6972,
+    "judgeMs": 5147
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "brinquedo.boneco",
+      "query": "boneco de ação infantil",
+      "why": "figuras de ação para brincar"
+     },
+     {
+      "shelfId": "brinquedo.jogo_tabuleiro",
+      "query": "jogo de tabuleiro infantil",
+      "why": "jogos para brincar em grupo"
+     },
+     {
+      "shelfId": "brinquedo.carrinho",
+      "query": "carrinho de brinquedo",
+      "why": "carrinhos e pistas"
+     },
+     {
+      "shelfId": "livraria.infantil",
+      "query": "livro infantil 10 anos",
+      "why": "leitura para a idade"
+     },
+     {
+      "shelfId": "brinquedo.cartas_colecionaveis",
+      "query": "cartas Pokémon",
+      "why": "cartas para colecionar e jogar"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "brinquedo.boneco",
+     "name": "Boneco - Marvel - Hulk - Hasbro",
+     "brand": "Hasbro",
+     "store": "Ri Happy",
+     "price": 99.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "Boneco Hulk da Hasbro",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "brinquedo.jogo_tabuleiro",
+     "name": "Jogo de Tabuleiro - Banco Imobiliário - Estrela",
+     "brand": "Estrela",
+     "store": "Ri Happy",
+     "price": 105.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "Banco Imobiliário da Estrela",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "brinquedo.carrinho",
+     "name": "Carrinho City Police Car 1 Unidade",
+     "brand": "Kids",
+     "store": "Drogal",
+     "price": 8.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "carrinhos e pistas",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Há opções variadas e adequadas à idade, todas dentro do orçamento; o carrinho é bem mais simples e menos especial como presente.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r47",
+   "text": "amigo secreto da familia, valor 30, sem bebida alcoolica",
+   "category": "presente",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem bebida alcoólica",
+    "orçamento total até R$ 30"
+   ],
+   "budget": 30,
+   "outcome": "atende",
+   "ms": 14830,
+   "timingMs": 14829,
+   "timings": {
+    "mapMs": 2500,
+    "searchMs": 4673,
+    "judgeMs": 7656
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "casa.caneca",
+      "query": "caneca presente",
+      "why": "presente útil e temático"
+     },
+     {
+      "shelfId": "doces.chocolate_presente",
+      "query": "caixa de bombons até 30 reais",
+      "why": "chocolate em caixa presenteável"
+     },
+     {
+      "shelfId": "beleza.corpo_banho",
+      "query": "kit corpo e banho até 30 reais",
+      "why": "kit de cuidado pessoal"
+     },
+     {
+      "shelfId": "casa.vela_aromatizador",
+      "query": "vela aromática presente",
+      "why": "aroma para casa"
+     },
+     {
+      "shelfId": "beleza.kit_presente",
+      "query": "kit presente",
+      "why": "kit de beleza pronto"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.chocolate_presente",
+     "name": "Caixa de Bombom Lacta Grandes Sucessos 250,6g",
+     "brand": "Lacta",
+     "store": "Drogal",
+     "price": 17.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Caixa de bombons Lacta sortidos",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "casa.caneca",
+     "name": "Caneca Empilhável Casual 12 x 8,3 x 11,5 cm 250 ml Preto Coza",
+     "brand": "Coza",
+     "store": "Brinox",
+     "price": 12.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "o mais em conta dos 2",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": false,
+    "nota": 7,
+    "comentario": "Há opções variadas e dentro do orçamento; a caneca chega em quatro dias, e “o mais em conta” não é sustentado pelos dados.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r50",
+   "text": "presente de casamento pra uma amiga, uns 200",
+   "category": "presente",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "orçamento total até R$ 200"
+   ],
+   "budget": 200,
+   "outcome": "atende",
+   "ms": 13985,
+   "timingMs": 13984,
+   "timings": {
+    "mapMs": 2164,
+    "searchMs": 6774,
+    "judgeMs": 5046
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "presente.cesta",
+      "query": "cesta de presente",
+      "why": "presente pronto para entregar"
+     },
+     {
+      "shelfId": "casa.copos_tacas",
+      "query": "jogo de taças",
+      "why": "para brindar a dois"
+     },
+     {
+      "shelfId": "casa.cama",
+      "query": "jogo de lençol casal",
+      "why": "útil para a casa nova"
+     },
+     {
+      "shelfId": "casa.caneca",
+      "query": "par de canecas",
+      "why": "opção para o dia a dia"
+     },
+     {
+      "shelfId": "beleza.perfume",
+      "query": "perfume",
+      "why": "presente que agrada"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "presente.cesta",
+    "casa.cama"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "casa.copos_tacas",
+     "name": "Jogo 6 Taças para Espumante Vintage em Cristal Bohemia 340ml Haus Concept Dream Cristal",
+     "brand": "Haus Concept",
+     "store": "Brinox",
+     "price": 159.99,
+     "delivery": "prazo da loja: 4 dias úteis",
+     "why": "jogo de 6 taças de cristal",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "casa.caneca",
+     "name": "Caneca Buck Tom e Jerry – Hanna Barbera",
+     "brand": "Tom e Jerry",
+     "store": "Zona Criativa",
+     "price": 24.9,
+     "delivery": "prazo da loja: 2 dias úteis",
+     "why": "",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "beleza.perfume",
+     "name": "Colonia Granado Cardamomo & Gengibre 230ml",
+     "brand": "Granado",
+     "store": "Pague Menos",
+     "price": 66.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "presente que agrada",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": false,
+    "nota": 7,
+    "comentario": "Taças são uma boa opção de casamento e há variedade; a caneca é pouco adequada ao contexto, e dizer que o perfume agrada é uma afirmação sem garantia.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r51",
+   "text": "to com dor de barriga",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "ia_indisponivel",
+   "ms": 14364,
+   "timingMs": 14364,
+   "timings": {
+    "mapMs": 6,
+    "searchMs": 3352,
+    "judgeMs": 11006
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.antiespasmodico",
+      "query": "buscopan | butilescopolamina | buscopan composto",
+      "why": "alivia a cólica abdominal",
+      "mipClass": "antiespasmodico"
+     },
+     {
+      "shelfId": "farmacia.antigases",
+      "query": "simeticona | luftal",
+      "why": "alivia gases e estufamento",
+      "mipClass": "antigases"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha de camomila | cha de erva doce",
+      "why": "chá morno conforta a barriga"
+     },
+     {
+      "shelfId": "bebidas.agua_coco",
+      "query": "agua de coco",
+      "why": "ajuda a manter a hidratação"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.antiespasmodico",
+     "name": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+     "brand": "Buscopan",
+     "store": "Pague Menos",
+     "price": 24.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia a cólica abdominal",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.antigases",
+     "name": "Antigases Simeticona 75mg/ml Genérico Medley 15ml Gotas",
+     "brand": "Medley",
+     "store": "Drogaria São Paulo",
+     "price": 7.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia gases e estufamento",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.cha",
+     "name": "Chá de Camomila Leão Fuze 15g com 15 unidades",
+     "brand": "Leão",
+     "store": "Mambo",
+     "price": 6.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "chá morno conforta a barriga",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.agua_coco",
+     "name": "Água de Coco Integral Sococo 330ml",
+     "brand": "Sococo",
+     "store": "Drogal",
+     "price": 7.45,
+     "delivery": "prazo da loja: 3h",
+     "why": "ajuda a manter a hidratação",
+     "remedio": false
+    }
+   ],
+   "aiFailed": [
+    "[ai:recommend-judge:error] sem veredito utilizá"
+   ]
+  },
+  {
+   "id": "r52",
+   "text": "dor de cabeça, mas sou alérgica a dipirona",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem dipirona (alergia)"
+   ],
+   "outcome": "atende",
+   "ms": 9557,
+   "timingMs": 9556,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 2712,
+    "judgeMs": 6843
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.anti_inflamatorio",
+      "query": "ibuprofeno | advil | alivium",
+      "why": "alivia dor e inflamação",
+      "mipClass": "anti_inflamatorio"
+     },
+     {
+      "shelfId": "bebidas.agua",
+      "query": "agua mineral",
+      "why": "desidratação piora a dor de cabeça"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.anti_inflamatorio",
+     "name": "Anti-inflamatório Ibuprofeno 400mg Genérico Medley 10 Cápsulas",
+     "brand": "Medley",
+     "store": "Drogaria São Paulo",
+     "price": 10.59,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia dor e inflamação",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.agua",
+     "name": "Água Mineral Lindoya Verão Sem Gás 510ml",
+     "brand": "Lindoya",
+     "store": "Drogal",
+     "price": 5.39,
+     "delivery": "prazo da loja: 3h",
+     "why": "água sem gás em 510 ml",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Ibuprofeno é uma opção isenta adequada e não contém dipirona; a água complementa, embora não trate diretamente a dor.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r53",
+   "text": "tô com azia horrivel",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "card_errado",
+   "ms": 7229,
+   "timingMs": 7228,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 2426,
+    "judgeMs": 4801
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.antiacido",
+      "query": "sal de fruta | eno | estomazil | gaviscon | mylanta | hidroxido de aluminio",
+      "why": "neutraliza a acidez do estômago",
+      "mipClass": "antiacido"
+     },
+     {
+      "shelfId": "farmacia.hepatoprotetor",
+      "query": "epocler | eparema",
+      "why": "ajuda na má digestão",
+      "mipClass": "hepatoprotetor"
+     },
+     {
+      "shelfId": "farmacia.antigases",
+      "query": "simeticona | luftal",
+      "why": "alivia o estufamento",
+      "mipClass": "antigases"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha de boldo | cha de camomila",
+      "why": "chá ajuda na digestão"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.antiacido",
+     "name": "Antiácido Sal de Fruta Eno Tradicional 2 Envelopes de 5g",
+     "brand": "Eno",
+     "store": "Drogaria São Paulo",
+     "price": 5.16,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "neutraliza a acidez do estômago",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.hepatoprotetor",
+     "name": "Hepatoprotetor Epocler Sabor Abacaxi 1 Flaconete 10ml",
+     "brand": "Epocler",
+     "store": "Drogaria São Paulo",
+     "price": 4.74,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "ajuda na má digestão",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "farmacia.antigases",
+     "name": "Simeticona 75mg/ml Sabor Cereja Emulsão Oral Gotas 15ml",
+     "brand": "Simeticona",
+     "store": "Pague Menos",
+     "price": 6.49,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia o estufamento",
+     "remedio": true
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 5,
+    "comentario": "Eno é adequado para azia; Epocler e simeticona não tratam esse sintoma e desviam a recomendação.",
+    "cards_errados": [
+     "C2",
+     "C3"
+    ],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r54",
+   "text": "muito gás, barriga estufada",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 4143,
+   "timingMs": 4142,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 548,
+    "judgeMs": 3593
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.antigases",
+      "query": "simeticona | luftal",
+      "why": "alivia gases e estufamento",
+      "mipClass": "antigases"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha de erva doce | cha de camomila",
+      "why": "chá morno alivia o desconforto"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.antigases",
+     "name": "Simeticona 75mg/ml Sabor Cereja Emulsão Gotas 15ml",
+     "brand": "Cimed",
+     "store": "Pague Menos",
+     "price": 5.49,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia gases e estufamento",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "mercado.cha",
+     "name": "Chá Leão Erva Doce 10 Sachês 16g",
+     "brand": "Leão",
+     "store": "Drogal",
+     "price": 4.65,
+     "delivery": "prazo da loja: 3h",
+     "why": "chá de erva-doce em sachês",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 10,
+    "comentario": "Simeticona apropriada para gases e chá de erva-doce como opção complementar; produtos distintos, sem violar restrições.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r55",
+   "text": "garganta arranhando e dói pra engolir",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 7155,
+   "timingMs": 7154,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 5193,
+    "judgeMs": 1960
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.garganta",
+      "query": "strepsils | neopiridin | ciflogex | flogoral",
+      "why": "alivia a dor de garganta",
+      "mipClass": "garganta"
+     },
+     {
+      "shelfId": "farmacia.anti_inflamatorio",
+      "query": "ibuprofeno",
+      "why": "alivia dor e inflamação",
+      "mipClass": "anti_inflamatorio"
+     },
+     {
+      "shelfId": "farmacia.analgesico",
+      "query": "paracetamol | dipirona",
+      "why": "alivia a dor",
+      "mipClass": "analgesico"
+     },
+     {
+      "shelfId": "mercado.mel_geleia",
+      "query": "mel",
+      "why": "mel acalma a garganta"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha de gengibre | cha com mel",
+      "why": "bebida morna conforta"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.garganta",
+     "name": "Pastilhas para Garganta Strepsils Sabor Mel e Limão 8 Pastilhas",
+     "brand": "Strepsils",
+     "store": "Pague Menos",
+     "price": 13.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "pastilhas para garganta",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.anti_inflamatorio",
+     "name": "Ibuprofeno 100mg/ml Suspensão Oral Gotas 20ml Genérico Cimed",
+     "brand": "Cimed",
+     "store": "Pague Menos",
+     "price": 8.89,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "anti-inflamatório para dor",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "farmacia.analgesico",
+     "name": "Paracetamol 750mg Genérico Cimed 10 Comprimidos",
+     "brand": "Cimed",
+     "store": "Drogaria São Paulo",
+     "price": 10.59,
+     "delivery": "prazo da loja: 60 min",
+     "why": "paracetamol alivia a dor",
+     "remedio": true
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções pertinentes para aliviar a dor, incluindo pastilha e analgésicos; os motivos são compatíveis com os produtos.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r56",
+   "text": "nariz entupido a noite toda",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 11963,
+   "timingMs": 11962,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 4812,
+    "judgeMs": 7149
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.descongestionante",
+      "query": "soro nasal | sorine | rinosoro | vick vaporub",
+      "why": "desentope e limpa o nariz",
+      "mipClass": "descongestionante"
+     },
+     {
+      "shelfId": "farmacia.antialergico",
+      "query": "loratadina | desloratadina",
+      "why": "reduz coriza de alergia",
+      "mipClass": "antialergico"
+     },
+     {
+      "shelfId": "limpeza.papel_toalha",
+      "query": "lenco de papel",
+      "why": "lenço de papel macio"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.descongestionante",
+     "name": "Descongestionante Nasal Sorine 9mg/ml 50ml Spray",
+     "brand": "Sorine",
+     "store": "Drogaria São Paulo",
+     "price": 30.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "desentope e limpa o nariz",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.antialergico",
+     "name": "Loratadina 10mg 12 Comprimidos Genérico Neo Química",
+     "brand": "Loratadina",
+     "store": "Pague Menos",
+     "price": 4.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "reduz coriza de alergia",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "limpeza.papel_toalha",
+     "name": "Lenço de Papel Dia a Dia Kleenex Leve 60 Pague 50",
+     "brand": "Kleenex",
+     "store": "Mambo",
+     "price": 7.19,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "lenço de papel Kleenex",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Boas opções para aliviar o nariz entupido, com tipos diferentes; loratadina ajuda especialmente se houver componente alérgico.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r57",
+   "text": "tosse seca que nao para",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 9166,
+   "timingMs": 9164,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 2279,
+    "judgeMs": 6884
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.antitussigeno",
+      "query": "dropropizina | vibral | cloperastina",
+      "why": "acalma a tosse seca",
+      "mipClass": "antitussigeno"
+     },
+     {
+      "shelfId": "farmacia.garganta",
+      "query": "strepsils | pastilha para garganta",
+      "why": "alivia a garganta irritada",
+      "mipClass": "garganta"
+     },
+     {
+      "shelfId": "mercado.mel_geleia",
+      "query": "mel",
+      "why": "mel acalma a garganta"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.antitussigeno",
+     "name": "Dropropizina 3mg/ml Xarope 120ml Genérico Achê",
+     "brand": "Dropropizina",
+     "store": "Pague Menos",
+     "price": 11.89,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "acalma a tosse seca",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.garganta",
+     "name": "Pastilhas para Garganta Strepsils Sabor Mel e Limão 8 Pastilhas",
+     "brand": "Strepsils",
+     "store": "Pague Menos",
+     "price": 13.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia a garganta irritada",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.mel_geleia",
+     "name": "Mel Holanda Baldoni 200g",
+     "brand": "Baldoni",
+     "store": "Mambo",
+     "price": 22.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "mel para acalmar a garganta",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Boa variedade: xarope isento adequado para tosse seca, pastilhas e mel como opções complementares.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r59",
+   "text": "picada de mosquito coçando muito",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "card_errado",
+   "ms": 4892,
+   "timingMs": 4890,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 2815,
+    "judgeMs": 2074
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.antialergico",
+      "query": "loratadina | desloratadina | fexofenadina | allegra",
+      "why": "alivia espirro, coriza e coceira",
+      "mipClass": "antialergico"
+     },
+     {
+      "shelfId": "farmacia.descongestionante",
+      "query": "soro nasal | sorine",
+      "why": "limpa o nariz",
+      "mipClass": "descongestionante"
+     },
+     {
+      "shelfId": "limpeza.papel_toalha",
+      "query": "lenco de papel",
+      "why": "lenço de papel macio"
+     },
+     {
+      "shelfId": "farmacia.repelente",
+      "query": "repelente",
+      "why": "evita novas picadas"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.antialergico",
+     "name": "Loratadina 10mg 12 Comprimidos Genérico Neo Química",
+     "brand": "Loratadina",
+     "store": "Pague Menos",
+     "price": 4.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "alivia coceira alérgica",
+     "remedio": true
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.descongestionante",
+     "name": "Descongestionante Nasal Sorine Jet SSC 9mg/ml 100ml Spray",
+     "brand": "Sorine",
+     "store": "Drogaria São Paulo",
+     "price": 41.59,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "limpa o nariz",
+     "remedio": true
+    },
+    {
+     "id": "C3",
+     "shelfId": "farmacia.repelente",
+     "name": "Repelente Spray Above Protect 200ml",
+     "brand": "Above",
+     "store": "Drogal",
+     "price": 12.65,
+     "delivery": "prazo da loja: 3h",
+     "why": "spray repelente 200ml",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 2,
+    "comentario": "Nenhum card trata adequadamente a coceira da picada; Sorine é irrelevante e o repelente só previne novas picadas.",
+    "cards_errados": [
+     "C2"
+    ],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r72",
+   "text": "qual o melhor shampoo pra cabelo cacheado",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "cabelo cacheado"
+   ],
+   "outcome": "atende",
+   "ms": 5393,
+   "timingMs": 5393,
+   "timings": {
+    "mapMs": 1267,
+    "searchMs": 2473,
+    "judgeMs": 1653
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.shampoo",
+      "query": "shampoo cabelo cacheado",
+      "why": "para cabelo cacheado"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.shampoo",
+     "name": "Widi Care Higienizando a Juba - Shampoo 500ml",
+     "brand": "Widi Care",
+     "store": "Época Cosméticos",
+     "price": 46.34,
+     "delivery": "prazo da loja: 2 dias úteis",
+     "why": "linha pra cabelo cacheado",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "O shampoo é adequado para cabelo cacheado, mas há apenas uma opção, sem variedade para comparar qual é a melhor.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r74",
+   "text": "me indica um café bom, de coador",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "coador"
+   ],
+   "outcome": "atende",
+   "ms": 10116,
+   "timingMs": 10114,
+   "timings": {
+    "mapMs": 1458,
+    "searchMs": 5494,
+    "judgeMs": 3162
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "mercado.cafe",
+      "query": "café em pó para coador",
+      "why": "em pó para coador"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.cafe",
+     "name": "Café Torrado e Moído Tradicional a Vácuo Melitta 500g",
+     "brand": "Melitta",
+     "store": "Mambo",
+     "price": 26.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "café em pó, pra coador",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "mercado.cafe",
+     "name": "Café Torrado e Moído Tradicional Pilão 500g",
+     "brand": "Pilão",
+     "store": "Mambo",
+     "price": 23.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "café em pó, pra coador",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.cafe",
+     "name": "Café Torrado e Moído Tradicional 3 Corações 500g",
+     "brand": "3 Corações",
+     "store": "Mambo",
+     "price": 22.99,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "café em pó, pra coador",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Três marcas conhecidas de café torrado e moído, adequadas para coador; opções variadas e motivos corretos.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r75",
+   "text": "qual o melhor protetor solar pra pele oleosa",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "pele oleosa"
+   ],
+   "outcome": "atende",
+   "ms": 9518,
+   "timingMs": 9518,
+   "timings": {
+    "mapMs": 3933,
+    "searchMs": 3373,
+    "judgeMs": 2212
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.protetor_solar",
+      "query": "protetor solar pele oleosa",
+      "why": "opções para pele oleosa"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Episol Bruma FPS50 Pele Mista e Oleosa 75ml",
+     "brand": "Episol",
+     "store": "Drogal",
+     "price": 93.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "indicado pra pele oleosa",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Facial Para Pele Oleosa Neutrogena Sun Fresh Derm Care FPS70 Clara",
+     "brand": "Neutrogena",
+     "store": "Época Cosméticos",
+     "price": 56.27,
+     "delivery": "prazo da loja: 2 dias úteis",
+     "why": "indicado pra pele oleosa",
+     "remedio": false
+    },
+    {
+     "id": "C3",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Facial Neutrogena Sun Fresh Derm Care FPS70 Pele Mista a Oleosa Cor Morena 40g",
+     "brand": "Neutrogena",
+     "store": "Pague Menos",
+     "price": 50.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "indicado pra pele oleosa",
+     "remedio": false
+    },
+    {
+     "id": "C4",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Facial Neutrogena Sun Fresh Derm Care Pele Mista a Oleosa FPS30 40g",
+     "brand": "Neutrogena Sun Fresh",
+     "store": "Drogal",
+     "price": 46.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "indicado pra pele oleosa",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Boas opções faciais para pele oleosa, incluindo marcas e versões distintas; há alguma repetição da linha Neutrogena.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r77",
+   "text": "qual detergente rende mais?",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "sem_cards",
+   "ms": 3613,
+   "timingMs": 3613,
+   "timings": {
+    "mapMs": 2020,
+    "searchMs": 1592,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "limpeza.detergente",
+      "query": "detergente",
+      "why": "rendimento por embalagem"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "limpeza.detergente"
+   ],
+   "cards": []
+  },
+  {
+   "id": "r78",
+   "text": "me indica um sorvete gostoso sem lactose",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem lactose"
+   ],
+   "outcome": "atende",
+   "ms": 11646,
+   "timingMs": 11645,
+   "timings": {
+    "mapMs": 5288,
+    "searchMs": 3106,
+    "judgeMs": 3251
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "doces.sorvete",
+      "query": "sorvete sem lactose",
+      "why": "versão sem lactose"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.sorvete",
+     "name": "Sorvete Proteico Pistache Sem Lactose IcePro 150ml",
+     "brand": "Ice Pro",
+     "store": "Mambo",
+     "price": 23.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "zero lactose no rótulo",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "doces.sorvete",
+     "name": "Sorvete Proteico Açaí Sem Lactose IcePro 150ml",
+     "brand": "Ice Pro",
+     "store": "Mambo",
+     "price": 23.98,
+     "delivery": "prazo da loja: em até 20h (amanhã, 7h–10h)",
+     "why": "zero lactose no rótulo",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Duas opções de sabores diferentes, ambas sem lactose; motivos factuais e prazo informado.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r79",
+   "text": "qual fralda é melhor pra recem nascido?",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "recém-nascido"
+   ],
+   "outcome": "atende",
+   "ms": 9456,
+   "timingMs": 9456,
+   "timings": {
+    "mapMs": 1514,
+    "searchMs": 4504,
+    "judgeMs": 3438
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "bebe.fralda",
+      "query": "fralda recém-nascido",
+      "why": "tamanho para recém-nascido"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "bebe.fralda",
+     "name": "Fraldas Pampers Recém Nascido Premium Care RN+ 36 Unidades",
+     "brand": "Pampers",
+     "store": "Drogal",
+     "price": 54.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "tamanho RN (recém-nascido)",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebe.fralda",
+     "name": "Fraldas Pampers Premium Care Recém-Nascido RN 36 Unidades",
+     "brand": "Pampers",
+     "store": "Drogaria São Paulo",
+     "price": 69.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "tamanho RN (recém-nascido)",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "As duas fraldas atendem ao tamanho RN, mas são versões muito próximas da mesma marca e não explicam qual é a melhor escolha.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r80",
+   "text": "qual pasta de dente é boa pra dente sensivel?",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "dentes sensíveis"
+   ],
+   "outcome": "atende",
+   "ms": 10166,
+   "timingMs": 10165,
+   "timings": {
+    "mapMs": 1569,
+    "searchMs": 4507,
+    "judgeMs": 4089
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "higiene.creme_dental",
+      "query": "creme dental dentes sensíveis",
+      "why": "para dentes sensíveis"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "higiene.creme_dental",
+     "name": "Creme Dental Sensodyne Clinical Repair Dentes Sensíveis 100g",
+     "brand": "Sensodyne",
+     "store": "Drogal",
+     "price": 27.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "linha pra dente sensível",
+     "remedio": false
+    },
+    {
+     "id": "C2",
+     "shelfId": "higiene.creme_dental",
+     "name": "Creme Dental Sensodyne Rápido Alívio Original para Dentes Sensíveis 90g",
+     "brand": "Sensodyne",
+     "store": "Pague Menos",
+     "price": 16.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "linha pra dente sensível",
+     "remedio": false
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Duas opções Sensodyne voltadas a dentes sensíveis, com versões distintas e prazos informados.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  }
+ ]
+}

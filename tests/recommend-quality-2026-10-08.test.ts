@@ -1,0 +1,397 @@
+// Rodada de QUALIDADE da recomendação (08/10/2026, noite): um teste por conserto, sem rede e sem banco.
+// Placar de referência: scripts/bench-recommend.mts (linha de base final-r2: atende 73,5%, card errado
+// 23,1%, restrição 81,3%, motivo verdadeiro 58,5%). Mapa/tabelas FAKE onde o conteúdo real muda.
+import "./helpers/load-env";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import {
+  attributeRules,
+  baseProductName,
+  dietProofWhy,
+  fastEtaCutoff,
+  meetsAttributes,
+  parseConstraint,
+  shelfSanityOk,
+  violatesRule,
+  whyIsFactual
+} from "../src/lib/recommend/quality";
+import { constraintRules, defaultTableDeps, eligibleCandidates, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint } from "../src/lib/recommend/fallback";
+import { __setPlanShelvesForTests } from "../src/lib/recommend/ai";
+import { capPerStore, finalizeWhys, fitKitBudget, productTypeOnly, quickOnly } from "../src/lib/recommend/handle";
+import { findRedFlag, findSymptom } from "../src/lib/recommend/tables";
+import { noteShopperCep, runShopperScoped, storesForShopper } from "../src/lib/store-areas";
+import type { ChoiceOption } from "../src/lib/conversation-types";
+import type { RecommendCard, RecommendRequest, ShelfCandidate, ShelfMap, ShelfPlan, SymptomTableEntry } from "../src/lib/recommend/types";
+
+function req(over: Partial<RecommendRequest>): RecommendRequest {
+  return { form: "need", text: "", criteria: [], constraints: [], source: "regex", ...over };
+}
+function opt(sku: string, name: string, over: Partial<ChoiceOption> = {}): ChoiceOption {
+  return { sku, name, unitPrice: 10, storeKey: "a", ...over };
+}
+function cand(shelfId: string, sku: string, name: string, over: Partial<ChoiceOption> = {}, popularity?: number): ShelfCandidate {
+  return { shelfId, option: opt(sku, name, over), ...(popularity != null ? { popularity } : {}) };
+}
+const rule = (c: string) => parseConstraint(c)!;
+
+describe("causa 1 — loja regional fora do escopo do turno (churrasco/café da manhã sem carne nem pão)", () => {
+  it("dentro do escopo sem CEP anotado, Mambo/Swift somem; com o CEP anotado (runChain faz), voltam", async () => {
+    process.env.LIA_AUTO_PURCHASE_STORES = "mambo,swift,drogal";
+    const stores = [{ key: "mambo" }, { key: "swift" }, { key: "drogal" }];
+    const semCep = await runShopperScoped(async () => storesForShopper(stores).map((s) => s.key));
+    assert.deepEqual(semCep, ["drogal"]);
+    const comCep = await runShopperScoped(async () => {
+      noteShopperCep("01310100");
+      return storesForShopper(stores).map((s) => s.key);
+    });
+    assert.deepEqual(comCep, ["mambo", "swift", "drogal"]);
+  });
+});
+
+describe("causa 2 — restrição é dura: prova no nome ou prateleira que por natureza cumpre", () => {
+  it("sem lactose: biscoito Alpino e iogurte comum saem; sorvete 'sem lactose' e suco passam", () => {
+    const r = rule("sem lactose");
+    assert.equal(violatesRule("Biscoito Recheado Nestlé Passatempo Sabor Alpino 90g", r, "doces.biscoito_doce"), true);
+    assert.equal(violatesRule("Iogurte Grego Tradicional Vigor 90g", r, "frios.iogurte"), true);
+    assert.equal(violatesRule("Picolé Kibon Tablito Sabor 3 Chocolates 61g", r, "doces.sorvete"), true);
+    assert.equal(violatesRule("Sorvete Proteico Açaí Sem Lactose IcePro 150ml", r, "doces.sorvete"), false);
+    assert.equal(violatesRule("Suco Del Valle Sabor Maçã 200ml", r, "bebidas.suco"), false);
+    assert.equal(violatesRule("Leite em Pó Molico Zero Lactose 260g", r, "frios.leite"), false);
+    // compatível com o contrato antigo (sem prateleira = só palavra que fere)
+    assert.equal(violatesConstraint("Biscoito de Polvilho", constraintRules(["sem lactose"])), false);
+  });
+
+  it("sem glúten: amendoim japonês e Cheetos saem; castanha e pipoca passam; 'sem glúten' no rótulo passa", () => {
+    const r = rule("sem glúten");
+    assert.equal(violatesRule("Amendoim Japonês Mendorato Santa Helena 90g", r, "snacks.amendoim_castanhas"), true);
+    assert.equal(violatesRule("Salgadinho Cheetos Onda Sabor Requeijão 105g", r, "snacks.salgadinho"), true);
+    assert.equal(violatesRule("Castanha de Caju Iracema 50g", r, "snacks.amendoim_castanhas"), false);
+    assert.equal(violatesRule("Pipoca Premium Yoki 400g", r, "snacks.salgadinho"), false);
+    assert.equal(violatesRule("Biscoito de Arroz Sem Glúten Camil", r, "snacks.biscoito_salgado"), false);
+  });
+
+  it("vegano e vegetariano: trufa e hot pocket saem; fruta, feijão e pizza de mussarela (vegetariano) passam", () => {
+    const vegan = rule("vegano");
+    assert.equal(violatesRule("Minitrufa Amarga Frutas Vermelhas 12G", vegan, "doces.chocolate"), true);
+    assert.equal(violatesRule("Banana Prata (unidade ~190 g)", vegan, "hortifruti.frutas"), false);
+    assert.equal(violatesRule("Feijão Carioca Tipo 1 Camil 1kg", vegan, "mercado.feijao"), false);
+    const veg = rule("vegetariano");
+    assert.equal(veg.kind, "vegetarian");
+    assert.equal(violatesRule("Sanduiche Hot Pocket X-Bacon Sadia 145g", veg, "lanches.sanduiche"), true);
+    assert.equal(violatesRule("Pizza de Mussarela Congelada Seara 220g", veg, "congelados.pizza"), false);
+    assert.equal(violatesRule("Pizza Calabresa com Queijo Seara", veg, "congelados.pizza"), true);
+    assert.equal(violatesRule("Iogurte Grego Vigor", veg, "frios.iogurte"), false);
+  });
+
+  it("'sem X' vira a família: porco, álcool, dipirona, cafeína, amendoim, zero açúcar", () => {
+    const porco = rule("sem porco");
+    assert.equal(violatesRule("Picanha Suína Temperada Prieto Kg", porco), true);
+    assert.equal(violatesRule("Linguiça Toscana Sadia", porco), true);
+    assert.equal(violatesRule("Picanha Swift Legado 1855", porco), false);
+    assert.equal(violatesRule("Linguiça de Frango Seara", porco), false);
+    const alcool = rule("sem bebida alcoólica");
+    assert.equal(violatesRule("Cerveja Lager Heineken Lata 350ml", alcool), true);
+    assert.equal(violatesRule("Vinho Tinto Malbec 750ml", alcool), true);
+    assert.equal(violatesRule("Cerveja Heineken Sem Álcool 0,0 350ml", alcool), false);
+    const dipirona = rule("sem dipirona (alergia)");
+    assert.equal(violatesRule("Novalgina 1g 10 Comprimidos", dipirona), true);
+    assert.equal(violatesRule("Dorflex 36 Comprimidos", dipirona), true);
+    assert.equal(violatesRule("Paracetamol 750mg Genérico Cimed", dipirona), false);
+    const cafeina = rule("sem cafeína");
+    assert.equal(violatesRule("Chá Preto Leão 16g", cafeina), true);
+    assert.equal(violatesRule("Café Solúvel Descafeinado Nescafé", cafeina), false);
+    assert.equal(violatesRule("Chá Leão Camomila 10 Sachês", cafeina), false);
+    assert.equal(violatesRule("Paçoca Rolha Amor 20 Unidades", rule("nada de amendoim")), true);
+    const acucar = rule("zero açúcar");
+    assert.equal(acucar.kind, "sugar");
+    assert.equal(violatesRule("Chocolate Lacta ao Leite 90g", acucar, "doces.chocolate"), true);
+    assert.equal(violatesRule("Chocolate Zero Açúcar Hershey's 82g", acucar, "doces.chocolate"), false);
+    assert.equal(violatesRule("Iogurte Natural Zero Lactose", acucar, "frios.iogurte"), true);
+  });
+
+  it("pick com alternativas: 'sem dipirona' tira só a dipirona da busca do analgésico", () => {
+    process.env.LIA_MEDICINE_MIP = "true";
+    const map: ShelfMap = {
+      generatedAt: "t",
+      shelves: [
+        { id: "farmacia.analgesico", label: "Analgésicos", domain: "farmacia", query: "paracetamol", stores: ["f"], flags: ["mip"] },
+        { id: "farmacia.anti_inflamatorio", label: "Anti-inflamatórios", domain: "farmacia", query: "ibuprofeno", stores: ["f"], flags: ["mip"] }
+      ]
+    };
+    const SYMPTOM: SymptomTableEntry[] = [
+      {
+        keys: ["dor de cabeca"],
+        picks: [
+          { shelfId: "farmacia.analgesico", query: "dipirona | paracetamol | neosaldina", why: "alivia a dor", mipClass: "analgesico" },
+          { shelfId: "farmacia.anti_inflamatorio", query: "ibuprofeno | advil", why: "alivia dor e inflamação", mipClass: "anti_inflamatorio" }
+        ]
+      }
+    ];
+    const deps = tableDepsFrom(map, { NEED_TABLE: [], SYMPTOM_TABLE: SYMPTOM, RED_FLAGS: [] });
+    const plan = planShelvesFromTables(req({ text: "dor de cabeça, sou alérgica a dipirona", symptom: "dor de cabeça", constraints: ["sem dipirona (alergia)"] }), deps);
+    assert.deepEqual(plan?.picks.map((p) => [p.shelfId, p.query]), [["farmacia.analgesico", "paracetamol"], ["farmacia.anti_inflamatorio", "ibuprofeno | advil"]]);
+    const semIbu = planShelvesFromTables(req({ text: "dor de cabeça", symptom: "dor de cabeça", constraints: ["sem ibuprofeno"] }), deps);
+    assert.deepEqual(semIbu?.picks.map((p) => p.shelfId), ["farmacia.analgesico"]);
+  });
+
+  it("eligibleCandidates aplica a prova por prateleira", () => {
+    const input = {
+      request: req({ text: "algo gelado e doce sem lactose", constraints: ["sem lactose"] }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [
+        cand("doces.biscoito_doce", "b1", "Biscoito Recheado Passatempo Alpino 90g"),
+        cand("doces.sorvete", "s1", "Sorvete Açaí Sem Lactose IcePro 150ml"),
+        cand("bebidas.agua_coco", "a1", "Água de Coco Sococo 200ml")
+      ]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["s1", "a1"]);
+  });
+});
+
+describe("causa 3 — produto julgado: o tipo e o atributo pedidos", () => {
+  it("cacheado tira anticaspa; coador tira copo/cápsula/solúvel; dente sensível tira clareadora comum", () => {
+    const cache = attributeRules(["cabelo cacheado"]);
+    assert.equal(meetsAttributes("Widi Care Higienizando a Juba - Shampoo 500ml", cache), true);
+    assert.equal(meetsAttributes("Shampoo Vichy Dercos Anticaspa Cabelos Cacheados", cache), false);
+    const coador = attributeRules(["coador"]);
+    assert.equal(meetsAttributes("Café Torrado e Moído Tradicional Pilão 500g", coador), true);
+    assert.equal(meetsAttributes("Eco Copo Café Kopenhagen 450ml", coador), false);
+    assert.equal(meetsAttributes("Cápsulas Dolce Gusto Cappuccino", coador), false);
+    const sens = attributeRules(["dentes sensíveis"]);
+    assert.equal(meetsAttributes("Creme Dental Sensodyne Rápido Alívio", sens), true);
+    assert.equal(meetsAttributes("Creme Dental Tripla Ação Menta Original Colgate 90g", sens), false);
+    assert.deepEqual(attributeRules(["orçamento total até R$ 80", "sem lactose"]), []);
+  });
+
+  it("eligibleCandidates no produto julgado: com algum candidato que cumpre o atributo, só ele fica", () => {
+    const input = {
+      request: req({ form: "product_judged", text: "qual pasta de dente é boa pra dente sensível", product: "creme dental dente sensível", constraints: ["dentes sensíveis"] }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [
+        cand("higiene.creme_dental", "c1", "Creme Dental Sensodyne Clinical Repair Dentes Sensíveis 100g"),
+        cand("higiene.creme_dental", "c2", "Creme Dental Close Up Dentes + Brancos 90g")
+      ]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["c1"]);
+  });
+
+  it("productTypeOnly: shampoo pra cacheado tira anticaspa, kit e infantil (se sobrar shampoo de adulto)", () => {
+    const r = req({ form: "product_judged", text: "qual o melhor shampoo pra cabelo cacheado", product: "shampoo cabelo cacheado", constraints: ["cabelo cacheado"] });
+    const cands = [
+      cand("beleza.shampoo", "1", "Widi Care Higienizando a Juba - Shampoo 500ml"),
+      cand("beleza.shampoo", "2", "Shampoo Infantil Baby Dove Hidratação Cabelos Cacheados"),
+      cand("beleza.shampoo", "3", "Lola Cosmetics Kit - Máscara + Shampoo Cacheados"),
+      cand("beleza.shampoo", "4", "Refil Shampoo Anticaspa DS Vichy Dercos Cabelos Cacheados"),
+      cand("beleza.shampoo", "5", "Shampoo Salon Line Cachos Definidos 300ml")
+    ];
+    assert.deepEqual(productTypeOnly(r, cands).map((c) => c.option.sku), ["1", "5"]);
+    const kid = req({ form: "product_judged", text: "shampoo pro meu filho cacheado", product: "shampoo infantil cacheado", constraints: ["cabelo cacheado"] });
+    assert.ok(productTypeOnly(kid, cands).some((c) => c.option.sku === "2"));
+  });
+
+  it("mesmo produto em outro pacote não é opção diferente", () => {
+    assert.equal(baseProductName("Fraldas Pampers Premium Care Recém-Nascido RN 36 Unidades"), baseProductName("Fralda Pampers Premium Care Recém-Nascido RN 20 Unidades").replace(/^fralda /, "fraldas "));
+    assert.notEqual(baseProductName("Fralda Huggies Rápida Absorção Recém Nascido P 38 Unidades"), baseProductName("Fralda Pampers Premium Care RN 20"));
+  });
+});
+
+describe("causa 4 — o item é do tipo da prateleira", () => {
+  it("hortifrúti sem Ruffles/Gatorade/trufa; café sem copo; carvão sem churrasqueira elétrica", () => {
+    assert.equal(shelfSanityOk("hortifruti.legumes", "Batata Ruffles Elma Chips Sabor Original 33g"), false);
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Gatorade Frutas Cítricas 500ml"), false);
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Minitrufa Amarga Frutas Vermelhas 12G"), false);
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Banana Prata (unidade ~190 g)"), true);
+    assert.equal(shelfSanityOk("hortifruti.legumes", "Batata Doce Rosada kg"), true);
+    assert.equal(shelfSanityOk("hortifruti.legumes", "Brócolis Congelado Pratigel 300g"), true);
+    assert.equal(shelfSanityOk("mercado.cafe", "Eco Copo Café Kopenhagen 450ml"), false);
+    assert.equal(shelfSanityOk("mercado.cafe", "Café Torrado e Moído Pilão 500g"), true);
+    assert.equal(shelfSanityOk("casa.churrasco", "Churrasqueira Elétrica Philco PCQ1500D 127V"), false);
+    assert.equal(shelfSanityOk("casa.churrasco", "Carvão Vegetal Swift 5kg"), true);
+    assert.equal(shelfSanityOk("frios.iogurte", "Kit Aptanutri & Bepantol Fórmula Infantil Premium 3 800g"), false);
+  });
+});
+
+describe("causa 5 — motivo (why) só com fato do card", () => {
+  it("popularidade, liderança, prazo e comparação solta não são fato", () => {
+    for (const bad of ["o mais vendido", "dos mais vendidos", "marca líder", "chega em 3h", "chega amanhã", "o mais em conta", "opções para sensibilidade", "marca reconhecida e bem vendida"]) {
+      assert.equal(whyIsFactual(bad), false, bad);
+    }
+    for (const ok of ["zero lactose no rótulo", "pra assar na brasa", "alivia a cólica abdominal", "pote de 1,5 L pra dividir", "marca Kibon"]) {
+      assert.equal(whyIsFactual(ok), true, ok);
+    }
+  });
+
+  it("finalizeWhys: 'o mais em conta' só no mais barato; restrição provada vira o motivo; popularidade cai pro papel do plano", () => {
+    const card = (shelfId: string, sku: string, name: string, unitPrice: number, why: string): RecommendCard => ({ sku, name, unitPrice, storeKey: "a", shelfId, why });
+    const plan: ShelfPlan = {
+      picks: [
+        { shelfId: "doces.sorvete", query: "sorvete", why: "doce e gelado" },
+        { shelfId: "bebidas.suco", query: "suco", why: "refrescante" },
+        { shelfId: "doces.balas", query: "bala", why: "o doce mais pedido" }
+      ],
+      source: "ai"
+    };
+    const cards = [
+      card("doces.sorvete", "s", "Sorvete Açaí Sem Lactose IcePro 150ml", 23.9, "o mais vendido"),
+      card("bebidas.suco", "j", "Suco Del Valle Maçã 200ml", 5.09, "marca conhecida e mais vendido"),
+      card("doces.balas", "b", "Bala de Goma Fini 90g", 7.99, "o mais em conta")
+    ];
+    const out = finalizeWhys(cards, req({ text: "algo gelado sem lactose", constraints: ["sem lactose"], criteria: ["cheap", "good"] }), plan);
+    assert.equal(out[0].why, "zero lactose no rótulo");
+    assert.equal(out[1].why, "o mais em conta dos 3");
+    assert.equal(out[2].why, "");
+    // preço não é o 1º critério: ninguém vira "o mais em conta"
+    assert.ok(!finalizeWhys(cards, req({ text: "festa", criteria: ["good", "cheap"] }), plan).some((c) => c.why.startsWith("o mais em conta")));
+    const remedio = finalizeWhys([{ ...card("farmacia.antigases", "r", "Simeticona 75mg", 7, "dos mais vendidos"), medicine: "mip" }], req({ symptom: "gases" }), {
+      picks: [{ shelfId: "farmacia.antigases", query: "simeticona", why: "alivia gases e estufamento", mipClass: "antigases" }],
+      source: "table"
+    });
+    assert.equal(remedio[0].why, "alivia gases e estufamento");
+  });
+
+  it("prova de dieta no nome vira motivo", () => {
+    assert.equal(dietProofWhy("Leite Zero Lactose Piracanjuba", constraintRules(["sem lactose"])), "zero lactose no rótulo");
+    assert.equal(dietProofWhy("Chocolate Diet Garoto 25g", constraintRules(["zero açúcar"])), "versão diet");
+  });
+});
+
+describe("causa 6 — urgência: o que chega no dia antes do que leva um dia; até 2 cards por loja", () => {
+  it("fastEtaCutoff: com item de 3h, o corte é 6h; sem nada abaixo de 12h, não corta", () => {
+    assert.equal(fastEtaCutoff([180, 1260, 1440]), 360);
+    assert.equal(fastEtaCutoff([30, 180]), 360);
+    assert.equal(fastEtaCutoff([1260, 1440]), undefined);
+    assert.equal(fastEtaCutoff([undefined]), undefined);
+  });
+
+  it("quickOnly tira o de amanhã sempre que há algo que chega no dia (plano de urgência é largo)", () => {
+    const cands = [
+      cand("snacks.salgadinho", "s1", "Doritos 32g", { etaMinutes: 180 }),
+      cand("doces.biscoito_doce", "b1", "Negresco 90g", { etaMinutes: 180 }),
+      cand("lanches.sanduiche", "h1", "Hot Pocket X-Burguer", { etaMinutes: 1260 })
+    ];
+    assert.deepEqual(quickOnly(cands).map((c) => c.option.sku), ["s1", "b1"]);
+    const one = [cands[0], cands[2]];
+    assert.deepEqual(quickOnly(one).map((c) => c.option.sku), ["s1"]);
+    const slow = [cands[2]];
+    assert.deepEqual(quickOnly(slow).map((c) => c.option.sku), ["h1"]);
+  });
+
+  it("fitKitBudget: kit com teto soma os cards + frete típico; presente (alternativas) não soma", () => {
+    const card = (sku: string, unitPrice: number): RecommendCard => ({ sku, name: sku, unitPrice, storeKey: "a", shelfId: `s.${sku}`, why: "" });
+    const kit = [card("racao", 66.9), card("tapete", 82.42), card("shampoo", 22.8), card("bola", 22.4)];
+    assert.deepEqual(fitKitBudget(kit, req({ text: "ganhei um cachorro filhote, preciso de tudo, ate 200", budget: 200 })).map((c) => c.sku), ["racao", "tapete", "shampoo"]);
+    assert.equal(fitKitBudget(kit, req({ text: "presente pro meu pai até 200", need: "presente", budget: 200 })).length, 4);
+  });
+
+  it("capPerStore: a 3ª da mesma loja vira a da outra loja na mesma prateleira", () => {
+    const map: ShelfMap = { generatedAt: "t", shelves: [] };
+    const td = tableDepsFrom(map, { NEED_TABLE: [], SYMPTOM_TABLE: [], RED_FLAGS: [] });
+    const candidates = [
+      cand("a.x", "1", "Água Lindoya", { storeKey: "drogal" }),
+      cand("a.y", "2", "Suco Del Valle", { storeKey: "drogal" }),
+      cand("a.z", "3", "Isotônico Gatorade", { storeKey: "drogal" }),
+      cand("a.z", "4", "Isotônico Powerade", { storeKey: "mambo" })
+    ];
+    const cards = candidates.slice(0, 3).map((c) => ({ ...c.option, shelfId: c.shelfId, why: "" }));
+    const input = { request: req({ text: "sede" }), plan: { picks: [], source: "table" } as ShelfPlan, candidates };
+    const out = capPerStore(cards, input, td, false);
+    assert.deepEqual(out.map((c) => `${c.storeKey}:${c.sku}`), ["drogal:1", "drogal:2", "mambo:4"]);
+  });
+});
+
+describe("causa 7 — sintoma: classes diretas; 'tosse que não para' não é 'há dias'", () => {
+  it("dor de barriga só antiespasmódico + antigases; gases só antigases; azia só antiácido; picada sem soro nasal", () => {
+    assert.deepEqual(findSymptom("dor de barriga")!.picks.map((p) => p.shelfId), ["farmacia.antiespasmodico", "farmacia.antigases"]);
+    assert.deepEqual(findSymptom("gases")!.picks.map((p) => p.shelfId), ["farmacia.antigases"]);
+    assert.deepEqual(findSymptom("to com azia horrivel")!.picks.map((p) => p.shelfId), ["farmacia.antiacido"]);
+    assert.deepEqual(findSymptom("comi demais")!.picks.map((p) => p.shelfId), ["farmacia.antiacido", "farmacia.hepatoprotetor", "farmacia.antigases"]);
+    const picada = findSymptom("picada de mosquito cocando muito")!;
+    assert.deepEqual([...picada.picks, ...(picada.care ?? [])].map((p) => p.shelfId), ["farmacia.antialergico", "farmacia.repelente"]);
+    assert.ok(findSymptom("rinite alergica")!.picks.some((p) => p.shelfId === "farmacia.descongestionante"));
+  });
+
+  it("'tosse seca que não para' recomenda; 'diarreia que não para' e 'tosse que não passa' seguem alertando", () => {
+    assert.equal(findRedFlag("tosse seca que nao para"), null);
+    assert.equal(findSymptom("tosse seca que nao para")?.picks[0].shelfId, "farmacia.antitussigeno");
+    assert.equal(findRedFlag("diarreia que nao para")?.reason, "há vários dias");
+    assert.equal(findRedFlag("tosse que nao passa")?.reason, "há vários dias");
+    assert.equal(findRedFlag("tosse faz uma semana")?.reason, "há vários dias");
+  });
+});
+
+describe("corpus difícil (08/10, noite) — h28/h13 sem remédio, h11/h27 tópico de criança, h09 pet, h04 comida, h26/h17 motivo", () => {
+  it("h28 'sem remédio': o plano do sintoma fica só no cuidado; candidato de remédio sai", async () => {
+    process.env.LIA_MEDICINE_MIP = "true";
+    __setPlanShelvesForTests(null);
+    const plan = await planShelves(req({ text: "to com dor nas costas de ficar sentado o dia todo, sem remedio por favor", need: "dor nas costas", symptom: "dor nas costas", constraints: ["sem remedio"] }));
+    assert.ok(plan.picks.length > 0);
+    assert.ok(plan.picks.every((p) => !p.mipClass && !p.shelfId.startsWith("farmacia.")), plan.picks.map((p) => p.shelfId).join(","));
+    const input = {
+      request: req({ text: "dor nas costas sem remédio", constraints: ["sem remédio"] }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("farmacia.relaxante_muscular", "d", "Dorflex 36 Comprimidos", { medicine: "mip" }), cand("casa.almofada", "a", "Almofada de Apoio Lombar")]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["a"]);
+  });
+
+  it("h11/h27: assadura de bebê de 8 meses e piolho de filha de 10 anos NÃO alertam; febre de bebê alerta", async () => {
+    process.env.LIA_MEDICINE_MIP = "true";
+    __setPlanShelvesForTests(null);
+    const assadura = await planShelves(req({ text: "meu bebe de 8 meses ta com assadura feia", need: "assadura no bebê de 8 meses", symptom: "assadura", recipient: "bebê de 8 meses" }));
+    assert.equal(assadura.redFlag, undefined);
+    assert.equal(assadura.picks[0]?.shelfId, "farmacia.pomada_assadura");
+    const piolho = await planShelves(req({ text: "minha filha de 10 anos ta com piolho", need: "piolho", symptom: "piolho", recipient: "filha de 10 anos" }));
+    assert.equal(piolho.redFlag, undefined);
+    assert.deepEqual(piolho.picks.map((p) => p.shelfId), ["farmacia.piolho", "beleza.acessorios_cabelo"]);
+    const febre = await planShelves(req({ text: "meu bebe de 8 meses ta com febre", need: "febre", symptom: "febre", recipient: "bebê" }));
+    assert.ok(febre.redFlag);
+  });
+
+  it("h09: cachorro com pulga vira higiene pet; nenhuma prateleira de gente", async () => {
+    __setPlanShelvesForTests(async () => ({ picks: [{ shelfId: "farmacia.repelente", query: "repelente para cachorro", why: "" }], source: "ai" }));
+    const r = req({ form: "product_judged", text: "meu cachorro ta cheio de pulga, o que compro?", product: "cheio de pulga", recipient: "cachorro", criteria: ["good"] });
+    const n = normalizeRecommendRequest(r);
+    assert.equal(n.form, "need");
+    const plan = await planShelves(r);
+    __setPlanShelvesForTests(null);
+    assert.ok(plan.picks.length > 0);
+    assert.ok(plan.picks.every((p) => p.shelfId.startsWith("pet.")), plan.picks.map((p) => p.shelfId).join(","));
+  });
+
+  it("h04: 'o que posso comer' com refluxo não vira remédio; refluxo vira o que evitar", () => {
+    const n = normalizeRecommendRequest(req({ text: "tenho refluxo, o que posso comer de noite sem passar mal?", need: "algo para comer de noite", symptom: "refluxo" }), defaultTableDeps());
+    assert.equal(n.symptom, undefined);
+    assert.ok(n.constraints.includes("sem café") && n.constraints.includes("sem chocolate"));
+    const remedio = normalizeRecommendRequest(req({ text: "tenho refluxo, que remédio eu tomo?", symptom: "refluxo" }), defaultTableDeps());
+    assert.equal(remedio.symptom, "refluxo");
+  });
+
+  it("h23: produto 'julgado' que é sintoma da tabela vira sintoma; h15/h01: sintoma só da tabela de necessidade vira necessidade", () => {
+    const unha = normalizeRecommendRequest(req({ form: "product_judged", text: "to com unha encravada doendo, o que faço", product: "unha encravada doendo" }));
+    assert.equal(unha.form, "need");
+    assert.equal(unha.symptom, "unha encravada doendo");
+    const queda = normalizeRecommendRequest(req({ text: "meu cabelo ta caindo muito, tem algo?", need: "queda de cabelo", symptom: "queda de cabelo" }));
+    assert.equal(queda.symptom, undefined);
+    const derm = normalizeRecommendRequest(req({ text: "to com dermatite atopica", need: "algo para dermatite atópica", symptom: "dermatite atópica" }));
+    assert.equal(derm.symptom, undefined);
+  });
+
+  it("h26: motivo do atributo é o que o cliente disse (pele sensível ≠ dente sensível); h17: alergia avisa traços", () => {
+    const plan: ShelfPlan = { picks: [{ shelfId: "beleza.protetor_solar", query: "protetor", why: "" }], source: "ai" };
+    const c: RecommendCard = { sku: "p", name: "Protetor Solar Dauf Mineral Peles Sensíveis FPS50", unitPrice: 51, storeKey: "a", shelfId: "beleza.protetor_solar", why: "" };
+    const out = finalizeWhys([c], req({ form: "product_judged", product: "protetor solar pele sensivel", constraints: ["pele sensível", "rosácea"] }), plan);
+    assert.equal(out[0].why, "pra pele sensível");
+    const s: RecommendCard = { sku: "s", name: "Salgadinho Doritos 32g", unitPrice: 5, storeKey: "a", shelfId: "snacks.salgadinho", why: "o mais vendido" };
+    const alerg = finalizeWhys([s], req({ form: "product_judged", product: "salgadinho", constraints: ["sem amendoim"] }), plan);
+    assert.match(alerg[0].why, /confira traços no rótulo/);
+  });
+
+  it("h24: orçamento é total — frete desconhecido conta R$ 10", () => {
+    const input = {
+      request: req({ text: "só tenho 20 reais", budget: 20 }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("doces.chocolate", "c", "Chocolate 90g", { unitPrice: 10.29 }), cand("doces.biscoito_doce", "b", "Biscoito 90g", { unitPrice: 2.95 }), cand("snacks.salgadinho", "f", "Salgadinho", { unitPrice: 12, freightFee: 0 })]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((x) => x.option.sku), ["b", "f"]);
+  });
+});

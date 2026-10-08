@@ -50,7 +50,7 @@ const NEEDS: NeedTableEntry[] = [
   {
     keys: ["algo doce", "doce", "alguma coisa doce", "algo gostoso pra comer", "algo gostoso"],
     picks: [
-      { shelfId: "t.chocolate", query: "chocolate", why: "o doce mais pedido" },
+      { shelfId: "t.chocolate", query: "chocolate", why: "doce pronto pra comer" },
       { shelfId: "t.sorvete", query: "sorvete", why: "doce e gelado" },
       { shelfId: "t.biscoito", query: "biscoito recheado", why: "pacote pronto" },
       { shelfId: "t.pudim", query: "pudim", why: "sobremesa pronta" },

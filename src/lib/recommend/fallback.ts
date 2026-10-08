@@ -16,8 +16,9 @@ import { medicineEnabled, isMedicineLineExtension } from "../medicine";
 import { displayPrice } from "../pricing";
 import * as tablesModule from "./tables";
 import { SHELF_MAP } from "./shelf-map";
-import { etaLabel, judgeFitnessWithAi, planShelvesWithAi, recommendAiEnabled } from "./ai";
+import { judgeFitnessWithAi, planShelvesWithAi, recommendAiEnabled } from "./ai";
 import { recommendMedicineEnabled } from "./types";
+import { attributeRules, meetsAttributes, parseConstraint, shelfSanityOk, violatesRule, type ConstraintRuleQ } from "./quality";
 import type {
   CustomerMemory,
   FitnessInput,
@@ -37,6 +38,10 @@ import type {
 export { recommendAiEnabled };
 
 const MAX_PICKS = 6;
+const WIDEN_TO = 5;
+export const TYPICAL_FREIGHT = 15;
+// Frete desconhecido no orçamento total (corpus difícil h24): R$ 10; frete real (inclusive 0) vale como veio.
+export const UNKNOWN_FREIGHT = 10;
 
 export function normRec(input: string | undefined | null): string {
   return (input ?? "")
@@ -140,62 +145,50 @@ function redFlagPlan(flag: Flag): ShelfPlan {
 }
 
 // ---------- restrições ----------
+// Rodada de qualidade (08/10, noite): as regras moram em quality.ts. Restrição de dieta é DURA — na
+// prateleira de risco o candidato precisa provar no nome ("zero lactose", "sem glúten", "vegano"); "sem X"
+// vira a família inteira de X ("sem porco" tira bacon/linguiça/picanha suína; "sem álcool" tira cerveja
+// e vinho; "sem dipirona" tira Novalgina/Dorflex). "zero açúcar"/"diet" agora também é corte.
 
-const DAIRY_RE = /\b(leite|queijo|queijos|iogurte|iogurtes|requeijao|manteiga|laticinio|laticinios|sorvete|sorvetes|creme de leite|chantilly|doce de leite|nata|coalhada|petit suisse|achocolatado|ao leite|bombom|bombons|trufa|trufas)\b/;
-const GLUTEN_RE = /\b(pao|paes|biscoito|biscoitos|bolacha|bolachas|bolo|bolos|macarrao|massa|massas|torrada|torradas|cerveja|cervejas|wafer|salgado|salgados|pizza|lasanha|bisnaguinha|cereal|cereais|granola)\b/;
-const ANIMAL_RE = /\b(carne|carnes|picanha|frango|linguica|bacon|presunto|salame|peixe|atum|sardinha|camarao|leite|queijo|queijos|iogurte|requeijao|manteiga|ovo|ovos|mel|hamburguer|salsicha|mortadela|peito de peru|sorvete|ao leite|chocolate ao leite|bombom|bombons)\b/;
-const CHOCOLATE_RE = /\b(chocolate|chocolates|bombom|bombons|trufa|trufas|cacau|brigadeiro|nutella|ovomaltine|achocolatado|lacta|garoto|kitkat|kit kat|bis|prestigio|sonho de valsa|ouro branco|talento|baton|twix|snickers|ferrero|lindt|hershey|hersheys|toblerone|laka|diamante negro|alpino|galak|suflair|charge|chokito|milka|kinder|negresco|trento)\b/;
+type ConstraintRule = ConstraintRuleQ;
 
-type ConstraintRule = { kind: "lactose" | "gluten" | "vegan" | "word"; word?: string };
-
-// "sem lactose" → lactose; "sem glúten" → glúten; "vegano"/"vegana" → vegan; "sem X"/"nada de X"/
-// "não quero X" → palavra X. "zero açúcar"/"diet"/"light" é PREFERÊNCIA (ordem), não corte.
 export function constraintRules(constraints: readonly string[], memory?: CustomerMemory): ConstraintRule[] {
   const all = [...constraints, ...(memory?.restrictions ?? []).map((r) => r.text)];
   const out: ConstraintRule[] = [];
+  const seen = new Set<string>();
   for (const raw of all) {
-    const c = normRec(raw);
-    if (!c) continue;
-    if (/\blactose\b/.test(c) || /\b(intolerante|alergi\w*) (a |ao )?leite\b/.test(c)) out.push({ kind: "lactose" });
-    else if (/\bgluten\b/.test(c) || /\bceliac[oa]\b/.test(c)) out.push({ kind: "gluten" });
-    else if (/\b(vegan[oa]?s?|vegetarian[oa]s? estrit[oa]s?)\b/.test(c)) out.push({ kind: "vegan" });
-    else {
-      const m = c.match(/^(?:sem|nada de|nao quero|nao pode ter|tirar?|tira|exceto|menos)\s+(.+)$/);
-      const word = m?.[1]?.replace(/^(o|a|os|as)\s+/, "").trim();
-      if (word && !/^(acucar|sal|gordura|conservantes?|corante|pressa)$/.test(word)) out.push({ kind: "word", word });
-    }
+    const rule = parseConstraint(raw);
+    if (!rule) continue;
+    const key = rule.kind === "word" ? `word:${normRec(rule.word)}` : rule.kind;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(rule);
   }
   return out;
+}
+
+// O texto (query de prateleira ou nome de produto) fere a restrição? A versão declarada
+// "sem X"/"zero X"/"livre de X" passa ("Leite Zero Lactose" serve para "sem lactose"). Com `shelfId`
+// (candidato), prateleira de risco exige a prova no nome.
+export function violatesConstraint(textRaw: string, rules: readonly ConstraintRule[], shelfId?: string): boolean {
+  return rules.some((rule) => violatesRule(textRaw, rule, shelfId));
+}
+
+// Pick com alternativas ("dipirona | paracetamol"): sai só a alternativa que fere; sem nenhuma, ou com a
+// prateleira inteira ferindo ("Carne suína e bacon" em "sem porco"), sai a pick.
+function pickWithinRules(pick: ShelfPick, shelf: ShelfNode | null | undefined, rules: readonly ConstraintRule[]): ShelfPick | null {
+  if (!rules.length) return pick;
+  const alts = pick.query.split("|").map((q) => q.trim()).filter(Boolean);
+  const kept = alts.filter((q) => !violatesConstraint(q, rules));
+  if (!kept.length) return null;
+  if (violatesConstraint(`${kept.join(" ")} ${shelf?.label ?? ""}`, rules)) return null;
+  return kept.length === alts.length ? pick : { ...pick, query: kept.join(" | ") };
 }
 
 function wordRe(word: string): RegExp {
   const stem = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   // Plural simples ("chocolate" casa "chocolates"; "amendoim" casa "amendoins").
   return new RegExp(`\\b${stem}(s|es)?\\b`);
-}
-
-// O texto (query de prateleira ou nome de produto) fere a restrição? A versão declarada
-// "sem X"/"zero X"/"livre de X" passa ("Leite Zero Lactose" serve para "sem lactose").
-export function violatesConstraint(textRaw: string, rules: readonly ConstraintRule[]): boolean {
-  const text = normRec(textRaw);
-  if (!text) return false;
-  for (const rule of rules) {
-    if (rule.kind === "lactose") {
-      if (/\b(zero|sem|livre de|0%?) lactose\b|\blac free\b|\bvegan[oa]?\b|\bvegetal\b/.test(text)) continue;
-      if (DAIRY_RE.test(text) || (/\bchocolate\b/.test(text) && !/\b(amargo|70%|80%|meio amargo)\b/.test(text))) return true;
-    } else if (rule.kind === "gluten") {
-      if (/\b(sem|zero|livre de) gluten\b|\bgluten free\b/.test(text)) continue;
-      if (GLUTEN_RE.test(text)) return true;
-    } else if (rule.kind === "vegan") {
-      if (/\b(vegan[oa]?|vegetal|plant|nao contem (ingredientes de )?origem animal)\b/.test(text)) continue;
-      if (ANIMAL_RE.test(text)) return true;
-    } else if (rule.word) {
-      const w = normRec(rule.word);
-      if (new RegExp(`\\b(sem|zero|livre de) ${w}`).test(text)) continue;
-      if (/^chocolates?$/.test(w) ? CHOCOLATE_RE.test(text) : wordRe(w).test(text)) return true;
-    }
-  }
-  return false;
 }
 
 // Já está na cesta? Cada trecho da query (separado por "|") cujas palavras (≥3 letras) estão
@@ -222,6 +215,9 @@ function hasFlag(shelf: ShelfNode | null | undefined, flag: string): boolean {
 // na dor de cabeça e na ressaca) vale mesmo sem a flag care no mapa; fora dela, sintoma só aceita mip/care.
 function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendTableDeps, opts: { symptom: boolean; basketNames?: string[]; memory?: CustomerMemory; tableShelves?: Set<string> }): ShelfPick[] {
   const rules = constraintRules(req.constraints, opts.memory);
+  const noMedicine = rules.some((r) => r.kind === "no_medicine");
+  // Pra pet (corpus difícil h09): só prateleira de pet — repelente/remédio de gente nunca.
+  const petOnly = PET_RECIPIENT_RE.test(normRec(req.recipient));
   const seen = new Set<string>();
   const out: ShelfPick[] = [];
   for (const pick of picks) {
@@ -229,11 +225,13 @@ function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendT
     const shelf = deps.shelfById(pick.shelfId);
     const mip = hasFlag(shelf, "mip");
     if (opts.symptom && !mip && !hasFlag(shelf, "care") && !opts.tableShelves?.has(pick.shelfId)) continue;
-    if (mip && !medicineGateOpen()) continue;
-    if (rules.length && violatesConstraint(`${pick.query} ${shelf?.label ?? ""}`, rules)) continue;
-    if (inBasket(pick.query, opts.basketNames)) continue;
+    if (mip && (!medicineGateOpen() || noMedicine)) continue;
+    if (petOnly && shelf && shelf.domain !== "pet") continue;
+    const allowed = pickWithinRules(pick, shelf, rules);
+    if (!allowed) continue;
+    if (inBasket(allowed.query, opts.basketNames)) continue;
     seen.add(pick.shelfId);
-    out.push(pick);
+    out.push(allowed);
     if (out.length >= MAX_PICKS) break;
   }
   return out;
@@ -245,11 +243,58 @@ const HEALTH_CUE_RE = /\b(dor|dores|doendo|febre|vomit\w*|enjoo|enjoad\w*|nausea
 // (08/10, revisão C3) A chave de sintoma de 1 palavra ambígua ("corte", "gás", "afta"…) só conta com
 // contexto de saúde: a checagem mora em tables.symptomKeyAllowed (usada por findSymptom e pelo
 // casamento local de tableDepsFrom), então "corte de carne pro churrasco" não é mais sintoma.
+// Corpus difícil (08/10, h04): "tenho refluxo, o que posso COMER de noite?" é pedido de comida — a condição
+// vira restrição (normalizeRecommendRequest), a tabela de sintomas não sequestra o pedido.
+const FOOD_ASK_RE = /\b(comer|como|comida|beber|bebo|bebida|jantar|janta|lanchar|lanche|almocar|almoco|cafe da manha|refeicao|refeicoes|cardapio|cozinhar)\b/;
+const MEDICINE_ASK_RE = /\b(remedio|remedios|medicamento|tomar|tomo|xarope|comprimido|pomada|pingo|pingar)\b/;
+export function isFoodAsk(text: string | undefined): boolean {
+  const t = normRec(text);
+  return FOOD_ASK_RE.test(t) && !MEDICINE_ASK_RE.test(t);
+}
+
 export function isSymptomRequest(req: RecommendRequest, deps: Pick<RecommendTableDeps, "findSymptom">): boolean {
   if (req.form !== "need") return false;
+  if (isFoodAsk(req.text)) return false;
   if (req.symptom?.trim()) return true;
   const text = normRec(req.need ?? req.text);
   return Boolean(deps.findSymptom(text)) || HEALTH_CUE_RE.test(text);
+}
+
+// Condição de saúde num pedido de comida → o que evitar (corpus difícil h04: refluxo).
+const CONDITION_AVOID: Array<{ re: RegExp; avoid: string[] }> = [
+  { re: /\b(refluxo|azia|gastrite|queimacao|ulcera)\b/, avoid: ["sem café", "sem chocolate", "sem refrigerante", "sem pimenta", "sem fritura"] }
+];
+
+// Ajustes do pedido ANTES de mapear (rodada de qualidade 08/10, corpus difícil). Puro e idempotente:
+//   - produto "julgado" que é um sintoma da tabela ("unha encravada doendo") vira necessidade de sintoma;
+//   - pedido de comida com condição de saúde perde o sintoma e ganha o que evitar;
+//   - "sintoma" que a tabela de sintomas não conhece mas a de necessidades sim (queda de cabelo, dermatite,
+//     acne, caspa) vira necessidade comum (cuidado/dermocosmético, nunca remédio);
+//   - pet com pulga/carrapato vira a necessidade "pulga" (higiene pet; antipulga é com o veterinário).
+export function normalizeRecommendRequest(req: RecommendRequest, deps: Pick<RecommendTableDeps, "findSymptom" | "findNeed"> = defaultTableDeps()): RecommendRequest {
+  let out = req;
+  const text = normRec(req.text);
+  if (petInvolved(req) && /\b(pulgas?|carrapatos?|piolho de cachorro|sarna)\b/.test(text)) {
+    const species = /\b(gat[oa]s?|gatinh\w*|felino)\b/.test(`${text} ${normRec(req.recipient)}`) ? "gato" : "cachorro";
+    return { ...req, form: "need", need: `pulga no ${species}`, product: undefined, symptom: undefined, recipient: req.recipient ?? species };
+  }
+  if (out.form === "product_judged") {
+    const product = normRec(out.product ?? out.text);
+    if (deps.findSymptom(product) && !findShelfForProduct(out.product ?? out.text, defaultTableDeps().shelves ?? [])) {
+      out = { ...out, form: "need", need: out.product ?? out.text, symptom: out.product ?? out.text, product: undefined };
+    }
+  }
+  if (out.form === "need" && isFoodAsk(out.text)) {
+    const cond = `${text} ${normRec(out.symptom)}`;
+    const avoid = CONDITION_AVOID.filter((c) => c.re.test(cond)).flatMap((c) => c.avoid);
+    const constraints = [...out.constraints, ...avoid.filter((a) => !out.constraints.includes(a))];
+    out = { ...out, symptom: undefined, constraints };
+  }
+  if (out.form === "need" && out.symptom?.trim()) {
+    const s = normRec(out.symptom);
+    if (!deps.findSymptom(s) && !deps.findSymptom(text) && (deps.findNeed(s) || deps.findNeed(normRec(out.need)))) out = { ...out, symptom: undefined };
+  }
+  return out;
 }
 
 // Pet envolvido no pedido (revisão A3): pra quem é pet, ou "meu cachorro/gato/pet" no texto.
@@ -289,13 +334,24 @@ function checkRedFlag(req: RecommendRequest, deps: RecommendTableDeps): Flag | u
   const emergency = checkEmergency(req, deps);
   if (emergency) return emergency;
   if (petInvolved(req)) return { reason: tablesModule.PET_SICK_REASON, kind: "context" };
+  // Cuidado TÓPICO de criança/bebê (corpus difícil h11/h27: "bebê de 8 meses com assadura feia", "filha de
+  // 10 anos com piolho"): a idade/o "bebê" não alerta — pomada de assadura e shampoo antipiolho são pra
+  // eles. Sistêmico (febre, dor, tosse, gripe, vômito, diarreia) continua alertando; os outros sinais
+  // (gestante, comorbidade, há dias…) também.
+  const all = normRec([req.text, req.symptom, req.need, req.product, req.recipient].filter(Boolean).join(" "));
+  const topical = TOPICAL_RE.test(all) && !SYSTEMIC_RE.test(all);
+  const scrub = (t: string) => (topical ? t.replace(KID_WORDS_RE, " ").replace(/\s+/g, " ").trim() : t);
   // O pra quem vai junto do texto (as exceções do texto valem: "assadura do bebê" não alerta).
   for (const t of [req.text, req.symptom, req.need, req.product, req.recipient ? `${req.text} ${req.recipient}` : undefined]) {
-    const flag = flagOf(t ? deps.findRedFlag(normRec(t)) : undefined, "context");
+    const flag = flagOf(t ? deps.findRedFlag(scrub(normRec(t))) : undefined, "context");
     if (flag) return flag;
   }
   return undefined;
 }
+
+const TOPICAL_RE = /\b(assadura|assadur\w*|assad[oa]|piolhos?|lendeas?|repelente|protetor solar|hidratante|sabonete|shampoo|brotoeja|picada|picadas)\b/;
+const SYSTEMIC_RE = /\b(febre|febril|dor|dores|doendo|doi|tosse|tossindo|gripe|gripad\w*|resfriad\w*|vomit\w*|diarreia|enjoo|nausea|colica|sangue|sangr\w*|convuls\w*|desmai\w*|respir\w*|mancha roxa|inchad\w*|pus)\b/;
+const KID_WORDS_RE = /\b(recem nascid[oa]|bebes?|nenem|lactente|filh[oa]s?|filhinh[oa]s?|criancas?|menin[oa]s?|garot[oa]s?|sobrinh[oa]s?|net[oa]s?|entead[oa]s?|afilhad[oa]s?|\d+ (mes|meses|ano|anos)|(um|uma|dois|duas|tres) (mes|meses|ano|anos))\b/g;
 
 // Plano já filtrado com prateleira de remédio num pedido que não passou pela checagem de saúde
 // (produto julgado "qual o melhor anti-inflamatório", IA/tabela com mip): a porta do remédio também
@@ -445,8 +501,9 @@ export type PlanShelvesOptions = {
 
 // Orquestra MAPEAR: emergência → alerta de saúde → IA (se ligada) → tabelas. Sempre devolve um plano
 // (picks pode ser []).
-export async function planShelves(req: RecommendRequest, opts: PlanShelvesOptions = {}): Promise<ShelfPlan> {
+export async function planShelves(reqIn: RecommendRequest, opts: PlanShelvesOptions = {}): Promise<ShelfPlan> {
   const deps = opts.deps ?? defaultTableDeps();
+  const req = normalizeRecommendRequest(reqIn, deps);
   // Emergência em QUALQUER pedido, antes da IA (revisão A2).
   const emergency = checkEmergency(req, deps);
   if (emergency) return redFlagPlan(emergency);
@@ -455,6 +512,13 @@ export async function planShelves(req: RecommendRequest, opts: PlanShelvesOption
   if (symptom) {
     const flag = checkRedFlag(req, deps);
     if (flag) return redFlagPlan(flag);
+  }
+  // Rodada de qualidade (08/10): sintoma COM entrada na tabela curada = plano da tabela, sem IA. A IA só
+  // podia reordenar/encolher as classes da própria entrada (A5) e, no placar, trazia 1 classe só (pouca
+  // variedade) ou classe fora do sintoma; a tabela já está na ordem de indicação e responde em 0 ms.
+  if (symptom && symptomEntry(req, deps)) {
+    const plan = planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory });
+    if (plan?.picks.length || plan?.redFlag) return plan;
   }
   const shelves = deps.shelves ?? [];
   const shelfIds = new Set(shelves.map((s) => s.id));
@@ -479,6 +543,29 @@ export async function planShelves(req: RecommendRequest, opts: PlanShelvesOption
       picks = picks.map((p) => (p.mipClass || !tableClass.has(p.shelfId) ? p : { ...p, mipClass: tableClass.get(p.shelfId) }));
     }
     picks = filterPicks(picks, req, deps, { symptom, basketNames: opts.basketNames, memory: opts.memory, tableShelves });
+    // Rodada de qualidade (08/10): produto julgado = só a prateleira do PRÓPRIO produto ("o melhor shampoo"
+    // trazia máscara e condicionador, que o juiz do placar marca como card errado). Sem prateleira própria
+    // no mapa, fica a 1ª pick da IA.
+    if (req.form === "product_judged" && picks.length > 1) {
+      const own = findShelfForProduct(req.product ?? req.text, shelves);
+      const mine = own ? picks.filter((p) => p.shelfId === own.id) : [];
+      picks = mine.length ? mine : picks.slice(0, 1);
+    }
+    // Rodada de qualidade (08/10): necessidade com entrada curada e plano curto da IA (3 prateleiras) ganha
+    // as prateleiras da tabela que faltam, até 5 — prateleira vazia no CEP não deixa o cliente com 1 card.
+    // Presente e "pra quem" ficam com o plano da IA: a tabela genérica de presente traria perfume e flores
+    // pra criança de 3 anos.
+    const giftOrRecipient = Boolean(req.recipient?.trim()) || /\b(presente|presentes|presentear|lembranc\w*|amigo secreto|amigo oculto|aniversario)\b/.test(normRec(`${req.need ?? ""} ${req.text}`));
+    // Urgência (placar q1): até 6 prateleiras, pra sobrar o que chega no dia depois do corte de prazo.
+    const fastNeed = Boolean(req.urgency) || req.criteria.includes("fast");
+    const widenTo = fastNeed ? MAX_PICKS : WIDEN_TO;
+    if (req.form === "need" && !symptom && !giftOrRecipient && picks.length && picks.length < widenTo) {
+      const entry = deps.findNeed(normRec(req.need ?? req.text)) ?? deps.findNeed(normRec(req.text));
+      if (entry) {
+        const extra = filterPicks(entry.picks.filter((p) => !picks.some((q) => q.shelfId === p.shelfId)), req, deps, { symptom: false, basketNames: opts.basketNames, memory: opts.memory });
+        picks = [...picks, ...extra].slice(0, widenTo);
+      }
+    }
     if (picks.length) return guardMip({ picks, source: "ai" }, req, deps, symptom);
   }
   return planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory }) ?? { picks: [], source: "table" };
@@ -559,22 +646,36 @@ function comparatorFor(modes: JudgeMode[], group: ShelfCandidate[], pick: ShelfP
 // Candidato que fere restrição, orçamento ou porta do remédio → fora.
 export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
   const rules = constraintRules(input.request.constraints, input.memory);
+  const noMedicine = rules.some((r) => r.kind === "no_medicine");
   const budget = input.request.budget;
-  return input.candidates.filter((c) => {
+  const ok = input.candidates.filter((c) => {
     if (!c?.option?.sku) return false;
-    if (rules.length && violatesConstraint(`${c.option.name} ${c.option.brand ?? ""}`, rules)) return false;
-    if (budget != null && budget > 0 && price(c) + (c.option.freightFee ?? 0) > budget) return false;
-    if (c.option.medicine === "mip" && !medicineGateOpen()) return false;
+    if (rules.length && violatesConstraint(`${c.option.name} ${c.option.brand ?? ""}`, rules, c.shelfId)) return false;
+    // Orçamento é TOTAL com entrega (corpus difícil h24; placar q1: perfume de R$ 85,99 "até 100"): conta o
+    // frete real, ou R$ 10 quando ainda não se sabe.
+    if (budget != null && budget > 0 && price(c) + (c.option.freightFee ?? UNKNOWN_FREIGHT) > budget) return false;
+    if (c.option.medicine === "mip" && (!medicineGateOpen() || noMedicine)) return false;
+    // Rodada de qualidade (08/10): o item tem de ser do tipo da prateleira (Ruffles não é legume).
+    if (c.shelfId !== "produto" && !shelfSanityOk(c.shelfId, c.option.name)) return false;
     return true;
   });
+  // Produto julgado com atributo dito ("pra cabelo cacheado", "de coador", "dente sensível"): quando algum
+  // candidato cumpre no nome, só eles ficam (o juiz do placar reprovava máscara/clareadora/copo).
+  if (input.request.form === "product_judged") {
+    const attrs = attributeRules(input.request.constraints);
+    if (attrs.length) {
+      const meeting = ok.filter((c) => meetsAttributes(c.option.name, attrs));
+      if (meeting.length) return meeting;
+    }
+  }
+  return ok;
 }
 
-function factWhy(c: ShelfCandidate, mode: JudgeMode): string | undefined {
-  const minutes = c.option.etaMinutes;
-  if (mode === "fast" && minutes != null && minutes < 24 * 60) return `chega em ${etaLabel(minutes)}`;
+// Rodada de qualidade (08/10): o motivo das regras não promete prazo ("chega em 3h" — o card já mostra o
+// prazo da loja) nem popularidade que o card não mostra; "o mais em conta" só sobrevive no card que é de
+// fato o mais barato (handle.finalizeWhys).
+function factWhy(_c: ShelfCandidate, mode: JudgeMode): string | undefined {
   if (mode === "cheap") return "o mais em conta";
-  if ((mode === "good" || mode === "default") && c.popularity != null && c.popularity <= 3) return "dos mais vendidos";
-  if (minutes != null && minutes < 24 * 60) return `chega em ${etaLabel(minutes)}`;
   return undefined;
 }
 
@@ -597,7 +698,7 @@ export function judgeFitnessByRules(input: FitnessInput, deps: Pick<RecommendTab
     if (!best) continue;
     const fact = factWhy(best, primary);
     // Rápido: o prazo real é o motivo; nos outros, o motivo do plano (tabela/IA) e o fato se faltar.
-    const why = primary === "fast" ? fact ?? pick?.why ?? "" : pick?.why || fact || "";
+    const why = pick?.why || fact || "";
     chosen.push({ shelfId, c: best, why, rank });
   }
   if (primary === "fast") {

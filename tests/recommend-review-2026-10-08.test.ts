@@ -170,8 +170,10 @@ describe("A5 — a IA não escolhe classe de remédio fora da tabela", () => {
       source: "ai"
     }));
     const p = await plan(req({ text: "tô com dor de cabeça", need: "dor de cabeça", symptom: "dor de cabeça" }));
-    assert.equal(p.source, "ai");
-    assert.deepEqual(ids(p), ["farmacia.analgesico", "bebidas.agua"]);
+    // Rodada de qualidade (08/10, noite): sintoma com entrada curada usa a TABELA direto (a IA nem decide).
+    assert.equal(p.source, "table");
+    assert.ok(!ids(p).includes("farmacia.antigripal"));
+    assert.deepEqual(ids(p), ["farmacia.analgesico", "farmacia.anti_inflamatorio", "bebidas.agua"]);
   });
 
   it("sintoma sem entrada na tabela: nada de mip (só cuidado)", async () => {
@@ -195,7 +197,9 @@ describe("A5 — a IA não escolhe classe de remédio fora da tabela", () => {
       source: "ai"
     }));
     const need = await plan(req({ text: "quero algo doce", need: "algo doce" }));
-    assert.deepEqual(ids(need), ["doces.chocolate"]);
+    // (08/10, noite) o plano curto da IA ganha as prateleiras da tabela — nenhuma de remédio.
+    assert.equal(ids(need)[0], "doces.chocolate");
+    assert.ok(!ids(need).some((id) => id.startsWith("farmacia.")), ids(need).join(","));
     const judged = await plan(req({ form: "product_judged", text: "me recomenda um chocolate bom", product: "chocolate", criteria: ["good"] }));
     assert.deepEqual(ids(judged), ["doces.chocolate"]);
   });

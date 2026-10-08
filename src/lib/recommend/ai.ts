@@ -102,18 +102,20 @@ Entrada (JSON): forma ("need" = necessidade/estado/ocasião sem produto; "produc
 Saída: "picks" em ORDEM do que mais ajuda primeiro — forma "need": 3 a 6 picks; forma "product_judged": 1 a 3. Cada pick:
 - shelfId: EXATAMENTE um id da 1ª coluna do mapa. Nunca invente nem altere id.
 - query: o que buscar nessa prateleira, curto e buscável (1 a 5 palavras); pode ser mais específico que a busca padrão ("chocolate ao leite", "sorvete pote 1,5l", "picanha", "kit presente perfume feminino"). Remédio: princípios ativos e marcas isentas separados por " | " ("loperamida | Imosec").
-- why: motivo curto (2 a 6 palavras), factual, em português, sem emoji, dizendo o que ESSA prateleira tem de próprio ("doce e gelado", "crocante pra beliscar", "alivia gases", "clássico de churrasco"); cada pick com um why diferente. Nunca prometa efeito, cura ou prazo; nunca "o melhor", "garantido", "resolve", "bem avaliado".
+- why: motivo curto (2 a 6 palavras), factual, em português, sem emoji, dizendo o que ESSA prateleira tem de próprio ("doce e gelado", "crocante pra beliscar", "alivia gases", "pra assar na brasa"); cada pick com um why diferente. Nunca prometa efeito, cura ou prazo; nunca popularidade ("mais vendido", "mais pedido", "líder", "clássico"), "o melhor", "garantido", "resolve", "bem avaliado".
 - mipClass: só em prateleira com flag mip, a classe do remédio em minúsculas sem acento ("antidiarreico", "antiespasmodico", "antigases", "antiacido", "analgesico"); nas outras, "".
 
 Regras:
 1. VARIEDADE: prateleiras de TIPOS diferentes, que se completam (algo doce: chocolate, sorvete, biscoito recheado, bolo pronto). Prateleiras irmãs contam como o MESMO tipo e entram no máximo uma (chocolate em barra e bombom/trufa; cerveja e chope; salgadinho e batata chips) — exceto em product_judged, onde a vizinha pode ser a irmã. Cada prateleira no máximo uma vez. Forma "need": prefira 4 a 6 picks quando o mapa tiver opções boas.
 2. RESTRIÇÕES são absolutas: "sem lactose" tira leite, queijo, iogurte, sorvete comum e chocolate ao leite (só versão zero lactose se a prateleira tiver); "sem chocolate" tira chocolate, bombom, trufa e tudo que leva chocolate; "vegano" tira carne, leite, ovo, mel; "zero açúcar"/"diabético" → versões zero/diet na query. Orçamento: só tire prateleira cujo item mais simples já passa do valor (um perfume feminino de até R$100 existe).
-3. PRA QUEM manda: pet → só prateleiras pet da espécie certa (nunca comida humana pra pet nem ração pra gente); criança/bebê → infantil; presente → coisa presenteável (flag gift) que combine com quem recebe, o presente mais clássico primeiro (mãe: perfume feminino, kit banho, chocolate fino/bombom, flores, maquiagem; pai: perfume masculino, vinho/bebida, kit barba).
+2b. Restrição de dieta ("sem lactose", "sem glúten", "zero açúcar", "vegano"): prefira prateleiras onde existe a versão que PROVA no rótulo e escreva a prova na query ("sorvete zero lactose", "leite zero lactose", "biscoito sem glúten", "chocolate zero açúcar"); o que por natureza cumpre (fruta, água, castanha) também vale.
+3. PRA QUEM manda: pet → só prateleiras pet da espécie certa (nunca comida humana pra pet nem ração pra gente); criança/bebê → infantil; presente → coisa presenteável (flag gift) que combine com quem recebe, o presente mais clássico primeiro (mãe: perfume feminino, kit banho, chocolate fino/bombom, flores, maquiagem; pai: perfume masculino, vinho/bebida, kit barba). Interesse dito ("ama churrasco", "gosta de café") = TODAS as prateleiras ligadas ao interesse (kit churrasco, facas, avental, tábua), nada genérico fora dele. Bebê recém-chegado: tamanho RN/P na query ("fralda rn").
 4. HORA e URGÊNCIA: entre 22h e 5h nada de café da manhã nem preparo demorado; fome/urgência → prontos pra comer (flag ready_to_eat) e o que serve na hora primeiro, depois o que exige preparo.
 5. CESTA: não repita o que o cliente já tem na cesta.
-6. SINTOMA/saúde: SÓ prateleiras com flag mip ou care, nunca comida comum; a classe mais indicada para o sintoma primeiro (dor de barriga: antiespasmódico, antigases, probiótico, antiácido — antidiarreico SÓ com diarreia dita; ressaca: só hidratação, nunca analgésico/anti-inflamatório/Engov depois de álcool; por último care como soro de reidratação), mipClass preenchido; why descreve a classe ("alivia cólica"), nunca cura. Sem sintoma, nenhuma prateleira mip. Pet doente: nenhum remédio (devolva vazio).
-7. PRODUTO + JULGAMENTO: a prateleira do PRÓPRIO produto em 1º, com query = o produto + os atributos que o cliente deu (tipo de cabelo, espécie, sabor) — palavras de juízo ("bom", "melhor") NÃO entram na query; why = o critério pedido em fatos ("marcas mais vendidas", "o mais em conta", "versão zero açúcar"); depois 0 a 2 prateleiras vizinhas que combinam (chocolate → bombom/trufa).
-8. OCASIÃO/KIT (churrasco, café da manhã, festa, noite de filme, limpeza): o essencial da ocasião em ordem de importância (churrasco: carne, carvão, pão de alho, cerveja ou refrigerante, gelo); número de pessoas não muda as prateleiras.
+6. SINTOMA/saúde: SÓ prateleiras com flag mip ou care, nunca comida comum; só as classes DIRETAS do sintoma (no máximo 3), a mais indicada primeiro (dor de barriga: antiespasmódico e antigases — antidiarreico SÓ com diarreia dita; gases: antigases; ressaca: só hidratação, nunca analgésico/anti-inflamatório/Engov depois de álcool; por último care como soro de reidratação), mipClass preenchido; why descreve a classe ("alivia cólica"), nunca cura. Sem sintoma, nenhuma prateleira mip. Pet doente: nenhum remédio (devolva vazio).
+7. PRODUTO + JULGAMENTO: só a prateleira do PRÓPRIO produto (1 pick; o cliente pediu shampoo, não máscara nem condicionador), com query = o produto + os atributos que o cliente deu (tipo de cabelo, espécie, sabor, "em pó" pra coador) — palavras de juízo ("bom", "melhor") NÃO entram na query; why = o atributo pedido em fatos ("pra cabelo cacheado", "versão zero açúcar").
+8. OCASIÃO/KIT (churrasco, café da manhã, festa, noite de filme, limpeza): um KIT — uma prateleira por PAPEL, o essencial da ocasião em ordem de importância (churrasco: carne bovina com query do CORTE de grelha "picanha | fraldinha | alcatra", carvão, pão de alho, cerveja ou refrigerante, linguiça; café da manhã: pão, café, leite, queijo/frios, fruta; festa: salgadinho, bolo, docinho, refrigerante, descartáveis — comida de dividir, nunca lanche individual); why = o papel no kit ("pra assar", "pra acompanhar", "pra brindar"). Número de pessoas não muda as prateleiras.
+10. CRIANÇA: até 3 anos, só brinquedo próprio pra idade (bebê/primeira infância, pelúcia, livro infantil); nada com peças pequenas (blocos pequenos, massinha) nem boneca de adulto.
 9. Nenhuma prateleira serve → devolva menos picks, ou nenhum. Vazio é melhor que errado.
 
 MAPA (id | rótulo | busca padrão | flags):
@@ -200,16 +202,17 @@ export function __setPlanShelvesForTests(fn: typeof planShelvesWithAiReal | null
 export const JUDGE_SYSTEM_PROMPT = `Você é a Lia, concierge de compras no WhatsApp, agora como JUIZ da recomendação. Recebe o pedido do cliente e, para cada prateleira escolhida (na ordem do plano), os candidatos REAIS com estoque e prazo no CEP. Escolha NO MÁXIMO 1 candidato por prateleira — o que melhor atende o pedido e o critério — e devolva os cards do que mais ajuda ao que menos.
 
 Critério de escolha:
-- fast (rápido/urgência/fome): menor prazo primeiro ("prazo_min"; verificado=true é mais confiável) e pronto pra usar/comer; os cards também em ordem de prazo.
-- good (bom/melhor): marca reconhecida e mais vendida (popularidade 1 = mais vendido), faixa de preço média-alta; NUNCA o mais barato só por ser barato.
+- fast (rápido/urgência/fome): o MENOR prazo primeiro e pronto pra usar/comer; os cards também em ordem de prazo.
+- good (bom/melhor): marca reconhecida e mais vendida (pop 1 = mais vendido), faixa de preço média-alta; NUNCA o mais barato só por ser barato.
 - cheap (barato): menor preço.
 - healthy (saudável): versão integral/zero/light/natural quando existir.
 - Sem critério: o mais vendido de marca conhecida, com preço razoável.
+- Grupo/ocasião ("pra 8 pessoas", festa): embalagem de dividir (2 L, pacote família, kg), nunca porção individual.
 - Sintoma (remedio=true): mantenha a ordem das prateleiras do plano (classe mais indicada primeiro); dentro da prateleira, a apresentação BÁSICA da marca antes das extensões de linha (Sinus, DC, PM, Max, Composto, Plus, 12h, Noite, Dia), depois a mais vendida; infantil só se for pra criança.
 
-Corte (candidato fica FORA): viola restrição ("sem lactose" com leite/queijo comum; "sem chocolate" com chocolate ou cobertura de chocolate; "vegano" com carne/leite/ovo), não é pra quem foi pedido (humano × pet, espécie errada, adulto × infantil), estoura o orçamento total, ou não é o tipo da prateleira. Prateleira sem candidato que sirva = sem card (vazio é melhor que errado).
+Corte (candidato fica FORA): não é do TIPO da prateleira/produto pedido (pediu shampoo → só shampoo, nunca máscara, condicionador ou kit; café de coador → café em pó, nunca cápsula, solúvel ou copo; fruta → fruta in natura, nunca chips/suco/doce), viola restrição (só passa o que PROVA no nome: "zero lactose", "sem glúten", "vegano"; "sem chocolate" tira tudo com chocolate ou cobertura), não é pra quem foi pedido (humano × pet, espécie errada, adulto × infantil, idade: até 3 anos nada de peças pequenas), estoura o orçamento, ou não combina com a ocasião. Prateleira sem candidato que sirva = sem card (vazio é melhor que errado).
 
-why: 1 linha curta (2 a 8 palavras), português, sem emoji, escrita a partir de FATOS do candidato ou da prateleira: "chega em 2h", "o mais vendido", "marca líder", "o mais em conta", "alivia cólica", "versão zero açúcar". Linguagem de cliente: nunca cite nome de campo nem número interno ("popularidade 3", "ref", "prazo_min", "versão básica"); popularidade 1 = "o mais vendido", 2 a 5 = "dos mais vendidos". Remédio (remedio=true): o why descreve a classe, a partir de "motivo_do_plano" ("alivia cólica", "contra diarreia"), nunca popularidade. Nunca prometa efeito, cura ou "chega agora"; não invente fato que não está na entrada.
+why: 1 linha curta (2 a 8 palavras), português, sem emoji, com um FATO que o próprio card mostra (nome, marca, tamanho, versão) ou o papel no pedido: "zero lactose no rótulo", "pote de 1,5 L pra dividir", "linha pra dente sensível", "pra assar na brasa", "pronto pra comer", "alivia cólica". PROIBIDO: popularidade ou liderança ("o mais vendido", "marca líder", "dos mais pedidos"), prazo ou entrega ("chega em 3h", "chega amanhã"), comparação de preço ("o mais em conta", "preço médio") e juízo vago ("ótima opção", "opção fina", "opções para…"). Remédio (remedio=true): o why descreve a classe, a partir de "motivo" ("alivia cólica", "contra diarreia"), nunca cura.
 
 Use "ref" exatamente como veio. Responda apenas JSON válido.`;
 
@@ -238,6 +241,8 @@ export function etaLabel(minutes: number | undefined): string | undefined {
   return days <= 1 ? "1 dia" : `${days} dias`;
 }
 
+const JUDGE_PER_SHELF = 6;
+
 // Monta a entrada do juiz com referências curtas (c1, c2…): o sku sozinho não é único entre lojas.
 export function judgeRefs(input: FitnessInput): { ref: string; index: number }[] {
   return input.candidates.map((_, index) => ({ ref: `c${index + 1}`, index }));
@@ -263,22 +268,19 @@ async function judgeFitnessWithAiReal(input: FitnessInput): Promise<FitnessVerdi
       return {
         prateleira: shelfId,
         busca: pick?.query ?? "",
-        motivo_do_plano: pick?.why ?? "",
+        motivo: pick?.why ?? "",
         ...(pick?.mipClass ? { classe_remedio: pick.mipClass } : {}),
-        candidatos: (byShelf.get(shelfId) ?? []).slice(0, 12).map(({ ref, index }) => {
+        // Rodada de qualidade (08/10): prompt menor (6 candidatos, campos curtos) — o juiz caía no prazo.
+        candidatos: (byShelf.get(shelfId) ?? []).slice(0, JUDGE_PER_SHELF).map(({ ref, index }) => {
           const c = input.candidates[index];
           const o = c.option;
           return {
             ref,
             nome: o.name,
-            marca: o.brand ?? "",
+            ...(o.brand ? { marca: o.brand } : {}),
             preco: displayPrice(o.unitPrice),
-            ...(o.freightFee != null ? { frete: o.freightFee } : {}),
-            loja: o.storeLabel ?? o.storeKey ?? "",
-            prazo: o.delivery ?? etaLabel(o.etaMinutes) ?? "",
-            ...(o.etaMinutes != null ? { prazo_min: o.etaMinutes } : {}),
-            ...(o.verified ? { verificado: true } : {}),
-            ...(c.popularity != null ? { popularidade: c.popularity } : {}),
+            prazo: etaLabel(o.etaMinutes) ?? o.delivery ?? "",
+            ...(c.popularity != null && c.popularity <= 5 ? { pop: c.popularity } : {}),
             ...(o.medicine === "mip" ? { remedio: true } : {})
           };
         })
@@ -305,7 +307,8 @@ async function judgeFitnessWithAiReal(input: FitnessInput): Promise<FitnessVerdi
     },
     {
       hedgeMs: Number(process.env.LIA_RECOMMEND_JUDGE_HEDGE_MS ?? 5000),
-      deadlineMs: Number(process.env.LIA_RECOMMEND_JUDGE_TIMEOUT_MS ?? 11000)
+      // Poucos candidatos (≤ 12) = prompt pequeno: mais 3 s de folga antes de cair nas regras (placar 08/10).
+      deadlineMs: Number(process.env.LIA_RECOMMEND_JUDGE_TIMEOUT_MS ?? (input.candidates.length <= 12 ? 14000 : 11000))
     }
   );
   if (!result) console.warn("[ai:recommend-judge:error]", "sem veredito utilizável da IA no prazo");
