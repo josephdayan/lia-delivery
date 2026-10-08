@@ -10,7 +10,7 @@
 // Escreve evals/results/search-<data>-<label>.json e imprime o placar. Não cobra nem envia nada;
 // usa Postgres embutido próprio (porta 54339). Precisa de OPENAI_API_KEY no .env.
 import "./talk-env.mts";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { startBenchDb } from "./bench/db.mts";
@@ -34,6 +34,21 @@ const limit = Number(arg("limit", "0"));
 const onlyCat = arg("cat");
 const only = arg("only");
 const concurrency = Number(arg("concurrency", "4"));
+// Checkpoint (08/10): a sessão na nuvem mata tarefa em 2 h e uma rodada de 316 morreu em 314/316 sem gravar.
+// Cada pedido concluído vai para evals/results/.<label>.partial.json; `--resume` com o mesmo --label pula os ids
+// já gravados e continua. O parcial some quando a rodada grava o arquivo final.
+const resume = args.includes("--resume");
+const partialFile = join(process.cwd(), "evals", "results", `.${label}.partial.json`);
+function loadPartial(): any[] {
+  if (!resume) return [];
+  try { return JSON.parse(readFileSync(partialFile, "utf8")).results ?? []; } catch { return []; }
+}
+function savePartial(results: any[]) {
+  mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
+  const tmp = `${partialFile}.tmp`;
+  writeFileSync(tmp, JSON.stringify({ label, results }));
+  renameSync(tmp, partialFile);
+}
 
 // Vitrine de produção (06/10): lojas de compra automática. A lista real é sensível (Vercel);
 // este é o palpite do golden (AUTO_ROSTER) e vale igual antes/depois.
@@ -82,9 +97,15 @@ async function main() {
     if (onlyCat) reqs = reqs.filter((r) => r.cat === onlyCat);
     if (only) reqs = reqs.filter((r) => r.text.toLowerCase().includes(only.toLowerCase()));
     if (limit) reqs = reqs.slice(0, limit);
+    const done = loadPartial();
+    const doneIds = new Set(done.map((r) => r.id));
+    if (doneIds.size) {
+      reqs = reqs.filter((r) => !doneIds.has(r.id));
+      console.log(`[resume] ${doneIds.size} pedidos já gravados em ${partialFile}; faltam ${reqs.length}`);
+    }
     console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-6-luna"}`);
 
-    const results: any[] = [];
+    const results: any[] = [...done];
     let next = 0;
     async function worker() {
       for (;;) {
@@ -129,6 +150,7 @@ async function main() {
         else if (!good(shown[0].id)) outcome = poolGood.length || shownGood.length ? "wrong_top1" : "false_positive";
         else outcome = shown.some((s) => !good(s.id)) ? "found_with_wrong_extra" : "found";
         results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), closest: closest.length ? closest : undefined, oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
+        savePartial(results);
         process.stdout.write(`${outcome === "found" || outcome === "honest_none" || outcome === "medicine_ok" ? "." : outcome[0].toUpperCase()}`);
       }
     }
@@ -169,6 +191,7 @@ async function main() {
     mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
     const file = join(process.cwd(), "evals", "results", `search-${new Date().toISOString().slice(0, 10)}-${label}.json`);
     writeFileSync(file, JSON.stringify({ summary, byCat, results }, null, 1));
+    try { unlinkSync(partialFile); } catch { /* sem parcial */ }
     console.log(JSON.stringify(summary, null, 1));
     console.table(byCat);
     console.log(`\nArquivo: ${file}`);
