@@ -12,6 +12,17 @@ const DB = "lia_bench";
 const URL = `postgresql://postgres:postgres@127.0.0.1:${PORT}/${DB}?schema=public`;
 
 export async function startBenchDb() {
+  // BENCH_DATABASE_URL (08/10): Postgres local já de pé (o embutido falha onde falta libicu). Só 127.0.0.1/localhost.
+  const external = process.env.BENCH_DATABASE_URL;
+  if (external) {
+    if (!/@(127\.0\.0\.1|localhost)[:/]/.test(external)) throw new Error("BENCH_DATABASE_URL precisa ser um Postgres local (127.0.0.1/localhost).");
+    const env = { ...process.env, DATABASE_URL: external, DIRECT_URL: external };
+    const migrated = spawnSync("npx", ["prisma", "migrate", "deploy"], { stdio: "ignore", env });
+    if (migrated.status !== 0) throw new Error("migrate deploy falhou no banco do benchmark");
+    process.env.DATABASE_URL = external;
+    process.env.DIRECT_URL = external;
+    return { url: external, stop: async () => {} };
+  }
   const pg = new EmbeddedPostgres({ databaseDir: DIR, user: "postgres", password: "postgres", port: PORT, persistent: true });
   if (!existsSync(join(DIR, "PG_VERSION"))) await pg.initialise();
   await pg.start();
