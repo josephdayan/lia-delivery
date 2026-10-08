@@ -76,8 +76,15 @@ export function looksLikeMedicineName(text: string): boolean {
 // Pedido que a Lia recusa mesmo com MIP ligado: nomeia remédio de receita ou fala de
 // receita/tarja/controlado. "dipirona", "dorflex", "antigripal" passam.
 export function looksLikePrescriptionRequest(text: string): boolean {
-  if (isPrescriptionText(text)) return true;
-  return /\b(receita|receitu[aá]rio|prescri[cç][aã]o|tarja)\b/i.test(text ?? "");
+  const t = text ?? "";
+  if (/\b(receita|receitu[aá]rio|prescri[cç][aã]o|tarja)\b/i.test(t)) return true;
+  if (PRESCRIPTION_WORDS_RE.test(t) || PRESCRIPTION_ACTIVE_RE.test(t) || PRESCRIPTION_DOSE_RE.test(t)) return true;
+  const brand = t.match(PRESCRIPTION_BRAND_RE);
+  if (!brand) return false;
+  // Marca ambígua ("frontal", "selene") só é remédio com contexto de remédio: dose, forma ou a
+  // palavra remédio. "lanterna frontal e pilha" não é pedido de receita (revisão 08/10).
+  if (!AMBIGUOUS_BRANDS.has(brand[0].toLowerCase())) return true;
+  return looksLikeMedicineName(t) || /\b(rem[eé]dios?|medicamentos?|farm[aá]cia|caixa|comprimidos?|gotas)\b/i.test(t);
 }
 
 // ---------------------------------------------------------------------------
@@ -192,4 +199,127 @@ export function isValidGtin(value: string | undefined | null): boolean {
   const body = d.slice(0, -1).split("").reverse();
   const sum = body.reduce((acc, ch, i) => acc + Number(ch) * (i % 2 === 0 ? 3 : 1), 0);
   return (10 - (sum % 10)) % 10 === Number(d[d.length - 1]);
+}
+
+// ---------------------------------------------------------------------------
+// Pedido do dono (08/10/2026), três comportamentos de remédio:
+//  1. remédio de RECEITA: dizer QUAL item não dá e por quê ("Rivotril precisa de receita");
+//  2. marca pedida "seca" ("tylenol"): a apresentação BÁSICA da marca vem antes das extensões
+//     de linha (Tylenol Sinus/DC/Bebê, Advil 12h/Mulher, Dorflex DIP/Max, Buscopan Composto…);
+//  3. marca sem estoque / só o genérico: oferecer o equivalente de mesmo princípio ativo como
+//     "o mais perto que tenho", nunca como se fosse o pedido (o cliente escolhe).
+
+const normMed = (s: string) => (s ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9+\s]/g, " ").replace(/\s+/g, " ").trim();
+
+// Qual nome de remédio de receita apareceu no texto (princípio ativo, dose de receita ou marca),
+// para a recusa nomear o item. Null quando o texto só fala de "receita"/"tarja" sem nomear.
+export function prescriptionDrugNameIn(text: string): string | null {
+  const t = text ?? "";
+  const m = t.match(PRESCRIPTION_ACTIVE_RE) ?? t.match(PRESCRIPTION_DOSE_RE);
+  if (m) return m[0];
+  const brand = t.match(PRESCRIPTION_BRAND_RE);
+  if (brand && !AMBIGUOUS_BRANDS.has(brand[0].toLowerCase())) return brand[0];
+  return null;
+}
+
+// Palavras que, logo depois (ou antes) da marca no nome do produto, marcam uma EXTENSÃO DE LINHA:
+// outro produto da mesma marca (Tylenol Sinus é descongestionante; Dorflex DIP é dipirona pura).
+// Dose, contagem e forma farmacêutica não são extensão ("Tylenol 750mg 20 Comprimidos" é o básico).
+// Sal, qualificador neutro e o próprio princípio ativo também não são extensão ("Dipirona Sódica",
+// "Tylenol Paracetamol 750mg", "Buscopan Simples", "Engov Original"). "+", "com" e "e" NÃO são
+// neutros: anunciam combinação (Paracetamol + Cafeína), que é outro produto.
+const DOSE_OR_FORM_RE = /^(\d+([.,]\d+)?(mg|mcg|g|ml|ui|%)?(\/ml|\/g)?|\d+|mg|mcg|ml|g|ui|comprimidos?|capsulas?|drageas?|gotas|xarope|solucao|suspensao|pomada|creme|gel|spray|sache|saches|flaconetes?|revestid[oa]s?|efervescentes?|mastigave(l|is)|liquidas?|moles|adulto|unidades?|un|de|da|do|x|oral|sabor|generico|sodica|sodico|monoidratada|monoidratado|potassica|potassico|cloridrato|dicloridrato|bromidrato|simples|original|classico|classica|tradicional|paracetamol|dipirona|ibuprofeno|loratadina|desloratadina|fexofenadina|simeticona|acido|acetilsalicilico|butilbrometo|escopolamina)$/;
+const AUDIENCE_EXTENSION_RE = /^(infantil|pediatrico|baby|bebe|kids|junior)$/;
+
+export function isMedicineLineExtension(query: string, name: string): boolean {
+  const q = normMed(query).split(" ").filter(Boolean);
+  const words = normMed(name).split(" ").filter(Boolean);
+  const brandIdx = words.findIndex((w) => w.length >= 4 && q.some((t) => t === w || (t.length >= 4 && (w.startsWith(t) || t.startsWith(w)))));
+  if (brandIdx < 0) return false;
+  const asked = new Set(q);
+  const before = words[brandIdx - 1];
+  if (before && AUDIENCE_EXTENSION_RE.test(before) && !asked.has(before)) return true;
+  const after = words[brandIdx + 1];
+  if (!after || asked.has(after)) return false;
+  // Combinação declarada logo depois do nome ("Paracetamol + Cafeína", "Dipirona com Cafeína") é outro produto.
+  if (after === "+" || after === "com" || after === "mais") return true;
+  if (DOSE_OR_FORM_RE.test(after)) return false;
+  return /^[a-z][a-z0-9]*$/.test(after) || /^\d+h$/.test(after);
+}
+
+// Apresentação básica da marca primeiro, extensões depois (ordem estável dentro de cada grupo).
+export function baseFormulationFirst<T extends { name: string }>(query: string, options: T[]): T[] {
+  const base = options.filter((o) => !isMedicineLineExtension(query, o.name));
+  if (!base.length || base.length === options.length) return options;
+  return [...base, ...options.filter((o) => isMedicineLineExtension(query, o.name))];
+}
+
+// Equivalentes de mesmo princípio ativo (só isentos que existem nas farmácias da Lia).
+// Marca ↔ genérico; nunca "parecido": é a mesma substância.
+export const MEDICINE_EQUIVALENTS: ReadonlyArray<{ brands: readonly string[]; active: string; label: string }> = [
+  { brands: ["tylenol"], active: "paracetamol", label: "Tylenol" },
+  { brands: ["advil", "alivium"], active: "ibuprofeno", label: "Advil" },
+  { brands: ["novalgina", "anador", "magnopyrol"], active: "dipirona", label: "Novalgina" },
+  { brands: ["allegra"], active: "fexofenadina", label: "Allegra" },
+  { brands: ["claritin", "loratamed"], active: "loratadina", label: "Claritin" },
+  { brands: ["desalex"], active: "desloratadina", label: "Desalex" },
+  { brands: ["luftal"], active: "simeticona", label: "Luftal" },
+  { brands: ["aspirina"], active: "acido acetilsalicilico", label: "Aspirina" }
+];
+
+export type MedicineEquivalent = { queries: string[]; falta: string; faltaFor: (name: string) => string; matches: (name: string) => boolean };
+
+// Público/forma pedidos têm que estar no equivalente: "tylenol bebê" nunca vira Paracetamol 750mg
+// (risco de dose). Marcadores: bebê/infantil/pediátrico/kids/gotas/xarope.
+const AUDIENCE_OR_FORM_RE = /^(bebe|infantil|pediatrico|pediatrica|kids|junior|crianca|gotas|xarope)$/;
+const hasWord = (haystack: string, word: string) => new RegExp(`\\b${word}\\b`).test(haystack);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// "tylenol 750mg" → busca também "paracetamol 750mg", apresentado como "é o genérico (paracetamol)";
+// "paracetamol" → busca também "tylenol", apresentado como "é o Tylenol (mesmo paracetamol)".
+// Só a MESMA substância: princípio ativo por palavra inteira (desloratadina ≠ loratadina,
+// dexibuprofeno ≠ ibuprofeno) e nunca combinação ("Paracetamol + Cafeína", "… com …").
+export function medicineEquivalentFor(query: string): MedicineEquivalent | null {
+  const norm = normMed(query);
+  const tokens = norm.split(" ").filter(Boolean);
+  const audience = tokens.filter((t) => AUDIENCE_OR_FORM_RE.test(t));
+  const audienceOk = (name: string) => !audience.length || audience.some((a) => hasWord(name, a) || (a === "bebe" && hasWord(name, "infantil")) || (a === "infantil" && hasWord(name, "bebe")) || (a === "crianca" && (hasWord(name, "infantil") || hasWord(name, "pediatrico"))));
+  const combo = (name: string) => /\+/.test(name) || /\b(com|mais)\b/.test(name);
+  for (const eq of MEDICINE_EQUIVALENTS) {
+    const activeWords = eq.active.split(" ");
+    const sameActive = (name: string) => activeWords.every((w) => hasWord(name, w));
+    const brand = eq.brands.find((b) => tokens.includes(b));
+    if (brand) {
+      const generic = norm.replace(new RegExp(`\\b${brand}\\b`), eq.active).replace(/\s+/g, " ").trim();
+      const falta = `é o genérico (${eq.active})`;
+      return {
+        queries: [generic],
+        falta,
+        faltaFor: () => falta,
+        matches: (raw) => { const name = normMed(raw); return sameActive(name) && !combo(name) && !eq.brands.some((b) => hasWord(name, b)) && audienceOk(name); }
+      };
+    }
+    if (activeWords.every((t) => tokens.includes(t))) {
+      const rest = tokens.filter((t) => !activeWords.includes(t)).join(" ");
+      const brandIn = (name: string) => eq.brands.find((b) => hasWord(name, b));
+      return {
+        queries: eq.brands.map((b) => `${b} ${rest}`.trim()),
+        falta: `é o ${eq.label} (mesmo ${eq.active})`,
+        faltaFor: (raw) => `é o ${cap(brandIn(normMed(raw)) ?? eq.label.toLowerCase())} (mesmo ${eq.active})`,
+        matches: (raw) => { const name = normMed(raw); return Boolean(brandIn(name)) && !combo(name) && audienceOk(name); }
+      };
+    }
+  }
+  return null;
+}
+
+// Nomes de remédio de receita por LINHA do pedido (dono, 08/10: a recusa nomeia cada um). Só nomes
+// reconhecidos — frase sem nome de remédio não vira "*Lanterna frontal* precisa de receita".
+export function prescriptionDrugNamesIn(lines: string[]): string[] {
+  const out: string[] = [];
+  for (const line of lines) {
+    const name = prescriptionDrugNameIn(line);
+    if (name && !out.some((n) => n.toLowerCase() === name.toLowerCase())) out.push(name);
+  }
+  return out;
 }

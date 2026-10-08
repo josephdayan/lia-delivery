@@ -338,12 +338,23 @@ export function medicineSkippedNote(): string {
 // ---------- remédio isento no CPF do cliente (29/09, LIA_MEDICINE_MIP) ----------
 
 // Pedido de remédio de receita com MIP ligado: recusa só o de receita e diz o que dá.
-export function prescriptionRefusal(): string {
-  return "Remédio de receita eu não consigo comprar. Remédio *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome. Me diz o nome do que você precisa.";
+// Dono (08/10): quando o pedido nomeia o remédio, a recusa diz QUAL não dá e por quê.
+const capName = (n: string) => n.charAt(0).toUpperCase() + n.slice(1);
+export function prescriptionRefusal(names?: string | string[]): string {
+  const list = (Array.isArray(names) ? names : names ? [names] : []).filter(Boolean).map((n) => `*${capName(n)}*`);
+  const head = !list.length
+    ? "Remédio de receita eu não consigo comprar."
+    : list.length === 1
+      ? `${list[0]} é remédio de receita, então esse eu não consigo comprar.`
+      : `${list.slice(0, -1).join(", ")} e ${list[list.length - 1]} são remédios de receita, então esses eu não consigo comprar.`;
+  return `${head} Remédio *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome. Me diz o nome do que você precisa.`;
 }
 
-export function prescriptionSkippedNote(): string {
-  return "_Remédio de receita eu não consigo comprar, então deixei ele de fora._";
+export function prescriptionSkippedNote(names?: string[]): string {
+  const list = (names ?? []).filter(Boolean).map((n) => `*${capName(n)}*`);
+  if (!list.length) return "_Remédio de receita eu não consigo comprar, então deixei ele de fora._";
+  if (list.length === 1) return `_${list[0]} precisa de receita, então esse eu não consigo comprar — deixei de fora._`;
+  return `_${list.slice(0, -1).join(", ")} e ${list[list.length - 1]} precisam de receita, então esses eu não consigo comprar — deixei de fora._`;
 }
 
 // Pedido por sintoma com MIP ligado: a Lia não indica remédio (é papel do farmacêutico).

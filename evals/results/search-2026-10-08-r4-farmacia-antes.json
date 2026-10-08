@@ -1,0 +1,474 @@
+{
+ "summary": {
+  "label": "r4-farmacia-antes",
+  "at": "2026-10-08T02:27:37.615Z",
+  "requests": 9,
+  "cep": "01310-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "outcomes": {
+   "found": 7,
+   "miss": 2
+  },
+  "top1WrongRate": "0.0%",
+  "precisionItems": "100.0%",
+  "coverage": "77.8%",
+  "honesty": "n/a",
+  "closestOffered": 0,
+  "medicineLeaks": "0/0",
+  "latencyMs": {
+   "p50": 11625,
+   "p90": 16568,
+   "max": 16568
+  }
+ },
+ "byCat": {
+  "farmacia": {
+   "n": 9,
+   "found": 7,
+   "miss": 2,
+   "wrong": 0,
+   "honest": 0
+  }
+ },
+ "results": [
+  {
+   "id": "s277",
+   "text": "curativo band-aid",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11625,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Curativos Band Aid 10 Unidades",
+     "price": 8.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Curativos Band-Aid Pequenos Ferimentos 16 Unidades",
+     "price": 10.85,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogal",
+     "name": "Curativo Band-Aid Flexible Fabric Flores do Campo Tamanhos Variados 30 Unidades",
+     "price": 18.05,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Curativo Band-Aid Johnson's Transparente 40 Unidades",
+     "price": 16.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Curativos Band-Aid Regular 10 Unidades",
+     "price": 7.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Curativos Band-Aid Pequenos Ferimentos 16 Unidades",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Curativo Band-Aid Transparente Variados 30 Unidades",
+     "price": 18.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Curativo Band-Aid Ultra Protection Johnson's 15 Unidades",
+     "price": 17.59
+    }
+   ],
+   "oracleSize": 25,
+   "note": "Pedido genérico de curativo Band-Aid; variações de tamanho, formato e quantidade são aceitáveis."
+  },
+  {
+   "id": "s276",
+   "text": "termômetro digital",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15494,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Termômetro Clínico Digital Biopress Rosa",
+     "price": 19.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Termômetro Clínico Digital G-Tech Urso Flex com Ponta Flexível 1 Unidade",
+     "price": 26.25,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Digital Ever Care",
+     "price": 22.13
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Clínico Digital G-tech Branco 1 Unidade",
+     "price": 13.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Clínico Digital G-Tech Ponta Flexível 1 Unidade",
+     "price": 19.5
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Termômetro Digital Multilaser Hc148",
+     "price": 14.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Termômetro Digital Pague Menos",
+     "price": 23.99
+    }
+   ],
+   "oracleSize": 36,
+   "note": "Pedido genérico de termômetro digital; termômetros clínicos são adequados, mas produtos com outro uso não são."
+  },
+  {
+   "id": "r016",
+   "text": "colírio systane complete",
+   "cat": "farmacia",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 16568,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Colírio Lubrificante Systane Complete 10ml",
+     "price": 117.5,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Colírio Lubrificante Systane Complete 10ml",
+     "price": 119.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Colírio Lubrificante Systane Complete 10ml",
+     "price": 117.5
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Colírio Lubrificante Systane Complete 10ml",
+     "price": 119.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Colírio Lubrificante Systane Complete Sem Conservantes 10ml",
+     "price": 109.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Colírio Lubrificante Oftálmico Estéril Systane Complete Sem Conservantes 10ml",
+     "price": 115.59
+    }
+   ],
+   "oracleSize": 49,
+   "note": "Colírio lubrificante é produto de saúde/MIP; o pedido especifica a linha Systane Complete."
+  },
+  {
+   "id": "s278",
+   "text": "álcool em gel",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10399,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Álcool Gel Higienizador Coperalcool 400ml",
+     "price": 22.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Gel Higienizante Giovanna Baby Blue 60g",
+     "price": 6.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Gel Higienizante Giovanna Baby Blue 70% Álcool 500ml",
+     "price": 22.36
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Higienizante Para As Mãos Giovanna Baby Classic 500ml",
+     "price": 20.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Higienização Para Mãos Giovanna Baby Blue 500ml",
+     "price": 20.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Gel Para Higiene Das Mãos Pague Menos 60ml 1 Unidade",
+     "price": 6.99
+    }
+   ],
+   "oracleSize": 39,
+   "note": "Pedido genérico de álcool em gel para higienização; acendedores e outros tipos de gel não servem."
+  },
+  {
+   "id": "s279",
+   "text": "máscara descartável",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11879,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Máscara Descartável PFF2 Com Válvula Delta Plus",
+     "price": 2.39,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Cirurgica Descartável Ever Care 10 Unidades",
+     "price": 11.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Descartável Nexcare 3M P2 1 Unidade",
+     "price": 13.45
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Máscara Cirurgica Descartável Ever Care 50 Unidades",
+     "price": 51.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Máscara Descartável Pague Menos Tripla Cor Black Com 10 Unidades",
+     "price": 9.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Máscara Cirúrgica Descartável Tripla Descarpack com Clipe Nasal 50 Unidades",
+     "price": 21.19
+    }
+   ],
+   "oracleSize": 34,
+   "note": "Pedido genérico de máscara descartável; modelos cirúrgicos são correspondentes e PFF2 é uma versão aceitável."
+  },
+  {
+   "id": "s280",
+   "text": "soro fisiológico",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10183,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Soro Fisiológico LBS 100ml",
+     "price": 4.79,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Soro Fisiológico LBS 250ml",
+     "price": 7.79,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care Bico Dosador 500ml",
+     "price": 10.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care 500ml",
+     "price": 10.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ampola Ever Care 5ml",
+     "price": 8.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico Ever Care Bico Dosador 100ml",
+     "price": 7.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Soro Fisiológico ADV 0,9% 500ml",
+     "price": 7.99
+    }
+   ],
+   "oracleSize": 40,
+   "note": "Soro fisiológico é um produto de saúde vendido sem receita; marca e volume não foram especificados."
+  },
+  {
+   "id": "s281",
+   "text": "preservativo",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10953,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Preservativos Prudence Lubrificados 8 unidades",
+     "price": 14.39,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Preservativo Prudence Lubrificado 8 Unidades",
+     "price": 11.49,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Preservativo Blowtex Skyn Sinta Tudo Elite Lubrificado Ultrafino Ultra Sensitive 8 Unidades",
+     "price": 29.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Prudence Lubrificado 8 Unidades",
+     "price": 11.29
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Lubrificado Olla Sensitive 8 Unidades",
+     "price": 24.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Olla Lubrificado 8 Unidades",
+     "price": 18.06
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Skyn Original 8 Unidades",
+     "price": 30.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Preservativo Prudence Masculino Lubrificado Super Sensitive 8 Unidades",
+     "price": 25.21
+    }
+   ],
+   "oracleSize": 10,
+   "note": "Pedido genérico de preservativo; marcas, versões e quantidades diferentes são aceitáveis quando não especificadas."
+  },
+  {
+   "id": "s282",
+   "text": "teste de gravidez",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 10866,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care 1 Tira + Coletor",
+     "price": 8.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care Caneta 1 Unidade",
+     "price": 16.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste Gravidez Confira Tira + Coletor 1 Unidade",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Ever Care Em Tira 2 Unidades",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Caneta Confira Pratic 1 Unidade",
+     "price": 17.59
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Teste de gravidez é produto de saúde; marcas e formatos não especificados são aceitáveis."
+  },
+  {
+   "id": "s283",
+   "text": "vitamina c efervescente",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 12492,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C Drogaria São Paulo Tripla Ação 30 Comprimidos Efervescentes",
+     "price": 32.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Bio-C+ Zinco Vitamina C 1g + Zinco 10mg União Química 30 Comprimidos Efervescente",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C, D e Zinco Redoxon Tripla Ação Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 17.9
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Pedido genérico de vitamina C efervescente; combinações com outros nutrientes são aceitáveis, mas formas não efervescentes ou usos diferentes não são."
+  }
+ ]
+}

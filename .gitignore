@@ -37,3 +37,4 @@ docs/obsidian/.obsidian/
 # Bancos e caches dos benchmarks (evals/)
 .local-pg-bench/
 evals/cache/
+evals/results/.*.partial.json*

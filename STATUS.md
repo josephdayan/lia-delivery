@@ -1,3 +1,106 @@
+## 08/10/2026 — Placar r4: medido de verdade (juiz gpt-6-luna), 3 consertos de busca e 3 regras de remédio do dono
+
+Rodado na nuvem com `NODE_USE_ENV_PROXY=1`, MIP ligado, Lia e juiz em **gpt-6-luna** (as 4 rodadas de 07/10 foram
+julgadas por gpt-6-sol e não servem de "antes"). CEP 01310-100. Branch `claude/placar-r4`. Arquivos em `evals/results/search-2026-10-08-r4-*.json`.
+
+### Tabela antes × depois
+
+| Rodada | n | 1ª opção errada | Precisão | Cobertura | Honestidade | medicineLeaks | p50 | Desfechos |
+|---|---|---|---|---|---|---|---|---|
+| 15 repetentes · antes | 15 | 0,0% | 100% | 46,2% | 100% | 0/0 | 13,8 s | found 6, miss 7, honest 2 |
+| 15 repetentes · só (a) farmácia-blocklist | 15 | 6,7% | 88,0% | 69,2% | 100% | 0/0 | 13,3 s | found 9, miss 3, wrong 1 (fita→Nexcare, juiz oscila), honest 2 |
+| 15 repetentes · depois (tudo) | 15 | 7,7% | 84,0% | 90,0% | 66,7% | 0/0 | 11,3 s | found 8, extra 1 (fórmula), miss 1 (fita), fp 1 (bicicleta: juiz oscila), honest 2, erro 2 (teto 150 s) |
+| remédio (9) · antes | 9 | 0,0% | 93,8% | 85,7% | n/a | 0/2 | 10,3 s | found 5, extra 1 (Dorflex DIP), miss 1 (omeprazol), med_ok 2 |
+| farmácia (9) · antes | 9 | 0,0% | 100% | 77,8% | n/a | 0/0 | 11,6 s | found 7, miss 2 (teste de gravidez, vitamina C) |
+| remédio-marcas (20) · antes | 20 | 6,7% | 88,4% | 86,7% | n/a | 1/5 | 10,7 s | found 13, wrong 1 (buscopan→Composto 1º), miss 1 (omeprazol), med_ok 4, leak 1 (fexofenadina: erro do juiz) |
+| remédio-marcas (20) · depois | 20 | 13,3% | 83,7% | 80,0% | n/a | 1/5 | 13,5 s | found 11, extra 1 (buscopan: básico 1º, Composto atrás), wrong 2 (neosaldina e buscopan composto: mesma 1ª opção do antes, juiz virou), miss 1, med_ok 4, leak 1 |
+| farmácia (9) · depois (fatia dos 316) | 9 | 0,0% | 100% | 100% | n/a | 0/0 | — | found 9 (teste de gravidez e vitamina C entraram) |
+| remédio (9) · depois (fatia dos 316) | 9 | 0,0% | — | — | n/a | 0/2 | — | found 5, miss 1 (omeprazol), med_ok 2, erro 1 (dipirona: teto 150 s) |
+| **316 · antes** | 316 | **2,0%** | **97,5%** | **93,1%** | **100%** | 0/2 | 9,8 s | found 238, extra 6, miss 12, wrong 6, honest 41, med_ok 2, erro 11 (teto 150 s) |
+| **316 · depois** | 316 | **1,6%** | **98,4%** | **96,2%** | **100%** | 0/2 | 10,5 s | found 253, extra 3, miss 5, wrong 5, honest 40, med_ok 2, erro 8 (teto 150 s) |
+
+Nos 316 (código congelado × código final, mesmo juiz, mesma noite): 1ª opção errada 2,0% → 1,6%, precisão 97,5% →
+98,4%, cobertura 93,1% → 96,2%, honestidade 100% nas duas, 0 vazamento de remédio, p50 +0,7 s. Pedidos que viraram
+found: teste de gravidez, vitamina C, Havaianas, leite em pó para bebê, cabo lightning, garrafa térmica, protetor
+auricular, mamão, peito de frango, esmalte vermelho, fita adesiva, e 5 que antes tinham extra errado. Pioraram:
+bolacha maizena (Mãe Terra Maizena Choco 1º), pão francês (pão de mel 1º), chave de fenda (ponta cruzada = Phillips
+1º), bala de goma (extra "Gummy vinagre"), presente criança 5 anos (miss), isqueiro maçarico (miss) — nenhum deles
+passa pelo código mudado (rerank/estoque/juiz); "erro" = teto de 150 s na busca, 11 no antes e 8 no depois (fora das
+métricas): o travamento é ANTERIOR a esta branch.
+
+Leitura honesta: os ganhos reais são de **cobertura** (teste de gravidez, Havaianas, vitamina C, pilhas
+recarregáveis, fórmula infantil, buscopan básico primeiro). As quedas de precisão nos conjuntos pequenos são, caso a
+caso, o juiz mudando de ideia sobre a MESMA 1ª opção entre rodadas (bicicleta Aro 12, "Neosaldina Dipirona 4 drágeas",
+"Buscopan Composto 10mg+500mg") e 1 extra num pedido que antes era miss. Em 15–20 pedidos cada flip vale 5–7 pontos.
+
+### Consertos de busca (cada um com teste offline; suíte `npm run test:local` 1170/1170)
+- **(a) Farmácia ao vivo por lista de bloqueio**, não allowlist da cópia (`src/lib/stores/live-search.ts`,
+  `stores/index.ts`): a busca ao vivo da Drogaria SP/Pague Menos só entrava em categoria que a cópia tinha, e a cópia
+  não tinha "Teste de Gravidez", "Chinelo", "Vitamina", "Pilhas". Agora o que barra é remédio de receita: categoria de
+  medicamento da loja + guardas ANVISA + nome de receita. Repetentes 6 → 9 found.
+- **(b) Alias** "leite em pó para bebê" / "leite pra bebê" / "leite infantil" → "fórmula infantil" (`QUERY_ALIASES`).
+- **(e) Plural irregular no matcher** (`singularPt` em `tokenMatchesWord`): "pilhas recarregáveis" nunca casava com
+  "Pilha Recarregável" (-eis ≠ -el), então toda recarregável pontuava como pilha comum e saía do top-12. Vale para
+  papéis/lençóis/limões/batons. Varredura nas 19.905 palavras dos catálogos: 167 pares novos, todos plural legítimo;
+  corte de 5 letras protege sais/pais/mães/cães.
+- **(c) bucha para parede / (d) top-1 errado**: medidos antes de mexer e NÃO persistiram (bucha, esmalte, bala de
+  goma e parafuso saíram "found" no antes de hoje). Nada alterado no prompt do rerank por causa deles.
+
+### Remédio — pedido do dono (08/10), além do placar
+1. **Recusa nomeia o remédio de receita**: "*Rivotril* precisa de receita, então esse eu não consigo comprar";
+   lista mista ("dipirona e rivotril") segue com a dipirona e a nota nomeia o Rivotril; só recusa a mensagem inteira
+   quando TUDO é de receita. Nomes só reconhecidos (frase sem nome vira o texto genérico; "lanterna frontal" não é o
+   ansiolítico).
+2. **Marca "seca" mostra o básico antes das extensões de linha**: Tylenol 750 antes de Sinus/DC/Bebê, Advil antes de
+   12h/Mulher, Buscopan antes de Composto, Dorflex antes de DIP/Max (`isMedicineLineExtension`/`baseFormulationFirst`,
+   só em vitrine inteira de isentos; regra também no prompt do rerank). Extensão PEDIDA ("tylenol sinus") vem normal.
+3. **Equivalente de mesmo princípio ativo como "o mais perto"**: marca sem estoque → "é o genérico (paracetamol)";
+   genérico sem estoque → "é o Tylenol (mesmo paracetamol)". Tabela fixa só com substância idêntica
+   (`MEDICINE_EQUIVALENTS`: Tylenol, Advil/Alivium, Novalgina/Anador/Magnopyrol, Allegra, Claritin/Loratamed, Desalex,
+   Luftal, Aspirina); casa por palavra inteira (desloratadina ≠ loratadina), recusa combinação (Paracetamol + Cafeína)
+   e exige o mesmo público/forma ("tylenol bebê" nunca vira 750 mg). Entra como reserva de 2 vagas na busca e nunca
+   como opção comum; o cliente escolhe.
+4. **Porta do MIP ao vivo** (com a flag): prateleira de medicamento da Drogaria SP/Pague Menos devolve item
+   `medicine: "mip"` pela MESMA lista positiva da colheita (Sem Tarja sem retenção; EAN de isento da DSP sem
+   antibiótico/controlado) + `mipOnly`. Fora da prateleira, item com cara de remédio só entra com EAN da lista.
+Revisão de código por sub-agente achou 9 pontos (2 de segurança ANVISA na porta nova); todos corrigidos e testados
+(`tests/medicine-brands-2026-10-08.test.ts`, `live-search-2026-10-07.test.ts`, `medicine-chat.test.ts`).
+
+### O que ainda falha e por quê
+- **fita adesiva transparente**: a Obramax (fita de empacotamento) não confirma entrega no CEP; sobra a "Fita
+  Transparente Nexcare" (esparadrapo, Drogal), que o rerank aceita e o juiz ora aceita ora não. Já era assim antes de
+  qualquer mudança (trace 02:29). Decisão de produto: esparadrapo transparente serve ou não para "fita adesiva"?
+- **omeprazol**: miss. A guarda de prescrição (`PRESCRIPTION_DOSE_RE`) trata omeprazol 20 mg como receita e a colheita
+  não trouxe nem o 10 mg. A Drogaria SP vende 10 e 20 mg genérico. **Decisão do dono**: se 10/20 mg são isentos, soltar
+  a guarda e recolher o catálogo.
+- **fexofenadina** conta como medicine_leak (1/5) por erro do juiz: é isento no Brasil desde 2016. Não é vazamento.
+- **carregador usb c**: honest_none/miss conforme a rodada: Casa & Vídeo/Obramax não confirmam no CEP; a Pague Menos
+  derruba o I2GO; sobra cabo (recusado, certo). Estoque, não busca.
+- **bicicleta**: só a infantil Aro 12 da Ri Happy; o juiz alterna acceptable/wrong. Critério, não bug.
+- **Travamento intermitente da busca sob concorrência (ANTERIOR à branch)**: com 3 buscas em paralelo, 2–3% dos
+  pedidos passam de 150 s em `buildChoices` (11/316 no código congelado de ontem, 8/316 no final; ids diferentes a
+  cada rodada: chocolate, dipirona, água com gás, sabão em pó omo…); os mesmos pedidos fecham em 10–18 s
+  sequencialmente. Nenhum fetch do caminho está sem timeout (auditado por sub-agente; Mercado Livre desligado).
+  Mitigado no bench (teto por etapa, vira "error" e fica fora das métricas; checkpoint por pedido + `--resume`).
+  Causa raiz em aberto: instrumentar `buildChoices` por etapa com o id do pedido e rodar com concorrência 3.
+  Em produção cada webhook é um turno só, mas 3 clientes simultâneos podem cair no mesmo buraco.
+- **Nos 316, ainda errados no depois** (todos fora do código mudado): bolacha maizena → "Maizena Choco" da Mãe Terra
+  em 1º; pão francês → pão de mel em 1º; chave de fenda → ponta cruzada (Phillips) em 1º; acendedor de churrasqueira
+  → isqueiro Bic em 1º; filé de tilápia → empanado infantil em 1º; martelo e isqueiro maçarico → miss (Obramax não
+  confirma no CEP); presente criança 5 anos → miss.
+- **Dorflex DIP** como 2º/3º card de "dorflex": é extensão (dipirona pura); já fica atrás do básico, o juiz às vezes
+  marca wrong. Para sumir, só excluindo extensões quando o básico existe — não fiz (o dono pediu "primeiro o normal,
+  depois o PM", não "só o normal").
+
+### Decisões pendentes do dono (lembrete agendado para 09/10)
+- **Remédio por sintoma** ("dor de barriga"): hoje a lista de sintomas é fixa e inconsistente ("dor de cabeça" recebe
+  "não indico, é com o farmacêutico"; "dor de barriga" cai na busca e a IA indica). Manter "não indico" e fechar o
+  furo, ou indicar isento por classe com aviso?
+- **Próxima grande coisa — recomendação por intenção/ocasião** ("quero algo doce", "café da manhã pra 4",
+  "churrasco"): camada intenção → 3–4 produtos concretos (reaproveita a tela de lista e o funil de verdade: catálogo,
+  estoque no CEP, rerank), uma pergunta só quando muda tudo, memória do cliente ("o de sempre"), placar próprio de
+  pedidos vagos com juiz. Estimativa: 1 dia a camada 1 com placar, +1 dia memória e pergunta.
+
 ## 08/10/2026 — Preço da loja + taxa de serviço declarada; compra e nota fiscal no CPF do cliente (tudo)
 
 Decisão do dono ("faz"): o modelo do remédio isento vale para todo pedido. Implementado atrás de `LIA_PRICING_MODE`

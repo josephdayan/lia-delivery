@@ -10,7 +10,7 @@
 // Escreve evals/results/search-<data>-<label>.json e imprime o placar. Não cobra nem envia nada;
 // usa Postgres embutido próprio (porta 54339). Precisa de OPENAI_API_KEY no .env.
 import "./talk-env.mts";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { startBenchDb } from "./bench/db.mts";
@@ -34,6 +34,21 @@ const limit = Number(arg("limit", "0"));
 const onlyCat = arg("cat");
 const only = arg("only");
 const concurrency = Number(arg("concurrency", "4"));
+// Checkpoint (08/10): a sessão na nuvem mata tarefa em 2 h e uma rodada de 316 morreu em 314/316 sem gravar.
+// Cada pedido concluído vai para evals/results/.<label>.partial.json; `--resume` com o mesmo --label pula os ids
+// já gravados e continua. O parcial some quando a rodada grava o arquivo final.
+const resume = args.includes("--resume");
+const partialFile = join(process.cwd(), "evals", "results", `.${label}.partial.json`);
+function loadPartial(): any[] {
+  if (!resume) return [];
+  try { return JSON.parse(readFileSync(partialFile, "utf8")).results ?? []; } catch { return []; }
+}
+function savePartial(results: any[]) {
+  mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
+  const tmp = `${partialFile}.tmp`;
+  writeFileSync(tmp, JSON.stringify({ label, results }));
+  renameSync(tmp, partialFile);
+}
 
 // Vitrine de produção (06/10): lojas de compra automática. A lista real é sensível (Vercel);
 // este é o palpite do golden (AUTO_ROSTER) e vale igual antes/depois.
@@ -52,6 +67,16 @@ function benchCep(): string {
 }
 
 type Req = { id: string; text: string; cat: string; origin: string };
+
+// Teto por etapa (08/10): duas rodadas ficaram presas para sempre num worker (1 pedido de 15 nunca
+// terminou, sem erro). Nenhuma etapa pode prender a rodada: estoura, vira "error"/"judge_failed"
+// com o id e a etapa no arquivo, e o resto segue.
+function withTimeout<T>(promise: Promise<T>, ms: number, stage: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`timeout ${stage} ${Math.round(ms / 1000)}s`)), ms);
+    promise.then((v) => { clearTimeout(timer); resolve(v); }, (e) => { clearTimeout(timer); reject(e); });
+  });
+}
 type Shown = { id: string; store: string; name: string; brand: string; price: number };
 
 async function main() {
@@ -72,9 +97,15 @@ async function main() {
     if (onlyCat) reqs = reqs.filter((r) => r.cat === onlyCat);
     if (only) reqs = reqs.filter((r) => r.text.toLowerCase().includes(only.toLowerCase()));
     if (limit) reqs = reqs.slice(0, limit);
+    const done = loadPartial();
+    const doneIds = new Set(done.map((r) => r.id));
+    if (doneIds.size) {
+      reqs = reqs.filter((r) => !doneIds.has(r.id));
+      console.log(`[resume] ${doneIds.size} pedidos já gravados em ${partialFile}; faltam ${reqs.length}`);
+    }
     console.log(`bench-search "${label}" · ${reqs.length} pedidos · ${stores.length} lojas no oráculo · juiz ${process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna"} · Lia ${process.env.OPENAI_MODEL ?? "gpt-6-luna"}`);
 
-    const results: any[] = [];
+    const results: any[] = [...done];
     let next = 0;
     async function worker() {
       for (;;) {
@@ -86,16 +117,16 @@ async function main() {
         let error: string | undefined;
         const scope = { aiFailed: [] as string[] };
         try {
-          const found = await aiScope.run(scope, () => runShopperScoped(() => searchOptionsForBench(r.text, cep)));
+          const found = await withTimeout(aiScope.run(scope, () => runShopperScoped(() => searchOptionsForBench(r.text, cep))), 150_000, `busca ${r.id}`);
           const options = found.options;
           // "Mais próximo" (Lia avisa a diferença; o cliente escolhe): fora da conta de acerto, só listado.
           closest = found.closest.map((o) => ({ store: o.storeLabel ?? o.storeKey ?? "", name: o.name, price: o.unitPrice }));
           shown = options.map((o, i) => ({ id: `S${i + 1}`, store: o.storeLabel ?? o.storeKey ?? "", name: o.name, brand: o.brand ?? "", price: o.unitPrice, _sku: `${o.storeKey}:${o.sku}` } as Shown));
         } catch (e) { error = e instanceof Error ? e.message.slice(0, 160) : String(e); }
         const ms = Date.now() - t0;
-        const pool = (await oraclePool(r.text, stores, Number(process.env.BENCH_ORACLE_PER_STORE ?? 5))).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
+        const pool = (await withTimeout(oraclePool(r.text, stores, Number(process.env.BENCH_ORACLE_PER_STORE ?? 5)), 90_000, `oraculo ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return [] as Awaited<ReturnType<typeof oraclePool>>; })).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
         const items = [...shown.map((s) => ({ id: s.id, store: s.store, name: s.name, brand: s.brand, price: s.price })), ...pool.map((p) => ({ id: p.jid, store: p.store, name: p.name, brand: p.brand, price: p.price }))];
-        const verdict = await judge({ request: r.text, items });
+        const verdict = await withTimeout(judge({ request: r.text, items }), 400_000, `juiz ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return null; });
         const v = verdict?.verdicts ?? {};
         const good = (id: string) => v[id] === "exact" || v[id] === "acceptable";
         const shownGood = shown.filter((s) => good(s.id));
@@ -105,7 +136,7 @@ async function main() {
         if (poolGood.length) {
           const { checkCandidatesLive, liveKey } = await import("../src/lib/live-availability");
           const probe = poolGood.slice(0, 6);
-          const live = await checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep);
+          const live = await withTimeout(checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep), 90_000, `estoque ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return { kept: probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })) } as Awaited<ReturnType<typeof checkCandidatesLive>>; });
           const alive = new Set(live.kept.map((c) => liveKey(c.storeKey, c.sku)));
           poolGood = probe.filter((p) => alive.has(liveKey(p.storeKey, p.sku)));
         }
@@ -119,6 +150,7 @@ async function main() {
         else if (!good(shown[0].id)) outcome = poolGood.length || shownGood.length ? "wrong_top1" : "false_positive";
         else outcome = shown.some((s) => !good(s.id)) ? "found_with_wrong_extra" : "found";
         results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), closest: closest.length ? closest : undefined, oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
+        savePartial(results);
         process.stdout.write(`${outcome === "found" || outcome === "honest_none" || outcome === "medicine_ok" ? "." : outcome[0].toUpperCase()}`);
       }
     }
@@ -159,6 +191,7 @@ async function main() {
     mkdirSync(join(process.cwd(), "evals", "results"), { recursive: true });
     const file = join(process.cwd(), "evals", "results", `search-${new Date().toISOString().slice(0, 10)}-${label}.json`);
     writeFileSync(file, JSON.stringify({ summary, byCat, results }, null, 1));
+    try { unlinkSync(partialFile); } catch { /* sem parcial */ }
     console.log(JSON.stringify(summary, null, 1));
     console.table(byCat);
     console.log(`\nArquivo: ${file}`);

@@ -144,7 +144,19 @@ test("remédio de receita continua recusado, mesmo com a flag ligada", async (t)
   if (!dbOk) return t.skip();
   const c = await customer();
   const out = await send(c.phone, "quero amoxicilina 500mg");
-  assert.match(out, /receita eu não consigo comprar/i, out.slice(0, 300));
+  // Dono (08/10): a recusa NOMEIA o remédio e diz o porquê.
+  assert.match(out, /\*Amoxicilina\* é remédio de receita, então esse eu não consigo comprar/i, out.slice(0, 300));
+});
+
+test("lista com isento + receita: o isento segue e a nota diz QUAL ficou de fora (dono, 08/10)", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customer();
+  const out = await send(c.phone, "quero dipirona e rivotril");
+  assert.match(out, /\*Rivotril\* precisa de receita, então esse eu não consigo comprar — deixei de fora/i, out.slice(0, 400));
+  assert.match(out, /dipirona/i, "a dipirona (isenta) continua na vitrine");
+  // Pedido só de receita, sem nome na lista ("remédio de receita"): recusa genérica, sem inventar nome.
+  const generic = await send(c.phone, "quero um remédio de receita");
+  assert.match(generic, /^Remédio de receita eu não consigo comprar/i, generic.slice(0, 200));
 });
 
 test("flag desligada: remédio segue recusado como sempre", async (t) => {

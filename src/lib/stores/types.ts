@@ -169,10 +169,27 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
 }
 const VEHICLE_WORDS = new Set(["veicular", "veiculares", "carro", "carros", "automotivo", "automotiva", "automotivos"]);
 
+// Plural irregular do português (08/10, placar r4): "recarregáveis" nunca casava com
+// "Recarregável", então toda pilha recarregável pontuava como pilha comum e saía do top-12.
+// Só a forma singular canônica dos sufixos regulares (-eis→-el, -ois→-ol, -ais→-al, -oes→-ao,
+// -ns→-m, -es após r/z/s/n, -s); "-ães" fica de fora ("mães" viraria "mão"). Palavra curta
+// (< 5 letras) não entra: "sais" não pode virar "sal", nem "pais" "pal".
+export function singularPt(word: string): string {
+  if (word.length < 5 || !word.endsWith("s")) return word;
+  if (/eis$/.test(word)) return word.slice(0, -3) + "el";
+  if (/ois$/.test(word)) return word.slice(0, -3) + "ol";
+  if (/ais$/.test(word)) return word.slice(0, -3) + "al";
+  if (/oes$/.test(word)) return word.slice(0, -3) + "ao";
+  if (/ns$/.test(word)) return word.slice(0, -2) + "m";
+  if (/[rzsn]es$/.test(word)) return word.slice(0, -2);
+  return word.slice(0, -1);
+}
+
 // Word-boundary match: avoids "bom"(3) hitting "bombril". Short tokens must match a
 // whole word; tokens >=4 may match as a substring of a word ("colgate" in "colgate").
 function tokenMatchesWord(token: string, word: string): boolean {
   if (token === word) return true;
+  if (token.length >= 5 && word.length >= 5 && singularPt(token) === singularPt(word)) return true;
   // Prefix match only — "refrigerante" matches "refri", but "restauração" must NOT
   // match "ração" (it's a suffix), and "bombril" must NOT match "bom" (too short).
   if (token.length >= 4 && word.startsWith(token)) return true;
@@ -717,7 +734,11 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\blava roupas? (?:em )?po\b/, "sabao em po"],
   [/\bxampus?\b/, "shampoo"],
   [/\bcaixas? de leite\b/, "leite longa vida"],
-  [/\bleite de caixinha\b/, "leite longa vida"]
+  [/\bleite de caixinha\b/, "leite longa vida"],
+  // 08/10 (placar r4, s141): o cliente pede "leite em pó para bebê"/"leite infantil"; a farmácia
+  // chama de "Fórmula Infantil" (Aptamil, Nan, Nestogeno) — e "leite em pó" sozinho segue leite.
+  [/\bleite (?:em po )?(?:para|pra|pro|de) (?:o |a |meu |minha )?(?:bebe|bebes|nenem|nene|neneh|recem[- ]nascido)\b/, "formula infantil"],
+  [/\bleite (?:em po )?infantil\b/, "formula infantil"]
 ];
 // Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
 // "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.

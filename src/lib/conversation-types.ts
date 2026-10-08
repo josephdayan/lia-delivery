@@ -310,7 +310,8 @@ export const CANCELABLE_FALLBACK_STATUSES = [
 
 // ---------- helpers: conversation + money + text ----------
 
-export type ExtractedLines = { lines: ParsedLine[]; greetingOnly: boolean; containsMedicine: boolean; containsTobacco: boolean };
+// prescriptionDropped: nomes dos remédios de receita que saíram da lista (dono, 08/10: a recusa nomeia o item).
+export type ExtractedLines = { lines: ParsedLine[]; greetingOnly: boolean; containsMedicine: boolean; containsTobacco: boolean; prescriptionDropped: string[] };
 
 export type ChoicesResult = {
   store: StoreConnector;
@@ -330,6 +331,7 @@ export type ChoicesResult = {
   reranked: boolean;
   greetingOnly: boolean;
   containsMedicine: boolean;
+  prescriptionDropped: string[];
   containsTobacco: boolean;
   // 06/10: linhas (frase já normalizada pelo split do teto) que TINHAM produto nas lojas,
   // mas nenhuma loja confirmou ao vivo para o CEP — o cliente ouve "não consigo comprar

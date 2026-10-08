@@ -1,0 +1,700 @@
+{
+ "summary": {
+  "label": "r4-repetentes-antes",
+  "at": "2026-10-08T02:22:48.611Z",
+  "requests": 15,
+  "cep": "01310-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "outcomes": {
+   "honest_none": 2,
+   "found": 6,
+   "miss": 7
+  },
+  "top1WrongRate": "0.0%",
+  "precisionItems": "100.0%",
+  "coverage": "46.2%",
+  "honesty": "100.0%",
+  "closestOffered": 1,
+  "medicineLeaks": "0/0",
+  "latencyMs": {
+   "p50": 13813,
+   "p90": 15609,
+   "max": 18894
+  }
+ },
+ "byCat": {
+  "casa": {
+   "n": 1,
+   "found": 0,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 1
+  },
+  "mercado": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "eletronicos": {
+   "n": 2,
+   "found": 0,
+   "miss": 2,
+   "wrong": 0,
+   "honest": 0
+  },
+  "bebe": {
+   "n": 2,
+   "found": 1,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 0
+  },
+  "beleza": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "papelaria": {
+   "n": 2,
+   "found": 0,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 1
+  },
+  "ferramentas": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "roupas": {
+   "n": 1,
+   "found": 0,
+   "miss": 1,
+   "wrong": 0,
+   "honest": 0
+  },
+  "farmacia": {
+   "n": 2,
+   "found": 0,
+   "miss": 2,
+   "wrong": 0,
+   "honest": 0
+  },
+  "esporte": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  }
+ },
+ "results": [
+  {
+   "id": "r017",
+   "text": "isqueiro pra charuto",
+   "cat": "casa",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 12247,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 72,
+   "note": "O pedido especifica um isqueiro para charuto; os itens listados são isqueiros comuns ou acendedores, não próprios para charuto."
+  },
+  {
+   "id": "s093",
+   "text": "bala de goma",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15194,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Bala Goma Gomets Dori 150g",
+     "price": 8.19,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Bananas Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Pedido genérico de bala de goma; aceitos doces de goma/gelatina, mas não chicletes, brinquedos ou gomas de suplemento."
+  },
+  {
+   "id": "r004",
+   "text": "carregador usb c",
+   "cat": "eletronicos",
+   "origin": "real",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 18894,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Carregador de Tomada Leve-Me PD 1 Unidade",
+     "price": 35.9
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Pedido genérico por carregador com saída USB-C; cabos, carregadores USB-A e módulos de tomada não correspondem ao tipo usual solicitado."
+  },
+  {
+   "id": "s139",
+   "text": "pomada para assadura",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13869,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Pomada Protetora Contra Assaduras Desitin Máxima Proteção 57g",
+     "price": 82.55,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pomada para Assadura Cetrilan Creme Protetor 40g",
+     "price": 34.39,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pomada para Assadura Hipoglós Transparente 1200g Leve 120g e Pague 80g",
+     "price": 61.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pomada Antiassaduras Nistatina + Óxido de Zinco Genérico Neo Química 60g",
+     "price": 18.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pomada para Assaduras Bepantriz Dexpantenol 30g",
+     "price": 21.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pomada Preventiva De Assaduras Hipoglós Original 40g",
+     "price": 32.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pomada Preventiva De Assaduras Hipoglós Original 120g",
+     "price": 59.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Pomada para Assadura Babymed Pomada Rosa 45g",
+     "price": 11.9
+    }
+   ],
+   "oracleSize": 69,
+   "note": "Pedido genérico de pomada para assadura; pomadas humanas preventivas ou de tratamento são pertinentes, mas produtos veterinários e itens sem relação não são."
+  },
+  {
+   "id": "s141",
+   "text": "leite em pó para bebê",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 10548,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Fórmula Infantil Nanlac Comfor de 1 a 3 anos 800g",
+     "price": 66.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Fórmula Infantil Nestonutri de 1 a 3 anos 800g",
+     "price": 62.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Nanlac Supreme Pro 800g",
+     "price": 103.15
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Nestonutri 1-3 anos 800g",
+     "price": 59.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 2 800g",
+     "price": 71.75
+    }
+   ],
+   "oracleSize": 74,
+   "note": "“Leite em pó para bebê” indica fórmula infantil; leite comum, acessórios e produtos sem relação não atendem ao pedido."
+  },
+  {
+   "id": "s143",
+   "text": "esmalte vermelho",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13235,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Vermelho Diamond Gel Charlotte De Romã Metálico 9,5ml",
+     "price": 13.49,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Gabriela Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Rebu Cremoso 8ml",
+     "price": 6.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Esmalte Vermelho Risqué & KitKat KitKat Mania Metálico 8ml",
+     "price": 9.69
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Pedido de esmalte vermelho; aceitos esmaltes de unha explicitamente vermelhos, não tintas ou produtos de outra categoria."
+  },
+  {
+   "id": "s189",
+   "text": "pilhas recarregáveis",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 14604,
+   "shown": [],
+   "closest": [
+    {
+     "store": "Drogal",
+     "name": "Pilha Zinco Rayovac AAA 4 Unidades",
+     "price": 11.15
+    },
+    {
+     "store": "Drogal",
+     "name": "Pilha Zinco Rayovac AA 4 Unidades",
+     "price": 12.69
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Pilha Duracell Recarregavel Aa 4 Unidades",
+     "price": 144.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Carregador De Pilhas Duracell Com 4 Pilhas",
+     "price": 189.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Pilha Recarregável Econômica Rayovac AAA (Palito) - Cartela com 2 unidades",
+     "price": 33.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Pilha Recarregável 1000MHA Tipo AAA Elgin",
+     "price": 29.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Bateria Recarregável 9V Elgin",
+     "price": 29.9
+    }
+   ],
+   "oracleSize": 39,
+   "note": "Pedido genérico de pilhas recarregáveis; tamanhos e marcas não especificados."
+  },
+  {
+   "id": "s192",
+   "text": "fita adesiva transparente",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 13813,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Fita Transparente Nexcare  25mm x 1,35m",
+     "price": 10.45
+    },
+    {
+     "store": "Drogal",
+     "name": "Fita Transparente Nexcare 25mm x 4,5m",
+     "price": 27.59
+    },
+    {
+     "store": "Obramax",
+     "name": "Fita de Empacotamento Transparente 710U 45mmx40m Adere",
+     "price": 4.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Fita de Empacotamento Transparente 48mmx40m Tekbond",
+     "price": 4.9
+    }
+   ],
+   "oracleSize": 57,
+   "note": "Pedido genérico de fita adesiva transparente; fitas transparentes comuns são aceitáveis, mas esparadrapos, fitas técnicas e outros produtos não são equivalentes."
+  },
+  {
+   "id": "s200",
+   "text": "marca texto",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 11283,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 41,
+   "note": "Pedido de marca-texto; nenhum dos produtos listados é um marca-texto."
+  },
+  {
+   "id": "s245",
+   "text": "parafuso",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10405,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Parafuso Atarraxante Phillips Cabeça Panela 3,9x32 Fixtil",
+     "price": 0.45,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Parafuso Para Telha 5/16\" X 110mm 4 Peças Fixtil",
+     "price": 18.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Parafuso para Telha com Arruela de Vedação 25 Peças Sforplast",
+     "price": 29.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Parafuso Drywall Ponta Agulha Trombeta Philips 1000 Peças Jomarca",
+     "price": 66.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Kit Parafuso Chipboard Philips com Bucha SFU Sforplast",
+     "price": 22.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Parafuso Cabeça Trombeta Fosfatizado Ponta Agulha Philips Ciser",
+     "price": 34.9
+    },
+    {
+     "store": "Obramax",
+     "name": "Parafuso para Vaso Sanitário e Bidê B10 80mm Inox Bognar",
+     "price": 6.9
+    }
+   ],
+   "oracleSize": 21,
+   "note": "Pedido genérico de parafuso; aceito parafusos de diferentes tipos e medidas, mas não produtos cujo nome apenas usa a palavra “parafuso”."
+  },
+  {
+   "id": "s246",
+   "text": "bucha para parede",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15323,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Bucha De Fixação 8 mm Fixtil",
+     "price": 0.35,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Obramax",
+     "name": "Bucha Plástica com Aba Sforplast",
+     "price": 7.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon com Aba Sforplast",
+     "price": 23.99
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Plástica Sforplast",
+     "price": 7.19
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon sem Aba Sforplast",
+     "price": 24.89
+    },
+    {
+     "store": "Obramax",
+     "name": "Bucha Nylon sem Anel com Parafuso Cabeça Chata Fischer",
+     "price": 45.9
+    }
+   ],
+   "oracleSize": 61,
+   "note": "Pedido genérico de bucha para fixação em parede; buchas de fixação são adequadas, mas esponjas e itens apenas com nomes semelhantes não são."
+  },
+  {
+   "id": "s274",
+   "text": "chinelo havaianas",
+   "cat": "roupas",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 15609,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 41/42 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 37/38 1 Par",
+     "price": 31.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 47/48 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 33/34 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 35/36 1 Par",
+     "price": 29.99
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Pedido genérico de chinelo Havaianas; sandálias da marca atendem, enquanto produtos com nomes apenas parecidos não."
+  },
+  {
+   "id": "s282",
+   "text": "teste de gravidez",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 9423,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care 1 Tira + Coletor",
+     "price": 8.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care Caneta 1 Unidade",
+     "price": 16.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste Gravidez Confira Tira + Coletor 1 Unidade",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Ever Care Em Tira 2 Unidades",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Caneta Confira Pratic 1 Unidade",
+     "price": 17.59
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Teste de gravidez é um produto de saúde; marcas e formatos diferentes são aceitáveis quando não especificados."
+  },
+  {
+   "id": "s283",
+   "text": "vitamina c efervescente",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 12847,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C Drogaria São Paulo Tripla Ação 30 Comprimidos Efervescentes",
+     "price": 32.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Bio-C+ Zinco Vitamina C 1g + Zinco 10mg União Química 30 Comprimidos Efervescente",
+     "price": 34.79
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C, D e Zinco Redoxon Tripla Ação Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 17.9
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Pedido genérico de vitamina C efervescente; aceitas versões efervescentes, mas não outras formas, produtos com vitamina C de uso diferente ou itens para pets."
+  },
+  {
+   "id": "s315",
+   "text": "bicicleta",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15480,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta - Aro 12 - Arco Iris - Laranja - Tk3-Track",
+     "price": 174.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+     "price": 299.95,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Branco e Pink - TK3 Track",
+     "price": 299.95,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta - Aro 12 - Arco Iris - Laranja - Tk3-Track",
+     "price": 174.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 -  Arco Íris Branco e Pink - TK3 Track",
+     "price": 299.95
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+     "price": 299.95
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta - Aro 16 - Houston - Lumi - Verde",
+     "price": 498.99
+    }
+   ],
+   "oracleSize": 13,
+   "note": "Pedido genérico de bicicleta; bicicletas convencionais de tamanhos diferentes são aceitáveis, mas acessórios e modelos ergométricos têm outro uso."
+  }
+ ]
+}
