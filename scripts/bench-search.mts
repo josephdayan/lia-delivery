@@ -52,6 +52,16 @@ function benchCep(): string {
 }
 
 type Req = { id: string; text: string; cat: string; origin: string };
+
+// Teto por etapa (08/10): duas rodadas ficaram presas para sempre num worker (1 pedido de 15 nunca
+// terminou, sem erro). Nenhuma etapa pode prender a rodada: estoura, vira "error"/"judge_failed"
+// com o id e a etapa no arquivo, e o resto segue.
+function withTimeout<T>(promise: Promise<T>, ms: number, stage: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`timeout ${stage} ${Math.round(ms / 1000)}s`)), ms);
+    promise.then((v) => { clearTimeout(timer); resolve(v); }, (e) => { clearTimeout(timer); reject(e); });
+  });
+}
 type Shown = { id: string; store: string; name: string; brand: string; price: number };
 
 async function main() {
@@ -86,16 +96,16 @@ async function main() {
         let error: string | undefined;
         const scope = { aiFailed: [] as string[] };
         try {
-          const found = await aiScope.run(scope, () => runShopperScoped(() => searchOptionsForBench(r.text, cep)));
+          const found = await withTimeout(aiScope.run(scope, () => runShopperScoped(() => searchOptionsForBench(r.text, cep))), 150_000, `busca ${r.id}`);
           const options = found.options;
           // "Mais próximo" (Lia avisa a diferença; o cliente escolhe): fora da conta de acerto, só listado.
           closest = found.closest.map((o) => ({ store: o.storeLabel ?? o.storeKey ?? "", name: o.name, price: o.unitPrice }));
           shown = options.map((o, i) => ({ id: `S${i + 1}`, store: o.storeLabel ?? o.storeKey ?? "", name: o.name, brand: o.brand ?? "", price: o.unitPrice, _sku: `${o.storeKey}:${o.sku}` } as Shown));
         } catch (e) { error = e instanceof Error ? e.message.slice(0, 160) : String(e); }
         const ms = Date.now() - t0;
-        const pool = (await oraclePool(r.text, stores, Number(process.env.BENCH_ORACLE_PER_STORE ?? 5))).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
+        const pool = (await withTimeout(oraclePool(r.text, stores, Number(process.env.BENCH_ORACLE_PER_STORE ?? 5)), 90_000, `oraculo ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return [] as Awaited<ReturnType<typeof oraclePool>>; })).map((p, i) => ({ ...p, jid: `O${i + 1}` }));
         const items = [...shown.map((s) => ({ id: s.id, store: s.store, name: s.name, brand: s.brand, price: s.price })), ...pool.map((p) => ({ id: p.jid, store: p.store, name: p.name, brand: p.brand, price: p.price }))];
-        const verdict = await judge({ request: r.text, items });
+        const verdict = await withTimeout(judge({ request: r.text, items }), 400_000, `juiz ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return null; });
         const v = verdict?.verdicts ?? {};
         const good = (id: string) => v[id] === "exact" || v[id] === "acceptable";
         const shownGood = shown.filter((s) => good(s.id));
@@ -105,7 +115,7 @@ async function main() {
         if (poolGood.length) {
           const { checkCandidatesLive, liveKey } = await import("../src/lib/live-availability");
           const probe = poolGood.slice(0, 6);
-          const live = await checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep);
+          const live = await withTimeout(checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep), 90_000, `estoque ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return { kept: probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })) } as Awaited<ReturnType<typeof checkCandidatesLive>>; });
           const alive = new Set(live.kept.map((c) => liveKey(c.storeKey, c.sku)));
           poolGood = probe.filter((p) => alive.has(liveKey(p.storeKey, p.sku)));
         }
