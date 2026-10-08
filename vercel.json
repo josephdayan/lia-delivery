@@ -16,5 +16,12 @@
       "path": "/api/cron/meta-templates",
       "schedule": "17 * * * *"
     }
-  ]
+  ],
+  "functions": {
+    "src/app/api/store-relay/route.ts": {
+      "regions": [
+        "gru1"
+      ]
+    }
+  }
 }
