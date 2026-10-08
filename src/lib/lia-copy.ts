@@ -1147,7 +1147,7 @@ export function vagueRequestAnswer(): string {
 
 // ---------- recomendação (08/10, plano-recomendacoes) ----------
 // O pedido entendido, só com o que a copy usa (sem importar o módulo da recomendação).
-export type RecommendCopyReq = { form: "need" | "product_judged"; need?: string; product?: string; symptom?: string; recipient?: string; criteria: readonly string[] };
+export type RecommendCopyReq = { form: "need" | "product_judged"; need?: string; product?: string; symptom?: string; recipient?: string; criteria: readonly string[]; constraints?: readonly string[] };
 
 const trimRec = (s: string | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
 const capFirst = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
@@ -1209,6 +1209,12 @@ export function recommendNoted(req: RecommendCopyReq): string {
 export function recommendNone(req: RecommendCopyReq, emptyShelfLabels: string[] = []): string {
   if (req.symptom) {
     return `Não achei remédio *sem receita* pra ${trimRec(req.symptom)} com entrega aí 😕 Se você souber o nome do remédio, me diz que eu procuro. Se não melhorar, procure um médico ou farmacêutico.`;
+  }
+  // Alergia (q6, 08/10): o nome do produto não prova ausência de traços — sem item com "sem X" escrito, a Lia diz isso.
+  const allergen = (req.constraints ?? []).map((c) => c.toLowerCase()).find((c) => /\b(amendoim|amendoins|castanhas?|nozes|amendoas?|camar[aã]o|frutos do mar|ovos?|soja)\b/.test(c));
+  if (allergen) {
+    const what = trimRec(allergen).replace(/^(sem|nada de|alergia a|alergia ao)\s+/i, "").replace(/\s*\(.*$/, "");
+    return `Com alergia a *${what}* eu só mostro o que traz *sem ${what}* escrito no nome, e não achei isso aí agora 😕 Se você me disser um produto que já conhece, eu procuro — e confira sempre o rótulo antes de comer.`;
   }
   const labels = emptyShelfLabels.map((l) => l.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase()).filter(Boolean).slice(0, 3);
   const what = labels.length ? labels.join(", ").replace(/, ([^,]*)$/, " e $1") : recommendLabel(req);

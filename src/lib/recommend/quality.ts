@@ -85,6 +85,9 @@ const VIOLATES: Record<DietKind, RegExp> = {
 // Natural com cobertura/recheio deixa de ser natural ("pipoca gourmet com cobertura de chocolate").
 const COATED_RE = /\b(cobert\w*|chocolate|caramel\w*|recheio|recheado|gourmet|doce de leite|leite condensado)\b/;
 
+// Prateleiras que cumprem por natureza uma restrição de alérgeno (sem processamento com traços).
+const ALLERGEN_SAFE_SHELF = /^(hortifruti\.(frutas|legumes|verduras)|bebidas\.(agua|agua_coco)|mercado\.(cafe|cha|arroz|feijao|acucar|sal)|carnes\.|casa\.|higiene\.|limpeza\.|beleza\.|pet\.|farmacia\.|bebe\.(fralda|lenco_umedecido|higiene_bebe))/;
+
 export type DietRule = { kind: DietKind };
 export type WordRule = { kind: "word"; word: string; family: RegExp; allow?: RegExp };
 // "sem remédio"/"não quero remédio" (corpus difícil h13/h28): nenhuma prateleira nem item de remédio.
@@ -161,7 +164,10 @@ export function parseConstraint(raw: string): ConstraintRuleQ | null {
   const word = m?.[1]?.replace(/^(o|a|os|as)\s+/, "").trim();
   if (!word || /^(sal|gordura|conservantes?|corante|pressa)$/.test(word)) return null;
   const fam = WORD_FAMILIES.find((f) => f.key.test(word));
-  if (fam) return { kind: "word", word, family: fam.family, ...(fam.allow ? { allow: fam.allow } : {}) };
+  if (fam) {
+    const label = new RegExp(`\\b(sem|zero|livre de|nao contem|free de) ${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+    return { kind: "word", word, family: fam.family, allow: fam.allow ?? label };
+  }
   return { kind: "word", word, family: wordStemRe(word), allow: new RegExp(`\\b(sem|zero|livre de) ${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) };
 }
 
@@ -174,6 +180,10 @@ export function violatesRule(textRaw: string, rule: ConstraintRuleQ, shelfId?: s
   if (rule.kind === "no_medicine") return false;
   if (rule.kind === "word") {
     if (rule.allow?.test(text)) return false;
+    // Alergia (placar q5: biscoito/salgadinho "sem amendoim" só pelo nome): o nome não prova a ausência de
+    // traços. Fora das prateleiras naturalmente livres (fruta, legume, água, carne, café…), só sai o que o
+    // próprio rótulo declara ("sem amendoim"); sem nada, a Lia diz que não consegue garantir.
+    if (shelfId && isAllergenRule(rule) && !ALLERGEN_SAFE_SHELF.test(shelfId)) return true;
     return rule.family.test(text);
   }
   const kind = rule.kind;
@@ -248,7 +258,7 @@ export function meetsAttributes(name: string, rules: readonly AttributeRule[]): 
 const PROCESSED_RE =
   /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa)\b/;
 const NOT_FOOD_RE =
-  /\b(formula infantil|fraldas?|pomada|shampoo|sabonete|hidratante|creme dental|desodorante|perfume|colonia|bepantol|aptanutri|aptamil|cafeteira|brinquedo|pelucia|livro|camiseta|vela|caneca|xicara|garrafa termica)\b/;
+  /\b(comprimidos?|capsulas?|medicamento|formula infantil|fraldas?|pomada|shampoo|sabonete|hidratante|creme dental|desodorante|perfume|colonia|bepantol|aptanutri|aptamil|cafeteira|brinquedo|pelucia|livro|camiseta|vela|caneca|xicara|garrafa termica)\b/;
 const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
   { shelf: /^hortifruti\.(frutas|legumes|verduras)$/, forbid: PROCESSED_RE },
   { shelf: /^mercado\.cafe$/, forbid: /\b(copo|caneca|xicara|cafeteira|filtro de papel|garrafa|porta|bombom|tablete|bolo|biscoito|chocolate)\b/ },
@@ -261,6 +271,7 @@ const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
   // Brinquedo só na prateleira de brinquedo/bebê/pet (placar q1: "Boneca Minnie" em acessórios de moda).
   { shelf: /^(?!brinquedo\.|bebe\.|pet\.|festa\.|livraria\.)/, forbid: /\b(boneca|bonecas|boneco|bonecos|brinquedo|brinquedos|pelucia|lego)\b/ },
   { shelf: /^bebe\.lenco_umedecido$/, forbid: /\b(nasal|nasais|nariz|intimo|intima|intimos|intimas)\b/ },
+  { shelf: /^snacks\.amendoim_castanhas$/, forbid: /\b(india|comprimidos?|capsulas?|varivax|extrato|suplemento|vitamina)\b/ },
   { shelf: /^hortifruti\.ovos$/, forbid: /\b(tempero|temperos|spices|casca|ovo de pascoa|chocolate|chocotone|po)\b/ },
   { shelf: /^farmacia\.antisseptico_cicatrizante$/, forbid: /\b(garganta|bucal|pastilha|pastilhas|anestesic\w*|spray bucal|cystex|urinari\w*|cistite)\b/ },
   { shelf: /^farmacia\.curativo$/, forbid: /\b(acne|acnes|espinha|espinhas|cravos?)\b/ },

@@ -20,6 +20,7 @@ import {
 import { constraintRules, defaultTableDeps, eligibleCandidates, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint } from "../src/lib/recommend/fallback";
 import { __setPlanShelvesForTests } from "../src/lib/recommend/ai";
 import { capPerStore, finalizeWhys, fitKitBudget, productTypeOnly, quickOnly } from "../src/lib/recommend/handle";
+import * as copy from "../src/lib/lia-copy";
 import { findRedFlag, findSymptom } from "../src/lib/recommend/tables";
 import { noteShopperCep, runShopperScoped, storesForShopper } from "../src/lib/store-areas";
 import type { ChoiceOption } from "../src/lib/conversation-types";
@@ -490,5 +491,37 @@ describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difí
     const plan = await planShelves(req({ text: "meu cachorro ta cheio de pulga", need: "pulga no cachorro", recipient: "cachorro" }));
     assert.ok(plan.picks.length && plan.picks.every((p) => p.shelfId.startsWith("pet.")));
     assert.ok(!plan.picks.some((p) => p.shelfId === "pet.brinquedo"));
+  });
+
+  it("q5: alergia — processado só passa com 'sem amendoim' no rótulo; fruta e água passam; 'sem adição de açúcar' não é zero açúcar", () => {
+    const a = parseConstraint("sem amendoim")!;
+    assert.equal(violatesRule("Salgadinho Queijo Nacho Doritos 32g", a, "snacks.salgadinho"), true);
+    assert.equal(violatesRule("Biscoito Água e Sal Adria 170g", a, "snacks.biscoito_salgado"), true);
+    assert.equal(violatesRule("Salgadinho Sem Amendoim Nutty 40g", a, "snacks.salgadinho"), false);
+    assert.equal(violatesRule("Maçã Turma da Mônica Pacote 1kg", a, "hortifruti.frutas"), false);
+    assert.equal(violatesRule("Paçoca Santa Helena 20g", a, "hortifruti.frutas"), true);
+    const z = parseConstraint("zero açúcar")!;
+    assert.equal(violatesRule("Iogurte de Ameixa Sem Adição de Açúcar Batavo Pense Zero 170g", z, "frios.iogurte"), true);
+    assert.equal(violatesRule("Refrigerante Coca-Cola Zero Açúcar 350ml", z, "bebidas.refrigerante"), false);
+  });
+
+  it("q6: castanha da Índia (remédio) fora do petisco; pulga só com 'pulga' no nome; bebê só com linha baby; alergia sem item = copy honesta", () => {
+    assert.equal(shelfSanityOk("snacks.amendoim_castanhas", "Castanha da Índia Varivax 30 comprimidos"), false);
+    assert.equal(shelfSanityOk("snacks.amendoim_castanhas", "Castanha de Caju Torrada 100g"), true);
+    const pulga = eligibleCandidates({
+      request: req({ need: "pulga no cachorro", text: "cachorro com pulga" }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("pet.higiene", "a", "Shampoo Cloresten Antifúngico"), cand("pet.higiene", "b", "Shampoo Antipulgas Pet Clean"), cand("pet.coleira", "c", "Coleira para Cachorro")]
+    });
+    assert.deepEqual(pulga.map((c) => c.option.sku).sort(), ["b", "c"]);
+    const baby = productTypeOnly(req({ form: "product_judged", text: "repelente pra bebe", product: "repelente", recipient: "bebê" }), [
+      cand("beleza.protetor_solar", "1", "Repelente Off Baby Gel"),
+      cand("beleza.protetor_solar", "2", "Repelente SBP Baby Bebê"),
+      cand("beleza.protetor_solar", "3", "Repelente Spray Above Protect")
+    ]);
+    assert.deepEqual(baby.map((c) => c.option.sku), ["1", "2"]);
+    const none = copy.recommendNone({ form: "product_judged", product: "salgadinho", criteria: ["good"], constraints: ["sem amendoim"] });
+    assert.match(none, /alergia a \*amendoim\*/);
+    assert.match(none, /confira sempre o rótulo/);
   });
 });

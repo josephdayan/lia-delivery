@@ -690,7 +690,7 @@ export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
   }
   // Preço pedido ("nada caro", "barato"): item muito acima do mais barato dos candidatos sai (placar q3: perfume de
   // R$ 899 numa lembrancinha "nada cara"). Só quando sobra algum.
-  if (input.request.criteria[0] === "cheap" && input.request.form === "need" && roomy.length > 1) {
+  if (input.request.criteria.includes("cheap") && input.request.form === "need" && roomy.length > 1) {
     const low = Math.min(...roomy.map(price));
     const cheapish = roomy.filter((c) => price(c) <= Math.max(low * 6, 40));
     if (cheapish.length) roomy = cheapish;
@@ -698,7 +698,15 @@ export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
   return finishEligible(roomy, input);
 }
 
-function finishEligible(ok: ShelfCandidate[], input: FitnessInput): ShelfCandidate[] {
+function finishEligible(okIn: ShelfCandidate[], input: FitnessInput): ShelfCandidate[] {
+  let ok = okIn;
+  // Pulga/carrapato (placar difícil q5: shampoo antifúngico no lugar do antipulgas): na prateleira que tem
+  // item que diz "pulga"/"carrapato" no nome, só ele fica.
+  if (/\bpulga/.test(normRec(input.request.need))) {
+    const says = (c: ShelfCandidate) => /\b(pulgas?|antipulgas?|carrapatos?|anticarrapatos?)\b/.test(normRec(c.option.name));
+    const withSay = new Set(ok.filter(says).map((c) => c.shelfId));
+    ok = ok.filter((c) => !withSay.has(c.shelfId) || says(c));
+  }
   // Produto julgado com atributo dito ("pra cabelo cacheado", "de coador", "dente sensível"): quando algum
   // candidato cumpre no nome, só eles ficam (o juiz do placar reprovava máscara/clareadora/copo).
   if (input.request.form === "product_judged") {

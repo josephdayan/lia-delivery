@@ -291,6 +291,8 @@ export function productTypeOnly(req: RecommendRequest, candidates: ShelfCandidat
   if (!/\b(kit|kits|combo|conjunto)\b/.test(ask)) keep((c) => !/\b(kit|kits|combo|conjunto)\b/.test(normRec(c.option.name)));
   // Repelente/produto pra BEBÊ (placar difícil q1): "Off Kids" é de criança maior — linha baby/bebê primeiro.
   if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask)) keep((c) => !/\bkids?\b/.test(normRec(c.option.name)));
+  // Pedido de BEBÊ: com 2+ itens que dizem baby/bebê no nome, só eles (Above Protect não é de bebê).
+  if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask) && out.filter((c) => /\b(baby|bebe|bebes)\b/.test(normRec(c.option.name))).length >= 2) keep((c) => /\b(baby|bebe|bebes)\b/.test(normRec(c.option.name)));
   if (!KID_RE.test(ask)) keep((c) => !/\b(infantil|kids?|baby|bebe|junior|teen)\b/.test(normRec(c.option.name)));
   return out;
 }
@@ -352,6 +354,8 @@ export function capPerStore(cards: RecommendCard[], input: Parameters<typeof jud
 // ("linha pra dente sensível"), "o mais em conta dos N" só no card mais barato quando o critério é preço,
 // ou o papel da prateleira ("pra assar", "pronto pra comer"). Popularidade, liderança e prazo prometido
 // saem (o card mostra o prazo; o juiz do placar marcava "o mais vendido" como falso).
+// Fruta, água, carne…: não levam a ressalva de traços (é natural, não processado).
+const NATURAL_SHELF_RE = /^(hortifruti\.|bebidas\.(agua|agua_coco)$|carnes\.|mercado\.(cafe|cha|arroz|feijao)$)/;
 export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan: ShelfPlan, memory?: LoadedMemory): RecommendCard[] {
   const rules = constraintRules(req.constraints, memory);
   const attrs = req.form === "product_judged" ? attributeRules(req.constraints) : [];
@@ -367,7 +371,7 @@ export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan
     const fromPlan = whyIsFactual(pickWhy) ? pickWhy! : "";
     let why: string;
     if (card.medicine === "mip") why = own || fromPlan;
-    else if (allergenWord) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
+    else if (allergenWord && !NATURAL_SHELF_RE.test(card.shelfId)) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
     else if (cheap && keyOf(card) === keyOf(cheap)) why = `o mais em conta dos ${cards.length}`;
     else why = dietProofWhy(card.name, rules) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? (own || fromPlan);
     return { ...card, why };
