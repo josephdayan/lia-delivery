@@ -41,7 +41,7 @@ Ainda falha no conjunto alvo (r5): bicicleta (só a infantil existe; o juiz a re
 mamão papaya (só formosa → "mais perto"), garrafa térmica esportiva e chave de fenda (mais perto), martelo e
 cabo lightning (não confirmados no CEP), presente para criança de 5 anos (é a frente "recomendação por
 intenção"), e variantes depois do básico (o corte de 1 variante mira isso, sem medição).
-Suíte `npm run test:local`: ver commit (verde em 1172/1172 antes do último corte).
+Suíte `NODE_USE_ENV_PROXY=1 npm run test:local`: 1172/1172 no código final (`9961611`).
 
 ## 08/10/2026 — Placar r4: medido de verdade (juiz gpt-6-luna), 3 consertos de busca e 3 regras de remédio do dono
 
