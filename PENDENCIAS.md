@@ -1,5 +1,11 @@
 ## 08/10/2026 — Modelo novo de preço/nota (service_fee)
 
+- [ ] **Recomendação (08/10):** revisar com o advogado sanitário a tabela sintoma → remédio isento (`src/lib/recommend/tables.ts`,
+  bloco "REVISÃO PENDENTE": loperamida, aciclovir creme, melatonina, cetoconazol creme, descongestionantes) — a recomendação
+  de remédio está LIGADA (`LIA_RECOMMEND_MEDICINE`), desligar na Vercel se preferir esperar a revisão.
+- [ ] **Recomendação (08/10):** testar no celular do dono "tô com muita fome, quero algo doce", "me recomenda um chocolate bom",
+  "tô com dor de barriga", "presente pra minha mãe até 100"; conferir cards com motivo, "outras", "sem chocolate" e a oferta
+  de complemento no "só isso". Decidir se `RecommendLog.phone` vira hash como o SearchMiss.
 - [ ] Deploy do main. Não precisa de env nova (o padrão já é `service_fee`); `LIA_PRICING_MODE=markup` na Vercel
   volta ao antigo sem deploy de código.
 - [ ] 1º pedido real de loja comum (não farmácia) com CPF cadastrado: conferir que o checkout VTEX aceita o perfil

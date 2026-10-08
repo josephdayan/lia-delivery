@@ -96,7 +96,7 @@ Revisão de código por sub-agente achou 9 pontos (2 de segurança ANVISA na por
 - **Remédio por sintoma** ("dor de barriga"): hoje a lista de sintomas é fixa e inconsistente ("dor de cabeça" recebe
   "não indico, é com o farmacêutico"; "dor de barriga" cai na busca e a IA indica). Manter "não indico" e fechar o
   furo, ou indicar isento por classe com aviso?
-- **Próxima grande coisa — recomendação por intenção/ocasião** ("quero algo doce", "café da manhã pra 4",
+- **FEITO em 08/10 (noite), ver AGENTS.md — recomendação por intenção/ocasião** ("quero algo doce", "café da manhã pra 4",
   "churrasco"): camada intenção → 3–4 produtos concretos (reaproveita a tela de lista e o funil de verdade: catálogo,
   estoque no CEP, rerank), uma pergunta só quando muda tudo, memória do cliente ("o de sempre"), placar próprio de
   pedidos vagos com juiz. Estimativa: 1 dia a camada 1 com placar, +1 dia memória e pergunta.

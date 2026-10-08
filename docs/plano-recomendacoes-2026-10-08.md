@@ -1,5 +1,9 @@
 # Plano: a Lia recomenda (pedido por necessidade → produtos concretos)
 
+> **Status (08/10, noite): IMPLEMENTADO nas 4 fases** (cadeia completa, memória, remédio por sintoma com alertas,
+> complemento no fechamento, painel `/ops/recomendacoes`, placar próprio). Registro vigente no topo de `AGENTS.md`.
+> Pendências do dono na seção 7.
+
 _Escrito em 08/10/2026 a pedido do dono. 2ª rodada no mesmo dia, depois da orientação dele:
 "primeiro ela precisa reconhecer que pediram uma recomendação; depois saber procurar nos
 nossos produtos pela inteligência dela, não pelo nome; pensar no macro, pra funcionar pra

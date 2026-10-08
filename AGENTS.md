@@ -1,3 +1,30 @@
+## 08/10/2026 (noite) — Recomendação por necessidade/ocasião/sintoma ("quero algo doce", "dor de barriga") — LIGADA
+
+Decisão do dono (08/10): a Lia recomenda. Plano e arquitetura: `docs/plano-recomendacoes-2026-10-08.md`. Cadeia de 5 etapas,
+cada uma com fallback sem IA e teste próprio (`src/lib/recommend/`):
+- **ENTENDER** — forma do pedido: produto (busca de sempre), produto+julgamento ("me recomenda um chocolate bom") ou
+  necessidade ("tô com fome", "algo doce", "churrasco pra 8", "presente pra mãe", "dor de barriga"). Ação `recommend` no
+  gerente de diálogo e no pré-cadastro + regras em `detect.ts` (tabela-ouro `tests/recommend-golden.test.ts`, 234 frases,
+  **zero produto nomeado virando recomendação** — regra: na dúvida, NÃO recomenda).
+- **MAPEAR** — `shelf-map.ts` = 241 prateleiras GERADAS dos catálogos (`scripts/build-shelf-map.mts`; regenerar ao somar loja);
+  `tables.ts` = necessidades/ocasiões/presentes, sintoma → classe ISENTA em ordem de indicação, sinais de alerta. A IA
+  (gpt-6-luna) escolhe prateleiras do mapa; fallback = tabelas. Sintoma: só classes da tabela; necessidade sem sintoma: nunca remédio.
+- **BUSCAR** — `gatherShelfCandidates` (sem Mercado Livre, só lojas que entregam no CEP, remédio só em prateleira `mip`) +
+  conferência ao vivo de sempre; busca VTEX por categoria disponível (`liveSearchByCategory`).
+- **JULGAR** — 1 card por prateleira pelo critério (rápido = prazo real; bom = marca/popularidade, nunca o mais barato;
+  barato; saudável; sintoma = classe mais indicada e apresentação básica), motivo factual no card, até 4 cards.
+- **APRENDER** — `RecommendLog` + `/ops/recomendacoes` (o que pedem, o que converte, prateleiras vazias = fila de revisão do mapa).
+Regras de segurança (revisão adversarial 08/10): emergência (peito, falta de ar, sangue, desmaio…) responde SAMU/PS em qualquer
+forma e ANTES do CEP; bebê/criança/idoso/gestante/comorbidade → médico/farmacêutico, compra só se o cliente nomear o isento;
+pet doente → veterinário, nunca remédio humano; ressaca sem AINE/Engov; loperamida só em "diarreia". Copy: `recommendRedFlag(reason, kind)`.
+Memória (`memory.ts`, `User.preferences`): só o que o cliente DISSE (restrições, pet, casa) + marcas repetidas dos pedidos pagos;
+"esquece minhas preferências" apaga. Complemento no fechamento (`complement.ts`, 1 oferta sim/não por pedido, tabela curada,
+nunca com remédio). Placar: `scripts/bench-recommend.mts` (80 pedidos, juiz luna) e cenários c102–c113.
+Flags: `LIA_RECOMMEND` (padrão ligado), `LIA_RECOMMEND_MEDICINE` (ligado; exige `LIA_MEDICINE_MIP`), `LIA_RECOMMEND_AI`,
+`LIA_RECOMMEND_COMPLEMENT` (ligado em prod; a suíte antiga roda desligada), `LIA_RECOMMEND_MAX_CARDS` (4).
+**Pendente do dono:** revisão da tabela de sintomas com o advogado sanitário (loperamida, aciclovir, melatonina, cetoconazol,
+descongestionantes — bloco "REVISÃO PENDENTE" no topo de `tables.ts`); `RecommendLog.phone` em texto puro (SearchMiss usa hash).
+
 ## 08/10/2026 — Nomes: projeto Vercel `lia-delivery` (repositório GitHub também vai para `lia-delivery`)
 
 O projeto na Vercel foi renomeado de `shopping-agent-mvp` para **`lia-delivery`** (painel:
