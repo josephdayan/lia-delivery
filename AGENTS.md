@@ -1,3 +1,12 @@
+## 08/10/2026 — Nomes: projeto Vercel `lia-delivery` (repositório GitHub também vai para `lia-delivery`)
+
+O projeto na Vercel foi renomeado de `shopping-agent-mvp` para **`lia-delivery`** (painel:
+vercel.com/josephdayans-projects/lia-delivery). Endereços que respondem: **liadelivery.com.br** (o oficial;
+use este em todo link público — fotos da Petz e volta do Mercado Pago já usam), `lia-delivery.vercel.app` e o
+antigo `shopping-agent-mvp.vercel.app` (mantido como reserva). O repositório no GitHub será renomeado para
+`josephdayan/lia-delivery`: o GitHub redireciona o nome antigo; em sessões novas do Claude, escolha o repositório
+pelo nome novo; num clone local, `git remote set-url origin https://github.com/josephdayan/lia-delivery.git`.
+
 ## REGRA VIGENTE — Modelo: SÓ `gpt-6-luna`. NUNCA `gpt-6-sol` (dono, repetido em 08/10)
 
 Lia, juiz dos placares, cliente simulado, visão, comprador — tudo `gpt-6-luna`. Sol custa ~20× e o dono proibiu;

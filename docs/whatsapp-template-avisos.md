@@ -84,7 +84,7 @@ Se vier **Rejeitado**, abrir o motivo:
 
 ## Passo 6 — Ligar na Vercel
 
-1. Abrir `https://vercel.com/josephdayans-projects/shopping-agent-mvp/settings/environment-variables`.
+1. Abrir `https://vercel.com/josephdayans-projects/lia-delivery/settings/environment-variables`.
 2. **Add New**: Key `LIA_TEMPLATE_ORDER_UPDATE`, Value `pedido_atualizacao`,
    ambiente **Production** (marcar Preview também, se quiser testar em preview). Salvar.
 3. Só se o idioma escolhido **não** foi Português (Brasil): adicionar `LIA_TEMPLATE_LANG` com o
