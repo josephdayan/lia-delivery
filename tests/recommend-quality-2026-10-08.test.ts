@@ -524,4 +524,20 @@ describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difí
     assert.match(none, /alergia a \*amendoim\*/);
     assert.match(none, /confira sempre o rótulo/);
   });
+
+  it("q8: repelente de bebê não vira protetor solar bebê; criança de 10 anos não recebe livro magnético", () => {
+    const baby = productTypeOnly(req({ form: "product_judged", text: "melhor repelente pra bebe", product: "repelente", recipient: "bebê" }), [
+      cand("beleza.protetor_solar", "1", "Protetor Solar Bebê Granado"),
+      cand("beleza.protetor_solar", "2", "Protetor Solar Granado Bebê"),
+      cand("beleza.protetor_solar", "3", "Repelente Spray Above Protect"),
+      cand("beleza.protetor_solar", "4", "Repelente Off Baby Gel")
+    ]);
+    assert.deepEqual(baby.map((c) => c.option.sku), ["3", "4"]);
+    const kid = eligibleCandidates({
+      request: req({ text: "presente pro meu sobrinho de 10 anos", recipient: "sobrinho de 10 anos" }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("brinquedo.infantil", "a", "Livro Magnético Infantil Princesas"), cand("brinquedo.carrinho", "b", "Carrinho Hot Wheels")]
+    });
+    assert.deepEqual(kid.map((c) => c.option.sku), ["b"]);
+  });
 });

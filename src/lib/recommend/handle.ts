@@ -292,7 +292,11 @@ export function productTypeOnly(req: RecommendRequest, candidates: ShelfCandidat
   // Repelente/produto pra BEBÊ (placar difícil q1): "Off Kids" é de criança maior — linha baby/bebê primeiro.
   if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask)) keep((c) => !/\bkids?\b/.test(normRec(c.option.name)));
   // Pedido de BEBÊ: com 2+ itens que dizem baby/bebê no nome, só eles (Above Protect não é de bebê).
-  if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask) && out.filter((c) => /\b(baby|bebe|bebes)\b/.test(normRec(c.option.name))).length >= 2) keep((c) => /\b(baby|bebe|bebes)\b/.test(normRec(c.option.name)));
+  // (o substantivo do produto pedido tem de estar no nome: "repelente" não vira "protetor solar bebê")
+  const headWord = normRec(req.product ?? "").split(" ").find((w) => w.length >= 4 && !/^(melhor|qual|bom|boa|pra|para|bebe|bebes)$/.test(w));
+  if (headWord) keep((c) => normRec(c.option.name).includes(headWord.slice(0, 6)));
+  const babyOk = (c: ShelfCandidate) => /\b(baby|bebe|bebes)\b/.test(normRec(c.option.name)) && (!headWord || normRec(c.option.name).includes(headWord.slice(0, 6)));
+  if (/\b(bebe|bebes|recem nascid\w*|nenem)\b/.test(ask) && out.filter(babyOk).length >= 2) keep(babyOk);
   if (!KID_RE.test(ask)) keep((c) => !/\b(infantil|kids?|baby|bebe|junior|teen)\b/.test(normRec(c.option.name)));
   return out;
 }

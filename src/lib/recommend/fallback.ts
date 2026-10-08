@@ -700,6 +700,13 @@ export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
 
 function finishEligible(okIn: ShelfCandidate[], input: FitnessInput): ShelfCandidate[] {
   let ok = okIn;
+  // Criança de 6+ anos: brinquedo de primeira infância (livro magnético, pelúcia de bebê) sai (placar q7: livro
+  // magnético de princesas pro sobrinho de 10 anos).
+  const age = normRec(`${input.request.recipient ?? ""} ${input.request.text}`).match(/\b(\d{1,2}) anos\b/);
+  if (age && Number(age[1]) >= 6 && Number(age[1]) < 13) {
+    const left = ok.filter((c) => !/\b(magnetic\w*|primeira infancia|chocalho|mordedor|pelucia de bebe|bebe)\b/.test(normRec(c.option.name)));
+    if (left.length) ok = left;
+  }
   // Pulga/carrapato (placar difícil q5: shampoo antifúngico no lugar do antipulgas): na prateleira que tem
   // item que diz "pulga"/"carrapato" no nome, só ele fica.
   if (/\bpulga/.test(normRec(input.request.need))) {
