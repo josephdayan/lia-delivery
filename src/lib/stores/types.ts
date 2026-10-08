@@ -417,29 +417,96 @@ const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|lts|litros?|
 function joinMeasures(query: string): string {
   return query.replace(/(\d+(?:[.,]\d+)?)\s+(litros?|lts?|quilos?|kilos?|kg|gramas?|ml|mg|g|l)\b/gi, "$1$2");
 }
+// Fatos da CONSULTA memorizados (08/10/2026, placar): `scoreQuery` roda uma vez por item do catálogo
+// (~80 mil por consulta) e recalculava tokens, negações e normalizações da MESMA consulta em cada um.
+// Mapa limitado (zera ao encher); os arrays são só leitura.
+type QueryFacts = { tokens: string[]; negs: string[]; norm: string; sizeNorm: string; words: string[] };
+const QUERY_MEMO_MAX = 512;
+const queryFactsMemo = new Map<string, QueryFacts>();
+function queryFacts(query: string): QueryFacts {
+  let facts = queryFactsMemo.get(query);
+  if (!facts) {
+    if (queryFactsMemo.size >= QUERY_MEMO_MAX) queryFactsMemo.clear();
+    facts = { tokens: queryTokens(query), negs: negatedWords(query), norm: normalizeText(query), sizeNorm: normSize(query), words: words(query) };
+    queryFactsMemo.set(query, facts);
+  }
+  return facts;
+}
+const scoreQueriesMemo = new Map<string, { query: string; aliases: string[] }>();
+function scoreQueries(rawQuery: string): { query: string; aliases: string[] } {
+  let entry = scoreQueriesMemo.get(rawQuery);
+  if (!entry) {
+    if (scoreQueriesMemo.size >= QUERY_MEMO_MAX) scoreQueriesMemo.clear();
+    const query = joinMeasures(rawQuery);
+    entry = { query, aliases: queryAliases(query) };
+    scoreQueriesMemo.set(rawQuery, entry);
+  }
+  return entry;
+}
+
 export function scoreCatalogMatch(rawQuery: string, item: CatalogItem): number {
-  const query = joinMeasures(rawQuery);
+  const { query, aliases } = scoreQueries(rawQuery);
   const own = scoreQuery(query, item);
-  const aliases = queryAliases(query);
   return aliases.length ? Math.max(own, ...aliases.map((alias) => scoreQuery(alias, item))) : own;
 }
 
-function scoreQuery(query: string, item: CatalogItem): number {
-  const tokens = queryTokens(query);
-  if (!tokens.length) return 0;
+// Texto do item já normalizado, memorizado por objeto (08/10/2026, placar): `rankCatalog` varre ~80 mil
+// itens por consulta e normalizar nome/marca/categoria a cada consulta era metade da CPU da busca
+// (perfil: normalizeText + words ≈ 3,5 s de 7,5 s). O memo confere nome/marca/categoria, então item
+// reescrito no lugar nunca usa texto velho. Os arrays são só leitura.
+type ItemText = {
+  name: string;
+  brand: string;
+  category: string;
+  nameNorm: string;
+  nameWords: string[];
+  // nome sem as palavras negadas ("Sem Perfume", "Zero Açúcar") — ver scoreQuery
+  nameWordsNoNeg: string[];
+  brandWords: string[];
+  categoryWords: string[];
+  categoryNorm: string;
+};
+const itemTextMemo = new WeakMap<CatalogItem, ItemText>();
+function itemText(item: CatalogItem): ItemText {
+  const brand = item.brand ?? "";
+  const category = item.category ?? "";
+  const memo = itemTextMemo.get(item);
+  if (memo && memo.name === item.name && memo.brand === brand && memo.category === category) return memo;
   const nameNorm = normalizeText(item.name);
+  const nameNegated = new Set([...nameNorm.matchAll(/\b(?:sem|zero)\s+([a-z]\S*)/g)].map((m) => m[1]));
+  const nameWords = words(item.name);
+  const text: ItemText = {
+    name: item.name,
+    brand,
+    category,
+    nameNorm,
+    nameWords,
+    nameWordsNoNeg: nameNegated.size ? nameWords.filter((w) => !nameNegated.has(w)) : nameWords,
+    brandWords: words(brand),
+    categoryWords: words(category),
+    categoryNorm: normalizeText(category)
+  };
+  itemTextMemo.set(item, text);
+  return text;
+}
+
+function scoreQuery(query: string, item: CatalogItem): number {
+  const q = queryFacts(query);
+  const tokens = q.tokens;
+  if (!tokens.length) return 0;
+  const text = itemText(item);
+  const nameNorm = text.nameNorm;
   // "Sem Perfume"/"Zero Açúcar" no NOME: a palavra negada não é o produto — pedir
   // "perfume" jamais deve trazer "Antitranspirante Sem Perfume". Ela sai do match
   // de score (attrMatchesItem continua vendo o nome inteiro pra "sem lactose").
   // ("zero 2 litros" não nega o "2" — só palavra, nunca número/tamanho)
-  const nameNegated = new Set([...nameNorm.matchAll(/\b(?:sem|zero)\s+([a-z]\S*)/g)].map((m) => m[1]));
-  const nameWords = words(item.name).filter((w) => !nameNegated.has(w));
-  const brandWords = words(item.brand ?? "");
-  const categoryWords = words(item.category ?? "");
+  const nameWords = text.nameWordsNoNeg;
+  const brandWords = text.brandWords;
+  const categoryWords = text.categoryWords;
 
   // "café SEM açúcar": açúcar é exclusão. Item cujo nome carrega a palavra negada só
   // sobrevive se for a versão "sem X" de verdade.
-  const negs = negatedWords(query);
+  const negs = q.negs;
   const negTokens = new Set(negs);
   const effTokens = tokens.filter((t) => !negTokens.has(t));
   if (!effTokens.length) return 0;
@@ -455,7 +522,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // Embalagem nunca é o presente (06/10, A7: "presente pra minha mãe até R$100" → "Sacola
   // Presenteável P" de R$5,49). Pedido de presente só traz sacola/papel/cartão-presente quando
   // a pessoa pediu a embalagem.
-  const queryNormEarly = normalizeText(query);
+  const queryNormEarly = q.norm;
   if (/\bpresentes?\b/.test(queryNormEarly) && GIFT_WRAP_HEAD_RE.test(nameNorm) && !GIFT_WRAP_ASK_RE.test(queryNormEarly)) return 0;
 
   // Species guard: a dog request must NEVER surface cat food (or vice versa).
@@ -501,7 +568,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
 
   // Remédio (06/10, A8): a DOSE pedida é identidade — "ibuprofeno 600mg" nunca vira o de
   // 100mg/ml. Item de remédio que declara dose e nenhuma bate sai; a mesma dose sobe.
-  const doseAsks = [...normalizeText(query).matchAll(/(\d+(?:[.,]\d+)?)\s*(mg|mcg)\b/g)].map((m) => `${m[1]}${m[2]}`);
+  const doseAsks = [...q.norm.matchAll(/(\d+(?:[.,]\d+)?)\s*(mg|mcg)\b/g)].map((m) => `${m[1]}${m[2]}`);
   if (doseAsks.length && item.medicine) {
     const doses = new Set([...nameNorm.matchAll(/(\d+(?:[.,]\d+)?)\s*(mg|mcg)\b/g)].map((m) => `${m[1]}${m[2]}`));
     if (doses.size && !doseAsks.some((d) => doses.has(d))) return 0;
@@ -512,7 +579,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // certo sobe; item com OUTRO tamanho explícito perde força.
   // normSize (não normalizeText): "1,5l" continua 1,5 — normalizeText apagava a vírgula e o
   // pedido virava "5l" (06/10, A9: "água mineral 1,5l" trazia galão de 5 L).
-  const sizeAsks = [...normSize(query).matchAll(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|lt|litros?)\b/g)];
+  const sizeAsks = [...q.sizeNorm.matchAll(/(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l|lt|litros?)\b/g)];
   for (const m of sizeAsks) {
     const attr = `${m[1]}${m[2].replace(/litros?|lts?$/, "l")}`;
     if (attrMatchesItem(attr, item)) score += 3;
@@ -523,7 +590,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // cápsulas") é identidade (06/10, tio Semy pediu o tubo com 4 bolas e veio o de 3): item
   // que declara OUTRA contagem do mesmo substantivo não é o produto; a mesma contagem sobe.
   // Fora daqui "unidades"/"latas", que o cliente também usa como quantidade a comprar.
-  const countAsks = [...normalizeText(query).matchAll(PACK_COUNT_RE)].map((m) => ({ n: Number(m[1]), unit: packUnit(m[2]) }));
+  const countAsks = [...q.norm.matchAll(PACK_COUNT_RE)].map((m) => ({ n: Number(m[1]), unit: packUnit(m[2]) }));
   if (countAsks.length) {
     const declared = [...nameNorm.matchAll(PACK_COUNT_RE)].map((m) => ({ n: Number(m[1]), unit: packUnit(m[2]) }));
     for (const ask of countAsks) {
@@ -606,7 +673,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
     const wantsWet = effTokens.some((token) => WET_WORDS.has(token));
     // (PET_ANY_RE cobre "para Cães e Gatos", que deixa itemAnimal ambíguo)
     if ((itemAnimal || PET_ANY_RE.test(nameNorm)) && nameWords.some((word) => WET_WORDS.has(word)) && !wantsWet) score -= 2;
-    const queryNorm = normalizeText(query);
+    const queryNorm = q.norm;
     const wantsProcessed = effTokens.some((t) => PROCESSED_VARIANTS.has(t)) || PROCESSED_BIGRAM_RE.test(queryNorm);
     // "em pó" é a forma BÁSICA do achocolatado (Nescau/Toddy) — só é variante
     // processada nos outros produtos ("leite em pó" continua perdendo pro leite).
@@ -619,7 +686,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // pedir "ração" não pode punir toda ração por ela dizer "Cães" no nome.
     // 06/10 (M5): a CATEGORIA da loja também diz que é pet ("Fralda … para Macho Petix" está em
     // "cachorro higiene e limpeza") — "fralda" mostrava fralda de cachorro.
-    const petHay = `${nameNorm} ${normalizeText(item.category ?? "")}`;
+    const petHay = `${nameNorm} ${text.categoryNorm}`;
     if (!queryAnimal && PET_SPECIES_RE.test(petHay) && !PET_INTRINSIC_RE.test(queryNorm)) score -= 3;
     // Variante de PÚBLICO na fralda (06/10, M5): "fralda"/"fralda XG" é a infantil; a geriátrica
     // só quando pedida (vinham 3 Bigfral adulto para "fralda XG").
@@ -652,7 +719,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
     if (wordEff.length === 1) {
       const asked = new Set(effTokens);
       const unrequested = [...nameNorm.matchAll(/\bde\s+([a-z]{3,})\b/g)].filter(
-        (m) => !asked.has(m[1]) && !words(query).includes(m[1])
+        (m) => !asked.has(m[1]) && !q.words.includes(m[1])
       );
       if (unrequested.length) score -= 2;
     }
@@ -700,9 +767,10 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   }
   if (!wordTokens.length) return false;
 
-  const nameWords = words(item.name);
-  const brandWords = words(item.brand ?? "");
-  const categoryWords = words(item.category ?? "");
+  const text = itemText(item);
+  const nameWords = text.nameWords;
+  const brandWords = text.brandWords;
+  const categoryWords = text.categoryWords;
   const nameCompounds = new Set(queryTokens(item.name));
   const isCovered = (token: string) =>
     nameCompounds.has(token) ||
@@ -724,6 +792,113 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
     !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
   if (specMissing) return false;
   return wordTokens.length <= 2 || opts?.allTokens ? missing === 0 : missing <= 1;
+}
+
+// ---------- Piso da PRATELEIRA pelo substantivo-cabeça (08/10/2026, placar da recomendação) ----------
+// O piso da recomendação usava `conciergeMatchIsStrong` com a consulta DECORADA ("bolo pronto",
+// "sanduiche pronto", "prato pronto congelado"), que exige todas as palavras: "Bolo de Chocolate Ana
+// Maria" caía (não diz "pronto") e a prateleira ficava vazia — o cliente via panetone de farmácia como
+// único "bolo". Aqui a régua é o SUBSTANTIVO-CABEÇA da consulta (a 1ª palavra de conteúdo: "bolo",
+// "sanduiche", "lasanha"), que precisa ser a cabeça do NOME (posição de título), e as demais palavras
+// de conteúdo precisam estar no item como no piso do concierge — menos as palavras de ESTADO
+// ("pronto", "congelado"), que nome de produto quase nunca carrega. Posição de título:
+// - entre as 3 primeiras palavras do nome, sem preposição antes ("Pão DE Queijo" não é queijo) e sem
+//   outro substantivo de categoria antes ("Esmalte Dailus Bolo de Chocolate" é esmalte, não bolo);
+// - ou a 1ª palavra que não é da marca; ou a própria marca ("doritos" → "Salgadinho Doritos");
+// - ou substantivo de categoria de beleza em qualquer posição (como no ranking: "Natura Kaiak
+//   Feminino Desodorante Colônia" é perfume).
+// Consulta de 2+ palavras também passa quando TODAS estão no item e qualquer uma está em posição de
+// título ("batata chips" × "Chips de Batata Pringles"). Diminutivo conta como o mesmo substantivo, no
+// mesmo gênero ("bolinho" = bolo, "salgadinho" = salgado; "bolinha" não é bolo).
+// As guardas duras do ranking continuam valendo (negação "sem X", embalagem de presente, espécie,
+// produto humano × pet) — ver `hardExclusion`.
+const STATE_WORDS = new Set(["pronto", "pronta", "prontos", "prontas", "congelado", "congelada", "congelados", "congeladas", "refrigerado", "refrigerada", "refrigerados", "refrigeradas", "gelado", "gelada", "gelados", "geladas"]);
+const HEAD_MARKERS = new Set(["com", "de", "da", "do", "das", "dos", "sem", "sabor", "para", "pra", "em", "tipo", "c", "e"]);
+const DIMINUTIVE_RE = /^(.{3,}?)z?inh([oa])s?$/;
+
+function diminutiveMatch(a: string, b: string): boolean {
+  const base = (word: string) => {
+    const plain = singularPt(word);
+    return /[oa]$/.test(plain) ? { stem: plain.slice(0, -1), gender: plain.slice(-1) } : null;
+  };
+  const check = (dim: string, other: string) => {
+    const m = DIMINUTIVE_RE.exec(dim);
+    const b2 = base(other);
+    return Boolean(m && b2 && m[1] === b2.stem && m[2] === b2.gender);
+  };
+  return check(a, b) || check(b, a);
+}
+
+function headNounMatch(token: string, word: string): boolean {
+  return tokenMatchesWordSyn(token, word) || diminutiveMatch(token, word);
+}
+
+// Guardas duras do ranking (espelham as de `scoreQuery`): o item nunca serve a esta consulta.
+function hardExclusion(query: string, item: CatalogItem): boolean {
+  const q = queryFacts(query);
+  const text = itemText(item);
+  const negs = new Set(q.negs);
+  const effTokens = q.tokens.filter((t) => !negs.has(t));
+  for (const neg of negs) {
+    if (new RegExp(`\\b${neg}\\b`).test(text.nameNorm) && !new RegExp(`\\b(sem|zero)\\s+${neg}\\b`).test(text.nameNorm)) return true;
+  }
+  if (/\bpresentes?\b/.test(q.norm) && GIFT_WRAP_HEAD_RE.test(text.nameNorm) && !GIFT_WRAP_ASK_RE.test(q.norm)) return true;
+  const queryAnimal = animalOf(effTokens);
+  const itemAnimal = animalOf(text.nameWordsNoNeg, true);
+  if (queryAnimal && itemAnimal && queryAnimal !== itemAnimal) return true;
+  return !queryAnimal && PET_ANY_RE.test(text.nameNorm) && effTokens.some((t) => HUMAN_PRODUCT_WORDS.has(t));
+}
+
+// Palavras de CONTEÚDO da consulta (sem estado, negação, medida, número; público só em brinquedo/presente).
+export function shelfContentWords(query: string): string[] {
+  const q = queryFacts(joinMeasures(query));
+  const negs = new Set(q.negs);
+  let content = q.tokens.filter((t) => !negs.has(t) && !STATE_WORDS.has(t) && !MEASURE_TOKEN_RE.test(t) && !/^\d+$/.test(t) && !UNIT_WORDS.has(t) && t.length > 1);
+  if (/\b(brinquedos?|presentes?)\b/.test(q.norm)) {
+    const core = content.filter((t) => !AUDIENCE_WORDS.has(t));
+    if (core.length) content = core;
+  }
+  return content;
+}
+
+// O substantivo-cabeça de uma consulta ("bolo pronto" → "bolo"); null quando só há palavra de estado.
+export function shelfHeadNoun(query: string): string | null {
+  const head = shelfContentWords(query)[0];
+  return head ? singularPt(head) : null;
+}
+
+function inTitlePosition(token: string, text: ItemText): boolean {
+  const raw = text.nameWords;
+  if (text.brandWords.some((word) => tokenMatchesBrand(token, word))) return true;
+  for (let i = 0; i < Math.min(3, raw.length); i++) {
+    if (!headNounMatch(token, raw[i])) continue;
+    if (i > 0 && HEAD_MARKERS.has(raw[i - 1])) continue;
+    if (raw.slice(0, i).some((word) => CATEGORY_NOUNS.has(word) && !headNounMatch(token, word))) continue;
+    return true;
+  }
+  const brand = new Set(text.brandWords);
+  const firstOwn = raw.find((word) => !brand.has(word) && !STOPWORDS.has(word) && !/^\d/.test(word));
+  if (firstOwn && headNounMatch(token, firstOwn)) return true;
+  return raw.some((word, i) => CATEGORY_NOUNS.has(word) && headNounMatch(token, word) && (i === 0 || !HEAD_MARKERS.has(raw[i - 1])));
+}
+
+export function shelfHeadMatch(query: string, item: CatalogItem): boolean {
+  const content = shelfContentWords(query);
+  if (!content.length) return false;
+  if (hardExclusion(joinMeasures(query), item)) return false;
+  const text = itemText(item);
+  const nameCompounds = new Set(queryTokens(item.name));
+  const covered = (token: string) =>
+    nameCompounds.has(token) ||
+    text.nameWords.some((word) => headNounMatch(token, word)) ||
+    text.brandWords.some((word) => tokenMatchesWord(token, word)) ||
+    text.categoryWords.some((word) => tokenMatchesWord(token, word));
+  // A cabeça sempre tem que estar no item; das outras, consulta longa (3+) tolera uma ausente.
+  if (!covered(content[0])) return false;
+  const missing = content.filter((token) => !covered(token)).length;
+  if (missing > (content.length > 2 ? 1 : 0)) return false;
+  if (inTitlePosition(content[0], text)) return true;
+  return content.length >= 2 && missing === 0 && content.some((token) => inTitlePosition(token, text));
 }
 
 // Outros nomes do MESMO produto (06/10, A9): o catálogo chama de um jeito, o cliente de outro.
@@ -868,7 +1043,7 @@ export function popularityBonus(rank?: number): number {
 
 export function rankCatalog(query: string, items: CatalogItem[], limit: number): CatalogItem[] {
   const childAsked = CHILD_VARIANT_RE.test(normalizeText(query));
-  const childRank = (item: CatalogItem) => (!childAsked && isChildVariant(normalizeText(item.name)) ? 1 : 0);
+  const childRank = (item: CatalogItem) => (!childAsked && isChildVariant(itemText(item).nameNorm) ? 1 : 0);
   // Popularidade (só catálogos VTEX, gravada pelo harvest/backfill) entra DEPOIS de
   // relevância, variante infantil, embalagem comum e básico-antes-de-variante (regras
   // deliberadas do dono) e ANTES do preço: entre iguais, o que a loja mais vende vence.

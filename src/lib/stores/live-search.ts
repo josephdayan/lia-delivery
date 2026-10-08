@@ -175,6 +175,31 @@ export function parseLiveProducts(storeKey: string, products: IsProduct[]): Cata
 
 const cache = new Map<string, { at: number; items: CatalogItem[] }>();
 
+// Prazo DURO para qualquer promessa (08/10/2026, placar: 9 de 31 pedidos estouravam 150 s). Sob o
+// agente de proxy do Node (`NODE_USE_ENV_PROXY=1`, undici EnvHttpProxyAgent), a leitura do CORPO de
+// uma resposta cujo `AbortSignal.timeout` disparou no meio pode ficar pendente para sempre — sem timer
+// nem socket vivo (sonda de 08/10: 6 `res.json()` de Mambo/Swift/Pague Menos/Drogal parados 40 s+,
+// cabeçalho já recebido). O `AbortSignal` não basta, então todo caminho que espera rede tem um prazo
+// próprio: passado `ms`, devolve `fallback`; rejeição também vira `fallback` (nunca lança). O timer é
+// ref'd de propósito (segura o processo vivo até resolver) e sempre limpo no fim.
+export async function withDeadline<T>(promise: Promise<T>, ms: number, fallback: T, onTimeout?: () => void): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<T>((resolve) => {
+    timer = setTimeout(() => {
+      onTimeout?.();
+      resolve(fallback);
+    }, Math.max(0, ms));
+  });
+  try {
+    return await Promise.race([promise.catch(() => fallback), deadline]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+// Folga do prazo duro sobre o timeout da requisição (o AbortSignal tem a vez primeiro).
+const HARD_DEADLINE_SLACK_MS = 500;
+
 export type LiveFetch = (url: string, init: { headers: Record<string, string>; signal: AbortSignal }) => Promise<{ ok: boolean; json(): Promise<unknown> }>;
 
 const IS_BASE = "/api/io/_v/api/intelligent-search";
@@ -184,15 +209,15 @@ const IS_BASE = "/api/io/_v/api/intelligent-search";
 async function fetchLiveProducts(storeKey: string, url: string, key: string, fetcher: LiveFetch): Promise<CatalogItem[]> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.items;
-  let items: CatalogItem[] = [];
-  try {
+  // Requisição + leitura do corpo sob o MESMO prazo duro (o corpo é que travava, ver withDeadline).
+  const work = (async (): Promise<CatalogItem[] | null> => {
     const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
-    if (!res.ok) return [];
+    if (!res.ok) return null;
     const data = (await res.json()) as { products?: IsProduct[] };
-    items = parseLiveProducts(storeKey, data.products ?? []);
-  } catch {
-    return []; // falha não entra no cache: a próxima tentativa pode dar certo
-  }
+    return parseLiveProducts(storeKey, data.products ?? []);
+  })();
+  const items = await withDeadline(work, timeoutMs() + HARD_DEADLINE_SLACK_MS, null);
+  if (!items) return []; // falha/timeout não entra no cache: a próxima tentativa pode dar certo
   if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value as string);
   cache.set(key, { at: Date.now(), items });
   return items;
@@ -267,9 +292,15 @@ export async function resolveCategoryPath(
   try {
     for (let level = 1; level <= maxDepth; level++) {
       const url = `https://${store.domain}${IS_BASE}/facets/${facetPath(parts)}?query=${encodeURIComponent(q)}&locale=pt-BR&hideUnavailableItems=true`;
-      const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
-      if (!res.ok) return null;
-      const data = (await res.json()) as { facets?: Facet[] };
+      const data = await withDeadline(
+        (async () => {
+          const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
+          return res.ok ? ((await res.json()) as { facets?: Facet[] }) : null;
+        })(),
+        timeoutMs() + HARD_DEADLINE_SLACK_MS,
+        null
+      );
+      if (!data) return null;
       const facet = (data.facets ?? []).find((f) => f.key === `category-${level}`);
       const values = (facet?.values ?? []).filter((v) => v.value && SLUG_RE.test(v.value) && (v.quantity ?? 0) > 0);
       if (!values.length) break;

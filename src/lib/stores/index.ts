@@ -1,7 +1,7 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
 import { conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
-import { liveSearchByCategory, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
+import { liveSearchByCategory, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot, withDeadline } from "./live-search";
 import { isMedicine } from "./anvisa";
 import type { ShelfNode, ShelfPick } from "../recommend/types";
 import { storeServesCep } from "../store-areas";
@@ -231,11 +231,41 @@ export function listStores(): StoreConnector[] {
 // moat — the three active verticals spread automatically through this registry.
 // Cópia do catálogo + prateleira ao vivo da loja (live-search.ts), em paralelo. Sem ao vivo
 // (desligado, loja não-VTEX, falha/timeout) o resultado é exatamente o da cópia, como antes.
+// Cache da CÓPIA (08/10/2026, placar): a cópia é estática no processo, mas `rankCatalog` varre o
+// catálogo inteiro da loja a cada consulta — 5 prateleiras × ~3 consultas × ~40 lojas eram 5–6 s de
+// CPU por recomendação, mesmo sem rede. LRU em memória por (loja, consulta normalizada, limite,
+// remédio isento ligado — Drogaria SP e Pague Menos mudam o catálogo com a flag), 10 min, 500
+// entradas. O ao vivo tem cache próprio (live-search.ts); o Mercado Livre (busca paga, ao vivo) fica fora.
+const SNAPSHOT_CACHE_TTL_MS = 10 * 60_000;
+const SNAPSHOT_CACHE_MAX = 500;
+const snapshotCache = new Map<string, { at: number; store: StoreConnector; items: CatalogItem[] }>();
+
+async function snapshotSearch(store: StoreConnector, query: string, limit: number): Promise<CatalogItem[]> {
+  if (store.key === mercadoLivreStore.key) return store.searchItems(query, limit);
+  const key = `${store.key}|${query.toLowerCase().replace(/\s+/g, " ").trim()}|${limit}|${medicineEnabled() ? "mip" : ""}`;
+  const hit = snapshotCache.get(key);
+  if (hit && hit.store === store && Date.now() - hit.at < SNAPSHOT_CACHE_TTL_MS) {
+    // LRU: o acerto vai para o fim da fila de despejo.
+    snapshotCache.delete(key);
+    snapshotCache.set(key, hit);
+    return hit.items.slice();
+  }
+  const items = await store.searchItems(query, limit);
+  snapshotCache.delete(key);
+  if (snapshotCache.size >= SNAPSHOT_CACHE_MAX) snapshotCache.delete(snapshotCache.keys().next().value as string);
+  snapshotCache.set(key, { at: Date.now(), store, items: items.slice() });
+  return items;
+}
+
+export function __clearSnapshotSearchCacheForTests(): void {
+  snapshotCache.clear();
+}
+
 async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number, liveLimiter?: FetchLimiter): Promise<CatalogItem[]> {
   const wantLive = liveSearchEnabled() && Boolean(VTEX_API_STORES[store.key]);
   const live = () => liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3));
   const [snapshot, liveItems] = await Promise.all([
-    store.searchItems(query, limitPerStore),
+    snapshotSearch(store, query, limitPerStore),
     wantLive ? (liveLimiter ? liveLimiter.run(live) : live()) : Promise.resolve([] as CatalogItem[])
   ]);
   if (!liveItems.length) return snapshot;
@@ -426,6 +456,15 @@ export function createFetchLimiter(max: number): FetchLimiter {
 }
 
 const shelfLiveLimiter = createFetchLimiter(Number(process.env.LIA_SHELF_MAX_INFLIGHT ?? 12));
+
+// Orçamento TOTAL por prateleira (08/10/2026, placar: prateleira que nunca respondia travava a
+// recomendação inteira). Passado o prazo, a prateleira devolve o que já tem — consulta que não voltou
+// conta como vazia. `LIA_SHELF_BUDGET_MS`, padrão 12 s (a busca ao vivo tem 3 s por requisição e o
+// limitador enfileira; 12 s cobre a fila de um pedido com 6 prateleiras).
+export function shelfBudgetMs(): number {
+  const value = Number(process.env.LIA_SHELF_BUDGET_MS);
+  return Number.isFinite(value) && value >= 500 ? value : 12_000;
+}
 const normShelf = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
 
 export function shelfQueryAlternatives(query: string): string[] {
@@ -453,10 +492,14 @@ function shelfTermCovered(term: string, alternatives: string[]): boolean {
 export async function gatherShelfCandidates(
   pick: ShelfPick,
   shelf: ShelfNode | undefined,
-  opts: { limit?: number; perStore?: number; cep?: string | null } = {}
+  opts: { limit?: number; perStore?: number; cep?: string | null; budgetMs?: number } = {}
 ): Promise<StoreCandidate[]> {
   const limit = opts.limit ?? 12;
   const perStore = opts.perStore ?? 4;
+  const deadline = Date.now() + (opts.budgetMs ?? shelfBudgetMs());
+  let timedOut = 0;
+  // Cada espera da prateleira vale até o MESMO prazo final; o que não chegou vira `fallback`.
+  const inTime = <T,>(promise: Promise<T>, fallback: T) => withDeadline(promise, deadline - Date.now(), fallback, () => timedOut++);
   const mip = Boolean(shelf?.flags?.includes("mip"));
   if (mip && !medicineEnabled()) return []; // remédio isento desligado: nada de remédio, nem pela porta
 
@@ -489,7 +532,7 @@ export async function gatherShelfCandidates(
   };
 
   // Prateleira inteira pela categoria da loja (só ao vivo; sem caminho no mapa = só texto).
-  const categoryTask = (async () => {
+  const categoryTask = inTime((async () => {
     const paths = Object.entries(shelf?.categoryPaths ?? {}).filter(([key, path]) => path && storeOk(key) && key !== mercadoLivreStore.key);
     if (!paths.length || !liveSearchEnabled()) return [] as StoreCandidate[];
     const perShelfStore = await Promise.all(
@@ -507,17 +550,19 @@ export async function gatherShelfCandidates(
       })
     );
     return perShelfStore.flat();
-  })();
+  })(), [] as StoreCandidate[]);
 
-  const primaryLists = await Promise.all(primary.map((query) => gather(query)));
+  const primaryLists = await Promise.all(primary.map((query) => inTime(gather(query), [] as StoreCandidate[])));
   const categoryHits = await categoryTask;
   primaryLists.forEach(push);
   // Consultas da prateleira que a pick não cobre; se a pick sozinha deu pouco, amplia também com as cobertas.
   const widen = merged.length < limit;
   const maxQueries = widen ? SHELF_WIDEN_MAX_QUERIES : SHELF_MAX_QUERIES;
   const secondary = (widen ? shelfTerms.filter((term, index) => term.trim() && shelfTerms.findIndex((other) => normShelf(other) === normShelf(term)) === index && !primary.some((p) => normShelf(p) === normShelf(term))) : extraTerms).slice(0, Math.max(0, maxQueries - primary.length));
-  const secondaryLists = await Promise.all(secondary.map((query) => gather(query)));
+  // Prazo já estourado: nem dispara a ampliação (devolve o que a pick trouxe).
+  const secondaryLists = deadline - Date.now() > 0 ? await Promise.all(secondary.map((query) => inTime(gather(query), [] as StoreCandidate[]))) : [];
   secondaryLists.forEach(push);
+  if (timedOut) console.warn(`[shelf:budget] ${pick.shelfId} q=${JSON.stringify(pick.query)}: ${timedOut} busca(s) passaram de ${opts.budgetMs ?? shelfBudgetMs()} ms; seguiu com ${merged.length + categoryHits.length} candidato(s)`);
 
   const catExtras: StoreCandidate[] = [];
   for (const candidate of categoryHits) {

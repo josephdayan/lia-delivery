@@ -23,7 +23,8 @@ import { prisma } from "../prisma";
 import { medicineEnabled } from "../medicine";
 import { reply, writeCtx } from "../turn-runtime";
 import { gatherShelfCandidates } from "../stores";
-import { conciergeMatchIsStrong } from "../stores/types";
+import { withDeadline } from "../stores/live-search";
+import { shelfHeadMatch } from "../stores/types";
 import {
   constraintRules,
   defaultTableDeps,
@@ -103,17 +104,33 @@ const keyOf = (o: { storeKey?: string; sku: string }) => `${o.storeKey ?? ""}:${
 
 // ---------------------------------------------------------------- BUSCAR
 
+// Prazos da BUSCA (08/10/2026, placar: 9 de 31 pedidos estouravam 150 s com prateleira que nunca
+// respondia). Cada prateleira tem até `PICK_BUDGET_MS` (busca + conferência ao vivo) e a busca inteira
+// até `LIA_RECOMMEND_SEARCH_BUDGET_MS` (30 s); prateleira que não respondeu conta como vazia e o
+// cliente recebe os cards das que chegaram.
+const PICK_BUDGET_MS = 15_000;
+export function recommendSearchBudgetMs(): number {
+  const value = Number(process.env.LIA_RECOMMEND_SEARCH_BUDGET_MS);
+  return Number.isFinite(value) && value >= 1000 ? value : 30_000;
+}
+
+// Piso de relevância da prateleira (o juiz por regras não confere o tipo): o item precisa responder a
+// uma das consultas — a da pick (alternativas " | "), a da prateleira ou um alias — pelo
+// SUBSTANTIVO-CABEÇA em posição de título (`shelfHeadMatch`, 08/10): "bolo pronto" aceita "Bolo de
+// Chocolate Ana Maria" e recusa uva e esmalte "Bolo de Chocolate"; "perfume" não aceita absorvente.
+export function shelfFloorTerms(pick: Pick<ShelfPick, "query">, shelf?: { query?: string; aliases?: readonly string[] }): string[] {
+  return [...pick.query.split("|"), shelf?.query ?? "", ...(shelf?.aliases ?? [])].map((q) => q.trim()).filter(Boolean);
+}
+
 async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps): Promise<ShelfCandidate[]> {
   const d = recommendDeps();
   // shelfId "produto": produto julgado sem prateleira no mapa — busca textual, nunca remédio.
   const shelf = pick.shelfId === "produto" ? undefined : td.shelfById(pick.shelfId) ?? undefined;
   try {
     const all = await gatherShelfCandidates(pick, shelf, { limit: KEEP_PER_SHELF, perStore: 3, cep });
-    // Piso de relevância (o juiz por regras não confere o tipo): o item precisa responder a uma das
-    // consultas da prateleira ("bolo pronto" não aceita uva; "perfume" não aceita absorvente). O que veio
-    // da prateleira inteira da loja (categoria VTEX) já é da prateleira e passa direto.
-    const terms = [...pick.query.split("|"), shelf?.query ?? "", ...(shelf?.aliases ?? [])].map((q) => q.trim()).filter(Boolean);
-    const found = all.filter((c) => Boolean(shelf?.categoryPaths?.[c.store.key]) || terms.some((q) => conciergeMatchIsStrong(q, c.item)));
+    // O que veio da prateleira inteira da loja (categoria VTEX) já é da prateleira e passa direto.
+    const terms = shelfFloorTerms(pick, shelf);
+    const found = all.filter((c) => Boolean(shelf?.categoryPaths?.[c.store.key]) || terms.some((q) => shelfHeadMatch(q, c.item)));
     if (!found.length) return [];
     const popularity = new Map(found.map((c) => [`${c.store.key}:${c.item.sku}`, c.item.popularity]));
     const options = found.map((c) => d.toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
@@ -125,8 +142,13 @@ async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps):
   }
 }
 
-async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
-  const perPick = await Promise.all(picks.map((pick) => searchPick(pick, cep, td)));
+async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps, deadline = Date.now() + recommendSearchBudgetMs()): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
+  const perPick = await Promise.all(
+    picks.map((pick) => {
+      const ms = Math.min(PICK_BUDGET_MS, deadline - Date.now());
+      return withDeadline(searchPick(pick, cep, td), ms, [] as ShelfCandidate[], () => console.warn(`[recommend:search:timeout] ${pick.shelfId} passou de ${ms} ms; prateleira conta como vazia`));
+    })
+  );
   const seen = new Set<string>();
   const candidates: ShelfCandidate[] = [];
   const emptyShelves: string[] = [];
@@ -249,16 +271,17 @@ async function runChain(req: RecommendRequest, cep: string, opts: { basketNames?
   // Refino positivo ("de morango"): a palavra entra na busca de cada prateleira e vira exigência no nome.
   const must = normRec(opts.mustHave);
   const picks = plan.picks.slice(0, MAX_PICKS).map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p));
-  const searched = await searchPicks(picks, cep, td);
+  const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs());
   let candidates = searched.candidates;
   if (must) {
     // Tem a palavra pedida E continua sendo da prateleira ("sorvete morango" não aceita a fruta solta).
     const words = must.split(" ").filter((w) => w.length >= 3);
-    const original = new Map(plan.picks.map((p) => [p.shelfId, p.query.split("|").map((q) => q.trim()).filter(Boolean)]));
+    // Mesmo piso da busca (substantivo-cabeça, 08/10): "bolo pronto" + "de morango" aceita "Bolo de Morango".
+    const original = new Map(plan.picks.map((p) => [p.shelfId, shelfFloorTerms(p, p.shelfId === "produto" ? undefined : td.shelfById(p.shelfId) ?? undefined)]));
     candidates = candidates.filter(
       (c) =>
         words.every((w) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(normRec(c.option.name))) &&
-        (original.get(c.shelfId) ?? []).some((q) => conciergeMatchIsStrong(q, c.option))
+        (original.get(c.shelfId) ?? []).some((q) => shelfHeadMatch(q, c.option))
     );
   }
   // Remédio pra adulto: apresentação infantil/pediátrica só quando o pedido é pra criança/bebê.
