@@ -6,7 +6,7 @@ import { pagarmeAdapter } from "@/lib/payments/pagarme";
 import * as copy from "@/lib/lia-copy";
 
 const ATTEMPT_TTL_MS = 60 * 60 * 1000;
-import { displayPrice } from "@/lib/pricing";
+import { customerInvoiceEnabled, displayPrice } from "@/lib/pricing";
 
 type CardOrder = {
   id: string;
@@ -14,6 +14,8 @@ type CardOrder = {
   phone: string;
   total: number;
   deliveryFee: number;
+  // Margem da Lia (linha própria no modelo service_fee). Opcional: pedidos antigos podem não trazer.
+  serviceFee?: number;
   items: unknown;
   status: string;
 };
@@ -87,6 +89,11 @@ function orderDetailsInput(order: CardOrder, credential: { id: string; last4: st
       };
     })
     .filter((item) => item.unitAmount > 0);
+  // Modelo service_fee (08/10): os itens saem pelo preço da loja e a margem é uma linha própria,
+  // como no resumo da cotação — senão ela cairia em "tax" e pareceria imposto.
+  if (detailedItems.length && customerInvoiceEnabled() && (order.serviceFee ?? 0) > 0) {
+    detailedItems.push({ retailerId: `${order.id}-servico`, name: "Taxa de serviço da Lia", quantity: 1, unitAmount: money(order.serviceFee ?? 0) });
+  }
 
   const items = detailedItems.length
     ? detailedItems

@@ -8,6 +8,20 @@
 
 import { hasMip, isMipItem, medicineServiceFee } from "./medicine";
 
+// MODELO DE PREÇO (dono, 08/10/2026): "service_fee" (padrão) = o cliente vê o PREÇO DA LOJA em
+// cada item e a margem da Lia sai numa linha própria ("Taxa de serviço da Lia"), igual ao que o
+// remédio isento já fazia; a compra na loja sai no CPF do cliente e a nota fiscal no nome dele.
+// "markup" = modelo antigo (margem embutida no preço, nota no nome da Lia). A margem em R$ é a
+// MESMA nos dois (as faixas abaixo); muda só onde ela aparece. LIA_PRICING_MODE=markup volta.
+export type PricingMode = "service_fee" | "markup";
+export function pricingMode(): PricingMode {
+  return process.env.LIA_PRICING_MODE === "markup" ? "markup" : "service_fee";
+}
+// Nota e compra no nome do cliente (quando ele cadastrou CPF) — vale no modelo service_fee.
+export function customerInvoiceEnabled(): boolean {
+  return pricingMode() === "service_fee";
+}
+
 type Tier = { above: number; rate: number };
 
 function baseRate(): number {
@@ -52,9 +66,15 @@ export function markupAmount(price: number): number {
   return fee;
 }
 
-// Preço EXIBIDO ao cliente (o único ponto de markup de todos os caminhos vivos).
-export function displayPrice(price: number): number {
+// Preço com a margem embutida (modelo antigo; e a base da taxa no modelo novo).
+export function markedPrice(price: number): number {
   return Math.round((price + markupAmount(price)) * 100) / 100;
+}
+
+// Preço EXIBIDO ao cliente (o único ponto de markup de todos os caminhos vivos). No modelo
+// service_fee é o preço da loja: a margem vai para a linha de taxa (serviceLineForItems).
+export function displayPrice(price: number): number {
+  return pricingMode() === "markup" ? markedPrice(price) : Math.round(price * 100) / 100;
 }
 
 // Margem de uma cesta COM itens: soma linha a linha (unidade com markup × qty) menos o
@@ -63,7 +83,7 @@ export function displayPrice(price: number): number {
 // pedido com remédio ganha a taxa fixa da Lia (medicineServiceFee), mostrada em linha própria.
 export function serviceFeeForItems(items: { unitPrice: number; qty: number; medicine?: string }[]): number {
   const marked = items.filter((i) => !isMipItem(i));
-  const display = marked.reduce((sum, i) => sum + Math.round(displayPrice(i.unitPrice) * i.qty * 100) / 100, 0);
+  const display = marked.reduce((sum, i) => sum + Math.round(markedPrice(i.unitPrice) * i.qty * 100) / 100, 0);
   const real = marked.reduce((sum, i) => sum + Math.round(i.unitPrice * i.qty * 100) / 100, 0);
   return Math.round((display - real + medicineFeeForItems(items)) * 100) / 100;
 }
@@ -72,6 +92,12 @@ export function serviceFeeForItems(items: { unitPrice: number; qty: number; medi
 // mostrar "Taxa de serviço da Lia" separada dos produtos.
 export function medicineFeeForItems(items: ReadonlyArray<{ medicine?: string }>): number {
   return hasMip(items) ? medicineServiceFee() : 0;
+}
+
+// O que aparece na linha "Taxa de serviço da Lia" do resumo: no modelo service_fee, a margem
+// inteira (os produtos saem pelo preço da loja); no modelo markup, só a taxa do remédio.
+export function serviceLineForItems(items: { unitPrice: number; qty: number; medicine?: string }[]): number {
+  return pricingMode() === "markup" ? medicineFeeForItems(items) : serviceFeeForItems(items);
 }
 
 // Margem quando só existe o SUBTOTAL (cotação manual do /ops, sem custo por item):

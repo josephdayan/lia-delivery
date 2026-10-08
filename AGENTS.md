@@ -1,3 +1,17 @@
+## REGRA VIGENTE — Modelo de preço e nota fiscal (dono, 08/10/2026): preço da loja + taxa de serviço; compra e nota no CPF do cliente
+
+`LIA_PRICING_MODE=service_fee` é o padrão (`src/lib/pricing.ts`): o cliente vê o **preço da loja** em cada item
+(card, tela da lista, resumo), a margem da Lia (as mesmas faixas 10/6/4/3%) sai na linha **"Taxa de serviço da
+Lia"** do resumo e do pedido nativo do cartão, e a compra em TODA loja sai no **nome e CPF do cliente** quando ele
+cadastrou o CPF (`DeliveryOrder.buyerDocument/buyerName`; `customerBuyerFor` em purchase-worker.ts) — a loja emite
+a nota fiscal no nome dele e a Lia encaminha o link (tracking-worker). Sem CPF cadastrado, a compra e a nota ficam no
+nome da Lia Delivery (CPF continua opcional; só remédio isento exige). Era o que o remédio isento já fazia desde 29/09,
+estendido a tudo. Textos fixos (taxa, nota fiscal, "pra que CPF?") e os fatos da IA seguem o modo. **Não dizer
+"serviço embutido no preço" nem "nota no nome da Lia" como regra geral.** `LIA_PRICING_MODE=markup` volta ao modelo
+antigo (margem embutida, nota no nome da Lia; remédio em linha própria). A suíte antiga roda em `markup`
+(`tests/helpers/load-env.ts`); o modelo novo tem `tests/service-fee-mode.test.ts`. Pendente do dono: contador (a receita
+da Lia passa a ser a taxa de serviço, não a revenda).
+
 ## REGRA VIGENTE — Remédio: a Lia VENDE remédio isento (MIP) desde 05/10/2026
 
 `LIA_MEDICINE_MIP=true` em produção (dono, 05/10). A Lia vende remédio isento de prescrição (dipirona, Advil, Dorflex,

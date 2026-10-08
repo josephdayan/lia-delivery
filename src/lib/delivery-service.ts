@@ -1,4 +1,4 @@
-import { displayPrice, serviceFeeForItems } from "@/lib/pricing";
+import { customerInvoiceEnabled, displayPrice, serviceFeeForItems } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { LIST_FLOW_REOPEN_ID, carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
@@ -7591,9 +7591,10 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
   const profile = await prisma.user.findUnique({ where: { id: convo.userId }, select: { name: true, cpfName: true } });
   const recipientName = ctx.recipientName?.trim() || profile?.name?.trim() || profile?.cpfName?.trim() || null;
   const acquisitionTouchId = await latestAcquisitionTouchId(convoId);
-  // Remédio isento (29/09): o pedido na farmácia sai no CPF/nome do cliente. Cópia no pedido
-  // pra compra não depender do perfil mudar depois; nulo = CNPJ da Lia, como sempre.
-  const buyer = medicineEnabled() && hasMip(ctx.basket)
+  // Compra e nota no nome do cliente (08/10, modelo service_fee: toda loja; antes só o remédio
+  // isento, 29/09). Cópia no pedido pra compra não depender do perfil mudar depois; sem CPF
+  // cadastrado = CNPJ da Lia, como sempre (remédio exige o CPF antes de cotar).
+  const buyer = customerInvoiceEnabled() || (medicineEnabled() && hasMip(ctx.basket))
     ? await prisma.user.findUnique({ where: { id: convo.userId }, select: { cpf: true, cpfName: true } })
     : null;
   const buyerData = buyer?.cpf && buyer.cpfName

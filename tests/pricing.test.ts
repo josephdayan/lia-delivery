@@ -7,6 +7,9 @@ import { displayPrice, markupAmount, serviceFeeForItems, serviceFeeForSubtotal }
 // 200–500, 4% de 500–1000, 3% acima. Marginal = contínuo: subir R$1 de preço nunca
 // derruba a margem em R$.
 
+// Estes testes são do modelo antigo (margem embutida no preço); o modelo service_fee (08/10) tem
+// teste próprio em service-fee-mode.test.ts.
+process.env.LIA_PRICING_MODE = "markup";
 afterEach(() => {
   delete process.env.LIA_MARKUP_TIERS;
   delete process.env.LIA_PRICE_MARKUP;

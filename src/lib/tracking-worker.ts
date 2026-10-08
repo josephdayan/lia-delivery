@@ -231,13 +231,13 @@ export async function reportMail(input: {
   }
   const { appendOrderNote } = await import("./order-flags");
   let invoiceNote = "";
-  // Remédio isento (29/09): a compra saiu no CPF do cliente, então a nota é DELE — a Lia
+  // Compra no CPF do cliente (remédio desde 29/09; tudo desde 08/10): a nota é DELE — a Lia
   // encaminha o link (ou avisa que saiu, quando o e-mail não traz link).
   if (input.kind === "invoiced" && target.buyerDocument) {
     const { deliverNotice } = await import("./turn-runtime");
     const { medicineInvoiceNotice } = await import("./lia-copy");
     const { VTEX_API_STORES } = await import("./purchase/vtex-checkout");
-    const storeLabel = job?.storeLabel ?? VTEX_API_STORES[input.storeKey]?.label ?? "farmácia";
+    const storeLabel = job?.storeLabel ?? VTEX_API_STORES[input.storeKey]?.label ?? "loja";
     const shortId = target.id.slice(-6).toUpperCase();
     const sent = await deliverNotice(target.phone, medicineInvoiceNotice(shortId, storeLabel, input.invoiceUrl), { shortId }).catch(() => "skipped" as const);
     invoiceNote = sent === "skipped" ? " ⚠️ Nota do cliente NÃO enviada (fora da janela sem template) — encaminhe pelo /ops." : ` 🧾 Nota encaminhada ao cliente (${sent}${input.invoiceUrl ? ", com link" : ", sem link"}).`;

@@ -1,3 +1,13 @@
+## 08/10/2026 — Preço da loja + taxa de serviço declarada; compra e nota fiscal no CPF do cliente (tudo)
+
+Decisão do dono ("faz"): o modelo do remédio isento vale para todo pedido. Implementado atrás de `LIA_PRICING_MODE`
+(padrão `service_fee`; `markup` volta ao antigo): item pelo preço da loja, linha "Taxa de serviço da Lia" com a
+mesma margem de sempre (total igual), compra em toda loja no nome/CPF do cliente quando cadastrado e nota fiscal
+encaminhada a ele; textos e fatos da IA mudam junto. Pedido nativo do cartão ganha a linha da taxa. Teste próprio
+`tests/service-fee-mode.test.ts` (puro + ponta a ponta com banco local). Falta: deploy, conferir no 1º pedido real
+que a loja aceita o perfil por CPF fora da farmácia (o checkout aborta se devolver outro documento) e a conversa
+com o contador (receita = taxa de serviço).
+
 ## 07/10/2026 (noite) — Placar de busca: leitura offline das 4 rodadas de 316 pedidos
 
 Última medição (rodada 3, juiz gpt-6-sol): **1ª opção errada 1,7%, precisão dos itens 97,8%, cobertura 95,1%,

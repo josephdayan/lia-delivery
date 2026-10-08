@@ -1,4 +1,5 @@
 import { preparationStores, purchaseUrlAllowed } from "./purchase-preparation";
+import { customerInvoiceEnabled } from "./pricing";
 import { createHash, randomUUID } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { isRetailerDeliveryOrder } from "@/lib/order-flags";
@@ -268,12 +269,14 @@ export async function claimNextPurchaseJob(workerId: string, allowedStores?: str
   return null;
 }
 
-// Só a compra da loja que tem o REMÉDIO sai no CPF do cliente; as outras lojas do mesmo
-// pedido seguem no CNPJ. Não depende da flag: pedido pago com remédio compra no CPF mesmo
-// que a flag seja desligada depois.
-function medicineBuyerFor(job: NonNullable<Awaited<ReturnType<typeof claimNextPurchaseJob>>>): { document: string; name: string } | null {
+// Compra no CPF/nome do cliente (08/10, modelo service_fee): TODA loja do pedido que carrega o
+// CPF compra no nome dele (nota fiscal dele). No modelo markup vale a regra de 29/09: só a loja
+// que tem o REMÉDIO; as outras seguem no CNPJ. Não depende da flag de remédio: pedido pago com
+// remédio compra no CPF mesmo que ela seja desligada depois.
+export function customerBuyerFor(job: { deliveryOrder: { buyerDocument: string | null; buyerName: string | null; items: unknown }; items: Array<{ requestedSku: string }> }): { document: string; name: string } | null {
   const order = job.deliveryOrder;
   if (!order.buyerDocument || !order.buyerName) return null;
+  if (customerInvoiceEnabled()) return { document: order.buyerDocument, name: order.buyerName };
   const items = Array.isArray(order.items) ? (order.items as Array<{ sku?: unknown; medicine?: unknown }>) : [];
   const mipSkus = new Set(items.flatMap((i) => (i && i.medicine === "mip" && typeof i.sku === "string" ? [i.sku] : [])));
   return job.items.some((item) => mipSkus.has(item.requestedSku)) ? { document: order.buyerDocument, name: order.buyerName } : null;
@@ -302,7 +305,7 @@ export function workerPayload(job: NonNullable<Awaited<ReturnType<typeof claimNe
       address: job.deliveryOrder.deliveryAddress
     },
     // Remédio isento (29/09): esta compra sai no CPF/nome do cliente (nulo = CNPJ da Lia).
-    buyer: medicineBuyerFor(job),
+    buyer: customerBuyerFor(job),
     items: job.items.map((item) => ({
       sku: item.requestedSku,
       name: item.requestedName,

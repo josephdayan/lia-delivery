@@ -44,6 +44,10 @@ process.env.LIA_RETAILER_TEST_SEED = "true";
 process.env.LIA_SEND_PHOTOS = "false";
 // Remédio isento (29/09): desligado por padrão; o teste que liga a flag liga sozinho.
 delete process.env.LIA_MEDICINE_MIP;
+// Modelo de preço (08/10): produção = service_fee (preço da loja + taxa em linha própria, nota no
+// CPF do cliente). A suíte antiga foi escrita com a margem embutida e fica nela; o modelo novo tem
+// teste próprio (tests/service-fee-mode.test.ts), que liga sozinho.
+process.env.LIA_PRICING_MODE ??= "markup";
 // Frete ao vivo consulta a rede (checkout das lojas) — nos testes fica desligado para
 // os E2E de cotação instantânea serem determinísticos (tabela semeada).
 process.env.LIA_LIVE_FREIGHT_OFF = "true";

@@ -1,3 +1,12 @@
+## 08/10/2026 — Modelo novo de preço/nota (service_fee)
+
+- [ ] Deploy do main. Não precisa de env nova (o padrão já é `service_fee`); `LIA_PRICING_MODE=markup` na Vercel
+  volta ao antigo sem deploy de código.
+- [ ] 1º pedido real de loja comum (não farmácia) com CPF cadastrado: conferir que o checkout VTEX aceita o perfil
+  por CPF (e-mail `contato+c<hash>@`), que a nota sai no nome do cliente e que o aviso com o link chega.
+- [ ] Dono: contador — a receita da Lia passa a ser a taxa de serviço (intermediação), não a revenda com margem.
+- [ ] `/ops`: o texto "A margem entra sozinha por faixa" segue válido; o painel mostra a margem (`serviceFee`) como antes.
+
 ## 07/10/2026 (noite) — Para remedir o placar de busca da sessão na nuvem
 
 - [ ] **Dono: liberar a rede do ambiente da nuvem** (menu do ambiente → Edit → Network access): `api.openai.com`,

@@ -6,7 +6,7 @@ import { normalizeCity } from "@/lib/coverage";
 import { normalizeMsg } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, OPS_QUEUE_STATUSES, PAID_OR_IN_FULFILLMENT_STATUSES, REFUND_CONFIRMED_PREFIX, REFUND_PENDING_FLAG, appendOrderNote } from "@/lib/order-flags";
 import { refundOrderViaProvider } from "@/lib/payments/ledger";
-import { medicineFeeForItems, serviceFeeForSubtotal } from "@/lib/pricing";
+import { pricingMode, serviceFeeForSubtotal, serviceLineForItems } from "@/lib/pricing";
 import { medicineEnabled } from "@/lib/medicine";
 import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
@@ -98,9 +98,11 @@ export async function opsPublishManualQuote(
         };
       })
     : ((order.items as unknown as BasketItem[]) ?? []);
-  // Remédio isento (29/09): a taxa da Lia sai numa linha própria e os produtos mostram o
-  // preço da farmácia. O total não muda — só a apresentação separa a taxa.
-  const medicineFee = input.serviceFee != null ? roundMoney(Math.min(serviceFee, medicineFeeForItems(items))) : 0;
+  // Linha "Taxa de serviço da Lia" (08/10, modelo service_fee: a margem inteira, produtos pelo
+  // preço da loja; modelo markup: só a taxa do remédio isento, como em 29/09). O total não muda.
+  const medicineFee = input.serviceFee != null
+    ? roundMoney(Math.min(serviceFee, serviceLineForItems(items)))
+    : pricingMode() === "service_fee" ? serviceFee : 0;
 
   const quoteExpiresAt = new Date(Date.now() + quoteTtlMinutes() * 60_000);
   const fulfillment = {

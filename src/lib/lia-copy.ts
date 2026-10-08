@@ -376,8 +376,18 @@ export function askFullNameForCpf(): string {
 }
 
 // "pra que cpf?" no cadastro (06/10): a IA dava uma resposta diferente a cada vez.
+// Modelo de preço (08/10, dono): padrão = preço da loja + "Taxa de serviço da Lia" em linha própria,
+// compra e nota no CPF do cliente. LIA_PRICING_MODE=markup volta ao texto do modelo antigo
+// (margem embutida, nota no nome da Lia). Espelha pricing.ts sem importar (copy é pura).
+function customerInvoiceMode(): boolean {
+  return process.env.LIA_PRICING_MODE !== "markup";
+}
+
 export function whyCpf(): string {
-  return `É pra eu comprar *no seu nome* quando a loja exige — farmácia (remédio sem receita) e nota fiscal no seu CPF. Fica guardado só aqui, não uso pra mais nada (${TERMS_URL}).\n\nSe preferir não passar agora, tudo bem: me diz o que você precisa. Se quiser passar, manda assim: _Maria da Silva 123.456.789-09_`;
+  const why = customerInvoiceMode()
+    ? "É pra eu comprar *no seu nome*: a nota fiscal da loja sai no seu CPF (e farmácia exige pra remédio sem receita)."
+    : "É pra eu comprar *no seu nome* quando a loja exige — farmácia (remédio sem receita) e nota fiscal no seu CPF.";
+  return `${why} Fica guardado só aqui, não uso pra mais nada (${TERMS_URL}).\n\nSe preferir não passar agora, tudo bem: me diz o que você precisa. Se quiser passar, manda assim: _Maria da Silva 123.456.789-09_`;
 }
 
 export function cpfSkipped(hasQueued: boolean): string {
@@ -1139,7 +1149,12 @@ export function thirdPartyPayAnswer(): string {
 // "Lia Delivery — CNPJ 12.345.678/0001-90"); sem env, resposta honesta sem número.
 export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string, inside = true, otcOnCpf = false): string {
   if (topic === "nf") {
-    // O trecho do CPF só vale com o remédio isento ligado (07/10, c13: o juiz chamou de promessa falsa).
+    // Modelo service_fee (08/10): a loja emite no nome e CPF do cliente (quem não cadastrou CPF
+    // recebe no nome da Lia). Modelo markup: no nome da Lia; o trecho do remédio só com MIP ligado
+    // (07/10, c13: o juiz chamou de promessa falsa).
+    if (customerInvoiceMode()) {
+      return "A nota fiscal é emitida pela própria loja, pelo preço dos produtos, *no seu nome e CPF* — por isso peço o CPF no cadastro. Sem CPF cadastrado, ela sai no nome da Lia Delivery. Quando a loja emite, eu te mando aqui.";
+    }
     return `A nota fiscal é emitida pela própria loja, no valor dos produtos. Ela sai no nome da *Lia Delivery*, que faz a compra pra você${otcOnCpf ? " (remédio sem receita sai no seu CPF)" : ""}. Se precisar de uma cópia, me avisa que o responsável te envia.`;
   }
   return businessInfo
@@ -1887,7 +1902,9 @@ export function serviceAnswer(
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
     case "service_fee":
-      return "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
+      return customerInvoiceMode()
+        ? "Cobro uma *taxa de serviço*, que aparece numa linha própria no resumo antes de você pagar — os produtos saem pelo *preço da loja*, e a nota fiscal vem no seu nome. O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não."
+        : "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
     case "pix_receiver":
       return pixReceiverAnswer();
     case "total_preview":
