@@ -20,7 +20,7 @@ pet doente → veterinário, nunca remédio humano; ressaca sem AINE/Engov; lope
 Memória (`memory.ts`, `User.preferences`): só o que o cliente DISSE (restrições, pet, casa) + marcas repetidas dos pedidos pagos;
 "esquece minhas preferências" apaga. Complemento no fechamento (`complement.ts`, 1 oferta sim/não por pedido, tabela curada,
 nunca com remédio). Placar: `scripts/bench-recommend.mts` (80 pedidos, juiz luna) e cenários c102–c113.
-Flags: `LIA_RECOMMEND` (padrão ligado), `LIA_RECOMMEND_MEDICINE` (ligado; exige `LIA_MEDICINE_MIP`), `LIA_RECOMMEND_AI`,
+Flags: `LIA_RECOMMEND` (padrão `all` = todos, liberado pelo dono em 08/10 noite junto com o fim do modo offline; `test` = só dono/admins; `false` = desliga), `LIA_RECOMMEND_MEDICINE` (ligado; exige `LIA_MEDICINE_MIP`), `LIA_RECOMMEND_AI`,
 `LIA_RECOMMEND_COMPLEMENT` (ligado em prod; a suíte antiga roda desligada), `LIA_RECOMMEND_MAX_CARDS` (4).
 **Pendente do dono:** revisão da tabela de sintomas com o advogado sanitário (loperamida, aciclovir, melatonina, cetoconazol,
 descongestionantes — bloco "REVISÃO PENDENTE" no topo de `tables.ts`); `RecommendLog.phone` em texto puro (SearchMiss usa hash).

@@ -19,9 +19,14 @@ const withMode = (mode: string | undefined, fn: () => void) => {
 };
 const inTurn = (phone: string, fn: () => void) => turnMeta.run({ replies: 0, phone }, fn);
 
-test("modo test (padrão): só dono/admin dentro de um turno; fora de turno vale", () => {
+test("padrão (sem env) = todos, inclusive cliente comum", () => {
   process.env.LIA_ADMIN_PHONES = "5511999990000";
-  withMode(undefined, () => {
+  withMode(undefined, () => inTurn("5511888880000", () => assert.equal(recommendEnabled(), true)));
+});
+
+test("modo test: só dono/admin dentro de um turno; fora de turno vale", () => {
+  process.env.LIA_ADMIN_PHONES = "5511999990000";
+  withMode("test", () => {
     assert.equal(recommendEnabled(), true, "sem turno (placar/scripts) vale");
     inTurn("5511999990000", () => assert.equal(recommendEnabled(), true, "admin recebe"));
     inTurn("5511888880000", () => assert.equal(recommendEnabled(), false, "cliente comum não recebe"));

@@ -193,11 +193,11 @@ export type RecommendOutcome = {
   candidates?: ShelfCandidate[];
 };
 
-// LIA_RECOMMEND (dono, 08/10, noite): "test" (padrão) = só dono/admins (LIA_OWNER_PHONE / LIA_ADMIN_PHONES /
-// LIA_OPERATOR_PHONE) recebem recomendação até o placar bater a meta (atende ≥ 90%); "all"/"true" = todo
-// cliente; "false" = desligada. Fora de um turno de WhatsApp (placar, scripts, testes com a flag "all") vale.
+// LIA_RECOMMEND (dono, 08/10, noite): "all" (padrão desde que o placar bateu a meta e o dono liberou pra
+// todos) = todo cliente; "test" = só dono/admins (LIA_OWNER_PHONE / LIA_ADMIN_PHONES / LIA_OPERATOR_PHONE);
+// "false" = desligada. Fora de um turno de WhatsApp (placar, scripts) vale.
 export function recommendEnabled(): boolean {
-  const mode = (process.env.LIA_RECOMMEND ?? "test").trim().toLowerCase();
+  const mode = (process.env.LIA_RECOMMEND ?? "all").trim().toLowerCase();
   if (mode === "false" || mode === "off") return false;
   if (mode === "true" || mode === "all") return true;
   const phone = turnMeta.getStore()?.phone;
