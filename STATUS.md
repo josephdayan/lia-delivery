@@ -100,6 +100,9 @@ Revisão de código por sub-agente achou 9 pontos (2 de segurança ANVISA na por
   "churrasco"): camada intenção → 3–4 produtos concretos (reaproveita a tela de lista e o funil de verdade: catálogo,
   estoque no CEP, rerank), uma pergunta só quando muda tudo, memória do cliente ("o de sempre"), placar próprio de
   pedidos vagos com juiz. Estimativa: 1 dia a camada 1 com placar, +1 dia memória e pergunta.
+  **Plano detalhado (08/10): [docs/plano-recomendacoes-2026-10-08.md](docs/plano-recomendacoes-2026-10-08.md)** —
+  diagnóstico do que acontece hoje ("quero algo doce" vira busca literal: uva doce/batata doce/doce de leite, ou
+  pergunta de volta), 3 camadas, arquivos a mexer, placar próprio e 4 decisões do dono (§7).
 
 ## 08/10/2026 — Preço da loja + taxa de serviço declarada; compra e nota fiscal no CPF do cliente (tudo)
 
