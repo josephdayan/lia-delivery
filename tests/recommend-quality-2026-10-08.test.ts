@@ -14,7 +14,8 @@ import {
   shelfSanityOk,
   violatesRule,
   whyIsFactual,
-  withDietQueries
+  withDietQueries,
+  withPetCondition
 } from "../src/lib/recommend/quality";
 import { constraintRules, defaultTableDeps, eligibleCandidates, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint } from "../src/lib/recommend/fallback";
 import { __setPlanShelvesForTests } from "../src/lib/recommend/ai";
@@ -468,5 +469,26 @@ describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difí
     assert.ok(!plan.picks.some((p) => p.shelfId === "snacks.amendoim_castanhas" || p.shelfId === "lanches.sanduiche"));
     const gord = constraintRules(n.constraints);
     assert.equal(violatesConstraint("Castanha de Caju Torrada", gord, "snacks.amendoim_castanhas"), true);
+  });
+
+  it("q3: ração pro gato com rins/castrado leva a linha na frente da consulta; outras prateleiras ficam como estão", () => {
+    assert.equal(withPetCondition("racao gato", "pet.racao_gato", "raçao pro meu gato castrado que tem problema nos rins"), "racao renal gato | racao gato castrado | racao gato");
+    assert.equal(withPetCondition("shampoo", "pet.higiene", "gato com rins"), "shampoo");
+  });
+
+  it("q3: 'nada caro'/'barato' dito como restrição vira critério de preço; lenço íntimo e panettone saem da prateleira errada", () => {
+    const n = normalizeRecommendRequest(req({ text: "lembrancinha pra professora, nada caro", need: "lembrancinha", constraints: ["barato"], criteria: ["good"] }), defaultTableDeps());
+    assert.equal(n.criteria[0], "cheap");
+    assert.equal(shelfSanityOk("bebe.lenco_umedecido", "Lenço Umedecido Íntimo K-Y"), false);
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Panettone Bauducco Frutas Cristalizadas 500g"), false);
+    assert.equal(shelfSanityOk("hortifruti.ovos", "Tempero Fit Ovos BR Spices 55g"), false);
+    assert.equal(shelfSanityOk("farmacia.antisseptico_cicatrizante", "Antisséptico Cystex 15mg"), false);
+  });
+
+  it("q3: pulga no cachorro usa a entrada da tabela (higiene pet) mesmo com a IA trazendo brinquedo", async () => {
+    __setPlanShelvesForTests(null);
+    const plan = await planShelves(req({ text: "meu cachorro ta cheio de pulga", need: "pulga no cachorro", recipient: "cachorro" }));
+    assert.ok(plan.picks.length && plan.picks.every((p) => p.shelfId.startsWith("pet.")));
+    assert.ok(!plan.picks.some((p) => p.shelfId === "pet.brinquedo"));
   });
 });

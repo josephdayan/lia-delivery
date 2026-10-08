@@ -284,6 +284,11 @@ export function normalizeRecommendRequest(req: RecommendRequest, deps: Pick<Reco
       out = { ...out, form: "need", need: out.product ?? out.text, symptom: out.product ?? out.text, product: undefined };
     }
   }
+  // "Nada caro", "barato", "em conta" dito como restrição é critério de preço (placar q3: lembrancinha 'nada
+  // caro' recebia perfume de R$ 899).
+  if (!out.criteria.includes("cheap") && out.constraints.some((c) => /\b(barat\w*|nada caro|em conta|economic\w*|pouco dinheiro)\b/.test(normRec(c)))) {
+    out = { ...out, criteria: ["cheap", ...out.criteria.filter((c) => c !== "cheap")] };
+  }
   if (out.form === "need" && isFoodAsk(out.text)) {
     const cond = `${text} ${normRec(out.symptom)}`;
     const avoid = CONDITION_AVOID.filter((c) => c.re.test(cond)).flatMap((c) => c.avoid);
@@ -519,6 +524,11 @@ export async function planShelves(reqIn: RecommendRequest, opts: PlanShelvesOpti
   const emergency = checkEmergency(req, deps);
   if (emergency) return redFlagPlan(emergency);
   const symptom = isSymptomRequest(req, deps);
+  // Pulga/carrapato no bicho: a entrada curada (higiene pet) manda — a IA trazia brinquedo e remédio humano.
+  if (/^pulga no (cachorro|gato)$/.test(normRec(req.need))) {
+    const plan = planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory });
+    if (plan?.picks.length) return plan;
+  }
   // Sinal de alerta de saúde SEMPRE antes da IA: não recomenda.
   if (symptom) {
     const flag = checkRedFlag(req, deps);

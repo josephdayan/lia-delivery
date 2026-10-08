@@ -756,8 +756,7 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
       mip("farmacia.analgesico", "dipirona | paracetamol", "alivia a dor")
     ],
     care: [
-      p("mercado.cha", "cha de camomila", "chá morno ajuda a relaxar"),
-      p("higiene.absorvente", "absorvente", "absorvente e protetor diário")
+      p("mercado.cha", "cha de camomila", "chá morno ajuda a relaxar")
     ]
   },
   {
@@ -816,9 +815,9 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   },
   {
     keys: ["piolho", "piolhos", "lendea", "cabeca cocando de piolho"],
-    picks: [mip("farmacia.piolho", "permetrina | deltametrina | pioletal | shampoo antipiolho", "elimina piolhos e lêndeas")],
+    picks: [mip("farmacia.piolho", "permetrina | deltametrina | pioletal | shampoo antipiolho", "tratamento contra piolhos")],
     // Corpus difícil h27 (08/10, noite): pente fino junto.
-    care: [p("beleza.acessorios_cabelo", "pente fino", "pente fino tira as lêndeas")]
+    care: [p("beleza.acessorios_cabelo", "pente fino antipiolho | pente fino lendeas | pente fino", "pente fino tira as lêndeas")]
   },
   {
     // Corpus difícil h21 (08/10, noite): conjuntivite = colírio LUBRIFICANTE (alívio); com secreção/dor forte

@@ -42,7 +42,7 @@ import {
   type RecommendTableDeps
 } from "./fallback";
 import { suggestComplement, type ComplementSuggestion } from "./complement";
-import { attributeRules, baseProductName, withDietQueries, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
+import { attributeRules, baseProductName, withDietQueries, withPetCondition, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
 import { loadCustomerMemory, memoryWantsHealthy, type LoadedMemory } from "./memory";
 import { recommendEnabled } from "./types";
 import type { RecommendCard, RecommendCriterion, RecommendOutcome, RecommendRequest, ShelfCandidate, ShelfPick, ShelfPlan } from "./types";
@@ -208,7 +208,13 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
   const fast = wantsFast(judged.criteria, judged.urgency);
   // Sintoma não é fome: o remédio chega em 1 dia e é a resposta certa — quickOnly só vale em comida/coisa
   // (placar q2: dor de barriga "rápido" ficava só com água de coco).
-  let candidates = fast && !isSymptomPlan(req, plan) ? quickOnly(candidatesIn) : candidatesIn;
+  let candidates = candidatesIn;
+  if (fast && !isSymptomPlan(req, plan)) {
+    // Só corta pelo prazo se sobrarem 2+ prateleiras (placar q3: "algo leve pro jantar" ficava com 1 castanha).
+    const quick = quickOnly(candidatesIn);
+    const shelvesOf = (list: ShelfCandidate[]) => new Set(list.map((c) => c.shelfId)).size;
+    if (shelvesOf(quick) >= Math.min(2, shelvesOf(candidatesIn))) candidates = quick;
+  }
   if (req.form === "product_judged") candidates = productTypeOnly(req, candidates);
   const input = { request: judged, plan, candidates, hour, ...(memory ? { memory } : {}) };
   // Sintoma (rodada de qualidade 08/10): o juiz é a REGRA do remédio (apresentação básica, mais vendido,
@@ -366,7 +372,11 @@ export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan
     if (card.medicine === "mip") why = own || fromPlan;
     else if (allergenWord) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
     else if (cheap && keyOf(card) === keyOf(cheap)) why = `o mais em conta dos ${cards.length}`;
-    else if (fastest && keyOf(card) === keyOf(fastest)) why = "o que chega mais rápido daqui";
+    else if (fastest && keyOf(card) === keyOf(fastest)) {
+      // O prazo vem do card (o juiz do placar marcava "chega mais rápido" solto como promessa sem base).
+      const when = (card.delivery ?? "").replace(/^prazo da loja:\s*/i, "").trim();
+      why = when ? `chega mais rápido dos ${cards.length}: ${when}` : "o que chega mais rápido daqui";
+    }
     else why = dietProofWhy(card.name, rules) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? (own || fromPlan);
     return { ...card, why };
   });
@@ -426,7 +436,7 @@ type Chain = {
 
 // "pra hoje", "agora", "rápido", "urgente" no texto = urgência (rodada de qualidade 08/10: "me surpreende
 // hj" recebia só item de amanhã). O detector nem sempre marca; a cadeia confere de novo.
-const URGENT_TEXT_RE = /\b(hj|hoje|agora|rapido|rapidinho|urgente|urgencia|correndo|madrugada|chegue logo|chega logo|pro jantar|pra janta|pro almoco|hoje a noite)\b|\bem (1|uma|meia|2|duas) horas?\b|\bem \d+ ?min/;
+const URGENT_TEXT_RE = /\b(hj|hoje|agora|rapido|rapidinho|urgente|urgencia|correndo|madrugada|chegue logo|chega logo|hoje a noite)\b|\bem (1|uma|meia|2|duas) horas?\b|\bem \d+ ?min/;
 
 async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketNames?: string[]; mustHave?: string; hour?: number; memory?: LoadedMemory } = {}): Promise<Chain> {
   const td = tableDeps();
@@ -451,7 +461,8 @@ async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketName
   const picks = plan.picks
     .slice(0, MAX_PICKS)
     .map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p))
-    .map((p) => (dietRules.length && p.shelfId !== "produto" ? { ...p, query: withDietQueries(p.query, p.shelfId, dietRules) } : p));
+    .map((p) => (dietRules.length && p.shelfId !== "produto" ? { ...p, query: withDietQueries(p.query, p.shelfId, dietRules) } : p))
+    .map((p) => ({ ...p, query: withPetCondition(p.query, p.shelfId, `${req.text} ${req.need ?? ""}`) }));
   const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs(), req.form === "product_judged");
   let candidates = searched.candidates;
   if (must) {

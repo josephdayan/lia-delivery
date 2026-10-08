@@ -245,7 +245,7 @@ export function meetsAttributes(name: string, rules: readonly AttributeRule[]): 
 // O item é do TIPO da prateleira? (o piso pelo substantivo-cabeça deixa passar "Batata Ruffles" no
 // hortifrúti por "batata", "Gatorade Frutas Cítricas" em frutas, "Eco Copo Café" no café.)
 const PROCESSED_RE =
-  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa)\b/;
+  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa)\b/;
 const NOT_FOOD_RE =
   /\b(formula infantil|fraldas?|pomada|shampoo|sabonete|hidratante|creme dental|desodorante|perfume|colonia|bepantol|aptanutri|aptamil|cafeteira|brinquedo|pelucia|livro|camiseta|vela|caneca|xicara|garrafa termica)\b/;
 const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
@@ -259,8 +259,9 @@ const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
   { shelf: /^doces\.(doces|bolo|biscoito_doce|balas)$/, forbid: /\b(picole|sorvete|acai)\b/ },
   // Brinquedo só na prateleira de brinquedo/bebê/pet (placar q1: "Boneca Minnie" em acessórios de moda).
   { shelf: /^(?!brinquedo\.|bebe\.|pet\.|festa\.|livraria\.)/, forbid: /\b(boneca|bonecas|boneco|bonecos|brinquedo|brinquedos|pelucia|lego)\b/ },
-  { shelf: /^bebe\.lenco_umedecido$/, forbid: /\b(nasal|nasais|nariz)\b/ },
-  { shelf: /^farmacia\.antisseptico_cicatrizante$/, forbid: /\b(garganta|bucal|pastilha|pastilhas|anestesic\w*|spray bucal)\b/ },
+  { shelf: /^bebe\.lenco_umedecido$/, forbid: /\b(nasal|nasais|nariz|intimo|intima|intimos|intimas)\b/ },
+  { shelf: /^hortifruti\.ovos$/, forbid: /\b(tempero|temperos|spices|casca|ovo de pascoa|chocolate|chocotone|po)\b/ },
+  { shelf: /^farmacia\.antisseptico_cicatrizante$/, forbid: /\b(garganta|bucal|pastilha|pastilhas|anestesic\w*|spray bucal|cystex|urinari\w*|cistite)\b/ },
   { shelf: /^farmacia\.curativo$/, forbid: /\b(acne|acnes|espinha|espinhas|cravos?)\b/ },
   { shelf: /^higiene\.absorvente$/, forbid: /\b(fraldas?|geriatric\w*|infantil)\b/ },
   { shelf: /^bebe\.higiene_bebe$/, forbid: /\b(kids|minions|teen|adulto)\b/ }
@@ -346,4 +347,21 @@ export function withDietQueries(query: string, shelfId: string, rules: readonly 
   const out: string[] = [];
   for (const q of [...extra, ...alts]) if (!out.some((o) => normQ(o) === normQ(q))) out.push(q);
   return out.slice(0, 6).join(" | ");
+}
+
+// Condição do bicho dita no pedido de ração (placar difícil q2, h10: "gato castrado com problema nos rins"):
+// a consulta ganha a linha terapêutica/específica na frente — achar "renal" no nome é o fato que o juiz cobra.
+export function withPetCondition(query: string, shelfId: string, text: string): string {
+  if (!/^pet\.racao_/.test(shelfId)) return query;
+  const t = normQ(text);
+  const species = /^pet\.racao_gato$/.test(shelfId) ? "gato" : "cachorro";
+  const extra: string[] = [];
+  if (/\b(rins|renal|renais)\b/.test(t)) extra.push(`racao renal ${species}`);
+  if (/\b(urinari\w*|cristais|calculo)\b/.test(t)) extra.push(`racao urinary ${species}`);
+  if (/\bcastrad[oa]s?\b/.test(t)) extra.push(`racao ${species} castrado`);
+  if (/\b(obes\w*|sobrepeso|acima do peso|gordinh\w*)\b/.test(t)) extra.push(`racao light ${species}`);
+  if (!extra.length) return query;
+  const out: string[] = [];
+  for (const q of [...extra, ...query.split("|").map((x) => x.trim()).filter(Boolean)]) if (!out.some((o) => normQ(o) === normQ(q))) out.push(q);
+  return out.slice(0, 5).join(" | ");
 }
