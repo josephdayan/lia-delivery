@@ -1216,6 +1216,11 @@ export function recommendNone(req: RecommendCopyReq, emptyShelfLabels: string[] 
     const what = trimRec(allergen).replace(/^(sem|nada de|alergia a|alergia ao)\s+/i, "").replace(/\s*\(.*$/, "");
     return `Com alergia a *${what}* eu só mostro o que traz *sem ${what}* escrito no nome, e não achei isso aí agora 😕 Se você me disser um produto que já conhece, eu procuro — e confira sempre o rótulo antes de comer.`;
   }
+  // "Algo gelado" (q9, r24): sem nada gelado que cumpra o pedido, a Lia diz isso, em vez de mostrar fruta e suco morno.
+  if (/\bgelad/i.test(req.need ?? "")) {
+    const restriction = trimRec((req.constraints ?? [])[0]);
+    return `Não achei nada *gelado*${restriction ? ` ${restriction}` : ""} com entrega aí agora 😕 Se você me disser um produto que já conhece, eu procuro.`;
+  }
   const labels = emptyShelfLabels.map((l) => l.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase()).filter(Boolean).slice(0, 3);
   const what = labels.length ? labels.join(", ").replace(/, ([^,]*)$/, " e $1") : recommendLabel(req);
   return `Hoje não achei ${labels.length ? what : `*${what}*`} com entrega aí 😕 Me diz um produto que eu procuro.`;

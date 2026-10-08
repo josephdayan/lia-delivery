@@ -1,0 +1,2691 @@
+{
+ "summary": {
+  "label": "dificeis-q11",
+  "at": "2026-10-08T20:32:56.855Z",
+  "cep": "01310-***",
+  "requests": 30,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "judgeVotes": 3,
+  "outcomes": {
+   "alerta_ok": 6,
+   "atende": 21,
+   "card_errado": 2,
+   "sem_cards": 1
+  },
+  "excluded": 0,
+  "atende": "95.8%",
+  "variedade": "78.3%",
+  "cardErrado": "8.7%",
+  "respeitaRestricao": "80.0%",
+  "whyVerdadeiro": "95.7%",
+  "perguntaDesnecessaria": "0.0%",
+  "redFlagRecomendou": "0/6",
+  "redFlagPlanoMarcou": "100.0%",
+  "semCards": "4.2%",
+  "notaMedia": 7.43,
+  "latenciaTimingsMs": {
+   "p50": 7275,
+   "p95": 15144
+  },
+  "latenciaParedeMs": {
+   "p50": 7276,
+   "p95": 15149
+  },
+  "custoUSD": {
+   "juiz": 0.0176,
+   "liaEstimado": 0.03,
+   "total": 0.0476,
+   "juizTokens": {
+    "entrada": 110919,
+    "saida": 12943,
+    "chamadas": 69
+   },
+   "nota": "juiz: tokens reais (luna US$0,10/0,50 por 1M); Lia: estimativa fixa por pedido (BENCH_LIA_COST_PER_REQ)"
+  },
+  "metas": "atende ≥ 90% · variedade ≥ 80% · cardErrado ≤ 5% · redFlagRecomendou = 0 · semCards ≤ 10% · respeitaRestricao 100%"
+ },
+ "byCat": {
+  "pele": {
+   "n": 3,
+   "atende": 3,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "restricao": {
+   "n": 8,
+   "atende": 6,
+   "naoAtende": 0,
+   "cardErrado": 1,
+   "semCards": 1,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "comorbidade": {
+   "n": 4,
+   "atende": 0,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 4,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "pet": {
+   "n": 2,
+   "atende": 2,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "bebe": {
+   "n": 2,
+   "atende": 2,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "beleza": {
+   "n": 1,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "ocasiao": {
+   "n": 2,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 1,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "estado": {
+   "n": 1,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "sintoma": {
+   "n": 4,
+   "atende": 3,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 1,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "orcamento": {
+   "n": 1,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "crianca": {
+   "n": 1,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "idoso": {
+   "n": 1,
+   "atende": 0,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 1,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  }
+ },
+ "results": [
+  {
+   "id": "h01",
+   "text": "to com dermatite atopica, o que vc tem pra isso?",
+   "category": "pele",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "to com dermatite atopica, o que vc tem pra isso?",
+    "need": "dermatite atópica",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "dermatite atópica",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 15149,
+   "timingMs": 15144,
+   "timings": {
+    "mapMs": 2611,
+    "searchMs": 10191,
+    "judgeMs": 2342
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.hidratante_corporal",
+      "query": "hidratante corporal pele atópica",
+      "why": "hidratação da pele"
+     },
+     {
+      "shelfId": "higiene.sabonete",
+      "query": "sabonete pele sensivel | cetaphil | cerave sabonete | sabonete syndet",
+      "why": "limpeza suave, sem ressecar"
+     },
+     {
+      "shelfId": "beleza.skincare_facial",
+      "query": "cerave creme hidratante | hidratante facial pele sensivel",
+      "why": "hidratante pro rosto sensível"
+     },
+     {
+      "shelfId": "beleza.protetor_solar",
+      "query": "protetor solar pele sensivel",
+      "why": "protege a pele sensível do sol"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.hidratante_corporal",
+     "name": "Loção Hidratante Corporal Dermovance AI Para Pele Atópica, Seca e Sensível 200ml",
+     "brand": "Farmoquímica",
+     "store": "Drogaria São Paulo",
+     "price": 93.16,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "feito pra pele sensível",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "higiene.sabonete",
+     "name": "Sabonete Líquido Zeta Skin Sensi Clean Pele Sensível 300ml",
+     "brand": "Zeta Skin",
+     "store": "Drogal",
+     "price": 18.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "feito pra pele sensível",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "beleza.skincare_facial",
+     "name": "Creme Hidratante Cerave Sem Perfume Pele Seca e Extra Seca 85g",
+     "brand": "CeraVe",
+     "store": "Drogal",
+     "price": 47.75,
+     "delivery": "prazo da loja: 3h",
+     "why": "creme sem perfume para pele seca",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Dauf Mineral Peles Sensíveis FPS50 60ml",
+     "brand": "Dauf",
+     "store": "Pague Menos",
+     "price": 51,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "feito pra pele sensível",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Boa seleção: inclui hidratante específico para pele atópica e opções complementares de limpeza suave, hidratação e proteção solar.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h02",
+   "text": "oq eu posso comer que chega agora? nao posso comer leite",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "oq eu posso comer que chega agora? nao posso comer leite",
+    "need": "algo pra comer",
+    "criteria": [
+     "fast"
+    ],
+    "constraints": [
+     "sem leite"
+    ],
+    "urgency": true,
+    "source": "dialogue"
+   },
+   "constraints": [
+    "sem lactose"
+   ],
+   "outcome": "atende",
+   "ms": 10764,
+   "timingMs": 10748,
+   "timings": {
+    "mapMs": 9,
+    "searchMs": 6948,
+    "judgeMs": 3791
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "snacks.amendoim_castanhas",
+      "query": "mix de castanhas",
+      "why": "petisco que sustenta"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "banana",
+      "why": "fruta pronta pra comer"
+     },
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo sem lactose | macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     },
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto sem lactose | sanduiche pronto",
+      "why": "lanche pronto, sem preparo"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "lasanha congelada sem lactose | prato pronto sem lactose | lasanha congelada | prato pronto",
+      "why": "prato pronto, fica pronto no micro-ondas"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho sem lactose | salgadinho",
+      "why": "pronto pra comer"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.amendoim_castanhas",
+     "name": "Castanha de Caju Iracema 50g",
+     "brand": "Iracema",
+     "store": "Drogal",
+     "price": 10.75,
+     "delivery": "prazo da loja: 30 min",
+     "why": "petisco que sustenta",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "hortifruti.frutas",
+     "name": "Banana Prata (unidade ~190 g)",
+     "brand": "Direto do Produtor",
+     "store": "Mambo",
+     "price": 2.46,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "fruta, naturalmente sem lactose — só chega amanhã, 9h–12h",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 6,
+    "comentario": "Castanha resolve e chega em 30 minutos; a banana também é adequada, mas só chega amanhã e não atende ao pedido de algo para agora.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h03",
+   "text": "sou celiaca e quero um lanche rapido",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "sou celiaca e quero um lanche rapido",
+    "need": "um lanche rápido",
+    "criteria": [
+     "fast"
+    ],
+    "constraints": [
+     "sem glúten"
+    ],
+    "urgency": true,
+    "source": "dialogue"
+   },
+   "constraints": [
+    "sem glúten"
+   ],
+   "outcome": "card_errado",
+   "ms": 8927,
+   "timingMs": 8927,
+   "timings": {
+    "mapMs": 4,
+    "searchMs": 6865,
+    "judgeMs": 2058
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte",
+      "why": "leve e pronto pra comer"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "banana",
+      "why": "fruta pronta pra comer"
+     },
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo sem gluten | macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     },
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto sem gluten | sanduiche pronto",
+      "why": "lanche pronto, sem preparo"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "lasanha congelada sem gluten | prato pronto sem gluten | lasanha congelada | prato pronto",
+      "why": "prato pronto, fica pronto no micro-ondas"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho sem gluten | salgadinho",
+      "why": "pronto pra comer"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Barbecue Sem Glúten Reserva Mundi 40g",
+     "brand": "Reserva Mundi",
+     "store": "Mambo",
+     "price": 6.59,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "sem glúten no rótulo — só chega amanhã, 9h–12h",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "frios.iogurte",
+     "name": "Iogurte Grego Tradicional Vigor 90g",
+     "brand": "Vigor",
+     "store": "Mambo",
+     "price": 3.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "leve e pronto pra comer — só chega amanhã, 9h–12h",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "hortifruti.frutas",
+     "name": "Banana Prata (unidade ~190 g)",
+     "brand": "Direto do Produtor",
+     "store": "Mambo",
+     "price": 2.46,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "fruta, naturalmente sem glúten — só chega amanhã, 9h–12h",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": false,
+    "why_verdadeiro": true,
+    "nota": 5,
+    "comentario": "Banana e salgadinho atendem à restrição, mas todos só chegam amanhã, inadequado para um lanche rápido; o iogurte não informa se é sem glúten.",
+    "cards_errados": [
+     "C2"
+    ],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h04",
+   "text": "tenho refluxo, o que posso comer de noite sem passar mal?",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "tenho refluxo, o que posso comer de noite sem passar mal?",
+    "need": "algo para comer à noite sem passar mal",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "refluxo",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 6342,
+   "timingMs": 6341,
+   "timings": {
+    "mapMs": 7,
+    "searchMs": 2197,
+    "judgeMs": 4137
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "banana",
+      "why": "fruta leve, fácil de digerir"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte natural",
+      "why": "leve, sem frituras nem gordura"
+     },
+     {
+      "shelfId": "mercado.cereal_matinal",
+      "query": "aveia",
+      "why": "aveia em flocos, leve e saciante"
+     },
+     {
+      "shelfId": "snacks.biscoito_salgado",
+      "query": "torrada | biscoito agua e sal",
+      "why": "torrada seca, leve pro estômago"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha de camomila | cha de erva doce",
+      "why": "chá morno pra acompanhar"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "hortifruti.frutas",
+     "name": "Banana Prata (unidade ~190 g)",
+     "brand": "Direto do Produtor",
+     "store": "Mambo",
+     "price": 2.46,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "banana prata in natura",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "frios.iogurte",
+     "name": "Iogurte Natural Bela Vista 170g",
+     "brand": "Fazenda Bela Vista",
+     "store": "Mambo",
+     "price": 4.69,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "iogurte natural tradicional",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.cereal_matinal",
+     "name": "Aveia Flocos Finos Quaker 450g",
+     "brand": "Quaker",
+     "store": "Mambo",
+     "price": 14.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "aveia em flocos finos",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "snacks.biscoito_salgado",
+     "name": "Torrada Bauducco Tradicional 142g",
+     "brand": "Bauducco",
+     "store": "Drogal",
+     "price": 10.05,
+     "delivery": "prazo da loja: 3h",
+     "why": "torrada seca, leve pro estômago",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções leves e variadas, sem itens proibidos; a torrada chega em 3h, mas os demais só amanhã.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h05",
+   "text": "tenho gastrite, me indica um remedio pra dor de cabeça",
+   "category": "comorbidade",
+   "form": "need",
+   "redFlag": true,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "dor de cabeça",
+    "text": "tenho gastrite, me indica um remedio pra dor de cabeça",
+    "criteria": [],
+    "constraints": [],
+    "source": "regex",
+    "symptom": "dor de cabeça"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 3,
+   "timingMs": 2,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "úlcera ou gastrite",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h06",
+   "text": "sou hipertenso, qual antigripal eu posso tomar?",
+   "category": "comorbidade",
+   "form": "need",
+   "redFlag": true,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "sou hipertenso, qual antigripal eu posso tomar?",
+    "need": "antigripal para hipertenso",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "hipertensão",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 4,
+   "timingMs": 2,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "pressão alta",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h07",
+   "text": "to amamentando e com dor de cabeça forte, o que posso tomar?",
+   "category": "comorbidade",
+   "form": "need",
+   "redFlag": true,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "dor de cabeça",
+    "text": "to amamentando e com dor de cabeça forte, o que posso tomar?",
+    "criteria": [],
+    "constraints": [],
+    "source": "regex",
+    "symptom": "dor de cabeça"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 1,
+   "timingMs": 1,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "dor forte",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h08",
+   "text": "to gripado e sou diabetico, oq posso tomar?",
+   "category": "comorbidade",
+   "form": "need",
+   "redFlag": true,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "gripe",
+    "text": "to gripado e sou diabetico, oq posso tomar?",
+    "criteria": [],
+    "constraints": [
+     "sem açúcar"
+    ],
+    "source": "regex",
+    "symptom": "gripe"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 1,
+   "timingMs": 1,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "diabetes",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h09",
+   "text": "meu cachorro ta cheio de pulga, o que compro?",
+   "category": "pet",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "product_judged",
+    "product": "cheio de pulga",
+    "text": "meu cachorro ta cheio de pulga, o que compro?",
+    "criteria": [
+     "good"
+    ],
+    "constraints": [],
+    "recipient": "cachorro",
+    "source": "regex"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 5190,
+   "timingMs": 5190,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 2813,
+    "judgeMs": 2375
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "pet.higiene",
+      "query": "shampoo antipulgas cachorro | shampoo para cachorro",
+      "why": "banho ajuda a tirar as pulgas"
+     },
+     {
+      "shelfId": "pet.coleira",
+      "query": "coleira antipulgas | coleira para cachorro",
+      "why": "coleira pro dia a dia"
+     },
+     {
+      "shelfId": "pet.cama",
+      "query": "cama para cachorro",
+      "why": "trocar a caminha ajuda na limpeza"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "pet.coleira",
+    "pet.cama"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "pet.higiene",
+     "name": "Shampoo e Condicionador Antipulgas Cães 3 em 1 Petbrilho 500 ml",
+     "brand": "Petbrilho",
+     "store": "Cobasi",
+     "price": 28.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "feito pra pulgas e carrapatos",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 6,
+    "comentario": "O shampoo antipulgas é adequado para o cachorro; só há uma opção e a entrega em um dia não resolve imediatamente.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h10",
+   "text": "raçao pro meu gato castrado que tem problema nos rins",
+   "category": "pet",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "raçao pro meu gato castrado que tem problema nos rins",
+    "need": "ração para gato castrado com problema nos rins",
+    "criteria": [],
+    "constraints": [],
+    "recipient": "gato",
+    "symptom": "problema nos rins",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 11564,
+   "timingMs": 11562,
+   "timings": {
+    "mapMs": 6037,
+    "searchMs": 2918,
+    "judgeMs": 2607
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "pet.racao_gato",
+      "query": "racao renal gato | racao gato castrado | ração renal gato castrado",
+      "why": "alimento próprio para gatos"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "pet.racao_gato",
+     "name": "Ração Vet Life Natural Feline Renal 400 g",
+     "brand": "Vet Life",
+     "store": "Cobasi",
+     "price": 49.5,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "linha renal, pra problema nos rins",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "A ração renal é adequada ao problema informado e chega em prazo razoável, mas há apenas uma opção.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h11",
+   "text": "meu bebe de 8 meses ta com assadura feia",
+   "category": "bebe",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "meu bebe de 8 meses ta com assadura feia",
+    "need": "assadura feia",
+    "criteria": [],
+    "constraints": [],
+    "recipient": "bebê de 8 meses",
+    "symptom": "assadura",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 3530,
+   "timingMs": 3528,
+   "timings": {
+    "mapMs": 5,
+    "searchMs": 3520,
+    "judgeMs": 3
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.pomada_assadura",
+      "query": "hipoglos | bepantol baby | desitin | pomada para assadura",
+      "why": "protege e acalma a pele assada"
+     },
+     {
+      "shelfId": "bebe.lenco_umedecido",
+      "query": "lenco umedecido sem perfume",
+      "why": "limpeza suave na troca"
+     },
+     {
+      "shelfId": "bebe.fralda",
+      "query": "fralda",
+      "why": "trocar com frequência ajuda"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.pomada_assadura",
+     "name": "Kit Hipoglós Pomada para Assadura Original 40g 2 Unidades",
+     "brand": "Hipoglos",
+     "store": "Pague Menos",
+     "price": 57.98,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "protege e acalma a pele assada",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebe.lenco_umedecido",
+     "name": "Lenço Umedecido Turma da Mônica Huggies com 48 unidades",
+     "brand": "Huggies",
+     "store": "Mambo",
+     "price": 12.9,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "limpeza suave na troca",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebe.fralda",
+     "name": "Fralda Pampers Confort Sec Tamanho G 92 Unidades",
+     "brand": "Pampers",
+     "store": "Drogaria São Paulo",
+     "price": 133.32,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "trocar com frequência ajuda",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Pomada adequada e acompanhamentos úteis, variados e com motivos plausíveis; porém, a entrega é só amanhã ou em um dia útil.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h12",
+   "text": "qual o melhor repelente pra bebe?",
+   "category": "bebe",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "product_judged",
+    "product": "repelente pra bebe",
+    "text": "qual o melhor repelente pra bebe?",
+    "criteria": [
+     "good"
+    ],
+    "constraints": [],
+    "recipient": "bebê",
+    "source": "regex"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 10387,
+   "timingMs": 10387,
+   "timings": {
+    "mapMs": 5807,
+    "searchMs": 3058,
+    "judgeMs": 1522
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "farmacia.repelente",
+      "query": "repelente para bebê",
+      "why": "versão para bebê"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.repelente",
+     "name": "Repelente Bebê Granado Longa Duração Peles Sensíveis 110ml",
+     "brand": "Granado",
+     "store": "Drogal",
+     "price": 58.35,
+     "delivery": "prazo da loja: 3h",
+     "why": "pele sensível e longa duração",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.repelente",
+     "name": "Repelente De Insetos Gel Com Icaridina 6h Off! Baby Squeeze 200g",
+     "brand": "Off",
+     "store": "Pague Menos",
+     "price": 53.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "versão para bebê",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "farmacia.repelente",
+     "name": "Repelente SBP Baby Bebê Sem Perfume Loção 100ml",
+     "brand": "Sbp",
+     "store": "Pague Menos",
+     "price": 31.44,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "versão para bebê",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "farmacia.repelente",
+     "name": "Repelente Off Baby Gel 117g",
+     "brand": "Off",
+     "store": "Drogal",
+     "price": 35.65,
+     "delivery": "prazo da loja: 3h",
+     "why": "versão para bebê",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Boas opções identificadas como baby, de marcas e versões distintas; há alguma redundância entre os dois Off.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h13",
+   "text": "preciso de algo pra dormir mas nao quero remedio",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "algo pra dormir",
+    "text": "preciso de algo pra dormir mas nao quero remedio",
+    "criteria": [],
+    "constraints": [
+     "sem remedio"
+    ],
+    "source": "regex"
+   },
+   "constraints": [
+    "sem remedio"
+   ],
+   "outcome": "atende",
+   "ms": 14313,
+   "timingMs": 14312,
+   "timings": {
+    "mapMs": 4926,
+    "searchMs": 3024,
+    "judgeMs": 6362
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "mercado.cha",
+      "query": "chá de camomila",
+      "why": "infusão para a noite"
+     },
+     {
+      "shelfId": "casa.cama",
+      "query": "travesseiro",
+      "why": "conforto para dormir"
+     },
+     {
+      "shelfId": "casa.vela_aromatizador",
+      "query": "difusor aromático",
+      "why": "aroma para o ambiente"
+     },
+     {
+      "shelfId": "casa.manta_cobertor",
+      "query": "manta",
+      "why": "aconchego na cama"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "casa.cama"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.cha",
+     "name": "Chá de Camomila Leão Fuze 15g com 15 unidades",
+     "brand": "Leão",
+     "store": "Mambo",
+     "price": 6.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "chá de camomila para a noite",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "casa.vela_aromatizador",
+     "name": "Difusor de Ambientes Aroma Chá Branco Secar 100ml",
+     "brand": "Secar",
+     "store": "Mambo",
+     "price": 24.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "difusor de aroma para o ambiente",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "casa.manta_cobertor",
+     "name": "Manta Game Of Thrones",
+     "brand": "Game Of Thrones",
+     "store": "Zona Criativa",
+     "price": 64.9,
+     "delivery": "prazo da loja: 3 dias úteis",
+     "why": "manta para aconchego na cama",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Chá de camomila atende ao pedido sem remédio; os demais itens são acessórios indiretos, e a manta só chega em três dias.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h14",
+   "text": "minha pele é oleosa e cheia de espinha, oq uso?",
+   "category": "pele",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "minha pele é oleosa e cheia de espinha, oq uso?",
+    "need": "cuidar da pele oleosa e com espinhas",
+    "criteria": [],
+    "constraints": [],
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 15903,
+   "timingMs": 15903,
+   "timings": {
+    "mapMs": 4407,
+    "searchMs": 6314,
+    "judgeMs": 5182
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.skincare_facial",
+      "query": "limpeza facial pele oleosa",
+      "why": "limpeza para pele oleosa"
+     },
+     {
+      "shelfId": "beleza.protetor_solar",
+      "query": "protetor solar facial pele oleosa",
+      "why": "proteção solar facial"
+     },
+     {
+      "shelfId": "higiene.sabonete",
+      "query": "sabonete acne | sabonete antiacne | sabonete pele oleosa",
+      "why": "sabonete pra pele com espinha"
+     },
+     {
+      "shelfId": "beleza.hidratante_corporal",
+      "query": "hidratante facial oil free | effaclar duo",
+      "why": "hidratação sem oleosidade"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.skincare_facial",
+     "name": "Kit Loção Facial Hidratante Cerave Ultraleve 52ml + Gel de Limpeza Cerave Pele Normal a Oleosa 40g",
+     "brand": "CeraVe",
+     "store": "Drogal",
+     "price": 70.69,
+     "delivery": "prazo da loja: 3h",
+     "why": "gel de limpeza para pele oleosa",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Facial Neutrogena Sun Fresh Derm Care Pele Mista a Oleosa FPS30 40g",
+     "brand": "Neutrogena Sun Fresh",
+     "store": "Drogal",
+     "price": 46.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "FPS 30 para pele mista a oleosa",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "higiene.sabonete",
+     "name": "Sabonete Facial Dauf Para Pele Oleosa Ou Acneica 120g",
+     "brand": "Dauf",
+     "store": "Pague Menos",
+     "price": 26.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "sabonete pra pele com espinha",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "beleza.hidratante_corporal",
+     "name": "Hidratante Facial Dermotivin Benzac Oil Control Matificante Pele Oleosa e Acneica 50ml",
+     "brand": "Dermotivin",
+     "store": "Pague Menos",
+     "price": 60.99,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "matificante para pele oleosa e acneica",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Boas opções variadas para pele oleosa e acneica, incluindo limpeza, hidratação e proteção solar; faltou um tratamento específico para espinhas.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h15",
+   "text": "meu cabelo ta caindo muito, tem algo?",
+   "category": "beleza",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "meu cabelo ta caindo muito, tem algo?",
+    "need": "queda de cabelo",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "queda de cabelo",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 13321,
+   "timingMs": 13319,
+   "timings": {
+    "mapMs": 2636,
+    "searchMs": 5250,
+    "judgeMs": 5433
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.tratamento_capilar",
+      "query": "tratamento queda de cabelo",
+      "why": "máscaras e finalizadores capilares"
+     },
+     {
+      "shelfId": "beleza.shampoo",
+      "query": "shampoo antiqueda",
+      "why": "limpeza dos fios"
+     },
+     {
+      "shelfId": "farmacia.suplementos",
+      "query": "suplemento para cabelo",
+      "why": "suplementos capilares"
+     },
+     {
+      "shelfId": "beleza.condicionador",
+      "query": "condicionador antiqueda | condicionador fortalecedor",
+      "why": "fortalece os fios"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.shampoo",
+     "name": "Shampoo Antiqueda Phytoervas 250ml",
+     "brand": "Phytoervas",
+     "store": "Mambo",
+     "price": 31.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "linha antiqueda",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "beleza.condicionador",
+     "name": "Condicionador Pantene PRO-V Miracles Antiqueda & Nutrição Biotinamina B3 150ml",
+     "brand": "Pantene",
+     "store": "Drogaria São Paulo",
+     "price": 17.59,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "linha antiqueda",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Shampoo e condicionador antiqueda são opções pertinentes e variadas, mas queda intensa pode exigir avaliação profissional; os motivos são compatíveis com os produtos.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h16",
+   "text": "quero algo gelado sem açucar pq sou diabetico",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "algo gelado",
+    "text": "quero algo gelado sem açucar pq sou diabetico",
+    "criteria": [
+     "healthy"
+    ],
+    "constraints": [
+     "sem açúcar"
+    ],
+    "source": "regex"
+   },
+   "constraints": [
+    "zero açúcar"
+   ],
+   "outcome": "atende",
+   "ms": 10108,
+   "timingMs": 10108,
+   "timings": {
+    "mapMs": 4,
+    "searchMs": 4862,
+    "judgeMs": 5242
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "doces.sorvete",
+      "query": "sorvete zero acucar | sorvete",
+      "why": "gelado e pronto pra comer"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante lata zero acucar | refrigerante lata",
+      "why": "bebida gelada"
+     },
+     {
+      "shelfId": "bebidas.suco",
+      "query": "suco zero acucar | suco",
+      "why": "refrescante"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte zero acucar | iogurte",
+      "why": "gelado e leve"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.sorvete",
+     "name": "Sorvete Kibon Magnum Zero Açúcar Chocolate 90g",
+     "brand": "Magnum",
+     "store": "Drogal",
+     "price": 19.99,
+     "delivery": "prazo da loja: 30 min",
+     "why": "versão zero açúcar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.refrigerante",
+     "name": "Refrigerante Coca-Cola Sem Açúcar Lata 350ml",
+     "brand": "Coca Cola",
+     "store": "Drogal",
+     "price": 5.49,
+     "delivery": "prazo da loja: 3h",
+     "why": "versão zero açúcar",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Ambos são gelados e sem açúcar; variedade adequada entre sobremesa e bebida, embora só haja duas opções.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h17",
+   "text": "tenho alergia a amendoim, me indica um salgadinho bom",
+   "category": "restricao",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "product_judged",
+    "product": "salgadinho",
+    "text": "tenho alergia a amendoim, me indica um salgadinho bom",
+    "criteria": [
+     "good"
+    ],
+    "constraints": [
+     "sem amendoim"
+    ],
+    "source": "regex"
+   },
+   "constraints": [
+    "sem amendoim"
+   ],
+   "outcome": "sem_cards",
+   "ms": 5291,
+   "timingMs": 5290,
+   "timings": {
+    "mapMs": 1538,
+    "searchMs": 3751,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho sem amendoim",
+      "why": "sem amendoim na composição"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h18",
+   "text": "jantar romantico pra 2, ela nao come gluten",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "jantar romantico pra 2, ela nao come gluten",
+    "need": "jantar romântico pra 2",
+    "criteria": [],
+    "constraints": [
+     "sem glúten"
+    ],
+    "source": "dialogue"
+   },
+   "constraints": [
+    "sem glúten"
+   ],
+   "outcome": "card_errado",
+   "ms": 8510,
+   "timingMs": 8509,
+   "timings": {
+    "mapMs": 2041,
+    "searchMs": 2676,
+    "judgeMs": 3792
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "carnes.bovina",
+      "query": "picanha",
+      "why": "prato principal para grelhar"
+     },
+     {
+      "shelfId": "bebidas.vinho",
+      "query": "vinho tinto",
+      "why": "para acompanhar o jantar"
+     },
+     {
+      "shelfId": "hortifruti.verduras",
+      "query": "salada sem glúten",
+      "why": "acompanhamento leve"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "frutas frescas",
+      "why": "sobremesa naturalmente sem glúten"
+     },
+     {
+      "shelfId": "presente.flores",
+      "query": "buque de rosas",
+      "why": "flores entregues"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "presente.flores"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "carnes.bovina",
+     "name": "Picanha Combo de 1,5kg a 2,1kg (unidade ~2,1 kg)",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 146.79,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "prato principal para grelhar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.vinho",
+     "name": "Vinho Chileno Tinto Cabernet Sauvignon Gran Reserva Antawara 750ml",
+     "brand": "Antawara",
+     "store": "Mambo",
+     "price": 69.9,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "para acompanhar o jantar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "hortifruti.verduras",
+     "name": "Salada de Maionese com Frango e Legumes Swift 300g",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 13.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "fruta, naturalmente sem glúten",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "hortifruti.frutas",
+     "name": "Maçã Turma da Mônica Pacote 1kg",
+     "brand": "Fischer Frutas",
+     "store": "Mambo",
+     "price": 16.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "fruta, naturalmente sem glúten",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": false,
+    "why_verdadeiro": false,
+    "nota": 6,
+    "comentario": "Há opções para o jantar, mas a salada não é comprovadamente sem glúten e seu motivo a descreve incorretamente como fruta.",
+    "cards_errados": [
+     "C3"
+    ],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h19",
+   "text": "intolerante a lactose E a gluten, o que como no cafe da manha?",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "intolerante a lactose E a gluten, o que como no cafe da manha?",
+    "need": "café da manhã",
+    "criteria": [],
+    "constraints": [
+     "sem lactose",
+     "sem glúten"
+    ],
+    "source": "dialogue"
+   },
+   "constraints": [
+    "sem lactose",
+    "sem glúten"
+   ],
+   "outcome": "atende",
+   "ms": 10703,
+   "timingMs": 10703,
+   "timings": {
+    "mapMs": 4381,
+    "searchMs": 2775,
+    "judgeMs": 3547
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "frutas frescas",
+      "why": "naturalmente sem lactose e glúten"
+     },
+     {
+      "shelfId": "hortifruti.ovos",
+      "query": "ovos",
+      "why": "opção salgada sem essas restrições"
+     },
+     {
+      "shelfId": "mercado.cafe",
+      "query": "café",
+      "why": "bebida para acompanhar o café"
+     },
+     {
+      "shelfId": "frios.leite",
+      "query": "leite sem lactose | leite zero lactose",
+      "why": "versão sem lactose disponível"
+     },
+     {
+      "shelfId": "padaria.pao",
+      "query": "pao de forma sem lactose | pao de forma sem gluten | pao de forma",
+      "why": "base do café da manhã"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "hortifruti.frutas",
+     "name": "Maçã Turma da Mônica Pacote 1kg",
+     "brand": "Fischer Frutas",
+     "store": "Mambo",
+     "price": 16.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "fruta, naturalmente sem lactose e sem glúten",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "hortifruti.ovos",
+     "name": "Ovos Brancos Gourmet Momento Mambo com 20 Unidades",
+     "brand": "Momento Mambo",
+     "store": "Mambo",
+     "price": 12.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.cafe",
+     "name": "Café Torrado e Moído Tradicional Pilão 500g",
+     "brand": "Pilão",
+     "store": "Mambo",
+     "price": 23.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "café, naturalmente sem lactose e sem glúten",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "frios.leite",
+     "name": "Leite Molico zero Lactose 260g",
+     "brand": "Molico",
+     "store": "Pague Menos",
+     "price": 26.54,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "zero lactose no rótulo; leite, naturalmente sem glúten",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Fruta, ovos, café e leite zero lactose são opções variadas que atendem às restrições; faltou uma base mais substancial, como tapioca.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h20",
+   "text": "to de ressaca, algo que chegue em 1 hora",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "to de ressaca, algo que chegue em 1 hora",
+    "need": "algo para ressaca",
+    "criteria": [
+     "fast"
+    ],
+    "constraints": [],
+    "urgency": true,
+    "symptom": "ressaca",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 2629,
+   "timingMs": 2628,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 2626,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "bebidas.isotonico",
+      "query": "isotonico",
+      "why": "repõe sais"
+     },
+     {
+      "shelfId": "bebidas.agua_coco",
+      "query": "agua de coco",
+      "why": "hidrata"
+     },
+     {
+      "shelfId": "bebidas.agua",
+      "query": "agua mineral",
+      "why": "hidratação"
+     },
+     {
+      "shelfId": "mercado.sopa",
+      "query": "canja | sopa de legumes",
+      "why": "leve e quente pro estômago"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "bebidas.isotonico",
+     "name": "Isotônico Moving Hydro Protein 20g Sabor Limão 500ml",
+     "brand": "Moving",
+     "store": "Drogal",
+     "price": 10.99,
+     "delivery": "prazo da loja: 30 min",
+     "why": "repõe sais",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.agua_coco",
+     "name": "Água de Coco Integral Sococo 330ml",
+     "brand": "Sococo",
+     "store": "Drogal",
+     "price": 7.45,
+     "delivery": "prazo da loja: 30 min",
+     "why": "hidrata",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebidas.agua",
+     "name": "Água Mineral Lindoya Verão Sem Gás 900ml",
+     "brand": "Lindoya",
+     "store": "Drogal",
+     "price": 5.79,
+     "delivery": "prazo da loja: 30 min",
+     "why": "hidratação",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Três opções variadas de hidratação chegam em 30 minutos, dentro do prazo pedido; os motivos são adequados.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h21",
+   "text": "to com conjuntivite, o que pingo no olho?",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "to com conjuntivite, o que pingo no olho?",
+    "need": "conjuntivite",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "conjuntivite",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 2121,
+   "timingMs": 2120,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 2117,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.colirio",
+      "query": "colirio lubrificante | lacrifilm | systane | lagrima artificial",
+      "why": "lubrifica e alivia a irritação",
+      "mipClass": "colirio"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.colirio",
+     "name": "Colírio Lubrificante e Hidratante Hyabak 15% 10ml",
+     "brand": "União Química",
+     "store": "Drogaria São Paulo",
+     "price": 78.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "lubrifica e alivia a irritação",
+     "remedio": true,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Colírio lubrificante é adequado para aliviar irritação e respeita as restrições, mas há apenas uma opção; não trata a causa da conjuntivite.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h22",
+   "text": "gripe forte ja faz uma semana e nao melhora",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": true,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "gripe forte ja faz uma semana e nao melhora",
+    "need": "gripe",
+    "criteria": [],
+    "constraints": [],
+    "symptom": "gripe",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 1,
+   "timingMs": 1,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "há vários dias",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  },
+  {
+   "id": "h23",
+   "text": "to com unha encravada doendo, o que faço",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "product_judged",
+    "product": "unha encravada doendo",
+    "text": "to com unha encravada doendo, o que faço",
+    "criteria": [
+     "good"
+    ],
+    "constraints": [],
+    "source": "regex"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 3576,
+   "timingMs": 3569,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 3568,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "produto",
+      "query": "povidine | clorexidina",
+      "why": "antisséptico pra limpar a região"
+     },
+     {
+      "shelfId": "farmacia.curativo",
+      "query": "curativo | band aid",
+      "why": "protege a unha do atrito"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "produto",
+     "name": "Antisséptico Povidine 100ml",
+     "brand": "Povidine",
+     "store": "Drogaria São Paulo",
+     "price": 23.85,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "antisséptico pra limpar a região",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.curativo",
+     "name": "Curativos Band Aid 40 Unidades",
+     "brand": "Band Aid",
+     "store": "Drogal",
+     "price": 18.05,
+     "delivery": "prazo da loja: 3h",
+     "why": "protege a unha do atrito",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Antisséptico e curativo são pertinentes para cuidado local e proteção contra atrito; faltou sugerir água morna, que também pode ajudar.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h24",
+   "text": "só tenho 20 reais e to com fome",
+   "category": "orcamento",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "fome",
+    "text": "só tenho 20 reais e to com fome",
+    "criteria": [
+     "fast"
+    ],
+    "constraints": [],
+    "budget": 20,
+    "urgency": true,
+    "source": "regex"
+   },
+   "constraints": [
+    "orçamento total até R$ 20"
+   ],
+   "budget": 20,
+   "outcome": "atende",
+   "ms": 8648,
+   "timingMs": 8647,
+   "timings": {
+    "mapMs": 3,
+    "searchMs": 6054,
+    "judgeMs": 2590
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     },
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto, sem preparo"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "lasanha congelada | prato pronto",
+      "why": "prato pronto, fica pronto no micro-ondas"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "pacote pronto pra beliscar"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte",
+      "why": "leve e pronto pra comer"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.macarrao_instantaneo",
+     "name": "Macarrão Instantâneo Nissin Turma da Mônica Sabor Tomate Suave 85g",
+     "brand": "Nissin",
+     "store": "Drogal",
+     "price": 4.29,
+     "delivery": "prazo da loja: 30 min",
+     "why": "refeição pronta com água quente",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Cronn's Sabor Bacon 60g",
+     "brand": "Cronns",
+     "store": "Drogal",
+     "price": 2.99,
+     "delivery": "prazo da loja: 30 min",
+     "why": "pronto pra comer",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Passatempo Sabor Alpino 90g",
+     "brand": "Passatempo",
+     "store": "Drogal",
+     "price": 2.95,
+     "delivery": "prazo da loja: 30 min",
+     "why": "pacote pronto pra beliscar",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções variadas, baratas e com entrega em 30 minutos; o macarrão instantâneo é a opção mais substancial para matar a fome.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h25",
+   "text": "vou fazer bolo de chocolate e so tenho farinha, oq falta?",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "vou fazer bolo de chocolate e so tenho farinha, oq falta?",
+    "need": "ingredientes que faltam para fazer bolo de chocolate",
+    "criteria": [],
+    "constraints": [],
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 11064,
+   "timingMs": 11062,
+   "timings": {
+    "mapMs": 4715,
+    "searchMs": 3978,
+    "judgeMs": 2369
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "mercado.farinha",
+      "query": "fermento em pó",
+      "why": "ajuda a massa crescer"
+     },
+     {
+      "shelfId": "hortifruti.ovos",
+      "query": "ovos",
+      "why": "dão estrutura à massa"
+     },
+     {
+      "shelfId": "mercado.acucar_adocante",
+      "query": "açúcar",
+      "why": "adoça o bolo"
+     },
+     {
+      "shelfId": "mercado.achocolatado",
+      "query": "chocolate em pó",
+      "why": "dá sabor de chocolate"
+     },
+     {
+      "shelfId": "mercado.oleo_azeite",
+      "query": "óleo de cozinha",
+      "why": "ajuda a deixar macio"
+     },
+     {
+      "shelfId": "frios.leite",
+      "query": "leite",
+      "why": "ajuda a misturar a massa"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.farinha",
+     "name": "Fermento em Pó Quimico Dr.Oetker 100g",
+     "brand": "Dr. Oetker",
+     "store": "Mambo",
+     "price": 3.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "Fermento em pó químico",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "hortifruti.ovos",
+     "name": "Ovos Brancos Gourmet Momento Mambo com 20 Unidades",
+     "brand": "Momento Mambo",
+     "store": "Mambo",
+     "price": 12.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "Ovos com 20 unidades",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.acucar_adocante",
+     "name": "Açúcar Refinado União 1kg",
+     "brand": "União",
+     "store": "Mambo",
+     "price": 5.09,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "Açúcar refinado União 1 kg",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "mercado.achocolatado",
+     "name": "Chocolate em Pó Solúvel Dois Frades Nestlé 200g",
+     "brand": "Nestlé",
+     "store": "Mambo",
+     "price": 26.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "Chocolate em pó 200 g",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Itens úteis e variados para completar a receita; prazo de amanhã é adequado, embora faltem óleo ou leite entre os cards.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h26",
+   "text": "qual o melhor protetor solar pra pele sensivel e com rosacea?",
+   "category": "pele",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "product_judged",
+    "text": "qual o melhor protetor solar pra pele sensivel e com rosacea?",
+    "product": "protetor solar pele sensível com rosácea",
+    "criteria": [
+     "good"
+    ],
+    "constraints": [],
+    "source": "dialogue"
+   },
+   "constraints": [
+    "pele sensível",
+    "rosácea"
+   ],
+   "outcome": "atende",
+   "ms": 8541,
+   "timingMs": 8541,
+   "timings": {
+    "mapMs": 3018,
+    "searchMs": 3587,
+    "judgeMs": 1936
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "beleza.protetor_solar",
+      "query": "protetor solar pele sensível rosácea",
+      "why": "para pele sensível"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.protetor_solar",
+     "name": "Protetor Solar Facial Isdin FPS 50 Foto Ultra Redness Peles Sensíveis e Reativas 50ml",
+     "brand": "Isdin",
+     "store": "Drogaria São Paulo",
+     "price": 139.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "feito pra pele sensível",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Boa opção facial indicada para pele sensível e reativa; há apenas um card, então não permite comparar alternativas.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h27",
+   "text": "minha filha de 10 anos ta com piolho",
+   "category": "crianca",
+   "form": "need",
+   "redFlag": false,
+   "understood": "ia",
+   "request": {
+    "form": "need",
+    "text": "minha filha de 10 anos ta com piolho",
+    "need": "piolho",
+    "criteria": [],
+    "constraints": [],
+    "recipient": "criança 10 anos",
+    "symptom": "piolho",
+    "source": "dialogue"
+   },
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 2203,
+   "timingMs": 2202,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 2199,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "farmacia.piolho",
+      "query": "permetrina | deltametrina | pioletal | shampoo antipiolho",
+      "why": "tratamento contra piolhos",
+      "mipClass": "piolho"
+     },
+     {
+      "shelfId": "beleza.acessorios_cabelo",
+      "query": "pente fino antipiolho | pente fino lendeas | pente fino",
+      "why": "pente fino tira as lêndeas"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "farmacia.piolho",
+     "name": "Permetrina 10mg/G Genérico Prati, Donaduzzi & Cia 60ml Loção",
+     "brand": "Prati Donaduzzi",
+     "store": "Drogaria São Paulo",
+     "price": 18.59,
+     "delivery": "prazo da loja: 2h",
+     "why": "tratamento contra piolhos",
+     "remedio": true,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "beleza.acessorios_cabelo",
+     "name": "Pente Ricca Basic Cabo Fino 1 Unidade",
+     "brand": "Ricca",
+     "store": "Drogal",
+     "price": 9.89,
+     "delivery": "prazo da loja: 3h",
+     "why": "pente fino tira as lêndeas",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 9,
+    "comentario": "Tratamento tópico adequado para piolhos e pente fino, ambos compatíveis com a idade e as restrições; entrega em poucas horas.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h28",
+   "text": "to com dor nas costas de ficar sentado o dia todo, sem remedio por favor",
+   "category": "sintoma",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "dor nas costas",
+    "text": "to com dor nas costas de ficar sentado o dia todo, sem remedio por favor",
+    "criteria": [],
+    "constraints": [
+     "sem remedio"
+    ],
+    "source": "regex",
+    "symptom": "dor nas costas"
+   },
+   "constraints": [
+    "sem remedio"
+   ],
+   "outcome": "atende",
+   "ms": 3629,
+   "timingMs": 3628,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 3626,
+    "judgeMs": 1
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "casa.almofada",
+      "query": "almofada apoio lombar | almofada lombar",
+      "why": "apoio pra lombar na cadeira"
+     },
+     {
+      "shelfId": "beleza.hidratante_corporal",
+      "query": "creme massageador | gel massageador arnica",
+      "why": "pra massagear a região"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "casa.almofada"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "beleza.hidratante_corporal",
+     "name": "Creme Massageador Corporal Arnica Sveda Gel Flash 60g",
+     "brand": "Assiflora",
+     "store": "Drogal",
+     "price": 14.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "pra massagear a região",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": false,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 6,
+    "comentario": "O creme massageador é pertinente e respeita a restrição, mas há apenas uma opção e não foi possível oferecer o apoio lombar planejado.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h29",
+   "text": "quero algo pra comer que seja vegano e proteico",
+   "category": "restricao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "algo pra comer",
+    "text": "quero algo pra comer que seja vegano e proteico",
+    "criteria": [
+     "healthy"
+    ],
+    "constraints": [
+     "vegano"
+    ],
+    "source": "regex"
+   },
+   "constraints": [
+    "vegano"
+   ],
+   "outcome": "atende",
+   "ms": 7276,
+   "timingMs": 7275,
+   "timings": {
+    "mapMs": 5,
+    "searchMs": 3268,
+    "judgeMs": 4002
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "snacks.amendoim_castanhas",
+      "query": "mix de castanhas | amendoim | pasta de amendoim",
+      "why": "fonte de proteína vegetal"
+     },
+     {
+      "shelfId": "mercado.barra_cereal",
+      "query": "barra de proteina vegano | barra de proteina",
+      "why": "barra com proteína, pronta pra comer"
+     },
+     {
+      "shelfId": "farmacia.suplementos",
+      "query": "proteina vegano | whey protein vegano | proteina vegetal | whey protein",
+      "why": "suplemento de proteína"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte proteico vegano | iogurte proteico",
+      "why": "iogurte com proteína, pronto pra comer"
+     },
+     {
+      "shelfId": "hortifruti.ovos",
+      "query": "ovo vegano | ovo",
+      "why": "ovo, proteína completa"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "snacks.amendoim_castanhas",
+     "name": "Castanha de Caju Torrada e Salgada Brasil Frutt 200g",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 24.97,
+     "delivery": "prazo da loja: em até 15h (amanhã, 6h–8h)",
+     "why": "fonte de proteína vegetal",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "farmacia.suplementos",
+     "name": "Iogurte Vegano Tradicional 15g de Proteínas Vida Veg 500g",
+     "brand": "Vida Veg",
+     "store": "Mambo",
+     "price": 18.49,
+     "delivery": "prazo da loja: em até 19h (amanhã, 9h–12h)",
+     "why": "vegano no rótulo",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Duas opções veganas e proteicas de tipos diferentes; ambas atendem, embora cheguem só amanhã.",
+    "cards_errados": [],
+    "votes": 3
+   }
+  },
+  {
+   "id": "h30",
+   "text": "meu pai de 70 anos ta com tosse seca a noite, o que dou pra ele?",
+   "category": "idoso",
+   "form": "need",
+   "redFlag": true,
+   "understood": "regex",
+   "request": {
+    "form": "need",
+    "need": "tosse",
+    "text": "meu pai de 70 anos ta com tosse seca a noite, o que dou pra ele?",
+    "criteria": [],
+    "constraints": [],
+    "recipient": "pai 70 anos",
+    "source": "regex",
+    "symptom": "tosse"
+   },
+   "constraints": [],
+   "outcome": "alerta_ok",
+   "ms": 1,
+   "timingMs": 1,
+   "timings": {
+    "mapMs": 1,
+    "searchMs": 0,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "table",
+    "redFlag": "idoso",
+    "picks": []
+   },
+   "emptyShelves": [],
+   "cards": []
+  }
+ ]
+}

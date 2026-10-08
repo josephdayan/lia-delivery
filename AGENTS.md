@@ -25,6 +25,20 @@ Flags: `LIA_RECOMMEND` (padrão ligado), `LIA_RECOMMEND_MEDICINE` (ligado; exige
 **Pendente do dono:** revisão da tabela de sintomas com o advogado sanitário (loperamida, aciclovir, melatonina, cetoconazol,
 descongestionantes — bloco "REVISÃO PENDENTE" no topo de `tables.ts`); `RecommendLog.phone` em texto puro (SearchMiss usa hash).
 
+**Rodada de qualidade q9 (08/10, noite):** placar principal q8 → q11 = atende 88,6% → 98,6%, card errado 2,9% → 1,5%, motivo 100%, restrição 100%;
+difícil q7 → q11 = atende 73,9% → 95,8%, variedade 61,9% → 78,3%. O que mudou: (1) **quantidade por número de pessoas**
+(`quantity.ts`: tabela g/ml/un por pessoa por prateleira, tamanho lido do NOME; o card leva `ChoiceOption.suggestedQty` e "sugestão: 3x pra 12
+pessoas"; escolher o card já põe a quantidade; orçamento vale pro total); (2) **fome pede refeição**: entradas `curated` em `NEED_TABLE`
+(fome, sono, jantar leve, gelado, proteico) vão direto da tabela, sem IA; macarrão instantâneo/sanduíche/prato pronto antes de petisco, e
+`ensureMealCard` garante 1 refeição; pedido de ESTADO (fome, sede…) não é kit (orçamento não soma os cards); (3) **urgente = entrega mais rápida da
+loja** (`confirmOptionsLive(..., {urgent})` usa `fastEstimate`: Drogal 30 min em vez de 3 h, como a vitrine do "pra hoje"); card que só chega
+amanhã diz o prazo no motivo; (4) **atributo pedido que o nome precisa provar** (`PROOF_ATTRS` em quality.ts: renal, urinário, pulga/carrapato,
+queda, caspa [strict: sem prova a prateleira sai]; castrado, filhote, light, pele sensível [prefere quem prova]) e motivo que afirma atributo sem
+prova é descartado (`whyClaimsUnproven`); motivo de dieta natural ("fruta, naturalmente sem lactose"); (5) "algo gelado" só prateleira com flag
+`cold`; "gelado e doce" = sorvete/iogurte; (6) ressaca sem o soro mip; unha encravada = Povidine + curativo; jantar leve sem sopa; (7) dieta com prova
+buscável: a prateleira de risco não sai do plano pela palavra (busca "sorvete sem lactose"), e as de risco vão DEPOIS das livres. Sem solução:
+r77 (detergente — Mambo marca todos indisponíveis pro CEP no check ao vivo), h17 (alergia a amendoim em salgadinho: copy honesta, por desenho).
+
 ## 08/10/2026 — Nomes: projeto Vercel `lia-delivery` (repositório GitHub também vai para `lia-delivery`)
 
 O projeto na Vercel foi renomeado de `shopping-agent-mvp` para **`lia-delivery`** (painel:

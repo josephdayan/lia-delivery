@@ -1,0 +1,1075 @@
+{
+ "summary": {
+  "label": "q9a",
+  "at": "2026-10-08T19:53:43.141Z",
+  "cep": "01310-***",
+  "requests": 10,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "judgeVotes": 1,
+  "outcomes": {
+   "atende": 6,
+   "card_errado": 1,
+   "nao_atende": 2,
+   "sem_cards": 1
+  },
+  "excluded": 0,
+  "atende": "70.0%",
+  "variedade": "100.0%",
+  "cardErrado": "11.1%",
+  "respeitaRestricao": "75.0%",
+  "whyVerdadeiro": "88.9%",
+  "perguntaDesnecessaria": "0.0%",
+  "redFlagRecomendou": "0/0",
+  "redFlagPlanoMarcou": "n/a",
+  "semCards": "10.0%",
+  "notaMedia": 6.22,
+  "latenciaTimingsMs": {
+   "p50": 10577,
+   "p95": 15660
+  },
+  "latenciaParedeMs": {
+   "p50": 10578,
+   "p95": 15661
+  },
+  "custoUSD": {
+   "juiz": 0.0026,
+   "liaEstimado": 0.01,
+   "total": 0.0126,
+   "juizTokens": {
+    "entrada": 15647,
+    "saida": 2158,
+    "chamadas": 9
+   },
+   "nota": "juiz: tokens reais (luna US$0,10/0,50 por 1M); Lia: estimativa fixa por pedido (BENCH_LIA_COST_PER_REQ)"
+  },
+  "metas": "atende ≥ 90% · variedade ≥ 80% · cardErrado ≤ 5% · redFlagRecomendou = 0 · semCards ≤ 10% · respeitaRestricao 100%"
+ },
+ "byCat": {
+  "estado": {
+   "n": 5,
+   "atende": 3,
+   "naoAtende": 2,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "vontade": {
+   "n": 2,
+   "atende": 1,
+   "naoAtende": 0,
+   "cardErrado": 1,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "ocasiao": {
+   "n": 2,
+   "atende": 2,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 0,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  },
+  "produto_julgado": {
+   "n": 1,
+   "atende": 0,
+   "naoAtende": 0,
+   "cardErrado": 0,
+   "semCards": 1,
+   "alertaOk": 0,
+   "alertaRecomendou": 0,
+   "excluidos": 0
+  }
+ },
+ "results": [
+  {
+   "id": "r01",
+   "text": "tô com muita fome",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "nao_atende",
+   "ms": 13357,
+   "timingMs": 13336,
+   "timings": {
+    "mapMs": 23,
+    "searchMs": 5372,
+    "judgeMs": 7941
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     },
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto, sem preparo"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "lasanha congelada | prato pronto",
+      "why": "prato pronto, fica pronto no micro-ondas"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "pacote pronto pra beliscar"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte",
+      "why": "leve e pronto pra comer"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.macarrao_instantaneo",
+     "name": "Macarrão Instantâneo Cup Noodles Sabor Galinha Caipira 85g",
+     "brand": "Nissin",
+     "store": "Drogal",
+     "price": 7.49,
+     "delivery": "prazo da loja: 3h",
+     "why": "Copo pronto para preparar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Elma Chips Fandangos Sabor Presunto 35g",
+     "brand": "Elma Chips",
+     "store": "Drogal",
+     "price": 5.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Salgadinho pronto pra comer",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Negresco 90g",
+     "brand": "Negresco",
+     "store": "Drogal",
+     "price": 3.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Biscoito recheado Negresco",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 4,
+    "comentario": "Há opções variadas e pertinentes, mas todas levam até 3 horas; esse prazo não atende bem quem está com muita fome agora.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r02",
+   "text": "to morrendo de fome, oq tem pra comer rapido?",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "nao_atende",
+   "ms": 7974,
+   "timingMs": 7974,
+   "timings": {
+    "mapMs": 575,
+    "searchMs": 5131,
+    "judgeMs": 2268
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     },
+     {
+      "shelfId": "lanches.sanduiche",
+      "query": "sanduiche pronto",
+      "why": "lanche pronto, sem preparo"
+     },
+     {
+      "shelfId": "congelados.pratos_prontos",
+      "query": "lasanha congelada | prato pronto",
+      "why": "prato pronto, fica pronto no micro-ondas"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "pacote pronto pra beliscar"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte",
+      "why": "leve e pronto pra comer"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "congelados.pratos_prontos"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.macarrao_instantaneo",
+     "name": "Macarrão Instantâneo Cup Noodles Sabor Galinha Caipira 85g",
+     "brand": "Nissin",
+     "store": "Drogal",
+     "price": 7.49,
+     "delivery": "prazo da loja: 3h",
+     "why": "Cup Noodles, pronto com água quente",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho Elma Chips Fandangos Sabor Presunto 35g",
+     "brand": "Elma Chips",
+     "store": "Drogal",
+     "price": 5.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Fandangos, pronto pra comer",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Negresco 90g",
+     "brand": "Negresco",
+     "store": "Drogal",
+     "price": 3.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "Biscoito recheado, pronto pra beliscar",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": false,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 3,
+    "comentario": "Há opções variadas e prontas, mas todas chegam em 3 horas, o que não atende à fome com pedido de algo rápido.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r04",
+   "text": "tô com fome e sou vegetariana",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "vegetariano"
+   ],
+   "outcome": "atende",
+   "ms": 11044,
+   "timingMs": 11044,
+   "timings": {
+    "mapMs": 877,
+    "searchMs": 5566,
+    "judgeMs": 4601
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinho",
+      "why": "pronto pra comer"
+     },
+     {
+      "shelfId": "doces.biscoito_doce",
+      "query": "biscoito recheado",
+      "why": "pacote pronto pra beliscar"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte",
+      "why": "leve e pronto pra comer"
+     },
+     {
+      "shelfId": "snacks.amendoim_castanhas",
+      "query": "mix de castanhas",
+      "why": "petisco que sustenta"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "banana",
+      "why": "fruta pronta pra comer"
+     },
+     {
+      "shelfId": "mercado.macarrao_instantaneo",
+      "query": "macarrao instantaneo",
+      "why": "refeição pronta em minutos, é só água quente"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.macarrao_instantaneo",
+     "name": "Macarrão Instantâneo Nissin Turma da Mônica Sabor Tomate Suave 85g",
+     "brand": "Nissin",
+     "store": "Drogal",
+     "price": 4.29,
+     "delivery": "prazo da loja: 3h",
+     "why": "macarrão instantâneo sabor tomate",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "doces.biscoito_doce",
+     "name": "Biscoito Recheado Nestlé Passatempo Sabor Alpino 90g",
+     "brand": "Passatempo",
+     "store": "Drogal",
+     "price": 2.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "pacote pronto pra beliscar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "snacks.amendoim_castanhas",
+     "name": "Mix Nuts Iracema Castanha de Caju, Amendoin e Uva Passa 50g",
+     "brand": "Iracema",
+     "store": "Drogal",
+     "price": 10.99,
+     "delivery": "prazo da loja: 3h",
+     "why": "mix de castanhas em 50g",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções variadas, vegetarianas e com entrega em 3h; todas são lanches prontos, embora não haja fruta ou opção mais substancial.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r09",
+   "text": "tô morrendo de sono e preciso estudar até tarde",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 10578,
+   "timingMs": 10577,
+   "timings": {
+    "mapMs": 2,
+    "searchMs": 7625,
+    "judgeMs": 2950
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "mercado.cafe",
+      "query": "cafe",
+      "why": "a cafeína ajuda a despertar"
+     },
+     {
+      "shelfId": "bebidas.energetico",
+      "query": "energetico",
+      "why": "cafeína e açúcar pra despertar"
+     },
+     {
+      "shelfId": "mercado.cha",
+      "query": "cha mate | cha matte | mate leao",
+      "why": "o chá mate tem cafeína"
+     },
+     {
+      "shelfId": "doces.chocolate",
+      "query": "chocolate",
+      "why": "energia rápida"
+     },
+     {
+      "shelfId": "mercado.barra_cereal",
+      "query": "barra de cereal",
+      "why": "lanche rápido que dá energia"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "mercado.cha",
+     "name": "Chá Matte Ice Tea Leão Limão 450ml",
+     "brand": "Leão",
+     "store": "Drogal",
+     "price": 8.95,
+     "delivery": "prazo da loja: 3h",
+     "why": "Chá matte pronto para beber",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "doces.chocolate",
+     "name": "Chocolate Snickers Branco 40g",
+     "brand": "Snickers",
+     "store": "Drogal",
+     "price": 5.09,
+     "delivery": "prazo da loja: 3h",
+     "why": "pronto para comer",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "mercado.cafe",
+     "name": "Café Torrado e Moído Tradicional 3 Corações 500g",
+     "brand": "3 Corações",
+     "store": "Mambo",
+     "price": 22.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "café torrado e moído — só chega amanhã, 8h–11h",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "mercado.barra_cereal",
+     "name": "Barra Cereais Cranbery Nuts &Joy 30g",
+     "brand": "Agtal",
+     "store": "Mambo",
+     "price": 4.59,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "barra de cereais pronta — só chega amanhã, 8h–11h",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 6,
+    "comentario": "Chá matte pode ajudar a despertar, mas café e barra só chegam amanhã; chocolate e barra são opções fracas para combater o sono.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r11",
+   "text": "ressaca braba hj, me ajuda",
+   "category": "estado",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 9044,
+   "timingMs": 9043,
+   "timings": {
+    "mapMs": 6,
+    "searchMs": 6713,
+    "judgeMs": 2324
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "bebidas.isotonico",
+      "query": "isotonico",
+      "why": "repõe sais"
+     },
+     {
+      "shelfId": "bebidas.agua_coco",
+      "query": "agua de coco",
+      "why": "hidrata"
+     },
+     {
+      "shelfId": "bebidas.agua",
+      "query": "agua mineral",
+      "why": "hidratação"
+     },
+     {
+      "shelfId": "mercado.sopa",
+      "query": "canja | sopa de legumes",
+      "why": "leve e quente pro estômago"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "bebidas.isotonico",
+     "name": "Isotônico Powerade Sabor Uva 500ml",
+     "brand": "Powerade",
+     "store": "Drogal",
+     "price": 7.65,
+     "delivery": "prazo da loja: 3h",
+     "why": "isotônico repõe sais",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "bebidas.agua_coco",
+     "name": "Água de Coco Integral Sococo 330ml",
+     "brand": "Sococo",
+     "store": "Drogal",
+     "price": 7.45,
+     "delivery": "prazo da loja: 3h",
+     "why": "água de coco integral",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebidas.agua",
+     "name": "Água Mineral Lindoya Verão Sem Gás 900ml",
+     "brand": "Lindoya",
+     "store": "Drogal",
+     "price": 5.79,
+     "delivery": "prazo da loja: 3h",
+     "why": "água mineral sem gás",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 8,
+    "comentario": "Opções variadas e adequadas para hidratação; entrega em 3h, embora não inclua alimento leve previsto no plano.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r16",
+   "text": "quero algo leve pro jantar",
+   "category": "vontade",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "atende",
+   "ms": 15531,
+   "timingMs": 15531,
+   "timings": {
+    "mapMs": 4580,
+    "searchMs": 6924,
+    "judgeMs": 4027
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "hortifruti.verduras",
+      "query": "salada pronta",
+      "why": "folhas para refeição leve"
+     },
+     {
+      "shelfId": "hortifruti.legumes",
+      "query": "legumes variados",
+      "why": "vegetais para acompanhar"
+     },
+     {
+      "shelfId": "carnes.peixe",
+      "query": "filé de tilápia",
+      "why": "proteína leve para jantar"
+     },
+     {
+      "shelfId": "mercado.enlatados",
+      "query": "atum em lata",
+      "why": "proteína prática para salada"
+     },
+     {
+      "shelfId": "hortifruti.frutas",
+      "query": "frutas",
+      "why": "fresca e leve"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "hortifruti.verduras",
+     "name": "Salada de Verão Fina D'aucy 300g",
+     "brand": "D'aucy",
+     "store": "Mambo",
+     "price": 5.39,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "salada de verão para refeição leve",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "hortifruti.legumes",
+     "name": "Seleta de Legumes Congelada Fresca Sadia Veg&Tal Pacote 300g",
+     "brand": "Sadia",
+     "store": "Mambo",
+     "price": 7.59,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "seleta de legumes congelada",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "carnes.peixe",
+     "name": "Filé de Tilápia Swift 400g",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 21.9,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "filé de tilápia sem empanar",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C4",
+     "shelfId": "mercado.enlatados",
+     "name": "Atum em Pedaços ao Natural Gomes da Costa 170g",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 11.97,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "atum em pedaços ao natural",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Opções leves e variadas; a salada pronta atende melhor, embora os demais itens exijam preparo ou acompanhamento.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r24",
+   "text": "algo gelado e doce, sem lactose",
+   "category": "vontade",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem lactose"
+   ],
+   "outcome": "card_errado",
+   "ms": 9706,
+   "timingMs": 9706,
+   "timings": {
+    "mapMs": 4,
+    "searchMs": 5400,
+    "judgeMs": 4302
+   },
+   "plan": {
+    "source": "table",
+    "picks": [
+     {
+      "shelfId": "bebidas.suco",
+      "query": "suco",
+      "why": "doce e gelado, pra beber"
+     },
+     {
+      "shelfId": "doces.sorvete",
+      "query": "sorvete sem lactose | picole sem lactose | sorvete | picole | acai",
+      "why": "doce e gelado"
+     },
+     {
+      "shelfId": "frios.iogurte",
+      "query": "iogurte sem lactose | sobremesa lactea sem lactose | iogurte | sobremesa lactea",
+      "why": "sobremesa gelada"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.sorvete",
+     "name": "Sorvete Proteico Baunilha e Morango Sem Lactose IcePro 150ml",
+     "brand": "Ice Pro",
+     "store": "Mambo",
+     "price": 23.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "zero lactose no rótulo",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C2",
+     "shelfId": "frios.iogurte",
+     "name": "Sobremesa Proteica Cremosa Chocolate Sem Lactose Verde Campo 130g",
+     "brand": "Verde Campo",
+     "store": "Mambo",
+     "price": 12.49,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "zero lactose no rótulo",
+     "remedio": false,
+     "qty": 1
+    },
+    {
+     "id": "C3",
+     "shelfId": "bebidas.suco",
+     "name": "Suco Del Valle Sabor Maçã 200ml",
+     "brand": "Del Valle",
+     "store": "Drogal",
+     "price": 5.09,
+     "delivery": "prazo da loja: 3h",
+     "why": "doce e gelado, pra beber",
+     "remedio": false,
+     "qty": 1
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": true,
+    "respeita_restricao": false,
+    "why_verdadeiro": true,
+    "nota": 5,
+    "comentario": "Sorvete e sobremesa sem lactose atendem; o suco não informa ser sem lactose, então viola a restrição. Entrega dos doces só amanhã.",
+    "cards_errados": [
+     "C3"
+    ],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r26",
+   "text": "vou fazer um churrasco pra 12, sem porco",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "sem porco"
+   ],
+   "outcome": "atende",
+   "ms": 10068,
+   "timingMs": 10066,
+   "timings": {
+    "mapMs": 5067,
+    "searchMs": 2786,
+    "judgeMs": 2213
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "carnes.bovina",
+      "query": "picanha | fraldinha | alcatra",
+      "why": "cortes bovinos pra grelha"
+     },
+     {
+      "shelfId": "casa.churrasco",
+      "query": "carvao",
+      "why": "pra manter a brasa"
+     },
+     {
+      "shelfId": "padaria.pao_de_alho",
+      "query": "pao de alho",
+      "why": "acompanhamento pra grelha"
+     },
+     {
+      "shelfId": "bebidas.cerveja",
+      "query": "cerveja",
+      "why": "bebida pra brindar"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante 2 litros",
+      "why": "pra quem não bebe"
+     }
+    ]
+   },
+   "emptyShelves": [],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "carnes.bovina",
+     "name": "Picanha Linha Mais de 1,1kg a 2,1kg (unidade ~2,1 kg)",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 167.79,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "Picanha Swift Linha Mais de 2,1 kg — sugestão: pra 12 pessoas, 3x (~6,3 kg no total)",
+     "remedio": false,
+     "qty": 3
+    },
+    {
+     "id": "C2",
+     "shelfId": "casa.churrasco",
+     "name": "Carvão Especial Vegetal Ecológico Momento Mambo 5kg",
+     "brand": "Momento Mambo",
+     "store": "Mambo",
+     "price": 54.49,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "pacote de 5 kg pra manter a brasa — sugestão: pra 12 pessoas, 2x (~10,0 kg no total)",
+     "remedio": false,
+     "qty": 2
+    },
+    {
+     "id": "C3",
+     "shelfId": "padaria.pao_de_alho",
+     "name": "Pão de Alho Tradicional Santa Massa 400g",
+     "brand": "Santa Massa",
+     "store": "Mambo",
+     "price": 19.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "pacote de 400 g pra dividir — sugestão: pra 12 pessoas, 3x",
+     "remedio": false,
+     "qty": 3
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.cerveja",
+     "name": "Cerveja Heineken 269ml",
+     "brand": "Swift",
+     "store": "Swift",
+     "price": 3.67,
+     "delivery": "prazo da loja: 1 dia útil",
+     "why": "bebida pra brindar — sugestão: pra 12 pessoas, 24x (~6,5 L no total)",
+     "remedio": false,
+     "qty": 24
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": false,
+    "nota": 8,
+    "comentario": "Boa seleção variada e sem porco; o motivo da picanha contradiz o nome do produto ao dizer que pesa mais de 2,1 kg.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r30",
+   "text": "festinha de aniversario pra 15 pessoas ate 300 reais",
+   "category": "ocasiao",
+   "form": "need",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [
+    "orçamento total até R$ 300"
+   ],
+   "budget": 300,
+   "outcome": "atende",
+   "ms": 15661,
+   "timingMs": 15660,
+   "timings": {
+    "mapMs": 6255,
+    "searchMs": 2811,
+    "judgeMs": 6594
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "doces.bolo",
+      "query": "bolo de aniversário",
+      "why": "pra cantar parabéns"
+     },
+     {
+      "shelfId": "snacks.salgadinho",
+      "query": "salgadinhos para festa",
+      "why": "pra servir e compartilhar"
+     },
+     {
+      "shelfId": "doces.doces",
+      "query": "docinhos de festa",
+      "why": "pra mesa de doces"
+     },
+     {
+      "shelfId": "bebidas.refrigerante",
+      "query": "refrigerante",
+      "why": "pra acompanhar a comida"
+     },
+     {
+      "shelfId": "casa.descartaveis",
+      "query": "copos pratos guardanapos",
+      "why": "pra servir sem louça"
+     },
+     {
+      "shelfId": "festa.artigos",
+      "query": "decoração de aniversário",
+      "why": "pra decorar a festa"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "casa.descartaveis"
+   ],
+   "cards": [
+    {
+     "id": "C1",
+     "shelfId": "doces.bolo",
+     "name": "Bolo de Laranja Panco 300g",
+     "brand": "Panco",
+     "store": "Mambo",
+     "price": 14.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "bolo Panco de 300 g — sugestão: pra 15 pessoas, 5x (~1,5 kg no total)",
+     "remedio": false,
+     "qty": 5
+    },
+    {
+     "id": "C2",
+     "shelfId": "snacks.salgadinho",
+     "name": "Salgadinho de Milho com Toque de Sal Marinho Tostitos 110g",
+     "brand": "Olitalia",
+     "store": "Mambo",
+     "price": 7.99,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "pacote de 110 g para dividir — sugestão: pra 15 pessoas, 5x",
+     "remedio": false,
+     "qty": 5
+    },
+    {
+     "id": "C3",
+     "shelfId": "doces.doces",
+     "name": "Doce de Leite Chup-Chup Gotas de Leite 120g",
+     "brand": "Gotas de Leite",
+     "store": "Mambo",
+     "price": 26.98,
+     "delivery": "prazo da loja: em até 19h (amanhã, 8h–11h)",
+     "why": "doce de leite para a mesa — sugestão: pra 15 pessoas, 4x",
+     "remedio": false,
+     "qty": 4
+    },
+    {
+     "id": "C4",
+     "shelfId": "bebidas.refrigerante",
+     "name": "Refrigerante Coca-Cola Garrafa Pet 2 Litros",
+     "brand": "Coca Cola",
+     "store": "Drogal",
+     "price": 13.55,
+     "delivery": "prazo da loja: 3h",
+     "why": "garrafa de 2 L pra dividir — sugestão: pra 15 pessoas, 4x (~8 L no total)",
+     "remedio": false,
+     "qty": 4
+    }
+   ],
+   "verdict": {
+    "atende": true,
+    "variedade": true,
+    "pergunta_desnecessaria": false,
+    "card_errado": false,
+    "respeita_restricao": true,
+    "why_verdadeiro": true,
+    "nota": 7,
+    "comentario": "Há opções variadas de comida e bebida dentro do orçamento; o bolo é simples, não decorado, e faltam descartáveis disponíveis.",
+    "cards_errados": [],
+    "votes": 1
+   }
+  },
+  {
+   "id": "r77",
+   "text": "qual detergente rende mais?",
+   "category": "produto_julgado",
+   "form": "product_judged",
+   "redFlag": false,
+   "understood": "corpus",
+   "constraints": [],
+   "outcome": "sem_cards",
+   "ms": 6771,
+   "timingMs": 6769,
+   "timings": {
+    "mapMs": 3918,
+    "searchMs": 2851,
+    "judgeMs": 0
+   },
+   "plan": {
+    "source": "ai",
+    "picks": [
+     {
+      "shelfId": "limpeza.detergente",
+      "query": "detergente",
+      "why": "produto pedido para louças"
+     }
+    ]
+   },
+   "emptyShelves": [
+    "limpeza.detergente"
+   ],
+   "cards": []
+  }
+ ]
+}

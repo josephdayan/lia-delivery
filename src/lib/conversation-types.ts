@@ -43,7 +43,7 @@ export type BasketItem = {
 // `repeat` (04/09): o cliente já comprou este produto — vem primeiro e com destaque.
 // `why` (08/10, recomendação): motivo de 1 linha do card ("doce e gelado", "alivia a cólica") — só em
 // opção que veio de uma recomendação; aparece abaixo do nome no card e em itálico na lista de texto.
-export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number; why?: string };
+export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number; why?: string; suggestedQty?: number };
 
 // Estado de uma escolha que veio de RECOMENDAÇÃO (08/10, plano-recomendacoes): o pedido entendido, o
 // plano de prateleiras, as prateleiras já mostradas/sem item e os candidatos já buscados (para "mais

@@ -18,7 +18,7 @@ import * as tablesModule from "./tables";
 import { SHELF_MAP } from "./shelf-map";
 import { judgeFitnessWithAi, planShelvesWithAi, recommendAiEnabled } from "./ai";
 import { recommendMedicineEnabled } from "./types";
-import { attributeRules, meetsAttributes, parseConstraint, shelfSanityOk, violatesRule, type ConstraintRuleQ } from "./quality";
+import { attributeRules, keepProvenAttributes, meetsAttributes, parseConstraint, shelfAtRisk, shelfSanityOk, violatesRule, type ConstraintRuleQ } from "./quality";
 import type {
   CustomerMemory,
   FitnessInput,
@@ -176,7 +176,11 @@ export function violatesConstraint(textRaw: string, rules: readonly ConstraintRu
 
 // Pick com alternativas ("dipirona | paracetamol"): sai só a alternativa que fere; sem nenhuma, ou com a
 // prateleira inteira ferindo ("Carne suína e bacon" em "sem porco"), sai a pick.
-function pickWithinRules(pick: ShelfPick, shelf: ShelfNode | null | undefined, rules: readonly ConstraintRule[]): ShelfPick | null {
+function pickWithinRules(pick: ShelfPick, shelf: ShelfNode | null | undefined, rulesIn: readonly ConstraintRule[]): ShelfPick | null {
+  // (q9, 08/10) Dieta com prova buscável ("sem lactose", "sem glúten", "vegano", "zero açúcar") numa prateleira de risco
+  // (sorvete, iogurte, biscoito…): a pick NÃO sai pela palavra da prateleira — a consulta ganha "sem lactose" etc.
+  // (withDietQueries) e o candidato precisa provar no nome. Sem isso o "sorvete sem lactose" nunca era buscado.
+  const rules = rulesIn.filter((r) => !(r.kind !== "word" && r.kind !== "no_medicine" && r.kind !== "vegetarian" && shelfAtRisk(r, pick.shelfId) && !/^doces\.chocolate/.test(pick.shelfId)));
   if (!rules.length) return pick;
   const alts = pick.query.split("|").map((q) => q.trim()).filter(Boolean);
   const kept = alts.filter((q) => !violatesConstraint(q, rules));
@@ -220,7 +224,13 @@ function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendT
   const petOnly = PET_RECIPIENT_RE.test(normRec(req.recipient));
   const seen = new Set<string>();
   const out: ShelfPick[] = [];
-  for (const pick of picks) {
+  // (q9, 08/10) Com restrição de dieta, as prateleiras onde o item comum fere (laticínio, padaria, snack…) vêm
+  // DEPOIS das livres por natureza (fruta, castanha): o teto de prateleiras não pode ser gasto só com as que
+  // vão sair no candidato (h02 "não posso comer leite" ficava sem nenhum card).
+  const dietRules = rules.filter((r) => r.kind !== "word" && r.kind !== "no_medicine");
+  const atRisk = (pick: ShelfPick) => dietRules.some((r) => shelfAtRisk(r, pick.shelfId));
+  const ordered = dietRules.length ? [...picks.filter((p) => !atRisk(p)), ...picks.filter(atRisk)] : picks;
+  for (const pick of ordered) {
     if (seen.has(pick.shelfId)) continue;
     const shelf = deps.shelfById(pick.shelfId);
     const mip = hasFlag(shelf, "mip");
@@ -234,7 +244,15 @@ function filterPicks(picks: ShelfPick[], req: RecommendRequest, deps: RecommendT
     out.push(allowed);
     if (out.length >= MAX_PICKS) break;
   }
+  // "Algo gelado" (q9, r24): só prateleira gelada (sorvete, picolé, bebida gelada); fruta nunca é "gelado".
+  if (wantsCold(req)) return out.filter((pick) => hasFlag(deps.shelfById(pick.shelfId), "cold"));
   return out;
+}
+
+// O pedido é "algo gelado" (sobremesa/bebida gelada)? "Cerveja gelada" no meio de um churrasco não conta.
+const COLD_ASK_RE = /\b(algo|alguma coisa|coisa|qualquer coisa|um)\s+(bem\s+)?gelad[oa]\b|\bgeladinh[oa]\b|\bgelad[oa] e (doce|docinho)\b|\b(doce|docinho) e gelad[oa]\b/;
+export function wantsCold(req: Pick<RecommendRequest, "need" | "text">): boolean {
+  return COLD_ASK_RE.test(normRec(`${req.need ?? ""} ${req.text}`));
 }
 
 // Pedido de saúde? (decide se o sinal de alerta de CONTEXTO vale e se o plano fica só em mip/care)
@@ -442,6 +460,20 @@ export function findShelfForProduct(product: string, shelves: readonly ShelfNode
   return best?.shelf;
 }
 
+// Entrada da tabela de necessidades do pedido: a do `need` limpo ou a do texto inteiro — vence a que casa pela chave
+// MAIS LONGA ("quero algo pra comer que seja vegano e proteico": o need "algo pra comer" é a fome genérica, o texto traz
+// "vegano e proteico"). Empate: a do `need`. (q9)
+export function needEntryFor(req: Pick<RecommendRequest, "need" | "text">, deps: Pick<RecommendTableDeps, "findNeed">): NeedTableEntry | undefined {
+  const matchedLen = (entry: NeedTableEntry, textNorm: string) =>
+    Math.max(0, ...entry.keys.map(normRec).filter((k) => k && (textNorm === k || new RegExp(`(^| )${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}( |$)`).test(textNorm))).map((k) => k.length));
+  const byNeed = deps.findNeed(normRec(req.need ?? req.text)) ?? undefined;
+  const byText = deps.findNeed(normRec(req.text)) ?? undefined;
+  if (byNeed && byText && byNeed !== byText) {
+    return matchedLen(byText, normRec(req.text)) > matchedLen(byNeed, normRec(req.need ?? req.text)) ? byText : byNeed;
+  }
+  return byNeed ?? byText;
+}
+
 // Entrada da tabela de sintomas do pedido (pelo sintoma, pela necessidade, pelo texto).
 function symptomEntry(req: RecommendRequest, deps: RecommendTableDeps): SymptomTableEntry | undefined {
   return deps.findSymptom(normRec(req.symptom ?? req.need ?? req.text)) ?? deps.findSymptom(normRec(req.text)) ?? undefined;
@@ -499,7 +531,7 @@ export function planShelvesFromTables(req: RecommendRequest, deps: RecommendTabl
     }
   }
   if (!entryPicks) {
-    const entry = deps.findNeed(normRec(req.need ?? req.text)) ?? deps.findNeed(normRec(req.text));
+    const entry = needEntryFor(req, deps);
     if (entry) entryPicks = entry.picks;
   }
   if (!entryPicks) return null;
@@ -540,6 +572,15 @@ export async function planShelves(reqIn: RecommendRequest, opts: PlanShelvesOpti
   if (symptom && symptomEntry(req, deps)) {
     const plan = planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory });
     if (plan?.picks.length || plan?.redFlag) return plan;
+  }
+  // (q9, 08/10) Necessidade com entrada CURADA (fome, sono, jantar leve, algo gelado): a tabela já tem as prateleiras
+  // certas, na ordem; a IA só variava (fome sem nenhuma refeição, sono com água mineral). Plano da tabela, sem IA.
+  if (req.form === "need" && !symptom) {
+    const entry = needEntryFor(req, deps);
+    if (entry?.curated) {
+      const plan = planShelvesFromTables(req, deps, { basketNames: opts.basketNames, memory: opts.memory });
+      if (plan?.picks.length) return plan;
+    }
   }
   const shelves = deps.shelves ?? [];
   const shelfIds = new Set(shelves.map((s) => s.id));
@@ -707,12 +748,15 @@ function finishEligible(okIn: ShelfCandidate[], input: FitnessInput): ShelfCandi
     const left = ok.filter((c) => !/\b(magnetic\w*|primeira infancia|chocalho|mordedor|pelucia de bebe|bebe)\b/.test(normRec(c.option.name)));
     if (left.length) ok = left;
   }
-  // Pulga/carrapato (placar difícil q5: shampoo antifúngico no lugar do antipulgas): na prateleira que tem
-  // item que diz "pulga"/"carrapato" no nome, só ele fica.
-  if (/\bpulga/.test(normRec(input.request.need))) {
-    const says = (c: ShelfCandidate) => /\b(pulgas?|antipulgas?|carrapatos?|anticarrapatos?)\b/.test(normRec(c.option.name));
-    const withSay = new Set(ok.filter(says).map((c) => c.shelfId));
-    ok = ok.filter((c) => !withSay.has(c.shelfId) || says(c));
+  // Atributo pedido que o nome do card precisa PROVAR (q9: renal, urinário, pulga/carrapato [strict]; castrado,
+  // filhote, light): na prateleira onde vale, só ficam os que provam; "Shampoo Cloresten Antifúngico" não é
+  // antipulgas, ração comum não é renal.
+  const ask = [input.request.need, input.request.text, input.request.product, input.request.symptom, input.request.recipient, ...input.request.constraints].filter(Boolean).join(" ");
+  ok = keepProvenAttributes(ok, ask);
+  // Pedido "quentinho" (q9, r07): chá gelado, ice tea e sorvete não esquentam ninguém.
+  if (/\b(quentinh\w*|quente|esquent\w*|aquec\w*)\b/.test(normRec(`${input.request.need ?? ""} ${input.request.text}`))) {
+    const left = ok.filter((c) => !/\b(ice tea|gelad\w*|iced|sorvete|picole|refrigerante)\b/.test(normRec(c.option.name)));
+    if (left.length) ok = left;
   }
   // Produto julgado com atributo dito ("pra cabelo cacheado", "de coador", "dente sensível"): quando algum
   // candidato cumpre no nome, só eles ficam (o juiz do placar reprovava máscara/clareadora/copo).

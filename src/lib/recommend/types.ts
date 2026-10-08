@@ -111,6 +111,9 @@ export type NeedTableEntry = {
   picks: ShelfPick[];
   // Critério implícito da necessidade (fome → fast).
   criteria?: RecommendCriterion[];
+  // (q9, 08/10) Plano 100% curado: a tabela já tem as prateleiras certas e a IA só variava (plano de fome com
+  // 1 refeição ou nenhuma). true = planShelves usa a tabela direto, sem chamar a IA (como o sintoma).
+  curated?: boolean;
 };
 
 export type SymptomTableEntry = {
@@ -186,6 +189,8 @@ export type RecommendOutcome = {
   // Prateleiras do plano que ficaram sem item comprável no CEP.
   emptyShelves: string[];
   timings: { mapMs: number; searchMs: number; judgeMs: number };
+  // (08/10, rodada q9) Candidatos buscados no CEP: só o placar/diagnóstico lê.
+  candidates?: ShelfCandidate[];
 };
 
 // LIA_RECOMMEND (dono, 08/10, noite): "test" (padrão) = só dono/admins (LIA_OWNER_PHONE / LIA_ADMIN_PHONES /

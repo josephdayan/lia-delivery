@@ -42,7 +42,9 @@ import {
   type RecommendTableDeps
 } from "./fallback";
 import { suggestComplement, type ComplementSuggestion } from "./complement";
-import { attributeRules, baseProductName, withDietQueries, withPetCondition, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, wantsFast, whyIsFactual } from "./quality";
+import { attributeRules, baseProductName, naturalDietWhy, withDietQueries, withPetCondition, dietProofWhy, fastEtaCutoff, isAllergenRule, meetsAttributes, provenAttributeWhy, wantsFast, whyClaimsUnproven, whyIsFactual } from "./quality";
+import { biggerPackIndex, headcountPlan, requestHeadcount, suggestQuantity, suggestedWhy, type HeadcountPlan } from "./quantity";
+import { displayPrice } from "../pricing";
 import { loadCustomerMemory, memoryWantsHealthy, type LoadedMemory } from "./memory";
 import { recommendEnabled } from "./types";
 import type { RecommendCard, RecommendCriterion, RecommendOutcome, RecommendRequest, ShelfCandidate, ShelfPick, ShelfPlan } from "./types";
@@ -68,7 +70,7 @@ export type RecommendDeps = {
   toChoiceOption: (item: CatalogItem, storeRef: { storeKey: string; storeLabel: string }) => ChoiceOption;
   // Conferência AO VIVO no site da loja para o CEP: preço/prazo/frete reais; sem operador, o que a
   // loja não confirmou sai (a mesma regra da vitrine).
-  confirmOptionsLive: (pool: ChoiceOption[], cep: string | null | undefined) => Promise<ChoiceOption[]>;
+  confirmOptionsLive: (pool: ChoiceOption[], cep: string | null | undefined, opts?: { urgent?: boolean }) => Promise<ChoiceOption[]>;
 };
 
 let deps: RecommendDeps | null = null;
@@ -126,7 +128,7 @@ export function shelfFloorTerms(pick: Pick<ShelfPick, "query">, shelf?: { query?
   return [...pick.query.split("|"), shelf?.query ?? "", ...(shelf?.aliases ?? [])].map((q) => q.trim()).filter(Boolean);
 }
 
-async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps, wide = false): Promise<ShelfCandidate[]> {
+async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps, wide = false, urgent = false): Promise<ShelfCandidate[]> {
   const d = recommendDeps();
   // shelfId "produto": produto julgado sem prateleira no mapa — busca textual, nunca remédio.
   const shelf = pick.shelfId === "produto" ? undefined : td.shelfById(pick.shelfId) ?? undefined;
@@ -147,7 +149,7 @@ async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps, 
     if (!found.length) return [];
     const popularity = new Map(found.map((c) => [`${c.store.key}:${c.item.sku}`, c.item.popularity]));
     const options = found.map((c) => d.toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
-    const live = await d.confirmOptionsLive(options, cep);
+    const live = await d.confirmOptionsLive(options, cep, { urgent });
     return live.map((option) => ({ shelfId: pick.shelfId, option, ...(popularity.get(keyOf(option)) != null ? { popularity: popularity.get(keyOf(option)) } : {}) }));
   } catch (error) {
     console.warn("[recommend:search:error]", pick.shelfId, error instanceof Error ? error.message : error);
@@ -155,11 +157,11 @@ async function searchPick(pick: ShelfPick, cep: string, td: RecommendTableDeps, 
   }
 }
 
-async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps, deadline = Date.now() + recommendSearchBudgetMs(), wide = false): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
+async function searchPicks(picks: ShelfPick[], cep: string, td: RecommendTableDeps, deadline = Date.now() + recommendSearchBudgetMs(), wide = false, urgent = false): Promise<{ candidates: ShelfCandidate[]; emptyShelves: string[] }> {
   const perPick = await Promise.all(
     picks.map((pick) => {
       const ms = Math.min(PICK_BUDGET_MS, deadline - Date.now());
-      return withDeadline(searchPick(pick, cep, td, wide && picks.length <= 2), ms, [] as ShelfCandidate[], () => console.warn(`[recommend:search:timeout] ${pick.shelfId} passou de ${ms} ms; prateleira conta como vazia`));
+      return withDeadline(searchPick(pick, cep, td, wide && picks.length <= 2, urgent), ms, [] as ShelfCandidate[], () => console.warn(`[recommend:search:timeout] ${pick.shelfId} passou de ${ms} ms; prateleira conta como vazia`));
     })
   );
   const seen = new Set<string>();
@@ -209,11 +211,24 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
   // Sintoma não é fome: o remédio chega em 1 dia e é a resposta certa — quickOnly só vale em comida/coisa
   // (placar q2: dor de barriga "rápido" ficava só com água de coco).
   let candidates = candidatesIn;
-  if (fast && !isSymptomPlan(req, plan)) {
+  // Sintoma COM remédio no plano: o remédio chega em 1 dia e é a resposta certa. Sintoma só de cuidado (ressaca:
+  // isotônico, água de coco; unha encravada) corta como qualquer pedido urgente (q9, h20: sopa "só chega amanhã"
+  // junto de 3 bebidas em 30 min era card errado).
+  const medicinePlan = plan.picks.some((p) => p.mipClass);
+  if (fast && !(isSymptomPlan(req, plan) && medicinePlan)) {
     // Só corta pelo prazo se sobrarem 2+ prateleiras (placar q3: "algo leve pro jantar" ficava com 1 castanha).
-    const quick = quickOnly(candidatesIn);
+    // (q9, 08/10) Conta só o que PASSA nas regras (restrição, orçamento…): com "não posso comer leite" a única
+    // prateleira rápida que sobrava zerava o plano (h02) — se o corte deixa menos de 2 prateleiras elegíveis,
+    // não corta, e o card que chega depois diz o prazo no motivo. Fora de fome (sono, sede…) o corte pede 3
+    // prateleiras rápidas: "água e chocolate" não responde a "preciso estudar até tarde" (r09).
+    const pool = eligibleCandidates({ request: judged, plan, candidates: candidatesIn, hour, ...(memory ? { memory } : {}) });
+    const quick = quickOnly(pool);
     const shelvesOf = (list: ShelfCandidate[]) => new Set(list.map((c) => c.shelfId)).size;
-    if (shelvesOf(quick) >= Math.min(2, shelvesOf(candidatesIn))) candidates = quick;
+    const minShelves = isHungerAsk(req) ? 2 : 3;
+    if (pool.length && quick.length < pool.length && shelvesOf(quick) >= Math.min(minShelves, shelvesOf(pool))) {
+      const keep = new Set(quick.map((c) => `${c.shelfId}|${keyOf(c.option)}`));
+      candidates = candidatesIn.filter((c) => keep.has(`${c.shelfId}|${keyOf(c.option)}`));
+    }
   }
   if (req.form === "product_judged") candidates = productTypeOnly(req, candidates);
   const input = { request: judged, plan, candidates, hour, ...(memory ? { memory } : {}) };
@@ -237,9 +252,12 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
   for (const card of verdict.cards) add(card.shelfId, card.sku, card.storeKey, card.why, req.form === "product_judged" ? 1 : Number.POSITIVE_INFINITY);
   if (req.form === "product_judged") {
     // 1ª volta: marcas novas; 2ª: até 2 da mesma marca (linha diferente).
+    // (q9) O resto é do conjunto ELEGÍVEL inteiro: o filtro de atributo provado (pele sensível, renal…) compara a
+    // prateleira inteira — com o card que prova já fora do `rest`, ninguém mais "provava" e tudo voltava.
+    const eligibleKeys = new Set(eligibleCandidates(input).map((c) => `${c.shelfId}|${keyOf(c.option)}`));
     for (const brandCap of [1, 2]) {
       for (let round = 0; round < max && cards.length < max; round++) {
-        const rest = candidates.filter((c) => !cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)));
+        const rest = candidates.filter((c) => eligibleKeys.has(`${c.shelfId}|${keyOf(c.option)}`) && !cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)));
         if (!rest.length) break;
         const more = rankAll({ ...input, candidates: rest }, td);
         const before = cards.length;
@@ -260,6 +278,9 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
       }
     }
     cards = capPerStore(cards, input, td, fast);
+    // Fome pede REFEIÇÃO (ou preparo em minutos) antes de petisco (q9, r01/r02/r04): sem nenhum card de
+    // refeição, o melhor candidato elegível das prateleiras de refeição entra na frente.
+    if (isHungerAsk(req)) cards = ensureMealCard(cards, input, td, max);
   }
   if (isSymptomPlan(req, plan)) {
     // Sintoma: a ordem é a da tabela (classe mais indicada primeiro, cuidado no fim), nunca a do prazo.
@@ -269,10 +290,137 @@ async function pickCards(req: RecommendRequest, plan: ShelfPlan, candidatesIn: S
     };
     cards = cards.map((c, i) => ({ c, i })).sort((a, b) => order(a.c) - order(b.c) || a.i - b.i).map((x) => x.c);
   } else if (fast) {
-    const eta = (c: RecommendCard) => c.etaMinutes ?? Number.POSITIVE_INFINITY;
-    cards = cards.map((c, i) => ({ c, i })).sort((a, b) => (eta(a.c) === eta(b.c) ? a.i - b.i : eta(a.c) - eta(b.c))).map((x) => x.c);
+    // Por FAIXA de prazo (menos de 1 h, 4 h, 12 h, mais), não pelo minuto: dentro da faixa vale a ordem do juiz
+    // (a refeição antes do petisco, a cafeína antes da água). (q9)
+    const band = (c: RecommendCard) => {
+      const m = c.etaMinutes ?? Number.POSITIVE_INFINITY;
+      return m <= 60 ? 0 : m <= 240 ? 1 : m <= 720 ? 2 : 3;
+    };
+    const meal = (c: RecommendCard) => (isHungerAsk(req) && MEAL_SHELVES.test(c.shelfId) ? 0 : 1);
+    cards = cards.map((c, i) => ({ c, i })).sort((a, b) => band(a.c) - band(b.c) || meal(a.c) - meal(b.c) || a.i - b.i).map((x) => x.c);
   }
-  return preferUsualBrand(finalizeWhys(fitKitBudget(cards.slice(0, max), judged), judged, plan, memory), input, max);
+  let finalCards = cards.slice(0, max);
+  const people = req.form === "need" ? headcountPlan(req, finalCards.map((c) => c.shelfId)) : undefined;
+  // Pedido de ocasião com número de gente: embalagem maior onde faz sentido (bolo, salgadinho, refrigerante).
+  if (people) finalCards = preferBiggerPacks(finalCards, input);
+  // Kit com orçamento soma os preços; pedido de ESTADO (fome, sede, doce) são alternativas, não um kit (h24).
+  finalCards = isStateAsk(req) ? finalCards : fitKitBudget(finalCards, judged);
+  const done = withDeliveryNotes(preferUsualBrand(finalizeWhys(finalCards, judged, plan, memory), input, max), judged);
+  return people ? applyHeadcount(done, judged, people) : done;
+}
+
+// ---------------------------------------------------------------- fome, estado, prazo, quantidade (q9)
+
+// Prateleiras de REFEIÇÃO (pronta ou de preparo em minutos). Petisco, chocolate e biscoito não entram.
+const MEAL_SHELVES = /^(lanches\.sanduiche|congelados\.(pratos_prontos|pizza|empanados|salgados|pao_de_queijo)|mercado\.(macarrao_instantaneo|sopa))$/;
+const HUNGER_RE = /\b(fome|larica|lanche|lanchinho|comer)\b/;
+const CRAVING_RE = /\b(doce|doces|docinho|salgado|salgada|sobremesa|gelad\w*)\b/;
+const MEAL_CONTEXT_RE = /\b(churrasc\w*|festa|festinha|piquenique|cafe da manha|jantar|almoco)\b/;
+// "Tô com fome", "o que posso comer agora": sem vontade específica de doce/salgado e fora de uma ocasião.
+export function isHungerAsk(req: Pick<RecommendRequest, "form" | "symptom" | "need" | "text">): boolean {
+  if (req.form !== "need" || req.symptom?.trim()) return false;
+  const t = normRec(`${req.need ?? ""} ${req.text}`);
+  return HUNGER_RE.test(t) && !CRAVING_RE.test(t) && !MEAL_CONTEXT_RE.test(t);
+}
+
+// Pedido de ESTADO ou vontade (fome, sede, sono, doce, salgado, gelado): os cards são alternativas pra escolher
+// UMA, não um kit pra somar.
+const STATE_RE = /\b(fome|larica|sede|sono|cansad\w*|doce|doces|docinho|salgado|salgada|sobremesa|gelad\w*|beliscar|lanche|lanchinho|comer)\b/;
+export function isStateAsk(req: Pick<RecommendRequest, "form" | "need" | "text" | "symptom">): boolean {
+  if (req.form !== "need") return false;
+  const t = normRec(`${req.need ?? ""} ${req.text}`);
+  return STATE_RE.test(t) && !MEAL_CONTEXT_RE.test(t) && !requestHeadcount(req as RecommendRequest);
+}
+
+function ensureMealCard(cards: RecommendCard[], input: Parameters<typeof judgeFitnessByRules>[0], td: RecommendTableDeps, max: number): RecommendCard[] {
+  if (cards.some((c) => MEAL_SHELVES.test(c.shelfId))) return cards;
+  const meals = eligibleCandidates(input).filter((c) => MEAL_SHELVES.test(c.shelfId) && !cards.some((x) => keyOf(x) === keyOf(c.option) || sameName(x, c.option)));
+  if (!meals.length) return cards;
+  const best = judgeFitnessByRules({ ...input, candidates: meals }, td).cards[0];
+  const chosen = best && meals.find((c) => c.shelfId === best.shelfId && c.option.sku === best.sku && (c.option.storeKey ?? "") === best.storeKey);
+  if (!chosen) return cards;
+  return [toCard(chosen, best.why), ...cards].slice(0, max);
+}
+
+// Bolo de 1 kg no lugar do bolinho de 300 g, salgadinho grande, refrigerante de 2 L: só pra pedido com número de gente.
+function preferBiggerPacks(cards: RecommendCard[], input: Parameters<typeof judgeFitnessByRules>[0]): RecommendCard[] {
+  const eligible = eligibleCandidates(input);
+  return cards.map((card) => {
+    const chosen = eligible.find((c) => c.shelfId === card.shelfId && keyOf(c.option) === keyOf(card));
+    if (!chosen) return card;
+    const big = biggerPackIndex(card.shelfId, chosen, eligible.filter((c) => c.shelfId === card.shelfId));
+    if (!big || big === chosen || cards.some((x) => x !== card && (keyOf(x) === keyOf(big.option) || sameName(x, big.option)))) return card;
+    // O motivo era do item antigo (tamanho no texto): volta vazio e o finalizeWhys usa o do plano.
+    return toCard(big, "");
+  });
+}
+
+// "Entrega na hora eu não tenho": o card que só chega amanhã diz o prazo no motivo, e, quando o cliente pediu
+// um prazo ("chegue em 1 hora") que ninguém cumpre, o mais rápido diz isso (fatos do card; a copy de abertura
+// repete). Só em pedido urgente.
+const ASKED_TIME_RE = /\bem (\d+|uma|um|meia|duas|dois) ?(h|hora|horas|min|minutos)\b/;
+export function askedMinutes(text: string): number | undefined {
+  const m = normRec(text).match(ASKED_TIME_RE);
+  if (!m) return undefined;
+  const n = m[1] === "meia" ? 0.5 : /^\d+$/.test(m[1]) ? Number(m[1]) : m[1] === "duas" || m[1] === "dois" ? 2 : 1;
+  return /^min/.test(m[2]) ? n : n * 60;
+}
+function deliveryLabel(c: RecommendCard): string | undefined {
+  const text = (c.delivery ?? "").replace(/^prazo da loja:\s*/i, "").trim();
+  const when = text.match(/\((amanh[^)]*)\)/);
+  if (when) return when[1].replace(/\s+/g, " ");
+  if (text) return text;
+  const eta = c.etaMinutes;
+  if (eta == null) return undefined;
+  return eta < 24 * 60 ? `${Math.max(1, Math.round(eta / 60))}h` : `${Math.round(eta / (24 * 60))} dia(s)`;
+}
+export function withDeliveryNotes(cards: RecommendCard[], req: RecommendRequest): RecommendCard[] {
+  const urgent = wantsFast(req.criteria, req.urgency) || URGENT_TEXT_RE.test(normRec(req.text));
+  if (!urgent || !cards.length) return cards;
+  const etas = cards.map((c) => c.etaMinutes).filter((m): m is number => typeof m === "number" && m > 0);
+  const min = etas.length ? Math.min(...etas) : undefined;
+  const asked = askedMinutes(req.text);
+  let fastestNoted = false;
+  return cards.map((card) => {
+    const eta = card.etaMinutes;
+    let note = "";
+    if (eta != null && eta >= 12 * 60) {
+      const label = deliveryLabel(card);
+      if (label) note = /^amanh/.test(label) ? `só chega ${label}` : `só chega em ${label}`;
+    } else if (asked != null && min != null && min > asked && eta === min && !fastestNoted) {
+      fastestNoted = true;
+      const label = deliveryLabel(card);
+      if (label) note = `o mais rápido que achei chega em ${label}`;
+    }
+    return note ? { ...card, why: card.why ? `${card.why} — ${note}` : note.charAt(0).toUpperCase() + note.slice(1) } : card;
+  });
+}
+
+// Quantidade sugerida por número de pessoas (quantity.ts): cada card ganha `suggestedQty` e o motivo "sugestão: 3x
+// pra 12 pessoas". Orçamento dito vale pro TOTAL (quantidade × preço + frete): se estoura, encolhe a quantidade
+// do card mais caro (até metade da sugestão) e, por fim, tira o último card.
+export function applyHeadcount(cards: RecommendCard[], req: RecommendRequest, hp: HeadcountPlan): RecommendCard[] {
+  type Line = { card: RecommendCard; qty: number; min: number; text: string };
+  let lines: Line[] = cards.map((card) => {
+    const s = suggestQuantity(card.shelfId, card, hp);
+    return { card, qty: s?.qty ?? 1, min: s ? Math.max(1, Math.ceil(s.qty / 2)) : 1, text: s?.text ?? "" };
+  });
+  const budget = req.budget;
+  if (budget && budget > 0) {
+    const freight = (ls: Line[]) => [...new Map(ls.map((l) => [l.card.storeKey ?? "", l.card.freightFee ?? TYPICAL_FREIGHT])).values()].reduce((a, b) => a + b, 0);
+    const total = (ls: Line[]) => ls.reduce((sum, l) => sum + displayPrice(l.card.unitPrice) * l.qty, 0) + freight(ls);
+    while (lines.length && total(lines) > budget) {
+      const shrinkable = lines.filter((l) => l.qty > l.min).sort((a, b) => displayPrice(b.card.unitPrice) * b.qty - displayPrice(a.card.unitPrice) * a.qty)[0];
+      if (shrinkable) shrinkable.qty -= 1;
+      else if (lines.length > 1) lines.pop();
+      else break;
+    }
+  }
+  return lines.map(({ card, qty, text }) => {
+    if (qty <= 1) return card;
+    const said = text.replace(/\d+x/, `${qty}x`);
+    return { ...card, suggestedQty: qty, why: suggestedWhy(card.why, { qty, text: said }) };
+  });
 }
 
 // Produto julgado (rodada de qualidade 08/10): o card é do produto pedido, com o atributo pedido. Cada corte
@@ -360,12 +508,18 @@ export function capPerStore(cards: RecommendCard[], input: Parameters<typeof jud
 // saem (o card mostra o prazo; o juiz do placar marcava "o mais vendido" como falso).
 // Fruta, água, carne…: não levam a ressalva de traços (é natural, não processado).
 const NATURAL_SHELF_RE = /^(hortifruti\.|bebidas\.(agua|agua_coco)$|carnes\.|mercado\.(cafe|cha|arroz|feijao)$)/;
+// Motivo de dieta: a prova do nome e/ou o que é natural do produto ("zero lactose no rótulo; leite, naturalmente sem glúten").
+function joinWhy(proof: string | undefined, natural: string | undefined): string | undefined {
+  return proof && natural ? `${proof}; ${natural}` : proof ?? natural;
+}
+
 export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan: ShelfPlan, memory?: LoadedMemory): RecommendCard[] {
   const rules = constraintRules(req.constraints, memory);
   const attrs = req.form === "product_judged" ? attributeRules(req.constraints) : [];
   // "o mais em conta" só quando preço é O critério (o 1º); num kit de tipos diferentes a comparação confunde.
   const cheap = req.criteria[0] === "cheap" && cards.length >= 2 ? [...cards].sort((a, b) => a.unitPrice - b.unitPrice)[0] : undefined;
   // Alergia (corpus difícil h17): o nome não prova ausência de traços — o motivo avisa.
+  const askText = [req.need, req.text, req.product, req.symptom, ...req.constraints].filter(Boolean).join(" ");
   const allergen = rules.find(isAllergenRule);
   const allergenWord = allergen && allergen.kind === "word" ? allergen.word.replace(/\s*\(.*$/, "") : undefined;
   // (q4) Sem "chega mais rápido" no motivo: o card já mostra o prazo e o juiz do placar reprovava a comparação.
@@ -373,11 +527,14 @@ export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan
     const pickWhy = plan.picks.find((p) => p.shelfId === card.shelfId)?.why;
     const own = whyIsFactual(card.why) ? card.why : "";
     const fromPlan = whyIsFactual(pickWhy) ? pickWhy! : "";
+    const naturalWhy = naturalDietWhy(card.name, card.shelfId, rules);
     let why: string;
     if (card.medicine === "mip") why = own || fromPlan;
     else if (allergenWord && !NATURAL_SHELF_RE.test(card.shelfId)) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
     else if (cheap && keyOf(card) === keyOf(cheap)) why = `o mais em conta dos ${cards.length}`;
-    else why = dietProofWhy(card.name, rules) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? (own || fromPlan);
+    else why = joinWhy(dietProofWhy(card.name, rules), naturalWhy) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? provenAttributeWhy(card.name, askText) ?? (own || fromPlan);
+    // (q9) Motivo que afirma atributo (renal, castrado, antipulgas, sem lactose…) só sai se o NOME prova.
+    if (why && !(naturalWhy && why.includes(naturalWhy)) && whyClaimsUnproven(why, card.name, card.shelfId)) why = "";
     return { ...card, why };
   });
 }
@@ -463,7 +620,9 @@ async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketName
     .map((p) => (must ? { ...p, query: p.query.split("|").map((q) => `${q.trim()} ${opts.mustHave!.trim()}`).join(" | ") } : p))
     .map((p) => (dietRules.length && p.shelfId !== "produto" ? { ...p, query: withDietQueries(p.query, p.shelfId, dietRules) } : p))
     .map((p) => ({ ...p, query: withPetCondition(p.query, p.shelfId, `${req.text} ${req.need ?? ""}`) }));
-  const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs(), req.form === "product_judged");
+  // Pedido urgente (fome, ressaca, "hoje", critério rápido): o card mostra a entrega mais rápida da loja (q9).
+  const urgent = Boolean(req.urgency) || wantsFast(req.criteria, req.urgency);
+  const searched = await searchPicks(picks, cep, td, Date.now() + recommendSearchBudgetMs(), req.form === "product_judged", urgent);
   let candidates = searched.candidates;
   if (must) {
     // Tem a palavra pedida E continua sendo da prateleira ("sorvete morango" não aceita a fruta solta).
@@ -850,7 +1009,7 @@ export async function recommendRefineFromAttribute(env: RecommendEnv, current: P
 // Entrada do placar (scripts/bench-recommend.mts): mesma cadeia, sem WhatsApp nem contexto.
 export async function recommendForBench(req: RecommendRequest, cep: string): Promise<RecommendOutcome> {
   const chain = await runChain(req, cep);
-  return { request: req, plan: chain.plan, cards: chain.cards.slice(0, recommendMaxCards()), emptyShelves: chain.emptyShelves, timings: chain.timings };
+  return { request: req, plan: chain.plan, cards: chain.cards.slice(0, recommendMaxCards()), emptyShelves: chain.emptyShelves, timings: chain.timings, candidates: chain.candidates };
 }
 
 // ---------------------------------------------------------------- COMPLEMENTO NO FECHAMENTO (fase 4)

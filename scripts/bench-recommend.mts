@@ -117,14 +117,14 @@ function withTimeout<T>(promise: Promise<T>, ms: number, stage: string): Promise
 }
 
 // ---------- JUIZ ----------
-type ShownCard = { id: string; shelfId: string; name: string; brand: string; store: string; price: number; delivery: string; why: string; remedio: boolean };
+type ShownCard = { id: string; shelfId: string; name: string; brand: string; store: string; price: number; delivery: string; why: string; remedio: boolean; qty: number };
 type JudgeVerdict = {
   atende: boolean; variedade: boolean; pergunta_desnecessaria: boolean; card_errado: boolean; respeita_restricao: boolean;
   why_verdadeiro: boolean; nota: number; comentario: string; cards_errados: string[];
 };
 let judgeTokens = { input: 0, output: 0, calls: 0 };
 
-const JUDGE_SYSTEM = `Você é um avaliador rigoroso da RECOMENDAÇÃO de uma concierge de compras no WhatsApp (a "Lia", Brasil). O cliente pediu algo vago ("tô com fome", "presente pra minha mãe", "dor de barriga", "me recomenda um chocolate bom") e a Lia respondeu com um PLANO (prateleiras escolhidas + motivo) e CARDS de produtos reais que ela consegue entregar no CEP dele. Você recebe: o pedido, a forma (need = necessidade sem produto; product_judged = produto nomeado + pedido de julgamento "o melhor/bom"), a categoria, as restrições e o orçamento TOTAL (produto + frete), pistas de tipos de produto que resolveriam (expectShelfKinds — só uma pista, outros tipos sensatos também valem), o que NÃO pode aparecer (mustNot), o plano e os cards (id, prateleira, nome, marca, loja, preço, prazo, motivo "why", e se é remédio isento).
+const JUDGE_SYSTEM = `Você é um avaliador rigoroso da RECOMENDAÇÃO de uma concierge de compras no WhatsApp (a "Lia", Brasil). O cliente pediu algo vago ("tô com fome", "presente pra minha mãe", "dor de barriga", "me recomenda um chocolate bom") e a Lia respondeu com um PLANO (prateleiras escolhidas + motivo) e CARDS de produtos reais que ela consegue entregar no CEP dele. Você recebe: o pedido, a forma (need = necessidade sem produto; product_judged = produto nomeado + pedido de julgamento "o melhor/bom"), a categoria, as restrições e o orçamento TOTAL (produto + frete), pistas de tipos de produto que resolveriam (expectShelfKinds — só uma pista, outros tipos sensatos também valem), o que NÃO pode aparecer (mustNot), o plano e os cards (id, prateleira, nome, marca, loja, preço de 1 unidade, quantidade_sugerida que o cliente vê no card como "Sugestão: Nx" quando o pedido traz número de pessoas, prazo, motivo "why", e se é remédio isento).
 Responda cada campo olhando os cards como um cliente exigente:
 - atende: pelo menos 1 card resolve de verdade a necessidade ou o pedido (tipo certo, respeita as restrições, e para pedido de urgência — fome, sede, ressaca, larica, "agora" — o prazo do card serve: um card que só chega em dias não resolve fome). Nos produto_julgado o card tem de ser do produto pedido e uma boa escolha (marca/versão reconhecida), não "o primeiro que apareceu".
 - variedade: os cards são de tipos de produto DISTINTOS entre si (need) — não 4 variações do mesmo item. Para produto_julgado, são opções realmente diferentes (marca/versão distintas), sem duplicata. Com 1 card só, é false.
@@ -223,7 +223,7 @@ function buildJudgePrompt(n: Need, outcome: any, shown: ShownCard[]): string {
       prateleiras: (outcome.plan?.picks ?? []).map((p: any) => ({ prateleira: p.shelfId, busca: p.query, motivo: p.why }))
     },
     prateleiras_sem_item_no_cep: outcome.emptyShelves ?? [],
-    cards: shown.map((c) => ({ id: c.id, prateleira: c.shelfId, nome: c.name, marca: c.brand, loja: c.store, preco: c.price, prazo: c.delivery || "(sem prazo)", motivo: c.why || "(sem motivo)", remedio_isento: c.remedio }))
+    cards: shown.map((c) => ({ id: c.id, prateleira: c.shelfId, nome: c.name, marca: c.brand, loja: c.store, preco: c.price, quantidade_sugerida: c.qty, preco_total_da_quantidade_sugerida: Math.round(c.price * c.qty * 100) / 100, prazo: c.delivery || "(sem prazo)", motivo: c.why || "(sem motivo)", remedio_isento: c.remedio }))
   });
 }
 
@@ -234,8 +234,8 @@ async function main() {
     // Prova do juiz sem a cadeia: um pedido de fome com um card bom e um errado (remédio + prazo de dias).
     const n: Need = { id: "selftest", text: "tô com muita fome", form: "need", category: "estado", expectShelfKinds: ["lanche pronto", "salgadinho"], mustNot: ["remedio"], constraints: [], need: "fome", urgency: true };
     const shown: ShownCard[] = [
-      { id: "C1", shelfId: "mercearia.salgadinho", name: "Salgadinho Ruffles Original 68g", brand: "Elma Chips", store: "Mambo", price: 9.9, delivery: "Hoje", why: "pronto pra comer", remedio: false },
-      { id: "C2", shelfId: "farmacia.antiacido", name: "Sal de Fruta Eno 5g", brand: "Eno", store: "Drogaria SP", price: 4.5, delivery: "Em 3 dias", why: "mata a fome na hora", remedio: true }
+      { id: "C1", shelfId: "mercearia.salgadinho", name: "Salgadinho Ruffles Original 68g", brand: "Elma Chips", store: "Mambo", price: 9.9, delivery: "Hoje", why: "pronto pra comer", remedio: false, qty: 1 },
+      { id: "C2", shelfId: "farmacia.antiacido", name: "Sal de Fruta Eno 5g", brand: "Eno", store: "Drogaria SP", price: 4.5, delivery: "Em 3 dias", why: "mata a fome na hora", remedio: true, qty: 1 }
     ];
     const outcome = { plan: { source: "ai", picks: [{ shelfId: "mercearia.salgadinho", query: "salgadinho", why: "pronto pra comer" }] }, emptyShelves: [] };
     const v = await judgeRecommendation(buildJudgePrompt(n, outcome, shown), shown.map((c) => c.id));
@@ -319,7 +319,7 @@ async function main() {
         const cards: any[] = outcome?.cards ?? [];
         const shown: ShownCard[] = cards.map((c, i) => ({
           id: `C${i + 1}`, shelfId: c.shelfId ?? "", name: c.name, brand: c.brand ?? "", store: c.storeLabel ?? c.storeKey ?? "",
-          price: c.unitPrice, delivery: c.delivery ?? (c.etaMinutes != null ? `${c.etaMinutes} min` : ""), why: c.why ?? "", remedio: c.medicine === "mip"
+          price: c.unitPrice, delivery: c.delivery ?? (c.etaMinutes != null ? `${c.etaMinutes} min` : ""), why: c.why ?? "", remedio: c.medicine === "mip", qty: c.suggestedQty ?? 1
         }));
 
         let verdict: (JudgeVerdict & { votes: number }) | null = null;

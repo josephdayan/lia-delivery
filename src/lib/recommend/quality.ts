@@ -45,7 +45,7 @@ const PROOF: Record<DietKind, RegExp> = {
   lactose: /\b(zero|sem|livre de|0%?) lactose\b|\blac ?free\b|\blactose free\b|\bvegan[oa]?s?\b|\b100% vegetal\b|\bbebida vegetal\b|\bsorbet\b|\ba base de agua\b/,
   gluten: /\b(sem|zero|livre de) gluten\b|\bgluten free\b|\bnao contem gluten\b/,
   vegan: /\bvegan[oa]?s?\b|\b100% vegetal\b|\bplant ?based\b|\bnao contem (ingredientes de )?origem animal\b|\bbebida vegetal\b/,
-  vegetarian: /\bvegetarian[oa]s?\b|\bvegan[oa]?s?\b|\b100% vegetal\b|\bplant ?based\b|\b(mussarela|muçarela|queijo|queijos|marguerita|margherita|quatro queijos|4 queijos|espinafre|brocolis|palmito|legumes|ricota)\b/,
+  vegetarian: /\bvegetarian[oa]s?\b|\bvegan[oa]?s?\b|\b100% vegetal\b|\bplant ?based\b|\b(mussarela|muçarela|queijo|queijos|marguerita|margherita|quatro queijos|4 queijos|espinafre|brocolis|palmito|legumes|ricota|tomate suave|sabor tomate|sabor legumes)\b/,
   // "sem adição de açúcar" NÃO prova zero açúcar (o juiz do placar reprovou sorvete/biscoito assim).
   sugar: /\b(zero|sem) acucar(es)?\b|\bzero\b(?! (lactose|gluten|alcool|cafeina))|\bdiet\b|\bsugar free\b|\b0% acucar\b/
 };
@@ -86,7 +86,15 @@ const VIOLATES: Record<DietKind, RegExp> = {
 const COATED_RE = /\b(cobert\w*|chocolate|caramel\w*|recheio|recheado|gourmet|doce de leite|leite condensado)\b/;
 
 // Prateleiras que cumprem por natureza uma restrição de alérgeno (sem processamento com traços).
-const ALLERGEN_SAFE_SHELF = /^(hortifruti\.(frutas|legumes|verduras)|bebidas\.(agua|agua_coco)|mercado\.(cafe|cha|arroz|feijao|acucar|sal)|carnes\.|casa\.|higiene\.|limpeza\.|beleza\.|pet\.|farmacia\.|bebe\.(fralda|lenco_umedecido|higiene_bebe))/;
+// (q9) Também as prateleiras que não são comida (brinquedo, livro, moda, eletrônico, papelaria, festa, flores): alergia a
+// amendoim não tem o que verificar ali (r35: "viagem com 2 crianças, nada de amendoim" zerava livro e brinquedo).
+const ALLERGEN_SAFE_SHELF = /^(hortifruti\.(frutas|legumes|verduras)|bebidas\.(agua|agua_coco)|mercado\.(cafe|cha|arroz|feijao|acucar|sal)|carnes\.|casa\.|higiene\.|limpeza\.|beleza\.|pet\.|farmacia\.|bebe\.(fralda|lenco_umedecido|higiene_bebe)|brinquedo\.|livraria\.|moda\.|eletronico\.|papelaria\.|festa\.|presente\.flores)/;
+
+// A prateleira é de risco pra esta regra de dieta (o item comum fere; só passa quem prova no nome)? Palavra solta
+// ("sem porco") e "sem remédio" não têm prateleira de risco. (q9: o plano põe as de risco depois das livres.)
+export function shelfAtRisk(rule: { kind: string }, shelfId: string): boolean {
+  return rule.kind in RISK && RISK[rule.kind as DietKind].test(shelfId);
+}
 
 export type DietRule = { kind: DietKind };
 export type WordRule = { kind: "word"; word: string; family: RegExp; allow?: RegExp };
@@ -203,6 +211,40 @@ export function violatesRule(textRaw: string, rule: ConstraintRuleQ, shelfId?: s
   return VIOLATES[kind].test(text);
 }
 
+// Fruta, suco, água de coco, café, leite e ovo não levam (conforme o caso) leite, trigo nem carne: o motivo diz isso quando
+// o cliente pediu a dieta e o nome não prova (r24: o juiz reprovava o suco "sem lactose" porque o motivo não dizia nada;
+// h19: leite zero lactose para quem também é celíaco). Só nome sem ingrediente que fere e sem cobertura/recheio.
+const NATURAL_BY_KIND: Partial<Record<DietKind, RegExp>> = {
+  lactose: /^(hortifruti\.|bebidas\.(suco|agua|agua_coco)$|mercado\.(cafe|cha|arroz|feijao)$)/,
+  gluten: /^(hortifruti\.|bebidas\.(suco|agua|agua_coco)$|frios\.leite$|mercado\.(cafe|cha|arroz|feijao)$)/,
+  vegan: /^(hortifruti\.(frutas|legumes|verduras)$|bebidas\.(suco|agua|agua_coco)$|mercado\.(cafe|cha|arroz|feijao)$)/
+};
+const NATURAL_LABEL: Partial<Record<DietKind, string>> = { lactose: "sem lactose", gluten: "sem glúten", vegan: "vegano" };
+function naturalNoun(shelfId: string): string {
+  if (/^hortifruti\.ovos$/.test(shelfId)) return "ovo";
+  if (/^hortifruti\./.test(shelfId)) return "fruta";
+  if (/suco$/.test(shelfId)) return "suco de fruta";
+  if (/frios\.leite$/.test(shelfId)) return "leite";
+  if (/mercado\.cafe$/.test(shelfId)) return "café";
+  if (/mercado\.cha$/.test(shelfId)) return "chá";
+  if (/mercado\.(arroz|feijao)$/.test(shelfId)) return "grão";
+  return "bebida";
+}
+export function naturalDietWhy(name: string, shelfId: string, rules: readonly ConstraintRuleQ[]): string | undefined {
+  const text = normQ(name);
+  if (COATED_RE.test(text) || /\b(vitamina|iogurte|lacteo|cremos\w*|nectar de leite|achocolatado|cappuccino|capuccino|aromatizad\w*)\b/.test(text)) return undefined;
+  const labels: string[] = [];
+  for (const rule of rules) {
+    if (rule.kind === "word" || rule.kind === "no_medicine" || rule.kind === "vegetarian" || rule.kind === "sugar") continue;
+    const re = NATURAL_BY_KIND[rule.kind];
+    if (!re?.test(shelfId) || PROOF[rule.kind].test(text)) continue;
+    // "leite" é do próprio produto no frios.leite: só vale pra glúten ali.
+    const violates = shelfId === "frios.leite" ? /\b(trigo|cevada|malte|aveia|biscoito|cereal)\b/.test(text) : VIOLATES[rule.kind].test(text);
+    if (!violates) labels.push(NATURAL_LABEL[rule.kind]!);
+  }
+  return labels.length ? `${naturalNoun(shelfId)}, naturalmente ${labels.join(" e ")}` : undefined;
+}
+
 // Prova de dieta no nome → motivo factual ("zero lactose no rótulo").
 export function dietProofWhy(name: string, rules: readonly ConstraintRuleQ[]): string | undefined {
   const text = normQ(name);
@@ -256,7 +298,7 @@ export function meetsAttributes(name: string, rules: readonly AttributeRule[]): 
 // O item é do TIPO da prateleira? (o piso pelo substantivo-cabeça deixa passar "Batata Ruffles" no
 // hortifrúti por "batata", "Gatorade Frutas Cítricas" em frutas, "Eco Copo Café" no café.)
 const PROCESSED_RE =
-  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa)\b/;
+  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa|drage|drages|dragea|dragees|pouch|passa|passas)\b/;
 const NOT_FOOD_RE =
   /\b(comprimidos?|capsulas?|medicamento|formula infantil|fraldas?|pomada|shampoo|sabonete|hidratante|creme dental|desodorante|perfume|colonia|bepantol|aptanutri|aptamil|cafeteira|brinquedo|pelucia|livro|camiseta|vela|caneca|xicara|garrafa termica)\b/;
 const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
@@ -276,7 +318,9 @@ const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [
   { shelf: /^farmacia\.antisseptico_cicatrizante$/, forbid: /\b(garganta|bucal|pastilha|pastilhas|anestesic\w*|spray bucal|cystex|urinari\w*|cistite)\b/ },
   { shelf: /^farmacia\.curativo$/, forbid: /\b(acne|acnes|espinha|espinhas|cravos?)\b/ },
   { shelf: /^higiene\.absorvente$/, forbid: /\b(fraldas?|geriatric\w*|infantil)\b/ },
-  { shelf: /^bebe\.higiene_bebe$/, forbid: /\b(kids|minions|teen|adulto)\b/ }
+  { shelf: /^bebe\.higiene_bebe$/, forbid: /\b(kids|minions|teen|adulto)\b/ },
+  // Barril de chope (5 L, precisa de chopeira) não é cerveja de churrasco (q9: "churrasco pra 12" → 2 barris Heineken).
+  { shelf: /^bebidas\.cerveja$/, forbid: /\b(barril|barris|chopeira)\b/ }
 ];
 
 export function shelfSanityOk(shelfId: string, name: string, category?: string): boolean {
@@ -287,6 +331,74 @@ export function shelfSanityOk(shelfId: string, name: string, category?: string):
   }
   void category;
   return true;
+}
+
+// ---------------------------------------------------------------- atributo pedido que o NOME prova (q9)
+
+// "ração pro gato castrado com problema nos rins", "meu cachorro tá cheio de pulga": o atributo é a razão
+// do pedido, e o juiz do placar reprovava ração comum com motivo "pra problema renal" e shampoo
+// "antifúngico" no lugar do antipulgas. Regra: (1) o MOTIVO (why) que afirma o atributo só sai se o nome
+// do card o prova; (2) na prateleira que o atributo vale, só ficam os cards que o provam — e, quando o
+// atributo é de saúde/parasita (`strict`), prateleira sem nenhum que prove sai inteira (preferível 1
+// card certo a 4 com 3 errados, ou nenhum e a Lia dizer que não achou).
+export type ProofAttr = { key: string; ask: RegExp; proof: RegExp; claim: RegExp; shelf: RegExp; strict: boolean; why: string };
+export const PROOF_ATTRS: ProofAttr[] = [
+  { key: "renal", ask: /\b(rins?|renal|renais)\b/, proof: /\b(renal|renais|rim|rins|kidney)\b/, claim: /\b(renal|renais|rins?)\b/, shelf: /^pet\./, strict: true, why: "linha renal, pra problema nos rins" },
+  { key: "urinario", ask: /\b(urinari\w*|cristais|calculo)\b/, proof: /\b(urinar\w*|urinary|struvite)\b/, claim: /\burinar\w*\b/, shelf: /^pet\./, strict: true, why: "linha urinária, pro trato urinário" },
+  { key: "pulga", ask: /\b(pulgas?|carrapatos?)\b/, proof: /\b(pulgas?|antipulgas?|carrapatos?|anticarrapatos?)\b/, claim: /\b(pulgas?|carrapatos?)\b/, shelf: /^pet\.(higiene|coleira)/, strict: true, why: "feito pra pulgas e carrapatos" },
+  { key: "castrado", ask: /\bcastrad[oa]s?\b/, proof: /\b(castrad\w*|neutered|sterili[sz]ed|sterilised)\b/, claim: /\bcastrad\w*\b/, shelf: /^pet\.racao/, strict: false, why: "própria pra castrados" },
+  { key: "filhote", ask: /\b(filhotes?|puppy|kitten|gatinh[oa]|cachorrinh[oa])\b/, proof: /\b(filhotes?|puppy|puppies|kitten|kittens|junior)\b/, claim: /\bfilhotes?\b/, shelf: /^pet\.racao/, strict: false, why: "própria pra filhote" },
+  // Cabelo e pele (q9, h15/h26): "queda de cabelo" e "caspa" são strict; "pele sensível" prefere quem prova.
+  { key: "queda", ask: /\b(queda de cabelo|cabelo caindo|antiqueda|caindo muito)\b/, proof: /\b(antiqueda|anti queda|queda|fortalecedor\w*|fortalece|crescimento|tonico capilar|biotina)\b/, claim: /\bantiqueda\b|\bqueda\b/, shelf: /^(beleza\.(shampoo|condicionador|tratamento_capilar)|farmacia\.(suplementos|vitaminas))$/, strict: true, why: "linha antiqueda" },
+  { key: "caspa", ask: /\bcaspa\b/, proof: /\b(anticaspa|caspa|seborreic\w*)\b/, claim: /\bcaspa\b/, shelf: /^beleza\.(shampoo|condicionador|tratamento_capilar)$/, strict: true, why: "linha anticaspa" },
+  { key: "sensivel", ask: /\b(pele sensivel|peles sensiveis|rosacea|atopic\w*)\b/, proof: /\b(sensiv\w*|sensodyne|hipoalerg\w*|atopic\w*|reativ\w*|redness|rosacea|dermato\w*|sensitive)\b/, claim: /\b(pele|peles) sensiv\w*|\bsensiv\w*\b/, shelf: /^(beleza|higiene)\./, strict: false, why: "feito pra pele sensível" },
+  { key: "light", ask: /\b(obes\w*|sobrepeso|acima do peso|gordinh\w*)\b/, proof: /\b(light|obes\w*|slim|peso ideal|controle de peso|weight|sobrepeso)\b/, claim: /\b(light|obes\w*|sobrepeso)\b/, shelf: /^pet\.racao/, strict: false, why: "linha light, pra controle de peso" }
+];
+
+// Motivo factual do atributo pedido que o nome do card PROVA ("linha renal, pra problema nos rins").
+export function provenAttributeWhy(name: string, askRaw: string): string | undefined {
+  const n = normQ(name);
+  const hit = askedProofAttrs(askRaw).find((a) => a.proof.test(n));
+  return hit?.why;
+}
+
+export function askedProofAttrs(askRaw: string): ProofAttr[] {
+  const ask = normQ(askRaw);
+  return PROOF_ATTRS.filter((a) => a.ask.test(ask));
+}
+
+// O motivo afirma um atributo (renal, castrado, pulgas, sem lactose…) que o nome do card não prova?
+export function whyClaimsUnproven(why: string | undefined | null, name: string, shelfId?: string): boolean {
+  const w = normQ(why);
+  if (!w) return false;
+  const n = normQ(name);
+  if (PROOF_ATTRS.some((a) => a.claim.test(w) && !a.proof.test(n))) return true;
+  // Chá gelado (ice tea, mate pronto) não é "bebida quente"; amendoim japonês não é "castanha".
+  if (/\b(quente|quentinh[oa]|aquece|esquenta)\b/.test(w) && /\b(ice tea|gelad\w*|refrigerad\w*|sorvete|picole)\b/.test(n)) return true;
+  if (/\bcastanhas?\b/.test(w) && !/\b(castanhas?|nozes|amendoas?|nuts|pistaches?|caju|macadamia|avela|mix)\b/.test(n)) return true;
+  // Dieta no motivo ("sem lactose", "sem glúten", "vegano", "zero açúcar"): o nome prova — ou a prateleira é
+  // livre por natureza (fruta, água, carne, café): "naturalmente sem lactose" em banana é fato.
+  if (shelfId && ALLERGEN_SAFE_SHELF.test(shelfId)) return false;
+  for (const kind of Object.keys(PROOF) as DietKind[]) {
+    const claim = kind === "lactose" ? /\blactose\b/ : kind === "gluten" ? /\bgluten\b/ : kind === "vegan" ? /\bvegan\w*\b/ : kind === "sugar" ? /\b(sem|zero) acucar\b|\bdiet\b/ : null;
+    if (claim && claim.test(w) && !PROOF[kind].test(n)) return true;
+  }
+  return false;
+}
+
+// Candidatos que cumprem o atributo pedido: nas prateleiras onde ele vale, só quem o PROVA no nome. Sem nenhum que
+// prove: atributo `strict` esvazia a prateleira; senão ficam todos (e o motivo não afirma o atributo).
+export function keepProvenAttributes<T extends { shelfId: string; option: { name: string } }>(candidates: readonly T[], askRaw: string): T[] {
+  let out = [...candidates];
+  for (const attr of askedProofAttrs(askRaw)) {
+    const shelves = [...new Set(out.filter((c) => attr.shelf.test(c.shelfId)).map((c) => c.shelfId))];
+    for (const shelf of shelves) {
+      const proving = out.filter((c) => c.shelfId === shelf && attr.proof.test(normQ(c.option.name)));
+      if (!proving.length && !attr.strict) continue;
+      out = out.filter((c) => c.shelfId !== shelf || proving.includes(c));
+    }
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- motivo factual

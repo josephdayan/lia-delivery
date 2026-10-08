@@ -72,7 +72,8 @@ test("todo id citado nas tabelas curadas existe no mapa; isento só em nó MIP",
   const missing: string[] = [];
   for (const e of NEED_TABLE) for (const pick of e.picks) if (!shelfById(pick.shelfId)) missing.push(`need ${e.keys[0]} → ${pick.shelfId}`);
   for (const e of SYMPTOM_TABLE) {
-    for (const pick of [...e.picks, ...(e.care ?? [])]) if (!shelfById(pick.shelfId)) missing.push(`sintoma ${e.keys[0]} → ${pick.shelfId}`);
+    // "produto" (q9, 08/10) = busca textual livre, sem prateleira (Povidine na unha encravada); só como cuidado, nunca remédio.
+    for (const pick of [...e.picks, ...(e.care ?? [])]) if (!shelfById(pick.shelfId) && !(pick.shelfId === "produto" && !pick.mipClass && (e.care ?? []).includes(pick))) missing.push(`sintoma ${e.keys[0]} → ${pick.shelfId}`);
     for (const pick of e.picks) {
       const node = shelfById(pick.shelfId);
       if (!node) continue;

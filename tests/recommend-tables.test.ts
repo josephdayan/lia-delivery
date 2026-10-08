@@ -15,7 +15,8 @@ test("tabelas: tamanhos mínimos e chaves normalizadas", () => {
   assert.ok(SYMPTOM_TABLE.length >= 20, `SYMPTOM_TABLE: ${SYMPTOM_TABLE.length}`);
   assert.ok(RED_FLAGS.length >= 10, `RED_FLAGS: ${RED_FLAGS.length}`);
   for (const e of [...NEED_TABLE, ...SYMPTOM_TABLE]) {
-    assert.ok(e.keys.length > 0 && e.picks.length > 0);
+    // (q9) sintoma sem remédio isento (ressaca, unha encravada) tem só o cuidado: picks vazio, care preenchido.
+    assert.ok(e.keys.length > 0 && e.picks.length + (("care" in e && e.care) ? e.care.length : 0) > 0);
     for (const k of e.keys) assert.equal(k, normalizeText(k), `chave não normalizada: "${k}"`);
     for (const pick of e.picks) {
       assert.ok(pick.query.trim() && pick.why.trim(), `${e.keys[0]} → ${pick.shelfId} sem query/why`);
@@ -36,10 +37,11 @@ test("sintomas: só isentos — nenhuma consulta nomeia remédio de receita", ()
 
 const NEEDS: [string, string][] = [
   // [frase do cliente, primeira prateleira esperada]
-  ["tô com fome", "snacks.salgadinho"],
-  ["to com uma larica absurda", "snacks.salgadinho"],
-  ["bateu a fome aqui", "snacks.salgadinho"],
-  ["tô morrendo de fome", "snacks.salgadinho"],
+  // (q9, 08/10) fome pede REFEIÇÃO (macarrão instantâneo, sanduíche, prato pronto) antes de petisco.
+  ["tô com fome", "mercado.macarrao_instantaneo"],
+  ["to com uma larica absurda", "mercado.macarrao_instantaneo"],
+  ["bateu a fome aqui", "mercado.macarrao_instantaneo"],
+  ["tô morrendo de fome", "mercado.macarrao_instantaneo"],
   ["to com muita fome, quero algo doce", "doces.chocolate"],
   ["quero algo doce", "doces.chocolate"],
   ["me vê um docinho", "doces.chocolate"],
@@ -106,7 +108,7 @@ const SYMPTOMS: [string, string][] = [
   ["acho que to gripado", "farmacia.antigripal"],
   ["nariz entupido", "farmacia.descongestionante"],
   ["crise de rinite", "farmacia.antialergico"],
-  ["remédio pra ressaca", "farmacia.hidratacao_oral"],
+  ["remédio pra ressaca", "bebidas.isotonico"],
   ["cólica menstrual", "farmacia.antiespasmodico"],
   ["não consigo dormir", "farmacia.calmante_natural"],
   ["assadura no bebê", "farmacia.pomada_assadura"],
@@ -123,7 +125,7 @@ test("findSymptom: sintoma → classe isenta mais indicada em primeiro", () => {
   for (const [phrase, first] of SYMPTOMS) {
     const entry = findSymptom(normalizeText(phrase));
     assert.ok(entry, `sem entrada: "${phrase}"`);
-    assert.equal(entry!.picks[0].shelfId, first, `"${phrase}" → ${entry!.keys[0]}`);
+    assert.equal([...entry!.picks, ...(entry!.care ?? [])][0].shelfId, first, `"${phrase}" → ${entry!.keys[0]}`);
   }
   assert.equal(findSymptom("quero um chocolate"), null);
 });
@@ -260,8 +262,10 @@ test("revisão C3: chave de sintoma de 1 palavra ambígua exige contexto de saú
 test("revisão A6: ressaca só hidratação (sem Engov/AAS, AINE, paracetamol); antigripal avisa pressão alta", () => {
   const ressaca = findSymptom("to de ressaca")!;
   const all = [...ressaca.picks, ...(ressaca.care ?? [])];
-  assert.deepEqual(ressaca.picks.map((p) => p.shelfId), ["farmacia.hidratacao_oral"]);
-  assert.deepEqual((ressaca.care ?? []).map((p) => p.shelfId).sort(), ["bebidas.agua", "bebidas.agua_coco", "bebidas.isotonico"]);
+  // (q9, 08/10) o soro de reidratação oral (mip, Hidraplex) saiu: o juiz o lia como remédio proibido e só chega em 1 dia.
+  assert.deepEqual(ressaca.picks.map((p) => p.shelfId), []);
+  assert.deepEqual((ressaca.care ?? []).map((p) => p.shelfId).sort(), ["bebidas.agua", "bebidas.agua_coco", "bebidas.isotonico", "mercado.sopa"]);
+  assert.ok(all.every((p) => !p.mipClass && !/hidratacao_oral/.test(p.shelfId)));
   for (const p of all) assert.doesNotMatch(`${p.shelfId} ${p.query}`, /engov|aas|aspirina|dipirona|paracetamol|ibuprofeno|analgesico|anti_inflamatorio|sonrisal/i);
   const gripe = findSymptom("to gripado")!;
   assert.match(gripe.picks.find((p) => p.shelfId === "farmacia.antigripal")!.why, /pressão alta/);

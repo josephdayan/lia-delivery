@@ -9,7 +9,12 @@ import {
   baseProductName,
   dietProofWhy,
   fastEtaCutoff,
+  keepProvenAttributes,
   meetsAttributes,
+  naturalDietWhy,
+  provenAttributeWhy,
+  shelfAtRisk,
+  whyClaimsUnproven,
   parseConstraint,
   shelfSanityOk,
   violatesRule,
@@ -17,11 +22,12 @@ import {
   withDietQueries,
   withPetCondition
 } from "../src/lib/recommend/quality";
-import { constraintRules, defaultTableDeps, eligibleCandidates, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint } from "../src/lib/recommend/fallback";
+import { constraintRules, defaultTableDeps, eligibleCandidates, needEntryFor, normalizeRecommendRequest, planShelves, planShelvesFromTables, tableDepsFrom, violatesConstraint, wantsCold } from "../src/lib/recommend/fallback";
 import { __setPlanShelvesForTests } from "../src/lib/recommend/ai";
-import { capPerStore, finalizeWhys, fitKitBudget, productTypeOnly, quickOnly } from "../src/lib/recommend/handle";
+import { applyHeadcount, askedMinutes, capPerStore, finalizeWhys, fitKitBudget, isHungerAsk, isStateAsk, productTypeOnly, quickOnly, withDeliveryNotes } from "../src/lib/recommend/handle";
+import { biggerPackIndex, headcountOf, headcountPlan, requestHeadcount, sizeOf, suggestQuantity } from "../src/lib/recommend/quantity";
 import * as copy from "../src/lib/lia-copy";
-import { findRedFlag, findSymptom } from "../src/lib/recommend/tables";
+import { findNeed, findRedFlag, findSymptom } from "../src/lib/recommend/tables";
 import { noteShopperCep, runShopperScoped, storesForShopper } from "../src/lib/store-areas";
 import type { ChoiceOption } from "../src/lib/conversation-types";
 import type { RecommendCard, RecommendRequest, ShelfCandidate, ShelfMap, ShelfPlan, SymptomTableEntry } from "../src/lib/recommend/types";
@@ -513,7 +519,8 @@ describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difí
       plan: { picks: [], source: "table" } as ShelfPlan,
       candidates: [cand("pet.higiene", "a", "Shampoo Cloresten Antifúngico"), cand("pet.higiene", "b", "Shampoo Antipulgas Pet Clean"), cand("pet.coleira", "c", "Coleira para Cachorro")]
     });
-    assert.deepEqual(pulga.map((c) => c.option.sku).sort(), ["b", "c"]);
+    // (q9) Agora o nome precisa dizer pulga/carrapato em TODA prateleira de higiene/coleira: a coleira sem a palavra sai.
+    assert.deepEqual(pulga.map((c) => c.option.sku).sort(), ["b"]);
     const baby = productTypeOnly(req({ form: "product_judged", text: "repelente pra bebe", product: "repelente", recipient: "bebê" }), [
       cand("beleza.protetor_solar", "1", "Repelente Off Baby Gel"),
       cand("beleza.protetor_solar", "2", "Repelente SBP Baby Bebê"),
@@ -539,5 +546,366 @@ describe("rodada q2 (08/10, noite) — achados do placar principal q2 e do difí
       candidates: [cand("brinquedo.infantil", "a", "Livro Magnético Infantil Princesas"), cand("brinquedo.carrinho", "b", "Carrinho Hot Wheels")]
     });
     assert.deepEqual(kid.map((c) => c.option.sku), ["b"]);
+  });
+});
+
+
+// ===================================================================================================
+// Rodada q9 (08/10/2026, noite) — principal q8 (atende 88,6%) e difícil q7 (atende 73,9%, card errado 19%)
+// ===================================================================================================
+
+function card(shelfId: string, sku: string, name: string, over: Partial<RecommendCard> = {}): RecommendCard {
+  return { ...opt(sku, name), shelfId, why: "", ...over };
+}
+
+describe("q9 / causa 1 — quantidade por número de pessoas (r26 churrasco pra 12, r30 festa pra 15)", () => {
+  it("headcountOf: 'pra 12', 'pra uns 15 amigos', 'somos oito'; idade, reais e kg não são gente", () => {
+    assert.equal(headcountOf("vou fazer um churrasco pra 12, sem porco"), 12);
+    assert.equal(headcountOf("festinha de aniversario pra 15 pessoas ate 300 reais"), 15);
+    assert.equal(headcountOf("churras sábado pra uns 15 amigos"), 15);
+    assert.equal(headcountOf("somos oito aqui"), 8);
+    assert.equal(headcountOf("presente pra menino de 5 anos"), undefined);
+    assert.equal(headcountOf("algo pra comer pra 20 reais"), undefined);
+    assert.equal(headcountOf("churrasco pra 2"), undefined, "1–2 pessoas não pedem sugestão de quantidade");
+    assert.equal(requestHeadcount(req({ text: "presente pra 4 amigos", need: "presente" })), undefined, "presente é alternativa, não kit");
+    assert.equal(requestHeadcount(req({ text: "tosse pra 5 pessoas", symptom: "tosse" })), undefined);
+  });
+
+  it("churrasco pra 12: picanha de ~2,1 kg → 3 peças; carvão de 5 kg → 2 sacos; pão de alho → 3; refri 2 L → 3", () => {
+    const plan = headcountPlan(req({ text: "vou fazer um churrasco pra 12", need: "churrasco pra 12 pessoas" }), ["carnes.bovina", "casa.churrasco"])!;
+    assert.equal(plan.churrasco, true);
+    assert.equal(suggestQuantity("carnes.bovina", { name: "Picanha Linha Mais de 1,1kg a 2,1kg (unidade ~2,1 kg)" }, plan)?.qty, 3);
+    assert.equal(suggestQuantity("carnes.bovina", { name: "Picanha", unitWeightKg: 2.1 }, plan)?.qty, 3);
+    assert.equal(suggestQuantity("casa.churrasco", { name: "Carvão Especial Vegetal Ecológico Momento Mambo 5kg" }, plan)?.qty, 2);
+    assert.equal(suggestQuantity("casa.churrasco", { name: "Acendedor de Churrasco Gel 500ml" }, plan), null, "só carvão leva a regra do carvão");
+    assert.equal(suggestQuantity("padaria.pao_de_alho", { name: "Pão de Alho Tradicional Santa Massa 400g" }, plan)?.qty, 3);
+    assert.equal(suggestQuantity("bebidas.refrigerante", { name: "Refrigerante Coca-Cola Garrafa Pet 2 Litros" }, plan)?.qty, 3);
+    const s = suggestQuantity("carnes.bovina", { name: "Picanha ~2,1 kg" }, plan)!;
+    assert.match(s.text, /pra 12 pessoas, 3x/);
+    // linguiça junto: a carne principal cai pra 300 g por pessoa
+    const com = headcountPlan(req({ text: "churrasco pra 12", need: "churrasco pra 12" }), ["carnes.bovina", "carnes.linguica"])!;
+    assert.equal(suggestQuantity("carnes.bovina", { name: "Alcatra 1kg" }, com)?.qty, 4, "12 × 300 g = 3,6 kg → 4 peças de 1 kg");
+  });
+
+  it("festa pra 15: bolo de 300 g → 5; salgadinho de 110 g → 5; sem tamanho no nome não chuta", () => {
+    const plan = headcountPlan(req({ text: "festinha de aniversario pra 15 pessoas ate 300 reais", need: "festa de aniversário pra 15 pessoas", budget: 300 }), [])!;
+    assert.equal(plan.churrasco, false);
+    assert.equal(suggestQuantity("doces.bolo", { name: "Bolo de Laranja Panco 300g" }, plan)?.qty, 5);
+    assert.equal(suggestQuantity("snacks.salgadinho", { name: "Salgadinho Tostitos 110g" }, plan)?.qty, 5);
+    assert.equal(suggestQuantity("doces.bolo", { name: "Bolo Caseiro" }, plan), null);
+    assert.equal(suggestQuantity("casa.descartaveis", { name: "Prato Raso Descartável Copobrás 17,5cm com 10 unidades" }, plan)?.qty, 2);
+    assert.equal(sizeOf({ name: "Cerveja Lata 350ml 12 latas" }, "ml"), 4200);
+  });
+
+  it("bolo/torta maior da prateleira ganha do bolinho, mas kit e preço absurdo por grama não", () => {
+    const small = { option: opt("1", "Bolo de Laranja Panco 300g", { unitPrice: 15 }) };
+    const big = { option: opt("2", "Torta de Chocolate Confeitaria 1kg", { unitPrice: 45 }) };
+    const kit = { option: opt("3", "Kit Presente Bolo Gourmet 1,5kg", { unitPrice: 90 }) };
+    const pricey = { option: opt("4", "Bolo Artesanal Premium 1kg", { unitPrice: 190 }) };
+    assert.equal(biggerPackIndex("doces.bolo", small, [small, big, kit, pricey]), big);
+    assert.equal(biggerPackIndex("doces.bolo", small, [small, kit]), undefined);
+    assert.equal(biggerPackIndex("casa.churrasco", small, [small, big]), undefined, "só prateleira de dividir (bolo, salgadinho, refri)");
+  });
+
+  it("applyHeadcount: card ganha suggestedQty e 'sugestão: Nx pra N pessoas'; orçamento total encolhe a quantidade", () => {
+    const hp = headcountPlan(req({ text: "festa pra 15 pessoas até 100 reais", need: "festa pra 15 pessoas", budget: 100 }), [])!;
+    const cards = [
+      card("snacks.salgadinho", "s", "Salgadinho Tostitos 110g", { unitPrice: 8, why: "pacote de dividir", freightFee: 5 }),
+      card("doces.bolo", "b", "Bolo de Laranja Panco 300g", { unitPrice: 15, freightFee: 5 })
+    ];
+    const free = applyHeadcount(cards, req({ text: "festa pra 15 pessoas", need: "festa pra 15 pessoas" }), hp);
+    assert.deepEqual(free.map((c) => c.suggestedQty), [5, 5]);
+    assert.match(free[0].why, /pacote de dividir — sugestão: pra 15 pessoas, 5x/);
+    const capped = applyHeadcount(cards, req({ text: "festa pra 15 pessoas até 100 reais", need: "festa pra 15 pessoas", budget: 100 }), hp);
+    const total = capped.reduce((sum, c) => sum + c.unitPrice * (c.suggestedQty ?? 1), 0) + 5;
+    assert.ok(total <= 100, `total ${total}`);
+    assert.ok(capped.every((c) => (c.suggestedQty ?? 1) >= 1));
+  });
+});
+
+describe("q9 / causa 2 — fome pede refeição; orçamento de fome são alternativas, não kit", () => {
+  it("a tabela de fome começa por macarrão instantâneo/sanduíche/prato pronto antes de petisco e é curada (sem IA)", () => {
+    const fome = findNeed("to com fome")!;
+    assert.equal(fome.curated, true);
+    assert.deepEqual(fome.picks.slice(0, 3).map((p) => p.shelfId), ["mercado.macarrao_instantaneo", "lanches.sanduiche", "congelados.pratos_prontos"]);
+    assert.ok(fome.picks.some((p) => p.shelfId === "hortifruti.frutas") && fome.picks.some((p) => p.shelfId === "snacks.amendoim_castanhas"), "cauda livre de restrição");
+    assert.equal(findNeed("fome de doce")!.picks[0].shelfId, "doces.chocolate", "vontade específica de doce não vira refeição");
+  });
+
+  it("plano de fome sai da tabela sem chamar a IA", async () => {
+    let called = 0;
+    __setPlanShelvesForTests(async () => {
+      called++;
+      return { picks: [{ shelfId: "doces.chocolate", query: "chocolate", why: "" }], source: "ai" };
+    });
+    const plan = await planShelves(req({ text: "tô com muita fome", need: "fome", criteria: ["fast"], urgency: true }));
+    __setPlanShelvesForTests(null);
+    assert.equal(called, 0);
+    assert.equal(plan.source, "table");
+    assert.equal(plan.picks[0].shelfId, "mercado.macarrao_instantaneo");
+  });
+
+  it("restrição de dieta põe as prateleiras de risco DEPOIS das livres (h02: 'não posso comer leite' nunca zera)", () => {
+    const plan = planShelvesFromTables(req({ text: "oq eu posso comer que chega agora? nao posso comer leite", need: "algo pra comer", constraints: ["sem leite"], criteria: ["fast"], urgency: true }), defaultTableDeps());
+    const ids = plan!.picks.map((p) => p.shelfId);
+    assert.deepEqual(ids.slice(0, 2), ["snacks.amendoim_castanhas", "hortifruti.frutas"]);
+    assert.ok(shelfAtRisk({ kind: "lactose" }, "frios.iogurte") && !shelfAtRisk({ kind: "lactose" }, "hortifruti.frutas") && !shelfAtRisk({ kind: "word" }, "frios.iogurte"));
+  });
+
+  it("isHungerAsk e isStateAsk", () => {
+    assert.equal(isHungerAsk(req({ text: "tô com muita fome", need: "fome" })), true);
+    assert.equal(isHungerAsk(req({ text: "só tenho 20 reais e to com fome", need: "fome com 20 reais" })), true);
+    assert.equal(isHungerAsk(req({ text: "fome de doce", need: "fome de doce" })), false);
+    assert.equal(isHungerAsk(req({ text: "vou fazer um churrasco pra 12 e comer muito", need: "churrasco" })), false);
+    assert.equal(isStateAsk(req({ text: "só tenho 20 reais e to com fome", need: "fome com 20 reais" })), true);
+    assert.equal(isStateAsk(req({ text: "tô morrendo de sede", need: "sede" })), true);
+    assert.equal(isStateAsk(req({ text: "filhote preciso de tudo até 200", need: "cachorro novo" })), false, "kit continua somando");
+    assert.equal(isStateAsk(req({ text: "churrasco pra 12", need: "churrasco pra 12 pessoas" })), false);
+  });
+
+  it("sem restrição, o macarrão instantâneo sabor tomate prova vegetariano; sabor galinha não", () => {
+    const veg = parseConstraint("vegetariano")!;
+    assert.equal(violatesRule("Macarrão Instantâneo Nissin Turma da Mônica Sabor Tomate Suave 85g", veg, "mercado.macarrao_instantaneo"), false);
+    assert.equal(violatesRule("Macarrão Instantâneo Nissin Lámen Sabor Galinha Caipira 85g", veg, "mercado.macarrao_instantaneo"), true);
+  });
+});
+
+describe("q9 / causa 3 — atributo pedido que o nome precisa provar (h10 renal, h09 pulga)", () => {
+  const ask = "raçao pro meu gato castrado que tem problema nos rins";
+  it("ração renal: só quem diz renal fica; ração comum sai da prateleira", () => {
+    const c = [
+      cand("pet.racao_gato", "1", "Ração Golden Special Gatos Adultos Frango e Carne 10,1 kg"),
+      cand("pet.racao_gato", "2", "Ração Fórmula Natural Vet Care Gatos Renal 1,5 kg"),
+      cand("pet.racao_gato", "3", "Ração Vet Life Natural Feline Renal 400 g")
+    ];
+    assert.deepEqual(keepProvenAttributes(c, ask).map((x) => x.option.sku), ["2", "3"]);
+    // sem nenhum que prove: atributo de saúde (strict) esvazia a prateleira — a Lia diz que não achou
+    assert.deepEqual(keepProvenAttributes([c[0]], ask), []);
+    // castrado (não strict) sozinho: sem prova, ficam todos (e o motivo não afirma "castrado")
+    assert.deepEqual(keepProvenAttributes([c[0]], "ração pro meu gato castrado").map((x) => x.option.sku), ["1"]);
+    assert.equal(provenAttributeWhy("Ração Vet Life Natural Feline Renal 400 g", ask), "linha renal, pra problema nos rins");
+  });
+
+  it("eligibleCandidates aplica: h09 shampoo antifúngico não é antipulgas", () => {
+    const input = {
+      request: req({ text: "meu cachorro ta cheio de pulga", need: "pulga no cachorro", recipient: "cachorro" }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("pet.higiene", "a", "Shampoo Cloresten Antifúngico e Bacteriano Dr.Clean Cães e Gatos 200 ml"), cand("pet.cama", "c", "Cama para Cachorro Pelúcia")]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["c"], "sem antipulgas na higiene, a prateleira sai; a cama não é do atributo");
+    const ok = eligibleCandidates({ ...input, candidates: [...input.candidates, cand("pet.higiene", "b", "Shampoo e Condicionador Antipulgas Cães 3 em 1 Petbrilho 500 ml")] });
+    assert.deepEqual(ok.map((c) => c.option.sku).sort(), ["b", "c"]);
+  });
+
+  it("motivo que afirma atributo sem prova no nome é descartado (h10, h09, 'sem lactose')", () => {
+    assert.equal(whyClaimsUnproven("para gato castrado com problema renal", "Ração Golden Special Gatos Adultos 10,1 kg", "pet.racao_gato"), true);
+    assert.equal(whyClaimsUnproven("para problema renal", "Ração Vet Care Gatos Renal 1,5 kg", "pet.racao_gato"), false);
+    assert.equal(whyClaimsUnproven("banho ajuda a tirar as pulgas", "Shampoo Cloresten Antifúngico", "pet.higiene"), true);
+    assert.equal(whyClaimsUnproven("sem lactose", "Biscoito Recheado Alpino 90g", "doces.biscoito_doce"), true);
+    assert.equal(whyClaimsUnproven("doce e naturalmente sem lactose", "Maçã Turma da Mônica 1kg", "hortifruti.frutas"), false, "fruta é livre por natureza");
+    assert.equal(whyClaimsUnproven("pronto pra comer", "Salgadinho Ruffles", "snacks.salgadinho"), false);
+  });
+
+  it("finalizeWhys: ração comum não sai com motivo renal; ração renal sai com o motivo provado", () => {
+    const r = req({ form: "product_judged", text: ask, product: "ração gato castrado", criteria: ["good"] });
+    const plan: ShelfPlan = { picks: [{ shelfId: "pet.racao_gato", query: "racao renal gato", why: "para gato castrado com problema renal" }], source: "ai" };
+    const out = finalizeWhys(
+      [card("pet.racao_gato", "1", "Ração Golden Special Gatos Adultos 10,1 kg", { why: "para gato castrado com problema renal" }), card("pet.racao_gato", "2", "Ração Vet Care Gatos Renal 1,5 kg")],
+      r,
+      plan
+    );
+    assert.equal(out[0].why, "");
+    assert.equal(out[1].why, "linha renal, pra problema nos rins");
+  });
+});
+
+describe("q9 / causa 4 — 'algo gelado' exige prateleira gelada; gelado e doce é sobremesa", () => {
+  it("wantsCold só no pedido de algo gelado (não 'cerveja gelada' do churrasco)", () => {
+    assert.equal(wantsCold(req({ text: "algo gelado e doce, sem lactose", need: "algo gelado e doce" })), true);
+    assert.equal(wantsCold(req({ text: "quero um geladinho" })), true);
+    assert.equal(wantsCold(req({ text: "churrasco com cerveja gelada", need: "churrasco" })), false);
+  });
+
+  it("plano de 'gelado e doce' vem da tabela curada: sorvete e iogurte antes de suco; fruta nunca", () => {
+    const e = findNeed("algo gelado e doce sem lactose")!;
+    assert.equal(e.curated, true);
+    assert.deepEqual(e.picks.map((p) => p.shelfId), ["doces.sorvete", "frios.iogurte"], "suco e refrigerante não são sobremesa gelada");
+    const plan = planShelvesFromTables(req({ text: "algo gelado e doce, sem lactose", need: "algo gelado e doce", constraints: ["sem lactose"] }), defaultTableDeps());
+    const ids = plan!.picks.map((p) => p.shelfId);
+    assert.ok(ids.includes("doces.sorvete"), "sorvete 'sem lactose' é buscado pela prova, não cortado pela palavra");
+    assert.ok(!ids.includes("hortifruti.frutas"));
+  });
+
+  it("filterPicks: com 'algo gelado', prateleira sem a flag cold sai (maçã nunca é gelado)", () => {
+    const map: ShelfMap = {
+      generatedAt: "t",
+      shelves: [
+        { id: "hortifruti.frutas", label: "Frutas", domain: "mercado", query: "maca", stores: ["a"], flags: ["fresh"] },
+        { id: "doces.sorvete", label: "Sorvetes", domain: "mercado", query: "sorvete", stores: ["a"], flags: ["cold"] }
+      ]
+    };
+    const deps = tableDepsFrom(map, {
+      NEED_TABLE: [{ keys: ["algo gelado"], picks: [{ shelfId: "hortifruti.frutas", query: "maca", why: "fruta" }, { shelfId: "doces.sorvete", query: "sorvete", why: "gelado" }] }],
+      SYMPTOM_TABLE: [],
+      RED_FLAGS: []
+    });
+    const plan = planShelvesFromTables(req({ text: "algo gelado", need: "algo gelado" }), deps);
+    assert.deepEqual(plan!.picks.map((p) => p.shelfId), ["doces.sorvete"]);
+  });
+
+  it("nada gelado cumpre: a Lia diz isso (copy honesta)", () => {
+    const none = copy.recommendNone({ form: "need", need: "algo gelado e doce", criteria: ["good"], constraints: ["sem lactose"] });
+    assert.match(none, /nada \*gelado\* sem lactose/);
+  });
+});
+
+describe("q9 / causa 5 e 6 — prazo honesto (sono 'até tarde', ressaca 'em 1 hora')", () => {
+  it("withDeliveryNotes: em pedido urgente o card de amanhã diz o prazo; o mais rápido diz que não dá no prazo pedido", () => {
+    const r = req({ text: "tô morrendo de sono e preciso estudar até tarde, chega agora?", criteria: ["fast"], urgency: true });
+    const cards = [
+      card("doces.chocolate", "a", "Chocolate Snickers 40g", { etaMinutes: 30, delivery: "prazo da loja: 30 min", why: "pronto pra comer" }),
+      card("mercado.cafe", "b", "Café Torrado e Moído 500g", { etaMinutes: 1140, delivery: "prazo da loja: em até 19h (amanhã, 8h–11h)", why: "a cafeína ajuda a despertar" })
+    ];
+    const out = withDeliveryNotes(cards, r);
+    assert.equal(out[0].why, "pronto pra comer");
+    assert.equal(out[1].why, "a cafeína ajuda a despertar — só chega amanhã, 8h–11h");
+    // sem urgência nada muda
+    assert.deepEqual(withDeliveryNotes(cards, req({ text: "café", criteria: ["good"] })), cards);
+  });
+
+  it("h20 'chegue em 1 hora' sem ninguém em 1 h: só o MAIS rápido diz o prazo real", () => {
+    assert.equal(askedMinutes("to de ressaca, algo que chegue em 1 hora"), 60);
+    assert.equal(askedMinutes("preciso em meia hora"), 30);
+    assert.equal(askedMinutes("quero pra hoje"), undefined);
+    const r = req({ text: "to de ressaca, algo que chegue em 1 hora", criteria: ["fast"], urgency: true });
+    const cards = [
+      card("bebidas.isotonico", "a", "Isotônico 500ml", { etaMinutes: 180, delivery: "prazo da loja: 3h", why: "repõe sais" }),
+      card("bebidas.agua", "b", "Água 900ml", { etaMinutes: 180, delivery: "prazo da loja: 3h", why: "hidratação" })
+    ];
+    const out = withDeliveryNotes(cards, r);
+    assert.equal(out[0].why, "repõe sais — o mais rápido que achei chega em 3h");
+    assert.equal(out[1].why, "hidratação");
+    // alguém cumpre (30 min): sem nota
+    assert.deepEqual(withDeliveryNotes([{ ...cards[0], etaMinutes: 30, delivery: "prazo da loja: 30 min" }], r)[0].why, "repõe sais");
+  });
+
+  it("ressaca: sem soro de reidratação oral (mip); isotônico, água de coco e água são o plano", () => {
+    process.env.LIA_MEDICINE_MIP = "true";
+    const e = findSymptom("to de ressaca")!;
+    assert.deepEqual(e.picks, []);
+    assert.deepEqual((e.care ?? []).map((p) => p.shelfId).slice(0, 3), ["bebidas.isotonico", "bebidas.agua_coco", "bebidas.agua"]);
+    const plan = planShelvesFromTables(req({ text: "ressaca braba hj, me ajuda", need: "ressaca", criteria: ["fast"], urgency: true }), defaultTableDeps());
+    assert.ok(plan!.picks.length >= 3 && plan!.picks.every((p) => !p.mipClass && p.shelfId !== "farmacia.hidratacao_oral"));
+  });
+
+  it("corte por prazo: conta só o que passa nas regras e pede 3 prateleiras rápidas fora de fome (quickOnly intacto)", () => {
+    const list = [
+      cand("doces.chocolate", "a", "Chocolate", { etaMinutes: 30 }),
+      cand("mercado.cafe", "b", "Café", { etaMinutes: 1140 })
+    ];
+    assert.deepEqual(quickOnly(list).map((c) => c.option.sku), ["a"]);
+  });
+});
+
+describe("q9 / causa 7 — unha encravada, refluxo, e plano de urgência que nunca zera", () => {
+  it("h23: unha encravada = antisséptico (Povidine/clorexidina, busca livre) + curativo, sem remédio nem lixa", () => {
+    const e = findSymptom("to com unha encravada doendo")!;
+    assert.deepEqual(e.picks, []);
+    const care = e.care ?? [];
+    assert.ok(care.some((p) => p.shelfId === "produto" && /povidine/.test(p.query) && /clorexidina/.test(p.query)));
+    assert.ok(care.some((p) => p.shelfId === "farmacia.curativo"));
+    assert.ok(care.every((p) => p.shelfId !== "beleza.esmalte"), "o juiz reprovou lixa/cortador (piora a unha encravada)");
+    const plan = planShelvesFromTables(req({ text: "to com unha encravada doendo, o que faço", need: "unha encravada", symptom: "unha encravada", criteria: ["fast"] }), defaultTableDeps());
+    assert.deepEqual(plan!.picks.map((p) => p.shelfId), ["produto", "farmacia.curativo"]);
+    assert.ok(plan!.picks.every((p) => !p.mipClass));
+  });
+
+  it("h04: jantar leve sem sopa de pacote (cebola/tempero); banana, iogurte natural, aveia, torrada, camomila", () => {
+    const e = findNeed("jantar leve pra quem tem refluxo")!;
+    assert.deepEqual(e.picks.map((p) => p.shelfId), ["hortifruti.frutas", "frios.iogurte", "mercado.cereal_matinal", "snacks.biscoito_salgado", "mercado.cha"]);
+    assert.ok(e.picks.every((p) => p.shelfId !== "mercado.sopa"));
+  });
+
+  it("h02: prateleira de risco não sai do plano pela palavra (sorvete/iogurte 'sem lactose' são buscados pela prova)", () => {
+    const plan = planShelvesFromTables(req({ text: "algo doce sem lactose", need: "algo doce", constraints: ["sem lactose"] }), defaultTableDeps());
+    const ids = plan!.picks.map((p) => p.shelfId);
+    assert.ok(ids.includes("doces.sorvete"));
+    assert.ok(!ids.includes("doces.chocolate"), "chocolate comum continua fora");
+  });
+});
+
+describe("q9 / shelfSanity e prova — Dragê de banana não é fruta; barril não é cerveja de churrasco; macarrão tomate prova vegetariano", () => {
+  it("shelfSanityOk", () => {
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Pouch Dragê Banana Passa Minions 85G"), false);
+    assert.equal(shelfSanityOk("hortifruti.frutas", "Banana Prata (unidade ~190 g)"), true);
+    assert.equal(shelfSanityOk("bebidas.cerveja", "Cerveja Barril Heineken 5L"), false);
+    assert.equal(shelfSanityOk("bebidas.cerveja", "Cerveja Heineken Long Neck 330ml"), true);
+  });
+});
+
+describe("q9 / motivo e filtros finos — frio quentinho, castanha, dieta natural, combinação", () => {
+  it("pedido 'quentinho' tira chá gelado/ice tea; sem alternativa, não esvazia", () => {
+    const input = {
+      request: req({ text: "tá um frio danado aqui, queria algo quentinho", need: "algo quentinho" }),
+      plan: { picks: [], source: "table" } as ShelfPlan,
+      candidates: [cand("mercado.cha", "1", "Chá Matte Ice Tea Leão Limão 450ml"), cand("mercado.sopa", "2", "Sopão Maggi Carne com Legumes 200g")]
+    };
+    assert.deepEqual(eligibleCandidates(input).map((c) => c.option.sku), ["2"]);
+    assert.deepEqual(eligibleCandidates({ ...input, candidates: [input.candidates[0]] }).map((c) => c.option.sku), ["1"]);
+  });
+
+  it("motivo 'bebida quente' em ice tea e 'castanhas' em amendoim japonês são descartados", () => {
+    assert.equal(whyClaimsUnproven("bebida quente para aquecer", "Chá Matte Ice Tea Leão Limão 450ml", "mercado.cha"), true);
+    assert.equal(whyClaimsUnproven("bebida quente para aquecer", "Chá Leão Camomila 10 Sachês", "mercado.cha"), false);
+    assert.equal(whyClaimsUnproven("castanhas pra beliscar", "Amendoim Japonês Mendorato Santa Helena 400g", "snacks.amendoim_castanhas"), true);
+    assert.equal(whyClaimsUnproven("castanhas pra beliscar", "Mix de Castanhas Iracema 100g", "snacks.amendoim_castanhas"), false);
+  });
+
+  it("naturalDietWhy: fruta/suco/café/leite dizem o que é natural; o que fere ou é processado não", () => {
+    const lac = [parseConstraint("sem lactose")!];
+    const both = [parseConstraint("sem lactose")!, parseConstraint("sem glúten")!];
+    assert.equal(naturalDietWhy("Suco Del Valle Sabor Maçã 200ml", "bebidas.suco", lac), "suco de fruta, naturalmente sem lactose");
+    assert.equal(naturalDietWhy("Maçã Turma da Mônica 1kg", "hortifruti.frutas", both), "fruta, naturalmente sem lactose e sem glúten");
+    assert.equal(naturalDietWhy("Café Torrado e Moído Pilão 500g", "mercado.cafe", both), "café, naturalmente sem lactose e sem glúten");
+    assert.equal(naturalDietWhy("Leite Longa Vida Sem Lactose Parmalat 1 L", "frios.leite", both), "leite, naturalmente sem glúten", "o 'sem lactose' é prova do nome, não natural");
+    assert.equal(naturalDietWhy("Suco de Laranja com Leite Condensado", "bebidas.suco", lac), undefined);
+    assert.equal(naturalDietWhy("Biscoito Recheado", "doces.biscoito_doce", lac), undefined);
+  });
+
+  it("finalizeWhys junta a prova do nome com o natural: 'zero lactose no rótulo; leite, naturalmente sem glúten'", () => {
+    const r = req({ text: "intolerante a lactose e a glúten, café da manhã", need: "café da manhã", constraints: ["sem lactose", "sem glúten"] });
+    const out = finalizeWhys([card("frios.leite", "1", "Leite Molico Zero Lactose 260g")], r, { picks: [], source: "ai" });
+    assert.equal(out[0].why, "zero lactose no rótulo; leite, naturalmente sem glúten");
+  });
+
+  it("alergia a amendoim não zera prateleira que não é comida (brinquedo, livro, eletrônico)", () => {
+    const r = parseConstraint("sem amendoim")!;
+    assert.equal(violatesRule("Livro Infantil Aventuras no Zoológico", r, "livraria.infantil"), false);
+    assert.equal(violatesRule("Carrinho Hot Wheels", r, "brinquedo.carrinho"), false);
+    assert.equal(violatesRule("Biscoito Recheado Passatempo 90g", r, "doces.biscoito_doce"), true);
+  });
+
+  it("queda de cabelo (strict): Koleston de reparo e whey não são antiqueda; sensível: só quem prova", () => {
+    const c = [
+      cand("beleza.shampoo", "1", "Shampoo Antiqueda Phytoervas 250ml"),
+      cand("beleza.tratamento_capilar", "2", "Tratamento Capilar Koleston Poderoso Reparo de Danos 170ml"),
+      cand("farmacia.suplementos", "3", "Whey Protein Morango Swift Pro&Fit 900g"),
+      cand("farmacia.suplementos", "4", "Biotina 45mcg Cabelo e Unhas 60 cápsulas")
+    ];
+    assert.deepEqual(keepProvenAttributes(c, "meu cabelo ta caindo muito, tem algo? queda de cabelo").map((x) => x.option.sku), ["1", "4"]);
+    const sol = [
+      cand("beleza.protetor_solar", "a", "Protetor Solar Facial Isdin FPS 50 Foto Ultra Redness Peles Sensíveis e Reativas"),
+      cand("beleza.protetor_solar", "b", "Protetor Solar Watery Fluid FPS 50")
+    ];
+    assert.deepEqual(keepProvenAttributes(sol, "protetor solar pele sensível com rosácea").map((x) => x.option.sku), ["a"]);
+    assert.equal(whyClaimsUnproven("feito pra pele sensível", "Protetor Solar Watery Fluid FPS 50", "beleza.protetor_solar"), true);
+  });
+
+  it("needEntryFor: a chave mais longa vence entre o need e o texto ('vegano e proteico' > 'algo pra comer')", () => {
+    const deps = defaultTableDeps();
+    const e = needEntryFor(req({ text: "quero algo pra comer que seja vegano e proteico", need: "algo pra comer" }), deps);
+    assert.ok(e?.keys.includes("vegano e proteico"));
+    const f = needEntryFor(req({ text: "tô com fome", need: "fome" }), deps);
+    assert.ok(f?.keys.includes("fome"));
   });
 });

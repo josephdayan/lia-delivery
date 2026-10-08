@@ -95,7 +95,9 @@ describe("recomendação — MAPEAR pelas tabelas (sem IA)", () => {
     assert.ok(!semChoc?.picks.some((p) => p.shelfId === "doces.chocolate"));
     assert.equal(semChoc?.picks.length, 3);
     const semLac = planShelvesFromTables(req({ text: "algo doce sem lactose", need: "algo doce", constraints: ["sem lactose"] }), deps);
-    assert.deepEqual(semLac?.picks.map((p) => p.shelfId), ["doces.biscoito", "doces.bolo"]);
+    // (q9, 08/10) Sorvete numa prateleira de risco NÃO sai pela palavra: a busca ganha "sem lactose" e o candidato precisa
+    // provar no nome. Chocolate continua saindo (chocolate sem lactose não existe na prateleira).
+    assert.deepEqual(semLac?.picks.map((p) => p.shelfId), ["doces.biscoito", "doces.sorvete", "doces.bolo"]);
   });
 
   it("o que já está na cesta não é recomendado de novo", () => {

@@ -775,13 +775,16 @@ function withinBudget(pool: ChoiceOption[], p: { cap?: number; capTotal?: boolea
 // Verificação ao vivo para opções montadas FORA do buildChoices (paginação, refino, resgate,
 // troca): confirmado ganha preço/prazo/frete da loja; sem operador, o que a loja não
 // confirmou sai (06/10 — a mesma regra da vitrine principal).
-async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | undefined): Promise<ChoiceOption[]> {
+async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | undefined, opts?: { urgent?: boolean }): Promise<ChoiceOption[]> {
   if (!cep || !pool.length) return pool;
   const live = await checkCandidatesLive(pool.map((o) => ({ storeKey: o.storeKey ?? "", sku: o.sku, o })), cep);
   const checked = live.kept.map((w) => {
     const check = live.checks.get(liveKey(w.storeKey, w.sku));
     if (!check?.available) return w.o;
-    const delivery = humanEstimate(check.estimate);
+    // Pedido urgente (recomendação de fome/ressaca/"pra hoje", q9): o card mostra a entrega MAIS RÁPIDA da loja
+    // (a cotação oferece a opção "rápido"), como a vitrine de sempre faz com o "pra hoje" (toChoiceOption urgent).
+    const fast = Boolean(opts?.urgent && check.fastEstimate);
+    const delivery = humanEstimate(fast ? check.fastEstimate : check.estimate);
     const weighed = check.unitWeightKg && !w.o.unitWeightKg ? { name: copy.soldByWeightName(w.o.name, check.unitWeightKg), unitWeightKg: check.unitWeightKg } : {};
     return {
       ...w.o,
@@ -789,8 +792,8 @@ async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | und
       ...weighed,
       ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}),
       ...(delivery ? { delivery } : {}),
-      ...(check.etaMinutes != null ? { etaMinutes: check.etaMinutes } : {}),
-      ...(check.fee != null ? { freightFee: check.fee } : {})
+      ...((fast ? check.fastEtaMinutes : check.etaMinutes) != null ? { etaMinutes: fast ? check.fastEtaMinutes : check.etaMinutes } : {}),
+      ...((fast ? check.fastFee : check.fee) != null ? { freightFee: fast ? check.fastFee : check.fee } : {})
     };
   });
   if (!liveConfirmationRequired()) return checked;
@@ -4933,6 +4936,14 @@ async function confirmChosenOption(
   opts?: { note?: string; after?: string; thenPay?: boolean; packOk?: boolean }
 ) {
   const chosenStore = chosen.storeKey ? getStore(chosen.storeKey) : fallbackStore;
+  // Quantidade sugerida pela recomendação por número de pessoas (q9, 08/10: "churrasco pra 12" → 3 peças de
+  // picanha): o card mostrou "sugestão: 3x"; escolher o card põe essa quantidade, a menos que o cliente tenha
+  // dito outra. A embalagem já foi contada pela sugestão (sem a pergunta de pacote).
+  if (current.recommendation && chosen.suggestedQty && chosen.suggestedQty > 1 && current.qty === 1 && !current.qtyExplicit) {
+    current.qty = chosen.suggestedQty;
+    current.qtyExplicit = true;
+    opts = { ...opts, packOk: true };
+  }
   // Embalagem que não fecha com o pedido ("12 ovos" → bandeja de 20, 07/10 c28): o ajuste mudava a
   // quantidade REAL em silêncio e só avisava depois de pôr na cesta. Agora pergunta antes; a escolha
   // continua aberta (pending) até o "sim". Toque repetido no mesmo card conta como confirmação.

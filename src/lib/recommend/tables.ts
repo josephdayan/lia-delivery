@@ -36,8 +36,8 @@ function mip(shelfId: string, query: string, why: string): ShelfPick {
   return { shelfId, query, why, mipClass: shelfId.replace(/^farmacia\./, "") };
 }
 
-function need(keys: string[], picks: ShelfPick[], criteria?: RecommendCriterion[]): NeedTableEntry {
-  return criteria ? { keys, picks, criteria } : { keys, picks };
+function need(keys: string[], picks: ShelfPick[], criteria?: RecommendCriterion[], curated?: boolean): NeedTableEntry {
+  return { keys, picks, ...(criteria ? { criteria } : {}), ...(curated ? { curated: true } : {}) };
 }
 
 // Faixas de idade para presente de criança: "menino de 4 anos", "menina 6 anos".
@@ -72,25 +72,43 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("snacks.biscoito_salgado", "biscoito salgado", "pacote pronto pra beliscar"),
     p("snacks.amendoim_castanhas", "amendoim", "petisco pronto e que sustenta")
   ], ["fast"]),
+  // Rodada q9 (08/10): fome pede REFEIÇÃO (ou preparo em minutos) antes de petisco — o juiz reprovava só
+  // salgadinho/chocolate pra "muita fome". Macarrão instantâneo é o que as lojas que entregam na hora têm;
+  // sanduíche e prato pronto vêm em seguida; petisco fecha. Plano CURADO (sem IA): determinístico.
   need(FOME_KEYS, [
-    p("snacks.salgadinho", "salgadinho", "pronto pra comer"),
-    p("doces.chocolate", "chocolate", "pronto pra comer e dá energia rápida"),
+    p("mercado.macarrao_instantaneo", "macarrao instantaneo", "refeição pronta em minutos, é só água quente"),
     p("lanches.sanduiche", "sanduiche pronto", "lanche pronto, sem preparo"),
+    p("congelados.pratos_prontos", "lasanha congelada | prato pronto", "prato pronto, fica pronto no micro-ondas"),
+    p("snacks.salgadinho", "salgadinho", "pronto pra comer"),
     p("doces.biscoito_doce", "biscoito recheado", "pacote pronto pra beliscar"),
     p("frios.iogurte", "iogurte", "leve e pronto pra comer"),
-    p("snacks.amendoim_castanhas", "mix de castanhas", "petisco que sustenta")
-  ], ["fast"]),
+    // Cauda pra quem tem restrição (sem lactose, sem glúten…): castanha e fruta são naturalmente livres — o plano
+    // põe as prateleiras de risco depois delas (fallback.filterPicks) e nunca fica sem card.
+    p("snacks.amendoim_castanhas", "mix de castanhas", "petisco que sustenta"),
+    p("hortifruti.frutas", "banana", "fruta pronta pra comer")
+  ], ["fast"], true),
   // Rodada de qualidade (08/10, noite; corpus difícil h04 e main r16): jantar LEVE / comer de noite com
-  // refluxo — banana, iogurte natural, sopa, aveia, chá. Nada de fritura, café, chocolate ou castanha.
+  // refluxo — banana, iogurte natural, aveia, torrada, chá. Nada de fritura, café, chocolate, castanha — e (q9)
+  // nada de sopa pronta: a de pacote leva cebola e tempero, gatilhos de refluxo.
   need(["jantar leve", "algo leve pro jantar", "algo leve pra jantar", "janta leve", "ceia leve", "algo leve pra comer de noite", "comer de noite",
     "algo para comer de noite", "algo para comer de noite sem passar mal", "jantar leve pra quem tem refluxo", "comida leve pra noite",
     "o que posso comer de noite"], [
     p("hortifruti.frutas", "banana", "fruta leve, fácil de digerir"),
     p("frios.iogurte", "iogurte natural", "leve, sem frituras nem gordura"),
-    p("mercado.sopa", "sopa", "quente, leve e fácil de digerir"),
     p("mercado.cereal_matinal", "aveia", "aveia em flocos, leve e saciante"),
+    p("snacks.biscoito_salgado", "torrada | biscoito agua e sal", "torrada seca, leve pro estômago"),
     p("mercado.cha", "cha de camomila | cha de erva doce", "chá morno pra acompanhar")
-  ], ["healthy"]),
+  ], ["healthy"], true),
+  // Rodada q9 (08/10, h29): "algo pra comer vegano e proteico" — castanhas, barra de proteína, proteína vegetal. Entra
+  // antes da fome genérica (chave mais longa vence em fallback.needEntryFor).
+  need(["vegano e proteico", "algo proteico", "comida proteica", "algo com proteina", "rico em proteina", "alto teor de proteina", "lanche proteico",
+    "algo pra comer proteico", "proteico"], [
+    p("snacks.amendoim_castanhas", "mix de castanhas | amendoim | pasta de amendoim", "fonte de proteína vegetal"),
+    p("mercado.barra_cereal", "barra de proteina", "barra com proteína, pronta pra comer"),
+    p("farmacia.suplementos", "proteina vegetal | whey protein", "suplemento de proteína"),
+    p("frios.iogurte", "iogurte proteico", "iogurte com proteína, pronto pra comer"),
+    p("hortifruti.ovos", "ovo", "ovo, proteína completa")
+  ], ["healthy"], true),
   need(["jantar rapido", "jantar pronto", "algo pra jantar", "almoco rapido", "comida pronta", "refeicao pronta", "nao quero cozinhar",
     "preguica de cozinhar", "sem tempo pra cozinhar", "janta", "jantar"], [
     p("congelados.pratos_prontos", "lasanha congelada", "fica pronto em minutos no micro-ondas"),
@@ -107,12 +125,19 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("bebidas.agua_coco", "agua de coco", "hidrata e refresca"),
     p("bebidas.isotonico", "isotonico", "repõe sais no calor")
   ], ["fast"]),
+  // Rodada q9 (08/10, r24): "gelado E doce" é sobremesa gelada (sorvete, picolé, iogurte); suco e refrigerante
+  // ficaram de fora — o juiz reprovava bebida no lugar da sobremesa. Sem nenhuma, a Lia diz que não achou (copy honesta).
+  need(["algo gelado e doce", "gelado e doce", "doce e gelado", "algo doce e gelado", "sobremesa gelada", "doce gelado", "algo doce gelado",
+    "algo geladinho e doce", "geladinho e doce"], [
+    p("doces.sorvete", "sorvete | picole | acai", "doce e gelado"),
+    p("frios.iogurte", "iogurte | sobremesa lactea", "sobremesa gelada")
+  ], ["good"], true),
   need(["algo gelado", "coisa gelada", "gelado", "geladinho", "algo bem gelado"], [
     p("doces.sorvete", "sorvete", "gelado e pronto pra comer"),
     p("bebidas.refrigerante", "refrigerante lata", "bebida gelada"),
     p("bebidas.suco", "suco", "refrescante"),
     p("frios.iogurte", "iogurte", "gelado e leve")
-  ], ["fast"]),
+  ], ["fast"], true),
   need(["frio", "to com frio", "que frio", "dia frio", "friozinho", "algo quente", "coisa quente", "algo pra esquentar", "esquentar",
     "noite fria"], [
     p("mercado.sopa", "sopa", "quentinha e pronta em minutos"),
@@ -125,9 +150,10 @@ export const NEED_TABLE: NeedTableEntry[] = [
     "ficar acordado", "virar a noite", "estudar a noite", "preciso acordar", "despertar"], [
     p("mercado.cafe", "cafe", "a cafeína ajuda a despertar"),
     p("bebidas.energetico", "energetico", "cafeína e açúcar pra despertar"),
+    p("mercado.cha", "cha mate | cha matte | mate leao", "o chá mate tem cafeína"),
     p("doces.chocolate", "chocolate", "energia rápida"),
     p("mercado.barra_cereal", "barra de cereal", "lanche rápido que dá energia")
-  ], ["fast"]),
+  ], ["fast"], true),
   need(["ressaca", "de ressaca", "to de ressaca", "bebi demais", "exagerei na bebida", "bebi muito ontem"], [
     p("bebidas.isotonico", "isotonico", "repõe líquido e sais"),
     p("bebidas.agua_coco", "agua de coco", "hidrata"),
@@ -740,11 +766,14 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   {
     keys: ["ressaca", "de ressaca", "to de ressaca", "bebi demais", "exagerei na bebida", "remedio pra ressaca"],
     // Revisão A6 (08/10): Engov tem AAS; analgésico/anti-inflamatório depois de álcool não. Ressaca = só hidratação.
-    picks: [mip("farmacia.hidratacao_oral", "soro de reidratacao | hidraplex", "repõe líquido e sais")],
+    // Rodada q9 (08/10): o soro de reidratação oral (mip, Hidraplex) saiu da ressaca — o juiz o lia como "remédio
+    // proibido" e ele só chega em 1 dia; isotônico, água de coco e água hidratam e entregam hoje (não-mip).
+    picks: [],
     care: [
       p("bebidas.isotonico", "isotonico", "repõe sais"),
       p("bebidas.agua_coco", "agua de coco", "hidrata"),
-      p("bebidas.agua", "agua mineral", "hidratação")
+      p("bebidas.agua", "agua mineral", "hidratação"),
+      p("mercado.sopa", "canja | sopa de legumes", "leve e quente pro estômago")
     ]
   },
   {
@@ -827,8 +856,15 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   {
     // Corpus difícil h23 (08/10, noite): unha encravada = limpar e proteger; inflamou/pus = alerta.
     keys: ["unha encravada", "unha encravada doendo", "unha inflamada", "unha do pe encravada"],
-    picks: [mip("farmacia.antisseptico_cicatrizante", "antisseptico | merthiolate | povidine | clorexidina | agua oxigenada", "limpa e protege a região")],
-    care: [p("farmacia.curativo", "curativo | band aid", "protege a unha do atrito")]
+    // Rodada q9 (08/10): antisséptico (Povidine/clorexidina) e curativo. O Povidine só aparece na busca livre do
+    // produto (as lojas não o classificam como remédio isento e a prateleira mip trazia só pastilha de garganta); a
+    // lixa/cortador e a água oxigenada que a rodada tentou foram reprovadas pelo juiz (lixa pode piorar a unha
+    // encravada, água oxigenada irrita) e saíram.
+    picks: [],
+    care: [
+      p("produto", "povidine | clorexidina", "antisséptico pra limpar a região"),
+      p("farmacia.curativo", "curativo | band aid", "protege a unha do atrito")
+    ]
   },
   {
     keys: ["intolerancia a lactose", "intolerante a lactose", "lactose me faz mal"],
