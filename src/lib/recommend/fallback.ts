@@ -688,6 +688,13 @@ export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
     const shelvesWithRoom = new Set(ok.filter(fits).map((c) => c.shelfId));
     roomy = ok.filter((c) => !shelvesWithRoom.has(c.shelfId) || fits(c));
   }
+  // Preço pedido ("nada caro", "barato"): item muito acima do mais barato dos candidatos sai (placar q3: perfume de
+  // R$ 899 numa lembrancinha "nada cara"). Só quando sobra algum.
+  if (input.request.criteria[0] === "cheap" && input.request.form === "need" && roomy.length > 1) {
+    const low = Math.min(...roomy.map(price));
+    const cheapish = roomy.filter((c) => price(c) <= Math.max(low * 6, 40));
+    if (cheapish.length) roomy = cheapish;
+  }
   return finishEligible(roomy, input);
 }
 

@@ -105,7 +105,6 @@ export const NEED_TABLE: NeedTableEntry[] = [
     p("bebidas.refrigerante", "refrigerante lata", "gelado e refrescante"),
     p("bebidas.suco", "suco", "refrescante, de fruta"),
     p("bebidas.agua_coco", "agua de coco", "hidrata e refresca"),
-    p("doces.sorvete", "picole", "gelado pra aliviar o calor"),
     p("bebidas.isotonico", "isotonico", "repõe sais no calor")
   ], ["fast"]),
   need(["algo gelado", "coisa gelada", "gelado", "geladinho", "algo bem gelado"], [
@@ -828,7 +827,7 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
   {
     // Corpus difícil h23 (08/10, noite): unha encravada = limpar e proteger; inflamou/pus = alerta.
     keys: ["unha encravada", "unha encravada doendo", "unha inflamada", "unha do pe encravada"],
-    picks: [mip("farmacia.antisseptico_cicatrizante", "antisseptico | merthiolate | povidine", "limpa e protege a região")],
+    picks: [mip("farmacia.antisseptico_cicatrizante", "antisseptico | merthiolate | povidine | clorexidina | agua oxigenada", "limpa e protege a região")],
     care: [p("farmacia.curativo", "curativo | band aid", "protege a unha do atrito")]
   },
   {

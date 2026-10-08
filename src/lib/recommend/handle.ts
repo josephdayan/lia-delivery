@@ -360,10 +360,7 @@ export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan
   // Alergia (corpus difícil h17): o nome não prova ausência de traços — o motivo avisa.
   const allergen = rules.find(isAllergenRule);
   const allergenWord = allergen && allergen.kind === "word" ? allergen.word.replace(/\s*\(.*$/, "") : undefined;
-  // Urgência (h02/h20/h24): o card que chega ANTES de todos os outros diz isso (o card mostra o prazo).
-  const eta = (c: RecommendCard) => c.etaMinutes ?? Number.POSITIVE_INFINITY;
-  const sorted = [...cards].sort((a, b) => eta(a) - eta(b));
-  const fastest = wantsFast(req.criteria, req.urgency) && sorted.length >= 2 && eta(sorted[0]) < eta(sorted[1]) ? sorted[0] : undefined;
+  // (q4) Sem "chega mais rápido" no motivo: o card já mostra o prazo e o juiz do placar reprovava a comparação.
   return cards.map((card) => {
     const pickWhy = plan.picks.find((p) => p.shelfId === card.shelfId)?.why;
     const own = whyIsFactual(card.why) ? card.why : "";
@@ -372,11 +369,6 @@ export function finalizeWhys(cards: RecommendCard[], req: RecommendRequest, plan
     if (card.medicine === "mip") why = own || fromPlan;
     else if (allergenWord) why = `sem ${allergenWord} no nome; confira traços no rótulo`;
     else if (cheap && keyOf(card) === keyOf(cheap)) why = `o mais em conta dos ${cards.length}`;
-    else if (fastest && keyOf(card) === keyOf(fastest)) {
-      // O prazo vem do card (o juiz do placar marcava "chega mais rápido" solto como promessa sem base).
-      const when = (card.delivery ?? "").replace(/^prazo da loja:\s*/i, "").trim();
-      why = when ? `chega mais rápido dos ${cards.length}: ${when}` : "o que chega mais rápido daqui";
-    }
     else why = dietProofWhy(card.name, rules) ?? (attrs.length && meetsAttributes(card.name, attrs) ? attrs[0].why : undefined) ?? (own || fromPlan);
     return { ...card, why };
   });

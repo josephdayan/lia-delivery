@@ -177,7 +177,8 @@ export function violatesRule(textRaw: string, rule: ConstraintRuleQ, shelfId?: s
     return rule.family.test(text);
   }
   const kind = rule.kind;
-  const proven = PROOF[kind].test(text);
+  // "Sem adição de açúcar" não é zero açúcar, mesmo com "Zero" no nome da linha (Pense Zero).
+  const proven = PROOF[kind].test(text) && !(kind === "sugar" && /\bsem adicao de acucar\b/.test(text) && !/\b(zero|sem) acucar\b|\bdiet\b/.test(text));
   if (kind === "vegetarian") {
     // Carne no nome fere mesmo com "queijo" junto ("pizza calabresa com queijo").
     if (VIOLATES.vegetarian.test(text) && !/\bvegetarian[oa]s?\b|\bvegan[oa]?s?\b|\bvegetal\b|\bplant ?based\b/.test(text)) return true;
@@ -359,6 +360,7 @@ export function withPetCondition(query: string, shelfId: string, text: string): 
   if (/\b(rins|renal|renais)\b/.test(t)) extra.push(`racao renal ${species}`);
   if (/\b(urinari\w*|cristais|calculo)\b/.test(t)) extra.push(`racao urinary ${species}`);
   if (/\bcastrad[oa]s?\b/.test(t)) extra.push(`racao ${species} castrado`);
+  if (/\b(filhote|filhotes|gatinh[oa]|cachorrinh[oa]|adotei|ganhei um)\b/.test(t)) extra.push(`racao filhote ${species}`);
   if (/\b(obes\w*|sobrepeso|acima do peso|gordinh\w*)\b/.test(t)) extra.push(`racao light ${species}`);
   if (!extra.length) return query;
   const out: string[] = [];
