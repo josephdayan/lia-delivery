@@ -1,0 +1,2522 @@
+{
+ "summary": {
+  "label": "r5-alvo-antes",
+  "at": "2026-10-08T12:31:13.096Z",
+  "requests": 57,
+  "cep": "01310-***",
+  "stores": 18,
+  "liaModel": "gpt-6-luna",
+  "judgeModel": "gpt-6-luna",
+  "outcomes": {
+   "found": 34,
+   "honest_none": 6,
+   "found_with_wrong_extra": 5,
+   "error": 2,
+   "wrong_top1": 5,
+   "false_positive": 2,
+   "miss": 1,
+   "medicine_ok": 2
+  },
+  "top1WrongRate": "13.2%",
+  "precisionItems": "80.2%",
+  "coverage": "86.7%",
+  "honesty": "75.0%",
+  "closestOffered": 1,
+  "medicineLeaks": "0/2",
+  "latencyMs": {
+   "p50": 10553,
+   "p90": 17605,
+   "max": 150001
+  }
+ },
+ "byCat": {
+  "mercado": {
+   "n": 7,
+   "found": 7,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "eletronicos": {
+   "n": 6,
+   "found": 3,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 2
+  },
+  "casa": {
+   "n": 6,
+   "found": 3,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 2
+  },
+  "remedio": {
+   "n": 10,
+   "found": 8,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 2
+  },
+  "higiene": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "roupas": {
+   "n": 3,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 2
+  },
+  "bebidas": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "hortifruti": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "acougue": {
+   "n": 2,
+   "found": 0,
+   "miss": 0,
+   "wrong": 2,
+   "honest": 0
+  },
+  "bebe": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "beleza": {
+   "n": 2,
+   "found": 1,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 0
+  },
+  "limpeza": {
+   "n": 3,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "esporte": {
+   "n": 2,
+   "found": 1,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 0
+  },
+  "papelaria": {
+   "n": 2,
+   "found": 1,
+   "miss": 0,
+   "wrong": 1,
+   "honest": 0
+  },
+  "ferramentas": {
+   "n": 3,
+   "found": 1,
+   "miss": 1,
+   "wrong": 1,
+   "honest": 0
+  },
+  "presente": {
+   "n": 1,
+   "found": 1,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  },
+  "farmacia": {
+   "n": 2,
+   "found": 2,
+   "miss": 0,
+   "wrong": 0,
+   "honest": 0
+  }
+ },
+ "results": [
+  {
+   "id": "r002",
+   "text": "chocolate",
+   "cat": "mercado",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13406,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Chocolate Snickers Ao Leite Sabor Tradicional 45g",
+     "price": 4.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Swift",
+     "name": "Chocolate KitKat Nestlé 41,5g",
+     "price": 4.97,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Swift",
+     "name": "Chocolate Ao Leite Suflair Nestlé 50g",
+     "price": 6.47,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Chocolate Bis Xtra ao Leite 45g",
+     "price": 6.7
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Chocolate Bis Xtra Oreo 45g",
+     "price": 6.7
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Chocolate Bis Black 45g",
+     "price": 6.7
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Chocolate Ouro Branco 1 Unidade de 20g",
+     "price": 3.1
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Chocolate Snickers Original 40g",
+     "price": 6.99
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Pedido genérico de chocolate; chocolates em barra e tabletes são adequados, mas produtos apenas saborizados ou para pets não são."
+  },
+  {
+   "id": "r004",
+   "text": "carregador usb c",
+   "cat": "eletronicos",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 16883,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 50,
+   "note": "Pedido de carregador com saída USB-C; cabos, carregadores de outra conexão e módulos de instalação não atendem."
+  },
+  {
+   "id": "r018",
+   "text": "isqueiro maçarico",
+   "cat": "casa",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 8708,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 48,
+   "oracleUnconfirmed": 2,
+   "note": "Pedido de isqueiro maçarico; só os maçaricos portáteis completos correspondem ao item, não isqueiros comuns, cilindros ou outros produtos."
+  },
+  {
+   "id": "r017",
+   "text": "isqueiro pra charuto",
+   "cat": "casa",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 16924,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 72,
+   "note": "Pedido específico de isqueiro para charuto; os isqueiros listados não indicam chama própria para charuto."
+  },
+  {
+   "id": "r043",
+   "text": "dipirona",
+   "cat": "remedio",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 15900,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Dipirona Sódica 500mg Gotas 20ml EMS Genérico",
+     "price": 7.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Dipirona Monoidratada 1G 10 Comprimidos Genérico Prati-Donaduzzi",
+     "price": 9.79,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Dipirona Monoidratada 1g Genérico Cimed 10 Comprimidos",
+     "price": 10.59,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 20 comprimidos",
+     "price": 37.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Dipirona 500mg Genérico Prati Donaduzzi 30 Comprimidos",
+     "price": 19.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Dipirona Monoidratada 1g Genérico Cimed 10 Comprimidos",
+     "price": 10.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Dipirona Monoidratada 500mg/ml Genérico Neo Química Abacaxi 20ml Gotas",
+     "price": 14.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Dipirona Sódica 1g Genérico Neo Química 10 Comprimidos",
+     "price": 9.99
+    }
+   ],
+   "oracleSize": 20,
+   "note": "Dipirona é medicamento isento de prescrição; apresentações humanas são aceitas, mas versões veterinárias ou pediátricas não foram pedidas."
+  },
+  {
+   "id": "r040",
+   "text": "kerasys de coco",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 21750,
+   "shown": [
+    {
+     "store": "Época Cosméticos",
+     "name": "Condicionador Kerasys Coconut Oil 400ml",
+     "price": 80.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 63,
+   "note": "“Kerasys de coco” corresponde ao produto Kerasys com coco; os demais itens não correspondem ao pedido."
+  },
+  {
+   "id": "r045",
+   "text": "camisa branca social",
+   "cat": "roupas",
+   "origin": "real",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 8168,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 66,
+   "note": "Pedido específico de camisa branca social; camiseta, roupa pet e itens apenas com “branco” não correspondem ao tipo pedido."
+  },
+  {
+   "id": "r052",
+   "text": "sabonete até 5 reais",
+   "cat": "higiene",
+   "origin": "real",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 7691,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Sabonete em Barra Hidratante Erva Doce Nivea 85g",
+     "price": 3.69,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Sabonete em Barra Raiz Oriente Phebo 90g",
+     "price": 6.59,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 61,
+   "note": "Pedido genérico de sabonete com limite de preço: só serve sabonete por até R$ 5."
+  },
+  {
+   "id": "s069",
+   "text": "bolacha maizena",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10484,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Biscoito Doce Maizena Piraquê 175g",
+     "price": 6.19,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Biscoito Doce Maizena Piraquê 175g",
+     "price": 6.19
+    },
+    {
+     "store": "Mambo",
+     "name": "Biscoito de Maizena Bauducco 170g",
+     "price": 3.69
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Bolacha maizena aceita biscoito maizena comum; versões integrais ou de chocolate não correspondem ao pedido."
+  },
+  {
+   "id": "s070",
+   "text": "cereal matinal",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10121,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Cereal Matinal Nestlé KitKat Sabor Chocolate 25g",
+     "price": 2.75,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Cereal Matinal Nescau Extra Cacau Nestlé 170g",
+     "price": 14.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Cereal de Chocolate Sucrilhos Kelloggs 240g",
+     "price": 14.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Cereal Matinal Sem Adição de Açúcar Nesfit 220g",
+     "price": 20.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Cereal Sucrilhos Original Kelloggs 240g",
+     "price": 11.98
+    },
+    {
+     "store": "Drogal",
+     "name": "Cereal Matinal Nestlé KitKat Sabor Chocolate 25g",
+     "price": 2.75
+    }
+   ],
+   "oracleSize": 47,
+   "note": "Pedido genérico de cereal matinal; versões comuns são aceitas, mas cereal infantil não corresponde."
+  },
+  {
+   "id": "s093",
+   "text": "bala de goma",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9572,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Bala Goma Gomets Dori 150g",
+     "price": 8.19,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Bala de Gelatina Fini Dentaduras Sabor Morango e Framboesa 90g",
+     "price": 8.99
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Amoras Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Ursinhos Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Minhocas Azedinhas Fini 80g",
+     "price": 7.97
+    },
+    {
+     "store": "Swift",
+     "name": "Bala Beijos Fini 80g",
+     "price": 7.97
+    }
+   ],
+   "oracleSize": 59,
+   "note": "Pedido genérico de bala de goma; aceito balas de goma e gelatina comuns, mas não chicletes, outras balas ou produtos de outro tipo."
+  },
+  {
+   "id": "s083",
+   "text": "pão francês",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 6536,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Pão Francês Mambo (unidade ~80 g)",
+     "price": 1.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Pão Francês Homebake 270g",
+     "price": 15.98,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Swift",
+     "name": "Pão Francês Rústico Swift 120g",
+     "price": 4.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Pão Francês Swift 480g",
+     "price": 9.9
+    },
+    {
+     "store": "Swift",
+     "name": "Pão Francês Swift 180g",
+     "price": 4.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Pão Francês Mambo Kg",
+     "price": 19.9
+    }
+   ],
+   "oracleSize": 73,
+   "oracleUnconfirmed": 1,
+   "note": "Pão francês genérico aceita versões comuns; integral e produtos de outro tipo ou uso não correspondem ao pedido."
+  },
+  {
+   "id": "s097",
+   "text": "água com gás",
+   "cat": "bebidas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12022,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Água Mineral Lindoya Verão Com Gás 510ml",
+     "price": 6.55,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Ever Nutri Com Gás 510ml",
+     "price": 4.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Água Com Gás Crystal 500ml",
+     "price": 2.77,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Ever Nutri Com Gás 510ml",
+     "price": 4.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Água mineral crystal com gás 500ml",
+     "price": 4.99
+    },
+    {
+     "store": "Swift",
+     "name": "Água Com Gás Crystal 1,5l",
+     "price": 3.97
+    },
+    {
+     "store": "Swift",
+     "name": "Água Com Gás Crystal 500ml",
+     "price": 2.77
+    },
+    {
+     "store": "Mambo",
+     "name": "Água Mineral com Gás San Pellegrino Vidro 250ml",
+     "price": 12.98
+    }
+   ],
+   "oracleSize": 68,
+   "note": "Água com gás genérica; marcas e tamanhos diferentes são aceitáveis, mas água sem gás ou outros produtos não são."
+  },
+  {
+   "id": "r005",
+   "text": "carregador de celular",
+   "cat": "eletronicos",
+   "origin": "real",
+   "outcome": "error",
+   "kind": "product",
+   "ms": 150001,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tomada Carregador I2GO USB Preto 1 Unidade",
+     "price": 51.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Carregador Veicular I2GO com 2 Saídas USB Entrada 12-24V Saída 5V-2,1A Preto 1 Unidade",
+     "price": 44.99
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Carregador De Celular Universal Ultrarrápido 20W Proeletronic",
+     "price": 35.9
+    }
+   ],
+   "oracleSize": 34,
+   "note": "Pedido genérico de carregador de celular; carregadores de parede, veicular e power bank servem. Carregadores para baterias de ferramentas ou embutidos em escovas não são o item pedido.",
+   "error": "timeout busca r005 150s"
+  },
+  {
+   "id": "s099",
+   "text": "suco de laranja integral",
+   "cat": "bebidas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10906,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Momento Mambo 900ml",
+     "price": 9.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Natural One 1,3L",
+     "price": 21.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco Integral de Laranja Refrigerado Xandô 1,5L",
+     "price": 24.98,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Momento Mambo 3L",
+     "price": 44.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Momento Mambo 900ml",
+     "price": 9.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Momento Mambo 500ml",
+     "price": 9.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco de Laranja Integral Refrigerado Natural One 1,3L",
+     "price": 21.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Suco Integral de Laranja Refrigerado Xandô 1,5L",
+     "price": 24.98
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Pedido específico de suco de laranja integral; produtos de outros tipos ou sem indicação de integralidade não atendem."
+  },
+  {
+   "id": "s115",
+   "text": "mamão papaya",
+   "cat": "hortifruti",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7704,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Mamão Papaya (unidade ~800 g)",
+     "price": 7.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Mamão Papaya Kg",
+     "price": 9.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Mamão Papaya Candy Kg",
+     "price": 16.98
+    }
+   ],
+   "oracleSize": 30,
+   "note": "Mamão papaya é uma fruta; outras variedades ou produtos apenas com nomes semelhantes não atendem ao pedido."
+  },
+  {
+   "id": "s111",
+   "text": "alface",
+   "cat": "hortifruti",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9332,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Alface Roxa Hidropônica Hasegawa",
+     "price": 6.89,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Alface Crespa Hidropônica Hasegawa 300g",
+     "price": 7.89,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Alface Lisa Baby Momento Mambo 150g",
+     "price": 11.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Alface Mimosa Baby Momento Mambo 150g",
+     "price": 11.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Alface Frisee Verde Baby Momento Mambo 150g",
+     "price": 11.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Alface Americana Higienizada Fatiada La Vita 250g",
+     "price": 10.98
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Pedido genérico de alface; sementes não são alface pronta para consumo e itens sem relação são inadequados."
+  },
+  {
+   "id": "s116",
+   "text": "peito de frango",
+   "cat": "acougue",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 10077,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Peito de Frango Cozido e Desfiado Aurora 360g",
+     "price": 27.98,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Mambo",
+     "name": "Peito de Frango Temperado em Cubos Cozido Congelado Na Receita Sadia 400g",
+     "price": 30.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Peito de Frango Swift 1Kg",
+     "price": 19.5,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Filé de Peito de Frango Combo de 0,6kg a 1,7kg",
+     "price": 15.5
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Peito de Frango Swift 1Kg",
+     "price": 19.5
+    },
+    {
+     "store": "Swift",
+     "name": "Tiras de Filé de Peito de Frango Swift 1Kg",
+     "price": 24.9
+    },
+    {
+     "store": "Swift",
+     "name": "Cubos de Filé de Peito de Frango Swift 1Kg",
+     "price": 24.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Peito de Frango sem Osso e sem Pele Tradicional Mambo Kg",
+     "price": 34.98
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Pedido genérico de peito de frango; aceitos cortes crus, não versões cozidas, temperadas, defumadas ou produtos de outro tipo."
+  },
+  {
+   "id": "s119",
+   "text": "filé de tilápia",
+   "cat": "acougue",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 11684,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Filé de Tilápia Croc Turma da Mônica Congelada Frescatto 300g",
+     "price": 29.98,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Swift 400g",
+     "price": 21.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Temperado Empanado Swift 500g",
+     "price": 34.9,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Imp Swift 800g",
+     "price": 34.9
+    },
+    {
+     "store": "Swift",
+     "name": "Filé de Tilápia Swift 400g",
+     "price": 21.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Filé de Tilápia Congelada Carapreta 500g",
+     "price": 29.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Filé de Tilápia Fresca Mambo Kg",
+     "price": 69.98
+    }
+   ],
+   "oracleSize": 34,
+   "note": "Pedido genérico de filé de tilápia; aceitos filés simples, frescos ou congelados, mas não temperados/empanados nem ração para cães."
+  },
+  {
+   "id": "s137",
+   "text": "lenço umedecido",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13246,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Lenços Umedecidos Neve Toque da Seda 48 Unidades",
+     "price": 22.49,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Lenço Umedecido Higiênico Supreme Neve com 48 unidades",
+     "price": 17.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Lenço Umedecido Ever Baby Sem Perfume 4 pacotes 48 Unidades",
+     "price": 40.84
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Lenço Umedecido Ever Care Corporal 60 Unidades",
+     "price": 23.93
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Lenço Umedecido Pampers Cuidado do Bebê 4 Pacotes com 48 Unidades",
+     "price": 45.07
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Lenço Umedecido Piquitucho Premium Capim Limão 60 Unidades",
+     "price": 10.82
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Lenços Umedecidos João e Maria Bebê Glicerina Hipoalergênico Sem Fragrância 45 Unidades",
+     "price": 13.99
+    }
+   ],
+   "oracleSize": 35,
+   "note": "Pedido genérico; lenços umedecidos de uso pessoal são aceitáveis. Itens íntimos, para pets ou de outros usos não correspondem."
+  },
+  {
+   "id": "s141",
+   "text": "leite em pó para bebê",
+   "cat": "bebe",
+   "origin": "synthetic",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 21033,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 1 800g",
+     "price": 68.95,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Fórmula Infantil de primeira infância Ninho Fases 1+ 400g",
+     "price": 38.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Mambo",
+     "name": "Fórmula Infantil Nestogeno 2 800g Fórmula Infantil Nestogeno 6 a 12 meses Nestlé 800g",
+     "price": 64.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 2 800g",
+     "price": 71.75
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Premium 1 800g",
+     "price": 68.95
+    },
+    {
+     "store": "Drogal",
+     "name": "Fórmula Infantil Aptamil Profutura Gold 1 800g",
+     "price": 119.49
+    }
+   ],
+   "oracleSize": 74,
+   "note": "Fórmulas infantis são leite em pó próprio para bebês; leite comum e produtos para crianças maiores não correspondem ao pedido."
+  },
+  {
+   "id": "s142",
+   "text": "tinta de cabelo castanho",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10877,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Tinta de Cabelo Koleston Castanho Médio 40",
+     "price": 32.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 50 Castanho Claro",
+     "price": 29.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tinta De Cabelo Casting Creme Gloss De L’oréal Paris 400 Castanho Natural 246g",
+     "price": 42.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Coloração Semipermanente Creme Henna Surya Castanho Escuro 70ml",
+     "price": 43.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 30 Castanho Escuro",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 40 Castanho Médio",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo L’Oréal Paris Casting Creme Gloss 400 Castanho Natural",
+     "price": 41.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tinta de Cabelo Wella Koleston 50 Castanho Claro",
+     "price": 29.99
+    }
+   ],
+   "oracleSize": 73,
+   "note": "Pedido genérico de tinta de cabelo castanho; aceitas tintas castanhas em tons e marcas não especificados."
+  },
+  {
+   "id": "s143",
+   "text": "esmalte vermelho",
+   "cat": "beleza",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 11368,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Esmalte Intensificador de Vermelho Risqué ChilliBeans Dá um Grau na Cor 8ml",
+     "price": 3.69,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Gabriela 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Risqué Vermelho Cremoso Carmim 8ml",
+     "price": 7.59,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Esmalte Cremoso Dailus Licor De Cereja Queridinhos 8",
+     "price": 9.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Carmim Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Maçã do Amor Metálico 8ml",
+     "price": 7.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Gabriela Cremoso 8ml",
+     "price": 7.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Esmalte Risqué Hipoalergênico Rebu Cremoso 8ml",
+     "price": 6.99
+    }
+   ],
+   "oracleSize": 78,
+   "note": "Pedido de esmalte vermelho; aceitos esmaltes claramente vermelhos, rejeitados outras cores e produtos apenas relacionados ao esmalte."
+  },
+  {
+   "id": "s149",
+   "text": "detergente líquido",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13105,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Detergente Líquido Capim Limão Ypê 500ml",
+     "price": 3.59,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Detergente Líquido Platinum Ypê 500ml",
+     "price": 4.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 31,
+   "note": "Pedido genérico de detergente líquido; detergentes líquidos lava-louças são aceitáveis, mas produtos de outros usos ou acessórios não."
+  },
+  {
+   "id": "s154",
+   "text": "multiuso veja",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12601,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Gold Lavanda e Álcool 10% de Desconto Veja 500ml",
+     "price": 7.09,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Banheiro AntiBac Veja Refil 400ml",
+     "price": 14.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Limpador Multiuso Banheiro AntiBac Veja Refil 400ml",
+     "price": 14.49
+    }
+   ],
+   "oracleSize": 42,
+   "note": "Pedido de limpador multiuso Veja; aceitam-se variantes comuns da marca, mas não outros produtos ou usos."
+  },
+  {
+   "id": "s180",
+   "text": "garrafa térmica esportiva",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10259,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Garrafa Térmica Stanley Flip Straw Saffron 650ml",
+     "price": 278.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Garrafa Térmica Stanley Flip Straw Saffron 650ml",
+     "price": 278.99
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Térmica Max Emborrachada 500ml Off White – Zonacriativa",
+     "price": 49.9
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Térmica Funny Bob Esponja",
+     "price": 154.9
+    }
+   ],
+   "oracleSize": 67,
+   "note": "Pedido genérico de garrafa térmica esportiva; garrafas térmicas comuns são aceitáveis, mas itens de outros tipos ou infantis não."
+  },
+  {
+   "id": "s186",
+   "text": "prato descartável",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10100,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Prato Plástico Aniversário 15cm Azul Regina 10 unidades",
+     "price": 3.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Raso Descartável Branco Copobrás 17,5cm com 10 unidades",
+     "price": 10.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato de Papel Feliz Aniversário Silver Plastic 18cm 10 Unidades",
+     "price": 13.49,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Prato de Papel Feliz Aniversário Silver Plastic 18cm 10 Unidades",
+     "price": 13.49
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Raso Descartável Branco Copobrás 17,5cm com 10 unidades",
+     "price": 10.98
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Plástico Aniversário 15cm Azul Regina 10 unidades",
+     "price": 3.99
+    },
+    {
+     "store": "Mambo",
+     "name": "Prato Papel 18cm C 10 Unidades",
+     "price": 13.49
+    }
+   ],
+   "oracleSize": 50,
+   "note": "Prato descartável genérico aceita pratos descartáveis de papel ou plástico; pratos reutilizáveis e itens de outro tipo não servem."
+  },
+  {
+   "id": "s192",
+   "text": "fita adesiva transparente",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "false_positive",
+   "kind": "product",
+   "ms": 11719,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Fita Transparente Nexcare 25mm x 1,35m",
+     "price": 10.45,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogal",
+     "name": "Fita Transparente Nexcare 12mm x 4,5m",
+     "price": 17.99,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogal",
+     "name": "Fita Transparente Nexcare 25mm x 4,5m",
+     "price": 27.59,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 57,
+   "oracleUnconfirmed": 2,
+   "note": "Fita transparente de papelaria ou empacotamento serve; fita médica e demais produtos são de outro uso ou tipo."
+  },
+  {
+   "id": "s193",
+   "text": "tesoura",
+   "cat": "papelaria",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7791,
+   "shown": [
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 7\" 17,8cm Aço Inox Preto",
+     "price": 10.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 8 1/4\" 21cm Aço Inox Preto",
+     "price": 12.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Tesoura Multiuso Cor Preta Mozcada 20cm",
+     "price": 25.98
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 7\" 17,8cm Aço Inox",
+     "price": 10.99
+    },
+    {
+     "store": "Brinox",
+     "name": "Tesoura Multiuso Brinox 8 1/4\" 21cm Aço Inox",
+     "price": 12.99
+    }
+   ],
+   "oracleSize": 44,
+   "oracleUnconfirmed": 1,
+   "note": "Pedido genérico; tesouras multiuso são adequadas, mas modelos especializados, infantis ou para animais têm outro uso."
+  },
+  {
+   "id": "s203",
+   "text": "cabo usb c",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13479,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Cabo Usb-A Para Usb-C 1 Metro Proeletronic",
+     "price": 19.9,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cabo Usb-C Para Usb-C 1 Metro Branco Proeletroeletronic",
+     "price": 21.9,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cabo Usb-A Para Usb-C 1.5M Nylon Trançado Cinza Proeletronic",
+     "price": 23.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogal",
+     "name": "Cabo Tipo C Universal Leve-Me V8 USB 1 Unidade",
+     "price": 29.9
+    },
+    {
+     "store": "Drogal",
+     "name": "Cabo Tipo C Iphone Leve-Me PD 1 Unidade",
+     "price": 35.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cabo Usb-C Para Usb-C 1 Metro Branco Proeletroeletronic",
+     "price": 21.9
+    }
+   ],
+   "oracleSize": 66,
+   "note": "Pedido genérico de cabo USB-C; cabos com conector USB-C são aceitáveis, independentemente do outro conector ou comprimento."
+  },
+  {
+   "id": "s204",
+   "text": "cabo lightning",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10303,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Cabo Lightning I2GO Certificado MFi 1,2m 2,4A PVC Flexível Flat Branco 1 Unidade Cabo USB-C I2GO 1,2m 2,4A PVC Flexível Flat Preto 1 Unidade",
+     "price": 103.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Cabo Lightning I2GO Certificado MFi 1,2m 2,4A PVC Flexível Flat Branco 1 Unidade",
+     "price": 103.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Cabo Iphone Leve-Me USB 1 Unidade",
+     "price": 29.9
+    }
+   ],
+   "oracleSize": 49,
+   "note": "Cabo Lightning é um cabo para iPhone; cabos de outros tipos ou produtos apenas com “cabo” no nome não servem."
+  },
+  {
+   "id": "s207",
+   "text": "carregador de parede usb",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 12102,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Carregador de Tomada Leve-Me 2 Entradas USB 1 Unidade",
+     "price": 29.9,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Carregador Multiplicador 2 Saídas USB 1,5A Tomadas 10A White Daneva",
+     "price": 154.9,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Carregador com 2 pontos para USB 2400mA branca Pial Plus",
+     "price": 169.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Tomada Carregador I2GO USB Preto 1 Unidade",
+     "price": 51.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Carregador de Tomada Leve-Me PD 1 Unidade",
+     "price": 35.9
+    }
+   ],
+   "oracleSize": 47,
+   "note": "Pedido genérico de carregador de parede USB; carregadores de tomada/parede servem, mas cabos, módulos de tomada e carregadores veiculares ou de outros aparelhos não."
+  },
+  {
+   "id": "s211",
+   "text": "cartão de memória 128gb",
+   "cat": "eletronicos",
+   "origin": "synthetic",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 8986,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 56,
+   "note": "Nenhum item é cartão de memória de 128 GB."
+  },
+  {
+   "id": "s233",
+   "text": "cortina",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 7932,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Cortina Duo Vista 2 Painéis De 260X170Cm Bege Camesa",
+     "price": 154.9,
+     "verdict": "exact"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cortina Duo Tessa 2 Painéis De 260X170Cm Branco Camesa",
+     "price": 169.9,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Telhanorte",
+     "name": "Cortina Duo Tessa 2 Painéis De 260X170Cm Branco Camesa",
+     "price": 169.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cortina Duo Vista 2 Painéis De 260X170Cm Bege Camesa",
+     "price": 154.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Cortina Alfa Blackout 100 De Bloqueio Da Luz 2 Painéis De 260X170Cm Bege Camesa",
+     "price": 139.9
+    }
+   ],
+   "oracleSize": 42,
+   "oracleUnconfirmed": 2,
+   "note": "Pedido genérico de cortina; cortinas de janela servem. Cortina de box, aparelho de ar, acessórios e itens apenas relacionados não são o produto pedido."
+  },
+  {
+   "id": "s228",
+   "text": "garrafa de água",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 19101,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Água Mineral sem Gás Prata 1,5L",
+     "price": 2.99,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Água Mineral Crystal Sem Gás 500ml",
+     "price": 5.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Swift",
+     "name": "Água Sem Gás Crystal 500ml",
+     "price": 2.27,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Kopenhagen",
+     "name": "Garrafa em Vidro e Bambu com Cristais 500ml",
+     "price": 89.9
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Garrafa de água - Retratil - 1L - Branca e preta - Sortida - Maccabi",
+     "price": 69.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Garrafa de água - 1 litro - Laranja - Maccabi",
+     "price": 79.99
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Galaxy Palmeiras",
+     "price": 124.9
+    },
+    {
+     "store": "Zona Criativa",
+     "name": "Garrafa Galaxy Corinthians",
+     "price": 124.9
+    }
+   ],
+   "oracleSize": 60,
+   "note": "Interpretei “garrafa de água” como recipiente reutilizável; água mineral engarrafada e itens de outros usos não correspondem."
+  },
+  {
+   "id": "s240",
+   "text": "martelo",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "miss",
+   "kind": "product",
+   "ms": 5470,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Telhanorte",
+     "name": "Martelo de Unha 23 mm Tramontina Master com Cabo em Madeira Envernizada",
+     "price": 29.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Martelo de unha 23mm Novipro",
+     "price": 31.9
+    }
+   ],
+   "oracleSize": 40,
+   "oracleUnconfirmed": 4,
+   "note": "Pedido genérico de martelo; aceitos martelos comuns, como o de unha, mas não ferramentas especializadas nem brinquedo."
+  },
+  {
+   "id": "s241",
+   "text": "chave de fenda",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "wrong_top1",
+   "kind": "product",
+   "ms": 9289,
+   "shown": [
+    {
+     "store": "Telhanorte",
+     "name": "Chave de Fenda Ponta Cruzada 3x125mm PH0 Novipro Chave de Fenda Ponta Cruzada Transparente 3x125mm Novipro",
+     "price": 11.9,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Chave Torx T25 com Orifício 100mm Eixo CRV Novipro Transparente Chave de Fenda Eixo CRV Ponta c/ Orifício T25x100x5mm Transparente Novipro",
+     "price": 14.9,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Chave de Fenda Novipro T30x100x6mm com Eixo em CRV e Ponta com Orifício Chave de Fenda Eixo CRV Ponta c/ Orifício T30x100x6mm Transparente Novipro",
+     "price": 17.9,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Telhanorte",
+     "name": "Chave de Fenda Tramontina Ponta Chata 1/8x4\" Amarela",
+     "price": 5.9
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Chave de fenda 3/16X6\" com ponta chata amarela Tramontina",
+     "price": 9.9
+    }
+   ],
+   "oracleSize": 46,
+   "oracleUnconfirmed": 4,
+   "note": "Pedido genérico de chave de fenda; aceitas chaves e jogos que incluam chaves de fenda, mas não outros tipos de ferramenta."
+  },
+  {
+   "id": "s150",
+   "text": "sabão em pó omo",
+   "cat": "limpeza",
+   "origin": "synthetic",
+   "outcome": "error",
+   "kind": "product",
+   "ms": 150001,
+   "shown": [],
+   "oracleGood": [
+    {
+     "store": "Mambo",
+     "name": "Lava Roupas em Pó Puro Cuidado Omo 800g",
+     "price": 8.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Lava Roupas em Pó Lavagem Perfeita Omo 1,4kg",
+     "price": 18.9
+    },
+    {
+     "store": "Mambo",
+     "name": "Lava Roupas em Pó Omo Perfect White 720g",
+     "price": 20.98
+    }
+   ],
+   "oracleSize": 62,
+   "note": "Pedido específico de sabão em pó Omo; produtos de outras categorias ou marcas não atendem.",
+   "error": "timeout busca s150 150s"
+  },
+  {
+   "id": "s253",
+   "text": "presente para criança de 5 anos",
+   "cat": "presente",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "vague_gift",
+   "ms": 10588,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Brinquedo Mola Mania Kids Unicórnio 1 Unidade",
+     "price": 15.79,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Brinquedo Interativo - Minimi - Centopeia Pula Pula - Modelos Sortidos - Jxp Brink",
+     "price": 30.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Brinquedo Musical - Boombox Karaokê - Homem-Aranha - Candide",
+     "price": 129.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Ri Happy",
+     "name": "Casa Com Escorregador - Barbie - Dreamland - Mattel",
+     "price": 849.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Carrinho - Disney  - Pixar - Carros - Relâmpago Mcqueen - Com Luz E Som - Mattel",
+     "price": 259.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Figura De Ação - Disney - Pixar - Toy Story 5 - Bala No Alvo - Com Sons E Movimento - Mattel",
+     "price": 499.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Boneca - Disney - Frozen - Elsa - Luzes E Som - Mattel",
+     "price": 329.99
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Pista De Brinquedo - Hot Wheels - City - Lava-Carros - Mattel",
+     "price": 279.99
+    }
+   ],
+   "oracleSize": 20,
+   "note": "Pedido de presente sem produto definido; brinquedos adequados à idade são opções plausíveis."
+  },
+  {
+   "id": "s275",
+   "text": "protetor auricular",
+   "cat": "ferramentas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9870,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Protetor Auditivo Moldável Nexcare Tamanho Único 5 Pares",
+     "price": 17,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Protetor de Ouvido Nexcare 3M Silicone 2 Unidades",
+     "price": 39.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Protetor Auditivo Moldável Nexcare Tamanho Único 5 Pares",
+     "price": 17
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Protetor de Ouvido Nexcare 3M Silicone 2 Unidades",
+     "price": 39.99
+    }
+   ],
+   "oracleSize": 36,
+   "oracleUnconfirmed": 4,
+   "note": "Pedido genérico de protetor auricular; plugs e abafadores próprios para proteção auditiva são aceitáveis. Itens de outros usos não correspondem."
+  },
+  {
+   "id": "s274",
+   "text": "chinelo havaianas",
+   "cat": "roupas",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11846,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 41/42 1 Par",
+     "price": 29.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 33/34 1 Par",
+     "price": 29.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 35/36 1 Par",
+     "price": 29.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 37/38 1 Par",
+     "price": 31.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Slim Gloss Preto Tamanho 41/42 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 47/48 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 33/34 1 Par",
+     "price": 29.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Sandália Havaianas Top Preto Tamanho 35/36 1 Par",
+     "price": 29.99
+    }
+   ],
+   "oracleSize": 41,
+   "note": "Pedido especifica chinelo da marca Havaianas, sem modelo, cor ou tamanho; outros chinelos e produtos com nomes parecidos não atendem."
+  },
+  {
+   "id": "s272",
+   "text": "camiseta básica branca",
+   "cat": "roupas",
+   "origin": "synthetic",
+   "outcome": "honest_none",
+   "kind": "product",
+   "ms": 16075,
+   "shown": [],
+   "closest": [
+    {
+     "store": "Zona Criativa",
+     "name": "Camiseta Kawaii Station Hello Kitty Branca G",
+     "price": 144.9
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 70,
+   "note": "Camiseta básica branca; nenhuma opção corresponde ao tipo, à cor e ao estilo pedidos."
+  },
+  {
+   "id": "s286",
+   "text": "omeprazol",
+   "cat": "remedio",
+   "origin": "synthetic",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 5004,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 20,
+   "note": "Omeprazol é inibidor da bomba de prótons sujeito a receita; nenhum item deve ser mostrado."
+  },
+  {
+   "id": "s282",
+   "text": "teste de gravidez",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10175,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste Gravidez Confira Tira + Coletor 1 Unidade",
+     "price": 9.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Teste de Gravidez Click Nexter 1 Unidade",
+     "price": 4.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogal",
+     "name": "Teste de Gravidez Confirme em Tira 1 Teste + Frasco Coletor",
+     "price": 6.89,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care 1 Tira + Coletor",
+     "price": 8.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste de Gravidez Ever Care Caneta 1 Unidade",
+     "price": 16.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste Gravidez Confira Tira + Coletor 1 Unidade",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Ever Care Em Tira 2 Unidades",
+     "price": 22.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Teste De Gravidez Caneta Confira Pratic 1 Unidade",
+     "price": 17.59
+    }
+   ],
+   "oracleSize": 35,
+   "oracleUnconfirmed": 1,
+   "note": "Teste de gravidez é produto de saúde; marcas e formatos variam sem alterar a finalidade. Testes de outras finalidades não servem."
+  },
+  {
+   "id": "s283",
+   "text": "vitamina c efervescente",
+   "cat": "farmacia",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13402,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Viter C 1g Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 6.89,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ViterC 1g Natulab 10 Comprimidos Efervescentes",
+     "price": 6.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 10 Comprimidos Efervescentes",
+     "price": 8.63,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C 1g Drogarias São Paulo 30 Comprimidos Efervescentes",
+     "price": 23.39
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Vitamina C ACEVITON Imunidade 30 Comprimidos Efervescentes",
+     "price": 17.81
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Bio-C 1g Sabor Laranja 10 Comprimidos Efervescentes",
+     "price": 11.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Ativday Vitamina C 1g 30 Comprimidos Efervescentes",
+     "price": 24.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Vitamina C Bio-C 1g 30 Comprimidos Efervescentes",
+     "price": 30.79
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Pedido genérico de vitamina C efervescente; versões puras são adequadas. Produtos com fórmula combinada ou outra forma de apresentação não correspondem."
+  },
+  {
+   "id": "s306",
+   "text": "acendedor de churrasqueira",
+   "cat": "casa",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 11266,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Acendedor Isqueiro Bic Ez Reach 1 Unidade",
+     "price": 17.55,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Acendedor Sólido 4 pçs Prime Grill",
+     "price": 11.9,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Telhanorte",
+     "name": "Acendedor Álcool Gel 430g Prime Grill",
+     "price": 17.9,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Cobasi",
+     "name": "Álcool Gel Acendedor Zulu Power Fire",
+     "price": 19.9
+    },
+    {
+     "store": "Cobasi",
+     "name": "Álcool Gel Acendedor Thor",
+     "price": 19.9
+    },
+    {
+     "store": "Swift",
+     "name": "Álcool Gel Acendedor Swift 500g",
+     "price": 9.97
+    },
+    {
+     "store": "Drogal",
+     "name": "Acendedor Isqueiro Bic Ez Reach 1 Unidade",
+     "price": 17.55
+    }
+   ],
+   "oracleSize": 40,
+   "note": "Pedido genérico de acendedor para churrasqueira; gel e acendedor sólido são opções adequadas, mas isqueiro de longo alcance é outro tipo."
+  },
+  {
+   "id": "s291",
+   "text": "pasta de amendoim",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 17605,
+   "shown": [
+    {
+     "store": "Drogal",
+     "name": "Pasta de Amendoim Dr. Peanut sabor Doce de Leite 250g",
+     "price": 26.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Pasta de Amendoim com Caramelo Flor de Sal La Ganexa 450g",
+     "price": 51.98,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Mambo",
+     "name": "Pasta de Amendoim Creamy Reeses 510g",
+     "price": 87.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Pague Menos",
+     "name": "Pasta De Amendoim Dr Peanut Avelã 250g",
+     "price": 27.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pasta De Amendoim Dr Peanut Buenissimo 250g",
+     "price": 27.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Pasta De Amendoim Dr Peanut Pistache 250g",
+     "price": 27.99
+    },
+    {
+     "store": "Drogal",
+     "name": "Pasta de Amendoim Dr. Peanut sabor Doce de Leite 250g",
+     "price": 26.99
+    }
+   ],
+   "oracleSize": 58,
+   "note": "Pedido genérico de pasta de amendoim; sabores comuns são aceitáveis, mas versões integrais, fit ou zero açúcar não foram pedidas."
+  },
+  {
+   "id": "s312",
+   "text": "chocolate em pó",
+   "cat": "mercado",
+   "origin": "synthetic",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 8160,
+   "shown": [
+    {
+     "store": "Mambo",
+     "name": "Chocolate em Pó Solúvel Dois Frades Nestlé 200g",
+     "price": 26.98,
+     "verdict": "exact"
+    },
+    {
+     "store": "Mambo",
+     "name": "Chocolate em Pó 70% Cacau Dr. Oetker 200g",
+     "price": 37.98,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 59,
+   "note": "Chocolate em pó genérico; pó para preparo é adequado. Cacau puro e suplementos ou produtos apenas com sabor chocolate não são chocolate em pó."
+  },
+  {
+   "id": "s315",
+   "text": "bicicleta",
+   "cat": "esporte",
+   "origin": "synthetic",
+   "outcome": "false_positive",
+   "kind": "product",
+   "ms": 9490,
+   "shown": [
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta - Aro 12 - Arco Iris - Laranja - Tk3-Track",
+     "price": 174.99,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+     "price": 299.95,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Ri Happy",
+     "name": "Bicicleta Aro 12 - Arco Íris Branco e Pink - TK3 Track",
+     "price": 299.95,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [],
+   "oracleSize": 12,
+   "note": "Pedido genérico de bicicleta; modelos infantis e bicicletas ergométricas não correspondem ao tipo pedido."
+  },
+  {
+   "id": "m02",
+   "text": "advil",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de 12h/Mulher",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 10553,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Advil 400mg 12 Cápsulas Moles",
+     "price": 26.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 12 Cápsulas Liquidas",
+     "price": 32.14,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Advil Extra Alívio 400mg 20 Cápsulas Líquidas",
+     "price": 27.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 20 Cápsulas",
+     "price": 36.34
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 12 Cápsulas Liquidas",
+     "price": 32.14
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Anti-inflamatório Advil 400mg 3 Cápsulas",
+     "price": 9.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Kit Analgésico Advil 400mg 3 Cápsulas + Leite de Magnésia EnoMagno Hortelã 10ml",
+     "price": 9.9
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Advil 400mg 12 Cápsulas Moles",
+     "price": 26.99
+    }
+   ],
+   "oracleSize": 16,
+   "oracleUnconfirmed": 1,
+   "note": "Advil é MIP; apresentações comuns da marca são aceitas. Extensões de linha com fórmula ou indicação especial são incorretas."
+  },
+  {
+   "id": "m01",
+   "text": "tylenol",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Sinus/DC/Bebê",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 13375,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico Tylenol 750mg 10 Comprimidos",
+     "price": 26.7,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 200mg/ml 15ml Gotas",
+     "price": 31.27,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Tylenol Dor e Febre 500mg 10 Comprimidos Revestidos",
+     "price": 19.99,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 200mg/ml 15ml Gotas",
+     "price": 31.27
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antitérmico Tylenol 750mg 20 Comprimidos",
+     "price": 41.59
+    },
+    {
+     "store": "Drogal",
+     "name": "Tylenol Gotas 200mg/ml Solução Oral 15ml",
+     "price": 24.9
+    }
+   ],
+   "oracleSize": 15,
+   "oracleUnconfirmed": 1,
+   "note": "Tylenol comum em qualquer dose, quantidade ou forma atende; versões Bebê, Criança e Sinus são extensões não pedidas."
+  },
+  {
+   "id": "m03",
+   "text": "neosaldina",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Muscular/Max",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 10294,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Neosaldina Dipirona Blister 4 Drágeas",
+     "price": 7.39,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 10 Drágeas",
+     "price": 19.89,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Neosaldina Dipirona Caixa 20 Drágeas",
+     "price": 31.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 20 Drágeas",
+     "price": 34.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 30 Comprimidos Revestidos",
+     "price": 45.59
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 10 Drágeas",
+     "price": 19.89
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Neosaldina Dipirona Blister 4 Drágeas",
+     "price": 7.39
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Neosaldina Dipirona Caixa 20 Drágeas",
+     "price": 31.99
+    }
+   ],
+   "oracleSize": 10,
+   "oracleUnconfirmed": 1,
+   "note": "Neosaldina comum é aceita em diferentes apresentações; a linha Muscular tem outra fórmula/indicação."
+  },
+  {
+   "id": "m04",
+   "text": "buscopan",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de Composto/Pediátrico",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 9531,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan 10mg/ml Solução Gotas 20ml",
+     "price": 24.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+     "price": 7.49,
+     "verdict": "wrong"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+     "price": 24.99,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan 10mg 20 Drágeas",
+     "price": 28.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Analgésico Buscopan 20 drágeas",
+     "price": 24.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan 10mg/ml Solução Gotas 20ml",
+     "price": 24.99
+    }
+   ],
+   "oracleSize": 10,
+   "note": "Buscopan sem fórmula adicional aceita apresentações comuns da marca; versões Composto e Duo têm fórmula diferente."
+  },
+  {
+   "id": "m05",
+   "text": "dorflex",
+   "cat": "remedio",
+   "origin": "dono 08/10: marca → básico antes de DIP/Max",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9503,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Relaxante Muscular, Analgésico e Antitérmico Dorflex 300mg + 35mg + 50mg 10 Comprimidos",
+     "price": 8.51,
+     "verdict": "exact"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 24 Comprimidos",
+     "price": 17.99,
+     "verdict": "exact"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Dorflex Analgésico e Relaxante Muscular 10 comprimidos Dorflex 10 Comprimidos",
+     "price": 7.39,
+     "verdict": "exact"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 36 Comprimidos",
+     "price": 17.49
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 50 Comprimidos",
+     "price": 24.74
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Relaxante Muscular Dorflex 300mg + 35mg + 50mg 24 Comprimidos",
+     "price": 17.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Dorflex Analgésico e Relaxante Muscular 50 Comprimidos",
+     "price": 24.74
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Dorflex Analgésico e Relaxante Muscular 10 comprimidos",
+     "price": 7.39
+    }
+   ],
+   "oracleSize": 22,
+   "note": "Dorflex é medicamento isento de prescrição; apresentações comuns da marca são aceitas, mas extensões Max e DIP têm fórmula diferente."
+  },
+  {
+   "id": "m19",
+   "text": "omeprazol",
+   "cat": "remedio",
+   "origin": "placar r4: miss (guarda trata 20mg como receita)",
+   "outcome": "medicine_ok",
+   "kind": "medicine",
+   "ms": 4249,
+   "shown": [],
+   "oracleGood": [],
+   "oracleSize": 20,
+   "note": "Omeprazol é medicamento de tarja vermelha; não devem ser apresentados produtos."
+  },
+  {
+   "id": "m11",
+   "text": "buscopan composto",
+   "cat": "remedio",
+   "origin": "dono 08/10: a extensão pedida tem que vir",
+   "outcome": "found",
+   "kind": "product",
+   "ms": 9420,
+   "shown": [
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+     "price": 7.49,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 6,67mg/ml + 333,4mg/ml Solução Gotas 20ml",
+     "price": 27.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 20 Comprimidos Revestido",
+     "price": 26.99,
+     "verdict": "acceptable"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 20 Comprimidos Revestido",
+     "price": 26.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 10mg + 250mg 4 Comprimidos Revestido",
+     "price": 7.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Analgésico e Antiespasmódico Buscopan Composto 6,67mg/ml 20ml Solução Gotas",
+     "price": 30.49
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+     "price": 24.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+     "price": 7.49
+    }
+   ],
+   "oracleSize": 52,
+   "note": "Buscopan Composto é tratado como produto; apresentações comuns em comprimidos ou gotas são aceitas quando não há dose ou forma especificada."
+  },
+  {
+   "id": "m14",
+   "text": "fexofenadina",
+   "cat": "remedio",
+   "origin": "dono 08/10: genérico",
+   "outcome": "found_with_wrong_extra",
+   "kind": "product",
+   "ms": 14434,
+   "shown": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Cloridato Fexofenadina 120mg Genérico Ranbaxy 10 Comprimidos",
+     "price": 14.59,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato De Fexofenadina 120mg 10 Comprimidos Revestidos Genérico Ems",
+     "price": 16.99,
+     "verdict": "acceptable"
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato de Fexofenadina 6mg/ml Sabor Framboesa Suspensão Oral 60ml Genérico Vitamedic",
+     "price": 24.29,
+     "verdict": "wrong"
+    }
+   ],
+   "oracleGood": [
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Cloridrato de Fexofenadina 180mg Genérico EMS 10 Comprimidos",
+     "price": 18.01
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Cloridrato de Fexofenadina 180mg Genérico Cimed 10 Comprimidos Revestidos",
+     "price": 39.99
+    },
+    {
+     "store": "Drogaria São Paulo",
+     "name": "Antialérgico Cloridrato de Fexofenadina 120mg Genérico Cimed 10 Comprimidos Revestidos",
+     "price": 38.59
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato De Fexofenadina 180mg 10 Comprimidos Revestidos Genérico Germed",
+     "price": 45.99
+    },
+    {
+     "store": "Pague Menos",
+     "name": "Cloridrato De Fexofenadina 120mg 10 Comprimidos Revestidos Genérico Ems",
+     "price": 16.99
+    }
+   ],
+   "oracleSize": 15,
+   "note": "Fexofenadina é medicamento isento de prescrição; comprimidos genéricos são aceitáveis em diferentes doses, mas apresentações pediátricas não foram solicitadas."
+  }
+ ]
+}
