@@ -14,8 +14,19 @@ julgadas por gpt-6-sol e não servem de "antes"). CEP 01310-100. Branch `claude/
 | farmácia (9) · antes | 9 | 0,0% | 100% | 77,8% | n/a | 0/0 | 11,6 s | found 7, miss 2 (teste de gravidez, vitamina C) |
 | remédio-marcas (20) · antes | 20 | 6,7% | 88,4% | 86,7% | n/a | 1/5 | 10,7 s | found 13, wrong 1 (buscopan→Composto 1º), miss 1 (omeprazol), med_ok 4, leak 1 (fexofenadina: erro do juiz) |
 | remédio-marcas (20) · depois | 20 | 13,3% | 83,7% | 80,0% | n/a | 1/5 | 13,5 s | found 11, extra 1 (buscopan: básico 1º, Composto atrás), wrong 2 (neosaldina e buscopan composto: mesma 1ª opção do antes, juiz virou), miss 1, med_ok 4, leak 1 |
-| 316 · antes | — | PENDENTE | | | | | | rodada original morreu em 314/316 no limite de 2 h da sessão (sem gravar); refeita |
-| 316 · depois | — | PENDENTE | | | | | | |
+| farmácia (9) · depois (fatia dos 316) | 9 | 0,0% | 100% | 100% | n/a | 0/0 | — | found 9 (teste de gravidez e vitamina C entraram) |
+| remédio (9) · depois (fatia dos 316) | 9 | 0,0% | — | — | n/a | 0/2 | — | found 5, miss 1 (omeprazol), med_ok 2, erro 1 (dipirona: teto 150 s) |
+| **316 · antes** | 316 | **2,0%** | **97,5%** | **93,1%** | **100%** | 0/2 | 9,8 s | found 238, extra 6, miss 12, wrong 6, honest 41, med_ok 2, erro 11 (teto 150 s) |
+| **316 · depois** | 316 | **1,6%** | **98,4%** | **96,2%** | **100%** | 0/2 | 10,5 s | found 253, extra 3, miss 5, wrong 5, honest 40, med_ok 2, erro 8 (teto 150 s) |
+
+Nos 316 (código congelado × código final, mesmo juiz, mesma noite): 1ª opção errada 2,0% → 1,6%, precisão 97,5% →
+98,4%, cobertura 93,1% → 96,2%, honestidade 100% nas duas, 0 vazamento de remédio, p50 +0,7 s. Pedidos que viraram
+found: teste de gravidez, vitamina C, Havaianas, leite em pó para bebê, cabo lightning, garrafa térmica, protetor
+auricular, mamão, peito de frango, esmalte vermelho, fita adesiva, e 5 que antes tinham extra errado. Pioraram:
+bolacha maizena (Mãe Terra Maizena Choco 1º), pão francês (pão de mel 1º), chave de fenda (ponta cruzada = Phillips
+1º), bala de goma (extra "Gummy vinagre"), presente criança 5 anos (miss), isqueiro maçarico (miss) — nenhum deles
+passa pelo código mudado (rerank/estoque/juiz); "erro" = teto de 150 s na busca, 11 no antes e 8 no depois (fora das
+métricas): o travamento é ANTERIOR a esta branch.
 
 Leitura honesta: os ganhos reais são de **cobertura** (teste de gravidez, Havaianas, vitamina C, pilhas
 recarregáveis, fórmula infantil, buscopan básico primeiro). As quedas de precisão nos conjuntos pequenos são, caso a
@@ -66,11 +77,17 @@ Revisão de código por sub-agente achou 9 pontos (2 de segurança ANVISA na por
 - **carregador usb c**: honest_none/miss conforme a rodada: Casa & Vídeo/Obramax não confirmam no CEP; a Pague Menos
   derruba o I2GO; sobra cabo (recusado, certo). Estoque, não busca.
 - **bicicleta**: só a infantil Aro 12 da Ri Happy; o juiz alterna acceptable/wrong. Critério, não bug.
-- **Travamento intermitente da busca sob concorrência**: 2 pedidos (isqueiro pra charuto, pomada para assadura)
-  passaram de 150 s no `r4-repetentes-depois`; sequencialmente fecham em 10–18 s; 2 rodadas anteriores ficaram presas
-  para sempre no mesmo ponto. Nenhum fetch do caminho está sem timeout (auditado por sub-agente; Mercado Livre
-  desligado). Mitigado no bench (teto por etapa, vira "error"); causa raiz em aberto. Em produção o webhook tem prazo
-  próprio, mas vale instrumentar `buildChoices` por etapa com o id do pedido.
+- **Travamento intermitente da busca sob concorrência (ANTERIOR à branch)**: com 3 buscas em paralelo, 2–3% dos
+  pedidos passam de 150 s em `buildChoices` (11/316 no código congelado de ontem, 8/316 no final; ids diferentes a
+  cada rodada: chocolate, dipirona, água com gás, sabão em pó omo…); os mesmos pedidos fecham em 10–18 s
+  sequencialmente. Nenhum fetch do caminho está sem timeout (auditado por sub-agente; Mercado Livre desligado).
+  Mitigado no bench (teto por etapa, vira "error" e fica fora das métricas; checkpoint por pedido + `--resume`).
+  Causa raiz em aberto: instrumentar `buildChoices` por etapa com o id do pedido e rodar com concorrência 3.
+  Em produção cada webhook é um turno só, mas 3 clientes simultâneos podem cair no mesmo buraco.
+- **Nos 316, ainda errados no depois** (todos fora do código mudado): bolacha maizena → "Maizena Choco" da Mãe Terra
+  em 1º; pão francês → pão de mel em 1º; chave de fenda → ponta cruzada (Phillips) em 1º; acendedor de churrasqueira
+  → isqueiro Bic em 1º; filé de tilápia → empanado infantil em 1º; martelo e isqueiro maçarico → miss (Obramax não
+  confirma no CEP); presente criança 5 anos → miss.
 - **Dorflex DIP** como 2º/3º card de "dorflex": é extensão (dipirona pura); já fica atrás do básico, o juiz às vezes
   marca wrong. Para sumir, só excluindo extensões quando o básico existe — não fiz (o dono pediu "primeiro o normal,
   depois o PM", não "só o normal").
