@@ -108,6 +108,15 @@ function blocksMedicine(text: string): boolean {
     : looksLikeMedicine(text) || (isPrescriptionDrugName(text) && countDistinctItems(text) <= 1);
 }
 // Dono (08/10): a recusa NOMEIA o remédio de receita ("Rivotril precisa de receita") quando o texto o nomeia.
+// A recusa da MENSAGEM INTEIRA só vale quando tudo o que foi pedido é remédio de receita (dono,
+// 08/10): "dipirona e rivotril" segue para a busca, que mostra a dipirona e nomeia o Rivotril na
+// nota. Com a flag do isento desligada, nada muda (qualquer remédio recusa a mensagem).
+function refusesWholeMessage(text: string): boolean {
+  if (!blocksMedicine(text)) return false;
+  if (!medicineEnabled()) return true;
+  const lines = resolveListItems(stripMedicineNegation(text)).filter((line) => queryTokens(line.phrase).length);
+  return lines.length <= 1 || lines.every((line) => blocksMedicine(line.phrase));
+}
 function noMedicineCopy(text?: string): string {
   return medicineEnabled() ? copy.prescriptionRefusal(prescriptionDrugNameIn(text ?? "") ?? undefined) : copy.noMedicine();
 }
@@ -1680,7 +1689,7 @@ async function handleDeliveryTurn(
   // GUARDA DE REMÉDIO GLOBAL (26/08 P1.6: 2/4 — a recusa dependia da etapa; na
   // pergunta de quantidade "também queria dipirona" virava "responde o número").
   // "sem remédio, quero X" segue como pedido (negação já tratada na extração).
-  if (blocksMedicine(text) && !/^sem\s/.test(normalizeMsg(text))) {
+  if (refusesWholeMessage(text) && !/^sem\s/.test(normalizeMsg(text))) {
     await refuseMedicine(phone, convo.id, ctx, text);
     if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
     return;
@@ -2944,7 +2953,7 @@ async function handleDeliveryTurn(
 
   // ---- onboarding: save the complete delivery address once, before the first basket ----
   if (!user.defaultAddress) {
-    if (blocksMedicine(text)) {
+    if (refusesWholeMessage(text)) {
       await refuseMedicine(phone, convo.id, ctx, text);
       return;
     }
@@ -2998,7 +3007,7 @@ async function handleDeliveryTurn(
   // O pedido NÃO é resolvido agora (senão o 1º pedido do cliente seria auto-escolhido
   // sem opções nem preço): guarda o texto cru e roda a busca normal depois do CEP.
   if (!savedCep) {
-    if (blocksMedicine(text)) {
+    if (refusesWholeMessage(text)) {
       await refuseMedicine(phone, convo.id, ctx, text);
       return;
     }
