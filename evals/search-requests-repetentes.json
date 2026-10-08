@@ -1,0 +1,92 @@
+[
+ {
+  "id": "r004",
+  "text": "carregador usb c",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r017",
+  "text": "isqueiro pra charuto",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "s093",
+  "text": "bala de goma",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s139",
+  "text": "pomada para assadura",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s141",
+  "text": "leite em pó para bebê",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s143",
+  "text": "esmalte vermelho",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s189",
+  "text": "pilhas recarregáveis",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s192",
+  "text": "fita adesiva transparente",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s200",
+  "text": "marca texto",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s245",
+  "text": "parafuso",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s246",
+  "text": "bucha para parede",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s274",
+  "text": "chinelo havaianas",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s282",
+  "text": "teste de gravidez",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s283",
+  "text": "vitamina c efervescente",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s315",
+  "text": "bicicleta",
+  "cat": "esporte",
+  "origin": "synthetic"
+ }
+]
