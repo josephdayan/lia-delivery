@@ -136,7 +136,7 @@ before(async () => {
   }
 });
 beforeEach(() => {
-  delete process.env.LIA_RECOMMEND;
+  process.env.LIA_RECOMMEND = "all"; // "ligada" (08/10, noite: o padrão de produção é "test", só admins)
   delete process.env.LIA_MEDICINE_MIP;
 });
 after(async () => {
@@ -268,7 +268,7 @@ test("LIA_RECOMMEND=false: pedido vago recebe a copy de sempre; ligada, vira car
   assert.equal(out, copy.vagueRequestAnswer());
   assert.ok(!top(await ctxOf(off))?.recommendation);
   assert.equal(await prisma.recommendLog.count({ where: { phone: off } }), 0);
-  delete process.env.LIA_RECOMMEND;
+  process.env.LIA_RECOMMEND = "all"; // "ligada" (08/10, noite: o padrão de produção é "test", só admins)
   const on = await registered();
   await send(on, "algo gostoso pra comer");
   assert.ok(top(await ctxOf(on))?.recommendation, "com a flag ligada, recomenda");

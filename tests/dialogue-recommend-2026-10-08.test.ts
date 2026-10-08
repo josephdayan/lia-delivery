@@ -75,7 +75,7 @@ const D = (over: Partial<PreDecision> = {}): PreDecision => ({
 
 beforeEach(() => {
   process.env.LIA_DIALOGUE_LLM = "true";
-  delete process.env.LIA_RECOMMEND;
+  process.env.LIA_RECOMMEND = "all"; // "ligada" (08/10, noite: o padrão de produção é "test", só admins)
   __setDialogueModelForTests(null);
   __setPreSignupModelForTests(null);
 });
@@ -288,7 +288,7 @@ test("pré-cadastro: LIA_RECOMMEND=false mantém a copy de pedido vago; parse l�
   process.env.LIA_RECOMMEND = "false";
   assert.deepEqual(planPreSignup(D({ recommend: true }), { text: "tô com fome" }), { ok: true, steps: [{ type: "fixed", key: "vague" }], label: "vague" });
   assert.deepEqual(planPreSignup(D({ vague: true }), { text: "me surpreende" }), { ok: true, steps: [{ type: "fixed", key: "vague" }], label: "vague" });
-  delete process.env.LIA_RECOMMEND;
+  process.env.LIA_RECOMMEND = "all"; // "ligada" (08/10, noite: o padrão de produção é "test", só admins)
   const raw = { items: [], budget: null, answers: [], medicine: false, outOfScope: false, human: false, waiting: false, farewell: false, vague: false, recommend: true, smalltalk: null };
   assert.equal(parsePreDecision(raw)?.recommend, true);
   assert.equal(parsePreDecision({ ...raw, recommend: "sim" })?.recommend, false);

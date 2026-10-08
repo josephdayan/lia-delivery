@@ -1259,6 +1259,10 @@ export async function handleDeliveryMessage(input: {
 }) {
   const phone = normalizePhone(input.phone);
   turnStartedAt.set(phone, Date.now());
+  {
+    const meta = turnMeta.getStore();
+    if (meta) meta.phone = phone;
+  }
   // Formulário de cadastro: o histórico grava só um rótulo (o formulário traz o CPF).
   const signupForm = isSignupFormReply(input.flowResponse) ? input.flowResponse : undefined;
   // Formulário da lista (07/10): o histórico grava só um rótulo; a resposta crua tem skus.

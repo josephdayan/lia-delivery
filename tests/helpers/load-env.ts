@@ -48,6 +48,8 @@ delete process.env.LIA_MEDICINE_MIP;
 // CPF do cliente). A suíte antiga foi escrita com a margem embutida e fica nela; o modelo novo tem
 // teste próprio (tests/service-fee-mode.test.ts), que liga sozinho.
 process.env.LIA_PRICING_MODE ??= "markup";
+// Recomendação (08/10): em produção o padrão é "test" (só dono/admins); a suíte usa telefones de teste.
+process.env.LIA_RECOMMEND ??= "all";
 // Complemento no fechamento (08/10, recomendação fase 4): em produção vem LIGADO ("quem leva carvão
 // costuma levar pão de alho" antes do total). A suíte antiga fecha a lista esperando o total direto e
 // fica sem ele; tests/recommend-complement-2026-10-08.test.ts liga sozinho.

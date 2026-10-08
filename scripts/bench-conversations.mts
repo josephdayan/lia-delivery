@@ -21,6 +21,8 @@ const concurrency = Number(arg("concurrency", "2"));
 const verbose = args.includes("--verbose");
 const MAX_TURNS = Number(arg("turns", "18"));
 
+// Recomendação (08/10): o placar simula clientes com telefone de teste; o padrão de produção é "test" (só admins).
+process.env.LIA_RECOMMEND ??= "all";
 process.env.LIA_AUTO_PURCHASE_STORES ??=
   "drogariasp,cobasi,paguemenos,swift,kopenhagen,rihappy,mambo,epocacosmeticos,drogal,casaevideo,obramax,brinox,creamy,telhanorte,zonacriativa,philco,oxford,polishop";
 

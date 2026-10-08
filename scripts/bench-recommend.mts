@@ -54,6 +54,7 @@ process.env.WHATSAPP_PROVIDER = "mock";
 process.env.LIA_SEND_PHOTOS = "false";
 // Mesma vitrine e remédio isento dos outros placares (bench-search): mede a mesma Lia de produção.
 process.env.LIA_MEDICINE_MIP ??= "true";
+process.env.LIA_RECOMMEND ??= "all";
 process.env.LIA_AUTO_PURCHASE_STORES ??=
   "drogariasp,cobasi,paguemenos,swift,kopenhagen,rihappy,mambo,epocacosmeticos,drogal,casaevideo,obramax,brinox,creamy,telhanorte,zonacriativa,philco,oxford,polishop";
 

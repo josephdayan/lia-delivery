@@ -235,6 +235,8 @@ export const turnMeta = new AsyncLocalStorage<{
   prevSent?: string[];
   sent?: string[];
   skipDialogue?: boolean;
+  // Telefone do cliente deste turno (08/10): a recomendação em modo "test" só vale para dono/admins.
+  phone?: string;
 }>();
 
 export function runTurnScoped<T>(fn: () => Promise<T>): Promise<T> {
