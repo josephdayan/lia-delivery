@@ -1,3 +1,22 @@
+## 08/10/2026 (tarde) — Obramax e Casa & Vídeo: repasse por São Paulo (caminho B do dono), testado na Vercel
+
+As duas lojas recusam acesso de fora do Brasil no checkout ("403 country not allowed"); a Lia roda nos EUA,
+então nunca confirmava frete/estoque nem comprava nelas (zero pedidos na história; produção registra
+`[live-check:unconfirmed] casaevideo…`). Decisão do dono: não mover servidor nem banco (o Supabase grátis só
+permite 2 projetos e o briefing-djen está em uso); só as chamadas a essas lojas passam por
+`/api/store-relay`, que roda em **gru1 (São Paulo)**.
+- Região: o `preferredRegion` da rota foi IGNORADO (rodou em iad1); o que vale é `vercel.json` → `functions`
+  → `regions: ["gru1"]`. Funciona no plano atual da Vercel.
+- **Teste na versão de teste da branch** (sondagem fixa, CEP da Av. Paulista): rota em `gru1`; Obramax 200
+  `available`, Casa & Vídeo 200 `available` (antes, da mesma Vercel em iad1: 403 e 403). POST sem chave: 403.
+- Segurança: só hosts da lista (`LIA_STORE_RELAY_HOSTS`), só caminhos de API VTEX, chave derivada do
+  `CRON_SECRET` (já existe na produção: o cron de compra roda autorizado a cada 2 min), comparação em tempo
+  constante. `LIA_STORE_RELAY_OFF=true` desliga. Fora da Vercel nada muda.
+- Falta conferir depois do deploy em produção: sumir `[live-check:http] … 403` e uma cotação real na Obramax.
+- Observação: o deploy de produção mais recente roda em **iad1** (Washington), mais longe do banco
+  (us-west-1) que o anterior (pdx1). Fixar `"regions": ["sfo1"]` no vercel.json deixaria o resto da Lia
+  colado ao banco — não alterei.
+
 ## 08/10/2026 (tarde) — r5: os 6 pendentes do placar r4 (na branch; medido só no conjunto alvo)
 
 Pedido do dono: consertar os 6 grupos que ainda falhavam. Tudo em `claude/placar-r4` depois de `03b3792`.
