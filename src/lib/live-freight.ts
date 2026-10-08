@@ -16,6 +16,7 @@
 // `faster` (04/09, dono: "tem que dar a opção de super expressa"): a entrega mais rápida
 // que a loja oferece para a cesta, quando é mais rápida que a mais barata e o extra cabe
 // em LIA_FAST_FREIGHT_MAX_EXTRA (R$ 20). Quem escolhe é o cliente (botão).
+import { storeFetch } from "./store-relay";
 import { storeServesCep } from "./store-areas";
 
 export type LiveFreightOutcome =
@@ -196,7 +197,7 @@ export function slowestEstimate(estimates: (string | undefined)[]): string | und
 }
 
 async function postSimulation(domain: string, items: { id: string; quantity: number; seller: string }[], cep: string): Promise<{ items?: SimItem[]; logisticsInfo?: LogisticsInfo[] } | null> {
-  const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
+  const response = await storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -482,7 +483,7 @@ function warnHttp(domain: string, status: number) {
 
 async function simulateItems(domain: string, ids: { sku: string; id: string; qty?: number }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
-    const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
+    const response = await storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

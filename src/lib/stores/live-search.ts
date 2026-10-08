@@ -25,6 +25,7 @@
 // item com cara de remédio (comprimido, princípio ativo) nessas duas lojas também sai pela porta
 // do MIP — nunca como produto comum. Com a flag desligada, nada muda: remédio fica fora.
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
+import { storeFetch } from "../store-relay";
 import { isMedicine, mipOnly, withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
 import { MIP_STORE_KEYS, isPrescriptionDrugName, isPrescriptionText, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
 import { MIP_CATALOG as DSP_MIP_CATALOG } from "./drogariasp-mip-catalog";
@@ -176,7 +177,7 @@ const cache = new Map<string, { at: number; items: CatalogItem[] }>();
 
 export type LiveFetch = (url: string, init: { headers: Record<string, string>; signal: AbortSignal }) => Promise<{ ok: boolean; json(): Promise<unknown> }>;
 
-export async function liveSearchItems(storeKey: string, query: string, count = 12, fetcher: LiveFetch = fetch as unknown as LiveFetch): Promise<CatalogItem[]> {
+export async function liveSearchItems(storeKey: string, query: string, count = 12, fetcher: LiveFetch = storeFetch as unknown as LiveFetch): Promise<CatalogItem[]> {
   const store = VTEX_API_STORES[storeKey];
   if (!store || !query.trim()) return [];
   const key = `${storeKey}|${query.trim().toLowerCase()}|${count}`;
