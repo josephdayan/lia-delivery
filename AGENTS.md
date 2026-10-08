@@ -1,3 +1,10 @@
+## REGRA VIGENTE — Modelo: SÓ `gpt-6-luna`. NUNCA `gpt-6-sol` (dono, repetido em 08/10)
+
+Lia, juiz dos placares, cliente simulado, visão, comprador — tudo `gpt-6-luna`. Sol custa ~20× e o dono proibiu;
+`scripts/bench/preflight.mts` aborta se `OPENAI_MODEL`/`BENCH_JUDGE_MODEL`/`BENCH_SIM_MODEL` tiver "sol". Rodadas
+antigas julgadas por sol (rodada3 de 07/10, hard-sol-r3) não servem de "antes": compare luna com luna.
+Custo dos testes (o que doeu em 07/10, ~US$30/dia): iterar com os 15 repetentes e pass@1; os 316 e o pass@3 só no fechamento.
+
 ## Sessões na nuvem (claude.ai/code): `NODE_USE_ENV_PROXY=1`
 
 O `fetch` do Node não usa o proxy do ambiente (o curl usa): sem `NODE_USE_ENV_PROXY=1`, ViaCEP, OpenAI e lojas

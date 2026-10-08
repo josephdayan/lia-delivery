@@ -48,7 +48,8 @@ lento. `npx tsx scripts/bench-conversations.mts --label antes [--only c01,c02] [
 ## Custo (preços por 1M tokens, 07/10)
 Tudo em `gpt-6-luna` (US$0,10 entrada / US$0,50 saída; o gpt-5.4-mini custava 0,75 / 4,50 = 7,5–9× mais; o gpt-5.5 do
 1º run, 5 / 30 = 50–60× mais). Rodada completa dos dois placares ≈ US$1. Ressalva: com o juiz e a Lia no mesmo
-modelo o juiz deixa de ser "mais forte que a Lia"; para auditoria rigorosa use `BENCH_JUDGE_MODEL=gpt-6-sol`.
+modelo o juiz deixa de ser "mais forte que a Lia" — e é assim mesmo: **regra do dono (08/10): só gpt-6-luna, nunca
+gpt-6-sol** (o preflight aborta se qualquer modelo tiver "sol"). Compare só rodadas julgadas pela luna entre si.
 
 ## Juiz calibrado (07/10)
 `evals/calibracao-rotulos.json` tem 40 conversas rotuladas à mão. `npx tsx scripts/bench/calibrate.mts <arquivo>` mede a
