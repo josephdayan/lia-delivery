@@ -214,7 +214,9 @@ function dedupeBasket(items: BasketItem[]): BasketItem[] {
 // Remédio pedido pela marca (dono, 08/10): a apresentação básica vem antes das extensões de linha
 // (Tylenol Sinus, Advil 12h, Dorflex DIP…) que o cliente não pediu. Só na vitrine de isentos.
 function medicineBaseFirst(query: string, options: ChoiceOption[], closest: boolean): ChoiceOption[] {
-  if (closest || !medicineEnabled() || !hasMip(options)) return options;
+  // Só vitrine SÓ de isentos: numa mistura ("leites" → leite integral + Leite de Magnésia) a regra
+  // empurrava o leite de verdade para trás do remédio (suíte, list-flow 08/10).
+  if (closest || !medicineEnabled() || !options.every((o) => isMipItem(o))) return options;
   return baseFormulationFirst(query, options);
 }
 
