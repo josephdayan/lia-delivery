@@ -26,7 +26,7 @@
 // do MIP — nunca como produto comum. Com a flag desligada, nada muda: remédio fica fora.
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { isMedicine, mipOnly, withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
-import { MIP_STORE_KEYS, isPrescriptionDrugName, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
+import { MIP_STORE_KEYS, isPrescriptionDrugName, isPrescriptionText, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
 import { MIP_CATALOG as DSP_MIP_CATALOG } from "./drogariasp-mip-catalog";
 import type { CatalogItem } from "./types";
 
@@ -92,11 +92,18 @@ export function liveMipAllowed(storeKey: string, product: IsProduct, item: { ean
   if (!liveMipStore(storeKey)) return false;
   const path = (product.categories ?? []).join(" ");
   if (storeKey === "drogariasp") {
-    // Prateleira própria dos isentos (C:/868/ "Remédios"); a de tarja é "Medicamentos" (C:/800/).
-    if (/rem[eé]dios?/i.test(path) && !/medicamentos?/i.test(path)) return true;
+    // As mesmas três checagens da colheita valem em QUALQUER prateleira: classificação preenchida
+    // tem que ser "Sem Tarja", prescrição não pode exigir receita/retenção, classe não pode ser de receita.
     const classification = norm(property(product, "Classificação"));
     const prescription = norm(property(product, "Prescrição Médica"));
-    return classification === "sem tarja" && !/com retencao|com receita|sob prescricao/.test(prescription);
+    const klass = property(product, "Classe dos Remédios") || property(product, "Classe do Medicamento");
+    if (classification && classification !== "sem tarja") return false;
+    if (/com retencao|com receita|sob prescricao/.test(prescription)) return false;
+    if (isPrescriptionText(`${klass} ${path}`)) return false;
+    // Prateleira própria dos isentos (C:/868/ "Remédios") passa; a de tarja ("Medicamentos",
+    // C:/800/) só com "Sem Tarja" explícito.
+    if (/rem[eé]dios?/i.test(path) && !/medicamentos?/i.test(path)) return true;
+    return classification === "sem tarja";
   }
   if (storeKey === "paguemenos") {
     const ean = isValidGtin(item.ean) ? onlyDigits(item.ean!) : "";
@@ -151,10 +158,11 @@ export function parseLiveProducts(storeKey: string, products: IsProduct[]): Cata
         // Remédio de receita pelo nome numa prateleira comum ("Isotretinoína" em "Pele"): nunca.
         continue;
       } else if (mipStore && isMedicine(base)) {
-        // Fora da prateleira de medicamento mas com cara de remédio ("30 Comprimidos
-        // Efervescentes", dexpantenol): sai pela porta do MIP (CPF do cliente, guarda de receita),
-        // nunca como produto comum.
-        mip.push({ ...base, medicine: "mip" });
+        // Fora da prateleira de medicamento mas com cara de remédio (dexpantenol, "comprimidos"):
+        // a loja guarda remédio em categoria cosmética (anvisa.ts), então só entra como MIP se o
+        // código de barras é de um isento da lista positiva da Drogaria SP; senão sai, como antes.
+        const ean = isValidGtin(item.ean) ? onlyDigits(item.ean!) : "";
+        if (ean && dspMipEanSet().has(ean)) mip.push({ ...base, medicine: "mip", ean });
       } else {
         plain.push(base);
       }

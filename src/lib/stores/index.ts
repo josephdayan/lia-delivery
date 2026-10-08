@@ -328,14 +328,12 @@ export async function gatherCrossStoreCandidates(
   const equivalent = medicineEnabled() ? medicineEquivalentFor(query) : null;
   if (equivalent) {
     const have = new Set(localRanked.map((c) => `${c.store.key}:${c.item.sku}`));
-    for (const eqQuery of equivalent.queries) {
-      const hits = rankStoreCandidates(eqQuery, await searchSelectedStores(localStores, eqQuery, perStore));
-      for (const c of hits) {
-        const key = `${c.store.key}:${c.item.sku}`;
-        if (have.has(key) || c.item.medicine !== "mip" || !equivalent.matches(c.item.name)) continue;
-        have.add(key);
-        equivalents.push(c);
-      }
+    const perQuery = await Promise.all(equivalent.queries.map(async (eqQuery) => rankStoreCandidates(eqQuery, await searchSelectedStores(localStores, eqQuery, perStore))));
+    for (const c of perQuery.flat()) {
+      const key = `${c.store.key}:${c.item.sku}`;
+      if (have.has(key) || c.item.medicine !== "mip" || !equivalent.matches(c.item.name)) continue;
+      have.add(key);
+      equivalents.push(c);
     }
   }
 
@@ -364,7 +362,7 @@ export async function gatherCrossStoreCandidates(
   }
   const main = [...distinct, ...variants];
   if (!equivalents.length) return main.slice(0, limit);
-  const keep = Math.min(3, equivalents.length);
+  const keep = Math.min(2, equivalents.length);
   return [...main.slice(0, Math.max(0, limit - keep)), ...equivalents.slice(0, keep)];
 }
 

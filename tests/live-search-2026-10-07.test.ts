@@ -78,6 +78,13 @@ test("MIP ligado, Drogaria SP: prateleira 'Remédios' entra marcada mip; 'Medica
     ]);
     assert.deepEqual(items.map((i) => i.name.split(" ")[0]), ["Analgésico", "Dipirona"]);
     assert.ok(items.every((i) => i.medicine === "mip"));
+    // Revisão 08/10: a prateleira "Remédios" NÃO dispensa tarja/prescrição/classe — as mesmas checagens da colheita.
+    const tarjaNaPrateleira = parseLiveProducts("drogariasp", [
+      shelf("Produto Y 30 Comprimidos", ["/Remédios/"], { properties: [{ name: "Classificação", values: ["Tarja Vermelha"] }] }),
+      shelf("Produto Z 30 Comprimidos", ["/Remédios/"], { properties: [{ name: "Prescrição Médica", values: ["Venda Sob Prescrição Médica"] }] }),
+      shelf("Produto W 30 Comprimidos", ["/Remédios/"], { properties: [{ name: "Classe dos Remédios", values: ["Antibióticos"] }] })
+    ]);
+    assert.deepEqual(tarjaNaPrateleira, []);
   });
   // Flag desligada: a mesma prateleira não devolve nada.
   assert.equal(parseLiveProducts("drogariasp", [shelf("Analgésico Novalgina 1g Dipirona 20 comprimidos", ["/Remédios/"])]).length, 0);
@@ -109,8 +116,17 @@ test("MIP ligado: fora da prateleira de medicamento, item com cara de remédio s
       shelf("Isotretinoína 20mg 30 Cápsulas", ["/Pele/"]) // receita pelo nome: nunca
     ]);
     const byName = Object.fromEntries(items.map((i) => [i.name.split(" ")[0], i.medicine ?? "comum"]));
-    // Vitamina sem palavra de remédio segue produto comum (a guarda ANVISA não a marca); dexpantenol vira MIP.
-    assert.deepEqual(byName, { Vitamina: "comum", Pomada: "mip", Teste: "comum", Sandália: "comum" });
+    // Vitamina sem palavra de remédio segue produto comum (a guarda ANVISA não a marca). Fora da prateleira
+    // de medicamento, item com cara de remédio SÓ entra como MIP com código de barras da lista positiva
+    // da Drogaria SP (revisão 08/10: a loja guarda remédio em categoria cosmética — clindamicina em
+    // "Acne", mupirocina em "Primeiros Socorros" — e esses não podem entrar). Sem EAN da lista: fora.
+    assert.deepEqual(byName, { Vitamina: "comum", Teste: "comum", Sandália: "comum" });
+    const comEan = parseLiveProducts("drogariasp", [
+      shelf("Analgésico e Antitérmico Dipirona Sódica 1g Neo Química 10 Comprimidos", ["/Promoções/"], {}, { ean: "7896714207551" }),
+      shelf("Clindamicina 1% Gel 30g", ["/Dermocosméticos/Acne/"], {}, { ean: "7898108640609" }),
+      shelf("Mupirocina 20mg/g Pomada 15g", ["/Primeiros Socorros/"])
+    ]);
+    assert.deepEqual(comEan.map((i) => [i.name.split(" ")[0], i.medicine]), [["Analgésico", "mip"]]);
   });
 });
 

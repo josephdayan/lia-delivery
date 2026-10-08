@@ -340,8 +340,13 @@ export function medicineSkippedNote(): string {
 // Pedido de remédio de receita com MIP ligado: recusa só o de receita e diz o que dá.
 // Dono (08/10): quando o pedido nomeia o remédio, a recusa diz QUAL não dá e por quê.
 const capName = (n: string) => n.charAt(0).toUpperCase() + n.slice(1);
-export function prescriptionRefusal(name?: string): string {
-  const head = name ? `*${capName(name)}* é remédio de receita, então esse eu não consigo comprar.` : "Remédio de receita eu não consigo comprar.";
+export function prescriptionRefusal(names?: string | string[]): string {
+  const list = (Array.isArray(names) ? names : names ? [names] : []).filter(Boolean).map((n) => `*${capName(n)}*`);
+  const head = !list.length
+    ? "Remédio de receita eu não consigo comprar."
+    : list.length === 1
+      ? `${list[0]} é remédio de receita, então esse eu não consigo comprar.`
+      : `${list.slice(0, -1).join(", ")} e ${list[list.length - 1]} são remédios de receita, então esses eu não consigo comprar.`;
   return `${head} Remédio *sem receita* (dipirona, antigripal, antiácido…) eu compro na farmácia no seu nome. Me diz o nome do que você precisa.`;
 }
 

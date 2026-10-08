@@ -23,7 +23,7 @@ import { recordSearchMisses } from "@/lib/search-misses";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
-import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNameIn } from "@/lib/medicine";
+import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
@@ -118,7 +118,9 @@ function refusesWholeMessage(text: string): boolean {
   return lines.length <= 1 || lines.every((line) => blocksMedicine(line.phrase));
 }
 function noMedicineCopy(text?: string): string {
-  return medicineEnabled() ? copy.prescriptionRefusal(prescriptionDrugNameIn(text ?? "") ?? undefined) : copy.noMedicine();
+  if (!medicineEnabled()) return copy.noMedicine();
+  const lines = text ? resolveListItems(stripMedicineNegation(text)).map((line) => line.phrase) : [];
+  return copy.prescriptionRefusal(prescriptionDrugNamesIn(lines.length ? lines : [text ?? ""]));
 }
 // A recusa de remédio repetida em pouco tempo muda de texto (07/10, c35): a mesma frase duas vezes
 // parecia travada, e "tem farmácia parceira?" não é pedido — é pergunta.
@@ -151,11 +153,11 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     .filter((line) => !blocksMedicine(line.phrase))
     .filter((line) => !looksLikeTobacco(line.phrase));
   // Remédio de receita que saiu da lista, pelo nome (dono, 08/10): a nota diz QUAL ficou de fora.
-  const prescriptionDropped = [...new Set(
+  const prescriptionDropped = prescriptionDrugNamesIn(
     resolveListItems(sanitized)
       .filter((line) => queryTokens(line.phrase).length && blocksMedicine(line.phrase))
-      .map((line) => prescriptionDrugNameIn(line.phrase) ?? line.phrase)
-  )];
+      .map((line) => line.phrase)
+  );
   if (extraction) {
     // A IA às vezes devolve contexto como item ("Para uma viagem") — o mesmo filtro de
     // modificador do parser determinístico vale pra ela (6º ciclo, rodada 1).
@@ -498,10 +500,14 @@ async function buildChoices(
     const { line, candidates, noneToday } = entry;
     const bySku = new Map(candidates.map((c) => [c.item.sku, c]));
     const chosen = rerankedSkus.get(entry);
+    // Equivalente de remédio (reserva de gatherCrossStoreCandidates) nunca entra como opção comum:
+    // sem IA ele sairia como se fosse a marca pedida. Só pelo caminho do "mais perto", abaixo.
+    const equivalent = medicineEnabled() ? medicineEquivalentFor(line.phrase) : null;
+    const isEquivalent = (c: StoreCandidate) => Boolean(equivalent && c.item.medicine === "mip" && equivalent.matches(c.item.name));
     // Sem o juízo da IA (fora do ar/prazo): quem tem TODAS as palavras do pedido (marca, "sem fio", tamanho)
     // vem na frente do que só se parece; se ninguém tem, segue o ranking de sempre.
-    const exactWords = chosen ? [] : candidates.filter((c) => conciergeMatchIsStrong(line.phrase, c.item, { allTokens: true }));
-    const fallbackPool = exactWords.length ? exactWords : candidates;
+    const exactWords = chosen ? [] : candidates.filter((c) => !isEquivalent(c) && conciergeMatchIsStrong(line.phrase, c.item, { allTokens: true }));
+    const fallbackPool = exactWords.length ? exactWords : candidates.filter((c) => !isEquivalent(c));
     let options: StoreCandidate[] = chosen
       ? chosen.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c))
       : diversifyOptions(line.phrase, fallbackPool.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
@@ -516,14 +522,11 @@ async function buildChoices(
     // Remédio (dono, 08/10): marca sem estoque, ou só o genérico na prateleira → o equivalente de
     // MESMO princípio ativo vira "o mais perto que tenho", nunca como se fosse o pedido. Os
     // candidatos já passaram pela checagem ao vivo; a reserva veio de gatherCrossStoreCandidates.
-    if (!options.length && medicineEnabled()) {
-      const eq = medicineEquivalentFor(line.phrase);
-      if (eq) {
-        const alt = candidates.filter((c) => c.item.medicine === "mip" && eq.matches(c.item.name) && !isMedicineLineExtension(eq.queries[0], c.item.name));
-        if (alt.length) {
-          options = alt.slice(0, vitrineLimit());
-          closestFalta = eq.falta;
-        }
+    if (!options.length && equivalent) {
+      const alt = candidates.filter((c) => isEquivalent(c) && !isMedicineLineExtension(equivalent.queries[0], c.item.name));
+      if (alt.length) {
+        options = alt.slice(0, vitrineLimit());
+        closestFalta = equivalent.faltaFor(alt[0].item.name);
       }
     }
     if (!options.length) {
@@ -563,7 +566,7 @@ async function buildChoices(
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
-      options: medicineBaseFirst(line.phrase, cheapestFirst ? sortedOptions : exactPackFirst(line.phrase, line.qty, sortedOptions), Boolean(closestFalta)).slice(0, vitrineLimit())
+      options: (cheapestFirst ? sortedOptions : medicineBaseFirst(line.phrase, exactPackFirst(line.phrase, line.qty, sortedOptions), Boolean(closestFalta))).slice(0, vitrineLimit())
     });
   }
   return {

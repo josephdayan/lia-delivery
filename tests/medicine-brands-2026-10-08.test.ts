@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { baseFormulationFirst, isMedicineLineExtension, medicineEquivalentFor, prescriptionDrugNameIn } from "../src/lib/medicine";
+import { baseFormulationFirst, isMedicineLineExtension, looksLikePrescriptionRequest, medicineEquivalentFor, prescriptionDrugNameIn, prescriptionDrugNamesIn } from "../src/lib/medicine";
 
 // Dono (08/10/2026): remédio de receita nomeado na recusa; marca "seca" mostra o básico antes das
 // extensões de linha; marca sem estoque oferece o genérico (mesmo princípio ativo) como "mais perto".
@@ -43,6 +43,15 @@ test("extensão de linha: Sinus/DC/Bebê/12h/Mulher/DIP/Max/Composto/Muscular/Pe
   assert.equal(ext("buscopan composto", "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos"), false);
   // Sem a marca no nome, não há o que julgar.
   assert.equal(ext("tylenol", "Paracetamol 750mg Genérico EMS 20 Comprimidos"), false);
+  // Revisão 08/10: sal, qualificador neutro e o próprio princípio ativo não são extensão.
+  assert.equal(ext("dipirona", "Analgésico e Antitérmico Dipirona Sódica 1g Genérico Neo Química 10 Comprimidos"), false);
+  assert.equal(ext("dipirona", "Dipirona Monoidratada 500mg Genérico Medley 10 Comprimidos"), false);
+  assert.equal(ext("dipirona gotas", "Dipirona Sódica 500mg/ml Gotas 20ml"), false);
+  assert.equal(ext("tylenol", "Tylenol Paracetamol 750mg 20 Comprimidos"), false);
+  assert.equal(ext("buscopan", "Buscopan Simples 10mg 20 Drágeas"), false);
+  assert.equal(ext("engov", "Engov Original 6 Comprimidos"), false);
+  // Combinação continua extensão: "+", "com" não são neutros.
+  assert.equal(ext("paracetamol", "Paracetamol + Cafeína 500mg + 65mg 20 Comprimidos"), true);
 });
 
 test("básico da marca primeiro, extensões depois, ordem estável; tudo extensão = ordem original", () => {
@@ -66,4 +75,34 @@ test("equivalente de mesmo princípio ativo: marca → genérico e genérico →
   assert.deepEqual(a.queries, ["advil 400mg", "alivium 400mg"]);
   assert.equal(medicineEquivalentFor("dorflex"), null, "sem genérico isento no catálogo: fora da tabela");
   assert.equal(medicineEquivalentFor("leite ninho"), null);
+  // Revisão 08/10: só a MESMA substância, por palavra inteira, nunca combinação.
+  const c = medicineEquivalentFor("claritin")!;
+  assert.equal(c.matches("Antialérgico Desloratadina 5mg Genérico Biosintética 10 Comprimidos"), false, "desloratadina não é loratadina");
+  assert.equal(c.matches("Antialérgico Loratadina 10mg Genérico Neo Química 12 Comprimidos"), true);
+  assert.equal(t.matches("Antigripal Decongex Gripe Paracetamol + Clorfeniramina + Fenilefrina 20 Comprimidos"), false, "combinação não é o genérico");
+  assert.equal(t.matches("Paracetamol com Cafeína 20 Comprimidos"), false);
+  assert.equal(a.matches("Dexibuprofeno 400mg 10 Comprimidos"), false);
+  const d = medicineEquivalentFor("dipirona")!;
+  assert.equal(d.matches("Analgésico e Antitérmico Novalgina 1g Dipirona Adulto 10 comprimidos"), true);
+  assert.equal(d.faltaFor("Analgésico e Antitérmico Anador 500mg 4 Comprimidos"), "é o Anador (mesmo dipirona)", "a marca que de fato casou, não a primeira da tabela");
+  assert.equal(d.matches("Dipirona + Cafeína + Orfenadrina 20 Comprimidos"), false);
+  // Público/forma pedidos: "tylenol bebê" nunca vira Paracetamol 750mg.
+  const b = medicineEquivalentFor("tylenol bebê")!;
+  assert.deepEqual(b.queries, ["paracetamol bebe"]);
+  assert.equal(b.matches("Paracetamol 750mg Genérico EMS 20 Comprimidos"), false);
+  assert.equal(b.matches("Paracetamol Bebê 100mg/ml Genérico Medley 15ml"), true);
+  assert.equal(b.matches("Paracetamol Infantil 32mg/ml Genérico 60ml"), true);
+  const g = medicineEquivalentFor("tylenol gotas")!;
+  assert.equal(g.matches("Paracetamol 750mg Genérico EMS 20 Comprimidos"), false);
+  assert.equal(g.matches("Paracetamol 200mg/ml Genérico Medley Gotas 15ml"), true);
+});
+
+test("recusa por linha: nomeia cada remédio de receita; frase sem nome não vira nome; marca ambígua só com contexto", () => {
+  assert.deepEqual(prescriptionDrugNamesIn(["rivotril", "sertralina"]).map((n) => n.toLowerCase()), ["rivotril", "sertralina"]);
+  assert.deepEqual(prescriptionDrugNamesIn(["lanterna frontal", "remédio de receita"]), [], "sem nome reconhecido, nada a nomear");
+  assert.equal(looksLikePrescriptionRequest("lanterna frontal e pilha"), false, "'frontal' é lanterna, não o ansiolítico");
+  assert.equal(looksLikePrescriptionRequest("frontal 2mg"), true);
+  assert.equal(looksLikePrescriptionRequest("remédio frontal"), true);
+  assert.equal(looksLikePrescriptionRequest("rivotril"), true);
+  assert.equal(looksLikePrescriptionRequest("dipirona"), false);
 });
