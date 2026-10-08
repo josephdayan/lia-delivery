@@ -216,13 +216,15 @@ export function violatesRule(textRaw: string, rule: ConstraintRuleQ, shelfId?: s
 // h19: leite zero lactose para quem também é celíaco). Só nome sem ingrediente que fere e sem cobertura/recheio.
 const NATURAL_BY_KIND: Partial<Record<DietKind, RegExp>> = {
   lactose: /^(hortifruti\.|bebidas\.(suco|agua|agua_coco)$|mercado\.(cafe|cha|arroz|feijao)$)/,
-  gluten: /^(hortifruti\.|bebidas\.(suco|agua|agua_coco)$|frios\.leite$|mercado\.(cafe|cha|arroz|feijao)$)/,
+  gluten: /^(hortifruti\.|bebidas\.(suco|agua|agua_coco)$|frios\.(leite|iogurte)$|mercado\.(cafe|cha|arroz|feijao)$)/,
   vegan: /^(hortifruti\.(frutas|legumes|verduras)$|bebidas\.(suco|agua|agua_coco)$|mercado\.(cafe|cha|arroz|feijao)$)/
 };
 const NATURAL_LABEL: Partial<Record<DietKind, string>> = { lactose: "sem lactose", gluten: "sem glúten", vegan: "vegano" };
 function naturalNoun(shelfId: string): string {
   if (/^hortifruti\.ovos$/.test(shelfId)) return "ovo";
+  if (/^hortifruti\.(verduras|legumes)$/.test(shelfId)) return "verdura/legume";
   if (/^hortifruti\./.test(shelfId)) return "fruta";
+  if (/frios\.iogurte$/.test(shelfId)) return "iogurte natural";
   if (/suco$/.test(shelfId)) return "suco de fruta";
   if (/frios\.leite$/.test(shelfId)) return "leite";
   if (/mercado\.cafe$/.test(shelfId)) return "café";
@@ -232,13 +234,15 @@ function naturalNoun(shelfId: string): string {
 }
 export function naturalDietWhy(name: string, shelfId: string, rules: readonly ConstraintRuleQ[]): string | undefined {
   const text = normQ(name);
-  if (COATED_RE.test(text) || /\b(vitamina|iogurte|lacteo|cremos\w*|nectar de leite|achocolatado|cappuccino|capuccino|aromatizad\w*)\b/.test(text)) return undefined;
+  if (COATED_RE.test(text) || /\b(vitamina|lacteo|cremos\w*|nectar de leite|achocolatado|cappuccino|capuccino|aromatizad\w*|maionese|molho|frango|atum|presunto|queijo|empanad\w*|congelad\w*|pronta|temperad\w*|granola|cereal|biscoito|cookie|brownie|chocolate)\b/.test(text)) return undefined;
   const labels: string[] = [];
   for (const rule of rules) {
     if (rule.kind === "word" || rule.kind === "no_medicine" || rule.kind === "vegetarian" || rule.kind === "sugar") continue;
     const re = NATURAL_BY_KIND[rule.kind];
     if (!re?.test(shelfId) || PROOF[rule.kind].test(text)) continue;
     // "leite" é do próprio produto no frios.leite: só vale pra glúten ali.
+    // Iogurte só vale como "naturalmente sem glúten" quando o nome diz natural/grego tradicional (sem sabor nem mistura).
+    if (shelfId === "frios.iogurte" && !/\b(natural|grego tradicional|grego natural|tradicional)\b/.test(text)) continue;
     const violates = shelfId === "frios.leite" ? /\b(trigo|cevada|malte|aveia|biscoito|cereal)\b/.test(text) : VIOLATES[rule.kind].test(text);
     if (!violates) labels.push(NATURAL_LABEL[rule.kind]!);
   }
@@ -298,7 +302,7 @@ export function meetsAttributes(name: string, rules: readonly AttributeRule[]): 
 // O item é do TIPO da prateleira? (o piso pelo substantivo-cabeça deixa passar "Batata Ruffles" no
 // hortifrúti por "batata", "Gatorade Frutas Cítricas" em frutas, "Eco Copo Café" no café.)
 const PROCESSED_RE =
-  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa|drage|drages|dragea|dragees|pouch|passa|passas)\b/;
+  /\b(chips|ruffles|pringles|batata palha|salgadinho|snack|snacks|isotonic\w*|gatorade|powerade|trufa|minitrufa|chocolate|bombom|suco|sucos|nectar|bala|balas|biscoito|bolacha|iogurte|sorvete|picole|geleia|doce|bolo|cereal|barra|refrigerante|cha|agua|polpa|panettone|chocotone|cristalizad\w*|tempero|temperos|desidratad\w*|liofilizad\w*|bebida|tablete|creme|sabonete|shampoo|hidratante|perfume|colonia|body|vela|aromatizador|essencia|sache|gelatina|pastilha|molho|conserva|enlatad\w*|pure|farinha|farofa|drage|drages|dragea|dragees|pouch|passa|passas|maionese|salpicao|frango|atum|presunto|empanad\w*|bacon)\b/;
 const NOT_FOOD_RE =
   /\b(comprimidos?|capsulas?|medicamento|formula infantil|fraldas?|pomada|shampoo|sabonete|hidratante|creme dental|desodorante|perfume|colonia|bepantol|aptanutri|aptamil|cafeteira|brinquedo|pelucia|livro|camiseta|vela|caneca|xicara|garrafa termica)\b/;
 const SHELF_SANITY: Array<{ shelf: RegExp; forbid: RegExp }> = [

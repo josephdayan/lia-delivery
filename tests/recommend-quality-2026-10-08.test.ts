@@ -909,3 +909,30 @@ describe("q9 / motivo e filtros finos — frio quentinho, castanha, dieta natura
     assert.ok(f?.keys.includes("fome"));
   });
 });
+
+describe("q9 / rodada 2 — salada pronta não é verdura, iogurte natural é sem glúten, 'frio' é plano curado de bebida quente", () => {
+  it("h18: salada de maionese com frango não passa na prateleira de verduras nem ganha 'naturalmente sem glúten'", () => {
+    assert.equal(shelfSanityOk("hortifruti.verduras", "Salada de Maionese com Frango e Legumes Swift 300g"), false);
+    assert.equal(shelfSanityOk("hortifruti.verduras", "Rúcula Hidropônica Villa das Folhas 140g"), true);
+    const gluten = [parseConstraint("sem glúten")!];
+    assert.equal(naturalDietWhy("Rúcula Hidropônica Villa das Folhas 140g", "hortifruti.verduras", gluten), "verdura/legume, naturalmente sem glúten");
+    assert.equal(naturalDietWhy("Salada de Maionese com Frango e Legumes Swift 300g", "hortifruti.verduras", gluten), undefined);
+  });
+
+  it("h03: iogurte natural/grego tradicional é 'naturalmente sem glúten'; iogurte com granola ou sabor não", () => {
+    const gluten = [parseConstraint("sem glúten")!];
+    assert.equal(naturalDietWhy("Iogurte Grego Tradicional Vigor 90g", "frios.iogurte", gluten), "iogurte natural, naturalmente sem glúten");
+    assert.equal(naturalDietWhy("Iogurte Natural Bela Vista 170g", "frios.iogurte", gluten), "iogurte natural, naturalmente sem glúten");
+    assert.equal(naturalDietWhy("Iogurte com Granola Nestlé 140g", "frios.iogurte", gluten), undefined);
+    assert.equal(naturalDietWhy("Iogurte Morango Danone 170g", "frios.iogurte", gluten), undefined);
+  });
+
+  it("r08/r07: 'frio' é entrada curada e o chá é de ervas (camomila, erva-doce) antes do chá comum", () => {
+    const frio = findNeed("to com frio")!;
+    assert.equal(frio.curated, true);
+    const cha = frio.picks.find((p) => p.shelfId === "mercado.cha")!;
+    assert.match(cha.query, /^cha de camomila/);
+    const plan = planShelvesFromTables(req({ text: "frio e sem nada em casa, sem cafeina pq to gravida", need: "frio", constraints: ["sem cafeína"] }), defaultTableDeps());
+    assert.ok(plan!.picks.some((p) => p.shelfId === "mercado.sopa") && !plan!.picks.some((p) => p.shelfId === "mercado.cafe" || p.shelfId === "mercado.achocolatado"));
+  });
+});

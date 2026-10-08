@@ -141,11 +141,11 @@ export const NEED_TABLE: NeedTableEntry[] = [
   need(["frio", "to com frio", "que frio", "dia frio", "friozinho", "algo quente", "coisa quente", "algo pra esquentar", "esquentar",
     "noite fria"], [
     p("mercado.sopa", "sopa", "quentinha e pronta em minutos"),
-    p("mercado.cha", "cha", "bebida quente que aquece"),
+    p("mercado.cha", "cha de camomila | cha de erva doce | cha de hortela | cha", "bebida quente que aquece"),
     p("mercado.achocolatado", "chocolate quente", "chocolate quente pra esquentar"),
     p("mercado.cafe", "cafe", "bebida quente"),
     p("casa.manta_cobertor", "manta", "pra se enrolar no sofá")
-  ]),
+  ], undefined, true),
   need(["sono", "com sono", "to com sono", "cansado", "cansada", "cansaco", "to cansado", "to cansada", "sem energia", "to sem energia",
     "ficar acordado", "virar a noite", "estudar a noite", "preciso acordar", "despertar"], [
     p("mercado.cafe", "cafe", "a cafeína ajuda a despertar"),

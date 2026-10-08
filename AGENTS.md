@@ -25,8 +25,8 @@ Flags: `LIA_RECOMMEND` (padrão ligado), `LIA_RECOMMEND_MEDICINE` (ligado; exige
 **Pendente do dono:** revisão da tabela de sintomas com o advogado sanitário (loperamida, aciclovir, melatonina, cetoconazol,
 descongestionantes — bloco "REVISÃO PENDENTE" no topo de `tables.ts`); `RecommendLog.phone` em texto puro (SearchMiss usa hash).
 
-**Rodada de qualidade q9 (08/10, noite):** placar principal q8 → q11 = atende 88,6% → 98,6%, card errado 2,9% → 1,5%, motivo 100%, restrição 100%;
-difícil q7 → q11 = atende 73,9% → 95,8%, variedade 61,9% → 78,3%. O que mudou: (1) **quantidade por número de pessoas**
+**Rodada de qualidade q9 (08/10, noite):** placar principal q8 → q12 = atende 88,6% → 98,6%, card errado 2,9% → 2,9%, variedade 95,7% → 94,2%, motivo 100%, restrição 100%, sem cards 1,4%;
+difícil q7 → q12 = atende 73,9% → 95,8%, card errado 19,0% → 4,3%, variedade 61,9% → 78,3%, restrição 100%, motivo 81,0% → 100%, sem cards 8,7% → 4,2%. O que mudou: (1) **quantidade por número de pessoas**
 (`quantity.ts`: tabela g/ml/un por pessoa por prateleira, tamanho lido do NOME; o card leva `ChoiceOption.suggestedQty` e "sugestão: 3x pra 12
 pessoas"; escolher o card já põe a quantidade; orçamento vale pro total); (2) **fome pede refeição**: entradas `curated` em `NEED_TABLE`
 (fome, sono, jantar leve, gelado, proteico) vão direto da tabela, sem IA; macarrão instantâneo/sanduíche/prato pronto antes de petisco, e
