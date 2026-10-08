@@ -150,5 +150,7 @@ test("nota fiscal: acha o link da NF-e no HTML do e-mail e ignora descadastro e 
     <a href="https://nfe.fazenda.sp.gov.br/ConsultaNFe/consulta?chave=3526&amp;x=1">Ver nota fiscal</a>`;
   assert.equal(invoiceLinkFrom(html), "https://nfe.fazenda.sp.gov.br/ConsultaNFe/consulta?chave=3526&x=1");
   assert.equal(invoiceLinkFrom(`<a href="https://loja.com/rastreio/123">acompanhe</a>`), undefined);
-  assert.match(copy.medicineInvoiceNotice("ABC123", "Drogaria São Paulo", "https://nfe.x/1"), /#ABC123.*Drogaria São Paulo.*https:\/\/nfe\.x\/1/);
+  // Sem número do pedido pro cliente (dono, 08/10 noite).
+  assert.match(copy.medicineInvoiceNotice("ABC123", "Drogaria São Paulo", "https://nfe.x/1"), /Drogaria São Paulo.*https:\/\/nfe\.x\/1/);
+  assert.doesNotMatch(copy.medicineInvoiceNotice("ABC123", "Drogaria São Paulo", "https://nfe.x/1"), /ABC123/);
 });

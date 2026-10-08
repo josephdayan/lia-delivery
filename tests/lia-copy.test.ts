@@ -115,7 +115,9 @@ test("status: uma linha humana por estado do pedido", () => {
     "canceled"
   ]) {
     const line = copy.orderStatusLine({ shortId: "ABC123", status });
-    assert.ok(line.includes("#ABC123"), `${status} deve citar o pedido`);
+    // Número do pedido não vai pro cliente (dono, 08/10 noite): "Seu pedido", ancorado por data/itens.
+    assert.ok(line.startsWith("Seu pedido"), `${status} deve citar o pedido`);
+    assert.ok(!line.includes("ABC123"), `${status} não pode mostrar o número`);
     assert.doesNotMatch(line, /undefined/);
   }
   const tracked = copy.orderStatusLine({ shortId: "ABC123", status: "dispatched", trackingUrl: "https://t.co/x" });

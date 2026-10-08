@@ -298,7 +298,8 @@ test("M2: pedido pago responde prazo, loja e endereço do pedido", async (t) => 
   const eta = await send(c.phone, "qual o prazo de entrega?");
   assert.match(eta, /prazo da loja: 3h/, eta);
   const store = await send(c.phone, "o pedido é de qual loja?");
-  assert.match(store, new RegExp(`#${c.shortId}\\* é da loja \\*Drogal\\*`), store);
+  assert.match(store, /Seu pedido é da loja \*Drogal\*/, store);
+  assert.doesNotMatch(store, new RegExp(c.shortId));
   const where = await send(c.phone, "pra qual endereço vai?");
   assert.match(where, /Rua Teste, 10, Centro/, where);
 });
@@ -307,7 +308,8 @@ test("A4: trocar o endereço depois de pagar avisa que o pedido pago vai pro end
   if (!dbOk) return t.skip();
   const c = await paidCustomer();
   const out = await send(c.phone, "quero mudar o endereço");
-  assert.match(out, new RegExp(`#${c.shortId}\\* já está pago e vai para \\*Rua Teste, 10`), out);
+  assert.match(out, /Seu pedido já está pago e vai para \*Rua Teste, 10/, out);
+  assert.doesNotMatch(out, new RegExp(c.shortId));
   assert.match(out, /vale para os próximos/);
   const notes = (await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: c.order.id } })).notes ?? "";
   assert.match(notes, /trocar o endereço DEPOIS de pagar/);
