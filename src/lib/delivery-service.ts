@@ -7593,12 +7593,12 @@ async function handlePreflightUnavailable(
   convoId: string,
   user: { id: string; cep: string | null },
   ctx: DeliveryContext,
-  unavailable: { storeLabel: string; items: BasketItem[]; remaining: BasketItem[] },
+  unavailable: { storeLabel: string; items: BasketItem[]; remaining: BasketItem[]; intro?: string },
   intro?: string
 ) {
   const next: DeliveryContext = { ...addressOnlyCtx(ctx, user.cep), basket: unavailable.remaining };
   await writeCtx(convoId, next);
-  await reply(phone, intro ?? copy.preflightUnavailable(unavailable.items.map((i) => i.name), unavailable.storeLabel));
+  await reply(phone, intro ?? unavailable.intro ?? copy.preflightUnavailable(unavailable.items.map((i) => i.name), unavailable.storeLabel));
   const query = unavailable.items.map((i) => (i.qty > 1 ? `${i.qty} ${i.name}` : i.name)).join(", ");
   await handleSearch(phone, convoId, user.cep, next, query, user.id);
 }

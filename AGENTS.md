@@ -7,7 +7,10 @@ janela de entrega obrigatória (Mambo), Pix de saída recusado pelo Asaas. Três
 - **Simulação com as mesmas coordenadas da compra** (`simulationGeo` em live-freight.ts, mesma fonte do
   vtex-address.ts, cache por CEP): vitrine, cotação e pré-voo veem as mesmas entregas que o checkout. Medido na loja:
   sem coordenada "rápida 30m", com coordenada "60m".
-- **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, via `findChargeBlock` em order-payments.ts): roda os
+- **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, via `findChargeBlock` em order-payments.ts): primeiro
+  `executabilityFailure` — **toda compra é por API, não existe fila manual** (dono, 08/10): cesta de 2 lojas
+  (`split`, fica a loja com mais R$), loja fora da API/sem liberação/sem conta (`store`) ou item sem link de
+  compra nunca são cobrados (Pague Menos 23/09 e ML 06/10 foram cobrados → "fila manual" → estorno). Depois roda os
   MESMOS passos da compra automática (cesta, perfil, endereço com coordenadas, entrega dentro do prazo prometido, Pix,
   conferência, **preço ≤ teto cotado**) e para antes de fechar; esvazia a cesta. Recusa da loja = nada cobrado (item →
   alternativas; entrega/preço/checkout → `copy.deliveryNotConfirmed` e a Lia **recota no mesmo turno**; endereço →

@@ -2466,6 +2466,18 @@ export function deliveryNotConfirmed(store: string, promise: string | undefined,
   return `Conferi na *${store}* na hora de cobrar e a loja não fechou o pedido agora. *Nada foi cobrado.* Refiz a cotação:`;
 }
 
+// Toda compra é por API (08/10 noite): loja que a Lia não fecha por API nunca é cobrada — o item é
+// procurado em outra loja.
+export function storeNotPurchasable(store: string, names: string[]): string {
+  return `Não consigo fechar *${names.join("*, *")}* na *${store}* agora. *Nada foi cobrado.* Vou procurar em outra loja:`;
+}
+
+// Cesta de 2 lojas na hora de cobrar (08/10 noite): a compra automática fecha UMA loja por pedido. Fica a
+// loja com a maior parte da cesta; o resto é procurado/fechado em seguida.
+export function oneStorePerOrder(keptStore: string, keptNames: string[], movedNames: string[]): string {
+  return `Fecho um pedido por loja: primeiro a *${keptStore}* (${keptNames.join(", ")}). *Nada foi cobrado ainda.* *${movedNames.join("*, *")}* fica pra fechar em seguida — vou procurar de novo:`;
+}
+
 // 2ª recusa seguida da mesma loja no ensaio (08/10 noite): a loja sai do caminho e a Lia busca o mesmo
 // item em outra loja — sem loop e sem cobrar.
 export function rehearsalGaveUpStore(names: string[], store: string): string {

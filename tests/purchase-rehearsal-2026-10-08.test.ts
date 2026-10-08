@@ -43,7 +43,7 @@ const order = (promise: string): RehearsalOrder => ({
   phone: "5511999990000",
   buyerDocument: null,
   buyerName: null,
-  items: [{ sku: "dsp-354260", name: "Sabonete Dove", qty: 1, storeKey: "drogariasp", storeLabel: "Drogaria São Paulo" }],
+  items: [{ sku: "dsp-354260", name: "Sabonete Dove", qty: 1, storeKey: "drogariasp", storeLabel: "Drogaria São Paulo", unitPrice: 5.39, productUrl: "https://www.drogariasaopaulo.com.br/sabonete-dove-creamy-comfort-90g/p" }],
   fulfillments: [{ deliveryPromise: `pela própria loja · prazo da loja: ${promise}` }]
 });
 
@@ -110,11 +110,37 @@ test("ensaio: orçamento de tempo estourado = loja instável, cobra como antes (
   }
 });
 
-test("ensaio: loja sem conta de compra automática não é ensaiada (vai pra fila manual)", async (t) => {
+// TODA compra é por API (dono, 08/10): o que a compra automática não executa NUNCA é cobrado — não existe
+// fila manual (Pague Menos 23/09 e Mercado Livre 06/10 foram cobrados, caíram na "fila" e estornados).
+test("ensaio: loja fora da compra automática (sem liberação/conta) → NÃO cobra (store), sem chamar a loja", async (t) => {
   if (!dbOk) return t.skip();
   const o = order("90 min");
-  o.items = [{ ...o.items[0], storeKey: "cobasi", sku: "cobasi-1" }];
-  assert.equal(await rehearsePurchase(o, fakeVtex().fetchImpl), null);
+  o.items = [{ ...o.items[0], storeKey: "cobasi", sku: "cobasi-1", productUrl: "https://www.cobasi.com.br/racao/p" }];
+  const fake = fakeVtex();
+  const fail = await rehearsePurchase(o, fake.fetchImpl);
+  assert.equal(fail?.kind, "store");
+  assert.deepEqual(fail?.skus, ["cobasi-1"]);
+  assert.equal(fake.calls.length, 0);
+  // Loja que não é VTEX por API (Mercado Livre, Petz…): idem.
+  o.items = [{ ...o.items[0], storeKey: "mercadolivre", sku: "MLB-1", productUrl: "https://produto.mercadolivre.com.br/MLB-1" }];
+  assert.equal((await rehearsePurchase(o, fake.fetchImpl))?.kind, "store");
+});
+
+test("ensaio: cesta de 2 lojas → NÃO cobra (split): fica a loja com a maior parte, o resto sai", async (t) => {
+  if (!dbOk) return t.skip();
+  const o = order("90 min");
+  o.items = [o.items[0], { sku: "mambo-9", name: "Leite", qty: 2, storeKey: "mambo", storeLabel: "Mambo", unitPrice: 9.9, productUrl: "https://www.mambo.com.br/leite/p" }];
+  const fail = await rehearsePurchase(o, fakeVtex().fetchImpl);
+  assert.equal(fail?.kind, "split");
+  assert.equal(fail?.storeKey, "mambo", "fica a loja com mais R$");
+  assert.deepEqual(fail?.skus, ["dsp-354260"]);
+});
+
+test("ensaio: item sem link de compra da loja → NÃO cobra (items)", async (t) => {
+  if (!dbOk) return t.skip();
+  const o = order("90 min");
+  o.items = [{ ...o.items[0], productUrl: undefined }];
+  assert.equal((await rehearsePurchase(o, fakeVtex().fetchImpl))?.kind, "items");
 });
 
 test("simulação da vitrine/cotação manda as MESMAS coordenadas que a compra (geoCoordinates [lng, lat])", async () => {

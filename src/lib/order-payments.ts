@@ -434,10 +434,11 @@ export async function supersedePixCharge(pixId: string | null | undefined) {
   }
 }
 
-export type PreflightUnavailable = { storeKey: string; storeLabel: string; items: BasketItem[]; remaining: BasketItem[] };
+// `intro` (08/10 noite): texto próprio quando o motivo não é "a loja ficou sem o item" (cesta de 2 lojas, loja fora da API).
+export type PreflightUnavailable = { storeKey: string; storeLabel: string; items: BasketItem[]; remaining: BasketItem[]; intro?: string };
 // Ensaio da compra recusou a ENTREGA prometida, o endereço ou o PREÇO (08/10 noite): nada cobrado; a cesta
 // inteira volta pro cliente e a Lia refaz a cotação na hora com o que a loja confirma de verdade.
-export type DeliveryNotConfirmed = { storeKey: string; storeLabel: string; promise?: string; kind: RehearsalFailure["kind"]; basket: BasketItem[] };
+export type DeliveryNotConfirmed = { storeKey: string; storeLabel: string; promise?: string; kind: Exclude<RehearsalFailure["kind"], "store" | "split">; basket: BasketItem[] };
 export type ChargeBlock = { unavailable: PreflightUnavailable; note: string } | { deliveryNotConfirmed: DeliveryNotConfirmed; note: string; ownerAlert: string };
 
 type ChargeableOrder = {
@@ -479,7 +480,7 @@ export async function findChargeBlock(order: ChargeableOrder): Promise<ChargeBlo
     phone: order.phone,
     buyerDocument: order.buyerDocument,
     buyerName: order.buyerName,
-    items: basket.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty, storeKey: i.storeKey, storeLabel: i.storeLabel, unitPrice: i.unitPrice, ...(i.medicine ? { medicine: i.medicine } : {}) })),
+    items: basket.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty, storeKey: i.storeKey, storeLabel: i.storeLabel, unitPrice: i.unitPrice, ...(i.productUrl ? { productUrl: i.productUrl } : {}), ...(i.medicine ? { medicine: i.medicine } : {}) })),
     fulfillments: order.fulfillments,
     itemsSubtotal: order.itemsSubtotal,
     deliveryFee: order.deliveryFee
@@ -489,15 +490,23 @@ export async function findChargeBlock(order: ChargeableOrder): Promise<ChargeBlo
   });
   if (!rehearsal) return null;
   const note = `🎭 ENSAIO DA COMPRA (${new Date().toISOString()}): ${rehearsal.storeLabel} recusou (${rehearsal.kind}): ${rehearsal.detail}. Nada cobrado.`;
-  if (rehearsal.kind === "items") {
+  if (rehearsal.kind === "items" || rehearsal.kind === "store" || rehearsal.kind === "split") {
     const failed = basket.filter((i) => rehearsal.skus.includes(i.sku));
-    return { unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining: basket.filter((i) => !rehearsal.skus.includes(i.sku)) }, note };
+    const remaining = basket.filter((i) => !rehearsal.skus.includes(i.sku));
+    // Toda compra é por API: loja que a Lia não compra ou cesta de 2 lojas (a compra fecha uma loja por
+    // pedido) nunca é cobrada — os itens saem e são procurados/fechados de novo.
+    const intro = rehearsal.kind === "store"
+      ? copy.storeNotPurchasable(rehearsal.storeLabel, failed.map((i) => i.name))
+      : rehearsal.kind === "split"
+        ? copy.oneStorePerOrder(rehearsal.storeLabel, remaining.map((i) => i.name), failed.map((i) => i.name))
+        : undefined;
+    return { unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining, ...(intro ? { intro } : {}) }, note: rehearsal.kind === "items" ? note : `${note} (toda compra é por API — nunca fila manual)` };
   }
   const promise = Array.isArray(order.fulfillments)
     ? (order.fulfillments as Array<{ storeKey?: string; deliveryPromise?: string }>).filter((f) => !f?.storeKey || f.storeKey === rehearsal.storeKey).map((f) => f?.deliveryPromise).filter(Boolean).join(" · ") || undefined
     : undefined;
   return {
-    deliveryNotConfirmed: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, promise, kind: rehearsal.kind, basket },
+    deliveryNotConfirmed: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, promise, kind: rehearsal.kind as DeliveryNotConfirmed["kind"], basket },
     note,
     ownerAlert: `🎭 Ensaio da compra barrou a cobrança: ${rehearsal.storeLabel} recusou (${rehearsal.kind}) — ${rehearsal.detail.slice(0, 160)}. Pedido ${order.id.slice(-6).toUpperCase()} NÃO foi cobrado.`
   };
