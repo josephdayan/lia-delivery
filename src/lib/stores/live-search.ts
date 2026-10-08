@@ -9,12 +9,25 @@
 // - só o que a PRÓPRIA loja vende (seller "1") e tem estoque — marketplace de terceiros não é comprável;
 // - o SKU tem o mesmo formato da cópia (`<prefixo>-<itemId>`), então checagem de frete/estoque,
 //   cesta e compra por API funcionam sem saber de onde o item veio;
-// - remédio fica de fora em duas camadas: categoria (a própria loja classifica "Medicamentos") e
-//   as guardas ANVISA de runtime (anvisa.ts); farmácia só amplia dentro das categorias que a
-//   colheita já tinha liberado;
+// - remédio de receita nunca entra: prateleira de medicamento da loja só passa pela porta do
+//   remédio isento (abaixo), e as guardas ANVISA de runtime (anvisa.ts) valem para o resto;
+// - farmácia amplia em QUALQUER categoria (08/10, placar r4): a allowlist "só categorias da cópia"
+//   escondia teste de gravidez, Havaianas e vitamina C da Drogaria SP e pilhas da Pague Menos —
+//   o que barra remédio é a lista de bloqueio (categoria + ANVISA), não a cópia;
 // - nunca lança: falha/timeout = lista vazia, e a cópia responde sozinha.
+//
+// Remédio isento AO VIVO (08/10): com LIA_MEDICINE_MIP=true, a prateleira de medicamento das
+// farmácias que vendem MIP pela Lia (Drogaria SP, Pague Menos) devolve item marcado `medicine:
+// "mip"` com a MESMA lista positiva da colheita (scripts/harvest-mip-catalog.mts): Drogaria SP =
+// prateleira "Remédios" (isentos) ou "Medicamentos" marcado "Sem Tarja" sem retenção de receita;
+// Pague Menos = código de barras de um MIP da Drogaria SP e sem marca de antibiótico/controlado/
+// restrito. Tudo passa ainda por `mipOnly` (guarda de prescrição por nome). Fora dessa prateleira,
+// item com cara de remédio (comprimido, princípio ativo) nessas duas lojas também sai pela porta
+// do MIP — nunca como produto comum. Com a flag desligada, nada muda: remédio fica fora.
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
-import { withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
+import { isMedicine, mipOnly, withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
+import { MIP_STORE_KEYS, isPrescriptionDrugName, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
+import { MIP_CATALOG as DSP_MIP_CATALOG } from "./drogariasp-mip-catalog";
 import type { CatalogItem } from "./types";
 
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";
@@ -32,7 +45,7 @@ function timeoutMs(): number {
   return Number.isFinite(value) && value >= 500 ? value : 3000;
 }
 
-// Farmácias: o produto ao vivo só entra se estiver numa categoria que a colheita liberou.
+// Farmácias (a cópia delas foi colhida com allowlist de categoria; o ao vivo não precisa dela).
 const PHARMACY_STORES = new Set(["drogariasp", "paguemenos", "drogal", "extrafarma", "farmaciaindiana", "drogariaspacheco", "drogariacatarinense"]);
 const MEDICINE_CATEGORY_RE = /(medicament|rem[eé]dio|prescri|tarja|isent|gen[eé]ric|controlad|manipula)/i;
 
@@ -42,14 +55,56 @@ type IsProduct = {
   link?: string;
   linkText?: string;
   categories?: string[];
+  // Especificações da loja ("Classificação": "Sem Tarja", "Antibiotico": "Sim"…), como a busca
+  // inteligente da VTEX as expõe.
+  properties?: Array<{ name?: string; values?: string[] }>;
   items?: Array<{
     itemId?: string;
+    ean?: string;
     name?: string;
     nameComplete?: string;
     images?: Array<{ imageUrl?: string }>;
     sellers?: Array<{ sellerId?: string; commertialOffer?: { Price?: number; AvailableQuantity?: number } }>;
   }>;
 };
+
+const norm = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+function property(product: IsProduct, name: string): string {
+  const key = norm(name);
+  return (product.properties ?? []).filter((p) => norm(p.name ?? "") === key).flatMap((p) => p.values ?? []).join(" ");
+}
+
+// Códigos de barras dos isentos da Drogaria SP (a lista positiva que a Pague Menos herda na
+// colheita). Montado na primeira prateleira de medicamento que chegar ao vivo.
+let dspMipEans: Set<string> | null = null;
+function dspMipEanSet(): Set<string> {
+  if (!dspMipEans) dspMipEans = new Set(DSP_MIP_CATALOG.map((item) => item.ean).filter((ean): ean is string => Boolean(ean)));
+  return dspMipEans;
+}
+
+export function liveMipStore(storeKey: string): boolean {
+  return medicineEnabled() && MIP_STORE_KEYS.includes(storeKey);
+}
+
+// Lista positiva da farmácia para um produto da prateleira de medicamento (puro, testável).
+// Espelha scripts/harvest-mip-catalog.mts: nunca por palavra nossa, sempre pela marcação da loja.
+export function liveMipAllowed(storeKey: string, product: IsProduct, item: { ean?: string }): boolean {
+  if (!liveMipStore(storeKey)) return false;
+  const path = (product.categories ?? []).join(" ");
+  if (storeKey === "drogariasp") {
+    // Prateleira própria dos isentos (C:/868/ "Remédios"); a de tarja é "Medicamentos" (C:/800/).
+    if (/rem[eé]dios?/i.test(path) && !/medicamentos?/i.test(path)) return true;
+    const classification = norm(property(product, "Classificação"));
+    const prescription = norm(property(product, "Prescrição Médica"));
+    return classification === "sem tarja" && !/com retencao|com receita|sob prescricao/.test(prescription);
+  }
+  if (storeKey === "paguemenos") {
+    const ean = isValidGtin(item.ean) ? onlyDigits(item.ean!) : "";
+    if (!ean || !dspMipEanSet().has(ean)) return false;
+    return !["Antibiotico", "MedicamentoControlado", "TemRestricao"].some((key) => /sim/i.test(property(product, key)));
+  }
+  return false;
+}
 
 export function categorySlug(categories: string[] | undefined): string {
   return (categories?.[0] ?? "")
@@ -65,18 +120,21 @@ export function categorySlug(categories: string[] | undefined): string {
 export function parseLiveProducts(storeKey: string, products: IsProduct[]): CatalogItem[] {
   const store = VTEX_API_STORES[storeKey];
   if (!store) return [];
-  const out: CatalogItem[] = [];
+  const plain: CatalogItem[] = [];
+  const mip: CatalogItem[] = [];
   const seen = new Set<string>();
+  const mipStore = liveMipStore(storeKey);
   for (const product of products) {
     const categoryPath = (product.categories ?? []).join(" ");
-    if (MEDICINE_CATEGORY_RE.test(categoryPath)) continue;
+    const medicineShelf = MEDICINE_CATEGORY_RE.test(categoryPath);
+    if (medicineShelf && !mipStore) continue;
     for (const item of product.items ?? []) {
       const own = (item.sellers ?? []).find((s) => s.sellerId === "1" && (s.commertialOffer?.AvailableQuantity ?? 0) > 0 && (s.commertialOffer?.Price ?? 0) > 0);
       if (!item.itemId || !own || seen.has(item.itemId)) continue;
       const link = product.link ?? (product.linkText ? `/${product.linkText}/p` : undefined);
       if (!link) continue;
       seen.add(item.itemId);
-      out.push({
+      const base: CatalogItem = {
         sku: `${store.skuPrefix}${item.itemId}`,
         name: (item.nameComplete || item.name || product.productName || `Produto ${item.itemId}`).replace(/\s+/g, " ").trim(),
         brand: product.brand || undefined,
@@ -85,11 +143,25 @@ export function parseLiveProducts(storeKey: string, products: IsProduct[]): Cata
         category: categorySlug(product.categories),
         imageUrl: item.images?.[0]?.imageUrl,
         productUrl: new URL(link, `https://${store.domain}`).toString()
-      });
+      };
+      if (medicineShelf) {
+        // Prateleira de medicamento: só pela lista positiva da própria farmácia, marcado MIP.
+        if (liveMipAllowed(storeKey, product, item)) mip.push({ ...base, medicine: "mip", ...(isValidGtin(item.ean) ? { ean: onlyDigits(item.ean!) } : {}) });
+      } else if (isPrescriptionDrugName(base.name)) {
+        // Remédio de receita pelo nome numa prateleira comum ("Isotretinoína" em "Pele"): nunca.
+        continue;
+      } else if (mipStore && isMedicine(base)) {
+        // Fora da prateleira de medicamento mas com cara de remédio ("30 Comprimidos
+        // Efervescentes", dexpantenol): sai pela porta do MIP (CPF do cliente, guarda de receita),
+        // nunca como produto comum.
+        mip.push({ ...base, medicine: "mip" });
+      } else {
+        plain.push(base);
+      }
       break; // um SKU por produto: cor/tamanho extra não muda o tipo e a checagem ao vivo é por SKU
     }
   }
-  return withoutVeterinaryMedicine(withoutMedicine(out));
+  return [...withoutVeterinaryMedicine(withoutMedicine(plain)), ...mipOnly(mip)];
 }
 
 const cache = new Map<string, { at: number; items: CatalogItem[] }>();
@@ -122,13 +194,12 @@ export function isPharmacyStore(storeKey: string): boolean {
 }
 
 // Mescla a cópia com o ao vivo de uma loja. O ao vivo vence no preço/nome (fresco); a
-// popularidade da cópia é preservada. Farmácia: o ao vivo só entra nas categorias da cópia.
-export function mergeLiveWithSnapshot(storeKey: string, snapshot: CatalogItem[], live: CatalogItem[], snapshotCategories?: Set<string>): CatalogItem[] {
-  const allowed = isPharmacyStore(storeKey) && snapshotCategories ? snapshotCategories : null;
+// popularidade da cópia é preservada. Vale para toda loja, farmácia inclusive: o que barra
+// remédio já aconteceu em parseLiveProducts (lista de bloqueio), não aqui.
+export function mergeLiveWithSnapshot(_storeKey: string, snapshot: CatalogItem[], live: CatalogItem[]): CatalogItem[] {
   const bySku = new Map(snapshot.map((item) => [item.sku, item]));
   const merged = [...snapshot];
   for (const item of live) {
-    if (allowed && !allowed.has(item.category ?? "")) continue;
     const old = bySku.get(item.sku);
     if (old) {
       const index = merged.indexOf(old);

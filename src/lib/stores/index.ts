@@ -1,7 +1,7 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
 import { conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
-import { isPharmacyStore, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
+import { liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { petzStore } from "./petz";
 import { boticarioStore } from "./boticario";
@@ -225,16 +225,6 @@ export function listStores(): StoreConnector[] {
 // Search EVERY registered store and tag each hit with the store that carries it.
 // This is the foundation of the "qualquer coisa, de qualquer loja, num WhatsApp só"
 // moat — the three active verticals spread automatically through this registry.
-const snapshotCategoryCache = new Map<string, Set<string>>();
-function snapshotCategories(store: StoreConnector): Set<string> {
-  let set = snapshotCategoryCache.get(store.key);
-  if (!set) {
-    set = new Set(store.listCatalog().map((item) => item.category ?? ""));
-    snapshotCategoryCache.set(store.key, set);
-  }
-  return set;
-}
-
 // Cópia do catálogo + prateleira ao vivo da loja (live-search.ts), em paralelo. Sem ao vivo
 // (desligado, loja não-VTEX, falha/timeout) o resultado é exatamente o da cópia, como antes.
 async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number): Promise<CatalogItem[]> {
@@ -244,7 +234,7 @@ async function searchStoreItems(store: StoreConnector, query: string, limitPerSt
     wantLive ? liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3)) : Promise.resolve([] as CatalogItem[])
   ]);
   if (!live.length) return snapshot;
-  const pool = mergeLiveWithSnapshot(store.key, snapshot, live, isPharmacyStore(store.key) ? snapshotCategories(store) : undefined);
+  const pool = mergeLiveWithSnapshot(store.key, snapshot, live);
   return rankCatalog(query, pool, limitPerStore);
 }
 
