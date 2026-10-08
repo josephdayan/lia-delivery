@@ -175,13 +175,35 @@ test("rerank: o pedido à IA manda o esquema por candidato e o prompt não cita 
   }) as typeof fetch;
   await rerankShoppingOptions("x", KERASYS);
   const parsed = JSON.parse(body) as { input: { content: string }[]; text: { format: { schema: { properties: { lines: { items: { required: string[] } } } } } } };
-  assert.deepEqual(parsed.text.format.schema.properties.lines.items.required, ["exigencias", "aprovados", "maisBarato", "proximos"]);
+  assert.deepEqual(parsed.text.format.schema.properties.lines.items.required, ["exigencias", "aprovados", "exatos", "maisBarato", "proximos"]);
   const system = parsed.input[0].content;
   assert.match(system, /exigencias/);
   assert.match(system, /TIPO/);
   assert.match(system, /EXIGÊNCIAS/);
   // Princípio do projeto: nada de regra por produto/marca no juízo (os exemplos são ilustração de classe).
   assert.doesNotMatch(system, /kerasys|nude|havaianas|golden/i);
+});
+
+// Exato antes de variante (08/10, placar r4): a IA marca quais aprovados são o básico pedido; eles abrem a
+// vitrine mesmo que a IA tenha listado uma variante primeiro. Sku "exato" fora dos aprovados é ignorado.
+const BISCOITO: RerankLine[] = [
+  {
+    query: "bolacha maizena",
+    candidates: [
+      { sku: "CHOCO", name: "Biscoito Integral Maizena Choco Bis 80g", price: 6, store: "Mambo" },
+      { sku: "MAIZENA", name: "Biscoito de Maizena Bauducco 170g", price: 5, store: "Mambo" },
+      { sku: "OUTRO", name: "Biscoito Maizena Piraquê 175g", price: 5.5, store: "Swift" }
+    ]
+  }
+];
+test("rerank: exatos abrem a vitrine, variantes depois; exato que não foi aprovado não entra", async () => {
+  mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA", "OUTRO"], exatos: ["MAIZENA", "OUTRO", "FANTASMA"], proximos: [] }] });
+  const out = await rerankShoppingOptions("bolacha maizena", BISCOITO);
+  assert.deepEqual(out?.lines[0].skus, ["MAIZENA", "OUTRO", "CHOCO"]);
+  // Sem "exatos" (resposta antiga), a ordem continua a da IA.
+  mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA"], proximos: [] }] });
+  const old = await rerankShoppingOptions("bolacha maizena", BISCOITO);
+  assert.deepEqual(old?.lines[0].skus.slice(0, 1), ["CHOCO"]);
 });
 
 // Preferência explícita de preço ("a mais barata"): quem decide que foi pedida é a IA (lê a

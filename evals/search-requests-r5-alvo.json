@@ -1,0 +1,344 @@
+[
+ {
+  "id": "r002",
+  "text": "chocolate",
+  "cat": "mercado",
+  "origin": "real"
+ },
+ {
+  "id": "r004",
+  "text": "carregador usb c",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r005",
+  "text": "carregador de celular",
+  "cat": "eletronicos",
+  "origin": "real"
+ },
+ {
+  "id": "r017",
+  "text": "isqueiro pra charuto",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "r018",
+  "text": "isqueiro maçarico",
+  "cat": "casa",
+  "origin": "real"
+ },
+ {
+  "id": "r040",
+  "text": "kerasys de coco",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "r043",
+  "text": "dipirona",
+  "cat": "remedio",
+  "origin": "real"
+ },
+ {
+  "id": "r045",
+  "text": "camisa branca social",
+  "cat": "roupas",
+  "origin": "real"
+ },
+ {
+  "id": "r052",
+  "text": "sabonete até 5 reais",
+  "cat": "higiene",
+  "origin": "real"
+ },
+ {
+  "id": "s069",
+  "text": "bolacha maizena",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s070",
+  "text": "cereal matinal",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s083",
+  "text": "pão francês",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s093",
+  "text": "bala de goma",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s097",
+  "text": "água com gás",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s099",
+  "text": "suco de laranja integral",
+  "cat": "bebidas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s111",
+  "text": "alface",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s115",
+  "text": "mamão papaya",
+  "cat": "hortifruti",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s116",
+  "text": "peito de frango",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s119",
+  "text": "filé de tilápia",
+  "cat": "acougue",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s137",
+  "text": "lenço umedecido",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s141",
+  "text": "leite em pó para bebê",
+  "cat": "bebe",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s142",
+  "text": "tinta de cabelo castanho",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s143",
+  "text": "esmalte vermelho",
+  "cat": "beleza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s149",
+  "text": "detergente líquido",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s150",
+  "text": "sabão em pó omo",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s154",
+  "text": "multiuso veja",
+  "cat": "limpeza",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s180",
+  "text": "garrafa térmica esportiva",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s186",
+  "text": "prato descartável",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s192",
+  "text": "fita adesiva transparente",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s193",
+  "text": "tesoura",
+  "cat": "papelaria",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s203",
+  "text": "cabo usb c",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s204",
+  "text": "cabo lightning",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s207",
+  "text": "carregador de parede usb",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s211",
+  "text": "cartão de memória 128gb",
+  "cat": "eletronicos",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s228",
+  "text": "garrafa de água",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s233",
+  "text": "cortina",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s240",
+  "text": "martelo",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s241",
+  "text": "chave de fenda",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s253",
+  "text": "presente para criança de 5 anos",
+  "cat": "presente",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s272",
+  "text": "camiseta básica branca",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s274",
+  "text": "chinelo havaianas",
+  "cat": "roupas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s275",
+  "text": "protetor auricular",
+  "cat": "ferramentas",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s282",
+  "text": "teste de gravidez",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s283",
+  "text": "vitamina c efervescente",
+  "cat": "farmacia",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s286",
+  "text": "omeprazol",
+  "cat": "remedio",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s291",
+  "text": "pasta de amendoim",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s306",
+  "text": "acendedor de churrasqueira",
+  "cat": "casa",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s312",
+  "text": "chocolate em pó",
+  "cat": "mercado",
+  "origin": "synthetic"
+ },
+ {
+  "id": "s315",
+  "text": "bicicleta",
+  "cat": "esporte",
+  "origin": "synthetic"
+ },
+ {
+  "id": "m01",
+  "text": "tylenol",
+  "cat": "remedio",
+  "origin": "dono 08/10: marca → básico antes de Sinus/DC/Bebê"
+ },
+ {
+  "id": "m02",
+  "text": "advil",
+  "cat": "remedio",
+  "origin": "dono 08/10: marca → básico antes de 12h/Mulher"
+ },
+ {
+  "id": "m03",
+  "text": "neosaldina",
+  "cat": "remedio",
+  "origin": "dono 08/10: marca → básico antes de Muscular/Max"
+ },
+ {
+  "id": "m04",
+  "text": "buscopan",
+  "cat": "remedio",
+  "origin": "dono 08/10: marca → básico antes de Composto/Pediátrico"
+ },
+ {
+  "id": "m05",
+  "text": "dorflex",
+  "cat": "remedio",
+  "origin": "dono 08/10: marca → básico antes de DIP/Max"
+ },
+ {
+  "id": "m11",
+  "text": "buscopan composto",
+  "cat": "remedio",
+  "origin": "dono 08/10: a extensão pedida tem que vir"
+ },
+ {
+  "id": "m14",
+  "text": "fexofenadina",
+  "cat": "remedio",
+  "origin": "dono 08/10: genérico"
+ },
+ {
+  "id": "m19",
+  "text": "omeprazol",
+  "cat": "remedio",
+  "origin": "placar r4: miss (guarda trata 20mg como receita)"
+ }
+]

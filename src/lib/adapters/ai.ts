@@ -164,6 +164,7 @@ export const RERANK_SYSTEM_PROMPT = (limit: number) =>
  TIPO — é o produto pedido: mesmo tipo, forma e uso; palavra parecida não basta. Não são o produto: ferramenta, utensílio ou equipamento de obra, cozinha ou indústria que só compartilha a técnica/função com o item de uso pessoal pedido (maçarico de solda, de cozinha ou de glacê não é isqueiro, mesmo acendendo com gás), acessório/peça de outro item (carregador não é cabo; cabo não é carregador), mesma palavra com outro uso (óleo lubrificante ou corporal não é óleo de cozinha), suplemento ou produto de saúde com a forma de um alimento, complemento ou tratamento que se usa COM o produto sem ser ele, preparo ou mistura que só contém o ingrediente (arroz carreteiro não é arroz), embalagem de presente, kit/combo que inclui o que não foi pedido (só se pediram kit), e linha de nicho que o cliente não pediu (infantil, geriátrica, pet, diet/fit, sem álcool). Pedido genérico = a versão doméstica comum e básica do produto ('feijão' → carioca antes do preto; 'macarrão' → massa seca).
  EXIGÊNCIAS — cumpre cada uma: o nome/marca mostra que sim, ou o produto é assim por natureza. USO: se o pedido diz para que o produto serve, ele precisa ser FEITO para esse uso — o nome ou a natureza do produto mostram (isqueiro 'pra charuto' é tocha/maçarico ou isqueiro de charuto; um isqueiro comum de bolso ou de fogão NÃO cumpre; 'mochila pra notebook' pede compartimento/capa de notebook). Produto genérico cujo nome não indica o uso e que não é feito para ele NÃO cumpre; só vale se o uso não muda o produto ('pilha pro controle' aceita pilha AA/AAA comum). DESTINATÁRIO/PÚBLICO: o gênero ou a idade do destinatário é exigência — perfume/colônia/desodorante/roupa/cosmético 'masculino', 'homme', 'for men', 'barba' NÃO servem para namorada, mãe, esposa, irmã; 'feminino', 'woman', 'she' NÃO servem para namorado, pai, marido; unissex serve aos dois; linha infantil só para criança. Na dúvida sobre o público do nome, NÃO cumpre. Se o nome mostra outro valor ('1 kg' para '5 kg', 'baunilha' para 'natural', outra marca) ou não permite confirmar a restrição ('sem açúcar' num leite saborizado sem essa indicação), NÃO cumpre. Vale para TODOS os listados, não só o primeiro.
 3) "aprovados": skus com tipo certo E todas as exigências cumpridas, do mais recomendado ao menos (sem limite: o sistema monta a vitrine de até ${limit} cards). Variante (outro sabor, cor, tamanho, embalagem) do que o cliente pediu continua sendo o que ele pediu: liste todas. Ordem: o produto que É o pedido antes de alternativa/acessório relacionado; a versão comum antes de versão para público específico; remédio pedido pela marca: a apresentação básica da marca antes das extensões de linha (Sinus, DC, PM, Max, Composto, Muscular, Bebê, 12h) que o cliente não pediu; o tamanho/numeração padrão antes de miniatura, reduzido ou numeração infantil (bola nº 5 antes de nº 2 ou mini; garrafa padrão antes de miniatura); nas primeiras posições alterne marca, loja e faixa de preço. "maisBarato": true só se o cliente pediu EXPLICITAMENTE o mais barato / mais em conta / mais econômico para esse item (ou para a lista toda); preferência vaga não conta — nesse caso o sistema ordena os aprovados por preço.
+3b) "exatos": dos aprovados, só os que são EXATAMENTE o produto básico pedido — sem sabor, linha, versão, recheio, preparo ou público que o cliente não pediu ('bolacha maizena' → o biscoito maizena comum, não 'Maizena Choco' nem integral; 'filé de tilápia' → o filé natural, não empanado nem infantil; 'pão francês' → pão francês, não pão de mel; 'acendedor de churrasqueira' → acendedor/álcool gel, não isqueiro). Marca, tamanho e embalagem diferentes continuam exatos. Pode ser [] quando nenhum aprovado é o básico.
 4) "proximos": só se "aprovados" ficou vazio — até 3 skus de TIPO certo que falham em alguma exigência de tamanho, embalagem, sabor, cor ou variante, o mais perto do pedido primeiro; "falta" = o que o produto é nesse atributo, em poucas palavras, que complete 'o mais perto que tenho …' (ex.: 'é de 500 ml', 'é sabor frutas vermelhas', 'é de girassol'). Nunca para espécie/porte do pet, público ou destinatário (adulto/infantil/masculino/feminino), uso, restrição de saúde ('sem lactose', 'sem glúten', 'sem açúcar') nem produto de outro tipo. Sem nada assim, [].
 Se nenhum candidato serve, aprovados e proximos vazios: um operador cota o que faltar — vazio é melhor que sugestão errada. Use APENAS skus daquele item. Um resultado por item, na mesma ordem. Responda apenas JSON válido.`;
 
@@ -263,6 +264,7 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
                     properties: {
                       exigencias: { type: "array", items: { type: "string" } },
                       aprovados: { type: "array", items: { type: "string" } },
+                      exatos: { type: "array", items: { type: "string" } },
                       maisBarato: { type: "boolean" },
                       proximos: {
                         type: "array",
@@ -274,7 +276,7 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
                         }
                       }
                     },
-                    required: ["exigencias", "aprovados", "maisBarato", "proximos"]
+                    required: ["exigencias", "aprovados", "exatos", "maisBarato", "proximos"]
                   }
                 }
               },
@@ -291,7 +293,7 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
     const payload = (await response.json()) as { output_text?: string; output?: Array<{ content?: Array<{ text?: string }> }> };
     const jsonText = payload.output_text ?? payload.output?.flatMap((item) => item.content ?? []).find((content) => content.text)?.text;
     if (!jsonText) return null;
-    const parsed = JSON.parse(jsonText) as { lines?: Array<{ exigencias?: string[]; aprovados?: string[]; skus?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean }> };
+    const parsed = JSON.parse(jsonText) as { lines?: Array<{ exigencias?: string[]; aprovados?: string[]; exatos?: string[]; skus?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean }> };
     if (!Array.isArray(parsed.lines) || parsed.lines.length !== lines.length) return null;
     return {
       lines: parsed.lines.map((line, i) => {
@@ -319,7 +321,14 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
         // Preço pedido explicitamente: o mais barato dos aprovados primeiro, sem diversificar (a
         // vitrine é "as mais baratas"). Só vale com 2+ aprovados — com 1 não há o que ordenar.
         const cheapest = Boolean(line.maisBarato) && approved.length > 1;
-        const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
+        // Exato antes de variante (08/10, placar r4): a 1ª opção errada mais comum era uma variante aprovada
+        // à frente do básico ('Maizena Choco' antes do Maizena, tilápia empanada infantil antes do filé). A IA
+        // marca quais aprovados são o básico pedido; eles abrem a vitrine e as variantes completam.
+        const exactSet = new Set((line.exatos ?? []).filter((sku) => seen.has(sku) && skus.includes(sku)));
+        const exact = approved.filter((c) => exactSet.has(c.sku));
+        const rest = approved.filter((c) => !exactSet.has(c.sku));
+        const ordered = exact.length ? [...diversifyOptions(lines[i].query, exact, limit), ...diversifyOptions(lines[i].query, rest, limit)].slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
+        const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : ordered;
         return {
           skus: shown.map((c) => c.sku),
           ...(cheapest ? { maisBarato: true } : {}),

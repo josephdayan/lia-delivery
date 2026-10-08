@@ -251,11 +251,13 @@ export function isMedicineLineExtension(query: string, name: string): boolean {
   return /^[a-z][a-z0-9]*$/.test(after) || /^\d+h$/.test(after);
 }
 
-// Apresentação básica da marca primeiro, extensões depois (ordem estável dentro de cada grupo).
+// Apresentação básica da marca primeiro; havendo o básico, no máximo UMA extensão de linha, no fim (dono,
+// 08/10: "primeiro o Tylenol normal e outra opção, o PM" — uma opção, não três Composto). Sem básico, a
+// ordem fica como veio.
 export function baseFormulationFirst<T extends { name: string }>(query: string, options: T[]): T[] {
   const base = options.filter((o) => !isMedicineLineExtension(query, o.name));
   if (!base.length || base.length === options.length) return options;
-  return [...base, ...options.filter((o) => isMedicineLineExtension(query, o.name))];
+  return [...base, ...options.filter((o) => isMedicineLineExtension(query, o.name)).slice(0, 1)];
 }
 
 // Equivalentes de mesmo princípio ativo (só isentos que existem nas farmácias da Lia).

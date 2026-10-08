@@ -56,9 +56,9 @@ test("extensão de linha: Sinus/DC/Bebê/12h/Mulher/DIP/Max/Composto/Muscular/Pe
   assert.equal(ext("paracetamol", "Paracetamol + Cafeína 500mg + 65mg 20 Comprimidos"), true);
 });
 
-test("básico da marca primeiro, extensões depois, ordem estável; tudo extensão = ordem original", () => {
+test("básico da marca primeiro e só UMA extensão no fim; tudo extensão = ordem original", () => {
   const names = ["Tylenol Sinus 24 Comprimidos", "Tylenol 750mg 10 Comprimidos", "Tylenol DC 4 Comprimidos", "Tylenol 750mg 20 Comprimidos"].map((name) => ({ name }));
-  assert.deepEqual(baseFormulationFirst("tylenol", names).map((o) => o.name), ["Tylenol 750mg 10 Comprimidos", "Tylenol 750mg 20 Comprimidos", "Tylenol Sinus 24 Comprimidos", "Tylenol DC 4 Comprimidos"]);
+  assert.deepEqual(baseFormulationFirst("tylenol", names).map((o) => o.name), ["Tylenol 750mg 10 Comprimidos", "Tylenol 750mg 20 Comprimidos", "Tylenol Sinus 24 Comprimidos"]);
   const onlyExt = [{ name: "Tylenol Sinus 24" }, { name: "Tylenol DC 4" }];
   assert.deepEqual(baseFormulationFirst("tylenol", onlyExt), onlyExt);
 });
