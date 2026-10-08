@@ -23,7 +23,7 @@ import { recordSearchMisses } from "@/lib/search-misses";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { automaticPurchaseStores } from "@/lib/purchase-policy";
-import { extractCpf, extractFullName, hasMip, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled } from "@/lib/medicine";
+import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNameIn } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
@@ -107,19 +107,20 @@ function blocksMedicine(text: string): boolean {
     ? looksLikePrescriptionRequest(text)
     : looksLikeMedicine(text) || (isPrescriptionDrugName(text) && countDistinctItems(text) <= 1);
 }
-function noMedicineCopy(): string {
-  return medicineEnabled() ? copy.prescriptionRefusal() : copy.noMedicine();
+// Dono (08/10): a recusa NOMEIA o remédio de receita ("Rivotril precisa de receita") quando o texto o nomeia.
+function noMedicineCopy(text?: string): string {
+  return medicineEnabled() ? copy.prescriptionRefusal(prescriptionDrugNameIn(text ?? "") ?? undefined) : copy.noMedicine();
 }
 // A recusa de remédio repetida em pouco tempo muda de texto (07/10, c35): a mesma frase duas vezes
 // parecia travada, e "tem farmácia parceira?" não é pedido — é pergunta.
-async function refuseMedicine(phone: string, convoId: string, ctx: DeliveryContext) {
+async function refuseMedicine(phone: string, convoId: string, ctx: DeliveryContext, text?: string) {
   const again = ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 30 * 60_000;
   ctx.medicineRefusedAt = Date.now();
   await writeCtx(convoId, ctx);
-  await reply(phone, again && !medicineEnabled() ? copy.noMedicineAgain() : noMedicineCopy());
+  await reply(phone, again && !medicineEnabled() ? copy.noMedicineAgain() : noMedicineCopy(text));
 }
-function medicineSkippedCopy(): string {
-  return medicineEnabled() ? copy.prescriptionSkippedNote() : copy.medicineSkippedNote();
+function medicineSkippedCopy(dropped?: string[]): string {
+  return medicineEnabled() ? copy.prescriptionSkippedNote(dropped) : copy.medicineSkippedNote();
 }
 
 // Clean the request into a shopping list. The LLM handles greetings, synonyms
@@ -140,6 +141,12 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     .filter((line) => queryTokens(line.phrase).length)
     .filter((line) => !blocksMedicine(line.phrase))
     .filter((line) => !looksLikeTobacco(line.phrase));
+  // Remédio de receita que saiu da lista, pelo nome (dono, 08/10): a nota diz QUAL ficou de fora.
+  const prescriptionDropped = [...new Set(
+    resolveListItems(sanitized)
+      .filter((line) => queryTokens(line.phrase).length && blocksMedicine(line.phrase))
+      .map((line) => prescriptionDrugNameIn(line.phrase) ?? line.phrase)
+  )];
   if (extraction) {
     // A IA às vezes devolve contexto como item ("Para uma viagem") — o mesmo filtro de
     // modificador do parser determinístico vale pra ela (6º ciclo, rodada 1).
@@ -159,7 +166,8 @@ async function extractLines(text: string): Promise<ExtractedLines> {
       lines: rewriteGroceryOil(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic)),
       greetingOnly: extraction.greetingOnly,
       containsMedicine: (extraction.containsMedicine && llmDroppedSomething) || blocksMedicine(sanitized),
-      containsTobacco
+      containsTobacco,
+      prescriptionDropped
     };
   }
   const raw = resolveListItems(sanitized).filter((line) => queryTokens(line.phrase).length);
@@ -168,7 +176,8 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     lines: rewriteGroceryOil(safe),
     greetingOnly: false,
     containsMedicine: safe.length < raw.length - (containsTobacco ? 1 : 0) || blocksMedicine(sanitized),
-    containsTobacco
+    containsTobacco,
+    prescriptionDropped
   };
 }
 
@@ -191,6 +200,13 @@ function dedupeBasket(items: BasketItem[]): BasketItem[] {
 
 // Os "mais próximos" do rerank: o primeiro e os que falham na MESMA coisa (mesma frase de
 // diferença). Misturar "é de 500 ml" com "é de 250 ml" sob um aviso só seria impreciso.
+// Remédio pedido pela marca (dono, 08/10): a apresentação básica vem antes das extensões de linha
+// (Tylenol Sinus, Advil 12h, Dorflex DIP…) que o cliente não pediu. Só na vitrine de isentos.
+function medicineBaseFirst(query: string, options: ChoiceOption[], closest: boolean): ChoiceOption[] {
+  if (closest || !medicineEnabled() || !hasMip(options)) return options;
+  return baseFormulationFirst(query, options);
+}
+
 function closestFromRerank(proximos: { sku: string; falta: string }[] | undefined): { skus: string[]; falta: string } | null {
   if (!proximos?.length) return null;
   const falta = proximos[0].falta;
@@ -222,7 +238,7 @@ async function buildChoices(
   }
 
   const perfStart = Date.now();
-  const { lines, greetingOnly, containsMedicine, containsTobacco } = await extractLines(text);
+  const { lines, greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = await extractLines(text);
   const perfExtracted = Date.now();
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
@@ -488,6 +504,19 @@ async function buildChoices(
       options = closest.skus.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c));
       closestFalta = options.length ? closest.falta : undefined;
     }
+    // Remédio (dono, 08/10): marca sem estoque, ou só o genérico na prateleira → o equivalente de
+    // MESMO princípio ativo vira "o mais perto que tenho", nunca como se fosse o pedido. Os
+    // candidatos já passaram pela checagem ao vivo; a reserva veio de gatherCrossStoreCandidates.
+    if (!options.length && medicineEnabled()) {
+      const eq = medicineEquivalentFor(line.phrase);
+      if (eq) {
+        const alt = candidates.filter((c) => c.item.medicine === "mip" && eq.matches(c.item.name) && !isMedicineLineExtension(eq.queries[0], c.item.name));
+        if (alt.length) {
+          options = alt.slice(0, vitrineLimit());
+          closestFalta = eq.falta;
+        }
+      }
+    }
     if (!options.length) {
       notFound.push(line.phrase);
       notFoundLines.push(line);
@@ -525,7 +554,7 @@ async function buildChoices(
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
-      options: (cheapestFirst ? sortedOptions : exactPackFirst(line.phrase, line.qty, sortedOptions)).slice(0, vitrineLimit())
+      options: medicineBaseFirst(line.phrase, cheapestFirst ? sortedOptions : exactPackFirst(line.phrase, line.qty, sortedOptions), Boolean(closestFalta)).slice(0, vitrineLimit())
     });
   }
   return {
@@ -539,6 +568,7 @@ async function buildChoices(
     greetingOnly: greetingOnly && autoAdded.length === 0 && pending.length === 0,
     containsMedicine,
     containsTobacco,
+    prescriptionDropped,
     ...(unconfirmedLines.length ? { unconfirmed: unconfirmedLines } : {})
   };
 }
@@ -1651,7 +1681,7 @@ async function handleDeliveryTurn(
   // pergunta de quantidade "também queria dipirona" virava "responde o número").
   // "sem remédio, quero X" segue como pedido (negação já tratada na extração).
   if (blocksMedicine(text) && !/^sem\s/.test(normalizeMsg(text))) {
-    await refuseMedicine(phone, convo.id, ctx);
+    await refuseMedicine(phone, convo.id, ctx, text);
     if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
     return;
   }
@@ -2451,7 +2481,7 @@ async function handleDeliveryTurn(
     // CANCELAR pra conseguir pedir). A cotação ainda não saiu, então item novo entra no
     // MESMO pedido como linha livre — o operador cota tudo junto e vê a adição no /ops.
     if (intent.kind === "free_text" && !isQuestion(text) && ctx.deliveryOrderId) {
-      const { lines, containsMedicine } = await extractLines(text);
+      const { lines, containsMedicine, prescriptionDropped } = await extractLines(text);
       if (lines.length) {
         const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } });
         if (order && order.status === AWAITING_OPERATOR_QUOTE_STATUS) {
@@ -2466,7 +2496,7 @@ async function handleDeliveryTurn(
             }
           });
           const notes: string[] = [];
-          if (containsMedicine) notes.push(medicineSkippedCopy());
+          if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
           notes.push(copy.addedToPendingQuote(addedLabels));
           await replyQuoteNotice(phone, notes.join("\n"));
           await notifyOperator(copy.operatorItemAddedAlert(order.id.slice(-6).toUpperCase(), addedLabels), phone);
@@ -2476,7 +2506,7 @@ async function handleDeliveryTurn(
       // A mensagem era SÓ remédio (a extração filtra): responde a recusa certa em vez
       // de fingir que está cotando algo que não pode vender.
       if (!lines.length && containsMedicine) {
-        await reply(phone, noMedicineCopy());
+        await reply(phone, noMedicineCopy(text));
         return;
       }
     }
@@ -2915,7 +2945,7 @@ async function handleDeliveryTurn(
   // ---- onboarding: save the complete delivery address once, before the first basket ----
   if (!user.defaultAddress) {
     if (blocksMedicine(text)) {
-      await refuseMedicine(phone, convo.id, ctx);
+      await refuseMedicine(phone, convo.id, ctx, text);
       return;
     }
     if (intent.kind === "reject") {
@@ -2969,7 +2999,7 @@ async function handleDeliveryTurn(
   // sem opções nem preço): guarda o texto cru e roda a busca normal depois do CEP.
   if (!savedCep) {
     if (blocksMedicine(text)) {
-      await refuseMedicine(phone, convo.id, ctx);
+      await refuseMedicine(phone, convo.id, ctx, text);
       return;
     }
     const alreadyAsked = ctx.step === "need_cep";
@@ -6434,7 +6464,7 @@ async function handleConciergeRequest(
     }
   }
   let notFoundLines = [...raw.notFoundLines, ...weakLines];
-  const { greetingOnly, containsMedicine } = raw;
+  const { greetingOnly, containsMedicine, prescriptionDropped } = raw;
 
   // ÚLTIMA CHANCE antes de dizer "não tenho": as linhas que o pipeline inteiro
   // descartou (piso + rerank) vão ao fornecedor de cauda longa mesmo que alguma
@@ -6506,7 +6536,7 @@ async function handleConciergeRequest(
   }
   if (!pending.length && !notFoundLines.length) {
     if (containsMedicine) {
-      await refuseMedicine(phone, convoId, ctx);
+      await refuseMedicine(phone, convoId, ctx, text);
     } else if (raw.containsTobacco) {
       await reply(phone, copy.tobaccoRefusal());
     } else {
@@ -6603,7 +6633,7 @@ async function handleConciergeRequest(
     ctx.pending = rest.length ? rest : undefined;
     ctx.step = rest.length ? "choosing" : "collecting";
     const notes: string[] = [copy.autoAddedNote(added.map((i) => `${i.qty}x ${i.name}`)), ...packNotes];
-    if (containsMedicine) notes.push(medicineSkippedCopy());
+    if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     if (hasNotFound) notes.push(notFoundNote(false));
     if (rest.length) {
@@ -6620,7 +6650,7 @@ async function handleConciergeRequest(
   // sugestão de cada uma já na cesta. Falha ou condição não atendida → segue o caminho de sempre.
   if (pending.length >= 2) {
     const flowNotes: string[] = [];
-    if (containsMedicine) flowNotes.push(medicineSkippedCopy());
+    if (containsMedicine) flowNotes.push(medicineSkippedCopy(prescriptionDropped));
     if (raw.containsTobacco) flowNotes.push(copy.tobaccoRefusal());
     if (await tryListFlow({ phone, convoId, userCep, ctx, pending, notFoundLines, unconfirmedSet, notes: flowNotes })) return;
   }
@@ -6670,7 +6700,7 @@ async function handleConciergeRequest(
       }
       notes.push(...composedNotes);
       notes.push(...packNotes);
-      if (containsMedicine) notes.push(medicineSkippedCopy());
+      if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
       if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
       if (hasNotFound) notes.push(notFoundNote(false));
       await writeCtx(convoId, ctx);
@@ -6683,7 +6713,7 @@ async function handleConciergeRequest(
     ];
     notes.push(...composedNotes);
     notes.push(...packNotes);
-    if (containsMedicine) notes.push(medicineSkippedCopy());
+    if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     if (hasNotFound) notes.push(notFoundNote(false));
     await advancePending(phone, convoId, ctx, userCep, notes.join("\n"));
@@ -6695,7 +6725,7 @@ async function handleConciergeRequest(
     ctx.pending = pending;
     await writeCtx(convoId, ctx);
     const notes: string[] = [];
-    if (containsMedicine) notes.push(medicineSkippedCopy());
+    if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
     if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
     // Os itens sem preço são recusados ANTES das opções — mas com escopo explícito:
     // "não achei X — o resto tá abaixo" (a copy global parecia contradição, 19/08).
@@ -6744,7 +6774,7 @@ async function handleConciergeRequest(
     return;
   }
   const notes: string[] = [];
-  if (containsMedicine) notes.push(medicineSkippedCopy());
+  if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
   if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
   notes.push(notFoundNote(false));
   if (offerLongTail) {

@@ -1,0 +1,22 @@
+[
+ { "id": "m01", "text": "tylenol", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de Sinus/DC/Bebê" },
+ { "id": "m02", "text": "advil", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de 12h/Mulher" },
+ { "id": "m03", "text": "neosaldina", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de Muscular/Max" },
+ { "id": "m04", "text": "buscopan", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de Composto/Pediátrico" },
+ { "id": "m05", "text": "dorflex", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de DIP/Max" },
+ { "id": "m06", "text": "novalgina", "cat": "remedio", "origin": "dono 08/10: marca" },
+ { "id": "m07", "text": "allegra", "cat": "remedio", "origin": "dono 08/10: marca → adulto antes de Pediátrico" },
+ { "id": "m08", "text": "luftal", "cat": "remedio", "origin": "dono 08/10: marca → básico antes de Max" },
+ { "id": "m09", "text": "benegrip", "cat": "remedio", "origin": "dono 08/10: marca" },
+ { "id": "m10", "text": "tylenol sinus", "cat": "remedio", "origin": "dono 08/10: a extensão pedida tem que vir" },
+ { "id": "m11", "text": "buscopan composto", "cat": "remedio", "origin": "dono 08/10: a extensão pedida tem que vir" },
+ { "id": "m12", "text": "paracetamol", "cat": "remedio", "origin": "dono 08/10: genérico" },
+ { "id": "m13", "text": "ibuprofeno 400mg", "cat": "remedio", "origin": "dono 08/10: genérico com dose" },
+ { "id": "m14", "text": "fexofenadina", "cat": "remedio", "origin": "dono 08/10: genérico" },
+ { "id": "m15", "text": "rivotril", "cat": "remedio", "origin": "dono 08/10: receita — tem que dizer que precisa de receita" },
+ { "id": "m16", "text": "losartana 50mg", "cat": "remedio", "origin": "dono 08/10: receita" },
+ { "id": "m17", "text": "amoxicilina 500mg", "cat": "remedio", "origin": "dono 08/10: receita" },
+ { "id": "m18", "text": "anticoncepcional yasmin", "cat": "remedio", "origin": "dono 08/10: receita" },
+ { "id": "m19", "text": "omeprazol", "cat": "remedio", "origin": "placar r4: miss (guarda trata 20mg como receita)" },
+ { "id": "m20", "text": "aspirina", "cat": "remedio", "origin": "dono 08/10: marca → genérico AAS se faltar" }
+]

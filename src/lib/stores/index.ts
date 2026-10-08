@@ -2,6 +2,7 @@ import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
 import { conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
 import { liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
+import { medicineEnabled, medicineEquivalentFor } from "../medicine";
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { petzStore } from "./petz";
 import { boticarioStore } from "./boticario";
@@ -320,6 +321,23 @@ export async function gatherCrossStoreCandidates(
     const seen = new Set(aliasRanked.map((c) => `${c.store.key}:${c.item.sku}`));
     localRanked = [...aliasRanked, ...localRanked.filter((c) => !seen.has(`${c.store.key}:${c.item.sku}`))];
   }
+  // Remédio (dono, 08/10): marca ↔ genérico de MESMO princípio ativo entram como RESERVA, no fim
+  // da lista (até 3 vagas), para a vitrine oferecer "o mais perto" quando a marca pedida falta.
+  // Não disputam as vagas do pedido em si e só valem para item isento (medicine: "mip").
+  const equivalents: StoreCandidate[] = [];
+  const equivalent = medicineEnabled() ? medicineEquivalentFor(query) : null;
+  if (equivalent) {
+    const have = new Set(localRanked.map((c) => `${c.store.key}:${c.item.sku}`));
+    for (const eqQuery of equivalent.queries) {
+      const hits = rankStoreCandidates(eqQuery, await searchSelectedStores(localStores, eqQuery, perStore));
+      for (const c of hits) {
+        const key = `${c.store.key}:${c.item.sku}`;
+        if (have.has(key) || c.item.medicine !== "mip" || !equivalent.matches(c.item.name)) continue;
+        have.add(key);
+        equivalents.push(c);
+      }
+    }
+  }
 
   // The ML actor is slow and paid. It only runs when no local candidate clears the
   // concierge relevance floor; registry order alone would still await it through
@@ -344,7 +362,10 @@ export async function gatherCrossStoreCandidates(
   for (const cand of ranked) {
     (distinct.some((d) => sameProductVariant(query, d.item, cand.item)) ? variants : distinct).push(cand);
   }
-  return [...distinct, ...variants].slice(0, limit);
+  const main = [...distinct, ...variants];
+  if (!equivalents.length) return main.slice(0, limit);
+  const keep = Math.min(3, equivalents.length);
+  return [...main.slice(0, Math.max(0, limit - keep)), ...equivalents.slice(0, keep)];
 }
 
 export type { CatalogItem, StoreConnector, StoreUnit };
