@@ -1623,9 +1623,14 @@ async function handleDeliveryTurn(
     return;
   }
 
-  // Botão "Mudar minha lista" (07/10): reabre o formulário com a lista como está agora.
+  // Botão "Mudar ou adicionar" (antes "Mudar minha lista", 07/10; juntado com "Adicionar mais" em 08/10):
+  // reabre o formulário com a lista como está agora (o corpo diz que item novo é só mandar o nome).
+  // Sem formulário pra reabrir (lista já fechada, flag desligada): vira o "Adicionar mais" de sempre.
   if (normalizeMsg(text) === LIST_FLOW_REOPEN_ID) {
-    if (!(await reshowListFlow(phone, convo.id, ctx, "reopen"))) await reply(phone, copy.listFlowClosed());
+    if (!(await reshowListFlow(phone, convo.id, ctx, "reopen"))) {
+      if (ctx.step === "collecting" && (ctx.basket?.length ?? 0) > 0) await reply(phone, copy.askMoreItems());
+      else await reply(phone, copy.listFlowClosed());
+    }
     return;
   }
 

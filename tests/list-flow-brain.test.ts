@@ -183,7 +183,7 @@ test("lista de 4 com 1 faltante: um formulário com 3 vagas, o faltante no bloco
   assert.equal(ctx.listFlow?.id, data.lista_id);
   assert.equal(ctx.listFlow?.slots.length, 3);
   assert.deepEqual(ctx.listMisses?.map((m) => [m.query, m.reason]), [["macarrão", "not_found"]]);
-  // Pagar / Adicionar mais / Mudar minha lista.
+  // Pagar / Mudar ou adicionar / Cancelar (08/10).
   const follow = followUps.filter((f) => f.to === phone);
   assert.equal(follow.length, 1);
   assert.equal(follow[0].opts?.listFlowButton, true);
@@ -277,6 +277,8 @@ test("'Mudar minha lista' reenvia o formulário com o estado atual", async (t) =
   assert.equal(mine.length, count + 1);
   const data = dataOf(mine.at(-1)!);
   assert.match(mine.at(-1)!.input.body, /Sua lista do jeito que está agora/);
+  // Botão único "Mudar ou adicionar" (08/10): o formulário reaberto ensina a adicionar item novo.
+  assert.match(mine.at(-1)!.input.body, /adicionar\* um item novo, é só me mandar o nome/);
   assert.equal(data.init_1, slots[0].skus.length ? data.init_1 : "", "a vaga pulada volta sem pré-seleção");
   assert.match(String(data.label_1), /escolha uma/);
 });

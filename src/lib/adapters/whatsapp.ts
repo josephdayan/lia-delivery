@@ -781,6 +781,16 @@ export const whatsappAdapter = {
   // item, "cancelar" limpa a lista em montagem.
   async sendChoiceFollowUp(to: string, body: string, opts?: { qtyButton?: boolean; listFlowButton?: boolean }) {
     if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
+    // Depois do formulário da lista (dono, 08/10 noite): "Adicionar mais" e "Mudar minha lista" viram UM
+    // botão ("Mudar ou adicionar" reabre o formulário e diz que item novo é só mandar o nome) e o
+    // terceiro é "Cancelar".
+    if (opts?.listFlowButton) {
+      return sendMetaSimpleButtons(to, body, [
+        { id: "pagar", title: "Pagar" },
+        { id: LIST_FLOW_REOPEN_ID, title: "Mudar ou adicionar" },
+        { id: "cancelar", title: "Cancelar" }
+      ]);
+    }
     return sendMetaSimpleButtons(to, body, [
       // Foi "Pagar"→"Ver total" (rodada 1) e voltou a "Pagar" por decisão do dono
       // (01/09): com a bolha nativa de Pix, o toque leva direto ao fluxo de pagamento
@@ -790,12 +800,7 @@ export const whatsappAdapter = {
       // Teto Meta = 3 botões. Quando a quantidade acabou de ser assumida (1 un), o
       // terceiro vira "Mudar quantidade" (dono, 01/09) — "cancelar" digitado segue
       // funcionando em qualquer estado.
-      // Depois do Flow da lista (07/10), o terceiro reabre o formulário com o estado atual.
-      opts?.listFlowButton
-        ? { id: LIST_FLOW_REOPEN_ID, title: "Mudar minha lista" }
-        : opts?.qtyButton
-          ? { id: "qtd_alterar", title: "Mudar quantidade" }
-          : { id: "cancelar", title: "Cancelar" }
+      opts?.qtyButton ? { id: "qtd_alterar", title: "Mudar quantidade" } : { id: "cancelar", title: "Cancelar" }
     ]);
   },
 

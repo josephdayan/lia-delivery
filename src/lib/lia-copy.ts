@@ -1753,7 +1753,9 @@ export function listFlowIntro(input: {
       : "Montei sua lista com a minha sugestão:";
   const tail = [
     input.overflowCount ? `_Só as 15 primeiras linhas cabem no formulário; as outras ${input.overflowCount} ficaram pela minha sugestão (dá pra trocar por texto)._` : "",
-    "Pra trocar ou tirar algum item, toque em *Escolher minha lista*. Se já está bom, é só *Pagar*."
+    input.reopen
+      ? "Pra trocar ou tirar algum item, toque em *Escolher minha lista*. Pra *adicionar* um item novo, é só me mandar o nome aqui."
+      : "Pra trocar ou tirar algum item, toque em *Escolher minha lista*. Se já está bom, é só *Pagar*."
   ].filter(Boolean);
   const extras = [...(input.notes ?? []), input.misses.length ? missesBlock(input.misses) : ""].filter(Boolean);
   const render = (count: number) => {
@@ -1785,7 +1787,7 @@ export function listFlowNoOtherOptions(queries: string[]): string {
 }
 
 export function listFlowClosed(): string {
-  return "Essa lista já foi fechada, então não mexi em nada. Pra ajustar, me diz o que trocar (ex.: _troca X por Y_) ou toque em *Adicionar mais*.";
+  return "Essa lista já foi fechada, então não mexi em nada. Pra ajustar, me diz o que trocar (ex.: _troca X por Y_) ou me manda o nome do item que quer adicionar.";
 }
 
 // Resumo depois do formulário: itens, o que ficou de fora, faltantes de novo e o total parcial.
