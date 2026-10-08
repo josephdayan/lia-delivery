@@ -1,3 +1,48 @@
+## 08/10/2026 (tarde) — r5: os 6 pendentes do placar r4 (na branch; medido só no conjunto alvo)
+
+Pedido do dono: consertar os 6 grupos que ainda falhavam. Tudo em `claude/placar-r4` depois de `03b3792`.
+**Não medido nos 316**: a rodada foi pausada (pedido de não gastar e de não trocar juiz e código ao mesmo
+tempo). Para entrar no main falta 1 rodada de 316 no código r5 com o juiz de `03b3792`.
+
+| Conjunto alvo (57: falhas de r4 + remédio-marcas), mesmo juiz novo | 1ª opção errada | Precisão | Cobertura | Honestidade | Erros | p50 |
+|---|---|---|---|---|---|---|
+| código de ontem (`03b3792`) | 13,2% | 80,2% | 86,7% | 75,0% | 2 | 10,6 s |
+| código r5 (até `9478697`) | **1,8%** | 83,3% | 89,4% | 87,5% | 0 | 10,7 s |
+
+O corte "máx. 1 variante depois do básico" (`9961611`) entrou depois dessa medição e não foi medido.
+
+1. **Travamento sob concorrência** — causa achada: o ranking do catálogo é CPU síncrona (~60 catálogos,
+   1,5–3 s por busca) e todas as lojas rodavam no mesmo tick; com 3 buscas em paralelo o event loop parava 2 s
+   de cada vez e uma busca chegou a 150 s (sem nenhum fetch pendente). Consertos: memória do texto
+   normalizado, das palavras e dos derivados da consulta; cada loja cede a vez ao event loop; ranking por loja
+   5 min em cache; prazo duro na busca ao vivo que não depende do AbortSignal. Estresse (30 buscas, 3 em
+   paralelo): p50 13 s → 7 s, pior caso 150 s → 17 s, bloqueios > 2 s 17 → 1. `LIA_PERF_TRACE=1` liga rastro por etapa.
+2. **Exato antes de variante** — o rerank devolve `exatos` (os aprovados que são o produto básico pedido);
+   eles abrem a vitrine e vêm antes do prazo de entrega (a ordenação por prazo desfazia isso: a tilápia empanada
+   infantil da loja mais rápida passava o filé comum). Havendo o básico, no máximo 1 variante depois.
+3. **Remédio**: havendo a apresentação básica da marca, no máximo 1 extensão de linha (Composto, DIP…), no fim.
+4. **Obramax e Casa & Vídeo "não confirmadas"** — não é estoque: a CDN delas responde 403 "country not allowed"
+   na simulação de frete para IP de fora do Brasil. **A função da Vercel roda em `iad1` (EUA)** (deploy desta
+   branch; nenhum `regions` no vercel.json) — então a produção provavelmente também não cota nem compra nessas
+   duas. Agora loga `[live-check:http] … 403` em vez de falhar mudo. **Decisão do dono**: rodar as funções em
+   `gru1` (São Paulo) — mas o banco Supabase da Lia parece estar em `us-west-1`, e cada consulta ficaria mais
+   lenta; ou mover o banco junto (`sa-east-1`). Não alterei região. O oráculo do placar agora só conta item que
+   a loja CONFIRMOU para o CEP (antes contava o não confirmado e gerava "miss" falso).
+5. **Omeprazol** — a Drogaria SP marca TODO omeprazol (inclusive 10 mg × 14), pantoprazol, esomeprazol e
+   lansoprazol como **Tarja Vermelha** (consulta à API dela, 08/10). A classe entrou na guarda de receita e a
+   recusa nomeia o remédio. **Atenção**: o AGENTS.md cita "omeprazol" como exemplo de isento que a Lia vende —
+   a frase está errada pela classificação da própria farmácia; não alterei a regra canônica.
+6. **Juiz da busca** — regras explícitas para os casos que viravam e maioria de 3 votos
+   (`BENCH_JUDGE_VOTES`). Rótulos à mão `evals/calibracao-busca-rotulos.json` (26 casos) e
+   `scripts/bench/calibrate-search.mts`: concordância 73% (juiz antigo) → 96% (novo). Só "chave de fenda ponta
+   cruzada" segue ambígua (vira para os dois lados).
+
+Ainda falha no conjunto alvo (r5): bicicleta (só a infantil existe; o juiz a recusa para pedido genérico),
+mamão papaya (só formosa → "mais perto"), garrafa térmica esportiva e chave de fenda (mais perto), martelo e
+cabo lightning (não confirmados no CEP), presente para criança de 5 anos (é a frente "recomendação por
+intenção"), e variantes depois do básico (o corte de 1 variante mira isso, sem medição).
+Suíte `npm run test:local`: ver commit (verde em 1172/1172 antes do último corte).
+
 ## 08/10/2026 — Placar r4: medido de verdade (juiz gpt-6-luna), 3 consertos de busca e 3 regras de remédio do dono
 
 Rodado na nuvem com `NODE_USE_ENV_PROXY=1`, MIP ligado, Lia e juiz em **gpt-6-luna** (as 4 rodadas de 07/10 foram
