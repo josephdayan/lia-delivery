@@ -8,17 +8,19 @@
 // mesmo endereço resolvido (com as mesmas coordenadas), mesmo perfil do comprador, mesma entrega
 // prometida → cesta, perfil, endereço, entrega dentro do prazo prometido, Pix selecionado e a conferência
 // (snapshot) — e PARA antes de fechar o pedido. Nada é criado na loja; a cesta é esvaziada no fim.
-// Recusa da LOJA (item, entrega, endereço, pagamento) = nada é cobrado. Loja fora do ar/timeout não
-// inventa recusa (a cobrança segue como antes e a compra tenta sozinha). `LIA_PURCHASE_REHEARSAL=false`
-// desliga.
+// Recusa da LOJA (item, entrega, endereço, pagamento, PREÇO acima do cotado) = nada é cobrado. Loja fora
+// do ar/timeout não inventa recusa (a cobrança segue como antes e a compra tenta sozinha). O ensaio
+// inteiro tem um orçamento de tempo (LIA_PURCHASE_REHEARSAL_BUDGET_MS, 45 s): estourou = loja instável,
+// não recusa. `LIA_PURCHASE_REHEARSAL=false` desliga.
 import { prisma } from "../prisma";
 import { automaticPurchaseStores } from "../purchase-policy";
 import { customerBuyerFor } from "../purchase-worker";
+import { withDeadline } from "../stores/live-search";
 import { resolveVtexAddress } from "./vtex-address";
 import { buyerProfile, customerBuyerProfile, serverBuyerEnabled } from "./vtex-runner";
 import { VTEX_API_STORES, VtexCheckoutRejected, VtexCheckoutSession, type FetchLike, type VtexBuyerProfile } from "./vtex-checkout";
 
-export type RehearsalItem = { sku: string; name: string; qty: number; storeKey: string; storeLabel?: string; medicine?: "mip" };
+export type RehearsalItem = { sku: string; name: string; qty: number; storeKey: string; storeLabel?: string; unitPrice?: number; medicine?: "mip" };
 export type RehearsalOrder = {
   id: string;
   cep: string | null;
@@ -29,10 +31,15 @@ export type RehearsalOrder = {
   buyerName: string | null;
   items: RehearsalItem[];
   fulfillments: unknown;
+  // Teto do que foi cotado ao cliente (o mesmo teto que a conferência da compra usa): a loja
+  // cobrando mais que isso na hora = o preço mudou = não cobra, recota.
+  itemsSubtotal?: number;
+  deliveryFee?: number;
 };
 // `items`: item fora / sem estoque / quantidade; `delivery`: a entrega prometida (prazo) não existe pro
-// endereço; `address`: a loja recusou o endereço; `checkout`: outro passo do checkout recusou.
-export type RehearsalFailure = { storeKey: string; storeLabel: string; kind: "items" | "delivery" | "address" | "checkout"; detail: string; skus: string[] };
+// endereço; `address`: a loja recusou o endereço; `price`: a loja está cobrando mais que o cotado;
+// `checkout`: outro passo do checkout recusou.
+export type RehearsalFailure = { storeKey: string; storeLabel: string; kind: "items" | "delivery" | "address" | "price" | "checkout"; detail: string; skus: string[] };
 
 let override: ((order: RehearsalOrder) => Promise<RehearsalFailure | null>) | null = null;
 export function __setPurchaseRehearsalForTests(fn: ((order: RehearsalOrder) => Promise<RehearsalFailure | null>) | null): void {
@@ -43,13 +50,40 @@ export function rehearsalEnabled(): boolean {
   return process.env.LIA_PURCHASE_REHEARSAL !== "false" && serverBuyerEnabled();
 }
 
-// A entrega prometida para a loja (a mesma string que a compra recebe em `deliveryPromise`).
-function promiseFor(fulfillments: unknown): string | undefined {
-  if (!Array.isArray(fulfillments)) return undefined;
-  const values = fulfillments
-    .map((entry) => (entry && typeof entry === "object" ? (entry as { deliveryPromise?: unknown }).deliveryPromise : undefined))
+function budgetMs(): number {
+  const configured = Number(process.env.LIA_PURCHASE_REHEARSAL_BUDGET_MS ?? 45_000);
+  return Number.isFinite(configured) && configured > 0 ? configured : 45_000;
+}
+
+type Fulfillment = { storeKey?: unknown; deliveryPromise?: unknown; itemsSubtotal?: unknown; retailerTotal?: unknown; deliveryFee?: unknown };
+function fulfillmentsOf(value: unknown): Fulfillment[] {
+  return Array.isArray(value) ? value.filter((entry): entry is Fulfillment => Boolean(entry) && typeof entry === "object") : [];
+}
+
+// A entrega prometida para a loja (a mesma string que a compra recebe em `deliveryPromise`): a da loja
+// quando o pedido tem uma por loja; senão, todas juntas (cesta de uma loja só).
+function promiseFor(fulfillments: Fulfillment[], storeKey: string): string | undefined {
+  const own = fulfillments.filter((f) => f.storeKey === storeKey);
+  const values = (own.length ? own : fulfillments)
+    .map((f) => f.deliveryPromise)
     .filter((value): value is string => typeof value === "string" && Boolean(value.trim()));
   return values.length ? values.join(" · ") : undefined;
+}
+
+const money = (value: unknown) => (typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null);
+// Teto em centavos do que a loja pode cobrar (itens + frete) — o mesmo critério de checkCheckout
+// ("Total da loja acima do teto do pedido"), por loja quando o pedido tem a cotação por loja.
+function ceilingCents(order: RehearsalOrder, fulfillments: Fulfillment[], storeKey: string, items: RehearsalItem[]): number | null {
+  const own = fulfillments.find((f) => f.storeKey === storeKey);
+  if (own) {
+    const subtotal = Math.max(money(own.itemsSubtotal) ?? 0, money(own.retailerTotal) ?? 0);
+    const fee = money(own.deliveryFee) ?? 0;
+    if (subtotal > 0) return Math.round((subtotal + fee) * 100);
+  }
+  const lines = items.map((i) => (money(i.unitPrice) ?? 0) * i.qty);
+  if (lines.every((v) => v > 0) && money(order.deliveryFee) != null) return Math.round((lines.reduce((a, b) => a + b, 0) + order.deliveryFee!) * 100);
+  if (money(order.itemsSubtotal) != null && money(order.deliveryFee) != null && money(order.itemsSubtotal)! > 0) return Math.round((order.itemsSubtotal! + order.deliveryFee!) * 100);
+  return null;
 }
 
 function classify(error: unknown): { kind: RehearsalFailure["kind"]; refusal: boolean; detail: string } {
@@ -87,39 +121,55 @@ export async function rehearsePurchase(order: RehearsalOrder, fetchImpl?: FetchL
     byStore.set(item.storeKey, [...(byStore.get(item.storeKey) ?? []), item]);
   }
   if (!byStore.size) return null;
-  const promise = promiseFor(order.fulfillments);
+  const fulfillments = fulfillmentsOf(order.fulfillments);
   const receiverName = (order.customerName ?? order.buyerName ?? "").trim() || "Cliente Lia";
-  const results = await Promise.all(
-    [...byStore].map(async ([storeKey, items]): Promise<RehearsalFailure | null> => {
-      const storeLabel = items[0].storeLabel ?? VTEX_API_STORES[storeKey].label;
-      const skus = items.map((i) => i.sku);
-      const account = await prisma.purchaseAccount.findUnique({ where: { storeKey } }).catch(() => null);
-      // Sem conta da loja a compra automática nem nasce (vai para a fila manual): nada a ensaiar.
-      if (!account?.email) return null;
-      let profile: VtexBuyerProfile;
-      try {
-        const buyer = customerBuyerFor({ deliveryOrder: { buyerDocument: order.buyerDocument, buyerName: order.buyerName, items: order.items }, items: items.map((i) => ({ requestedSku: i.sku })) });
-        profile = buyer ? customerBuyerProfile(account.email, buyer, order.phone) : buyerProfile(account.email, order.phone);
-      } catch (error) {
-        // Configuração do comprador (CNPJ/CPF): a compra falharia igual — não cobra.
-        return { storeKey, storeLabel, kind: "checkout", detail: error instanceof Error ? error.message : String(error), skus };
-      }
-      const session = new VtexCheckoutSession(storeKey, fetchImpl, 20_000);
-      const started = Date.now();
-      try {
-        const address = await resolveVtexAddress({ receiverName, cep: order.cep!, addressText: order.deliveryAddress!, ...(fetchImpl ? { fetchImpl } : {}) });
-        await session.prepare({ items: items.map((i) => ({ sku: i.sku, qty: i.qty })), profile, address, deliveryPromise: promise });
-        session.snapshot({ cartHash: "rehearsal", customerAddress: order.deliveryAddress!, items: items.map((i) => ({ sku: i.sku })) });
-        console.log(`[purchase-rehearsal] ok ${storeKey} ${order.id} ms=${Date.now() - started}`);
-        return null;
-      } catch (error) {
-        const c = classify(error);
-        console.warn(`[purchase-rehearsal] ${c.refusal ? "RECUSA" : "instável"} ${storeKey} ${order.id} kind=${c.kind} ms=${Date.now() - started}: ${c.detail.slice(0, 200)}`);
-        return c.refusal ? { storeKey, storeLabel, kind: c.kind, detail: c.detail.slice(0, 300), skus } : null;
-      } finally {
-        await session.clearCart().catch(() => undefined);
-      }
-    })
+  const startedAll = Date.now();
+  const results = await withDeadline<(RehearsalFailure | null)[] | null>(
+    Promise.all(
+      [...byStore].map(async ([storeKey, items]): Promise<RehearsalFailure | null> => {
+        const storeLabel = items[0].storeLabel ?? VTEX_API_STORES[storeKey].label;
+        const skus = items.map((i) => i.sku);
+        const promise = promiseFor(fulfillments, storeKey);
+        const account = await prisma.purchaseAccount.findUnique({ where: { storeKey } }).catch(() => null);
+        // Sem conta da loja a compra automática nem nasce (vai para a fila manual): nada a ensaiar.
+        if (!account?.email) return null;
+        let profile: VtexBuyerProfile;
+        try {
+          const buyer = customerBuyerFor({ deliveryOrder: { buyerDocument: order.buyerDocument, buyerName: order.buyerName, items: order.items }, items: items.map((i) => ({ requestedSku: i.sku })) });
+          profile = buyer ? customerBuyerProfile(account.email, buyer, order.phone) : buyerProfile(account.email, order.phone);
+        } catch (error) {
+          // Configuração do comprador (CNPJ/CPF): a compra falharia igual — não cobra.
+          return { storeKey, storeLabel, kind: "checkout", detail: error instanceof Error ? error.message : String(error), skus };
+        }
+        const session = new VtexCheckoutSession(storeKey, fetchImpl, 20_000);
+        const started = Date.now();
+        try {
+          const address = await resolveVtexAddress({ receiverName, cep: order.cep!, addressText: order.deliveryAddress!, ...(fetchImpl ? { fetchImpl } : {}) });
+          await session.prepare({ items: items.map((i) => ({ sku: i.sku, qty: i.qty })), profile, address, deliveryPromise: promise });
+          const evidence = session.snapshot({ cartHash: "rehearsal", customerAddress: order.deliveryAddress!, items: items.map((i) => ({ sku: i.sku })) });
+          // Preço: a loja cobrando mais que o cotado ao cliente viraria CHECKOUT_MISMATCH depois do
+          // pagamento ("Total da loja acima do teto do pedido") — e estorno. Aqui vira recotação.
+          const ceiling = ceilingCents(order, fulfillments, storeKey, items);
+          if (ceiling != null && evidence.totalCents > ceiling) {
+            const detail = `preço na loja ${(evidence.totalCents / 100).toFixed(2)} acima do cotado ${(ceiling / 100).toFixed(2)}`;
+            console.warn(`[purchase-rehearsal] RECUSA ${storeKey} ${order.id} kind=price ms=${Date.now() - started}: ${detail}`);
+            return { storeKey, storeLabel, kind: "price", detail, skus };
+          }
+          console.log(`[purchase-rehearsal] ok ${storeKey} ${order.id} ms=${Date.now() - started} total=${evidence.totalCents} ceiling=${ceiling ?? "-"}`);
+          return null;
+        } catch (error) {
+          const c = classify(error);
+          console.warn(`[purchase-rehearsal] ${c.refusal ? "RECUSA" : "instável"} ${storeKey} ${order.id} kind=${c.kind} ms=${Date.now() - started}: ${c.detail.slice(0, 200)}`);
+          return c.refusal ? { storeKey, storeLabel, kind: c.kind, detail: c.detail.slice(0, 300), skus } : null;
+        } finally {
+          await session.clearCart().catch(() => undefined);
+        }
+      })
+    ),
+    budgetMs(),
+    null,
+    () => console.warn(`[purchase-rehearsal] orçamento de ${budgetMs()}ms estourou ${order.id} (loja instável, cobra como antes) ms=${Date.now() - startedAll}`)
   );
+  if (!results) return null;
   return results.find((r): r is RehearsalFailure => r !== null) ?? null;
 }

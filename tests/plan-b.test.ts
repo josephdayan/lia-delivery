@@ -50,6 +50,7 @@ async function send(phone: string, text: string): Promise<string> {
 const ORIGINAL = { sku: "naturaldaterra-165908", name: "Ice Tea Pêssego Zero", qty: 1, unitPrice: 4.49, lineTotal: 4.49, storeKey: "naturaldaterra", storeLabel: "Natural da Terra" };
 const SUB: ChoiceOption = { sku: "paguemenos-777", name: "Chá Ice Tea Pêssego Zero 1,5L", unitPrice: 3.99, storeKey: "paguemenos", storeLabel: "Pague Menos", productUrl: "https://www.paguemenos.com.br/p/777" };
 const TOO_EXPENSIVE: ChoiceOption = { sku: "paguemenos-999", name: "Ice Tea Premium", unitPrice: 9.99, storeKey: "paguemenos", storeLabel: "Pague Menos" };
+const PETZ_ITEM = { sku: "petz-7001", name: "Ração Golden Gatos 1kg", qty: 1, unitPrice: 39.9, lineTotal: 39.9, storeKey: "petz", storeLabel: "Petz" };
 const NOT_VERIFIABLE: ChoiceOption = { sku: "PETZ-1", name: "Ice Tea Petz", unitPrice: 3.5, storeKey: "petz", storeLabel: "Petz" };
 const searchAll = async () => [NOT_VERIFIABLE, TOO_EXPENSIVE, SUB];
 const simulateOk = async (_store: string, skus: string[]) => new Map<string, LiveItemCheck>(skus.map((sku) => [sku, { sku, available: true, fee: 9.9, estimate: "1bd", etaMinutes: 24 * 60 }]));
@@ -234,25 +235,96 @@ test("ensaio da compra: entrega prometida não existe pro endereço → nada cob
   if (!dbOk) return t.skip();
   const { __setPurchaseRehearsalForTests } = await import("../src/lib/purchase/rehearsal");
   __setPlanBForTests({ search: null, simulate: null });
-  const o = await paidBlockedOrder({ status: "awaiting_quote_confirmation", blocked: false });
-  await prisma.deliveryOrder.update({ where: { id: o.orderId }, data: { fulfillments: [{ storeKey: "naturaldaterra", deliveryPromise: "pela própria loja · prazo da loja: 30 min" }] } });
+  const o = await paidBlockedOrder({ status: "awaiting_quote_confirmation", blocked: false, item: PETZ_ITEM });
+  await prisma.deliveryOrder.update({ where: { id: o.orderId }, data: { fulfillments: [{ storeKey: "petz", deliveryPromise: "pela própria loja · prazo da loja: 30 min" }] } });
   await prisma.conversation.update({
     where: { id: o.convoId },
     data: { context: JSON.stringify({ step: "awaiting_quote_confirmation", deliveryOrderId: o.orderId, deliveryAddress: TEST_ADDRESS, deliveryAddressVerified: true }) }
   });
   __setPreflightForTests(async () => null);
-  __setPurchaseRehearsalForTests(async () => ({ storeKey: "naturaldaterra", storeLabel: "Natural da Terra", kind: "delivery", detail: "sla: nenhuma entrega dentro do prazo prometido", skus: ["naturaldaterra-165908"] }));
+  __setPurchaseRehearsalForTests(async () => ({ storeKey: "petz", storeLabel: "Petz", kind: "delivery", detail: "sla: nenhuma entrega dentro do prazo prometido", skus: ["petz-7001"] }));
   try {
     const reply = await send(o.phone, "pix");
-    assert.match(reply, /Conferi na \*Natural da Terra\* na hora de cobrar e a entrega de \*30 min\* não está disponível pro seu endereço agora\. \*Nada foi cobrado\.\*/);
+    assert.match(reply, /Conferi na \*Petz\* na hora de cobrar e a entrega de \*30 min\* não está disponível pro seu endereço agora\. \*Nada foi cobrado\.\* Refiz o total/);
     const after1 = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: o.orderId } });
     assert.equal(after1.status, "canceled");
     assert.equal(after1.pixId, null, "nenhuma cobrança emitida");
     assert.match(after1.notes ?? "", /ENSAIO DA COMPRA/);
+    // Recotação NO MESMO TURNO: um pedido novo nasce da mesma cesta, com o total na mesa — o cliente não
+    // precisa dizer "pagar" de novo.
+    const requoted = await prisma.deliveryOrder.findFirst({ where: { userId: o.userId, id: { not: o.orderId } }, orderBy: { createdAt: "desc" } });
+    assert.ok(requoted, `a Lia refez a cotação sozinha — resposta: ${reply}`);
+    assert.deepEqual((requoted!.items as { sku: string }[]).map((i) => i.sku), ["petz-7001"]);
+    assert.equal(requoted!.status, "awaiting_quote_confirmation", `total novo na mesa — resposta: ${reply}`);
+    assert.equal(requoted!.pixId, null, "nada cobrado na recotação");
+    assert.match(reply, /Total/i);
     const convo = await prisma.conversation.findUniqueOrThrow({ where: { id: o.convoId } });
     const ctx = JSON.parse(convo.context ?? "{}");
-    assert.equal(ctx.step, "collecting");
-    assert.ok((ctx.basket ?? []).length >= 1, "a lista continua com o cliente");
+    assert.equal(ctx.deliveryOrderId, requoted!.id);
+    assert.equal(ctx.rehearsalRefused?.storeKey, "petz");
+    assert.equal(ctx.rehearsalRefused?.count, 1);
+  } finally {
+    __setPreflightForTests(null);
+    __setPurchaseRehearsalForTests(null);
+  }
+});
+
+// 2ª recusa seguida da MESMA loja (a simulação não enxerga o que o checkout recusa — janela obrigatória da
+// Mambo, 25/09): a loja sai do caminho e a Lia procura o item em outra. Nunca loop, nunca cobra.
+test("ensaio da compra: a mesma loja recusa de novo → sai do caminho, busca alternativa, nada cobrado", async (t) => {
+  if (!dbOk) return t.skip();
+  const { __setPurchaseRehearsalForTests } = await import("../src/lib/purchase/rehearsal");
+  __setPlanBForTests({ search: null, simulate: null });
+  const o = await paidBlockedOrder({ status: "awaiting_quote_confirmation", blocked: false, item: PETZ_ITEM });
+  await prisma.conversation.update({
+    where: { id: o.convoId },
+    data: { context: JSON.stringify({ step: "awaiting_quote_confirmation", deliveryOrderId: o.orderId, deliveryAddress: TEST_ADDRESS, deliveryAddressVerified: true, rehearsalRefused: { storeKey: "petz", skus: ["petz-7001"], count: 1, at: Date.now() } }) }
+  });
+  __setPreflightForTests(async () => null);
+  __setPurchaseRehearsalForTests(async () => ({ storeKey: "petz", storeLabel: "Petz", kind: "checkout", detail: "Janela de entrega não selecionada.", skus: ["petz-7001"] }));
+  try {
+    const reply = await send(o.phone, "pix");
+    assert.match(reply, /A \*Petz\* não fechou \*Ração Golden Gatos 1kg\* pro seu endereço de novo\. \*Nada foi cobrado\.\* Vou procurar em outra loja/);
+    const after1 = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: o.orderId } });
+    assert.equal(after1.status, "canceled");
+    assert.equal(after1.pixId, null);
+    const convo = await prisma.conversation.findUniqueOrThrow({ where: { id: o.convoId } });
+    const ctx = JSON.parse(convo.context ?? "{}");
+    assert.equal(ctx.rehearsalRefused, undefined, "a recusa zera ao trocar de loja");
+    assert.ok(!(ctx.basket ?? []).some((i: { storeKey: string }) => i.storeKey === "petz"), "a loja recusada saiu da cesta");
+    const charged = await prisma.deliveryOrder.findFirst({ where: { userId: o.userId, pixId: { not: null } } });
+    assert.equal(charged, null, "nada cobrado em nenhum pedido");
+  } finally {
+    __setPreflightForTests(null);
+    __setPurchaseRehearsalForTests(null);
+  }
+});
+
+// Cobrança JÁ aberta (Pix na mesa) e o cliente troca pra cartão / pede o código de novo: a loja é
+// consultada de novo antes de reemitir. Recusa = pedido fecha sem dinheiro e a lista volta.
+test("ensaio da compra na troca de forma de pagamento: loja recusou → nada reemitido, pedido fecha sem dinheiro", async (t) => {
+  if (!dbOk) return t.skip();
+  const { __setPurchaseRehearsalForTests } = await import("../src/lib/purchase/rehearsal");
+  __setPlanBForTests({ search: null, simulate: null });
+  const o = await paidBlockedOrder({ status: "awaiting_payment", blocked: false, item: PETZ_ITEM });
+  await prisma.deliveryOrder.update({ where: { id: o.orderId }, data: { pixId: "mock-pix-1", pixCopiaECola: "00020126mockpix", notes: "Pagamento: pix", paidAt: null } });
+  await prisma.conversation.update({
+    where: { id: o.convoId },
+    data: { context: JSON.stringify({ step: "awaiting_payment", deliveryOrderId: o.orderId, deliveryAddress: TEST_ADDRESS, deliveryAddressVerified: true }) }
+  });
+  __setPreflightForTests(async () => null);
+  __setPurchaseRehearsalForTests(async () => ({ storeKey: "petz", storeLabel: "Petz", kind: "price", detail: "preço na loja 44.90 acima do cotado 39.90", skus: ["petz-7001"] }));
+  try {
+    const reply = await send(o.phone, "cartão");
+    assert.match(reply, /Conferi na \*Petz\* na hora de cobrar e o preço mudou na loja\. \*Nada foi cobrado\.\*/);
+    assert.doesNotMatch(reply, /link|cartão de crédito/i, "nenhum link de cartão emitido");
+    const after1 = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: o.orderId } });
+    assert.equal(after1.status, "canceled");
+    assert.match(after1.notes ?? "", /ENSAIO DA COMPRA .* recusou \(price\)/);
+    const requoted = await prisma.deliveryOrder.findFirst({ where: { userId: o.userId, id: { not: o.orderId } }, orderBy: { createdAt: "desc" } });
+    assert.ok(requoted, `recotou na hora — resposta: ${reply}`);
+    assert.equal(requoted!.status, "awaiting_quote_confirmation");
+    assert.equal(requoted!.pixId, null);
   } finally {
     __setPreflightForTests(null);
     __setPurchaseRehearsalForTests(null);

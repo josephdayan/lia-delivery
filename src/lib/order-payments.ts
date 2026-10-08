@@ -435,9 +435,87 @@ export async function supersedePixCharge(pixId: string | null | undefined) {
 }
 
 export type PreflightUnavailable = { storeKey: string; storeLabel: string; items: BasketItem[]; remaining: BasketItem[] };
-// Ensaio da compra recusou a ENTREGA prometida ou o endereço (08/10 noite): nada cobrado; a cesta inteira
-// volta pro cliente fechar de novo com a entrega que a loja confirma de verdade.
-export type DeliveryNotConfirmed = { storeLabel: string; promise?: string; kind: RehearsalFailure["kind"]; basket: BasketItem[] };
+// Ensaio da compra recusou a ENTREGA prometida, o endereço ou o PREÇO (08/10 noite): nada cobrado; a cesta
+// inteira volta pro cliente e a Lia refaz a cotação na hora com o que a loja confirma de verdade.
+export type DeliveryNotConfirmed = { storeKey: string; storeLabel: string; promise?: string; kind: RehearsalFailure["kind"]; basket: BasketItem[] };
+export type ChargeBlock = { unavailable: PreflightUnavailable; note: string } | { deliveryNotConfirmed: DeliveryNotConfirmed; note: string; ownerAlert: string };
+
+type ChargeableOrder = {
+  id: string;
+  phone: string;
+  cep: string | null;
+  deliveryAddress: string | null;
+  customerName: string | null;
+  buyerDocument: string | null;
+  buyerName: string | null;
+  items: unknown;
+  fulfillments: unknown;
+  itemsSubtotal: number;
+  deliveryFee: number;
+};
+
+// O que impede de cobrar AGORA, consultando a loja de novo (nada gravado aqui — quem chama fecha o pedido
+// com `note`). Dois degraus, os mesmos em toda cobrança (cotação aceita, troca de forma, Pix vencido):
+// 1. Pré-voo (04/09): a simulação da loja, cesta inteira, para o CEP. "Não" definitivo = sem estoque/entrega.
+// 2. ENSAIO DA COMPRA (08/10 noite, purchase/rehearsal.ts): os mesmos passos da compra automática, sem
+//    fechar o pedido — entrega prometida, endereço, Pix e preço. Recusa da loja = nada é cobrado (o cliente
+//    não paga pra depois receber estorno).
+export async function findChargeBlock(order: ChargeableOrder): Promise<ChargeBlock | null> {
+  const basket = ((order.items as unknown as BasketItem[]) ?? []).filter(Boolean);
+  const failure = await preflightBasket(basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey })), order.cep);
+  if (failure) {
+    const failed = basket.filter((i) => failure.skus.includes(i.sku));
+    const storeLabel = failed[0]?.storeLabel ?? failure.storeKey;
+    return {
+      unavailable: { storeKey: failure.storeKey, storeLabel, items: failed, remaining: basket.filter((i) => !failure.skus.includes(i.sku)) },
+      note: `🛫 PRÉ-VOO (${new Date().toISOString()}): ${storeLabel} ${failure.kind === "no-delivery" ? "sem entrega no CEP" : "sem estoque"} para ${failed.map((i) => i.name).join(", ")}. Nada cobrado; cliente redirecionado para alternativas.`
+    };
+  }
+  const rehearsal = await rehearsePurchase({
+    id: order.id,
+    cep: order.cep,
+    deliveryAddress: order.deliveryAddress,
+    customerName: order.customerName,
+    phone: order.phone,
+    buyerDocument: order.buyerDocument,
+    buyerName: order.buyerName,
+    items: basket.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty, storeKey: i.storeKey, storeLabel: i.storeLabel, unitPrice: i.unitPrice, ...(i.medicine ? { medicine: i.medicine } : {}) })),
+    fulfillments: order.fulfillments,
+    itemsSubtotal: order.itemsSubtotal,
+    deliveryFee: order.deliveryFee
+  }).catch((error) => {
+    console.warn("[purchase-rehearsal:error]", order.id, error instanceof Error ? error.message : error);
+    return null;
+  });
+  if (!rehearsal) return null;
+  const note = `🎭 ENSAIO DA COMPRA (${new Date().toISOString()}): ${rehearsal.storeLabel} recusou (${rehearsal.kind}): ${rehearsal.detail}. Nada cobrado.`;
+  if (rehearsal.kind === "items") {
+    const failed = basket.filter((i) => rehearsal.skus.includes(i.sku));
+    return { unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining: basket.filter((i) => !rehearsal.skus.includes(i.sku)) }, note };
+  }
+  const promise = Array.isArray(order.fulfillments)
+    ? (order.fulfillments as Array<{ storeKey?: string; deliveryPromise?: string }>).filter((f) => !f?.storeKey || f.storeKey === rehearsal.storeKey).map((f) => f?.deliveryPromise).filter(Boolean).join(" · ") || undefined
+    : undefined;
+  return {
+    deliveryNotConfirmed: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, promise, kind: rehearsal.kind, basket },
+    note,
+    ownerAlert: `🎭 Ensaio da compra barrou a cobrança: ${rehearsal.storeLabel} recusou (${rehearsal.kind}) — ${rehearsal.detail.slice(0, 160)}. Pedido ${order.id.slice(-6).toUpperCase()} NÃO foi cobrado.`
+  };
+}
+
+// Cobrança JÁ aberta (awaiting_payment) que vai ser reemitida/reenviada (troca Pix↔cartão, Pix vencido,
+// "manda de novo"): a loja é consultada de novo antes. Bloqueio = o pedido fecha sem dinheiro (a mesma
+// saída única de `closeUnpaidOrder`, que respeita um pagamento chegando no mesmo instante) e o chamador
+// devolve a lista ao cliente. null = pode seguir.
+export async function recheckOpenCharge(order: ChargeableOrder & { status: string; notes: string | null; pixId: string | null }): Promise<ChargeBlock | null> {
+  if (order.status !== "awaiting_payment") return null;
+  const block = await findChargeBlock(order);
+  if (!block) return null;
+  const closed = await closeUnpaidOrder(order, block.note);
+  if (closed !== "closed") return null;
+  if ("ownerAlert" in block) await notifyOwner(block.ownerAlert, order.phone).catch(() => undefined);
+  return block;
+}
 
 export async function issueValidatedRetailerQuotePayment(
   orderId: string,
@@ -450,58 +528,16 @@ export async function issueValidatedRetailerQuotePayment(
     return { expired: true };
   }
 
-  // Pré-voo (04/09): consulta a loja de novo AGORA, cesta inteira, para o CEP. "Não"
-  // definitivo → nada é cobrado, o pedido fecha e o chamador reapresenta alternativas.
   const basket = ((order.items as unknown as BasketItem[]) ?? []).filter(Boolean);
-  const failure = await preflightBasket(basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey })), order.cep);
-  if (failure) {
-    const failed = basket.filter((i) => failure.skus.includes(i.sku));
-    const storeLabel = failed[0]?.storeLabel ?? failure.storeKey;
+  const block = await findChargeBlock(order);
+  if (block) {
     await prisma.deliveryOrder.updateMany({
       where: { id: order.id, status: "awaiting_quote_confirmation" },
-      data: {
-        status: "canceled",
-        quoteExpiresAt: null,
-        notes: [order.notes, `🛫 PRÉ-VOO (${new Date().toISOString()}): ${storeLabel} ${failure.kind === "no-delivery" ? "sem entrega no CEP" : "sem estoque"} para ${failed.map((i) => i.name).join(", ")}. Nada cobrado; cliente redirecionado para alternativas.`].filter(Boolean).join("\n")
-      }
+      data: { status: "canceled", quoteExpiresAt: null, notes: [order.notes, block.note].filter(Boolean).join("\n") }
     });
-    return { expired: false, unavailable: { storeKey: failure.storeKey, storeLabel, items: failed, remaining: basket.filter((i) => !failure.skus.includes(i.sku)) } };
-  }
-
-  // ENSAIO DA COMPRA (08/10 noite, purchase/rehearsal.ts): os mesmos passos da compra automática, sem
-  // fechar o pedido. Recusa da loja = nada é cobrado (o cliente não paga pra depois receber estorno).
-  const rehearsal = await rehearsePurchase({
-    id: order.id,
-    cep: order.cep,
-    deliveryAddress: order.deliveryAddress,
-    customerName: order.customerName,
-    phone: order.phone,
-    buyerDocument: order.buyerDocument,
-    buyerName: order.buyerName,
-    items: basket.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty, storeKey: i.storeKey, storeLabel: i.storeLabel, ...(i.medicine ? { medicine: i.medicine } : {}) })),
-    fulfillments: order.fulfillments
-  }).catch((error) => {
-    console.warn("[purchase-rehearsal:error]", order.id, error instanceof Error ? error.message : error);
-    return null;
-  });
-  if (rehearsal) {
-    const promise = Array.isArray(order.fulfillments)
-      ? (order.fulfillments as Array<{ deliveryPromise?: string }>).map((f) => f?.deliveryPromise).filter(Boolean).join(" · ") || undefined
-      : undefined;
-    await prisma.deliveryOrder.updateMany({
-      where: { id: order.id, status: "awaiting_quote_confirmation" },
-      data: {
-        status: "canceled",
-        quoteExpiresAt: null,
-        notes: [order.notes, `🎭 ENSAIO DA COMPRA (${new Date().toISOString()}): ${rehearsal.storeLabel} recusou (${rehearsal.kind}): ${rehearsal.detail}. Nada cobrado.`].filter(Boolean).join("\n")
-      }
-    });
-    await notifyOwner(`🎭 Ensaio da compra barrou a cobrança: ${rehearsal.storeLabel} recusou (${rehearsal.kind}) — ${rehearsal.detail.slice(0, 160)}. Pedido ${order.id.slice(-6).toUpperCase()} NÃO foi cobrado.`, order.phone).catch(() => undefined);
-    if (rehearsal.kind === "items") {
-      const failed = basket.filter((i) => rehearsal.skus.includes(i.sku));
-      return { expired: false, unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining: basket.filter((i) => !rehearsal.skus.includes(i.sku)) } };
-    }
-    return { expired: false, deliveryNotConfirmed: { storeLabel: rehearsal.storeLabel, promise, kind: rehearsal.kind, basket } };
+    if ("unavailable" in block) return { expired: false, unavailable: block.unavailable };
+    await notifyOwner(block.ownerAlert, order.phone).catch(() => undefined);
+    return { expired: false, deliveryNotConfirmed: block.deliveryNotConfirmed };
   }
 
   // Trava do Pix de saída (06/10): loja de compra automática só é cobrada se a Lia

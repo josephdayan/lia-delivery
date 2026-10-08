@@ -81,6 +81,35 @@ test("ensaio: loja fora do ar/timeout não inventa recusa (cobra como antes)", a
   assert.equal(await rehearsePurchase(order("90 min"), flaky as never), null);
 });
 
+test("ensaio: a loja está cobrando MAIS que o cotado ao cliente → NÃO cobra (price); igual ou menor → cobra", async (t) => {
+  if (!dbOk) return t.skip();
+  // Cotado 5,39 + frete 8,90 (SUPER EXPRESSA 90m); a loja agora cobra 7,99 → recusa por preço (antes virava
+  // CHECKOUT_MISMATCH depois do pagamento e estorno).
+  const quoted = { ...order("90 min"), itemsSubtotal: 5.39, deliveryFee: 8.9 };
+  quoted.items = [{ ...quoted.items[0], unitPrice: 5.39 }];
+  const fail = await rehearsePurchase(quoted, fakeVtex({ priceCents: 799 }).fetchImpl);
+  assert.equal(fail?.kind, "price");
+  assert.match(fail?.detail ?? "", /acima do cotado/);
+  assert.equal(await rehearsePurchase(quoted, fakeVtex({ priceCents: 539 }).fetchImpl), null);
+  assert.equal(await rehearsePurchase(quoted, fakeVtex({ priceCents: 499 }).fetchImpl), null, "mais barato na loja não é recusa");
+  // Teto por loja (pedido com cotação por loja): vale o da loja ensaiada.
+  const perStore = { ...quoted, fulfillments: [{ storeKey: "drogariasp", deliveryPromise: "pela própria loja · prazo da loja: 90 min", itemsSubtotal: 5.39, deliveryFee: 8.9 }, { storeKey: "mambo", deliveryPromise: "prazo da loja: 2 dias", itemsSubtotal: 100, deliveryFee: 0 }] };
+  assert.equal((await rehearsePurchase(perStore, fakeVtex({ priceCents: 799 }).fetchImpl))?.kind, "price");
+});
+
+test("ensaio: orçamento de tempo estourado = loja instável, cobra como antes (nunca trava a conversa)", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_PURCHASE_REHEARSAL_BUDGET_MS = "300";
+  const hang = () => new Promise<Response>(() => undefined);
+  const started = Date.now();
+  try {
+    assert.equal(await rehearsePurchase(order("90 min"), hang as never), null);
+    assert.ok(Date.now() - started < 5_000, "voltou pelo orçamento, não pelo timeout da loja");
+  } finally {
+    delete process.env.LIA_PURCHASE_REHEARSAL_BUDGET_MS;
+  }
+});
+
 test("ensaio: loja sem conta de compra automática não é ensaiada (vai pra fila manual)", async (t) => {
   if (!dbOk) return t.skip();
   const o = order("90 min");

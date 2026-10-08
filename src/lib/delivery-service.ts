@@ -51,7 +51,7 @@ import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, Choice
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
 import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
-import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
+import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
 // Fachada pública (rotas, testes e módulos de pagamento importam daqui).
@@ -2324,6 +2324,9 @@ async function handleDeliveryTurn(
       await reply(phone, (ctx.basket?.length ?? 0) > 0 ? copy.finishOrderFirst() : copy.noOrdersYet());
       return;
     }
+    // Ensaio da compra (08/10 noite): antes de reemitir/reenviar, a loja é consultada de novo — a cobrança
+    // só volta pro cliente se a compra ainda consegue fechar; senão a lista volta e a Lia recota.
+    if (await guardOpenCharge(phone, convo.id, user, ctx, order)) return;
     if (intent.kind === "resend_code" && intent.keyAsk) {
       // "qual a chave pix?" (06/10): explica o copia-e-cola e reenvia o mesmo código.
       if (!isCardCharge(order)) await reply(phone, copy.pixKeyExplain());
@@ -3268,6 +3271,7 @@ async function handleDeliveryTurn(
   if (ctx.step === "awaiting_payment" && ctx.deliveryOrderId && (intent.kind === "pay" || intent.kind === "choose_payment")) {
     const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } });
     if (order && order.status === "awaiting_payment") {
+      if (await guardOpenCharge(phone, convo.id, user, ctx, order)) return;
       const wanted = intent.kind === "choose_payment" ? intent.method : intent.kind === "pay" ? intent.method : undefined;
       if (wanted && wanted !== (isCardCharge(order) ? "card" : "pix")) {
         // Rajada "pix"/"cartão" (28/08 S10): a troca deixa claro que o código anterior
@@ -3348,6 +3352,7 @@ async function handleDeliveryTurn(
         return;
       }
       if (openOrder?.status === "awaiting_payment") {
+        if (await guardOpenCharge(phone, convo.id, user, ctx, openOrder)) return;
         await resendCharge(phone, openOrder);
         return;
       }
@@ -7516,18 +7521,71 @@ export function packAdjusted(
 // Pré-voo barrou a cobrança (04/09): o pedido fechou sem cobrar; o resto da cesta volta
 // pro contexto e os itens que a loja não tem são buscados de novo — a verificação ao vivo
 // tira a loja que falhou e mostra só o que está confirmado para o CEP.
-// Ensaio da compra recusou a entrega/endereço (08/10 noite): nada cobrado, a cesta inteira volta para o
-// cliente (montando a lista) e o próximo "pagar" refaz a cotação com a entrega que a loja confirma.
+// Ensaio da compra recusou a entrega/endereço/preço (08/10 noite): nada cobrado, a cesta inteira volta
+// para o cliente e a Lia REFAZ A COTAÇÃO NO MESMO TURNO (simulação com as mesmas coordenadas da compra →
+// a entrega/preço que a loja confirma). Endereço recusado: pede o endereço de novo antes de cotar.
+// Loop impossível: a 2ª recusa seguida da MESMA loja com os mesmos itens tira a loja do caminho e busca o
+// item em outra (como o pré-voo faz com item sem estoque).
 async function handleDeliveryNotConfirmed(
   phone: string,
   convoId: string,
   user: { id: string; cep: string | null },
   ctx: DeliveryContext,
-  info: { storeLabel: string; promise?: string; kind: "items" | "delivery" | "address" | "checkout"; basket: BasketItem[] }
+  info: { storeKey: string; storeLabel: string; promise?: string; kind: "items" | "delivery" | "address" | "price" | "checkout"; basket: BasketItem[] }
 ) {
-  const next: DeliveryContext = { ...addressOnlyCtx(ctx, user.cep), step: "collecting", basket: info.basket.filter((item) => item.unitPrice > 0) };
+  const basket = info.basket.filter((item) => item.unitPrice > 0);
+  const skus = basket.filter((item) => item.storeKey === info.storeKey).map((item) => item.sku).sort();
+  // Recusa anterior conta por 2 h: a mesma loja/itens recusados ontem são outra história.
+  const prior = ctx.rehearsalRefused && Date.now() - ctx.rehearsalRefused.at < 2 * 3_600_000 ? ctx.rehearsalRefused : undefined;
+  const repeated = Boolean(prior && prior.storeKey === info.storeKey && prior.skus.join("|") === skus.join("|") && info.kind !== "address");
+  if (repeated && skus.length) {
+    const failed = basket.filter((item) => item.storeKey === info.storeKey);
+    await handlePreflightUnavailable(
+      phone,
+      convoId,
+      user,
+      { ...ctx, rehearsalRefused: undefined },
+      { storeLabel: info.storeLabel, items: failed, remaining: basket.filter((item) => item.storeKey !== info.storeKey) },
+      copy.rehearsalGaveUpStore(failed.map((i) => i.name), info.storeLabel)
+    );
+    return;
+  }
+  const next: DeliveryContext = {
+    ...addressOnlyCtx(ctx, user.cep),
+    step: "collecting",
+    basket,
+    ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}),
+    rehearsalRefused: { storeKey: info.storeKey, skus, count: (prior?.storeKey === info.storeKey ? prior.count : 0) + 1, at: Date.now() }
+  };
+  if (info.kind === "address") {
+    next.deliveryAddressVerified = false;
+    await writeCtx(convoId, next);
+    await reply(phone, copy.deliveryNotConfirmed(info.storeLabel, info.promise, info.kind));
+    await continueAfterBasket(phone, convoId, next, user.cep);
+    return;
+  }
   await writeCtx(convoId, next);
-  await reply(phone, copy.deliveryNotConfirmed(info.storeLabel, info.promise, info.kind));
+  await continueAfterBasket(phone, convoId, next, user.cep, copy.deliveryNotConfirmed(info.storeLabel, info.promise, info.kind));
+}
+
+// Cobrança aberta (awaiting_payment) prestes a ser reemitida/reenviada: a loja é consultada de novo
+// (pré-voo + ensaio). Bloqueio = pedido fechado sem dinheiro e a lista volta pro cliente. true = o turno
+// foi resolvido aqui; false = pode reemitir/reenviar.
+async function guardOpenCharge(
+  phone: string,
+  convoId: string,
+  user: { id: string; cep: string | null },
+  ctx: DeliveryContext,
+  order: Parameters<typeof recheckOpenCharge>[0]
+): Promise<boolean> {
+  const block = await recheckOpenCharge(order).catch((error) => {
+    console.warn("[recheck-open-charge:error]", order.id, error instanceof Error ? error.message : error);
+    return null;
+  });
+  if (!block) return false;
+  if ("unavailable" in block) await handlePreflightUnavailable(phone, convoId, user, ctx, block.unavailable);
+  else await handleDeliveryNotConfirmed(phone, convoId, user, ctx, block.deliveryNotConfirmed);
+  return true;
 }
 
 async function handlePreflightUnavailable(
@@ -7535,11 +7593,12 @@ async function handlePreflightUnavailable(
   convoId: string,
   user: { id: string; cep: string | null },
   ctx: DeliveryContext,
-  unavailable: { storeLabel: string; items: BasketItem[]; remaining: BasketItem[] }
+  unavailable: { storeLabel: string; items: BasketItem[]; remaining: BasketItem[] },
+  intro?: string
 ) {
   const next: DeliveryContext = { ...addressOnlyCtx(ctx, user.cep), basket: unavailable.remaining };
   await writeCtx(convoId, next);
-  await reply(phone, copy.preflightUnavailable(unavailable.items.map((i) => i.name), unavailable.storeLabel));
+  await reply(phone, intro ?? copy.preflightUnavailable(unavailable.items.map((i) => i.name), unavailable.storeLabel));
   const query = unavailable.items.map((i) => (i.qty > 1 ? `${i.qty} ${i.name}` : i.name)).join(", ");
   await handleSearch(phone, convoId, user.cep, next, query, user.id);
 }
@@ -8075,7 +8134,9 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
     // Complemento (08/10, fase 4): "editar itens" reabre ESTE pedido — não pergunta de novo nem oferece o recusado.
     ...(ctx.complementAsked ? { complementAsked: ctx.complementAsked } : {}),
-    ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {})
+    ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {}),
+    // Ensaio da compra (08/10 noite): a recusa anterior sobrevive à recotação — a 2ª da mesma loja troca de loja.
+    ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
   });
 
   let holdupItem: string | undefined;

@@ -158,7 +158,9 @@ export async function opsPublishManualQuote(
             // "mais barato"/"entrega mais rápida" DEPOIS do total dependem dos dois
             // (27/08 S12/S14).
             ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
-            ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {})
+            ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {}),
+            // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
+            ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
           });
         } catch (error) {
           // Turno superado no meio da publicação: o pedido volta pra fila e o turno

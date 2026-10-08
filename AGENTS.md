@@ -7,12 +7,18 @@ janela de entrega obrigatória (Mambo), Pix de saída recusado pelo Asaas. Três
 - **Simulação com as mesmas coordenadas da compra** (`simulationGeo` em live-freight.ts, mesma fonte do
   vtex-address.ts, cache por CEP): vitrine, cotação e pré-voo veem as mesmas entregas que o checkout. Medido na loja:
   sem coordenada "rápida 30m", com coordenada "60m".
-- **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, chamado em `issueValidatedRetailerQuotePayment`): roda os
+- **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, via `findChargeBlock` em order-payments.ts): roda os
   MESMOS passos da compra automática (cesta, perfil, endereço com coordenadas, entrega dentro do prazo prometido, Pix,
-  conferência) e para antes de fechar; esvazia a cesta. Recusa da loja = nada cobrado (item → alternativas;
-  entrega/endereço → `copy.deliveryNotConfirmed`, a lista continua e o "pagar" refaz o total). Loja fora do ar não
-  inventa recusa. Reproduzido na loja real com o pedido de 08/10: promessa 30 min → NÃO COBRA; 60 min → cobra.
-  `LIA_PURCHASE_REHEARSAL=false` desliga.
+  conferência, **preço ≤ teto cotado**) e para antes de fechar; esvazia a cesta. Recusa da loja = nada cobrado (item →
+  alternativas; entrega/preço/checkout → `copy.deliveryNotConfirmed` e a Lia **recota no mesmo turno**; endereço →
+  pede o endereço de novo). **Sem loop**: a 2ª recusa seguida da MESMA loja/itens (`ctx.rehearsalRefused`) tira a
+  loja do caminho e busca o item em outra (`copy.rehearsalGaveUpStore`). Vale em TODA cobrança: cotação aceita,
+  troca Pix↔cartão, Pix vencido e "manda de novo" (`recheckOpenCharge` → `guardOpenCharge`, que fecha o pedido
+  aberto sem dinheiro por `closeUnpaidOrder`). Loja fora do ar/403/5xx ou orçamento estourado
+  (`LIA_PURCHASE_REHEARSAL_BUDGET_MS`, 45 s) não inventa recusa. Reproduzido na loja real com o pedido de 08/10:
+  promessa 30 min → NÃO COBRA; 60 min → cobra. `LIA_PURCHASE_REHEARSAL=false` desliga.
+  Janela que sobra (aceita): Pix emitido e pago até 60 min depois — a loja pode mudar nesse meio; aí a compra falha
+  e o estorno automático é o caminho (único caso restante).
 - **Trava do Pix de saída sem janela de 6h** (`pixOutReadiness`): vale a última recusa do Asaas de quando for, sem Pix
   pago depois → testa de novo (a cada 10 min) antes de cobrar.
 

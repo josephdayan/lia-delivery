@@ -2449,17 +2449,27 @@ export function preflightUnavailable(names: string[], store: string): string {
   return `Conferi na *${store}* na hora de cobrar e *${names.join("*, *")}* não está mais disponível para o seu endereço. Nada foi cobrado. Veja outras opções:`;
 }
 
-// Ensaio da compra (08/10 noite): a loja não confirmou a entrega prometida (ou o endereço) na hora de
-// cobrar. Nada foi cobrado; a cesta continua e o "pagar" refaz o total com a entrega que existe.
-export function deliveryNotConfirmed(store: string, promise: string | undefined, kind: "delivery" | "address" | "checkout" | "items"): string {
+// Ensaio da compra (08/10 noite): a loja não confirmou a entrega prometida, o endereço ou o preço na hora
+// de cobrar. Nada foi cobrado; a Lia refaz a cotação NA HORA (a mensagem do novo total vem logo depois) —
+// endereço recusado pede o endereço de novo.
+export function deliveryNotConfirmed(store: string, promise: string | undefined, kind: "delivery" | "address" | "price" | "checkout" | "items"): string {
   const prazo = promise ? (promise.match(/prazo da loja:\s*([^·]+)/i)?.[1] ?? "").trim() : "";
   if (kind === "address") {
     return `Conferi na *${store}* na hora de cobrar e a loja não aceitou o seu endereço como está. *Nada foi cobrado.* Me manda o endereço completo de novo (rua, número e complemento) que eu refaço.`;
   }
   if (kind === "delivery") {
-    return `Conferi na *${store}* na hora de cobrar e a entrega${prazo ? ` de *${prazo}*` : " que eu te mostrei"} não está disponível pro seu endereço agora. *Nada foi cobrado.* Sua lista continua aqui: diz *pagar* que eu fecho de novo com a entrega que a loja confirma pra você.`;
+    return `Conferi na *${store}* na hora de cobrar e a entrega${prazo ? ` de *${prazo}*` : " que eu te mostrei"} não está disponível pro seu endereço agora. *Nada foi cobrado.* Refiz o total com a entrega que a loja confirma pra você:`;
   }
-  return `Conferi na *${store}* na hora de cobrar e a loja não fechou o pedido agora. *Nada foi cobrado.* Sua lista continua aqui: diz *pagar* daqui a pouco que eu tento de novo.`;
+  if (kind === "price") {
+    return `Conferi na *${store}* na hora de cobrar e o preço mudou na loja. *Nada foi cobrado.* Refiz o total com o preço de agora:`;
+  }
+  return `Conferi na *${store}* na hora de cobrar e a loja não fechou o pedido agora. *Nada foi cobrado.* Refiz a cotação:`;
+}
+
+// 2ª recusa seguida da mesma loja no ensaio (08/10 noite): a loja sai do caminho e a Lia busca o mesmo
+// item em outra loja — sem loop e sem cobrar.
+export function rehearsalGaveUpStore(names: string[], store: string): string {
+  return `A *${store}* não fechou *${names.join("*, *")}* pro seu endereço de novo. *Nada foi cobrado.* Vou procurar em outra loja:`;
 }
 
 export function operatorPlanBOffered(shortId: string, summary: string): string {
