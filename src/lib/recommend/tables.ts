@@ -641,16 +641,15 @@ export const SYMPTOM_TABLE: SymptomTableEntry[] = [
     picks: [
       mip("farmacia.analgesico", "dipirona | paracetamol | neosaldina | dorflex", "alivia a dor de cabeça"),
       mip("farmacia.anti_inflamatorio", "ibuprofeno | advil | alivium", "alivia dor e inflamação")
-    ],
-    care: [p("bebidas.agua", "agua mineral", "desidratação piora a dor de cabeça")]
+    ]
+    // Sem água como "cuidado" (dono, 08/10 noite: "a água não tem a ver" num pedido de dor de cabeça).
   },
   {
     keys: ["enxaqueca", "crise de enxaqueca", "enxaqueca forte"],
     picks: [
       mip("farmacia.analgesico", "neosaldina | dipirona | paracetamol | doril enxaqueca", "alivia a dor da enxaqueca"),
       mip("farmacia.anti_inflamatorio", "ibuprofeno | advil", "alivia dor e inflamação")
-    ],
-    care: [p("bebidas.agua", "agua mineral", "hidratação")]
+    ]
   },
   {
     keys: ["febre", "to com febre", "febril", "febrao", "corpo quente", "temperatura alta"],

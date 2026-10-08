@@ -270,3 +270,12 @@ test("revisão A6: ressaca só hidratação (sem Engov/AAS, AINE, paracetamol); 
   const gripe = findSymptom("to gripado")!;
   assert.match(gripe.picks.find((p) => p.shelfId === "farmacia.antigripal")!.why, /pressão alta/);
 });
+
+test("dor de cabeça e enxaqueca não recomendam água (dono, 08/10 noite: 'a água não tem a ver')", () => {
+  for (const text of ["to com dor de cabeca", "enxaqueca"]) {
+    const entry = findSymptom(normalizeText(text));
+    assert.ok(entry, text);
+    const shelves = [...entry!.picks, ...(entry!.care ?? [])].map((p) => p.shelfId);
+    assert.ok(!shelves.includes("bebidas.agua"), `${text}: ${shelves.join(", ")}`);
+  }
+});

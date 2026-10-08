@@ -173,7 +173,8 @@ describe("A5 — a IA não escolhe classe de remédio fora da tabela", () => {
     // Rodada de qualidade (08/10, noite): sintoma com entrada curada usa a TABELA direto (a IA nem decide).
     assert.equal(p.source, "table");
     assert.ok(!ids(p).includes("farmacia.antigripal"));
-    assert.deepEqual(ids(p), ["farmacia.analgesico", "farmacia.anti_inflamatorio", "bebidas.agua"]);
+    // Sem água na dor de cabeça (dono, 08/10 noite: "a água não tem a ver").
+    assert.deepEqual(ids(p), ["farmacia.analgesico", "farmacia.anti_inflamatorio"]);
   });
 
   it("sintoma sem entrada na tabela: nada de mip (só cuidado)", async () => {
