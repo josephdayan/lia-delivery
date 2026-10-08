@@ -102,7 +102,10 @@ Revisão de código por sub-agente achou 9 pontos (2 de segurança ANVISA na por
   pedidos vagos com juiz. Estimativa: 1 dia a camada 1 com placar, +1 dia memória e pergunta.
   **Plano detalhado (08/10): [docs/plano-recomendacoes-2026-10-08.md](docs/plano-recomendacoes-2026-10-08.md)** —
   diagnóstico do que acontece hoje ("quero algo doce" vira busca literal: uva doce/batata doce/doce de leite, ou
-  pergunta de volta), 3 camadas, arquivos a mexer, placar próprio e 4 decisões do dono (§7).
+  pergunta de volta) e o macro em 5 etapas (entender a forma do pedido → mapear em prateleiras reais → buscar →
+  julgar pelo critério → aprender), com mapa de prateleiras gerado dos catálogos. Dono (08/10, 2ª rodada): sintoma
+  redireciona a remédio isento que ajude, os melhores antes (substitui o "não indico" de 07/10; fase própria, só
+  depois da revisão sanitária).
 
 ## 08/10/2026 — Preço da loja + taxa de serviço declarada; compra e nota fiscal no CPF do cliente (tudo)
 
