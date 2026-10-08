@@ -196,12 +196,21 @@ const BISCOITO: RerankLine[] = [
     ]
   }
 ];
-test("rerank: exatos abrem a vitrine, variantes depois; exato que não foi aprovado não entra", async () => {
+test("rerank: exatos abrem a vitrine e só UMA variante depois; exato que não foi aprovado não entra", async () => {
   mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA", "OUTRO"], exatos: ["MAIZENA", "OUTRO", "FANTASMA"], proximos: [] }] });
   const out = await rerankShoppingOptions("bolacha maizena", BISCOITO);
   assert.deepEqual(out?.lines[0].skus, ["MAIZENA", "OUTRO", "CHOCO"]);
   // O conjunto segue para a vitrine, que ordena exato antes do prazo de entrega.
   assert.deepEqual(out?.lines[0].exatos, ["MAIZENA", "OUTRO"]);
+  // Um exato e duas variantes aprovadas: o exato e só a 1ª variante.
+  const TRES: RerankLine[] = [{ query: "filé de tilápia", candidates: [
+    { sku: "EMP", name: "Filé de Tilápia Empanado 500g", price: 30, store: "Swift" },
+    { sku: "FILE", name: "Filé de Tilápia 400g", price: 35, store: "Swift" },
+    { sku: "INF", name: "Filé de Tilápia Croc Infantil 300g", price: 25, store: "Mambo" }
+  ] }];
+  mockResponse({ lines: [{ exigencias: [], aprovados: ["EMP", "FILE", "INF"], exatos: ["FILE"], proximos: [] }] });
+  const one = await rerankShoppingOptions("filé de tilápia", TRES);
+  assert.deepEqual(one?.lines[0].skus, ["FILE", "EMP"]);
   // Sem "exatos" (resposta antiga), a ordem continua a da IA.
   mockResponse({ lines: [{ exigencias: [], aprovados: ["CHOCO", "MAIZENA"], proximos: [] }] });
   const old = await rerankShoppingOptions("bolacha maizena", BISCOITO);

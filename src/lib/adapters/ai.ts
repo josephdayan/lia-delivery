@@ -328,7 +328,10 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
         const exactSet = new Set((line.exatos ?? []).filter((sku) => seen.has(sku) && skus.includes(sku)));
         const exact = approved.filter((c) => exactSet.has(c.sku));
         const rest = approved.filter((c) => !exactSet.has(c.sku));
-        const ordered = exact.length ? [...diversifyOptions(lines[i].query, exact, limit), ...diversifyOptions(lines[i].query, rest, limit)].slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
+        // Havendo o básico, no máximo UMA variante depois dele (mesma regra que o dono deu para remédio:
+        // "primeiro o normal e outra opção") — a variante aprovada que o cliente não pediu (empanado, cozido,
+        // zero açúcar) era o "extra errado" mais comum do placar.
+        const ordered = exact.length ? [...diversifyOptions(lines[i].query, exact, limit), ...diversifyOptions(lines[i].query, rest, limit).slice(0, 1)].slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
         const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : ordered;
         return {
           skus: shown.map((c) => c.sku),
