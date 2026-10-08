@@ -1,3 +1,10 @@
+## Sessões na nuvem (claude.ai/code): `NODE_USE_ENV_PROXY=1`
+
+O `fetch` do Node não usa o proxy do ambiente (o curl usa): sem `NODE_USE_ENV_PROXY=1`, ViaCEP, OpenAI e lojas
+falham em silêncio ("Host not in allowlist") e a Lia cai nos fallbacks. Suíte e placares: `NODE_USE_ENV_PROXY=1 npm run
+test:local`, `NODE_USE_ENV_PROXY=1 npx tsx scripts/bench-search.mts …`. Postgres embutido precisa de `.local-pg*/` com
+dono `postgres` (`chown -R postgres .local-pg .local-pg-bench`).
+
 ## REGRA VIGENTE — Modelo de preço e nota fiscal (dono, 08/10/2026): preço da loja + taxa de serviço; compra e nota no CPF do cliente
 
 `LIA_PRICING_MODE=service_fee` é o padrão (`src/lib/pricing.ts`): o cliente vê o **preço da loja** em cada item

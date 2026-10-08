@@ -23,8 +23,10 @@
 - [ ] Rede do ambiente liberada pelo dono (07/10). Falta `OPENAI_API_KEY` como segredo do ambiente (dono pega a
   chave em platform.openai.com → API keys). Sem ela o placar não roda: a IA da Lia e o juiz são a OpenAI.
 - [ ] Conferir se a guarda por nome ("comprimidos"/"mg" = remédio) esconde vitamina C com MIP ligado; se sim, é bug.
-- [ ] Suíte local completa nesta sessão: 1150/1151 — a única falha é `conversation.eval.test.ts` "CEP de SP capital"
-  (ViaCEP bloqueado pela rede do ambiente), não é regressão.
+- [x] Suíte local completa na sessão da nuvem (08/10, com o modelo service_fee): **1157/1157** — a única falha
+  (`conversation.eval.test.ts` "CEP de SP capital") era o `fetch` do Node ignorando o proxy do ambiente; com
+  `NODE_USE_ENV_PROXY=1` passa. **Regra para sessões na nuvem:** rodar `npm run test:local` e os placares com
+  `NODE_USE_ENV_PROXY=1` (OpenAI, lojas e ViaCEP só saem pelo proxy).
 
 ## 07/10/2026 (noite) — Tela de escolha da lista
 
