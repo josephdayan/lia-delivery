@@ -634,3 +634,38 @@ model SearchMiss {
   @@index([createdAt])
   @@index([query])
 }
+
+// Recomendação (08/10/2026, plano docs/plano-recomendacoes-2026-10-08.md §1.5 APRENDER): cada
+// recomendação mostrada (ou recusada por sinal de alerta / sem item no CEP) e, depois, o que o
+// cliente escolheu. Alimenta /ops/recomendacoes (o que pedem de forma vaga, o que converte, onde o
+// mapa falhou). Gravação best-effort: falha aqui nunca derruba a conversa.
+model RecommendLog {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  phone        String
+  userId       String?
+  // dialogue | regex | presignup (RecommendSource)
+  source       String
+  // need | product_judged
+  form         String
+  need         String?
+  product      String?
+  symptom      String?
+  criteria     Json
+  constraints  Json
+  // ai | table
+  planSource   String
+  redFlag      String?
+  shelfIds     Json
+  cardSkus     Json
+  emptyShelves Json
+  chosenSku    String?
+  // shown | chosen | none | red_flag
+  outcome      String?
+  mapMs        Int
+  searchMs     Int
+  judgeMs      Int
+
+  @@index([createdAt])
+  @@index([phone])
+}

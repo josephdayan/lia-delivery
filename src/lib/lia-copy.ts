@@ -1145,6 +1145,86 @@ export function vagueRequestAnswer(): string {
   return "Me diz o que você está com vontade que eu acho 🙂 Por exemplo: _lasanha congelada_, _pizza congelada_, _chocolate_, _sorvete_, _salgadinho_ — ou o nome de um produto.";
 }
 
+// ---------- recomendação (08/10, plano-recomendacoes) ----------
+// O pedido entendido, só com o que a copy usa (sem importar o módulo da recomendação).
+export type RecommendCopyReq = { form: "need" | "product_judged"; need?: string; product?: string; symptom?: string; recipient?: string; criteria: readonly string[] };
+
+const trimRec = (s: string | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
+const capFirst = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+const isGiftNeed = (req: RecommendCopyReq) => /\bpresente/i.test(req.need ?? "");
+const isSweetNeed = (req: RecommendCopyReq) => /\bdoce/i.test(req.need ?? "");
+const isHungerNeed = (req: RecommendCopyReq) => /^(?:muita\s+)?fome$|\bmatar a fome\b/i.test(trimRec(req.need));
+// "mãe" → "sua mãe"; "minha namorada" → "sua namorada"; "cachorro" → "seu cachorro".
+function recipientPhrase(recipient: string): string {
+  const r = trimRec(recipient).replace(/^(?:minha|meu|minhas|meus|a|o)\s+/i, "");
+  if (!r) return "";
+  if (/^(?:criança|crianca|bebê|bebe|amig[oa] secret[oa])/i.test(r)) return `${/^amig/i.test(r) ? "o" : "a"} ${r}`;
+  const feminine = /(?:a|ã|ãe|mae|mãe|avó|avo|tia|irmã|irma|esposa|namorada|filha|sogra|madrinha|chefe)$/i.test(r) && !/^(?:pai|avô|cachorro|gato)$/i.test(r);
+  return `${feminine ? "sua" : "seu"} ${r}`;
+}
+
+// Rótulo legível da necessidade: vira o `query` da escolha ("algo doce", "pra dor de barriga",
+// "chocolate bom", "presente pra sua mãe").
+export function recommendLabel(req: RecommendCopyReq): string {
+  if (req.symptom) return `pra ${trimRec(req.symptom)}`;
+  if (req.form === "product_judged") {
+    const product = trimRec(req.product) || "produto";
+    if (req.criteria.includes("cheap")) return `${product} em conta`;
+    if (req.criteria.includes("healthy")) return `${product} saudável`;
+    return `${product} bom`;
+  }
+  if (isGiftNeed(req) && req.recipient) return `presente pra ${recipientPhrase(req.recipient)}`;
+  if (isHungerNeed(req)) return "matar a fome";
+  return trimRec(req.need) || "uma ideia";
+}
+
+// Abertura dos cards. Nunca promete rapidez: o prazo real está em cada card.
+export function recommendIntro(req: RecommendCopyReq): string {
+  if (req.symptom) return `Pra ${trimRec(req.symptom)}, o que eu tenho *sem receita*:`;
+  if (req.form === "product_judged") {
+    const product = capFirst(trimRec(req.product) || "produto");
+    if (req.criteria.includes("cheap")) return `${product} em conta? Separei estes 👇`;
+    return `${product} bom? Separei estes 👇`;
+  }
+  if (isGiftNeed(req)) return req.recipient ? `Pra ${recipientPhrase(req.recipient)}, separei estas ideias 🎁` : "Separei estas ideias de presente 🎁";
+  if (isSweetNeed(req)) return "Pra matar a vontade de doce, olha o que achei 🍫";
+  if (isHungerNeed(req)) return "Pra matar a fome, olha o que achei 👇";
+  if (/^churrasco\b/i.test(trimRec(req.need))) return `Pro ${trimRec(req.need)}:`;
+  return `Pra *${trimRec(req.need) || "isso"}*, olha o que achei 👇`;
+}
+
+// Item da lista "Já anotei:" do onboarding (o pedido de recomendação inteiro, até o CEP).
+export function recommendNoted(req: RecommendCopyReq): string {
+  const label = recommendLabel(req);
+  return label.startsWith("pra ") || label === "matar a fome" ? `uma recomendação ${label === "matar a fome" ? "pra matar a fome" : label}` : `uma recomendação de ${label}`;
+}
+
+// Nenhum card com entrega no CEP. Nunca "não achei doce": diz o que procurou e pede um produto.
+export function recommendNone(req: RecommendCopyReq, emptyShelfLabels: string[] = []): string {
+  if (req.symptom) {
+    return `Não achei remédio *sem receita* pra ${trimRec(req.symptom)} com entrega aí 😕 Se você souber o nome do remédio, me diz que eu procuro. Se não melhorar, procure um médico ou farmacêutico.`;
+  }
+  const labels = emptyShelfLabels.map((l) => l.replace(/\s*\(.*?\)\s*/g, " ").trim().toLowerCase()).filter(Boolean).slice(0, 3);
+  const what = labels.length ? labels.join(", ").replace(/, ([^,]*)$/, " e $1") : recommendLabel(req);
+  return `Hoje não achei ${labels.length ? what : `*${what}*`} com entrega aí 😕 Me diz um produto que eu procuro.`;
+}
+
+// Antes dos cards de remédio isento (regra do dono, 08/10).
+export function recommendMedicineCare(): string {
+  return "São remédios *isentos de receita*. Leia a bula; se não melhorar em 1–2 dias ou piorar, procure um médico.";
+}
+
+// Sinal de alerta no pedido de saúde: não recomenda; compra só se o cliente nomear o isento.
+export function recommendRedFlag(reason: string): string {
+  const why = trimRec(reason) || "esse sinal";
+  return `Com *${why}*, o certo é falar com um médico ou farmacêutico antes de tomar qualquer coisa — se for forte ou piorar, procure atendimento (emergência: SAMU 192). Se um profissional já indicou um remédio *sem receita*, me diz o nome que eu compro.`;
+}
+
+// "outras" depois de mostrar todas as ideias que tinham entrega.
+export function recommendMoreNone(): string {
+  return "Essas eram as ideias que eu tinha com entrega aí. Me diz um produto que eu procuro 🙂 Ou responde o número de uma das opções.";
+}
+
 // "quem é vc?", "vc é robô?" (06/10): a apresentação genérica não dizia nem "sou a Lia".
 export function identityAnswer(): string {
   return "Sou a Lia, assistente virtual da *Lia Delivery* 🤖 Eu procuro o que você precisa em lojas oficiais, mostro o total com frete e prazo, e compro pra você depois que você paga. Se preferir falar com uma pessoa, é só dizer *atendente*.";

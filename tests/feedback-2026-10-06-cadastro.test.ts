@@ -304,11 +304,16 @@ test("M2: 'quanto tá o leite ninho?' no 1º contato anota o produto", async (t)
 
 test("M1: apresentação e cortesia não são anotadas", async (t) => {
   if (!dbOk) return t.skip();
-  for (const text of ["Oi Lia, sou a Clara Souza", "Bom dia! Tudo bem? Gostaria de fazer um pedido", "quero algo pra comer", "me liga"]) {
+  for (const text of ["Oi Lia, sou a Clara Souza", "Bom dia! Tudo bem? Gostaria de fazer um pedido", "me liga"]) {
     const phone = newPhone();
     const out = await send(phone, text);
     assert.doesNotMatch(out, /anotei/i, `${text}: ${out.slice(0, 200)}`);
   }
+  // Recomendação (08/10, dono): "quero algo pra comer" é pedido vago — fica anotado como RECOMENDAÇÃO até o
+  // CEP (nunca como item "1x quero algo pra comer").
+  const vague = await send(newPhone(), "quero algo pra comer");
+  assert.match(vague, /• uma recomendação de algo pra comer/, vague);
+  assert.doesNotMatch(vague, /1x quero algo/);
   const phone = newPhone();
   const out = await send(phone, "Oi! Vi o anúncio de vocês. Vcs entregam remédio? Preciso de dipirona");
   assert.match(out, /Já anotei:\n• 1x dipirona\n\n/);

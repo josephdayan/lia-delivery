@@ -5,6 +5,7 @@ import { ACTIVE_DELIVERY_ORDER_STATUSES, CONCIERGE_STORE_KEY } from "@/lib/order
 import { displayPrice } from "@/lib/pricing";
 import { DEFAULT_STORE_KEY, StoreConnector, getStore } from "@/lib/stores";
 import * as copy from "@/lib/lia-copy";
+import type { RecommendRequest, ShelfCandidate, ShelfPlan } from "@/lib/recommend/types";
 
 // Card MDR (~4.99% à vista) passed through to the customer when they choose card, so the
 // 10% margin survives. Gross-up: charged = net / (1 - mdr). Tunable via env as volume
@@ -40,7 +41,21 @@ export type BasketItem = {
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
 // o CEP do cliente — a única fonte que pode pôr prazo num card.
 // `repeat` (04/09): o cliente já comprou este produto — vem primeiro e com destaque.
-export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number };
+// `why` (08/10, recomendação): motivo de 1 linha do card ("doce e gelado", "alivia a cólica") — só em
+// opção que veio de uma recomendação; aparece abaixo do nome no card e em itálico na lista de texto.
+export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number; why?: string };
+
+// Estado de uma escolha que veio de RECOMENDAÇÃO (08/10, plano-recomendacoes): o pedido entendido, o
+// plano de prateleiras, as prateleiras já mostradas/sem item e os candidatos já buscados (para "mais
+// barato" re-julgar sem nova busca e "outras" mostrar as próximas prateleiras). `logId` = RecommendLog.
+export type RecommendationState = {
+  request: RecommendRequest;
+  plan: ShelfPlan;
+  shownShelfIds: string[];
+  emptyShelves: string[];
+  candidates?: ShelfCandidate[];
+  logId?: string;
+};
 
 export type StoreFulfillment = {
   storeKey: string;
@@ -103,6 +118,9 @@ export type PendingChoice = {
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
+  // Escolha montada por uma recomendação (08/10): "outras"/"mais barato"/refino seguem a recomendação
+  // (próximas prateleiras, re-julgamento, re-plano) em vez de paginar variantes de uma busca.
+  recommendation?: RecommendationState;
 };
 
 // not_found = nenhuma loja tem; unbuyable = existe, mas nenhuma entrega no CEP. ("mais perto" e
@@ -247,6 +265,9 @@ export type DeliveryContext = {
   lastChoice?: PendingChoice & { chosenSku: string };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
   pendingRequest?: string;
+  // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
+  // o `pendingRequest` separa por ", " e só guarda o que parece produto. Depois do CEP vira recomendação.
+  pendingRecommend?: string;
   cep?: string;
   city?: string;
   uf?: string;

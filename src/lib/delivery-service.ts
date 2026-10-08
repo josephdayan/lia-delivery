@@ -33,6 +33,9 @@ import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
+import { detectRecommendation } from "@/lib/recommend/detect";
+import { handleRecommend, markRecommendChosen, recommendByPrice, recommendFollowUp, recommendMore, recommendRefineFromAttribute, setRecommendDeps, type RecommendEnv } from "@/lib/recommend/handle";
+import { recommendEnabled } from "@/lib/recommend/types";
 import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, stripAcquisitionTag, type InboundAcquisition } from "@/lib/acquisition";
 
 // The operational brain of the remodelled Lia. One conversation = one basket of
@@ -693,7 +696,7 @@ function optionDelivery(o: ChoiceOption): string | undefined {
 function choicesTextFor(p: PendingChoice, header?: string): string {
   return copy.choicesText(
     p.query,
-    p.options.map((o) => ({ name: customerChoiceName(p, o), displayPrice: display(o.unitPrice, o.medicine), delivery: optionDelivery(o), repeat: o.repeat })),
+    p.options.map((o) => ({ name: textChoiceName(p, o), displayPrice: display(o.unitPrice, o.medicine), delivery: optionDelivery(o), repeat: o.repeat })),
     header ?? choicesHeaderFor(p)
   );
 }
@@ -703,6 +706,17 @@ function customerChoiceName(p: PendingChoice, option: ChoiceOption): string {
     return option.name.replace(/desodorante col[oô]nia/gi, "Perfume");
   }
   return option.name;
+}
+
+// Card de RECOMENDAÇÃO (08/10): o motivo vai na linha de baixo do nome (cards soltos) ou depois do nome
+// (carrossel, onde a quebra vira " · " e o nome é encurtado para caber); na lista de texto, "_motivo_".
+function cardChoiceName(p: PendingChoice, option: ChoiceOption): string {
+  const name = customerChoiceName(p, option);
+  return option.why ? `${name}\n_${option.why}_` : name;
+}
+function textChoiceName(p: PendingChoice, option: ChoiceOption): string {
+  const name = customerChoiceName(p, option);
+  return option.why ? `${name} · _${option.why}_` : name;
 }
 
 function toChoiceOption(
@@ -839,7 +853,7 @@ async function askSignup(phone: string, body: string, fallback: () => Promise<vo
 // de novo, sem a apresentação. Com CEP, falta só rua e número → o pedido de sempre.
 async function askStreetOrSignup(phone: string, ctx: DeliveryContext, userCep: string | null | undefined) {
   if (ctx.cep || userCep) return askStreetAndNumber(phone, ctx);
-  const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = notedForCopy(ctx);
   // Sem CEP nenhum, o texto pede o endereço COM CEP (06/10: "Falta o endereço: rua, número e
   // complemento" saía para quem nem tinha mandado endereço e soava como cobrança).
   await askSignup(phone, copy.signupFormBody(noted, false), () =>
@@ -918,7 +932,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     // posicional confirmava outro produto quando a lista trocava por baixo.
     const choices = p.options.map((o) => ({
       id: `optsku:${o.sku}`,
-      name: customerChoiceName(p, o),
+      name: cardChoiceName(p, o),
       displayPrice: display(o.unitPrice, o.medicine),
       imageUrl: o.imageUrl,
       delivery: optionDelivery(o),
@@ -984,7 +998,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   await reply(phone, header ?? choicesHeaderFor(p));
   for (let i = 0; i < p.options.length; i++) {
     const o = p.options[i];
-    await replyPhoto(phone, copy.choiceLine(i, o.name, display(o.unitPrice, o.medicine), optionDelivery(o), o.repeat), o.imageUrl);
+    await replyPhoto(phone, copy.choiceLine(i, textChoiceName(p, o), display(o.unitPrice, o.medicine), optionDelivery(o), o.repeat), o.imageUrl);
     if (gapMs > 0 && i < p.options.length - 1) await sleep(gapMs);
   }
   await reply(phone, copy.choicesAsk(p.options.length));
@@ -1891,7 +1905,7 @@ async function handleDeliveryTurn(
       ctx.flow = "delivery";
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
-      const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+      const noted = notedForCopy(ctx);
       await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress()));
     } else if (!savedCep) {
       ctx.flow = "delivery";
@@ -2024,7 +2038,20 @@ async function handleDeliveryTurn(
     await reply(phone, answer);
     return;
   }
-  if (intent.kind === "complaint") {
+  // Recomendação (08/10): pedido vago ("quero algo doce") e sintoma que o regex lê como reclamação
+  // ("tô com uma dor de cabeça horrível") viram recomendação. Com endereço e CEP, a busca de sempre
+  // (handleSearch: reabre cotação, depois reconhece a recomendação); sem eles, o onboarding abaixo
+  // guarda a frase inteira e pede o CEP.
+  const socialRec =
+    recommendEnabled() && (intent.kind === "vague_request" || intent.kind === "want_items" || intent.kind === "complaint")
+      ? detectRecommendation(text, { hasPendingChoice: Boolean(ctx.pending?.length), basketNames: ctx.basket?.map((b) => b.name) })
+      : null;
+  const recommendNow = socialRec && (intent.kind !== "complaint" || socialRec.symptom) ? socialRec : null;
+  if (recommendNow && user.defaultAddress && savedCep) {
+    await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
+    return;
+  }
+  if (intent.kind === "complaint" && !recommendNow) {
     await flagLatestOrder(user.id, `⚠️ RECLAMAÇÃO DO CLIENTE: "${text.slice(0, 140)}"`);
     const { notify, repeat } = enterAttendance(ctx, "complaint");
     if (notify) await notifyOwner(`⚠️ Reclamação de cliente: "${text.slice(0, 200)}" — responder no WhatsApp dele.`, phone);
@@ -2064,7 +2091,7 @@ async function handleDeliveryTurn(
     await rePresentStep();
     return;
   }
-  if (intent.kind === "vague_request") {
+  if (intent.kind === "vague_request" && !recommendNow) {
     await reply(phone, copy.vagueRequestAnswer());
     await rePresentStep();
     return;
@@ -2720,9 +2747,9 @@ async function handleDeliveryTurn(
       const queued = ctx.pendingRequest;
       ctx.pendingRequest = undefined;
       await writeCtx(convo.id, ctx);
-      if (queued) {
+      if (queued || ctx.pendingRecommend) {
         await reply(phone, copy.cpfSkipped(true));
-        await handleSearch(phone, convo.id, user.cep, ctx, queued, user.id);
+        await runQueuedRequest(phone, convo.id, user.cep, ctx, queued, user.id);
       } else {
         await reply(phone, copy.cpfSkipped(false));
       }
@@ -2739,9 +2766,15 @@ async function handleDeliveryTurn(
     ctx.pendingRequest = undefined;
     await writeCtx(convo.id, ctx);
     if (queued) {
-      await handleSearch(phone, convo.id, user.cep, ctx, intent.kind === "free_text" ? `${queued}, ${text}` : queued, user.id);
+      await runQueuedRequest(phone, convo.id, user.cep, ctx, intent.kind === "free_text" ? `${queued}, ${text}` : queued, user.id);
       return;
     }
+    if (ctx.pendingRecommend && intent.kind !== "free_text") {
+      await runQueuedRequest(phone, convo.id, user.cep, ctx, undefined, user.id);
+      return;
+    }
+    // Mensagem nova com uma recomendação guardada: a mensagem nova manda (a guardada sai).
+    delete ctx.pendingRecommend;
   } else if (ctx.step === "need_cpf") {
     const n = normalizeMsg(text);
     if (/\b(sem|tira|tirar|remove|remover|nao quero|deixa)\b.*\bremedios?\b/.test(n)) {
@@ -2783,9 +2816,9 @@ async function handleDeliveryTurn(
       const queued = ctx.pendingRequest;
       ctx.pendingRequest = undefined;
       await writeCtx(convo.id, ctx);
-      if (queued) {
+      if (queued || ctx.pendingRecommend) {
         await reply(phone, copy.cpfSaved(maskCpf(cpf)));
-        await handleSearch(phone, convo.id, user.cep, ctx, queued, user.id);
+        await runQueuedRequest(phone, convo.id, user.cep, ctx, queued, user.id);
       } else if (ctx.basket?.length) {
         await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.cpfSaved(maskCpf(cpf)));
       } else {
@@ -2972,7 +3005,10 @@ async function handleDeliveryTurn(
     const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
     if (availability) text = availability;
     const priceAsk = !availability && intent.kind === "free_text" ? parsePriceAsk(text) : null;
-    const asking = !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
+    // Pedido de recomendação (08/10): a frase INTEIRA fica guardada até o CEP ("qual o melhor
+    // chocolate?" não é pergunta do serviço; "tô com fome, quero algo doce" não vira "1x tô com fome").
+    const recNote = onboardingRecommendation(text, intent);
+    const asking = !recNote && !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await answerOnboardingQuestion(phone, text);
       ctx.flow = "delivery";
@@ -2991,10 +3027,11 @@ async function handleDeliveryTurn(
     }
     // Só o que tem cara de produto é anotado (06/10, M1): "sou a Clara Souza", "gostaria de
     // fazer um pedido", "vi o anúncio", história pessoal e "me liga" ficam de fora.
-    const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    const note = !recNote && intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    if (recNote) ctx.pendingRecommend = recNote.text;
     // Despedida depois da recusa de remédio ("vou procurar uma farmácia, obrigada"): sem pedido novo, sem
     // pedir endereço de novo (07/10, c08).
-    if (!note && intent.kind === "free_text" && !isQuestion(text) && ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000) {
+    if (!note && !recNote && intent.kind === "free_text" && !isQuestion(text) && ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000) {
       await reply(phone, copy.medicineFarewell());
       return;
     }
@@ -3003,7 +3040,7 @@ async function handleDeliveryTurn(
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
     if (priceAsk && note) await reply(phone, copy.priceAfterAddress(priceAsk));
-    const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((line) => `${line.qty}x ${line.phrase}`) : [];
+    const noted = notedForCopy(ctx);
     await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
     return;
   }
@@ -3027,7 +3064,8 @@ async function handleDeliveryTurn(
     const availability = intent.kind === "free_text" ? parseAvailabilityAsk(text) : null;
     if (availability) text = availability;
     const priceAsk = !availability && intent.kind === "free_text" ? parsePriceAsk(text) : null;
-    const asking = !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
+    const recNote = onboardingRecommendation(text, intent);
+    const asking = !recNote && !availability && !priceAsk && intent.kind === "free_text" && isQuestion(text);
     if (asking) {
       await answerOnboardingQuestion(phone, text);
       ctx.flow = "delivery";
@@ -3036,17 +3074,18 @@ async function handleDeliveryTurn(
       await askAddress(phone, copy.askCepAgain());
       return;
     }
-    const note = intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    const note = !recNote && intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
     const lines = note ? resolveListItems(note) : [];
     if (note) addPendingRequest(ctx, note);
+    if (recNote) ctx.pendingRecommend = recNote.text;
     ctx.flow = "delivery";
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
-    const noted = ctx.pendingRequest ? resolveListItems(ctx.pendingRequest).map((l) => `${l.qty}x ${l.phrase}`) : [];
+    const noted = notedForCopy(ctx);
     await reply(
       phone,
       alreadyAsked
-        ? lines.length
+        ? lines.length || recNote
           ? copy.notedAskCep(noted)
           : copy.askCepAgain()
         : copy.welcomeAskCep(noted)
@@ -3071,6 +3110,13 @@ async function handleDeliveryTurn(
   // "tira X"/"troca X por Y" fall through to the basket-editing handlers below.
   // "o 1, pode pagar no pix" (06/10) é escolha + pagamento: entra na escolha mesmo com o
   // intent de pagar.
+  // Escolha que veio de RECOMENDAÇÃO (08/10): "outras" = próximas prateleiras, "mais barato" = re-julga
+  // pelo preço, "sem chocolate"/"de morango" = refaz a recomendação com a restrição — antes da escolha
+  // comum ("sem chocolate" seria remoção da cesta; "outras" paginaria variantes de "algo doce").
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.recommendation) {
+    const env: RecommendEnv = { phone, convoId: convo.id, userId: user.id, userCep: user.cep, ctx };
+    if (await recommendFollowUp(env, text, intent)) return;
+  }
   const choiceThenPay = ctx.step === "choosing" && ctx.pending?.length ? parseChoiceCombo(text, ctx.pending[0].options)?.pay : false;
   if (
     ctx.step === "choosing" &&
@@ -4297,12 +4343,12 @@ async function handleNewCep(
   // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
   // 01310-100") ou antes (06/10, Clara mandou rua e número, depois o CEP: o CPF nunca foi pedido).
   // Os itens guardados aparecem na confirmação: o cliente vê que não sumiram.
-  const noted = queued ? resolveListItems(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = notedForCopy(ctx, queued);
   const savedWithNoted = noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg;
   if (completingSignup && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedWithNoted, queued))) return;
-  if (queued) {
+  if (queued || ctx.pendingRecommend) {
     await reply(phone, savedMsg);
-    await handleSearch(phone, convoId, null, ctx, queued);
+    await runQueuedRequest(phone, convoId, null, ctx, queued || undefined, userId, undefined);
     return;
   }
 
@@ -4345,6 +4391,48 @@ function addPendingRequest(ctx: DeliveryContext, note: string) {
     segments.push(note);
   }
   ctx.pendingRequest = segments.join(", ") || undefined;
+}
+
+// ---- recomendação no onboarding (08/10, plano-recomendacoes; dono: CEP no 1º contato) ----
+// A mensagem é um pedido de recomendação? (vago, sintoma, presente, produto + julgamento). Sintoma
+// lido como reclamação também conta; o resto da reclamação não.
+function onboardingRecommendation(text: string, intent: Intent) {
+  if (!recommendEnabled()) return null;
+  if (intent.kind !== "free_text" && intent.kind !== "vague_request" && intent.kind !== "want_items" && intent.kind !== "complaint") return null;
+  const req = detectRecommendation(text);
+  return req && (intent.kind !== "complaint" || req.symptom) ? req : null;
+}
+
+// "Já anotei:" — os itens guardados e, se houver, a recomendação guardada ("uma recomendação de algo doce").
+function notedForCopy(ctx: DeliveryContext, queued: string | undefined = ctx.pendingRequest): string[] {
+  const items = queued ? resolveListItems(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const rec = ctx.pendingRecommend ? detectRecommendation(ctx.pendingRecommend) : null;
+  return rec ? [...items, copy.recommendNoted(rec)] : items;
+}
+
+// O pedido guardado no onboarding roda depois do CEP/cadastro: a recomendação guardada vira
+// recomendação (cards); itens viram a busca de sempre. As duas coisas juntas (raro: "tô com fome" e
+// depois "e 2 cocas" antes do CEP): a recomendação vai e os itens ficam registrados no log — o
+// cliente vê os cards e pede os itens de novo depois. Flag desligada: a frase vira busca, como antes.
+async function runQueuedRequest(
+  phone: string,
+  convoId: string,
+  cep: string | null | undefined,
+  ctx: DeliveryContext,
+  queued: string | undefined,
+  userId?: string,
+  searchUserId: string | undefined = userId
+) {
+  const recText = ctx.pendingRecommend;
+  delete ctx.pendingRecommend;
+  const req = recText && recommendEnabled() ? detectRecommendation(recText) : null;
+  if (req) {
+    if (queued) console.log(`[recommend] pedido guardado com itens; itens não buscados: ${JSON.stringify(queued.slice(0, 120))}`);
+    await handleRecommend({ phone, convoId, userId, userCep: cep, ctx }, { ...req, source: "presignup" });
+    return;
+  }
+  const text = [queued, recText].filter(Boolean).join(", ");
+  if (text) await handleSearch(phone, convoId, cep, ctx, text, searchUserId);
 }
 
 function looksLikeDeliveryAddress(text: string): boolean {
@@ -4398,7 +4486,7 @@ async function handleDeliveryAddress(
       ctx.pendingRequest = undefined;
       await writeCtx(convoId, ctx);
       await reply(phone, `${copy.addressUpdated(ctx.deliveryAddress!, ctx.cep)}${await paidOrderAddressNotice(userId, ctx.deliveryAddress!)}`);
-      if (queued) await handleSearch(phone, convoId, null, ctx, queued);
+      if (queued || ctx.pendingRecommend) await runQueuedRequest(phone, convoId, null, ctx, queued, userId, undefined);
       return;
     }
     // Endereço já existe e a mensagem é OUTRA coisa: o passo travado não pode reter o
@@ -4508,11 +4596,11 @@ async function handleDeliveryAddress(
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
   const savedMsg = copy.addressSavedPrefix(finalAddress, ctx.cep);
-  const noted = queued ? resolveListItems(queued).map((line) => `${line.qty}x ${line.phrase}`) : [];
+  const noted = notedForCopy(ctx, queued);
   if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg, queued))) return;
-  if (queued) {
+  if (queued || ctx.pendingRecommend) {
     await reply(phone, `${copy.addressUpdated(finalAddress, ctx.cep)}${await paidOrderAddressNotice(userId, finalAddress)}`);
-    await handleSearch(phone, convoId, null, ctx, queued);
+    await runQueuedRequest(phone, convoId, null, ctx, queued, userId, undefined);
     return;
   }
 
@@ -4640,7 +4728,7 @@ async function keepPreviousAddress(phone: string, user: TurnUser, convoId: strin
     ctx.pendingRequest = undefined;
     await writeCtx(convoId, ctx);
     await reply(phone, kept);
-    if (queued) await handleSearch(phone, convoId, prev.cep, ctx, queued, user.id);
+    if (queued || ctx.pendingRecommend) await runQueuedRequest(phone, convoId, prev.cep, ctx, queued, user.id);
     return true;
   }
   if (!ctx.deliveryAddress || !ctx.deliveryAddressVerified || !isKeepOldAddressExplicit(text)) return false;
@@ -4779,9 +4867,9 @@ async function handleSignupForm(
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
   await writeCtx(convo.id, ctx);
-  if (queued) {
+  if (queued || ctx.pendingRecommend) {
     await reply(phone, copy.signupSaved(firstName, address));
-    await handleSearch(phone, convo.id, form.cep, ctx, queued, user.id);
+    await runQueuedRequest(phone, convo.id, form.cep, ctx, queued, user.id);
     return;
   }
   if (ctx.basket?.length) {
@@ -4849,6 +4937,8 @@ async function confirmChosenOption(
     }
   }
   ctx.pending = ctx.pending!.slice(1);
+  // Recomendação escolhida (08/10): o RecommendLog fecha o ciclo (o que converte).
+  if (current.recommendation) await markRecommendChosen(current.recommendation, chosen);
   // Memória da escolha concluída: "Outras opções"/"mais barato" depois dela reabrem
   // esta mesma escolha (e o novo pick substitui o item na cesta, não soma outro).
   const { replaceSku, ...lastBase } = current;
@@ -5576,6 +5666,8 @@ async function showPriceSortedOptions(
   dir: "asc" | "desc"
 ) {
   const p = ctx.pending![0];
+  // Recomendação (08/10): re-julga os candidatos da recomendação pelo preço.
+  if (p.recommendation) return recommendByPrice({ phone, convoId, userCep: ctx.cep, ctx }, p, dir);
   const known = new Map<string, ChoiceOption>();
   for (const o of [...(p.shownOptions ?? []), ...p.options]) known.set(o.sku, o);
   try {
@@ -5631,6 +5723,8 @@ async function reopenLastChoice(
 
 async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector) {
   const p = ctx.pending![0];
+  // Recomendação (08/10): "outras" = as próximas prateleiras do plano, não variantes de "algo doce".
+  if (p.recommendation) return recommendMore({ phone, convoId, userCep: ctx.cep, ctx }, p);
   const shown = p.shownSkus ?? p.options.map((o) => o.sku);
   const pool = (await choiceCandidates(store, ctx, p)).filter((o) => !shown.includes(o.sku));
   // Quem pediu "outras" dispensou o que está na mesa: variante do dispensado não é
@@ -5713,6 +5807,11 @@ const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|ne
 // específica ("isqueiro maçarico", "isqueiro tocha") e troca as opções na mesa. Devolve
 // false quando nada aparece — o chamador segue o caminho de sempre.
 async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string, mustMatch?: string): Promise<boolean> {
+  // Recomendação (08/10): o refino ("tem de morango?") refaz a recomendação com a palavra pedida.
+  if (current.recommendation) {
+    await recommendRefineFromAttribute({ phone, convoId, userCep: ctx.cep, ctx }, current, text);
+    return true;
+  }
   const found = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, true, ctx.cep);
   const picked = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
   // Busca nova que só achou o "mais próximo" não serve de refino (o cabeçalho diria o contrário).
@@ -5778,6 +5877,7 @@ async function tryRejectedRefine(phone: string, convoId: string, ctx: DeliveryCo
 
 async function refineOptions(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector, attrs: string[], text?: string) {
   const p = ctx.pending![0];
+  if (p.recommendation) return recommendRefineFromAttribute({ phone, convoId, userCep: ctx.cep, ctx }, p, attrs.join(" "));
   const base = p.baseQuery ?? p.query;
   const refined = `${base} ${attrs.join(" ")}`;
   let matches = diversifyOptions(refined, await choiceCandidates(store, ctx, p, attrs), vitrineLimit());
@@ -7387,6 +7487,17 @@ async function handleSearch(
     if (!businessInfo) await notifyOwner(`📇 Cliente pediu o CNPJ/dados da empresa junto com um pedido — enviar manualmente (configure LIA_BUSINESS_INFO).`, phone);
     text = fiscal.text;
   }
+  // Recomendação (08/10, plano-recomendacoes): necessidade/estado/ocasião/sintoma/presente ("tô com
+  // fome, quero algo doce", "dor de barriga", "presente pra minha mãe") ou produto + julgamento ("me
+  // recomenda um chocolate bom") vira cards de prateleiras distintas. Produto nomeado sem julgamento
+  // ("quero chocolate") nunca entra aqui (detect devolve null) e segue a busca de sempre.
+  if (recommendEnabled()) {
+    const rec = detectRecommendation(text, { hasPendingChoice: Boolean(ctx.pending?.length), basketNames: ctx.basket?.map((b) => b.name) });
+    if (rec) {
+      await handleRecommend({ phone, convoId, userId, userCep, ctx }, rec);
+      return;
+    }
+  }
   // Concierge mode: no catalog gate. Whatever the customer asks for becomes a free-form
   // line the operator will source and price. Breadth — "anything from anywhere" — is the
   // moat, and a human buyer needs zero integration to honor it.
@@ -8115,3 +8226,12 @@ export const dialogueHandlers = {
   mergeBaskets,
   refuseMedicine
 };
+
+// Recomendação (08/10): a execução (recommend/handle.ts) reusa a vitrine daqui sem import circular.
+setRecommendDeps({
+  searchOptions: (query, cep) => searchOptionsForPlanB(query, cep),
+  sendChoices,
+  advancePending: (phone, convoId, ctx, userCep) => advancePending(phone, convoId, ctx, userCep),
+  toChoiceOption: (item, storeRef) => toChoiceOption(item, storeRef),
+  confirmOptionsLive
+});

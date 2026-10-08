@@ -244,9 +244,12 @@ test("c23: 'tenho uns 120 reais no total com a entrega' não vira item — o pro
   const out = await send(phone, "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega");
   assert.equal(preCalls.length, 1);
   const ctx = await context(phone);
-  assert.match(ctx.pendingRequest, /presente pra minha mãe/);
-  assert.match(ctx.pendingRequest, /120/);
-  assert.doesNotMatch(ctx.pendingRequest, /total|entrega/);
+  // Recomendação (08/10, dono): "presente pra minha mãe" sem produto é pedido de RECOMENDAÇÃO — a frase
+  // (com o teto) fica guardada inteira em `pendingRecommend` até o CEP, não como item da lista.
+  const stored = ctx.pendingRecommend ?? ctx.pendingRequest;
+  assert.match(stored, /presente pra minha mãe/);
+  assert.match(stored, /120/);
+  assert.doesNotMatch(stored, /total|entrega/);
   assert.match(out, /endere[cç]o/i);
   assert.doesNotMatch(out, /tenho uns 120 reais/);
 });
