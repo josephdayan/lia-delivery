@@ -331,6 +331,9 @@ export default function OpsBoard() {
         <a href="/ops/faltantes" style={{ color: "#e4002b", fontSize: 13, textDecoration: "none" }} title="Itens que o cliente pediu e não tínhamos, agrupados por pedido">
           🔎 faltantes
         </a>
+        <a href="/ops/recomendacoes" style={{ color: "#e4002b", fontSize: 13, textDecoration: "none" }} title="O que o cliente pede de forma vaga, o que converte e onde o mapa de prateleiras falhou">
+          💡 recomendações
+        </a>
         {isOwner && (
           <a href="/ops/financeiro" style={{ color: "#e4002b", fontSize: 13, textDecoration: "none" }} title="P&L por pedido: cliente pagou, taxa, custo na loja, sobrou — e CSV pra planilha">
             💰 financeiro
