@@ -177,7 +177,7 @@ async function planShelvesWithAiReal(req: RecommendRequest, opts: PlanShelvesOpt
     },
     {
       hedgeMs: Number(process.env.LIA_RECOMMEND_MAP_HEDGE_MS ?? 2500),
-      deadlineMs: Number(process.env.LIA_RECOMMEND_MAP_TIMEOUT_MS ?? 7000)
+      deadlineMs: Number(process.env.LIA_RECOMMEND_MAP_TIMEOUT_MS ?? 9000)
     }
   );
   if (!result) console.warn("[ai:recommend-plan:error]", "sem plano utilizável da IA no prazo");
@@ -304,8 +304,8 @@ async function judgeFitnessWithAiReal(input: FitnessInput): Promise<FitnessVerdi
       return { cards, source: "ai" } as FitnessVerdict;
     },
     {
-      hedgeMs: Number(process.env.LIA_RECOMMEND_JUDGE_HEDGE_MS ?? 4000),
-      deadlineMs: Number(process.env.LIA_RECOMMEND_JUDGE_TIMEOUT_MS ?? 8000)
+      hedgeMs: Number(process.env.LIA_RECOMMEND_JUDGE_HEDGE_MS ?? 5000),
+      deadlineMs: Number(process.env.LIA_RECOMMEND_JUDGE_TIMEOUT_MS ?? 11000)
     }
   );
   if (!result) console.warn("[ai:recommend-judge:error]", "sem veredito utilizável da IA no prazo");
