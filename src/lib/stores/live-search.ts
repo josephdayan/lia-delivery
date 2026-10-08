@@ -185,9 +185,19 @@ export async function liveSearchItems(storeKey: string, query: string, count = 1
   const url = `https://${store.domain}/api/io/_v/api/intelligent-search/product_search/?query=${encodeURIComponent(query)}&count=${count}&locale=pt-BR&hideUnavailableItems=true`;
   let items: CatalogItem[] = [];
   try {
-    const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
-    if (!res.ok) return [];
-    const data = (await res.json()) as { products?: IsProduct[] };
+    const ms = timeoutMs();
+    const request = (async () => {
+      const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(ms) });
+      if (!res.ok) return null;
+      return (await res.json()) as { products?: IsProduct[] };
+    })();
+    // Prazo duro que não depende do AbortSignal (08/10, placar r4): sob CPU alta e 3 buscas em paralelo, uma
+    // busca ficou 150 s parada aqui sem nenhum fetch pendente — a leitura do corpo não respeitou o abort.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<"timeout">((resolve) => { timer = setTimeout(() => resolve("timeout"), ms + 1000); });
+    const data = await Promise.race([request, deadline]).finally(() => clearTimeout(timer));
+    request.catch(() => {}); // perdeu a corrida: rejeição tardia não vira erro solto
+    if (!data || data === "timeout") return [];
     items = parseLiveProducts(storeKey, data.products ?? []);
   } catch {
     return []; // falha não entra no cache: a próxima tentativa pode dar certo

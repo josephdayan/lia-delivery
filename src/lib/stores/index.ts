@@ -228,14 +228,39 @@ export function listStores(): StoreConnector[] {
 // moat — the three active verticals spread automatically through this registry.
 // Cópia do catálogo + prateleira ao vivo da loja (live-search.ts), em paralelo. Sem ao vivo
 // (desligado, loja não-VTEX, falha/timeout) o resultado é exatamente o da cópia, como antes.
+// Busca na cópia do catálogo (08/10, placar r4): o ranking é CPU pura e síncrona — ~60 catálogos, ~1,5 s por
+// busca — e todas as lojas começavam no mesmo tick, travando o event loop por 2 s seguidos. Com 3 conversas ao
+// mesmo tempo, timers e sockets atrasavam e uma busca chegou a ficar 150 s parada. Agora (1) cada loja cede a
+// vez ao event loop antes de ranquear (o bloqueio máximo vira o da maior loja) e (2) o resultado fica 5 min em
+// memória por loja+consulta+limite+flag do remédio isento (o catálogo é estático; o alias e a reserva da mesma
+// conversa repetem consultas).
+const SNAPSHOT_TTL_MS = 5 * 60_000;
+const SNAPSHOT_MAX = 3000;
+const snapshotCache = new Map<string, { at: number; items: CatalogItem[] }>();
+const yieldToLoop = () => new Promise<void>((resolve) => setImmediate(resolve));
+async function snapshotSearch(store: StoreConnector, query: string, limit: number): Promise<CatalogItem[]> {
+  const key = `${store.key}|${medicineEnabled() ? 1 : 0}|${limit}|${query}`;
+  const hit = snapshotCache.get(key);
+  if (hit && Date.now() - hit.at < SNAPSHOT_TTL_MS) return hit.items.slice();
+  await yieldToLoop();
+  const items = await store.searchItems(query, limit);
+  if (snapshotCache.size >= SNAPSHOT_MAX) snapshotCache.delete(snapshotCache.keys().next().value as string);
+  snapshotCache.set(key, { at: Date.now(), items });
+  return items;
+}
+export function __clearSnapshotCacheForTests() {
+  snapshotCache.clear();
+}
+
 async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number): Promise<CatalogItem[]> {
   const wantLive = liveSearchEnabled() && Boolean(VTEX_API_STORES[store.key]);
   const [snapshot, live] = await Promise.all([
-    store.searchItems(query, limitPerStore),
+    snapshotSearch(store, query, limitPerStore),
     wantLive ? liveSearchItems(store.key, query, Math.max(12, limitPerStore * 3)) : Promise.resolve([] as CatalogItem[])
   ]);
   if (!live.length) return snapshot;
   const pool = mergeLiveWithSnapshot(store.key, snapshot, live);
+  await yieldToLoop();
   return rankCatalog(query, pool, limitPerStore);
 }
 

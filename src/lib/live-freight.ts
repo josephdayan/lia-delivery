@@ -206,7 +206,10 @@ async function postSimulation(domain: string, items: { id: string; quantity: num
     body: JSON.stringify({ items, postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
     signal: AbortSignal.timeout(timeoutMs())
   });
-  if (!response.ok) return null;
+  if (!response.ok) {
+    warnHttp(domain, response.status);
+    return null;
+  }
   return (await response.json()) as { items?: SimItem[]; logisticsInfo?: LogisticsInfo[] };
 }
 
@@ -465,6 +468,18 @@ export function cheapestDelivery<T extends { price?: number; shippingEstimate?: 
   });
 }
 
+// Loja que recusa a simulação (08/10: Obramax e Casa & Vídeo devolvem 403 "country not allowed" para IP de
+// fora do Brasil no /api/checkout) virava "não confirmado" sem rastro. Agora fica um aviso por loja e status
+// a cada 10 min — a pista para conferir a região da função na Vercel (gru1) antes de culpar o estoque.
+const httpWarned = new Map<string, number>();
+function warnHttp(domain: string, status: number) {
+  const key = `${domain}:${status}`;
+  const last = httpWarned.get(key) ?? 0;
+  if (Date.now() - last < 10 * 60_000) return;
+  httpWarned.set(key, Date.now());
+  console.warn(`[live-check:http] ${domain} respondeu ${status} na simulação${status === 403 ? " (bloqueio da loja/CDN — região da função fora do Brasil?)" : ""}`);
+}
+
 async function simulateItems(domain: string, ids: { sku: string; id: string; qty?: number }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
     const response = await fetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
@@ -477,7 +492,10 @@ async function simulateItems(domain: string, ids: { sku: string; id: string; qty
       body: JSON.stringify({ items: ids.map((x) => ({ id: x.id, quantity: Math.max(1, x.qty ?? 1), seller: "1" })), postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
       signal: AbortSignal.timeout(timeoutMs())
     });
-    if (!response.ok) return null;
+    if (!response.ok) {
+      warnHttp(domain, response.status);
+      return null;
+    }
     const payload = (await response.json()) as { items?: SimItem[]; logisticsInfo?: LogisticsInfo[] };
     const simulated = Array.isArray(payload.items) ? payload.items : [];
     const logistics = Array.isArray(payload.logisticsInfo) ? payload.logisticsInfo : [];

@@ -1,0 +1,163 @@
+{
+ "_sobre": "Rótulos à mão para o juiz da BUSCA (scripts/bench/judge.mts), 08/10/2026. Casos em que o juiz virava entre rodadas ou errava a regra. Medir: npx tsx scripts/bench/calibrate-search.mts [--repeat 3]. Meta: ≥ 95%.",
+ "casos": [
+  {
+   "pedido": "bicicleta",
+   "produto": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+   "loja": "Ri Happy",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "bicicleta",
+   "produto": "Bicicleta Aro 29 Mountain Bike 21 Marchas Freio a Disco",
+   "loja": "Casa & Vídeo",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "bicicleta infantil",
+   "produto": "Bicicleta Aro 12 - Arco Íris Vermelho e Azul - TK3 Track",
+   "loja": "Ri Happy",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "fita adesiva transparente",
+   "produto": "Fita Transparente Nexcare 25mm x 4,5m",
+   "loja": "Drogal",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "fita adesiva transparente",
+   "produto": "Fita de Empacotamento Transparente 48mmx40m Tekbond",
+   "loja": "Obramax",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "fita adesiva transparente",
+   "produto": "Fita Adesiva Durex Transparente 12mm x 33m 3M",
+   "loja": "Zona Criativa",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "neosaldina",
+   "produto": "Analgésico Neosaldina Dipirona Blister 4 Drágeas",
+   "loja": "Pague Menos",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "neosaldina",
+   "produto": "Analgésico, Antitérmico e Anti-inflamatório Neosaldina 30mg + 300mg + 30mg 10 Drágeas",
+   "loja": "Drogaria São Paulo",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "neosaldina",
+   "produto": "Analgésico e Relaxante Muscular Neosaldina Muscular 300mg 20 Comprimidos Revestidos",
+   "loja": "Drogaria São Paulo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "buscopan",
+   "produto": "Analgésico e Antiespasmódico Buscopan 10mg 20 Drágeas",
+   "loja": "Drogaria São Paulo",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "buscopan",
+   "produto": "Buscopan Composto 10mg + 250mg 20 Comprimidos Revestidos",
+   "loja": "Pague Menos",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "buscopan composto",
+   "produto": "Buscopan Composto 10mg + 500mg 4 Comprimidos Revestidos",
+   "loja": "Pague Menos",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "tylenol",
+   "produto": "Analgésico Tylenol 750mg 10 Comprimidos",
+   "loja": "Drogaria São Paulo",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "tylenol",
+   "produto": "Analgésico e Descongestionante Tylenol Sinus 24 Comprimidos Revestidos",
+   "loja": "Drogaria São Paulo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "dorflex",
+   "produto": "Analgésico e Relaxante Muscular Dorflex DIP 1g 10 Comprimidos",
+   "loja": "Drogaria São Paulo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "fexofenadina",
+   "produto": "Cloridrato De Fexofenadina 120mg 10 Comprimidos Revestidos Genérico Ems",
+   "loja": "Pague Menos",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "omeprazol",
+   "produto": "Omeprazol 20mg Genérico Cimed 28 Cápsulas",
+   "loja": "Drogaria São Paulo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "leite em pó para bebê",
+   "produto": "Fórmula Infantil Aptamil Premium 1 800g",
+   "loja": "Drogal",
+   "esperado": "acceptable"
+  },
+  {
+   "pedido": "bolacha maizena",
+   "produto": "Biscoito Integral Mãe Terra Maizena Choco Bis 80g",
+   "loja": "Mambo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "bolacha maizena",
+   "produto": "Biscoito de Maizena Bauducco 170g",
+   "loja": "Mambo",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "filé de tilápia",
+   "produto": "Filé de Tilápia Croc Turma da Mônica Congelado 300g",
+   "loja": "Swift",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "filé de tilápia",
+   "produto": "Filé de Tilápia Swift 400g",
+   "loja": "Swift",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "pão francês",
+   "produto": "Pão De Mel Bauducco Sabor Chocolate 180g",
+   "loja": "Mambo",
+   "esperado": "wrong"
+  },
+  {
+   "pedido": "chave de fenda",
+   "produto": "Chave de Fenda Ponta Cruzada 3x125mm PH0 Noll",
+   "loja": "Telhanorte",
+   "esperado": "acceptable",
+   "obs": "o varejo chama a Phillips de 'chave de fenda ponta cruzada'; rótulo discutível, fica acceptable"
+  },
+  {
+   "pedido": "acendedor de churrasqueira",
+   "produto": "Acendedor Sólido 4 pçs Prime Grill",
+   "loja": "Swift",
+   "esperado": "exact"
+  },
+  {
+   "pedido": "esmalte vermelho",
+   "produto": "Esmalte Intensificador de Vermelho Risqué ChilliBeans 8ml",
+   "loja": "Drogal",
+   "esperado": "acceptable",
+   "obs": "é esmalte vermelho (Risqué); rótulo antigo vinha do juiz antigo"
+  }
+ ]
+}

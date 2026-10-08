@@ -251,7 +251,11 @@ async function buildChoices(
   }
 
   const perfStart = Date.now();
+  // Rastro por etapa (LIA_PERF_TRACE=1, desligado por padrão): achar onde uma busca para sob concorrência.
+  const trace = (stage: string) => { if (process.env.LIA_PERF_TRACE === "1") console.log(`[stage] ${Date.now() - perfStart}ms ${text.slice(0, 40)} :: ${stage}`); };
+  trace("extract:start");
   const { lines, greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = await extractLines(text);
+  trace("extract:done");
   const perfExtracted = Date.now();
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
@@ -281,6 +285,7 @@ async function buildChoices(
       const searchPhrase = pack ? pack.core : shownPhrase;
       let candidates: StoreCandidate[];
       if (crossStore) {
+        trace(`gather:start ${searchPhrase}`);
         candidates = await gatherCrossStoreCandidates(searchPhrase, 12, 4, {
           onLongTailSearch,
           forceLongTail,
@@ -375,7 +380,9 @@ async function buildChoices(
           }
           return { kept: kept.map((w) => w.c), dropped: live.dropped.length };
         };
+        trace(`confirm:start ${candidates.length}`);
         const first = await confirm(candidates);
+        trace(`confirm:done kept=${first.kept.length}`);
         candidates = first.kept;
         // 06/10 (testers: pilha da Casa & Vídeo, fita isolante da Obramax): sem operador, opção
         // que a loja não confirmou para o CEP é beco no "pagar" (a cotação aborta). Sai da
@@ -394,6 +401,7 @@ async function buildChoices(
           const good = (c: StoreCandidate) => scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 1;
           if (buyable.filter(good).length < 2 && (first.dropped > 0 || buyable.length < candidates.length)) {
             const tried = new Set([...liveChecks.keys()]);
+            trace("deeper:gather");
             let deeper = (await gatherCrossStoreCandidates(searchPhrase, 36, 12)).filter(
               // Só o mesmo produto: relevância perto da dos primeiros (no máx. 3 pontos abaixo) e o
               // tamanho pedido — "Leite de Rosas" não é reserva de leite.
@@ -401,6 +409,7 @@ async function buildChoices(
             );
             if (cap != null) deeper = deeper.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
             if (deeper.length) {
+              trace(`deeper:confirm ${deeper.length}`);
               const more = await confirm(deeper.slice(0, 12));
               const extra = buyableOf(more.kept);
               console.log("[live-check:deeper]", searchPhrase, `${extra.length}/${Math.min(12, deeper.length)}`);
@@ -459,6 +468,7 @@ async function buildChoices(
   // livre/não-achei, que é o resultado honesto). IA off/falhou → null → ranking
   // determinístico de sempre, diversificado.
   const perfSearched = Date.now();
+  trace("rerank:start");
   const withCandidates = perLine.filter((entry) => entry.candidates.length);
   const rerank = withCandidates.length
     ? await rerankShoppingOptions(

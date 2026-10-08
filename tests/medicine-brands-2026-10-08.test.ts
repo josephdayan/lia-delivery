@@ -9,7 +9,9 @@ test("recusa nomeia o remédio de receita que apareceu no pedido", () => {
   assert.equal(prescriptionDrugNameIn("quero rivotril 2mg")?.toLowerCase(), "rivotril");
   assert.equal(prescriptionDrugNameIn("amoxicilina 500mg e dipirona")?.toLowerCase(), "amoxicilina");
   assert.equal(prescriptionDrugNameIn("losartana 50 mg"), "losartana");
-  assert.equal(prescriptionDrugNameIn("omeprazol 20mg")?.toLowerCase(), "omeprazol 20mg");
+  // Omeprazol: a farmácia marca todos como Tarja Vermelha (08/10) — receita em qualquer dose.
+  assert.equal(prescriptionDrugNameIn("omeprazol 20mg")?.toLowerCase(), "omeprazol");
+  assert.equal(prescriptionDrugNameIn("quero omeprazol")?.toLowerCase(), "omeprazol");
   assert.equal(prescriptionDrugNameIn("remédio de receita"), null, "sem nome, sem item para nomear");
   assert.equal(prescriptionDrugNameIn("dipirona"), null);
   assert.equal(prescriptionDrugNameIn("vitrine frontal"), null, "marca ambígua não conta");

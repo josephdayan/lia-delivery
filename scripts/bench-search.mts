@@ -133,12 +133,17 @@ async function main() {
         // "Existe" = existe E entrega no CEP: o oráculo só conta item que a simulação ao vivo da própria
         // loja confirma para o endereço (Swift/Mambo regionais, estoque por CEP).
         let poolGood = pool.filter((p) => good(p.jid));
+        let oracleUnconfirmed = 0;
         if (poolGood.length) {
           const { checkCandidatesLive, liveKey } = await import("../src/lib/live-availability");
           const probe = poolGood.slice(0, 6);
-          const live = await withTimeout(checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep), 90_000, `estoque ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return { kept: probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })) } as Awaited<ReturnType<typeof checkCandidatesLive>>; });
-          const alive = new Set(live.kept.map((c) => liveKey(c.storeKey, c.sku)));
-          poolGood = probe.filter((p) => alive.has(liveKey(p.storeKey, p.sku)));
+          const live = await withTimeout(checkCandidatesLive(probe.map((p) => ({ storeKey: p.storeKey, sku: p.sku })), cep), 90_000, `estoque ${r.id}`).catch((e) => { console.warn(`[bench] ${e instanceof Error ? e.message : e}`); return null; });
+          // Só conta como "existe e entrega" o que a loja CONFIRMOU para o CEP (08/10): `kept` também traz item
+          // sem resposta da loja (Obramax/Casa & Vídeo bloqueiam IP de fora do Brasil no checkout), e a Lia,
+          // corretamente, não vende o que não confirmou — isso virava "miss" falso no placar.
+          const confirmed = (p: { storeKey: string; sku: string }) => live?.checks.get(liveKey(p.storeKey, p.sku))?.available === true;
+          oracleUnconfirmed = probe.filter((p) => !live?.checks.has(liveKey(p.storeKey, p.sku))).length;
+          poolGood = probe.filter(confirmed);
         }
         const kind = verdict?.kind ?? "product";
         let outcome: string;
@@ -149,7 +154,7 @@ async function main() {
         else if (!shown.length) outcome = poolGood.length ? "miss" : "honest_none";
         else if (!good(shown[0].id)) outcome = poolGood.length || shownGood.length ? "wrong_top1" : "false_positive";
         else outcome = shown.some((s) => !good(s.id)) ? "found_with_wrong_extra" : "found";
-        results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), closest: closest.length ? closest : undefined, oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
+        results.push({ ...r, outcome, kind, ms, shown: shown.map((s) => ({ store: s.store, name: s.name, price: s.price, verdict: v[s.id] })), closest: closest.length ? closest : undefined, oracleGood: poolGood.slice(0, 5).map((p) => ({ store: p.store, name: p.name, price: p.price })), oracleSize: pool.length, ...(oracleUnconfirmed ? { oracleUnconfirmed } : {}), note: verdict?.note, error, aiFailed: scope.aiFailed.length ? scope.aiFailed : undefined });
         savePartial(results);
         process.stdout.write(`${outcome === "found" || outcome === "honest_none" || outcome === "medicine_ok" ? "." : outcome[0].toUpperCase()}`);
       }

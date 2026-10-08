@@ -72,14 +72,30 @@ export function catalogWithImages(items: CatalogItem[]): CatalogItem[] {
 
 // Shared helper: accent-insensitive, lowercase token match scoring so a store's
 // searchItems can rank a free-text request against its catalog.
+// Memória do texto normalizado e das palavras (08/10, placar r4): cada busca re-normalizava os mesmos
+// ~60 mil nomes estáticos do catálogo — 3,3 s de CPU por busca, com o event loop parado 2 s de cada vez;
+// com 3 conversas ao mesmo tempo, até os prazos (AbortSignal) disparavam atrasados e a busca "travava".
+// O catálogo é estático: o texto normalizado de um nome nunca muda. Teto de entradas para não crescer sem fim.
+const TEXT_CACHE_MAX = 400_000;
+const normCache = new Map<string, string>();
+const wordsCache = new Map<string, readonly string[]>();
+function remember<V>(cache: Map<string, V>, key: string, value: V): V {
+  if (cache.size >= TEXT_CACHE_MAX) cache.clear();
+  cache.set(key, value);
+  return value;
+}
+
 export function normalizeText(input: string): string {
-  return (input ?? "")
+  const key = input ?? "";
+  const hit = normCache.get(key);
+  if (hit !== undefined) return hit;
+  return remember(normCache, key, key
     .toLowerCase()
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim());
 }
 
 // Greetings / fillers / articles that must NOT drive product matching, otherwise
@@ -122,8 +138,12 @@ function collapseCompounds(tokens: string[]): string[] {
   return out;
 }
 
+// Lista CONGELADA e compartilhada: quem chama só lê (filter/some/every/includes); mutar lança erro.
 function words(text: string): string[] {
-  return collapseCompounds(normalizeText(text).split(" ").filter(Boolean));
+  const key = text ?? "";
+  const hit = wordsCache.get(key);
+  if (hit) return hit as string[];
+  return remember(wordsCache, key, Object.freeze(collapseCompounds(normalizeText(key).split(" ").filter(Boolean)))) as string[];
 }
 
 // Pet vocabulary. Customers say "cachorro"/"gato"; catalogs say "Cães"/"Gatos"
@@ -152,7 +172,16 @@ function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | null {
 
 // tokenMatchesWord plus synonym equivalences: pet (cachorro≈cães≈cão, gato≈felino) e
 // beleza (perfume≈colônia — no Boticário os perfumes se chamam "Desodorante Colônia").
+// Resultado depende só do par (token, palavra) e as listas são fixas: cache por par (08/10). Era a maior
+// fatia da CPU da busca — o mesmo par voltava a cada item de cada catálogo, com distância de edição dentro.
+const synCache = new Map<string, boolean>();
 function tokenMatchesWordSyn(token: string, word: string): boolean {
+  const key = `${token}|${word}`;
+  const hit = synCache.get(key);
+  if (hit !== undefined) return hit;
+  return remember(synCache, key, tokenMatchesWordSynRaw(token, word));
+}
+function tokenMatchesWordSynRaw(token: string, word: string): boolean {
   if (tokenMatchesWord(token, word)) return true;
   // Pedido genérico serve o específico: "usb" casa com "usb-c" do nome. A direção
   // inversa (pedir "usb c", nome só diz "usb") fica de fora de propósito.
@@ -239,12 +268,27 @@ function tokenMatchesBrand(token: string, word: string): boolean {
 }
 
 // The meaningful product tokens in a request (greetings/fillers removed).
+// Lista congelada e compartilhada (08/10): chamada por item de catálogo, a mesma consulta voltava dezenas
+// de milhares de vezes por busca.
+const tokensCache = new Map<string, readonly string[]>();
 export function queryTokens(query: string): string[] {
+  const key = query ?? "";
+  const hit = tokensCache.get(key);
+  if (hit) return hit as string[];
+  return remember(tokensCache, key, Object.freeze(queryTokensRaw(key))) as string[];
+}
+function queryTokensRaw(query: string): string[] {
   return words(query).filter((token) => (token.length > 1 || SIZE_LETTER_RE.test(token)) && !STOPWORDS.has(token));
 }
 
 // "café SEM açúcar", "água SEM gás" — o que vem depois do "sem" é EXCLUSÃO, não busca.
+const negCache = new Map<string, readonly string[]>();
 function negatedWords(query: string): string[] {
+  const hit = negCache.get(query);
+  if (hit) return hit as string[];
+  return remember(negCache, query, Object.freeze(negatedWordsRaw(query))) as string[];
+}
+function negatedWordsRaw(query: string): string[] {
   return [...normalizeText(query).matchAll(/\bsem\s+(\w{3,})\b/g)].map((m) => m[1]);
 }
 
@@ -414,7 +458,13 @@ const MEASURE_TOKEN_RE = /^\d+(?:[.,]\d+)?(?:kg|g|mg|mcg|ui|ml|l|lt|lts|litros?|
 // com "Lava Roupas em Pó Omo" — na busca, no piso do concierge e no "tira o X".
 // "leite 2 litros" → "leite 2litros": número + unidade é UMA medida (06/10, A9). Separados, o
 // "litros" contava como palavra do produto e "Fanta 2 Litros" vencia o leite.
+const joinCache = new Map<string, string>();
 function joinMeasures(query: string): string {
+  const hit = joinCache.get(query);
+  if (hit !== undefined) return hit;
+  return remember(joinCache, query, joinMeasuresRaw(query));
+}
+function joinMeasuresRaw(query: string): string {
   return query.replace(/(\d+(?:[.,]\d+)?)\s+(litros?|lts?|quilos?|kilos?|kg|gramas?|ml|mg|g|l)\b/gi, "$1$2");
 }
 export function scoreCatalogMatch(rawQuery: string, item: CatalogItem): number {
@@ -422,6 +472,14 @@ export function scoreCatalogMatch(rawQuery: string, item: CatalogItem): number {
   const own = scoreQuery(query, item);
   const aliases = queryAliases(query);
   return aliases.length ? Math.max(own, ...aliases.map((alias) => scoreQuery(alias, item))) : own;
+}
+
+const nameWordsCache = new Map<string, readonly string[]>();
+function nameWordsWithoutNegated(name: string, nameNorm: string): string[] {
+  const hit = nameWordsCache.get(name);
+  if (hit) return hit as string[];
+  const negated = new Set([...nameNorm.matchAll(/\b(?:sem|zero)\s+([a-z]\S*)/g)].map((m) => m[1]));
+  return remember(nameWordsCache, name, Object.freeze(words(name).filter((w) => !negated.has(w)))) as string[];
 }
 
 function scoreQuery(query: string, item: CatalogItem): number {
@@ -432,8 +490,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // "perfume" jamais deve trazer "Antitranspirante Sem Perfume". Ela sai do match
   // de score (attrMatchesItem continua vendo o nome inteiro pra "sem lactose").
   // ("zero 2 litros" não nega o "2" — só palavra, nunca número/tamanho)
-  const nameNegated = new Set([...nameNorm.matchAll(/\b(?:sem|zero)\s+([a-z]\S*)/g)].map((m) => m[1]));
-  const nameWords = words(item.name).filter((w) => !nameNegated.has(w));
+  const nameWords = nameWordsWithoutNegated(item.name, nameNorm);
   const brandWords = words(item.brand ?? "");
   const categoryWords = words(item.category ?? "");
 
@@ -757,7 +814,14 @@ export function parsePackPhrase(phrase: string): { core: string; brand?: string;
   return { core: core || norm, ...(brand ? { brand } : {}), ...(count && count > 1 ? { count } : {}) };
 }
 
+const aliasCache = new Map<string, readonly string[]>();
 export function queryAliases(query: string): string[] {
+  const key = query ?? "";
+  const hit = aliasCache.get(key);
+  if (hit) return hit as string[];
+  return remember(aliasCache, key, Object.freeze(queryAliasesRaw(key))) as string[];
+}
+function queryAliasesRaw(query: string): string[] {
   const norm = normalizeText(query);
   const pack = parsePackPhrase(query);
   if (pack) return [...new Set([pack.core, ...(pack.brand ? [`pack ${pack.brand}`, `fardo ${pack.brand}`] : []), ...queryAliases(pack.core)])].filter((alias) => alias && alias !== norm);

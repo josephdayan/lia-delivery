@@ -49,10 +49,10 @@ test("nome completo: exige nome e sobrenome, ignora o CPF e as palavras de apoio
 });
 
 test("receita: barra antibiótico, controlado, marca de receita e pedido de receita; isento passa", () => {
-  for (const t of ["amoxicilina 500mg", "Rivotril 2mg", "ozempic", "remédio tarja preta", "tenho a receita do antibiótico", "omeprazol 20mg", "anticoncepcional"]) {
+  for (const t of ["amoxicilina 500mg", "Rivotril 2mg", "ozempic", "remédio tarja preta", "tenho a receita do antibiótico", "omeprazol 20mg", "anticoncepcional", "omeprazol", "omeprazol 10mg", "pantoprazol 20mg"]) {
     assert.equal(looksLikePrescriptionRequest(t), true, t);
   }
-  for (const t of ["dipirona", "dorflex", "um antigripal", "sal de fruta eno", "loratadina 10mg", "omeprazol 10mg"]) {
+  for (const t of ["dipirona", "dorflex", "um antigripal", "sal de fruta eno", "loratadina 10mg", "fexofenadina 120mg"]) {
     assert.equal(looksLikePrescriptionRequest(t), false, t);
   }
 });

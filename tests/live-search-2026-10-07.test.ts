@@ -167,3 +167,18 @@ test("padrão ligado; LIA_LIVE_SEARCH=false desliga", () => {
   }
     assert.equal(categorySlug(["/Dermocosméticos/Shampoo/"]), "dermocosmeticos shampoo");
 });
+
+test("busca ao vivo: corpo que nunca termina não prende a busca (prazo duro, 08/10)", async () => {
+  __clearLiveSearchCacheForTests();
+  const saved = process.env.LIA_LIVE_SEARCH_TIMEOUT_MS;
+  process.env.LIA_LIVE_SEARCH_TIMEOUT_MS = "500";
+  try {
+    // Cabeçalho chega, o corpo nunca: o AbortSignal não é respeitado por esse fetcher.
+    const stuck = async () => ({ ok: true, json: () => new Promise<unknown>(() => {}) });
+    const t0 = Date.now();
+    assert.deepEqual(await liveSearchItems("casaevideo", "sabao em po omo", 12, stuck), []);
+    assert.ok(Date.now() - t0 < 3000, `devia desistir em ~1,5 s, levou ${Date.now() - t0} ms`);
+  } finally {
+    if (saved === undefined) delete process.env.LIA_LIVE_SEARCH_TIMEOUT_MS; else process.env.LIA_LIVE_SEARCH_TIMEOUT_MS = saved;
+  }
+});
