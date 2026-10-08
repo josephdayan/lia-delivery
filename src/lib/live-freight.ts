@@ -19,6 +19,51 @@
 import { storeFetch } from "./store-relay";
 import { withStoreSlot } from "./store-throttle";
 import { storeServesCep } from "./store-areas";
+import { lookupCepAddress } from "./purchase/vtex-address";
+
+// Coordenadas do CEP na simulação (08/10 noite, pedido real estornado): a entrega TURBO (30 min) da
+// Drogarias Pacheco é por RAIO. Simulada só com o CEP, a loja localiza o CEP do jeito dela e oferece
+// TURBO; a COMPRA manda as coordenadas do endereço (vtex-address.ts → BrasilAPI) e a TURBO some — a Lia
+// prometeu 30 min, cobrou, e a compra estornou ("nenhuma entrega dentro do prazo prometido"). A vitrine e
+// a cotação agora simulam com AS MESMAS coordenadas que a compra vai usar (mesma fonte), então nunca
+// prometem um prazo que o checkout não oferece. Cache por CEP; sem coordenada, simula como antes (a
+// compra também vai sem). `LIA_SIM_GEO=false` desliga (testes sem rede).
+const GEO_TTL_MS = 6 * 60 * 60_000;
+const geoCache = new Map<string, { at: number; geo: { lat: number; lng: number } | null }>();
+let geoResolver: (cep: string) => Promise<{ lat: number; lng: number } | null> = async (cep) => (await lookupCepAddress(cep, fetch, 2_500))?.geo ?? null;
+export function __setSimulationGeoForTests(fn: ((cep: string) => Promise<{ lat: number; lng: number } | null>) | null): void {
+  geoResolver = fn ?? (async (cep) => (await lookupCepAddress(cep, fetch, 2_500))?.geo ?? null);
+  geoCache.clear();
+}
+const geoInFlight = new Map<string, Promise<{ lat: number; lng: number } | null>>();
+export async function simulationGeo(cep: string): Promise<{ lat: number; lng: number } | null> {
+  if (process.env.LIA_SIM_GEO === "false") return null;
+  const digits = cep.replace(/\D/g, "");
+  if (digits.length !== 8) return null;
+  const hit = geoCache.get(digits);
+  if (hit && Date.now() - hit.at < GEO_TTL_MS) return hit.geo;
+  // Uma consulta por CEP em voo: a vitrine simula dezenas de itens ao mesmo tempo.
+  const flying = geoInFlight.get(digits);
+  if (flying) return flying;
+  const task = (async () => {
+    let geo: { lat: number; lng: number } | null = null;
+    try {
+      geo = await geoResolver(digits);
+    } catch {
+      geo = null;
+    }
+    // Falha não fica no cache por muito tempo: a próxima tentativa pode achar.
+    geoCache.set(digits, { at: geo ? Date.now() : Date.now() - GEO_TTL_MS + 60_000, geo });
+    if (geoCache.size > 2000) geoCache.delete(geoCache.keys().next().value as string);
+    return geo;
+  })().finally(() => geoInFlight.delete(digits));
+  geoInFlight.set(digits, task);
+  return task;
+}
+async function simulationBody(items: { id: string; quantity: number; seller: string }[], cep: string): Promise<string> {
+  const geo = await simulationGeo(cep);
+  return JSON.stringify({ items, postalCode: cep.replace(/\D/g, ""), country: "BRA", ...(geo ? { geoCoordinates: [geo.lng, geo.lat] } : {}) });
+}
 
 export type LiveFreightOutcome =
   // `unitPrices` (27/09): preço de CUSTO por unidade que a loja cobra AGORA (sellingPrice da
@@ -198,6 +243,7 @@ export function slowestEstimate(estimates: (string | undefined)[]): string | und
 }
 
 async function postSimulation(domain: string, items: { id: string; quantity: number; seller: string }[], cep: string): Promise<{ items?: SimItem[]; logisticsInfo?: LogisticsInfo[] } | null> {
+  const body = await simulationBody(items, cep);
   const response = await storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
     method: "POST",
     headers: {
@@ -205,7 +251,7 @@ async function postSimulation(domain: string, items: { id: string; quantity: num
       Accept: "application/json",
       "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
     },
-    body: JSON.stringify({ items, postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
+    body,
     signal: AbortSignal.timeout(timeoutMs())
   });
   if (!response.ok) return null;
@@ -469,6 +515,7 @@ export function cheapestDelivery<T extends { price?: number; shippingEstimate?: 
 
 async function simulateItems(domain: string, ids: { sku: string; id: string; qty?: number }[], cep: string): Promise<Map<string, LiveItemCheck> | null> {
   try {
+    const body = await simulationBody(ids.map((x) => ({ id: x.id, quantity: Math.max(1, x.qty ?? 1), seller: "1" })), cep);
     // Fila (store-throttle.ts, 08/10): uma simulação por SKU × 4 linhas estourava o timeout de todas.
     const response = await withStoreSlot(() =>
       storeFetch(`https://${domain}/api/checkout/pub/orderForms/simulation?sc=1`, {
@@ -478,7 +525,7 @@ async function simulateItems(domain: string, ids: { sku: string; id: string; qty
           Accept: "application/json",
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
         },
-        body: JSON.stringify({ items: ids.map((x) => ({ id: x.id, quantity: Math.max(1, x.qty ?? 1), seller: "1" })), postalCode: cep.replace(/\D/g, ""), country: "BRA" }),
+        body,
         signal: AbortSignal.timeout(timeoutMs())
       })
     );

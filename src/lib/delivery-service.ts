@@ -2641,6 +2641,10 @@ async function handleDeliveryTurn(
           await handlePreflightUnavailable(phone, convo.id, user, ctx, issued.unavailable);
           return;
         }
+        if (issued.deliveryNotConfirmed) {
+          await handleDeliveryNotConfirmed(phone, convo.id, user, ctx, issued.deliveryNotConfirmed);
+          return;
+        }
         if (issued.expired) {
           await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
           await reply(phone, copy.quoteExpired());
@@ -3297,6 +3301,10 @@ async function handleDeliveryTurn(
       }
       if (result.unavailable) {
         await handlePreflightUnavailable(phone, convo.id, user, ctx, result.unavailable);
+        return;
+      }
+      if (result.deliveryNotConfirmed) {
+        await handleDeliveryNotConfirmed(phone, convo.id, user, ctx, result.deliveryNotConfirmed);
         return;
       }
       if (result.expired) await reply(phone, copy.quoteExpired());
@@ -7508,6 +7516,20 @@ export function packAdjusted(
 // Pré-voo barrou a cobrança (04/09): o pedido fechou sem cobrar; o resto da cesta volta
 // pro contexto e os itens que a loja não tem são buscados de novo — a verificação ao vivo
 // tira a loja que falhou e mostra só o que está confirmado para o CEP.
+// Ensaio da compra recusou a entrega/endereço (08/10 noite): nada cobrado, a cesta inteira volta para o
+// cliente (montando a lista) e o próximo "pagar" refaz a cotação com a entrega que a loja confirma.
+async function handleDeliveryNotConfirmed(
+  phone: string,
+  convoId: string,
+  user: { id: string; cep: string | null },
+  ctx: DeliveryContext,
+  info: { storeLabel: string; promise?: string; kind: "items" | "delivery" | "address" | "checkout"; basket: BasketItem[] }
+) {
+  const next: DeliveryContext = { ...addressOnlyCtx(ctx, user.cep), step: "collecting", basket: info.basket.filter((item) => item.unitPrice > 0) };
+  await writeCtx(convoId, next);
+  await reply(phone, copy.deliveryNotConfirmed(info.storeLabel, info.promise, info.kind));
+}
+
 async function handlePreflightUnavailable(
   phone: string,
   convoId: string,

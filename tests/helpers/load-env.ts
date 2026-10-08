@@ -50,6 +50,10 @@ delete process.env.LIA_MEDICINE_MIP;
 process.env.LIA_PRICING_MODE ??= "markup";
 // Recomendação (08/10): em produção o padrão é "test" (só dono/admins); a suíte usa telefones de teste.
 process.env.LIA_RECOMMEND ??= "all";
+// Coordenadas do CEP na simulação (08/10 noite) e ensaio da compra: rede — a suíte fica sem; os testes
+// próprios (tests/purchase-rehearsal-2026-10-08.test.ts) ligam com costura.
+process.env.LIA_SIM_GEO ??= "false";
+process.env.LIA_PURCHASE_REHEARSAL ??= "false";
 // Complemento no fechamento (08/10, recomendação fase 4): em produção vem LIGADO ("quem leva carvão
 // costuma levar pão de alho" antes do total). A suíte antiga fecha a lista esperando o total direto e
 // fica sem ele; tests/recommend-complement-2026-10-08.test.ts liga sozinho.

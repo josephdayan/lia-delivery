@@ -301,7 +301,10 @@ function templateParam(text: string, max = 1024) {
 // Os 3 parâmetros do corpo do card, já ajustados ao limite hidratado da Meta.
 function cardBodyParams(option: WhatsAppDeliveryChoice, body?: string): [string, string, string] {
   const fitted = fitCarouselCardParams({
-    name: templateParam(option.badge ? `⭐ ${option.badge} · ${option.name}` : option.name),
+    // Carrossel (dono, 08/10 noite): o motivo da recomendação (2ª linha, "_…_") NÃO entra no card —
+    // aparecia com o sublinhado cru e roubava o espaço do prazo ("Drogarias Pacheco ·…"). Cards soltos
+    // e lista de texto continuam com o motivo.
+    name: templateParam(option.badge ? `⭐ ${option.badge} · ${option.name.split("\n")[0]}` : option.name.split("\n")[0]),
     price: formatBRL(option.displayPrice),
     // O rótulo do prazo já está no template; o texto vai compacto (janela agendada = só a janela).
     delivery: templateParam(compactCardDelivery(option.delivery ?? "confirmo na cotação"))

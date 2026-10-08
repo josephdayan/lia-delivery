@@ -44,8 +44,11 @@ export async function pixOutReadiness(amountCents: number): Promise<PixOutReadin
   } catch (error) {
     console.warn("[pix-out:readiness:balance-error]", error instanceof Error ? error.message : error);
   }
+  // (08/10 noite) Sem janela de 6h: a última recusa do Asaas (06/10, "conta não aprovada") saía da janela
+  // e a trava abria sem testar — cobrança → compra recusada → estorno. Vale a ÚLTIMA recusa, de quando for,
+  // sem nenhum Pix pago depois dela: aí testa de novo (no máximo a cada 10 min).
   const refusal = await prisma.purchaseAttempt.findFirst({
-    where: { step: "pix_capture", status: "refused", createdAt: { gte: new Date(Date.now() - BREAKER_WINDOW_MS) } },
+    where: { step: "pix_capture", status: "refused", ...(process.env.LIA_PIX_OUT_BREAKER_WINDOW === "6h" ? { createdAt: { gte: new Date(Date.now() - BREAKER_WINDOW_MS) } } : {}) },
     orderBy: { createdAt: "desc" },
     select: { createdAt: true },
   });

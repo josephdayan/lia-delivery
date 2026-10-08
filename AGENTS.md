@@ -1,3 +1,21 @@
+## REGRA VIGENTE — Nunca cobrar o que a compra não consegue fazer (08/10/2026, noite, dono: "o maior problema da Lia")
+
+Caso real: a vitrine prometeu TURBO 30 min (Drogarias Pacheco), o dono pagou, a compra estornou ("nenhuma entrega
+dentro do prazo prometido"). Causa: a simulação era só por CEP e a compra manda as COORDENADAS do endereço; a TURBO é
+por raio e some com elas. Estornos de 30 dias no banco: prazo prometido inexistente, item sem estoque na hora,
+janela de entrega obrigatória (Mambo), Pix de saída recusado pelo Asaas. Três travas, todas ANTES de cobrar:
+- **Simulação com as mesmas coordenadas da compra** (`simulationGeo` em live-freight.ts, mesma fonte do
+  vtex-address.ts, cache por CEP): vitrine, cotação e pré-voo veem as mesmas entregas que o checkout. Medido na loja:
+  sem coordenada "rápida 30m", com coordenada "60m".
+- **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, chamado em `issueValidatedRetailerQuotePayment`): roda os
+  MESMOS passos da compra automática (cesta, perfil, endereço com coordenadas, entrega dentro do prazo prometido, Pix,
+  conferência) e para antes de fechar; esvazia a cesta. Recusa da loja = nada cobrado (item → alternativas;
+  entrega/endereço → `copy.deliveryNotConfirmed`, a lista continua e o "pagar" refaz o total). Loja fora do ar não
+  inventa recusa. Reproduzido na loja real com o pedido de 08/10: promessa 30 min → NÃO COBRA; 60 min → cobra.
+  `LIA_PURCHASE_REHEARSAL=false` desliga.
+- **Trava do Pix de saída sem janela de 6h** (`pixOutReadiness`): vale a última recusa do Asaas de quando for, sem Pix
+  pago depois → testa de novo (a cada 10 min) antes de cobrar.
+
 ## 08/10/2026 (noite) — Recomendação por necessidade/ocasião/sintoma ("quero algo doce", "dor de barriga") — LIGADA
 
 Decisão do dono (08/10): a Lia recomenda. Plano e arquitetura: `docs/plano-recomendacoes-2026-10-08.md`. Cadeia de 5 etapas,

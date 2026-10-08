@@ -11,6 +11,7 @@ import { PaymentProviderError, cancelMercadoPagoPayment, checkoutAdapter, pixAda
 import { cardOnFileEnabled, confirmSavedCardTap, createCardAttempt as createCardAttemptRaw, expireOpenPaymentAttempts, findPendingSavedCardAttempt, getConfirmedPaymentAttempt, getOneClickCredential, hasInFlightCardAttempt } from "@/lib/payments/whatsapp-pay";
 import { prisma } from "@/lib/prisma";
 import { preflightBasket } from "./live-freight";
+import { rehearsePurchase, type RehearsalFailure } from "./purchase/rehearsal";
 import { pixOutReadiness } from "@/lib/payments/pix-out/readiness";
 import { automaticPurchaseStores, MERCADO_LIVRE_STORE_KEY } from "@/lib/purchase-policy";
 import * as copy from "@/lib/lia-copy";
@@ -434,11 +435,14 @@ export async function supersedePixCharge(pixId: string | null | undefined) {
 }
 
 export type PreflightUnavailable = { storeKey: string; storeLabel: string; items: BasketItem[]; remaining: BasketItem[] };
+// Ensaio da compra recusou a ENTREGA prometida ou o endereço (08/10 noite): nada cobrado; a cesta inteira
+// volta pro cliente fechar de novo com a entrega que a loja confirma de verdade.
+export type DeliveryNotConfirmed = { storeLabel: string; promise?: string; kind: RehearsalFailure["kind"]; basket: BasketItem[] };
 
 export async function issueValidatedRetailerQuotePayment(
   orderId: string,
   method: "pix" | "card"
-): Promise<{ expired: boolean; unavailable?: PreflightUnavailable; pixOutDown?: boolean }> {
+): Promise<{ expired: boolean; unavailable?: PreflightUnavailable; pixOutDown?: boolean; deliveryNotConfirmed?: DeliveryNotConfirmed }> {
   const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
   if (!order || order.status !== "awaiting_quote_confirmation") return { expired: false };
   if (!order.quoteExpiresAt || order.quoteExpiresAt.getTime() <= Date.now()) {
@@ -462,6 +466,42 @@ export async function issueValidatedRetailerQuotePayment(
       }
     });
     return { expired: false, unavailable: { storeKey: failure.storeKey, storeLabel, items: failed, remaining: basket.filter((i) => !failure.skus.includes(i.sku)) } };
+  }
+
+  // ENSAIO DA COMPRA (08/10 noite, purchase/rehearsal.ts): os mesmos passos da compra automática, sem
+  // fechar o pedido. Recusa da loja = nada é cobrado (o cliente não paga pra depois receber estorno).
+  const rehearsal = await rehearsePurchase({
+    id: order.id,
+    cep: order.cep,
+    deliveryAddress: order.deliveryAddress,
+    customerName: order.customerName,
+    phone: order.phone,
+    buyerDocument: order.buyerDocument,
+    buyerName: order.buyerName,
+    items: basket.map((i) => ({ sku: i.sku, name: i.name, qty: i.qty, storeKey: i.storeKey, storeLabel: i.storeLabel, ...(i.medicine ? { medicine: i.medicine } : {}) })),
+    fulfillments: order.fulfillments
+  }).catch((error) => {
+    console.warn("[purchase-rehearsal:error]", order.id, error instanceof Error ? error.message : error);
+    return null;
+  });
+  if (rehearsal) {
+    const promise = Array.isArray(order.fulfillments)
+      ? (order.fulfillments as Array<{ deliveryPromise?: string }>).map((f) => f?.deliveryPromise).filter(Boolean).join(" · ") || undefined
+      : undefined;
+    await prisma.deliveryOrder.updateMany({
+      where: { id: order.id, status: "awaiting_quote_confirmation" },
+      data: {
+        status: "canceled",
+        quoteExpiresAt: null,
+        notes: [order.notes, `🎭 ENSAIO DA COMPRA (${new Date().toISOString()}): ${rehearsal.storeLabel} recusou (${rehearsal.kind}): ${rehearsal.detail}. Nada cobrado.`].filter(Boolean).join("\n")
+      }
+    });
+    await notifyOwner(`🎭 Ensaio da compra barrou a cobrança: ${rehearsal.storeLabel} recusou (${rehearsal.kind}) — ${rehearsal.detail.slice(0, 160)}. Pedido ${order.id.slice(-6).toUpperCase()} NÃO foi cobrado.`, order.phone).catch(() => undefined);
+    if (rehearsal.kind === "items") {
+      const failed = basket.filter((i) => rehearsal.skus.includes(i.sku));
+      return { expired: false, unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining: basket.filter((i) => !rehearsal.skus.includes(i.sku)) } };
+    }
+    return { expired: false, deliveryNotConfirmed: { storeLabel: rehearsal.storeLabel, promise, kind: rehearsal.kind, basket } };
   }
 
   // Trava do Pix de saída (06/10): loja de compra automática só é cobrada se a Lia

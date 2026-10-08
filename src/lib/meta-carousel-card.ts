@@ -53,6 +53,18 @@ function fixedLengthOf(body: string): number {
 const DELIVERY_CAP = 22;
 const NAME_MIN = 28;
 
+// Prazo "Loja · prazo" grande demais (08/10 noite: "Drogarias Pacheco ·…" escondia o "30 min"): o
+// PRAZO é o que o cliente precisa ler; quem encolhe é o nome da loja.
+function truncateDelivery(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const at = text.lastIndexOf(" · ");
+  if (at <= 0) return truncate(text, max);
+  const eta = text.slice(at);
+  const storeRoom = max - eta.length;
+  if (storeRoom < 4) return truncate(text.slice(at + 3), max);
+  return `${truncate(text.slice(0, at), storeRoom)}${eta}`;
+}
+
 // Corta no limite tentando não partir palavra, e deixa o corte VISÍVEL ("…") para ninguém
 // confundir nome truncado com nome do produto.
 function truncate(text: string, max: number): string {
@@ -77,11 +89,11 @@ export function fitCarouselCardParams(
   const budget = limit - fixed - price.length;
   if (budget <= 0) return { name: truncate(input.name, Math.max(0, limit - fixed)), price, delivery: "" };
 
-  let delivery = truncate(input.delivery, Math.min(DELIVERY_CAP, budget));
+  let delivery = truncateDelivery(input.delivery, Math.min(DELIVERY_CAP, budget));
   let nameBudget = budget - delivery.length;
   // Nome abaixo do mínimo legível: o prazo cede espaço até desaparecer.
   if (nameBudget < NAME_MIN) {
-    delivery = truncate(input.delivery, Math.max(0, budget - NAME_MIN));
+    delivery = truncateDelivery(input.delivery, Math.max(0, budget - NAME_MIN));
     nameBudget = budget - delivery.length;
   }
   return { name: truncate(input.name, nameBudget), price, delivery };

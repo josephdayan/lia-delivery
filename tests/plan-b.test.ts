@@ -227,3 +227,34 @@ test("pré-voo: loja sem o item na hora de cobrar → nada cobrado, pedido fecha
     __setPreflightForTests(null);
   }
 });
+
+// Ensaio da compra (08/10 noite, caso TURBO): a loja não confirma a entrega prometida pro endereço na hora de
+// cobrar → nada cobrado, pedido fecha e a lista continua com o cliente pra fechar de novo.
+test("ensaio da compra: entrega prometida não existe pro endereço → nada cobrado, lista volta pro cliente", async (t) => {
+  if (!dbOk) return t.skip();
+  const { __setPurchaseRehearsalForTests } = await import("../src/lib/purchase/rehearsal");
+  __setPlanBForTests({ search: null, simulate: null });
+  const o = await paidBlockedOrder({ status: "awaiting_quote_confirmation", blocked: false });
+  await prisma.deliveryOrder.update({ where: { id: o.orderId }, data: { fulfillments: [{ storeKey: "naturaldaterra", deliveryPromise: "pela própria loja · prazo da loja: 30 min" }] } });
+  await prisma.conversation.update({
+    where: { id: o.convoId },
+    data: { context: JSON.stringify({ step: "awaiting_quote_confirmation", deliveryOrderId: o.orderId, deliveryAddress: TEST_ADDRESS, deliveryAddressVerified: true }) }
+  });
+  __setPreflightForTests(async () => null);
+  __setPurchaseRehearsalForTests(async () => ({ storeKey: "naturaldaterra", storeLabel: "Natural da Terra", kind: "delivery", detail: "sla: nenhuma entrega dentro do prazo prometido", skus: ["naturaldaterra-165908"] }));
+  try {
+    const reply = await send(o.phone, "pix");
+    assert.match(reply, /Conferi na \*Natural da Terra\* na hora de cobrar e a entrega de \*30 min\* não está disponível pro seu endereço agora\. \*Nada foi cobrado\.\*/);
+    const after1 = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: o.orderId } });
+    assert.equal(after1.status, "canceled");
+    assert.equal(after1.pixId, null, "nenhuma cobrança emitida");
+    assert.match(after1.notes ?? "", /ENSAIO DA COMPRA/);
+    const convo = await prisma.conversation.findUniqueOrThrow({ where: { id: o.convoId } });
+    const ctx = JSON.parse(convo.context ?? "{}");
+    assert.equal(ctx.step, "collecting");
+    assert.ok((ctx.basket ?? []).length >= 1, "a lista continua com o cliente");
+  } finally {
+    __setPreflightForTests(null);
+    __setPurchaseRehearsalForTests(null);
+  }
+});
