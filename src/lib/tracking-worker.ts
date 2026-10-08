@@ -200,7 +200,7 @@ export async function reportMail(input: {
       // Já estava "saiu pra entrega": manda só o código, sem evento novo.
       const { whatsappAdapter } = await import("./adapters/whatsapp");
       const { deliveryCode } = await import("./lia-copy");
-      await whatsappAdapter.sendMessage(order.phone, `Pedido #${order.id.slice(-6).toUpperCase()}: ${deliveryCode(code)}`);
+      await whatsappAdapter.sendMessage(order.phone, deliveryCode(code));
     }
     return { matched: true as const, orderId: order.id, kind: input.kind };
   }
@@ -239,7 +239,7 @@ export async function reportMail(input: {
     const { VTEX_API_STORES } = await import("./purchase/vtex-checkout");
     const storeLabel = job?.storeLabel ?? VTEX_API_STORES[input.storeKey]?.label ?? "loja";
     const shortId = target.id.slice(-6).toUpperCase();
-    const sent = await deliverNotice(target.phone, medicineInvoiceNotice(shortId, storeLabel, input.invoiceUrl), { shortId }).catch(() => "skipped" as const);
+    const sent = await deliverNotice(target.phone, medicineInvoiceNotice(shortId, storeLabel, input.invoiceUrl), { items: target.items }).catch(() => "skipped" as const);
     invoiceNote = sent === "skipped" ? " ⚠️ Nota do cliente NÃO enviada (fora da janela sem template) — encaminhe pelo /ops." : ` 🧾 Nota encaminhada ao cliente (${sent}${input.invoiceUrl ? ", com link" : ", sem link"}).`;
   }
   await prisma.deliveryOrder.update({ where: { id: target.id }, data: { notes: appendOrderNote(target.notes, `📧 ${input.kind} — e-mail da loja ${number} (${receivedAt.toISOString()}).${invoiceNote}`) } });

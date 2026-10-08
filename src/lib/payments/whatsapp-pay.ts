@@ -6,7 +6,7 @@ import { pagarmeAdapter } from "@/lib/payments/pagarme";
 import * as copy from "@/lib/lia-copy";
 
 const ATTEMPT_TTL_MS = 60 * 60 * 1000;
-import { customerInvoiceEnabled, displayPrice } from "@/lib/pricing";
+import { displayPrice } from "@/lib/pricing";
 
 type CardOrder = {
   id: string;
@@ -14,7 +14,9 @@ type CardOrder = {
   phone: string;
   total: number;
   deliveryFee: number;
-  // Margem da Lia (linha própria no modelo service_fee). Opcional: pedidos antigos podem não trazer.
+  // Opcionais (pedidos antigos/testes podem não trazer): com os dois, o que não está nos itens exibidos
+  // nem no frete soma na entrega (nunca uma linha de taxa).
+  itemsSubtotal?: number;
   serviceFee?: number;
   items: unknown;
   status: string;
@@ -89,17 +91,15 @@ function orderDetailsInput(order: CardOrder, credential: { id: string; last4: st
       };
     })
     .filter((item) => item.unitAmount > 0);
-  // Modelo service_fee (08/10): os itens saem pelo preço da loja e a margem é uma linha própria,
-  // como no resumo da cotação — senão ela cairia em "tax" e pareceria imposto.
-  if (detailedItems.length && customerInvoiceEnabled() && (order.serviceFee ?? 0) > 0) {
-    detailedItems.push({ retailerId: `${order.id}-servico`, name: "Taxa de serviço da Lia", quantity: 1, unitAmount: money(order.serviceFee ?? 0) });
-  }
-
   const items = detailedItems.length
     ? detailedItems
     : [{ retailerId: order.id, name: "Pedido Lia", quantity: 1, unitAmount: money(order.total - order.deliveryFee) }];
   const subtotal = money(items.reduce((sum, item) => sum + item.unitAmount * item.quantity, 0));
-  const shipping = money(order.deliveryFee);
+  // Taxa da Lia nunca vira linha (dono, 08/10 noite): o que o pedido cobra além dos itens exibidos e do
+  // frete (taxa fixa do remédio; a margem com LIA_PRICING_MODE=service_fee) soma na entrega, como no resumo
+  // — em "tax" pareceria imposto. "tax" fica só com a taxa da maquininha (total − base do pedido).
+  const base = order.itemsSubtotal != null ? money(order.itemsSubtotal + (order.serviceFee ?? 0) + order.deliveryFee) : null;
+  const shipping = detailedItems.length && base != null ? money(Math.max(order.deliveryFee, base - subtotal)) : money(order.deliveryFee);
   // Any line rounding difference is absorbed in the disclosed card fee so Meta's
   // invariant remains exact: subtotal + shipping + tax = total.
   const tax = money(order.total - subtotal - shipping);

@@ -125,7 +125,7 @@ export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvi
         : copy.delivered();
     const event = await tx.deliveryEvent.create({ data: {
       deliveryOrderId: order.id, dedupeKey: key, kind: evidence.kind, source: evidence.source,
-      sourceReference: reference, occurredAt, message: evidence.kind === "bought" ? text : `Pedido #${shortId}: ${text}`
+      sourceReference: reference, occurredAt, message: text
     } });
     return { order: updated, eventId: event.id };
   });
@@ -144,7 +144,7 @@ function messageIdFrom(result: unknown): string | undefined {
 
 export async function dispatchDeliveryEvent(id: string) {
   const now = new Date();
-  const event = await prisma.deliveryEvent.findUniqueOrThrow({ where: { id }, include: { deliveryOrder: { select: { phone: true, status: true } } } });
+  const event = await prisma.deliveryEvent.findUniqueOrThrow({ where: { id }, include: { deliveryOrder: { select: { phone: true, status: true, items: true } } } });
   if (event.deliveryStatus !== "pending" || (event.nextAttemptAt && event.nextAttemptAt > now)) return;
   // Não mandar "saiu" atrasado depois de "entregue", nem "comprado" depois de estorno.
   const obsolete = ["canceled", "refunded", "refund_pending"].includes(event.deliveryOrder.status) ||
@@ -164,7 +164,7 @@ export async function dispatchDeliveryEvent(id: string) {
   if (!claimed.count) return;
   try {
     const result = outside
-      ? await whatsappAdapter.sendTemplateMessage(event.deliveryOrder.phone, { name: template!, bodyParams: [event.deliveryOrderId.slice(-6).toUpperCase(), event.message] }, id)
+      ? await whatsappAdapter.sendTemplateMessage(event.deliveryOrder.phone, { name: template!, bodyParams: [copy.orderTemplateLabel(event.deliveryOrder.items), event.message] }, id)
       : await whatsappAdapter.sendMessage(event.deliveryOrder.phone, event.message, { noticeId: id });
     const providerMessageId = messageIdFrom(result);
     if (process.env.WHATSAPP_PROVIDER === "meta" && !providerMessageId) throw new Error("Meta não devolveu o id da mensagem");

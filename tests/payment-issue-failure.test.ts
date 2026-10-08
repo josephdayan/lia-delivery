@@ -258,3 +258,42 @@ test("com o MP de volta, repetir *pix* emite a cobrança real", async (t) => {
   assert.equal(order.pixCopiaECola, "00020126REAL-PIX-PAYLOAD");
   assert.equal(order.status, "awaiting_payment");
 });
+
+// Pix em UMA forma só (dono, 08/10 noite: "vem o card automático e de novo a chave; só precisa de um").
+// Caso real: o cartão não aprovou, o cliente mandou "Pix" → saía a bolha nativa E o código em texto.
+test("bolha nativa do Pix entregue = a única mensagem da cobrança (sem código repetido, sem número do pedido)", async (t) => {
+  if (!dbOk) return t.skip();
+  const bubbles: { to: string; body: string; itemName: string }[] = [];
+  const adapter = whatsappAdapter as unknown as { sendPixOrderDetails: unknown };
+  const original = adapter.sendPixOrderDetails;
+  adapter.sendPixOrderDetails = async (to: string, input: { body: string; itemName: string }) => {
+    bubbles.push({ to, body: input.body, itemName: input.itemName });
+    return { messageId: "bubble" };
+  };
+  const env = { native: process.env.LIA_NATIVE_PIX, name: process.env.LIA_PIX_MERCHANT_NAME, key: process.env.LIA_PIX_KEY, type: process.env.LIA_PIX_KEY_TYPE };
+  Object.assign(process.env, { LIA_NATIVE_PIX: "1", LIA_PIX_MERCHANT_NAME: "Lia Delivery", LIA_PIX_KEY: "12345678000199", LIA_PIX_KEY_TYPE: "CNPJ" });
+  try {
+    // Cobrança de cartão aberta (link) e o cliente troca pra Pix.
+    const { phone, orderId } = await awaitingPaymentOrder("pref-1", "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=1");
+    await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: "Pagamento: cartão" } });
+    const out = await withRealCredsAnd(pixOkFetch, () => send(phone, "pix"));
+    assert.equal(bubbles.filter((b) => b.to === phone).length, 1, "a bolha saiu");
+    assert.doesNotMatch(out, /00020126REAL-PIX-PAYLOAD/, `o código NÃO vem de novo em texto: ${out}`);
+    assert.doesNotMatch(bubbles[0].body + bubbles[0].itemName, /#|próxima mensagem/, "sem número do pedido e sem 'próxima mensagem'");
+    // Primeira cobrança Pix também: só a bolha.
+    const second = await awaitingPaymentOrder();
+    const before = bubbles.length;
+    const out2 = await withRealCredsAnd(pixOkFetch, () => send(second.phone, "pix"));
+    assert.equal(bubbles.length, before + 1);
+    assert.doesNotMatch(out2, /00020126REAL-PIX-PAYLOAD/, out2);
+    // Pediu o código de novo: aí sim vai em texto.
+    const resent = await withRealCredsAnd(pixOkFetch, () => send(second.phone, "manda o codigo de novo"));
+    assert.match(resent, /00020126REAL-PIX-PAYLOAD/);
+  } finally {
+    adapter.sendPixOrderDetails = original;
+    for (const [k, v] of [["LIA_NATIVE_PIX", env.native], ["LIA_PIX_MERCHANT_NAME", env.name], ["LIA_PIX_KEY", env.key], ["LIA_PIX_KEY_TYPE", env.type]] as const) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+  }
+});

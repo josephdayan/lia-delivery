@@ -139,19 +139,28 @@ falham em silêncio ("Host not in allowlist") e a Lia cai nos fallbacks. Suíte 
 test:local`, `NODE_USE_ENV_PROXY=1 npx tsx scripts/bench-search.mts …`. Postgres embutido precisa de `.local-pg*/` com
 dono `postgres` (`chown -R postgres .local-pg .local-pg-bench`).
 
-## REGRA VIGENTE — Modelo de preço e nota fiscal (dono, 08/10/2026): preço da loja + taxa de serviço; compra e nota no CPF do cliente
+## REGRA VIGENTE — Modelo de preço e nota fiscal (dono, 08/10/2026 noite): taxa da Lia NUNCA aparece; compra e nota no CPF do cliente
 
-`LIA_PRICING_MODE=service_fee` é o padrão (`src/lib/pricing.ts`): o cliente vê o **preço da loja** em cada item
-(card, tela da lista, resumo), a margem da Lia (as mesmas faixas 10/6/4/3%) sai na linha **"Taxa de serviço da
-Lia"** do resumo e do pedido nativo do cartão, e a compra em TODA loja sai no **nome e CPF do cliente** quando ele
-cadastrou o CPF (`DeliveryOrder.buyerDocument/buyerName`; `customerBuyerFor` em purchase-worker.ts) — a loja emite
-a nota fiscal no nome dele e a Lia encaminha o link (tracking-worker). Sem CPF cadastrado, a compra e a nota ficam no
-nome da Lia Delivery (CPF continua opcional; só remédio isento exige). Era o que o remédio isento já fazia desde 29/09,
-estendido a tudo. Textos fixos (taxa, nota fiscal, "pra que CPF?") e os fatos da IA seguem o modo. **Não dizer
-"serviço embutido no preço" nem "nota no nome da Lia" como regra geral.** `LIA_PRICING_MODE=markup` volta ao modelo
-antigo (margem embutida, nota no nome da Lia; remédio em linha própria). A suíte antiga roda em `markup`
-(`tests/helpers/load-env.ts`); o modelo novo tem `tests/service-fee-mode.test.ts`. Pendente do dono: contador (a receita
-da Lia passa a ser a taxa de serviço, não a revenda).
+Dono, 08/10 noite: "essa taxa da Lia de 50 centavos não pode aparecer; embute em outra coisa". `LIA_PRICING_MODE`
+padrão = **markup** (`src/lib/pricing.ts`): a margem da Lia (faixas 10/6/4/3%) vai **embutida no preço de cada item**
+(card, lista, resumo, pedido nativo do cartão) — **nenhuma linha de "taxa" em mensagem nenhuma**. A taxa fixa do
+remédio isento (que não leva margem) **soma na linha "Entrega"** (`summary`/`manualQuoteSummary` dobram `serviceLine`
+no frete; `whatsapp-pay` põe em `shipping`, nunca em `tax`). `LIA_PRICING_MODE=service_fee` (só se pedido) põe o item
+pelo preço da loja e a margem também vai pra entrega. A IA diz "não tem taxa separada, o serviço vem no preço" e
+**nunca fala em "taxa de serviço"**. A compra e a nota fiscal continuam no **nome e CPF do cliente** quando ele
+cadastrou CPF (`customerInvoiceEnabled`, agora independente do modo; `LIA_CUSTOMER_INVOICE=false` volta à nota no
+nome da Lia). Ressalva conhecida: a nota da loja mostra o preço da loja (menor que o item na Lia). A suíte antiga roda
+em markup com `LIA_CUSTOMER_INVOICE=false` (`tests/helpers/load-env.ts`); a regra nova tem
+`tests/service-fee-mode.test.ts`. Substitui a regra da manhã de 08/10 (preço da loja + "Taxa de serviço da Lia").
+
+## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
+
+- **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do
+  banco e "copiar código") — o copia-e-cola em texto não vai junto, nem na troca cartão→Pix (`sendPixCharge` em
+  order-payments.ts). Bolha recusada → instruções + código como sempre. "Manda o código de novo" reenvia em texto.
+- **Número do pedido (`#GT…`) é nosso**: nenhuma mensagem ao cliente leva `#id` (status, cancelamento, nota fiscal,
+  código de entrega, bolha do Pix). O pedido é ancorado por data e itens. O `#id` continua no /ops e nos avisos do dono.
+- "🤖 Recebedor novo aprovado sozinho" é `notifyOwner` — só o dono recebe.
 
 ## REGRA VIGENTE — Remédio: a Lia VENDE remédio isento (MIP) desde 05/10/2026
 

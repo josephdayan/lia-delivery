@@ -66,7 +66,9 @@ test("forma de pagamento não aceita, chave pix, prazo e repetir pedido não vir
 
 test("textos novos: confirmação de estorno, Pix novo e loja/prazo do pedido", () => {
   const ask = copy.withdrawConfirmAsk({ shortId: "ABC123", itemsPreview: "1x Caneta", total: 30 });
-  assert.match(ask, /Confirma o cancelamento do pedido \*#ABC123\* \(1x Caneta\)\?/);
+  // Sem número do pedido pro cliente (dono, 08/10 noite): o pedido é ancorado pelos itens.
+  assert.match(ask, /Confirma o cancelamento do pedido \(1x Caneta\)\?/);
+  assert.doesNotMatch(ask, /#/);
   assert.match(ask, /R\$ 30,00/);
   assert.match(ask, /\*sim\*/);
   assert.doesNotMatch(copy.paymentSwitched("pix", 23.7, true), /Troquei/);
@@ -180,7 +182,8 @@ test("A2: 'cancela' depois de pagar pergunta antes; 'não' mantém, 'sim' estorn
   if (!dbOk) return t.skip();
   const c = await paidCustomer();
   const ask = await send(c.phone, "cancela");
-  assert.match(ask, new RegExp(`Confirma o cancelamento do pedido \\*#${c.shortId}\\*`), ask);
+  assert.match(ask, /Confirma o cancelamento do pedido/, ask);
+  assert.doesNotMatch(ask, new RegExp(c.shortId), "número do pedido não vai pro cliente");
   assert.doesNotMatch(ask, /Não tem compra em aberto/);
   assert.equal(await statusOf(c.order.id), "paid", "nada estornado antes do sim");
   const kept = await send(c.phone, "não");
@@ -233,7 +236,8 @@ test("M10: dinheiro de volta de pedido cancelado sem pagamento diz que nada foi 
   await setCtx(c.userId, baseCtx);
   const o = await order(c, { status: "canceled" });
   const out = await send(c.phone, "quero meu dinheiro de volta");
-  assert.match(out, new RegExp(`#${o.id.slice(-6).toUpperCase()}[\\s\\S]*nada foi cobrado`), out);
+  assert.match(out, /cancelado antes do pagamento[\s\S]*nada foi cobrado/, out);
+  assert.doesNotMatch(out, new RegExp(o.id.slice(-6).toUpperCase()), "número do pedido não vai pro cliente");
   assert.doesNotMatch(out, /estorno o valor/);
 });
 

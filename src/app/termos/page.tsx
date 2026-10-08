@@ -68,8 +68,8 @@ export default function TermsPage() {
                 sobre o uso devem ser tiradas com o farmacêutico ou o médico, e a bula deve ser lida antes do uso.
               </p>
               <p className="mt-2">
-                Medicamentos que exigem receita não são atendidos. O medicamento é cobrado pelo preço da farmácia e a
-                taxa de serviço da Lia é mostrada separada, antes do pagamento.
+                Medicamentos que exigem receita não são atendidos. O medicamento é cobrado pelo preço da farmácia; o
+                serviço da Lia entra no valor da entrega, e o total aparece antes do pagamento.
               </p>
             </section>
           )}

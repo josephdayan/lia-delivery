@@ -125,7 +125,7 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
       } else if (sig.state === "invoiced" && order.status === "retailer_preparing" && !notes.includes(INVOICED_MARK)) {
         const { deliverNotice } = await import("../turn-runtime");
         const copy = await import("../lia-copy");
-        await deliverNotice(order.phone, `Pedido #${order.id.slice(-6).toUpperCase()}: ${copy.retailerInvoiced(store.label, eta)}`, { shortId: order.id.slice(-6).toUpperCase() });
+        await deliverNotice(order.phone, copy.retailerInvoiced(store.label, eta), { items: order.items });
         await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${INVOICED_MARK} em ${now.toISOString()}${eta ? ` — previsão ${eta}` : ""}.`) } });
         report.notices += 1;
       }

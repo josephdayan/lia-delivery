@@ -387,11 +387,10 @@ export function askFullNameForCpf(): string {
 }
 
 // "pra que cpf?" no cadastro (06/10): a IA dava uma resposta diferente a cada vez.
-// Modelo de preço (08/10, dono): padrão = preço da loja + "Taxa de serviço da Lia" em linha própria,
-// compra e nota no CPF do cliente. LIA_PRICING_MODE=markup volta ao texto do modelo antigo
-// (margem embutida, nota no nome da Lia). Espelha pricing.ts sem importar (copy é pura).
+// Compra e nota no CPF do cliente (08/10, dono) — LIA_CUSTOMER_INVOICE=false volta à nota no nome da
+// Lia. Espelha pricing.ts sem importar (copy é pura).
 function customerInvoiceMode(): boolean {
-  return process.env.LIA_PRICING_MODE !== "markup";
+  return process.env.LIA_CUSTOMER_INVOICE !== "false";
 }
 
 export function whyCpf(): string {
@@ -419,8 +418,8 @@ export function medicineRemovedFromBasket(): string {
 
 export function medicineInvoiceNotice(shortId: string, storeLabel: string, url?: string): string {
   return url
-    ? `🧾 Pedido #${shortId}: a ${storeLabel} emitiu a nota fiscal no seu nome. Aqui está: ${url}`
-    : `🧾 Pedido #${shortId}: a ${storeLabel} emitiu a nota fiscal no seu nome. Se precisar de uma cópia, é só pedir aqui.`;
+    ? `🧾 A ${storeLabel} emitiu a nota fiscal no seu nome. Aqui está: ${url}`
+    : `🧾 A ${storeLabel} emitiu a nota fiscal no seu nome. Se precisar de uma cópia, é só pedir aqui.`;
 }
 
 // Escolha de pagamento em pedido com remédio: texto puro, sem botão de pagamento do WhatsApp.
@@ -634,7 +633,9 @@ export function notFoundNote(items: string[]): string {
 export type SummaryInput = {
   items: CopyBasketItem[];
   produtos: number;
-  // Taxa da Lia em pedido com remédio isento (29/09), fora de "Produtos".
+  // Parte do total que não está nos produtos nem no frete (taxa fixa do remédio isento, 29/09; a margem
+  // inteira com LIA_PRICING_MODE=service_fee). NUNCA vira linha de "taxa" (dono, 08/10 noite: "não é pra
+  // aparecer que tem taxa") — soma na linha da entrega.
   serviceLine?: number;
   frete: number;
   etaMinutes?: number;
@@ -661,8 +662,7 @@ export function summary(input: SummaryInput): string {
     ...lines,
     "",
     `Produtos: ${brl(input.produtos)}`,
-    ...(input.serviceLine != null ? [`Taxa de serviço da Lia: ${brl(input.serviceLine)}`] : []),
-    deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
+    deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
   if (input.notFound?.length) {
@@ -776,7 +776,7 @@ export function editItemsHelp(): string {
 // nada. Antes a Lia fundia os dois sozinha ("O total anterior não vale mais") — agora
 // ela PERGUNTA. Juntar/adicionar explícito ou cobrança recém-emitida seguem fundindo.
 export function mergeOrNewOrderPrompt(shortId: string, total: number): string {
-  return `Você tem o pedido *#${shortId}* (${brl(total)}) esperando pagamento. Esse item novo é pra *juntar* nele, ou começamos um *pedido novo*?`;
+  return `Você tem um pedido de *${brl(total)}* esperando pagamento. Esse item novo é pra *juntar* nele, ou começamos um *pedido novo*?`;
 }
 
 // Pix pago enquanto a pergunta "juntar ou pedido novo?" estava aberta: o item novo
@@ -787,18 +787,20 @@ export function newItemAfterPayment(request: string): string {
 }
 
 export function newOrderStarted(shortId: string): string {
-  return `Fechado! Cancelei o *#${shortId}* — nada foi cobrado. Bora pro pedido novo 👇`;
+  return "Fechado! Cancelei o pedido anterior — nada foi cobrado. Bora pro pedido novo 👇";
 }
 
 // Corpo da bolha nativa de Pix (order_details). V2 (01/09): a bolha vai PRIMEIRO e,
 // quando a Graph aceita, substitui o texto de instruções — só o copia-e-cola sai
 // depois dela (fallback universal pra WhatsApp Web/cliente antigo).
-export function nativePixBody(orderRef: string): string {
-  return `Pedido ${orderRef} — toca em *Pagar com Pix* pra abrir seu banco, ou copia o código da próxima mensagem 👇 Assim que cair, te aviso por aqui ⚡`;
+// Bolha nativa do Pix (08/10 noite, dono: "vem o card e de novo a chave; só precisa de um"): quando a
+// bolha sai, ela é a ÚNICA mensagem da cobrança — o botão já paga e copia o código. Sem número do pedido.
+export function nativePixBody(): string {
+  return "Toca no botão abaixo pra pagar com Pix — ele abre seu banco ou copia o código. Assim que cair, te aviso por aqui ⚡";
 }
 
-export function nativePixItemName(orderRef: string): string {
-  return `Pedido Lia ${orderRef}`;
+export function nativePixItemName(): string {
+  return "Pedido Lia";
 }
 
 export function cardInstructions(total: number, link: string, mock: boolean): string {
@@ -926,8 +928,9 @@ export function sandboxHint(): string {
 
 // ---------- order lifecycle ----------
 
-// O "Seu pedido" que abria as 14 variantes saiu: o `#id` em negrito já abre a linha e
-// economiza uma linha inteira na tela do celular.
+// Número do pedido NUNCA vai pro cliente (dono, 08/10 noite: "a pessoa não precisa saber o número do
+// pedido, isso é nosso") — o pedido é ancorado pela data e pelos itens; o `#id` fica no /ops e nos avisos
+// do dono. `shortId` continua no input pra quem chama não mudar.
 export function orderStatusLine(input: {
   shortId: string;
   status: string;
@@ -941,7 +944,7 @@ export function orderStatusLine(input: {
   dateLabel?: string;
 }): string {
   const meta = [input.dateLabel, input.itemsPreview].filter(Boolean).join(" — ");
-  const id = meta ? `*#${input.shortId}* (${meta})` : `*#${input.shortId}*`;
+  const id = meta ? `Seu pedido (${meta})` : "Seu pedido";
   switch (input.status) {
     case "awaiting_operator_quote":
       return `${id} com o total sendo fechado. Mando com a entrega pra você aprovar — nada é cobrado antes.`;
@@ -989,6 +992,15 @@ export function orderStatusLine(input: {
     default:
       return `${id} em andamento. Qualquer novidade eu aviso.`;
   }
+}
+
+// {{1}} do template de aviso fora da janela de 24h ("…atualização sobre o seu pedido {{1}}: {{2}}"): o
+// número do pedido não vai pro cliente (dono, 08/10 noite) — vai o primeiro item ("de Chocolate X").
+export function orderTemplateLabel(items: unknown): string {
+  const list = Array.isArray(items) ? (items as { name?: unknown }[]).filter((i) => i && typeof i.name === "string" && i.name.trim()) : [];
+  if (!list.length) return "na Lia";
+  const first = String(list[0].name).split("\n")[0].trim().slice(0, 40).trim();
+  return list.length > 1 ? `de ${first} e mais ${list.length - 1}` : `de ${first}`;
 }
 
 // 2ª vez que o cliente pergunta de um pedido que não existe neste número (07/10).
@@ -1055,7 +1067,7 @@ export function withdrawnRefunded(total: number): string {
 export function withdrawConfirmAsk(input: { shortId: string; itemsPreview?: string; total: number; card?: boolean }): string {
   const meta = input.itemsPreview ? ` (${input.itemsPreview})` : "";
   return [
-    `Confirma o cancelamento do pedido *#${input.shortId}*${meta}?`,
+    `Confirma o cancelamento do pedido${meta}?`,
     `O valor de *${brl(input.total)}* volta pelo mesmo meio que você pagou (${input.card ? "cartão" : "Pix"}) — o banco leva até 7 dias úteis pra mostrar.`,
     "",
     "Responde *sim* pra cancelar ou *não* pra manter o pedido."
@@ -1063,23 +1075,23 @@ export function withdrawConfirmAsk(input: { shortId: string; itemsPreview?: stri
 }
 
 export function withdrawKept(shortId: string): string {
-  return `Combinado, o pedido *#${shortId}* segue normal 👍`;
+  return "Combinado, o pedido segue normal 👍";
 }
 
 // "quero meu dinheiro de volta" depois de um pedido cancelado SEM pagamento (06/10): a
 // resposta prometia estorno de item faltando, com nada cobrado.
 export function refundNotPaidYet(shortId: string): string {
-  return `O pedido *#${shortId}* ainda não foi pago — nada foi cobrado. Se não quiser mais, responde *cancelar*.`;
+  return "Esse pedido ainda não foi pago — nada foi cobrado. Se não quiser mais, responde *cancelar*.";
 }
 
 export function refundNothingCharged(shortId: string): string {
-  return `O pedido *#${shortId}* foi cancelado antes do pagamento — nada foi cobrado, então não tem valor pra devolver.`;
+  return "Esse pedido foi cancelado antes do pagamento — nada foi cobrado, então não tem valor pra devolver.";
 }
 
 export function nothingToCancel(paidActive?: { shortId: string; dateLabel?: string; itemsPreview?: string }): string {
   if (paidActive) {
     const meta = [paidActive.dateLabel, paidActive.itemsPreview].filter(Boolean).join(" — ");
-    return `Não tem compra em aberto pra cancelar. Seu pedido *#${paidActive.shortId}*${meta ? ` (${meta})` : ""} está pago e em andamento — esse segue normal; qualquer coisa nele, me fala o número.`;
+    return `Não tem compra em aberto pra cancelar. Seu pedido${meta ? ` (${meta})` : ""} está pago e em andamento — esse segue normal; qualquer coisa nele, é só me falar.`;
   }
   return "Não tem nada em aberto pra cancelar. Me diz o que você precisa que eu monto a lista.";
 }
@@ -1088,7 +1100,7 @@ export function nothingToCancel(paidActive?: { shortId: string; dateLabel?: stri
 // existir um pedido pago antigo, ele entra como segunda linha, com data e conteúdo.
 export function alsoActiveOrder(input: { shortId: string; dateLabel?: string; itemsPreview?: string }): string {
   const meta = [input.dateLabel, input.itemsPreview].filter(Boolean).join(" — ");
-  return `Além desse, seu pedido *#${input.shortId}*${meta ? ` (${meta})` : ""} está pago e em andamento — esse segue normal.`;
+  return `Além desse, seu pedido${meta ? ` (${meta})` : ""} está pago e em andamento — esse segue normal.`;
 }
 
 export function noPreviousOrder(): string {
@@ -1978,7 +1990,7 @@ export function operatorQuoteStillWorking(): string {
 // Cotação que sai enquanto a conversa já está em OUTRO assunto: rotulada com o pedido
 // dela, pra não parecer a cesta atual (27/08 S19).
 export function quoteForOrderLabel(shortId: string, dateLabel?: string): string {
-  return `Saiu o total do seu pedido *#${shortId}*${dateLabel ? ` (${dateLabel})` : ""} — esse é separado do que a gente está vendo agora:`;
+  return `Saiu o total do seu outro pedido${dateLabel ? ` (${dateLabel})` : ""} — esse é separado do que a gente está vendo agora:`;
 }
 
 // Corpo da confirmação pós-escolha quando os BOTÕES (Pagar / Adicionar mais itens /
@@ -2004,8 +2016,8 @@ export function manualQuoteSummary(input: {
   // (rodada 27/08 S1: linhas antigas R$10,31 vs Produtos R$12,53 após troca de loja).
   items: { qty: number; name: string; lineTotal?: number }[];
   produtos: number;
-  // Pedido com remédio isento (29/09): taxa da Lia em linha própria; o remédio vai pelo preço
-  // da farmácia e é comprado no nome/CPF do cliente.
+  // Pedido com remédio isento (29/09): o remédio vai pelo preço da farmácia (comprado no nome/CPF do
+  // cliente) e a taxa fixa da Lia soma na linha da entrega — nunca aparece como "taxa" (08/10 noite).
   serviceLine?: number;
   frete: number;
   deliveryPromise?: string;
@@ -2025,8 +2037,7 @@ export function manualQuoteSummary(input: {
     ...lines,
     "",
     `Produtos: ${brl(input.produtos)}`,
-    ...(input.serviceLine != null ? [`Taxa de serviço da Lia: ${brl(input.serviceLine)}`] : []),
-    deliveryLine(input.frete, input.deliveryPromise, input.etaMinutes),
+    deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`
   ];
   if (input.deliveryAddress) {
@@ -2063,9 +2074,8 @@ export function serviceAnswer(
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
     case "service_fee":
-      return customerInvoiceMode()
-        ? "Cobro uma *taxa de serviço*, que aparece numa linha própria no resumo antes de você pagar — os produtos saem pelo *preço da loja*, e a nota fiscal vem no seu nome. O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não."
-        : "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). O frete é o da própria loja, sem margem em cima. No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
+      // Taxa da Lia nunca aparece (dono, 08/10 noite): não existe linha de taxa; o serviço vai no preço.
+      return "Não tem taxa separada: o meu serviço já vem *embutido no preço de cada item* (por isso pode ficar um pouco acima do site da loja). No cartão entra a taxa do cartão; no Pix, não. E você sempre vê o total antes de pagar.";
     case "pix_receiver":
       return pixReceiverAnswer();
     case "total_preview":
@@ -2184,7 +2194,7 @@ export function orderDeliveryInfo(input: { stores: string[]; promise?: string })
 }
 
 export function orderStoreAnswer(shortId: string, stores: string[]): string {
-  return `Seu pedido *#${shortId}* é da loja ${stores.map((s) => `*${s}*`).join(" e ")}.`;
+  return `Seu pedido é da loja ${stores.map((s) => `*${s}*`).join(" e ")}.`;
 }
 
 export function savedAddressAnswer(address: string, cep?: string): string {
@@ -2192,13 +2202,13 @@ export function savedAddressAnswer(address: string, cep?: string): string {
 }
 
 export function orderAddressAnswer(shortId: string, address: string): string {
-  return `📍 Seu pedido *#${shortId}* vai para: ${address}`;
+  return `📍 Seu pedido vai para: ${address}`;
 }
 
 // Troca de endereço DEPOIS de pagar (06/10): dizia "Endereço atualizado" e o pedido pago
 // seguia para o endereço antigo, sem aviso.
 export function paidOrderAddressKept(shortId: string, address: string): string {
-  return `Seu pedido *#${shortId}* já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
+  return `Seu pedido já está pago e vai para *${address}* — esse eu não consigo mudar por aqui. O endereço novo vale para os próximos pedidos.`;
 }
 
 // ---------- modo atendimento (07/10, placar c13/c30/c31) ----------
@@ -2299,7 +2309,7 @@ export function operatorPaidAlert(shortId: string, total: number): string {
 // cliente: transparência curta — nada foi cobrado — e convite a recomeçar. A mensagem
 // nova dele é processada normalmente logo em seguida.
 export function staleQuoteRestart(shortId: string): string {
-  return `Cancelei o pedido *#${shortId}* por inatividade — nada foi cobrado. Bora recomeçar.`;
+  return "Cancelei o pedido parado por inatividade — nada foi cobrado. Bora recomeçar.";
 }
 
 // Trocar endereço com cotação na mesa: o frete foi calculado pro endereço antigo, então
@@ -2367,7 +2377,7 @@ export function searchingWider(): string {
 // Dinheiro que chegou sem bater com a cobrança vigente (código antigo pago, valor
 // diferente, pedido já cancelado). Nada é aprovado sozinho: operador confere.
 export function unexpectedPaymentReceived(shortId: string, amount: number): string {
-  return `Recebi um pagamento de ${brl(amount)} ligado ao pedido #${shortId}, que não estava mais aguardando esse valor. Vou conferir e te retorno por aqui.`;
+  return `Recebi um pagamento de ${brl(amount)} de um pedido que não estava mais aguardando esse valor. Vou conferir e te retorno por aqui.`;
 }
 
 export function operatorUnexpectedPaymentAlert(shortId: string, detail: string): string {
@@ -2405,8 +2415,8 @@ export function operatorPaidStuckAlert(shortId: string, age: string, blockedReas
 
 export function purchaseDelayedCustomer(shortId: string, blocked: boolean): string {
   return blocked
-    ? `Seu pedido *#${shortId}* travou na loja: o item está sem estoque para o seu endereço. Estou tentando outra loja agora; se não der, devolvo o valor integral e te aviso por aqui.`
-    : `Seu pedido *#${shortId}* está demorando mais que o normal para eu fechar a compra na loja. Continuo nele; se não conseguir, devolvo o valor integral e te aviso por aqui.`;
+    ? `Seu pedido travou na loja: o item está sem estoque para o seu endereço. Estou tentando outra loja agora; se não der, devolvo o valor integral e te aviso por aqui.`
+    : `Seu pedido está demorando mais que o normal para eu fechar a compra na loja. Continuo nele; se não conseguir, devolvo o valor integral e te aviso por aqui.`;
 }
 
 export function operatorAutoRefundAlert(shortId: string, total: number, reason: string): string {

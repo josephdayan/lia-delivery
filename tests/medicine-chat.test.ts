@@ -100,7 +100,9 @@ test("remédio isento: vitrine sem carrossel, sem markup, CPF uma vez, cotação
   const quoted = await send(c.phone, "Maria da Silva 529.982.247-25");
   assert.match(quoted, /✅ Anotado/, "confirmação curta (dono, 05/10)");
   assert.doesNotMatch(quoted, /529\.982\.247-25|52998224725/, "CPF inteiro nunca volta no chat");
-  assert.match(quoted, /Taxa de serviço da Lia: R\$ 4,90/, quoted.slice(0, 600));
+  // Taxa da Lia nunca aparece (dono, 08/10 noite): a taxa fixa do remédio soma na entrega.
+  assert.doesNotMatch(quoted, /taxa de servi/i, quoted.slice(0, 600));
+  assert.match(quoted, /Entrega: R\$/, quoted.slice(0, 600));
   assert.doesNotMatch(quoted, /no seu nome e CPF/, "resumo sem o aviso longo (dono, 05/10)");
   assert.match(quoted, /pix[\s\S]*cart(ã|a)o/i, "pagamento oferecido");
   assert.deepEqual(interactive, [], `nenhuma superfície de compra da Meta: ${interactive.join(",")}`);
@@ -124,7 +126,7 @@ test("remédio isento: quem já deu o CPF não é perguntado de novo", async (t)
   await pickDipirona(c.phone);
   const quoted = await send(c.phone, "só isso");
   assert.doesNotMatch(quoted, /nome completo/i);
-  assert.match(quoted, /Taxa de serviço da Lia/);
+  assert.doesNotMatch(quoted, /taxa de servi/i);
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { phone: c.phone }, orderBy: { createdAt: "desc" } });
   assert.equal(order.buyerDocument, CPF);
 });

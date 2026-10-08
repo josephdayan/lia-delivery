@@ -660,7 +660,7 @@ export async function watchPaidOrder(
   const firstAlert = !(order.notes ?? "").includes("⏰ COMPRA PENDENTE");
   const tellCustomer = blockedReason ? !planBOffered && (firstAlert || bucket >= 1440) : bucket >= 360;
   if (!tellCustomer) return "operator";
-  const delivered = await deliverNotice(order.phone, copy.purchaseDelayedCustomer(shortId, Boolean(blockedReason)), { shortId });
+  const delivered = await deliverNotice(order.phone, copy.purchaseDelayedCustomer(shortId, Boolean(blockedReason)), { items: order.items });
   if (delivered === "skipped") {
     await prisma.deliveryOrder.update({
       where: { id: orderId },
@@ -707,7 +707,7 @@ export async function opsPurchaseFailedRefund(
   });
   await resetConversationForClosedOrder(order, "refund");
   const items = ((order.items as unknown as { qty: number; name: string }[]) ?? []).map((i) => (i.qty > 1 ? `${i.qty}x ${i.name}` : i.name));
-  const delivered = await deliverNotice(order.phone, copy.purchaseFailedRefunded(items, result.amount, safeReason || undefined), { shortId: order.id.slice(-6).toUpperCase() });
+  const delivered = await deliverNotice(order.phone, copy.purchaseFailedRefunded(items, result.amount, safeReason || undefined), { items: order.items });
   if (delivered === "skipped") {
     return prisma.deliveryOrder.update({
       where: { id: orderId },

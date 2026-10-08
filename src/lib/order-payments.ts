@@ -207,14 +207,18 @@ export async function issueChargeForOrder(
     where: { id: order.id },
     data: { pixId: charge.pixId, pixCopiaECola: charge.copiaECola }
   });
-  // V2 (01/09, "veio os dois"): a bolha nativa vai PRIMEIRO; quando a Graph aceita,
-  // ela substitui o texto de instruções e só o código sai depois (fallback universal
-  // pra WhatsApp Web/cliente antigo — e o copia-e-cola precisa ser mensagem SOZINHA:
-  // com prosa junto, não cola no banco). Bolha recusada → as duas mensagens de sempre.
-  const bubbleSent = await maybeSendNativePixBubble(phone, order.id, charge.pixId, total, charge.copiaECola, charge.mock);
-  if (!bubbleSent) await reply(phone, copy.pixInstructions(total, charge.mock));
-  await reply(phone, charge.copiaECola);
+  await sendPixCharge(phone, order.id, charge.pixId, total, charge.copiaECola, charge.mock);
   return true;
+}
+
+// A cobrança Pix chega ao cliente em UMA forma só (dono, 08/10 noite: "vem o card e de novo a chave;
+// só precisa de um deles"): a bolha nativa quando a Graph aceita — ela já tem o total, o botão do banco e
+// o "copiar código" —, senão as instruções + o copia-e-cola em mensagem SOZINHA (com prosa junto, não
+// cola no banco). "Manda o código de novo" continua reenviando o código em texto (resendCharge).
+async function sendPixCharge(phone: string, orderId: string, pixId: string, total: number, code: string, mock: boolean) {
+  if (await maybeSendNativePixBubble(phone, orderId, pixId, total, code, mock)) return;
+  await reply(phone, copy.pixInstructions(total, mock));
+  await reply(phone, code);
 }
 
 // Bolha nativa de pagamento (order_details + pix_dynamic_code): total e botão
@@ -243,14 +247,13 @@ export async function maybeSendNativePixBubble(
     console.warn("[whatsapp:native-pix] flag ligada sem LIA_PIX_MERCHANT_NAME/LIA_PIX_KEY/LIA_PIX_KEY_TYPE — pulando bolha");
     return false;
   }
-  const orderRef = `#${orderId.slice(-6).toUpperCase()}`;
   try {
     await whatsappAdapter.sendPixOrderDetails(phone, {
       // reference_id precisa ser único por bolha; o pixId do Mercado Pago é único por
       // cobrança (o mesmo pedido pode reemitir Pix ao trocar de forma de pagamento).
       referenceId: `pix-${pixId}`,
-      body: copy.nativePixBody(orderRef),
-      itemName: copy.nativePixItemName(orderRef),
+      body: copy.nativePixBody(),
+      itemName: copy.nativePixItemName(),
       total,
       pixCode,
       merchantName,
@@ -610,9 +613,7 @@ export async function issueValidatedRetailerQuotePayment(
         data: { status: "awaiting_payment", pixId: charge.pixId, pixCopiaECola: charge.copiaECola, quoteExpiresAt: null }
       });
       await setQuoteConversationAwaitingPayment(order);
-      const bubbleSent = await maybeSendNativePixBubble(order.phone, order.id, charge.pixId, total, charge.copiaECola, charge.mock);
-      if (!bubbleSent) await reply(order.phone, copy.pixInstructions(total, charge.mock));
-      await reply(order.phone, charge.copiaECola);
+      await sendPixCharge(order.phone, order.id, charge.pixId, total, charge.copiaECola, charge.mock);
     }
     return { expired: false };
   } catch (error) {
@@ -741,10 +742,9 @@ export async function switchPaymentMethod(
     data: { total, notes, pixId: charge.pixId, pixCopiaECola: charge.payload }
   });
   if (order.pixId !== charge.pixId) await supersedePixCharge(order.pixId);
-  // Bolha antes do texto (a troca de forma continua numa mensagem só: contexto do
-  // novo total + código juntos — aqui o código não precisa ser mensagem solitária
-  // porque a bolha, quando entregue, já tem o Copy Pix code).
-  await maybeSendNativePixBubble(phone, order.id, charge.pixId, total, charge.payload, charge.mock);
+  // Bolha entregue = ela é a cobrança inteira (total + botão + copiar código); o código em texto não sai
+  // de novo (dono, 08/10 noite). Sem bolha: o texto de sempre, novo total + código.
+  if (await maybeSendNativePixBubble(phone, order.id, charge.pixId, total, charge.payload, charge.mock)) return;
   await reply(
     phone,
     [copy.paymentSwitched(method, total, opts.renewed), charge.payload, charge.mock ? `\n${copy.sandboxHint()}` : ""].filter(Boolean).join("\n")

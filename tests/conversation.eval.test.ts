@@ -667,5 +667,7 @@ test("concierge: total na hora → pix → 'paguei' (sandbox) → status e pagam
   const dup = await c.send("paguei");
   assert.match(dup, /já está confirmado|já recebi|já (foi|está) pago|pago/i);
   const status = await c.send("cade meu pedido?");
-  assert.match(status, /#\w{6}/);
+  // Número do pedido não vai pro cliente (dono, 08/10 noite): o status fala do pedido pelos itens.
+  assert.match(status, /Seu pedido[\s\S]*pago/);
+  assert.doesNotMatch(status, /#\w{6}/);
 });

@@ -42,10 +42,11 @@ export async function outsideServiceWindow(phone: string): Promise<boolean> {
 export type NoticeDelivery = "text" | "template" | "skipped";
 
 // Aviso PROATIVO (o cliente não acabou de escrever): dentro da janela vai como texto; fora
-// dela vai como template aprovado (LIA_TEMPLATE_ORDER_UPDATE, body "{{1}}" = pedido,
+// dela vai como template aprovado (LIA_TEMPLATE_ORDER_UPDATE, body "{{1}}" = rótulo dos itens — nunca o
+// número do pedido (08/10 noite) —,
 // "{{2}}" = texto) ou, sem template configurado, NÃO é enviado (falharia) — quem chama
 // registra na nota do pedido (03/09: o aviso do chá morreu em silêncio por isso).
-export async function deliverNotice(to: string, text: string, opts: { shortId?: string } = {}): Promise<NoticeDelivery> {
+export async function deliverNotice(to: string, text: string, opts: { items?: unknown } = {}): Promise<NoticeDelivery> {
   if (!(await outsideServiceWindow(to))) {
     await whatsappAdapter.sendMessage(to, text);
     return "text";
@@ -55,7 +56,7 @@ export async function deliverNotice(to: string, text: string, opts: { shortId?: 
     console.warn("[notice:skipped-outside-window]", { to: to.slice(0, 7) + "***", reason: "sem LIA_TEMPLATE_ORDER_UPDATE" });
     return "skipped";
   }
-  await whatsappAdapter.sendTemplateMessage(to, { name: template, bodyParams: [opts.shortId ?? "—", text] });
+  await whatsappAdapter.sendTemplateMessage(to, { name: template, bodyParams: [copy.orderTemplateLabel(opts.items), text] });
   return "template";
 }
 

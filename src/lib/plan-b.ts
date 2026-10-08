@@ -178,7 +178,7 @@ export async function offerPlanB(orderId: string, deps: { search?: SearchOptions
   });
   // Fora da janela de 24h não há botão: vai por template com instrução em texto.
   if (await outsideServiceWindow(order.phone)) {
-    await deliverNotice(order.phone, `${text}\n\n${copy.planBTextFallback()}`, { shortId });
+    await deliverNotice(order.phone, `${text}\n\n${copy.planBTextFallback()}`, { items: order.items });
   } else {
     const sent = await whatsappAdapter.sendPlanBButtons(order.phone, text);
     if (!sent) await reply(order.phone, `${text}\n\n${copy.planBTextFallback()}`);

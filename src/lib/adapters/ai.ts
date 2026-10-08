@@ -6,15 +6,13 @@
 import { diversifyOptions } from "../stores/types";
 import { medicineEnabled } from "../medicine";
 
-// Fatos do serviço que mudam com o modelo de preço (08/10): padrão = preço da loja + taxa de
-// serviço em linha própria e nota no CPF do cliente; LIA_PRICING_MODE=markup = modelo antigo.
+// Fatos do serviço (08/10 noite, dono: "não é pra aparecer que tem taxa"): a margem vai no preço, sem
+// linha de taxa; a nota sai no CPF do cliente (LIA_CUSTOMER_INVOICE=false = nome da Lia).
 function customerInvoiceMode(): boolean {
-  return process.env.LIA_PRICING_MODE !== "markup";
+  return process.env.LIA_CUSTOMER_INVOICE !== "false";
 }
 function serviceFeeFact(): string {
-  return customerInvoiceMode()
-    ? "a Lia cobra uma taxa de serviço que aparece em linha própria no resumo antes de pagar; os produtos saem pelo preço da loja (NUNCA diga que não cobra nada ou que não tem taxa)"
-    : "o serviço da Lia vem embutido no preço de cada item — não há taxa separada, por isso pode ficar um pouco acima do site da loja (NUNCA diga que não cobra nada, que não tem margem ou que o preço é o mesmo da loja)";
+  return "o serviço da Lia vem embutido no preço — não há taxa separada nem linha de taxa, por isso pode ficar um pouco acima do site da loja (NUNCA fale em 'taxa de serviço' da Lia; NUNCA diga que não cobra nada, que não tem margem ou que o preço é o mesmo da loja)";
 }
 function invoiceFact(): string {
   return customerInvoiceMode()

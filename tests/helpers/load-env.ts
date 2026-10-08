@@ -48,6 +48,9 @@ delete process.env.LIA_MEDICINE_MIP;
 // CPF do cliente). A suíte antiga foi escrita com a margem embutida e fica nela; o modelo novo tem
 // teste próprio (tests/service-fee-mode.test.ts), que liga sozinho.
 process.env.LIA_PRICING_MODE ??= "markup";
+// Compra e nota no CPF do cliente (08/10): a suíte antiga foi escrita com a nota no nome da Lia; o
+// comportamento novo tem teste próprio (tests/service-fee-mode.test.ts).
+process.env.LIA_CUSTOMER_INVOICE ??= "false";
 // Recomendação (08/10): em produção o padrão é "test" (só dono/admins); a suíte usa telefones de teste.
 process.env.LIA_RECOMMEND ??= "all";
 // Coordenadas do CEP na simulação (08/10 noite) e ensaio da compra: rede — a suíte fica sem; os testes

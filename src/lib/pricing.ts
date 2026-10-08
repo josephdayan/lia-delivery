@@ -8,18 +8,19 @@
 
 import { hasMip, isMipItem, medicineServiceFee } from "./medicine";
 
-// MODELO DE PREÇO (dono, 08/10/2026): "service_fee" (padrão) = o cliente vê o PREÇO DA LOJA em
-// cada item e a margem da Lia sai numa linha própria ("Taxa de serviço da Lia"), igual ao que o
-// remédio isento já fazia; a compra na loja sai no CPF do cliente e a nota fiscal no nome dele.
-// "markup" = modelo antigo (margem embutida no preço, nota no nome da Lia). A margem em R$ é a
-// MESMA nos dois (as faixas abaixo); muda só onde ela aparece. LIA_PRICING_MODE=markup volta.
+// MODELO DE PREÇO (dono, 08/10/2026 noite: "essa taxa da Lia não pode aparecer, embute em outra
+// coisa"): "markup" (padrão) = a margem da Lia vai EMBUTIDA no preço de cada item — nenhuma linha de
+// taxa em mensagem nenhuma. A taxa fixa do remédio isento (que não leva margem) soma na linha da entrega.
+// "service_fee" (LIA_PRICING_MODE=service_fee, só se pedido) = item pelo preço da loja; mesmo assim a
+// margem NUNCA vira "taxa": os resumos somam ela na entrega. A margem em R$ é a MESMA nos dois.
 export type PricingMode = "service_fee" | "markup";
 export function pricingMode(): PricingMode {
-  return process.env.LIA_PRICING_MODE === "markup" ? "markup" : "service_fee";
+  return process.env.LIA_PRICING_MODE === "service_fee" ? "service_fee" : "markup";
 }
-// Nota e compra no nome do cliente (quando ele cadastrou CPF) — vale no modelo service_fee.
+// Compra e nota fiscal no nome/CPF do cliente quando ele cadastrou CPF (dono, 08/10) — independe de
+// onde a margem aparece. LIA_CUSTOMER_INVOICE=false volta à compra no nome da Lia.
 export function customerInvoiceEnabled(): boolean {
-  return pricingMode() === "service_fee";
+  return process.env.LIA_CUSTOMER_INVOICE !== "false";
 }
 
 type Tier = { above: number; rate: number };
@@ -94,8 +95,8 @@ export function medicineFeeForItems(items: ReadonlyArray<{ medicine?: string }>)
   return hasMip(items) ? medicineServiceFee() : 0;
 }
 
-// O que aparece na linha "Taxa de serviço da Lia" do resumo: no modelo service_fee, a margem
-// inteira (os produtos saem pelo preço da loja); no modelo markup, só a taxa do remédio.
+// A parte do total que NÃO está no preço exibido dos itens: no modelo markup, só a taxa do remédio; no
+// service_fee, a margem inteira. Os resumos somam isso na linha da entrega (nunca "taxa").
 export function serviceLineForItems(items: { unitPrice: number; qty: number; medicine?: string }[]): number {
   return pricingMode() === "markup" ? medicineFeeForItems(items) : serviceFeeForItems(items);
 }
