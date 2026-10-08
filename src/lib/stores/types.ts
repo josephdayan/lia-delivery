@@ -866,7 +866,77 @@ export function popularityBonus(rank?: number): number {
   return 0;
 }
 
-export function rankCatalog(query: string, items: CatalogItem[], limit: number): CatalogItem[] {
+// ---------- índice do catálogo (08/10/2026): pontuar só quem PODE pontuar ----------
+// `scoreQuery` só devolve > 0 com um token forte casando palavra do nome, da marca ou da
+// categoria (tokenMatchesWordSyn / isSameNoun / tokenMatchesWord). Varrer os ~90 mil itens das
+// 39 vitrines por linha custava ~1,8 s de CPU — 4 linhas = 7 s travando a thread, e as
+// respostas das lojas (busca ao vivo, simulação) venciam o timeout na fila de eventos
+// (teste do dono: "não tinha gin"). O índice guarda, por catálogo (identidade do array),
+// palavra → itens; a consulta casa os tokens (da frase e dos aliases) contra o VOCABULÁRIO
+// (milhares de palavras, não centenas de milhares de itens) com os MESMOS casadores, e só os
+// itens apontados passam pelo `scoreCatalogMatch` completo. Condição necessária, nunca
+// suficiente: o resultado é idêntico ao da varredura inteira (teste de equivalência em
+// tests/catalog-index-2026-10-08.test.ts). Catálogo é array estático por loja, então o índice
+// nasce uma vez por processo; pools transitórios (cópia + ao vivo) são pequenos.
+type CatalogIndex = { vocab: string[]; postings: Map<string, number[]> };
+const CATALOG_INDEXES = new WeakMap<CatalogItem[], CatalogIndex>();
+let fullScanForTests = false;
+
+function indexFor(items: CatalogItem[]): CatalogIndex {
+  const cached = CATALOG_INDEXES.get(items);
+  if (cached) return cached;
+  const postings = new Map<string, number[]>();
+  items.forEach((item, i) => {
+    const seen = new Set<string>();
+    for (const w of [...words(item.name), ...words(item.brand ?? ""), ...words(item.category ?? "")]) {
+      if (seen.has(w)) continue;
+      seen.add(w);
+      const list = postings.get(w);
+      if (list) list.push(i);
+      else postings.set(w, [i]);
+    }
+  });
+  const index = { vocab: [...postings.keys()], postings };
+  CATALOG_INDEXES.set(items, index);
+  return index;
+}
+
+// token × palavra do vocabulário → casa? Puro, então vale entre lojas e consultas.
+const MATCH_MEMO = new Map<string, boolean>();
+const MATCH_MEMO_MAX = 400_000;
+function tokenCanHit(token: string, word: string): boolean {
+  const key = `${token}\u0000${word}`;
+  const hit = MATCH_MEMO.get(key);
+  if (hit !== undefined) return hit;
+  const value = isSameNoun(token, word) || tokenMatchesWordSyn(token, word) || tokenMatchesWord(token, word);
+  if (MATCH_MEMO.size >= MATCH_MEMO_MAX) MATCH_MEMO.clear();
+  MATCH_MEMO.set(key, value);
+  return value;
+}
+
+// Itens que têm chance de pontuar para a consulta (superconjunto do resultado real).
+function candidateItems(rawQuery: string, items: CatalogItem[]): CatalogItem[] {
+  const query = joinMeasures(rawQuery);
+  const tokens = new Set([query, ...queryAliases(query)].flatMap((q) => queryTokens(q)));
+  if (!tokens.size) return [];
+  const index = indexFor(items);
+  const hit = new Set<number>();
+  for (const word of index.vocab) {
+    for (const token of tokens) {
+      if (!tokenCanHit(token, word)) continue;
+      for (const i of index.postings.get(word)!) hit.add(i);
+      break;
+    }
+  }
+  return [...hit].sort((a, b) => a - b).map((i) => items[i]);
+}
+
+export function __setCatalogFullScanForTests(on: boolean) {
+  fullScanForTests = on;
+}
+
+export function rankCatalog(query: string, allItems: CatalogItem[], limit: number): CatalogItem[] {
+  const items = fullScanForTests ? allItems : candidateItems(query, allItems);
   const childAsked = CHILD_VARIANT_RE.test(normalizeText(query));
   const childRank = (item: CatalogItem) => (!childAsked && isChildVariant(normalizeText(item.name)) ? 1 : 0);
   // Popularidade (só catálogos VTEX, gravada pelo harvest/backfill) entra DEPOIS de

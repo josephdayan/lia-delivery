@@ -1,3 +1,26 @@
+## 08/10/2026 (noite, 2ª) — Tempo da lista: índice do catálogo (CPU 7 s → 1 s), thread livre, retry da busca ao vivo
+
+Depois das três correções abaixo, o dono pediu que "nunca mais" aconteça e mandou consertar o tempo. Medido
+no repro local da lista de 4 itens: a PONTUAÇÃO da cópia dos catálogos (`rankCatalog`/`scoreCatalogMatch`,
+~90 mil itens em 39 vitrines) custava **~1,8 s de CPU por linha** — 4 linhas = 7 s com a thread travada,
+e as respostas das lojas (busca ao vivo, simulação) esperavam na fila de eventos com o timeout correndo.
+Era o segundo motivo do "não tinha gin" e a maior fatia dos 17 s de "search+live" do turno de produção.
+- **Índice do catálogo** (`candidateItems` em `src/lib/stores/types.ts`): por catálogo (identidade do array,
+  WeakMap), palavra → itens; a consulta casa os tokens (frase + aliases) contra o vocabulário com os MESMOS
+  casadores (`isSameNoun`/`tokenMatchesWordSyn`/`tokenMatchesWord`, memoizados) e só os itens apontados
+  passam pelo `scoreCatalogMatch` inteiro. Condição necessária, nunca suficiente: resultado **idêntico** ao
+  da varredura (teste de equivalência `tests/catalog-index-2026-10-08.test.ts`: 316 pedidos reais do placar +
+  60 casos de borda × 5 catálogos grandes, top-12 igual). 4 linhas × 39 lojas: **7,1 s → 1,1 s** (com a
+  construção do índice; quente, 2,2 s → 0,14 s em 5 catálogos). Regra: mexeu em `scoreQuery` de um jeito
+  que possa pontuar SEM casar palavra do nome/marca/categoria, o índice tem que acompanhar (o teste acusa).
+  `__setCatalogFullScanForTests(true)` volta à varredura.
+- **Thread livre entre lojas**: `searchStoreItems` cede a vez (`setImmediate`) antes de pontuar cada loja,
+  para as respostas de rede entrarem no meio.
+- **Busca ao vivo tenta de novo UMA vez no timeout** (`liveSearchItems`): estouro isolado não vira "não achei".
+Fica para medir em produção: o turno de 4 linhas tinha extração 4 s + busca/checagem 17 s + juiz 8 s;
+a parte de busca/checagem deve cair para poucos segundos. Juiz e extração são IA (`gpt-6-luna`); o
+`LIA_AI_EFFORT=none` segue "a medir antes de virar padrão".
+
 ## 08/10/2026 (noite) — Teste da lista pelo dono: gin "não achei", lista reenviada, "cancelei por inatividade"
 
 Conversa real (16:44 UTC, lista "2 vodkas absolute / suco de laranja / gin / 4 red bull"), reconstruída

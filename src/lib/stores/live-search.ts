@@ -186,9 +186,18 @@ export async function liveSearchItems(storeKey: string, query: string, count = 1
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.items;
   const url = `https://${store.domain}/api/io/_v/api/intelligent-search/product_search/?query=${encodeURIComponent(query)}&count=${count}&locale=pt-BR&hideUnavailableItems=true`;
   let items: CatalogItem[] = [];
+  // Fila (store-throttle.ts): o timeout conta a partir da saída da fila, não da chegada do pedido.
+  const attempt = () => withStoreSlot(() => fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) }));
   try {
-    // Fila (store-throttle.ts): o timeout conta a partir da saída da fila, não da chegada do pedido.
-    const res = await withStoreSlot(() => fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) }));
+    let res: Awaited<ReturnType<typeof attempt>>;
+    try {
+      res = await attempt();
+    } catch (error) {
+      // Timeout (08/10: "não tinha gin"): UMA nova tentativa antes de a loja ficar de fora desta
+      // linha — a cópia local não tem tudo e um estouro isolado não pode virar "não achei".
+      if (!(error instanceof Error && /abort|timeout/i.test(error.name))) throw error;
+      res = await attempt();
+    }
     if (!res.ok) return [];
     const data = (await res.json()) as { products?: IsProduct[] };
     items = parseLiveProducts(storeKey, data.products ?? []);

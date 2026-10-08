@@ -229,6 +229,10 @@ export function listStores(): StoreConnector[] {
 // Cópia do catálogo + prateleira ao vivo da loja (live-search.ts), em paralelo. Sem ao vivo
 // (desligado, loja não-VTEX, falha/timeout) o resultado é exatamente o da cópia, como antes.
 async function searchStoreItems(store: StoreConnector, query: string, limitPerStore: number): Promise<CatalogItem[]> {
+  // Devolve a vez à fila de eventos entre uma loja e outra (08/10): as 39 pontuações de catálogo
+  // rodavam em sequência sem soltar a thread, e as respostas das lojas (busca ao vivo,
+  // simulação) esperavam todas acabarem — com o timeout delas correndo.
+  await new Promise<void>((resolve) => setImmediate(resolve));
   const wantLive = liveSearchEnabled() && Boolean(VTEX_API_STORES[store.key]);
   const [snapshot, live] = await Promise.all([
     store.searchItems(query, limitPerStore),
