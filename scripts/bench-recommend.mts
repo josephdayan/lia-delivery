@@ -13,6 +13,10 @@
 // (OPENAI_API_KEY). CEP: BENCH_CEP, senão .retail-buyer/config.json (probe.cep), senão Av. Paulista.
 import { mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { detectRecommendation } from "../src/lib/recommend/detect";
+import { callDialogueModel } from "../src/lib/dialogue/model";
+import { buildDialogueState } from "../src/lib/dialogue/state";
+import { planActions } from "../src/lib/dialogue/plan";
 import { AsyncLocalStorage } from "node:async_hooks";
 
 const args = process.argv.slice(2);
@@ -29,6 +33,7 @@ if (args.includes("--help") || args.includes("-h")) {
   --cat <categoria>     estado | vontade | ocasiao | presente | sintoma | produto_julgado
   --concurrency <N>     pedidos em paralelo (padrão 3)
   --file <arquivo>      outro corpus em evals/ (padrão recommend-needs.json)
+  --detect              monta o pedido pelo caminho REAL de entender (regras detect.ts → gerente de diálogo IA), não pelos campos do corpus
   --resume              continua uma rodada interrompida com o mesmo --label (checkpoint em evals/results/.recommend-<label>.partial.json)
   --verbose             imprime cada pedido com cards e veredito
   --selftest-judge      só prova o juiz: julga 2 cards inventados (sem Lia, sem banco) e imprime o veredito
@@ -46,6 +51,7 @@ const only = arg("only")?.split(",").map((s) => s.trim()).filter(Boolean);
 const concurrency = Math.max(1, Number(arg("concurrency", "3")));
 const resume = args.includes("--resume");
 const verbose = args.includes("--verbose");
+const detectMode = args.includes("--detect");
 const JUDGE_MODEL = process.env.BENCH_JUDGE_MODEL ?? "gpt-6-luna";
 const LIA_MODEL = process.env.OPENAI_MODEL ?? "gpt-6-luna";
 
@@ -272,7 +278,23 @@ async function main() {
       for (;;) {
         const n = needs[next++];
         if (!n) return;
-        const request = {
+        // --detect (08/10, noite): o pedido nasce do caminho real — regras de detect.ts e, se elas não
+        // reconhecem, o gerente de diálogo (IA) com estado vazio de cliente cadastrado. Mede o ENTENDER junto.
+        let understood: "regex" | "ia" | "nao_reconheceu" | "corpus" = "corpus";
+        let detected: any = null;
+        if (detectMode) {
+          detected = detectRecommendation(n.text);
+          if (detected) understood = "regex";
+          else {
+            const state = buildDialogueState({ flow: "delivery", step: "collecting" } as any, { hasAddress: true });
+            const decision = await callDialogueModel({ text: n.text, state });
+            const plan = decision ? planActions(decision, state, { text: n.text }) : null;
+            const step: any = plan && plan.ok ? plan.steps.find((st: any) => st.type === "recommend") : null;
+            if (step?.request) { detected = { ...step.request, source: "dialogue" }; understood = "ia"; }
+            else understood = "nao_reconheceu";
+          }
+        }
+        const request = detected ?? {
           form: n.form,
           text: n.text,
           ...(n.form === "product_judged" ? { product: n.product ?? n.text } : { need: n.need ?? n.text }),
@@ -319,7 +341,7 @@ async function main() {
           else result = verdict.atende ? "atende" : "nao_atende";
         }
         results.push({
-          id: n.id, text: n.text, category: n.category, form: n.form, redFlag: Boolean(n.redFlag),
+          id: n.id, text: n.text, category: n.category, form: n.form, redFlag: Boolean(n.redFlag), understood, request: detectMode ? request : undefined,
           constraints: n.constraints, budget: n.budget, outcome: result, ms, timingMs, timings,
           plan: outcome ? { source: outcome.plan?.source, redFlag: outcome.plan?.redFlag, picks: outcome.plan?.picks } : undefined,
           emptyShelves: outcome?.emptyShelves, cards: shown, verdict: verdict ?? undefined, error,
