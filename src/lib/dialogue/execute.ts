@@ -8,6 +8,7 @@ import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice }
 import * as copy from "../lia-copy";
 import { extractCep, normalizeMsg, parseRefinement } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
+import { handleRecommend } from "../recommend/handle";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -82,6 +83,8 @@ function describe(step: Planned): string {
       return step.kind;
     case "fixed":
       return step.key;
+    case "recommend":
+      return `recommend(${step.request.form})`;
     default:
       return step.type;
   }
@@ -251,6 +254,13 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       if (step.key === "medicine") await h.refuseMedicine(phone, convoId, ctx);
       else await reply(phone, copy.outOfScopeProductAnswer());
       if (current) await h.sendChoices(phone, current);
+      return "done";
+    }
+
+    case "recommend": {
+      // Recomendação (08/10): a execução (prateleiras → busca no CEP → juiz → cards) é do handler. Com
+      // opções na tela, ele recebe o contexto inteiro e decide (continuar a escolha ou recomendar de novo).
+      await handleRecommend({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text });
       return "done";
     }
 

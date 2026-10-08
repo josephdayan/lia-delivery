@@ -26,6 +26,10 @@ export const ACTION_TYPES = [
   // a resposta é o texto FIXO do lia-copy (nunca texto livre da IA).
   "out_of_scope",
   "medicine",
+  // Recomendação (08/10, plano-recomendacoes §1.1): o cliente pede JULGAMENTO ("me recomenda um
+  // chocolate bom") ou descreve NECESSIDADE/ESTADO/OCASIÃO/SINTOMA sem nomear produto ("tô com fome",
+  // "dor de barriga", "churrasco pra 8"). A execução é src/lib/recommend/handle.ts.
+  "recommend",
   "unclear"
 ] as const;
 export type ActionType = (typeof ACTION_TYPES)[number];
@@ -61,6 +65,12 @@ export type Sort = (typeof SORTS)[number];
 export const PAY_METHODS = ["pix", "card", "unspecified"] as const;
 export type PayMethod = (typeof PAY_METHODS)[number];
 
+// recommend: forma do pedido e critérios (espelham RecommendForm/RecommendCriterion de recommend/types).
+export const RECOMMEND_FORMS = ["product_judged", "need"] as const;
+export type RecommendActionForm = (typeof RECOMMEND_FORMS)[number];
+export const RECOMMEND_CRITERIA = ["fast", "good", "cheap", "healthy"] as const;
+export type RecommendActionCriterion = (typeof RECOMMEND_CRITERIA)[number];
+
 // Ação CRUA devolvida pela IA (campos nulos viram undefined). Os números (option, target, from)
 // referem a numeração do ESTADO enviado — nunca a skus nem a preços.
 export type DialogueAction = {
@@ -89,6 +99,22 @@ export type DialogueAction = {
   retry?: boolean;
   // search durante a escolha: troca o item em escolha por este (em vez de entrar na fila).
   replace?: boolean;
+  // ---- recommend (08/10) ----
+  // product_judged = produto nomeado + julgamento; need = necessidade sem produto.
+  form?: RecommendActionForm;
+  // need: a necessidade como o cliente disse, limpa ("algo doce", "fome", "churrasco pra 8 pessoas").
+  need?: string;
+  // product_judged: o produto nomeado, limpo ("chocolate", "shampoo cabelo cacheado").
+  product?: string;
+  criteria?: RecommendActionCriterion[];
+  // Restrições ditas ("sem lactose", "sem chocolate", "vegano"). Orçamento NÃO entra aqui: o código
+  // extrai o teto da própria mensagem (parsePriceCap), a IA não decide dinheiro.
+  constraints?: string[];
+  // Pra quem: "mãe", "namorada", "cachorro", "criança 5 anos".
+  recipient?: string;
+  urgency?: boolean;
+  // Sintoma normalizado ("dor de barriga", "azia") quando o pedido é de saúde.
+  symptom?: string;
 };
 
 export type DialogueDecision = { actions: DialogueAction[] };

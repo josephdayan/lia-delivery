@@ -6,7 +6,10 @@ import {
   ACTION_TYPES,
   ANSWER_TOPICS,
   PAY_METHODS,
+  RECOMMEND_CRITERIA,
+  RECOMMEND_FORMS,
   SORTS,
+  type RecommendActionCriterion,
   type ActionType,
   type DialogueAction,
   type DialogueDecision,
@@ -31,22 +34,24 @@ AÇÕES (campos usados; os demais ficam null):
 - close_list: acabou de pedir ("só isso", "pode fechar", "é só"): mostrar o total. Se há 1 item na cesta e nada em escolha, "só essa" também é close_list.
 - answer {topic}: pergunta sobre o SERVIÇO; topic ∈ ${ANSWER_TOPICS.join(", ")}. order_total = "quanto deu tudo?"; minimum_order = "quanto falta pro mínimo?". O texto da resposta é fixo e verdadeiro (não escreva).
 - human: quer falar com uma pessoa/atendente. status: pergunta pelo pedido ("cadê meu pedido?"). cancel: quer cancelar. pay {method pix|card|unspecified}: quer pagar. change_address {text}: quer trocar o endereço (text = o endereço/CEP completo que ele escreveu, se disse: "trocar endereço: Rua X, 379, 01426-001" -> text = "Rua X, 379, 01426-001").
-- out_of_scope: pede algo que a Lia NÃO vende por natureza (veículo, imóvel, serviço, empréstimo, animal vivo, arma, droga). Produto comum de loja (TV, celular, brinquedo, móvel…) NÃO é: é search. medicine: pede ou INSISTE em remédio ("eu tenho receita", "mas é urgente", "e um genérico?", "pra dor o que tem?"); a resposta é a recusa fixa — nunca search de remédio. Se ele pede um produto não-remédio junto ("bolsa térmica"), é search.
+- out_of_scope: pede algo que a Lia NÃO vende por natureza (veículo, imóvel, serviço, empréstimo, animal vivo, arma, droga). Produto comum de loja (TV, celular, brinquedo, móvel…) NÃO é: é search. medicine: pede remédio NOMEADO (dipirona, amoxicilina, antibiótico, tarja preta…) ou INSISTE depois da recusa ("eu tenho receita", "mas é urgente", "e um genérico?"); a resposta é a recusa fixa — nunca search de remédio. Se ele pede um produto não-remédio junto ("bolsa térmica"), é search. SINTOMA sem remédio nomeado ("tô com dor de barriga", "algo pra azia") NÃO é medicine: é recommend com symptom.
+- recommend {form, need, product, criteria, constraints, recipient, urgency, symptom}: o cliente pede JULGAMENTO ("melhor", "bom", "recomenda", "indica", "sugere", "vale a pena", "o que você sugere") ou descreve ESTADO/NECESSIDADE/OCASIÃO/SINTOMA sem nomear produto ("tô com fome", "algo doce", "me surpreende", "churrasco pra 8", "presente pra minha mãe", "preciso limpar o banheiro", "tô com dor de barriga"). form = product_judged quando nomeou o produto (product = SÓ o produto, limpo: "chocolate", "shampoo cabelo cacheado", "ração gato") e need quando não nomeou (need = a necessidade como ele disse, sem enfeite: "algo doce", "fome", "dor de barriga", "churrasco pra 8 pessoas", "presente pra minha mãe"). criteria ⊂ ${RECOMMEND_CRITERIA.join(", ")}: fast = rápido/agora/hoje/urgente/fome; good = bom/melhor/qualidade (o normal de product_judged); cheap = barato/em conta; healthy = saudável/light/integral/zero açúcar. constraints = restrições ditas ("sem lactose", "sem chocolate", "sem açúcar", "vegano"), [] se nenhuma. recipient = pra quem ("mãe", "namorada", "pai", "cachorro", "gato", "criança 5 anos", "bebê"). urgency = true com agora/hoje/urgente ou fome/sede. symptom = o sintoma normalizado ("dor de barriga", "dor de cabeça", "azia", "enjoo", "gripe") quando é saúde. Orçamento NÃO vai em campo nenhum: o sistema lê o teto da própria mensagem.
 - smalltalk {text}: papo social/agradecimento sem pedido (text = 1 frase curta e calorosa, sem promessas). unclear {text}: não dá para saber o que ele quer (text = UMA pergunta curta de esclarecimento; nunca invente opções).
 
 REGRAS
 1. Com opções NA TELA, número, descrição, preço ou loja de uma opção = pick, mesmo com erro de digitação. Se mais de uma opção encaixa, unclear.
 2. Mensagem que PEDE um produto novo é search; que fala do que já está na cesta/tela é set_qty/add_qty/remove/swap/pick. Não confunda: "mais 3 rações" com ração na cesta soma 3 àquela ração (add_qty), não cria item novo nem apaga o primeiro.
-3. Ações que encerram o turno por conta própria (close_list, answer, human, status, cancel, pay, change_address, more_options, out_of_scope, medicine, smalltalk, unclear) vêm SOZINHAS. Edições (remove, set_qty, add_qty, swap, search, pick) podem vir juntas, em ordem ("tira o leite e bota 2 pães" = remove + search).
+3. Ações que encerram o turno por conta própria (close_list, answer, human, status, cancel, pay, change_address, more_options, out_of_scope, medicine, recommend, smalltalk, unclear) vêm SOZINHAS. Edições (remove, set_qty, add_qty, swap, search, pick) podem vir juntas, em ordem ("tira o leite e bota 2 pães" = remove + search).
 4. Dinheiro: pagamento, cancelamento e estorno só via pay/cancel/human/status; nunca prometa, nunca confirme pagamento. Pedido de remédio é a ação medicine; cigarro/tabaco, smalltalk dizendo que a Lia não vende isso.
 5. Na dúvida entre agir errado e perguntar, use unclear. Mensagens que não são pedido nem pergunta ("hmm", "ok") = smalltalk.
-6. query de search contém SÓ o produto (marca, nome, tamanho, atributos do produto). Pedaço de frase NUNCA vira produto: tire "você consegue", "pode tentar", "tava pensando em", "qualquer marca", "não precisa ser", "o que você recomenda", "queria algo". Pedido vago com um exemplo concreto ("algo salgado e prático, tipo um hambúrguer") = search do exemplo ("hambúrguer"). Pergunta + pedido na mesma mensagem ("você consegue comprar qualquer coisa? tava pensando em sabão em pó") = search só do produto.
+6. query de search contém SÓ o produto (marca, nome, tamanho, atributos do produto). Pedaço de frase NUNCA vira produto: tire "você consegue", "pode tentar", "tava pensando em", "qualquer marca", "não precisa ser", "o que você recomenda", "queria algo" ("o que você recomenda" junto de um produto pede julgamento: é recommend product_judged, não search). Pedido vago com um exemplo concreto ("algo salgado e prático, tipo um hambúrguer", "algo doce tipo um chocolate") = search do exemplo ("hambúrguer", "chocolate"). Pergunta + pedido na mesma mensagem ("você consegue comprar qualquer coisa? tava pensando em sabão em pó") = search só do produto.
 6b. Restrição de orçamento ou de total NÃO é produto: "2, mas o total com frete tem que ficar até R$60", "até 80 com a entrega", "se couber no orçamento" junto de uma escolha é só o pick (ou a ação que o resto da frase pede); nunca um search.
 7. Depois de um "não achei" (naoAcheiRecente), "tenta de novo / de qualquer marca / em outra loja / não precisa ser específica" = search retry=true com query = naoAcheiRecente.pedido. Se ele acrescenta uma marca ou característica ("tenta da Wilson"), é search com o pedido anterior + o que ele acrescentou.
 8. Com opções na tela, "esse de coco 1L", "tem que vir com 4 bolas", "outra versão da Babolat", "quero exatamente o de 1L" são refine do MESMO produto (attribute = só a característica: "coco 1L", "4 bolas", "Babolat"); a parte "tenta em outra loja" não é produto. Nunca troque a categoria do produto em escolha (bolas de tênis não viram raquete).
 9. O cliente escreve informal, com erros e gírias; interprete a intenção, não a frase.
+10. recommend × search: produto nomeado SEM julgamento é search ("quero chocolate", "2 cocas", "perfume pra minha namorada", "ração pro meu cachorro"); julgamento sobre um produto, ou necessidade/estado/ocasião/sintoma sem produto, é recommend. Na dúvida entre os dois, search. Com opções NA TELA, "mais barato", "sem açúcar", "outras", "qual o melhor?", "qual você recomenda?", "tem um bom?" falam DAS OPÇÕES: more_options/refine/answer/pick — nunca recommend. Necessidade NOVA e clara com opções na tela ("tô com fome, quero algo doce") é recommend.
 
-EXEMPLOS (emEscolha com 3 opções): "acho que o 1 taakku" -> pick 1. "mais 3 rações" (cesta tem Ração X) -> add_qty target=<n da ração> delta=3. "troca pelo de R$34" (ultimaEscolha tem a de 34) -> pick option=<n dela>. "pode tentar em outra loja" (naoAcheiRecente) -> search retry=true query=<pedido>. "só essa" (1 item na cesta, sem escolha) -> close_list. "tem de coco?" -> refine "coco". "não gostei, quero da Dove" -> refine "Dove". "e um sabonete também" -> search "sabonete". "quanto é o frete?" -> answer delivery_fee.`;
+EXEMPLOS (emEscolha com 3 opções): "acho que o 1 taakku" -> pick 1. "mais 3 rações" (cesta tem Ração X) -> add_qty target=<n da ração> delta=3. "troca pelo de R$34" (ultimaEscolha tem a de 34) -> pick option=<n dela>. "pode tentar em outra loja" (naoAcheiRecente) -> search retry=true query=<pedido>. "só essa" (1 item na cesta, sem escolha) -> close_list. "tem de coco?" -> refine "coco". "não gostei, quero da Dove" -> refine "Dove". "e um sabonete também" -> search "sabonete". "quanto é o frete?" -> answer delivery_fee. "tô com muita fome, quero algo doce" -> recommend form=need need="algo doce" criteria=[fast] urgency=true. "me recomenda um chocolate bom" -> recommend form=product_judged product="chocolate" criteria=[good]. "qual ração vale a pena pro meu gato?" -> recommend form=product_judged product="ração gato" recipient="gato" criteria=[good]. "tô com dor de barriga" -> recommend form=need need="dor de barriga" symptom="dor de barriga". "presente pra minha mãe até 100" -> recommend form=need need="presente pra minha mãe" recipient="mãe" (o teto o sistema lê). "churrasco pra 8" -> recommend form=need need="churrasco pra 8 pessoas". "algo doce sem chocolate" -> recommend form=need need="algo doce" constraints=["sem chocolate"]. "quero chocolate" -> search "chocolate". "algo doce tipo um chocolate" -> search "chocolate".`;
 
 const NULLABLE = (type: string) => ({ type: [type, "null"] });
 
@@ -74,9 +79,17 @@ export const DIALOGUE_SCHEMA = {
           text: NULLABLE("string"),
           sort: { type: ["string", "null"], enum: [...SORTS, null] },
           retry: NULLABLE("boolean"),
-          replace: NULLABLE("boolean")
+          replace: NULLABLE("boolean"),
+          form: { type: ["string", "null"], enum: [...RECOMMEND_FORMS, null] },
+          need: NULLABLE("string"),
+          product: NULLABLE("string"),
+          criteria: { type: ["array", "null"], items: { type: "string", enum: [...RECOMMEND_CRITERIA] } },
+          constraints: { type: ["array", "null"], items: { type: "string" } },
+          recipient: NULLABLE("string"),
+          urgency: NULLABLE("boolean"),
+          symptom: NULLABLE("string")
         },
-        required: ["type", "option", "qty", "delta", "target", "query", "attribute", "from", "to", "topic", "method", "text", "sort", "retry", "replace"]
+        required: ["type", "option", "qty", "delta", "target", "query", "attribute", "from", "to", "topic", "method", "text", "sort", "retry", "replace", "form", "need", "product", "criteria", "constraints", "recipient", "urgency", "symptom"]
       }
     }
   },
@@ -95,6 +108,14 @@ function str(v: unknown): string | undefined {
 }
 function int(v: unknown): number | undefined {
   return typeof v === "number" && Number.isFinite(v) ? Math.round(v) : undefined;
+}
+function phrase(v: unknown): string | undefined {
+  return str(v)?.replace(/\s+/g, " ");
+}
+function strList(v: unknown, max: number): string[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const list = v.filter((x): x is string => typeof x === "string").map((x) => x.replace(/\s+/g, " ").trim()).filter((x) => x && x.length <= 60);
+  return [...new Set(list)].slice(0, max);
 }
 
 // Normaliza o JSON cru (nulos viram ausentes; enum desconhecido derruba a ação).
@@ -123,7 +144,21 @@ export function parseDecision(raw: unknown): DialogueDecision | null {
       text: str(r.text),
       sort,
       retry: typeof r.retry === "boolean" ? r.retry : undefined,
-      replace: typeof r.replace === "boolean" ? r.replace : undefined
+      replace: typeof r.replace === "boolean" ? r.replace : undefined,
+      // recommend (08/10): os campos só existem nessa ação. Critério fora do enum cai calado; forma
+      // desconhecida fica ausente (o plano infere pelo campo preenchido ou recusa).
+      ...(r.type === "recommend"
+        ? {
+            form: RECOMMEND_FORMS.find((f) => f === r.form),
+            need: phrase(r.need),
+            product: phrase(r.product),
+            criteria: strList(r.criteria, 4)?.filter((c): c is RecommendActionCriterion => RECOMMEND_CRITERIA.includes(c as RecommendActionCriterion)),
+            constraints: strList(r.constraints, 6),
+            recipient: phrase(r.recipient),
+            urgency: typeof r.urgency === "boolean" ? r.urgency : undefined,
+            symptom: phrase(r.symptom)
+          }
+        : {})
     });
   }
   return actions.length ? { actions } : null;

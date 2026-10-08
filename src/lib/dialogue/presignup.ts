@@ -9,8 +9,9 @@
 import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { looksLikeMedicine, type Intent } from "../lia-intents";
+import { looksLikeMedicine, parsePriceCap, type Intent } from "../lia-intents";
 import { isPrescriptionDrugName } from "../medicine";
+import { recommendEnabled } from "../recommend/types";
 import { reply, turnMeta, writeCtx } from "../turn-runtime";
 import { ANSWER_TEXT } from "./plan";
 import { ANSWER_TOPICS, type AnswerTopic, type PlanOutcome } from "./types";
@@ -35,6 +36,9 @@ export type PreDecision = {
   waiting: boolean;
   farewell: boolean;
   vague: boolean;
+  // Pedido de RECOMENDAÇÃO (08/10): necessidade/estado/ocasião/sintoma/presente sem produto, ou produto +
+  // julgamento ("me recomenda um chocolate bom"). Opcional no tipo (decisões antigas/testes); o schema exige.
+  recommend?: boolean;
   smalltalk?: string;
 };
 
@@ -45,20 +49,21 @@ export const PRESIGNUP_SYSTEM_PROMPT = `Você é o GERENTE DE DIÁLOGO da Lia, c
 ESTADO: passo (sem_cadastro | pedindo_endereco | pedindo_cep); itensAnotados (o que a Lia já guardou do pedido); recusouRemedioRecente; atendimentoAberto (o responsável humano já foi avisado e o cliente espera); ultimaFalaDaLia.
 
 CAMPOS (todos obrigatórios; o que não se aplica fica vazio/null/false):
-- items: os PRODUTOS que o cliente PEDE agora, cada um {query, qty, cheapest}. query = SÓ o produto, como ele escreveu (marca, nome, tamanho, atributo do produto); sem "quero/preciso/me ve/tenho", sem orçamento, sem urgência, sem contexto ("do trabalho", "amigo secreto", "pro meu sobrinho de 5 anos" só entra se define o produto). A espécie do pet e o público/gênero de quem usa FICAM na query, porque definem o produto: 'ração pro meu cachorro' -> 'ração cachorro', 'perfume pra minha namorada' -> 'perfume feminino', 'shampoo pro meu filho pequeno' -> 'shampoo infantil'. Presente sem produto definido continua como ele disse ("presente pra minha mãe", "presente pro meu sobrinho de 5 anos"): a busca sabe converter. Quantidade DITA = qty ("3 leites" = 3; "2 litros de leite" = qty 1 e query "leite 2 litros"; sem número = 1). cheapest = true só se ele pede o mais barato / mais em conta DAQUELE item. Vários produtos = vários itens. Item que já está em itensAnotados e que ele só repete NÃO entra de novo.
+- items: os PRODUTOS que o cliente PEDE agora, cada um {query, qty, cheapest}. query = SÓ o produto, como ele escreveu (marca, nome, tamanho, atributo do produto); sem "quero/preciso/me ve/tenho", sem orçamento, sem urgência, sem contexto ("do trabalho", "amigo secreto", "pro meu sobrinho de 5 anos" só entra se define o produto). A espécie do pet e o público/gênero de quem usa FICAM na query, porque definem o produto: 'ração pro meu cachorro' -> 'ração cachorro', 'perfume pra minha namorada' -> 'perfume feminino', 'shampoo pro meu filho pequeno' -> 'shampoo infantil'. Presente SEM produto definido ("presente pra minha mãe", "o que dar pro meu pai") NÃO é item: é recommend. Quantidade DITA = qty ("3 leites" = 3; "2 litros de leite" = qty 1 e query "leite 2 litros"; sem número = 1). cheapest = true só se ele pede o mais barato / mais em conta DAQUELE item. Vários produtos = vários itens. Item que já está em itensAnotados e que ele só repete NÃO entra de novo.
 - budget: número em reais se ele diz quanto quer ou pode gastar ("uns 120 reais", "até 130 no total com entrega", "no máximo 60"); senão null. Orçamento NUNCA é item.
-- answers: perguntas sobre o SERVIÇO que ele fez (o texto da resposta é fixo): ${ANSWER_TOPICS.join(", ")}. Pedido de CNPJ/nome do responsável = cnpj. "O que você recomenda?" / "me indica algo" NÃO é answers (é pedido de produto: items, ou vague).
-- medicine: true se ele pede remédio/medicamento/antibiótico/tarja preta, OU insiste depois da recusa ("eu tenho receita", "mas é urgente", "e um genérico?", "pra dor o que tem?", "não consegue nem com receita?"). Remédio NUNCA entra em items. Pergunta sobre dar um jeito de conseguir remédio ("não consegue nem com receita?", "não tem como encomendar por aqui?", "e por uma farmácia parceira?") depois do pedido de remédio também é medicine, nunca answers. Produto não-remédio que ele pede em seguida ("bolsa térmica", "um chá") entra em items normalmente.
+- answers: perguntas sobre o SERVIÇO que ele fez (o texto da resposta é fixo): ${ANSWER_TOPICS.join(", ")}. Pedido de CNPJ/nome do responsável = cnpj. "O que você recomenda?" / "me indica algo" NÃO é answers (é recommend).
+- medicine: true se ele pede remédio NOMEADO/medicamento/antibiótico/tarja preta, OU insiste depois da recusa ("eu tenho receita", "mas é urgente", "e um genérico?", "pra dor o que tem?", "não consegue nem com receita?"). Remédio NUNCA entra em items. Pergunta sobre dar um jeito de conseguir remédio ("não consegue nem com receita?", "não tem como encomendar por aqui?", "e por uma farmácia parceira?") depois do pedido de remédio também é medicine, nunca answers. Produto não-remédio que ele pede em seguida ("bolsa térmica", "um chá") entra em items normalmente.
 - outOfScope: true se pede algo que a Lia NÃO vende por natureza: veículo, imóvel, serviço (uber, encanador, conserto), empréstimo/dinheiro, animal vivo, arma, droga. Produto comum de loja (inclusive TV, celular, fone, brinquedo, móvel) NÃO é fora de escopo: vira item. Se true, a coisa pedida NÃO entra em items.
 - human: true se pede falar com uma pessoa/atendente/dono/gerente/responsável OU cobra a resposta dela de novo ("ninguém apareceu", "cadê o atendente?").
 - waiting: true se, com atendimentoAberto, ele diz que vai aguardar/esperar o retorno da pessoa e não pede mais nada ("beleza, vou aguardar", "tô esperando eles me mandarem o CNPJ"). Se pede algo novo junto, é human/answers, não waiting.
 - farewell: true se ele se despede ou encerra ("tchau", "obrigado, vou procurar em outro lugar", "FIM", "deixa pra lá", "valeu, era só isso") SEM pedir produto.
-- vague: true se quer comprar mas não diz o quê ("me indica algo bom", "me surpreende", "quero algo gostoso") — sem exemplo concreto de produto.
+- recommend: true se ele pede uma RECOMENDAÇÃO em vez de nomear o que quer: (a) JULGAMENTO sobre um produto ("me recomenda um chocolate bom", "qual o melhor shampoo pra cabelo cacheado", "qual ração vale a pena pro meu gato", "pode ser uma lasanha congelada, o que vc recomenda?"); (b) ESTADO/NECESSIDADE/OCASIÃO sem produto ("tô com fome", "quero algo doce", "algo gostoso pra comer", "churrasco pra 8", "preciso limpar o banheiro"); (c) SINTOMA sem remédio nomeado ("tô com dor de barriga", "algo pra azia", "tô gripada") — isso NÃO é medicine; (d) PRESENTE sem produto ("presente pra minha mãe", "o que dar pro meu pai"). Com recommend, o produto julgado / a necessidade NÃO entra em items (o sistema guarda a mensagem inteira); outro produto nomeado na mesma mensagem, sem julgamento, entra em items. Pedido vago com exemplo concreto ("algo doce tipo um chocolate") NÃO é recommend: o exemplo vai em items.
+- vague: true se quer comprar mas não diz o quê nem dá nenhuma pista ("quero comprar umas coisas", "me indica algo") — sem exemplo concreto, sem necessidade.
 - smalltalk: uma frase curta e calorosa, SÓ para papo social sem pedido nem pergunta; senão null. Sem promessa, preço, prazo ou desconto.
 
 REGRAS: pedaço de frase NUNCA vira produto ("você consegue", "pode tentar", "no total com entrega", "tenho receita", "vou aguardar", "o CNPJ pra eu conferir", "secreto do trabalho"). Pergunta + pedido na mesma mensagem: answers + items. Na dúvida entre pedir produto e perguntar, prefira não inventar item. O cliente escreve informal, com erros e gírias: interprete a intenção.
 
-EXEMPLOS: "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega" -> items [{"presente pra minha mãe",1,false}], budget 120. "amigo secreto do trabalho, uma caixa de bombom, no máximo 60 com a entrega" -> items [{"caixa de bombom",1,false}], budget 60. "qual o desodorante mais barato que vc tem?" -> items [{"desodorante",1,true}]. "mas eu tenho receita" (depois de pedir amoxicilina) -> medicine. "tem alguma bolsa térmica ou algo assim pra aliviar?" -> items [{"bolsa térmica",1,false}]. "Obrigada! FIM" -> farewell. "vcs vendem carro 0km?" -> outOfScope. "pode ser uma lasanha congelada, o que vc recomenda?" -> items [{"lasanha congelada",1,false}]. "beleza, vou aguardar. preciso do CNPJ pra eu conferir" (atendimentoAberto) -> waiting.`;
+EXEMPLOS: "quero dar um presente pra minha mãe, tenho uns 120 reais no total com a entrega" -> recommend, budget 120 (items vazio). "tô com muita fome, quero algo doce" -> recommend. "tô com dor de barriga" -> recommend (não medicine). "me recomenda um chocolate bom" -> recommend (items vazio). "quero chocolate" -> items [{"chocolate",1,false}]. "amigo secreto do trabalho, uma caixa de bombom, no máximo 60 com a entrega" -> items [{"caixa de bombom",1,false}], budget 60. "qual o desodorante mais barato que vc tem?" -> items [{"desodorante",1,true}]. "mas eu tenho receita" (depois de pedir amoxicilina) -> medicine. "tem alguma bolsa térmica ou algo assim pra aliviar?" -> items [{"bolsa térmica",1,false}]. "Obrigada! FIM" -> farewell. "vcs vendem carro 0km?" -> outOfScope. "pode ser uma lasanha congelada, o que vc recomenda?" -> recommend (items vazio). "algo doce tipo um chocolate" -> items [{"chocolate",1,false}]. "beleza, vou aguardar. preciso do CNPJ pra eu conferir" (atendimentoAberto) -> waiting.`;
 
 const NULLABLE = (type: string) => ({ type: [type, "null"] });
 
@@ -83,9 +88,10 @@ export const PRESIGNUP_SCHEMA = {
     waiting: { type: "boolean" },
     farewell: { type: "boolean" },
     vague: { type: "boolean" },
+    recommend: { type: "boolean" },
     smalltalk: NULLABLE("string")
   },
-  required: ["items", "budget", "answers", "medicine", "outOfScope", "human", "waiting", "farewell", "vague", "smalltalk"]
+  required: ["items", "budget", "answers", "medicine", "outOfScope", "human", "waiting", "farewell", "vague", "recommend", "smalltalk"]
 } as const;
 
 const clampText = (v: unknown, max: number): string | undefined => {
@@ -118,6 +124,7 @@ export function parsePreDecision(raw: unknown): PreDecision | null {
     waiting: r.waiting === true,
     farewell: r.farewell === true,
     vague: r.vague === true,
+    recommend: r.recommend === true,
     smalltalk: clampText(r.smalltalk, 200)
   };
 }
@@ -205,7 +212,11 @@ export type PreStep =
   | { type: "smalltalk"; text: string }
   | { type: "human" }
   // Lista limpa que o fluxo de sempre anota e pede o endereço.
-  | { type: "items"; text: string };
+  | { type: "items"; text: string }
+  // Recomendação (08/10, dono: CEP no primeiro contato, nunca mais): a MENSAGEM ORIGINAL segue para o
+  // fluxo de sempre, que a guarda como pedido e pede o endereço/CEP; depois do CEP o pedido guardado
+  // passa pela busca, onde recommend/detect.ts a reconhece (sem CEP não há estoque nem prazo).
+  | { type: "recommend"; text: string };
 
 export type PrePlan = { ok: true; steps: PreStep[]; label: string; setPreBudget?: number } | { ok: false; reason: string };
 
@@ -221,7 +232,16 @@ export function itemsText(items: PreItem[], budget: number | null): string {
   return lines.join(", ");
 }
 
-export function planPreSignup(d: PreDecision, opts: { preBudget?: number } = {}): PrePlan {
+// Recomendação guardada: a mensagem como o cliente escreveu; o teto dito ANTES (mensagem separada, `preBudget`) vai junto
+// quando a frase não traz o seu — senão a busca de depois do CEP não o veria.
+export function recommendText(text: string, budget: number | null): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (budget == null || parsePriceCap(clean) != null) return clean;
+  return `${clean} até ${Number.isInteger(budget) ? budget : budget.toFixed(2).replace(".", ",")} reais`;
+}
+
+// `text` = a mensagem original (a recomendação guarda a frase inteira, não um item extraído).
+export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?: string } = {}): PrePlan {
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
   const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
   const medicine = d.medicine || items.length !== d.items.length;
@@ -230,7 +250,11 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number } = {})
   const steps: PreStep[] = [];
   const parts: string[] = [];
   const budget = d.budget ?? opts.preBudget ?? null;
-  if (items.length) {
+  // Recomendação sem item concreto (ligada): vira o pedido guardado. Com a flag desligada, o pedido
+  // vago/de recomendação recebe a copy de sempre (vagueRequestAnswer) mais abaixo.
+  // Com remédio na mesma mensagem ("dor de cabeça, tem dipirona?") a porta do remédio responde sozinha.
+  const recommend = (d.recommend || d.vague) && !items.length && !medicine && recommendEnabled() && Boolean(opts.text?.trim());
+  if (items.length || recommend) {
     if (d.answers.length) {
       steps.push({ type: "answer", topics: d.answers });
       parts.push("answer");
@@ -243,8 +267,13 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number } = {})
       steps.push({ type: "fixed", key: "out_of_scope" });
       parts.push("out_of_scope");
     }
-    steps.push({ type: "items", text: itemsText(items, budget) });
-    parts.push("items");
+    if (recommend) {
+      steps.push({ type: "recommend", text: recommendText(opts.text!, budget) });
+      parts.push("recommend");
+    } else {
+      steps.push({ type: "items", text: itemsText(items, budget) });
+      parts.push("items");
+    }
     return { ok: true, steps, label: parts.join("+") };
   }
   if (medicine) return { ok: true, steps: [{ type: "medicine" }], label: "medicine" };
@@ -252,7 +281,7 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number } = {})
   if (d.answers.length) return { ok: true, steps: [{ type: "answer", topics: d.answers }], label: `answer:${d.answers.join(",")}` };
   if (d.waiting) return { ok: true, steps: [{ type: "wait" }], label: "waiting" };
   if (d.farewell) return { ok: true, steps: [{ type: "fixed", key: "farewell" }], label: "farewell" };
-  if (d.vague) return { ok: true, steps: [{ type: "fixed", key: "vague" }], label: "vague" };
+  if (d.vague || d.recommend) return { ok: true, steps: [{ type: "fixed", key: "vague" }], label: "vague" };
   if (d.budget != null) return { ok: true, steps: [{ type: "fixed", key: "budget_only" }], label: "budget_only", setPreBudget: d.budget };
   if (d.smalltalk) return { ok: true, steps: [{ type: "smalltalk", text: d.smalltalk }], label: "smalltalk" };
   return { ok: false, reason: "sem_acao" };
@@ -307,7 +336,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   }
   // A IA do gerente já classificou a mensagem: o roteador de fallback (outra chamada) não repete.
   if (meta) meta.llmUsed = true;
-  const plan = planPreSignup(decision, { preBudget: ctx.preBudget });
+  const plan = planPreSignup(decision, { preBudget: ctx.preBudget, text: input.text });
   if (!plan.ok) {
     console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=${plan.reason}`);
     return { kind: "fallthrough", reason: plan.reason };
@@ -342,6 +371,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
         case "fixed":
           if (step.key === "out_of_scope") await reply(phone, copy.outOfScopeProductAnswer());
           else if (step.key === "farewell") await reply(phone, copy.medicineFarewell());
+          // Só com LIA_RECOMMEND=false: ligada, o pedido vago/de recomendação vira o pedido guardado (acima).
           else if (step.key === "vague") await reply(phone, copy.vagueRequestAnswer());
           else {
             ctx.preBudget = plan.setPreBudget;
@@ -350,6 +380,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           }
           break;
         case "items":
+        case "recommend":
           // O fluxo de sempre anota (sem duplicar), pede o cadastro/CEP e guarda o pedido para a busca.
           outcome = { kind: "rewrite", text: step.text, actions: plan.label };
           if (ctx.preBudget != null) {

@@ -2,8 +2,10 @@
 // existe, item que não está na cesta, "fechar" fora de hora…) derruba o plano inteiro e o caminho
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
-import { extractCep } from "../lia-intents";
-import type { AnswerTopic, DialogueAction, DialogueDecision, DialogueState, PayMethod, Sort } from "./types";
+import { extractCep, parseBudgetStatement, parsePriceCap } from "../lia-intents";
+import { detectRecommendation } from "../recommend/detect";
+import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
+import { RECOMMEND_CRITERIA, type AnswerTopic, type DialogueAction, type DialogueDecision, type DialogueState, type PayMethod, type Sort } from "./types";
 
 export type Target = { kind: "screen" } | { kind: "basket"; idx: number; name: string } | { kind: "queue"; idx: number; name: string };
 
@@ -21,7 +23,9 @@ export type Planned =
   | { type: "rewrite"; text: string; label: string }
   | { type: "reply"; kind: "smalltalk" | "unclear"; text?: string }
   // Texto FIXO do lia-copy (nunca livre da IA): produto que a Lia não vende / remédio insistente.
-  | { type: "fixed"; key: "out_of_scope" | "medicine" };
+  | { type: "fixed"; key: "out_of_scope" | "medicine" }
+  // Recomendação (08/10): necessidade ou produto + julgamento, já validada e no contrato da etapa ENTENDER.
+  | { type: "recommend"; request: RecommendRequest };
 
 export type Plan = { ok: true; steps: Planned[] } | { ok: false; reason: string };
 
@@ -66,9 +70,11 @@ function resolveTarget(state: DialogueState, target: number | undefined): Target
 }
 
 // Ações que respondem/encerram o turno sozinhas: só valem isoladas.
-const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay", "change_address", "more_options", "smalltalk", "unclear", "out_of_scope", "medicine"]);
+const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay", "change_address", "more_options", "smalltalk", "unclear", "out_of_scope", "medicine", "recommend"]);
 
-export function planActions(decision: DialogueDecision, state: DialogueState): Plan {
+// `text` = a mensagem original do cliente: vira o `text` da recomendação e é de onde o CÓDIGO tira o
+// teto de preço (a IA não decide dinheiro) e os sinais determinísticos (detect.ts).
+export function planActions(decision: DialogueDecision, state: DialogueState, opts: { text?: string } = {}): Plan {
   const actions = decision.actions;
   if (!actions.length || actions.length > 3) return { ok: false, reason: "quantidade_de_acoes" };
   if (actions.length > 1 && actions.some((a) => SOLO.has(a.type))) return { ok: false, reason: "acao_exclusiva_combinada" };
@@ -76,7 +82,7 @@ export function planActions(decision: DialogueDecision, state: DialogueState): P
   const steps: Planned[] = [];
   for (let i = 0; i < actions.length; i++) {
     const a = actions[i];
-    const step = planOne(a, state, actions.some((x) => x.type === "pick"));
+    const step = planOne(a, state, actions.some((x) => x.type === "pick"), opts.text);
     if (typeof step === "string") return { ok: false, reason: `${a.type}:${step}` };
     // search consecutivos viram UMA busca de várias linhas (a extração já separa itens).
     const prev = steps[steps.length - 1];
@@ -98,7 +104,7 @@ export function planActions(decision: DialogueDecision, state: DialogueState): P
   return { ok: true, steps };
 }
 
-function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false): Planned | string {
+function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
     case "search": {
@@ -191,6 +197,8 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false):
       return { type: "fixed", key: "out_of_scope" };
     case "medicine":
       return { type: "fixed", key: "medicine" };
+    case "recommend":
+      return planRecommend(a, state, text);
     case "smalltalk":
       return { type: "reply", kind: "smalltalk", text: a.text };
     case "unclear":
@@ -198,4 +206,49 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false):
     default:
       return "desconhecida";
   }
+}
+
+const clean120 = (v: string | undefined) => {
+  const t = v?.replace(/\s+/g, " ").trim();
+  return t && t.length <= 120 ? t : t ? null : undefined;
+};
+
+// recommend (08/10, plano-recomendacoes §1.1): valida o que a IA extraiu e monta o contrato da etapa
+// ENTENDER. Os sinais determinísticos da própria mensagem (detect.ts) completam o que a IA deixou de
+// fora (teto de preço, restrição, pra quem) — nunca o contrário.
+function planRecommend(a: DialogueAction, state: DialogueState, text: string): Planned | string {
+  const product = clean120(a.product);
+  const need = clean120(a.need);
+  const symptom = clean120(a.symptom);
+  if (product === null || need === null || symptom === null) return "texto_longo";
+  const form = a.form ?? (product ? "product_judged" : need || symptom ? "need" : undefined);
+  if (!form) return "sem_forma";
+  if (form === "product_judged" && !product) return "sem_produto";
+  if (form === "need" && !need && !symptom) return "sem_necessidade";
+  // Flag desligada: produto + julgamento vira a busca de sempre; necessidade cai no caminho de hoje.
+  if (!recommendEnabled()) return form === "product_judged" ? { type: "search", lines: [{ query: product!, qty: 1 }] } : "recomendacao_desligada";
+  const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
+  const signals = text ? detectRecommendation(text, { hasPendingChoice: Boolean(onScreen) }) : null;
+  // Opções na tela + mensagem curta que nem as regras leem como recomendação ("mais barato", "sem açúcar",
+  // "outras"): é refino/mais opções da tela — o caminho de hoje decide, não a recomendação.
+  if (onScreen && !signals && text.trim().split(/\s+/).length <= 4) return "recomendacao_na_tela";
+  const criteria = [...new Set<RecommendCriterion>([...(a.criteria ?? []), ...(signals?.criteria ?? [])])].filter((c) => (RECOMMEND_CRITERIA as readonly string[]).includes(c));
+  if (form === "product_judged" && !criteria.length) criteria.push("good");
+  const constraints = [...new Set([...(a.constraints ?? []), ...(signals?.constraints ?? [])].map((c) => c.toLowerCase()))].slice(0, 6);
+  const budget = (text ? parsePriceCap(text) ?? parseBudgetStatement(text) : null) ?? signals?.budget;
+  const recipient = clean120(a.recipient) ?? signals?.recipient;
+  const urgency = a.urgency || signals?.urgency;
+  const request: RecommendRequest = {
+    form,
+    text,
+    ...(form === "product_judged" ? { product: product! } : { need: need ?? symptom! }),
+    criteria: (["fast", "good", "cheap", "healthy"] as RecommendCriterion[]).filter((c) => criteria.includes(c)),
+    constraints,
+    ...(budget != null ? { budget } : {}),
+    ...(recipient ? { recipient } : {}),
+    ...(urgency ? { urgency: true } : {}),
+    ...(symptom ? { symptom } : signals?.symptom && form === "need" ? { symptom: signals.symptom } : {}),
+    source: "dialogue"
+  };
+  return { type: "recommend", request };
 }

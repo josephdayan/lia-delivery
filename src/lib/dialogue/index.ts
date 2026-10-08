@@ -8,6 +8,8 @@ import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
 import { asksCheapestQuestion, normalizeMsg } from "../lia-intents";
+import { detectRecommendation } from "../recommend/detect";
+import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
 import { prisma } from "../prisma";
 import { turnMeta } from "../turn-runtime";
@@ -87,7 +89,10 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   const trimmed = text.trim();
   // id de botão ("optsku:123", "frete:barato", "adicionar_mais"): string de máquina, não linguagem.
   if (/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(trimmed)) return "botao";
-  if (DETERMINISTIC_INTENTS.has(i.intent.kind)) return `intent:${i.intent.kind}`;
+  // "tô com uma dor de cabeça horrível" o regex lê como reclamação; com sintoma de verdade é pedido de
+  // recomendação (08/10) e a IA decide.
+  const symptomComplaint = i.intent.kind === "complaint" && recommendEnabled() && Boolean(detectRecommendation(text)?.symptom);
+  if (DETERMINISTIC_INTENTS.has(i.intent.kind) && !symptomComplaint) return `intent:${i.intent.kind}`;
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
@@ -98,7 +103,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto
   // "não achado" — essa a IA decide.
   const fresh = !ctx.pending?.length && !(ctx.basket?.length) && !ctx.lastMiss && !ctx.lastChoice && (ctx.step === undefined || ctx.step === "collecting");
-  if (fresh && i.looksLikeList && isPlainShoppingList(text)) return "lista_nova";
+  // "tô com muita fome, quero algo doce" tem vírgula e frases curtas — parece lista, mas é pedido de
+  // recomendação (08/10): a IA decide (ação recommend), nunca a busca literal de "algo doce".
+  if (fresh && i.looksLikeList && isPlainShoppingList(text) && !(recommendEnabled() && detectRecommendation(text))) return "lista_nova";
   return null;
 }
 
@@ -137,7 +144,7 @@ export async function runDialogueTurn(input: DialogueTurnInput): Promise<PlanOut
     }
     // O gerente já classificou a mensagem: o roteador de fallback (outra chamada de IA) não repete.
     if (meta) meta.llmUsed = true;
-    const plan = planActions(decision, state);
+    const plan = planActions(decision, state, { text: input.text });
     if (!plan.ok) {
       console.log(`[dialogue] ação=${decision.actions.map((a) => a.type).join("+")} ms=${modelMs} motivo=invalida:${plan.reason}`);
       return { kind: "fallthrough", reason: plan.reason };
