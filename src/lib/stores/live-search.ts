@@ -177,13 +177,13 @@ const cache = new Map<string, { at: number; items: CatalogItem[] }>();
 
 export type LiveFetch = (url: string, init: { headers: Record<string, string>; signal: AbortSignal }) => Promise<{ ok: boolean; json(): Promise<unknown> }>;
 
-export async function liveSearchItems(storeKey: string, query: string, count = 12, fetcher: LiveFetch = storeFetch as unknown as LiveFetch): Promise<CatalogItem[]> {
-  const store = VTEX_API_STORES[storeKey];
-  if (!store || !query.trim()) return [];
-  const key = `${storeKey}|${query.trim().toLowerCase()}|${count}`;
+const IS_BASE = "/api/io/_v/api/intelligent-search";
+
+// Mesmo funil para a busca textual e a por categoria: cache, timeout, parse (seller próprio,
+// estoque, filtros de remédio) e "nunca lança".
+async function fetchLiveProducts(storeKey: string, url: string, key: string, fetcher: LiveFetch): Promise<CatalogItem[]> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.items;
-  const url = `https://${store.domain}/api/io/_v/api/intelligent-search/product_search/?query=${encodeURIComponent(query)}&count=${count}&locale=pt-BR&hideUnavailableItems=true`;
   let items: CatalogItem[] = [];
   try {
     const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
@@ -196,6 +196,97 @@ export async function liveSearchItems(storeKey: string, query: string, count = 1
   if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value as string);
   cache.set(key, { at: Date.now(), items });
   return items;
+}
+
+export async function liveSearchItems(storeKey: string, query: string, count = 12, fetcher: LiveFetch = storeFetch as unknown as LiveFetch): Promise<CatalogItem[]> {
+  const store = VTEX_API_STORES[storeKey];
+  if (!store || !query.trim()) return [];
+  const key = `${storeKey}|${query.trim().toLowerCase()}|${count}`;
+  const url = `https://${store.domain}${IS_BASE}/product_search/?query=${encodeURIComponent(query)}&count=${count}&locale=pt-BR&hideUnavailableItems=true`;
+  return fetchLiveProducts(storeKey, url, key, fetcher);
+}
+
+// ---------- Busca por CATEGORIA (08/10/2026, recomendação por prateleira) ----------
+// A busca inteligente da VTEX aceita o caminho de facetas no lugar da consulta:
+// `product_search/category-1/<dep>/category-2/<cat>/category-3/<sub>` devolve a PRATELEIRA
+// inteira da loja (todos os chocolates, todos os antidiarreicos), não os poucos itens que casam
+// com uma palavra. Medido em 08/10 em Mambo, Drogaria SP e Cobasi (caminho certo = 126 a 737
+// itens da prateleira; caminho inexistente = 0 itens, 200 OK). Atenção: o caminho SEM o prefixo
+// `category-N` (`product_search/mercearia/chocolates`) NÃO filtra — a loja ignora ou devolve 0.
+// Aqui o caminho é só a lista de slugs por nível ("mambo/mercearia/doces-e-chocolates"); o
+// prefixo é montado abaixo. Slugs inválidos = [] sem rede.
+const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
+const MAX_CATEGORY_DEPTH = 4;
+
+export function categorySegments(categoryPath: string): string[] | null {
+  const parts = categoryPath.split("/").map((part) => part.trim().toLowerCase()).filter(Boolean);
+  if (!parts.length || parts.length > MAX_CATEGORY_DEPTH || !parts.every((part) => SLUG_RE.test(part))) return null;
+  return parts;
+}
+
+function facetPath(parts: string[]): string {
+  return parts.map((part, index) => `category-${index + 1}/${part}`).join("/");
+}
+
+export async function liveSearchByCategory(storeKey: string, categoryPath: string, count = 12, fetcher: LiveFetch = storeFetch as unknown as LiveFetch): Promise<CatalogItem[]> {
+  const store = VTEX_API_STORES[storeKey];
+  const parts = categorySegments(categoryPath);
+  if (!store || !parts) return [];
+  const key = `${storeKey}|cat:${parts.join("/")}|${count}`;
+  const url = `https://${store.domain}${IS_BASE}/product_search/${facetPath(parts)}?count=${count}&locale=pt-BR&hideUnavailableItems=true`;
+  return fetchLiveProducts(storeKey, url, key, fetcher);
+}
+
+type FacetValue = { value?: string; quantity?: number };
+type Facet = { key?: string; values?: FacetValue[] };
+
+const pathCache = new Map<string, { at: number; path: string | null }>();
+const PATH_TTL_MS = 60 * 60_000;
+
+// Caminho de categoria dominante de uma consulta ("chocolate" → "mambo/mercearia/doces-e-chocolates"),
+// descendo nível a nível pelas facetas da própria loja: em cada nível pega o valor mais forte e só
+// segue se ele concentra pelo menos `minShare` do nível pai (no 1º nível, metade disso: a consulta
+// pode espalhar entre departamentos). Consulta ambígua (sem categoria dominante) = null. Nunca
+// lança; falha de rede não entra no cache. Serve ao gerador do mapa para preencher `categoryPaths`.
+export async function resolveCategoryPath(
+  storeKey: string,
+  query: string,
+  opts: { maxDepth?: number; minShare?: number; fetcher?: LiveFetch } = {}
+): Promise<string | null> {
+  const store = VTEX_API_STORES[storeKey];
+  const q = query.trim();
+  if (!store || !q) return null;
+  const maxDepth = Math.min(MAX_CATEGORY_DEPTH, Math.max(1, opts.maxDepth ?? 3));
+  const minShare = opts.minShare ?? 0.5;
+  const fetcher = opts.fetcher ?? (storeFetch as unknown as LiveFetch);
+  const key = `${storeKey}|${q.toLowerCase()}|${maxDepth}|${minShare}`;
+  const hit = pathCache.get(key);
+  if (hit && Date.now() - hit.at < PATH_TTL_MS) return hit.path;
+  const parts: string[] = [];
+  let parentQuantity = 0;
+  try {
+    for (let level = 1; level <= maxDepth; level++) {
+      const url = `https://${store.domain}${IS_BASE}/facets/${facetPath(parts)}?query=${encodeURIComponent(q)}&locale=pt-BR&hideUnavailableItems=true`;
+      const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { facets?: Facet[] };
+      const facet = (data.facets ?? []).find((f) => f.key === `category-${level}`);
+      const values = (facet?.values ?? []).filter((v) => v.value && SLUG_RE.test(v.value) && (v.quantity ?? 0) > 0);
+      if (!values.length) break;
+      const top = values.reduce((best, v) => ((v.quantity ?? 0) > (best.quantity ?? 0) ? v : best));
+      const total = level === 1 ? values.reduce((sum, v) => sum + (v.quantity ?? 0), 0) : parentQuantity;
+      const share = total > 0 ? (top.quantity ?? 0) / total : 0;
+      if (share < (level === 1 ? minShare / 2 : minShare)) break;
+      parts.push(top.value!);
+      parentQuantity = top.quantity ?? 0;
+    }
+  } catch {
+    return null;
+  }
+  const path = parts.length ? parts.join("/") : null;
+  if (pathCache.size >= CACHE_MAX) pathCache.delete(pathCache.keys().next().value as string);
+  pathCache.set(key, { at: Date.now(), path });
+  return path;
 }
 
 export function isPharmacyStore(storeKey: string): boolean {
@@ -222,4 +313,5 @@ export function mergeLiveWithSnapshot(_storeKey: string, snapshot: CatalogItem[]
 
 export function __clearLiveSearchCacheForTests() {
   cache.clear();
+  pathCache.clear();
 }

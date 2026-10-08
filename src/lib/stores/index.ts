@@ -1,7 +1,10 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
 import { conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
-import { liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
+import { liveSearchByCategory, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot } from "./live-search";
+import { isMedicine } from "./anvisa";
+import type { ShelfNode, ShelfPick } from "../recommend/types";
+import { storeServesCep } from "../store-areas";
 import { medicineEnabled, medicineEquivalentFor } from "../medicine";
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { petzStore } from "./petz";
@@ -304,12 +307,17 @@ export async function gatherCrossStoreCandidates(
   perStore = 4,
   // `longTailQuery`: frase COMPLETA do cliente para o ML quando a IA encurtou a linha
   // ("isqueiro pra charuto" → "isqueiro"); as vitrines locais continuam com a frase curta.
-  options?: { onLongTailSearch?: () => void; forceLongTail?: boolean; longTailQuery?: string }
+  // `noLongTail` (08/10, recomendação): o Mercado Livre nem entra — recomendação só mostra o que a
+  // Lia compra sozinha. `onlyStores`: restringe a busca a essas lojas (prateleira do mapa).
+  options?: { onLongTailSearch?: () => void; forceLongTail?: boolean; longTailQuery?: string; noLongTail?: boolean; onlyStores?: readonly string[] }
 ): Promise<StoreCandidate[]> {
   // Loja regional fora da área do cliente (mercado do Rio para quem está em SP) nem entra
   // na busca: não ocupa vaga de candidato e não aparece em nenhum caminho (store-areas.ts).
-  const stores = storesForShopper(listStores());
-  const longTail = stores.find((store) => store.key === mercadoLivreStore.key);
+  const allowed = options?.onlyStores?.length ? new Set(options.onlyStores) : null;
+  const stores = storesForShopper(listStores()).filter(
+    (store) => (!allowed || allowed.has(store.key)) && !(options?.noLongTail && store.key === mercadoLivreStore.key)
+  );
+  const longTail = options?.noLongTail ? undefined : stores.find((store) => store.key === mercadoLivreStore.key);
   const localStores = stores.filter((store) => store.key !== mercadoLivreStore.key);
   const localHits = await searchSelectedStores(localStores, query, perStore);
   let localRanked = rankStoreCandidates(query, localHits);
@@ -364,6 +372,122 @@ export async function gatherCrossStoreCandidates(
   if (!equivalents.length) return main.slice(0, limit);
   const keep = Math.min(2, equivalents.length);
   return [...main.slice(0, Math.max(0, limit - keep)), ...equivalents.slice(0, keep)];
+}
+
+// ---------- Busca por PRATELEIRA (08/10/2026, plano de recomendação, etapa BUSCAR) ----------
+// Uma prateleira do mapa vira candidatos comprávei no CEP: a união de VÁRIAS consultas (a da pick,
+// com alternativas separadas por " | ", depois a consulta e os aliases da prateleira) mais, onde o
+// mapa tem `categoryPaths`, a prateleira inteira da loja pela busca de categoria da VTEX. Cada
+// consulta passa pelo mesmo funil da lista de itens (`gatherCrossStoreCandidates`: cópia + ao vivo
+// + equivalentes). Regras duras:
+// - Mercado Livre nunca roda aqui: recomendação só mostra o que a Lia compra sozinha;
+// - remédio: prateleira `mip` só aceita item `medicine: "mip"` (porta do remédio isento); qualquer
+//   outra prateleira (inclusive pick sem prateleira conhecida) nunca devolve remédio;
+// - sem duplicata (`loja:sku`), ordem = pick.query, depois aliases, depois a prateleira inteira.
+const SHELF_MAX_QUERIES = 6;
+const SHELF_CATEGORY_RESERVE = 4;
+const normShelf = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+
+export function shelfQueryAlternatives(query: string): string[] {
+  const seen = new Set<string>();
+  return query
+    .split("|")
+    .map((part) => part.trim())
+    .filter((part) => {
+      const key = normShelf(part);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+// A consulta da prateleira já está contida em alguma alternativa da pick (todas as palavras)?
+function shelfTermCovered(term: string, alternatives: string[]): boolean {
+  const words = normShelf(term).split(" ").filter(Boolean);
+  return alternatives.some((alt) => {
+    const altWords = new Set(normShelf(alt).split(" "));
+    return words.every((word) => altWords.has(word));
+  });
+}
+
+export async function gatherShelfCandidates(
+  pick: ShelfPick,
+  shelf: ShelfNode | undefined,
+  opts: { limit?: number; perStore?: number; cep?: string | null } = {}
+): Promise<StoreCandidate[]> {
+  const limit = opts.limit ?? 12;
+  const perStore = opts.perStore ?? 4;
+  const mip = Boolean(shelf?.flags?.includes("mip"));
+  if (mip && !medicineEnabled()) return []; // remédio isento desligado: nada de remédio, nem pela porta
+
+  const cepDigits = (opts.cep ?? "").replace(/\D/g, "");
+  const shelfStores = shelf?.stores?.length ? shelf.stores.filter((key) => key !== mercadoLivreStore.key) : undefined;
+  const storeOk = (key: string) => key !== mercadoLivreStore.key && (!cepDigits || storeServesCep(key, cepDigits)) && (!shelfStores || shelfStores.includes(key));
+  // Lojas da busca: as da prateleira (ou todas) que entregam no CEP. Lista vazia = nada a buscar.
+  const searchKeys = shelfStores ? shelfStores.filter(storeOk) : cepDigits ? listStores().map((store) => store.key).filter(storeOk) : undefined;
+  if (searchKeys && !searchKeys.length) return [];
+  const gather = (query: string) => gatherCrossStoreCandidates(query, Math.max(limit, 12), perStore, { noLongTail: true, onlyStores: searchKeys });
+  const accept = (candidate: StoreCandidate) =>
+    storeOk(candidate.store.key) &&
+    (mip ? candidate.item.medicine === "mip" : !candidate.item.medicine && !isMedicine(candidate.item));
+
+  const alternatives = shelfQueryAlternatives(pick.query);
+  if (!alternatives.length && shelf?.query) alternatives.push(shelf.query);
+  const shelfTerms = shelf ? [shelf.query, ...(shelf.aliases ?? [])] : [];
+  const extraTerms = shelfTerms.filter((term, index) => term.trim() && shelfTerms.findIndex((other) => normShelf(other) === normShelf(term)) === index && !shelfTermCovered(term, alternatives));
+  const primary = alternatives.slice(0, SHELF_MAX_QUERIES);
+
+  const seen = new Set<string>();
+  const merged: StoreCandidate[] = [];
+  const push = (list: StoreCandidate[]) => {
+    for (const candidate of list) {
+      const key = `${candidate.store.key}:${candidate.item.sku}`;
+      if (seen.has(key) || !accept(candidate)) continue;
+      seen.add(key);
+      merged.push(candidate);
+    }
+  };
+
+  // Prateleira inteira pela categoria da loja (só ao vivo; sem caminho no mapa = só texto).
+  const categoryTask = (async () => {
+    const paths = Object.entries(shelf?.categoryPaths ?? {}).filter(([key, path]) => path && storeOk(key) && key !== mercadoLivreStore.key);
+    if (!paths.length || !liveSearchEnabled()) return [] as StoreCandidate[];
+    const perShelfStore = await Promise.all(
+      paths.map(async ([key, path]) => {
+        const store = listStores().find((s) => s.key === key);
+        if (!store) return [] as StoreCandidate[];
+        const items = await liveSearchByCategory(key, path, Math.max(12, perStore * 3));
+        const hits = items.map((item) => ({ store, item }));
+        // Ordem dentro da prateleira: quem mais casa com a consulta da pick primeiro (zeros ficam, na ordem da loja).
+        return hits
+          .map((hit, index) => ({ hit, index, score: Math.max(0, ...alternatives.map((alt) => scoreCatalogMatch(alt, hit.item))) }))
+          .sort((a, b) => b.score - a.score || a.index - b.index)
+          .map((entry) => entry.hit)
+          .slice(0, perStore);
+      })
+    );
+    return perShelfStore.flat();
+  })();
+
+  const primaryLists = await Promise.all(primary.map((query) => gather(query)));
+  const categoryHits = await categoryTask;
+  primaryLists.forEach(push);
+  // Consultas da prateleira que a pick não cobre; se a pick sozinha deu pouco, amplia também com as cobertas.
+  const widen = merged.length < limit;
+  const secondary = (widen ? shelfTerms.filter((term, index) => term.trim() && shelfTerms.findIndex((other) => normShelf(other) === normShelf(term)) === index && !primary.some((p) => normShelf(p) === normShelf(term))) : extraTerms).slice(0, Math.max(0, SHELF_MAX_QUERIES - primary.length));
+  const secondaryLists = await Promise.all(secondary.map((query) => gather(query)));
+  secondaryLists.forEach(push);
+
+  const catExtras: StoreCandidate[] = [];
+  for (const candidate of categoryHits) {
+    const key = `${candidate.store.key}:${candidate.item.sku}`;
+    if (seen.has(key) || !accept(candidate)) continue;
+    seen.add(key);
+    catExtras.push(candidate);
+  }
+  if (!catExtras.length) return merged.slice(0, limit);
+  const keep = Math.min(SHELF_CATEGORY_RESERVE, catExtras.length, limit);
+  return [...merged.slice(0, Math.max(0, limit - keep)), ...catExtras.slice(0, keep)];
 }
 
 export type { CatalogItem, StoreConnector, StoreUnit };
