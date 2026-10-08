@@ -235,7 +235,7 @@ async function realCreateCheckout(input: { orderId: string; amount: number; desc
   // Per-preference notification_url is more reliable than the dashboard-only setting.
   if (process.env.MERCADO_PAGO_WEBHOOK_URL) body.notification_url = process.env.MERCADO_PAGO_WEBHOOK_URL;
   if (input.payerEmail) body.payer = { email: input.payerEmail };
-  const base = process.env.LIA_PUBLIC_URL ?? "https://shopping-agent-mvp.vercel.app";
+  const base = process.env.LIA_PUBLIC_URL ?? "https://liadelivery.com.br"; // domínio próprio: não muda se o projeto da Vercel for renomeado
   if (base) body.back_urls = { success: base, pending: base, failure: base };
   const res = await fetch("https://api.mercadopago.com/checkout/preferences", {
     method: "POST",
