@@ -26,6 +26,7 @@
 // do MIP — nunca como produto comum. Com a flag desligada, nada muda: remédio fica fora.
 import { VTEX_API_STORES } from "../purchase/vtex-checkout";
 import { storeFetch } from "../store-relay";
+import { withStoreSlot } from "../store-throttle";
 import { isMedicine, mipOnly, withoutMedicine, withoutVeterinaryMedicine } from "./anvisa";
 import { MIP_STORE_KEYS, isPrescriptionDrugName, isPrescriptionText, isValidGtin, medicineEnabled, onlyDigits } from "../medicine";
 import { MIP_CATALOG as DSP_MIP_CATALOG } from "./drogariasp-mip-catalog";
@@ -186,7 +187,8 @@ export async function liveSearchItems(storeKey: string, query: string, count = 1
   const url = `https://${store.domain}/api/io/_v/api/intelligent-search/product_search/?query=${encodeURIComponent(query)}&count=${count}&locale=pt-BR&hideUnavailableItems=true`;
   let items: CatalogItem[] = [];
   try {
-    const res = await fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) });
+    // Fila (store-throttle.ts): o timeout conta a partir da saída da fila, não da chegada do pedido.
+    const res = await withStoreSlot(() => fetcher(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs()) }));
     if (!res.ok) return [];
     const data = (await res.json()) as { products?: IsProduct[] };
     items = parseLiveProducts(storeKey, data.products ?? []);

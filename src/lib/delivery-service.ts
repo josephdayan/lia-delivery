@@ -45,7 +45,7 @@ import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-type
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
-import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -1313,6 +1313,16 @@ export async function handleDeliveryMessage(input: {
     return;
   }
 
+  // Lista reenviada (08/10, teste do dono): a mesma lista chegou duas vezes em 23 s (wamids
+  // diferentes — o cliente reenviou enquanto o 1º turno ainda buscava) e o 2º turno virou
+  // "troca + busca de novo" em cima do formulário, com três carrosséis. Texto idêntico ao da
+  // mensagem anterior, há poucos minutos, com cara de pedido de produto = reenvio por impaciência:
+  // o 1º turno já responde (ou responderá); este fica mudo. Fica ANTES do lock de propósito.
+  if (inboundMessageId && looksLikeProductList(text) && (await isRecentDuplicateInbound(convo.id, inboundMessageId, text))) {
+    console.log("[inbound:duplicate]", phone, JSON.stringify(text.slice(0, 60)));
+    return;
+  }
+
   // Login do painel pelo WhatsApp (04/09): operador manda "ops" e recebe link de 10 min.
   // Fica ANTES do lock porque não toca no contexto da conversa.
   if (/^(ops|painel|login|entrar)$/i.test(text) && isAdminPhone(phone)) {
@@ -1557,11 +1567,14 @@ async function handleDeliveryTurn(
       for (const key of Object.keys(ctx)) delete (ctx as Record<string, unknown>)[key];
       Object.assign(ctx, fresh);
       await writeCtx(convo.id, ctx);
-      if (canceledShortId) await reply(phone, copy.staleQuoteRestart(canceledShortId));
+      // 08/10 (dono, teste da lista): SEM "cancelei o pedido por inatividade". Quem parou na
+      // compra e volta um dia depois pedindo outra coisa só quer a coisa nova — o pedido velho
+      // morre em silêncio (nada foi cobrado) e a mensagem segue como pedido novo.
+      if (canceledShortId) console.log("[quote:abandoned]", canceledShortId);
       // Toque num BOTÃO velho não é mensagem nova pra processar: sem isso "frete:barato"
       // seguiria adiante como se fosse uma lista de compras.
       if (isFreightChoicePayload(text)) {
-        if (!canceledShortId) await reply(phone, copy.quoteExpired());
+        await reply(phone, copy.quoteExpired());
         return;
       }
     }
@@ -1830,6 +1843,35 @@ async function handleDeliveryTurn(
         await continueAfterBasket(phone, convo.id, ctx, user.cep);
         return;
       }
+    }
+  }
+
+  // Total/entrega na mesa há mais de 10 min + pedido de produto do nada (08/10, teste do dono: parou
+  // na compra ontem, hoje mandou outra lista e ouviu "cancelei o pedido"): é OUTRA missão de compra.
+  // Mesma regra do Pix emitido (04/09, dono: "se ele esquece do outro e pede outra coisa, só dá o que
+  // ele pede"): sem "adiciona", nada de fundir a cesta velha nem anunciar — o pedido antigo é cancelado
+  // em silêncio (nada foi cobrado), o endereço fica e a mensagem segue como pedido novo. Até 10 min,
+  // "e um óleo" continua sendo ajuste do mesmo pedido (reabre e refaz o total). Fica ANTES do gerente
+  // de diálogo, que trataria a lista nova como edição do pedido na mesa.
+  if (
+    (ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight") &&
+    ctx.deliveryOrderId &&
+    intent.kind === "free_text" &&
+    !isQuestion(text) &&
+    !explicitAddCue(text) &&
+    looksLikeNewProductRequest(text)
+  ) {
+    const waiting = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { id: true, updatedAt: true } });
+    // Relógio = publicação da cotação (updatedAt do pedido; ver o segundo relógio do TTL de abandono).
+    const quoteAgeMs = waiting ? Date.now() - waiting.updatedAt.getTime() : 0;
+    if (waiting && quoteAgeMs >= newMissionAfterMs() && (await cancelPendingRetailerQuote(waiting.id))) {
+      console.log("[quote:new-mission]", waiting.id.slice(-6).toUpperCase(), JSON.stringify(text.slice(0, 60)));
+      const fresh = addressOnlyCtx(ctx, user.cep);
+      for (const key of Object.keys(ctx)) delete (ctx as unknown as Record<string, unknown>)[key];
+      Object.assign(ctx, fresh);
+      await writeCtx(convo.id, ctx);
+      await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
+      return;
     }
   }
 
@@ -3534,13 +3576,10 @@ async function handleDeliveryTurn(
     const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } });
     if (order && order.status === "awaiting_payment") {
       const n = normalizeMsg(text);
-      const explicitAdd = /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(n);
+      const explicitAdd = explicitAddCue(text);
       // Só item novo reabre (06/10): "to pagando", "comprovante enviado", o nome do cliente,
       // "o link não abre" CANCELAVAM o Pix que o cliente estava pagando.
-      const productLike =
-        explicitAdd ||
-        looksLikeProductList(text) ||
-        /^(?:(?:ah+|e|ah e|ai|opa)\s+)?(?:quero|queria|preciso|precisava|me ve|manda|traz|compra|tambem|esqueci|faltou|e tambem|e um|e uma|e o|e a)\b/.test(n);
+      const productLike = looksLikeNewProductRequest(text);
       if (!productLike) {
         if (/\b(link|nao abre|nao abriu|nao consigo abrir|nao carrega|erro)\b/.test(n)) {
           await reply(phone, copy.paymentLinkTrouble());
@@ -3555,7 +3594,7 @@ async function handleDeliveryTurn(
         return;
       }
       const issuedAt = ctx.paymentIssuedAt ?? order.updatedAt.getTime();
-      const chargeFresh = Date.now() - issuedAt < 10 * 60_000;
+      const chargeFresh = Date.now() - issuedAt < newMissionAfterMs();
       if (!explicitAdd && !chargeFresh) {
         // 04/09 (dono): pedido parado + item novo do nada = pedido NOVO, sem perguntar
         // ("se ele esquece do outro e pede outra coisa, só dá o que ele pede"). O antigo
@@ -5903,6 +5942,25 @@ function looksLikeProductList(text: string): boolean {
   // Saudação na frente ("Ola quero 2 cxs de…", 06/10) não muda o que a mensagem é.
   const n = normalizeMsg(text).replace(/^(?:(?:oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)(?:\s+lia)?[\s,!.]*)+/, "");
   return /^\d+\s*x?\s+\S/.test(n) || /^(quero|queria|me ve|manda|preciso de|traz|compra)\s+\d/.test(n);
+}
+
+// "adiciona/bota/põe mais um": o cliente está AMPLIANDO o pedido que está na mesa (funde).
+function explicitAddCue(text: string): boolean {
+  return /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(normalizeMsg(text));
+}
+
+// Pedido de produto do nada ("preciso de um shampoo", "quero 2 cocas", lista) — o que, com um
+// pedido parado na mesa, vira outra missão de compra (04/09 no Pix; 08/10 no total/entrega).
+function looksLikeNewProductRequest(text: string): boolean {
+  if (explicitAddCue(text) || looksLikeProductList(text)) return true;
+  return /^(?:(?:ah+|e|ah e|ai|opa)\s+)?(?:quero|queria|preciso|precisava|me ve|manda|traz|compra|tambem|esqueci|faltou|e tambem|e um|e uma|e o|e a)\b/.test(normalizeMsg(text));
+}
+
+// Pedido parado + pedido de produto do nada depois deste tempo = missão NOVA (não funde, não pergunta).
+// Lido a cada chamada (os evals ajustam o env em tempo de teste).
+function newMissionAfterMs(): number {
+  const value = Number(process.env.LIA_NEW_MISSION_AFTER_MS);
+  return Number.isFinite(value) && value >= 0 ? value : 10 * 60_000;
 }
 
 async function tryLlmInterpret(

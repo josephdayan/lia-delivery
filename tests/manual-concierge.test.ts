@@ -542,7 +542,9 @@ test("concierge: cotação abandonada 1h+ expira sozinha e a conversa recomeça"
   await prisma.$executeRaw`UPDATE "Message" SET "createdAt" = NOW() - INTERVAL '2 hours' WHERE "conversationId" IN (SELECT id FROM "Conversation" WHERE "userId" = ${c.userId})`;
   await prisma.$executeRaw`UPDATE "Conversation" SET "updatedAt" = NOW() - INTERVAL '2 hours' WHERE "userId" = ${c.userId}`;
   const back = await c.send("quero um leite");
-  assert.match(back, /por inatividade — nada foi cobrado/, `sem aviso de recomeço: ${back.slice(0, 200)}`);
+  // 08/10 (dono): o pedido velho morre em SILÊNCIO — "cancelei por inatividade" só confundia quem
+  // voltou pedindo outra coisa.
+  assert.doesNotMatch(back, /por inatividade|[Cc]ancelei/, `anunciou o cancelamento: ${back.slice(0, 200)}`);
   assert.doesNotMatch(back, /já incluí na cotação/, "a mensagem nova NÃO pode cair no pedido velho");
   const after = await prisma.deliveryOrder.findUnique({ where: { id: stuck!.id } });
   assert.equal(after?.status, "canceled");

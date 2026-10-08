@@ -392,6 +392,25 @@ export async function lastActivityAt(convoId: string, exceptMessageId?: string):
   return previous?.createdAt;
 }
 
+// Mesmo texto da mensagem anterior do cliente, há menos de LIA_DUPLICATE_INBOUND_MS (3 min):
+// reenvio por impaciência enquanto o turno anterior ainda roda (08/10). Quem decide se o texto
+// merece o dedupe (pedido de produto) é o chamador; aqui só a comparação.
+export function duplicateInboundWindowMs(): number {
+  const value = Number(process.env.LIA_DUPLICATE_INBOUND_MS);
+  return Number.isFinite(value) && value >= 0 ? value : 3 * 60_000;
+}
+
+export async function isRecentDuplicateInbound(convoId: string, exceptMessageId: string, text: string): Promise<boolean> {
+  const previous = await prisma.message.findFirst({
+    where: { conversationId: convoId, sender: "user", id: { not: exceptMessageId } },
+    orderBy: { createdAt: "desc" },
+    select: { text: true, createdAt: true }
+  });
+  if (!previous) return false;
+  if (Date.now() - previous.createdAt.getTime() > duplicateInboundWindowMs()) return false;
+  return normalizeMsg(previous.text) === normalizeMsg(text);
+}
+
 // Um turno POR VEZ por conversa (2ª revisão, 11/08). Duas mensagens simultâneas do
 // mesmo cliente liam a mesma cesta e cada uma gravava o contexto INTEIRO — a última
 // apagava o item da primeira. Lock cooperativo no banco (vale entre instâncias
