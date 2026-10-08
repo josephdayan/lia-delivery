@@ -72,6 +72,13 @@ test("pedido comprado pelo servidor: faturado → envio → saiu pra entrega →
 
   await tick();
   assert.equal(mine().length, 0, "pagamento aprovado na loja: nada a dizer");
+  const nextIn = async () => ((await prisma.trackingSubscription.findUniqueOrThrow({ where: { deliveryOrderId: order.id } })).nextCheckAt!.getTime() - Date.now()) / 60_000;
+  assert.ok((await nextIn()) > 50, "sem previsão próxima: olha de hora em hora");
+  // Entrega rápida (Expressa 30 min, Drogal 08/10): previsão nas próximas 2h → olha a cada 5 min.
+  state = { state: "payment-approved", shippingData: { logisticsInfo: [{ shippingEstimateDate: new Date(Date.now() + 25 * 60_000).toISOString() }] } };
+  await tick();
+  assert.ok((await nextIn()) <= 5.1, "previsão em 25 min: próxima olhada em ≤ 5 min");
+  state = { state: "payment-approved" };
   assert.match(calls[0], /martinsfontespaulista\.com\.br\/api\/checkout\/pub\/orders\/order-group\/v999dgsp cookie=CheckoutDataAccess=x/);
 
   state = { state: "invoiced", shippingData: { logisticsInfo: [{ shippingEstimateDate: new Date(Date.now() + 3 * 86_400_000).toISOString() }] } };

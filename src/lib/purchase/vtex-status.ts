@@ -129,8 +129,12 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
         await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${INVOICED_MARK} em ${now.toISOString()}${eta ? ` — previsão ${eta}` : ""}.`) } });
         report.notices += 1;
       }
-      // Mais perto da entrega, olhar mais vezes.
-      const every = sig.lastMile || sig.shipped ? 20 : sig.state === "invoiced" ? 30 : 60;
+      // Mais perto da entrega, olhar mais vezes. Entrega rápida (Expressa 30 min, Drogal 08/10): a previsão
+      // da loja nas próximas 2h — ou vencida há menos de 6h — olha a cada 5 min (o cron roda a cada 3);
+      // antes eram 60 min fixos e a entrega de 30 min chegava antes da 2ª olhada.
+      const etaAt = sig.eta ? Date.parse(sig.eta) : NaN;
+      const soon = Number.isFinite(etaAt) && etaAt - now.getTime() < 2 * 3_600_000 && now.getTime() - etaAt < 6 * 3_600_000;
+      const every = soon ? 5 : sig.lastMile || sig.shipped ? 20 : sig.state === "invoiced" ? 30 : 60;
       await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { nextCheckAt: new Date(now.getTime() + every * 60_000), lastCheckedAt: now, lastError: null, failures: 0, ...(sig.delivered ? { completedAt: now } : {}) } });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
