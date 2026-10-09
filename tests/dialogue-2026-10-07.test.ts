@@ -557,7 +557,8 @@ test("vários set_qty na cesta no mesmo turno → UMA mensagem com a lista, os p
   await prisma.conversation.create({ data: { userId: user.id, context: JSON.stringify({ flow: "delivery", step: "collecting", cep: "01310-100", deliveryAddress: ADDRESS, deliveryAddressVerified: true, basket: basket0 }) } });
   model(() => [act("set_qty", { target: 1, qty: 1 }), act("set_qty", { target: 2, qty: 4 }), act("set_qty", { target: 3, qty: 2 })]);
   const start = outbox.length;
-  await send(phone, "2 vodkas absolute, 1 gin, 4 red bul");
+  // Ajuste explícito ("muda pra…"): lista nova sem esse tipo de palavra recomeça (regra de 09/10, basket-one-store).
+  await send(phone, "muda pra 2 vodkas, 1 gin e 4 red bull");
   const mine = outbox.slice(start).filter((m) => m.to === phone);
   assert.equal(mine.length, 1, `uma mensagem só: ${mine.map((m) => m.text.slice(0, 80)).join(" | ")}`);
   assert.match(mine[0].text, /Lista atualizada/);
