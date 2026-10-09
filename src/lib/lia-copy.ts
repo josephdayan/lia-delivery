@@ -486,6 +486,18 @@ export function swapRemovedPrefix(from: string, to?: string): string {
   return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
 
+export function requestedStoreNotShown(label: string): string {
+  return `Não achei isso na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
+}
+
+export function askEitherItem(a: string, b: string): string {
+  return `Você quer *${a}* ou *${b}*? Responde *1* (${a}), *2* (${b}) ou *os dois*.`;
+}
+
+export function swapUndone(names: string): string {
+  return `Feito, desfiz a troca: voltou *${names}* pra cesta. ✅`;
+}
+
 export function swappedFor(from: string, to: string): string {
   return `✅ Troquei ${from} por ${to}.`;
 }

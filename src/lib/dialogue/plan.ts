@@ -3,7 +3,7 @@
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { countDistinctItems } from "../list-items";
-import { extractCep, parseBudgetStatement, parsePriceCap } from "../lia-intents";
+import { extractCep, normalizeMsg, parseBudgetStatement, parsePriceCap } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
@@ -115,11 +115,26 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
   return { ok: true, steps };
 }
 
+// Negação de atributo vira filtro, nunca termo positivo (09/10, rodada 3): "troca a areia por uma SEM cheiro" → a IA
+// devolvia "cheiro" e a busca trazia areia perfumada. Se a fala diz "sem X" e a frase da IA tem X sem o "sem", devolve o "sem".
+export function keepNegation(text: string, phrase: string): string {
+  const said = normalizeMsg(text);
+  let out = phrase;
+  for (const m of said.matchAll(/\bsem\s+([a-z]{3,})/g)) {
+    const word = m[1];
+    const norm = normalizeMsg(out);
+    if (!new RegExp(`\\b${word}\\b`).test(norm) || new RegExp(`\\bsem\\s+${word}\\b`).test(norm)) continue;
+    const swapped = out.replace(new RegExp(`\\b${word}\\b`, "i"), `sem ${word}`);
+    out = swapped === out ? `${out} sem ${word}` : swapped;
+  }
+  return out;
+}
+
 function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
     case "search": {
-      const query = a.query?.replace(/\s+/g, " ").trim();
+      const query = a.query ? keepNegation(text, a.query.replace(/\s+/g, " ").trim()) : undefined;
       if (!query || query.length > 160) return "sem_busca";
       return {
         type: "search",
@@ -147,7 +162,7 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       return "sem_opcoes";
     }
     case "refine": {
-      const attribute = a.attribute?.replace(/\s+/g, " ").trim();
+      const attribute = a.attribute ? keepNegation(text, a.attribute.replace(/\s+/g, " ").trim()) : undefined;
       if (!onScreen) return "sem_opcoes_na_tela";
       if (!attribute || attribute.length > 60) return "sem_atributo";
       return { type: "refine", attribute };
@@ -172,7 +187,7 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
     case "swap": {
       const from = resolveTarget(state, a.from ?? a.target);
       if (!from || from.kind !== "basket") return "alvo_invalido";
-      const to = a.to?.replace(/\s+/g, " ").trim();
+      const to = a.to ? keepNegation(text, a.to.replace(/\s+/g, " ").trim()) : undefined;
       if (!to || to.length > 100) return "sem_destino";
       // "troca por bolacha água e sal e coloca 3" (09/10, teste real): a quantidade dita junto da troca se perdia — o
       // modelo não tem campo de quantidade no swap. Quantidade de unidades depois de coloca/bota/quero entra na busca.
