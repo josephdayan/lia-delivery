@@ -293,7 +293,12 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
 
     case "reply": {
       // Texto livre da IA passa pelo MESMO filtro anti-promessa do roteador de fallback.
-      const clean = sanitizeRouterReply(step.text);
+      let clean = sanitizeRouterReply(step.text);
+      // Pergunta que cita OUTRO item que não o da tela (09/10, rodada 3: "…ou quer escolher uma das opções de lâmpada?"
+      // com o carrossel de ração aberto): o item pendente é o da tela; a frase da IA é trocada pela do código.
+      if (clean && current && step.kind !== "smalltalk" && namesOtherItem(clean, current.query, ctx)) {
+        clean = copy.finishChoiceFirst([current.query]);
+      }
       if (step.kind === "smalltalk") {
         await reply(phone, clean ?? copy.thanks());
         if (current) await h.sendChoices(phone, current);
@@ -347,4 +352,17 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
   await h.sendChoices(phone, ctx.pending[0]);
+}
+
+// A frase cita o nome de algum outro item da cesta/fila e nenhuma palavra do item que está na tela?
+export function namesOtherItem(text: string, currentQuery: string, ctx: DeliveryContext): boolean {
+  const said = normalizeMsg(text);
+  if (!/\bopcoes? d[eoa]s?\b/.test(said)) return false;
+  const mine = queryTokens(currentQuery).filter((t) => t.length >= 4);
+  if (mine.some((t) => said.includes(t))) return false;
+  const others = [
+    ...(ctx.pending ?? []).map((p) => p.query),
+    ...(ctx.basket ?? []).flatMap((b) => [b.ask ?? "", b.name])
+  ];
+  return others.some((o) => queryTokens(o).some((t) => t.length >= 4 && new RegExp(`\\b${t}\\b`).test(said)));
 }

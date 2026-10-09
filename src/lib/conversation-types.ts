@@ -5,6 +5,7 @@ import { ACTIVE_DELIVERY_ORDER_STATUSES, CONCIERGE_STORE_KEY } from "@/lib/order
 import { displayPrice } from "@/lib/pricing";
 import { DEFAULT_STORE_KEY, StoreConnector, getStore } from "@/lib/stores";
 import * as copy from "@/lib/lia-copy";
+import type { SpecAsk, SpecKind } from "@/lib/spec-ask";
 import type { RecommendRequest, ShelfCandidate, ShelfPlan } from "@/lib/recommend/types";
 
 // Card MDR (~4.99% à vista) passed through to the customer when they choose card, so the
@@ -84,6 +85,8 @@ export type StoreFulfillment = {
 export type PendingChoice = {
   query: string;
   qty: number;
+  // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
+  storeNoted?: boolean;
   // "pra hoje" (04/09): `urgent` = só opções com entrega da loja em menos de 1 dia;
   // `noneToday` = pediu hoje, ninguém entrega hoje — o cabeçalho diz isso e mostra o mais rápido.
   urgent?: boolean;
@@ -261,6 +264,9 @@ export type DeliveryContext = {
   medicineRefusedAt?: number;
   // Oferta pendente de busca na cauda longa (Mercado Livre) para as linhas que as
   // vitrines locais não cobriram (revisão 02/09). "sim" dispara a busca; "não" limpa.
+  // Item que depende de especificação não dita (09/10, g7): fila de perguntas ("capa de celular" → modelo?). A resposta
+  // curta do cliente volta para a busca do item; vale 30 min.
+  specAsk?: { asks: Array<{ kind: SpecKind; query: string; qty: number; qtyExplicit?: boolean }>; askedAt: number };
   longTailOffer?: { lines: Array<{ phrase: string; qty: number; qtyExplicit?: boolean; cap?: number; raw?: string }> };
   // Plano B (04/09): pedido PAGO travou na loja; substituto verificado ao vivo oferecido
   // com botões "Trocar"/"Devolver o dinheiro". Vive até a resposta ou o estorno automático.
@@ -275,6 +281,12 @@ export type DeliveryContext = {
   // da escolha reabrem ela — o toque num card antigo não pode cair no "me diz de outro
   // jeito" (teste real 19/08).
   lastChoice?: PendingChoice & { chosenSku: string };
+  // Última TROCA feita pela Lia (09/10, rodada 3): "não, quero o nivea de antes" / "volta o anterior" desfaz a troca
+  // (devolve o item tirado à cesta) em vez de virar lista nova. `addedSku` = o que entrou no lugar (troca de 1 opção);
+  // `to` = a busca que ficou pendente (várias opções).
+  // "lego ou carrinho" (09/10, rodada 3): a Lia perguntou qual; "1"/"2"/"o carrinho"/"os dois" escolhe.
+  askEither?: { base: string; alternatives: [string, string]; at: number };
+  lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
   pendingRequest?: string;
   // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
@@ -394,6 +406,8 @@ export type ChoicesResult = {
   // mas nenhuma loja confirmou ao vivo para o CEP — o cliente ouve "não consigo comprar
   // agora", não "não achei".
   unconfirmed?: string[];
+  // 09/10 (g7): linhas que dependem de especificação não dita; só vêm quando o chamador pede (`askSpecs`).
+  specAsks?: SpecAsk[];
 };
 
 // The store an in-progress order belongs to (picked when the basket was built).

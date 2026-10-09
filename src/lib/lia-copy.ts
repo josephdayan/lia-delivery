@@ -486,6 +486,18 @@ export function swapRemovedPrefix(from: string, to?: string): string {
   return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
 
+export function requestedStoreNotShown(label: string): string {
+  return `Não achei isso na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
+}
+
+export function askEitherItem(a: string, b: string): string {
+  return `Você quer *${a}* ou *${b}*? Responde *1* (${a}), *2* (${b}) ou *os dois*.`;
+}
+
+export function swapUndone(names: string): string {
+  return `Feito, desfiz a troca: voltou *${names}* pra cesta. ✅`;
+}
+
 export function swappedFor(from: string, to: string): string {
   return `✅ Troquei ${from} por ${to}.`;
 }
@@ -2743,6 +2755,31 @@ export function longTailOffer(items: string[]): string {
     return `*${labels[0]}* eu não achei nas lojas parceiras. Quer que eu procure no Mercado Livre? Responde *sim* ou *não*.`;
   }
   return ["Esses eu não achei nas lojas parceiras:", ...labels.map((i) => `• ${i}`), "Quer que eu procure no Mercado Livre? Responde *sim* ou *não*."].join("\n");
+}
+
+// Especificação que falta (09/10, rodada 3, g7): uma linha, sem chute. O resto da lista já foi mostrado.
+export function specQuestion(kind: "capa" | "pelicula" | "carregador" | "cartucho" | "filtro" | "pneu" | "racao", label: string): string {
+  const item = label.replace(/\s+/g, " ").trim();
+  switch (kind) {
+    case "capa":
+      return `Pra *${item}*, qual o modelo do celular? (ex.: iPhone 13, Galaxy A54)`;
+    case "pelicula":
+      return `Pra *${item}*, qual o modelo do celular? (ex.: iPhone 13, Galaxy A54)`;
+    case "carregador":
+      return `Pra *${item}*, qual a entrada do cabo: USB-C, Lightning (iPhone) ou micro-USB?`;
+    case "cartucho":
+      return `Pra *${item}*, qual o modelo da impressora? (ex.: HP DeskJet 2774)`;
+    case "filtro":
+      return `Pra *${item}*, qual o modelo do aparelho ou do carro?`;
+    case "pneu":
+      return `Pra *${item}*, qual a medida? (ex.: 175/70 R14, ou aro 26 de bicicleta)`;
+    case "racao":
+      return `Pra *${item}*, é filhote ou adulto, e de que porte?`;
+  }
+}
+
+export function specSkipped(label: string): string {
+  return `Sem isso eu não acerto a compatibilidade, então deixo *${label.replace(/\s+/g, " ").trim()}* de fora. Se lembrar, é só me dizer.`;
 }
 
 export function longTailDeclined(): string {
