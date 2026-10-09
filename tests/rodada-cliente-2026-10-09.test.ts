@@ -106,7 +106,7 @@ test("'o sabonete pode ser o mais barato' é pedido do mais barato DAQUELE item 
   assert.equal(parseItemCheapest("pode ser o mais barato do arroz"), "arroz");
   assert.equal(parseItemCheapest("qual o mais barato?"), null);
   assert.equal(parseItemCheapest("pode ser o mais barato"), null);
-  assert.match(copy.itemCheapestAnswer({ item: "sabonete", name: "Sabonete Dove 90g", price: 5.71, where: "Americanas · 1 dia útil", already: true }), /já é o mais barato/);
+  assert.match(copy.itemCheapestAnswer({ item: "sabonete", name: "Sabonete Dove 90g", price: 5.71, where: "Americanas · 1 dia útil", already: true }), /já está o mais barato/);
 });
 
 test("horário de atendimento não passa pela IA (ela perguntava 'da Lia ou da loja?')", async () => {
