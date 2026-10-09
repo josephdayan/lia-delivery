@@ -117,6 +117,18 @@ export async function refundRejectedServerJobs(limit = 10) {
 }
 export type RunResult = { jobId: string; storeKey: string; status: string; detail?: string };
 
+// Firewall do site (Akamai/WAF) recusando o servidor: passageiro, não é recusa da loja.
+export function isSiteBlock(status: number) {
+  return status === 403 || status === 429;
+}
+export function storeBlockRetries() {
+  const v = Number(process.env.LIA_STORE_BLOCK_RETRIES ?? 3);
+  return Number.isFinite(v) && v >= 0 ? Math.floor(v) : 3;
+}
+async function blockRetriesUsed(jobId: string) {
+  return prisma.purchaseAttempt.count({ where: { purchaseJobId: jobId, step: "worker", status: "retrying", errorCode: { startsWith: "VTEX_" } } });
+}
+
 export function maxPaidAgeHours() {
   const v = Number(process.env.LIA_SERVER_BUYER_MAX_AGE_HOURS ?? 24);
   return Number.isFinite(v) && v > 0 ? v : 24;
@@ -209,7 +221,12 @@ export async function executeVtexJob(
     const message = error instanceof Error ? error.message : String(error);
     const stage = error instanceof VtexCheckoutRejected ? error.stage : "prepare";
     // Loja fora do ar / timeout: vale tentar de novo sozinho. Item, entrega ou endereço: humano.
-    const retryable = !(error instanceof VtexCheckoutRejected) && /timeout|fetch failed|ECONN|socket/i.test(message);
+    // Bloqueio do site (403/429 do firewall) ANTES de existir pedido: tenta de novo algumas vezes
+    // antes de devolver (09/10, Casa & Vídeo e Obramax deram 403 na compra 1 min depois de o
+    // ensaio passar, e a parte delas voltou na 1ª tentativa).
+    const retryable = error instanceof VtexCheckoutRejected
+      ? isSiteBlock(error.status) && (await blockRetriesUsed(payload.jobId)) < storeBlockRetries()
+      : /timeout|fetch failed|ECONN|socket/i.test(message);
     return fail(`VTEX_${stage.toUpperCase()}`.slice(0, 80), message, retryable);
   }
   let staged;
