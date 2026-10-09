@@ -790,7 +790,12 @@ export function minimumOrder(input: {
     "",
     `Produtos (${store}): ${brl(input.produtos)}`,
     "",
-    `A ${store} tem pedido mínimo de *${brl(input.displayMin)}* — faltam *${brl(input.falta)}*. Manda mais um item de lá que eu fecho.`
+    `A ${store} tem pedido mínimo de *${brl(input.displayMin)}* — faltam *${brl(input.falta)}*. Manda mais um item de lá que eu fecho.`,
+    // Saída explícita (09/10, teste real: um detergente de R$ 3 travava uma lista de 12 itens): sem isto o cliente não
+    // sabe que pode tirar o item que não atinge o mínimo e seguir com o resto.
+    input.items.length === 1
+      ? `Ou, se preferir, diz *tira ${(input.items[0].name.split(" ")[0] ?? "o item").toLowerCase()}* que eu fecho o resto.`
+      : "Ou me diz o que tirar que eu fecho o resto."
   ];
   if (input.otherItems?.length) {
     out.push(
