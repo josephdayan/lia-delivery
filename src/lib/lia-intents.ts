@@ -1495,6 +1495,8 @@ export function detectIntent(text: string): Intent {
   ) {
     return { kind: "insult" };
   }
+  // Palavrão de raiva ("que porra é essa", "aff, que merda", "isso é uma droga", 09/10, rodada 3): curto e sem pedido junto.
+  if (isAngerSwear(n)) return { kind: "insult" };
 
   // Regateio: "faz por 10?", "tem desconto?" — resposta clara, nunca escolha nem busca.
   if (/^(faz|fazes|consegue|sai) por (r\$\s*)?\d+|^tem desconto|^(da|dá) (um )?desconto|^faz mais barato/.test(n)) {
@@ -1757,6 +1759,12 @@ export function detectPaymentMethod(text: string): "pix" | "card" | undefined {
 }
 
 // "quanto fica no cartão?", "qual é a desnatada?" — a question, not a decision.
+export function isAngerSwear(normalized: string): boolean {
+  const n = normalized.replace(/[!?.]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.split(" ").length > 8 || /\d/.test(n)) return false;
+  return /\b(?:que (?:porra|merda|bosta|droga|saco|inferno|lixo|raiva|odio)|puta (?:que|merda)|pqp|caralho|(?:isso|vc|voce|isto) (?:e|eh|ta|esta) (?:uma |um )?(?:merda|porra|droga|bosta|lixo|horrivel|pessim\w+))\b/.test(n);
+}
+
 export function isQuestion(text: string): boolean {
   const n = normalizeMsg(text);
   return /\?\s*$/.test(n) || /^(quanto|quanta|qual|quais|como|quando|onde|por que|pq|sera que|tem como|voce tem|vcs tem|tem)\b/.test(n);
@@ -2536,6 +2544,48 @@ export function parseStoreReference(
 const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;
 export function isHoursAsk(text: string): boolean {
   return HOURS_ASK_RE.test(normalizeMsg(text).replace(/[!.?]+$/g, "").trim());
+}
+
+// Resposta a uma pergunta de esclarecimento da Lia (09/10, rodada 3). "Qual leite você quer?" + "o integral mesmo, e o
+// pão de forma" = "adiciona leite integral, pão de forma": a primeira parte responde a pergunta (qualificador do item
+// perguntado) e o resto é item extra a somar. Devolve null quando a fala não parece resposta (cai no fluxo de sempre).
+export function questionSubject(question: string): string | null {
+  const n = normalizeMsg(question).replace(/[?!.]+$/g, "").trim();
+  const m = n.match(/^(?:qual|quais|que|me diz qual|e qual)\s+(?:tipo de |marca de |sabor de |tamanho de )?([a-z]+(?: [a-z]+)?)(?:\s+(?:voce|vc|seria|prefere|quer|queria|gostaria|e|eh|pra|para|de)\b.*)?$/);
+  const subject = m?.[1]?.trim();
+  if (!subject || /^(?:dos|das|opcao|loja|forma|pagamento|endereco|cep)\b/.test(subject)) return null;
+  return subject.split(" ")[0];
+}
+
+export function answerOpenQuestion(question: string, text: string): string | null {
+  const subject = questionSubject(question);
+  if (!subject) return null;
+  const n = normalizeMsg(text).replace(/[!?]+$/g, "").trim();
+  if (!n || n.length > 140) return null;
+  const parts = n.split(/\s*(?:,|;|\be\b|\btambem\b)\s*/).map((x) => x.trim()).filter(Boolean);
+  if (!parts.length) return null;
+  const head = parts[0]
+    .replace(/^(?:ah |entao |ai |hm+ )?(?:eh |e )?(?:o |a |os |as |um |uma |de )?/, "")
+    .replace(/\b(?:mesmo|mesma|por favor|pf|pfv|pode ser|quero|prefiro|queria|vou querer|ai|isso)\b/g, " ")
+    .replace(/^(?:o |a |os |as |de |do |da )+/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!head || head.split(" ").length > 3 || /\d/.test(head)) return null;
+  if (/^(?:nao|sim|nada|ok|so isso|cancela\w*|esquece|deixa|tanto faz|qualquer)$/.test(head)) return null;
+  // "esse mesmo, o 1" / "o primeiro, por favor" escolhem uma OPÇÃO da tela; não são qualificador do item.
+  if (/^(?:ess[ae]s?|est[ae]s?|isso|aquel[ae]s?|primeir[oa]|segund[oa]|terceir[oa]|ultim[oa]|outr[oa]s?|mesmo|mesma)\b/.test(head)) return null;
+  const first = head.includes(subject) ? head : `${subject} ${head}`;
+  // Os itens extras saem do texto ORIGINAL (com acento), sem o artigo do começo.
+  const rawParts = text.replace(/[!?]+$/g, "").trim().split(/\s*(?:,|;|\be\b|\btamb[eé]m\b)\s*/i).map((x) => x.trim()).filter(Boolean);
+  const extra = rawParts.slice(1).map((x) => x.replace(/^(?:o|a|os|as)\s+/i, "")).filter((x) => x && !/^(?:mais|tamb[eé]m)$/i.test(x));
+  return `adiciona ${[first, ...extra].join(", ")}`;
+}
+
+// "vocês entregam hoje?", "chega hoje?", "dá pra entregar hoje?" (09/10, rodada 3): pergunta de sim/não sobre o mesmo dia.
+export function asksDeliveryToday(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  if (n.length > 60) return false;
+  return /\b(?:entreg\w*|chega\w*|chegar|enviam|manda\w*)\s+(?:ainda\s+)?hoje\b/.test(n) || /\bhoje\s+(?:ainda\s+)?(?:da|tem|rola)\s+(?:pra|para)\s+(?:entreg\w+|chegar)\b/.test(n);
 }
 
 // "chega hoje?", "o 2 chega hoje?", "quando chega?", "qual o prazo?" com as opções na tela

@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, asksDeliveryToday, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -46,6 +46,10 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "paid_claim",
   "resend_code",
   "switch_payment",
+  // Pergunta sobre cancelar ("como cancelo?") só explica; a IA lia como pedido e cancelava (09/10, rodada 3).
+  "cancel_question",
+  "unsupported_payment",
+  "insult",
   // Dono avisado no WhatsApp por caminho fixo: se o regex pegou, não depende da IA.
   "human",
   "complaint",
@@ -103,6 +107,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (i.intent.kind === "swap_item" && /^(?:o |a )?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
   if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
   if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
+  // "vocês entregam hoje?": sim/não direto, calculado dos prazos reais (não passa pela IA, que perde o "hoje").
+  if (asksDeliveryToday(text) && ["status", "service_question", "free_text"].includes(i.intent.kind)) return "intent:today_ask";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".

@@ -75,7 +75,8 @@ REGRAS:
 3. Despedida, agradecimento ou emoji ("👍", "ok", "valeu", "tchau", "FIM"): uma confirmação curta e calorosa ("Combinado! Quando precisar é só chamar 💚"), sem repetir o resto.
 4. Se o cliente pede de novo algo que a Lia já disse que não consegue: reconheça que ele insistiu e diga com clareza que o resultado é o mesmo. Se ele pede para tentar de novo ou em mais lojas, ACRESCENTE a informação nova que as falas permitem: a Lia já conferiu todas as lojas que entregam no endereço dele e nenhuma tem (não prometa buscar em outras lojas). Se ele FIXOU marca, versão, tamanho ou uso ("tem que ser exatamente esse", "só aceito Yorgus"), NUNCA sugira outra marca, outra versão ou produto parecido: diga que não achou aquilo e que, se precisar de outra coisa, é só pedir. Se as falas dizem que a Lia não compra aquela categoria (móveis grandes, eletrodomésticos grandes, veículos, imóveis), repita que ela não compra isso, sem oferecer "tentar outra versão". Só repita um próximo passo (outro endereço numa cidade atendida…) quando o cliente não fixou nada e esse passo já foi dito.
 5. Se o cliente pediu para ser avisado ou para a Lia anotar algo e as falas dizem que isso já foi feito, confirme em uma frase só o que elas dizem. NUNCA prometa avisar nem chamar quando a Lia chegar na região dele: não existe aviso automático; diga só que a cidade foi anotada para priorizar, sem data nem garantia.
-6. Se não dá para responder sem inventar, devolva text vazio.
+6. Se a mensagem repetida diz que a Lia NÃO ACHOU o produto, a resposta nova TEM que dizer, com clareza, que não achou (nunca só repetir o que o cliente procura).
+7. Se não dá para responder sem inventar, devolva text vazio.
 Responda apenas JSON.`;
 
 const REPEAT_SCHEMA = {
@@ -141,13 +142,23 @@ function shortAck(input: RepeatInput): string | null {
   return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent, false)) ?? null;
 }
 
+// "Não achei" é informação que a reescrita nunca pode apagar (09/10, rodada 3: "Entendi, você procura um carregador
+// Lightning." no lugar do "não achei" e o cliente não sabia que nada foi encontrado).
+export function conveysMiss(text: string): boolean {
+  return /\bnao (?:achei|encontrei|consegui achar|consegui encontrar|localizei|tenho)\b|\bnenhuma loja\b|\bsem resultado/.test(canon(text));
+}
+
 // Texto novo no lugar da repetição, ou null (a mensagem original sai como sempre saiu).
 export async function rewriteRepeated(input: RepeatInput): Promise<string | null> {
   if (!repeatGuardEnabled()) return null;
   if (seamActive || process.env.OPENAI_API_KEY) {
     const raw = await modelImpl(input).catch(() => null);
     const clean = sanitizeRouterReply(raw ?? undefined);
-    if (clean && !sameAsRecent(clean, input.recent, false)) return clean;
+    if (clean && !sameAsRecent(clean, input.recent, false)) {
+      // A reescrita apagou o "não achei": vale o texto original, que diz isso.
+      if (conveysMiss(input.said) && !conveysMiss(clean)) return null;
+      return clean;
+    }
   }
   return shortAck(input);
 }
