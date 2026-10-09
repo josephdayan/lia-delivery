@@ -151,3 +151,13 @@ test("09/10: modelo devolve 3 buscas para uma lista de 6 -> plano inválido (cai
   const whole = planActions({ actions: [search("ração gato"), search("carregador usb"), search("pilha aa")] }, state, { text: "ração de gato, carregador usb e pilha aa" });
   assert.equal(whole.ok, true);
 });
+
+test("09/10: 'bolacha maizena' acha Biscoito Maizena (bolacha ≈ biscoito)", async (t) => {
+  if (!dbOk) return t.skip("sem banco");
+  const c = await customer();
+  await setCtx(c.userId, { ...baseCtx });
+  const out = await send(c.phone, "quero bolacha maizena");
+  const ctx = (await ctxOf(c.userId)) as { pending?: { options?: { name: string }[] }[]; basket?: { name: string }[] };
+  const names = [...(ctx.pending ?? []).flatMap((p) => (p.options ?? []).map((o) => o.name)), ...(ctx.basket ?? []).map((b) => b.name)].join(" | ");
+  assert.match(names + out, /biscoito[^|]*maizena|maizena[^|]*biscoito/i, `sem biscoito maizena: ${names} :: ${out.slice(0, 200)}`);
+});

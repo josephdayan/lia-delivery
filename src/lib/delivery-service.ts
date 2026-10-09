@@ -298,6 +298,12 @@ async function buildChoices(
         const lineStore = lockedStoreKey ? getStore(lockedStoreKey) : await pickStoreForQueries([searchPhrase]);
         candidates = (await lineStore.searchItems(searchPhrase, 12)).map((item) => ({ store: lineStore, item }));
       }
+      // "bolacha" é "biscoito" no catálogo: busca as duas formas (09/10, "bolacha maizena" voltava só amido de milho).
+      if (crossStore && /\bbolachas?\b/i.test(searchPhrase)) {
+        const alt = await gatherCrossStoreCandidates(searchPhrase.replace(/\bbolachas?\b/gi, "biscoito"), 12, 4);
+        const have = new Set(candidates.map((c) => `${c.store.key}:${c.item.sku}`));
+        candidates = [...candidates, ...alt.filter((c) => !have.has(`${c.store.key}:${c.item.sku}`))];
+      }
       let packQty: number | undefined;
       let packOnly = false;
       let packSingles: StoreCandidate[] = [];

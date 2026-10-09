@@ -162,11 +162,14 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
   if ((token === "perfume" || token === "perfumes") && (word === "colonia" || word === "colonias")) return true;
   // "miojo" ≈ "lámen": o cliente fala miojo; o catálogo esconde "Miojo"/"Lámen" no
   // meio do nome ("Pack Macarrão Instantâneo Lámen … Nissin Miojo 510g").
+  // "bolacha" ≈ "biscoito" (09/10, teste real: "bolacha maizena" não achava nenhum Biscoito Maizena em loja alguma).
+  if (COOKIE_WORDS.has(token) && COOKIE_WORDS.has(word)) return true;
   if ((token === "miojo" || token === "miojos" || token === "lamen") && (word === "lamen" || word === "miojo")) return true;
   // 27/09 (golden "carregador veicular"): a Drogal chama o mesmo produto de "Carregador Carro".
   if (VEHICLE_WORDS.has(token) && VEHICLE_WORDS.has(word)) return true;
   return false;
 }
+const COOKIE_WORDS = new Set(["bolacha", "bolachas", "biscoito", "biscoitos"]);
 const VEHICLE_WORDS = new Set(["veicular", "veiculares", "carro", "carros", "automotivo", "automotiva", "automotivos"]);
 
 // Plural irregular do português (08/10, placar r4): "recarregáveis" nunca casava com
