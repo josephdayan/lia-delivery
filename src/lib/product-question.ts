@@ -12,6 +12,7 @@ export type ProductQuestion =
   | { kind: "audience"; tag: AudienceTag }
   | { kind: "compare"; a: number; b: number }
   | { kind: "explain"; n: number }
+  | { kind: "price"; n: number }
   | { kind: "original" }
   | { kind: "expiry" }
   | { kind: "dietary"; term: string };
@@ -98,6 +99,13 @@ export function parseProductQuestion(text: string, optionCount: number): Product
 
   if (!isQuestion) return null;
 
+  // "qual o preço do primeiro?", "quanto custa o 2?" (09/10, rodada 3): responde o preço da opção citada.
+  const price = n.match(/\b(?:preco|valor|quanto\s+(?:custa|e|eh|ta|esta|fica|sai|vale))\b(.*)$/);
+  if (price) {
+    const refs = refsIn(price[1], optionCount);
+    if (refs.length === 1) return { kind: "price", n: refs[0] };
+  }
+
   if (/\b(validade|vencimento|vence|vencido|prazo de validade|data de fabricacao)\b/.test(n)) return { kind: "expiry" };
   if (/\b(original|originais|autentic[oa]s?|legitim[oa]s?|falsific\w+|pirata|paralel[oa])\b/.test(n)) return { kind: "original" };
 
@@ -155,6 +163,10 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
       notes.push(gap ? `A *${a.price < b.price ? q.a : q.b}* sai ${brl(gap)} mais barata.` : "O preço é o mesmo.");
       notes.push("Detalhe técnico além do nome eu não tenho aqui. Qual você quer?");
       return ["O que eu sei comparar é nome, preço e loja:", ...lines, "", ...notes].join("\n");
+    }
+    case "price": {
+      const o = options[q.n - 1];
+      return `A opção *${q.n}* é *${o.name}*: ${brl(o.price)}${where(o)}. Quer essa? Responde *${q.n}*.`;
     }
     case "explain": {
       const o = options[q.n - 1];

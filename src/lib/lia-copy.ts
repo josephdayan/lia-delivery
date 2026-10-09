@@ -97,12 +97,12 @@ export function signupFormBody(notedItems?: string[], intro = true): string {
   return `${INTRO}${note}\n\nAntes, um cadastro rápido: nome, CPF e endereço. É uma vez só 👇`;
 }
 
-export function signupSaved(firstName: string | undefined, address: string): string {
-  return `✅ Cadastro feito${firstName ? `, ${firstName}` : ""}!\n📍 Entrega em: ${cleanAddressForCopy(address)}\n_Pra mudar depois, é só dizer "trocar endereço"._`;
+export function signupSaved(firstName: string | undefined, address: string, uf?: string | null): string {
+  return `✅ Cadastro feito${firstName ? `, ${firstName}` : ""}!\n📍 Entrega em: ${cleanAddressForCopy(address)}\n_Pra mudar depois, é só dizer "trocar endereço"._${outsideSaoPauloNote(uf)}`;
 }
 
-export function signupSavedAskItems(firstName: string | undefined, address: string): string {
-  return `${signupSaved(firstName, address)}\n\nO que você precisa?`;
+export function signupSavedAskItems(firstName: string | undefined, address: string, uf?: string | null): string {
+  return `${signupSaved(firstName, address, uf)}\n\nO que você precisa?`;
 }
 
 // Endereço salvo, mas o nome ou o CPF do formulário não conferiu: pede os dois por texto,
@@ -169,8 +169,13 @@ function withCep(address: string, cep?: string): string {
   return `${clean} — CEP ${cep}`;
 }
 
-export function addressSavedPrefix(address: string, cep?: string): string {
-  return `📍 Endereço salvo: ${withCep(address, cep)}`;
+// Fora de SP (09/10, rodada 3): o CEP do Rio é aceito, mas só poucas lojas entregam e o prazo é mais longo.
+export function outsideSaoPauloNote(uf?: string | null): string {
+  return uf && uf.toUpperCase() !== "SP" ? "\n_Fora de SP o prazo de entrega é mais longo (alguns dias úteis) e há menos lojas._" : "";
+}
+
+export function addressSavedPrefix(address: string, cep?: string, uf?: string | null): string {
+  return `📍 Endereço salvo: ${withCep(address, cep)}${outsideSaoPauloNote(uf)}`;
 }
 
 export function addressUpdated(address: string, cep?: string): string {
@@ -394,6 +399,11 @@ export function askCpfOnboarding(): string {
 
 export function cpfSavedAskItems(): string {
   return "✅ Anotado. O que você precisa?";
+}
+
+// Antes do total, com o CPF do cadastro ainda inválido (09/10, rodada 3).
+export function askCpfBeforeQuote(): string {
+  return "Antes de fechar o total, preciso do seu *CPF* certinho — o que você mandou não conferiu 🤔 Manda seu nome completo e CPF numa mensagem só:\n_Maria da Silva 123.456.789-09_";
 }
 
 export function cpfInvalid(): string {
@@ -710,6 +720,12 @@ export function promiseForCustomer(promise?: string | null): string {
     .join(" · ");
 }
 
+// Frete maior que os produtos (09/10, rodada 3): o cliente leigo desiste sem saber que somar itens da mesma loja dilui.
+// Só copy; o cálculo não muda.
+export function expensiveShippingNote(produtos: number, entrega: number): string[] {
+  return entrega > produtos + 0.009 && produtos > 0 ? ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"] : [];
+}
+
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
   const prazo = (deliveryPromise ? promiseForCustomer(deliveryPromise) : "") || (etaMinutes ? `chega em ~${etaMinutes} min` : null);
   return `Entrega: ${brl(frete)}${prazo ? ` · ${prazo}` : ""}`;
@@ -723,7 +739,8 @@ export function summary(input: SummaryInput): string {
     "",
     `Produtos: ${brl(input.produtos)}`,
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
-    `*Total: ${brl(input.total)}*`
+    `*Total: ${brl(input.total)}*`,
+    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
   ];
   if (input.notFound?.length) {
     out.push("", notFoundNote(input.notFound));
@@ -1794,16 +1811,17 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
 export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[] }): string {
+  // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
+  const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
   return [
     `Dá pra juntar tudo na *${input.storeLabel}* por ${brl(input.joinedTotal)} com uma entrega, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas.`,
-    "Pra juntar, troco:",
-    ...swapPairLines(input.pairs),
-    "Qual prefere?"
+    ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
+    "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
 }
 
 export function consolidationAsk(): string {
-  return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter*.";
+  return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter* (ou 1 / 2).";
 }
 
 export function consolidationKept(stores: number): string {
@@ -2354,7 +2372,8 @@ export function manualQuoteSummary(input: {
     "",
     `Produtos: ${brl(input.produtos)}`,
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
-    `*Total: ${brl(input.total)}*`
+    `*Total: ${brl(input.total)}*`,
+    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
   ];
   if (input.deliveryAddress) {
     out.push("", `📍 ${input.deliveryAddress}`);
@@ -2899,7 +2918,8 @@ export function itemsNotDeliverableHere(items: string[], closingRest: boolean): 
   const head = items.length === 1
     ? `Não tenho ${what} para entregar no seu endereço agora — a loja não confirmou estoque ou entrega.`
     : `Não tenho estes itens para entregar no seu endereço agora — a loja não confirmou estoque ou entrega:\n${what}`;
-  return closingRest ? `${head}\nFecho o resto pra você:` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
+  const again = items.length === 1 ? "esse item" : "esses itens";
+  return closingRest ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, é só me pedir de novo.` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
 }
 
 // A escolha não tem entrega no endereço, mas a vitrine tem outras: elas vêm logo abaixo.
