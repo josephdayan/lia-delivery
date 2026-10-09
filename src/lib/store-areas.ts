@@ -13,6 +13,7 @@
 // Puro (sem DB/rede), com um escopo por turno (AsyncLocalStorage) para que TODA busca do
 // turno filtre pela área do cliente sem passar o CEP pelos ~10 pontos de busca do cérebro.
 import { AsyncLocalStorage } from "node:async_hooks";
+import { pausedStoresSnapshot } from "./store-pause";
 import { ufFromCep } from "./coverage";
 import { automaticPurchaseStores } from "./purchase-policy";
 
@@ -79,7 +80,9 @@ function automaticOnly<T extends { key: string }>(stores: T[]): T[] {
 
 export function storesForShopper<T extends { key: string }>(stores: T[]): T[] {
   const scope = shopperScope.getStore();
-  const sellable = automaticOnly(stores);
+  // Loja pausada (09/10, store-pause.ts): não começou um pedido comprado no prazo → fora da vitrine.
+  const paused = pausedStoresSnapshot();
+  const sellable = automaticOnly(stores).filter((store) => !paused.has(store.key));
   if (!scope) return sellable;
   return sellable.filter((store) => storeServesCep(store.key, scope.cep));
 }

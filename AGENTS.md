@@ -65,6 +65,29 @@ prova é descartado (`whyClaimsUnproven`); motivo de dieta natural ("fruta, natu
 `cold`; "gelado e doce" = sorvete/iogurte; (6) ressaca sem o soro mip; unha encravada = Povidine + curativo; jantar leve sem sopa; (7) dieta com prova
 buscável: a prateleira de risco não sai do plano pela palavra (busca "sorvete sem lactose"), e as de risco vão DEPOIS das livres. Sem solução:
 r77 (detergente — Mambo marca todos indisponíveis pro CEP no check ao vivo), h17 (alergia a amendoim em salgadinho: copy honesta, por desenho).
+## 09/10/2026 — Vigia de pedido comprado parado na loja + loja sai da vitrine sozinha (dono)
+
+Caso real: pedido #GTGH3C, Drogal nº 1667434680238-01, Expressa 30 min, comprado pela Lia e com Pix da loja
+pago às 19:49 de 08/10. Ficou **13 h em "payment-approved"** (a loja nunca liberou para separação), ninguém
+foi avisado e nada chegou. Os pedidos da Mambo, no mesmo caminho, andaram (faturado em 3–4 h). Dono: "não
+pode a pessoa comprar e não chegar… todo mundo vai ser cliente novo… se não der certo, tem que tirar essa loja".
+- **Vigia** (`storeOrderHealth` + bloco em `pollVtexOrderStatuses`, `src/lib/purchase/vtex-status.ts`): pedido
+  comprado ainda ANTES da separação (`PRE_HANDLING`: payment-approved, window-to-cancel, …) é **parado** quando
+  — entrega rápida (prazo da loja ≤ 3 h): passou metade do prazo, mínimo 20 min; entrega longa: o prazo venceu;
+  sem prazo: 12 h. Parado = uma vez só (nota `⛔ LOJA NÃO COMEÇOU O PEDIDO`): cliente recebe a verdade
+  (`retailerStalled`: "a loja ainda não começou… já estou cobrando… se ela não entregar, você recebe o dinheiro de
+  volta"), dono recebe o alerta (`ownerStoreStalled`) e **a loja sai da vitrine**. Já começou mas passou 1 h (rápida)
+  / 12 h (longa) do prazo sem sinal de entrega = **atrasado**: só aviso ao dono (`ownerOrderLate`). Antes da separação
+  o status é olhado a cada 5 min na 1ª hora após a compra e a cada 15 depois (era 60).
+- **Loja pausada** (`src/lib/store-pause.ts`, AppFlag `store_paused:<loja>`): `storesForShopper` tira a loja da
+  vitrine; o turno do WhatsApp relê o banco (cache 30 s). Volta só com o dono: **"lia loja drogal on"** (e
+  "lia loja X off" pausa à mão). Pedido já cotado antes da pausa ainda pode ser comprado.
+- O **estorno** do cliente continua sendo o toque do dono no /ops (pedido com Pix da loja pago fica fora do
+  estorno automático de 6 h). O alerta diz para cobrar a loja e estornar se ela não resolver.
+- Drogal: cobrada por e-mail em 09/10 (sac@drogal.com.br, a partir do Gmail do dono; SAC 0800 771 2120,
+  seg–sex 8h–20h, sáb 8h–15h). Com o deploy, o vigia pega o #GTGH3C na 1ª olhada e tira a Drogal da vitrine.
+Teste: `tests/store-stall-2026-10-09.test.ts`; `delivery-accuracy` ajustado (cadência antes da separação).
+
 ## 08/10/2026 (noite, 2ª) — Tempo da lista: índice do catálogo (CPU 7 s → 1 s), thread livre, retry da busca ao vivo
 
 Depois das três correções abaixo, o dono pediu que "nunca mais" aconteça e mandou consertar o tempo. Medido

@@ -4,6 +4,7 @@
 import { prisma } from "./prisma";
 import { isAdminPhone, phoneRole } from "./turn-runtime";
 import { parseOfflineCommand, setOfflineMode } from "./offline-mode";
+import { parseStoreToggleCommand, pauseStore, resumeStore } from "./store-pause";
 import { whatsappAdapter } from "./adapters/whatsapp";
 import { parseOpsActionButton, consumeOpsAction, mirrorOpsAction } from "./ops-actions";
 import { ownerConfirmCartBought, ownerDeclineCart, ownerStoreNumber, approveCheckout, refuseReceiver, retryAfterPixFailure, approveReceiverAndPay, heldPixCode } from "./purchase-execution";
@@ -26,6 +27,14 @@ export async function handleOperatorInbound(phone: string, text: string): Promis
   if (offline !== null && phoneRole(phone) === "owner") {
     await setOfflineMode(offline, `wa:${phone}`);
     await reply(phone, copy.ownerOfflineToggled(offline));
+    return "handled";
+  }
+  // "lia loja drogal on|off" (09/10): religa ou tira uma loja da vitrine. Só o dono.
+  const toggle = parseStoreToggleCommand(text);
+  if (toggle && phoneRole(phone) === "owner") {
+    if (toggle.on) await resumeStore(toggle.storeKey, `wa:${phone}`);
+    else await pauseStore(toggle.storeKey, "pausada pelo dono", `wa:${phone}`);
+    await reply(phone, copy.ownerStoreToggled(toggle.storeKey, toggle.on));
     return "handled";
   }
   const button = parseOpsActionButton(text);

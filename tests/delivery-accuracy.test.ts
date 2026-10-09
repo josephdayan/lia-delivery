@@ -73,7 +73,9 @@ test("pedido comprado pelo servidor: faturado → envio → saiu pra entrega →
   await tick();
   assert.equal(mine().length, 0, "pagamento aprovado na loja: nada a dizer");
   const nextIn = async () => ((await prisma.trackingSubscription.findUniqueOrThrow({ where: { deliveryOrderId: order.id } })).nextCheckAt!.getTime() - Date.now()) / 60_000;
-  assert.ok((await nextIn()) > 50, "sem previsão próxima: olha de hora em hora");
+  // 09/10 (vigia de loja parada): antes da separação, na 1ª hora após a compra, olha a cada 5 min
+  // (a Expressa parada aparece em ~20 min); depois, a cada 15 (antes: 60 fixos).
+  assert.ok((await nextIn()) <= 5.1, "antes da separação, 1ª hora após a compra: a cada 5 min");
   // Entrega rápida (Expressa 30 min, Drogal 08/10): previsão nas próximas 2h → olha a cada 5 min.
   state = { state: "payment-approved", shippingData: { logisticsInfo: [{ shippingEstimateDate: new Date(Date.now() + 25 * 60_000).toISOString() }] } };
   await tick();
