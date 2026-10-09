@@ -22,7 +22,7 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2174,7 +2174,8 @@ async function handleDeliveryTurn(
     const currentIndex = last.options.findIndex((o) => o.sku === last.chosenSku);
     // Na escolha de entrega "1"/"2"/"o outro" são as opções de FRETE: lá só vale o preço do produto.
     const atFreight = ctx.step === "choosing_freight";
-    const viaIndex = atFreight ? null : parseChoiceSwitch(text);
+    // "muda pra 6" / "põe 6" com o resumo na tela é QUANTIDADE (09/10, rodada 1), não a opção 6 da lista.
+    const viaIndex = atFreight || parseQtyCommand(text) ? null : parseChoiceSwitch(text);
     const ref =
       currentIndex >= 0
         ? parseOptionSwitchRef(text, last.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine) })), currentIndex, { priceOnly: atFreight })

@@ -9,7 +9,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { __setDialogueModelForTests, dialogueBypassReason } from "../src/lib/dialogue";
-import { detectIntent, isExplicitClearAll, isExplicitRepeatOrder } from "../src/lib/lia-intents";
+import { detectIntent, isExplicitClearAll, isExplicitRepeatOrder, parseQtyCommand } from "../src/lib/lia-intents";
 import type { DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -226,4 +226,77 @@ test("'cancela' com a oferta de complemento na tela recusa a oferta e mantém a 
   const reply = await send(phone, "cancela");
   assert.doesNotMatch(reply, /Tudo bem, cancelado|Carrinho limpo/);
   assert.equal((await context(phone)).basket?.length, 1, "a cesta de 2 leites continua");
+});
+
+// ---------------------------------------------------------------- 4/5. quantidade: "muda pra 6", "mais um"
+
+test("'mais um' logo depois de escolher soma 1 ao item recém-escolhido (nada de 'mais leite ou outro produto?')", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const [a, b] = OPTIONS;
+  const line = (o: (typeof OPTIONS)[number], qty: number) => ({ sku: o.sku, name: o.name, qty, unitPrice: o.unitPrice, lineTotal: o.unitPrice * qty, storeKey: o.storeKey, storeLabel: o.storeLabel });
+  await prisma.conversation.create({
+    data: {
+      userId: user.id,
+      context: JSON.stringify({
+        flow: "delivery",
+        step: "collecting",
+        cep: "01310-100",
+        deliveryAddress: ADDRESS,
+        deliveryAddressVerified: true,
+        storeKey: "concierge",
+        basket: [line(a, 1), line(b, 3)],
+        lastChoice: { query: "leite", qty: 3, options: OPTIONS, chosenSku: b.sku }
+      })
+    }
+  });
+  const reply = await send(phone, "mais um");
+  assert.match(reply, /4x Leite Integral Italac/);
+  assert.equal(modelCalls, 0);
+  const basket = (await context(phone)).basket ?? [];
+  assert.equal(basket.find((i) => i.sku === b.sku)?.qty, 4);
+  assert.equal(basket.find((i) => i.sku === a.sku)?.qty, 1, "o outro item não muda");
+});
+
+test("'muda pra 6' / 'põe 6' / 'quero 6' com o resumo na tela são quantidade, nunca a opção 6 da lista", () => {
+  for (const t of ["muda pra 6", "põe 6", "quero 6", "muda para 6"]) {
+    assert.equal(detectIntent(t).kind, "qty_adjust", t);
+    assert.deepEqual(parseQtyCommand(t), { set: 6 }, t);
+  }
+  // trocar pela OPÇÃO continua sendo troca
+  assert.equal(detectIntent("troca pelo 2").kind, "switch_choice");
+  assert.equal(parseQtyCommand("troca pelo 2"), null);
+});
+
+test("'muda pra 6' com o resumo na tela muda a quantidade e reenvia o resumo (não vira 'só N opções')", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const o = OPTIONS[0];
+  const item = { sku: o.sku, name: o.name, qty: 1, unitPrice: o.unitPrice, lineTotal: o.unitPrice, storeKey: "carrefour", storeLabel: "Carrefour" };
+  const order = await prisma.deliveryOrder.create({
+    data: { userId: user.id, phone, storeKey: "carrefour", storeLabel: "Carrefour", items: [item], total: 23, status: "awaiting_quote_confirmation" }
+  });
+  await prisma.conversation.create({
+    data: {
+      userId: user.id,
+      context: JSON.stringify({
+        flow: "delivery",
+        step: "awaiting_quote_confirmation",
+        cep: "01310-100",
+        deliveryAddress: ADDRESS,
+        deliveryAddressVerified: true,
+        storeKey: "concierge",
+        deliveryOrderId: order.id,
+        basket: [item],
+        lastChoice: { query: "leite", qty: 1, options: OPTIONS, chosenSku: o.sku }
+      })
+    }
+  });
+  const reply = await send(phone, "muda pra 6");
+  assert.doesNotMatch(reply, /opções|Voltei pras opções|São só/);
+  assert.match(reply, /6x/);
+  const latest = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: user.id, status: { not: "canceled" } }, orderBy: { createdAt: "desc" } });
+  assert.equal((latest.items as unknown as { qty: number }[])[0].qty, 6);
 });
