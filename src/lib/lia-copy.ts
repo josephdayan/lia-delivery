@@ -195,6 +195,19 @@ export function askHouseNumber(street: string, district: string | undefined, cep
   return `📍 CEP ${cep ?? ""}: *${street}*${district ? `, ${district}` : ""}.\nPra completar o endereço, falta só o *número* (e o complemento, se tiver).`.replace("CEP : ", "");
 }
 
+// Endereço sem número de verdade ("rua sem nome 0").
+export function addressNotValid(hasCep: boolean): string {
+  return hasCep
+    ? "Esse endereço não parece completo 🤔 Me manda a *rua com o número da casa* (e o complemento, se tiver) 📍"
+    : "Esse endereço não parece completo 🤔 Me manda a *rua com o número da casa* e o *CEP* 📍";
+}
+
+// "pagar" com o endereço sem número: sem ele não dá pra fechar o total (frete e prazo dependem da porta).
+export function payNeedsAddressNumber(street?: string, district?: string): string {
+  const where = street ? ` (${street}${district ? `, ${district}` : ""})` : "";
+  return `Antes de fechar o total preciso do *número* do seu endereço${where}, e o complemento se tiver. Me manda ele e eu sigo 📍`;
+}
+
 // Pedido do endereço quando ainda não há CEP nenhum (antes era "Falta o endereço: rua, número
 // e complemento", que soava como se o cliente tivesse esquecido algo).
 export function askAddressWithCep(): string {
@@ -427,6 +440,16 @@ export function medicinePaymentChoiceText(pixTotal: number, cardTotal: number): 
   return `Como você quer pagar?\n• *Pix*: ${brl(pixTotal)}\n• *Cartão*: ${brl(cardTotal)}\n\nResponde *pix* ou *cartão*.`;
 }
 
+// "cancela" com vários itens em escolha (09/10, rodada 1): não apaga a cesta sem perguntar.
+export function cancelAllAsk(current?: string): string {
+  const keep = current ? ` tudo e sigo com *${current}*` : " a cesta";
+  return `Cancelar a cesta toda? Responde *sim* pra esvaziar tudo, ou *não* que eu mantenho${keep}.`;
+}
+
+export function cancelAllKept(): string {
+  return "Certo, mantive a cesta.";
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }
@@ -455,6 +478,10 @@ export function swappedFor(from: string, to: string): string {
 // "só isso" com a cesta ABAIXO do mínimo da loja: sem loop — explica e dá saída.
 export function finishOrderFirst(): string {
   return "Esse pedido ainda não foi fechado. Responde *pagar* que eu mando o código.";
+}
+
+export function noOpenOrderToPay(): string {
+  return "Você ainda não tem pedido aberto pra pagar. O que você precisa?";
 }
 
 export function emptyCartPay(): string {
@@ -494,9 +521,11 @@ export function choiceSequence(queries: string[]): string {
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
-export function nextChoiceHeader(query: string, remaining: number): string {
-  const tail = remaining > 1 ? ` — depois faltam ${remaining - 1}` : "";
-  return `Agora *${query}*${tail}.`;
+export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string): string {
+  const left = remaining - 1;
+  const tail = left > 1 ? ` — depois faltam ${left}` : left === 1 ? " — depois falta 1" : "";
+  // 09/10 (rodada 1): o tamanho/variante que não existe é avisado em TODO item da fila, não só no primeiro.
+  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}`;
 }
 
 export function choiceLine(index: number, name: string, displayPrice: number, delivery?: string, repeat?: boolean): string {
@@ -614,6 +643,11 @@ export function productDetailsWhich(): string {
 
 export function choiceSkipped(query: string): string {
   return `Deixei *${query}* de fora. Se quiser, me diz de outro jeito que eu procuro.`;
+}
+
+// Tirou o item da vez porque o cliente já trouxe o substituto na mesma frase.
+export function choiceDropped(query: string): string {
+  return `Tirei *${query}*.`;
 }
 
 // Dizia só "Não peguei qual você quer" e deixava o cliente sem próximo passo.
@@ -909,6 +943,19 @@ export function supplierValidationPending(): string {
   return "Ainda confirmando na loja. Não precisa pagar nada agora — te aviso quando estiver pronto.";
 }
 
+// Cesta ou total que venceu enquanto o cliente estava fora (09/10, rodada 1).
+export function cartExpired(items: string[], quote: boolean): string {
+  const shown = items.slice(0, 4).join(", ") + (items.length > 4 ? ` e mais ${items.length - 4}` : "");
+  const count = `${items.length} ${items.length === 1 ? "item" : "itens"}`;
+  return quote
+    ? `Seu pedido de ${count} (${shown}) ficou parado e o total venceu. Nada foi cobrado. Quer que eu monte de novo com os preços de hoje? Responde *sim*.`
+    : `Sua cesta de ${count} (${shown}) expirou porque ficou parada por um tempo. Quer que eu monte de novo com os preços de hoje? Responde *sim*.`;
+}
+
+export function cartExpiredDropped(): string {
+  return "Tudo bem, deixei a cesta antiga de lado. O que você precisa?";
+}
+
 export function quoteExpired(): string {
   return "Esse preço venceu. Fecho um novo antes de cobrar qualquer coisa.";
 }
@@ -1184,6 +1231,10 @@ export function trustAnswer(): string {
 // era repetitivo (e com o corpo "Olha o que achei", parecia busca nova). Uma linha lembra a escolha.
 export function choicesStillOpen(query: string): string {
   return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
+}
+// "oi?"/"tá aí?" com a mesma vitrine recém-enviada (09/10, rodada 1): lembra em vez de reenviar.
+export function greetingChoicesStillOpen(query: string): string {
+  return `Oi! 🙂 Tô aqui. ${choicesStillOpen(query)}`;
 }
 // "o sabonete pode ser o mais barato" (09/10): já é / troquei — com loja e prazo, que mudam junto.
 export function itemCheapestAnswer(input: { item: string; name: string; price: number; where?: string; already: boolean }): string {

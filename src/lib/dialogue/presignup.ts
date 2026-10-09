@@ -194,7 +194,7 @@ export function preSignupBypassReason(i: PreBypassInput): string | null {
   const { ctx } = i;
   if (i.hasAddress) return "com_cadastro";
   if (!COLLECTING_STEPS.has(ctx.step)) return "passo";
-  if (ctx.cepSwap || ctx.cepCityCheck || ctx.cpfOnboarding || ctx.cancelReason || ctx.withdrawConfirm) return "pergunta_aberta";
+  if (ctx.cepSwap || ctx.cepCityCheck || ctx.cpfOnboarding || ctx.cancelReason || ctx.withdrawConfirm || ctx.clearAllConfirm) return "pergunta_aberta";
   if (i.addressLike) return "endereco";
   if (!CONSULTED_INTENTS.has(i.intent.kind)) return `intent:${i.intent.kind}`;
   if (!i.text.trim() || i.text.length > 600) return "tamanho";

@@ -184,6 +184,8 @@ export function parseHouseNumberReply(
   }
   const m = text.match(/^(\d{1,5}[a-z]?|s\/?n|sem n[uú]mero)(?![\d/])\s*[,;-]?\s*(.*)$/i);
   if (!m) return null;
+  // Número 0 não é endereço ("rua sem nome 0", 09/10 rodada 1).
+  if (/^0+[a-z]?$/i.test(m[1])) return null;
   const tail = m[2].trim().replace(/[\s,.;]+$/, "");
   if (!tail) return { numero: m[1] };
   const complement = parseAddressComplement(tail);
@@ -193,6 +195,49 @@ export function parseHouseNumberReply(
   const tailWords = normalizeMsg(tail).replace(/[^a-z0-9\s]/g, " ").split(" ").filter(Boolean);
   if (placeWords.size && tailWords.every((w) => placeWords.has(w) || STREET_WORDS.test(w) || w === "sp" || w === "rj")) return { numero: m[1] };
   return null;
+}
+
+// "número 1000, quero pão de forma" (09/10, rodada 1): o número da casa dito junto do CEP e de um
+// pedido. Devolve o número e o resto da mensagem sem a expressão — nunca vira item.
+const LABELED_NUMBER_RE = /(?:^|[\s,;.])(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)(?:\s+(?:da casa|do pr[eé]dio))?\s*(?:[eé]|eh|:)?\s*(\d{1,5}[a-z]?|s\/?n)(?![\d/])/i;
+export function extractLabeledHouseNumber(raw: string): { numero: string; complemento?: string; rest: string } | null {
+  const text = raw ?? "";
+  const m = LABELED_NUMBER_RE.exec(text);
+  if (!m || /^0+[a-z]?$/i.test(m[1])) return null;
+  const before = text.slice(0, m.index);
+  let after = text.slice(m.index + m[0].length);
+  let complemento: string | undefined;
+  const comp = /^\s*[,;-]?\s*((?:ap(?:to|artamento)?|apt|bloco|bl|casa|fundos|sala|conj(?:unto)?|cj|andar|loja)\.?\s*\w+)/i.exec(after);
+  if (comp && parseAddressComplement(comp[1])) {
+    complemento = parseAddressComplement(comp[1]) || undefined;
+    after = after.slice(comp[0].length);
+  }
+  const rest = `${before} ${after}`.replace(/\s+/g, " ").replace(/^[\s,;.:-]+|[\s,;:-]+$/g, "").replace(/\s+,/g, ",").trim();
+  return { numero: m[1], ...(complemento ? { complemento } : {}), rest };
+}
+
+// "mudei, entrega na Rua X 466, 04534-002" / "Rio de Janeiro 22041-001" (09/10, rodada 1): o que sobra do
+// endereço (aviso de mudança, nome da cidade/estado/bairro) não é produto. Tira esses trechos da lista de itens.
+const ADDRESS_FILLER_WORDS = new Set([
+  "mudei", "me", "mudou", "mudanca", "troquei", "trocou", "agora", "novo", "nova", "endereco", "cep", "cidade", "bairro", "estado", "capital",
+  "moro", "mora", "morando", "entrega", "entregar", "entregue", "manda", "mandar", "pra", "para", "pro", "na", "no", "em", "de", "do", "da", "dos", "das",
+  "e", "a", "o", "ai", "ali", "aqui", "la", "casa", "eu", "meu", "minha", "sp", "rj", "uf", "brasil"
+]);
+const ADDRESS_STATE_WORDS = ["sao paulo", "rio de janeiro", "rio", "campinas", "santos", "niteroi"];
+export function dropAddressOnlyItems(items: string | undefined, place?: { city?: string; uf?: string; district?: string; street?: string }): string | undefined {
+  if (!items) return items;
+  const known = new Set([...streetTokens(place?.city), ...streetTokens(place?.district)]);
+  const kept = items
+    .split(/\s*,\s*/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => {
+      let n = ` ${normalizeMsg(part).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim()} `;
+      for (const state of ADDRESS_STATE_WORDS) n = n.replace(new RegExp(` ${state} `, "g"), "  ");
+      const words = n.split(" ").filter(Boolean);
+      return !(words.every((w) => ADDRESS_FILLER_WORDS.has(w) || known.has(w)) );
+    });
+  return kept.length ? kept.join(", ") : undefined;
 }
 
 // "Rua Augusta, 01305-100", "moro na rua augusta perto do metrô": rua citada, número não.
@@ -362,7 +407,8 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   const cleaned = courtesy.text.replace(URL_RE, (url) => ` ${urlSlug(url)} `).replace(REMINDER_RE, "");
   const lines = resolveListItems(cleaned).filter((line) => {
     const n = normalizeMsg(line.phrase);
-    return !PHONE_ONLY_RE.test(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
+    if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(line.phrase.trim()) && (/\b0+\b/.test(line.phrase) || /\bsem nome\b/i.test(line.phrase))) return false;
+    return !/^(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)\s*(?:[eé]|eh|:)?\s*\d{1,5}[a-z]?$/i.test(line.phrase.trim()) && !PHONE_ONLY_RE.test(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
   });
   const text = lines.map((line) => (line.qtyExplicit || line.qty > 1 ? `${line.qty} ${line.phrase}` : line.phrase)).join(", ");
   return { text, lines, wantsToOrder: courtesy.wantsToOrder };

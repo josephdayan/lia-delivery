@@ -23,9 +23,10 @@ export function repeatGuardEnabled(): boolean {
 }
 
 // Texto que pode ser re-enviado igual de propósito: dinheiro, link, código Pix, resumo do pedido.
-// A guarda só mexe em prosa de conversa.
+// A guarda só mexe em prosa de conversa. O lembrete "as opções de X continuam aí em cima" também
+// (09/10, rodada 1): ele já É a versão curta no lugar do carrossel; reescrito, perdia o item.
 export function isRepeatableVerbatim(text: string): boolean {
-  return /R\$|https?:\/\/|\b00020\d|pix copia|copia e cola|\bpedido\b.*\btotal\b/i.test(text);
+  return /R\$|https?:\/\/|\b00020\d|pix copia|copia e cola|\bpedido\b.*\btotal\b|continuam aí em cima/i.test(text);
 }
 
 const canon = (text: string) => normalizeMsg(text).replace(/\s+/g, " ").trim();
@@ -134,6 +135,9 @@ const SHORT_ACKS = ["👍", "Tudo certo 💚", "Por nada! 💚", "Combinado 🙂
 function shortAck(input: RepeatInput): string | null {
   const n = canon(input.customer);
   if (!n || n.split(" ").length > 4 || /\?/.test(input.customer)) return null;
+  // Só agradecimento/despedida/emoji ganha "Por nada!"/"👍". "1", "pagar", "sim" repetindo a pergunta da Lia não: o cliente
+  // ficava preso respondendo "👍" a uma pergunta em aberto (09/10, rodada 1).
+  if (!/^(?:[\p{Extended_Pictographic}\s]+|ok|okay|blz|beleza|valeu|vlw|obrigad[oa]s?|obg|brigad[oa]|tchau|ate\w*|fim|show|top|tmj|combinado|fechou|fechado|certo|entendi|boa|legal|perfeito|massa|bjs?|beijos?|abs|abracos?|tudo bem|de nada|por nada|oi|ola)(?:\s+(?:obrigad[oa]|valeu|vlw|ok|tchau|lia|pela ajuda|ate mais))*$/u.test(n)) return null;
   return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent, false)) ?? null;
 }
 
