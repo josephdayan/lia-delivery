@@ -178,7 +178,7 @@ test("08/10: o timeout da busca ao vivo conta da SAÍDA da fila — 5 lojas lent
 
 // ---------- (2) lista reenviada ----------
 
-test("08/10: a mesma lista reenviada em segundos é ignorada (o 1º turno já respondeu); minutos depois volta a valer", async (t) => {
+test("08/10: a mesma lista reenviada em segundos não refaz a busca (o 1º turno já respondeu); minutos depois volta a valer", async (t) => {
   if (!dbOk) return t.skip();
   const c = await customer();
   const list = "2 leites, arroz e feijão";
@@ -187,7 +187,8 @@ test("08/10: a mesma lista reenviada em segundos é ignorada (o 1º turno já re
   const ctxBefore = JSON.stringify(await ctxOf(c.userId));
 
   const again = await send(c.phone, list);
-  assert.equal(again, "", `o reenvio idêntico tem que ficar mudo, respondeu: ${again.slice(0, 200)}`);
+  // Rodada 2 (09/10): o reenvio não refaz a busca, mas também não fica mudo — reapresenta onde a conversa parou.
+  assert.match(again, /Já tinha recebido isso|Já estou nisso/, `o reenvio idêntico tem que avisar, respondeu: ${again.slice(0, 200)}`);
   assert.equal(JSON.stringify(await ctxOf(c.userId)), ctxBefore, "o reenvio não mexe no contexto");
 
   // 5 min depois não é impaciência: é pedido de novo.
