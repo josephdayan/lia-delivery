@@ -231,6 +231,24 @@ pelo fluxo inteiro. Corrigido (testes em `tests/rodada-cliente-2026-10-09.test.t
   os cards na tela é área, não o prazo das opções; depois de uma pergunta de lado com os cards na tela, uma linha
   (`copy.choicesStillOpen`) lembra a escolha — o carrossel não é reenviado.
 
+**Rodada de cliente é com a IA LIGADA** (dono, 09/10: "não vai ser sem IA, tem que ter"): produção usa o gerente de
+diálogo e o rerank. O roteiro (`scratchpad/cliente/driver.mts`) usa a `OPENAI_API_KEY` do ambiente e um banco próprio
+(`lia_cliente`), então roda junto da bateria (`CLIENTE_AI=0` só para comparar com o caminho sem IA). Achados dessa
+rodada, corrigidos:
+- **"óleo" sozinho** dava "não achei" (com IA) ou "Óleo Secante" de unha (sem IA); **"feijão"** vinha vermelho, e a junção
+  trocava pelo "Feijão Carioca Pronto Com Tempero 380g". Agora item do dia a dia sem qualificador tem versão comum
+  (`STAPLE_DEFAULTS`: óleo = de cozinha, soja primeiro; feijão = carioca; açúcar = refinado/cristal), o que passa no
+  piso vem antes do que não passa em `gatherCrossStoreCandidates`, e o compositor da lista só troca por opção tão básica
+  e fiel ao pedido quanto a 1ª.
+- **Rerank zerando linha com produto exato** ("fralda pampers g e lenço umedecido" → lenço "não achei" com 7 lenços
+  confirmados): a linha zerada com candidato que tem todas as palavras é julgada de novo, sozinha (`[rerank:retry]`).
+- **"o sabonete pode ser o mais barato"** (a IA perguntava de volta) e **"a ração tem que ser de 3kg"** (a IA ora trocava
+  pelo mesmo 1kg, ora refinava sem opções) agora são determinísticos sobre a lista: mais barato da vaga, ou troca por
+  opções DO TAMANHO pedido (±10%; sem nenhuma, o item fica e a Lia avisa).
+- "qual o horário de vocês?" não passa pela IA (ela perguntava "da Lia ou da loja?").
+- Fechamento: o aviso "Juntei tudo na *loja*" sai antes do "a loja mudou o preço"; "quanto deu tudo?" com cards na
+  tela não reenvia o carrossel.
+
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
 - **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do
