@@ -1077,7 +1077,7 @@ const REFUSE_PAY_RE = /\bn(a|ã)o (vou|quero|vamos|pretendo) (pagar|comprar|leva
 // Negação/desistência SECA — a resposta mais comum do WhatsApp. Sem isto, "não" vira
 // busca de produto e casa com "Esponja NÃO Risca" no catálogo.
 const REJECT_BARE_RE =
-  /^(?:(?:ah+|ok|certo|entendi|beleza)[,.!\s]+)*(?:entao[,\s]+)?(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|deixa( pra la| quieto)?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad\w*|valeu|brigad\w*|vlw)?[\s,!.]*$/;
+  /^(?:(?:ah+|ok|certo|entendi|beleza)[,.!\s]+)*(?:entao[,\s]+)?(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|nao[,\s]+deixa( pra la| quieto| assim| como (esta|ta))?|deixa( pra la| quieto| assim| como (esta|ta))?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad\w*|valeu|brigad\w*|vlw)?[\s,!.]*$/;
 
 // "só isso", "mais nada", "é só" — o cliente FECHOU a lista; hora de mostrar o total.
 const DONE_RE =

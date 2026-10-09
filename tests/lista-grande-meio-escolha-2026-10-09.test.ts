@@ -202,3 +202,10 @@ test("09/10: 'esvazia tudo' / 'esvaziar carrinho' / 'começar do zero' são pedi
     assert.equal(detectIntent(phrase).kind, "clear_cart", phrase);
   }
 });
+
+test("09/10: 'não, deixa' / 'deixa assim' são recusa (não busca de produto)", () => {
+  for (const phrase of ["não, deixa", "nao deixa", "deixa assim", "não, deixa quieto", "deixa como está"]) {
+    assert.equal(detectIntent(phrase).kind, "reject", phrase);
+  }
+  assert.notEqual(detectIntent("deixa o arroz de 5kg").kind, "reject");
+});
