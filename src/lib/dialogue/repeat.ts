@@ -23,9 +23,10 @@ export function repeatGuardEnabled(): boolean {
 }
 
 // Texto que pode ser re-enviado igual de propósito: dinheiro, link, código Pix, resumo do pedido.
-// A guarda só mexe em prosa de conversa.
+// A guarda só mexe em prosa de conversa. O lembrete "as opções de X continuam aí em cima" também
+// (09/10, rodada 1): ele já É a versão curta no lugar do carrossel; reescrito, perdia o item.
 export function isRepeatableVerbatim(text: string): boolean {
-  return /R\$|https?:\/\/|\b00020\d|pix copia|copia e cola|\bpedido\b.*\btotal\b/i.test(text);
+  return /R\$|https?:\/\/|\b00020\d|pix copia|copia e cola|\bpedido\b.*\btotal\b|continuam aí em cima/i.test(text);
 }
 
 const canon = (text: string) => normalizeMsg(text).replace(/\s+/g, " ").trim();

@@ -22,7 +22,7 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -53,7 +53,7 @@ import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, Choice
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
 import { refreshPausedStores } from "./store-pause";
-import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -1058,6 +1058,18 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   // Meta supports reply buttons inside the 24h customer-service window. One card per
   // option keeps each "Escolher este" button attached to the correct product.
   if (process.env.WHATSAPP_PROVIDER === "meta") {
+    // Mesma vitrine recém-enviada e nada mudou (09/10, rodada 1): "arroz" + "e feijão também",
+    // "oi?", "alô, tá aí?" reenviavam o carrossel inteiro do mesmo item — spam de cards. Uma
+    // linha lembra a escolha; cabeçalho que informa algo novo (quantidade, refino…) reenvia.
+    const reminder = !header || header === copy.choicesHeader(p.query) ? copy.choicesStillOpen(p.query)
+      : header === copy.greetingMidChoice(p.query) ? copy.greetingChoicesStillOpen(p.query)
+      : header === copy.demonstrativeNeedsChoice() ? header
+      : undefined;
+    const inbound = turnMeta.getStore()?.inboundText ?? "";
+    if (reminder && !asksToSeeChoicesAgain(inbound) && (await choicesStillOnScreen(phone, p))) {
+      await reply(phone, reminder);
+      return;
+    }
     // O id do botão carrega o SKU, não a posição: card antigo (de antes do
     // "outras"/refino) tocado depois escolhe o produto DAQUELE card — id
     // posicional confirmava outro produto quando a lista trocava por baixo.
@@ -1097,7 +1109,8 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
         const legacyHeader = intro === copy.choicesHeader(p.query) ? copy.choicesHeaderLegacy(p.query) : intro;
         const sent = await whatsappAdapter.sendDeliveryCarousel(phone, legacyHeader, choices);
         if (sent) {
-          await rememberCarousel(phone, sent.messageId, p, intro);
+          if (sent.messageId) await rememberCarousel(phone, sent.messageId, p, intro);
+          else await rememberChoicesShown(phone, p, intro);
           return;
         }
       } catch (error) {
@@ -1108,7 +1121,10 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     try {
       markTurnReplied();
       const interactive = await whatsappAdapter.sendDeliveryChoices(phone, choices);
-      if (interactive) return;
+      if (interactive) {
+        await rememberChoicesShown(phone, p, intro);
+        return;
+      }
     } catch (error) {
       console.warn("[whatsapp:meta:choices:fallback-text]", error instanceof Error ? error.message : error);
     }
@@ -1149,6 +1165,42 @@ async function rememberCarousel(phone: string, messageId: string | undefined, p:
     });
   } catch (error) {
     console.warn("[carousel:remember-failed]", error instanceof Error ? error.message : error);
+  }
+}
+
+// Cards soltos também ficam gravados (sender "choices", sem wamid) — só pra saber se a vitrine
+// ainda está na tela (choicesStillOnScreen). O resgate de toque velho continua só nos carrosséis.
+async function rememberChoicesShown(phone: string, p: PendingChoice, header: string) {
+  try {
+    const { convo } = await getOrCreateConvo(phone);
+    await prisma.message.create({ data: { conversationId: convo.id, sender: "choices", text: JSON.stringify({ header, pending: p }) } });
+  } catch (error) {
+    console.warn("[choices:remember-failed]", error instanceof Error ? error.message : error);
+  }
+}
+
+// A ÚLTIMA vitrine enviada nesta conversa é esta mesma (item, opções e preços), há menos de
+// LIA_CHOICES_REPEAT_MS (3 min): o cliente ainda tem os cards logo acima.
+function choicesRepeatWindowMs(): number {
+  const value = Number(process.env.LIA_CHOICES_REPEAT_MS);
+  return Number.isFinite(value) && value >= 0 ? value : 3 * 60_000;
+}
+const vitrineKey = (p: PendingChoice) => JSON.stringify([p.query, p.options.map((o) => [o.sku, o.unitPrice])]);
+async function choicesStillOnScreen(phone: string, p: PendingChoice): Promise<boolean> {
+  const windowMs = choicesRepeatWindowMs();
+  if (!windowMs) return false;
+  try {
+    const { convo } = await getOrCreateConvo(phone);
+    const last = await prisma.message.findFirst({
+      where: { conversationId: convo.id, sender: { in: ["carousel", "carousel-recovered", "choices"] } },
+      orderBy: { createdAt: "desc" },
+      select: { text: true, createdAt: true }
+    });
+    if (!last || Date.now() - last.createdAt.getTime() > windowMs) return false;
+    const saved = JSON.parse(last.text) as { pending?: PendingChoice };
+    return Boolean(saved.pending?.options?.length) && vitrineKey(saved.pending!) === vitrineKey(p);
+  } catch {
+    return false;
   }
 }
 
@@ -1581,11 +1633,14 @@ export async function handleDeliveryMessage(input: {
   // ATÔMICO pelo índice único (conversationId, metadata): checar-depois-gravar deixava
   // duas entregas SIMULTÂNEAS do mesmo sid passarem juntas pelo findFirst.
   let inboundMessageId: string | undefined;
+  // Lugar na fila do turno (FIFO por conversa, 09/10): a mensagem gravada é a ordem de chegada.
+  let ticket: TurnTicket | undefined;
   try {
     const created = await prisma.message.create({
       data: { conversationId: convo.id, sender: "user", text, metadata: input.messageId }
     });
     inboundMessageId = created.id;
+    ticket = { messageId: created.id, createdAt: created.createdAt };
   } catch (error) {
     if (input.messageId && (error as { code?: string })?.code === "P2002") return;
     throw error;
@@ -1616,6 +1671,7 @@ export async function handleDeliveryMessage(input: {
     const understood = await understandMedia(input.media);
     if (!understood) {
       await reply(phone, copy.mediaNotUnderstood(input.media.kind));
+      await skipTurnTicket(convo.id, ticket);
       return;
     }
     text = understood.text;
@@ -1634,6 +1690,7 @@ export async function handleDeliveryMessage(input: {
   // DEPOIS do dedupe pra retry da Meta não repetir o aviso.
   if (!text) {
     await reply(phone, copy.nonTextMessage());
+    await skipTurnTicket(convo.id, ticket);
     return;
   }
 
@@ -1644,6 +1701,7 @@ export async function handleDeliveryMessage(input: {
   // o 1º turno já responde (ou responderá); este fica mudo. Fica ANTES do lock de propósito.
   if (inboundMessageId && looksLikeProductList(text) && (await isRecentDuplicateInbound(convo.id, inboundMessageId, text))) {
     console.log("[inbound:duplicate]", phone, JSON.stringify(text.slice(0, 60)));
+    await skipTurnTicket(convo.id, ticket);
     return;
   }
 
@@ -1654,6 +1712,7 @@ export async function handleDeliveryMessage(input: {
     // contas das lojas nem as ações de dinheiro (ver src/lib/auth.ts).
     const token = createOpsLoginToken(Date.now(), phoneRole(phone) ?? "owner");
     await reply(phone, token ? copy.opsLoginLink(opsLoginUrl(token)) : copy.opsLoginUnavailable());
+    await skipTurnTicket(convo.id, ticket);
     return;
   }
 
@@ -1661,12 +1720,13 @@ export async function handleDeliveryMessage(input: {
   // "cadastro" e recebe o formulário mesmo já cadastrado. Preencher regrava os dados dele.
   if (!signupForm && /^cadastro$/i.test(text) && isAdminPhone(phone)) {
     await askSignup(phone, copy.signupFormBody(), () => reply(phone, copy.welcomeAskFullDeliveryAddress()));
+    await skipTurnTicket(convo.id, ticket);
     return;
   }
 
-  // Um turno por vez por conversa (ver acquireTurnLock). O dedupe fica ANTES do lock
-  // de propósito: retry do webhook sai na hora, sem esperar o turno original terminar.
-  const lockToken = await acquireTurnLock(convo.id);
+  // Um turno por vez por conversa, na ordem de chegada (ver acquireTurnLock). O dedupe fica
+  // ANTES do lock de propósito: retry do webhook sai na hora, sem esperar o turno original.
+  const lockToken = await acquireTurnLock(convo.id, ticket);
   try {
     // Recarrega a conversa DEPOIS do lock: o turno anterior pode ter gravado contexto
     // enquanto esperávamos — processar sobre o snapshot velho recriaria a corrida.
@@ -1697,7 +1757,7 @@ export async function handleDeliveryMessage(input: {
     }
   } finally {
     await persistSentTexts(convo.id);
-    await releaseTurnLock(convo.id, lockToken);
+    await releaseTurnLock(convo.id, lockToken, ticket);
   }
 }
 
