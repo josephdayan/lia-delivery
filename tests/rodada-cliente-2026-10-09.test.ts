@@ -124,3 +124,17 @@ test("'a ração tem que ser de 3kg' é troca de tamanho do item da lista", asyn
   assert.equal(parseItemSize("quero 3kg"), null);
   assert.match(copy.swapRemovedPrefix("Ração Pitukats 1kg", "ração gato 3kg"), /Tirei \*Ração Pitukats 1kg\*.*ração gato 3kg.*no lugar/);
 });
+
+test("lista comprida numa mensagem (13 itens, >120 caracteres) é lista — não passa pela IA do diálogo, que corta em 3", async () => {
+  const { isPlainShoppingList } = await import("../src/lib/dialogue");
+  const t = "petisco pedigree dentastix, lingua de gato kopenhagen, massinha play doh, carrinho hot wheels, esmalte risqué, shampoo seda, sabonete granado, pilha duracell aa, fita isolante, garrafa térmica 1 litro, lasanha swift, tinta guache, azeite andorinha";
+  assert.ok(t.length > 120);
+  assert.equal(isPlainShoppingList(t), true);
+  assert.equal(isPlainShoppingList("ah legal, queria um sabão em pó, pode ser daqueles mais em conta, e também uma esponja e um detergente bom pra louça"), false);
+});
+
+test("petisco Pedigree não dispara 'quem leva ração costuma levar um petisco'", async () => {
+  const { suggestComplement } = await import("../src/lib/recommend/complement");
+  const out = suggestComplement([{ name: "Petisco Pedigree Dentastix Cuidado Oral Cães Adultos 3 unidades" } as never], { shelfById: () => ({ id: "pet.petisco_cachorro" }) as never });
+  assert.equal(out, null);
+});

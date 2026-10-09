@@ -59,13 +59,16 @@ const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_car
 const CHATTER_RE = /\b(pode|poderia|consegue|queria|gostaria|tava|estava|pensando|legal|daquel[ae]s?|daquilo|mais em conta|recomenda|sugere|talvez|tipo|ou seja|tambem|alem)\b/;
 export function isPlainShoppingList(text: string): boolean {
   const n = normalizeMsg(text);
-  if (n.length > 120 || /[?]/.test(text) || CHATTER_RE.test(n)) return false;
+  if (/[?]/.test(text) || CHATTER_RE.test(n)) return false;
   // Segmentos = os itens que o resolvedor único de contagem enxerga (list-items.ts): "romeu e julieta"
   // é UM segmento, "arroz e feijão" são dois. Sem item reconhecível, a regex antiga decide.
   const items = resolveListItems(text);
   const segments = items.length
     ? items.map((item) => item.phrase)
     : text.split(/[\n,;]+|\s+e\s+/i).map((x) => x.trim()).filter(Boolean);
+  // Lista comprida (09/10, 13 itens de lojas diferentes): passou de 120 caracteres, ia pra IA do diálogo, que devolve
+  // no máximo 3 ações — só 3 itens viravam busca e os outros 10 sumiam. 4+ itens curtos é lista, de qualquer tamanho.
+  if (n.length > 120 && segments.length < 4) return false;
   return segments.length >= 1 && segments.every((seg) => seg.split(/\s+/).length <= 5);
 }
 

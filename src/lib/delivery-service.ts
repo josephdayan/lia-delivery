@@ -8956,7 +8956,8 @@ async function tryPublishInstantQuote(
     // como baratear — a recomposição automática vale pra LISTA; cesta montada card a
     // card foi escolha explícita do cliente e não é trocada em silêncio.
     const produtosDisplay = itemsSubtotal + serviceFeeExact;
-    if (freights.length >= 3 && totalFee >= 0.4 * produtosDisplay) {
+    // Lista que JÁ veio numa mensagem só (formulário da lista) não ouve "me manda a lista numa mensagem só" (09/10).
+    if (freights.length >= 3 && totalFee >= 0.4 * produtosDisplay && !ctx.listFlow) {
       await reply(phone, copy.freightFragmentationTip(freights.length));
     }
     return { handled: true };
