@@ -153,6 +153,23 @@ nome da Lia). Ressalva conhecida: a nota da loja mostra o preço da loja (menor 
 em markup com `LIA_CUSTOMER_INVOICE=false` (`tests/helpers/load-env.ts`); a regra nova tem
 `tests/service-fee-mode.test.ts`. Substitui a regra da manhã de 08/10 (preço da loja + "Taxa de serviço da Lia").
 
+## REGRA VIGENTE — Uma loja por pedido: a Lia junta a lista numa loja só (dono, 08/10/2026 noite, "Conserta")
+
+Caso real: "2 vodkas absolute, 1 suco de laranja, 1 gin, 4 red bull" caiu em Santa Luzia + Americanas + Mambo,
+travou no mínimo da Americanas, a troca ia levar o suco pra uma 4ª loja, e "Quando chega" respondeu "Até agora…
+diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma paga**. Regras:
+- **Juntar no fechamento** (`consolidateBasketStores` em delivery-service.ts, chamado em `continueAfterBasket`
+  antes do pedido mínimo): cesta em 2+ lojas → procura cada linha nas lojas da cesta (depois nas outras de compra
+  automática) e escolhe a loja que cobre TUDO (mais itens nativos, depois menor total). Linha comparada com o que o
+  cliente PEDIU (`BasketItem.ask`, gravado em toda entrada na cesta): "vodka absolut" aceita qualquer Absolut, com
+  preferência pelo que distinguia a escolha (mesmo sabor/marca, ex.: Raspberri, Natural One) e contra palavra nova
+  ("e Maçã"); preço entre 0,5× e 1,5×; tamanho do pedido quando ele disse um. Sem `ask`: mesmo nome, marca real
+  (marca = nome da loja não conta) e tamanho. Troca anunciada (`copy.basketConsolidated`), uma tentativa por cesta
+  (`ctx.consolidationTried`), teto `LIA_CONSOLIDATE_BUDGET_MS` (15 s). Medido na cesta real: Mambo com Absolut
+  Raspberri 750 ml + Natural One laranja integral, 2,1 s. Nenhuma loja cobre → cesta segue (a cobrança divide).
+- **"Quando chega?" com a lista na mesa** (status sem pedido): é pergunta de prazo — a Lia diz que o prazo é da
+  loja e vem no total e **fecha agora** (`copy.etaComesWithTotal`); escolha em aberto termina antes.
+
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
 - **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do

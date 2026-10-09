@@ -36,6 +36,9 @@ export type BasketItem = {
   freeShipping?: boolean;
   // Remédio isento (29/09): sem markup, taxa da Lia em linha própria, compra no CPF do cliente.
   medicine?: "mip";
+  // O que o cliente PEDIU nessa linha ("2 vodkas absolute" → "vodka absolut"), 08/10 noite: juntar a cesta
+  // numa loja só compara com o pedido, não com a variante que a Lia escolheu (sabor, tamanho).
+  ask?: string;
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
@@ -311,6 +314,8 @@ export type DeliveryContext = {
   // da MESMA loja com os mesmos itens tira a loja do caminho e busca alternativas — nunca fica em loop
   // "cota → recusa → cota" e nunca cobra.
   rehearsalRefused?: { storeKey: string; skus: string[]; count: number; at: number };
+  // Uma loja por pedido (08/10 noite): cesta (skus×qtd) que já tentou juntar numa loja só — não busca de novo.
+  consolidationTried?: string;
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

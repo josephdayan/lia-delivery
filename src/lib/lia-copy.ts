@@ -1881,6 +1881,22 @@ export function minimumSwapOffer(input: { newTotal: number; delta: number; store
   return out.join("\n");
 }
 
+// Uma loja por pedido (08/10 noite): a lista estava em várias lojas e a Lia juntou tudo numa só. Nunca
+// silencioso — o que mudou, com preço, e a diferença no total.
+export function basketConsolidated(store: string, pairs: SwapPair[], delta: number): string {
+  const diff = delta > 0.009 ? ` (${brl(delta)} a mais nos produtos, numa entrega só)` : delta < -0.009 ? ` (${brl(Math.abs(delta))} a menos)` : "";
+  return [`Juntei tudo na *${store}* pra vir num pedido só${diff}:`, ...swapPairLines(pairs)].join("\n");
+}
+
+// "Quando chega?" com a lista montada (08/10 noite): o prazo é da loja e sai no total — a Lia fecha agora.
+export function etaComesWithTotal(): string {
+  return "O prazo é o da loja pro seu endereço — ele vem junto com o total. Fechei pra você ver:";
+}
+
+export function etaAfterChoice(): string {
+  return "O prazo é o da loja pro seu endereço e vem junto com o total. Escolhe essa aqui primeiro que eu já te mostro:";
+}
+
 export function minimumSwapDone(pairs?: SwapPair[]): string {
   if (!pairs?.length) return "Troquei de loja — sem pedido mínimo. Fechando seu total:";
   return ["Troquei de loja — sem pedido mínimo:", ...swapPairLines(pairs), "Fechando seu total:"].join("\n");

@@ -2,6 +2,7 @@ import { customerInvoiceEnabled, displayPrice, serviceFeeForItems } from "@/lib/
 import { prisma } from "@/lib/prisma";
 import { LIST_FLOW_REOPEN_ID, carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
+import { withDeadline } from "@/lib/stores/live-search";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
@@ -22,7 +23,7 @@ import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissF
 import { recordSearchMisses } from "@/lib/search-misses";
 import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
-import { automaticPurchaseStores } from "@/lib/purchase-policy";
+import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
@@ -668,7 +669,7 @@ function conciergeItem(phrase: string, qty: number): BasketItem {
   };
 }
 
-function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector): BasketItem {
+function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector, ask?: string): BasketItem {
   const selectedStore = o.storeKey ? getStore(o.storeKey) : store;
   return {
     sku: o.sku,
@@ -681,7 +682,8 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector)
     storeLabel: o.storeLabel ?? selectedStore.label,
     ...(o.productUrl ? { productUrl: o.productUrl } : {}),
     ...(o.freeShipping ? { freeShipping: true } : {}),
-    ...(o.medicine === "mip" ? { medicine: "mip" as const } : {})
+    ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
+    ...(ask?.trim() ? { ask: ask.trim().slice(0, 120) } : {})
   };
 }
 
@@ -1243,6 +1245,168 @@ async function offerMinimumSwap(
   }
   await reply(phone, `${body}\n(responde *trocar de loja* que eu troco)`);
   return true;
+}
+
+// ---------- uma loja por pedido: juntar a cesta (08/10 noite) ----------
+// A compra é por API e fecha UMA loja por pedido (dono, 08/10: "toda compra é por API"). A lista monta
+// cada item na melhor loja, então "2 vodkas, 1 suco, 1 gin, 4 red bull" caía em três lojas (Santa Luzia,
+// Americanas, Mambo) — com pedido mínimo, três fretes e nenhuma chance de fechar (90 dias: 50 cotações
+// com mais de uma loja, NENHUMA paga). No fechamento, a Lia procura o MESMO produto nas lojas da cesta
+// (depois nas outras lojas de compra automática) e junta tudo na loja que cobre a lista inteira pelo
+// menor total. Mesmo produto = o que o cliente pediu na linha (ou, sem isso, o mesmo nome, marca e
+// tamanho), entre metade e 1,5× o preço. Nenhuma loja cobre tudo → a cesta fica como está.
+const MEASURE_IN_NAME_RE = /(\d+(?:[.,]\d+)?)\s*(kg|g|mg|ml|l|lt|litros?)\b/i;
+function measureOf(name: string): number | null {
+  const m = normalizeMsg(name).replace(/(\d),(\d)/g, "$1.$2").match(MEASURE_IN_NAME_RE);
+  if (!m) return null;
+  const value = Number(m[1]);
+  const unit = m[2].toLowerCase();
+  if (!Number.isFinite(value) || value <= 0) return null;
+  return unit === "kg" || unit === "l" || unit === "lt" || unit.startsWith("litro") ? value * 1000 : unit === "mg" ? value / 1000 : value;
+}
+function sameProductElsewhere(original: BasketItem, candidate: { name: string; brand?: string; unitPrice: number; medicine?: "mip" }): boolean {
+  if (Boolean(original.medicine) !== Boolean(candidate.medicine)) return false;
+  // Marca de verdade só: catálogo que põe o nome da LOJA no campo marca ("OBA", "Swift") ou "Não Disponível" não conta.
+  const brand = normalizeMsg(original.brand ?? "").split(" ")[0] ?? "";
+  const storeWords = new Set([original.storeKey, ...normalizeMsg(original.storeLabel ?? "").split(" ")]);
+  const realBrand = brand.length >= 3 && !/^(nao|generico|marca)$/.test(brand) && !storeWords.has(brand);
+  if (realBrand && !normalizeMsg(`${candidate.name} ${candidate.brand ?? ""}`).includes(brand)) return false;
+  const a = measureOf(original.name);
+  const b = measureOf(candidate.name);
+  if (a != null && (b == null || Math.abs(a - b) / a > 0.1)) return false;
+  return display(candidate.unitPrice, candidate.medicine) <= display(original.unitPrice, original.medicine) * 1.5;
+}
+// Produto × produto (não pedido × produto): o buscador lê "sem açúcar" como exclusão ("café SEM açúcar"),
+// então nome de catálogo com "Sem Açúcar" nunca casava consigo mesmo. Aqui vale o nome: mesmo
+// substantivo (1ª palavra) e ≥ 60% das palavras em comum, sem contar medidas.
+function nameIdentity(name: string): string[] {
+  return queryTokens(name).filter((token) => !/^\d/.test(token));
+}
+function sameNamedProduct(a: string, b: string): boolean {
+  const ta = nameIdentity(a);
+  const tb = new Set(nameIdentity(b));
+  if (!ta.length || !tb.size || !tb.has(ta[0])) return false;
+  const common = new Set(ta.filter((t) => tb.has(t))).size;
+  return common / (new Set(ta).size + tb.size - common) >= 0.6;
+}
+// Oferta da loja pra uma linha da cesta. Com o pedido do cliente (`ask`), vale o que ele pediu: "vodka
+// absolut" aceita qualquer Absolut (o sabor foi escolha da Lia), com o tamanho do PEDIDO quando ele disse um;
+// sem `ask` (cesta antiga), o mesmo produto pelo nome.
+async function findInStores(item: BasketItem, onlyStores: string[]): Promise<Map<string, ChoiceOption>> {
+  const found = new Map<string, { option: ChoiceOption; score: number }>();
+  if (!onlyStores.length) return new Map();
+  const ask = item.ask?.trim();
+  const query = ask || queryTokens(normalizeMsg(item.name).replace(/\bsem\s+\w+/g, " ")).filter((t) => !/^\d/.test(t)).slice(0, 5).join(" ");
+  if (!query) return new Map();
+  const askedSize = ask ? measureOf(ask) : null;
+  const askTokens = new Set(ask ? nameIdentity(ask) : []);
+  const generic = (t: string) => /^(garrafa|lata|unidades?|pack|refrigerado|integral|original|tradicional|classic[oa]?|regular|litros?|ml|kg)$/.test(t);
+  const originalTokens = new Set(nameIdentity(item.name));
+  const extras = new Set([...originalTokens].filter((t) => !askTokens.has(t) && !generic(t)));
+  // Duas buscas: o pedido + o que distinguia a escolha ("suco de laranja natural one" acha o Natural One de
+  // laranja pura que "suco de laranja" sozinho deixa de fora) e o pedido puro como reserva.
+  const searches = ask && extras.size ? [`${ask} ${[...extras].slice(0, 3).join(" ")}`, query] : [query];
+  const lists = await Promise.all(searches.map((q) => gatherCrossStoreCandidates(q, 40, 6, { noLongTail: true, onlyStores }).catch(() => [] as StoreCandidate[])));
+  const seen = new Set<string>();
+  const candidates: StoreCandidate[] = lists.flat().filter((c) => {
+    const key = `${c.store.key}:${c.item.sku}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const was = display(item.unitPrice, item.medicine);
+  for (const c of candidates) {
+    if (c.store.key === item.storeKey) continue;
+    if (Boolean(item.medicine) !== Boolean(c.item.medicine)) continue;
+    // Faixa de preço: até 50% mais caro; menos da metade do preço é outro produto (suco de R$ 4,49 → "Fruit
+    // Shoot" infantil de R$ 0,99), não o mesmo em outra loja.
+    const now = display(c.item.unitPrice, c.item.medicine);
+    if (now > was * 1.5 || now < was * 0.5) continue;
+    let ok: boolean;
+    if (ask) {
+      const size = measureOf(c.item.name);
+      ok = conciergeMatchIsStrong(ask, c.item) && (askedSize == null || (size != null && Math.abs(size - askedSize) / askedSize <= 0.1));
+    } else {
+      ok = sameNamedProduct(item.name, c.item.name) && sameProductElsewhere(item, c.item);
+    }
+    if (!ok) continue;
+    // Com o pedido: a 1ª que serve na ordem do buscador (relevância ao pedido, que já prefere o produto
+    // básico — "vodka absolut" → Absolut Original, nunca a de pimenta só porque o nome parece com o sabor
+    // escolhido antes). Sem o pedido: a mais parecida com o item escolhido.
+    // O que distinguia a escolha além do pedido ("Natural One" no suco, "Raspeberry" na vodka) vem primeiro:
+    // mesma marca/sabor quando a loja tem; senão, a ordem do buscador.
+    // Palavra nova que nem o pedido nem a escolha tinham ("e Maçã" num suco de laranja) pesa contra.
+    const tokens = nameIdentity(c.item.name);
+    const shared = [...extras].filter((t) => tokens.includes(t)).length;
+    const foreign = new Set(tokens.filter((t) => !askTokens.has(t) && !originalTokens.has(t) && !generic(t))).size;
+    const score = ask
+      ? candidates.length * (2 * shared - foreign) - candidates.indexOf(c)
+      : nameSimilarity(item.name, c.item.name) - display(c.item.unitPrice, c.item.medicine) / 10_000;
+    const prev = found.get(c.store.key);
+    if (!prev || score > prev.score) found.set(c.store.key, { option: toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }), score });
+  }
+  return new Map([...found].map(([k, v]) => [k, v.option]));
+}
+function nameSimilarity(a: string, b: string): number {
+  const ta = new Set(nameIdentity(a));
+  const tb = new Set(nameIdentity(b));
+  if (!ta.size || !tb.size) return 0;
+  const common = [...ta].filter((t) => tb.has(t)).length;
+  return common / (ta.size + tb.size - common);
+}
+// Plano pra juntar a cesta numa loja só. Não muda o contexto (quem chama aplica): com teto de tempo, uma
+// busca que termina depois não pode mexer numa cesta que já seguiu.
+export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket">): Promise<{ basket: BasketItem[]; storeLabel: string; pairs: copy.SwapPair[]; delta: number } | null> {
+  const basket = ctx.basket ?? [];
+  const basketStores = [...new Set(basket.map((i) => i.storeKey))];
+  if (basketStores.length < 2 || basket.some((i) => !i.storeKey || i.storeKey === CONCIERGE_STORE_KEY || !(i.unitPrice > 0))) return null;
+  const auto = automaticPurchaseStores();
+  const eligible = (key: string) => key !== MERCADO_LIVRE_STORE_KEY && (!auto.length || auto.includes(key));
+  const lineOf = (unitPrice: number, qty: number, medicine?: "mip") => Math.round(display(unitPrice, medicine) * qty * 100) / 100;
+  const plan = async (targets: string[]) => {
+    if (!targets.length) return null;
+    const offers = await Promise.all(basket.map((item) => findInStores(item, targets.filter((t) => t !== item.storeKey))));
+    let best: { store: string; total: number; native: number } | null = null;
+    for (const store of targets) {
+      let total = 0;
+      let native = 0;
+      let covers = true;
+      basket.forEach((item, i) => {
+        if (item.storeKey === store) {
+          total += lineOf(item.unitPrice, item.qty, item.medicine);
+          native += 1;
+          return;
+        }
+        const offer = offers[i].get(store);
+        if (!offer) covers = false;
+        else total += lineOf(offer.unitPrice, item.qty, offer.medicine);
+      });
+      if (covers && (!best || native > best.native || (native === best.native && total < best.total - 0.009))) best = { store, total, native };
+    }
+    return best ? { ...best, offers } : null;
+  };
+  // 1º as lojas que já estão na cesta (troca menor: vence a que já tem mais itens); depois as outras de
+  // compra automática.
+  const inBasket = basketStores.filter(eligible);
+  let chosen = await plan(inBasket);
+  if (!chosen && auto.length) chosen = await plan(auto.filter((k) => eligible(k) && !inBasket.includes(k)));
+  if (!chosen) return null;
+  const target = getStore(chosen.store);
+  const replacements = basket
+    .map((item, i) => ({ item, offer: chosen!.offers[i].get(chosen!.store) }))
+    .filter((r) => r.item.storeKey !== chosen!.store && r.offer)
+    .map((r) => ({ fromSku: r.item.sku, qty: r.item.qty, option: r.offer!, ask: r.item.ask }));
+  const moved = basket.filter((item) => item.storeKey !== chosen!.store);
+  const oldTotal = basket.reduce((sum, i) => sum + lineOf(i.unitPrice, i.qty, i.medicine), 0);
+  return {
+    basket: mergeBaskets(
+      basket.filter((item) => item.storeKey === chosen!.store).map((item) => ({ ...item })),
+      replacements.map((r) => choiceToBasketItem(r.option, r.qty, target, r.ask))
+    ),
+    storeLabel: target.label,
+    pairs: swapPairsForCopy(moved, replacements),
+    delta: Math.round((chosen.total - oldTotal) * 100) / 100
+  };
 }
 
 // ---------- the WhatsApp conversation state machine ----------
@@ -2453,7 +2617,7 @@ async function handleDeliveryTurn(
     // auditando linha a linha).
     const swappedOut = basket.filter((b) => swap.replacements.some((r) => r.fromSku === b.sku));
     const added = swap.replacements.map((r) =>
-      choiceToBasketItem(r.option, r.qty, r.option.storeKey ? getStore(r.option.storeKey) : orderStore(ctx))
+      choiceToBasketItem(r.option, r.qty, r.option.storeKey ? getStore(r.option.storeKey) : orderStore(ctx), basket.find((b) => b.sku === r.fromSku)?.ask)
     );
     ctx.basket = mergeBaskets(keep, added);
     await writeCtx(convo.id, ctx);
@@ -3776,6 +3940,7 @@ async function replyNoOrders(phone: string, convoId: string, ctx: DeliveryContex
   await reply(phone, copy.noOrdersYet());
 }
 
+const ETA_QUESTION_RE = /\b(chega|chegam|chegar|demora|demoram|prazo|horas|hoje|amanha|entrega quando|quando entrega)\b/;
 async function handleStatus(phone: string, userId: string, ctx: DeliveryContext, text?: string, convoId?: string) {
   if (asksPastOrder(text)) {
     const past =
@@ -3816,6 +3981,19 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     ? await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId } })
     : null;
   if (!ctxOrder && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
+    // "Quando chega?" com a lista na mesa (08/10 noite, dono: a Lia respondia "Até agora… diz só isso" duas
+    // vezes): é pergunta de PRAZO. O prazo de cada loja só existe no total — então responde isso e fecha
+    // agora (o total vem com o prazo); escolha em aberto termina antes.
+    if (text && ETA_QUESTION_RE.test(normalizeMsg(text)) && convoId) {
+      if (ctx.pending?.length) {
+        await reply(phone, copy.etaAfterChoice());
+        await sendChoices(phone, ctx.pending[0]);
+        return;
+      }
+      const owner = await prisma.user.findUnique({ where: { id: userId }, select: { cep: true } });
+      await continueAfterBasket(phone, convoId, ctx, owner?.cep ?? null, copy.etaComesWithTotal());
+      return;
+    }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
     await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0));
@@ -5047,7 +5225,7 @@ async function confirmChosenOption(
     ? copy.choiceConfirmedAssumedOne(chosen.name, current.query)
     : `${copy.choiceConfirmed(chosen.name, pack.qty)}${pack.note ? `\n${pack.note}` : ""}`;
   const confirmed = [opts?.note, confirmedBase, opts?.after].filter(Boolean).join("\n");
-  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore)]);
+  ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore, current.query)]);
   // Teto dito na linha ("até R$100") vale para o TOTAL com entrega (07/10, c23/c24): guardado aqui, conferido
   // na cotação. `warned` sobrevive à troca de opção para não repetir a lista de "cabe no limite".
   if (current.cap != null) {
@@ -6478,7 +6656,7 @@ async function handleSwap(
   }
   if (options.length === 1 && !(ctx.pending?.length)) {
     const only = options[0];
-    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, qty, only.storeKey ? getStore(only.storeKey) : store)]);
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, qty, only.storeKey ? getStore(only.storeKey) : store, to)]);
     await continueAfterBasket(phone, convoId, ctx, userCep, copy.swappedFor(removedNames, only.name));
     return;
   }
@@ -6838,7 +7016,7 @@ async function handleConciergeRequest(
       const store = top.storeKey ? getStore(top.storeKey) : orderStore(ctx);
       const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       if (adj.note) packNotes.push(adj.note);
-      added.push(choiceToBasketItem(top, adj.qty, store));
+      added.push(choiceToBasketItem(top, adj.qty, store, choice.query));
     }
     ctx.basket = mergeBaskets(ctx.basket ?? [], added);
     // "escolhe você, até R$60": o teto continua valendo para o total (rodada 2, 07/10).
@@ -6902,7 +7080,7 @@ async function handleConciergeRequest(
       const store = top.storeKey ? getStore(top.storeKey) : orderStore(ctx);
       const adj = packAdjusted(top, Math.max(1, choice.qty), choice.query);
       if (adj.note) packNotes.push(adj.note);
-      added.push(choiceToBasketItem(top, adj.qty, store));
+      added.push(choiceToBasketItem(top, adj.qty, store, choice.query));
     }
     ctx.basket = mergeBaskets(ctx.basket ?? [], added);
     ctx.pending = confirm.length ? confirm : undefined;
@@ -7164,7 +7342,7 @@ async function tryListFlow(args: {
       const suggest = !choice.closestFalta && display(top.unitPrice, top.medicine) * adj.qty <= autopickMax;
       if (suggest) {
         if (adj.note) packNotes.push(adj.note);
-        added.push(choiceToBasketItem(top, adj.qty, top.storeKey ? getStore(top.storeKey) : orderStore(ctx)));
+        added.push(choiceToBasketItem(top, adj.qty, top.storeKey ? getStore(top.storeKey) : orderStore(ctx), choice.query));
       }
       return {
         lineKey: `${index}:${normalizeMsg(choice.query)}`,
@@ -7289,7 +7467,7 @@ async function handleListFlowReply(
         if (currentSku) basket = basket.filter((item) => item.sku !== currentSku);
         const adj = packAdjusted(option, slot.qty, slot.query);
         if (adj.note) packNotes.push(adj.note);
-        basket = mergeBaskets(basket, [choiceToBasketItem(option, adj.qty, option.storeKey ? getStore(option.storeKey) : orderStore(ctx))]);
+        basket = mergeBaskets(basket, [choiceToBasketItem(option, adj.qty, option.storeKey ? getStore(option.storeKey) : orderStore(ctx), slot.query)]);
         slot.suggestedSku = option.sku;
         return;
       }
@@ -7852,7 +8030,7 @@ async function handleComplementAnswer(
       (n.length <= 40 && /^(nao|n|nn|dispenso|deixa|so isso|obrigad\w*|valeu|nem|agora nao|dessa vez nao|nao precisa|nao quero)\b/.test(n)));
   if (yes) {
     const store = getStore(offer.option.storeKey ?? orderStore(ctx).key);
-    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(offer.option, 1, store)]);
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(offer.option, 1, store, offer.query)]);
     await markComplementOutcome(offer.logId, "accepted", `${offer.option.storeKey ?? ""}:${offer.option.sku}`);
     await writeCtx(convoId, ctx);
     await continueAfterBasket(phone, convoId, ctx, user.cep, copy.complementAdded(offer.option.name));
@@ -7906,6 +8084,11 @@ async function handlePreferenceStatement(
   return true;
 }
 
+function consolidationBudgetMs(): number {
+  const configured = Number(process.env.LIA_CONSOLIDATE_BUDGET_MS ?? 15_000);
+  return Number.isFinite(configured) && configured > 0 ? configured : 15_000;
+}
+
 async function continueAfterBasket(
   phone: string,
   convoId: string,
@@ -7936,6 +8119,28 @@ async function continueAfterBasket(
     return;
   }
   {
+    // Uma loja por pedido (08/10 noite): lista espalhada em várias lojas é juntada numa só ANTES do
+    // pedido mínimo (juntar costuma resolver o mínimo também). A troca nunca é silenciosa.
+    const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
+      ctx.consolidationTried = tried;
+      const joined = await withDeadline(
+        consolidateBasketStores(ctx).catch((error) => {
+          console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
+          return null;
+        }),
+        consolidationBudgetMs(),
+        null,
+        () => console.warn("[basket:consolidate:timeout]")
+      );
+      if (joined) {
+        ctx.basket = joined.basket;
+        ctx.minSwap = undefined;
+        ctx.consolidationTried = joined.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+        prefix = [prefix, copy.basketConsolidated(joined.storeLabel, joined.pairs, joined.delta)].filter(Boolean).join("\n\n");
+      }
+      await writeCtx(convoId, ctx);
+    }
     // Pedido mínimo é regra DA LOJA (o operador compra no site dela): fechar abaixo do
     // mínimo cota, cobra e depois toma recusa no checkout. A checagem existia só no
     // fluxo legado, depois do return acima — no concierge nunca rodava.
