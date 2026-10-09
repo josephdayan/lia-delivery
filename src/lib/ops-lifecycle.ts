@@ -13,7 +13,7 @@ import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
 import { BasketItem, FreightChoiceState, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
 import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
-import { humanEstimate } from "./live-freight";
+import { humanEstimate, promiseMissesDeadline } from "./live-freight";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
 import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
@@ -152,10 +152,12 @@ export async function opsPublishManualQuote(
   // sem isso, uma cotação atrasada apagava a compra em andamento e despejava o resumo
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
+  let neededBy: { date: string; label: string } | undefined;
   if (order.conversationId) {
     const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
     if (convo) {
       const ctx = readCtx(convo.context);
+      neededBy = ctx.neededBy;
       conversationMovedOn =
         (Boolean(ctx.deliveryOrderId) && ctx.deliveryOrderId !== order.id) ||
         ((ctx.basket?.length ?? 0) > 0 && ctx.deliveryOrderId !== order.id) ||
@@ -209,7 +211,8 @@ export async function opsPublishManualQuote(
     etaMinutes: input.etaMinutes,
     total,
     deliveryAddress: order.deliveryAddress ?? undefined,
-    sameHour
+    sameHour,
+    ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date) ? { deadlineMiss: { label: neededBy.label } } : {})
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.

@@ -766,9 +766,11 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
     prefer: /\bsoja\b/
   },
   feijao: { prefer: /\bcarioca\b/ },
-  acucar: { prefer: /\b(refinado|cristal)\b/ }
+  acucar: { prefer: /\b(refinado|cristal)\b/ },
+  // "2kg de frango" (rodada 4, M8): o corte do dia a dia vem antes de passarinho/asa/coração.
+  frango: { prefer: /\b(peito|coxa|sobrecoxa|file|filezinho|inteiro)\b/ }
 };
-function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
+export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
   const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
   return core.length === 1 ? STAPLE_DEFAULTS[core[0]] : undefined;
 }

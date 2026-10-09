@@ -391,6 +391,32 @@ export function hasUrgencySignal(text: string): boolean {
   return URGENCY_RE.test(normalizeMsg(text));
 }
 
+// Prazo dito pelo cliente (rodada 4, M6): "é aniversário da minha mãe amanhã", "preciso pra hoje", "até sexta".
+// "amanhã" solto é ambíguo ("pago amanhã", "pode ser amanhã"): só vale com sinal de necessidade/evento/entrega.
+const SP_DATE = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["terca", 2], ["quarta", 3], ["quinta", 4], ["sexta", 5], ["sabado", 6]];
+export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string } | null {
+  const n = normalizeMsg(text);
+  const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
+  const EVENT = "aniversario|festa|festinha|viagem|jantar|reuniao|presente|visita|casamento|formatura";
+  if (/\bdepois de amanha\b/.test(n) && new RegExp(`\\b(?:preciso|precisa|ate|pra|para|chegar|chegue|entreg\\w*|receber|quero|queria|${EVENT})\\b`).test(n)) return { date: shift(2), label: "depois de amanhã" };
+  const tomorrow =
+    /\b(?:pra|para|ate|so ate|ate o dia)\s+amanha\b/.test(n) ||
+    new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bamanha\\b|\\bamanha\\b.{0,30}\\b(?:${EVENT})\\b`).test(n) ||
+    /\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b.{0,30}\bamanha\b/.test(n) ||
+    /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n);
+  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã" };
+  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
+  for (const [name, dow] of WEEKDAYS) {
+    if (new RegExp(`\\b(?:ate|so ate|pra|para)\\s+(?:a\\s+|o\\s+|este\\s+|esta\\s+)?${name}(?:-feira)?\\b`).test(n)) {
+      const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
+      const diff = ((dow - today + 7) % 7) || 7;
+      return { date: shift(diff), label: name === "sabado" ? "sábado" : name === "terca" ? "terça" : name };
+    }
+  }
+  return null;
+}
+
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
 // " e " separava itens; agora quem decide se separa é o resolvedor de list-items.ts.
 const CONJUNCTION_SPLIT_RE = /\s+e\s+|\s*\+\s*|\s+\/\s+/i;
