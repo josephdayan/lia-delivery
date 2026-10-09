@@ -210,6 +210,7 @@ export function readCtx(context: string | null): DeliveryContext {
 // turno velho PARA, sem gravar e sem falar mais nada.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { noteShopperCep, runShopperScoped } from "./store-areas";
+import { testLineCapture } from "./test-line";
 
 export class TurnSupersededError extends Error {
   constructor(convoId: string) {
@@ -252,7 +253,11 @@ export const turnMeta = new AsyncLocalStorage<{
     const original = adapter[name];
     if (!name.startsWith("send") || typeof original !== "function") continue;
     adapter[name] = async function (this: unknown, to: string, ...rest: unknown[]) {
-      const result = await (original as (...args: unknown[]) => Promise<unknown>).apply(this, [to, ...rest]);
+      // Linha de teste (test-line.ts): dentro da captura nada sai pra Meta; o envio é gravado.
+      const capture = testLineCapture.getStore();
+      const result = capture
+        ? (capture.out.push({ kind: name, to: String(to), args: rest }), { provider: "test-line", to, messages: [{ id: `wamid.testline.${capture.out.length}` }] })
+        : await (original as (...args: unknown[]) => Promise<unknown>).apply(this, [to, ...rest]);
       const meta = turnMeta.getStore();
       if (meta && result != null && (!meta.phone || digits(to) === digits(meta.phone))) meta.replies += 1;
       return result;
