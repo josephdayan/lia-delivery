@@ -191,3 +191,66 @@ test("Pix da loja recusado na conferência: motivo gravado, nenhum pagamento sai
   assert.equal((await prisma.purchaseSpend.findFirstOrThrow({ where: { purchaseJobId: job.id } })).status, "released");
   assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).status, "refunded");
 });
+
+test("firewall do site (403) antes do pedido: tenta de novo até o limite e só então devolve (09/10, Casa & Vídeo e Obramax)", async () => {
+  await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
+  const old = process.env.LIA_STORE_BLOCK_RETRIES;
+  process.env.LIA_STORE_BLOCK_RETRIES = "2";
+  try {
+    const order = await paidOrder();
+    const before = mockPixOutCalls.pay;
+    const store = fakeVtex({ orderGroup: `v${process.pid}00011dgsp` });
+    const blocked = async (url: string, init?: RequestInit) =>
+      new URL(url).pathname.includes("/api/checkout/pub/orderForm") ? new Response("<html><head><title>403 Forbidden</title></head></html>", { status: 403 }) : store.fetchImpl(url, init);
+    const release = async (id: string) => prisma.purchaseJob.update({ where: { id }, data: { nextAttemptAt: new Date(Date.now() - 1_000) } });
+    const r1 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: blocked });
+    assert.equal(r1.runs[0]?.status, "retrying", JSON.stringify(r1.runs));
+    const job = await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: order.id } });
+    assert.equal(job.status, "retrying");
+    assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).status, "paid", "1º bloqueio não devolve");
+    // 2ª tentativa bloqueada ainda tenta de novo; a 3ª (limite 2 esgotado) vai para revisão e devolve.
+    await release(job.id);
+    assert.equal((await runVtexApiPurchases({ maxJobs: 1, fetchImpl: blocked })).runs[0]?.status, "retrying");
+    await release(job.id);
+    const r3 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: blocked });
+    assert.equal(r3.runs[0]?.status, "needs_review", JSON.stringify(r3.runs));
+    assert.equal((await prisma.purchaseJob.findUniqueOrThrow({ where: { id: job.id } })).status, "canceled");
+    assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).status, "refunded");
+    assert.equal(mockPixOutCalls.pay, before, "nada pago à loja");
+    // Bloqueio que passa na tentativa seguinte: compra normal.
+    const ok = await paidOrder();
+    const once = fakeVtex({ orderGroup: `v${process.pid}00012dgsp` });
+    let first = true;
+    const flaky = async (url: string, init?: RequestInit) => {
+      if (first && new URL(url).pathname.includes("/api/checkout/pub/orderForm")) { first = false; return new Response("forbidden", { status: 403 }); }
+      return once.fetchImpl(url, init);
+    };
+    assert.equal((await runVtexApiPurchases({ maxJobs: 1, fetchImpl: flaky })).runs[0]?.status, "retrying");
+    const j2 = await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: ok.id } });
+    await release(j2.id);
+    const r5 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: flaky });
+    assert.equal(r5.runs[0]?.status, "completed", JSON.stringify(r5.runs));
+    assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: ok.id } })).storeOrderNumber, `v${process.pid}00012dgsp-01`);
+  } finally {
+    if (old === undefined) delete process.env.LIA_STORE_BLOCK_RETRIES; else process.env.LIA_STORE_BLOCK_RETRIES = old;
+  }
+});
+
+test("trabalho parado há mais de um dia não trava a conta da loja (09/10, Pix da Cobasi de 15/09 em pix_paid)", async () => {
+  await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
+  const old = await paidOrder({ paidAt: new Date(Date.now() - 20 * 86_400_000) });
+  const stuck = await prisma.purchaseJob.create({ data: { deliveryOrderId: old.id, fulfillmentKey: STORE, storeKey: STORE, storeLabel: "Drogaria São Paulo", status: "pix_paid", lockedAt: new Date(Date.now() - 20 * 86_400_000) } });
+  await prisma.$executeRaw`UPDATE "PurchaseJob" SET "updatedAt" = now() - interval '20 days' WHERE id = ${stuck.id}`;
+  const order = await paidOrder();
+  const r = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fakeVtex({ orderGroup: `v${process.pid}00021dgsp` }).fetchImpl });
+  assert.equal(r.runs[0]?.status, "completed", JSON.stringify(r.runs));
+  assert.equal((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).storeOrderNumber, `v${process.pid}00021dgsp-01`);
+  assert.equal((await prisma.purchaseJob.findUniqueOrThrow({ where: { id: stuck.id } })).status, "pix_paid", "o parado continua para conferência");
+  // Parado recente (Pix em curso) continua ocupando a conta.
+  await prisma.$executeRaw`UPDATE "PurchaseJob" SET "updatedAt" = now() WHERE id = ${stuck.id}`;
+  const next = await paidOrder();
+  const r2 = await runVtexApiPurchases({ maxJobs: 1, fetchImpl: fakeVtex({ orderGroup: `v${process.pid}00022dgsp` }).fetchImpl });
+  assert.equal(r2.runs.length, 0, JSON.stringify(r2.runs));
+  assert.equal((await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: next.id } })).status, "queued");
+  await prisma.purchaseJob.update({ where: { id: stuck.id }, data: { status: "canceled" } });
+});
