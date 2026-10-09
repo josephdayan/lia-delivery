@@ -1128,7 +1128,7 @@ const SERVICE_WORDS_RE =
   /\b(entreg\w+|frete|taxa|cobertura|regiao|area de (entrega|atendimento)|prazo|demora\w*|horario|funcionam?\w*|atendem?\w*|pagamento|formas? de pagar|parcel\w+|vale[- ]?(refeicao|alimentacao)|vr\b|va\b|cupom|desconto|pedido minimo|minimo)\b/;
 
 const CLEAR_CART_RE =
-  /\b(zera|zerar|recome[c]ar|come[c]ar de novo|novo pedido|outro pedido)\b|\b(limpa|limpar)\s+(o\s+|a\s+)?(carrinho|cesta|pedido|tudo|lista)\b|\b(tira|tirar|remove|remover|apaga|apagar|esquece|esquecer)\s+(o\s+|os\s+|a\s+|as\s+)?(tudo|anteriores|antigos|de antes|carrinho|cesta)\b/;
+  /\b(zera|zerar|recome[c]ar|recome[c]a|come[c]ar de novo|come[c]a de novo|come[c]ar do zero|come[c]a do zero|novo pedido|outro pedido)\b|\b(esvazia|esvaziar|esvazie)\s+(o\s+|a\s+)?(tudo|carrinho|cesta|pedido|lista)\b|\b(limpa|limpar)\s+(o\s+|a\s+)?(carrinho|cesta|pedido|tudo|lista)\b|\b(tira|tirar|remove|remover|apaga|apagar|esquece|esquecer)\s+(o\s+|os\s+|a\s+|as\s+)?(tudo|anteriores|antigos|de antes|carrinho|cesta)\b/;
 
 // Desistência da lista INTEIRA (09/10, rodada 1): "na verdade não quero nada disso" só tirava o item da vez.
 // "não quero mais nada" sozinho continua sendo fechar a lista (done) — frase ambígua, coberta por teste antigo.

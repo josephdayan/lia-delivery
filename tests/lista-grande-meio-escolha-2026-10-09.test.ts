@@ -14,6 +14,7 @@ import { planActions } from "../src/lib/dialogue/plan";
 import { buildDialogueState } from "../src/lib/dialogue/state";
 import type { DeliveryContext } from "../src/lib/conversation-types";
 import { consolidationYesTitle } from "../src/lib/adapters/whatsapp";
+import { detectIntent } from "../src/lib/lia-intents";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { storeSlotsInFlight, withStoreSlot } from "../src/lib/store-throttle";
@@ -180,4 +181,24 @@ test("09/10: título do botão 'juntar' cabe em 20 caracteres sem cortar o nome 
   assert.equal(consolidationYesTitle("Mambo"), "Juntar na Mambo");
   assert.equal(consolidationYesTitle("Farmácia Indiana"), "Juntar numa loja");
   for (const label of ["Mambo", "Farmácia Indiana", "Drogarias Pacheco", "Casa Santa Luzia"]) assert.ok(consolidationYesTitle(label).length <= 20);
+});
+
+test("09/10: 'esvazia tudo, quero recomeçar' com a oferta de troca de loja aberta esvazia a cesta (não vira busca)", async (t) => {
+  if (!dbOk) return t.skip("sem banco");
+  const c = await customer();
+  const basket = [
+    { sku: "americanas-1", name: "Sabonete em Barra Dove 90g", qty: 2, unitPrice: 5.71, lineTotal: 11.42, storeKey: "americanas", storeLabel: "Americanas" },
+    { sku: "farmaciaindiana-1", name: "Creme Dental Colgate 50g", qty: 1, unitPrice: 4.39, lineTotal: 4.39, storeKey: "farmaciaindiana", storeLabel: "Farmácia Indiana" }
+  ];
+  await setCtx(c.userId, { ...baseCtx, step: "collecting", basket, minSwap: { fromStoreKey: "americanas", replacements: [] } });
+  const out = await send(c.phone, "esvazia tudo, quero recomeçar");
+  assert.doesNotMatch(out, /não achei/i, out.slice(0, 300));
+  const ctx = (await ctxOf(c.userId)) as { basket?: unknown[] };
+  assert.equal((ctx.basket ?? []).length, 0, out.slice(0, 200));
+});
+
+test("09/10: 'esvazia tudo' / 'esvaziar carrinho' / 'começar do zero' são pedido de esvaziar a cesta", () => {
+  for (const phrase of ["esvazia tudo", "esvazia a cesta", "esvaziar carrinho", "começa de novo", "começar do zero", "recomeça tudo"]) {
+    assert.equal(detectIntent(phrase).kind, "clear_cart", phrase);
+  }
 });

@@ -2353,6 +2353,7 @@ async function handleDeliveryTurn(
     (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") &&
     !isQuestion(text) &&
     !explicitAddCue(text) &&
+    intent.kind !== "clear_cart" &&
     !ADD_TO_BASKET_RE.test(normalizeMsg(text)) &&
     !EDIT_OR_CHOICE_RE.test(normalizeMsg(text)) &&
     (countDistinctItems(text) >= 2 || (idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text)))
