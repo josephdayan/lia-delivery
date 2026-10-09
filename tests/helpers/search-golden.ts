@@ -329,7 +329,9 @@ export const GOLDEN_CASES: GoldenCase[] = [
   { name: "remédio com a dose certa continua achável (ibuprofeno 400mg)", query: "ibuprofeno 400mg", top1Include: /ibuprofeno 400\s?mg/, allExclude: /100\s?mg|50\s?mg|200\s?mg/, env: MIP_ON, deterministic: true },
   // 06/10 (testador "Vc tem cottage da yorgus 14g proteína?"): marca + atributo não fazem o
   // produto — iogurte Yorgus 14g nunca é cottage.
-  { name: "cottage com marca e atributo nunca vira iogurte da marca", query: "cottage da Yorgus 14g proteína", none: true, deterministic: true },
+  // 09/10: com o que passa no piso vindo antes do que não passa (gatherCrossStoreCandidates), o cottage DE VERDADE
+  // da Yorgus ("Queijo Cottage Yorgus") aparece — antes a vitrine ficava vazia. O que continua proibido é iogurte sem cottage.
+  { name: "cottage com marca e atributo nunca vira iogurte da marca", query: "cottage da Yorgus 14g proteína", top1Include: /queijo.*cottage/, allExclude: /^(?!.*cottage)/, deterministic: true },
 
   // 07/10 (fase 3, placar): o juízo confere os ATRIBUTOS que o cliente disse. Só a IA resolve
   // (o scorer léxico não sabe que "baunilha" não é "natural"); medidos por scripts/eval-search.mts.
