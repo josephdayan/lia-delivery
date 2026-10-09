@@ -238,6 +238,9 @@ export type DeliveryContext = {
   // Flow "Escolher minha lista" enviado (LIA_LIST_FLOW). `id` é o flow_token: a resposta só vale se
   // o id bate e a cesta continua como estava (`basketSig`); qualquer edição por texto invalida.
   listFlow?: ListFlowCtx;
+  // A cesta nasceu de uma LISTA mandada numa mensagem só (09/10, rodada 1): a dica de frete não pode
+  // mandar o cliente "mandar a lista inteira numa mensagem só" — ele já mandou.
+  listInOneMessage?: boolean;
   // Orçamento declarado na linha ("presente até R$100", "uns 80 reais") vale para o TOTAL com entrega
   // (07/10, c23/c24). `sku` = a escolha que o teto cobre (só vale com ela sozinha na cesta);
   // `warned` = já avisamos que estourou (a 2ª vez pergunta em vez de repetir a lista);

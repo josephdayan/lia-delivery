@@ -118,8 +118,46 @@ function computeStrong(phrase: string, opts?: { all?: boolean }): boolean {
   return false;
 }
 
+// Marcas escritas com "e"/"&" no nome ("Head & Shoulders", "Johnson & Johnson", "Dolce & Gabbana", "Tom e Jerry")
+// (09/10, rodada 1): o cliente digita "head e shoulders" e o "e" não pode virar separador de itens. Vem do
+// campo marca dos catálogos (regra geral, sem lista fixa): guarda o lado esquerdo → lados direitos possíveis.
+let conjoined: Map<string, Set<string>> | null = null;
+function ensureConjoined(): Map<string, Set<string>> {
+  if (conjoined) return conjoined;
+  const map = new Map<string, Set<string>>();
+  const seen = new Set<string>();
+  for (const store of listStores()) {
+    for (const item of store.listCatalog()) {
+      const brand = item.brand;
+      if (!brand || seen.has(brand) || !/&|\s(?:e|and)\s/i.test(brand)) continue;
+      seen.add(brand);
+      const [a, b, ...more] = brand.split(/\s*&\s*|\s+(?:e|and)\s+/i).map((p) => normalizeText(p));
+      if (!a || !b || more.length || a.length < 2 || b.length < 2) continue;
+      const rights = map.get(a) ?? new Set<string>();
+      rights.add(b);
+      map.set(a, rights);
+    }
+  }
+  conjoined = map;
+  return map;
+}
+// `left` termina e `right` começa com os dois lados de uma marca composta conhecida?
+export function localIsConjoinedBrand(left: string, right: string): boolean {
+  const l = normalizeText(left).split(" ").filter(Boolean);
+  const r = normalizeText(right).split(" ").filter(Boolean);
+  if (!l.length || !r.length) return false;
+  const map = ensureConjoined();
+  for (let i = 1; i <= Math.min(3, l.length); i++) {
+    const rights = map.get(l.slice(-i).join(" "));
+    if (!rights) continue;
+    for (let j = 1; j <= Math.min(3, r.length); j++) if (rights.has(r.slice(0, j).join(" "))) return true;
+  }
+  return false;
+}
+
 // Só para testes: descarta o índice e o cache.
 export function resetListProbe(): void {
   index = null;
+  conjoined = null;
   cache.clear();
 }

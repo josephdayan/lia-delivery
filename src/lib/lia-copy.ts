@@ -494,9 +494,11 @@ export function choiceSequence(queries: string[]): string {
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
-export function nextChoiceHeader(query: string, remaining: number): string {
-  const tail = remaining > 1 ? ` — depois faltam ${remaining - 1}` : "";
-  return `Agora *${query}*${tail}.`;
+export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string): string {
+  const left = remaining - 1;
+  const tail = left > 1 ? ` — depois faltam ${left}` : left === 1 ? " — depois falta 1" : "";
+  // 09/10 (rodada 1): o tamanho/variante que não existe é avisado em TODO item da fila, não só no primeiro.
+  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}`;
 }
 
 export function choiceLine(index: number, name: string, displayPrice: number, delivery?: string, repeat?: boolean): string {

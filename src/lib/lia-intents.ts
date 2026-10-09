@@ -199,9 +199,12 @@ const MAX_QTY = 50;
 // WhatsApp real vem cheio de abreviações. Expandir só as formas inequívocas antes
 // de separar a lista evita que "qro", "tb" e "pf" virem palavras do produto.
 // Mantemos isto conservador: gíria ambígua não é alterada.
-function expandShoppingShorthand(text: string): string {
+export function expandShoppingShorthand(text: string): string {
   return text
-    .replace(/\b(qro|qr|qero|kero|kero|keru)\b/gi, "quero")
+    // Abreviações de produto (09/10, rodada 1: "req. tirolez" virava o item "req" → "não achei" e depois achava).
+    .replace(/\breq\b\.?/gi, "requeijão")
+    .replace(/\bcerva\b/gi, "cerveja")
+    .replace(/\bdeterg\b\.?/gi, "detergente")    .replace(/\b(qro|qr|qero|kero|kero|keru)\b/gi, "quero")
     .replace(/\b(qria|keria)\b/gi, "queria")
     .replace(/\b(pf|pff+|pf+v+r?|pfr|pls)\b/gi, "por favor")
     .replace(/\b(tb|tbm|tmb|tambem)\b/gi, "tambem")

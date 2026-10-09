@@ -29,7 +29,8 @@ import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLi
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
-import { CEP_RE_GLOBAL } from "@/lib/lia-intents";
+import { CEP_RE_GLOBAL, expandShoppingShorthand } from "@/lib/lia-intents";
+import { displayQueryName } from "@/lib/query-display";
 import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
@@ -121,9 +122,11 @@ function blocksMedicine(text: string): boolean {
 // nota. Com a flag do isento desligada, nada muda (qualquer remédio recusa a mensagem).
 function refusesWholeMessage(text: string): boolean {
   if (!blocksMedicine(text)) return false;
-  if (!medicineEnabled()) return true;
+  // 09/10 (rodada 1, A3): também com a flag desligada, o remédio no meio de uma lista sai com a explicação
+  // curta e o resto segue; a recusa da mensagem inteira só vale quando tudo ali é remédio.
   const lines = resolveListItems(stripMedicineNegation(text)).filter((line) => queryTokens(line.phrase).length);
-  return lines.length <= 1 || lines.every((line) => blocksMedicine(line.phrase));
+  // "dipirona, vê se tem em alguma farmácia": o resto é só a pergunta sobre farmácia, não item de compra.
+  return lines.length <= 1 || lines.every((line) => blocksMedicine(line.phrase) || /\b(?:farmacias?|drogarias?)\b/.test(normalizeMsg(line.phrase)));
 }
 function noMedicineCopy(text?: string): string {
   if (!medicineEnabled()) return copy.noMedicine();
@@ -150,7 +153,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   // "sem remédio"/"não quero remédio" é negação: sai da mensagem ANTES de qualquer
   // detecção — senão a Lia avisa que removeu um medicamento que ninguém pediu
   // (rodadas 4 e 14 dos testes reais de 14/08).
-  const sanitized = stripMedicineNegation(text);
+  const sanitized = expandShoppingShorthand(stripMedicineNegation(text));
   const containsTobacco = looksLikeTobacco(sanitized);
   // Frase já reescrita pelo roteador da IA neste turno: é uma busca limpa, o parser
   // determinístico dá conta e a 2ª chamada de IA só somava até 10 s (06/10).
@@ -1036,6 +1039,11 @@ function vitrineLimit(): number {
   return carouselEnabled() ? 5 : 3;
 }
 
+// Nome do item nos cabeçalhos ("Agora *Omo*"): a digitação errada do cliente não volta como está (09/10, rodada 1).
+function shownQuery(p: PendingChoice): string {
+  return displayQueryName(p.query, p.options);
+}
+
 function choicesHeaderFor(p: PendingChoice): string {
   if (p.closestFalta) return copy.closestHeader(p.query, p.closestFalta);
   if (p.cheapestFirst) return copy.cheapestFirstHeader(p.query);
@@ -1094,7 +1102,7 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
           await reply(phone, intro);
           introSent = true;
         }
-        const legacyHeader = intro === copy.choicesHeader(p.query) ? copy.choicesHeaderLegacy(p.query) : intro;
+        const legacyHeader = intro === copy.choicesHeader(p.query) ? copy.choicesHeaderLegacy(shownQuery(p)) : intro;
         const sent = await whatsappAdapter.sendDeliveryCarousel(phone, legacyHeader, choices);
         if (sent) {
           await rememberCarousel(phone, sent.messageId, p, intro);
@@ -5475,7 +5483,7 @@ async function confirmChosenOption(
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
     await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst()}` : confirmed);
-    await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(ctx.pending[0].query, ctx.pending.length));
+    await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(shownQuery(ctx.pending[0]), ctx.pending.length, ctx.pending[0].closestFalta));
     return;
   }
   // "quero o 1 e paga no pix" (06/10): escolheu e já pediu pra fechar — segue pro total.
@@ -5564,7 +5572,7 @@ async function handleChoosing(
       const again = ctx.lastChoice?.chosenSku.toLowerCase() === wanted ? (ctx.basket ?? []).find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined;
       if (again) {
         await reply(phone, copy.alreadyInBasket(again.name, again.qty));
-        await sendChoices(phone, current, copy.nextChoiceHeader(current.query, ctx.pending!.length));
+        await sendChoices(phone, current, copy.nextChoiceHeader(shownQuery(current), ctx.pending!.length, current.closestFalta));
         return;
       }
       // Card de outro item/conversa antiga: não chuta produto — DIZ que o botão é
@@ -5912,9 +5920,9 @@ async function handleChoosing(
   if (asksRunningTotal(text)) {
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows));
-    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel.
-    await reply(phone, copy.choicesStillOpen(current.query));
+    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1):
+    // o parcial e o lembrete em duas mensagens seguidas diziam a mesma coisa.
+    await reply(phone, `${copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows)}\n\n${copy.choicesStillOpen(current.query)}`);
     return;
   }
 
@@ -6446,7 +6454,7 @@ async function advancePending(
   if (ctx.pending?.length) {
     await writeCtx(convoId, ctx);
     if (prefix) await reply(phone, prefix);
-    await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(ctx.pending[0].query, ctx.pending.length));
+    await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(shownQuery(ctx.pending[0]), ctx.pending.length, ctx.pending[0].closestFalta));
     return;
   }
   ctx.pending = undefined;
@@ -7401,6 +7409,7 @@ async function handleConciergeRequest(
   if (pending.length) {
     ctx.step = "choosing";
     ctx.pending = pending;
+    if (raw.lines.length >= 2) ctx.listInOneMessage = true;
     await writeCtx(convoId, ctx);
     const notes: string[] = [];
     if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
@@ -7409,7 +7418,7 @@ async function handleConciergeRequest(
     // "não achei X — o resto tá abaixo" (a copy global parecia contradição, 19/08).
     if (hasNotFound) notes.push(notFoundNote(true));
     if (notes.length) await reply(phone, notes.join("\n"));
-    if (pending.length > 1) await reply(phone, copy.choiceSequence(pending.map((p) => p.query)));
+    if (pending.length > 1) await reply(phone, copy.choiceSequence(pending.map(shownQuery)));
     await sendChoices(phone, pending[0]);
     return;
   }
@@ -7885,7 +7894,7 @@ async function rescueLongTail(
     ctx.pending = [...rescued, ...(ctx.pending ?? []).filter((p) => !rescued.some((r) => sharesProductNoun(r.query, p.query)))];
     await writeCtx(convoId, ctx);
     if (still.length) await reply(phone, copy.itemsNotAvailableWithOptions(still));
-    if (rescued.length > 1) await reply(phone, copy.choiceSequence(rescued.map((p) => p.query)));
+    if (rescued.length > 1) await reply(phone, copy.choiceSequence(rescued.map(shownQuery)));
     await sendChoices(phone, rescued[0]);
     return;
   }
@@ -7955,7 +7964,7 @@ export function parseWeightAskKg(query: string): number | undefined {
 }
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
 export function declaredPack(optionName: string): number {
-  const m = optionName.match(/(\d{1,3})\s*(?:un\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
+  const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
   return m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
 // O pedido conta o CONTEÚDO ("6 ovos", "12 rolos") e não embalagens ("2 caixas de ovos").
@@ -8959,7 +8968,7 @@ async function tryPublishInstantQuote(
     // card foi escolha explícita do cliente e não é trocada em silêncio.
     const produtosDisplay = itemsSubtotal + serviceFeeExact;
     // Lista que JÁ veio numa mensagem só (formulário da lista) não ouve "me manda a lista numa mensagem só" (09/10).
-    if (freights.length >= 3 && totalFee >= 0.4 * produtosDisplay && !ctx.listFlow) {
+    if (freights.length >= 3 && totalFee >= 0.4 * produtosDisplay && !ctx.listFlow && !ctx.listInOneMessage) {
       await reply(phone, copy.freightFragmentationTip(freights.length));
     }
     return { handled: true };
