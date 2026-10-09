@@ -126,14 +126,16 @@ test("ensaio: loja fora da compra automática (sem liberação/conta) → NÃO c
   assert.equal((await rehearsePurchase(o, fake.fetchImpl))?.kind, "store");
 });
 
-test("ensaio: cesta de 2 lojas → NÃO cobra (split): fica a loja com a maior parte, o resto sai", async (t) => {
+// Pedido de várias lojas (09/10, dono: "pedido de duas coisas de lojas diferentes tem que fechar"): cesta de 2
+// lojas não é mais recusa. Cada loja passa pela régua dela; só a que a compra não executaria sai.
+test("ensaio: cesta de 2 lojas não é recusa; a loja sem compra automática sai sozinha (store), com os itens dela", async (t) => {
   if (!dbOk) return t.skip();
   const o = order("90 min");
   o.items = [o.items[0], { sku: "mambo-9", name: "Leite", qty: 2, storeKey: "mambo", storeLabel: "Mambo", unitPrice: 9.9, productUrl: "https://www.mambo.com.br/leite/p" }];
   const fail = await rehearsePurchase(o, fakeVtex().fetchImpl);
-  assert.equal(fail?.kind, "split");
-  assert.equal(fail?.storeKey, "mambo", "fica a loja com mais R$");
-  assert.deepEqual(fail?.skus, ["dsp-354260"]);
+  assert.equal(fail?.kind, "store", "a Mambo não está liberada neste teste");
+  assert.equal(fail?.storeKey, "mambo");
+  assert.deepEqual(fail?.skus, ["mambo-9"], "só os itens da loja que não fecha saem");
 });
 
 test("ensaio: item sem link de compra da loja → NÃO cobra (items)", async (t) => {

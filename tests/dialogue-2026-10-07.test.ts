@@ -461,7 +461,9 @@ test("remove e swap resolvem o item pelo número do estado, com o total já na m
   await send(phone, "quero feijão");
   await send(phone, "1");
   assert.equal((await basket(phone)).length, 2);
-  const quote = await send(phone, "pagar");
+  const first = await send(phone, "pagar");
+  // Cesta em duas lojas (09/10): a Lia oferece juntar numa loja só; o cliente aceita.
+  const quote = /Dá pra juntar tudo/.test(first) ? await send(phone, "juntar") : first;
   assert.match(quote, /Seu pedido/, quote.slice(0, 300));
   model((input) => {
     assert.equal(input.state.passo, "total_na_mesa");

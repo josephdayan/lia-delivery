@@ -1,9 +1,14 @@
 // Uma etapa só avança com evidência explícita; prazo decorrido nunca é evidência.
 import { prisma } from "./prisma";
+import type { Prisma } from "@prisma/client";
 import { appendOrderNote } from "./order-flags";
 import { whatsappAdapter } from "./adapters/whatsapp";
 import { outsideServiceWindow } from "./turn-runtime";
 import * as copy from "./lia-copy";
+import {
+  aggregateOrderStatus, isMultiStoreOrder, MULTI_STORE_TRACKING_KEY, orderItems, orderStoreKeys, STORE_SHARE_REFUNDED,
+  STORE_STAGE_RANK, storeEventKey, storeStageFromKeys, type StoreStage
+} from "./purchase/store-split";
 
 // 27/09: "shipped" = a loja despachou (transportadora/rota longa) — NÃO é "saiu pra entrega".
 // "out_for_delivery" fica reservado para a última milha (entregador a caminho da casa).
@@ -37,6 +42,9 @@ export function validateTrackingUrl(value?: string): string | undefined {
 }
 
 export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvidence) {
+  // Pedido de várias lojas (09/10): cada loja anda sozinha (comprado, enviado, saiu, entregue).
+  const head = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { items: true } });
+  if (head && isMultiStoreOrder(head)) return recordMultiStoreEvent(orderId, evidence);
   const reference = evidence.sourceReference.trim();
   if (!reference || reference.length > 300) throw new Error("Informe a referência da evidência da loja.");
   const occurredAt = evidence.occurredAt ?? new Date();
@@ -133,6 +141,143 @@ export async function recordDeliveryEvent(orderId: string, evidence: DeliveryEvi
   if (result.eventId) await dispatchDeliveryEvent(result.eventId).catch((error) => {
     console.warn("[delivery-event:dispatch]", result.eventId, error instanceof Error ? error.message : "failed");
   });
+  return result.order;
+}
+
+// ---------- pedido de várias lojas (09/10) ----------
+// Um evento por loja (dedupe `${pedido}:${loja}:${etapa}`), um aviso por loja com o nome dela, e o
+// status do pedido é o da loja mais atrasada entre as que seguem (as devolvidas não contam). A 1ª
+// compra grava o número no pedido (as travas de "já comprado" seguem valendo para o pedido inteiro:
+// nada de estorno integral nem desistência depois que uma loja comprou).
+function activeStores(order: { items: unknown }, jobs: Array<{ storeKey: string; status: string; lastErrorCode: string | null }>): string[] {
+  return orderStoreKeys(order.items).filter((storeKey) => !jobs.some((job) => job.storeKey === storeKey && job.status === "canceled" && job.lastErrorCode === STORE_SHARE_REFUNDED));
+}
+
+// Recalcula o status do pedido pelas lojas que seguem. Só anda pra frente.
+export async function syncMultiStoreStatus(tx: Prisma.TransactionClient, orderId: string, occurredAt = new Date()) {
+  const order = await tx.deliveryOrder.findUniqueOrThrow({ where: { id: orderId } });
+  const jobs = await tx.purchaseJob.findMany({ where: { deliveryOrderId: orderId }, select: { storeKey: true, status: true, lastErrorCode: true } });
+  const events = await tx.deliveryEvent.findMany({ where: { deliveryOrderId: orderId }, select: { dedupeKey: true } });
+  const keys = events.map((e) => e.dedupeKey);
+  const stores = activeStores(order, jobs);
+  const stages = stores.map((storeKey) => storeStageFromKeys(orderId, storeKey, keys));
+  const target = aggregateOrderStatus(stages);
+  const progress = ["paid", "retailer_preparing", "retailer_out_for_delivery", "delivered"];
+  if (!target || !progress.includes(order.status) || progress.indexOf(target) <= progress.indexOf(order.status)) return { order, stores, stages };
+  const updated = await tx.deliveryOrder.update({ where: { id: orderId }, data: {
+    status: target,
+    ...(target !== "paid" && target !== "retailer_preparing" && !order.courierDispatchedAt ? { courierDispatchedAt: occurredAt } : {}),
+    ...(target === "delivered" ? { deliveredAt: occurredAt } : {})
+  } });
+  if (target === "delivered") await tx.trackingSubscription.updateMany({ where: { deliveryOrderId: orderId }, data: { completedAt: new Date(), lockedAt: null } });
+  return { order: updated, stores, stages };
+}
+
+async function recordMultiStoreEvent(orderId: string, evidence: DeliveryEvidence) {
+  const reference = evidence.sourceReference.trim();
+  if (!reference || reference.length > 300) throw new Error("Informe a referência da evidência da loja.");
+  const occurredAt = evidence.occurredAt ?? new Date();
+  if (!Number.isFinite(occurredAt.getTime()) || occurredAt.getTime() > Date.now() + 60_000) throw new Error("Data da evidência inválida.");
+  const tracking = validateTrackingUrl(evidence.trackingUrl);
+  // A loja do evento: a do trabalho de compra, a que o leitor informou ou — passo do operador sem
+  // loja (ex.: "entregue" no /ops) — todas as lojas compradas que ainda não chegaram nessa etapa.
+  let storeKeys: string[];
+  if (evidence.purchaseExecution) {
+    storeKeys = [(await prisma.purchaseJob.findUniqueOrThrow({ where: { id: evidence.purchaseExecution.jobId } })).storeKey];
+  } else if (evidence.storeKey) {
+    storeKeys = [evidence.storeKey];
+  } else {
+    if (evidence.kind === "bought") throw new Error("Pedido com várias lojas: registre a compra de cada loja no trabalho de compra dela.");
+    if (evidence.source !== "operator") throw new Error("Cesta com múltiplas entregas exige acompanhamento por pacote; revisar no /ops.");
+    storeKeys = orderStoreKeys((await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: orderId }, select: { items: true } })).items);
+  }
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "DeliveryOrder" WHERE id = ${orderId} FOR UPDATE`;
+    const order = await tx.deliveryOrder.findUniqueOrThrow({ where: { id: orderId } });
+    if (!["paid", "retailer_preparing", "retailer_out_for_delivery", "delivered"].includes(order.status)) throw new Error("Etapa incompatível com o estado atual do pedido.");
+    if (order.paidAt && occurredAt < order.paidAt) throw new Error("Evidência anterior ao pagamento do pedido.");
+    const jobs = await tx.purchaseJob.findMany({ where: { deliveryOrderId: order.id }, orderBy: { createdAt: "desc" } });
+    const keys = (await tx.deliveryEvent.findMany({ where: { deliveryOrderId: order.id }, select: { dedupeKey: true } })).map((e) => e.dedupeKey);
+    const active = activeStores(order, jobs);
+    const created: string[] = [];
+    for (const storeKey of storeKeys) {
+      if (!active.includes(storeKey)) {
+        if (storeKeys.length === 1) throw new Error("A parte desta loja já foi devolvida ao cliente.");
+        continue;
+      }
+      const job = jobs.find((j) => j.storeKey === storeKey);
+      const stage = storeStageFromKeys(order.id, storeKey, keys);
+      const key = storeEventKey(order.id, storeKey, evidence.kind);
+      if (keys.includes(key)) continue;
+      if (evidence.purchaseExecution) {
+        const proof = evidence.purchaseExecution;
+        if (!job || job.id !== proof.jobId || job.submissionId !== proof.submissionId || !["submitting", "outcome_unknown", "completed", "awaiting_owner_confirm", "awaiting_store_number", "pix_paid", "store_confirmed"].includes(job.status)) throw new Error("Tentativa de compra incompatível.");
+        if (job.status === "completed" && job.storeOrderNumber !== evidence.storeOrderNumber?.trim()) throw new Error("Comprovante duplicado com número diferente.");
+      }
+      if (evidence.source === "tracking_reader" || evidence.source === "mailbox_reader") {
+        if (evidence.kind === "bought") throw new Error("O leitor de rastreio não confirma compras.");
+        if (!job?.storeOrderNumber || evidence.storeOrderNumber !== job.storeOrderNumber) throw new Error("Cesta com múltiplas lojas: a evidência não corresponde à compra registrada desta loja.");
+      }
+      const rank = STORE_STAGE_RANK[evidence.kind as StoreStage];
+      if (evidence.kind === "bought") {
+        if (stage !== "paid" || order.status !== "paid") throw new Error("Etapa incompatível com o estado atual do pedido.");
+      } else if (stage === "paid") {
+        if (storeKeys.length === 1) throw new Error("Etapa incompatível com o estado atual do pedido.");
+        continue;
+      } else if (rank <= STORE_STAGE_RANK[stage]) {
+        continue;
+      }
+      const number = evidence.kind === "bought" ? evidence.storeOrderNumber?.trim() : job?.storeOrderNumber ?? undefined;
+      if (evidence.kind === "bought" && !number) throw new Error("Informe o número da compra na loja.");
+      const storeLabel = orderItems(order.items).find((i) => i.storeKey === storeKey)?.storeLabel ?? storeKey;
+      if (evidence.kind === "bought") {
+        if (job) {
+          await tx.purchaseJob.update({ where: { id: job.id }, data: {
+            status: "completed", storeOrderNumber: number, lockedAt: null, nextAttemptAt: null, completedAt: new Date(),
+            ...(evidence.purchaseExecution ? { actualTotal: evidence.purchaseExecution.actualTotal } : {})
+          } });
+          if (evidence.purchaseExecution) await tx.purchaseAttempt.updateMany({ where: { purchaseJobId: job.id, idempotencyKey: evidence.purchaseExecution.submissionId }, data: { status: "completed", completedAt: new Date() } });
+        }
+        await tx.trackingSubscription.upsert({
+          where: { deliveryOrderId: order.id },
+          create: { deliveryOrderId: order.id, storeKey: MULTI_STORE_TRACKING_KEY, storeOrderNumber: number!, ...(tracking ? { trackingUrl: tracking } : {}) },
+          update: { completedAt: null, nextCheckAt: new Date() }
+        });
+      }
+      const stagesAfter = active.map((s) => (s === storeKey ? (evidence.kind as StoreStage) : storeStageFromKeys(order.id, s, keys)));
+      const labelOf = (s: string) => orderItems(order.items).find((i) => i.storeKey === s)?.storeLabel ?? s;
+      const text = evidence.kind === "bought"
+        ? copy.storePartBought({
+            storeLabel,
+            items: orderItems(order.items).filter((i) => i.storeKey === storeKey).map((i) => (i.qty > 1 ? `${i.qty}x ${i.name}` : i.name)),
+            waitingStores: active.filter((s, i) => stagesAfter[i] === "paid").map(labelOf),
+            trackingUrl: tracking
+          })
+        : evidence.kind === "shipped"
+          ? copy.storePartShipped(storeLabel, tracking, evidence.etaText)
+          : evidence.kind === "out_for_delivery"
+            ? `${copy.storePartOutForDelivery(storeLabel, tracking)}${evidence.deliveryCode ? `\n${copy.deliveryCode(evidence.deliveryCode)}` : ""}`
+            : copy.storePartDelivered(storeLabel, active.filter((s, i) => stagesAfter[i] !== "delivered").map(labelOf));
+      const event = await tx.deliveryEvent.create({ data: {
+        deliveryOrderId: order.id, dedupeKey: key, kind: evidence.kind, source: evidence.source,
+        sourceReference: reference, occurredAt, message: text
+      } });
+      keys.push(key);
+      created.push(event.id);
+      await tx.deliveryOrder.update({ where: { id: order.id }, data: {
+        ...(evidence.kind === "bought" && !order.storeOrderNumber ? { storeOrderNumber: number } : {}),
+        notes: appendOrderNote((await tx.deliveryOrder.findUniqueOrThrow({ where: { id: order.id }, select: { notes: true } })).notes, `🧾 ${evidence.kind} (${storeLabel}${number ? ` nº ${number}` : ""}) — ${evidence.source}: ${reference.replace(/[\r\n]/g, " ")} (${occurredAt.toISOString()}).`)
+      } });
+      if (evidence.kind === "bought" && !order.storeOrderNumber) order.storeOrderNumber = number!;
+    }
+    const synced = await syncMultiStoreStatus(tx, order.id, occurredAt);
+    return { order: synced.order, eventIds: created };
+  });
+  for (const id of result.eventIds) {
+    await dispatchDeliveryEvent(id).catch((error) => {
+      console.warn("[delivery-event:dispatch]", id, error instanceof Error ? error.message : "failed");
+    });
+  }
   return result.order;
 }
 

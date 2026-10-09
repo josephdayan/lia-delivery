@@ -16,6 +16,7 @@ import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, no
 import { humanEstimate } from "./live-freight";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
+import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
 
 export async function sendFreightChoice(phone: string, choice: FreightChoiceState) {
   const totalFor = (fee: number) =>
@@ -63,6 +64,9 @@ export async function opsPublishManualQuote(
     // onde só existe o subtotal — as faixas progressivas valem sobre ele inteiro.
     serviceFee?: number;
     items?: { qty: number; name: string; unitPrice?: number }[];
+    // Cesta de várias lojas (09/10): frete e prazo de CADA loja. Vira uma entrada por loja em
+    // `fulfillments`, com a parte do cliente — é o que a compra e a devolução de cada loja usam.
+    perStore?: Array<{ storeKey: string; storeLabel: string; fee: number; promise?: string }>;
   }
 ) {
   const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
@@ -114,6 +118,13 @@ export async function opsPublishManualQuote(
     retailerTotal: produtos,
     etaMinutes: input.etaMinutes
   };
+  const perStoreStores = new Set(items.map((i) => i.storeKey));
+  const perStore =
+    input.perStore && input.perStore.length > 1 &&
+    input.perStore.every((s) => perStoreStores.has(s.storeKey)) && perStoreStores.size === input.perStore.length &&
+    Math.abs(input.perStore.reduce((sum, s) => sum + s.fee, 0) - deliveryFee) < 0.01
+      ? buildStoreFulfillments(items as SplitItem[], input.perStore, total)
+      : null;
   // Flip ATÔMICO: a condição de status vai no próprio UPDATE. Sem isso, um cancelamento
   // concorrente (cliente mandando "cancelar", ou a expiração de abandono) era
   // sobrescrito e o pedido "ressuscitava" indo pedir pagamento.
@@ -122,7 +133,7 @@ export async function opsPublishManualQuote(
     data: {
       status: "awaiting_quote_confirmation",
       items: items as unknown as object,
-      fulfillments: [fulfillment] as unknown as object,
+      fulfillments: (perStore ?? [fulfillment]) as unknown as object,
       itemsSubtotal,
       serviceFee,
       deliveryFee,
@@ -594,12 +605,21 @@ export async function watchPaidOrder(
   now = new Date()
 ): Promise<"none" | "operator" | "operator+customer" | "auto_refunded" | "auto_refund_failed" | "plan_b_offered"> {
   let order = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
-  if (!order || order.status !== "paid" || order.storeOrderNumber || !order.paidAt) return "none";
+  if (!order || order.status !== "paid" || !order.paidAt) return "none";
+  // Pedido de várias lojas (09/10): o prazo vale POR LOJA — a loja que não comprou a tempo devolve só
+  // a parte dela; as outras seguem. Nunca o estorno integral (uma loja pode estar pagando o Pix dela).
+  const multi = isMultiStoreOrder(order) && perStoreQuoteReady(order);
+  if (multi) {
+    if ((await refundStaleStores(order, now)) > 0) return "auto_refunded";
+    order = (await prisma.deliveryOrder.findUnique({ where: { id: orderId } })) ?? order;
+    if (order.status !== "paid") return "none";
+  }
+  if (order.storeOrderNumber) return "none";
 
   // Plano B antes de tudo (04/09): bloqueio novo → substituto verificado oferecido na
   // hora. Marcadores na nota evitam repetir; "sem substituto" segue para alerta/estorno.
   const notes0 = order.notes ?? "";
-  if (blockedReasonOf(notes0) && !notes0.includes(PLAN_B_OFFERED_PREFIX) && !notes0.includes(PLAN_B_NONE_PREFIX) && !notes0.includes(PLAN_B_ACCEPTED_PREFIX)) {
+  if (!multi && blockedReasonOf(notes0) && !notes0.includes(PLAN_B_OFFERED_PREFIX) && !notes0.includes(PLAN_B_NONE_PREFIX) && !notes0.includes(PLAN_B_ACCEPTED_PREFIX)) {
     const { offerPlanB } = await import("./plan-b");
     const outcome = await offerPlanB(orderId, {}, now);
     if (outcome === "offered") return "plan_b_offered";
@@ -610,7 +630,7 @@ export async function watchPaidOrder(
   // e devolver o dinheiro no mesmo tick.
   const manualQueue = Boolean(await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: orderId, status: "manual_queue" }, select: { id: true } }));
   const decision = autoRefundDecision({ ...order, manualQueue }, now);
-  if (decision.refund) {
+  if (decision.refund && !multi) {
     const shortId = order.id.slice(-6).toUpperCase();
     try {
       await opsPurchaseFailedRefund(orderId, decision.customerReason, { origin: "auto", internalReason: decision.reason });
@@ -671,6 +691,32 @@ export async function watchPaidOrder(
   return "operator+customer";
 }
 
+// Lojas de um pedido de várias lojas que passaram do prazo sem compra (mesma régua do estorno
+// automático do pedido inteiro: bloqueio, fila manual ou 6 h sem compra). Devolve só a parte de cada uma.
+async function refundStaleStores(order: { id: string; status: string; paidAt: Date | null; notes: string | null }, now: Date): Promise<number> {
+  const jobs = await prisma.purchaseJob.findMany({ where: { deliveryOrderId: order.id, storeOrderNumber: null, status: { in: ["queued", "retrying", "needs_review", "awaiting_approval", "manual_queue", "preflight_queued"] } } });
+  let refunded = 0;
+  for (const job of jobs) {
+    const decision = autoRefundDecision({ status: "paid", storeOrderNumber: null, paidAt: order.paidAt, notes: order.notes, manualQueue: job.status === "manual_queue" }, now);
+    if (!decision.refund) continue;
+    try {
+      const { refundStoreShare } = await import("./purchase/store-refund");
+      const result = await refundStoreShare(job.id, { reason: decision.customerReason, internalReason: `${job.storeLabel}: ${decision.reason}`, origin: "auto" });
+      if (result.status === "refunded") refunded += 1;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[auto-refund:store-share-failed]", order.id, job.storeKey, message);
+      const marker = `${AUTO_REFUND_FAILED_MARKER} (${job.storeLabel})`;
+      const current = await prisma.deliveryOrder.findUnique({ where: { id: order.id }, select: { notes: true, phone: true } });
+      if (current && !(current.notes ?? "").includes(marker)) {
+        await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(current.notes, `${marker}: ${message.replace(/[\r\n]/g, " ").slice(0, 160)} (${now.toISOString()}) — tenta de novo a cada 10 min.`) } });
+        await notifyOwner(copy.operatorAutoRefundFailedAlert(order.id.slice(-6).toUpperCase(), `${job.storeLabel}: ${message}`), current.phone);
+      }
+    }
+  }
+  return refunded;
+}
+
 // "Não consegui comprar → estornar": um clique no /ops que estorna pelo provedor,
 // fecha o pedido e explica ao cliente, com o motivo. Sem razão no pagamento
 // (pedido antigo), lança a mensagem legível e o caminho manual continua valendo.
@@ -692,6 +738,28 @@ export async function autoRefundStoreCanceled(
   if ((current.notes ?? "").includes(STORE_CANCELED_REFUND_MARK) || current.status === "refunded") return "already";
   if (!current.paidAt || !["retailer_preparing", "retailer_out_for_delivery", "paid", "refund_pending"].includes(current.status)) return "skipped";
   const shortId = orderId.slice(-6).toUpperCase();
+  // Pedido de várias lojas (09/10): a loja que cancelou devolve só a parte dela; as outras seguem.
+  if (isMultiStoreOrder(current)) {
+    const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: orderId, storeKey: input.storeKey, storeOrderNumber: input.storeOrderNumber } });
+    if (!job) return "skipped";
+    if (job.status === "canceled" && job.lastErrorCode === STORE_SHARE_REFUNDED) return "already";
+    try {
+      const { refundStoreShare } = await import("./purchase/store-refund");
+      const result = await refundStoreShare(job.id, { reason: `a ${input.storeLabel} cancelou a parte dela`, internalReason: `${input.storeLabel} cancelou o pedido ${input.storeOrderNumber} depois da compra (via ${input.source}); Pix pago à loja a recuperar`, origin: "auto", storeCanceled: { storeOrderNumber: input.storeOrderNumber } });
+      if (result.status === "skipped") return "skipped";
+      console.warn("[store-canceled:auto-refund-share]", input.storeKey, shortId, input.storeOrderNumber, result.reference);
+      return "refunded";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[store-canceled:auto-refund-share-failed]", orderId, input.storeKey, message);
+      const marker = `${AUTO_REFUND_FAILED_MARKER} (${input.storeLabel})`;
+      if (!(current.notes ?? "").includes(marker)) {
+        await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(current.notes, `${marker}: loja cancelou e a devolução da parte dela falhou — ${message.replace(/[\r\n]/g, " ").slice(0, 160)} (${new Date().toISOString()}).`) } });
+        await notifyOwner(copy.operatorAutoRefundFailedAlert(shortId, `${input.storeLabel}: ${message}`));
+      }
+      return "failed";
+    }
+  }
   try {
     const result = await refundOrderViaProvider(orderId);
     const payout = await prisma.pixPayout.findFirst({ where: { deliveryOrderId: orderId, status: "paid" }, orderBy: { createdAt: "desc" } });

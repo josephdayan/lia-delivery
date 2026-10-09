@@ -719,6 +719,15 @@ export const whatsappAdapter = {
     ]);
   },
 
+  // Oferta de juntar a cesta numa loja só (09/10): o toque volta como `consolidar:sim` / `consolidar:nao`.
+  async sendConsolidationOffer(to: string, body: string, storeLabel: string, stores: number) {
+    if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
+    return sendMetaSimpleButtons(to, body, [
+      { id: "consolidar:sim", title: `Juntar na ${storeLabel}`.slice(0, 20) },
+      { id: "consolidar:nao", title: `Manter ${stores} lojas`.slice(0, 20) }
+    ]);
+  },
+
   // Aviso de espera de cotação com a saída SEMPRE visível (pedido do dono, 11/08): botão
   // "Cancelar pedido" cujo toque volta como o texto "cancelar" e cai no cancel contextual
   // que já existe. Fora do Meta retorna null e o chamador manda o texto puro.

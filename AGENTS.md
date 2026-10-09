@@ -1,3 +1,33 @@
+## REGRA VIGENTE — Pedido de várias lojas fecha; juntar numa loja só é oferta, não trava (dono, 09/10/2026)
+
+Dono: "pedido de duas coisas de lojas diferentes tem que fechar… a regra certa é oferecer, não impor". Substitui a
+trava "uma loja por pedido" de 08/10 (noite) e o `split` do ensaio da compra.
+- **Oferta** (`continueAfterBasket`): quando `consolidateBasketStores` acha uma loja que cobre tudo, a Lia pergunta
+  com os dois totais e o número de entregas (`copy.consolidationOffer`, botões `consolidar:sim`/`consolidar:nao`,
+  texto "juntar"/"manter"; `ctx.consolidationOffer`). Juntar = troca anunciada como antes; manter = segue com as
+  lojas. Qualquer outra mensagem descarta a oferta. Nada mais na conversa mudou.
+- **Cotação por loja**: cesta de 2+ lojas grava em `DeliveryOrder.fulfillments` uma entrada por loja com frete,
+  prazo, custo dos itens, margem e `customerShare` (soma das partes = total ao centavo; `buildStoreFulfillments`
+  em `src/lib/purchase/store-split.ts`). Pedido de 2+ lojas sem essa cotação nunca vira compra automática.
+- **Compra por loja**: um `PurchaseJob` por loja (`fulfillmentKey` = loja), com a parte da cesta, o teto
+  (itens + frete da loja), o hash e o Pix de saída de cada uma. `order.storeOrderNumber` = o da primeira loja
+  comprada (as travas antigas de estorno integral/desistência continuam valendo); a trava de compra repetida é
+  por trabalho. Status do pedido = o da loja mais atrasada (`aggregateOrderStatus`).
+- **Falha parcial** (`refundStoreShare` em `src/lib/purchase/store-refund.ts`): loja que recusa ANTES de ter
+  dinheiro a caminho (sem pedido criado sem conferência, sem Pix de saída) devolve só a parte dela
+  (`refundOrderViaProvider(id, parte, { onlyJobId })`), o trabalho fica `canceled`/`STORE_SHARE_REFUNDED` e as
+  outras seguem. Reserva `store_refund` por trabalho evita devolução dupla; a compra das outras confere
+  "devolvido = soma das partes devolvidas". Vale no comprador (`refundServerJobFailure`) e no vigia do pago
+  (`refundStaleStores`, mesmo prazo de 6 h por loja). Última loja devolvida = pedido `refunded`. Nota de devolução
+  parcial sem 🛑/ESTORNO (essas marcas travam a compra das outras).
+- **Acompanhamento por loja**: eventos com chave `${pedido}:${loja}:${tipo}` e avisos "comprei/saiu/chegou a parte
+  da <loja>" (`copy.storePart*`); assinatura única `storeKey: "multi"` e o vigia de loja parada lê cada loja no
+  seu pedido (`pollMultiStoreOrders`). Loja que cancela depois da compra = `🚫 A <loja> cancelou a parte dela`,
+  e a parte dela volta sozinha (`autoRefundStoreCanceled` → `refundStoreShare` com `storeCanceled`; nunca o
+  estorno do pedido inteiro); o Pix pago à loja fica a recuperar com ela.
+- Pedido de UMA loja: nada mudou (mesmo hash, mesmos caminhos). Testes: `tests/multi-store-purchase-2026-10-09.test.ts`
+  e `tests/basket-one-store-2026-10-08.test.ts`.
+
 ## REGRA VIGENTE — Nunca cobrar o que a compra não consegue fazer (08/10/2026, noite, dono: "o maior problema da Lia")
 
 Caso real: a vitrine prometeu TURBO 30 min (Drogarias Pacheco), o dono pagou, a compra estornou ("nenhuma entrega
@@ -9,7 +39,7 @@ janela de entrega obrigatória (Mambo), Pix de saída recusado pelo Asaas. Três
   sem coordenada "rápida 30m", com coordenada "60m".
 - **Ensaio da compra** (`src/lib/purchase/rehearsal.ts`, via `findChargeBlock` em order-payments.ts): primeiro
   `executabilityFailure` — **toda compra é por API, não existe fila manual** (dono, 08/10): cesta de 2 lojas
-  (`split`, fica a loja com mais R$), loja fora da API/sem liberação/sem conta (`store`) ou item sem link de
+  (`split`; desde 09/10 não é mais recusa, cada loja é conferida), loja fora da API/sem liberação/sem conta (`store`) ou item sem link de
   compra nunca são cobrados (Pague Menos 23/09 e ML 06/10 foram cobrados → "fila manual" → estorno). Depois roda os
   MESMOS passos da compra automática (cesta, perfil, endereço com coordenadas, entrega dentro do prazo prometido, Pix,
   conferência, **preço ≤ teto cotado**) e para antes de fechar; esvazia a cesta. Recusa da loja = nada cobrado (item →
@@ -200,7 +230,7 @@ nome da Lia). Ressalva conhecida: a nota da loja mostra o preço da loja (menor 
 em markup com `LIA_CUSTOMER_INVOICE=false` (`tests/helpers/load-env.ts`); a regra nova tem
 `tests/service-fee-mode.test.ts`. Substitui a regra da manhã de 08/10 (preço da loja + "Taxa de serviço da Lia").
 
-## REGRA VIGENTE — Uma loja por pedido: a Lia junta a lista numa loja só (dono, 08/10/2026 noite, "Conserta")
+## SUPERADA em 09/10 (juntar virou oferta) — Uma loja por pedido: a Lia junta a lista numa loja só (dono, 08/10/2026 noite, "Conserta")
 
 Caso real: "2 vodkas absolute, 1 suco de laranja, 1 gin, 4 red bull" caiu em Santa Luzia + Americanas + Mambo,
 travou no mínimo da Americanas, a troca ia levar o suco pra uma 4ª loja, e "Quando chega" respondeu "Até agora…
