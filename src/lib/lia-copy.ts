@@ -1973,6 +1973,20 @@ export function newListDropped(names: string[]): string {
   return `Comecei uma lista nova e deixei de fora o que estava antes (${shown.join(", ")}${more}). Se era pra somar, é só pedir de novo com *adiciona*.`;
 }
 
+// Cesta ativa + lista sem pista de recomeço (09/10, rodada 4): soma e diz como trocar tudo, numa linha.
+export function summedToBasket(labels: string[]): string {
+  const shown = [...new Set(labels.map((n) => n.trim()).filter(Boolean))].slice(0, 4).map((n) => `*${n}*`);
+  const more = labels.length > shown.length ? ` e mais ${labels.length - shown.length}` : "";
+  return `Somei ${shown.join(", ")}${more} ao que você já tinha; se era pra trocar tudo, diga *nova lista*.`;
+}
+
+// Item pedido de novo que já estava na cesta (09/10, rodada 4, M3): uma linha só, quantidade somada.
+export function repeatedItemMerged(lines: { name: string; qty: number; added: number }[]): string {
+  const parts = lines.map((l) => `*${l.name}* (+${l.added}, agora *${l.qty}x*)`);
+  const was = lines.length === 1 ? ` pra *${lines[0].qty - lines[0].added}x*` : "";
+  return `${parts.join(", ")} já estava na cesta — somei na mesma linha. Se foi repetido sem querer, me diz que eu volto${was}.`;
+}
+
 // "vai mudar o frete?" com pedido já cotado → o número real, não a explicação genérica.
 export function currentFee(fee: number): string {
   return `A entrega do seu pedido está em *${brl(fee)}*. Se mudar endereço ou cesta, eu recalculo.`;

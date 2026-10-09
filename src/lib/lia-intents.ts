@@ -1160,6 +1160,27 @@ export function isExplicitClearAll(text: string): boolean {
   return CLEAR_ALL_RE.test(normalizeMsg(text));
 }
 
+// Intenção EXPLÍCITA de trocar a lista inteira (09/10, rodada 4): com a cesta ativa, só isto recomeça; o resto soma.
+// "nova lista: …", "começa de novo, …", "esquece tudo e manda …", "na verdade quero só …". Devolve o que sobra (os
+// itens da lista nova, no texto original) ou null quando não há pista de recomeço.
+const RESTART_HEAD_RE = new RegExp(
+  "^\\s*(?:(?:ah|ai|ops|opa|olha|ent[aã]o|pensando bem|na verdade|desculpa|errei)[,!.\\s]+)*" +
+    "(?:(?:faz|faça|fa[cç]a|bora|vamos|quero)\\s+(?:uma\\s+|um\\s+)?)?" +
+    "(?:nova lista|lista nova|outra lista|novo pedido|outro pedido|recome[cç]a(?:r)?(?: tudo)?|come[cç]a(?:r)? (?:de novo|do zero|tudo de novo)|do zero|zera(?:r)?(?: tudo| a lista| a cesta| o carrinho)?" +
+    "|(?:esquece|esque[cç]a|apaga|limpa|cancela|tira)(?: tudo| isso tudo| tudo isso| a lista| a cesta| o carrinho| o que eu pedi| o resto)" +
+    "|(?:na verdade|pensando bem),?\\s+(?:eu\\s+)?(?:quero|preciso(?: de)?|vou querer|s[oó] quero|manda|me v[eê])(?:\\s+(?:s[oó]|somente|apenas))?(?=\\s+\\S))" +
+    "(?:\\s*[,:;.!-]+\\s*|\\s+)?(?:(?:e|agora|ai|a[ií])\\s+)?(?:(?:manda|quero|me v[eê]|traz|preciso(?: de)?|coloca|p[oõ]e|s[oó])\\s+)?",
+  "i"
+);
+export function splitRestartCue(text: string): { rest: string } | null {
+  const m = text.match(RESTART_HEAD_RE);
+  if (!m) return null;
+  const head = normalizeMsg(m[0]);
+  // "na verdade quero só" exige o "só/somente/apenas" (sem ele é correção de item: "na verdade quero de uva").
+  if (/^(?:.*\s)?(?:na verdade|pensando bem)\b/.test(head) && !/\b(?:nova lista|lista nova|outra lista|novo pedido|outro pedido|recomec|comec|zera|esquec|apaga|limpa|cancela|tira|do zero)/.test(head) && !/\b(so|somente|apenas)\b/.test(head)) return null;
+  return { rest: text.slice(m[0].length).replace(/^[\s,:;.!-]+|[\s,;.!]+$/g, "") };
+}
+
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
 // pede o pedido anterior (sem produto no meio) — vai direto ao ramo de repetir, sem passar pela IA do diálogo.
 const REPEAT_ORDER_RE =

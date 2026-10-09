@@ -201,7 +201,10 @@ test("lista nova com cesta montada: recomeça do zero (sem cancelar); 'também'/
   if (!dbOk) return t.skip();
   const velho = await item("banana prata organica tamiso", "oba", 1, /Tamiso/);
   const c = await customerWith([velho]);
-  const out = await send(c.phone, "2 leites integral piracanjuba, 1 arroz camil 5kg");
+  // O caso real era a cesta de 24 min atrás (09/10, rodada 4: com a cesta recente, lista sem pista de recomeço SOMA —
+  // ver rodada4-g10). Aqui a cesta conta como parada.
+  process.env.LIA_NEW_MISSION_AFTER_MS = "0";
+  const out = await send(c.phone, "2 leites integral piracanjuba, 1 arroz camil 5kg").finally(() => delete process.env.LIA_NEW_MISSION_AFTER_MS);
   const convo = await prisma.conversation.findFirstOrThrow({ where: { userId: c.userId } });
   const ctx = JSON.parse(convo.context ?? "{}");
   const names = [...(ctx.basket ?? []), ...(ctx.pending ?? []).map((p: { query: string }) => ({ name: p.query }))].map((i: { name: string }) => i.name).join(" | ");
