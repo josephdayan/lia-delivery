@@ -174,7 +174,12 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       if (!from || from.kind !== "basket") return "alvo_invalido";
       const to = a.to?.replace(/\s+/g, " ").trim();
       if (!to || to.length > 100) return "sem_destino";
-      return { type: "swap", from, to };
+      // "troca por bolacha água e sal e coloca 3" (09/10, teste real): a quantidade dita junto da troca se perdia — o
+      // modelo não tem campo de quantidade no swap. Quantidade de unidades depois de coloca/bota/quero entra na busca.
+      const said = text.match(/\b(?:coloca|bota|poe|põe|quero|manda)\s+(\d{1,2}|dois|duas|tr[eê]s|quatro|cinco|seis)\b/i);
+      const words: Record<string, string> = { dois: "2", duas: "2", tres: "3", "três": "3", quatro: "4", cinco: "5", seis: "6" };
+      const qty = said ? words[said[1].toLowerCase()] ?? said[1] : undefined;
+      return { type: "swap", from, to: qty && !/\d/.test(to) && Number(qty) > 1 ? `${qty} ${to}` : to };
     }
     case "skip_current":
       return onScreen ? { type: "skip_current" } : "sem_opcoes_na_tela";
