@@ -10,6 +10,9 @@ import { test, before, after, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
+import { planActions } from "../src/lib/dialogue/plan";
+import { buildDialogueState } from "../src/lib/dialogue/state";
+import type { DeliveryContext } from "../src/lib/conversation-types";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { storeSlotsInFlight, withStoreSlot } from "../src/lib/store-throttle";
@@ -137,4 +140,14 @@ test("09/10: 'adicionar 1 gin e 1 vodka' com cesta montada soma — não apaga a
   const ctx = await ctxOf(c.userId);
   const names = (ctx.basket ?? []).map((b) => b.name).join(" | ");
   assert.match(names, /Feijão Preto/, `a cesta antiga sumiu: ${names}`);
+});
+
+test("09/10: modelo devolve 3 buscas para uma lista de 6 -> plano inválido (cai no pipeline determinístico)", () => {
+  const state = buildDialogueState({ flow: "delivery", step: "collecting" } as DeliveryContext, { hasAddress: true });
+  const search = (query: string) => ({ type: "search" as const, query, qty: 1 });
+  const text = "também ração de gato, carregador usb, pilha aa, fita adesiva, sabão em pó, papel higiênico";
+  const cut = planActions({ actions: [search("ração gato"), search("carregador usb"), search("pilha aa")] }, state, { text });
+  assert.equal(cut.ok, false);
+  const whole = planActions({ actions: [search("ração gato"), search("carregador usb"), search("pilha aa")] }, state, { text: "ração de gato, carregador usb e pilha aa" });
+  assert.equal(whole.ok, true);
 });
