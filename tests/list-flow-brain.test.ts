@@ -258,7 +258,10 @@ test("'Pagar' sem abrir o formulário segue com as sugestões", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer();
   await send(phone, LIST);
-  const out = await send(phone, "pagar");
+  let out = await send(phone, "pagar");
+  // Cesta em 2+ lojas (09/10): a lista não junta sozinha; o fechamento oferece juntar ou manter.
+  // (Aqui o feijão sozinho na Carrefour ficaria abaixo do mínimo dela: juntar é o que fecha.)
+  if (/\*juntar\* ou \*manter\*/.test(out)) out = await send(phone, "juntar");
   assert.match(out, /R\$/, out.slice(0, 300));
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { user: { phone } }, orderBy: { createdAt: "desc" } });
   assert.equal((order.items as unknown[]).length, 3, "a cotação sai com as sugestões");

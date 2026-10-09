@@ -174,12 +174,17 @@ async function send(phone: string, text: string): Promise<string> {
   await handleDeliveryMessage({ phone, text, messageId: `sfm_${RUN}_${++seq}` });
   return outbox.slice(start).filter((m) => m.to === phone).map((m) => m.text).join("\n---\n");
 }
+// "pagar" com a cesta em 2 lojas: desde 09/10 a lista não junta sozinha e o fechamento oferece juntar.
+async function pay(phone: string): Promise<string> {
+  const out = await send(phone, "pagar");
+  return /\*juntar\* ou \*manter\*/.test(out) ? send(phone, "juntar") : out;
+}
 
 test("cotação: margem embutida nos itens, NENHUMA linha de taxa, total = loja + margem + frete; pedido com o CPF do cliente", async (t) => {
   if (!dbOk) return t.skip();
   const phone = await customer(true);
   await send(phone, "2 leites, arroz e feijão");
-  const out = await send(phone, "pagar");
+  const out = await pay(phone);
   assert.match(out, /Total: R\$/, out.slice(0, 600));
   assert.doesNotMatch(out, /taxa/i, out.slice(0, 600));
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { user: { phone } }, orderBy: { createdAt: "desc" } });
@@ -199,7 +204,7 @@ test("sem CPF cadastrado: a cotação sai igual e a compra fica no CNPJ da Lia (
   if (!dbOk) return t.skip();
   const phone = await customer(false);
   await send(phone, "2 leites, arroz e feijão");
-  const out = await send(phone, "pagar");
+  const out = await pay(phone);
   assert.match(out, /Total: R\$/, out.slice(0, 600));
   assert.doesNotMatch(out, /taxa/i, out.slice(0, 600));
   assert.doesNotMatch(out, /CPF/, "não pede CPF para compra comum");
