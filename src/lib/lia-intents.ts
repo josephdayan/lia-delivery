@@ -2509,6 +2509,24 @@ export function parseChoiceEtaAsk(text: string): { option?: number; today: boole
   return { ...(opt ? { option: Number(opt[1]) } : {}), today: /\bhoje\b/.test(n) };
 }
 
+// "o sabonete pode ser o mais barato", "troca o shampoo pelo mais barato", "quero o arroz mais barato" com a lista
+// montada (09/10, rodada com a IA: a IA perguntava "você quer trocar por uma opção mais barata?"). Devolve o item.
+export function parseItemCheapest(text: string): string | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const cheap = "(?:o |a |os |as )?mais (?:barat[oa]s?|em conta)";
+  const pats = [
+    new RegExp(`^(?:e |mas |ah )?(?:o |a |os |as )?(.+?) (?:pode ser|podem ser|quero|prefiro|eu quero|vou querer) ${cheap}$`),
+    new RegExp(`^(?:troca|troque|muda|mude) (?:o |a |os |as )?(.+?) (?:pel[oa]s?|pra|para|por) ${cheap}$`),
+    new RegExp(`^(?:pode ser|quero|prefiro|manda) ${cheap} (?:d[oa]s? |no |na |pro |pra )?(.+)$`)
+  ];
+  for (const re of pats) {
+    const m = n.match(re);
+    const item = m?.[1]?.replace(/^(?:o|a|os|as)\s+/, "").trim();
+    if (item && item.split(" ").length <= 4 && !/\b(opcao|numero|\d)\b/.test(item)) return item;
+  }
+  return null;
+}
+
 // Número de opção pedido ("5", "o 5", "opção 5", "quero o 5") — para dizer "são só 3".
 export function parseChoiceNumber(text: string): number | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();

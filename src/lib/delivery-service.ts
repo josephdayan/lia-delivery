@@ -22,7 +22,7 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2206,6 +2206,37 @@ async function handleDeliveryTurn(
     await writeCtx(convo.id, ctx);
     await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
     return;
+  }
+
+  // "o sabonete pode ser o mais barato" com a lista do formulário montada (09/10): troca pela opção mais barata da
+  // vaga (sem nova busca) ou diz que já é. A IA perguntava de volta.
+  if (ctx.listFlow?.slots.length && ctx.basket?.length && (!ctx.step || ctx.step === "collecting")) {
+    const itemAsk = parseItemCheapest(text);
+    const slot = itemAsk ? ctx.listFlow.slots.find((sl) => sharesProductNoun(sl.query, itemAsk)) : undefined;
+    const pool = slot ? [...slot.options, ...(slot.extraOptions ?? [])].filter((o) => o.unitPrice > 0) : [];
+    if (slot && itemAsk && pool.length) {
+      const cheapest = pool.reduce((a, b) => (display(b.unitPrice, b.medicine) < display(a.unitPrice, a.medicine) ? b : a));
+      const currentSku = slotCurrentSku(slot, ctx.basket);
+      const current = ctx.basket.find((item) => item.sku === currentSku);
+      const where = [cheapest.storeLabel, cheapest.delivery ? compactCardDelivery(cheapest.delivery) : ""].filter(Boolean).join(" · ");
+      const already = Boolean(current) && display(current!.unitPrice, current!.medicine) <= display(cheapest.unitPrice, cheapest.medicine);
+      if (!already) {
+        const qty = current?.qty ?? Math.max(1, slot.qty);
+        ctx.basket = mergeBaskets(
+          ctx.basket.filter((item) => item.sku !== currentSku),
+          [choiceToBasketItem(cheapest, qty, cheapest.storeKey ? getStore(cheapest.storeKey) : orderStore(ctx), slot.query)]
+        );
+        ctx.listFlow = {
+          ...ctx.listFlow,
+          slots: ctx.listFlow.slots.map((sl) => (sl === slot ? { ...sl, suggestedSku: cheapest.sku } : sl)),
+          basketSig: basketSignature(ctx.basket)
+        };
+        await writeCtx(convo.id, ctx);
+      }
+      const shown = already && current ? current : cheapest;
+      await reply(phone, copy.itemCheapestAnswer({ item: slot.query, name: shown.name, price: display(shown.unitPrice, shown.medicine), where, already }));
+      return;
+    }
   }
 
   // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
@@ -6848,10 +6879,19 @@ async function handleSwap(
 function runBasketComposer(pending: PendingChoice[]): string[] {
   const composedNotes: string[] = [];
   if (process.env.LIA_BASKET_COMPOSER_OFF !== "true" && pending.length >= 2) {
+    // Só troca por opção tão básica e tão fiel ao pedido quanto a 1ª (09/10, rodada com a IA: "feijão" virou
+    // "Feijão Carioca Pronto Com Tempero 380g" pra juntar loja). `allowed[i]` guarda o índice original.
+    const allowed = pending.map((p) => {
+      const first = p.options[0];
+      if (!first) return [] as number[];
+      const pen = variantPenalty(p.query, first.name);
+      const miss = missingAskWords(p.query, { name: first.name });
+      return p.options.map((o, j) => (j === 0 || (variantPenalty(p.query, o.name) <= pen && missingAskWords(p.query, { name: o.name }) <= miss) ? j : -1)).filter((j) => j >= 0);
+    });
     const composition = composeBasket(
-      pending.map((p) => ({
+      pending.map((p, i) => ({
         qty: Math.max(1, p.qty),
-        options: p.options.map((o) => ({
+        options: allowed[i].map((j) => p.options[j]).map((o) => ({
           sku: o.sku,
           name: o.name,
           unitPrice: o.unitPrice,
@@ -6865,7 +6905,7 @@ function runBasketComposer(pending: PendingChoice[]): string[] {
     const saved = Math.round((composition.before.total - composition.after.total) * 100) / 100;
     if (composition.moves.length && saved >= 3) {
       for (let i = 0; i < pending.length; i++) {
-        const pick = composition.picks[i];
+        const pick = allowed[i][composition.picks[i]] ?? 0;
         if (pick > 0) {
           const line = pending[i];
           const chosen = line.options[pick];

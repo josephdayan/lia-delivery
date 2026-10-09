@@ -1173,6 +1173,13 @@ export function trustAnswer(): string {
 export function choicesStillOpen(query: string): string {
   return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
 }
+// "o sabonete pode ser o mais barato" (09/10): já é / troquei — com loja e prazo, que mudam junto.
+export function itemCheapestAnswer(input: { item: string; name: string; price: number; where?: string; already: boolean }): string {
+  const tail = `*${input.name}* — ${brl(input.price)}${input.where ? ` · _${input.where}_` : ""}`;
+  return input.already
+    ? `O *${input.item}* já é o mais barato que achei: ${tail}.`
+    : `✅ Troquei pelo mais barato: ${tail}.`;
+}
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
 }

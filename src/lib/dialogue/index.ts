@@ -95,6 +95,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (DETERMINISTIC_INTENTS.has(i.intent.kind) && !symptomComplaint) return `intent:${i.intent.kind}`;
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
+  // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".
+  if (i.intent.kind === "service_question" && i.intent.topic === "hours") return "intent:hours";
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
   // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";

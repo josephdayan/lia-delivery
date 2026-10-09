@@ -753,6 +753,22 @@ const ACCESSORY_HEADS = new Set([
   "chaveiro", "camiseta", "camisa", "bone", "toalha", "balde", "cooler", "bolsa", "mochila", "estojo", "capa", "adesivo",
   "ima", "pelucia", "boneco", "miniatura", "luminaria", "placa", "quadro", "poster", "fantasia"
 ]);
+// Item do dia a dia pedido SEM qualificador (09/10, rodada de cliente com a IA ligada): "óleo" é óleo de cozinha
+// (era "Óleo Secante Color" de unha sem a IA, e "não achei" com ela); "feijão" é o carioca; "açúcar", o refinado.
+// `accept` = o que o nome precisa ter pra ser o produto; `prefer` = a versão comum, que vem primeiro.
+const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer: RegExp }> = {
+  oleo: {
+    accept: /\b(soja|girassol|milho|canola|oliva|olliva|algodao|cozinha|composto)\b/,
+    reject: /\b(corporal|corpo|capilar|cabelo|hidratante|massagem|bebe|pele|facial|rosto|banho|unha|maquina|madeira)\b/,
+    prefer: /\bsoja\b/
+  },
+  feijao: { prefer: /\bcarioca\b/ },
+  acucar: { prefer: /\b(refinado|cristal)\b/ }
+};
+function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
+  const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
+  return core.length === 1 ? STAPLE_DEFAULTS[core[0]] : undefined;
+}
 export function conciergeMatchIsStrong(rawQuery: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
   const query = joinMeasures(rawQuery);
   return [query, ...queryAliases(query)].some((q) => strongFor(q, item, opts));
@@ -797,6 +813,8 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   // o produto é o COPO, não a bebida. Nome que começa com acessório não pedido nunca é o produto pedido.
   const head = normalizeText(item.name).split(/\s+/)[0] ?? "";
   if (ACCESSORY_HEADS.has(head) && !wordTokens.includes(head) && !wordTokens.some((t) => ACCESSORY_HEADS.has(t))) return false;
+  const staple = stapleFor(query);
+  if (staple?.accept && (!staple.accept.test(normalizeText(item.name)) || staple.reject?.test(normalizeText(item.name)))) return false;
   const specMissing = wordTokens.some((token) => SPEC_TOKENS.has(token) && !nameTokens.has(token) &&
     !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
   if (specMissing) return false;
@@ -931,7 +949,10 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bcoca ?cola\b|\bcocas?\b/, "coca cola"],
   [/\bguaranas?\b/, "guarana"],
   [/\bheinekem\b|\bheineke\b/, "heineken"],
-  [/\bjhonnie|\bjohnny walker|\bjhonny walker/, "johnnie walker"]
+  [/\bjhonnie|\bjohnny walker|\bjhonny walker/, "johnnie walker"],
+  // Item do dia a dia sem qualificador (09/10): a busca da loja por "óleo" traz secante de unha e óleo corporal.
+  [/^oleos?$/, "oleo de soja"],
+  [/^feijao$/, "feijao carioca"]
 ];
 // Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
 // "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.
@@ -1182,5 +1203,7 @@ export function variantPenalty(query: string, name: string): number {
   if (wantsSugarFree && !SUGAR_FREE.some((t) => tokens.has(t)) && !(tokens.has("sem") && tokens.has("acucar"))) penalty += 1;
   // "Suco de laranja COM maçã", "com vitaminas": algo a mais que o pedido não tem.
   if (tokens.has("com") && !asked.has("com")) penalty += 1;
+  const staple = stapleFor(query);
+  if (staple && !staple.prefer.test(normalizeText(name))) penalty += 1;
   return penalty;
 }

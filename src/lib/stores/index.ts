@@ -405,7 +405,10 @@ export async function gatherCrossStoreCandidates(
   for (const cand of ranked) {
     (distinct.some((d) => sameProductVariant(query, d.item, cand.item)) ? variants : distinct).push(cand);
   }
-  const main = [...distinct, ...variants];
+  // O que passa no piso de relevância vem antes do que não passa (09/10, "óleo": secante de unha e óleo corporal
+  // ocupavam as vagas e o óleo de soja da Mambo, R$ 7,99 e entrega hoje, ficava de fora). Ordem estável.
+  const strong = (c: StoreCandidate) => conciergeMatchIsStrong(query, c.item);
+  const main = [...distinct.filter(strong), ...variants.filter(strong), ...distinct.filter((c) => !strong(c)), ...variants.filter((c) => !strong(c))];
   if (!equivalents.length) return main.slice(0, limit);
   const keep = Math.min(2, equivalents.length);
   return [...main.slice(0, Math.max(0, limit - keep)), ...equivalents.slice(0, keep)];

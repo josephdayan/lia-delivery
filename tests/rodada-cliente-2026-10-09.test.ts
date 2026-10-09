@@ -84,3 +84,34 @@ test("pergunta de lado com os cards na tela: uma linha lembra a escolha (sem ree
   assert.match(t, /sabonete dove/);
   assert.doesNotMatch(t, /Olha o que achei/);
 });
+
+test("item do dia a dia sem qualificador: 'óleo' é de cozinha (soja primeiro), 'feijão' é o carioca", async () => {
+  const { conciergeMatchIsStrong, variantPenalty, queryAliases: aliases } = await import("../src/lib/stores/types");
+  const it = (name: string) => ({ sku: "x", name, unitPrice: 5 }) as never;
+  assert.equal(conciergeMatchIsStrong("óleo", it("Óleo Secante Color")), false);
+  assert.equal(conciergeMatchIsStrong("óleo", it("Óleo Corporal Paixão Flor de Baunilha 100ml")), false);
+  assert.equal(conciergeMatchIsStrong("óleo", it("Oleo Hidratante Corporal Farmax 100ml Girassol")), false);
+  assert.equal(conciergeMatchIsStrong("óleo", it("Óleo de Soja Soya 900ml")), true);
+  assert.equal(conciergeMatchIsStrong("óleo de coco", it("Óleo de Coco Extra Virgem 200ml")), true, "com qualificador vale o pedido");
+  assert.ok(variantPenalty("óleo", "Óleo de Girassol Liza 900ml") > variantPenalty("óleo", "Óleo de Soja Liza 900ml"));
+  assert.ok(variantPenalty("feijão", "Feijão Vermelho Urbano 500g") > variantPenalty("feijão", "Feijão Carioca Swift 1kg"));
+  assert.ok(variantPenalty("feijão", "Feijão Carioca Pronto Com Tempero Camil 380g") > variantPenalty("feijão", "Feijão Carioca Swift 1kg"));
+  assert.deepEqual(aliases("óleo"), ["oleo de soja"]);
+});
+
+test("'o sabonete pode ser o mais barato' é pedido do mais barato DAQUELE item da lista", async () => {
+  const { parseItemCheapest } = await import("../src/lib/lia-intents");
+  assert.equal(parseItemCheapest("o sabonete pode ser o mais barato"), "sabonete");
+  assert.equal(parseItemCheapest("troca o shampoo pelo mais barato"), "shampoo");
+  assert.equal(parseItemCheapest("pode ser o mais barato do arroz"), "arroz");
+  assert.equal(parseItemCheapest("qual o mais barato?"), null);
+  assert.equal(parseItemCheapest("pode ser o mais barato"), null);
+  assert.match(copy.itemCheapestAnswer({ item: "sabonete", name: "Sabonete Dove 90g", price: 5.71, where: "Americanas · 1 dia útil", already: true }), /já é o mais barato/);
+});
+
+test("horário de atendimento não passa pela IA (ela perguntava 'da Lia ou da loja?')", async () => {
+  const { dialogueBypassReason } = await import("../src/lib/dialogue");
+  const { detectIntent } = await import("../src/lib/lia-intents");
+  const text = "qual o horário de vocês?";
+  assert.equal(dialogueBypassReason({ text, intent: detectIntent(text), ctx: { step: "choosing" } as never, hasAddress: true, looksLikeList: false }), "intent:hours");
+});
