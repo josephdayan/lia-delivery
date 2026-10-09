@@ -199,7 +199,7 @@ export function parseHouseNumberReply(
 
 // "número 1000, quero pão de forma" (09/10, rodada 1): o número da casa dito junto do CEP e de um
 // pedido. Devolve o número e o resto da mensagem sem a expressão — nunca vira item.
-const LABELED_NUMBER_RE = /(?:^|[\s,;.])(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)(?:\s+(?:da casa|do pr[eé]dio))?\s*(?:[eé]|eh|:)?\s*(\d{1,5}[a-z]?|s\/?n)(?![\d/])/i;
+const LABELED_NUMBER_RE = /(?:^|[\s,;.])(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?|n\.?(?=\s*\d))(?:\s+(?:da casa|do pr[eé]dio))?\s*(?:[eé]|eh|:)?\s*(\d{1,5}[a-z]?|s\/?n)(?![\d/])/i;
 export function extractLabeledHouseNumber(raw: string): { numero: string; complemento?: string; rest: string } | null {
   const text = raw ?? "";
   const m = LABELED_NUMBER_RE.exec(text);
