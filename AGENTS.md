@@ -220,6 +220,16 @@ pelo fluxo inteiro. Corrigido (testes em `tests/rodada-cliente-2026-10-09.test.t
 - **Nome repetido pela loja** ("Energético Energy Drink Red Bull 250ml Energético Red Bull Energy Drink 250ml") limpo
   na exibição (`dedupeProductName`).
 - **Resumo depois do formulário** em uma linha ("✅ Lista salva: N itens · R$ X" + "🚚 loja · prazo").
+- **"2 cocas" virava "Copo Vidro Coca-Cola"**: acessório (copo, caneca, camiseta…) que o pedido não citou não é o
+  produto (`ACCESSORY_HEADS` em stores/types.ts).
+- **Troca pro mínimo da loja** só com preço até 1,5× e sem variante pior (era pão R$ 9,89 → R$ 26,84); a junção numa
+  loja só não troca por Zero/sabor nem junta em loja abaixo do mínimo.
+- **"cancela o pedido que paguei"** é cancelamento (era "seu pagamento já está confirmado").
+- **Marca pedida**: o NOME manda antes do campo de marca da loja; com 2+ opções que têm a marca no nome, a que não
+  tem sai da vitrine ("sabonete dove" mostrava um Nivea cadastrado como Dove).
+- **"qual o horário de vocês?"** é horário de atendimento (tópico `hours`), não prazo; **"vocês entregam no rio?"** com
+  os cards na tela é área, não o prazo das opções; depois de uma pergunta de lado com os cards na tela, uma linha
+  (`copy.choicesStillOpen`) lembra a escolha — o carrossel não é reenviado.
 
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
