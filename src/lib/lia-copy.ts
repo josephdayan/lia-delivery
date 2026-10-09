@@ -427,6 +427,16 @@ export function medicinePaymentChoiceText(pixTotal: number, cardTotal: number): 
   return `Como você quer pagar?\n• *Pix*: ${brl(pixTotal)}\n• *Cartão*: ${brl(cardTotal)}\n\nResponde *pix* ou *cartão*.`;
 }
 
+// "cancela" com vários itens em escolha (09/10, rodada 1): não apaga a cesta sem perguntar.
+export function cancelAllAsk(current?: string): string {
+  const keep = current ? ` tudo e sigo com *${current}*` : " a cesta";
+  return `Cancelar a cesta toda? Responde *sim* pra esvaziar tudo, ou *não* que eu mantenho${keep}.`;
+}
+
+export function cancelAllKept(): string {
+  return "Certo, mantive a cesta.";
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }

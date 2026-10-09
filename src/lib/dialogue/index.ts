@@ -86,7 +86,7 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   const { ctx, text } = i;
   if (!i.hasAddress) return "sem_cadastro";
   if (!HOOK_STEPS.has(ctx.step)) return "passo";
-  if (ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) {
+  if (ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.clearAllConfirm) {
     return "pergunta_aberta";
   }
   const trimmed = text.trim();

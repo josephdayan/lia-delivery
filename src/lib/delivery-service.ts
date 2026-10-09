@@ -1739,7 +1739,7 @@ function attendanceQuiet(ctx: DeliveryContext): boolean {
   if (ctx.pending?.length || ctx.basket?.length) return false;
   // Pergunta binária em aberto (plano B, "o de sempre", troca de loja, juntar pedido, cobrança, teto
   // estourado…): o "sim"/"ok" é resposta DELA, não espera pelo atendente.
-  if (ctx.planB || ctx.repeatConfirm || ctx.minSwap || ctx.consolidationOffer || ctx.mergeDecision || ctx.longTailOffer || ctx.freightChoice || ctx.budget?.awaiting || ctx.packConfirm || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) return false;
+  if (ctx.planB || ctx.repeatConfirm || ctx.minSwap || ctx.consolidationOffer || ctx.mergeDecision || ctx.longTailOffer || ctx.freightChoice || ctx.budget?.awaiting || ctx.packConfirm || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.clearAllConfirm) return false;
   return !ctx.step || ctx.step === "collecting" || ctx.step === "need_cep" || ctx.step === "need_address";
 }
 
@@ -1800,6 +1800,25 @@ async function handleDeliveryTurn(
     }
     if (asked && intent.kind === "reject") {
       await reply(phone, copy.withdrawKept(asked.orderId.slice(-6).toUpperCase()));
+      return;
+    }
+  }
+
+  // "cancela" ambíguo com vários itens em escolha (09/10, rodada 1): "sim"/"tudo" esvazia; "não" mantém e volta pra
+  // escolha; qualquer outra mensagem desarma e segue o fluxo normal (a cesta continua de pé).
+  if (ctx.clearAllConfirm) {
+    const asked = Date.now() - ctx.clearAllConfirm.askedAt < 30 * 60_000;
+    ctx.clearAllConfirm = undefined;
+    const said = normalizeMsg(text);
+    if (asked && (intent.kind === "affirm" || intent.kind === "cancel" || intent.kind === "clear_cart" || /^(tudo|a cesta toda|tudo mesmo|limpa tudo)[\s!.]*$/.test(said))) {
+      await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
+      await reply(phone, copy.cartCleared());
+      return;
+    }
+    await writeCtx(convo.id, ctx);
+    if (asked && intent.kind === "reject" && /^(nao|n|nn|nao quero|nao precisa|melhor nao)[\s!.]*$/.test(said)) {
+      await reply(phone, copy.cancelAllKept());
+      if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
       return;
     }
   }
@@ -4430,6 +4449,13 @@ async function handleCancel(
     ctx.step !== "awaiting_payment" &&
     !explicitOrder
   ) {
+    // Vários itens em jogo e uma escolha na tela (09/10, rodada 1): "cancela" pode ser só o item da vez — pergunta.
+    if (ctx.step === "choosing" && ctx.pending?.length && (ctx.pending.length + (ctx.basket?.length ?? 0)) >= 2) {
+      ctx.clearAllConfirm = { askedAt: Date.now() };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.cancelAllAsk(ctx.pending[0].query));
+      return;
+    }
     await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
     await reply(phone, copy.cartCleared());
     return;
@@ -8321,6 +8347,8 @@ async function handleComplementAnswer(
     !yes &&
     (n === "complemento_nao" ||
       closing ||
+      // "cancela" seco com o complemento na tela (09/10, rodada 1) recusa a oferta; não apaga a cesta.
+      (intent.kind === "cancel" && !intent.explicitOrder && n.split(" ").length <= 2) ||
       intent.kind === "reject" ||
       (n.length <= 40 && /^(nao|n|nn|dispenso|deixa|so isso|obrigad\w*|valeu|nem|agora nao|dessa vez nao|nao precisa|nao quero)\b/.test(n)));
   if (yes) {

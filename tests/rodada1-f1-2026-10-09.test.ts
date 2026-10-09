@@ -176,3 +176,54 @@ test("com pedido anterior: remonta pra conferência e o 'sim' fecha o total (nã
   assert.doesNotMatch(yes, /Imagina/);
   assert.match(yes, /R\$/);
 });
+
+// ---------------------------------------------------------------- 3. "cancela" ambíguo
+
+test("'cancela' com 2+ itens em escolha pergunta antes de apagar; 'não' mantém, 'sim' esvazia", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await withChoice(phone);
+  const ask = await send(phone, "cancela");
+  assert.match(ask, /Cancelar a cesta toda\?/);
+  assert.equal((await context(phone)).pending?.length, 3, "nada foi apagado ainda");
+  const kept = await send(phone, "não");
+  assert.match(kept, /mantive/i);
+  const ctx = await context(phone);
+  assert.equal(ctx.pending?.length, 3);
+  assert.equal(ctx.clearAllConfirm, undefined);
+  await send(phone, "cancela");
+  assert.match(await send(phone, "sim"), /Carrinho limpo/);
+  assert.equal((await context(phone)).pending?.length ?? 0, 0);
+});
+
+test("'cancela' com um item só em escolha continua limpando direto", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await withChoice(phone, { pending: [{ query: "leite", qty: 1, options: OPTIONS }] });
+  assert.match(await send(phone, "cancela"), /Carrinho limpo/);
+});
+
+test("'cancela' com a oferta de complemento na tela recusa a oferta e mantém a cesta", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const o = OPTIONS[0];
+  await prisma.conversation.create({
+    data: {
+      userId: user.id,
+      context: JSON.stringify({
+        flow: "delivery",
+        step: "collecting",
+        cep: "01310-100",
+        deliveryAddress: ADDRESS,
+        deliveryAddressVerified: true,
+        storeKey: "concierge",
+        basket: [{ sku: o.sku, name: o.name, qty: 2, unitPrice: o.unitPrice, lineTotal: o.unitPrice * 2, storeKey: "carrefour", storeLabel: "Carrefour" }],
+        complementOffer: { at: Date.now(), query: "achocolatado", shelfId: "achocolatado", option: { ...OPTIONS[1], sku: "MB-NESCAU" } }
+      })
+    }
+  });
+  const reply = await send(phone, "cancela");
+  assert.doesNotMatch(reply, /Tudo bem, cancelado|Carrinho limpo/);
+  assert.equal((await context(phone)).basket?.length, 1, "a cesta de 2 leites continua");
+});
