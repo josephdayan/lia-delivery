@@ -23,7 +23,8 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -813,7 +814,7 @@ function isBasketEtaAsk(text: string): boolean {
   const n = normalizeMsg(text);
   return n.length <= 60 && BASKET_ETA_ASK_RE.test(n);
 }
-async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null) {
+async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null, askedToday = false) {
   if (ctx.pending?.length) {
     const known = basketEtaByStore(ctx.basket ?? []);
     await reply(phone, copy.etaAfterChoice(known.rows));
@@ -822,7 +823,7 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
   }
   const eta = basketEtaByStore(ctx.basket ?? []);
   if (eta.complete && eta.rows.length) {
-    await reply(phone, copy.basketEtaAnswer(eta.rows));
+    await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday));
     return;
   }
   // Sem o prazo de alguma loja na mão: o total traz o prazo de todas — fecha agora.
@@ -1982,6 +1983,19 @@ async function handleDeliveryTurn(
       text = yesNoDigit[1] === "1" ? "sim" : "não";
     }
   }
+  // Link de produto/loja (09/10, rodada 3): a Lia não abre link; uma linha pede o nome do produto (antes: ~24 s de busca
+  // por pedaços da URL e "não achei"). Se a mensagem trazia mais texto, o resto segue como pedido.
+  {
+    const linkless = stripLinks(text);
+    if (linkless.hadLink && !/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(text.trim())) {
+      await reply(phone, copy.productLinkNotOpened());
+      if (!/[a-zà-ú]{2,}/i.test(linkless.text)) return;
+      text = linkless.text;
+    }
+    // Pedido em inglês ("I need a phone charger and some milk"): traduz o básico e segue; fora do dicionário, como veio.
+    const english = translateEnglishOrder(text);
+    if (english) text = english;
+  }
   let intent = detectIntent(text);
   // "só essa" com o item já na cesta e nada em escolha (07/10, c07): é fechar a lista — não "a qual produto
   // você se refere?" (o cliente então digitava o nome e o mesmo item entrava de novo: 2x).
@@ -2526,6 +2540,31 @@ async function handleDeliveryTurn(
     }
   }
 
+  // Resposta à pergunta de esclarecimento da Lia (09/10, rodada 3): "Qual leite você quer?" → "o integral mesmo, e o pão
+  // de forma". A resposta resolve a pergunta e o resto é SOMADO à cesta; nunca vira "lista nova".
+  // Com o carrossel de UM item aberto, "o integral mesmo, e o pão de forma" também responde a esse item.
+  const choosingNow = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
+  const impliedQuestion =
+    !ctx.openQuestion && choosingNow && intent.kind === "free_text" && /\b(mesmo|mesma|pode ser)\b/.test(normalizeMsg(text)) && /,|\be\b/.test(text) && !/\d/.test(text)
+      ? { text: `Qual ${choosingNow.query} você quer?`, at: Date.now() }
+      : undefined;
+  if (ctx.openQuestion || impliedQuestion) {
+    const open = (ctx.openQuestion ?? impliedQuestion)!;
+    ctx.openQuestion = undefined;
+    if (Date.now() - open.at < 10 * 60_000 && intent.kind === "free_text" && !isQuestion(text)) {
+      const answered = answerOpenQuestion(open.text, text);
+      // No carrossel aberto só vale quando há item extra; a resposta sozinha é refinamento e o fluxo de escolha cuida.
+      if (answered && (!impliedQuestion || answered.includes(","))) {
+        console.log("[open-question:answer]", JSON.stringify(open.text), "->", JSON.stringify(answered));
+        if (impliedQuestion && choosingNow) ctx.pending = ctx.pending!.filter((p) => p !== choosingNow);
+        if (impliedQuestion && !ctx.pending?.length) ctx.step = "collecting";
+        text = answered;
+        intent = detectIntent(text);
+      }
+    }
+    await writeCtx(convo.id, ctx);
+  }
+
   // "lego ou carrinho" (09/10, rodada 3): resposta à pergunta de qual, ou pedido novo com alternativa.
   if (ctx.askEither || intent.kind === "free_text") {
     if (await handleAltItem(phone, convo.id, user.cep, ctx, text, user.id)) return;
@@ -2757,6 +2796,33 @@ async function handleDeliveryTurn(
       await reply(phone, copy.greeting());
     }
     return;
+  }
+
+  // "Vocês entregam hoje?" (09/10, rodada 3): resposta direta (Sim / Não / Depende da loja) com o prazo real que
+  // a Lia já tem. Com opções na tela, o bloco de prazos das opções logo abaixo responde.
+  if (
+    asksDeliveryToday(text) &&
+    (intent.kind === "status" || intent.kind === "service_question" || intent.kind === "free_text") &&
+    !(ctx.step === "choosing" && ctx.pending?.[0]?.options.length)
+  ) {
+    const current = await currentOrderForQuestions(user.id, ctx);
+    const paid = current && PAID_OR_IN_FULFILLMENT_STATUSES.includes(current.status);
+    if (!paid) {
+      if (current && ctx.deliveryOrderId && current.status === "awaiting_quote_confirmation") {
+        const fulfillments = (Array.isArray(current.fulfillments) ? current.fulfillments : []) as Array<{ deliveryPromise?: string }>;
+        await reply(phone, copy.todayOnOrder(fulfillments.map((f) => f?.deliveryPromise ?? ""), orderDeliveryInfoLine(current)));
+        await replyChargeNotIssuedButtons(phone, user.id, ctx);
+        return;
+      }
+      if ((ctx.basket?.length ?? 0) > 0 && !ctx.deliveryOrderId) {
+        await answerBasketEta(phone, convo.id, ctx, user.cep, true);
+        return;
+      }
+      if (!ctx.deliveryOrderId) {
+        await reply(phone, copy.todayUnknown());
+        return;
+      }
+    }
   }
 
   // Prazo com a lista montada e sem pedido ainda (09/10): responde com o prazo de cada loja (ou fecha o total,
@@ -3014,7 +3080,7 @@ async function handleDeliveryTurn(
     return;
   }
   if (intent.kind === "insult") {
-    await reply(phone, copy.insultAnswer());
+    await reply(phone, isAngerSwear(normalizeMsg(text)) ? copy.angerApology() : copy.insultAnswer());
     await rePresentStep();
     return;
   }
@@ -3363,13 +3429,17 @@ async function handleDeliveryTurn(
     // "trocar endereço — Rua Oscar Freire, 379, apto 12, 01426-001": o endereço já veio junto
     // (placar c16) — usa-o em vez de pedir de novo.
     const embedded = text
-      .replace(/^.*?\b(?:trocar|mudar|alterar|atualizar|novo)\s+(?:o\s+|meu\s+)*endere[cç]o\b[\s:—–\-,.]*/i, "")
+      // "muda o endereço pro trabalho: Rua X..." (09/10, rodada 3): "muda/troca" e o apelido do lugar também saem.
+      .replace(/^.*?\b(?:trocar|troca|mudar|muda|alterar|altera|atualizar|atualiza|novo)\s+(?:o\s+|meu\s+)*endere[cç]o\b(?:\s+(?:pro|pra|para|do|da|de)\s+(?:meu\s+|minha\s+|o\s+|a\s+)?[a-zà-ú]+)?[\s:—–\-,.]*/i, "")
       .trim();
     if (embedded.length > 8 && (extractCep(embedded) || looksLikeDeliveryAddress(embedded))) {
       // Com CEP novo na mensagem, o fluxo do CEP roda primeiro (senão o endereço novo era gravado com o
       // CEP ANTIGO — placar rodada 2, c16).
       const typed = detectIntent(embedded);
+      const typedCep = extractCep(embedded);
       if (typed.kind === "cep") await handleNewCep(phone, user.id, convo.id, ctx, typed.cep, Boolean(savedCep), typed.rest, embedded);
+      // O CEP escrito no meio do endereço também vale (antes o endereço era salvo sem CEP e a Lia pedia "o CEP").
+      else if (typedCep) await handleNewCep(phone, user.id, convo.id, ctx, typedCep, Boolean(savedCep), undefined, embedded);
       else await handleDeliveryAddress(phone, user.id, convo.id, ctx, null, embedded);
       return;
     }
@@ -5263,8 +5333,11 @@ async function handleNewCep(
   // que veio junto ("quero 2 sabonetes, entrega em Rua X 221 … 01233020"): antes o texto
   // inteiro virava o endereço da etiqueta e os itens sumiam. Só o número ("meu cep é X e o
   // número é 1500") monta o endereço com a rua do CEP.
+  // Endereço escrito sem a cidade ("Rua Funchal 418, Vila Olímpia, 04551-060", 09/10, rodada 3): a cidade do CEP completa o
+  // rótulo, como no cadastro ("..., São Paulo"); o resumo do pedido não pode ficar sem ela.
+  const withCity = (addr: string) => (city && !normalizeMsg(addr).includes(normalizeMsg(city)) ? `${addr.replace(/[\s,]+$/, "")}, ${city}` : addr);
   const typedAddress = split?.address
-    ? split.address
+    ? (firstAddress ? split.address : withCity(split.address))
     : house && street && !ctx.deliveryAddressVerified
       ? buildSignupAddress({ street, numero: house.numero, complemento: house.complemento, district, city, uf })
       : undefined;
