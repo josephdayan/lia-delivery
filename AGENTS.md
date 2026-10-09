@@ -167,8 +167,13 @@ diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma
   (marca = nome da loja não conta) e tamanho. Troca anunciada (`copy.basketConsolidated`), uma tentativa por cesta
   (`ctx.consolidationTried`), teto `LIA_CONSOLIDATE_BUDGET_MS` (15 s). Medido na cesta real: Mambo com Absolut
   Raspberri 750 ml + Natural One laranja integral, 2,1 s. Nenhuma loja cobre → cesta segue (a cobrança divide).
-- **"Quando chega?" com a lista na mesa** (status sem pedido): é pergunta de prazo — a Lia diz que o prazo é da
-  loja e vem no total e **fecha agora** (`copy.etaComesWithTotal`); escolha em aberto termina antes.
+- **Prazo direto (09/10, dono: "devia mostrar o prazo direto e saber responder")**: cada item da cesta guarda o
+  prazo que a loja informou no card (`BasketItem.delivery`); o resumo da lista e o "até agora" mostram
+  `🚚 Prazo: *Loja* — prazo` (loja com vários itens = o mais lento, `basketEtaByStore`). Qualquer pergunta de prazo
+  com a lista montada e sem pedido ("quanto tempo demora", "quando chega", "em quanto tempo chega", "entrega
+  hoje?", "qual o prazo" — `isBasketEtaAsk`, antes de qualquer intenção) responde com o prazo de cada loja
+  (`copy.basketEtaAnswer`) + "diz *pagar*"; sem o prazo de alguma linha, fecha o total (que traz o prazo). Nunca
+  o texto genérico "o prazo depende da loja".
 
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 

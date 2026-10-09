@@ -113,3 +113,43 @@ test("com o que o cliente pediu na linha ('banana prata'): a variante da outra l
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   assert.deepEqual([...new Set((order.items as { storeKey: string }[]).map((i) => i.storeKey))], ["carrefour"]);
 });
+
+// Prazo direto (dono, 09/10, print: "Quanto tenpo demora" com a lista montada → texto genérico "o prazo depende
+// da loja"; e a lista não mostrava prazo nenhum). O prazo que a loja informou no card vai junto do item.
+test("prazo com a lista montada: toda forma de pergunta responde o prazo da loja (nunca o texto genérico nem busca)", async (t) => {
+  if (!dbOk) return t.skip();
+  const gin = { ...(await item("leite integral piracanjuba", "carrefour", 1, /Piracanjuba/)), delivery: "prazo da loja: em até 15h (hoje, 12h–15h)" };
+  const vodka = { ...(await item("banana prata organica tamiso", "oba", 1, /Tamiso/)), delivery: "prazo da loja: 1 dia útil" };
+  for (const ask of ["Quanto tenpo demora", "em quanto tempo chega", "quando chega?", "entrega hoje?", "qual o prazo"]) {
+    const c = await customerWith([gin, vodka]);
+    const out = await send(c.phone, ask);
+    assert.doesNotMatch(out, /O prazo depende da loja e do seu endereço — tem item/, `${ask}: ${out.slice(0, 300)}`);
+    assert.match(out, /\*Carrefour\* em \*em até 15h \(hoje, 12h–15h\)\*[\s\S]*\*Oba[^*]*\* em \*1 dia útil\*/, `${ask}: ${out.slice(0, 300)}`);
+    assert.match(out, /Diz \*pagar\*/);
+    assert.equal(await prisma.deliveryOrder.count({ where: { userId: c.userId } }), 0, "só respondeu, não fechou");
+  }
+});
+
+test("prazo de alguma loja desconhecido: fecha o total (que traz o prazo) em vez do texto genérico", async (t) => {
+  if (!dbOk) return t.skip();
+  const leite = await item("leite integral piracanjuba", "carrefour", 2, /Piracanjuba/);
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const c = await customerWith([leite, arroz]);
+  const out = await send(c.phone, "Quanto tenpo demora");
+  assert.match(out, /O prazo é o da loja/, out.slice(0, 400));
+  assert.match(out, /Total/);
+});
+
+test("resumo da lista e 'até agora' mostram o prazo de cada loja", async () => {
+  const copy = await import("../src/lib/lia-copy");
+  const rows = [{ store: "Mambo", when: "em até 15h (hoje, 12h–15h)" }, { store: "Casa Santa Luzia", when: "1 dia útil" }];
+  const list = copy.listFlowDone({ items: [{ qty: 1, name: "Gin", total: 50 }], leftOut: [], misses: [], produtos: 50, eta: rows });
+  assert.match(list, /🚚 Prazo: \*Mambo\* — em até 15h \(hoje, 12h–15h\) · \*Casa Santa Luzia\* — 1 dia útil/);
+  assert.match(copy.partialTotal([{ qty: 1, name: "Gin", displayLineTotal: 50 }], 50, 0, rows), /🚚 Prazo: \*Mambo\*/);
+  const { basketEtaByStore } = await import("../src/lib/delivery-service");
+  const eta = basketEtaByStore([
+    { sku: "a", name: "A", qty: 1, unitPrice: 1, lineTotal: 1, storeKey: "mambo", storeLabel: "Mambo", delivery: "prazo da loja: 3h" },
+    { sku: "b", name: "B", qty: 1, unitPrice: 1, lineTotal: 1, storeKey: "mambo", storeLabel: "Mambo", delivery: "prazo da loja: 1 dia útil" }
+  ]);
+  assert.deepEqual(eta, { rows: [{ store: "Mambo", when: "1 dia útil" }], complete: true }, "loja com vários itens vale o mais lento");
+});

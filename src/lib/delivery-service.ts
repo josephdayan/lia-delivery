@@ -683,8 +683,60 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector,
     ...(o.productUrl ? { productUrl: o.productUrl } : {}),
     ...(o.freeShipping ? { freeShipping: true } : {}),
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
-    ...(ask?.trim() ? { ask: ask.trim().slice(0, 120) } : {})
+    ...(ask?.trim() ? { ask: ask.trim().slice(0, 120) } : {}),
+    ...(o.delivery ? { delivery: o.delivery } : {})
   };
+}
+
+// Prazo por loja da cesta (09/10, dono: "devia mostrar o prazo direto"): o que a loja informou na consulta
+// ao vivo de cada card; loja com vários itens vale o MAIS LENTO. `complete` = toda linha tem prazo.
+function deliveryMinutes(label: string): number {
+  const t = normalizeMsg(label);
+  if (/\bhoje\b/.test(t)) return 8 * 60;
+  const n = Number((t.match(/(\d+)/) ?? [])[1] ?? NaN);
+  if (!Number.isFinite(n)) return Number.MAX_SAFE_INTEGER;
+  if (/\bmin\b/.test(t)) return n;
+  if (/\bh\b|\bhoras?\b|\d+h\b/.test(t)) return n * 60;
+  if (/uteis|util/.test(t)) return n * 24 * 60 + 12 * 60;
+  return n * 24 * 60;
+}
+export function basketEtaByStore(basket: BasketItem[]): { rows: { store: string; when: string }[]; complete: boolean } {
+  const byStore = new Map<string, string>();
+  let complete = basket.length > 0;
+  for (const item of basket) {
+    const when = item.delivery?.replace(/^prazo da loja:\s*/i, "").trim();
+    if (!when) {
+      complete = false;
+      continue;
+    }
+    const store = item.storeLabel || item.storeKey;
+    const prev = byStore.get(store);
+    if (!prev || deliveryMinutes(when) > deliveryMinutes(prev)) byStore.set(store, when);
+  }
+  return { rows: [...byStore].map(([store, when]) => ({ store, when })), complete };
+}
+
+// Pergunta de prazo com a lista na mesa (09/10): toda forma — "quanto tempo demora", "quando chega",
+// "em quanto tempo chega", "entrega hoje?" — responde com o prazo da loja, nunca o texto genérico.
+const BASKET_ETA_ASK_RE = /\b(quando (chega|chegam|vai chegar|entrega|entregam|fica pronto)|chega(m)? quando|quanto tempo|quanto tenpo|em quanto tempo|que horas|qual (e |eh )?o prazo|prazo( de entrega)?|demora|demoram|chega(m)? hoje|entrega(m)? hoje|vai chegar|chega rapido|e rapido)\b/;
+function isBasketEtaAsk(text: string): boolean {
+  const n = normalizeMsg(text);
+  return n.length <= 60 && BASKET_ETA_ASK_RE.test(n);
+}
+async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null) {
+  if (ctx.pending?.length) {
+    const known = basketEtaByStore(ctx.basket ?? []);
+    await reply(phone, copy.etaAfterChoice(known.rows));
+    await sendChoices(phone, ctx.pending[0]);
+    return;
+  }
+  const eta = basketEtaByStore(ctx.basket ?? []);
+  if (eta.complete && eta.rows.length) {
+    await reply(phone, copy.basketEtaAnswer(eta.rows));
+    return;
+  }
+  // Sem o prazo de alguma loja na mão: o total traz o prazo de todas — fecha agora.
+  await continueAfterBasket(phone, convoId, ctx, userCep, copy.etaComesWithTotal());
 }
 
 // Nome da loja junto do prazo em TODA opção — texto, card e carrossel (dono, 06/10: "nome da
@@ -2164,6 +2216,19 @@ async function handleDeliveryTurn(
     } else {
       await reply(phone, copy.greeting());
     }
+    return;
+  }
+
+  // Prazo com a lista montada e sem pedido ainda (09/10): responde com o prazo de cada loja (ou fecha o total,
+  // que traz o prazo). Antes: "quanto tempo demora" → texto genérico; "em quanto tempo chega" → busca.
+  if (
+    (ctx.basket?.length ?? 0) > 0 &&
+    !ctx.deliveryOrderId &&
+    !(ctx.step === "choosing" && parseChoiceEtaAsk(text)?.option) &&
+    (intent.kind === "status" || intent.kind === "service_question" || intent.kind === "free_text") &&
+    isBasketEtaAsk(text)
+  ) {
+    await answerBasketEta(phone, convo.id, ctx, user.cep);
     return;
   }
 
@@ -3984,19 +4049,14 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     // "Quando chega?" com a lista na mesa (08/10 noite, dono: a Lia respondia "Até agora… diz só isso" duas
     // vezes): é pergunta de PRAZO. O prazo de cada loja só existe no total — então responde isso e fecha
     // agora (o total vem com o prazo); escolha em aberto termina antes.
-    if (text && ETA_QUESTION_RE.test(normalizeMsg(text)) && convoId) {
-      if (ctx.pending?.length) {
-        await reply(phone, copy.etaAfterChoice());
-        await sendChoices(phone, ctx.pending[0]);
-        return;
-      }
+    if (text && ETA_QUESTION_RE.test(normalizeMsg(text)) && convoId && (ctx.basket?.length ?? 0) > 0) {
       const owner = await prisma.user.findUnique({ where: { id: userId }, select: { cep: true } });
-      await continueAfterBasket(phone, convoId, ctx, owner?.cep ?? null, copy.etaComesWithTotal());
+      await answerBasketEta(phone, convoId, ctx, owner?.cep ?? null);
       return;
     }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
     return;
   }
   // Cancelou agora há pouco e perguntou "cadê meu pedido?": o assunto é o CANCELADO.
@@ -7487,7 +7547,8 @@ async function handleListFlowReply(
       leftOut,
       misses: missEntriesFor(freshListMisses(ctx), []),
       produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100,
-      moreFor
+      moreFor,
+      eta: basketEtaByStore(basket).rows
     });
   if (wantMore.length) {
     await showListFlowMoreOptions(phone, convo.id, ctx, wantMore, (moreFor) => [summaryFor(moreFor), ...packNotes].join("\n"));

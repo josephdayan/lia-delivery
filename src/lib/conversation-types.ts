@@ -39,6 +39,9 @@ export type BasketItem = {
   // O que o cliente PEDIU nessa linha ("2 vodkas absolute" → "vodka absolut"), 08/10 noite: juntar a cesta
   // numa loja só compara com o pedido, não com a variante que a Lia escolheu (sabor, tamanho).
   ask?: string;
+  // Prazo que a LOJA informou pro CEP na consulta ao vivo do card ("prazo da loja: 1 dia útil"), 09/10: a lista
+  // e o "quanto tempo demora?" mostram o prazo direto, antes do total.
+  delivery?: string;
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para

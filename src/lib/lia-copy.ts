@@ -1687,7 +1687,21 @@ export function totalAwaitingPayment(total: number): string {
 }
 
 // "quanto deu tudo?" no meio das escolhas/coleta → parcial honesto, sem inventar frete.
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number): string {
+// Prazo por loja (09/10, dono: "devia mostrar o prazo direto"): "🚚 Prazo: *Mambo* — 1 dia útil".
+export type EtaRow = { store: string; when: string };
+export function etaLine(rows: EtaRow[]): string {
+  return `🚚 Prazo: ${rows.map((r) => `*${r.store}* — ${r.when}`).join(" · ")} _(contado da compra)_`;
+}
+
+// "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
+export function basketEtaAnswer(rows: EtaRow[]): string {
+  const body = rows.length === 1
+    ? `A *${rows[0].store}* entrega em *${rows[0].when}* pro seu endereço, contado da compra.`
+    : `Pro seu endereço: ${rows.map((r) => `*${r.store}* em *${r.when}*`).join(", ")} — contado da compra.`;
+  return `${body}\nDiz *pagar* que eu mando o total com a entrega.`;
+}
+
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = []): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
@@ -1698,7 +1712,7 @@ export function partialTotal(items: CopyBasketItem[], produtos: number, pendingC
     pendingCount > 0
       ? `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
       : '_Diz *"só isso"* que eu mando o total com a entrega._';
-  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, tail].join("\n");
+  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), tail].join("\n");
 }
 
 // ---------- concierge manual (largura + cotação do operador) ----------
@@ -1810,6 +1824,8 @@ export function listFlowDone(input: {
   produtos: number;
   // Vagas marcadas "Nenhuma — ver outras": as opções novas vêm logo abaixo.
   moreFor?: string[];
+  // Prazo de cada loja (09/10): aparece direto, antes do total.
+  eta?: EtaRow[];
 }): string {
   const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)];
   const moreFor = input.moreFor ?? [];
@@ -1817,6 +1833,7 @@ export function listFlowDone(input: {
   if (input.leftOut.length) lines.push("", `Ficou de fora (sem opção escolhida): ${input.leftOut.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")}.`);
   if (input.misses.length) lines.push("", missesBlock(input.misses));
   if (input.items.length) lines.push("", `Produtos: ${brl(input.produtos)} _(a entrega entra no total)_`);
+  if (input.items.length && input.eta?.length) lines.push(etaLine(input.eta));
   if (moreFor.length) lines.push("", `Agora as outras opções de ${moreFor.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")} 👇`);
   return lines.join("\n");
 }
@@ -1893,8 +1910,9 @@ export function etaComesWithTotal(): string {
   return "O prazo é o da loja pro seu endereço — ele vem junto com o total. Fechei pra você ver:";
 }
 
-export function etaAfterChoice(): string {
-  return "O prazo é o da loja pro seu endereço e vem junto com o total. Escolhe essa aqui primeiro que eu já te mostro:";
+export function etaAfterChoice(known: EtaRow[] = []): string {
+  const so = known.length ? `Do que já está na lista: ${known.map((r) => `*${r.store}* em *${r.when}*`).join(", ")}. ` : "";
+  return `${so}O prazo de cada opção está no card — escolhe essa aqui que eu fecho o total com a entrega:`;
 }
 
 export function minimumSwapDone(pairs?: SwapPair[]): string {
