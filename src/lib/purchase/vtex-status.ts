@@ -28,6 +28,36 @@ const PRE_HANDLING = new Set(["order-created", "order-completed", "on-order-comp
 //   - entrega longa: o prazo da loja venceu;
 //   - sem prazo conhecido: 12 h.
 // Atrasado (só aviso ao dono) = já começou, mas o prazo venceu há 1 h (rápida) / 12 h (longa) sem entrega.
+// Parado além da tolerância = a Lia pede o cancelamento na própria loja (09/10, dono: "nesses casos o
+// estorno devia ser automático"). Tolerância: rápida (≤ 3 h) = prazo + 1 h; longa = prazo + 12 h; sem
+// prazo = 24 h. Antes disso a loja ainda pode entregar (um atraso não é um cancelamento).
+export function stalledPastGrace(input: { boughtAt: Date; eta?: string; now: Date }): boolean {
+  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
+  if (!Number.isFinite(etaAt)) return input.now.getTime() - input.boughtAt.getTime() >= 24 * 3_600_000;
+  const fast = (etaAt - input.boughtAt.getTime()) / 60_000 <= 180;
+  return input.now.getTime() >= etaAt + (fast ? 60 : 12 * 60) * 60_000;
+}
+export function stallAutoCancelEnabled(): boolean {
+  return process.env.LIA_STALL_AUTO_CANCEL !== "false";
+}
+const CANCEL_REQUESTED_MARK = "🧾 Cancelamento pedido à loja";
+// Cancelamento pelo próprio comprador (API pública do checkout VTEX), com os cookies do fechamento.
+export async function requestStoreCancellation(
+  domain: string,
+  orderId: string,
+  cookies: Record<string, string>,
+  fetchImpl: FetchLike,
+  reason = "Pedido não iniciado dentro do prazo prometido"
+): Promise<{ ok: boolean; status: number }> {
+  const r = await fetchImpl(`https://${domain}/api/checkout/pub/orders/${encodeURIComponent(orderId)}/user-cancel-request`, {
+    method: "POST",
+    headers: { Cookie: Object.entries(cookies).map(([k, v]) => `${k}=${v}`).join("; "), Accept: "application/json", "Content-Type": "application/json", "User-Agent": UA },
+    body: JSON.stringify({ reason }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  return { ok: r.ok, status: r.status };
+}
+
 export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
   if (input.delivered) return "ok";
   const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
@@ -135,35 +165,65 @@ async function pollStoreOrder(input: {
     const current = multi ? (await prisma.deliveryOrder.findUnique({ where: { id: order.id }, select: { notes: true } }))?.notes ?? null : order.notes;
     await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(current, text) } });
   };
-  // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora,
+  // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora (mesmo
+  // quando o cliente é o próprio dono testando: alerta de dinheiro/loja nunca é suprimido),
   // conta a verdade ao cliente e tira a loja da vitrine até o dono religar (store-pause.ts).
   const health = storeOrderHealth({ state: sig.state, boughtAt, eta: sig.eta, now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
   const shortId = order.id.slice(-6).toUpperCase();
-  if (health === "stalled" && !notes.includes(mark(STALL_MARK))) {
+  // Parado além da tolerância: a Lia pede o cancelamento na loja; quando a loja confirmar "canceled",
+  // o estorno automático abaixo devolve o dinheiro. Uma vez por pedido (por loja, no pedido de várias).
+  let cancelAccepted = false;
+  if (health === "stalled" && stallAutoCancelEnabled() && !notes.includes(mark(CANCEL_REQUESTED_MARK)) && stalledPastGrace({ boughtAt, eta: sig.eta, now })) {
+    let outcome = "";
+    try {
+      const res = await requestStoreCancellation(store.domain, storeOrderNumber, details.cookies ?? {}, fetchImpl);
+      outcome = res.ok ? `aceito (HTTP ${res.status})` : `recusado (HTTP ${res.status})`;
+    } catch (error) {
+      outcome = `falhou (${error instanceof Error ? error.message : String(error)})`;
+    }
+    await addNote(`${mark(CANCEL_REQUESTED_MARK)} em ${now.toISOString()}: ${outcome}.`);
+    console.warn("[store-stall:cancel-request]", storeKey, shortId, storeOrderNumber, outcome);
+    if (outcome.startsWith("aceito")) {
+      cancelAccepted = true;
+      const { deliverNotice } = await import("../turn-runtime");
+      const copy = await import("../lia-copy");
+      await deliverNotice(order.phone, copy.retailerStalledCanceling(store.label, shortId), { items: order.items }).catch(() => undefined);
+      report.notices += 1;
+    }
+    // Recarrega as notas para o bloco de "parado" não repetir o aviso de antes.
+    order.notes = (await prisma.deliveryOrder.findUnique({ where: { id: order.id }, select: { notes: true } }))?.notes ?? order.notes;
+  }
+  const notesNow = order.notes ?? "";
+  if (health === "stalled" && !notesNow.includes(mark(STALL_MARK))) {
     const { pauseStore } = await import("../store-pause");
     const paused = await pauseStore(storeKey, `pedido #${shortId} (${storeOrderNumber}) parado em "${sig.state}" além do prazo`, "vigia");
     await addNote(`${mark(STALL_MARK)}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja tirada da vitrine; cliente avisado; cobrar a loja e estornar se ela não resolver.`);
     const { deliverNotice, notifyOwner } = await import("../turn-runtime");
     const copy = await import("../lia-copy");
-    await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
-    await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }), order.phone);
+    if (!cancelAccepted) await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
+    await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }));
     console.error("[store-stall]", storeKey, shortId, storeOrderNumber, sig.state);
     report.notices += 1;
   } else if (health === "late" && !notes.includes(mark(LATE_MARK)) && !notes.includes(mark(STALL_MARK))) {
     await addNote(`${mark(LATE_MARK)} (status "${sig.state}" em ${now.toISOString()}).`);
     const { notifyOwner } = await import("../turn-runtime");
     const copy = await import("../lia-copy");
-    await notifyOwner(copy.ownerOrderLate({ storeLabel: store.label, shortId, storeOrderNumber, state: String(sig.state) }), order.phone);
+    await notifyOwner(copy.ownerOrderLate({ storeLabel: store.label, shortId, storeOrderNumber, state: String(sig.state) }));
     console.warn("[store-late]", storeKey, shortId, storeOrderNumber, sig.state);
   }
   if (sig.state === "canceled") {
     // Pedido de várias lojas: marca SEM 🛑 (o 🛑 trava a compra das outras lojas do pedido).
     const canceledMark = multi ? `🚫 A ${store.label} cancelou a parte dela` : CANCELED_MARK;
-    if (!notes.includes(canceledMark)) {
-      await addNote(`${canceledMark} (status da loja em ${now.toISOString()}). Conferir reembolso da loja e estornar o cliente.`);
+    if (!notes.includes(canceledMark)) await addNote(`${canceledMark} (status da loja em ${now.toISOString()}).`);
+    // Estorno automático (09/10): a loja cancelou = o dinheiro do cliente volta agora (no pedido de várias
+    // lojas, só a parte desta loja). Falhou → olha de novo em 10 min (o alerta ao dono sai uma vez).
+    const { autoRefundStoreCanceled, storeCancelAutoRefundEnabled } = await import("../ops-lifecycle");
+    const refund = storeCancelAutoRefundEnabled() ? await autoRefundStoreCanceled(order.id, { storeKey, storeLabel: store.label, storeOrderNumber, source: "store-status" }) : "skipped";
+    if (refund === "skipped" && !notes.includes(canceledMark)) {
       const { notifyOwner } = await import("../turn-runtime");
-      await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${order.id.slice(-6).toUpperCase()} (${storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar ${multi ? "a parte dela" : "o cliente"} no /ops.`, order.phone);
+      await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${shortId} (${storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar ${multi ? "a parte dela" : "o cliente"} no /ops.`);
     }
+    if (refund === "failed") return { every: 10, done: false };
     return { every: 0, done: true };
   }
   if (sig.delivered) {

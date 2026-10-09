@@ -6,7 +6,9 @@ import "./helpers/load-env";
 import { test, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
-import { pollVtexOrderStatuses, storeOrderHealth } from "../src/lib/purchase/vtex-status";
+import { pollVtexOrderStatuses, stalledPastGrace, storeOrderHealth } from "../src/lib/purchase/vtex-status";
+import { recordPayment } from "../src/lib/payments/ledger";
+import { reportMail } from "../src/lib/tracking-worker";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { __resetPausedStoresForTests, parseStoreToggleCommand, pausedStoresSnapshot, refreshPausedStores, resumeStore } from "../src/lib/store-pause";
 import { storesForShopper } from "../src/lib/store-areas";
@@ -159,4 +161,95 @@ test("09/10: loja que anda normalmente (Expressa começada a tempo) não dispara
   assert.equal(sent.slice(start).filter((m) => m.to === phone || m.to === OWNER).length, 0);
   assert.equal(pausedStoresSnapshot().has("mambo"), false);
   await resumeStore("mambo", "teste");
+});
+
+test("09/10: tolerância para pedir o cancelamento — rápida: prazo + 1 h; longa: prazo + 12 h; sem prazo: 24 h", () => {
+  const boughtAt = new Date("2026-10-08T22:49:00Z");
+  const at = (m: number) => new Date(boughtAt.getTime() + min(m));
+  assert.equal(stalledPastGrace({ boughtAt, eta: at(30).toISOString(), now: at(80) }), false);
+  assert.equal(stalledPastGrace({ boughtAt, eta: at(30).toISOString(), now: at(91) }), true);
+  assert.equal(stalledPastGrace({ boughtAt, eta: at(20 * 60).toISOString(), now: at(25 * 60) }), false);
+  assert.equal(stalledPastGrace({ boughtAt, eta: at(20 * 60).toISOString(), now: at(33 * 60) }), true);
+  assert.equal(stalledPastGrace({ boughtAt, now: at(23 * 60) }), false);
+  assert.equal(stalledPastGrace({ boughtAt, now: at(24 * 60) }), true);
+});
+
+async function paidByMock(order: { id: string; total: number }, n: number) {
+  await recordPayment({ deliveryOrderId: order.id, provider: "mock", providerPaymentId: `pp-stall-${process.pid}-${n}`, amountCents: Math.round(order.total * 100), status: "approved", method: "pix" });
+}
+
+test("09/10: parada além da tolerância → Lia pede o cancelamento na loja; loja confirma → estorno automático e cliente avisado", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `+55090977${process.pid}3`;
+  // Comprada há 2 h com Expressa de 30 min: parada E além da tolerância (prazo + 1 h).
+  const order = await boughtOrder({ phone, storeKey: "drogal", storeLabel: "Drogal", storeOrderNumber: "1667434680238-02", boughtMinutesAgo: 120 });
+  await paidByMock(order, 3);
+  const eta = new Date(Date.now() - min(90)).toISOString();
+  let state = "payment-approved";
+  const calls: string[] = [];
+  const fetchImpl = async (url: string, init?: RequestInit) => {
+    calls.push(`${init?.method ?? "GET"} ${url}`);
+    if (url.includes("user-cancel-request")) return new Response("", { status: 200 });
+    return new Response(JSON.stringify([{ orderId: "1667434680238-02", state, shippingData: { logisticsInfo: [{ shippingEstimateDate: eta }] } }]), { status: 200 });
+  };
+  const tick = async () => {
+    await prisma.trackingSubscription.updateMany({ where: { deliveryOrderId: order.id }, data: { nextCheckAt: new Date(0) } });
+    return pollVtexOrderStatuses({ fetchImpl });
+  };
+  const start = sent.length;
+  const toCustomer = () => sent.slice(start).filter((m) => m.to === phone).map((m) => m.text);
+  const toOwner = () => sent.slice(start).filter((m) => m.to === OWNER).map((m) => m.text);
+
+  await tick();
+  assert.ok(calls.some((c) => /POST .*\/orders\/1667434680238-02\/user-cancel-request$/.test(c)), `sem pedido de cancelamento: ${calls.join(" | ")}`);
+  assert.equal(toCustomer().length, 1, "uma mensagem ao cliente nesta olhada");
+  assert.match(toCustomer()[0], /Pedi o cancelamento na loja/);
+  assert.doesNotMatch(toCustomer()[0], /já estou cobrando/);
+  assert.equal(toOwner().length, 1, "dono avisado da loja parada");
+  let notes = (await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } })).notes ?? "";
+  assert.match(notes, /Cancelamento pedido à loja .* aceito/);
+  assert.ok(pausedStoresSnapshot().has("drogal"));
+
+  // Segunda olhada, ainda parada: nada se repete (nem o pedido de cancelamento).
+  const before = calls.length;
+  await tick();
+  assert.equal(calls.slice(before).filter((c) => /user-cancel-request/.test(c)).length, 0);
+  assert.equal(toCustomer().length, 1);
+
+  // A loja confirma o cancelamento: estorno automático.
+  state = "canceled";
+  await tick();
+  const after = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } });
+  assert.equal(after.status, "refunded");
+  notes = after.notes ?? "";
+  assert.match(notes, /LOJA CANCELOU O PEDIDO/);
+  assert.match(notes, /Estorno automático: loja cancelou/);
+  assert.match(notes, /ESTORNO CONFIRMADO: integral/);
+  assert.equal(toCustomer().length, 2);
+  assert.match(toCustomer()[1], /Drogal cancelou o pedido \*#[A-Z0-9]{6}\*/);
+  assert.match(toCustomer()[1], /Já estornei R\$ 12,35/);
+  assert.equal(toOwner().length, 2);
+  assert.match(toOwner()[1], /Estorno automático de R\$ 12,35 ao cliente feito/);
+  assert.ok((await prisma.trackingSubscription.findUniqueOrThrow({ where: { deliveryOrderId: order.id } })).completedAt);
+  // Terceira olhada não acontece (assinatura fechada) e, se acontecesse, não estornaria de novo.
+  await tick();
+  assert.equal(toCustomer().length, 2);
+  await resumeStore("drogal", "teste");
+});
+
+test("09/10: e-mail de cancelamento da loja → estorno automático na hora", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `+55090977${process.pid}4`;
+  const order = await boughtOrder({ phone, storeKey: "drogal", storeLabel: "Drogal", storeOrderNumber: "1667434680238-03", boughtMinutesAgo: 60 });
+  await paidByMock(order, 4);
+  const start = sent.length;
+  const res = await reportMail({ storeKey: "drogal", storeOrderNumber: "1667434680238-03", kind: "canceled", messageId: `mail-${process.pid}-4`, receivedAt: new Date().toISOString() });
+  assert.equal(res.matched, true);
+  const after = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } });
+  assert.equal(after.status, "refunded");
+  assert.match(after.notes ?? "", /Estorno automático: loja cancelou .*via mail/);
+  assert.match(after.notes ?? "", /📧 canceled — e-mail da loja 1667434680238-03/);
+  const mine = sent.slice(start).filter((m) => m.to === phone).map((m) => m.text);
+  assert.equal(mine.length, 1);
+  assert.match(mine[0], /cancelou o pedido .* Já estornei/);
 });

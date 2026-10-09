@@ -23,7 +23,8 @@ trava "uma loja por pedido" de 08/10 (noite) e o `split` do ensaio da compra.
 - **Acompanhamento por loja**: eventos com chave `${pedido}:${loja}:${tipo}` e avisos "comprei/saiu/chegou a parte
   da <loja>" (`copy.storePart*`); assinatura única `storeKey: "multi"` e o vigia de loja parada lê cada loja no
   seu pedido (`pollMultiStoreOrders`). Loja que cancela depois da compra = `🚫 A <loja> cancelou a parte dela`,
-  estorno da parte pelo /ops.
+  e a parte dela volta sozinha (`autoRefundStoreCanceled` → `refundStoreShare` com `storeCanceled`; nunca o
+  estorno do pedido inteiro); o Pix pago à loja fica a recuperar com ela.
 - Pedido de UMA loja: nada mudou (mesmo hash, mesmos caminhos). Testes: `tests/multi-store-purchase-2026-10-09.test.ts`
   e `tests/basket-one-store-2026-10-08.test.ts`.
 
@@ -94,6 +95,30 @@ prova é descartado (`whyClaimsUnproven`); motivo de dieta natural ("fruta, natu
 `cold`; "gelado e doce" = sorvete/iogurte; (6) ressaca sem o soro mip; unha encravada = Povidine + curativo; jantar leve sem sopa; (7) dieta com prova
 buscável: a prateleira de risco não sai do plano pela palavra (busca "sorvete sem lactose"), e as de risco vão DEPOIS das livres. Sem solução:
 r77 (detergente — Mambo marca todos indisponíveis pro CEP no check ao vivo), h17 (alergia a amendoim em salgadinho: copy honesta, por desenho).
+## 09/10/2026 (2ª) — REGRA VIGENTE: loja cancelou depois da compra = estorno automático; parada além da tolerância = a Lia cancela na loja
+
+Dono, depois de a Drogal cancelar o #GTGH3C sem motivo: "nesses casos, o estorno devia ser automático". Regra do
+SISTEMA (o agente continua sem mover dinheiro):
+- **Loja cancelou** (status "canceled" no pedido da loja OU e-mail de cancelamento) → `autoRefundStoreCanceled`
+  (`ops-lifecycle.ts`): estorno integral pelo provedor na hora, status `refunded`, cliente avisado
+  (`storeCanceledRefunded`), dono avisado com o Pix pago à loja a recuperar (`ownerStoreCanceledRefunded`), conversa
+  resetada, acompanhamento encerrado. Idempotente pela nota `🤖 Estorno automático: loja cancelou`. Falha do
+  provedor → nota + alerta uma vez e a próxima olhada tenta de novo. `LIA_STORE_CANCEL_AUTO_REFUND=false` desliga.
+- **Parada além da tolerância** (`stalledPastGrace`: rápida = prazo + 1 h; longa = prazo + 12 h; sem prazo = 24 h)
+  → a Lia pede o cancelamento na própria loja (`requestStoreCancellation`, API pública do checkout VTEX
+  `user-cancel-request` com os cookies do fechamento), avisa o cliente (`retailerStalledCanceling`) e, quando a
+  loja confirmar "canceled", o estorno acima dispara. Antes da tolerância a loja ainda pode entregar: só o aviso de
+  parada (20 min na rápida) e a pausa da loja. `LIA_STALL_AUTO_CANCEL=false` desliga. O endpoint de cancelamento
+  ainda NÃO foi exercitado numa loja real (o da Drogal já estava cancelado): o primeiro caso real diz se as lojas
+  aceitam; recusa vira nota "recusado (HTTP n)" e o fluxo de antes (alerta ao dono) continua.
+- O Pix pago à loja não volta sozinho: a nota do pedido guarda valor e e2e; o dono confere o extrato do Asaas.
+- **Alerta de dinheiro/loja nunca é suprimido** quando o cliente é o próprio dono (loja parada, atrasada, cancelada,
+  estorno automático feito ou falho): no #GTGH3C o Mercado Pago recusou o estorno ("Collector hasn't enough
+  available money", saldo da conta) e o alerta não chegou porque o dono testava como cliente. O estorno falho é
+  retentado a cada 10 min pela próxima olhada; entra saldo no Mercado Pago, sai o estorno.
+Teste: `tests/store-stall-2026-10-09.test.ts` (10). Caso Drogal: cancelado às 8h25 de 09/10, cobrado no ticket
+#212970 (motivo + devolução de R$ 11,85).
+
 ## 09/10/2026 — Vigia de pedido comprado parado na loja + loja sai da vitrine sozinha (dono)
 
 Caso real: pedido #GTGH3C, Drogal nº 1667434680238-01, Expressa 30 min, comprado pela Lia e com Pix da loja

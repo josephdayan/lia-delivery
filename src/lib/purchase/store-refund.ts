@@ -23,7 +23,9 @@ export type StoreRefundResult =
 
 export async function refundStoreShare(
   jobId: string,
-  input: { reason: string; internalReason?: string; origin: "auto" | "ops" }
+  // `storeCanceled` (09/10): a loja cancelou DEPOIS da compra (status "canceled" ou e-mail). A compra
+  // desta loja está registrada (Pix pago à loja, a recuperar com ela); a parte do cliente volta mesmo assim.
+  input: { reason: string; internalReason?: string; origin: "auto" | "ops"; storeCanceled?: { storeOrderNumber: string } }
 ): Promise<StoreRefundResult> {
   const reservation = await prisma.$transaction(async (tx) => {
     const base = await tx.purchaseJob.findUniqueOrThrow({ where: { id: jobId }, select: { deliveryOrderId: true } });
@@ -32,8 +34,12 @@ export async function refundStoreShare(
     const order = await tx.deliveryOrder.findUniqueOrThrow({ where: { id: job.deliveryOrderId } });
     if (!isMultiStoreOrder(order)) return { skip: "pedido de uma loja só (estorno do pedido inteiro)" };
     if (!PAID_OR_IN_FULFILLMENT_STATUSES.includes(order.status)) return { skip: `pedido em ${order.status}` };
-    if (job.storeOrderNumber || MONEY_MOVING.includes(job.status)) return { skip: `compra desta loja em ${job.status}` };
-    if (await tx.pixPayout.findUnique({ where: { purchaseJobId: job.id } })) return { skip: "Pix de saída registrado; conciliar antes" };
+    if (input.storeCanceled) {
+      if (job.status !== "completed" || job.storeOrderNumber !== input.storeCanceled.storeOrderNumber) return { skip: `compra desta loja em ${job.status}` };
+    } else {
+      if (job.storeOrderNumber || MONEY_MOVING.includes(job.status)) return { skip: `compra desta loja em ${job.status}` };
+      if (await tx.pixPayout.findUnique({ where: { purchaseJobId: job.id } })) return { skip: "Pix de saída registrado; conciliar antes" };
+    }
     const existing = await tx.purchaseAttempt.findUnique({ where: { purchaseJobId_idempotencyKey: { purchaseJobId: job.id, idempotencyKey: `store-refund:${job.id}` } } });
     if (existing) return { skip: "parte desta loja já devolvida" };
     const scope = storeScope(order, job.storeKey);
@@ -47,7 +53,7 @@ export async function refundStoreShare(
       status: "canceled", lockedAt: null, claimToken: null, browserSessionId: null, nextAttemptAt: null,
       lastErrorCode: STORE_SHARE_REFUNDED, lastErrorMessage: `Parte da loja devolvida ao cliente: ${(input.internalReason ?? input.reason).slice(0, 300)}`
     } });
-    if (job.submissionId) await tx.purchaseSpend.updateMany({ where: { submissionId: job.submissionId, status: "reserved" }, data: { status: "released", releasedAt: new Date(), releaseNote: "parte da loja devolvida ao cliente" } });
+    if (job.submissionId && !input.storeCanceled) await tx.purchaseSpend.updateMany({ where: { submissionId: job.submissionId, status: "reserved" }, data: { status: "released", releasedAt: new Date(), releaseNote: "parte da loja devolvida ao cliente" } });
     return { order, job, scope, previous: { status: job.status, code: job.lastErrorCode, message: job.lastErrorMessage } };
   });
   if ("skip" in reservation) return { status: "skipped", reason: reservation.skip! };

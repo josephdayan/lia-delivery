@@ -195,3 +195,29 @@ test("09/10: vigia do pago por loja — loja sem compra depois do prazo devolve 
     delete process.env.LIA_SERVER_BUYER_OFF;
   }
 });
+
+test("09/10: loja que cancela depois da compra num pedido de várias lojas devolve só a parte dela, sem estornar o pedido inteiro", async () => {
+  await prisma.purchaseSpend.updateMany({ data: { budgetDay: "2000-01-01" } });
+  const order = await multiOrder();
+  const a = fakeVtex({ orderGroup: `v${process.pid}0401dgsp` });
+  const b = fakeVtex({ domain: "www.mambo.com.br", skuId: "777", priceCents: 990, slas: mamboSlas, orderGroup: `v${process.pid}0402mmb` });
+  const report = await runVtexApiPurchases({ maxJobs: 2, fetchImpl: router(a, b) as never });
+  assert.deepEqual(report.runs.map((r) => r.status), ["completed", "completed"], JSON.stringify(report.runs));
+  const statusFetch = async (url: string) => {
+    const mambo = new URL(url).hostname === "www.mambo.com.br";
+    return new Response(JSON.stringify([{ orderId: "x", state: mambo ? "canceled" : "handling" }]), { status: 200 });
+  };
+  await prisma.trackingSubscription.updateMany({ where: { deliveryOrderId: order.id }, data: { nextCheckAt: new Date(0) } });
+  const polled = await pollVtexOrderStatuses({ fetchImpl: statusFetch as never });
+  assert.deepEqual(polled.errors, []);
+  const payment = await prisma.payment.findFirstOrThrow({ where: { deliveryOrderId: order.id } });
+  assert.equal(payment.refundedCents, storeScope(order, "mambo")!.shareCents, "só a parte da Mambo");
+  const fresh = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: order.id } });
+  assert.equal(fresh.status, "retailer_preparing", "a Drogaria segue");
+  assert.match(fresh.notes ?? "", /🚫 A Mambo cancelou a parte dela/);
+  assert.equal((await prisma.purchaseJob.findFirstOrThrow({ where: { deliveryOrderId: order.id, storeKey: "drogariasp" } })).status, "completed");
+  // Segunda olhada não devolve de novo.
+  await prisma.trackingSubscription.updateMany({ where: { deliveryOrderId: order.id }, data: { nextCheckAt: new Date(0) } });
+  await pollVtexOrderStatuses({ fetchImpl: statusFetch as never });
+  assert.equal((await prisma.payment.findFirstOrThrow({ where: { deliveryOrderId: order.id } })).refundedCents, storeScope(order, "mambo")!.shareCents);
+});

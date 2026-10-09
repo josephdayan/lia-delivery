@@ -16,7 +16,7 @@ import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, no
 import { humanEstimate } from "./live-freight";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
-import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, type SplitItem } from "./purchase/store-split";
+import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
 
 export async function sendFreightChoice(phone: string, choice: FreightChoiceState) {
   const totalFor = (fee: number) =>
@@ -720,6 +720,86 @@ async function refundStaleStores(order: { id: string; status: string; paidAt: Da
 // "Não consegui comprar → estornar": um clique no /ops que estorna pelo provedor,
 // fecha o pedido e explica ao cliente, com o motivo. Sem razão no pagamento
 // (pedido antigo), lança a mensagem legível e o caminho manual continua valendo.
+// Loja cancelou DEPOIS da compra (09/10/2026, dono: "nesses casos o estorno devia ser automático").
+// Caso real: Drogal cancelou o #GTGH3C às 8h25 e o dinheiro do cliente ficou preso esperando um toque
+// no /ops. Regra do sistema: cancelamento confirmado pela loja (status do pedido ou e-mail) = estorno
+// integral pelo provedor na hora, cliente avisado, dono avisado (com o Pix pago à loja a recuperar).
+// Idempotente pela nota; falha (provedor recusou) vira nota + alerta, e quem chamou tenta de novo.
+export const STORE_CANCELED_REFUND_MARK = "🤖 Estorno automático: loja cancelou";
+export function storeCancelAutoRefundEnabled(): boolean {
+  return process.env.LIA_STORE_CANCEL_AUTO_REFUND !== "false";
+}
+export async function autoRefundStoreCanceled(
+  orderId: string,
+  input: { storeKey: string; storeLabel: string; storeOrderNumber: string; source: "store-status" | "mail" }
+): Promise<"refunded" | "already" | "skipped" | "failed"> {
+  const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId } });
+  if (!current) return "skipped";
+  if ((current.notes ?? "").includes(STORE_CANCELED_REFUND_MARK) || current.status === "refunded") return "already";
+  if (!current.paidAt || !["retailer_preparing", "retailer_out_for_delivery", "paid", "refund_pending"].includes(current.status)) return "skipped";
+  const shortId = orderId.slice(-6).toUpperCase();
+  // Pedido de várias lojas (09/10): a loja que cancelou devolve só a parte dela; as outras seguem.
+  if (isMultiStoreOrder(current)) {
+    const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: orderId, storeKey: input.storeKey, storeOrderNumber: input.storeOrderNumber } });
+    if (!job) return "skipped";
+    if (job.status === "canceled" && job.lastErrorCode === STORE_SHARE_REFUNDED) return "already";
+    try {
+      const { refundStoreShare } = await import("./purchase/store-refund");
+      const result = await refundStoreShare(job.id, { reason: `a ${input.storeLabel} cancelou a parte dela`, internalReason: `${input.storeLabel} cancelou o pedido ${input.storeOrderNumber} depois da compra (via ${input.source}); Pix pago à loja a recuperar`, origin: "auto", storeCanceled: { storeOrderNumber: input.storeOrderNumber } });
+      if (result.status === "skipped") return "skipped";
+      console.warn("[store-canceled:auto-refund-share]", input.storeKey, shortId, input.storeOrderNumber, result.reference);
+      return "refunded";
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[store-canceled:auto-refund-share-failed]", orderId, input.storeKey, message);
+      const marker = `${AUTO_REFUND_FAILED_MARKER} (${input.storeLabel})`;
+      if (!(current.notes ?? "").includes(marker)) {
+        await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(current.notes, `${marker}: loja cancelou e a devolução da parte dela falhou — ${message.replace(/[\r\n]/g, " ").slice(0, 160)} (${new Date().toISOString()}).`) } });
+        await notifyOwner(copy.operatorAutoRefundFailedAlert(shortId, `${input.storeLabel}: ${message}`));
+      }
+      return "failed";
+    }
+  }
+  try {
+    const result = await refundOrderViaProvider(orderId);
+    const payout = await prisma.pixPayout.findFirst({ where: { deliveryOrderId: orderId, status: "paid" }, orderBy: { createdAt: "desc" } });
+    const notesWithoutPending = (current.notes ?? "").split("\n").filter((line) => line !== REFUND_PENDING_FLAG).join("\n");
+    const order = await prisma.deliveryOrder.update({
+      where: { id: orderId },
+      data: {
+        status: "refunded",
+        notes: appendOrderNote(
+          appendOrderNote(
+            notesWithoutPending,
+            `${STORE_CANCELED_REFUND_MARK} (${input.storeLabel} nº ${input.storeOrderNumber}, via ${input.source}) — pelo provedor em ${new Date().toISOString()}.${payout ? ` Pix pago à loja (R$ ${(payout.amountCents / 100).toFixed(2).replace(".", ",")}, ${payout.endToEndId ?? payout.providerPayoutId ?? "sem e2e"}) a recuperar.` : ""}`
+          ),
+          `${REFUND_CONFIRMED_PREFIX} integral — ${result.reference}`
+        )
+      }
+    });
+    await prisma.trackingSubscription.updateMany({ where: { deliveryOrderId: orderId, completedAt: null }, data: { completedAt: new Date() } });
+    await resetConversationForClosedOrder(order, "store-canceled-refund");
+    const delivered = await deliverNotice(order.phone, copy.storeCanceledRefunded(input.storeLabel, shortId, result.amount), { items: order.items }).catch(() => "skipped" as const);
+    if (delivered === "skipped") {
+      await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(order.notes, "⚠️ Aviso do estorno NÃO enviado: cliente fora da janela de 24h e sem template. Avisar por outro canal.") } });
+    }
+    await notifyOwner(copy.ownerStoreCanceledRefunded({ storeLabel: input.storeLabel, shortId, storeOrderNumber: input.storeOrderNumber, total: result.amount, storePaid: payout ? payout.amountCents / 100 : undefined }));
+    console.warn("[store-canceled:auto-refund]", input.storeKey, shortId, input.storeOrderNumber, result.reference);
+    return "refunded";
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[store-canceled:auto-refund-failed]", orderId, message);
+    if (!(current.notes ?? "").includes(AUTO_REFUND_FAILED_MARKER)) {
+      await prisma.deliveryOrder.update({
+        where: { id: orderId },
+        data: { notes: appendOrderNote(current.notes, `${AUTO_REFUND_FAILED_MARKER}: loja cancelou e o estorno falhou — ${message.replace(/[\r\n]/g, " ").slice(0, 160)} (${new Date().toISOString()}). Estornar à mão no /ops.`) }
+      });
+      await notifyOwner(copy.operatorAutoRefundFailedAlert(shortId, message));
+    }
+    return "failed";
+  }
+}
+
 export async function opsPurchaseFailedRefund(
   orderId: string,
   reason?: string,
