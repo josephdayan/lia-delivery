@@ -35,6 +35,11 @@ export function greeting(): string {
   return `Oi! Sou a Lia 💚 ${PITCH}`;
 }
 
+// Queixa de demora antes de haver pedido em andamento (09/10, rodada 2): pede desculpa e não mexe na lista.
+export function waitApology(): string {
+  return "Desculpa a espera 🙏 Assim que eu tiver seu endereço, já saio procurando.";
+}
+
 export function thanks(): string {
   return "Imagina! Qualquer coisa é só chamar 💚";
 }
@@ -1797,6 +1802,10 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
   ].join("\n");
 }
 
+export function consolidationAsk(): string {
+  return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter*.";
+}
+
 export function consolidationKept(stores: number): string {
   return `Fechado, mantenho as ${stores} lojas — cada uma entrega a sua parte.`;
 }
@@ -2897,6 +2906,11 @@ export function backNothingOpen(): string {
 }
 
 // "qual o mais barato?" é pergunta — responde qual é, não põe na cesta (06/10).
+export function cheapestTieNote(numbers: number[], price: number, picked: number): string {
+  const list = numbers.length === 2 ? `${numbers[0]} e ${numbers[1]}` : `${numbers.slice(0, -1).join(", ")} e ${numbers[numbers.length - 1]}`;
+  return `As opções ${list} estavam empatadas em ${brl(price)} — peguei a *${picked}*, que é a mais certeira pro seu pedido. Se preferir outra, é só falar.`;
+}
+
 export function cheapestOptionAnswer(n: number, name: string, price: number, cheapest: boolean): string {
   return `O mais ${cheapest ? "barato" : "caro"} é o *${n}*: ${name} — ${brl(price)}. Quer esse? Responde *${n}*.`;
 }

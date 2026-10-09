@@ -2,7 +2,7 @@
 // é pedido e o que é cortesia numa mensagem só. Tudo puro (sem banco, sem rede) — testado em
 // tests/feedback-2026-10-06-cadastro.test.ts.
 import { resolveListItems } from "@/lib/list-items";
-import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, normalizeMsg, parseAddressComplement, type ParsedLine } from "@/lib/lia-intents";
+import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
 // "praça", "estrada") só com a palavra seguinte em maiúscula — "calça larga" não é endereço.
@@ -408,7 +408,7 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   const lines = resolveListItems(cleaned).filter((line) => {
     const n = normalizeMsg(line.phrase);
     if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(line.phrase.trim()) && (/\b0+\b/.test(line.phrase) || /\bsem nome\b/i.test(line.phrase))) return false;
-    return !/^(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)\s*(?:[eé]|eh|:)?\s*\d{1,5}[a-z]?$/i.test(line.phrase.trim()) && !PHONE_ONLY_RE.test(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
+    return !/^(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)\s*(?:[eé]|eh|:)?\s*\d{1,5}[a-z]?$/i.test(line.phrase.trim()) && !PHONE_ONLY_RE.test(line.phrase) && !isWaitGripe(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
   });
   const text = lines.map((line) => (line.qtyExplicit || line.qty > 1 ? `${line.qty} ${line.phrase}` : line.phrase)).join(", ");
   return { text, lines, wantsToOrder: courtesy.wantsToOrder };
