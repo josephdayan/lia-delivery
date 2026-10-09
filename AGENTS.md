@@ -203,6 +203,24 @@ diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma
 - **Pré-escolha = básica mais barata** (`cheapestFirstForLine` com `variantPenalty`): "gin" não pré-escolhe mais o
   Apogee Citrus só por ser o mais barato.
 
+## 09/10/2026 — Rodada de cliente (roteiro com lojas reais, `scratchpad/cliente/driver.mts`): o que foi corrigido
+
+Dono: "os detalhes óbvios já eram pra ter sido corrigidos". Roteiro local (banco local, lojas/frete ao vivo, sem IA)
+pelo fluxo inteiro. Corrigido (testes em `tests/rodada-cliente-2026-10-09.test.ts` e `recommend-e2e`):
+- **Assunto novo de recomendação no meio da escolha** ("tem algo doce pra comer?" com os remédios de dor de cabeça na
+  tela) virava refino e reenviava os MESMOS cards → agora é pedido novo (`handleChoosing`, antes do refino).
+- **Prazo como o cliente lê** (`copy.promiseForCustomer`, só exibição — a promessa gravada continua a mesma, a compra
+  confere por ela): "Entrega: R$ 24,90 · hoje, 12h–15h" (era "pela própria loja · prazo da loja: em até 9h (…)") e
+  "A *Mambo* entrega *hoje, 12h–15h*" (era "entrega em *em até 9h…*").
+- **Troca cartão→Pix** sem a bolha: a 2ª mensagem não repete "troquei" (`paymentSwitched(…, announced)`).
+- **Endereço**: rua do CEP reconhecida com 1 letra de diferença e abreviação ("Souza" × "Sousa", "Eng") — antes o
+  endereço ia pra etiqueta como digitado, em minúsculas.
+- **Marca como se fala**: "red bul", "absolute", "cocas", "heinekem" (`QUERY_ALIASES`) — sem a IA, "red bul" dava
+  "não achei".
+- **Nome repetido pela loja** ("Energético Energy Drink Red Bull 250ml Energético Red Bull Energy Drink 250ml") limpo
+  na exibição (`dedupeProductName`).
+- **Resumo depois do formulário** em uma linha ("✅ Lista salva: N itens · R$ X" + "🚚 loja · prazo").
+
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
 - **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do

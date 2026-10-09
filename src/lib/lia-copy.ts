@@ -650,8 +650,28 @@ export type SummaryInput = {
 // real. Antes havia `?? 40` / `?? 90` de fallback: sem prazo da loja, a Lia escrevia
 // "chega em ~40 min" sem base nenhuma (dono, 17/08: "para de mentir q sempre chega no
 // mesmo dia pq n eh verdade as vezes"). Sem dado, a linha sai só com o valor.
+// Prazo como o CLIENTE lê (09/10, rodada de cliente: "pela própria loja · prazo da loja: em até 9h (hoje, 12h–15h)"
+// e "entrega em *em até 9h…*"). Só exibição: a promessa gravada no pedido continua igual (a compra confere por ela).
+// "pela própria loja (2 entregas) · prazo da loja: em até 9h (hoje, 12h–15h)" → "2 entregas · hoje, 12h–15h".
+export function promiseForCustomer(promise?: string | null): string {
+  if (!promise) return "";
+  return promise
+    .split(" · ")
+    .map((part) =>
+      part
+        .trim()
+        .replace(/^(?:entrega )?pela própria loja\s*/i, "")
+        .replace(/^prazo da loja:\s*/i, "")
+        .replace(/^em até \d+h \((.+)\)$/i, "$1")
+        .replace(/^\((\d+ entregas)\)$/i, "$1")
+        .trim()
+    )
+    .filter(Boolean)
+    .join(" · ");
+}
+
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
-  const prazo = deliveryPromise ?? (etaMinutes ? `chega em ~${etaMinutes} min` : null);
+  const prazo = (deliveryPromise ? promiseForCustomer(deliveryPromise) : "") || (etaMinutes ? `chega em ~${etaMinutes} min` : null);
   return `Entrega: ${brl(frete)}${prazo ? ` · ${prazo}` : ""}`;
 }
 
@@ -904,7 +924,11 @@ export function resendCard(link: string): string {
 
 // renewed (06/10): "o pix expirou" com Pix gera cobrança NOVA no mesmo método — dizia
 // "Troquei pra Pix" sem ter trocado nada.
-export function paymentSwitched(method: "pix" | "card", total: number, renewed = false): string {
+export function paymentSwitched(method: "pix" | "card", total: number, renewed = false, announced = false): string {
+  // Aviso da troca já saiu logo antes (09/10): só o total e o código/link, sem repetir "troquei".
+  if (announced) {
+    return method === "pix" ? `Total *${brl(total)}* no Pix, sem taxa. Segue o código 👇` : `Total *${brl(total)}* no cartão, com a taxa da maquininha. Segue o link 👇`;
+  }
   if (renewed) {
     return method === "pix"
       ? `Gerei um Pix novo — total *${brl(total)}*. O anterior não vale mais. Segue o código 👇`
@@ -1690,14 +1714,19 @@ export function totalAwaitingPayment(total: number): string {
 // Prazo por loja (09/10, dono: "devia mostrar o prazo direto"): "🚚 Prazo: *Mambo* — 1 dia útil".
 export type EtaRow = { store: string; when: string };
 export function etaLine(rows: EtaRow[]): string {
-  return `🚚 Prazo: ${rows.map((r) => `*${r.store}* — ${r.when}`).join(" · ")} _(contado da compra)_`;
+  return `🚚 Prazo: ${rows.map((r) => `*${r.store}* — ${promiseForCustomer(r.when)}`).join(" · ")} _(contado da compra)_`;
+}
+// "3h", "1 dia útil" → "em *3h*"; "hoje", "hoje, 12h–15h", "amanhã" → "*hoje, 12h–15h*".
+function whenPhrase(when: string): string {
+  const w = promiseForCustomer(when);
+  return /^\d/.test(w) ? `em *${w}*` : `*${w}*`;
 }
 
 // "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
 export function basketEtaAnswer(rows: EtaRow[]): string {
   const body = rows.length === 1
-    ? `A *${rows[0].store}* entrega em *${rows[0].when}* pro seu endereço, contado da compra.`
-    : `Pro seu endereço: ${rows.map((r) => `*${r.store}* em *${r.when}*`).join(", ")} — contado da compra.`;
+    ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pro seu endereço, contado da compra.`
+    : `Pro seu endereço: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`;
   return `${body}\nDiz *pagar* que eu mando o total com a entrega.`;
 }
 
@@ -1928,7 +1957,7 @@ export function etaComesWithTotal(): string {
 }
 
 export function etaAfterChoice(known: EtaRow[] = []): string {
-  const so = known.length ? `Do que já está na lista: ${known.map((r) => `*${r.store}* em *${r.when}*`).join(", ")}. ` : "";
+  const so = known.length ? `Do que já está na lista: ${known.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")}. ` : "";
   return `${so}O prazo de cada opção está no card — escolhe essa aqui que eu fecho o total com a entrega:`;
 }
 
@@ -2238,7 +2267,7 @@ export function unsupportedPayment(): string {
 // Loja e prazo DO PEDIDO (06/10): "quando chega?" com pedido pago devolvia só o status.
 export function orderDeliveryInfo(input: { stores: string[]; promise?: string }): string {
   const stores = input.stores.length ? input.stores.map((s) => `*${s}*`).join(" e ") : "";
-  const promise = input.promise ? input.promise.replace(/^pela própria loja/, "entrega pela própria loja") : "";
+  const promise = promiseForCustomer(input.promise);
   if (stores && promise) return `🚚 Loja ${stores} · ${promise}`;
   if (stores) return `🚚 Loja ${stores}`;
   return promise ? `🚚 ${promise.charAt(0).toUpperCase()}${promise.slice(1)}` : "";

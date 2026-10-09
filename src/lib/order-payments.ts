@@ -667,7 +667,8 @@ export async function switchPaymentMethod(
   },
   method: "pix" | "card",
   // renewed (06/10): cobrança nova no MESMO método (Pix/link vencido) — o texto não diz "troquei".
-  opts: { renewed?: boolean } = {}
+  // announced (09/10): o "vale o Pix agora" já saiu (previousChargeSuperseded) — o texto não repete "troquei".
+  opts: { renewed?: boolean; announced?: boolean } = {}
 ) {
   const base = Math.round((order.itemsSubtotal + order.serviceFee + order.deliveryFee) * 100) / 100;
   const isCard = method === "card";
@@ -703,7 +704,7 @@ export async function switchPaymentMethod(
     });
     await supersedePixCharge(order.pixId);
     if (await sendFirstCardEnrollment(updated)) {
-      await reply(phone, copy.paymentSwitched(method, total, opts.renewed));
+      await reply(phone, copy.paymentSwitched(method, total, opts.renewed, opts.announced));
       return;
     }
     let link;
@@ -719,7 +720,7 @@ export async function switchPaymentMethod(
       where: { id: order.id },
       data: { total, notes, pixId: link.preferenceId, pixCopiaECola: link.initPoint }
     });
-    await reply(phone, [copy.paymentSwitched(method, total, opts.renewed), link.initPoint, link.mock ? `\n${copy.sandboxHint()}` : ""].filter(Boolean).join("\n"));
+    await reply(phone, [copy.paymentSwitched(method, total, opts.renewed, opts.announced), link.initPoint, link.mock ? `\n${copy.sandboxHint()}` : ""].filter(Boolean).join("\n"));
     return;
   }
 
@@ -747,7 +748,7 @@ export async function switchPaymentMethod(
   if (await maybeSendNativePixBubble(phone, order.id, charge.pixId, total, charge.payload, charge.mock)) return;
   await reply(
     phone,
-    [copy.paymentSwitched(method, total, opts.renewed), charge.payload, charge.mock ? `\n${copy.sandboxHint()}` : ""].filter(Boolean).join("\n")
+    [copy.paymentSwitched(method, total, opts.renewed, opts.announced), charge.payload, charge.mock ? `\n${copy.sandboxHint()}` : ""].filter(Boolean).join("\n")
   );
 }
 

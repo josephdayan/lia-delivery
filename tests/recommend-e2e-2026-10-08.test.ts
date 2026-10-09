@@ -324,3 +324,20 @@ test("refino na tela: 'sem chocolate' refaz a recomendação sem chocolate; 'de 
   for (const o of q.options) assert.doesNotMatch(o.name, CHOCOLATE_RE, "a restrição anterior continua valendo");
   assert.equal(q.query, "algo doce de morango");
 });
+
+// Rodada de cliente (09/10): com os cards de uma recomendação na tela, OUTRA necessidade ("me recomenda um
+// chocolate bom" depois de "quero algo doce" virava refino; "tem algo doce pra comer?" depois da dor de cabeça
+// reenviava os remédios) é pedido novo. Mesma necessidade com detalhe ("sem chocolate") continua sendo refino.
+test("assunto novo de recomendação no meio da escolha vira pedido novo (não reenvia os mesmos cards)", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_MEDICINE_MIP = "true";
+  const phone = await registered();
+  await send(phone, "tô com dor de barriga");
+  const before = top(await ctxOf(phone))!;
+  assert.ok(before.recommendation, "recomendou remédio");
+  const out = await send(phone, "tem algo doce pra comer?");
+  const after = top(await ctxOf(phone))!;
+  assert.ok(after.recommendation, `nova recomendação: ${out.slice(0, 200)}`);
+  assert.notEqual(after.recommendation!.request.need, before.recommendation!.request.need);
+  assert.ok(!after.options.some((o) => before.options.some((b) => b.sku === o.sku)), "nenhum card repetido");
+});

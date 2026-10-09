@@ -913,7 +913,16 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   // 08/10 (placar r4, s141): o cliente pede "leite em pó para bebê"/"leite infantil"; a farmácia
   // chama de "Fórmula Infantil" (Aptamil, Nan, Nestogeno) — e "leite em pó" sozinho segue leite.
   [/\bleite (?:em po )?(?:para|pra|pro|de) (?:o |a |meu |minha )?(?:bebe|bebes|nenem|nene|neneh|recem[- ]nascido)\b/, "formula infantil"],
-  [/\bleite (?:em po )?infantil\b/, "formula infantil"]
+  [/\bleite (?:em po )?infantil\b/, "formula infantil"],
+  // Marcas escritas do jeito que se fala (09/10, rodada de cliente: "4 red bul" → "não achei em nenhuma loja";
+  // em produção a IA corrige, sem ela a busca não achava).
+  [/\bred ?bul\b/, "red bull"],
+  [/\bredbull\b/, "red bull"],
+  [/\babsolute\b/, "absolut"],
+  [/\bcoca ?cola\b|\bcocas?\b/, "coca cola"],
+  [/\bguaranas?\b/, "guarana"],
+  [/\bheinekem\b|\bheineke\b/, "heineken"],
+  [/\bjhonnie|\bjohnny walker|\bjhonny walker/, "johnnie walker"]
 ];
 // Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
 // "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.

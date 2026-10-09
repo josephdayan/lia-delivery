@@ -785,6 +785,22 @@ function textChoiceName(p: PendingChoice, option: ChoiceOption): string {
   return option.why ? `${name} · _${option.why}_` : name;
 }
 
+// Nome que a loja cadastrou repetido ("Energético Energy Drink Red Bull 250ml Energético Red Bull Energy Drink
+// 250ml", Mambo, 09/10): fica a primeira metade quando a segunda repete as mesmas palavras.
+export function dedupeProductName(name: string): string {
+  const words = name.trim().split(/\s+/);
+  const first = normalizeMsg(words[0] ?? "");
+  if (words.length < 4 || first.length < 3) return name;
+  for (let i = 2; i < words.length - 1; i++) {
+    if (normalizeMsg(words[i]) !== first) continue;
+    const a = new Set(words.slice(0, i).map((w) => normalizeMsg(w)));
+    const b = new Set(words.slice(i).map((w) => normalizeMsg(w)));
+    const common = [...b].filter((w) => a.has(w)).length;
+    if (common / Math.max(a.size, b.size) >= 0.7) return words.slice(0, i).join(" ");
+  }
+  return name;
+}
+
 function toChoiceOption(
   o: { sku: string; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; category?: string; freeShipping?: boolean; medicine?: "mip" },
   storeRef?: { storeKey?: string; storeLabel?: string },
@@ -803,7 +819,7 @@ function toChoiceOption(
   const unitWeightKg = live?.available ? live.unitWeightKg : undefined;
   return {
     sku: o.sku,
-    name: unitWeightKg ? copy.soldByWeightName(o.name, unitWeightKg) : o.name,
+    name: unitWeightKg ? copy.soldByWeightName(dedupeProductName(o.name), unitWeightKg) : dedupeProductName(o.name),
     brand: o.brand,
     // Preço da loja AGORA quando a simulação respondeu (05/10): o card e o total batem.
     unitPrice: live?.available && live.unitPrice != null ? live.unitPrice : o.unitPrice,
@@ -3540,7 +3556,7 @@ async function handleDeliveryTurn(
         // Rajada "pix"/"cartão" (28/08 S10): a troca deixa claro que o código anterior
         // NÃO vale mais — antes o cliente ficava com Pix vivo e oferta de cartão juntos.
         await reply(phone, copy.previousChargeSuperseded(wanted));
-        await switchPaymentMethod(phone, order, wanted);
+        await switchPaymentMethod(phone, order, wanted, { announced: true });
       } else {
         await resendCharge(phone, order);
       }
@@ -5428,6 +5444,23 @@ async function handleChoosing(
     }
     await confirmChosenOption(phone, convoId, ctx, userCep, store, current, tapped);
     return;
+  }
+
+  // Assunto NOVO de recomendação no meio da escolha (09/10, rodada de cliente: com os cards de dor de cabeça na tela,
+  // "tem algo doce pra comer?" virava refino da dor de cabeça e reenviava os mesmos remédios). Outra necessidade
+  // ou outro produto pra julgar = pedido novo; a escolha da tela sai com aviso. Mesma necessidade = refino (abaixo).
+  if (intent.kind === "free_text" && recommendEnabled()) {
+    const rec = detectRecommendation(text, { hasPendingChoice: true, basketNames: ctx.basket?.map((b) => b.name) });
+    const was = current.recommendation?.request;
+    const subject = (r: { form: string; need?: string; product?: string; symptom?: string }) => normalizeMsg(r.symptom ?? r.need ?? r.product ?? "");
+    if (rec && subject(rec) && (!was || subject(rec) !== subject(was)) && !(was && subject(was) && subject(rec).includes(subject(was)))) {
+      ctx.pending = ctx.pending!.slice(1);
+      if (!ctx.pending.length) ctx.pending = undefined;
+      ctx.step = ctx.pending?.length ? "choosing" : "collecting";
+      await writeCtx(convoId, ctx);
+      await handleSearch(phone, convoId, userCep, ctx, text, userId);
+      return;
+    }
   }
 
   // Pergunta de embalagem em aberto (07/10, c28): "sim" põe na cesta; "não"/"outras" volta às opções;

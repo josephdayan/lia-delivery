@@ -126,6 +126,38 @@ function streetTokens(street?: string): string[] {
 
 // Com o CEP salvo (ViaCEP deu a rua), "1500", "221 apto 13", "o numero é 1500", "numero 221 ap
 // 13", "Augusta 1500" e "nº 1500" bastam. Devolve número e complemento como o cliente escreveu.
+// Palavra da rua com 1 letra de diferença ("souza" × "Sousa" do CEP, "egidio" × "egídio", digitação), 09/10:
+// a rua não era reconhecida e o endereço ia pra etiqueta como o cliente digitou, em minúsculas.
+function nearStreetWord(word: string, known: Set<string>): boolean {
+  if (known.has(word)) return true;
+  // Abreviação: "eng" de Engenheiro, "prof" de Professor, "gen" de General.
+  if (word.length >= 3 && [...known].some((k) => k.length > word.length && k.startsWith(word))) return true;
+  if (word.length < 4) return false;
+  for (const k of known) {
+    if (Math.abs(k.length - word.length) > 1 || k.length < 4) continue;
+    let i = 0;
+    let j = 0;
+    let edits = 0;
+    while (i < k.length && j < word.length && edits <= 1) {
+      if (k[i] === word[j]) {
+        i++;
+        j++;
+        continue;
+      }
+      edits++;
+      if (k.length > word.length) i++;
+      else if (word.length > k.length) j++;
+      else {
+        i++;
+        j++;
+      }
+    }
+    edits += k.length - i + (word.length - j);
+    if (edits <= 1) return true;
+  }
+  return false;
+}
+
 export function parseHouseNumberReply(
   raw: string,
   place?: { street?: string; district?: string; city?: string }
@@ -145,7 +177,7 @@ export function parseHouseNumberReply(
     let i = 0;
     while (i < words.length && !/\d/.test(words[i])) {
       const w = normalizeMsg(words[i]).replace(/[^a-z0-9]/g, "");
-      if (!w || STREET_WORDS.test(w) || known.has(w)) i++;
+      if (!w || STREET_WORDS.test(w) || nearStreetWord(w, known)) i++;
       else break;
     }
     if (i > 0 && i < words.length && /\d/.test(words[i])) text = words.slice(i).join(" ").replace(/^[\s,]+/, "");
