@@ -15,6 +15,14 @@ test("faltou o/a/um/uma + item sozinho é esquecimento; outras reclamações con
   assert.equal(detectIntent("faltou o café").kind, "complaint", "a intenção pura segue reclamação; o serviço decide pelo pedido");
 });
 
+test("oferta de juntar lojas aberta dispensa a IA do diálogo ('manter', 'não' vão ao handler)", async () => {
+  const { dialogueBypassReason } = await import("../src/lib/dialogue/index");
+  const ctx = { step: "collecting", consolidationOffer: { key: "k", basket: [], storeLabel: "Mambo", stores: 2, pairs: [], delta: 0 } } as never;
+  for (const text of ["manter", "não", "não, deixa separado"]) {
+    assert.equal(dialogueBypassReason({ text, intent: detectIntent(text), ctx, hasAddress: true, looksLikeList: false }), "pergunta_aberta", text);
+  }
+});
+
 test("aviso de lista nova cita o que saiu", () => {
   const m = copy.newListDropped(["Arroz Camil 5kg", "leite"]);
   assert.match(m, /Arroz Camil 5kg/);
