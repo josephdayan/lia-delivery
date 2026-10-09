@@ -28,6 +28,10 @@ function leaseMs(): number {
   return Number.isFinite(configured) ? Math.max(60_000, Math.min(60 * 60_000, configured)) : 15 * 60_000;
 }
 
+function busyHorizonMs(): number {
+  const hours = Number(process.env.LIA_PURCHASE_BUSY_HOURS ?? 24);
+  return (Number.isFinite(hours) && hours > 0 ? hours : 24) * 3_600_000;
+}
 function retryMs(): number {
   const configured = Number(process.env.LIA_PURCHASE_WORKER_RETRY_MS ?? 5 * 60_000);
   return Number.isFinite(configured) ? Math.max(60_000, Math.min(60 * 60_000, configured)) : 5 * 60_000;
@@ -344,7 +348,9 @@ export async function claimNextPurchaseJob(workerId: string, allowedStores?: str
       // não apenas o pedido: dois clientes jamais montam a mesma sacola em paralelo.
       await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${`purchase-account:${full.storeKey}`}))::text`;
       // Carrinho nas mãos do dono (ML) ou Pix em curso também ocupam a conta da loja.
-      const busy = await tx.purchaseJob.findFirst({ where: { storeKey: full.storeKey, OR: [
+      // Trabalho parado há mais de um dia não ocupa mais a conta (09/10: um Pix da Cobasi de 15/09
+      // sem desfecho travou toda compra nova da loja); ele segue no /ops para conferência.
+      const busy = await tx.purchaseJob.findFirst({ where: { storeKey: full.storeKey, updatedAt: { gt: new Date(Date.now() - busyHorizonMs()) }, OR: [
         { status: { in: ["claimed", "submitting", "outcome_unknown", "awaiting_owner_confirm", "awaiting_store_number", "pix_captured", "pix_submitted", "pix_paid"] } }, {status:{in:["awaiting_approval","approved"]},lockedAt:{not:null}}, { status: "needs_review", lockedAt: { not: null } }
       ] }, select: { id: true } });
       const trackingBusy = await tx.trackingSubscription.findFirst({where:{storeKey:full.storeKey,lockedAt:{gt:new Date(Date.now()-5*60_000)}}});
