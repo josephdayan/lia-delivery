@@ -153,3 +153,15 @@ test("resumo da lista e 'até agora' mostram o prazo de cada loja", async () => 
   ]);
   assert.deepEqual(eta, { rows: [{ store: "Mambo", when: "1 dia útil" }], complete: true }, "loja com vários itens vale o mais lento");
 });
+
+// Produto básico primeiro (dono, 09/10: "vodka absolute" → Absolut Citron, "suco de laranja" → Fruit Shoot infantil).
+test("pedido genérico: a versão básica vem antes de sabor/edição/'com X'; variante pedida vale", async () => {
+  const { variantPenalty } = await import("../src/lib/stores/types");
+  const order = (q: string, names: string[]) => [...names].sort((a, b) => variantPenalty(q, a) - variantPenalty(q, b))[0];
+  assert.equal(order("vodka absolute", ["Vodka Absolut Citron 750ml", "Vodka Absolut Raspeberry 750ml", "Vodka Sueca Absolut Original 1 Litro"]), "Vodka Sueca Absolut Original 1 Litro");
+  assert.equal(order("suco de laranja", ["Suco de Laranja Fruit Shoot Maguary 150ml com Vitaminas", "Suco Natural One Laranja com Maçã 180ml", "Suco de Laranja Natural One 180ml 100% Natural Garrafa"]), "Suco de Laranja Natural One 180ml 100% Natural Garrafa");
+  assert.equal(order("gin", ["Gin London Dry Citrus Apogee 1 Litro", "Gin & Tonic Tanqueray 275ml", "Gin Inglês Seagers 1L"]), "Gin Inglês Seagers 1L");
+  assert.equal(order("red bul", ["Energético Morango & Pêssego Red Bull 250ml", "Energético Red Bull Sugarfree 250ml", "Energético Energy Drink Red Bull 250ml"]), "Energético Energy Drink Red Bull 250ml");
+  assert.equal(order("red bull sem açúcar", ["Energético Energy Drink Red Bull 250ml", "Energético Red Bull Sugarfree 250ml"]), "Energético Red Bull Sugarfree 250ml");
+  assert.equal(order("vodka absolut citron", ["Vodka Sueca Absolut Original 1 Litro", "Vodka Absolut Citron 750ml"]), "Vodka Absolut Citron 750ml");
+});

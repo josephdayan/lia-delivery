@@ -53,6 +53,30 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const editing = steps.some((s) => EDITING.has(s.type) || (s.type === "pick" && s.source === "last"));
   const reopened = editing ? await reopenOrderForEdit(phone, convoId, ctx, userCep) : false;
 
+  // Vários ajustes de quantidade na cesta de uma vez ("2 vodkas, 1 suco, 1 gin, 4 red bull" com esses itens já na
+  // cesta, 09/10): aplica todos e responde UMA vez, com a lista inteira e o prazo — antes cada um mandava a sua
+  // confirmação com três botões.
+  if (steps.length >= 2 && steps.every((s) => s.type === "qty" && s.target.kind === "basket")) {
+    let applied = 0;
+    for (const s of steps) {
+      if (s.type !== "qty") continue;
+      const item = locate(ctx, s.target);
+      if (!item) continue;
+      const next = s.mode === "set" ? s.value : item.qty + s.value;
+      if (next <= 0) ctx.basket = (ctx.basket ?? []).filter((b) => b !== item);
+      else {
+        item.qty = Math.min(50, next);
+        item.lineTotal = Math.round(item.unitPrice * item.qty * 100) / 100;
+      }
+      applied += 1;
+    }
+    if (applied) {
+      await writeCtx(convoId, ctx);
+      await env.h.replyBasketList(phone, ctx);
+      return { kind: "handled", actions: label };
+    }
+  }
+
   for (let i = 0; i < steps.length; i++) {
     const nextIsSearch = steps[i + 1]?.type === "search";
     const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick" });

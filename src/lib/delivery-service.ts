@@ -6,7 +6,7 @@ import { withDeadline } from "@/lib/stores/live-search";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
-import { attrMatchesItem, conciergeMatchIsStrong, diversifyOptions, inferCatalogRefinement, parsePackPhrase, queryTokens, sameProductVariant, scoreCatalogMatch } from "@/lib/stores/types";
+import { attrMatchesItem, conciergeMatchIsStrong, diversifyOptions, inferCatalogRefinement, parsePackPhrase, queryTokens, sameProductVariant, scoreCatalogMatch, variantPenalty } from "@/lib/stores/types";
 import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
@@ -563,7 +563,7 @@ async function buildChoices(
         return preferredSkus?.has(item.sku) ? { ...option, repeat: true } : option;
       })
       // Preço pedido explicitamente manda na ordem (desempate: confirmado ao vivo e prazo).
-      .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta);
+      .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta(line.phrase));
     pending.push({
       query: line.phrase,
       qty: line.qty,
@@ -645,12 +645,21 @@ export function byVerifiedThenEta(a: ChoiceOption, b: ChoiceOption): number {
   return a.unitPrice + a.freightFee - (b.unitPrice + b.freightFee);
 }
 
-// Já comprado vem antes de tudo; entre iguais, confirmado ao vivo e depois o prazo.
-function byRepeatThenVerifiedThenEta(a: ChoiceOption, b: ChoiceOption): number {
-  const ra = a.repeat ? 1 : 0;
-  const rb = b.repeat ? 1 : 0;
-  if (ra !== rb) return rb - ra;
-  return byVerifiedThenEta(a, b);
+// Já comprado vem antes de tudo; entre iguais, confirmado ao vivo, depois o produto BÁSICO (sem sabor/edição
+// que o pedido não pediu — 09/10) e depois o prazo.
+function byRepeatThenVerifiedThenEta(query: string) {
+  return (a: ChoiceOption, b: ChoiceOption): number => {
+    const ra = a.repeat ? 1 : 0;
+    const rb = b.repeat ? 1 : 0;
+    if (ra !== rb) return rb - ra;
+    const va = a.verified ? 1 : 0;
+    const vb = b.verified ? 1 : 0;
+    if (va !== vb) return vb - va;
+    const pa = variantPenalty(query, a.name);
+    const pb = variantPenalty(query, b.name);
+    if (pa !== pb) return pa - pb;
+    return byVerifiedThenEta(a, b);
+  };
 }
 
 // A free-form concierge line: whatever the customer asked for, verbatim. No catalog
@@ -8799,7 +8808,22 @@ async function answerCanonical(phone: string, userId: string, convoId: string, c
 
 export const preSignupHandlers: PreHandlers = { refuseMedicine, attendanceWait, answerCanonical };
 
+// Vários ajustes de quantidade no mesmo turno (09/10, dono: lista repetida virou 4 mensagens com botões): a
+// cesta ajustada vai numa mensagem só — lista, produtos, prazo de cada loja e UM conjunto de botões.
+async function replyBasketList(phone: string, ctx: DeliveryContext) {
+  const basket = ctx.basket ?? [];
+  const body = copy.listFlowDone({
+    items: basketLinesForCopy(basket),
+    leftOut: [],
+    misses: [],
+    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100,
+    eta: basketEtaByStore(basket).rows
+  });
+  await replyBasketAdjusted(phone, body, `${body}\n\nDiz *pagar* que eu fecho, ou me manda o que mudar.`);
+}
+
 export const dialogueHandlers = {
+  replyBasketList,
   handleSearch,
   buildChoicesWithSearchNotice,
   confirmChosenOption,

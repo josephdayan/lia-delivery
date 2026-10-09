@@ -1135,3 +1135,34 @@ export function rankCatalog(query: string, allItems: CatalogItem[], limit: numbe
     .slice(0, limit)
     .map((e) => e.item);
 }
+
+// Produto BÁSICO primeiro (dono, 09/10, print: "vodka absolute" → Absolut Citron; "suco de laranja" → Fruit
+// Shoot infantil; "gin" → Apogee Citrus). Quem pede o genérico quer a versão comum: sabor, edição, zero/diet,
+// drink pronto e "com X" são VARIANTES — só contam a favor quando o próprio pedido diz. Devolve quantos
+// marcadores de variante o nome tem que o pedido não tem (0 = básico).
+const VARIANT_MARKERS = new Set([
+  "citron", "limao", "lemon", "lima", "tabasco", "pimenta", "raspberri", "raspberry", "raspeberry", "framboesa",
+  "vanilia", "vanilla", "baunilha", "morango", "strawberry", "pessego", "peach", "melancia", "watermelon", "maca",
+  "apple", "uva", "manga", "maracuja", "melao", "acerola", "cenoura", "beterraba", "gengibre", "tropical", "pomelo",
+  "amora", "frutas", "vermelhas", "fruits", "cereja", "coco", "nectarina", "blueberry", "mirtilo", "menta",
+  "hortela", "caramelo", "canela", "tangerina", "abacaxi", "kiwi", "pitaya", "goiaba", "sugarfree", "sugar",
+  "zero", "diet", "light", "edition", "edicao", "summer", "winter", "rose", "pink", "citrus", "mix", "kids",
+  "infantil", "shoot", "sprite", "tonic", "tonica", "aromatizada", "saborizada", "sabor", "vitaminas",
+  "proteina", "veggies", "blend", "special", "doce", "white", "black", "gold", "premium", "reserva"
+]);
+const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
+export function variantPenalty(query: string, name: string): number {
+  const asked = new Set(words(query));
+  // "sem açúcar"/"zero"/"diet" pedidos: as grafias da loja (Sugarfree, Sugar Free, Zero, Diet) são o pedido.
+  const wantsSugarFree = (asked.has("sem") && asked.has("acucar")) || SUGAR_FREE.some((t) => asked.has(t));
+  if (wantsSugarFree) for (const t of [...SUGAR_FREE, "free"]) asked.add(t);
+  const tokens = new Set(words(name));
+  let penalty = 0;
+  for (const token of tokens) if (VARIANT_MARKERS.has(token) && !asked.has(token)) penalty += 1;
+  // A variante PEDIDA ("vodka absolut citron") que o produto não tem conta contra ele.
+  for (const token of asked) if (VARIANT_MARKERS.has(token) && !SUGAR_FREE.includes(token) && !tokens.has(token)) penalty += 1;
+  if (wantsSugarFree && !SUGAR_FREE.some((t) => tokens.has(t)) && !(tokens.has("sem") && tokens.has("acucar"))) penalty += 1;
+  // "Suco de laranja COM maçã", "com vitaminas": algo a mais que o pedido não tem.
+  if (tokens.has("com") && !asked.has("com")) penalty += 1;
+  return penalty;
+}

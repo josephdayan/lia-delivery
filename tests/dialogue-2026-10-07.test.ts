@@ -541,3 +541,29 @@ test("variável desligada (padrão): a IA do gerente nunca é consultada", async
   await send(phone, "o segundo por favor");
   assert.equal(calls.length, 0);
 });
+
+// Lista repetida com os itens já na cesta (dono, 09/10, print: "2 vodkas absolute, 1 suco de laranja, 1 gin, 4 red
+// bul" → set_qty+set_qty+set_qty e QUATRO mensagens, cada uma com Pagar/Adicionar mais/Cancelar): uma resposta só,
+// com a lista inteira, o prazo de cada loja e um conjunto de botões.
+test("vários set_qty na cesta no mesmo turno → UMA mensagem com a lista, os produtos e o prazo", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const basket0 = [
+    { sku: "mambo-6688", name: "Gin Inglês Seagers 1L", qty: 1, unitPrice: 79.98, lineTotal: 79.98, storeKey: "mambo", storeLabel: "Mambo", delivery: "prazo da loja: em até 15h (hoje, 12h–15h)" },
+    { sku: "mambo-5565", name: "Energético Red Bull 250ml", qty: 1, unitPrice: 8.49, lineTotal: 8.49, storeKey: "mambo", storeLabel: "Mambo", delivery: "prazo da loja: em até 15h (hoje, 12h–15h)" },
+    { sku: "mambo-15931", name: "Vodka Sueca Absolut Original 1 Litro", qty: 1, unitPrice: 94.9, lineTotal: 94.9, storeKey: "mambo", storeLabel: "Mambo", delivery: "prazo da loja: em até 15h (hoje, 12h–15h)" }
+  ];
+  await prisma.conversation.create({ data: { userId: user.id, context: JSON.stringify({ flow: "delivery", step: "collecting", cep: "01310-100", deliveryAddress: ADDRESS, deliveryAddressVerified: true, basket: basket0 }) } });
+  model(() => [act("set_qty", { target: 1, qty: 1 }), act("set_qty", { target: 2, qty: 4 }), act("set_qty", { target: 3, qty: 2 })]);
+  const start = outbox.length;
+  await send(phone, "2 vodkas absolute, 1 gin, 4 red bul");
+  const mine = outbox.slice(start).filter((m) => m.to === phone);
+  assert.equal(mine.length, 1, `uma mensagem só: ${mine.map((m) => m.text.slice(0, 80)).join(" | ")}`);
+  assert.match(mine[0].text, /Lista atualizada/);
+  assert.match(mine[0].text, /4x Energético Red Bull/);
+  assert.match(mine[0].text, /2x Vodka Sueca Absolut Original/);
+  assert.match(mine[0].text, /🚚 Prazo: \*Mambo\* — em até 15h/);
+  const items = await basket(phone);
+  assert.deepEqual(items.map((i) => i.qty), [1, 4, 2]);
+});

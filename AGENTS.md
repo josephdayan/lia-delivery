@@ -175,6 +175,17 @@ diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma
   (`copy.basketEtaAnswer`) + "diz *pagar*"; sem o prazo de alguma linha, fecha o total (que traz o prazo). Nunca
   o texto genérico "o prazo depende da loja".
 
+## REGRA VIGENTE — Produto básico primeiro e cesta ajustada numa mensagem só (dono, 09/10/2026, "Errou")
+
+- **Básico primeiro** (`variantPenalty` em stores/types.ts, na ordem das opções de `buildChoices`): pedido genérico
+  mostra primeiro a versão comum — sabor/edição/zero/diet/drink pronto/"com X" são variantes e só valem quando o
+  pedido diz ("vodka absolut citron", "red bull sem açúcar"). Caso real: "vodka absolute" punha Absolut Citron
+  primeiro (formulário pré-escolhia), "suco de laranja" o Fruit Shoot infantil, "gin" o Apogee Citrus. Ordem:
+  já comprado → confirmado ao vivo → básico → mínimo da loja → prazo.
+- **Vários ajustes de quantidade no mesmo turno** (gerente de diálogo `set_qty`/`add_qty` em itens da cesta, ex.:
+  a lista repetida com os itens já na cesta) → aplica todos e manda UMA mensagem com a lista, produtos, prazo e um
+  conjunto de botões (`replyBasketList`). Antes: uma mensagem com três botões por item.
+
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
 - **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do
