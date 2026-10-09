@@ -179,6 +179,9 @@ export type DeliveryContext = {
   // 05/10 (dono): nome + CPF pedidos no CADASTRO, logo depois do endereço. Neste modo a
   // resposta sem CPF não trava nada: segue como mensagem normal.
   cpfOnboarding?: boolean;
+  // 09/10 (rodada 3): o CPF do formulário/texto não conferiu. Os passos seguintes seguem, mas o pedido não vai
+  // para o total/pagamento sem um CPF válido guardado (a Lia pede de novo antes de fechar).
+  cpfRequired?: boolean;
   // Pedido não-pago parado + item novo pedido do nada (01/09): a Lia pergunta "juntar
   // ou pedido novo?" e guarda aqui o pedido antigo e o texto do item até a resposta.
   mergeDecision?: { orderId: string; request: string; total: number };

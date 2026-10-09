@@ -1492,6 +1492,12 @@ async function offerMinimumSwap(
   return true;
 }
 
+// Resposta afirmativa à oferta de juntar (09/10, rodada 3): "juntar", "sim, juntar na X", "pode juntar", "ok junta".
+// Palavras de aceite antes são ignoradas; negação ("não junta") nunca casa porque "nao" não está na lista.
+function isJoinReply(said: string): boolean {
+  return /^(?:(?:sim|ok|okay|pode|bora|quero|isso|claro|vamos|vai|beleza|blz|show|por favor|pf|entao)\b[\s,.!]*)*junt(?:a|ar|e|em)\b/.test(said);
+}
+
 // ---------- uma loja por pedido: juntar a cesta (08/10 noite) ----------
 // A compra é por API e fecha UMA loja por pedido (dono, 08/10: "toda compra é por API"). A lista monta
 // cada item na melhor loja, então "2 vodkas, 1 suco, 1 gin, 4 red bull" caía em três lojas (Santa Luzia,
@@ -1508,6 +1514,35 @@ function measureOf(name: string): number | null {
   const unit = m[2].toLowerCase();
   if (!Number.isFinite(value) || value <= 0) return null;
   return unit === "kg" || unit === "l" || unit === "lt" || unit.startsWith("litro") ? value * 1000 : unit === "mg" ? value / 1000 : value;
+}
+// O substituto da consolidação tem que ser a MESMA coisa (09/10, rodada 3): mesmo tamanho (±10%), mesma
+// quantidade na embalagem (fralda 60 un ≠ 92 un), mesma voltagem (127V ≠ 220V) e nenhum subtipo novo
+// ("temperado", "integral", "zero"…). Troca que muda isso não é oferecida.
+const UNIT_COUNT_RE = /(\d+)\s*(?:un|und|unid|unidades?|uni|folhas?|capsulas?|comprimidos?|tabletes?|sach[eê]s?)\b/;
+const VOLTAGE_RE = /\b(110|127|220)\s*v\b|\bbivolt\b/;
+const SUBTYPE_RE = /\b(temperad\w*|tempero|integral|desnatad\w*|lactose|zero|light|diet|aromatizad\w*|organic\w*|vegan\w*|gourmet)\b/g;
+export function sameSpecAsOriginal(originalName: string, extraContext: string, candidateName: string): boolean {
+  const o = normalizeMsg(originalName).replace(/(\d),(\d)/g, "$1.$2");
+  const c = normalizeMsg(candidateName).replace(/(\d),(\d)/g, "$1.$2");
+  const within = (a: number, b: number) => Math.abs(a - b) / a <= 0.1;
+  const mo = measureOf(originalName);
+  if (mo != null) {
+    const mc = measureOf(candidateName);
+    if (mc == null || !within(mo, mc)) return false;
+  }
+  const uo = UNIT_COUNT_RE.exec(o);
+  if (uo) {
+    const uc = UNIT_COUNT_RE.exec(c);
+    if (!uc || !within(Number(uo[1]), Number(uc[1]))) return false;
+  }
+  const vo = VOLTAGE_RE.exec(o);
+  if (vo) {
+    const vc = VOLTAGE_RE.exec(c);
+    if (!vc || vc[0] !== vo[0]) return false;
+  }
+  const known = `${o} ${normalizeMsg(extraContext)}`;
+  for (const m of c.matchAll(SUBTYPE_RE)) if (!known.includes(m[0])) return false;
+  return true;
 }
 function sameProductElsewhere(original: BasketItem, candidate: { name: string; brand?: string; unitPrice: number; medicine?: "mip" }): boolean {
   if (Boolean(original.medicine) !== Boolean(candidate.medicine)) return false;
@@ -1572,6 +1607,7 @@ async function findInStores(item: BasketItem, onlyStores: string[]): Promise<Map
     // Nem pra sub-tipo de uso que o escolhido não era (09/10: lenço umedecido → lenço de higiene íntima).
     const useQualifier = USE_QUALIFIER_RE.exec(normalizeMsg(c.item.name));
     if (useQualifier && !normalizeMsg(`${item.name} ${ask ?? ""} ${query}`).includes(useQualifier[0])) continue;
+    if (!sameSpecAsOriginal(item.name, `${ask ?? ""} ${query}`, c.item.name)) continue;
     let ok: boolean;
     if (ask) {
       const size = measureOf(c.item.name);
@@ -1893,7 +1929,10 @@ async function handleDeliveryTurn(
   // "1"/"2" numa pergunta de sim/não em aberto (09/10, rodada 2): os botões são "sim"/"não", e o cliente que
   // digita o número não pode ter a quantidade mexida. Vale para toda pergunta binária pendente, num lugar só.
   const yesNoDigit = /^\s*([12])[\s.!]*$/.exec(text);
-  if (yesNoDigit) {
+  if (yesNoDigit && ctx.consolidationOffer) {
+    // Oferta de juntar aberta: 1 = juntar, 2 = manter; o número nunca mexe na quantidade (09/10, rodada 3).
+    text = yesNoDigit[1] === "1" ? "consolidar:sim" : "consolidar:nao";
+  } else if (yesNoDigit) {
     const free = !ctx.pending?.length;
     const recent = (at?: number) => at != null && Date.now() - at < 30 * 60_000;
     if (recent(ctx.withdrawConfirm?.askedAt) || recent(ctx.clearAllConfirm?.askedAt) || (free && (ctx.complementOffer || ctx.longTailOffer || ctx.repeatConfirm || ctx.minSwap))) {
@@ -2426,6 +2465,8 @@ async function handleDeliveryTurn(
   if (
     (ctx.basket?.length ?? 0) > 0 &&
     !ctx.deliveryOrderId &&
+    // Oferta de juntar aberta: "sim, juntar na X" tem vírgula mas é resposta, não lista (09/10, rodada 3).
+    !ctx.consolidationOffer &&
     (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") &&
     !isQuestion(text) &&
     !explicitAddCue(text) &&
@@ -3092,7 +3133,7 @@ async function handleDeliveryTurn(
     const said = normalizeMsg(text);
     // "ok"/"blz" solto não escolhe entre duas opções (09/10, rodada 2): pergunta de novo, uma vez. "sim/pode/quero" aceita.
     const vagueOk = intent.kind === "affirm" && /^(ok|okay|okey|blz|beleza|certo|tudo bem|fechou|vai|show)\b[\s!.]*$/.test(said);
-    const join = said === "consolidar:sim" || /^(pode )?junta(r)?\b/.test(said) || (intent.kind === "affirm" && !vagueOk && !/mant/.test(said));
+    const join = said === "consolidar:sim" || isJoinReply(said) || (intent.kind === "affirm" && !vagueOk && !/mant/.test(said));
     const keep = said === "consolidar:nao" || /^(pode )?(mante(r|m|nha)|deixa(r)?( como (esta|ta))?|separad[oa]s?|nao junta)/.test(said);
     if (vagueOk && offer.key === key && !keep) {
       await reply(phone, copy.consolidationAsk());
@@ -3499,6 +3540,7 @@ async function handleDeliveryTurn(
     }
     if (/\b(nao|n)\s+(quero|vou)\s+(dar|passar|informar|mandar)\b|\bsem\s+cpf\b|\bprefiro\s+nao\b|\bpula(r)?\b/.test(n)) {
       delete ctx.cpfOnboarding;
+      ctx.cpfRequired = undefined; // recusa explícita do cliente vale
       ctx.step = "collecting";
       const queued = ctx.pendingRequest;
       ctx.pendingRequest = undefined;
@@ -3553,7 +3595,7 @@ async function handleDeliveryTurn(
         await reply(phone, copy.askCpfAfterName());
         return;
       }
-      await reply(phone, looksLikeCpfAttempt(text) ? copy.cpfInvalid() : copy.askCpfForMedicine());
+      await reply(phone, looksLikeCpfAttempt(text) ? copy.cpfInvalid() : ctx.cpfRequired ? copy.askCpfBeforeQuote() : copy.askCpfForMedicine());
       return;
     }
     const name = extractFullName(text) ?? ctx.cpfDraft?.name;
@@ -3565,6 +3607,7 @@ async function handleDeliveryTurn(
     }
     await prisma.user.update({ where: { id: user.id }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
     delete ctx.cpfDraft;
+    ctx.cpfRequired = undefined;
     ctx.step = "collecting";
     if (ctx.cpfOnboarding) {
       // Cadastro: segue para o pedido guardado no onboarding, ou pergunta o que ele quer.
@@ -5070,6 +5113,7 @@ async function handleNewCep(
   // número (a rua vem do CEP), só a rua sem número, ou itens.
   const raw = rawText ?? "";
   const split = raw ? splitAddressAndItems(raw) : null;
+  if (split?.items) split.items = (await takeIdentityFromItems(userId, split.items)) ?? "";
   const rawRest = raw
     .replace(CEP_RE_GLOBAL, " ")
     .replace(/\b(?:o\s+)?(?:meu\s+)?(?:novo\s+)?cep\s*(?:[eé]|eh|:)?\s*/gi, " ")
@@ -5163,7 +5207,7 @@ async function handleNewCep(
   // endereço fazia o 1º endereço sair como "atualizado" e o CPF nunca ser pedido).
   const completingSignup = firstAddress || !hadCepBefore;
   const shownAddress = ctx.deliveryAddress ?? cep;
-  const savedMsg = completingSignup ? copy.addressSavedPrefix(shownAddress, ctx.cep) : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`;
+  const savedMsg = completingSignup ? copy.addressSavedPrefix(shownAddress, ctx.cep, ctx.uf) : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`;
   ctx.pendingRequest = undefined;
   if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return;
   // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
@@ -5274,6 +5318,27 @@ function snapshotExpiredCart(ctx: DeliveryContext, idleMs: number, quote = false
   return items.length ? { items, at: Date.now(), ...(quote ? { quote: true } : {}) } : undefined;
 }
 
+// Nome completo e CPF colados antes do endereço ("Carla Mendes, CPF 529.982.247-25, Av Paulista 1000…", 09/10, rodada 3)
+// vão pro cadastro e saem do texto: nome e CPF nunca viram item de busca. CPF inválido também sai (a Lia pede de novo
+// depois, pelos passos de sempre); só grava quando vêm CPF válido E nome.
+async function takeIdentityFromItems(userId: string, items: string | undefined): Promise<string | undefined> {
+  if (!items || !looksLikeCpfAttempt(items)) return items;
+  const cpf = extractCpf(items);
+  const rest: string[] = [];
+  let name: string | null = null;
+  for (const segment of items.split(/\s*[,;\n]\s*/).filter(Boolean)) {
+    if (looksLikeCpfAttempt(segment)) {
+      name = name ?? extractFullName(segment);
+    } else if (!name && looksLikeOnboardingName(segment)) {
+      name = extractFullName(segment);
+    } else {
+      rest.push(segment);
+    }
+  }
+  if (cpf && name) await prisma.user.update({ where: { id: userId }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
+  return rest.join(", ") || undefined;
+}
+
 function looksLikeDeliveryAddress(text: string): boolean {
   const address = text.trim();
   const hasStreet = /\b(?:rua|r(?:\.|(?=\s+[a-zà-ú]))|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
@@ -5305,7 +5370,8 @@ async function handleDeliveryAddress(
     // Pedido e endereço na mesma mensagem (A1): só a rua vai pra etiqueta; o resto é pedido.
     const split = splitAddressAndItems(address);
     finalAddress = (split?.address && looksLikeDeliveryAddress(split.address) ? split.address : address).replace(/\s+,/g, ",").replace(/,\s*,/g, ",");
-    extraItems = split?.items ? onboardingNote(split.items).text || undefined : undefined;
+    const itemsText = split?.items ? await takeIdentityFromItems(userId, split.items) : undefined;
+    extraItems = itemsText ? onboardingNote(itemsText).text || undefined : undefined;
     // Cidade escrita ≠ cidade do CEP já salvo (A5): pergunta antes de gravar.
     const typedCity = knownCep && ctx.city && !opts?.cityConfirmed ? typedCityMismatch(finalAddress, ctx.city, ctx.uf) : null;
     if (typedCity && knownCep) {
@@ -5442,7 +5508,7 @@ async function handleDeliveryAddress(
 
   const queued = ctx.pendingRequest;
   ctx.pendingRequest = undefined;
-  const savedMsg = copy.addressSavedPrefix(finalAddress, ctx.cep);
+  const savedMsg = copy.addressSavedPrefix(finalAddress, ctx.cep, ctx.uf);
   const noted = notedForCopy(ctx, queued);
   if (firstAddress && (await askCpfAtOnboarding(phone, userId, convoId, ctx, noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted)}` : savedMsg, queued))) return;
   if (queued || ctx.pendingRecommend) {
@@ -5704,6 +5770,8 @@ async function handleSignupForm(
   if (!identity) {
     ctx.step = "need_cpf";
     ctx.cpfOnboarding = true;
+    // CPF digitado que não conferiu: o pedido só fecha com um válido (09/10, rodada 3).
+    if (!form.cpf) ctx.cpfRequired = true;
     delete ctx.cpfDraft;
     await writeCtx(convo.id, ctx);
     await reply(phone, copy.signupFixCpf(address, form.cpf ? "name" : "cpf"));
@@ -5717,15 +5785,15 @@ async function handleSignupForm(
   ctx.pendingRequest = undefined;
   await writeCtx(convo.id, ctx);
   if (queued || ctx.pendingRecommend) {
-    await reply(phone, copy.signupSaved(firstName, address));
+    await reply(phone, copy.signupSaved(firstName, address, place.uf));
     await runQueuedRequest(phone, convo.id, form.cep, ctx, queued, user.id);
     return;
   }
   if (ctx.basket?.length) {
-    await continueAfterBasket(phone, convo.id, ctx, form.cep, copy.signupSaved(firstName, address));
+    await continueAfterBasket(phone, convo.id, ctx, form.cep, copy.signupSaved(firstName, address, place.uf));
     return;
   }
-  await reply(phone, copy.signupSavedAskItems(firstName, address));
+  await reply(phone, copy.signupSavedAskItems(firstName, address, place.uf));
 }
 
 // Endereço novo confirmado com um pedido AINDA na fila do operador (2ª revisão, 11/08):
@@ -8868,14 +8936,19 @@ async function continueAfterBasket(
         // compra fecha as duas formas — várias lojas viram um trabalho de compra por loja.
         const stores = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
         const [keptTotal, joinedTotal] = await Promise.all([estimateBasketTotal(ctx.basket ?? [], ctx.cep), estimateBasketTotal(joined.basket, ctx.cep)]);
+        // Juntar que sai MAIS CARO no total (produtos + frete) não é oferta (09/10, rodada 3: +R$ 44 pra poupar R$ 8,90 de frete).
+        const costlier = joinedTotal > keptTotal + 0.009 && conciergeStoresBelowMinimum(ctx).length === 0;
+        if (costlier) console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
+        else {
         ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta };
         await writeCtx(convoId, ctx);
         if (prefix) await reply(phone, prefix);
         const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs });
         markTurnReplied();
         const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores).catch(() => null);
-        if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter*.`);
+        if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
         return;
+        }
       }
       await writeCtx(convoId, ctx);
     }
@@ -8905,6 +8978,20 @@ async function continueAfterBasket(
         await writeCtx(convoId, ctx);
         if (prefix) await reply(phone, prefix);
         await reply(phone, copy.askRecipientName());
+        return;
+      }
+    }
+    // CPF do cadastro não conferiu (09/10, rodada 3): pede de novo antes do total, em vez de seguir sem ele.
+    if (ctx.cpfRequired) {
+      const buyer = await prisma.user.findFirst({ where: { phone }, select: { cpf: true, cpfName: true } });
+      if (buyer?.cpf && buyer?.cpfName) {
+        ctx.cpfRequired = undefined;
+      } else {
+        ctx.step = "need_cpf";
+        ctx.cpfOnboarding = false;
+        await writeCtx(convoId, ctx);
+        if (prefix) await reply(phone, prefix);
+        await reply(phone, copy.askCpfBeforeQuote());
         return;
       }
     }
