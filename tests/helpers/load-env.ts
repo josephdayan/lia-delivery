@@ -153,3 +153,6 @@ for (const store of [
 for (const store of ["CARREFOUR", "PETZ", "BOTICARIO", "DECATHLON", "OBA"]) {
   process.env[`LIA_ENABLE_${store}`] = "true";
 }
+
+// Cache de conferência ao vivo (09/10) vazaria resultado de um teste para o outro: desligado nos testes.
+process.env.LIA_LIVE_CHECK_CACHE_MS = "0";

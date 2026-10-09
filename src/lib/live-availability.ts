@@ -31,6 +31,29 @@ export function buyableWithoutOperator(storeKey: string | undefined, check: Live
 }
 export type Simulate = (storeKey: string, skus: string[], cep: string, qtys?: Record<string, number>) => Promise<Map<string, LiveItemCheck> | null>;
 
+// Cache de conferência ao vivo. Só resultado DEFINITIVO da loja entra (sem resposta nunca é guardado).
+const liveCache = new Map<string, { check: LiveItemCheck; at: number }>();
+function liveCacheMs(): number {
+  const value = Number(process.env.LIA_LIVE_CHECK_CACHE_MS);
+  return Number.isFinite(value) && value >= 0 ? value : 180_000;
+}
+function liveCacheKey(storeKey: string, sku: string, cep: string, qty: number): string {
+  return `${storeKey}|${sku}|${cep.replace(/\D/g, "")}|${qty}`;
+}
+function readLiveCache(storeKey: string, sku: string, cep: string, qty: number, into: Map<string, LiveItemCheck>): boolean {
+  const hit = liveCache.get(liveCacheKey(storeKey, sku, cep, qty));
+  if (!hit) return false;
+  if (Date.now() - hit.at > liveCacheMs()) {
+    liveCache.delete(liveCacheKey(storeKey, sku, cep, qty));
+    return false;
+  }
+  into.set(liveKey(storeKey, sku), hit.check);
+  return true;
+}
+export function __clearLiveCheckCacheForTests() {
+  liveCache.clear();
+}
+
 export function liveKey(storeKey: string, sku: string): string {
   return `${storeKey}:${sku}`;
 }
@@ -61,15 +84,25 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
     if (!supported(candidate.storeKey)) continue;
     byStore.set(candidate.storeKey, [...(byStore.get(candidate.storeKey) ?? []), candidate]);
   }
+  const cacheOn = !simulateOverride && simulate === liveItemAvailability && liveCacheMs() > 0;
   await Promise.all(
     [...byStore].map(async ([storeKey, list]) => {
-      const skus = [...new Set(list.map((c) => c.sku))].slice(0, 12);
+      const allSkus = [...new Set(list.map((c) => c.sku))].slice(0, 12);
       const qtys: Record<string, number> = {};
       for (const c of list) if (c.qty && c.qty > 1) qtys[c.sku] = Math.max(qtys[c.sku] ?? 1, Math.round(c.qty));
+      // Cache curto (09/10, latência): a mesma loja/SKU/CEP/quantidade conferida há poucos minutos não vai de novo à loja
+      // ("outras opções" e refino repetiam as mesmas simulações). A cotação e o "pagar" reconferem na hora da compra.
+      const skus = cacheOn ? allSkus.filter((sku) => !readLiveCache(storeKey, sku, cep, qtys[sku] ?? 1, checks)) : allSkus;
+      if (!skus.length) return;
       try {
-        const result = await simulate(storeKey, skus, cep, Object.keys(qtys).length ? qtys : undefined);
+        const subQtys: Record<string, number> = {};
+        for (const sku of skus) if (qtys[sku]) subQtys[sku] = qtys[sku];
+        const result = await simulate(storeKey, skus, cep, Object.keys(subQtys).length ? subQtys : undefined);
         if (!result) return; // loja não respondeu → desconhecido, mantém
-        for (const [sku, check] of result) checks.set(liveKey(storeKey, sku), check);
+        for (const [sku, check] of result) {
+          checks.set(liveKey(storeKey, sku), check);
+          if (cacheOn) liveCache.set(liveCacheKey(storeKey, sku, cep, qtys[sku] ?? 1), { check, at: Date.now() });
+        }
       } catch {
         /* desconhecido, mantém */
       }

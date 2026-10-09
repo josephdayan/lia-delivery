@@ -136,8 +136,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
       if (step.retry && miss) text = "tenta de novo";
-      else if (process.env.LIA_DIALOGUE_SKIP_EXTRACT === "true") {
-        // A frase já está limpa (IA do gerente): a extração não paga outra chamada de IA.
+      else if (process.env.LIA_DIALOGUE_SKIP_EXTRACT === "true" || (process.env.LIA_DIALOGUE_SKIP_EXTRACT !== "false" && step.lines.length === 1)) {
+        // A frase já está limpa (IA do gerente): a extração não paga outra chamada de IA (~2 s, 09/10: latência).
+        // Uma linha só é o caso comum e a extração não acrescenta nada; lista de várias linhas continua extraindo.
         const meta = turnMeta.getStore();
         if (meta) meta.routerQuery = text;
       }
