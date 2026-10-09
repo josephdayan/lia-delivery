@@ -1,0 +1,178 @@
+// Rodada 1 de testes no WhatsApp (09/10, grupo f1): limpar a lista inteira, repetir pedido, "cancela" ambíguo,
+// "muda pra N" depois do resumo, "mais um" e "troca X pelo mais barato". A IA do diálogo é SIMULADA: onde a frase tem
+// resposta inequívoca, o código decide sem ela (a simulada responde "unclear" para provar que não é consultada).
+import "./helpers/load-env";
+
+import { test, before, after, beforeEach } from "node:test";
+import assert from "node:assert/strict";
+import { prisma } from "../src/lib/prisma";
+import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
+import { handleDeliveryMessage } from "../src/lib/delivery-service";
+import { __setDialogueModelForTests, dialogueBypassReason } from "../src/lib/dialogue";
+import { detectIntent, isExplicitClearAll, isExplicitRepeatOrder } from "../src/lib/lia-intents";
+import type { DeliveryContext } from "../src/lib/conversation-types";
+
+const RUN = `${Date.now().toString(36)}${process.pid}`;
+const PREFIX = `+5509${String(Date.now()).slice(-6)}${String(process.pid).slice(-2)}`;
+const ADDRESS = "Rua das Flores, 123, Bela Vista, São Paulo - SP";
+let seq = 0;
+let dbOk = false;
+const outbox: { to: string; text: string }[] = [];
+for (const key of Object.keys(whatsappAdapter) as (keyof typeof whatsappAdapter)[]) {
+  if (typeof whatsappAdapter[key] !== "function" || !String(key).startsWith("send")) continue;
+  (whatsappAdapter as Record<string, unknown>)[key] = async (to: string, text: unknown) => {
+    outbox.push({ to, text: typeof text === "string" ? text : JSON.stringify(text) });
+    return key === "sendDeliveryChoices" ? false : { provider: "test", to };
+  };
+}
+
+process.env.LIA_DIALOGUE_LLM = "true";
+let modelCalls = 0;
+// IA simulada que sempre "não entende": se o código dependesse dela, a resposta seria a pergunta genérica.
+function dumbModel() {
+  modelCalls = 0;
+  __setDialogueModelForTests(async () => {
+    modelCalls++;
+    return { actions: [{ type: "unclear" }] };
+  });
+}
+
+async function send(phone: string, text: string): Promise<string> {
+  const start = outbox.length;
+  await handleDeliveryMessage({ phone, text, messageId: `r1f1_${RUN}_${++seq}` });
+  return outbox.slice(start).filter((m) => m.to === phone).map((m) => m.text).join("\n---\n");
+}
+async function customer() {
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  await prisma.user.create({ data: { phone, cep: "01310-100", defaultAddress: ADDRESS, cpf: "52998224725", cpfName: "Maria da Silva" } });
+  return phone;
+}
+async function context(phone: string): Promise<DeliveryContext> {
+  const convo = await prisma.conversation.findFirstOrThrow({ where: { user: { phone } }, orderBy: { updatedAt: "desc" } });
+  return JSON.parse(convo.context ?? "{}");
+}
+async function wipe() {
+  const users = await prisma.user.findMany({ where: { phone: { startsWith: PREFIX } }, select: { id: true } });
+  const ids = users.map((u) => u.id);
+  if (!ids.length) return;
+  await prisma.message.deleteMany({ where: { conversation: { userId: { in: ids } } } });
+  await prisma.deliveryOrder.deleteMany({ where: { userId: { in: ids } } });
+  await prisma.conversation.deleteMany({ where: { userId: { in: ids } } });
+  await prisma.user.deleteMany({ where: { id: { in: ids } } });
+}
+before(async () => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+    await wipe();
+  } catch (error) {
+    if (process.env.LIA_REQUIRE_DB === "1") throw error;
+  }
+});
+beforeEach(() => {
+  process.env.LIA_DIALOGUE_LLM = "true";
+  dumbModel();
+});
+after(async () => {
+  __setDialogueModelForTests(null);
+  if (dbOk) await wipe();
+  await prisma.$disconnect();
+});
+
+const OPTIONS = [
+  { sku: "CRF-PAD-003", name: "Leite UHT Integral Carrefour Classic 1L", unitPrice: 5.38, storeKey: "carrefour", storeLabel: "Carrefour", delivery: "1 dia útil", etaMinutes: 1440 },
+  { sku: "MB-LEITE-1", name: "Leite Integral Italac 1L", unitPrice: 6.04, storeKey: "mambo", storeLabel: "Mambo", delivery: "hoje", etaMinutes: 120 },
+  { sku: "CRF-PAD-027", name: "Leite Integral Jussara Max 1L", unitPrice: 5.71, storeKey: "carrefour", storeLabel: "Carrefour", delivery: "1 dia útil", etaMinutes: 1440 }
+];
+const ARROZ = [{ sku: "CRF-ARROZ-1", name: "Arroz Branco Tio João 5kg", unitPrice: 30.5, storeKey: "carrefour", storeLabel: "Carrefour", delivery: "1 dia útil", etaMinutes: 1440 }];
+async function withChoice(phone: string, extra: Record<string, unknown> = {}) {
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  await prisma.conversation.create({
+    data: {
+      userId: user.id,
+      context: JSON.stringify({
+        flow: "delivery",
+        step: "choosing",
+        cep: "01310-100",
+        deliveryAddress: ADDRESS,
+        deliveryAddressVerified: true,
+        storeKey: "concierge",
+        pending: [{ query: "arroz 5kg", qty: 1, options: ARROZ }, { query: "feijão", qty: 1, options: OPTIONS }, { query: "açúcar", qty: 1, options: OPTIONS }],
+        pendingSince: Date.now(),
+        ...extra
+      })
+    }
+  });
+}
+
+// ---------------------------------------------------------------- 1. esvaziar a lista inteira
+
+test("frases de desistência da lista inteira são clear_cart e não consultam a IA", () => {
+  for (const t of ["na verdade não quero nada disso", "não quero nada disso", "esquece tudo", "deixa pra lá tudo", "deixa tudo pra lá", "na verdade esquece tudo isso", "desisto de tudo"]) {
+    assert.equal(detectIntent(t).kind, "clear_cart", t);
+    assert.ok(isExplicitClearAll(t) || /^esquece tudo$/.test(t), t);
+    const bypass = dialogueBypassReason({ text: t, intent: detectIntent(t), ctx: { step: "choosing", pending: [{ query: "x", qty: 1, options: [{ sku: "a" }] }] } as never, hasAddress: true, looksLikeList: false });
+    assert.ok(bypass, `${t}: não pode ir pra IA`);
+  }
+  // não são desistência da lista: continuam como antes
+  assert.equal(detectIntent("não quero mais nada").kind, "done");
+  assert.notEqual(detectIntent("não quero esse, quero outro").kind, "clear_cart");
+});
+
+test("'na verdade não quero nada disso' no meio da escolha esvazia tudo (nada de feijão na fila)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await withChoice(phone);
+  const reply = await send(phone, "na verdade não quero nada disso");
+  assert.match(reply, /Carrinho limpo|esvaziei/i);
+  assert.doesNotMatch(reply, /feij|Deixei|Tirei/i);
+  const ctx = await context(phone);
+  assert.equal(ctx.pending?.length ?? 0, 0);
+  assert.equal(ctx.basket?.length ?? 0, 0);
+  assert.match(await send(phone, "pagar"), /vazia|o que você/i);
+  assert.equal(modelCalls, 0);
+});
+
+// ---------------------------------------------------------------- 2. repetir pedido
+
+test("'repete meu último pedido' / 'o mesmo de ontem' / 'o mesmo da última vez' chegam ao ramo de repetir, sem IA", () => {
+  for (const t of ["repete meu último pedido", "quero o mesmo de ontem", "o mesmo da última vez", "repete o último pedido", "manda o mesmo pedido de ontem", "quero o mesmo da última vez, por favor"]) {
+    assert.equal(detectIntent(t).kind, "repeat_last", t);
+    assert.ok(isExplicitRepeatOrder(t), t);
+    assert.ok(dialogueBypassReason({ text: t, intent: detectIntent(t), ctx: {} as never, hasAddress: true, looksLikeList: false }), `${t}: não pode ir pra IA`);
+  }
+  // com produto no meio é busca (com o ⭐ "você já pediu"), não repetição do pedido todo
+  assert.notEqual(detectIntent("quero o mesmo shampoo da outra vez").kind, "repeat_last");
+  assert.equal(isExplicitRepeatOrder("repete o leite"), false);
+});
+
+test("sem pedido anterior: diz que não há pedido pra repetir", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  assert.match(await send(phone, "quero o mesmo de ontem"), /não tem um pedido pra repetir/);
+  assert.match(await send(phone, "repete meu último pedido"), /pedido pra repetir/i);
+  assert.equal(modelCalls, 0);
+});
+
+test("com pedido anterior: remonta pra conferência e o 'sim' fecha o total (não vira agradecimento)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const o = OPTIONS[0];
+  await prisma.deliveryOrder.create({
+    data: {
+      userId: user.id,
+      phone,
+      storeKey: "carrefour",
+      storeLabel: "Carrefour",
+      items: [{ sku: o.sku, name: o.name, qty: 2, unitPrice: o.unitPrice, lineTotal: o.unitPrice * 2, storeKey: "carrefour", storeLabel: "Carrefour" }],
+      status: "delivered"
+    }
+  });
+  const first = await send(phone, "repete meu último pedido");
+  assert.match(first, /Leite UHT Integral Carrefour Classic/);
+  assert.equal((await context(phone)).repeatConfirm, true);
+  const yes = await send(phone, "sim");
+  assert.doesNotMatch(yes, /Imagina/);
+  assert.match(yes, /R\$/);
+});

@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -96,6 +96,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // recomendação (08/10) e a IA decide.
   const symptomComplaint = i.intent.kind === "complaint" && recommendEnabled() && Boolean(detectRecommendation(text)?.symptom);
   if (DETERMINISTIC_INTENTS.has(i.intent.kind) && !symptomComplaint) return `intent:${i.intent.kind}`;
+  if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
+  if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".
