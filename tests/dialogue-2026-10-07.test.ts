@@ -561,7 +561,7 @@ test("vários set_qty na cesta no mesmo turno → UMA mensagem com a lista, os p
   await send(phone, "muda pra 2 vodkas, 1 gin e 4 red bull");
   const mine = outbox.slice(start).filter((m) => m.to === phone);
   assert.equal(mine.length, 1, `uma mensagem só: ${mine.map((m) => m.text.slice(0, 80)).join(" | ")}`);
-  assert.match(mine[0].text, /Lista atualizada/);
+  assert.match(mine[0].text, /Quantidades atualizadas/);
   assert.match(mine[0].text, /4x Energético Red Bull/);
   assert.match(mine[0].text, /2x Vodka Sueca Absolut Original/);
   assert.match(mine[0].text, /Mambo · hoje, 12h–15h/, "prazo em cada item");

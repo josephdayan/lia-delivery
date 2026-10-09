@@ -1817,6 +1817,16 @@ export function listFlowClosed(): string {
 }
 
 // Resumo depois do formulário: itens, o que ficou de fora, faltantes de novo e o total parcial.
+// Quantidades mudadas de uma vez (09/10): aqui a lista com as quantidades É o que o cliente quer conferir.
+export function basketQtyUpdated(items: { qty: number; name: string; total: number; when?: string }[], produtos: number): string {
+  return [
+    "✅ Quantidades atualizadas:",
+    ...items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}${i.when ? ` · _${i.when}_` : ""}`),
+    "",
+    `Produtos: ${brl(produtos)} _(a entrega entra no total)_`
+  ].join("\n");
+}
+
 export function listFlowDone(input: {
   items: { qty: number; name: string; total: number; when?: string }[];
   leftOut: string[];
@@ -1824,16 +1834,23 @@ export function listFlowDone(input: {
   produtos: number;
   // Vagas marcadas "Nenhuma — ver outras": as opções novas vêm logo abaixo.
   moreFor?: string[];
-  // Prazo de cada loja (09/10): aparece direto, antes do total.
   eta?: EtaRow[];
 }): string {
-  const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}${i.when ? ` · _${i.when}_` : ""}`)];
+  // Uma linha só (dono, 09/10): os itens já estão no formulário e na 1ª mensagem — repetir a lista depois de
+  // escolher era ruído. Fica o que muda a decisão: quantos itens, quanto e o prazo de cada loja.
   const moreFor = input.moreFor ?? [];
-  if (!input.items.length) lines.push(moreFor.length ? "_Por enquanto nenhum item na lista._" : "_Nenhum item ficou na lista._");
+  const lines: string[] = [];
+  if (input.items.length) {
+    const n = input.items.length;
+    lines.push(`✅ Lista salva: ${n} ${n === 1 ? "item" : "itens"} · ${brl(input.produtos)} _(a entrega entra no total)_`);
+    const whens = [...new Set(input.items.map((i) => i.when).filter((w): w is string => Boolean(w)))];
+    if (whens.length) lines.push(`🚚 ${whens.join("; ")}`);
+    else if (input.eta?.length) lines.push(etaLine(input.eta));
+  } else {
+    lines.push(moreFor.length ? "_Por enquanto nenhum item na lista._" : "_Nenhum item ficou na lista._");
+  }
   if (input.leftOut.length) lines.push("", `Ficou de fora (sem opção escolhida): ${input.leftOut.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")}.`);
   if (input.misses.length) lines.push("", missesBlock(input.misses));
-  if (input.items.length) lines.push("", `Produtos: ${brl(input.produtos)} _(a entrega entra no total)_`);
-  if (input.items.length && input.eta?.length) lines.push(etaLine(input.eta));
   if (moreFor.length) lines.push("", `Agora as outras opções de ${moreFor.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")} 👇`);
   return lines.join("\n");
 }

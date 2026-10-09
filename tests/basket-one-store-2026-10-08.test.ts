@@ -144,6 +144,7 @@ test("resumo da lista e 'até agora' mostram o prazo de cada loja", async () => 
   const copy = await import("../src/lib/lia-copy");
   const rows = [{ store: "Mambo", when: "em até 15h (hoje, 12h–15h)" }, { store: "Casa Santa Luzia", when: "1 dia útil" }];
   const list = copy.listFlowDone({ items: [{ qty: 1, name: "Gin", total: 50 }], leftOut: [], misses: [], produtos: 50, eta: rows });
+  assert.match(list, /✅ Lista salva: 1 item · R\$ ?50,00/);
   assert.match(list, /🚚 Prazo: \*Mambo\* — em até 15h \(hoje, 12h–15h\) · \*Casa Santa Luzia\* — 1 dia útil/);
   assert.match(copy.partialTotal([{ qty: 1, name: "Gin", displayLineTotal: 50 }], 50, 0, rows), /🚚 Prazo: \*Mambo\*/);
   const { basketEtaByStore } = await import("../src/lib/delivery-service");

@@ -222,9 +222,10 @@ test("resposta do formulário: trocar uma, tirar outra e manter a terceira → c
   const fu = followUps.slice(before);
   assert.equal(fu.length, 1, `${out}`);
   assert.equal(fu[0].opts?.listFlowButton, true);
-  assert.match(fu[0].body, /Lista atualizada/);
+  // Uma linha só depois do formulário (dono, 09/10): quantos itens, quanto, prazo.
+  assert.match(fu[0].body, /✅ Lista salva: 2 itens · R\$/);
   assert.match(fu[0].body, /❌ \*macarrão\* — não achei em nenhuma loja/);
-  assert.match(fu[0].body, /Produtos: R\$/);
+  assert.doesNotMatch(fu[0].body, /^• /m, "sem a lista enumerada de novo");
   const history = await prisma.message.findMany({ where: { conversation: { user: { phone } }, sender: "user" }, select: { text: true } });
   assert.ok(history.some((m) => m.text === "🛒 Lista escolhida no formulário"));
 });
@@ -386,7 +387,7 @@ test("'Nenhuma — ver outras': tira a sugestão, resume a lista e mostra outras
   const after = await ctxOf(phone);
   assert.ok(!after.basket!.some((i) => i.sku === target.suggestedSku), "a sugestão recusada saiu da cesta");
   assert.equal(after.basket?.length, slots.length - 1, "as outras ficaram");
-  assert.match(out, /Lista atualizada/);
+  assert.match(out, /Lista salva/);
   if (after.step === "choosing") {
     assert.match(out, new RegExp(`Agora as outras opções de \\*${target.query}\\*`));
     assert.equal(after.pending?.[0].query, target.query);
@@ -425,5 +426,5 @@ test("primeira mensagem e resumo do formulário mostram loja e prazo de cada ite
   assert.match(intro, /2x Vodka Absolut Original 1L — R\$ ?208,78 · _Mambo · hoje, 12h–15h_/);
   assert.match(intro, /1x Gin Seagers 1L — R\$ ?87,98 · _Mambo · hoje, 12h–15h_/);
   const done = copy.listFlowDone({ items, leftOut: [], misses: [], produtos: 296.76 });
-  assert.match(done, /2x Vodka Absolut Original 1L — R\$ ?208,78 · _Mambo · hoje, 12h–15h_/);
+  assert.equal(done, "✅ Lista salva: 2 itens · R$ 296,76 _(a entrega entra no total)_\n🚚 Mambo · hoje, 12h–15h");
 });

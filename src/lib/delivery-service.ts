@@ -8854,12 +8854,10 @@ export const preSignupHandlers: PreHandlers = { refuseMedicine, attendanceWait, 
 // cesta ajustada vai numa mensagem só — lista, produtos, prazo de cada loja e UM conjunto de botões.
 async function replyBasketList(phone: string, ctx: DeliveryContext) {
   const basket = ctx.basket ?? [];
-  const body = copy.listFlowDone({
-    items: basketLinesForCopy(basket),
-    leftOut: [],
-    misses: [],
-    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100
-  });
+  const body = copy.basketQtyUpdated(
+    basketLinesForCopy(basket),
+    Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100
+  );
   await replyBasketAdjusted(phone, body, `${body}\n\nDiz *pagar* que eu fecho, ou me manda o que mudar.`);
 }
 
