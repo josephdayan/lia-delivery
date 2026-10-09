@@ -486,8 +486,9 @@ export function swapRemovedPrefix(from: string, to?: string): string {
   return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
 
-export function requestedStoreNotShown(label: string): string {
-  return `Não achei isso na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
+export function requestedStoreNotShown(label: string, item?: string): string {
+  // Nomeia o item (rodada 4, M1): sem isso o aviso parecia ser da escolha que o cliente acabou de fazer.
+  return `${item ? `Pra *${item}*, não achei` : "Não achei isso"} na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
 }
 
 export function askEitherItem(a: string, b: string): string {
@@ -736,6 +737,12 @@ export function promiseForCustomer(promise?: string | null): string {
 // Só copy; o cálculo não muda.
 export function expensiveShippingNote(produtos: number, entrega: number): string[] {
   return entrega > produtos + 0.009 && produtos > 0 ? ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"] : [];
+}
+
+// "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
+export function deadlineMissNote(label: string, promise?: string): string {
+  const prazo = promiseForCustomer(promise);
+  return `⚠️ Você precisou pra *${label}*, mas essa entrega ${prazo ? `sai em *${prazo}*` : "não chega a tempo"}. Se não der, me avisa antes de pagar.`;
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
@@ -2408,6 +2415,8 @@ export function manualQuoteSummary(input: {
   total: number;
   deliveryAddress?: string;
   sameHour?: boolean;
+  // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
+  deadlineMiss?: { label: string };
   // true = a mensagem sai com o botão "Trocar endereço" (dono, 11/08: ação em botão,
   // não instrução de digitar) — a dica de texto some porque o botão fala por ela.
   addressButton?: boolean;
@@ -2422,6 +2431,7 @@ export function manualQuoteSummary(input: {
     `Produtos: ${brl(input.produtos)}`,
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
+    ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
   ];
   if (input.deliveryAddress) {

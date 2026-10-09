@@ -640,3 +640,18 @@ export function promisedMinutes(promise?: string): number | null {
   if (unit.startsWith("h")) return value * 60;
   return value * 24 * 60;
 }
+
+// A entrega prometida cumpre o prazo que o cliente disse ("amanhã", "até sexta")? (rodada 4, M6). `null` = não dá pra
+// concluir (promessa sem prazo legível); true = NÃO cumpre. Dia útil conta como dia corrido (limite inferior).
+export function promiseMissesDeadline(promise: string | undefined | null, neededByDate: string, now: Date = new Date()): boolean | null {
+  const t = (promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  if (!t) return null;
+  const today = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const days = Math.round((Date.parse(`${neededByDate}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
+  if (!Number.isFinite(days) || days < 0) return null;
+  const dayUnits = /(\d+)\s*(?:dias?\s+uteis|dias?)\b/.exec(t);
+  if (dayUnits) return Number(dayUnits[1]) > days;
+  const minutes = promisedMinutes(promise ?? undefined);
+  if (minutes == null) return null;
+  return minutes > Math.max(1, days) * 24 * 60;
+}
