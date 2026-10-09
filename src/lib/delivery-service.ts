@@ -754,7 +754,7 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
 function optionDelivery(o: ChoiceOption): string | undefined {
   const store = o.storeLabel?.trim();
   if (!store) return o.delivery;
-  const when = o.delivery?.replace(/^prazo da loja:\s*/i, "").trim();
+  const when = o.delivery ? compactCardDelivery(o.delivery) : "";
   return when ? `${store} · ${when}` : store;
 }
 
@@ -1257,11 +1257,15 @@ async function offerMinimumSwap(
       const query = tokens.slice(0, take).join(" ");
       if (!query) break;
       const candidates = await gatherCrossStoreCandidates(query, 12);
+      // Preço na mesma faixa (09/10, rodada de cliente: pão de R$ 9,89 → pão orgânico de R$ 26,84 "pra fugir do
+      // mínimo"): a troca é pelo MESMO tipo de produto, até 1,5× e sem variante que o original não tinha.
       const alts = candidates.filter(
         (c) =>
           c.store.key !== store.key &&
           storeMinReal(c.store) === 0 &&
-          conciergeMatchIsStrong(query, c.item)
+          conciergeMatchIsStrong(query, c.item) &&
+          c.item.unitPrice <= item.unitPrice * 1.5 &&
+          variantPenalty(query, c.item.name) <= variantPenalty(query, item.name)
       );
       // Entre as lojas que servem, frete CONHECIDO ganha de tarifa padrão (R$18 numa
       // pasta de R$6 mataria a vantagem da troca), e o fee menor desempata.
@@ -1400,6 +1404,8 @@ async function findInStores(item: BasketItem, onlyStores: string[]): Promise<Map
     // Shoot" infantil de R$ 0,99), não o mesmo em outra loja.
     const now = display(c.item.unitPrice, c.item.medicine);
     if (now > was * 1.5 || now < was * 0.5) continue;
+    // Nunca pra uma variante que a escolhida não era (09/10: "Coca Cola 220ml" → "Coca-Cola Zero").
+    if (variantPenalty(ask || query, c.item.name) > variantPenalty(ask || query, item.name)) continue;
     let ok: boolean;
     if (ask) {
       const size = measureOf(c.item.name);
@@ -1459,6 +1465,11 @@ export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket
         if (!offer) covers = false;
         else total += lineOf(offer.unitPrice, item.qty, offer.medicine);
       });
+      // Loja onde a cesta junta fica abaixo do pedido mínimo dela não serve (09/10: juntou na Americanas e travou no
+      // mínimo de R$ 30 logo em seguida).
+      const raw = basket.reduce((sum, item, i) => sum + (item.storeKey === store ? item.unitPrice : offers[i].get(store)?.unitPrice ?? 0) * item.qty, 0);
+      const min = storeMinReal(getStore(store));
+      if (covers && min > 0 && raw < min) covers = false;
       if (covers && (!best || native > best.native || (native === best.native && total < best.total - 0.009))) best = { store, total, native };
     }
     return best ? { ...best, offers } : null;
@@ -2532,7 +2543,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0)}`);
+      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows)}`);
       return;
     }
     if ((ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment") && ctx.deliveryOrderId) {
@@ -2758,7 +2769,7 @@ async function handleDeliveryTurn(
     }
     if (ctx.basket?.length) {
       const produtos = Math.round(basketForCopy(ctx).reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0));
+      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -3754,7 +3765,7 @@ async function handleDeliveryTurn(
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0));
+          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
         }
         return;
       }
@@ -3921,7 +3932,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
       return;
     }
   }
@@ -5781,7 +5792,7 @@ async function handleChoosing(
   if (asksRunningTotal(text)) {
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending!.length));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows));
     await sendChoices(phone, current);
     return;
   }

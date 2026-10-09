@@ -124,7 +124,8 @@ test("prazo com a lista montada: toda forma de pergunta responde o prazo da loja
     const c = await customerWith([gin, vodka]);
     const out = await send(c.phone, ask);
     assert.doesNotMatch(out, /O prazo depende da loja e do seu endereço — tem item/, `${ask}: ${out.slice(0, 300)}`);
-    assert.match(out, /\*Carrefour\* em \*em até 15h \(hoje, 12h–15h\)\*[\s\S]*\*Oba[^*]*\* em \*1 dia útil\*/, `${ask}: ${out.slice(0, 300)}`);
+    // Prazo como o cliente lê (09/10): "hoje, 12h–15h", nunca "em até 15h (…)".
+    assert.match(out, /\*Carrefour\* \*hoje, 12h–15h\*[\s\S]*\*Oba[^*]*\* em \*1 dia útil\*/, `${ask}: ${out.slice(0, 300)}`);
     assert.match(out, /Diz \*pagar\*/);
     assert.equal(await prisma.deliveryOrder.count({ where: { userId: c.userId } }), 0, "só respondeu, não fechou");
   }
@@ -145,7 +146,7 @@ test("resumo da lista e 'até agora' mostram o prazo de cada loja", async () => 
   const rows = [{ store: "Mambo", when: "em até 15h (hoje, 12h–15h)" }, { store: "Casa Santa Luzia", when: "1 dia útil" }];
   const list = copy.listFlowDone({ items: [{ qty: 1, name: "Gin", total: 50 }], leftOut: [], misses: [], produtos: 50, eta: rows });
   assert.match(list, /✅ Lista salva: 1 item · R\$ ?50,00/);
-  assert.match(list, /🚚 Prazo: \*Mambo\* — em até 15h \(hoje, 12h–15h\) · \*Casa Santa Luzia\* — 1 dia útil/);
+  assert.match(list, /🚚 Prazo: \*Mambo\* — hoje, 12h–15h · \*Casa Santa Luzia\* — 1 dia útil/);
   assert.match(copy.partialTotal([{ qty: 1, name: "Gin", displayLineTotal: 50 }], 50, 0, rows), /🚚 Prazo: \*Mambo\*/);
   const { basketEtaByStore } = await import("../src/lib/delivery-service");
   const eta = basketEtaByStore([

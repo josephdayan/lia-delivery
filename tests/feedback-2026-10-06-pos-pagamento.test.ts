@@ -74,7 +74,7 @@ test("textos novos: confirmação de estorno, Pix novo e loja/prazo do pedido", 
   assert.doesNotMatch(copy.paymentSwitched("pix", 23.7, true), /Troquei/);
   assert.match(copy.paymentSwitched("pix", 23.7, true), /Pix novo/);
   assert.match(copy.paymentSwitched("pix", 23.7), /Troquei pra Pix/);
-  assert.equal(copy.orderDeliveryInfo({ stores: ["Drogal"], promise: "pela própria loja · prazo da loja: 3h" }), "🚚 Loja *Drogal* · entrega pela própria loja · prazo da loja: 3h");
+  assert.equal(copy.orderDeliveryInfo({ stores: ["Drogal"], promise: "pela própria loja · prazo da loja: 3h" }), "🚚 Loja *Drogal* · 3h");
   assert.doesNotMatch(copy.orderStatusLine({ shortId: "X", status: "awaiting_quote_confirmation" }), /em andamento/);
 });
 
@@ -252,7 +252,7 @@ test("A5: 'já paguei' com o total na tela e sem cobrança diz que ainda não ge
   assert.doesNotMatch(out, /em andamento/);
   const status = await send(c.phone, "quando chega?");
   assert.match(status, /Ainda não gerei a cobrança/, status);
-  assert.match(status, /prazo da loja: 3h/, "repete o prazo da loja");
+  assert.match(status, /\*Drogal\* · 3h/, "repete o prazo da loja");
   const hi = await send(c.phone, "bom dia");
   assert.match(hi, /total pronto/, hi);
   assert.equal(await statusOf(o.id), "awaiting_quote_confirmation");
@@ -293,10 +293,10 @@ test("M2: pedido pago responde prazo, loja e endereço do pedido", async (t) => 
   if (!dbOk) return t.skip();
   const c = await paidCustomer();
   const when = await send(c.phone, "quando chega?");
-  assert.match(when, /prazo da loja: 3h/, when);
+  assert.match(when, /\*Drogal\* · 3h/, when);
   assert.match(when, /Drogal/);
   const eta = await send(c.phone, "qual o prazo de entrega?");
-  assert.match(eta, /prazo da loja: 3h/, eta);
+  assert.match(eta, /\*Drogal\* · 3h/, eta);
   const store = await send(c.phone, "o pedido é de qual loja?");
   assert.match(store, /Seu pedido é da loja \*Drogal\*/, store);
   assert.doesNotMatch(store, new RegExp(c.shortId));

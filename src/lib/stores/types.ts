@@ -748,6 +748,11 @@ function scoreQuery(query: string, item: CatalogItem): number {
 // eles são filtro de variante, não identidade do produto.
 // `allTokens` (06/10, A6): cobertura TOTAL — o item responde por todas as palavras do pedido
 // (marca e espécie inclusas). Usado para decidir se um tamanho pedido pode filtrar a vitrine.
+const ACCESSORY_HEADS = new Set([
+  "copo", "copos", "caneca", "canecas", "taca", "tacas", "jarra", "garrafinha", "squeeze", "abridor", "porta", "suporte",
+  "chaveiro", "camiseta", "camisa", "bone", "toalha", "balde", "cooler", "bolsa", "mochila", "estojo", "capa", "adesivo",
+  "ima", "pelucia", "boneco", "miniatura", "luminaria", "placa", "quadro", "poster", "fantasia"
+]);
 export function conciergeMatchIsStrong(rawQuery: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
   const query = joinMeasures(rawQuery);
   return [query, ...queryAliases(query)].some((q) => strongFor(q, item, opts));
@@ -788,6 +793,10 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   // produto, nunca qualificador tolerável — "cabo usb" não pode virar cabo elétrico de obra.
   // O nome também passa pelos compostos: "Cabo Tipo C" vira "usbc", como o pedido.
   const nameTokens = new Set(queryTokens(item.name));
+  // Acessório que leva o nome da marca (09/10, rodada de cliente: "2 cocas" → "Copo Vidro Americano Coca-Cola"):
+  // o produto é o COPO, não a bebida. Nome que começa com acessório não pedido nunca é o produto pedido.
+  const head = normalizeText(item.name).split(/\s+/)[0] ?? "";
+  if (ACCESSORY_HEADS.has(head) && !wordTokens.includes(head) && !wordTokens.some((t) => ACCESSORY_HEADS.has(t))) return false;
   const specMissing = wordTokens.some((token) => SPEC_TOKENS.has(token) && !nameTokens.has(token) &&
     !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
   if (specMissing) return false;

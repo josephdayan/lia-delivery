@@ -43,3 +43,12 @@ test("nome de produto repetido pela loja é limpo; nome normal fica igual", () =
   assert.equal(dedupeProductName("Kit Shampoo Kit Condicionador"), "Kit Shampoo Kit Condicionador");
   assert.equal(dedupeProductName("Leite Integral Piracanjuba 1 Litro"), "Leite Integral Piracanjuba 1 Litro");
 });
+
+test("acessório com nome de marca não é o produto ('2 cocas' → nunca 'Copo Vidro Coca-Cola')", async () => {
+  const { conciergeMatchIsStrong } = await import("../src/lib/stores/types");
+  const it = (name: string) => ({ sku: "x", name, unitPrice: 5 }) as never;
+  assert.equal(conciergeMatchIsStrong("coca cola", it("Copo Vidro 345ml Americano Coca-Cola Nadir Colecionável")), false);
+  assert.equal(conciergeMatchIsStrong("coca cola", it("Coca Cola 220ml")), true);
+  assert.equal(conciergeMatchIsStrong("copo coca cola", it("Copo Vidro 345ml Americano Coca-Cola Nadir Colecionável")), true, "pediu o copo: vale");
+  assert.equal(conciergeMatchIsStrong("shampoo", it("Kit Shampoo e Condicionador Seda")), true, "kit continua valendo");
+});
