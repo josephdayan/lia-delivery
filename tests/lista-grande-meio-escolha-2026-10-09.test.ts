@@ -161,3 +161,16 @@ test("09/10: 'bolacha maizena' acha Biscoito Maizena (bolacha ≈ biscoito)", as
   const names = [...(ctx.pending ?? []).flatMap((p) => (p.options ?? []).map((o) => o.name)), ...(ctx.basket ?? []).map((b) => b.name)].join(" | ");
   assert.match(names + out, /biscoito[^|]*maizena|maizena[^|]*biscoito/i, `sem biscoito maizena: ${names} :: ${out.slice(0, 200)}`);
 });
+
+test("09/10: 'troca por X e coloca 3' leva a quantidade junto na busca da troca", () => {
+  const state = buildDialogueState(
+    { flow: "delivery", step: "awaiting_quote_confirmation", basket: [{ sku: "m1", name: "Biscoito de Maizena Bauducco 170g", qty: 1, unitPrice: 4.06, lineTotal: 4.06, storeKey: "mambo", storeLabel: "Mambo" }] } as unknown as DeliveryContext,
+    { hasAddress: true }
+  );
+  const swap = (text: string) => planActions({ actions: [{ type: "swap" as const, from: 1, to: "bolacha agua e sal" }] }, state, { text });
+  const withQty = swap("troca por bolacha agua e sal e coloca 3");
+  assert.equal(withQty.ok, true);
+  assert.equal((withQty as { steps: { to: string }[] }).steps[0].to, "3 bolacha agua e sal");
+  const noQty = swap("troca por bolacha agua e sal");
+  assert.equal((noQty as { steps: { to: string }[] }).steps[0].to, "bolacha agua e sal");
+});
