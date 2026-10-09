@@ -52,3 +52,11 @@ test("acessório com nome de marca não é o produto ('2 cocas' → nunca 'Copo 
   assert.equal(conciergeMatchIsStrong("copo coca cola", it("Copo Vidro 345ml Americano Coca-Cola Nadir Colecionável")), true, "pediu o copo: vale");
   assert.equal(conciergeMatchIsStrong("shampoo", it("Kit Shampoo e Condicionador Seda")), true, "kit continua valendo");
 });
+
+test("'cancela o pedido que paguei' é cancelamento (não 'seu pagamento já está confirmado')", async () => {
+  const { detectIntent } = await import("../src/lib/lia-intents");
+  for (const t of ["cancela o pedido que paguei", "paguei mas quero cancelar", "desisti do pedido que paguei"]) {
+    assert.deepEqual(detectIntent(t), { kind: "cancel", explicitOrder: true }, t);
+  }
+  assert.equal(detectIntent("já paguei").kind, "paid_claim");
+});

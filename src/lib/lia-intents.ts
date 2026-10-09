@@ -1491,6 +1491,10 @@ export function detectIntent(text: string): Intent {
   }
   if (SWITCH_PAYMENT_RE.test(n)) return { kind: "switch_payment" };
   if (NOT_PAID_RE.test(n)) return { kind: "pay" };
+  // "cancela o pedido que paguei", "paguei mas quero cancelar", "desisti do pedido que paguei" (09/10, rodada de
+  // cliente: respondia "seu pagamento já está confirmado" e ignorava o cancelamento): o pedido é CANCELAR; o "paguei"
+  // só diz qual pedido. A desistência de pedido pago segue o fluxo de sempre (pergunta e estorna no "sim").
+  if (PAID_RE.test(n) && CANCEL_RE.test(n) && !isQuestion(n)) return { kind: "cancel", explicitOrder: true };
   // "caiu?" / "já caiu?" é PERGUNTA sobre o pagamento (status), não afirmação de pago.
   if (PAID_RE.test(n)) return isQuestion(n) ? { kind: "status" } : { kind: "paid_claim" };
   // "pensando bem melhor não"/"deixa pra lá" = arrependimento seco → reject (26/08:

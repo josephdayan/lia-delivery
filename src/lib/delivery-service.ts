@@ -646,6 +646,12 @@ export function byVerifiedThenEta(a: ChoiceOption, b: ChoiceOption): number {
   return a.unitPrice + a.freightFee - (b.unitPrice + b.freightFee);
 }
 
+function missingAskWords(query: string, option: { name: string; brand?: string }): number {
+  const have = normalizeMsg(`${option.name} ${option.brand ?? ""}`).replace(/-/g, " ");
+  const haveWords = new Set(have.split(/\s+/));
+  return queryTokens(normalizeMsg(query)).filter((t) => !/^\d/.test(t) && !haveWords.has(t) && !have.includes(t)).length;
+}
+
 // Já comprado vem antes de tudo; entre iguais, confirmado ao vivo, depois o produto BÁSICO (sem sabor/edição
 // que o pedido não pediu — 09/10) e depois o prazo.
 function byRepeatThenVerifiedThenEta(query: string) {
@@ -656,6 +662,15 @@ function byRepeatThenVerifiedThenEta(query: string) {
     const va = a.verified ? 1 : 0;
     const vb = b.verified ? 1 : 0;
     if (va !== vb) return vb - va;
+    // O que o cliente DISSE vem antes (09/10, rodada de cliente: "sabonete dove" mostrava Nivea primeiro): opção que
+    // não cobre uma palavra do pedido (marca, tipo) vai depois das que cobrem.
+    // O NOME manda antes do campo de marca: a Casa Santa Luzia cadastra "Sabonete … Nivea" com marca "Dove" (09/10).
+    const na = missingAskWords(query, { name: a.name });
+    const nb = missingAskWords(query, { name: b.name });
+    if (na !== nb) return na - nb;
+    const ma = missingAskWords(query, a);
+    const mb = missingAskWords(query, b);
+    if (ma !== mb) return ma - mb;
     const pa = variantPenalty(query, a.name);
     const pb = variantPenalty(query, b.name);
     if (pa !== pb) return pa - pb;
