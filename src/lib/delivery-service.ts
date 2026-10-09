@@ -557,7 +557,7 @@ async function buildChoices(
     // Embalagem exata do pedido ("12 ovos" → dúzia) entra na vitrine mesmo fora do top-3.
     const exactPack = !closestFalta && line.qty >= 4 && countsPackContent(line.phrase) ? candidates.find((c) => declaredPack(c.item.name) === line.qty) : undefined;
     if (exactPack && !options.includes(exactPack)) options = [exactPack, ...options];
-    const sortedOptions = options
+    let sortedOptions = options
       .map(({ store, item }) => {
         const check = liveChecks.get(liveKey(store.key, item.sku));
         const option = toChoiceOption(item, { storeKey: store.key, storeLabel: store.label }, check, urgent);
@@ -565,6 +565,12 @@ async function buildChoices(
       })
       // Preço pedido explicitamente manda na ordem (desempate: confirmado ao vivo e prazo).
       .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta(line.phrase));
+    // Pediu "sabonete dove" e há 2+ Dove de verdade (09/10, rodada de cliente): o Nivea cadastrado com marca
+    // "Dove" pela loja sai da vitrine. Só quando sobra escolha; o já comprado fica sempre.
+    const coversAsk = (o: ChoiceOption) => missingAskWords(line.phrase, { name: o.name }) === 0;
+    if (!cheapestFirst && !closestFalta && sortedOptions.filter(coversAsk).length >= 2) {
+      sortedOptions = sortedOptions.filter((o) => coversAsk(o) || o.repeat);
+    }
     pending.push({
       query: line.phrase,
       qty: line.qty,
@@ -2441,7 +2447,7 @@ async function handleDeliveryTurn(
   // os cards "sumirem" e o cliente tinha que pedir de novo (29/08 S7/S12).
   const rePresentStep = async () => {
     if (ctx.step === "choosing" && ctx.pending?.length) {
-      await sendChoices(phone, ctx.pending[0]);
+      await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
     }
   };
   if (intent.kind === "trust_question") {

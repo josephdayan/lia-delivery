@@ -1168,6 +1168,11 @@ export function trustAnswer(): string {
 }
 
 // Serviço que a Lia não faz (06/10): "chama um uber" recebia "não achei, me diz outra marca".
+// Depois de responder uma pergunta de lado com os cards na tela (09/10): reenviar o carrossel inteiro
+// era repetitivo (e com o corpo "Olha o que achei", parecia busca nova). Uma linha lembra a escolha.
+export function choicesStillOpen(query: string): string {
+  return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
+}
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
 }
@@ -2133,7 +2138,7 @@ export function manualQuoteSummary(input: {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview",
+  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean }
 ): string {
@@ -2151,6 +2156,9 @@ export function serviceAnswer(
     case "eta":
       // NÃO prometer same-day: o prazo é do checkout da loja e varia por item/endereço.
       return "O prazo depende da loja e do seu endereço — tem item que chega em horas, tem item que leva alguns dias. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
+    case "hours":
+      // Horário de atendimento (09/10): a Lia responde a qualquer hora; quem tem horário é a entrega da loja.
+      return "Pode pedir a *qualquer hora*, todo dia — eu respondo na hora. A entrega segue o horário de cada loja, e eu te mostro o prazo exato antes de você pagar.";
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
     case "service_fee":

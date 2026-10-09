@@ -35,7 +35,7 @@ export type ListItemDecision = "split" | "joined" | "inherited_head" | "brand_sh
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview";
+export type ServiceTopic = "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview";
 
 export type Intent =
   | { kind: "thanks" }
@@ -1672,10 +1672,13 @@ export function detectIntent(text: string): Intent {
 
   // Pergunta operacional (frete/prazo/área/pagamento) SEM cara de produto — responder
   // com copy de serviço; cair em busca aqui gera "sabonete pra quem pergunta de frete".
+  if (n.split(" ").length <= 10 && HOURS_ASK_RE.test(n.replace(/[!.?]+$/g, "").trim())) return { kind: "service_question", topic: "hours" };
   if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && n.split(" ").length <= 10) {
     const topic = /\bfrete|taxa\b/.test(n) || /\b(quanto|qual( o)? valor|preco)\b.*\bentrega\b|\bentrega\b.*\b(quanto|custa|sai por)\b/.test(n)
       ? ("fee" as const)
-      : /\bprazo|demora\w*|horario|que horas|tempo\b/.test(n)
+      : HOURS_ASK_RE.test(n)
+        ? ("hours" as const)
+        : /\bprazo|demora\w*|horario|que horas|tempo\b/.test(n)
         ? ("eta" as const)
         : /\bpagamento|pagar|parcel\w+|vale|vr\b|va\b|pix|cartao\b/.test(n)
           ? ("payment" as const)
@@ -2486,11 +2489,20 @@ export function parseStoreReference(
   return known ? { label: known, indices: [] } : null;
 }
 
+// "qual o horário de vocês?", "vcs abrem que horas?", "funcionam domingo?" (09/10): horário de
+// ATENDIMENTO, não prazo de entrega — antes caía no texto de prazo. "que horas chega" segue prazo.
+const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;
+export function isHoursAsk(text: string): boolean {
+  return HOURS_ASK_RE.test(normalizeMsg(text).replace(/[!.?]+$/g, "").trim());
+}
+
 // "chega hoje?", "o 2 chega hoje?", "quando chega?", "qual o prazo?" com as opções na tela
 // (06/10): a resposta são os prazos das opções. Devolve o número da opção citada (se houver).
 export function parseChoiceEtaAsk(text: string): { option?: number; today: boolean } | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
   if (!/\b(chega|chegam|chegaria|entrega|entregam|entregaria|prazo|demora|demoram)\b/.test(n)) return null;
+  // "vocês entregam no rio?"/"entrega em campinas?" (09/10): pergunta de ÁREA, não do prazo das opções.
+  if (/\b(?:entrega\w*|chega\w*|atende\w*)\s+(?:em|no|na|nos|nas|pra|para|ate)\s+(?!(?:\d|quanto|qual|que|quando|hoje|amanha|casa|minha casa|meu endereco|o \d|a \d)\b)\w/.test(n)) return null;
   if (!/\?$/.test(n) && !/^(?:qual|quais|quando|quanto tempo|o que|que|e |o \d|a \d|qual delas)/.test(n)) return null;
   if (n.split(" ").length > 9) return null;
   const opt = n.match(/\b(?:o|a|opcao|numero)\s+([1-9])\b/);

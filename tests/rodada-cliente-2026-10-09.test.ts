@@ -60,3 +60,27 @@ test("'cancela o pedido que paguei' é cancelamento (não 'seu pagamento já est
   }
   assert.equal(detectIntent("já paguei").kind, "paid_claim");
 });
+
+test("horário de atendimento não é prazo de entrega; 'que horas chega' continua prazo", async () => {
+  const { detectIntent } = await import("../src/lib/lia-intents");
+  for (const t of ["qual o horário de vocês?", "vcs abrem que horas?", "vocês funcionam domingo?", "até que horas vocês atendem?"]) {
+    assert.deepEqual(detectIntent(t), { kind: "service_question", topic: "hours" }, t);
+  }
+  assert.notEqual((detectIntent("que horas chega?") as { topic?: string }).topic, "hours");
+  assert.match(copy.serviceAnswer("hours", "SP"), /qualquer hora/);
+});
+
+test("'vocês entregam no rio?' com opções na tela é pergunta de área, não prazo das opções", async () => {
+  const { detectIntent, parseChoiceEtaAsk } = await import("../src/lib/lia-intents");
+  assert.equal(parseChoiceEtaAsk("vocês entregam no rio?"), null);
+  assert.equal(parseChoiceEtaAsk("entrega em campinas?"), null);
+  assert.deepEqual(detectIntent("vocês entregam no rio?"), { kind: "service_question", topic: "area" });
+  assert.deepEqual(parseChoiceEtaAsk("o 2 chega hoje?"), { option: 2, today: true });
+  assert.ok(parseChoiceEtaAsk("vocês entregam em quanto tempo?"));
+});
+
+test("pergunta de lado com os cards na tela: uma linha lembra a escolha (sem reenviar o carrossel)", () => {
+  const t = copy.choicesStillOpen("sabonete dove");
+  assert.match(t, /sabonete dove/);
+  assert.doesNotMatch(t, /Olha o que achei/);
+});
