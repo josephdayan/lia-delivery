@@ -13,6 +13,7 @@ import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { planActions } from "../src/lib/dialogue/plan";
 import { buildDialogueState } from "../src/lib/dialogue/state";
 import type { DeliveryContext } from "../src/lib/conversation-types";
+import { consolidationYesTitle } from "../src/lib/adapters/whatsapp";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { storeSlotsInFlight, withStoreSlot } from "../src/lib/store-throttle";
@@ -173,4 +174,10 @@ test("09/10: 'troca por X e coloca 3' leva a quantidade junto na busca da troca"
   assert.equal((withQty as { steps: { to: string }[] }).steps[0].to, "3 bolacha agua e sal");
   const noQty = swap("troca por bolacha agua e sal");
   assert.equal((noQty as { steps: { to: string }[] }).steps[0].to, "bolacha agua e sal");
+});
+
+test("09/10: título do botão 'juntar' cabe em 20 caracteres sem cortar o nome da loja no meio", () => {
+  assert.equal(consolidationYesTitle("Mambo"), "Juntar na Mambo");
+  assert.equal(consolidationYesTitle("Farmácia Indiana"), "Juntar numa loja");
+  for (const label of ["Mambo", "Farmácia Indiana", "Drogarias Pacheco", "Casa Santa Luzia"]) assert.ok(consolidationYesTitle(label).length <= 20);
 });

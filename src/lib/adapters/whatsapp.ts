@@ -517,6 +517,13 @@ function parseFlowResponse(raw: string | undefined): Record<string, unknown> | u
   }
 }
 
+// Botão do WhatsApp aceita 20 caracteres: "Juntar na Farmácia Indiana" virava "Juntar na Farmácia I" (09/10, teste real).
+// Cabe o nome da loja? Usa. Senão, texto genérico inteiro — a mensagem acima já diz qual loja.
+export function consolidationYesTitle(storeLabel: string): string {
+  const named = `Juntar na ${storeLabel}`;
+  return named.length <= 20 ? named : "Juntar numa loja";
+}
+
 export const whatsappAdapter = {
   parseInbound(payload: RawInbound) {
     const metaChange = payload.entry?.[0]?.changes?.[0]?.value;
@@ -723,7 +730,7 @@ export const whatsappAdapter = {
   async sendConsolidationOffer(to: string, body: string, storeLabel: string, stores: number) {
     if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
     return sendMetaSimpleButtons(to, body, [
-      { id: "consolidar:sim", title: `Juntar na ${storeLabel}`.slice(0, 20) },
+      { id: "consolidar:sim", title: consolidationYesTitle(storeLabel) },
       { id: "consolidar:nao", title: `Manter ${stores} lojas`.slice(0, 20) }
     ]);
   },
