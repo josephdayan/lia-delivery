@@ -51,7 +51,7 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const { ctx, phone, convoId, userCep } = env;
   // Total na mesa + edição da cesta: reabre o pedido antes (como os handlers de edição fazem).
   const editing = steps.some((s) => EDITING.has(s.type) || (s.type === "pick" && s.source === "last"));
-  const reopened = editing ? await reopenOrderForEdit(phone, convoId, ctx, userCep) : false;
+  const reopened = editing ? await reopenOrderForEdit(phone, convoId, ctx, userCep, { quiet: steps.every((s) => s.type === "qty") }) : false;
 
   // Vários ajustes de quantidade na cesta de uma vez ("2 vodkas, 1 suco, 1 gin, 4 red bull" com esses itens já na
   // cesta, 09/10): aplica todos e responde UMA vez, com a lista inteira e o prazo — antes cada um mandava a sua

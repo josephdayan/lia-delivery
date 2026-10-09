@@ -331,7 +331,9 @@ export async function reopenOrderForEdit(
   phone: string,
   convoId: string,
   ctx: DeliveryContext,
-  userCep: string | null | undefined
+  userCep: string | null | undefined,
+  // `quiet`: quem chama já responde com "✅ Nx ..." + o novo resumo; o aviso extra virava 3 balões (09/10, rodada 2).
+  opts?: { quiet?: boolean }
 ): Promise<boolean> {
   if (!ctx.deliveryOrderId) return false;
   if (ctx.step !== "awaiting_quote_confirmation" && ctx.step !== "awaiting_payment" && ctx.step !== "choosing_freight") {
@@ -360,7 +362,7 @@ export async function reopenOrderForEdit(
   ctx.step = "collecting";
   ctx.cep = ctx.cep ?? userCep ?? undefined;
   await writeCtx(convoId, ctx);
-  await reply(phone, copy.orderReopened());
+  if (!opts?.quiet) await reply(phone, copy.orderReopened());
   return true;
 }
 
