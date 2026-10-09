@@ -14,7 +14,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
@@ -22,18 +22,19 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
-import { CEP_RE_GLOBAL, expandShoppingShorthand } from "@/lib/lia-intents";
+import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
 import { dropAddressOnlyItems, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
+import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { detectRecommendation } from "@/lib/recommend/detect";
@@ -54,7 +55,7 @@ import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, Choice
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
 import { refreshPausedStores } from "./store-pause";
-import { TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TURN_LOCK_TTL_MS, TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -149,6 +150,10 @@ function medicineSkippedCopy(dropped?: string[]): string {
 // ("pasta de dente"->creme dental), medicines and quantities; the deterministic
 // splitter + medicine word-list covers OpenAI-off and OpenAI-error, so a remédio
 // never slips through as a plain search.
+// Algum pedido da mensagem não aparece (por nenhuma palavra) entre as consultas mantidas?
+export function someRequestDropped(requested: string[], kept: string[]): boolean {
+  return requested.some((phrase) => !kept.some((query) => queryTokens(query).some((token) => queryTokens(phrase).includes(token))));
+}
 async function extractLines(text: string): Promise<ExtractedLines> {
   // "sem remédio"/"não quero remédio" é negação: sai da mensagem ANTES de qualquer
   // detecção — senão a Lia avisa que removeu um medicamento que ninguém pediu
@@ -179,11 +184,14 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     // ELA MESMA manteve na lista ("quero advil" → Advil na lista + aviso "remédio de receita
     // deixei de fora"). Só vale o aviso se algum pedido da mensagem ficou de fora de verdade.
     const kept = [...items.map((item) => item.query), ...deterministic.map((line) => line.phrase)];
-    const llmDroppedSomething =
-      !medicineEnabled() ||
+    // Aviso e cesta têm que concordar (09/10, rodada 2: "deixei ele de fora" com a pomada de assadura na lista):
+    // só vale se algum pedido da mensagem ficou de fora de verdade — com a flag do isento ligada ou não.
+    const llmDroppedSomething = someRequestDropped(
       resolveListItems(sanitized)
         .filter((line) => queryTokens(line.phrase).length && !looksLikeTobacco(line.phrase))
-        .some((line) => !kept.some((query) => queryTokens(query).some((token) => queryTokens(line.phrase).includes(token))));
+        .map((line) => line.phrase),
+      kept
+    );
     return {
       lines: rewriteGroceryOil(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic)),
       greetingOnly: extraction.greetingOnly,
@@ -1063,6 +1071,49 @@ function sameDayMaxMinutes(): number {
   return Number(process.env.LIA_SAME_DAY_MAX_MINUTES ?? 24 * 60);
 }
 
+// Itens ainda sem escolha, pelo nome que o cliente usou (09/10, rodada 2): "fecha"/"pagar"/"quanto tá" dizem QUAIS faltam.
+function pendingNames(ctx: DeliveryContext): string[] {
+  const names = (ctx.pending ?? []).map((p) => (p.baseQuery ?? p.query).trim()).filter(Boolean);
+  return [...new Set(names)];
+}
+
+// O lembrete "as opções de X continuam aí em cima" não repete em falas seguidas (09/10, rodada 2: depois de "blz" saía
+// o mesmo ponteiro três vezes numa conversa curta). Olha a última fala da Lia, de turnos anteriores.
+function choicesNudgeAllowed(): boolean {
+  const last = turnMeta.getStore()?.prevSent?.slice(-1)[0];
+  return !(last && /continuam aí em cima/.test(last));
+}
+
+// "ok"/"blz"/"👍"/"obrigado"/"valeu" sozinhos: reconhecimento, nunca escolha nem encerramento (09/10, rodada 2).
+const NEUTRAL_ACK_RE = /^(?:muito |mto )?(?:ok+|okay|oks|blz|beleza|certo|certinho|show|top|joia|massa|valeu|vlw|obrigad[oa]|obg|brigad[oa]|perfeito|otimo|legal|tudo bem|ta bom|ta certo|ta otimo|entendi|ahh?|aham)(?: (?:valeu|obrigad[oa]|pela ajuda|demais))?$/;
+const EMOJI_ACK_RE = /^[\p{Extended_Pictographic}\u{FE0F}\u200d\s]+$/u;
+function neutralAck(text: string): "thanks" | "ok" | null {
+  const n = normalizeMsg(text).replace(/[!.,;:]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n) return null;
+  if (NEUTRAL_ACK_RE.test(n)) return /valeu|vlw|obrig|obg|brigad/.test(n) ? "thanks" : "ok";
+  if (EMOJI_ACK_RE.test(text.trim())) return /[🙏❤💚🙌]/u.test(text) ? "thanks" : /[👍👌✅🆗😊🙂]/u.test(text) ? "ok" : null;
+  return null;
+}
+
+// Reenvio idêntico (regra de 08/10): sem refazer a busca, mas nunca em silêncio (09/10, rodada 2). Turno anterior ainda
+// rodando = uma linha ("já estou nisso"); já terminou = reapresenta a pergunta/opções em que a conversa parou.
+async function replyToDuplicateInbound(phone: string, convoId: string) {
+  const fresh = await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true, turnLock: true, turnLockAt: true } });
+  const running = Boolean(fresh?.turnLock && fresh.turnLockAt && Date.now() - fresh.turnLockAt.getTime() < TURN_LOCK_TTL_MS);
+  if (running) {
+    await reply(phone, copy.duplicateStillWorking());
+    return;
+  }
+  const ctx = readCtx(fresh?.context ?? null);
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length) {
+    await reply(phone, copy.duplicateRecap());
+    await sendChoices(phone, ctx.pending[0]);
+    return;
+  }
+  const last = ctx.lastSent && Date.now() - ctx.lastSent.at < REPEAT_WINDOW_MS ? ctx.lastSent.texts.slice(-1)[0] : undefined;
+  await reply(phone, last ? copy.duplicateRecapLast(last) : copy.duplicateNothingToShow());
+}
+
 async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
   // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
@@ -1518,6 +1569,9 @@ async function findInStores(item: BasketItem, onlyStores: string[]): Promise<Map
     if (now > was * 1.5 || now < was * 0.5) continue;
     // Nunca pra uma variante que a escolhida não era (09/10: "Coca Cola 220ml" → "Coca-Cola Zero").
     if (variantPenalty(ask || query, c.item.name) > variantPenalty(ask || query, item.name)) continue;
+    // Nem pra sub-tipo de uso que o escolhido não era (09/10: lenço umedecido → lenço de higiene íntima).
+    const useQualifier = USE_QUALIFIER_RE.exec(normalizeMsg(c.item.name));
+    if (useQualifier && !normalizeMsg(`${item.name} ${ask ?? ""} ${query}`).includes(useQualifier[0])) continue;
     let ok: boolean;
     if (ask) {
       const size = measureOf(c.item.name);
@@ -1712,10 +1766,12 @@ export async function handleDeliveryMessage(input: {
   // diferentes — o cliente reenviou enquanto o 1º turno ainda buscava) e o 2º turno virou
   // "troca + busca de novo" em cima do formulário, com três carrosséis. Texto idêntico ao da
   // mensagem anterior, há poucos minutos, com cara de pedido de produto = reenvio por impaciência:
-  // o 1º turno já responde (ou responderá); este fica mudo. Fica ANTES do lock de propósito.
+  // o 1º turno já responde (ou responderá); este NÃO refaz a busca. Rodada 2 (09/10): mudo também deixava o cliente sem sinal
+  // — agora responde curto (replyToDuplicateInbound). Fica ANTES do lock de propósito.
   if (inboundMessageId && looksLikeProductList(text) && (await isRecentDuplicateInbound(convo.id, inboundMessageId, text))) {
     console.log("[inbound:duplicate]", phone, JSON.stringify(text.slice(0, 60)));
     await skipTurnTicket(convo.id, ticket);
+    await replyToDuplicateInbound(phone, convo.id);
     return;
   }
 
@@ -2359,10 +2415,13 @@ async function handleDeliveryTurn(
     (countDistinctItems(text) >= 2 || (idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text)))
   ) {
     console.log("[basket:new-list]", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`, `parado_ms=${idleMs}`);
+    // Avisa o que saiu (09/10, rodada 2): com item já escolhido ou carrossel aberto, a lista pode ser complemento.
+    const dropped = [...(ctx.basket ?? []).map((b) => b.name), ...(ctx.pending ?? []).map((p) => p.query)];
     const fresh = addressOnlyCtx(ctx, user.cep);
     for (const key of Object.keys(ctx)) delete (ctx as unknown as Record<string, unknown>)[key];
     Object.assign(ctx, fresh);
     await writeCtx(convo.id, ctx);
+    await reply(phone, copy.newListDropped(dropped));
     await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
     return;
   }
@@ -2410,6 +2469,57 @@ async function handleDeliveryTurn(
     if (sized && target && measureOf(target.name) !== measureOf(sized.size)) {
       const base = (slot?.query ?? target.ask ?? sized.item).replace(/\b\d+(?:[.,]\d+)?\s?(?:kg|g|ml|l|litros?)\b/gi, " ").replace(/\s+/g, " ").trim();
       await handleSwap(phone, convo.id, user.cep, ctx, target.name, `${base} ${sized.size}`, text, undefined, target.sku);
+      return;
+    }
+  }
+
+  // "pode ser o mais baratinho" com as opções na tela (09/10, rodada 2): escolhe a mais barata; empate de preço = a
+  // primeira (melhor relevância) e a Lia diz que estavam empatadas, em vez de perguntar "a 1 ou a 5?".
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && intent.kind === "free_text" && CHEAPEST_PICK_RE.test(normalizeMsg(text))) {
+    const current = ctx.pending[0];
+    const { index, tied } = cheapestWithTies(current.options);
+    const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
+    const o = current.options[index];
+    await confirmChosenOption(phone, convo.id, ctx, user.cep, store, current, o, tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(o.unitPrice, o.medicine), index + 1) } : undefined);
+    return;
+  }
+
+  // "troca a ração por outra marca" com a cesta montada: determinístico, antes da IA (que pedia "qual marca?").
+  if (intent.kind === "swap_item" && ctx.basket?.length && (!ctx.step || ctx.step === "collecting") && OTHER_BRAND_RE.test(normalizeMsg(intent.to))) {
+    await handleSwap(phone, convo.id, user.cep, ctx, intent.from, intent.to, text);
+    return;
+  }
+
+  // Escolha aberta + reconhecimento seco ("👍", "ok", "blz", "obrigado", "valeu") — 09/10, rodada 2: "👍" virava
+  // "Não peguei qual você quer" (8,6 s de IA) e "obrigado" soava como encerramento. Resposta curta que lembra o item
+  // pendente, sem IA, sem repetir o lembrete em falas seguidas.
+  if (
+    ctx.step === "choosing" &&
+    ctx.pending?.[0]?.options.length &&
+    !(ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.packConfirm)
+  ) {
+    const ack = neutralAck(text);
+    if (ack) {
+      await reply(phone, copy.choiceAck(ctx.pending[0].baseQuery ?? ctx.pending[0].query, ack === "thanks", choicesNudgeAllowed(), turnMeta.getStore()?.prevSent ?? []));
+      return;
+    }
+  }
+
+  // Pergunta sobre o PRODUTO com as opções na tela (09/10, rodada 2): "essa ração serve pra filhote?", "é original?",
+  // "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois". Respondida em código com o nome/
+  // preço/loja das opções (e diz com honestidade o que não dá pra saber), sem perder a escolha aberta.
+  if (
+    ctx.step === "choosing" &&
+    ctx.pending?.[0]?.options.length &&
+    intent.kind === "free_text" &&
+    !(ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.packConfirm)
+  ) {
+    const current = ctx.pending[0];
+    const shown = current.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine), storeLabel: o.storeLabel }));
+    const pq = parseProductQuestion(text, shown.length);
+    if (pq && !(pq.kind === "dietary" && !isPetFood(shown))) {
+      const answer = answerProductQuestion(pq, shown, current.baseQuery ?? current.query);
+      await reply(phone, choicesNudgeAllowed() ? `${answer}\n\n${copy.choicesStillOpen(current.query)}` : answer);
       return;
     }
   }
@@ -2618,6 +2728,17 @@ async function handleDeliveryTurn(
     await reply(phone, answer);
     return;
   }
+  // "faltou o café" com a cesta em montagem e nenhum pedido pago/entregue (09/10, rodada 2): é item esquecido, não
+  // reclamação (que chamava o responsável). Com pedido pago/entregue continua reclamação.
+  if (
+    intent.kind === "complaint" &&
+    isMissingItemOnlyComplaint(text) &&
+    ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) &&
+    !ctx.deliveryOrderId &&
+    !(await prisma.deliveryOrder.findFirst({ where: { userId: user.id, status: { in: [...PAID_OR_IN_FULFILLMENT_STATUSES, "delivered"] } }, select: { id: true } }))
+  ) {
+    intent = { kind: "free_text" };
+  }
   // Recomendação (08/10): pedido vago ("quero algo doce") e sintoma que o regex lê como reclamação
   // ("tô com uma dor de cabeça horrível") viram recomendação. Com endereço e CEP, a busca de sempre
   // (handleSearch: reabre cotação, depois reconhece a recomendação); sem eles, o onboarding abaixo
@@ -2652,7 +2773,7 @@ async function handleDeliveryTurn(
   // Depois de responder, a ETAPA em curso é reapresentada — a pergunta lateral fazia
   // os cards "sumirem" e o cliente tinha que pedir de novo (29/08 S7/S12).
   const rePresentStep = async () => {
-    if (ctx.step === "choosing" && ctx.pending?.length) {
+    if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) {
       await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
     }
   };
@@ -2770,7 +2891,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows)}`);
+      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx))}`);
       return;
     }
     if ((ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment") && ctx.deliveryOrderId) {
@@ -2949,8 +3070,14 @@ async function handleDeliveryTurn(
     const offer = ctx.consolidationOffer;
     const key = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
     const said = normalizeMsg(text);
-    const join = said === "consolidar:sim" || /^(pode )?junta(r)?\b/.test(said) || (intent.kind === "affirm" && !/mant/.test(said));
+    // "ok"/"blz" solto não escolhe entre duas opções (09/10, rodada 2): pergunta de novo, uma vez. "sim/pode/quero" aceita.
+    const vagueOk = intent.kind === "affirm" && /^(ok|okay|okey|blz|beleza|certo|tudo bem|fechou|vai|show)\b[\s!.]*$/.test(said);
+    const join = said === "consolidar:sim" || /^(pode )?junta(r)?\b/.test(said) || (intent.kind === "affirm" && !vagueOk && !/mant/.test(said));
     const keep = said === "consolidar:nao" || /^(pode )?(mante(r|m|nha)|deixa(r)?( como (esta|ta))?|separad[oa]s?|nao junta)/.test(said);
+    if (vagueOk && offer.key === key && !keep) {
+      await reply(phone, copy.consolidationAsk());
+      return;
+    }
     ctx.consolidationOffer = undefined;
     if (offer.key === key && (join || keep)) {
       if (join) {
@@ -3018,7 +3145,7 @@ async function handleDeliveryTurn(
     }
     if (ctx.basket?.length) {
       const produtos = Math.round(basketForCopy(ctx).reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -3475,6 +3602,10 @@ async function handleDeliveryTurn(
   // A CEP identifies the neighbourhood, not the door. Do not send an address-like
   // message to a courier until the customer confirms street + number.
   if (ctx.step === "need_address") {
+    if (intent.kind === "free_text" && isWaitGripe(text) && !looksLikeDeliveryAddress(text)) {
+      await reply(phone, copy.waitApology());
+      return;
+    }
     // "pagar"/"pix"/"só isso" com o endereço incompleto (09/10, rodada 1): diz o que falta em vez de repetir a pergunta ou mandar "👍".
     if (["pay", "choose_payment", "done"].includes(intent.kind) && !ctx.deliveryAddressVerified) {
       const place = ctx.cepPlace;
@@ -3493,6 +3624,10 @@ async function handleDeliveryTurn(
   // Esperando CEP, veio texto que não é CEP ("é pertinho da padaria São José"):
   // re-pede o CEP — NUNCA vira busca de produto (28/08 S12).
   if (ctx.step === "need_cep" && intent.kind === "free_text" && !extractCep(text)) {
+    if (isWaitGripe(text)) {
+      await reply(phone, copy.waitApology());
+      return;
+    }
     if (looksLikeDeliveryAddress(text)) {
       await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, text);
       return;
@@ -3606,6 +3741,10 @@ async function handleDeliveryTurn(
 
   // ---- onboarding: save the complete delivery address once, before the first basket ----
   if (!user.defaultAddress) {
+    if (intent.kind === "free_text" && isWaitGripe(text)) {
+      await reply(phone, copy.waitApology());
+      return;
+    }
     if (refusesWholeMessage(text)) {
       await refuseMedicine(phone, convo.id, ctx, text);
       return;
@@ -3664,6 +3803,10 @@ async function handleDeliveryTurn(
   // O pedido NÃO é resolvido agora (senão o 1º pedido do cliente seria auto-escolhido
   // sem opções nem preço): guarda o texto cru e roda a busca normal depois do CEP.
   if (!savedCep) {
+    if (intent.kind === "free_text" && isWaitGripe(text)) {
+      await reply(phone, copy.waitApology());
+      return;
+    }
     if (refusesWholeMessage(text)) {
       await refuseMedicine(phone, convo.id, ctx, text);
       return;
@@ -3891,7 +4034,7 @@ async function handleDeliveryTurn(
       // 11/08: só item com preço entra no pedido) — a Lia pede pra terminar a escolha,
       // que é o único jeito de fechar com total na hora.
       if (ctx.pending?.length) {
-        await reply(phone, copy.finishChoiceFirst());
+        await reply(phone, copy.finishChoiceFirst(pendingNames(ctx), turnMeta.getStore()?.prevSent ?? []));
         await sendChoices(phone, ctx.pending[0]);
         return;
       }
@@ -4032,7 +4175,7 @@ async function handleDeliveryTurn(
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
         }
         return;
       }
@@ -4199,7 +4342,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
       return;
     }
   }
@@ -4384,7 +4527,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
     return;
   }
   // Cancelou agora há pouco e perguntou "cadê meu pedido?": o assunto é o CANCELADO.
@@ -5659,7 +5802,7 @@ async function confirmChosenOption(
   }
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
-    await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst()}` : confirmed);
+    await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst(pendingNames(ctx))}` : confirmed);
     await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(shownQuery(ctx.pending[0]), ctx.pending.length, ctx.pending[0].closestFalta));
     return;
   }
@@ -6079,9 +6222,10 @@ async function handleChoosing(
       parsed.type === "pick"
         ? parsed.index
         : parsed.type === "cheapest"
-          ? current.options.reduce((best, o, i, arr) => (o.unitPrice < arr[best].unitPrice ? i : best), 0)
+          ? cheapestWithTies(current.options).index
           : 0;
-    await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index]);
+    const tied = parsed.type === "cheapest" ? cheapestWithTies(current.options).tied : [];
+    await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(current.options[index].unitPrice, current.options[index].medicine), index + 1) } : undefined);
     return;
   }
 
@@ -6098,9 +6242,10 @@ async function handleChoosing(
   if (asksRunningTotal(text)) {
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1):
-    // o parcial e o lembrete em duas mensagens seguidas diziam a mesma coisa.
-    await reply(phone, `${copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows)}\n\n${copy.choicesStillOpen(current.query)}`);
+    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
+    // não se repete em falas seguidas (rodada 2).
+    const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+    await reply(phone, choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
     return;
   }
 
@@ -6990,6 +7135,18 @@ async function handleChoiceSwitch(
   });
 }
 
+// Mais barata das opções na tela; no empate de preço fica a primeira (a de melhor relevância/prazo) e o cliente é avisado.
+function cheapestWithTies(options: ChoiceOption[]): { index: number; tied: number[] } {
+  const price = (o: ChoiceOption) => Math.round(display(o.unitPrice, o.medicine) * 100);
+  const index = options.reduce((best, o, i, arr) => (price(o) < price(arr[best]) ? i : best), 0);
+  return { index, tied: options.map((o, i) => (price(o) === price(options[index]) ? i : -1)).filter((i) => i >= 0) };
+}
+const CHEAPEST_PICK_RE = /^(?:(?:pode ser|quero|vou de|vou no|vou na|fico com|prefiro|me ve|manda|bota|pega)\s+(?:o |a )?mais barat\w+|(?:(?:pode ser|quero|vou de|fico com|prefiro|me ve)\s+)?(?:o |a )?mais baratinh[oa])(?:\s+(?:mesmo|ai|por favor|pfv))?$/;
+const CHEAPEST_TO_RE = /^(?:(?:o|a|um|uma)\s+)?(?:\S+\s+){0,3}?(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)$|^(?:o |a )?(?:mais barat\w*|mais em conta)$/;
+// Sub-tipo de uso: se o candidato tem e o item atual não, não é "o mesmo item mais barato".
+const USE_QUALIFIER_RE = /\b(intim\w*|antissept\w*|demaquilant\w*|facial|pet|cachorro|gato|geriatric\w*|adulto)\b/;
+const OTHER_BRAND_RE = /^(?:outr[oa]s?|uma outra|um outro|diferente|algum[a]? outr[oa])(?: (?:marca|versao|opcao|tipo|sabor|modelo|coisa))?s?$|^(?:de )?outra marca$/;
+
 async function handleSwap(
   phone: string,
   convoId: string,
@@ -7068,45 +7225,14 @@ async function handleSwap(
     await reply(phone, copy.swapAskWhat([...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ")));
     return;
   }
-  // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério, não nome de produto. Busca o MESMO
-  // item (o pedido original do cliente) e fica com o mais barato; se o da cesta já é, diz isso e mantém.
-  const cheapTo = to ? normalizeMsg(to).match(/^(.*?)\s*(?:o |a )?mais (?:barat[oa]s?|em conta)$/) : null;
-  if (cheapTo && removed.length === 1 && !removedPending.length) {
-    const target = removed[0];
-    const phrase = cheapTo[1].replace(/^(?:o|a|os|as)\s+/, "").trim() || target.ask || from;
-    const crossStoreCheap = !ctx.storeKey || ctx.storeKey === CONCIERGE_STORE_KEY;
-    const found = crossStoreCheap
-      ? await gatherCrossStoreCandidates(phrase, 12)
-      : (await orderStore(ctx).searchItems(phrase, 6)).map((item) => ({ store: orderStore(ctx), item }));
-    const live = await confirmOptionsLive(
-      found.filter((c) => conciergeMatchIsStrong(phrase, c.item)).map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
-      ctx.cep ?? userCep
-    );
-    // Mesmo tamanho do item da cesta (±10%): o arroz de 5kg não pode virar o de 1kg só por ser mais barato.
-    const targetSize = measureOf(target.name);
-    const pool = live.filter((o) => {
-      if (o.unitPrice <= 0) return false;
-      if (!targetSize) return true;
-      const size = measureOf(o.name);
-      return size != null && Math.abs(size - targetSize) / targetSize <= 0.1;
-    });
-    const cheapest = pool.length ? pool.reduce((a, b) => (display(b.unitPrice, b.medicine) < display(a.unitPrice, a.medicine) ? b : a)) : undefined;
-    const currentPrice = display(target.unitPrice, target.medicine);
-    if (!cheapest || display(cheapest.unitPrice, cheapest.medicine) >= currentPrice || cheapest.sku === target.sku) {
-      await reply(phone, copy.itemCheapestAnswer({ item: phrase, name: target.name, price: currentPrice, already: true }));
-      return;
-    }
-    const where = [cheapest.storeLabel, cheapest.delivery ? compactCardDelivery(cheapest.delivery) : ""].filter(Boolean).join(" · ");
-    ctx.basket = mergeBaskets(keep, [choiceToBasketItem(cheapest, target.qty, cheapest.storeKey ? getStore(cheapest.storeKey) : orderStore(ctx), target.ask ?? phrase)]);
-    await continueAfterBasket(
-      phone,
-      convoId,
-      ctx,
-      userCep,
-      copy.itemCheapestAnswer({ item: phrase, name: cheapest.name, price: display(cheapest.unitPrice, cheapest.medicine), where, already: false })
-    );
-    return;
-  }
+  // "troca a ração por OUTRA MARCA" (09/10, rodada 2): "outra marca" não é produto — busca de novo o mesmo item
+  // (o que o cliente pediu), sem a marca/produto atual, e o que ele escolher ENTRA NO LUGAR.
+  // "troca o lenço pelo MAIS BARATO" (09/10, rodada 2): o "mais barato" fica dentro do item que está na cesta (mesma busca,
+  // sem sub-tipo que o atual não tinha — lenço infantil não vira lenço de higiene íntima) e vai por preço.
+  const cheapestSwap = removed.length === 1 && CHEAPEST_TO_RE.test(normalizeMsg(to));
+  if (cheapestSwap) to = removed[0].ask?.trim() || removed[0].name.split(/\s+/).slice(0, 2).join(" ");
+  const otherBrand = !cheapestSwap && OTHER_BRAND_RE.test(normalizeMsg(to)) && removed.length === 1;
+  if (otherBrand) to = removed[0].ask?.trim() || removed[0].name.replace(/\b\d+(?:[.,]\d+)?\s?(?:kg|g|ml|l|litros?|un|unidades?)\b/gi, " ").replace(/\s+/g, " ").trim();
   ctx.basket = keep;
   ctx.pending = pendingKeep.length ? pendingKeep : undefined;
   const removedNames = [...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ");
@@ -7129,8 +7255,11 @@ async function handleSwap(
     : (await store.searchItems(searchPhrase, 3)).map((item) => ({ store, item }));
   // 06/10: a troca também só oferece o que a loja confirmou para o CEP (sem operador, o
   // não confirmado é beco no "pagar").
+  const leaving = otherBrand ? removed[0] : undefined;
+  const leavingBrand = leaving ? normalizeMsg(leaving.brand ?? "") : "";
   const confirmed = await confirmOptionsLive(
     candidates
+      .filter((c) => !leaving || (c.item.sku !== leaving.sku && !(leavingBrand.length > 2 && normalizeMsg(`${c.item.brand ?? ""} ${c.item.name}`).includes(leavingBrand))))
       .filter((c) => conciergeMatchIsStrong(searchPhrase, c.item))
       .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
     ctx.cep ?? userCep
@@ -7142,7 +7271,24 @@ async function handleSwap(
     const size = measureOf(o.name);
     return size != null && Math.abs(size - askedSize) / askedSize <= 0.1;
   }) : confirmed;
-  const options = diversifyOptions(searchPhrase, sized, vitrineLimit());
+  let options = diversifyOptions(searchPhrase, sized, vitrineLimit());
+  if (cheapestSwap) {
+    const current = removed[0];
+    const currentNorm = normalizeMsg(`${current.name} ${current.ask ?? ""}`);
+    const pool = sized
+      .filter((o) => o.sku !== current.sku)
+      .filter((o) => { const q = USE_QUALIFIER_RE.exec(normalizeMsg(o.name)); return !q || currentNorm.includes(q[0]); })
+      .sort((a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine));
+    const cheapest = pool[0];
+    if (!cheapest || display(cheapest.unitPrice, cheapest.medicine) >= display(current.unitPrice, current.medicine)) {
+      ctx.basket = basket;
+      ctx.pending = pending.length ? pending : undefined;
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.itemCheapestAnswer({ item: to, name: current.name, price: display(current.unitPrice, current.medicine), where: current.storeLabel, already: true }));
+      return;
+    }
+    options = [cheapest];
+  }
 
   if (!options.length) {
     // TROCA É ATÔMICA (26/08 P1.7): sem substituto forte, o item original FICA — tirar
@@ -7156,7 +7302,7 @@ async function handleSwap(
   if (options.length === 1 && !(ctx.pending?.length)) {
     const only = options[0];
     ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, qty, only.storeKey ? getStore(only.storeKey) : store, to)]);
-    await continueAfterBasket(phone, convoId, ctx, userCep, copy.swappedFor(removedNames, only.name));
+    await continueAfterBasket(phone, convoId, ctx, userCep, cheapestSwap ? copy.itemCheapestAnswer({ item: to, name: only.name, price: display(only.unitPrice, only.medicine), where: only.storeLabel, already: false }) : copy.swappedFor(removedNames, only.name));
     return;
   }
   ctx.pending = [
@@ -8667,7 +8813,7 @@ async function continueAfterBasket(
     const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
-      const joined = await withDeadline(
+      let joined = await withDeadline(
         consolidateBasketStores(ctx).catch((error) => {
           console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
           return null;
@@ -8676,6 +8822,19 @@ async function continueAfterBasket(
         null,
         () => console.warn("[basket:consolidate:timeout]")
       );
+      // A loja tem que confirmar a cesta JUNTA antes de a oferta existir (09/10, rodada 2: aceitou, "Juntei tudo" e
+      // logo "Não tenho estes itens"). Recusa definitiva da loja = sem oferta; a cesta original segue intacta.
+      if (joined) {
+        const refused = await withDeadline(
+          preflightBasket(joined.basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey ?? "" })), ctx.cep ?? userCep).catch(() => null),
+          consolidationBudgetMs(),
+          null
+        );
+        if (refused) {
+          console.warn("[basket:consolidate:store-refused]", refused.storeKey, refused.kind);
+          joined = null;
+        }
+      }
       if (joined) {
         // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A
         // compra fecha as duas formas — várias lojas viram um trabalho de compra por loja.

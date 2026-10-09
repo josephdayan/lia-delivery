@@ -40,6 +40,11 @@ export function normComplement(input: string | undefined | null): string {
 
 const MEAT_BBQ = /\b(picanha|fraldinha|alcatra|maminha|cupim|costela|contra file|contrafile|linguica toscana|linguica para churrasco|linguica churrasco|carne para churrasco|kit churrasco|coracao de frango|asa de frango|tulipa|medalhao)\b/;
 
+// Petisco de cachorro já na cesta (inclui os que não dizem "petisco" no nome: Dentastix, ossinho, bifinho).
+const PET_TREAT_RE = /\b(petisco|petiscos|bifinho|bifinhos|osso|ossinho|ossinhos|snack|snacks|dentastix|palito dental|mastigavel|mastigaveis|rawhide|stick|sticks|joy beef|pedigree biscrok|biscoito para (cao|cachorro))\b/;
+// Item de pet: só puxa complemento de pet — "Ração Carne e Arroz" não pede feijão (09/10, rodada 2).
+const PET_ITEM_RE = /\b(racao|racoes|petisco|petiscos|pet|cao|caes|cachorro|cachorros|cachorrinho|filhote|filhotes|gato|gatos|felino|felinos|canino|caninos|dog|cat|areia higienica|granulado sanitario|dentastix|whiskas|friskies|pedigree|golden|premier|guabi|biofresh|sache)\b/;
+
 // ≥ 40 pares. Ordem = prioridade quando a cesta dispara mais de um.
 export const COMPLEMENT_PAIRS: readonly Pair[] = [
   { trigger: "carvão", when: /\bcarvao\b/, query: "pao de alho", shelfId: "padaria.pao_de_alho", why: "Quem leva carvão costuma levar pão de alho 🧄", has: /\bpao de alho\b/ },
@@ -50,8 +55,8 @@ export const COMPLEMENT_PAIRS: readonly Pair[] = [
   { trigger: "café", when: /\bcafe\b/, unless: /\b(capsula|capsulas|soluvel|cafeteira|cappuccino|capuccino|filtro|dolce gusto|nespresso|tres coracoes capsula|com leite|gelado|bebida)\b/, query: "filtro de papel para cafe", shelfId: "produto", why: "Quem leva café em pó costuma levar filtro de papel ☕", has: /\bfiltro\b/ },
   { trigger: "pão", when: /\b(pao frances|pao de forma|pao forma|bisnaguinha|pao integral|pao de leite|pao sovado|pao caseiro|pao italiano|baguete)\b/, query: "manteiga", shelfId: "frios.requeijao_manteiga", why: "Pão pede uma manteiga 🧈", has: /\b(manteiga|margarina|requeijao|cream cheese)\b/ },
   { trigger: "torrada", when: /\btorrada/, query: "requeijao", shelfId: "frios.requeijao_manteiga", why: "Torrada combina com requeijão 😋", has: /\b(manteiga|margarina|requeijao|cream cheese|geleia)\b/ },
-  { trigger: "ração de cachorro", when: /\bracao\b.*\b(cao|caes|cachorro|cachorros|dog|canin\w*|adulto raca|filhote raca)\b|\b(pedigree|golden formula|premier pet|special dog|dog chow|biofresh|guabi natural)\b/, unless: /\bgat|\b(petisco|bifinho|snack|dentastix|osso)\b/, query: "petisco cachorro", shelfId: "pet.petisco_cachorro", why: "Quem leva ração costuma levar um petisco pro cachorro 🐶", has: /\b(petisco|bifinho|osso|snack)\b/ },
-  { trigger: "ração de gato", when: /\bracao\b.*\b(gato|gatos|felin\w*|cat)\b|\b(whiskas|cat chow|friskies|gran plus gato|golden gatos)\b/, unless: /\b(petisco|sache|snack|churu|dreamies)\b/, query: "petisco gato", shelfId: "pet.petisco_gato", why: "Quem leva ração costuma levar um petisco pro gato 🐱", has: /\b(petisco|sache|churu|dreamies|snack)\b/ },
+  { trigger: "ração de cachorro", when: /\bracao\b.*\b(cao|caes|cachorro|cachorros|dog|canin\w*|adulto raca|filhote raca)\b|\b(pedigree|golden formula|premier pet|special dog|dog chow|biofresh|guabi natural)\b/, unless: /\bgat|\b(petisco|bifinho|snack|dentastix|osso)\b/, query: "petisco cachorro", shelfId: "pet.petisco_cachorro", why: "Quem leva ração costuma levar um petisco pro cachorro 🐶", has: PET_TREAT_RE },
+  { trigger: "ração de gato", when: /\bracao\b.*\b(gato|gatos|felin\w*|cat)\b|\b(whiskas|cat chow|friskies|gran plus gato|golden gatos)\b/, unless: /\b(petisco|sache|snack|churu|dreamies)\b/, query: "petisco gato", shelfId: "pet.petisco_gato", why: "Quem leva ração costuma levar um petisco pro gato 🐱", has: /\b(petisco|sache|churu|dreamies|snack|bifinho|stick|sticks)\b/ },
   { trigger: "areia de gato", when: /\bareia\b.*\b(gato|gatos|higienica|sanitari\w*)\b|\bgranulado sanitario\b/, query: "sache para gato", shelfId: "pet.petisco_gato", why: "Quem leva areia costuma levar um sachê pro gato 🐱", has: /\b(sache|petisco|racao)\b/ },
   { trigger: "shampoo", when: /\bshampoo\b/, unless: /\b(pet|cachorro|cao|gato|infantil|anticaspa a seco|seco)\b/, query: "condicionador", shelfId: "beleza.condicionador", why: "Quem leva shampoo costuma levar o condicionador 🧴", has: /\bcondicionador\b/ },
   { trigger: "condicionador", when: /\bcondicionador\b/, unless: /\b(pet|cachorro|gato)\b/, query: "shampoo", shelfId: "beleza.shampoo", why: "Quem leva condicionador costuma levar o shampoo 🧴", has: /\bshampoo\b/ },
@@ -102,7 +107,9 @@ export function suggestComplement(
   if (basket.some((b) => b.medicine === "mip") || names.some((n) => MEDICINE_NAME_RE.test(n))) return null;
   const declined = new Set((opts.recentlyDeclined ?? []).map(normComplement));
   for (const pair of COMPLEMENT_PAIRS) {
-    const triggered = names.some((n) => pair.when.test(n) && !(pair.unless?.test(n) ?? false));
+    const petPair = pair.shelfId.startsWith("pet.");
+    // Item de pet só dispara par de pet; par de comida/higiene humana nunca olha item de pet.
+    const triggered = names.some((n) => pair.when.test(n) && !(pair.unless?.test(n) ?? false) && (PET_ITEM_RE.test(n) ? petPair : true));
     if (!triggered) continue;
     // "Já tem": olha os OUTROS itens (o próprio gatilho "pão de hambúrguer" contém "hambúrguer").
     if (names.some((n) => !pair.when.test(n) && pair.has.test(n))) continue;

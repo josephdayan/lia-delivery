@@ -1123,6 +1123,23 @@ const HUMAN_RE =
 const COMPLAINT_RE =
   /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero reclamar|absurdo|pessimo|horrivel|uma vergonha)\b/;
 
+// Queixa de demora/lentidão sem produto ("que demora", "vcs são lentos"): nunca vira item (09/10, rodada 2).
+// Pergunta de prazo ("quanto tempo demora?") não entra: essa é service_question.
+export function isWaitGripe(raw: string): boolean {
+  const n = normalizeMsg(raw);
+  if (!n || n.split(" ").length > 7 || /\d/.test(n)) return false;
+  if (/\b(quanto|qual|quando|prazo|tempo|entrega|chega|chegar)\b/.test(n)) return false;
+  return /\b(demor\w*|lent[oa]s?|lerd\w+|devagar|enrolan\w+)\b/.test(n);
+}
+
+// "faltou o café" sozinho: com pedido pago/entregue é reclamação; com a cesta ainda em montagem é item esquecido
+// (09/10, rodada 2). Só vale quando a ÚNICA pista de reclamação é o "faltou (o|a|um|uma)".
+const MISSING_ITEM_RE = /\bfaltou (um|uma|o|a)\b/;
+export function isMissingItemOnlyComplaint(text: string): boolean {
+  const n = normalizeMsg(text);
+  return MISSING_ITEM_RE.test(n) && !COMPLAINT_RE.test(n.replace(MISSING_ITEM_RE, " "));
+}
+
 // Pergunta operacional (frete/prazo/área/pagamento) sem produto — responder com copy.
 const SERVICE_WORDS_RE =
   /\b(entreg\w+|frete|taxa|cobertura|regiao|area de (entrega|atendimento)|prazo|demora\w*|horario|funcionam?\w*|atendem?\w*|pagamento|formas? de pagar|parcel\w+|vale[- ]?(refeicao|alimentacao)|vr\b|va\b|cupom|desconto|pedido minimo|minimo)\b/;

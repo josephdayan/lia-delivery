@@ -35,6 +35,11 @@ export function greeting(): string {
   return `Oi! Sou a Lia 💚 ${PITCH}`;
 }
 
+// Queixa de demora antes de haver pedido em andamento (09/10, rodada 2): pede desculpa e não mexe na lista.
+export function waitApology(): string {
+  return "Desculpa a espera 🙏 Assim que eu tiver seu endereço, já saio procurando.";
+}
+
 export function thanks(): string {
   return "Imagina! Qualquer coisa é só chamar 💚";
 }
@@ -1797,6 +1802,10 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
   ].join("\n");
 }
 
+export function consolidationAsk(): string {
+  return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter*.";
+}
+
 export function consolidationKept(stores: number): string {
   return `Fechado, mantenho as ${stores} lojas — cada uma entrega a sua parte.`;
 }
@@ -1826,8 +1835,50 @@ export function paymentLinkTrouble(): string {
   return "Se o link não abrir, eu mando um *Pix copia-e-cola* no lugar: responde *pix*. Seu pedido continua guardado.";
 }
 
-export function finishChoiceFirst(): string {
+// "fecha"/"pagar" com itens sem escolher (09/10, rodada 2): diz QUAIS faltam, não só "as opções abaixo".
+export function namesList(names: string[]): string {
+  const bold = names.map((n) => `*${n}*`);
+  return bold.length > 1 ? `${bold.slice(0, -1).join(", ")} e ${bold[bold.length - 1]}` : bold[0] ?? "";
+}
+export function finishChoiceFirst(missing: string[] = [], recent: string[] = []): string {
+  // Repetido em seguida ("fecha" e depois "pagar"): outra redação com os mesmos nomes — a guarda anti-repetição reescreveria
+  // e perderia a lista do que falta.
+  const seen = (text: string) => recent.some((r) => r.trim() === text.trim());
+  if (missing.length > 1) {
+    const first = `Antes de pagar falta escolher: ${namesList(missing)}. A gente vai um de cada vez, começando por *${missing[0]}* 👇`;
+    return seen(first) ? `Ainda faltam ${missing.length} itens pra escolher (${namesList(missing)}) — termina por *${missing[0]}*, que aí eu fecho o total 👇` : first;
+  }
+  if (missing.length === 1) {
+    const first = `Antes de pagar, escolhe uma das opções de *${missing[0]}* (toca no card ou responde o número) que aí eu fecho o total 👇`;
+    return seen(first) ? `Só falta *${missing[0]}*: escolhe uma das opções e eu fecho o total 👇` : first;
+  }
   return "Antes de pagar, escolhe uma das opções abaixo (toca no card ou responde o número) que aí eu fecho o total 👇";
+}
+
+// "👍", "ok", "blz", "obrigado", "valeu" com as opções na tela (09/10, rodada 2): resposta curta, sem IA, que lembra o item
+// pendente — e NÃO repete o lembrete se a fala anterior da Lia já era ele (withPointer=false).
+export function choiceAck(query: string, thanks: boolean, withPointer: boolean, recent: string[] = []): string {
+  // Varia a abertura/fecho pelo que a Lia já disse: o mesmo texto de novo seria reescrito pela guarda anti-repetição
+  // (e perderia o item pendente).
+  const fresh = (options: string[]) => options.find((o) => !recent.some((r) => r.includes(o))) ?? options[0];
+  const lead = fresh(thanks ? ["Por nada! 🙂", "Imagina 🙂", "Disponha 🙂"] : ["Certo! 🙂", "Fechado 🙂", "Combinado 🙂"]);
+  if (withPointer) return `${lead} ${choicesStillOpen(query)}`;
+  const tail = fresh(["Quando decidir, é só me dizer o número.", "Sem pressa: quando escolher, é só responder o número.", "Tô por aqui — é só responder o número da opção."]);
+  return `${lead} ${tail}`;
+}
+
+// Mensagem idêntica reenviada (09/10, rodada 2): nunca silêncio.
+export function duplicateStillWorking(): string {
+  return "Já estou nisso, as opções chegam aqui em seguida 👇";
+}
+export function duplicateRecap(): string {
+  return "Já tinha recebido isso 🙂 Sem buscar de novo, olha onde a gente parou:";
+}
+export function duplicateRecapLast(last: string): string {
+  return `Já tinha recebido isso 🙂 Sem repetir a busca, foi isso que te respondi:\n\n${last}`;
+}
+export function duplicateNothingToShow(): string {
+  return "Já tinha recebido isso 🙂 Se faltou alguma coisa ou quer mudar o pedido, é só me dizer.";
 }
 
 // "coca" com Fanta+2 Cocas na mesa → estreitou pras que batem.
@@ -1875,6 +1926,13 @@ export function queuedItemsNote(queries: string[]): string {
   return `Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
 }
 
+// Lista nova no meio da cesta/escolha: a antiga sai; o cliente precisa saber o quê (09/10, rodada 2).
+export function newListDropped(names: string[]): string {
+  const shown = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 4).map((n) => `*${n}*`);
+  const more = names.length > shown.length ? ` e mais ${names.length - shown.length}` : "";
+  return `Comecei uma lista nova e deixei de fora o que estava antes (${shown.join(", ")}${more}). Se era pra somar, é só pedir de novo com *adiciona*.`;
+}
+
 // "vai mudar o frete?" com pedido já cotado → o número real, não a explicação genérica.
 export function currentFee(fee: number): string {
   return `A entrega do seu pedido está em *${brl(fee)}*. Se mudar endereço ou cesta, eu recalculo.`;
@@ -1905,16 +1963,19 @@ export function basketEtaAnswer(rows: EtaRow[]): string {
   return `${body}\nDiz *pagar* que eu mando o total com a entrega.`;
 }
 
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = []): string {
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = []): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
+    if (missing.length) return `Ainda não escolhi nada: falta você escolher ${namesList(missing)} — aí eu fecho total, entrega e prazo de uma vez.`;
     return "Falta você escolher as opções que eu mandei — aí eu fecho total, entrega e prazo de uma vez.";
   }
   const lines = items.map((item) => `• ${item.qty}x ${item.name} — ${brl(item.displayLineTotal)}`);
   const tail =
     pendingCount > 0
-      ? `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
+      ? missing.length
+        ? `_Falta escolher: ${missing.join(", ")}. Aí sai o total com a entrega._`
+        : `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
       : '_Diz *"só isso"* que eu mando o total com a entrega._';
   return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), tail].join("\n");
 }
@@ -2897,6 +2958,11 @@ export function backNothingOpen(): string {
 }
 
 // "qual o mais barato?" é pergunta — responde qual é, não põe na cesta (06/10).
+export function cheapestTieNote(numbers: number[], price: number, picked: number): string {
+  const list = numbers.length === 2 ? `${numbers[0]} e ${numbers[1]}` : `${numbers.slice(0, -1).join(", ")} e ${numbers[numbers.length - 1]}`;
+  return `As opções ${list} estavam empatadas em ${brl(price)} — peguei a *${picked}*, que é a mais certeira pro seu pedido. Se preferir outra, é só falar.`;
+}
+
 export function cheapestOptionAnswer(n: number, name: string, price: number, cheapest: boolean): string {
   return `O mais ${cheapest ? "barato" : "caro"} é o *${n}*: ${name} — ${brl(price)}. Quer esse? Responde *${n}*.`;
 }
