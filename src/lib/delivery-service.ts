@@ -6368,7 +6368,8 @@ function explicitAddCue(text: string): boolean {
 // "e uma coca e um guaraná" começa com "e": continua a lista de antes.
 const ADD_TO_BASKET_RE = /^e\b|\b(tambem|e mais|mais \d|mais dois|mais duas|mais tres|junta|junto|alem disso|faltou|esqueci)\b/;
 // Mexe na cesta ou na escolha, não é pedido novo: "tira o gin e a vodka", "troca", "2 do primeiro e 1 do segundo".
-const EDIT_OR_CHOICE_RE = /\b(tira|tirar|remove|remover|retira|exclui|troca|trocar|muda|mudar|diminui|aumenta|deixa|so|somente|apenas|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|ultim[oa]|opcao|opcoes|esse|essa|desse|dessa|desses|dessas|numero)\b/;
+// Correção também ("não quero de uva, quero de laranja", "na verdade…", "em vez de…", "prefiro…").
+const EDIT_OR_CHOICE_RE = /\b(tira|tirar|remove|remover|retira|exclui|troca|trocar|muda|mudar|diminui|aumenta|deixa|so|somente|apenas|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|ultim[oa]|opcao|opcoes|esse|essa|desse|dessa|desses|dessas|numero|nao quero|na verdade|em vez|ao inves|no lugar|prefiro|melhor|errei|corrig\w*)\b/;
 
 // Pedido de produto do nada ("preciso de um shampoo", "quero 2 cocas", lista) — o que, com um
 // pedido parado na mesa, vira outra missão de compra (04/09 no Pix; 08/10 no total/entrega).
