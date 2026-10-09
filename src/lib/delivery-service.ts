@@ -22,7 +22,7 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2235,6 +2235,22 @@ async function handleDeliveryTurn(
       }
       const shown = already && current ? current : cheapest;
       await reply(phone, copy.itemCheapestAnswer({ item: slot.query, name: shown.name, price: display(shown.unitPrice, shown.medicine), where, already }));
+      return;
+    }
+  }
+
+  // "a ração tem que ser de 3kg" com a cesta montada (09/10): troca aquele item por opções do tamanho pedido (só o
+  // tamanho, ±10%); sem nenhuma, o item fica e a Lia avisa.
+  if (ctx.basket?.length && (!ctx.step || ctx.step === "collecting")) {
+    const sized = parseItemSize(text);
+    const slot = sized ? ctx.listFlow?.slots.find((sl) => sharesProductNoun(sl.query, sized.item)) : undefined;
+    const target = sized
+      ? (slot ? ctx.basket.find((b) => b.sku === slotCurrentSku(slot, ctx.basket!)) : undefined) ??
+        ctx.basket.find((b) => (b.ask && sharesProductNoun(b.ask, sized.item)) || itemMatchesPhrase(sized.item, b))
+      : undefined;
+    if (sized && target && measureOf(target.name) !== measureOf(sized.size)) {
+      const base = (slot?.query ?? target.ask ?? sized.item).replace(/\b\d+(?:[.,]\d+)?\s?(?:kg|g|ml|l|litros?)\b/gi, " ").replace(/\s+/g, " ").trim();
+      await handleSwap(phone, convo.id, user.cep, ctx, target.name, `${base} ${sized.size}`, text, undefined, target.sku);
       return;
     }
   }
@@ -5845,7 +5861,8 @@ async function handleChoosing(
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
     await reply(phone, copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows));
-    await sendChoices(phone, current);
+    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel.
+    await reply(phone, copy.choicesStillOpen(current.query));
     return;
   }
 
@@ -6840,7 +6857,14 @@ async function handleSwap(
       .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
     ctx.cep ?? userCep
   );
-  const options = diversifyOptions(searchPhrase, confirmed, vitrineLimit());
+  // Tamanho pedido na troca ("a ração tem que ser de 3kg", 09/10): só o que tem o tamanho (±10%); a busca
+  // mostrava as de 1kg de novo. Sem nenhuma do tamanho, a troca não acontece (o original fica, com aviso).
+  const askedSize = measureOf(searchPhrase);
+  const sized = askedSize ? confirmed.filter((o) => {
+    const size = measureOf(o.name);
+    return size != null && Math.abs(size - askedSize) / askedSize <= 0.1;
+  }) : confirmed;
+  const options = diversifyOptions(searchPhrase, sized, vitrineLimit());
 
   if (!options.length) {
     // TROCA É ATÔMICA (26/08 P1.7): sem substituto forte, o item original FICA — tirar
@@ -6867,7 +6891,7 @@ async function handleSwap(
   ];
   ctx.step = "choosing";
   await writeCtx(convoId, ctx);
-  await reply(phone, copy.swapRemovedPrefix(removedNames));
+  await reply(phone, copy.swapRemovedPrefix(removedNames, to));
   await sendChoices(phone, ctx.pending[0]);
 }
 

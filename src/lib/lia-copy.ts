@@ -443,8 +443,9 @@ export function swapAskWhat(from: string): string {
   return `Trocar ${from} por qual?`;
 }
 
-export function swapRemovedPrefix(from: string): string {
-  return `Tirei ${from}.`;
+export function swapRemovedPrefix(from: string, to?: string): string {
+  // "a ração tem que ser de 3kg" (09/10): "Tirei Ração… 1kg." soava como se tivesse só tirado. Diz a troca.
+  return to ? `No lugar de *${from}*, escolhe uma opção de *${to}*:` : `Tirei ${from}.`;
 }
 
 export function swappedFor(from: string, to: string): string {

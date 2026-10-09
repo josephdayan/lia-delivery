@@ -2527,6 +2527,17 @@ export function parseItemCheapest(text: string): string | null {
   return null;
 }
 
+// "a ração tem que ser de 3kg", "quero a ração de 3kg", "o leite de 2 litros" com a lista montada (09/10, rodada com
+// a IA: ela ora trocava pelo mesmo 1kg, ora tentava refinar sem opções na tela). Devolve o item e o tamanho.
+export function parseItemSize(text: string): { item: string; size: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  const m = n.match(/^(?:e |mas |ah |na verdade |quero |prefiro |troca |muda )?(?:o |a |os |as )?(.+?) (?:tem que ser |precisa ser |deve ser |pode ser |e |eh |tem que ter |com |vem )?(?:de |com )?(\d+(?:[.,]\d+)?\s?(?:kg|kilos?|quilos?|g|gr|gramas?|ml|l|lt|litros?))$/);
+  if (!m) return null;
+  const item = m[1].replace(/\s+(?:tem que ser|precisa ser|deve ser|pode ser)$/, "").replace(/^(?:o|a|os|as)\s+/, "").trim();
+  if (!item || item.split(" ").length > 4 || /^\d/.test(item) || /^(?:quero|prefiro|manda|pode|tem|e)$/.test(item)) return null;
+  return { item, size: m[2].replace(/\s+/g, "").replace(/(?:kilos?|quilos?)$/, "kg").replace(/(?:gr|gramas?)$/, "g").replace(/(?:lt|litros?)$/, "l") };
+}
+
 // Número de opção pedido ("5", "o 5", "opção 5", "quero o 5") — para dizer "são só 3".
 export function parseChoiceNumber(text: string): number | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();

@@ -115,3 +115,12 @@ test("horário de atendimento não passa pela IA (ela perguntava 'da Lia ou da l
   const text = "qual o horário de vocês?";
   assert.equal(dialogueBypassReason({ text, intent: detectIntent(text), ctx: { step: "choosing" } as never, hasAddress: true, looksLikeList: false }), "intent:hours");
 });
+
+test("'a ração tem que ser de 3kg' é troca de tamanho do item da lista", async () => {
+  const { parseItemSize } = await import("../src/lib/lia-intents");
+  assert.deepEqual(parseItemSize("a ração tem que ser de 3kg"), { item: "racao", size: "3kg" });
+  assert.deepEqual(parseItemSize("quero a ração de 3 quilos"), { item: "racao", size: "3kg" });
+  assert.deepEqual(parseItemSize("o leite de 2 litros"), { item: "leite", size: "2l" });
+  assert.equal(parseItemSize("quero 3kg"), null);
+  assert.match(copy.swapRemovedPrefix("Ração Pitukats 1kg", "ração gato 3kg"), /No lugar de \*Ração Pitukats 1kg\*.*ração gato 3kg/);
+});
