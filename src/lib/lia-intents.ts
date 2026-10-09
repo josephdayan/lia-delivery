@@ -204,6 +204,11 @@ export function expandShoppingShorthand(text: string): string {
     // Abreviações de produto (09/10, rodada 1: "req. tirolez" virava o item "req" → "não achei" e depois achava).
     .replace(/\breq\b\.?/gi, "requeijão")
     .replace(/\bcerva\b/gi, "cerveja")
+    // (09/10, rodada 2) abreviação com ponto vira palavra inteira; sem o ponto "mac"/"ref" podem ser outra coisa.
+    .replace(/\bpres\./gi, "presunto")
+    .replace(/\bref\./gi, "refrigerante")
+    .replace(/\bmac\./gi, "macarrão")
+    .replace(/\bdet\./gi, "detergente")
     .replace(/\bdeterg\b\.?/gi, "detergente")    .replace(/\b(qro|qr|qero|kero|kero|keru)\b/gi, "quero")
     .replace(/\b(qria|keria)\b/gi, "queria")
     .replace(/\b(pf|pff+|pf+v+r?|pfr|pls)\b/gi, "por favor")
@@ -1150,7 +1155,7 @@ const CLEAR_CART_RE =
 // Desistência da lista INTEIRA (09/10, rodada 1): "na verdade não quero nada disso" só tirava o item da vez.
 // "não quero mais nada" sozinho continua sendo fechar a lista (done) — frase ambígua, coberta por teste antigo.
 const CLEAR_ALL_RE =
-  /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei)[,\s]+)*(?:nao (?:quero|preciso (?:de )?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso)[\s,!.]*$/;
+  /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei)[,\s]+)*(?:nao (?:quero|preciso (?:de )?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso|(?:deixa (?:pra|para) la|deixa quieto|esquece|esqueca|desisto|deixa)[,\s]+(?:e )?nao (?:quero|preciso(?: de)?|vou querer) (?:mais )?nada(?: (?:disso|disto|daquilo|disso tudo|de tudo isso))?)[\s,!.]*$/;
 export function isExplicitClearAll(text: string): boolean {
   return CLEAR_ALL_RE.test(normalizeMsg(text));
 }
@@ -1158,7 +1163,7 @@ export function isExplicitClearAll(text: string): boolean {
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
 // pede o pedido anterior (sem produto no meio) — vai direto ao ramo de repetir, sem passar pela IA do diálogo.
 const REPEAT_ORDER_RE =
-  /^(?:(?:oi|ola|opa|bom dia|boa tarde|boa noite)[,!.\s]+)?(?:eu )?(?:(?:quero|queria|vou querer|manda|me manda|me ve|pode mandar|pode repetir|pode fazer|faz|traz|gostaria de|bora)\s+)?(?:(?:repete|repetir|repita|refaz|refazer)\s+(?:o |a |meu |minha |aquele |aquela )?(?:meu |minha )?(?:ultim[oa]|anterior|mesm[oa]|pedido|compra)(?:\s+(?:pedido|compra))?(?:\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez))?|(?:o |a )?(?:mesm[oa]|igual)(?:\s+(?:pedido|coisa|compra))?\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez|ultimo pedido|ultima compra)|(?:o |a )?(?:ultim[oa]|anterior) (?:pedido|compra))(?:[,\s]+(?:por favor|pfv|pf))?[\s!.?]*$/;
+  /^(?:(?:oi|ola|opa|bom dia|boa tarde|boa noite)[,!.\s]+)?(?:eu )?(?:(?:quero|queria|vou querer|manda|me manda|me ve|pode mandar|pode repetir|pode fazer|faz|fazer|traz|pede|pedir|gostaria de|bora)\s+)?(?:(?:repete|repetir|repita|refaz|refazer)\s+(?:o |a |meu |minha |aquele |aquela )?(?:meu |minha )?(?:ultim[oa]|anterior|mesm[oa]|pedido|compra)(?:\s+(?:pedido|compra))?(?:\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez))?|(?:o |a )?(?:mesm[oa]|igual)(?:\s+(?:pedido|coisa|compra))?\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez|ultimo pedido|ultima compra)|(?:o |a )?(?:ultim[oa]|anterior) (?:pedido|compra)|(?:o )?(?:mesm[oa]|igual) (?:de|do|da) sempre|(?:o )?de sempre|(?:de novo|outra vez|novamente)\s+(?:aquel[ea]|esse|essa|o|a|meu|minha)\s+(?:mesm[oa]\s+)?(?:pedido|compra)(?:\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez))?|(?:de novo|outra vez|novamente)\s+o que (?:eu )?(?:pedi|comprei)(?:\s+(?:ontem|anteontem|(?:na )?semana passada|outro dia|(?:da|na) ultima vez|antes))?|(?:aquel[ea]|esse|essa) (?:mesm[oa]\s+)?(?:pedido|compra) (?:de novo|outra vez|novamente))(?:[,\s]+(?:por favor|pfv|pf))?[\s!.?]*$/;
 export function isExplicitRepeatOrder(text: string): boolean {
   return REPEAT_ORDER_RE.test(normalizeMsg(text));
 }

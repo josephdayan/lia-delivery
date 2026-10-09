@@ -1890,6 +1890,16 @@ async function handleDeliveryTurn(
     ctx.deliveryAddress = user.defaultAddress;
     ctx.deliveryAddressVerified = true;
   }
+  // "1"/"2" numa pergunta de sim/não em aberto (09/10, rodada 2): os botões são "sim"/"não", e o cliente que
+  // digita o número não pode ter a quantidade mexida. Vale para toda pergunta binária pendente, num lugar só.
+  const yesNoDigit = /^\s*([12])[\s.!]*$/.exec(text);
+  if (yesNoDigit) {
+    const free = !ctx.pending?.length;
+    const recent = (at?: number) => at != null && Date.now() - at < 30 * 60_000;
+    if (recent(ctx.withdrawConfirm?.askedAt) || recent(ctx.clearAllConfirm?.askedAt) || (free && (ctx.complementOffer || ctx.longTailOffer || ctx.repeatConfirm || ctx.minSwap))) {
+      text = yesNoDigit[1] === "1" ? "sim" : "não";
+    }
+  }
   let intent = detectIntent(text);
   // "só essa" com o item já na cesta e nada em escolha (07/10, c07): é fechar a lista — não "a qual produto
   // você se refere?" (o cliente então digitava o nome e o mesmo item entrava de novo: 2x).
@@ -2141,6 +2151,16 @@ async function handleDeliveryTurn(
   // loja) — nesses, "sim" continua sendo delas.
   // 06/09 (pai do dono): a oferta nasceu com uma escolha aberta e o "sim" era ignorado.
   // Botão vale sempre; palavra solta ("sim") só quando não há escolha aberta.
+  // Botão antigo reenviado como texto (09/10, rodada 2): "complemento_nao" sem oferta aberta não é pedido de produto
+  // ("optsku:..." já tem intent próprio, stale_option_tap).
+  {
+    const tap = text.trim().toLowerCase();
+    if ((/^complemento_(sim|nao)$/.test(tap) && !ctx.complementOffer) || (/^longtail_(sim|nao)$/.test(tap) && !ctx.longTailOffer)) {
+      await reply(phone, copy.staleButtonTap(false));
+      return;
+    }
+  }
+
   if (ctx.longTailOffer && !ctx.repeatConfirm && !ctx.minSwap) {
     const n = normalizeMsg(text);
     const free = !ctx.pending?.length && (ctx.step === "collecting" || !ctx.step);
@@ -4068,7 +4088,7 @@ async function handleDeliveryTurn(
     const last = ctx.lastChoice;
     const hasLastChoice = Boolean(last);
     if (intent.kind === "qty_adjust" || hasLastChoice) {
-      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep, { quiet: intent.kind === "qty_adjust" });
       if (intent.kind === "qty_adjust") await handleQtyAdjust(phone, convo.id, user.cep, ctx, intent, reopened);
       else await handleChoiceSwitch(phone, convo.id, user.cep, ctx, intent.kind === "back" ? { other: true, back: true } : intent, reopened);
       return;
@@ -4311,6 +4331,14 @@ async function handleDeliveryTurn(
     // recebeu "não entendi"). Fora desse contexto, segue o honesto "não entendi".
     const last = ctx.basket?.[ctx.basket.length - 1];
     if (last && intent.value >= 1 && intent.value <= 50 && (ctx.step === "collecting" || ctx.step === undefined)) {
+      // Número solto não reescreve a quantidade já pedida (09/10, rodada 2): "uma dúzia de coca" + "1" + "1" virava 1x.
+      // Vale uma vez por item, e "1" seco nunca derruba quantidade maior (para isso há "só 1", "deixa 1").
+      const key = `${last.sku}`;
+      if (intent.value !== last.qty && (ctx.bareQtyUsed === key || (intent.value === 1 && last.qty > 1))) {
+        await reply(phone, copy.bareNumberKeepsQty(last.qty, last.name));
+        return;
+      }
+      ctx.bareQtyUsed = key;
       last.qty = intent.value;
       last.lineTotal = Math.round(last.unitPrice * last.qty * 100) / 100;
       await writeCtx(convo.id, ctx);
