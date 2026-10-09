@@ -1598,6 +1598,30 @@ export function retailerInvoiced(storeLabel: string, etaText?: string): string {
   return `🧾 A ${storeLabel} emitiu a nota do seu pedido e está preparando o envio${etaText ? ` — previsão de entrega: ${etaText}` : ""}.`;
 }
 
+// Loja não começou o pedido comprado dentro do prazo (09/10, Drogal 13 h em "pagamento aprovado").
+// Verdade sem susto: o que aconteceu, que a Lia já está cobrando e que o dinheiro não se perde.
+export function retailerStalled(storeLabel: string, shortId: string): string {
+  return `⚠️ A ${storeLabel} ainda não começou a separar seu pedido *#${shortId}*, e o prazo que ela deu já passou. Já estou cobrando a loja e te dou retorno por aqui. Se ela não entregar, você recebe o dinheiro de volta.`;
+}
+
+export function ownerStoreStalled(input: { storeLabel: string; storeKey: string; shortId: string; storeOrderNumber: string; state: string; minutes: number; paused: boolean }): string {
+  const h = input.minutes >= 120 ? `${Math.round(input.minutes / 60)} h` : `${input.minutes} min`;
+  return [
+    `🚨 A ${input.storeLabel} não começou o pedido #${input.shortId} (nº ${input.storeOrderNumber}): comprado e pago há ${h}, ainda em "${input.state}" e o prazo da loja já passou.`,
+    "O cliente foi avisado de que estamos cobrando a loja.",
+    input.paused ? `A ${input.storeLabel} saiu da vitrine até você religar ("lia loja ${input.storeKey} on").` : `A ${input.storeLabel} já estava fora da vitrine.`,
+    "Cobre a loja (entrega ou cancelamento com devolução) e, se ela não resolver, estorne o cliente no /ops."
+  ].join("\n");
+}
+
+export function ownerOrderLate(input: { storeLabel: string; shortId: string; storeOrderNumber: string; state: string }): string {
+  return `⏰ O pedido #${input.shortId} (${input.storeLabel}, nº ${input.storeOrderNumber}) passou do prazo da loja e não há sinal de entrega (status na loja: "${input.state}"). Confira com a loja.`;
+}
+
+export function ownerStoreToggled(storeKey: string, on: boolean): string {
+  return on ? `✅ Loja ${storeKey} de volta na vitrine.` : `⏸️ Loja ${storeKey} fora da vitrine até você mandar "lia loja ${storeKey} on".`;
+}
+
 export function deliveryCode(code: string): string {
   return `🔐 Código de recebimento: *${code}*. Fale ele pro entregador só depois de receber o pedido.`;
 }

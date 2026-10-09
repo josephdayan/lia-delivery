@@ -16,6 +16,34 @@ import { VTEX_API_STORE_KEYS, VTEX_API_STORES, type FetchLike } from "./vtex-che
 
 type Json = Record<string, unknown>;
 const INVOICED_MARK = "🧾 Loja faturou (status do pedido na loja)";
+const STALL_MARK = "⛔ LOJA NÃO COMEÇOU O PEDIDO";
+const LATE_MARK = "⏰ Passou do prazo da loja sem sinal de entrega";
+// Estados ANTES de a loja começar a separar. Pedido comprado que fica aqui além do prazo = a loja
+// não pegou o pedido (Drogal 08/10: 13 h em "payment-approved" com Expressa de 30 min).
+const PRE_HANDLING = new Set(["order-created", "order-completed", "on-order-completed", "payment-pending", "payment-approved", "approve-payment", "window-to-cancel", "waiting-for-seller-confirmation", "waiting-for-authorization", "waiting-ffmt-authorization", "authorize-fulfillment", "order-accepted"]);
+
+// Puro. Parado = loja ainda não começou e:
+//   - entrega rápida (prazo da loja ≤ 3 h): passou metade do prazo, no mínimo 20 min (30 min → 20 min);
+//   - entrega longa: o prazo da loja venceu;
+//   - sem prazo conhecido: 12 h.
+// Atrasado (só aviso ao dono) = já começou, mas o prazo venceu há 1 h (rápida) / 12 h (longa) sem entrega.
+export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
+  if (input.delivered) return "ok";
+  const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
+  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
+  const promiseMin = Number.isFinite(etaAt) ? (etaAt - input.boughtAt.getTime()) / 60_000 : null;
+  const fast = promiseMin != null && promiseMin <= 180;
+  if (input.state && PRE_HANDLING.has(input.state)) {
+    if (promiseMin == null) return elapsedMin >= 12 * 60 ? "stalled" : "ok";
+    if (fast) return elapsedMin >= Math.max(20, promiseMin / 2) ? "stalled" : "ok";
+    return input.now.getTime() >= etaAt ? "stalled" : "ok";
+  }
+  if (promiseMin != null && input.state !== "canceled") {
+    const graceMin = fast ? 60 : 12 * 60;
+    if (input.now.getTime() >= etaAt + graceMin * 60_000) return "late";
+  }
+  return "ok";
+}
 const CANCELED_MARK = "🛑 LOJA CANCELOU O PEDIDO";
 const LAST_MILE = /sa[ií]u para (a )?entrega|em rota de entrega|rota de entrega|saiu com o entregador|out for delivery|entregador/i;
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36";
@@ -104,6 +132,29 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
       const eta = etaTextFrom(sig.eta, now);
       const common = { source: "tracking_reader" as const, storeKey: sub.storeKey, storeOrderNumber: sub.storeOrderNumber, ...(sig.trackingUrl ? { trackingUrl: sig.trackingUrl } : {}) };
       const notes = order.notes ?? "";
+      // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora,
+      // conta a verdade ao cliente e tira a loja da vitrine até o dono religar (store-pause.ts).
+      const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: order.id, storeKey: sub.storeKey }, orderBy: { createdAt: "desc" }, select: { completedAt: true, createdAt: true } });
+      const boughtAt = job?.completedAt ?? job?.createdAt ?? sub.createdAt;
+      const health = storeOrderHealth({ state: sig.state, boughtAt, eta: sig.eta, now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
+      const shortId = order.id.slice(-6).toUpperCase();
+      if (health === "stalled" && !notes.includes(STALL_MARK)) {
+        const { pauseStore } = await import("../store-pause");
+        const paused = await pauseStore(sub.storeKey, `pedido #${shortId} (${sub.storeOrderNumber}) parado em "${sig.state}" além do prazo`, "vigia");
+        await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${STALL_MARK}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja tirada da vitrine; cliente avisado; cobrar a loja e estornar se ela não resolver.`) } });
+        const { deliverNotice, notifyOwner } = await import("../turn-runtime");
+        const copy = await import("../lia-copy");
+        await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
+        await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey: sub.storeKey, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }), order.phone);
+        console.error("[store-stall]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
+        report.notices += 1;
+      } else if (health === "late" && !notes.includes(LATE_MARK) && !notes.includes(STALL_MARK)) {
+        await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${LATE_MARK} (status "${sig.state}" em ${now.toISOString()}).`) } });
+        const { notifyOwner } = await import("../turn-runtime");
+        const copy = await import("../lia-copy");
+        await notifyOwner(copy.ownerOrderLate({ storeLabel: store.label, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state) }), order.phone);
+        console.warn("[store-late]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
+      }
       if (sig.state === "canceled") {
         if (!notes.includes(CANCELED_MARK)) {
           await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${CANCELED_MARK} (status da loja em ${now.toISOString()}). Conferir reembolso da loja e estornar o cliente.`) } });
@@ -134,7 +185,11 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
       // antes eram 60 min fixos e a entrega de 30 min chegava antes da 2ª olhada.
       const etaAt = sig.eta ? Date.parse(sig.eta) : NaN;
       const soon = Number.isFinite(etaAt) && etaAt - now.getTime() < 2 * 3_600_000 && now.getTime() - etaAt < 6 * 3_600_000;
-      const every = soon ? 5 : sig.lastMile || sig.shipped ? 20 : sig.state === "invoiced" ? 30 : 60;
+      // Ainda antes da separação: olha a cada 5 min na 1ª hora depois da compra (o vigia pega a
+      // Expressa parada em ~20 min), depois a cada 15.
+      const preHandling = Boolean(sig.state && PRE_HANDLING.has(sig.state));
+      const firstHour = now.getTime() - boughtAt.getTime() < 3_600_000;
+      const every = soon || (preHandling && firstHour) ? 5 : preHandling ? 15 : sig.lastMile || sig.shipped ? 20 : sig.state === "invoiced" ? 30 : 60;
       await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { nextCheckAt: new Date(now.getTime() + every * 60_000), lastCheckedAt: now, lastError: null, failures: 0, ...(sig.delivered ? { completedAt: now } : {}) } });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

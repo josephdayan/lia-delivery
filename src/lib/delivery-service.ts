@@ -52,6 +52,7 @@ import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-type
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
+import { refreshPausedStores } from "./store-pause";
 import { TurnSupersededError, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
@@ -1500,6 +1501,8 @@ export async function handleDeliveryMessage(input: {
   let text = tagged.text;
   const acquisition = mergeAcquisition(input.acquisition, tagged.campaignCode);
   const { user, convo } = await getOrCreateConvo(phone, input.name);
+  // Loja pausada pelo vigia ou pelo dono (09/10) sai da vitrine deste turno (cache de 30 s).
+  await refreshPausedStores();
 
   // Twilio/Meta retry the webhook when a turn is slow — never process the same inbound
   // message twice (a duplicated "2 arroz" would silently double the basket). O dedupe é
