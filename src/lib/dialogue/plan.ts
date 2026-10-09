@@ -2,6 +2,7 @@
 // existe, item que não está na cesta, "fechar" fora de hora…) derruba o plano inteiro e o caminho
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
+import { countDistinctItems } from "../list-items";
 import { extractCep, parseBudgetStatement, parsePriceCap } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
@@ -92,6 +93,15 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
     } else {
       steps.push(step);
     }
+  }
+  // O modelo às vezes devolve só 3 buscas para uma lista de 6 (09/10, teste real: ração/esmalte/carregador sumiram sem aviso).
+  // Plano só de buscas com MENOS linhas do que itens na mensagem = lista cortada: cai no pipeline determinístico, que conta todos.
+  const searchOnly = steps.length > 0 && steps.every((st) => st.type === "search" && !st.retry);
+  if (searchOnly && opts.text) {
+    const planned = steps.reduce((sum, st) => sum + (st.type === "search" ? st.lines.length : 0), 0);
+    // Só lista GRANDE (4+): frase solta ("você consegue qualquer coisa? tava pensando em sabão") conta item a mais sem ser lista.
+    const counted = countDistinctItems(opts.text);
+    if (counted >= 4 && counted > planned) return { ok: false, reason: "lista_maior_que_as_acoes" };
   }
   // "1, só amora" (pick + only_keep da tela, em qualquer ordem): primeiro larga a fila e só então escolhe —
   // senão o pick abria o próximo item da fila e o only_keep rodava em cima dele.
