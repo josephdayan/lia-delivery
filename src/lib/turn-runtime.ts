@@ -430,18 +430,66 @@ export const TURN_LOCK_TTL_MS = Number(process.env.LIA_TURN_LOCK_TTL_MS ?? 180_0
 // cliente) e o barge residual é inofensivo: o CAS do contexto mata a escrita perdedora.
 export const TURN_LOCK_MAX_WAIT_MS = Number(process.env.LIA_TURN_LOCK_MAX_WAIT_MS ?? 120_000);
 
-export async function acquireTurnLock(convoId: string): Promise<string> {
+// FIFO por conversa (09/10, rodada 1): o polling puro deixava "quem acorda primeiro" ganhar —
+// "arroz", "feijão", "macarrão" saíam fora de ordem e "pagar" passava na frente de "o primeiro".
+// Sem migração: `turnLockAt` com `turnLock` NULL guarda a MARCA d'água (createdAt da última
+// mensagem do cliente que já teve turno, ou que saiu antes do lock). Com a trava livre, um
+// turno só reivindica se não houver mensagem do cliente MAIS ANTIGA que a sua e posterior à
+// marca — essa ainda está na fila e passa primeiro. Quem cede espera no máximo
+// LIA_TURN_FIFO_GRACE_MS com a trava livre (a da frente reivindica em ~400 ms; a espera só
+// pesa quando a mensagem da frente saiu sem turno e não conseguiu avançar a marca).
+export const TURN_FIFO_GRACE_MS = Number(process.env.LIA_TURN_FIFO_GRACE_MS ?? 3_000);
+
+export type TurnTicket = { messageId: string; createdAt: Date };
+
+async function hasEarlierQueued(convoId: string, ticket: TurnTicket, watermark: Date): Promise<boolean> {
+  const earlier = await prisma.message.findMany({
+    where: {
+      conversationId: convoId,
+      sender: "user",
+      id: { not: ticket.messageId },
+      createdAt: { gt: watermark, lte: ticket.createdAt }
+    },
+    select: { id: true, createdAt: true }
+  });
+  // Mesmo milissegundo: desempate estável pelo id.
+  return earlier.some((m) => m.createdAt < ticket.createdAt || m.id < ticket.messageId);
+}
+
+export async function acquireTurnLock(convoId: string, ticket?: TurnTicket): Promise<string> {
   const token = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
   const deadline = Date.now() + TURN_LOCK_MAX_WAIT_MS;
+  let yieldingSince: number | undefined;
   for (;;) {
-    const claimed = await prisma.conversation.updateMany({
-      where: {
-        id: convoId,
-        OR: [{ turnLock: null }, { turnLockAt: null }, { turnLockAt: { lt: new Date(Date.now() - TURN_LOCK_TTL_MS) } }]
-      },
-      data: { turnLock: token, turnLockAt: new Date() }
-    });
-    if (claimed.count) return token;
+    const staleBefore = new Date(Date.now() - TURN_LOCK_TTL_MS);
+    let mayClaim = true;
+    if (ticket) {
+      const convo = await prisma.conversation.findUnique({ where: { id: convoId }, select: { turnLock: true, turnLockAt: true } });
+      const free = !convo?.turnLock || !convo.turnLockAt || convo.turnLockAt < staleBefore;
+      if (!free) {
+        mayClaim = false;
+        yieldingSince = undefined;
+      } else {
+        // Sem marca (conversa antiga, trava vencida): só a janela recente conta como fila.
+        const watermark =
+          !convo?.turnLock && convo?.turnLockAt ? convo.turnLockAt : new Date(ticket.createdAt.getTime() - TURN_LOCK_MAX_WAIT_MS);
+        if (await hasEarlierQueued(convoId, ticket, watermark)) {
+          yieldingSince ??= Date.now();
+          if (Date.now() - yieldingSince < TURN_FIFO_GRACE_MS) mayClaim = false;
+          else console.warn("[turn-lock:fifo-grace]", convoId);
+        }
+      }
+    }
+    if (mayClaim) {
+      const claimed = await prisma.conversation.updateMany({
+        where: {
+          id: convoId,
+          OR: [{ turnLock: null }, { turnLockAt: null }, { turnLockAt: { lt: staleBefore } }]
+        },
+        data: { turnLock: token, turnLockAt: new Date() }
+      });
+      if (claimed.count) return token;
+    }
     if (Date.now() >= deadline) {
       console.warn("[turn-lock:barge]", convoId);
       await prisma.conversation.updateMany({ where: { id: convoId }, data: { turnLock: token, turnLockAt: new Date() } });
@@ -451,13 +499,31 @@ export async function acquireTurnLock(convoId: string): Promise<string> {
   }
 }
 
-export async function releaseTurnLock(convoId: string, token: string) {
+export async function releaseTurnLock(convoId: string, token: string, ticket?: TurnTicket) {
   try {
     // Só solta se o lock ainda é NOSSO — quem entrou por barge/TTL não pode ser solto
-    // por um turno velho terminando atrasado.
-    await prisma.conversation.updateMany({ where: { id: convoId, turnLock: token }, data: { turnLock: null, turnLockAt: null } });
+    // por um turno velho terminando atrasado. Solto, `turnLockAt` vira a marca d'água FIFO.
+    await prisma.conversation.updateMany({
+      where: { id: convoId, turnLock: token },
+      data: { turnLock: null, turnLockAt: ticket?.createdAt ?? null }
+    });
   } catch (error) {
     console.warn("[turn-lock:release-failed]", error instanceof Error ? error.message : error);
+  }
+}
+
+// Mensagem gravada que sai SEM turno (duplicata, figurinha, login do painel…): avança a marca
+// pra não segurar a fila atrás dela. Só com a trava livre; ocupada, a próxima cede no máximo
+// TURN_FIFO_GRACE_MS. Nunca lança.
+export async function skipTurnTicket(convoId: string, ticket?: TurnTicket) {
+  if (!ticket) return;
+  try {
+    await prisma.conversation.updateMany({
+      where: { id: convoId, turnLock: null, OR: [{ turnLockAt: null }, { turnLockAt: { lt: ticket.createdAt } }] },
+      data: { turnLockAt: ticket.createdAt }
+    });
+  } catch (error) {
+    console.warn("[turn-lock:skip-failed]", error instanceof Error ? error.message : error);
   }
 }
 

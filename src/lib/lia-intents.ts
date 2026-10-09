@@ -2675,3 +2675,11 @@ export function looksLikePharmacyPartnerAsk(text: string): boolean {
   if (!(isQuestion(text) || /\b(?:vc|voce|voces|vcs|consegue\w*|pode|poderia|tem como)\b/.test(n))) return false;
   return /\b(?:parceir\w*|vend\w*|trabalh\w*|conveni\w*|tem|tenha|atend\w*|indic\w*|recomend\w*|sugir\w*|sugere|passa\w*|contato|telefone|endereco|perto|proxim\w*|entreg\w*|conhec\w*)\b/.test(n);
 }
+
+// "mostra as opções de novo", "não apareceram os cards" (09/10, rodada 1): pedido explícito de
+// rever a vitrine — esse reenvia o carrossel mesmo que ele tenha acabado de sair.
+export function asksToSeeChoicesAgain(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?)\b/.test(n)) return false;
+  return /\b(?:mostr\w*|mand\w*|reenvi\w*|ver|ve|quais|cade|de novo|novamente|dnv|sumi\w*|nao (?:vi|apareceu|apareceram|chegou|chegaram|veio|vieram|carregou|carregaram))\b/.test(n);
+}

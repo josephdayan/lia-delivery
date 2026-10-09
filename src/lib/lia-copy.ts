@@ -1185,6 +1185,10 @@ export function trustAnswer(): string {
 export function choicesStillOpen(query: string): string {
   return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
 }
+// "oi?"/"tá aí?" com a mesma vitrine recém-enviada (09/10, rodada 1): lembra em vez de reenviar.
+export function greetingChoicesStillOpen(query: string): string {
+  return `Oi! 🙂 Tô aqui. ${choicesStillOpen(query)}`;
+}
 // "o sabonete pode ser o mais barato" (09/10): já é / troquei — com loja e prazo, que mudam junto.
 export function itemCheapestAnswer(input: { item: string; name: string; price: number; where?: string; already: boolean }): string {
   const tail = `*${input.name}* — ${brl(input.price)}${input.where ? ` · _${input.where}_` : ""}`;
