@@ -134,6 +134,9 @@ const SHORT_ACKS = ["👍", "Tudo certo 💚", "Por nada! 💚", "Combinado 🙂
 function shortAck(input: RepeatInput): string | null {
   const n = canon(input.customer);
   if (!n || n.split(" ").length > 4 || /\?/.test(input.customer)) return null;
+  // Só agradecimento/despedida/emoji ganha "Por nada!"/"👍". "1", "pagar", "sim" repetindo a pergunta da Lia não: o cliente
+  // ficava preso respondendo "👍" a uma pergunta em aberto (09/10, rodada 1).
+  if (!/^(?:[\p{Extended_Pictographic}\s]+|ok|okay|blz|beleza|valeu|vlw|obrigad[oa]s?|obg|brigad[oa]|tchau|ate\w*|fim|show|top|tmj|combinado|fechou|fechado|certo|entendi|boa|legal|perfeito|massa|bjs?|beijos?|abs|abracos?|tudo bem|de nada|por nada|oi|ola)(?:\s+(?:obrigad[oa]|valeu|vlw|ok|tchau|lia|pela ajuda|ate mais))*$/u.test(n)) return null;
   return SHORT_ACKS.find((ack) => !sameAsRecent(ack, input.recent, false)) ?? null;
 }
 

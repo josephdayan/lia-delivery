@@ -195,6 +195,19 @@ export function askHouseNumber(street: string, district: string | undefined, cep
   return `📍 CEP ${cep ?? ""}: *${street}*${district ? `, ${district}` : ""}.\nPra completar o endereço, falta só o *número* (e o complemento, se tiver).`.replace("CEP : ", "");
 }
 
+// Endereço sem número de verdade ("rua sem nome 0").
+export function addressNotValid(hasCep: boolean): string {
+  return hasCep
+    ? "Esse endereço não parece completo 🤔 Me manda a *rua com o número da casa* (e o complemento, se tiver) 📍"
+    : "Esse endereço não parece completo 🤔 Me manda a *rua com o número da casa* e o *CEP* 📍";
+}
+
+// "pagar" com o endereço sem número: sem ele não dá pra fechar o total (frete e prazo dependem da porta).
+export function payNeedsAddressNumber(street?: string, district?: string): string {
+  const where = street ? ` (${street}${district ? `, ${district}` : ""})` : "";
+  return `Antes de fechar o total preciso do *número* do seu endereço${where}, e o complemento se tiver. Me manda ele e eu sigo 📍`;
+}
+
 // Pedido do endereço quando ainda não há CEP nenhum (antes era "Falta o endereço: rua, número
 // e complemento", que soava como se o cliente tivesse esquecido algo).
 export function askAddressWithCep(): string {
@@ -455,6 +468,10 @@ export function swappedFor(from: string, to: string): string {
 // "só isso" com a cesta ABAIXO do mínimo da loja: sem loop — explica e dá saída.
 export function finishOrderFirst(): string {
   return "Esse pedido ainda não foi fechado. Responde *pagar* que eu mando o código.";
+}
+
+export function noOpenOrderToPay(): string {
+  return "Você ainda não tem pedido aberto pra pagar. O que você precisa?";
 }
 
 export function emptyCartPay(): string {
@@ -907,6 +924,19 @@ export function paymentConfirmedOutsideHours(): string {
 
 export function supplierValidationPending(): string {
   return "Ainda confirmando na loja. Não precisa pagar nada agora — te aviso quando estiver pronto.";
+}
+
+// Cesta ou total que venceu enquanto o cliente estava fora (09/10, rodada 1).
+export function cartExpired(items: string[], quote: boolean): string {
+  const shown = items.slice(0, 4).join(", ") + (items.length > 4 ? ` e mais ${items.length - 4}` : "");
+  const count = `${items.length} ${items.length === 1 ? "item" : "itens"}`;
+  return quote
+    ? `Seu pedido de ${count} (${shown}) ficou parado e o total venceu. Nada foi cobrado. Quer que eu monte de novo com os preços de hoje? Responde *sim*.`
+    : `Sua cesta de ${count} (${shown}) expirou porque ficou parada por um tempo. Quer que eu monte de novo com os preços de hoje? Responde *sim*.`;
+}
+
+export function cartExpiredDropped(): string {
+  return "Tudo bem, deixei a cesta antiga de lado. O que você precisa?";
 }
 
 export function quoteExpired(): string {

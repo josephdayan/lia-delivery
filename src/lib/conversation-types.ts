@@ -333,6 +333,8 @@ export type DeliveryContext = {
   cepSwap?: { cep: string; askedAt: number; items?: string };
   // O CEP é de outra cidade que a escrita no endereço: nada salvo até confirmar.
   cepCityCheck?: { cep: string; raw: string; askedAt: number; via: "cep" | "address" };
+  // Cesta/cotação que venceu por inatividade (09/10, rodada 1): quem volta horas depois é avisado e retoma com "sim".
+  expiredCart?: { items: string[]; at: number; quote?: boolean };
   // Endereço de antes de uma troca, para "deixa o antigo"/"usa o de antes".
   previousAddress?: { cep: string; address: string; city?: string; uf?: string };
   // Último CEP recusado por estar fora da área: a mensagem seguinte lembra o motivo.
