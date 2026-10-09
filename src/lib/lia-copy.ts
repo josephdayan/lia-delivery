@@ -1663,6 +1663,63 @@ export function deliveryCode(code: string): string {
   return `🔐 Código de recebimento: *${code}*. Fale ele pro entregador só depois de receber o pedido.`;
 }
 
+// ---------- pedido de várias lojas (09/10): um aviso por loja ----------
+// Cada loja compra, envia e entrega no seu tempo; o cliente ouve de cada uma, com o nome da loja.
+function storesPhrase(labels: string[]): string {
+  const named = labels.map((l) => `*${l}*`);
+  return named.length <= 1 ? named.join("") : `${named.slice(0, -1).join(", ")} e ${named[named.length - 1]}`;
+}
+
+export function storePartBought(input: { storeLabel: string; items: string[]; waitingStores: string[]; trackingUrl?: string | null }): string {
+  const what = input.items.length === 1 ? input.items[0] : `${input.items.length} itens`;
+  const next = input.waitingStores.length
+    ? ` Ainda estou comprando na ${storesPhrase(input.waitingStores)}.`
+    : " Agora todas as lojas do pedido estão preparando.";
+  return `✅ Comprei a parte da *${input.storeLabel}* (${what}) — a loja está preparando.${next}${input.trackingUrl ? `\nAcompanha: ${input.trackingUrl}` : ""}`;
+}
+
+export function storePartShipped(storeLabel: string, trackingUrl?: string | null, etaText?: string): string {
+  return `📦 A *${storeLabel}* enviou a parte dela do seu pedido${etaText ? ` — previsão de entrega: ${etaText}` : ""}. Te aviso quando sair pra entrega.${trackingUrl ? `\nAcompanha: ${trackingUrl}` : ""}`;
+}
+
+export function storePartOutForDelivery(storeLabel: string, trackingUrl?: string | null): string {
+  return `🚚 A parte da *${storeLabel}* saiu pra entrega. Te aviso quando chegar.${trackingUrl ? `\nAcompanha: ${trackingUrl}` : ""}`;
+}
+
+export function storePartDelivered(storeLabel: string, missingStores: string[]): string {
+  return missingStores.length
+    ? `✅ A parte da *${storeLabel}* foi entregue. Falta a da ${storesPhrase(missingStores)} — te aviso quando chegar.`
+    : `✅ A parte da *${storeLabel}* foi entregue — chegou tudo. Da próxima, é só mandar *repete o de sempre*.`;
+}
+
+// Só uma loja falhou depois do pagamento: devolve a parte dela e segue com as outras.
+export function storePartRefunded(input: { storeLabel: string; items: string[]; amount: number; reason?: string; otherStores: string[] }): string {
+  const what = input.items.length === 1 ? `*${input.items[0]}*` : input.items.map((i) => `• ${i}`).join("\n");
+  const why = input.reason ? ` (${input.reason.slice(0, 120)})` : "";
+  const rest = input.otherStores.length
+    ? ` O resto do pedido segue normal na ${storesPhrase(input.otherStores)}.`
+    : "";
+  return `A *${input.storeLabel}* não conseguiu fechar ${input.items.length === 1 ? what : `estes itens:\n${what}\n`}${why}. Devolvi ${brl(input.amount)}, a parte dela (produtos e frete) — volta no mesmo Pix ou cartão em até 7 dias úteis.${rest}`;
+}
+
+export function operatorStoreShareRefunded(shortId: string, storeLabel: string, amount: number, reason: string, origin: "auto" | "ops"): string {
+  return `${origin === "auto" ? "🤖" : "↩️"} Pedido #${shortId}: devolvida só a parte da ${storeLabel} (${brl(amount)}). Motivo: ${reason.slice(0, 160)}. As outras lojas do pedido seguem.`;
+}
+
+// Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[] }): string {
+  return [
+    `Dá pra juntar tudo na *${input.storeLabel}* por ${brl(input.joinedTotal)} com uma entrega, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas.`,
+    "Pra juntar, troco:",
+    ...swapPairLines(input.pairs),
+    "Qual prefere?"
+  ].join("\n");
+}
+
+export function consolidationKept(stores: number): string {
+  return `Fechado, mantenho as ${stores} lojas — cada uma entrega a sua parte.`;
+}
+
 export function delivered(): string {
   return "Entregue ✅ Da próxima, é só mandar *repete o de sempre*.";
 }
@@ -2600,12 +2657,6 @@ export function deliveryNotConfirmed(store: string, promise: string | undefined,
 // procurado em outra loja.
 export function storeNotPurchasable(store: string, names: string[]): string {
   return `Não consigo fechar *${names.join("*, *")}* na *${store}* agora. *Nada foi cobrado.* Vou procurar em outra loja:`;
-}
-
-// Cesta de 2 lojas na hora de cobrar (08/10 noite): a compra automática fecha UMA loja por pedido. Fica a
-// loja com a maior parte da cesta; o resto é procurado/fechado em seguida.
-export function oneStorePerOrder(keptStore: string, keptNames: string[], movedNames: string[]): string {
-  return `Fecho um pedido por loja: primeiro a *${keptStore}* (${keptNames.join(", ")}). *Nada foi cobrado ainda.* *${movedNames.join("*, *")}* fica pra fechar em seguida — vou procurar de novo:`;
 }
 
 // 2ª recusa seguida da mesma loja no ensaio (08/10 noite): a loja sai do caminho e a Lia busca o mesmo

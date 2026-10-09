@@ -10,6 +10,10 @@
 > **removidos** em 03/08; a entrega é do varejista (sem motoboy); as 107 unidades
 > geocodadas e as guardas de cobertura/km são legado do modelo de julho.
 
+> **Decisão vigente — 09/10/2026:** pedido com itens de lojas diferentes fecha: um trabalho de compra e um Pix
+> de saída por loja, devolução só da parte da loja que falhar, e "juntar numa loja só" é oferta ao cliente.
+> Regra em [AGENTS.md](AGENTS.md).
+
 > **Decisão vigente — 25/09/2026:** a Lia compra sozinha por API (9 lojas VTEX, Pix pago pela
 > Asaas, sem operador no caminho feliz). Regra canônica e o que ainda cai em humano: topo de
 > [AGENTS.md](AGENTS.md). A decisão de 15/09 (operador) está superada.

@@ -5,8 +5,11 @@ import { purchaseUrlAllowed, PURCHASE_DOMAINS } from "./purchase-preparation";
 import {
   claimNextPurchaseJob,
   purchaseCartHash,
+  purchaseFundsIntact,
+  refundedShareCents,
   workerPayload,
 } from "./purchase-worker";
+import { isMultiStoreOrder, storeScope } from "./purchase/store-split";
 import { notifyOperator, notifyOwner } from "./turn-runtime";
 import { recordDeliveryEvent } from "./delivery-events";
 import { Prisma } from "@prisma/client";
@@ -108,29 +111,37 @@ export function checkCheckout(
     cep: string | null;
     deliveryFee: number;
     itemsSubtotal: number;
+    total?: number;
     fulfillments: unknown;
   },
   e: CheckoutEvidence,
+  storeKey?: string,
 ) {
-  const items = order.items as {
+  const all = order.items as {
     sku: string;
     qty: number;
     unitPrice: number;
     storeKey: string;
     productUrl?: string;
   }[];
-  if (
-    !Array.isArray(items) ||
-    !items.length ||
-    new Set(items.map((i) => i.storeKey)).size !== 1
-  )
+  if (!Array.isArray(all) || !all.length)
     throw new Error("Cesta exige conferência manual.");
+  // Pedido de várias lojas (09/10): a conferência é da parte da loja do trabalho — itens, frete,
+  // prazo e teto dela. Sem a loja (chamada antiga) ou sem cotação por loja: conferência manual.
+  const stores = new Set(all.map((i) => i.storeKey));
+  const multi = stores.size > 1;
+  const scope = multi && storeKey ? storeScope({ ...order, total: order.total ?? 0 }, storeKey) : null;
+  if (multi && !scope) throw new Error("Cesta exige conferência manual.");
+  const items = scope ? (scope.items as typeof all) : all;
   if (!purchaseUrlAllowed(items[0].storeKey, e.checkoutUrl))
     throw new Error("Checkout fora da loja do pedido.");
+  const deliveryFee = scope ? scope.deliveryFee : order.deliveryFee;
+  const expectedPromise = scope ? scope.promise ?? "" : promiseOf(order.fulfillments);
+  const ceilingCents = scope ? scope.ceilingCents : dollars(order.itemsSubtotal + order.deliveryFee);
   const hash = purchaseCartHash(
     items.map((i) => ({ ...i, name: "", storeLabel: "" })),
-    order.deliveryFee,
-    promiseOf(order.fulfillments) || undefined,
+    deliveryFee,
+    expectedPromise || undefined,
     order,
   );
   if (!order.customerName || norm(e.recipientName) !== norm(order.customerName))
@@ -164,12 +175,11 @@ export function checkCheckout(
     e.items.reduce((a, i) => a + i.lineTotalCents, 0) + e.freightCents - (e.discountCents ?? 0)
   )
     throw new Error("Total do checkout não fecha.");
-  if (e.totalCents > dollars(order.itemsSubtotal + order.deliveryFee))
+  if (e.totalCents > ceilingCents)
     throw new Error("Total da loja acima do teto do pedido.");
   // Prazo da loja igual ou MENOR que o prometido ao cliente serve (15/09: o comprador escolhe
   // a entrega mais barata dentro do prazo; "Econômica 1 dia útil" × promessa "7 dias úteis").
   // Sem prazo legível dos dois lados, vale a igualdade de texto de antes.
-  const expectedPromise = promiseOf(order.fulfillments);
   const promisedBudget = promisedMinutes(expectedPromise);
   const actualMinutes = promisedMinutes(e.deliveryPromise);
   const promiseOk = !expectedPromise
@@ -180,22 +190,20 @@ export function checkCheckout(
   if (!Number.isFinite(age) || age < -60_000 || age > 120_000)
     throw new Error("Conferência do checkout vencida.");
 }
-async function funding(tx: Prisma.TransactionClient, id: string) {
+async function funding(tx: Prisma.TransactionClient, job: { deliveryOrderId: string; storeKey: string; storeOrderNumber?: string | null }) {
   const order = await tx.deliveryOrder.findUniqueOrThrow({
-    where: { id },
+    where: { id: job.deliveryOrderId },
     include: { payments: true, paymentAttempts: true },
   });
-  const real = order.payments.filter((p) =>
-    ["mercadopago", "pagarme"].includes(p.provider),
-  );
+  // Várias lojas (09/10): o pedido ganha o número da 1ª loja comprada e pode ter partes de loja
+  // devolvidas; o que vale é ESTA loja não ter compra e o dinheiro restante estar íntegro.
+  const multi = isMultiStoreOrder(order);
+  const refunded = multi ? await refundedShareCents(order.id, tx) : 0;
   if (
     order.status !== "paid" ||
-    order.storeOrderNumber ||
+    (multi ? Boolean(job.storeOrderNumber) || !storeScope(order, job.storeKey) : Boolean(order.storeOrderNumber)) ||
     /🛑|ESTORNO|CANCELAMENTO/.test(order.notes ?? "") ||
-    !real.length ||
-    real.some((p) => p.status !== "approved" || p.refundedCents !== 0) ||
-    real.reduce((a, p) => a + p.amountCents, 0) !== dollars(order.total) ||
-    order.paymentAttempts.some((p) => p.status === "unknown_outcome")
+    !purchaseFundsIntact(order, refunded)
   )
     throw new Error("Pagamento/pedido exige revisão antes da compra.");
   return order;
@@ -361,8 +369,8 @@ export async function stageCheckout(
     const job = await owned(tx, jobId, workerId, token);
     if (!["claimed", "awaiting_approval", "approved"].includes(job.status))
       throw new Error("Não é possível substituir uma conferência já aprovada.");
-    const order = await funding(tx, job.deliveryOrderId);
-    checkCheckout(order, e);
+    const order = await funding(tx, job);
+    checkCheckout(order, e, job.storeKey);
     const account = await tx.purchaseAccount.findUnique({
       where: { storeKey: job.storeKey },
     });
@@ -464,9 +472,9 @@ export async function approveCheckout(jobId: string, hash: string) {
       job.checkoutHash !== hash
     )
       throw new Error("O carrinho mudou. Confira o resumo atualizado.");
-    const order = await funding(tx, job.deliveryOrderId);
+    const order = await funding(tx, job);
     const evidence = parseStoredEvidence(job.checkoutEvidence);
-    checkCheckout(order, { ...evidence, observedAt: new Date().toISOString() });
+    checkCheckout(order, { ...evidence, observedAt: new Date().toISOString() }, job.storeKey);
     return tx.purchaseJob.update({
       where: { id: jobId },
       data: {
@@ -525,8 +533,8 @@ export async function beginPurchase(
   const result = await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "DeliveryOrder" WHERE id = ${base.deliveryOrderId} FOR UPDATE`;
     const job = await owned(tx, jobId, workerId, token);
-    const order = await funding(tx, job.deliveryOrderId);
-    checkCheckout(order, evidence);
+    const order = await funding(tx, job);
+    checkCheckout(order, evidence, job.storeKey);
     const account = await tx.purchaseAccount.findUnique({
       where: { storeKey: job.storeKey },
     });
@@ -708,8 +716,8 @@ export async function requestOwnerConfirm(
     if (job.status !== "claimed") throw new Error("Carrinho já encaminhado ou encerrado.");
     if (job.storeKey !== MERCADO_LIVRE_STORE_KEY || e.payment.kind !== "ml_balance")
       throw new Error("Confirmação do dono é só para o Mercado Livre com saldo Mercado Pago.");
-    const order = await funding(tx, job.deliveryOrderId);
-    checkCheckout(order, e);
+    const order = await funding(tx, job);
+    checkCheckout(order, e, job.storeKey);
     const account = await tx.purchaseAccount.findUnique({ where: { storeKey: job.storeKey } });
     if (
       !account?.enabled || !account.loginReady || !account.paymentReady || account.paymentKind !== "ml_balance" ||

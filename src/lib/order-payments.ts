@@ -441,7 +441,7 @@ export async function supersedePixCharge(pixId: string | null | undefined) {
 export type PreflightUnavailable = { storeKey: string; storeLabel: string; items: BasketItem[]; remaining: BasketItem[]; intro?: string };
 // Ensaio da compra recusou a ENTREGA prometida, o endereço ou o PREÇO (08/10 noite): nada cobrado; a cesta
 // inteira volta pro cliente e a Lia refaz a cotação na hora com o que a loja confirma de verdade.
-export type DeliveryNotConfirmed = { storeKey: string; storeLabel: string; promise?: string; kind: Exclude<RehearsalFailure["kind"], "store" | "split">; basket: BasketItem[] };
+export type DeliveryNotConfirmed = { storeKey: string; storeLabel: string; promise?: string; kind: Exclude<RehearsalFailure["kind"], "store">; basket: BasketItem[] };
 export type ChargeBlock = { unavailable: PreflightUnavailable; note: string } | { deliveryNotConfirmed: DeliveryNotConfirmed; note: string; ownerAlert: string };
 
 type ChargeableOrder = {
@@ -493,16 +493,12 @@ export async function findChargeBlock(order: ChargeableOrder): Promise<ChargeBlo
   });
   if (!rehearsal) return null;
   const note = `🎭 ENSAIO DA COMPRA (${new Date().toISOString()}): ${rehearsal.storeLabel} recusou (${rehearsal.kind}): ${rehearsal.detail}. Nada cobrado.`;
-  if (rehearsal.kind === "items" || rehearsal.kind === "store" || rehearsal.kind === "split") {
+  if (rehearsal.kind === "items" || rehearsal.kind === "store") {
     const failed = basket.filter((i) => rehearsal.skus.includes(i.sku));
     const remaining = basket.filter((i) => !rehearsal.skus.includes(i.sku));
-    // Toda compra é por API: loja que a Lia não compra ou cesta de 2 lojas (a compra fecha uma loja por
-    // pedido) nunca é cobrada — os itens saem e são procurados/fechados de novo.
-    const intro = rehearsal.kind === "store"
-      ? copy.storeNotPurchasable(rehearsal.storeLabel, failed.map((i) => i.name))
-      : rehearsal.kind === "split"
-        ? copy.oneStorePerOrder(rehearsal.storeLabel, remaining.map((i) => i.name), failed.map((i) => i.name))
-        : undefined;
+    // Toda compra é por API: loja que a Lia não compra nunca é cobrada — os itens saem e são
+    // procurados de novo. Cesta de várias lojas não é recusa (09/10): cada loja compra a sua parte.
+    const intro = rehearsal.kind === "store" ? copy.storeNotPurchasable(rehearsal.storeLabel, failed.map((i) => i.name)) : undefined;
     return { unavailable: { storeKey: rehearsal.storeKey, storeLabel: rehearsal.storeLabel, items: failed, remaining, ...(intro ? { intro } : {}) }, note: rehearsal.kind === "items" ? note : `${note} (toda compra é por API — nunca fila manual)` };
   }
   const promise = Array.isArray(order.fulfillments)
@@ -893,17 +889,21 @@ export async function markDeliveryOrderPaid(orderId: string, evidence?: PaymentE
   // separando" — o cliente lia as duas mensagens ao contrário.
   let startServerBuyer: (() => void) | undefined;
   try {
-    const { ensurePurchaseJobForPaidOrder, manualQueueJobForPaidOrder } = await import("@/lib/purchase-worker");
-    // Sem executor para esta loja/cesta: fila manual explícita no /ops (11/09).
-    const job = await ensurePurchaseJobForPaidOrder(order.id);
-    if (!job) await manualQueueJobForPaidOrder(order.id);
+    const { ensurePurchaseJobsForPaidOrder, manualQueueJobForPaidOrder } = await import("@/lib/purchase-worker");
+    // Um trabalho por loja (09/10). Sem executor para esta loja/cesta (ou para uma das lojas): fila
+    // manual explícita no /ops (11/09), só da parte que ficou sem trabalho.
+    const jobs = await ensurePurchaseJobsForPaidOrder(order.id);
+    const storeCount = new Set(((order.items as unknown as Array<{ storeKey?: string }>) ?? []).map((i) => i?.storeKey).filter(Boolean)).size;
+    if (jobs.length < Math.max(1, storeCount)) await manualQueueJobForPaidOrder(order.id);
     // Comprador VTEX no servidor (25/09): compra na hora em que o dinheiro cai, sem esperar
     // o cron. Corre depois da resposta ao webhook (waitUntil); o cron cobre o que sobrar.
-    else if ((await import("@/lib/purchase/vtex-checkout")).VTEX_API_STORE_KEYS.includes(job.storeKey)) {
+    const { VTEX_API_STORE_KEYS } = await import("@/lib/purchase/vtex-checkout");
+    const serverJobs = jobs.filter((job) => VTEX_API_STORE_KEYS.includes(job.storeKey)).length;
+    if (serverJobs) {
       const { runVtexApiPurchases } = await import("@/lib/purchase/vtex-runner");
       const { waitUntil } = await import("@vercel/functions");
       startServerBuyer = () =>
-        waitUntil(runVtexApiPurchases({ maxJobs: 1 }).then((r) => { if (r.errors.length) console.warn("[vtex-runner:on-paid]", r.errors); }).catch((error) => console.error("[vtex-runner:on-paid]", error instanceof Error ? error.message : error)));
+        waitUntil(runVtexApiPurchases({ maxJobs: serverJobs }).then((r) => { if (r.errors.length) console.warn("[vtex-runner:on-paid]", r.errors); }).catch((error) => console.error("[vtex-runner:on-paid]", error instanceof Error ? error.message : error)));
     }
   } catch (error) {
     console.error("[purchase-worker:enqueue-failed]", error instanceof Error ? error.message : error);

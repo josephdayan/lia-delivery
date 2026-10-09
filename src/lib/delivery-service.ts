@@ -1739,7 +1739,7 @@ function attendanceQuiet(ctx: DeliveryContext): boolean {
   if (ctx.pending?.length || ctx.basket?.length) return false;
   // Pergunta binária em aberto (plano B, "o de sempre", troca de loja, juntar pedido, cobrança, teto
   // estourado…): o "sim"/"ok" é resposta DELA, não espera pelo atendente.
-  if (ctx.planB || ctx.repeatConfirm || ctx.minSwap || ctx.mergeDecision || ctx.longTailOffer || ctx.freightChoice || ctx.budget?.awaiting || ctx.packConfirm || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) return false;
+  if (ctx.planB || ctx.repeatConfirm || ctx.minSwap || ctx.consolidationOffer || ctx.mergeDecision || ctx.longTailOffer || ctx.freightChoice || ctx.budget?.awaiting || ctx.packConfirm || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) return false;
   return !ctx.step || ctx.step === "collecting" || ctx.step === "need_cep" || ctx.step === "need_address";
 }
 
@@ -2811,6 +2811,28 @@ async function handleDeliveryTurn(
   // respondem e retornam (o cliente pedia a troca e recebia de volta o menu de
   // pagamento, podendo pagar uma cotação amarrada ao endereço velho). Como o frete foi
   // calculado pro endereço antigo, uma cotação em aberto cai antes de pedir o CEP novo.
+  // Resposta à oferta de juntar numa loja só (09/10). Cesta mudou desde a oferta → ela morre. Outra
+  // mensagem qualquer segue o fluxo normal (a oferta sai da mesa e não volta pra mesma cesta).
+  if (ctx.consolidationOffer) {
+    const offer = ctx.consolidationOffer;
+    const key = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    const said = normalizeMsg(text);
+    const join = said === "consolidar:sim" || /^(pode )?junta(r)?\b/.test(said) || (intent.kind === "affirm" && !/mant/.test(said));
+    const keep = said === "consolidar:nao" || /^(pode )?(mante(r|m|nha)|deixa(r)?( como (esta|ta))?|separad[oa]s?|nao junta)/.test(said);
+    ctx.consolidationOffer = undefined;
+    if (offer.key === key && (join || keep)) {
+      if (join) {
+        ctx.basket = offer.basket;
+        ctx.minSwap = undefined;
+        ctx.consolidationTried = offer.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+      }
+      await writeCtx(convo.id, ctx);
+      await continueAfterBasket(phone, convo.id, ctx, user.cep, join ? copy.basketConsolidated(offer.storeLabel, offer.pairs, offer.delta) : copy.consolidationKept(offer.stores));
+      return;
+    }
+    await writeCtx(convo.id, ctx);
+  }
+
   // Recusa da troca de loja: mantém a cesta e lembra o caminho de completar.
   if (ctx.minSwap && normalizeMsg(text) === "minswap:no") {
     const fromStore = getStore(ctx.minSwap.fromStoreKey);
@@ -4620,8 +4642,11 @@ function orderStoresOf(order: { items: unknown; storeKey: string; storeLabel: st
 }
 
 function orderDeliveryInfoLine(order: { items: unknown; storeKey: string; storeLabel: string; fulfillments: unknown }): string {
-  const fulfillments = (Array.isArray(order.fulfillments) ? order.fulfillments : []) as Array<{ deliveryPromise?: string }>;
-  const promise = fulfillments.map((f) => f?.deliveryPromise).find(Boolean);
+  const fulfillments = (Array.isArray(order.fulfillments) ? order.fulfillments : []) as Array<{ deliveryPromise?: string; storeLabel?: string }>;
+  // Pedido de várias lojas (09/10): o prazo de cada loja, com o nome dela.
+  const promise = fulfillments.length > 1
+    ? fulfillments.filter((f) => f?.deliveryPromise).map((f) => `${f.storeLabel ?? "loja"}: ${f.deliveryPromise}`).join("; ") || undefined
+    : fulfillments.map((f) => f?.deliveryPromise).find(Boolean);
   return copy.orderDeliveryInfo({ stores: orderStoresOf(order), promise });
 }
 
@@ -8352,6 +8377,25 @@ async function handlePreferenceStatement(
   return true;
 }
 
+// Total estimado de uma cesta (produtos + margem + frete de cada loja) para a oferta de juntar: frete
+// da loja ao vivo para o CEP quando dá, senão a política de frete dela. O total de verdade sai na cotação.
+async function estimateBasketTotal(basket: BasketItem[], cep?: string | null): Promise<number> {
+  const items = basket as InstantQuoteItem[];
+  const freights = computeStoreFreights(items).freights;
+  if (liveFreightEnabled() && cep) {
+    const outcomes = await withDeadline(
+      Promise.all(freights.map((f) => liveStoreFreight(f.storeKey, basket.filter((i) => i.storeKey === f.storeKey).map((i) => ({ sku: i.sku, qty: i.qty })), cep).catch(() => null))),
+      8_000,
+      null
+    );
+    outcomes?.forEach((outcome, i) => {
+      if (outcome?.kind === "ok") freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
+    });
+  }
+  const subtotal = basket.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
+  return roundMoney(subtotal + serviceFeeForItems(basket as { unitPrice: number; qty: number }[]) + freights.reduce((sum, f) => sum + f.fee, 0));
+}
+
 function consolidationBudgetMs(): number {
   const configured = Number(process.env.LIA_CONSOLIDATE_BUDGET_MS ?? 15_000);
   return Number.isFinite(configured) && configured > 0 ? configured : 15_000;
@@ -8402,10 +8446,18 @@ async function continueAfterBasket(
         () => console.warn("[basket:consolidate:timeout]")
       );
       if (joined) {
-        ctx.basket = joined.basket;
-        ctx.minSwap = undefined;
-        ctx.consolidationTried = joined.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
-        prefix = [prefix, copy.basketConsolidated(joined.storeLabel, joined.pairs, joined.delta)].filter(Boolean).join("\n\n");
+        // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A
+        // compra fecha as duas formas — várias lojas viram um trabalho de compra por loja.
+        const stores = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
+        const [keptTotal, joinedTotal] = await Promise.all([estimateBasketTotal(ctx.basket ?? [], ctx.cep), estimateBasketTotal(joined.basket, ctx.cep)]);
+        ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta };
+        await writeCtx(convoId, ctx);
+        if (prefix) await reply(phone, prefix);
+        const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs });
+        markTurnReplied();
+        const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores).catch(() => null);
+        if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter*.`);
+        return;
       }
       await writeCtx(convoId, ctx);
     }
@@ -8708,6 +8760,9 @@ async function tryPublishInstantQuote(
     // Prazo da loja (SLA da simulação) vai pro resumo (04/09): o card mostrava o prazo e
     // o resumo não — o cliente ficava com "90 min" na cabeça sem ver de quem era o prazo.
     const storeEstimates: string[] = [];
+    // Prazo de CADA loja (09/10): pedido de várias lojas guarda o prazo e o frete por loja — é o que a
+    // compra de cada loja confere.
+    const estimateByStore = new Map<string, string>();
     // Entrega mais rápida da loja (SUPER EXPRESSA etc.), por loja da cesta.
     const storeFaster: Array<{ index: number; cheapFee: number; faster: { fee: number; estimate?: string; name?: string } }> = [];
     const repriced: Array<{ name: string; from: number; to: number; medicine?: string }> = [];
@@ -8750,7 +8805,10 @@ async function tryPublishInstantQuote(
             (item as { lineTotal?: number }).lineTotal = roundMoney(live * item.qty);
           }
           freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
-          if (outcome.estimate) storeEstimates.push(outcome.estimate);
+          if (outcome.estimate) {
+            storeEstimates.push(outcome.estimate);
+            estimateByStore.set(freights[i].storeKey, outcome.estimate);
+          }
           console.log("[instant-quote:estimate]", freights[i].storeKey, outcome.estimate ?? "-");
           if (outcome.faster) storeFaster.push({ index: i, cheapFee: outcome.fee, faster: outcome.faster });
         }
@@ -8882,7 +8940,17 @@ async function tryPublishInstantQuote(
       fee: totalFee,
       estimate: mlEstimate,
       stores: freights.length,
-      storeEstimate: slowestEstimate(storeEstimates)
+      storeEstimate: slowestEstimate(storeEstimates),
+      ...(freights.length > 1
+        ? {
+            perStore: freights.map((f) => ({
+              storeKey: f.storeKey,
+              storeLabel: f.storeLabel,
+              fee: f.fee,
+              promise: storePromiseText(PER_AD_FREIGHT_STORES.has(f.storeKey) ? mlEstimate : undefined, estimateByStore.get(f.storeKey))
+            }))
+          }
+        : {})
     });
     // Frete comendo a compra (3+ entregas e frete ≥ 40% dos produtos): dica honesta de
     // como baratear — a recomposição automática vale pra LISTA; cesta montada card a
@@ -8962,9 +9030,23 @@ async function handleOverBudget(
 // Publica a cotação instantânea. A data vem do próprio anúncio pro CEP do cliente (consulta
 // do ML) — é promessa da loja, não estimativa nossa. Sem data publicada, a frase segue sem
 // prazo (inventar prazo segue proibido).
+// Prazo de UMA loja, no mesmo formato da promessa do pedido de uma loja só.
+function storePromiseText(mlEstimate: string | undefined, storeEstimate: string | undefined): string {
+  const storeEta = humanEstimate(storeEstimate);
+  return mlEstimate ? `pela própria loja · chega até ${mlEstimate}` : storeEta ? `pela própria loja · ${storeEta}` : "pela própria loja";
+}
+
 async function publishInstantQuote(
   orderId: string,
-  input: { itemsSubtotal: number; serviceFee?: number; fee: number; estimate?: string; storeEstimate?: string; stores: number }
+  input: {
+    itemsSubtotal: number;
+    serviceFee?: number;
+    fee: number;
+    estimate?: string;
+    storeEstimate?: string;
+    stores: number;
+    perStore?: Array<{ storeKey: string; storeLabel: string; fee: number; promise?: string }>;
+  }
 ) {
   const base = input.stores > 1 ? `pela própria loja (${input.stores} entregas)` : "pela própria loja";
   // ML traz data ("chega até sábado"); loja VTEX traz SLA ("1bd") → "prazo da loja: 1 dia útil".
@@ -8975,7 +9057,8 @@ async function publishInstantQuote(
     serviceFee: input.serviceFee,
     deliveryFee: input.fee,
     deliveryMode: "retailer_delivery",
-    deliveryPromise: promise
+    deliveryPromise: promise,
+    ...(input.perStore ? { perStore: input.perStore } : {})
   });
 }
 

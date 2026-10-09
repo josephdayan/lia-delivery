@@ -53,73 +53,145 @@ function deliveryPromise(fulfillments: unknown): string | undefined {
   return values.length ? values.join(" · ") : undefined;
 }
 
+// Pedido de várias lojas (09/10): prazo e frete da LOJA do trabalho; uma loja só: os do pedido.
+function multiStore(items: unknown): boolean {
+  return new Set((Array.isArray(items) ? items : []).map((i) => (i as { storeKey?: unknown })?.storeKey).filter(Boolean)).size > 1;
+}
+function ownFulfillment(fulfillments: unknown, storeKey: string): { deliveryPromise?: unknown; deliveryFee?: unknown } | undefined {
+  return Array.isArray(fulfillments) ? fulfillments.find((f) => f && typeof f === "object" && (f as { storeKey?: unknown }).storeKey === storeKey) : undefined;
+}
+function storePromise(order: { items: unknown; fulfillments: unknown }, storeKey: string): string | undefined {
+  if (!multiStore(order.items)) return deliveryPromise(order.fulfillments);
+  const own = ownFulfillment(order.fulfillments, storeKey)?.deliveryPromise;
+  return typeof own === "string" && own.trim() ? own : undefined;
+}
+function storeFee(order: { items: unknown; fulfillments: unknown; deliveryFee: number }, storeKey: string): number {
+  if (!multiStore(order.items)) return order.deliveryFee;
+  const fee = Number(ownFulfillment(order.fulfillments, storeKey)?.deliveryFee);
+  return Number.isFinite(fee) ? fee : 0;
+}
+
 function preparationEligible(storeKey: string, items: OrderItem[], configured = false): boolean {
   return (configured || preparationStores().includes(storeKey)) && items.length > 0 && items.every((item) => item.storeKey === storeKey &&
     Number.isInteger(item.qty) && item.qty > 0 && Number.isFinite(item.unitPrice) && item.unitPrice > 0 &&
     purchaseUrlAllowed(storeKey, item.productUrl ?? ""));
 }
 
-export async function ensurePurchaseJobForPaidOrder(orderId: string) {
+// Dinheiro do cliente íntegro para comprar: pagamento real aprovado no valor do pedido, sem resultado
+// desconhecido, e nenhuma devolução além das partes de loja devolvidas por falha só daquela loja
+// (pedido de várias lojas, 09/10). Pedido de uma loja: nenhuma devolução, como sempre.
+export function purchaseFundsIntact(
+  order: { total: number; payments: Array<{ provider: string; status: string; amountCents: number; refundedCents: number }>; paymentAttempts: Array<{ status: string }> },
+  refundedShareCents = 0
+): boolean {
+  const real = order.payments.filter((p) => ["mercadopago", "pagarme"].includes(p.provider));
+  if (!real.length || order.paymentAttempts.some((a) => a.status === "unknown_outcome")) return false;
+  if (real.reduce((sum, p) => sum + p.amountCents, 0) !== Math.round(order.total * 100)) return false;
+  const refunded = real.reduce((sum, p) => sum + p.refundedCents, 0);
+  if (refunded !== refundedShareCents) return false;
+  return real.every((p) => p.status === "approved" || (refundedShareCents > 0 && p.status === "partially_refunded"));
+}
+
+// Soma das partes de loja já devolvidas ao cliente (tentativa `store_refund` gravada ANTES da chamada
+// ao provedor e apagada se ela falhar — conta mesmo enquanto a devolução está em curso).
+export async function refundedShareCents(orderId: string, db: Pick<typeof prisma, "purchaseAttempt"> = prisma): Promise<number> {
+  const rows = await db.purchaseAttempt.findMany({ where: { step: "store_refund", purchaseJob: { deliveryOrderId: orderId } }, select: { details: true } });
+  return rows.reduce((sum, row) => sum + Number((row.details as { amountCents?: unknown } | null)?.amountCents ?? 0), 0);
+}
+
+// Um trabalho de compra POR LOJA do pedido (09/10). Pedido de uma loja: um trabalho, como sempre.
+// Loja sem compra automática fica sem trabalho aqui (a fila manual cobre).
+export async function ensurePurchaseJobsForPaidOrder(orderId: string) {
   // 15/09/2026 — operador humano contratado. Antes, `LIA_AUTO_PURCHASE_OFF` só barrava o
   // clique final: o job nascia assim mesmo e o pedido saía da fila manual, então o
   // operador não via "COMPRA MANUAL" e ninguém comprava. Com o kill-switch ligado nenhum
   // job automático nasce e todo pedido pago cai na fila do /ops, que é a rota decidida.
   // A conta salva da loja (a Cobasi está pronta) deixa de puxar o pedido sozinha.
-  if (process.env.LIA_AUTO_PURCHASE_OFF === "true") return null;
+  if (process.env.LIA_AUTO_PURCHASE_OFF === "true") return [];
   const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, include: { purchaseJobs: true, payments: true, paymentAttempts: { select: { status: true } } } });
-  if (!order || order.status !== "paid" || !isRetailerDeliveryOrder(order)) return null;
-  if (order.storeOrderNumber || hasCancelRequest(order.notes) || hasPendingRefund(order.notes) || (order.notes ?? "").includes("🛑 COMPRA BLOQUEADA:")) return null;
-  const real = order.payments.filter((p) => ["mercadopago", "pagarme"].includes(p.provider));
-  if (!real.length || real.some((p) => p.status !== "approved" || p.refundedCents !== 0) ||
-      real.reduce((sum, p) => sum + p.amountCents, 0) !== Math.round(order.total * 100) ||
-      order.paymentAttempts.some((a) => a.status === "unknown_outcome")) return null;
+  if (!order || order.status !== "paid" || !isRetailerDeliveryOrder(order)) return [];
+  if (order.storeOrderNumber || hasCancelRequest(order.notes) || hasPendingRefund(order.notes) || (order.notes ?? "").includes("🛑 COMPRA BLOQUEADA:")) return [];
+  if (!purchaseFundsIntact(order)) return [];
   const items = ((order.items as unknown as OrderItem[]) ?? []).filter(Boolean);
-  // Lojas precisam de habilitação explícita para preparação. Linhas livres, cestas
-  // mistas e checkout final continuam fora deste executor.
-  const storeKey = items[0]?.storeKey;
-  const account = storeKey ? await prisma.purchaseAccount.findUnique({ where: { storeKey } }) : null;
-  if (!preparationEligible(storeKey, items, Boolean(account?.enabled && account.loginReady && account.paymentReady))) return null;
-  const existing = order.purchaseJobs.find((job) => job.fulfillmentKey === storeKey);
-  if (existing) return existing;
-
-  const promise = deliveryPromise(order.fulfillments);
-  const expectedTotal = money(order.itemsSubtotal + order.deliveryFee);
-  const hash = purchaseCartHash(items, order.deliveryFee, promise, order);
-  try {
-    return await prisma.purchaseJob.create({
-      data: {
-        deliveryOrderId: order.id,
-        fulfillmentKey: storeKey,
-        storeKey,
-        storeLabel: items[0].storeLabel,
-        status: "queued",
-        expectedTotal,
-        approvalMaxTotal: expectedTotal,
-        approvalCartHash: hash,
-        cartHash: hash,
-        cartSnapshot: { deliveryFee: money(order.deliveryFee), deliveryPromise: promise ?? null },
-        items: {
-          create: items.map((item) => ({
-            requestedSku: item.sku,
-            requestedName: item.name,
-            requestedQty: Math.max(1, Math.round(item.qty)),
-            requestedUnitPrice: money(item.unitPrice),
-            productUrl: item.productUrl,
-            expectedUnitPrice: money(item.unitPrice),
-            status: "resolved"
-          }))
+  const { orderStoreKeys, perStoreQuoteReady, storeScope, storeCartHash } = await import("./purchase/store-split");
+  const stores = orderStoreKeys(items);
+  // Cesta de várias lojas só vira compra automática quando a cotação foi feita por loja.
+  if (!stores.length || !perStoreQuoteReady(order)) return [];
+  const jobs = [];
+  for (const storeKey of stores) {
+    const scope = storeScope(order, storeKey);
+    if (!scope) continue;
+    // Lojas precisam de habilitação explícita para preparação. Linhas livres e checkout final
+    // continuam fora deste executor.
+    const account = await prisma.purchaseAccount.findUnique({ where: { storeKey } });
+    if (!preparationEligible(storeKey, scope.items as OrderItem[], Boolean(account?.enabled && account.loginReady && account.paymentReady))) continue;
+    const existing = order.purchaseJobs.find((job) => job.fulfillmentKey === storeKey);
+    if (existing) { jobs.push(existing); continue; }
+    const expectedTotal = money(scope.ceilingCents / 100);
+    const hash = storeCartHash(order, scope);
+    try {
+      jobs.push(await prisma.purchaseJob.create({
+        data: {
+          deliveryOrderId: order.id,
+          fulfillmentKey: storeKey,
+          storeKey,
+          storeLabel: scope.storeLabel,
+          status: "queued",
+          expectedTotal,
+          approvalMaxTotal: expectedTotal,
+          approvalCartHash: hash,
+          cartHash: hash,
+          cartSnapshot: { deliveryFee: money(scope.deliveryFee), deliveryPromise: scope.promise ?? null, ...(scope.multi ? { customerShareCents: scope.shareCents, stores } : {}) },
+          items: {
+            create: scope.items.map((item) => ({
+              requestedSku: item.sku,
+              requestedName: item.name,
+              requestedQty: Math.max(1, Math.round(item.qty)),
+              requestedUnitPrice: money(item.unitPrice),
+              productUrl: item.productUrl,
+              expectedUnitPrice: money(item.unitPrice),
+              status: "resolved"
+            }))
+          }
         }
-      }
-    });
-  } catch (error) {
-    // Payment webhooks may race. The unique (order, fulfillment) constraint is the
-    // authority, so the loser returns the row created by the winner.
-    const raced = await prisma.purchaseJob.findUnique({
-      where: { deliveryOrderId_fulfillmentKey: { deliveryOrderId: order.id, fulfillmentKey: storeKey } }
-    });
-    if (raced) return raced;
-    throw error;
+      }));
+    } catch (error) {
+      // Payment webhooks may race. The unique (order, fulfillment) constraint is the
+      // authority, so the loser returns the row created by the winner.
+      const raced = await prisma.purchaseJob.findUnique({
+        where: { deliveryOrderId_fulfillmentKey: { deliveryOrderId: order.id, fulfillmentKey: storeKey } }
+      });
+      if (!raced) throw error;
+      jobs.push(raced);
+    }
   }
+  return jobs;
+}
+
+export async function ensurePurchaseJobForPaidOrder(orderId: string) {
+  return (await ensurePurchaseJobsForPaidOrder(orderId))[0] ?? null;
+}
+
+// O trabalho ainda pode ser comprado AGORA? Mesmas regras de quando nasceu, olhando só a parte da loja:
+// pedido pago, sem cancelamento/estorno/bloqueio, dinheiro íntegro, loja habilitada e carrinho igual
+// ao do trabalho (cesta, frete, prazo e endereço). Pedido de várias lojas: as outras lojas podem já
+// ter sido compradas (o pedido tem número) ou devolvidas — o que vale é esta loja não ter compra.
+export async function purchaseJobStillValid(jobId: string): Promise<boolean> {
+  if (process.env.LIA_AUTO_PURCHASE_OFF === "true") return false;
+  const job = await prisma.purchaseJob.findUnique({ where: { id: jobId }, include: { deliveryOrder: { include: { payments: true, paymentAttempts: { select: { status: true } } } } } });
+  if (!job || job.storeOrderNumber) return false;
+  const order = job.deliveryOrder;
+  if (order.status !== "paid" || !isRetailerDeliveryOrder(order)) return false;
+  if (hasCancelRequest(order.notes) || hasPendingRefund(order.notes) || (order.notes ?? "").includes("🛑 COMPRA BLOQUEADA:")) return false;
+  const { isMultiStoreOrder, storeScope, storeCartHash } = await import("./purchase/store-split");
+  const multi = isMultiStoreOrder(order);
+  if (!multi && order.storeOrderNumber) return false;
+  if (!purchaseFundsIntact(order, multi ? await refundedShareCents(order.id) : 0)) return false;
+  const scope = storeScope(order, job.storeKey);
+  if (!scope) return false;
+  const account = await prisma.purchaseAccount.findUnique({ where: { storeKey: job.storeKey } });
+  if (!preparationEligible(job.storeKey, scope.items as OrderItem[], Boolean(account?.enabled && account.loginReady && account.paymentReady))) return false;
+  return storeCartHash(order, scope) === job.cartHash;
 }
 
 // Pedido pago cuja loja NÃO tem execução automática (cesta mista, linha livre, loja sem
@@ -130,9 +202,31 @@ export const MANUAL_QUEUE_STATUS = "manual_queue";
 export async function manualQueueJobForPaidOrder(orderId: string) {
   const order = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, include: { purchaseJobs: true } });
   if (!order || order.status !== "paid" || order.storeOrderNumber) return null;
-  if (order.purchaseJobs.length) return order.purchaseJobs[0];
   const items = ((order.items as unknown as OrderItem[]) ?? []).filter(Boolean);
   const storeKeys = [...new Set(items.map((i) => i.storeKey).filter(Boolean))];
+  const { perStoreQuoteReady } = await import("./purchase/store-split");
+  // Várias lojas cotadas por loja (09/10): só a loja que ficou sem trabalho automático vai para a
+  // fila manual, com a parte dela; as outras seguem compradas sozinhas.
+  if (storeKeys.length > 1 && perStoreQuoteReady(order) && order.purchaseJobs.length) {
+    const missing = storeKeys.filter((key) => !order.purchaseJobs.some((job) => job.fulfillmentKey === key));
+    let created = null;
+    for (const storeKey of missing) {
+      const own = items.filter((i) => i.storeKey === storeKey);
+      try {
+        created = await prisma.purchaseJob.create({
+          data: {
+            deliveryOrderId: order.id, fulfillmentKey: storeKey, storeKey, storeLabel: own[0]?.storeLabel ?? storeKey,
+            status: MANUAL_QUEUE_STATUS,
+            expectedTotal: money(own.reduce((sum, i) => sum + money(i.unitPrice * i.qty), 0)),
+            lastErrorMessage: "Loja sem compra automática: compra manual desta parte no /ops.",
+            items: { create: own.map((item) => ({ requestedSku: item.sku, requestedName: item.name, requestedQty: Math.max(1, Math.round(item.qty)), requestedUnitPrice: money(item.unitPrice), productUrl: item.productUrl, expectedUnitPrice: money(item.unitPrice), status: "manual" })) }
+          }
+        });
+      } catch { /* corrida: o outro criou */ }
+    }
+    return created;
+  }
+  if (order.purchaseJobs.length) return order.purchaseJobs[0];
   const storeKey = storeKeys.length === 1 ? storeKeys[0] : order.storeKey;
   const storeLabel = storeKeys.length === 1 ? items[0].storeLabel ?? storeKey : order.storeLabel;
   try {
@@ -239,9 +333,9 @@ export async function claimNextPurchaseJob(workerId: string, allowedStores?: str
     });
     if (!candidate) return null;
     const full = await prisma.purchaseJob.findUniqueOrThrow({ where: { id: candidate.id }, include: { deliveryOrder: true } });
-    const eligible = await ensurePurchaseJobForPaidOrder(full.deliveryOrderId);
-    const snapshot = purchaseCartHash(full.deliveryOrder.items as unknown as OrderItem[], full.deliveryOrder.deliveryFee, deliveryPromise(full.deliveryOrder.fulfillments), full.deliveryOrder);
-    if (!eligible || snapshot !== full.cartHash) {
+    // Revalida SÓ a parte desta loja (09/10): num pedido de várias lojas as outras podem já estar
+    // compradas ou devolvidas sem invalidar esta.
+    if (!(await purchaseJobStillValid(full.id))) {
       await prisma.purchaseJob.updateMany({ where: { id: full.id, status: candidate.status }, data: { status: "needs_review", lastErrorCode: "ORDER_CHANGED", lastErrorMessage: "Pagamento, cesta ou endereço mudou. Revalidar antes de comprar." } });
       continue;
     }
@@ -255,8 +349,13 @@ export async function claimNextPurchaseJob(workerId: string, allowedStores?: str
       ] }, select: { id: true } });
       const trackingBusy = await tx.trackingSubscription.findFirst({where:{storeKey:full.storeKey,lockedAt:{gt:new Date(Date.now()-5*60_000)}}});
       if (busy || trackingBusy) return { count: 0 };
+      // Pedido de uma loja: número da loja no pedido = já comprado. Várias lojas: o número do pedido
+      // é o da 1ª loja comprada; o que vale é ESTE trabalho não ter número.
+      const current = await tx.deliveryOrder.findUniqueOrThrow({ where: { id: full.deliveryOrderId }, select: { storeOrderNumber: true, items: true } });
+      const { isMultiStoreOrder } = await import("./purchase/store-split");
+      if (current.storeOrderNumber && !isMultiStoreOrder(current)) return { count: 0 };
       return tx.purchaseJob.updateMany({
-      where: { id: candidate.id, status: candidate.status, deliveryOrder: { status: "paid", storeOrderNumber: null }, OR: [{ lockedAt: null }, { lockedAt: { lt: stale } }] },
+      where: { id: candidate.id, status: candidate.status, storeOrderNumber: null, deliveryOrder: { status: "paid" }, OR: [{ lockedAt: null }, { lockedAt: { lt: stale } }] },
       data: { status: candidate.status==="approved"?"approved":"claimed", lockedAt: now, browserSessionId: workerId, nextAttemptAt: null, lastErrorCode: null, lastErrorMessage: null }
       });
     });
@@ -289,7 +388,7 @@ export function workerPayload(job: NonNullable<Awaited<ReturnType<typeof claimNe
     shortOrderId: job.deliveryOrderId.slice(-6).toUpperCase(),
     storeKey: job.storeKey,
     storeLabel: job.storeLabel,
-    deliveryPromise: deliveryPromise(job.deliveryOrder.fulfillments),
+    deliveryPromise: storePromise(job.deliveryOrder, job.storeKey),
     expectedTotal: job.expectedTotal,
     maximumTotal: job.approvalMaxTotal,
     cartHash: job.cartHash,
@@ -297,7 +396,7 @@ export function workerPayload(job: NonNullable<Awaited<ReturnType<typeof claimNe
     mode: "cart_only",
     canSubmitPurchase: false,
     // Frete cotado ao cliente (o ML não expõe frete no carrinho antes do endereço).
-    deliveryFeeCents: Math.round(money(job.deliveryOrder.deliveryFee) * 100),
+    deliveryFeeCents: Math.round(money(storeFee(job.deliveryOrder, job.storeKey)) * 100),
     customer: {
       name: job.deliveryOrder.customerName,
       phone: job.deliveryOrder.phone,

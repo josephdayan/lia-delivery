@@ -1,8 +1,9 @@
 // Uma loja por pedido (dono, 08/10 noite, print: "2 vodkas, 1 suco, 1 gin, 4 red bull" caiu em Santa Luzia,
 // Americanas e Mambo; travou no mínimo da Americanas e "Quando chega" voltou "Até agora… diz só isso" duas
-// vezes). A compra é por API e fecha UMA loja por pedido: no fechamento a Lia junta a lista na loja que tem
-// tudo (mesmo produto, mesma marca e tamanho) e "quando chega?" com a lista na mesa fecha o total, que traz
-// o prazo.
+// vezes). No fechamento a Lia acha a loja que tem tudo (mesmo produto, mesma marca e tamanho) e "quando
+// chega?" com a lista na mesa fecha o total, que traz o prazo.
+// 09/10 (dono: "a regra certa é oferecer, não impor"): juntar numa loja só virou OFERTA com os dois totais
+// e o frete na cara; o cliente escolhe. Manter as lojas fecha um pedido com uma compra por loja.
 import "./helpers/load-env";
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -69,7 +70,7 @@ async function send(phone: string, text: string): Promise<string> {
   return outbox.slice(start).filter((m) => m.to === phone).map((m) => m.text).join("\n---\n");
 }
 
-test("lista em 2 lojas + 'quando chega' → junta tudo na loja que tem tudo e manda o total (nunca 'Até agora')", async (t) => {
+test("lista em 2 lojas + 'quando chega' → OFERECE juntar na loja que tem tudo (dois totais); 'juntar' fecha numa loja só", async (t) => {
   if (!dbOk) return t.skip();
   const leite = await item("leite integral piracanjuba", "carrefour", 2, /Piracanjuba/);
   const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
@@ -78,15 +79,39 @@ test("lista em 2 lojas + 'quando chega' → junta tudo na loja que tem tudo e ma
   const out = await send(c.phone, "Quando chega");
   assert.doesNotMatch(out, /Até agora/, out.slice(0, 500));
   assert.match(out, /O prazo é o da loja/, out.slice(0, 500));
-  assert.match(out, /Juntei tudo na \*Carrefour\* pra vir num pedido só/, out.slice(0, 800));
+  assert.match(out, /Dá pra juntar tudo na \*Carrefour\* por R\$ ?[\d,.]+ com uma entrega, ou manter como está por R\$ ?[\d,.]+ com 2 entregas/, out.slice(0, 800));
   assert.match(out, /Coca-Cola Sem Açúcar/);
-  assert.match(out, /Total/, out.slice(0, 800));
+  assert.doesNotMatch(out, /Juntei tudo/, "não impõe");
+  assert.equal(await prisma.deliveryOrder.count({ where: { userId: c.userId } }), 0, "espera a escolha");
+  const joined = await send(c.phone, "consolidar:sim");
+  assert.match(joined, /Juntei tudo na \*Carrefour\* pra vir num pedido só/, joined.slice(0, 800));
+  assert.match(joined, /Total/, joined.slice(0, 800));
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   const stores = new Set((order.items as { storeKey: string }[]).map((i) => i.storeKey));
   assert.deepEqual([...stores], ["carrefour"], "um pedido, uma loja");
   const cocaNow = (order.items as { name: string; qty: number }[]).find((i) => /Coca-Cola/i.test(i.name));
   assert.equal(cocaNow?.qty, 2, "quantidade preservada");
   assert.match(cocaNow?.name ?? "", /350/i, "mesmo tamanho");
+});
+
+test("oferta de juntar: 'manter' fecha com as 2 lojas — frete e prazo POR LOJA no pedido e a parte de cada uma soma o total", async (t) => {
+  if (!dbOk) return t.skip();
+  const leite = await item("leite integral piracanjuba", "carrefour", 2, /Piracanjuba/);
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const coca = await item("refrigerante coca cola sem acucar lata", "oba", 2, /Sem Açúcar Lata/i);
+  const c = await customerWith([leite, arroz, coca]);
+  const offer = await send(c.phone, "só isso");
+  assert.match(offer, /Dá pra juntar tudo na \*Carrefour\*/, offer.slice(0, 600));
+  const kept = await send(c.phone, "consolidar:nao");
+  assert.match(kept, /mantenho as 2 lojas/, kept.slice(0, 600));
+  assert.doesNotMatch(kept, /Dá pra juntar/, "não oferece de novo");
+  assert.match(kept, /Total/, kept.slice(0, 800));
+  const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
+  assert.deepEqual([...new Set((order.items as { storeKey: string }[]).map((i) => i.storeKey))].sort(), ["carrefour", "oba"]);
+  const fulfillments = order.fulfillments as Array<{ storeKey: string; deliveryFee: number; customerShare: number; deliveryPromise?: string }>;
+  assert.deepEqual(fulfillments.map((f) => f.storeKey).sort(), ["carrefour", "oba"], "uma entrega por loja");
+  assert.equal(Math.round(fulfillments.reduce((sum, f) => sum + f.deliveryFee, 0) * 100), Math.round(order.deliveryFee * 100), "frete do pedido = soma dos fretes");
+  assert.equal(Math.round(fulfillments.reduce((sum, f) => sum + f.customerShare, 0) * 100), Math.round(order.total * 100), "as partes somam o total ao centavo");
 });
 
 test("nenhuma loja tem tudo (marca só numa loja): não troca nada nem inventa — cesta segue como está", async (t) => {
@@ -101,15 +126,17 @@ test("nenhuma loja tem tudo (marca só numa loja): não troca nada nem inventa �
   assert.ok(ctx.consolidationTried || ctx.deliveryOrderId, "tentou uma vez e seguiu");
 });
 
-test("com o que o cliente pediu na linha ('banana prata'): a variante da outra loja serve — junta numa loja só", async (t) => {
+test("com o que o cliente pediu na linha ('banana prata'): a variante da outra loja serve — oferece juntar e 'junta' fecha numa loja só", async (t) => {
   if (!dbOk) return t.skip();
   const leite = await item("leite integral piracanjuba", "carrefour", 2, /Piracanjuba/);
   const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
   const banana = { ...(await item("banana prata organica tamiso", "oba", 1, /Tamiso/)), ask: "banana prata" };
   const c = await customerWith([leite, arroz, banana]);
   const out = await send(c.phone, "só isso");
-  assert.match(out, /Juntei tudo na \*Carrefour\*/, out.slice(0, 700));
+  assert.match(out, /Dá pra juntar tudo na \*Carrefour\*/, out.slice(0, 700));
   assert.match(out, /Banana Prata Carrefour/);
+  const joined = await send(c.phone, "junta");
+  assert.match(joined, /Juntei tudo na \*Carrefour\*/, joined.slice(0, 700));
   const order = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   assert.deepEqual([...new Set((order.items as { storeKey: string }[]).map((i) => i.storeKey))], ["carrefour"]);
 });

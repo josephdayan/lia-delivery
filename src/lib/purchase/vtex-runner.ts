@@ -16,6 +16,7 @@ import {
 import { reportPurchaseJobFailure } from "../purchase-worker";
 import { resolveVtexAddress } from "./vtex-address";
 import { isValidCpf, medicineBuyerEmail, onlyDigits, splitName } from "../medicine";
+import { isMultiStoreOrder } from "./store-split";
 import { VTEX_API_STORE_KEYS, VtexCheckoutRejected, VtexCheckoutSession, vtexOrderId, type FetchLike, type VtexBuyerProfile } from "./vtex-checkout";
 
 export const SERVER_BUYER_ID = "server-vtex-api";
@@ -35,6 +36,15 @@ function customerReason(code: string): string {
   if (code === "PIX_CAPTURE_REFUSED" || code === "VTEX_ORDER_WITHOUT_PAYMENT") return "não consegui concluir o pagamento na loja";
   return "a loja não confirmou a compra agora";
 }
+// Pedido de várias lojas (09/10): só a parte da loja do trabalho volta; as outras seguem.
+export async function refundServerJobFailure(job: { id: string; deliveryOrderId: string }, code: string, detail: string) {
+  const order = await prisma.deliveryOrder.findUniqueOrThrow({ where: { id: job.deliveryOrderId }, select: { items: true } });
+  if (!isMultiStoreOrder(order)) return refundServerFailure(job.deliveryOrderId, code, detail);
+  const { refundStoreShare } = await import("./store-refund");
+  const result = await refundStoreShare(job.id, { reason: customerReason(code), internalReason: `${code}: ${detail}`.slice(0, 200), origin: "auto" });
+  if (result.status === "skipped") throw new Error(`devolução da parte da loja não feita: ${result.reason}`);
+  return result;
+}
 export async function refundServerFailure(orderId: string, code: string, detail: string) {
   const { opsPurchaseFailedRefund } = await import("../ops-lifecycle");
   const { notifyOwner } = await import("../turn-runtime");
@@ -47,8 +57,9 @@ export async function refundServerFailure(orderId: string, code: string, detail:
 // estorna (cobre também quem caiu em revisão antes desta regra existir).
 export async function refundRejectedServerJobs(limit = 10) {
   const jobs = await prisma.purchaseJob.findMany({
-    where: { status: "needs_review", storeKey: { in: VTEX_API_STORE_KEYS }, updatedAt: { gte: new Date(Date.now() - 48 * 3_600_000) }, deliveryOrder: { status: "paid", storeOrderNumber: null } },
-    select: { id: true, deliveryOrderId: true, lastErrorCode: true, lastErrorMessage: true }, take: limit,
+    // Pedido de várias lojas pode ter o número de outra loja já comprada (a parte DESTA volta sozinha).
+    where: { status: "needs_review", storeKey: { in: VTEX_API_STORE_KEYS }, storeOrderNumber: null, updatedAt: { gte: new Date(Date.now() - 48 * 3_600_000) }, deliveryOrder: { status: { in: ["paid", "retailer_preparing", "retailer_out_for_delivery", "delivered"] } } },
+    select: { id: true, deliveryOrderId: true, lastErrorCode: true, lastErrorMessage: true, deliveryOrder: { select: { status: true, storeOrderNumber: true, items: true } } }, take: limit,
   });
   let refunded = 0;
   const errors: string[] = [];
@@ -56,31 +67,47 @@ export async function refundRejectedServerJobs(limit = 10) {
   // qualquer PixPayout; 28/09, 1º pedido real do Mambo): nenhum dinheiro saiu, o pedido da
   // loja vence sem pagamento — o cliente é estornado já, sem esperar a loja cancelar.
   const unpaidPlaced = await prisma.purchaseJob.findMany({
-    where: { status: "outcome_unknown", lastErrorCode: { in: ["PIX_CAPTURE_REFUSED", "VTEX_ORDER_WITHOUT_PAYMENT"] }, storeKey: { in: VTEX_API_STORE_KEYS }, updatedAt: { gte: new Date(Date.now() - 48 * 3_600_000) }, deliveryOrder: { status: "paid", storeOrderNumber: null } },
-    select: { id: true, deliveryOrderId: true, lastErrorCode: true, submissionId: true }, take: limit,
+    where: { status: "outcome_unknown", lastErrorCode: { in: ["PIX_CAPTURE_REFUSED", "VTEX_ORDER_WITHOUT_PAYMENT"] }, storeKey: { in: VTEX_API_STORE_KEYS }, storeOrderNumber: null, updatedAt: { gte: new Date(Date.now() - 48 * 3_600_000) }, deliveryOrder: { status: { in: ["paid", "retailer_preparing", "retailer_out_for_delivery", "delivered"] } } },
+    select: { id: true, deliveryOrderId: true, lastErrorCode: true, submissionId: true, deliveryOrder: { select: { status: true, storeOrderNumber: true, items: true } } }, take: limit,
   });
+  // Pedido de uma loja: só enquanto nada foi comprado (pedido pago e sem número), como sempre.
+  const single = (job: { deliveryOrder: { status: string; storeOrderNumber: string | null; items: unknown } }) => !isMultiStoreOrder(job.deliveryOrder);
+  const eligible = (job: { deliveryOrder: { status: string; storeOrderNumber: string | null; items: unknown } }) =>
+    single(job) ? job.deliveryOrder.status === "paid" && !job.deliveryOrder.storeOrderNumber : true;
   for (const job of unpaidPlaced) {
+    if (!eligible(job)) continue;
     const payout = await prisma.pixPayout.findFirst({ where: { purchaseJobId: job.id }, select: { id: true } });
     if (payout) continue; // dinheiro pode ter saído: humano
     const refusal = await prisma.purchaseAttempt.findFirst({ where: { purchaseJobId: job.id, step: { in: ["pix_capture", "vtex_order"] } }, orderBy: { createdAt: "desc" } });
     const why = refusal?.errorMessage ?? "a Lia não conseguiu pagar o Pix da loja";
     try {
-      await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "canceled", lockedAt: null, claimToken: null, lastErrorMessage: `Pedido criado na loja e NÃO pago pela Lia (${why}); vence sem pagamento. Cliente estornado.`.slice(0, 500) } });
       if (job.submissionId) await prisma.purchaseSpend.updateMany({ where: { submissionId: job.submissionId, status: "reserved" }, data: { status: "released", releasedAt: new Date(), releaseNote: "Pix da loja não pago; pedido vence sozinho" } });
-      await refundServerFailure(job.deliveryOrderId, job.lastErrorCode ?? "PIX_CAPTURE_REFUSED", why);
+      if (single(job)) {
+        await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "canceled", lockedAt: null, claimToken: null, lastErrorMessage: `Pedido criado na loja e NÃO pago pela Lia (${why}); vence sem pagamento. Cliente estornado.`.slice(0, 500) } });
+        await refundServerFailure(job.deliveryOrderId, job.lastErrorCode ?? "PIX_CAPTURE_REFUSED", why);
+      } else {
+        // Várias lojas: o trabalho sai do "resultado desconhecido" (nenhum Pix saiu, conferido acima)
+        // e só a parte desta loja volta.
+        await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "needs_review", lockedAt: null, claimToken: null, lastErrorMessage: `Pedido criado na loja e NÃO pago pela Lia (${why}); vence sem pagamento.`.slice(0, 500) } });
+        await refundServerJobFailure(job, job.lastErrorCode ?? "PIX_CAPTURE_REFUSED", why);
+      }
       refunded += 1;
     } catch (error) {
       errors.push(`${job.deliveryOrderId}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   for (const job of jobs) {
-    if (!refundableServerFailure(job.lastErrorCode)) continue;
+    if (!eligible(job) || !refundableServerFailure(job.lastErrorCode)) continue;
     // Tentativa de pedido que chegou a existir na loja nunca estorna sozinha.
     const placed = await prisma.purchaseAttempt.findFirst({ where: { purchaseJobId: job.id, step: "vtex_order" }, select: { id: true } });
     if (placed) continue;
     try {
-      await refundServerFailure(job.deliveryOrderId, job.lastErrorCode!, job.lastErrorMessage ?? "");
-      await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "canceled", lastErrorMessage: `${job.lastErrorMessage ?? ""} — estornado automaticamente.`.slice(0, 500) } });
+      if (single(job)) {
+        await refundServerFailure(job.deliveryOrderId, job.lastErrorCode!, job.lastErrorMessage ?? "");
+        await prisma.purchaseJob.update({ where: { id: job.id }, data: { status: "canceled", lastErrorMessage: `${job.lastErrorMessage ?? ""} — estornado automaticamente.`.slice(0, 500) } });
+      } else {
+        await refundServerJobFailure(job, job.lastErrorCode!, job.lastErrorMessage ?? "");
+      }
       refunded += 1;
     } catch (error) {
       errors.push(`${job.deliveryOrderId}: ${error instanceof Error ? error.message : String(error)}`);
@@ -252,7 +279,8 @@ export async function executeVtexJob(
 // com o número do pedido guardado na tentativa `vtex_order`.
 export async function finishPendingVtexOrders(limit = 20) {
   const jobs = await prisma.purchaseJob.findMany({
-    where: { status: { in: ["pix_paid", "store_confirmed"] }, storeKey: { in: VTEX_API_STORE_KEYS }, browserSessionId: SERVER_BUYER_ID, submissionId: { not: null }, deliveryOrder: { storeOrderNumber: null } },
+    // O número é do TRABALHO (pedido de várias lojas já pode ter o número de outra loja).
+    where: { status: { in: ["pix_paid", "store_confirmed"] }, storeKey: { in: VTEX_API_STORE_KEYS }, browserSessionId: SERVER_BUYER_ID, submissionId: { not: null }, storeOrderNumber: null },
     take: limit,
   });
   let finished = 0;

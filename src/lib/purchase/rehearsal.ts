@@ -42,10 +42,9 @@ export type RehearsalOrder = {
 // `items`: item fora / sem estoque / quantidade / sem link de compra; `delivery`: a entrega prometida (prazo)
 // não existe pro endereço; `address`: a loja recusou o endereço; `price`: a loja está cobrando mais que o
 // cotado; `checkout`: outro passo do checkout recusou; `store`: a Lia não compra nessa loja por API (não é
-// loja VTEX por API, não está liberada ou está sem conta) — `skus` = todos os itens dela; `split`: cesta de
-// mais de uma loja (a compra automática fecha UMA loja por pedido) — `skus` = os itens que saem,
-// `storeKey/storeLabel` = a loja que fica.
-export type RehearsalFailure = { storeKey: string; storeLabel: string; kind: "items" | "delivery" | "address" | "price" | "checkout" | "store" | "split"; detail: string; skus: string[] };
+// loja VTEX por API, não está liberada ou está sem conta) — `skus` = todos os itens dela. Cesta de várias
+// lojas não é recusa (09/10): cada loja é ensaiada e comprada por conta própria.
+export type RehearsalFailure = { storeKey: string; storeLabel: string; kind: "items" | "delivery" | "address" | "price" | "checkout" | "store"; detail: string; skus: string[] };
 
 let override: ((order: RehearsalOrder) => Promise<RehearsalFailure | null>) | null = null;
 export function __setPurchaseRehearsalForTests(fn: ((order: RehearsalOrder) => Promise<RehearsalFailure | null>) | null): void {
@@ -119,28 +118,26 @@ function classify(error: unknown): { kind: RehearsalFailure["kind"]; refusal: bo
 // TODA compra é por API (decisão de 25/09; dono, 08/10: "não temos mais compra que não é por API"). O que
 // a compra automática não executa NÃO pode ser cobrado — antes virava job na "fila manual" que ninguém
 // compra e acabava em estorno (Pague Menos 23/09, Mercado Livre 06/10). Espelha `preparationEligible` +
-// `ensurePurchaseJobForPaidOrder` (purchase-worker.ts): uma loja por pedido, loja VTEX por API liberada e
-// com conta pronta, item com quantidade inteira, preço e link de compra da loja.
+// `ensurePurchaseJobsForPaidOrder` (purchase-worker.ts), loja a loja: loja VTEX por API liberada e com
+// conta pronta, item com quantidade inteira, preço e link de compra da loja.
 export async function executabilityFailure(order: Pick<RehearsalOrder, "items">): Promise<RehearsalFailure | null> {
   const items = order.items.filter(Boolean);
   if (!items.length) return null;
   const stores = [...new Set(items.map((i) => i.storeKey))];
   const labelOf = (key: string) => items.find((i) => i.storeKey === key)?.storeLabel ?? VTEX_API_STORES[key]?.label ?? key;
-  if (stores.length > 1) {
-    // Fica a loja com a maior parte da cesta (em R$); as outras saem e são fechadas depois.
-    const subtotal = (key: string) => items.filter((i) => i.storeKey === key).reduce((sum, i) => sum + (money(i.unitPrice) ?? 0) * i.qty, 0);
-    const kept = [...stores].sort((a, b) => subtotal(b) - subtotal(a) || items.findIndex((i) => i.storeKey === a) - items.findIndex((i) => i.storeKey === b))[0];
-    return { storeKey: kept, storeLabel: labelOf(kept), kind: "split", detail: `cesta de ${stores.length} lojas (${stores.join(", ")}); a compra automática fecha uma loja por pedido`, skus: items.filter((i) => i.storeKey !== kept).map((i) => i.sku) };
+  // Cesta de várias lojas (09/10): cada loja vira um trabalho de compra próprio — vale a mesma régua
+  // para cada uma. A primeira loja que a compra não executaria barra a cobrança, com os itens dela.
+  for (const storeKey of stores) {
+    const own = items.filter((i) => i.storeKey === storeKey);
+    const skus = own.map((i) => i.sku);
+    const storeFail = (detail: string): RehearsalFailure => ({ storeKey, storeLabel: labelOf(storeKey), kind: "store", detail, skus });
+    if (!VTEX_API_STORES[storeKey]) return storeFail(`${labelOf(storeKey)} não fecha por API`);
+    if (!automaticPurchaseStores().includes(storeKey)) return storeFail(`${labelOf(storeKey)} não está liberada para compra automática (LIA_AUTO_PURCHASE_STORES)`);
+    const account = await prisma.purchaseAccount.findUnique({ where: { storeKey } }).catch(() => null);
+    if (!account?.email || !account.enabled || !account.loginReady || !account.paymentReady) return storeFail(`${labelOf(storeKey)} sem conta de compra pronta no /ops`);
+    const bad = own.filter((i) => !(Number.isInteger(i.qty) && i.qty > 0) || !((money(i.unitPrice) ?? 0) > 0) || !purchaseUrlAllowed(storeKey, i.productUrl ?? ""));
+    if (bad.length) return { storeKey, storeLabel: labelOf(storeKey), kind: "items", detail: `item sem link de compra/preço/quantidade válidos: ${bad.map((i) => i.sku).join(", ")}`, skus: bad.map((i) => i.sku) };
   }
-  const storeKey = stores[0];
-  const skus = items.map((i) => i.sku);
-  const storeFail = (detail: string): RehearsalFailure => ({ storeKey, storeLabel: labelOf(storeKey), kind: "store", detail, skus });
-  if (!VTEX_API_STORES[storeKey]) return storeFail(`${labelOf(storeKey)} não fecha por API`);
-  if (!automaticPurchaseStores().includes(storeKey)) return storeFail(`${labelOf(storeKey)} não está liberada para compra automática (LIA_AUTO_PURCHASE_STORES)`);
-  const account = await prisma.purchaseAccount.findUnique({ where: { storeKey } }).catch(() => null);
-  if (!account?.email || !account.enabled || !account.loginReady || !account.paymentReady) return storeFail(`${labelOf(storeKey)} sem conta de compra pronta no /ops`);
-  const bad = items.filter((i) => !(Number.isInteger(i.qty) && i.qty > 0) || !((money(i.unitPrice) ?? 0) > 0) || !purchaseUrlAllowed(storeKey, i.productUrl ?? ""));
-  if (bad.length) return { storeKey, storeLabel: labelOf(storeKey), kind: "items", detail: `item sem link de compra/preço/quantidade válidos: ${bad.map((i) => i.sku).join(", ")}`, skus: bad.map((i) => i.sku) };
   return null;
 }
 
