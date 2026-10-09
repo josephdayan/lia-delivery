@@ -27,6 +27,36 @@ const PRE_HANDLING = new Set(["order-created", "order-completed", "on-order-comp
 //   - entrega longa: o prazo da loja venceu;
 //   - sem prazo conhecido: 12 h.
 // Atrasado (só aviso ao dono) = já começou, mas o prazo venceu há 1 h (rápida) / 12 h (longa) sem entrega.
+// Parado além da tolerância = a Lia pede o cancelamento na própria loja (09/10, dono: "nesses casos o
+// estorno devia ser automático"). Tolerância: rápida (≤ 3 h) = prazo + 1 h; longa = prazo + 12 h; sem
+// prazo = 24 h. Antes disso a loja ainda pode entregar (um atraso não é um cancelamento).
+export function stalledPastGrace(input: { boughtAt: Date; eta?: string; now: Date }): boolean {
+  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
+  if (!Number.isFinite(etaAt)) return input.now.getTime() - input.boughtAt.getTime() >= 24 * 3_600_000;
+  const fast = (etaAt - input.boughtAt.getTime()) / 60_000 <= 180;
+  return input.now.getTime() >= etaAt + (fast ? 60 : 12 * 60) * 60_000;
+}
+export function stallAutoCancelEnabled(): boolean {
+  return process.env.LIA_STALL_AUTO_CANCEL !== "false";
+}
+const CANCEL_REQUESTED_MARK = "🧾 Cancelamento pedido à loja";
+// Cancelamento pelo próprio comprador (API pública do checkout VTEX), com os cookies do fechamento.
+export async function requestStoreCancellation(
+  domain: string,
+  orderId: string,
+  cookies: Record<string, string>,
+  fetchImpl: FetchLike,
+  reason = "Pedido não iniciado dentro do prazo prometido"
+): Promise<{ ok: boolean; status: number }> {
+  const r = await fetchImpl(`https://${domain}/api/checkout/pub/orders/${encodeURIComponent(orderId)}/user-cancel-request`, {
+    method: "POST",
+    headers: { Cookie: Object.entries(cookies).map(([k, v]) => `${k}=${v}`).join("; "), Accept: "application/json", "Content-Type": "application/json", "User-Agent": UA },
+    body: JSON.stringify({ reason }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  return { ok: r.ok, status: r.status };
+}
+
 export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
   if (input.delivered) return "ok";
   const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
@@ -138,13 +168,37 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
       const boughtAt = job?.completedAt ?? job?.createdAt ?? sub.createdAt;
       const health = storeOrderHealth({ state: sig.state, boughtAt, eta: sig.eta, now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
       const shortId = order.id.slice(-6).toUpperCase();
-      if (health === "stalled" && !notes.includes(STALL_MARK)) {
+      // Parado além da tolerância: a Lia pede o cancelamento na loja; quando a loja confirmar "canceled",
+      // o estorno automático abaixo devolve o dinheiro. Uma vez por pedido.
+      let cancelAccepted = false;
+      if (health === "stalled" && stallAutoCancelEnabled() && !notes.includes(CANCEL_REQUESTED_MARK) && stalledPastGrace({ boughtAt, eta: sig.eta, now })) {
+        let outcome = "";
+        try {
+          const res = await requestStoreCancellation(store.domain, sub.storeOrderNumber, details.cookies, fetchImpl);
+          outcome = res.ok ? `aceito (HTTP ${res.status})` : `recusado (HTTP ${res.status})`;
+        } catch (error) {
+          outcome = `falhou (${error instanceof Error ? error.message : String(error)})`;
+        }
+        await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${CANCEL_REQUESTED_MARK} em ${now.toISOString()}: ${outcome}.`) } });
+        console.warn("[store-stall:cancel-request]", sub.storeKey, shortId, sub.storeOrderNumber, outcome);
+        if (outcome.startsWith("aceito")) {
+          cancelAccepted = true;
+          const { deliverNotice } = await import("../turn-runtime");
+          const copy = await import("../lia-copy");
+          await deliverNotice(order.phone, copy.retailerStalledCanceling(store.label, shortId), { items: order.items }).catch(() => undefined);
+          report.notices += 1;
+        }
+        // Recarrega as notas para o bloco de "parado" não repetir o aviso de antes.
+        order.notes = (await prisma.deliveryOrder.findUnique({ where: { id: order.id }, select: { notes: true } }))?.notes ?? order.notes;
+      }
+      const notesNow = order.notes ?? "";
+      if (health === "stalled" && !notesNow.includes(STALL_MARK)) {
         const { pauseStore } = await import("../store-pause");
         const paused = await pauseStore(sub.storeKey, `pedido #${shortId} (${sub.storeOrderNumber}) parado em "${sig.state}" além do prazo`, "vigia");
         await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${STALL_MARK}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja tirada da vitrine; cliente avisado; cobrar a loja e estornar se ela não resolver.`) } });
         const { deliverNotice, notifyOwner } = await import("../turn-runtime");
         const copy = await import("../lia-copy");
-        await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
+        if (!cancelAccepted) await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
         await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey: sub.storeKey, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }), order.phone);
         console.error("[store-stall]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
         report.notices += 1;
@@ -156,10 +210,20 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
         console.warn("[store-late]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
       }
       if (sig.state === "canceled") {
+        const { autoRefundStoreCanceled, storeCancelAutoRefundEnabled } = await import("../ops-lifecycle");
         if (!notes.includes(CANCELED_MARK)) {
-          await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${CANCELED_MARK} (status da loja em ${now.toISOString()}). Conferir reembolso da loja e estornar o cliente.`) } });
+          await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${CANCELED_MARK} (status da loja em ${now.toISOString()}).`) } });
+        }
+        // Estorno automático (09/10): a loja cancelou = o dinheiro do cliente volta agora. Falhou → a
+        // assinatura fica aberta e a próxima olhada tenta de novo (o alerta ao dono sai uma vez).
+        const refund = storeCancelAutoRefundEnabled() ? await autoRefundStoreCanceled(order.id, { storeKey: sub.storeKey, storeLabel: store.label, storeOrderNumber: sub.storeOrderNumber, source: "store-status" }) : "skipped";
+        if (refund === "skipped" && !notes.includes(CANCELED_MARK)) {
           const { notifyOwner } = await import("../turn-runtime");
-          await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${order.id.slice(-6).toUpperCase()} (${sub.storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar o cliente no /ops.`, order.phone);
+          await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${shortId} (${sub.storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar o cliente no /ops.`, order.phone);
+        }
+        if (refund === "failed") {
+          await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { nextCheckAt: new Date(now.getTime() + 10 * 60_000), lastCheckedAt: now } });
+          continue;
         }
         await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { completedAt: now, lastCheckedAt: now } });
         continue;
