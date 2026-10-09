@@ -229,6 +229,21 @@ export async function reportMail(input: {
   if (input.kind === "created" || input.kind === "paid") {
     await prisma.purchaseJob.updateMany({ where: { deliveryOrderId: target.id, status: { in: ["pix_paid"] } }, data: { status: "store_confirmed", storeOrderNumber: number } });
   }
+  // E-mail de cancelamento da loja (09/10): estorno automático ao cliente, sem esperar a próxima olhada
+  // no status (o e-mail da Drogal chegou 2 min antes do status virar "canceled").
+  if (input.kind === "canceled") {
+    const { autoRefundStoreCanceled, storeCancelAutoRefundEnabled } = await import("./ops-lifecycle");
+    const { VTEX_API_STORES } = await import("./purchase/vtex-checkout");
+    if (storeCancelAutoRefundEnabled()) {
+      const refund = await autoRefundStoreCanceled(target.id, { storeKey: input.storeKey, storeLabel: job?.storeLabel ?? VTEX_API_STORES[input.storeKey]?.label ?? input.storeKey, storeOrderNumber: number, source: "mail" });
+      if (refund === "refunded" || refund === "already") {
+        const { appendOrderNote } = await import("./order-flags");
+        const fresh = await prisma.deliveryOrder.findUnique({ where: { id: target.id }, select: { notes: true } });
+        await prisma.deliveryOrder.update({ where: { id: target.id }, data: { notes: appendOrderNote(fresh?.notes ?? target.notes, `📧 canceled — e-mail da loja ${number} (${receivedAt.toISOString()}).`) } });
+        return { matched: true as const, orderId: target.id, kind: input.kind };
+      }
+    }
+  }
   const { appendOrderNote } = await import("./order-flags");
   let invoiceNote = "";
   // Compra no CPF do cliente (remédio desde 29/09; tudo desde 08/10): a nota é DELE — a Lia

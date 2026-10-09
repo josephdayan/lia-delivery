@@ -1614,6 +1614,24 @@ export function ownerStoreStalled(input: { storeLabel: string; storeKey: string;
   ].join("\n");
 }
 
+// A loja cancelou depois da compra (09/10, Drogal): o dinheiro volta sozinho, sem o cliente pedir.
+export function storeCanceledRefunded(storeLabel: string, shortId: string, total: number): string {
+  return `A ${storeLabel} cancelou o pedido *#${shortId}* do lado dela, sem entregar. Já estornei ${brl(total)} — volta no mesmo Pix ou cartão em até 7 dias úteis. Se quiser, me manda de novo que eu busco em outra loja.`;
+}
+
+// Loja parada além do prazo e a Lia pediu o cancelamento lá (09/10): o cliente sabe o próximo passo.
+export function retailerStalledCanceling(storeLabel: string, shortId: string): string {
+  return `⚠️ A ${storeLabel} não começou a separar seu pedido *#${shortId}* e o prazo passou faz tempo. Pedi o cancelamento na loja; assim que ela confirmar, seu dinheiro volta sozinho. Se quiser, me manda de novo que eu busco em outra loja.`;
+}
+
+export function ownerStoreCanceledRefunded(input: { storeLabel: string; shortId: string; storeOrderNumber: string; total: number; storePaid?: number }): string {
+  return [
+    `🛑 A ${input.storeLabel} cancelou o pedido #${input.shortId} (nº ${input.storeOrderNumber}) depois da compra.`,
+    `Estorno automático de ${brl(input.total)} ao cliente feito e cliente avisado.`,
+    input.storePaid ? `Falta a loja devolver o Pix de ${brl(input.storePaid)} para a conta da Lia — conferir o extrato.` : "Nada foi pago à loja."
+  ].join("\n");
+}
+
 export function ownerOrderLate(input: { storeLabel: string; shortId: string; storeOrderNumber: string; state: string }): string {
   return `⏰ O pedido #${input.shortId} (${input.storeLabel}, nº ${input.storeOrderNumber}) passou do prazo da loja e não há sinal de entrega (status na loja: "${input.state}"). Confira com a loja.`;
 }
