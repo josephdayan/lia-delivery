@@ -1481,6 +1481,11 @@ export function priceDisputeAnswer(): string {
 }
 
 // Xingamento leve: resposta digna, sem briga, e devolve o fluxo.
+// Palavrão de raiva (09/10, rodada 3): desculpa curta e convite a contar o problema (antes: "O que você quis dizer?").
+export function angerApology(): string {
+  return "Desculpa! Me conta o que deu errado que eu ajudo — ou, se preferir, chamo uma pessoa pra falar com você.";
+}
+
 export function insultAnswer(): string {
   return "Ainda estou aprendendo, é verdade 🙂 Me diz do seu jeito o que você precisa que eu resolvo — e se preferir falar com uma pessoa, é só dizer *atendente*.";
 }
@@ -1985,12 +1990,39 @@ function whenPhrase(when: string): string {
   return /^\d/.test(w) ? `em *${w}*` : `*${w}*`;
 }
 
+// "Chega hoje?" (09/10, rodada 3): a resposta abre com Sim / Não / Depende da loja, e só depois vem o detalhe.
+// Prazo que cabe no mesmo dia: "hoje", "hoje, 12h–15h", "3h", "45 min" (nunca "amanhã, 5h–8h" nem "1 dia útil").
+export function whenIsToday(when: string): boolean {
+  const w = promiseForCustomer(when).toLowerCase().trim();
+  if (!w || /amanh|dia[s]? [uú]te|dias?\b/.test(w)) return false;
+  return /\bhoje\b/.test(w) || /^(?:em\s*)?~?\d+\s*(?:min|h\b|horas?)/.test(w);
+}
+export function todayVerdictHead(whens: string[]): string {
+  const known = whens.filter(Boolean);
+  if (!known.length) return "Depende da loja.";
+  const today = known.filter(whenIsToday).length;
+  if (today === known.length) return "Sim, chega hoje.";
+  if (today === 0) return "Não, hoje não.";
+  return "Depende da loja.";
+}
+
 // "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
-export function basketEtaAnswer(rows: EtaRow[]): string {
+export function basketEtaAnswer(rows: EtaRow[], askedToday = false): string {
   const body = rows.length === 1
     ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pro seu endereço, contado da compra.`
     : `Pro seu endereço: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`;
-  return `${body}\nDiz *pagar* que eu mando o total com a entrega.`;
+  const head = askedToday ? `${todayVerdictHead(rows.map((r) => r.when))} ` : "";
+  return `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
+}
+
+// "Vocês entregam hoje?" sem nada na mesa: não dá pra prometer, mas a resposta abre direta.
+export function todayUnknown(): string {
+  return "Depende da loja: tem item que chega em horas, outros só no dia seguinte ou mais. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
+}
+
+// Tela de pagamento: o prazo já gravado no pedido, respondido com Sim / Não / Depende.
+export function todayOnOrder(whens: string[], info: string): string {
+  return `${todayVerdictHead(whens)}${info ? ` ${info}` : ""}`;
 }
 
 export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = []): string {
@@ -2528,7 +2560,7 @@ export function pixKeyNoCharge(): string {
 }
 
 export function unsupportedPayment(): string {
-  return "Aqui é só *Pix* ou *cartão de crédito*, tudo pelo chat — dinheiro, vale-refeição, boleto ou pagamento na entrega eu não consigo aceitar.";
+  return "Não dá: aqui é só *Pix* ou *cartão de crédito*, tudo pelo chat e antes da entrega — dinheiro, vale-refeição, boleto ou pagamento na entrega eu não consigo aceitar.";
 }
 
 // "ok"/"blz" logo depois do Pix (06/10): "Imagina! Qualquer coisa é só chamar" soava como
@@ -2595,10 +2627,15 @@ export function complaintAck(hasOrder = true, inside = true): string {
     : `Sinto muito 😕 Já avisei o responsável, ele te responde aqui, ${when}. Me conta o que aconteceu que eu deixo anotado.`;
 }
 
+// Link de produto de outra loja (09/10, rodada 3): a Lia não abre link, pede o nome.
+export function productLinkNotOpened(): string {
+  return "Não consigo abrir link — me diz o *nome do produto* (marca e tamanho, se tiver) que eu procuro nas lojas pra você 🙂";
+}
+
 export function cancelHowTo(hasPaidOrder: boolean): string {
   return hasPaidOrder
     ? "Enquanto eu ainda não comprei na loja, é só dizer *cancelar* que devolvo o valor na hora. Depois que a compra sai, não dá mais."
-    : "Antes de pagar, você pode limpar a lista quando quiser. Depois de pagar, dá pra desistir até eu comprar na loja.";
+    : "Antes de pagar é só dizer *cancelar* — não cobra nada. Depois de pagar, dá pra desistir até eu comprar na loja.";
 }
 
 
@@ -3039,10 +3076,12 @@ export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?
     const today = rows.filter((r) => r.today);
     head =
       rows.length === 1
-        ? today.length ? "Chega hoje sim 🙂" : "Hoje não — o prazo dessa é:"
-        : today.length
-          ? `Chega hoje: ${today.map((r) => `*${r.n}*`).join(", ")}.`
-          : "Nenhuma dessas chega hoje. Os prazos:";
+        ? today.length ? "Sim, chega hoje 🙂" : "Não. Hoje não — o prazo dessa é:"
+        : today.length === rows.length
+          ? "Sim, todas chegam hoje:"
+          : today.length
+            ? `Depende da loja. Chega hoje: ${today.map((r) => `*${r.n}*`).join(", ")}. Os prazos:`
+            : "Não, nenhuma dessas chega hoje. Os prazos:";
   }
   return [head, ...lines].join("\n");
 }

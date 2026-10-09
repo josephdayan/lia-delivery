@@ -219,7 +219,14 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
     case "pay":
       return { type: "rewrite", text: PAY_TEXT[a.method ?? "unspecified"], label: `pay:${a.method ?? "unspecified"}` };
     case "change_address": {
-      const said = a.text?.trim();
+      let said = a.text?.trim();
+      // O endereço que a IA devolve tem que estar na fala do cliente (09/10, rodada 3: "trocar endereço" voltava com o
+      // endereço ANTIGO da cesta como se fosse novo). Palavra por palavra; sem isso, vale "trocar endereço" puro.
+      if (said && text) {
+        const spoken = new Set(normalizeMsg(text).split(/[^a-z0-9]+/).filter(Boolean));
+        const missing = normalizeMsg(said).split(/[^a-z0-9]+/).filter((w) => w.length >= 3 || /\d/.test(w)).some((w) => !spoken.has(w));
+        if (missing) said = undefined;
+      }
       // Só um CEP: vale como CEP solto (o fluxo de endereço novo já cuida); com rua, vai junto.
       if (said && extractCep(said) && said.replace(/\D/g, "").length <= 8) return { type: "rewrite", text: said, label: "change_address" };
       return { type: "rewrite", text: said ? `trocar endereço: ${said}` : "trocar endereço", label: "change_address" };

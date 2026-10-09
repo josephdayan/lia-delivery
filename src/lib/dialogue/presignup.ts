@@ -10,6 +10,7 @@ import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
 import { looksLikeMedicine, parsePriceCap, type Intent } from "../lia-intents";
+import { resolveListItems } from "../list-items";
 import { isPrescriptionDrugName } from "../medicine";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled } from "../recommend/types";
@@ -101,12 +102,15 @@ const clampText = (v: unknown, max: number): string | undefined => {
   return t && t.length <= max ? t : undefined;
 };
 
+// Teto só de sanidade (09/10, rodada 3): o corte em 8 fazia 4 itens de uma lista de 12 sumirem sem aviso.
+export const MAX_PRE_ITEMS = 60;
+
 // Normaliza o JSON cru (item sem produto cai; tema desconhecido cai). null = JSON inutilizável.
 export function parsePreDecision(raw: unknown): PreDecision | null {
   const r = raw as Record<string, unknown> | null;
   if (!r || typeof r !== "object") return null;
   const items: PreItem[] = [];
-  for (const item of Array.isArray(r.items) ? r.items.slice(0, 8) : []) {
+  for (const item of Array.isArray(r.items) ? r.items.slice(0, MAX_PRE_ITEMS) : []) {
     const it = item as Record<string, unknown>;
     const query = clampText(it?.query, 100);
     if (!query) continue;
@@ -360,6 +364,12 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   // A IA do gerente já classificou a mensagem: o roteador de fallback (outra chamada) não repete.
   if (meta) meta.llmUsed = true;
   const plan = planPreSignup(decision, { preBudget: ctx.preBudget, text: input.text });
+  // A IA devolveu MENOS itens do que a lista tem (09/10, rodada 3): item perdido calado é o pior erro. O caminho
+  // determinístico anota todos.
+  if (plan.ok && decision.items.length >= 1 && !decision.recommend && resolveListItems(input.text).length >= decision.items.length + 2) {
+    console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=itens_a_menos`);
+    return { kind: "fallthrough", reason: "itens_a_menos" };
+  }
   if (!plan.ok) {
     console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=${plan.reason}`);
     return { kind: "fallthrough", reason: plan.reason };

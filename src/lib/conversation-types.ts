@@ -285,6 +285,9 @@ export type DeliveryContext = {
   // (devolve o item tirado à cesta) em vez de virar lista nova. `addedSku` = o que entrou no lugar (troca de 1 opção);
   // `to` = a busca que ficou pendente (várias opções).
   // "lego ou carrinho" (09/10, rodada 3): a Lia perguntou qual; "1"/"2"/"o carrinho"/"os dois" escolhe.
+  // Pergunta de esclarecimento que a Lia acabou de fazer ("Qual leite você quer?", 09/10, rodada 3): a próxima fala
+  // responde ELA ("o integral mesmo, e o pão de forma" = leite integral + pão de forma), nunca vira lista nova.
+  openQuestion?: { text: string; at: number };
   askEither?: { base: string; alternatives: [string, string]; at: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
