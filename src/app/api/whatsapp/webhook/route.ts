@@ -5,7 +5,7 @@ import { z } from "zod";
 import { requireMetaSignature, requireWebhookSecret } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { handleDeliveryMessage, recoverFailedCarousel, runTurnScoped, TurnSupersededError } from "@/lib/delivery-service";
-import { notifyOperator, isAdminPhone, notifyOwner } from "@/lib/turn-runtime";
+import { notifyOperator, isAdminPhone, notifyOwner, turnMeta } from "@/lib/turn-runtime";
 import { startWhatsAppCardChargeWorkflow } from "@/lib/payments/whatsapp-pay-dispatch";
 import { genericError, offlineNotice, turnStillWorking } from "@/lib/lia-copy";
 import { isOfflineMode } from "@/lib/offline-mode";
@@ -60,7 +60,14 @@ async function processDeliveryMessage(raw: ReturnType<typeof whatsappAdapter.par
     // runTurnScoped arma o CAS de contexto: se outro turno (ex.: um "cancelar") gravar
     // no meio deste, a próxima escrita DESTE falha e ele para — cesta velha nunca
     // ressuscita por cima da nova (P0.1 do teste de 26/08).
-    const work = runTurnScoped(() => handleDeliveryMessage(inbound));
+    // `repliesSoFar` lê o contador de envios DESTE turno: o aviso de espera só sai se o cliente ainda não recebeu nada
+    // (09/10: "Só um instante" aparecia DEPOIS do total, parecendo um segundo turno).
+    let repliesSoFar = () => 0;
+    const work = runTurnScoped(() => {
+      const meta = turnMeta.getStore();
+      repliesSoFar = () => meta?.replies ?? 0;
+      return handleDeliveryMessage(inbound);
+    });
     const raced = await Promise.race([
       work.then(() => "done" as const),
       new Promise<"deadline">((resolve) => {
@@ -70,7 +77,7 @@ async function processDeliveryMessage(raw: ReturnType<typeof whatsappAdapter.par
     if (raced === "deadline") {
       console.warn(`[turn:deadline] ${inbound.phone} passou de ${deadlineMs}ms sem resposta`);
       try {
-        await whatsappAdapter.sendMessage(inbound.phone, turnStillWorking());
+        if (repliesSoFar() === 0) await whatsappAdapter.sendMessage(inbound.phone, turnStillWorking());
       } catch (notifyError) {
         console.error(`[turn:deadline:notify-failed]`, notifyError);
       }
