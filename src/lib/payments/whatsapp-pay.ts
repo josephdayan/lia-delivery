@@ -257,7 +257,8 @@ async function sendCardFallback(order: CardOrder, last4: string) {
     where: { id: order.id },
     data: { pixId: link.preferenceId, pixCopiaECola: link.initPoint }
   });
-  await whatsappAdapter.sendMessage(order.phone, `${copy.cardChargeFailed(last4)}\n\n${copy.cardInstructions(order.total, link.initPoint, link.mock)}`);
+  void last4;
+  await whatsappAdapter.sendMessage(order.phone, copy.cardRetryLink(order.total, link.initPoint, link.mock));
 }
 
 type ClaimResult =

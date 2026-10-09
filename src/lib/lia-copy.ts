@@ -778,7 +778,7 @@ export function pixInstructions(total: number, mock: boolean): string {
     "",
     "O código vem na próxima mensagem — copia ela inteira e cola no *Pix copia e cola* do seu banco 👇",
     "",
-    mock ? sandboxHint() : "Assim que cair, eu começo a separar."
+    mock ? sandboxHint() : "Assim que cair, eu faço a compra na loja."
   ].join("\n");
 }
 
@@ -831,7 +831,7 @@ export function cardInstructions(total: number, link: string, mock: boolean): st
     "Paga por este link 👇",
     link,
     "",
-    mock ? sandboxHint() : "Assim que aprovar, eu começo a separar."
+    mock ? sandboxHint() : "Assim que aprovar, eu faço a compra na loja."
   ].join("\n");
 }
 
@@ -877,7 +877,18 @@ export function savedCardNothingPending(): string {
 }
 
 export function cardChargeFailed(last4: string): string {
-  return `O cartão final *${last4}* não aprovou. Responde *pix*, ou *cartão* que eu mando um link novo.`;
+  return `O cartão final *${last4}* não aprovou. Dá pra pagar no *Pix* (responde *pix*) ou tentar outro cartão.`;
+}
+
+// Recusa do cartão salvo (09/10): a bolha já disse "não aprovou" — o link novo vem sozinho, sem repetir a recusa
+// nem "responde cartão que eu mando um link" (o link é este).
+export function cardRetryLink(total: number, link: string, mock: boolean): string {
+  return [
+    `Pra tentar outro cartão, paga por este link 👇`,
+    link,
+    "",
+    `Total *${brl(total)}* _(taxa da maquininha incluída)_. ${mock ? sandboxHint() : "Assim que aprovar, eu faço a compra na loja."}`
+  ].join("\n");
 }
 
 export function cardAttemptExpired(): string {
@@ -1637,8 +1648,9 @@ export function retailerInvoiced(storeLabel: string, etaText?: string): string {
 
 // Loja não começou o pedido comprado dentro do prazo (09/10, Drogal 13 h em "pagamento aprovado").
 // Verdade sem susto: o que aconteceu, que a Lia já está cobrando e que o dinheiro não se perde.
-export function retailerStalled(storeLabel: string, shortId: string): string {
-  return `⚠️ A ${storeLabel} ainda não começou a separar seu pedido *#${shortId}*, e o prazo que ela deu já passou. Já estou cobrando a loja e te dou retorno por aqui. Se ela não entregar, você recebe o dinheiro de volta.`;
+// Sem número do pedido pro cliente (dono, 08/10): o #id é nosso.
+export function retailerStalled(storeLabel: string, _shortId?: string): string {
+  return `⚠️ A ${storeLabel} ainda não começou a separar seu pedido, e o prazo que ela deu já passou. Já estou cobrando a loja e te dou retorno por aqui. Se ela não entregar, você recebe o dinheiro de volta.`;
 }
 
 export function ownerStoreStalled(input: { storeLabel: string; storeKey: string; shortId: string; storeOrderNumber: string; state: string; minutes: number; paused: boolean }): string {
@@ -1652,13 +1664,13 @@ export function ownerStoreStalled(input: { storeLabel: string; storeKey: string;
 }
 
 // A loja cancelou depois da compra (09/10, Drogal): o dinheiro volta sozinho, sem o cliente pedir.
-export function storeCanceledRefunded(storeLabel: string, shortId: string, total: number): string {
-  return `A ${storeLabel} cancelou o pedido *#${shortId}* do lado dela, sem entregar. Já estornei ${brl(total)} — volta no mesmo Pix ou cartão em até 7 dias úteis. Se quiser, me manda de novo que eu busco em outra loja.`;
+export function storeCanceledRefunded(storeLabel: string, _shortId: string, total: number): string {
+  return `A ${storeLabel} cancelou seu pedido do lado dela, sem entregar. Já estornei ${brl(total)} — volta no mesmo Pix ou cartão em até 7 dias úteis. Se quiser, me manda de novo que eu busco em outra loja.`;
 }
 
 // Loja parada além do prazo e a Lia pediu o cancelamento lá (09/10): o cliente sabe o próximo passo.
-export function retailerStalledCanceling(storeLabel: string, shortId: string): string {
-  return `⚠️ A ${storeLabel} não começou a separar seu pedido *#${shortId}* e o prazo passou faz tempo. Pedi o cancelamento na loja; assim que ela confirmar, seu dinheiro volta sozinho. Se quiser, me manda de novo que eu busco em outra loja.`;
+export function retailerStalledCanceling(storeLabel: string, _shortId?: string): string {
+  return `⚠️ A ${storeLabel} não começou a separar seu pedido e o prazo passou faz tempo. Pedi o cancelamento na loja; assim que ela confirmar, seu dinheiro volta sozinho. Se quiser, me manda de novo que eu busco em outra loja.`;
 }
 
 export function ownerStoreCanceledRefunded(input: { storeLabel: string; shortId: string; storeOrderNumber: string; total: number; storePaid?: number }): string {

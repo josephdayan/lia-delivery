@@ -6954,7 +6954,9 @@ async function handleSwap(
 // troca. Compartilhado pelo modo lista e pelo Flow da lista.
 function runBasketComposer(pending: PendingChoice[]): string[] {
   const composedNotes: string[] = [];
-  if (process.env.LIA_BASKET_COMPOSER_OFF !== "true" && pending.length >= 2) {
+  // Desligado por padrão desde 09/10 (dono, teste de lojas: a lista de 9 lojas virou 6 sozinha): pedido de várias
+  // lojas fecha, e juntar é OFERTA no fechamento (consolidationOffer, com os dois totais). LIA_BASKET_COMPOSER=on religa.
+  if (process.env.LIA_BASKET_COMPOSER === "on" && process.env.LIA_BASKET_COMPOSER_OFF !== "true" && pending.length >= 2) {
     // Só troca por opção tão básica e tão fiel ao pedido quanto a 1ª (09/10, rodada com a IA: "feijão" virou
     // "Feijão Carioca Pronto Com Tempero 380g" pra juntar loja). `allowed[i]` guarda o índice original.
     const allowed = pending.map((p) => {

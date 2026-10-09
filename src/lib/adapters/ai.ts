@@ -336,8 +336,17 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
 
 let rerankImpl: typeof rerankShoppingOptionsReal = rerankShoppingOptionsReal;
 
-export function rerankShoppingOptions(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
-  return rerankImpl(message, lines, limit);
+// Lista comprida (09/10, 11 itens: rerank de 19 s numa chamada só, o turno passou de 45 s e o cliente recebeu
+// "ainda estou nisso"): em lotes de até 4 itens, em paralelo, na mesma ordem. Um lote que falha = null para a lista
+// inteira (o chamador cai no ranking determinístico, como quando a chamada única falha).
+const RERANK_CHUNK = 4;
+export async function rerankShoppingOptions(message: string, lines: RerankLine[], limit = 3): Promise<RerankResult | null> {
+  if (lines.length <= RERANK_CHUNK) return rerankImpl(message, lines, limit);
+  const chunks: RerankLine[][] = [];
+  for (let i = 0; i < lines.length; i += RERANK_CHUNK) chunks.push(lines.slice(i, i + RERANK_CHUNK));
+  const results = await Promise.all(chunks.map((chunk) => rerankImpl(message, chunk, limit)));
+  if (results.some((r, i) => !r || r.lines.length !== chunks[i].length)) return null;
+  return { lines: results.flatMap((r) => r!.lines) };
 }
 
 // Costura de TESTE (como a do roteador): os E2E injetam o juízo da IA sem rede.

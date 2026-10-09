@@ -120,7 +120,7 @@ test("09/10: Drogal parada — cliente avisado, dono avisado, loja fora da vitri
 
   await tick();
   assert.equal(toCustomer().length, 1, "cliente avisado");
-  assert.match(toCustomer()[0], /Drogal ainda não começou a separar seu pedido \*#[A-Z0-9]{6}\*/);
+  assert.match(toCustomer()[0], /Drogal ainda não começou a separar seu pedido, e/);
   assert.match(toCustomer()[0], /dinheiro de volta/);
   assert.equal(toOwner().length, 1, "dono avisado");
   assert.match(toOwner()[0], /não começou o pedido .*1667434680238-01/);
@@ -226,7 +226,7 @@ test("09/10: parada além da tolerância → Lia pede o cancelamento na loja; lo
   assert.match(notes, /Estorno automático: loja cancelou/);
   assert.match(notes, /ESTORNO CONFIRMADO: integral/);
   assert.equal(toCustomer().length, 2);
-  assert.match(toCustomer()[1], /Drogal cancelou o pedido \*#[A-Z0-9]{6}\*/);
+  assert.match(toCustomer()[1], /Drogal cancelou seu pedido do lado dela/);
   assert.match(toCustomer()[1], /Já estornei R\$ 12,35/);
   assert.equal(toOwner().length, 2);
   assert.match(toOwner()[1], /Estorno automático de R\$ 12,35 ao cliente feito/);
@@ -251,5 +251,5 @@ test("09/10: e-mail de cancelamento da loja → estorno automático na hora", as
   assert.match(after.notes ?? "", /📧 canceled — e-mail da loja 1667434680238-03/);
   const mine = sent.slice(start).filter((m) => m.to === phone).map((m) => m.text);
   assert.equal(mine.length, 1);
-  assert.match(mine[0], /cancelou o pedido .* Já estornei/);
+  assert.match(mine[0], /cancelou seu pedido .* Já estornei/);
 });
