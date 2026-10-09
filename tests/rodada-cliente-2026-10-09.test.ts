@@ -138,3 +138,29 @@ test("petisco Pedigree não dispara 'quem leva ração costuma levar um petisco'
   const out = suggestComplement([{ name: "Petisco Pedigree Dentastix Cuidado Oral Cães Adultos 3 unidades" } as never], { shelfById: () => ({ id: "pet.petisco_cachorro" }) as never });
   assert.equal(out, null);
 });
+
+test("cartão salvo: a cobrança na Pagar.me leva o endereço de entrega e o destinatário (antifraude), somando o total", async () => {
+  const { pagarmeAdapter, shippingAddressFromOrder } = await import("../src/lib/payments/pagarme");
+  const address = shippingAddressFromOrder("Rua Engenheiro Edgar Egidio de Souza, 221 ap 13, Santa Cecília, São Paulo - SP", "01233-020");
+  assert.deepEqual(address, { line1: "Rua Engenheiro Edgar Egidio de Souza, 221 ap 13, Santa Cecília", zipCode: "01233020", city: "São Paulo", state: "SP", country: "BR" });
+  assert.equal(shippingAddressFromOrder("Rua sem cidade 12", "01233020"), null);
+  const prev = { key: process.env.PAGARME_SECRET_KEY, fetch: global.fetch };
+  process.env.PAGARME_SECRET_KEY = "sk_test_x";
+  let body: Record<string, unknown> = {};
+  global.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+    body = JSON.parse(String(init?.body ?? "{}"));
+    return new Response(JSON.stringify({ id: "or_1", status: "paid", charges: [{ id: "ch_1", status: "paid", last_transaction: { status: "captured", acquirer_message: "ok" } }] }), { status: 200 });
+  }) as typeof fetch;
+  try {
+    await pagarmeAdapter.chargeSavedCard({ orderId: "ord_1", attemptId: "att_1", amountCents: 33345, customerId: "cus_1", cardId: "card_1", description: "Lia", shipping: { amountCents: 9908, recipientName: "Joseph", recipientPhone: "+5511976366065", address: address! } });
+  } finally {
+    process.env.PAGARME_SECRET_KEY = prev.key;
+    global.fetch = prev.fetch;
+  }
+  const items = body.items as { amount: number }[];
+  const shipping = body.shipping as { amount: number; recipient_name: string; address: { zip_code: string; state: string } };
+  assert.equal(items[0].amount + shipping.amount, 33345, "itens + entrega = total cobrado");
+  assert.equal(shipping.recipient_name, "Joseph");
+  assert.equal(shipping.address.zip_code, "01233020");
+  assert.equal(shipping.address.state, "SP");
+});

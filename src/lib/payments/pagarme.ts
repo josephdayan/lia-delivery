@@ -10,6 +10,21 @@ export type PagarmeAddress = {
   country?: string;
 };
 
+// Entrega do pedido (09/10, cartão do dono recusado pelo antifraude num pedido de R$ 333): sem endereço de entrega
+// nem destinatário, o antifraude da Pagar.me julga só com o cartão. `shipping` do POST /orders (v5).
+export type PagarmeShipping = { amountCents: number; recipientName: string; recipientPhone?: string; address: PagarmeAddress };
+
+// "Rua X, 221 ap 13, Santa Cecília, São Paulo - SP" + CEP → endereço da Pagar.me. Sem cidade/UF legíveis → null.
+export function shippingAddressFromOrder(deliveryAddress: string | null | undefined, cep: string | null | undefined): PagarmeAddress | null {
+  const text = (deliveryAddress ?? "").replace(/\s+/g, " ").trim();
+  const zip = (cep ?? "").replace(/\D/g, "");
+  const m = text.match(/^(.*),\s*([^,]+?)\s*[-–\/]\s*([A-Za-z]{2})\s*$/);
+  if (!m || zip.length !== 8) return null;
+  const line1 = m[1].trim();
+  if (!line1) return null;
+  return { line1: line1.slice(0, 256), zipCode: zip, city: m[2].trim().slice(0, 64), state: m[3].toUpperCase(), country: "BR" };
+}
+
 export type PagarmeCustomerInput = {
   code: string;
   name: string;
@@ -199,6 +214,7 @@ export const pagarmeAdapter = {
     customerId: string;
     cardId: string;
     description: string;
+    shipping?: PagarmeShipping;
   }): Promise<PagarmeSavedCardCharge> {
     if (mockEnabled() && !config().secretKey) {
       return {
@@ -209,18 +225,34 @@ export const pagarmeAdapter = {
       };
     }
 
+    // Entrega válida só se sobra valor para o item (centavos inteiros, item ≥ R$ 1).
+    const shippingCents = input.shipping && Number.isInteger(input.shipping.amountCents) && input.shipping.amountCents >= 0 && input.amountCents - input.shipping.amountCents >= 100
+      ? input.shipping.amountCents
+      : undefined;
     try {
       const order = await request<PagarmeOrder>("/orders", {
         method: "POST",
         body: JSON.stringify({
           code: input.orderId.slice(0, 52),
           customer_id: input.customerId,
+          // Com entrega: o total é itens + entrega (a Pagar.me soma os dois), então o item leva o resto.
           items: [{
             code: input.orderId.slice(0, 52),
-            amount: input.amountCents,
+            amount: input.amountCents - (shippingCents ?? 0),
             description: input.description.slice(0, 256),
             quantity: 1
           }],
+          ...(shippingCents != null && input.shipping
+            ? {
+                shipping: {
+                  amount: shippingCents,
+                  description: "Entrega pela loja",
+                  recipient_name: input.shipping.recipientName.slice(0, 64),
+                  ...(input.shipping.recipientPhone ? { recipient_phone: digits(input.shipping.recipientPhone).slice(-13) } : {}),
+                  address: addressPayload(input.shipping.address)
+                }
+              }
+            : {}),
           payments: [{
             payment_method: "credit_card",
             credit_card: {

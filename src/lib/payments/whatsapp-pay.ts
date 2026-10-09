@@ -2,7 +2,7 @@ import { orderHasMedicine } from "@/lib/medicine-orders";
 import { prisma } from "@/lib/prisma";
 import { whatsappAdapter, type PaymentConfirmation, type WhatsAppOrderDetailsInput } from "@/lib/adapters/whatsapp";
 import { checkoutAdapter } from "@/lib/payments/mercadopago";
-import { pagarmeAdapter } from "@/lib/payments/pagarme";
+import { pagarmeAdapter, shippingAddressFromOrder, type PagarmeShipping } from "@/lib/payments/pagarme";
 import * as copy from "@/lib/lia-copy";
 
 const ATTEMPT_TTL_MS = 60 * 60 * 1000;
@@ -373,6 +373,18 @@ async function markAttemptFailed(attemptId: string, error: string | undefined) {
   return { handled: true, charged: false };
 }
 
+// Endereço de entrega e destinatário pro antifraude da Pagar.me (09/10). Endereço ilegível = sem shipping (como antes).
+function shippingFor(order: { deliveryAddress: string | null; cep: string | null; deliveryFee: number; customerName: string | null; buyerName: string | null; phone: string }): PagarmeShipping | undefined {
+  const address = shippingAddressFromOrder(order.deliveryAddress, order.cep);
+  if (!address) return undefined;
+  return {
+    amountCents: Math.max(0, Math.round((order.deliveryFee ?? 0) * 100)),
+    recipientName: (order.customerName ?? order.buyerName ?? "").trim() || "Cliente Lia",
+    recipientPhone: order.phone,
+    address
+  };
+}
+
 export async function chargeConfirmedPaymentAttempt(attemptId: string) {
   const attempt = await prisma.paymentAttempt.findUnique({
     where: { id: attemptId },
@@ -402,7 +414,8 @@ export async function chargeConfirmedPaymentAttempt(attemptId: string) {
     amountCents: attempt.amountCents,
     customerId: attempt.credential.providerCustomerId,
     cardId: attempt.credential.providerCardId,
-    description: `Lia · pedido ${attempt.deliveryOrderId.slice(-6)}`
+    description: `Lia · pedido ${attempt.deliveryOrderId.slice(-6)}`,
+    shipping: shippingFor(attempt.deliveryOrder)
   });
 
   if (charge.status === "captured") {
