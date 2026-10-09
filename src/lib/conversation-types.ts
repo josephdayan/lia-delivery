@@ -284,6 +284,8 @@ export type DeliveryContext = {
   // `complementDeclined` = consultas/prateleiras recusadas nesta conversa (nunca oferece de novo).
   complementOffer?: { option: ChoiceOption; query: string; shelfId: string; why: string; trigger: string; logId?: string; at: number };
   complementAsked?: { skus: string[]; at: number };
+  // Número solto já usado como ajuste de quantidade deste item (09/10, rodada 2): o segundo "1" não reescreve de novo.
+  bareQtyUsed?: string;
   complementDeclined?: string[];
   cep?: string;
   city?: string;

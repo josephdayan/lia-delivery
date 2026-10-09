@@ -2661,6 +2661,11 @@ export function moreOfSameAdded(added: number, name: string, totalQty: number): 
 export function moreOfSameAddedShort(totalQty: number, name: string): string {
   return `✅ ${totalQty}x ${name}`;
 }
+// Número solto que não vira ajuste (09/10, rodada 2): a quantidade pedida fica como está.
+export function bareNumberKeepsQty(qty: number, name: string): string {
+  return `Deixei ${qty}x ${name} como estava. Pra mudar a quantidade, manda assim: *põe 3* ou *só 1*.`;
+}
+
 export function qtyAdjustedShort(qty: number, name: string): string {
   return `✅ ${qty}x ${name}`;
 }

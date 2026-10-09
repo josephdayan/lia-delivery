@@ -955,7 +955,24 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bjhonnie|\bjohnny walker|\bjhonny walker/, "johnnie walker"],
   // Item do dia a dia sem qualificador (09/10): a busca da loja por "óleo" traz secante de unha e óleo corporal.
   [/^oleos?$/, "oleo de soja"],
-  [/^feijao$/, "feijao carioca"]
+  [/^feijao$/, "feijao carioca"],
+  // Termos populares que o catálogo não usa (09/10, rodada 2, g4). Todos exigem a palavra INTEIRA ou a frase
+  // inteira, para nunca virar produto errado ("massa" fica de fora: pode ser massa de pastel, lasanha ou corrida).
+  [/\bcervas?\b|\bcervejinhas?\b|\bbrejas?\b/, "cerveja"],
+  [/\breq\b/, "requeijao"],
+  [/^ph$/, "papel higienico"],
+  [/\bomo{2,}\b/, "omo"],
+  [/\bcolgat\b|\bcolgati\b/, "colgate"],
+  [/\bgil+ett?e?\b|\bgilete\b/, "gillette"],
+  [/\byogurtes?\b|\byogurt\b/, "iogurte"],
+  [/\bpapel filme\b/, "filme pvc"],
+  [/^calabresa$/, "linguica calabresa"],
+  [/^manteigas?$/, "manteiga com sal"],
+  [/^ovo$/, "ovos"],
+  [/^sal$/, "sal refinado"],
+  [/^(pampers|huggies)$/, "fralda $1"],
+  [/^toddy$/, "achocolatado toddy"],
+  [/^nescau$/, "achocolatado nescau"]
 ];
 // Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
 // "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.
