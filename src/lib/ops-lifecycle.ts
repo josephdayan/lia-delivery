@@ -715,7 +715,7 @@ export async function autoRefundStoreCanceled(
     if (delivered === "skipped") {
       await prisma.deliveryOrder.update({ where: { id: orderId }, data: { notes: appendOrderNote(order.notes, "⚠️ Aviso do estorno NÃO enviado: cliente fora da janela de 24h e sem template. Avisar por outro canal.") } });
     }
-    await notifyOwner(copy.ownerStoreCanceledRefunded({ storeLabel: input.storeLabel, shortId, storeOrderNumber: input.storeOrderNumber, total: result.amount, storePaid: payout ? payout.amountCents / 100 : undefined }), order.phone);
+    await notifyOwner(copy.ownerStoreCanceledRefunded({ storeLabel: input.storeLabel, shortId, storeOrderNumber: input.storeOrderNumber, total: result.amount, storePaid: payout ? payout.amountCents / 100 : undefined }));
     console.warn("[store-canceled:auto-refund]", input.storeKey, shortId, input.storeOrderNumber, result.reference);
     return "refunded";
   } catch (error) {
@@ -726,7 +726,7 @@ export async function autoRefundStoreCanceled(
         where: { id: orderId },
         data: { notes: appendOrderNote(current.notes, `${AUTO_REFUND_FAILED_MARKER}: loja cancelou e o estorno falhou — ${message.replace(/[\r\n]/g, " ").slice(0, 160)} (${new Date().toISOString()}). Estornar à mão no /ops.`) }
       });
-      await notifyOwner(copy.operatorAutoRefundFailedAlert(shortId, message), current.phone);
+      await notifyOwner(copy.operatorAutoRefundFailedAlert(shortId, message));
     }
     return "failed";
   }

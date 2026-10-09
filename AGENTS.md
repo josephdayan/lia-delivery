@@ -82,6 +82,10 @@ SISTEMA (o agente continua sem mover dinheiro):
   ainda NÃO foi exercitado numa loja real (o da Drogal já estava cancelado): o primeiro caso real diz se as lojas
   aceitam; recusa vira nota "recusado (HTTP n)" e o fluxo de antes (alerta ao dono) continua.
 - O Pix pago à loja não volta sozinho: a nota do pedido guarda valor e e2e; o dono confere o extrato do Asaas.
+- **Alerta de dinheiro/loja nunca é suprimido** quando o cliente é o próprio dono (loja parada, atrasada, cancelada,
+  estorno automático feito ou falho): no #GTGH3C o Mercado Pago recusou o estorno ("Collector hasn't enough
+  available money", saldo da conta) e o alerta não chegou porque o dono testava como cliente. O estorno falho é
+  retentado a cada 10 min pela próxima olhada; entra saldo no Mercado Pago, sai o estorno.
 Teste: `tests/store-stall-2026-10-09.test.ts` (10). Caso Drogal: cancelado às 8h25 de 09/10, cobrado no ticket
 #212970 (motivo + devolução de R$ 11,85).
 

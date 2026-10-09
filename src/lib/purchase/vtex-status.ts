@@ -162,7 +162,8 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
       const eta = etaTextFrom(sig.eta, now);
       const common = { source: "tracking_reader" as const, storeKey: sub.storeKey, storeOrderNumber: sub.storeOrderNumber, ...(sig.trackingUrl ? { trackingUrl: sig.trackingUrl } : {}) };
       const notes = order.notes ?? "";
-      // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora,
+      // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora (mesmo
+      // quando o cliente é o próprio dono testando: alerta de dinheiro/loja nunca é suprimido),
       // conta a verdade ao cliente e tira a loja da vitrine até o dono religar (store-pause.ts).
       const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: order.id, storeKey: sub.storeKey }, orderBy: { createdAt: "desc" }, select: { completedAt: true, createdAt: true } });
       const boughtAt = job?.completedAt ?? job?.createdAt ?? sub.createdAt;
@@ -199,14 +200,14 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
         const { deliverNotice, notifyOwner } = await import("../turn-runtime");
         const copy = await import("../lia-copy");
         if (!cancelAccepted) await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
-        await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey: sub.storeKey, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }), order.phone);
+        await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey: sub.storeKey, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }));
         console.error("[store-stall]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
         report.notices += 1;
       } else if (health === "late" && !notes.includes(LATE_MARK) && !notes.includes(STALL_MARK)) {
         await prisma.deliveryOrder.update({ where: { id: order.id }, data: { notes: appendOrderNote(order.notes, `${LATE_MARK} (status "${sig.state}" em ${now.toISOString()}).`) } });
         const { notifyOwner } = await import("../turn-runtime");
         const copy = await import("../lia-copy");
-        await notifyOwner(copy.ownerOrderLate({ storeLabel: store.label, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state) }), order.phone);
+        await notifyOwner(copy.ownerOrderLate({ storeLabel: store.label, shortId, storeOrderNumber: sub.storeOrderNumber, state: String(sig.state) }));
         console.warn("[store-late]", sub.storeKey, shortId, sub.storeOrderNumber, sig.state);
       }
       if (sig.state === "canceled") {
@@ -219,7 +220,7 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
         const refund = storeCancelAutoRefundEnabled() ? await autoRefundStoreCanceled(order.id, { storeKey: sub.storeKey, storeLabel: store.label, storeOrderNumber: sub.storeOrderNumber, source: "store-status" }) : "skipped";
         if (refund === "skipped" && !notes.includes(CANCELED_MARK)) {
           const { notifyOwner } = await import("../turn-runtime");
-          await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${shortId} (${sub.storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar o cliente no /ops.`, order.phone);
+          await notifyOwner(`🛑 A ${store.label} cancelou o pedido #${shortId} (${sub.storeOrderNumber}) depois da compra. Conferir o reembolso da loja e estornar o cliente no /ops.`);
         }
         if (refund === "failed") {
           await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { nextCheckAt: new Date(now.getTime() + 10 * 60_000), lastCheckedAt: now } });
