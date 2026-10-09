@@ -34,6 +34,7 @@ import { displayQueryName } from "@/lib/query-display";
 import { dropAddressOnlyItems, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
+import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { detectRecommendation } from "@/lib/recommend/detect";
@@ -54,7 +55,7 @@ import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, Choice
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
 import { refreshPausedStores } from "./store-pause";
-import { TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TURN_LOCK_TTL_MS, TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -1070,6 +1071,49 @@ function sameDayMaxMinutes(): number {
   return Number(process.env.LIA_SAME_DAY_MAX_MINUTES ?? 24 * 60);
 }
 
+// Itens ainda sem escolha, pelo nome que o cliente usou (09/10, rodada 2): "fecha"/"pagar"/"quanto tá" dizem QUAIS faltam.
+function pendingNames(ctx: DeliveryContext): string[] {
+  const names = (ctx.pending ?? []).map((p) => (p.baseQuery ?? p.query).trim()).filter(Boolean);
+  return [...new Set(names)];
+}
+
+// O lembrete "as opções de X continuam aí em cima" não repete em falas seguidas (09/10, rodada 2: depois de "blz" saía
+// o mesmo ponteiro três vezes numa conversa curta). Olha a última fala da Lia, de turnos anteriores.
+function choicesNudgeAllowed(): boolean {
+  const last = turnMeta.getStore()?.prevSent?.slice(-1)[0];
+  return !(last && /continuam aí em cima/.test(last));
+}
+
+// "ok"/"blz"/"👍"/"obrigado"/"valeu" sozinhos: reconhecimento, nunca escolha nem encerramento (09/10, rodada 2).
+const NEUTRAL_ACK_RE = /^(?:muito |mto )?(?:ok+|okay|oks|blz|beleza|certo|certinho|show|top|joia|massa|valeu|vlw|obrigad[oa]|obg|brigad[oa]|perfeito|otimo|legal|tudo bem|ta bom|ta certo|ta otimo|entendi|ahh?|aham)(?: (?:valeu|obrigad[oa]|pela ajuda|demais))?$/;
+const EMOJI_ACK_RE = /^[\p{Extended_Pictographic}\u{FE0F}\u200d\s]+$/u;
+function neutralAck(text: string): "thanks" | "ok" | null {
+  const n = normalizeMsg(text).replace(/[!.,;:]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n) return null;
+  if (NEUTRAL_ACK_RE.test(n)) return /valeu|vlw|obrig|obg|brigad/.test(n) ? "thanks" : "ok";
+  if (EMOJI_ACK_RE.test(text.trim())) return /[🙏❤💚🙌]/u.test(text) ? "thanks" : /[👍👌✅🆗😊🙂]/u.test(text) ? "ok" : null;
+  return null;
+}
+
+// Reenvio idêntico (regra de 08/10): sem refazer a busca, mas nunca em silêncio (09/10, rodada 2). Turno anterior ainda
+// rodando = uma linha ("já estou nisso"); já terminou = reapresenta a pergunta/opções em que a conversa parou.
+async function replyToDuplicateInbound(phone: string, convoId: string) {
+  const fresh = await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true, turnLock: true, turnLockAt: true } });
+  const running = Boolean(fresh?.turnLock && fresh.turnLockAt && Date.now() - fresh.turnLockAt.getTime() < TURN_LOCK_TTL_MS);
+  if (running) {
+    await reply(phone, copy.duplicateStillWorking());
+    return;
+  }
+  const ctx = readCtx(fresh?.context ?? null);
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length) {
+    await reply(phone, copy.duplicateRecap());
+    await sendChoices(phone, ctx.pending[0]);
+    return;
+  }
+  const last = ctx.lastSent && Date.now() - ctx.lastSent.at < REPEAT_WINDOW_MS ? ctx.lastSent.texts.slice(-1)[0] : undefined;
+  await reply(phone, last ? copy.duplicateRecapLast(last) : copy.duplicateNothingToShow());
+}
+
 async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
   // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
@@ -1722,10 +1766,12 @@ export async function handleDeliveryMessage(input: {
   // diferentes — o cliente reenviou enquanto o 1º turno ainda buscava) e o 2º turno virou
   // "troca + busca de novo" em cima do formulário, com três carrosséis. Texto idêntico ao da
   // mensagem anterior, há poucos minutos, com cara de pedido de produto = reenvio por impaciência:
-  // o 1º turno já responde (ou responderá); este fica mudo. Fica ANTES do lock de propósito.
+  // o 1º turno já responde (ou responderá); este NÃO refaz a busca. Rodada 2 (09/10): mudo também deixava o cliente sem sinal
+  // — agora responde curto (replyToDuplicateInbound). Fica ANTES do lock de propósito.
   if (inboundMessageId && looksLikeProductList(text) && (await isRecentDuplicateInbound(convo.id, inboundMessageId, text))) {
     console.log("[inbound:duplicate]", phone, JSON.stringify(text.slice(0, 60)));
     await skipTurnTicket(convo.id, ticket);
+    await replyToDuplicateInbound(phone, convo.id);
     return;
   }
 
@@ -2443,6 +2489,40 @@ async function handleDeliveryTurn(
     return;
   }
 
+  // Escolha aberta + reconhecimento seco ("👍", "ok", "blz", "obrigado", "valeu") — 09/10, rodada 2: "👍" virava
+  // "Não peguei qual você quer" (8,6 s de IA) e "obrigado" soava como encerramento. Resposta curta que lembra o item
+  // pendente, sem IA, sem repetir o lembrete em falas seguidas.
+  if (
+    ctx.step === "choosing" &&
+    ctx.pending?.[0]?.options.length &&
+    !(ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.packConfirm)
+  ) {
+    const ack = neutralAck(text);
+    if (ack) {
+      await reply(phone, copy.choiceAck(ctx.pending[0].baseQuery ?? ctx.pending[0].query, ack === "thanks", choicesNudgeAllowed(), turnMeta.getStore()?.prevSent ?? []));
+      return;
+    }
+  }
+
+  // Pergunta sobre o PRODUTO com as opções na tela (09/10, rodada 2): "essa ração serve pra filhote?", "é original?",
+  // "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois". Respondida em código com o nome/
+  // preço/loja das opções (e diz com honestidade o que não dá pra saber), sem perder a escolha aberta.
+  if (
+    ctx.step === "choosing" &&
+    ctx.pending?.[0]?.options.length &&
+    intent.kind === "free_text" &&
+    !(ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.packConfirm)
+  ) {
+    const current = ctx.pending[0];
+    const shown = current.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine), storeLabel: o.storeLabel }));
+    const pq = parseProductQuestion(text, shown.length);
+    if (pq && !(pq.kind === "dietary" && !isPetFood(shown))) {
+      const answer = answerProductQuestion(pq, shown, current.baseQuery ?? current.query);
+      await reply(phone, choicesNudgeAllowed() ? `${answer}\n\n${copy.choicesStillOpen(current.query)}` : answer);
+      return;
+    }
+  }
+
   // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
   // estado e escolhe uma ação de lista fechada ANTES do roteamento por regex. Inequívoco/barato (número,
   // CEP, botões, pix/cartão, cadastro) segue determinístico; IA fora do ar ou ação inválida = caminho de hoje.
@@ -2692,7 +2772,7 @@ async function handleDeliveryTurn(
   // Depois de responder, a ETAPA em curso é reapresentada — a pergunta lateral fazia
   // os cards "sumirem" e o cliente tinha que pedir de novo (29/08 S7/S12).
   const rePresentStep = async () => {
-    if (ctx.step === "choosing" && ctx.pending?.length) {
+    if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) {
       await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
     }
   };
@@ -2810,7 +2890,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows)}`);
+      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx))}`);
       return;
     }
     if ((ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment") && ctx.deliveryOrderId) {
@@ -3064,7 +3144,7 @@ async function handleDeliveryTurn(
     }
     if (ctx.basket?.length) {
       const produtos = Math.round(basketForCopy(ctx).reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -3953,7 +4033,7 @@ async function handleDeliveryTurn(
       // 11/08: só item com preço entra no pedido) — a Lia pede pra terminar a escolha,
       // que é o único jeito de fechar com total na hora.
       if (ctx.pending?.length) {
-        await reply(phone, copy.finishChoiceFirst());
+        await reply(phone, copy.finishChoiceFirst(pendingNames(ctx), turnMeta.getStore()?.prevSent ?? []));
         await sendChoices(phone, ctx.pending[0]);
         return;
       }
@@ -4094,7 +4174,7 @@ async function handleDeliveryTurn(
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
         }
         return;
       }
@@ -4261,7 +4341,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
       return;
     }
   }
@@ -4446,7 +4526,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
     return;
   }
   // Cancelou agora há pouco e perguntou "cadê meu pedido?": o assunto é o CANCELADO.
@@ -5721,7 +5801,7 @@ async function confirmChosenOption(
   }
   if (ctx.pending.length) {
     await writeCtx(convoId, ctx);
-    await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst()}` : confirmed);
+    await reply(phone, opts?.thenPay ? `${confirmed}\n${copy.finishChoiceFirst(pendingNames(ctx))}` : confirmed);
     await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(shownQuery(ctx.pending[0]), ctx.pending.length, ctx.pending[0].closestFalta));
     return;
   }
@@ -6161,9 +6241,10 @@ async function handleChoosing(
   if (asksRunningTotal(text)) {
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1):
-    // o parcial e o lembrete em duas mensagens seguidas diziam a mesma coisa.
-    await reply(phone, `${copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows)}\n\n${copy.choicesStillOpen(current.query)}`);
+    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
+    // não se repete em falas seguidas (rodada 2).
+    const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+    await reply(phone, choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
     return;
   }
 
