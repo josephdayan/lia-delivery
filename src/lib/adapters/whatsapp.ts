@@ -524,6 +524,14 @@ export function consolidationYesTitle(storeLabel: string): string {
   return named.length <= 20 ? named : "Juntar numa loja";
 }
 
+// Botões do pedido mínimo (09/10): tirar o item que não atinge o mínimo ou completar na própria loja. Títulos ≤ 20 caracteres.
+export function minimumButtonTitles(firstWord: string, storeLabel: string): { remove: string; fill: string } {
+  const word = firstWord.toLowerCase();
+  const remove = `Tirar ${word}`.length <= 20 ? `Tirar ${word}` : "Tirar esse item";
+  const fill = `Completar na ${storeLabel}`.length <= 20 ? `Completar na ${storeLabel}` : "Completar na loja";
+  return { remove, fill };
+}
+
 export const whatsappAdapter = {
   parseInbound(payload: RawInbound) {
     const metaChange = payload.entry?.[0]?.changes?.[0]?.value;
@@ -723,6 +731,16 @@ export const whatsappAdapter = {
     return sendMetaSimpleButtons(to, body, [
       { id: "minswap:yes", title: "Trocar de loja" },
       { id: "minswap:no", title: "Deixar como está" }
+    ]);
+  },
+
+  // Saída do pedido mínimo sem equivalente em outra loja (09/10): o toque volta como `minimo:tirar` / `minimo:completar`.
+  async sendMinimumOptions(to: string, body: string, firstWord: string, storeLabel: string) {
+    if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
+    const titles = minimumButtonTitles(firstWord, storeLabel);
+    return sendMetaSimpleButtons(to, body, [
+      { id: "minimo:tirar", title: titles.remove },
+      { id: "minimo:completar", title: titles.fill }
     ]);
   },
 

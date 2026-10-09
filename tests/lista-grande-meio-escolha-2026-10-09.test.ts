@@ -187,7 +187,7 @@ test("09/10: 'esvazia tudo, quero recomeçar' com a oferta de troca de loja aber
   if (!dbOk) return t.skip("sem banco");
   const c = await customer();
   const basket = [
-    { sku: "americanas-1", name: "Sabonete em Barra Dove 90g", qty: 2, unitPrice: 5.71, lineTotal: 11.42, storeKey: "americanas", storeLabel: "Americanas" },
+    { sku: "americanas-1", name: "Sabonete em Barra Dove 90g", qty: 2, unitPrice: 5.71, lineTotal: 11.42, storeKey: "carrefour", storeLabel: "Carrefour" },
     { sku: "farmaciaindiana-1", name: "Creme Dental Colgate 50g", qty: 1, unitPrice: 4.39, lineTotal: 4.39, storeKey: "farmaciaindiana", storeLabel: "Farmácia Indiana" }
   ];
   await setCtx(c.userId, { ...baseCtx, step: "collecting", basket, minSwap: { fromStoreKey: "americanas", replacements: [] } });
@@ -208,4 +208,31 @@ test("09/10: 'não, deixa' / 'deixa assim' são recusa (não busca de produto)",
     assert.equal(detectIntent(phrase).kind, "reject", phrase);
   }
   assert.notEqual(detectIntent("deixa o arroz de 5kg").kind, "reject");
+});
+
+test("09/10: botão 'Tirar' do pedido mínimo remove só o item da loja abaixo do mínimo e segue com o resto", async (t) => {
+  if (!dbOk) return t.skip("sem banco");
+  const c = await customer();
+  const basket = [
+    { sku: "americanas-9", name: "Detergente Líquido Limpol Neutro 500ml", qty: 1, unitPrice: 2.9, lineTotal: 2.9, storeKey: "carrefour", storeLabel: "Carrefour" },
+    { sku: "mambo-1", name: "Arroz Polido Tipo 1 Tio João 1kg", qty: 1, unitPrice: 7.6, lineTotal: 7.6, storeKey: "mambo", storeLabel: "Mambo" }
+  ];
+  await setCtx(c.userId, { ...baseCtx, step: "collecting", basket });
+  const out = await send(c.phone, "minimo:tirar");
+  assert.match(out, /Tirei Detergente/i, out.slice(0, 300));
+  const ctx = (await ctxOf(c.userId)) as { basket?: { name: string }[] };
+  const names = (ctx.basket ?? []).map((b) => b.name).join("|");
+  assert.doesNotMatch(names, /Detergente/);
+  assert.match(names, /Arroz/);
+});
+
+test("09/10: botão 'Completar' do pedido mínimo pede um item da loja e diz quanto falta", async (t) => {
+  if (!dbOk) return t.skip("sem banco");
+  const c = await customer();
+  const basket = [{ sku: "americanas-9", name: "Detergente Líquido Limpol Neutro 500ml", qty: 1, unitPrice: 2.9, lineTotal: 2.9, storeKey: "carrefour", storeLabel: "Carrefour" }];
+  await setCtx(c.userId, { ...baseCtx, step: "collecting", basket });
+  const out = await send(c.phone, "minimo:completar");
+  assert.match(out, /Carrefour.*faltam R\$/i, out.slice(0, 300));
+  const ctx = (await ctxOf(c.userId)) as { basket?: unknown[] };
+  assert.equal(ctx.basket?.length, 1, "completar não mexe na cesta");
 });

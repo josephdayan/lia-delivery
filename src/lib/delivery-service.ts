@@ -3272,6 +3272,31 @@ async function handleDeliveryTurn(
   // respondem e retornam (o cliente pedia a troca e recebia de volta o menu de
   // pagamento, podendo pagar uma cotação amarrada ao endereço velho). Como o frete foi
   // calculado pro endereço antigo, uma cotação em aberto cai antes de pedir o CEP novo.
+  // Botões do pedido mínimo (09/10): tirar o item que não atinge o mínimo (e seguir com o resto) ou completar na loja.
+  if (/^minimo:(tirar|completar)$/.test(normalizeMsg(text))) {
+    const stuckStore = conciergeStoresBelowMinimum(ctx)[0];
+    if (!stuckStore) {
+      await reply(phone, copy.didNotUnderstand());
+      return;
+    }
+    if (normalizeMsg(text) === "minimo:completar") {
+      const produtos = (ctx.basket ?? []).filter((item) => item.storeKey === stuckStore.key).reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0);
+      const falta = Math.max(0, Math.round((display(storeMinReal(stuckStore)) - produtos) * 100) / 100);
+      await reply(phone, `Manda o nome de um item da ${stuckStore.label} que eu somo (faltam ${copy.brl(falta)}).`);
+      return;
+    }
+    const removed = (ctx.basket ?? []).filter((item) => item.storeKey === stuckStore.key);
+    ctx.basket = (ctx.basket ?? []).filter((item) => item.storeKey !== stuckStore.key);
+    if (!ctx.basket.length) {
+      await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
+      await reply(phone, copy.cartCleared());
+      return;
+    }
+    await writeCtx(convo.id, ctx);
+    await continueAfterBasket(phone, convo.id, ctx, user.cep, `Tirei ${removed.map((item) => item.name).join(", ")}. Sigo com o resto.`);
+    return;
+  }
+
   // Resposta à oferta de juntar numa loja só (09/10). Cesta mudou desde a oferta → ela morre. Outra
   // mensagem qualquer segue o fluxo normal (a oferta sai da mesa e não volta pra mesma cesta).
   if (ctx.consolidationOffer) {
@@ -9255,7 +9280,16 @@ async function continueAfterBasket(
       if (prefix) await reply(phone, prefix);
       await reply(phone, minimumOrderText(ctx, belowStore));
       // A saída de verdade: mesmos itens em loja sem mínimo (teste real 24/08).
-      await offerMinimumSwap(phone, convoId, ctx, belowStore);
+      const swapOffered = await offerMinimumSwap(phone, convoId, ctx, belowStore);
+      // Sem equivalente em outra loja (09/10, teste real: detergente de R$ 3 travando lista de 12): dois botões —
+      // tirar o item que não atinge o mínimo ou completar na própria loja.
+      if (!swapOffered) {
+        const stuckItem = (ctx.basket ?? []).find((item) => item.storeKey === belowStore.key);
+        markTurnReplied();
+        await whatsappAdapter
+          .sendMinimumOptions(phone, "O que prefere?", (stuckItem?.name.split(" ")[0] ?? "item"), belowStore.label)
+          .catch(() => null);
+      }
       return;
     }
     // Destinatário (11/09): só pergunta quando o perfil do WhatsApp não tem nome E a cesta
