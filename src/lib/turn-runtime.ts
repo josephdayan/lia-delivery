@@ -240,6 +240,26 @@ export const turnMeta = new AsyncLocalStorage<{
   phone?: string;
 }>();
 
+// A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido
+// do dono): com LIA_NATIVE_PIX=1 o Pix saía só como bolha nativa (`sendPixOrderDetails`), o
+// contador ficava em zero e a Lia emendava "Me perdi aqui 😅 Me diz de novo o que você precisa?"
+// logo depois do Pix. Todo `send*` do adaptador que de fato enviou (resultado não nulo) ao
+// telefone do turno conta como resposta; aviso ao dono/operador no meio do turno não conta.
+{
+  const adapter = whatsappAdapter as unknown as Record<string, unknown>;
+  const digits = (value: unknown) => String(value ?? "").replace(/\D/g, "");
+  for (const name of Object.keys(adapter)) {
+    const original = adapter[name];
+    if (!name.startsWith("send") || typeof original !== "function") continue;
+    adapter[name] = async function (this: unknown, to: string, ...rest: unknown[]) {
+      const result = await (original as (...args: unknown[]) => Promise<unknown>).apply(this, [to, ...rest]);
+      const meta = turnMeta.getStore();
+      if (meta && result != null && (!meta.phone || digits(to) === digits(meta.phone))) meta.replies += 1;
+      return result;
+    };
+  }
+}
+
 export function runTurnScoped<T>(fn: () => Promise<T>): Promise<T> {
   return turnStore.run(new Map(), () => turnMeta.run({ replies: 0, llmUsed: false, sent: [] }, () => runShopperScoped(fn)));
 }
