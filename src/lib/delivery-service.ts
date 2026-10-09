@@ -491,6 +491,30 @@ async function buildChoices(
   const rerankedClosest = new Map<(typeof perLine)[number], { skus: string[]; falta: string }>();
   const askedCheapest = new Set<(typeof perLine)[number]>();
   if (rerank) {
+    // 2ª chance (09/10, rodada com a IA: "fralda pampers g e lenço umedecido" → "lenço umedecido: não achei" com 7
+    // lenços confirmados na loja; a mesma chamada ora escolhia, ora zerava). Linha zerada que tem candidato com TODAS
+    // as palavras do pedido é julgada de novo, sozinha, sem o resto da mensagem puxando o contexto.
+    const retryIdx = withCandidates
+      .map((entry, i) => ({ entry, i }))
+      .filter(({ entry, i }) => !rerank.lines[i].skus.length && !rerank.lines[i].proximos?.length && entry.candidates.some((c) => conciergeMatchIsStrong(entry.line.phrase, c.item, { allTokens: true })));
+    if (retryIdx.length && withCandidates.length > 1) {
+      const again = await Promise.all(
+        retryIdx.map(({ entry }) =>
+          rerankShoppingOptions(
+            entry.line.phrase,
+            [{ query: entry.line.phrase, candidates: entry.candidates.map((c) => ({ sku: c.item.sku, name: c.item.name, brand: c.item.brand, price: display(c.item.unitPrice, c.item.medicine), store: c.store.label })) }],
+            vitrineLimit()
+          ).catch(() => null)
+        )
+      );
+      retryIdx.forEach(({ entry, i }, k) => {
+        const line = again[k]?.lines[0];
+        if (line?.skus.length) {
+          console.log("[rerank:retry]", entry.line.phrase, line.skus.length);
+          rerank.lines[i] = line;
+        }
+      });
+    }
     withCandidates.forEach((entry, i) => {
       rerankedSkus.set(entry, rerank.lines[i].skus);
       if (rerank.lines[i].maisBarato) askedCheapest.add(entry);
@@ -8765,6 +8789,12 @@ async function tryPublishInstantQuote(
       // "a loja mudou o preço" num preço menor só parecia erro (dono, 05/10).
       const raised = repriced.filter((r) => r.to > r.from);
       if (raised.length) {
+        // O aviso de junção ("Juntei tudo na Mambo…") vem ANTES do "a loja mudou o preço" (09/10): senão o cliente lê
+        // o preço novo de um produto que ainda nem sabe que entrou na cesta.
+        if (prefix) {
+          await reply(phone, prefix);
+          prefix = undefined;
+        }
         await reply(phone, copy.pricesUpdatedByStore(raised.map((r) => ({ name: r.name, from: display(r.from, r.medicine), to: display(r.to, r.medicine) }))));
       }
     }

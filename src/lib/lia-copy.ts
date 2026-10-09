@@ -445,7 +445,7 @@ export function swapAskWhat(from: string): string {
 
 export function swapRemovedPrefix(from: string, to?: string): string {
   // "a ração tem que ser de 3kg" (09/10): "Tirei Ração… 1kg." soava como se tivesse só tirado. Diz a troca.
-  return to ? `No lugar de *${from}*, escolhe uma opção de *${to}*:` : `Tirei ${from}.`;
+  return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
 
 export function swappedFor(from: string, to: string): string {
@@ -1178,7 +1178,7 @@ export function choicesStillOpen(query: string): string {
 export function itemCheapestAnswer(input: { item: string; name: string; price: number; where?: string; already: boolean }): string {
   const tail = `*${input.name}* — ${brl(input.price)}${input.where ? ` · _${input.where}_` : ""}`;
   return input.already
-    ? `O *${input.item}* já é o mais barato que achei: ${tail}.`
+    ? `Pra *${input.item}*, já está o mais barato que achei: ${tail}.`
     : `✅ Troquei pelo mais barato: ${tail}.`;
 }
 export function outOfScopeServiceAnswer(): string {
