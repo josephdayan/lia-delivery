@@ -2135,6 +2135,30 @@ async function handleDeliveryTurn(
     }
   }
 
+  // Lista NOVA com a cesta montada e sem pedido (09/10, dono: "não era pra precisar clicar cancelar; se alguém
+  // manda algo descorrelacionado, recomeça"): "2 vodkas, 1 suco, 1 gin, 4 red bull" com os itens de 24 min atrás
+  // na cesta virou set_qty dos itens velhos. Lista de 2+ itens sem "adiciona/também/mais" = pedido novo; pedido de
+  // produto avulso depois de 10 min parado também. A cesta velha sai em silêncio (nada foi cobrado; o endereço
+  // fica) e a mensagem segue como pedido novo — busca do zero. Fica ANTES do gerente de diálogo.
+  if (
+    (ctx.basket?.length ?? 0) > 0 &&
+    !ctx.deliveryOrderId &&
+    (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") &&
+    !isQuestion(text) &&
+    !explicitAddCue(text) &&
+    !ADD_TO_BASKET_RE.test(normalizeMsg(text)) &&
+    !EDIT_OR_CHOICE_RE.test(normalizeMsg(text)) &&
+    (countDistinctItems(text) >= 2 || (idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text)))
+  ) {
+    console.log("[basket:new-list]", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`, `parado_ms=${idleMs}`);
+    const fresh = addressOnlyCtx(ctx, user.cep);
+    for (const key of Object.keys(ctx)) delete (ctx as unknown as Record<string, unknown>)[key];
+    Object.assign(ctx, fresh);
+    await writeCtx(convo.id, ctx);
+    await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
+    return;
+  }
+
   // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
   // estado e escolhe uma ação de lista fechada ANTES do roteamento por regex. Inequívoco/barato (número,
   // CEP, botões, pix/cartão, cadastro) segue determinístico; IA fora do ar ou ação inválida = caminho de hoje.
@@ -6339,6 +6363,12 @@ function looksLikeProductList(text: string): boolean {
 function explicitAddCue(text: string): boolean {
   return /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(normalizeMsg(text));
 }
+
+// Ampliar a cesta sem "adiciona": "também", "e mais", "mais 2", "junta" (09/10: lista com uma dessas palavras soma).
+// "e uma coca e um guaraná" começa com "e": continua a lista de antes.
+const ADD_TO_BASKET_RE = /^e\b|\b(tambem|e mais|mais \d|mais dois|mais duas|mais tres|junta|junto|alem disso|faltou|esqueci)\b/;
+// Mexe na cesta ou na escolha, não é pedido novo: "tira o gin e a vodka", "troca", "2 do primeiro e 1 do segundo".
+const EDIT_OR_CHOICE_RE = /\b(tira|tirar|remove|remover|retira|exclui|troca|trocar|muda|mudar|diminui|aumenta|deixa|so|somente|apenas|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|ultim[oa]|opcao|opcoes|esse|essa|desse|dessa|desses|dessas|numero)\b/;
 
 // Pedido de produto do nada ("preciso de um shampoo", "quero 2 cocas", lista) — o que, com um
 // pedido parado na mesa, vira outra missão de compra (04/09 no Pix; 08/10 no total/entrega).

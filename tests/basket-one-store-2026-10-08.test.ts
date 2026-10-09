@@ -165,3 +165,25 @@ test("pedido genérico: a versão básica vem antes de sabor/edição/'com X'; v
   assert.equal(order("red bull sem açúcar", ["Energético Energy Drink Red Bull 250ml", "Energético Red Bull Sugarfree 250ml"]), "Energético Red Bull Sugarfree 250ml");
   assert.equal(order("vodka absolut citron", ["Vodka Sueca Absolut Original 1 Litro", "Vodka Absolut Citron 750ml"]), "Vodka Absolut Citron 750ml");
 });
+
+// Lista nova com cesta antiga (dono, 09/10: "não era pra precisar clicar cancelar; se alguém manda algo
+// descorrelacionado, recomeça"). Caso real: a lista repetida virou ajuste de quantidade dos itens velhos.
+test("lista nova com cesta montada: recomeça do zero (sem cancelar); 'também'/'e uma'/'tira' continuam mexendo na cesta", async (t) => {
+  if (!dbOk) return t.skip();
+  const velho = await item("banana prata organica tamiso", "oba", 1, /Tamiso/);
+  const c = await customerWith([velho]);
+  const out = await send(c.phone, "2 leites integral piracanjuba, 1 arroz camil 5kg");
+  const convo = await prisma.conversation.findFirstOrThrow({ where: { userId: c.userId } });
+  const ctx = JSON.parse(convo.context ?? "{}");
+  const names = [...(ctx.basket ?? []), ...(ctx.pending ?? []).map((p: { query: string }) => ({ name: p.query }))].map((i: { name: string }) => i.name).join(" | ");
+  assert.doesNotMatch(names, /Tamiso/, `a cesta velha saiu: ${names} — ${out.slice(0, 300)}`);
+  assert.match(names, /leite|arroz/i, names);
+  // Adição explícita mantém o que já estava.
+  for (const add of ["também 1 coca cola lata", "e uma coca cola lata"]) {
+    const c2 = await customerWith([velho]);
+    await send(c2.phone, add);
+    const ctx2 = JSON.parse((await prisma.conversation.findFirstOrThrow({ where: { userId: c2.userId } })).context ?? "{}");
+    const all = [...(ctx2.basket ?? []).map((i: { name: string }) => i.name), ...(ctx2.pending ?? []).map((p: { query: string }) => p.query)].join(" | ");
+    assert.match(all, /Tamiso/, `${add}: a cesta continua — ${all}`);
+  }
+});

@@ -185,6 +185,11 @@ diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma
 - **Vários ajustes de quantidade no mesmo turno** (gerente de diálogo `set_qty`/`add_qty` em itens da cesta, ex.:
   a lista repetida com os itens já na cesta) → aplica todos e manda UMA mensagem com a lista, produtos, prazo e um
   conjunto de botões (`replyBasketList`). Antes: uma mensagem com três botões por item.
+- **Lista nova recomeça sozinha** (dono, 09/10: "não era pra precisar clicar cancelar; se alguém manda algo
+  descorrelacionado, recomeça"): com cesta montada e sem pedido, uma lista de 2+ itens — ou um pedido de produto
+  avulso depois de 10 min parado (`newMissionAfterMs`) — tira a cesta velha em silêncio e busca do zero (antes do
+  gerente de diálogo). Continua somando quando o cliente diz "adiciona/bota/também/e mais/mais 2/junta/faltou" ou
+  começa com "e …"; edição ("tira", "troca", "só") e escolha ("2 do primeiro", "esse") nunca recomeçam.
 
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
