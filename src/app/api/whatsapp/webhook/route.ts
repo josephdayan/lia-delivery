@@ -54,7 +54,8 @@ async function processDeliveryMessage(raw: ReturnType<typeof whatsappAdapter.par
     // cliente ficou sem NENHUMA resposta). Se o processamento passar do prazo, avisa o
     // cliente que a Lia continua nele — a resposta de verdade chega em seguida quando o
     // turno terminar; se a função for morta, ao menos o silêncio absoluto não existe.
-    const deadlineMs = Number(process.env.LIA_TURN_DEADLINE_MS ?? 45000);
+    // 09/10 (latência): o aviso sai com 8 s (antes 45 s) — o cliente tolera 15 s de busca se souber que algo está acontecendo.
+    const deadlineMs = Number(process.env.LIA_TURN_DEADLINE_MS ?? 8000);
     let deadlineTimer: ReturnType<typeof setTimeout> | undefined;
     // runTurnScoped arma o CAS de contexto: se outro turno (ex.: um "cancelar") gravar
     // no meio deste, a próxima escrita DESTE falha e ele para — cesta velha nunca
@@ -67,7 +68,7 @@ async function processDeliveryMessage(raw: ReturnType<typeof whatsappAdapter.par
       })
     ]);
     if (raced === "deadline") {
-      console.error(`[turn:deadline] ${inbound.phone} passou de ${deadlineMs}ms sem resposta`);
+      console.warn(`[turn:deadline] ${inbound.phone} passou de ${deadlineMs}ms sem resposta`);
       try {
         await whatsappAdapter.sendMessage(inbound.phone, turnStillWorking());
       } catch (notifyError) {
