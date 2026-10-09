@@ -6527,7 +6527,8 @@ function looksLikeProductList(text: string): boolean {
 
 // "adiciona/bota/põe mais um": o cliente está AMPLIANDO o pedido que está na mesa (funde).
 function explicitAddCue(text: string): boolean {
-  return /\b(adiciona|acrescenta|inclui|bota|coloca|poe|põe|mais um|mais uma)\b/.test(normalizeMsg(text));
+  // Imperativo E infinitivo: "adicionar 1 gin e 1 vodka" (09/10, teste real) apagou a cesta como se fosse lista nova.
+  return /\b(adicion(a|ar|e|em)|acrescent(a|ar|e|em)|inclu(i|ir|a|am)|bot(a|ar)|coloc(a|ar|e)|poe|põe|pon(ha|ho)|somar|mais um|mais uma)\b/.test(normalizeMsg(text));
 }
 
 // Ampliar a cesta sem "adiciona": "também", "e mais", "mais 2", "junta" (09/10: lista com uma dessas palavras soma).

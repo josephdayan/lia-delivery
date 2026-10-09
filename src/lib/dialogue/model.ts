@@ -119,12 +119,17 @@ function strList(v: unknown, max: number): string[] | undefined {
   return [...new Set(list)].slice(0, max);
 }
 
+const MAX_DIALOGUE_ACTIONS = 12;
+
 // Normaliza o JSON cru (nulos viram ausentes; enum desconhecido derruba a ação).
 export function parseDecision(raw: unknown): DialogueDecision | null {
   const list = (raw as { actions?: unknown })?.actions;
   if (!Array.isArray(list)) return null;
+  // Lista grande (6 itens = 6 buscas) não pode ser cortada em silêncio no 4º: acima do teto a decisão é descartada e o
+  // pipeline determinístico (que conta todos os itens) assume (09/10, teste real: ração/esmalte/carregador sumiram).
+  if (list.length > MAX_DIALOGUE_ACTIONS) return null;
   const actions: DialogueAction[] = [];
-  for (const item of list.slice(0, 4)) {
+  for (const item of list) {
     const r = item as Record<string, unknown>;
     if (!ACTION_TYPES.includes(r?.type as ActionType)) return null;
     const topic = ANSWER_TOPICS.find((t) => t === r.topic);
