@@ -30,7 +30,7 @@ import {
   type ListItemDecision,
   type ParsedLine
 } from "@/lib/lia-intents";
-import { localCatalogProbe, localIsBrand } from "@/lib/stores/list-probe";
+import { localCatalogProbe, localIsBrand, localIsConjoinedBrand } from "@/lib/stores/list-probe";
 
 export type CatalogProbe = (phrase: string, opts?: { all?: boolean }) => { strong: boolean };
 
@@ -44,6 +44,8 @@ export type ResolveListItemsOptions = {
   catalogProbe?: CatalogProbe;
   // "Esta palavra é marca?". Padrão: marcas dos catálogos locais.
   isBrand?: (word: string) => boolean;
+  // "Estes dois lados formam uma marca com 'e'/'&' no nome?" (Head & Shoulders). Padrão: catálogos locais.
+  isConjoinedBrand?: (left: string, right: string) => boolean;
   // Escreve `[list-split]` no log para cada trecho com conjunção.
   log?: boolean;
 };
@@ -52,7 +54,7 @@ export type ResolveListItemsOptions = {
 
 // Nomes compostos em que o "e" faz parte do nome. Curto e curado: só entra nome com caso de teste.
 // Comparado em forma normalizada; "&" vale como "e".
-const ALWAYS_ONE = ["romeu e julieta", "cookies e cream", "black e white", "johnson e johnson"];
+const ALWAYS_ONE = ["romeu e julieta", "cookies e cream", "black e white", "johnson e johnson", "head e shoulders", "dolce e gabbana", "procter e gamble", "marks e spencer"];
 
 // Cabeça de kit/combo: "kit shampoo e condicionador" é UM produto.
 const KIT_HEAD_RE = /^(?:(?:um|uma|o|a)\s+)?(?:kit|combo|conjunto|duo|trio|dupla|par)\b/;
@@ -128,7 +130,7 @@ function productWords(s: string): string[] {
     .filter((w) => w && !CONNECTORS.has(w) && !FILLER.has(w) && !QTY_WORDS.has(w) && !/^\d+$/.test(w));
 }
 
-type Ctx = { probe: CatalogProbe; isBrand: (w: string) => boolean };
+type Ctx = { probe: CatalogProbe; isBrand: (w: string) => boolean; conjoinedBrand: (left: string, right: string) => boolean };
 
 function isAttrWord(w: string, ctx: Ctx): boolean {
   const n = nrm(w);
@@ -210,6 +212,8 @@ function decidePair(left: string, leftTail: string, right: string, pieceCount: n
   // 1. nome composto curado e kit
   const pairNorm = `${nrm(leftTail)} e ${nrm(R)}`;
   if (ALWAYS_ONE.some((entry) => pairNorm.includes(entry))) return { kind: "join", reason: "nome_composto" };
+  // marca composta com "e"/"&" no nome (09/10, rodada 1: "shampoo head e shoulders" virava 2 shampoos)
+  if (ctx.conjoinedBrand(L, R)) return { kind: "join", reason: "marca_composta" };
   // cauda com quantidade própria ("2 coca e 1 ruffles"): é outro item, sem dúvida
   if (hasLeadingQty(right)) return { kind: "split", reason: "qty_propria" };
   if (KIT_HEAD_RE.test(nrm(L))) return { kind: "join", reason: "kit" };
@@ -334,7 +338,7 @@ function withDefaults(line: ParsedLine, aiOnly: boolean): ResolvedListItem {
 }
 
 export function resolveListItems(text: string, opts: ResolveListItemsOptions = {}): ResolvedListItem[] {
-  const ctx: Ctx = { probe: opts.catalogProbe ?? localCatalogProbe, isBrand: opts.isBrand ?? localIsBrand };
+  const ctx: Ctx = { probe: opts.catalogProbe ?? localCatalogProbe, isBrand: opts.isBrand ?? localIsBrand, conjoinedBrand: opts.isConjoinedBrand ?? localIsConjoinedBrand };
   const deterministic = parseBasketLines(markSharedBrand(text), { conjunction: makeConjunction(ctx, Boolean(opts.log)) });
   if (!opts.aiItems?.length) return deterministic.map((line) => withDefaults(line, false));
   const detKeys = new Set(deterministic);
