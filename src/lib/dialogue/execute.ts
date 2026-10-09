@@ -232,12 +232,14 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       if (!current) return "invalid";
       ctx.pending = ctx.pending!.slice(1);
       // Era o único item: "Deixei de fora" já diz o próximo passo.
+      // "tira o feijão e põe macarrão" (09/10, rodada 1): o cliente pediu a troca — "me diz de outro jeito" soava como erro.
+      const said = opts.nextIsSearch ? copy.choiceDropped(current.query) : copy.choiceSkipped(current.query);
       if (!ctx.pending.length && !(ctx.basket?.length ?? 0)) {
         await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
-        await reply(phone, copy.choiceSkipped(current.query));
+        await reply(phone, said);
         return "done";
       }
-      await reply(phone, copy.choiceSkipped(current.query));
+      await reply(phone, said);
       await h.advancePending(phone, convoId, ctx, userCep);
       return "done";
     }

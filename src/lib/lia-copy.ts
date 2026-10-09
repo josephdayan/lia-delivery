@@ -427,6 +427,16 @@ export function medicinePaymentChoiceText(pixTotal: number, cardTotal: number): 
   return `Como você quer pagar?\n• *Pix*: ${brl(pixTotal)}\n• *Cartão*: ${brl(cardTotal)}\n\nResponde *pix* ou *cartão*.`;
 }
 
+// "cancela" com vários itens em escolha (09/10, rodada 1): não apaga a cesta sem perguntar.
+export function cancelAllAsk(current?: string): string {
+  const keep = current ? ` tudo e sigo com *${current}*` : " a cesta";
+  return `Cancelar a cesta toda? Responde *sim* pra esvaziar tudo, ou *não* que eu mantenho${keep}.`;
+}
+
+export function cancelAllKept(): string {
+  return "Certo, mantive a cesta.";
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }
@@ -616,6 +626,11 @@ export function productDetailsWhich(): string {
 
 export function choiceSkipped(query: string): string {
   return `Deixei *${query}* de fora. Se quiser, me diz de outro jeito que eu procuro.`;
+}
+
+// Tirou o item da vez porque o cliente já trouxe o substituto na mesma frase.
+export function choiceDropped(query: string): string {
+  return `Tirei *${query}*.`;
 }
 
 // Dizia só "Não peguei qual você quer" e deixava o cliente sem próximo passo.

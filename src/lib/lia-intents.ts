@@ -1130,6 +1130,22 @@ const SERVICE_WORDS_RE =
 const CLEAR_CART_RE =
   /\b(zera|zerar|recome[c]ar|come[c]ar de novo|novo pedido|outro pedido)\b|\b(limpa|limpar)\s+(o\s+|a\s+)?(carrinho|cesta|pedido|tudo|lista)\b|\b(tira|tirar|remove|remover|apaga|apagar|esquece|esquecer)\s+(o\s+|os\s+|a\s+|as\s+)?(tudo|anteriores|antigos|de antes|carrinho|cesta)\b/;
 
+// Desistência da lista INTEIRA (09/10, rodada 1): "na verdade não quero nada disso" só tirava o item da vez.
+// "não quero mais nada" sozinho continua sendo fechar a lista (done) — frase ambígua, coberta por teste antigo.
+const CLEAR_ALL_RE =
+  /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei)[,\s]+)*(?:nao (?:quero|preciso (?:de )?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso)[\s,!.]*$/;
+export function isExplicitClearAll(text: string): boolean {
+  return CLEAR_ALL_RE.test(normalizeMsg(text));
+}
+
+// "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
+// pede o pedido anterior (sem produto no meio) — vai direto ao ramo de repetir, sem passar pela IA do diálogo.
+const REPEAT_ORDER_RE =
+  /^(?:(?:oi|ola|opa|bom dia|boa tarde|boa noite)[,!.\s]+)?(?:eu )?(?:(?:quero|queria|vou querer|manda|me manda|me ve|pode mandar|pode repetir|pode fazer|faz|traz|gostaria de|bora)\s+)?(?:(?:repete|repetir|repita|refaz|refazer)\s+(?:o |a |meu |minha |aquele |aquela )?(?:meu |minha )?(?:ultim[oa]|anterior|mesm[oa]|pedido|compra)(?:\s+(?:pedido|compra))?(?:\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez))?|(?:o |a )?(?:mesm[oa]|igual)(?:\s+(?:pedido|coisa|compra))?\s+(?:de|d[oa]) (?:ontem|anteontem|semana passada|outro dia|ultima vez|outra vez|ultimo pedido|ultima compra)|(?:o |a )?(?:ultim[oa]|anterior) (?:pedido|compra))(?:[,\s]+(?:por favor|pfv|pf))?[\s!.?]*$/;
+export function isExplicitRepeatOrder(text: string): boolean {
+  return REPEAT_ORDER_RE.test(normalizeMsg(text));
+}
+
 const CHANGE_ADDRESS_RE =
   /\b(muda|mudar|troca|trocar|altera|alterar|atualiza|atualizar|corrige|corrigir)\w*\b[^]*\b(endereco|cep)\b|\b(endereco|cep)\s+(novo|errado|mudou|diferente)\b|\bnovo\s+(endereco|cep)\b|\boutro\s+endereco\b/;
 
@@ -1248,6 +1264,7 @@ export function parseCancelReason(text: string, asked: boolean): CancelReasonKey
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
   if (!n) return { kind: "free_text" };
+  if (CLEAR_ALL_RE.test(n) && !/^cancel/.test(n)) return { kind: "clear_cart" };
 
   // Ids exatos dos botões de cartão salvo (chegam como texto quando o cliente toca).
   // Vêm ANTES de qualquer regex: são strings de máquina, não linguagem.
@@ -1614,7 +1631,7 @@ export function detectIntent(text: string): Intent {
     if (isQuestion(n)) return { kind: "cancel_question" };
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
-  if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n)) return { kind: "repeat_last" };
+  if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n) || REPEAT_ORDER_RE.test(n)) return { kind: "repeat_last" };
   if (STATUS_RE.test(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":

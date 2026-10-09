@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -86,7 +86,7 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   const { ctx, text } = i;
   if (!i.hasAddress) return "sem_cadastro";
   if (!HOOK_STEPS.has(ctx.step)) return "passo";
-  if (ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm) {
+  if (ctx.minSwap || ctx.repeatConfirm || ctx.planB || ctx.mergeDecision || ctx.longTailOffer || ctx.cepSwap || ctx.cepCityCheck || ctx.cancelReason || ctx.withdrawConfirm || ctx.clearAllConfirm) {
     return "pergunta_aberta";
   }
   const trimmed = text.trim();
@@ -96,6 +96,13 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // recomendação (08/10) e a IA decide.
   const symptomComplaint = i.intent.kind === "complaint" && recommendEnabled() && Boolean(detectRecommendation(text)?.symptom);
   if (DETERMINISTIC_INTENTS.has(i.intent.kind) && !symptomComplaint) return `intent:${i.intent.kind}`;
+  // "muda pra 6" / "põe 6" / "quero 6" com UM item na cesta e nada em escolha (09/10, rodada 1): só pode ser a quantidade desse item.
+  // Logo depois de escolher (lastChoice, ainda coletando), "mais um" soma ao item recém-escolhido, mesmo com outros na cesta.
+  if (i.intent.kind === "qty_adjust" && !i.ctx.pending?.length && (i.ctx.basket?.length === 1 || (i.ctx.lastChoice && (!i.ctx.step || i.ctx.step === "collecting")))) return "intent:qty_single";
+  // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério; o cérebro resolve o item sem IA.
+  if (i.intent.kind === "swap_item" && /^(?:o |a )?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
+  if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
+  if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".
@@ -134,6 +141,11 @@ export async function runDialogueTurn(input: DialogueTurnInput): Promise<PlanOut
   if (!dialogueEnabled() || !dialogueModelAvailable()) return null;
   const bypass = dialogueBypassReason(input);
   if (bypass) return null;
+  // Resumo na tela com um item só (09/10, rodada 1): "põe 6"/"quero 8" é a quantidade dele; sem IA.
+  if (input.intent.kind === "qty_adjust" && !input.ctx.pending?.length && !input.ctx.basket?.length) {
+    const open = await openOrderView(input.ctx);
+    if (open && open.items.length === 1) return null;
+  }
   const started = Date.now();
   const meta = turnMeta.getStore();
 
