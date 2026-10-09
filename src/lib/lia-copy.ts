@@ -2726,6 +2726,31 @@ export function longTailOffer(items: string[]): string {
   return ["Esses eu não achei nas lojas parceiras:", ...labels.map((i) => `• ${i}`), "Quer que eu procure no Mercado Livre? Responde *sim* ou *não*."].join("\n");
 }
 
+// Especificação que falta (09/10, rodada 3, g7): uma linha, sem chute. O resto da lista já foi mostrado.
+export function specQuestion(kind: "capa" | "pelicula" | "carregador" | "cartucho" | "filtro" | "pneu" | "racao", label: string): string {
+  const item = label.replace(/\s+/g, " ").trim();
+  switch (kind) {
+    case "capa":
+      return `Pra *${item}*, qual o modelo do celular? (ex.: iPhone 13, Galaxy A54)`;
+    case "pelicula":
+      return `Pra *${item}*, qual o modelo do celular? (ex.: iPhone 13, Galaxy A54)`;
+    case "carregador":
+      return `Pra *${item}*, qual a entrada do cabo: USB-C, Lightning (iPhone) ou micro-USB?`;
+    case "cartucho":
+      return `Pra *${item}*, qual o modelo da impressora? (ex.: HP DeskJet 2774)`;
+    case "filtro":
+      return `Pra *${item}*, qual o modelo do aparelho ou do carro?`;
+    case "pneu":
+      return `Pra *${item}*, qual a medida? (ex.: 175/70 R14, ou aro 26 de bicicleta)`;
+    case "racao":
+      return `Pra *${item}*, é filhote ou adulto, e de que porte?`;
+  }
+}
+
+export function specSkipped(label: string): string {
+  return `Sem isso eu não acerto a compatibilidade, então deixo *${label.replace(/\s+/g, " ").trim()}* de fora. Se lembrar, é só me dizer.`;
+}
+
 export function longTailDeclined(): string {
   return "Deixo esses de fora. Manda o próximo item ou *só isso* pra fechar.";
 }
