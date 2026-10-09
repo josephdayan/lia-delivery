@@ -191,6 +191,18 @@ diz só isso" duas vezes. 90 dias: 50 cotações com mais de uma loja, **nenhuma
   gerente de diálogo). Continua somando quando o cliente diz "adiciona/bota/também/e mais/mais 2/junta/faltou" ou
   começa com "e …"; edição ("tira", "troca", "só") e escolha ("2 do primeiro", "esse") nunca recomeçam.
 
+## REGRA VIGENTE — Lista pelo formulário: prazo na 1ª mensagem e todo item pré-escolhido (dono, 09/10/2026)
+
+- **Prazo antes de decidir**: a 1ª mensagem (`listFlowIntro`) e o resumo depois do formulário (`listFlowDone`) mostram
+  em cada item a loja e o prazo informado no card (`• 2x Vodka … — R$ 208,78 · _Mambo · hoje, 12h–15h_`); o formulário
+  já mostrava em cada opção.
+- **Todo item pré-escolhido**: o teto da pré-escolha do formulário é por UNIDADE (`LIA_LIST_AUTOPICK_UNIT_MAX`, R$300;
+  linha até `LIA_LIST_AUTOPICK_LINE_MAX`, R$1.000). Caso real: "2 vodkas" (R$190) passava do teto de R$100 por linha,
+  ficava "escolha uma", fora da 1ª mensagem e da cesta ("veio as três e não as quatro"). O caminho sem formulário
+  mantém o teto de R$100 por linha (caso dos 12 itens de R$18).
+- **Pré-escolha = básica mais barata** (`cheapestFirstForLine` com `variantPenalty`): "gin" não pré-escolhe mais o
+  Apogee Citrus só por ser o mais barato.
+
 ## REGRA VIGENTE — Pix em UMA mensagem e sem número do pedido pro cliente (dono, 08/10/2026 noite)
 
 - **Pix**: quando a bolha nativa (`LIA_NATIVE_PIX=1`) sai, ela é a ÚNICA mensagem da cobrança (já tem total, botão do

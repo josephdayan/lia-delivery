@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { LIST_FLOW_REOPEN_ID, carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
 import { withDeadline } from "@/lib/stores/live-search";
+import { compactCardDelivery } from "@/lib/meta-carousel-card";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
@@ -7313,8 +7314,14 @@ function slotCurrentSku(slot: ListFlowCtxSlot, basket: BasketItem[]): string | n
   return slot.skus.find(inBasket) ?? null;
 }
 
+// Linha da lista com loja e prazo (09/10, dono: "na primeira mensagem já precisa vir o tempo de entrega de cada
+// coisa — pode influenciar a decisão"): "Mambo · hoje, 12h–15h".
 function basketLinesForCopy(basket: BasketItem[]) {
-  return basket.map((item) => ({ qty: item.qty, name: item.name, total: display(item.unitPrice, item.medicine) * item.qty }));
+  return basket.map((item) => {
+    const when = item.delivery ? compactCardDelivery(item.delivery) : "";
+    const where = [item.storeLabel?.trim(), when].filter(Boolean).join(" · ");
+    return { qty: item.qty, name: item.name, total: display(item.unitPrice, item.medicine) * item.qty, ...(when ? { when: where } : {}) };
+  });
 }
 
 // Status das linhas que não viraram sugestão, na copy única (Etapa 3).
@@ -7389,13 +7396,13 @@ async function sendListFlowFollowUp(phone: string, body: string) {
   await reply(phone, copy.conciergeKeepAdding());
 }
 
-// Opções da linha do mais barato ao mais caro pelo total da linha (embalagem ajustada); empate
-// mantém a ordem do ranking.
+// Opções da linha: a versão BÁSICA primeiro (09/10 — "gin" pré-escolhia o Apogee Citrus por ser o mais barato),
+// depois do mais barato ao mais caro pelo total da linha (embalagem ajustada); empate mantém o ranking.
 function cheapestFirstForLine(choice: PendingChoice): ChoiceOption[] {
   const qty = Math.max(1, choice.qty);
   return choice.options
-    .map((option, index) => ({ option, index, total: display(option.unitPrice, option.medicine) * packAdjusted(option, qty, choice.query).qty }))
-    .sort((a, b) => a.total - b.total || a.index - b.index)
+    .map((option, index) => ({ option, index, basic: variantPenalty(choice.query, option.name), total: display(option.unitPrice, option.medicine) * packAdjusted(option, qty, choice.query).qty }))
+    .sort((a, b) => a.basic - b.basic || a.total - b.total || a.index - b.index)
     .map(({ option }) => option);
 }
 
@@ -7431,7 +7438,11 @@ async function tryListFlow(args: {
     // composer só troca se juntar entregas economizar no total.
     const lines = pending.map((choice) => ({ ...choice, options: cheapestFirstForLine(choice) }));
     const composedNotes = runBasketComposer(lines);
-    const autopickMax = Number(process.env.LIA_BULK_AUTOPICK_MAX ?? 100);
+    // Pré-escolha do formulário (09/10): o cliente vê e troca tudo antes de pagar, então o teto é por UNIDADE
+    // (R$300) com folga na linha (R$1.000) — o teto de R$100 por linha deixava "2 vodkas" (R$190) sem sugestão,
+    // fora da primeira mensagem e da cesta, como se não tivesse sido pedida.
+    const unitMax = Number(process.env.LIA_LIST_AUTOPICK_UNIT_MAX ?? 300);
+    const lineMax = Number(process.env.LIA_LIST_AUTOPICK_LINE_MAX ?? 1000);
     const added: BasketItem[] = [];
     const packNotes: string[] = [];
     const slots: ListFlowCtxSlot[] = lines.map((choice, index) => {
@@ -7439,7 +7450,8 @@ async function tryListFlow(args: {
       const qty = Math.max(1, choice.qty);
       const adj = packAdjusted(top, qty, choice.query);
       // "Mais próximo" ou acima do teto não entra sozinho: vaga sem sugestão ("escolha uma").
-      const suggest = !choice.closestFalta && display(top.unitPrice, top.medicine) * adj.qty <= autopickMax;
+      const unit = display(top.unitPrice, top.medicine);
+      const suggest = !choice.closestFalta && unit <= unitMax && unit * adj.qty <= lineMax;
       if (suggest) {
         if (adj.note) packNotes.push(adj.note);
         added.push(choiceToBasketItem(top, adj.qty, top.storeKey ? getStore(top.storeKey) : orderStore(ctx), choice.query));
@@ -7587,8 +7599,7 @@ async function handleListFlowReply(
       leftOut,
       misses: missEntriesFor(freshListMisses(ctx), []),
       produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100,
-      moreFor,
-      eta: basketEtaByStore(basket).rows
+      moreFor
     });
   if (wantMore.length) {
     await showListFlowMoreOptions(phone, convo.id, ctx, wantMore, (moreFor) => [summaryFor(moreFor), ...packNotes].join("\n"));
@@ -8847,8 +8858,7 @@ async function replyBasketList(phone: string, ctx: DeliveryContext) {
     items: basketLinesForCopy(basket),
     leftOut: [],
     misses: [],
-    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100,
-    eta: basketEtaByStore(basket).rows
+    produtos: Math.round(basket.reduce((sum, item) => sum + display(item.unitPrice, item.medicine) * item.qty, 0) * 100) / 100
   });
   await replyBasketAdjusted(phone, body, `${body}\n\nDiz *pagar* que eu fecho, ou me manda o que mudar.`);
 }

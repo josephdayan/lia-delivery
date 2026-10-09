@@ -564,7 +564,7 @@ test("vários set_qty na cesta no mesmo turno → UMA mensagem com a lista, os p
   assert.match(mine[0].text, /Lista atualizada/);
   assert.match(mine[0].text, /4x Energético Red Bull/);
   assert.match(mine[0].text, /2x Vodka Sueca Absolut Original/);
-  assert.match(mine[0].text, /🚚 Prazo: \*Mambo\* — em até 15h/);
+  assert.match(mine[0].text, /Mambo · hoje, 12h–15h/, "prazo em cada item");
   const items = await basket(phone);
   assert.deepEqual(items.map((i) => i.qty), [1, 4, 2]);
 });

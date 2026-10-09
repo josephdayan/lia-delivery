@@ -404,3 +404,26 @@ test("'Nenhuma — ver outras': tira a sugestão, resume a lista e mostra outras
     assert.doesNotMatch(out, /Agora as outras opções/);
   }
 });
+
+// Dono, 09/10: "2 vodkas" (R$190) passava do teto de R$100 por LINHA → ficava sem sugestão, fora da primeira
+// mensagem e da cesta ("veio as três e não as quatro"). No formulário o teto é por unidade (R$300).
+test("linha cara pela quantidade (unidade barata) também vem pré-escolhida e aparece na primeira mensagem", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await send(phone, "30 leites, arroz e feijão");
+  const ctx = await ctxOf(phone);
+  const leite = ctx.listFlow?.slots.find((s) => /leite/i.test(s.query));
+  assert.ok(leite?.suggestedSku, `leite pré-escolhido: ${JSON.stringify(ctx.listFlow?.slots.map((s) => [s.query, s.suggestedSku]))}`);
+  assert.ok(ctx.basket?.some((b) => b.sku === leite!.suggestedSku), "e na cesta");
+  assert.match(lastFlow(phone).input.body, /\dx .*[Ll]eite/, "e na primeira mensagem");
+});
+
+test("primeira mensagem e resumo do formulário mostram loja e prazo de cada item", async () => {
+  const copy = await import("../src/lib/lia-copy");
+  const items = [{ qty: 2, name: "Vodka Absolut Original 1L", total: 208.78, when: "Mambo · hoje, 12h–15h" }, { qty: 1, name: "Gin Seagers 1L", total: 87.98, when: "Mambo · hoje, 12h–15h" }];
+  const intro = copy.listFlowIntro({ items, misses: [] });
+  assert.match(intro, /2x Vodka Absolut Original 1L — R\$ ?208,78 · _Mambo · hoje, 12h–15h_/);
+  assert.match(intro, /1x Gin Seagers 1L — R\$ ?87,98 · _Mambo · hoje, 12h–15h_/);
+  const done = copy.listFlowDone({ items, leftOut: [], misses: [], produtos: 296.76 });
+  assert.match(done, /2x Vodka Absolut Original 1L — R\$ ?208,78 · _Mambo · hoje, 12h–15h_/);
+});

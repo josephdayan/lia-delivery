@@ -1765,7 +1765,7 @@ const FLOW_BODY_MAX = 1000;
 // Texto da mensagem de Flow (corpo ≤ 1024): cesta sugerida + o que faltou + o que fazer. Lista
 // longa encolhe: as primeiras linhas ficam e o resto vira "…e mais N".
 export function listFlowIntro(input: {
-  items: { qty: number; name: string; total: number }[];
+  items: { qty: number; name: string; total: number; when?: string }[];
   misses: MissEntry[];
   notes?: string[];
   stale?: boolean;
@@ -1785,7 +1785,7 @@ export function listFlowIntro(input: {
   ].filter(Boolean);
   const extras = [...(input.notes ?? []), input.misses.length ? missesBlock(input.misses) : ""].filter(Boolean);
   const render = (count: number) => {
-    const shown = input.items.slice(0, count).map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`);
+    const shown = input.items.slice(0, count).map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}${i.when ? ` · _${i.when}_` : ""}`);
     const rest = input.items.length - count;
     if (rest > 0) shown.push(`• …e mais ${rest} ${rest === 1 ? "item" : "itens"}`);
     return [head, ...shown, ...(extras.length ? ["", ...extras] : []), "", ...tail].join("\n");
@@ -1818,7 +1818,7 @@ export function listFlowClosed(): string {
 
 // Resumo depois do formulário: itens, o que ficou de fora, faltantes de novo e o total parcial.
 export function listFlowDone(input: {
-  items: { qty: number; name: string; total: number }[];
+  items: { qty: number; name: string; total: number; when?: string }[];
   leftOut: string[];
   misses: MissEntry[];
   produtos: number;
@@ -1827,7 +1827,7 @@ export function listFlowDone(input: {
   // Prazo de cada loja (09/10): aparece direto, antes do total.
   eta?: EtaRow[];
 }): string {
-  const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)];
+  const lines = ["✅ Lista atualizada:", ...input.items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}${i.when ? ` · _${i.when}_` : ""}`)];
   const moreFor = input.moreFor ?? [];
   if (!input.items.length) lines.push(moreFor.length ? "_Por enquanto nenhum item na lista._" : "_Nenhum item ficou na lista._");
   if (input.leftOut.length) lines.push("", `Ficou de fora (sem opção escolhida): ${input.leftOut.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ")}.`);
