@@ -300,3 +300,47 @@ test("'muda pra 6' com o resumo na tela muda a quantidade e reenvia o resumo (n�
   const latest = await prisma.deliveryOrder.findFirstOrThrow({ where: { userId: user.id, status: { not: "canceled" } }, orderBy: { createdAt: "desc" } });
   assert.equal((latest.items as unknown as { qty: number }[])[0].qty, 6);
 });
+
+// ---------------------------------------------------------------- 6. troca ("mais barato") e "tira X e põe Y"
+
+test("'tira o feijão e põe macarrão' (tira + busca): diz 'Tirei feijão', não 'me diz de outro jeito' (soa como erro)", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = await customer();
+  await withChoice(phone, { pending: [{ query: "feijão", qty: 1, options: OPTIONS }, { query: "açúcar", qty: 1, options: OPTIONS }] });
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "skip_current" }, { type: "search", query: "leite integral" }] }));
+  const reply = await send(phone, "na verdade tira o feijão e põe leite integral");
+  assert.match(reply, /Tirei \*feijão\*/);
+  assert.doesNotMatch(reply, /de outro jeito/);
+});
+
+test("'troca X pelo mais barato' é critério, não nome de produto: nunca 'arroz mais barato eu não achei'", async (t) => {
+  if (!dbOk) return t.skip();
+  assert.deepEqual(detectIntent("troca o arroz pelo mais barato"), { kind: "swap_item", from: "arroz", to: "mais barato" });
+  assert.ok(
+    dialogueBypassReason({ text: "troca o arroz pelo mais barato", intent: detectIntent("troca o arroz pelo mais barato"), ctx: { basket: [{ sku: "a" }] } as never, hasAddress: true, looksLikeList: false })
+  );
+  const phone = await customer();
+  const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
+  const { getStore } = await import("../src/lib/stores");
+  const found = (await getStore("carrefour").searchItems("leite integral", 12)).filter((i) => i.unitPrice > 0);
+  assert.ok(found.length >= 2, "o seed precisa ter 2+ leites");
+  const priciest = found.reduce((a, b) => (b.unitPrice > a.unitPrice ? b : a));
+  await prisma.conversation.create({
+    data: {
+      userId: user.id,
+      context: JSON.stringify({
+        flow: "delivery",
+        step: "collecting",
+        cep: "01310-100",
+        deliveryAddress: ADDRESS,
+        deliveryAddressVerified: true,
+        storeKey: "concierge",
+        basket: [{ sku: priciest.sku, name: priciest.name, qty: 1, unitPrice: priciest.unitPrice, lineTotal: priciest.unitPrice, storeKey: "carrefour", storeLabel: "Carrefour", ask: "leite integral" }]
+      })
+    }
+  });
+  const reply = await send(phone, "troca o leite pelo mais barato");
+  assert.doesNotMatch(reply, /não achei|mais barato eu não/i);
+  assert.match(reply, /mais barato/i);
+  assert.equal(modelCalls, 0);
+});

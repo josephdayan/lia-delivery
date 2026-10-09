@@ -6908,6 +6908,45 @@ async function handleSwap(
     await reply(phone, copy.swapAskWhat([...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ")));
     return;
   }
+  // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério, não nome de produto. Busca o MESMO
+  // item (o pedido original do cliente) e fica com o mais barato; se o da cesta já é, diz isso e mantém.
+  const cheapTo = to ? normalizeMsg(to).match(/^(.*?)\s*(?:o |a )?mais (?:barat[oa]s?|em conta)$/) : null;
+  if (cheapTo && removed.length === 1 && !removedPending.length) {
+    const target = removed[0];
+    const phrase = cheapTo[1].replace(/^(?:o|a|os|as)\s+/, "").trim() || target.ask || from;
+    const crossStoreCheap = !ctx.storeKey || ctx.storeKey === CONCIERGE_STORE_KEY;
+    const found = crossStoreCheap
+      ? await gatherCrossStoreCandidates(phrase, 12)
+      : (await orderStore(ctx).searchItems(phrase, 6)).map((item) => ({ store: orderStore(ctx), item }));
+    const live = await confirmOptionsLive(
+      found.filter((c) => conciergeMatchIsStrong(phrase, c.item)).map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
+      ctx.cep ?? userCep
+    );
+    // Mesmo tamanho do item da cesta (±10%): o arroz de 5kg não pode virar o de 1kg só por ser mais barato.
+    const targetSize = measureOf(target.name);
+    const pool = live.filter((o) => {
+      if (o.unitPrice <= 0) return false;
+      if (!targetSize) return true;
+      const size = measureOf(o.name);
+      return size != null && Math.abs(size - targetSize) / targetSize <= 0.1;
+    });
+    const cheapest = pool.length ? pool.reduce((a, b) => (display(b.unitPrice, b.medicine) < display(a.unitPrice, a.medicine) ? b : a)) : undefined;
+    const currentPrice = display(target.unitPrice, target.medicine);
+    if (!cheapest || display(cheapest.unitPrice, cheapest.medicine) >= currentPrice || cheapest.sku === target.sku) {
+      await reply(phone, copy.itemCheapestAnswer({ item: phrase, name: target.name, price: currentPrice, already: true }));
+      return;
+    }
+    const where = [cheapest.storeLabel, cheapest.delivery ? compactCardDelivery(cheapest.delivery) : ""].filter(Boolean).join(" · ");
+    ctx.basket = mergeBaskets(keep, [choiceToBasketItem(cheapest, target.qty, cheapest.storeKey ? getStore(cheapest.storeKey) : orderStore(ctx), target.ask ?? phrase)]);
+    await continueAfterBasket(
+      phone,
+      convoId,
+      ctx,
+      userCep,
+      copy.itemCheapestAnswer({ item: phrase, name: cheapest.name, price: display(cheapest.unitPrice, cheapest.medicine), where, already: false })
+    );
+    return;
+  }
   ctx.basket = keep;
   ctx.pending = pendingKeep.length ? pendingKeep : undefined;
   const removedNames = [...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ");

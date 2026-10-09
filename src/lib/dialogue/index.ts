@@ -99,6 +99,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "muda pra 6" / "põe 6" / "quero 6" com UM item na cesta e nada em escolha (09/10, rodada 1): só pode ser a quantidade desse item.
   // Logo depois de escolher (lastChoice, ainda coletando), "mais um" soma ao item recém-escolhido, mesmo com outros na cesta.
   if (i.intent.kind === "qty_adjust" && !i.ctx.pending?.length && (i.ctx.basket?.length === 1 || (i.ctx.lastChoice && (!i.ctx.step || i.ctx.step === "collecting")))) return "intent:qty_single";
+  // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério; o cérebro resolve o item sem IA.
+  if (i.intent.kind === "swap_item" && /^(?:o |a )?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
   if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
   if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;

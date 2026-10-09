@@ -626,6 +626,11 @@ export function choiceSkipped(query: string): string {
   return `Deixei *${query}* de fora. Se quiser, me diz de outro jeito que eu procuro.`;
 }
 
+// Tirou o item da vez porque o cliente já trouxe o substituto na mesma frase.
+export function choiceDropped(query: string): string {
+  return `Tirei *${query}*.`;
+}
+
 // Dizia só "Não peguei qual você quer" e deixava o cliente sem próximo passo.
 export function choiceNotUnderstood(): string {
   return "Não peguei qual você quer. Responde o número.";
