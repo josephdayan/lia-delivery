@@ -1884,6 +1884,13 @@ export function queuedItemsNote(queries: string[]): string {
   return `Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
 }
 
+// Lista nova no meio da cesta/escolha: a antiga sai; o cliente precisa saber o quê (09/10, rodada 2).
+export function newListDropped(names: string[]): string {
+  const shown = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 4).map((n) => `*${n}*`);
+  const more = names.length > shown.length ? ` e mais ${names.length - shown.length}` : "";
+  return `Comecei uma lista nova e deixei de fora o que estava antes (${shown.join(", ")}${more}). Se era pra somar, é só pedir de novo com *adiciona*.`;
+}
+
 // "vai mudar o frete?" com pedido já cotado → o número real, não a explicação genérica.
 export function currentFee(fee: number): string {
   return `A entrega do seu pedido está em *${brl(fee)}*. Se mudar endereço ou cesta, eu recalculo.`;

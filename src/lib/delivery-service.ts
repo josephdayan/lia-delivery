@@ -22,7 +22,7 @@ import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildLis
 import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
-import { detectIntent, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2368,10 +2368,13 @@ async function handleDeliveryTurn(
     (countDistinctItems(text) >= 2 || (idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text)))
   ) {
     console.log("[basket:new-list]", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`, `parado_ms=${idleMs}`);
+    // Avisa o que saiu (09/10, rodada 2): com item já escolhido ou carrossel aberto, a lista pode ser complemento.
+    const dropped = [...(ctx.basket ?? []).map((b) => b.name), ...(ctx.pending ?? []).map((p) => p.query)];
     const fresh = addressOnlyCtx(ctx, user.cep);
     for (const key of Object.keys(ctx)) delete (ctx as unknown as Record<string, unknown>)[key];
     Object.assign(ctx, fresh);
     await writeCtx(convo.id, ctx);
+    await reply(phone, copy.newListDropped(dropped));
     await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
     return;
   }
@@ -2643,6 +2646,17 @@ async function handleDeliveryTurn(
     await writeCtx(convo.id, ctx);
     await reply(phone, answer);
     return;
+  }
+  // "faltou o café" com a cesta em montagem e nenhum pedido pago/entregue (09/10, rodada 2): é item esquecido, não
+  // reclamação (que chamava o responsável). Com pedido pago/entregue continua reclamação.
+  if (
+    intent.kind === "complaint" &&
+    isMissingItemOnlyComplaint(text) &&
+    ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) &&
+    !ctx.deliveryOrderId &&
+    !(await prisma.deliveryOrder.findFirst({ where: { userId: user.id, status: { in: [...PAID_OR_IN_FULFILLMENT_STATUSES, "delivered"] } }, select: { id: true } }))
+  ) {
+    intent = { kind: "free_text" };
   }
   // Recomendação (08/10): pedido vago ("quero algo doce") e sintoma que o regex lê como reclamação
   // ("tô com uma dor de cabeça horrível") viram recomendação. Com endereço e CEP, a busca de sempre
