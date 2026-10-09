@@ -51,6 +51,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 // dashboard drives. Intent detection lives in lia-intents (pure, unit-tested) and
 // every customer-facing string lives in lia-copy.
 import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-types";
+import { isBareRacao, racaoStagesMixed, specKindOf, specAnswerLooksValid, specAnswerUnknown, combineSpecQuery, type SpecAsk } from "./spec-ask";
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
@@ -252,7 +253,8 @@ async function buildChoices(
   preferredSkus?: Map<string, number>,
   onLongTailSearch?: () => void,
   forceLongTail?: boolean,
-  cep?: string | null
+  cep?: string | null,
+  opts?: { askSpecs?: boolean }
 ): Promise<ChoicesResult> {
   noteShopperCep(cep);
   // Mapa (loja:sku → verificação ao vivo) preenchido por linha e lido ao montar os cards.
@@ -270,7 +272,18 @@ async function buildChoices(
   }
 
   const perfStart = Date.now();
-  const { lines, greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = await extractLines(text);
+  const extracted = await extractLines(text);
+  const { greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = extracted;
+  // Item que depende de especificação não dita ("capa de celular" sem modelo, 09/10 g7): não busca, pergunta.
+  const specAsks: SpecAsk[] = [];
+  const lines = opts?.askSpecs
+    ? extracted.lines.filter((line) => {
+        const kind = specKindOf(line.phrase);
+        if (!kind || (line.raw && !specKindOf(line.raw))) return true;
+        specAsks.push({ kind, query: line.phrase, qty: line.qty, ...(line.qtyExplicit ? { qtyExplicit: true } : {}) });
+        return false;
+      })
+    : extracted.lines;
   const perfExtracted = Date.now();
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
@@ -638,7 +651,8 @@ async function buildChoices(
     containsMedicine,
     containsTobacco,
     prescriptionDropped,
-    ...(unconfirmedLines.length ? { unconfirmed: unconfirmedLines } : {})
+    ...(unconfirmedLines.length ? { unconfirmed: unconfirmedLines } : {}),
+    ...(specAsks.length ? { specAsks } : {})
   };
 }
 
@@ -655,7 +669,8 @@ async function buildChoicesWithSearchNotice(
   lockedStoreKey?: string,
   preferredSkus?: Map<string, number>,
   forceLongTail?: boolean,
-  cep?: string | null
+  cep?: string | null,
+  opts?: { askSpecs?: boolean }
 ): Promise<ChoicesResult> {
   let notice: ReturnType<typeof searchNoticeTimer> | undefined;
   return buildChoices(
@@ -666,7 +681,8 @@ async function buildChoicesWithSearchNotice(
       notice ??= searchNoticeTimer(phone);
     },
     forceLongTail,
-    cep
+    cep,
+    opts
   ).finally(() => notice?.cancel());
 }
 
@@ -1964,6 +1980,32 @@ async function handleDeliveryTurn(
       return;
     }
     if (/^cancelmotivo:/.test(normalizeMsg(text))) return;
+  }
+
+  // Resposta à pergunta de especificação (g7, 09/10): "iphone 13" / "é tipo c" volta para a busca daquele item.
+  // Vale 30 min; mensagem que não parece a resposta segue o fluxo normal e a pergunta continua de pé.
+  if (ctx.specAsk) {
+    const live = Date.now() - ctx.specAsk.askedAt < SPEC_ASK_TTL_MS ? ctx.specAsk : undefined;
+    if (!live) {
+      ctx.specAsk = undefined;
+      await writeCtx(convo.id, ctx);
+    } else if (intent.kind === "free_text" || intent.kind === "reject") {
+      if (specAnswerUnknown(text)) {
+        ctx.specAsk = undefined;
+        await writeCtx(convo.id, ctx);
+        await reply(phone, live.asks.map((a) => copy.specSkipped(a.query)).join("\n"));
+        return;
+      }
+      const idx = intent.kind === "free_text" ? live.asks.findIndex((a) => specAnswerLooksValid(a.kind, text)) : -1;
+      if (idx >= 0) {
+        const answered = live.asks[idx];
+        const rest = live.asks.filter((_, i) => i !== idx);
+        ctx.specAsk = rest.length ? { asks: rest, askedAt: live.askedAt } : undefined;
+        await writeCtx(convo.id, ctx);
+        text = combineSpecQuery(answered, text);
+        intent = detectIntent(text);
+      }
+    }
   }
 
   // Desistência de pedido PAGO esperando o "sim" (06/10). "sim"/"confirmo"/"cancela" de novo
@@ -7477,7 +7519,38 @@ function runBasketComposer(pending: PendingChoice[]): string[] {
   return composedNotes;
 }
 
+// Perguntas de especificação (g7) montadas neste turno, enviadas pelo invólucro depois do resto da resposta.
+const turnSpecAsks = new Map<string, SpecAsk[]>();
+
 async function handleConciergeRequest(
+  phone: string,
+  convoId: string,
+  userCep: string | null | undefined,
+  ctx: DeliveryContext,
+  text: string,
+  userId?: string
+) {
+  turnSpecAsks.delete(phone);
+  try {
+    await handleConciergeCore(phone, convoId, userCep, ctx, text, userId);
+  } catch (err) {
+    turnSpecAsks.delete(phone);
+    throw err;
+  }
+  const asks = turnSpecAsks.get(phone);
+  turnSpecAsks.delete(phone);
+  if (!asks?.length) return;
+  // Contexto fresco: o miolo do pedido gravou a cesta/escolhas por conta própria.
+  const fresh = readCtx((await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true } }))?.context ?? null);
+  const keep = (fresh.specAsk && Date.now() - fresh.specAsk.askedAt < SPEC_ASK_TTL_MS ? fresh.specAsk.asks : []).filter((old) => !asks.some((a) => a.kind === old.kind));
+  fresh.specAsk = { asks: [...keep, ...asks], askedAt: Date.now() };
+  await writeCtx(convoId, fresh);
+  await reply(phone, fresh.specAsk.asks.map((a) => copy.specQuestion(a.kind, a.query)).join("\n"));
+}
+
+const SPEC_ASK_TTL_MS = 30 * 60_000;
+
+async function handleConciergeCore(
   phone: string,
   convoId: string,
   userCep: string | null | undefined,
@@ -7582,8 +7655,9 @@ async function handleConciergeRequest(
     }
   }
   const raw = rawPre ?? (mercadoLivreEnabled()
-    ? await buildChoicesWithSearchNotice(phone, text, undefined, preferred, undefined, ctx.cep ?? userCep)
-    : await buildChoices(text, undefined, preferred, undefined, undefined, ctx.cep ?? userCep));
+    ? await buildChoicesWithSearchNotice(phone, text, undefined, preferred, undefined, ctx.cep ?? userCep, { askSpecs: true })
+    : await buildChoices(text, undefined, preferred, undefined, undefined, ctx.cep ?? userCep, { askSpecs: true }));
+
   // Piso de relevância próprio do concierge: opção que não responde pelo que o cliente
   // escreveu é descartada e a linha volta a ser livre. Sugerir errado é pior que não
   // sugerir, porque a linha livre resolve o pedido de verdade.
@@ -7611,6 +7685,19 @@ async function handleConciergeRequest(
   }
   let notFoundLines = [...raw.notFoundLines, ...weakLines];
   const { greetingOnly, containsMedicine, prescriptionDropped } = raw;
+  // Perguntas de especificação (g7): as já detectadas antes da busca + ração pelada cujas opções misturam idade/porte
+  // (só pergunta quando o catálogo separa e o cliente não disse). O invólucro envia depois do resto da resposta.
+  const specAsks: SpecAsk[] = [...(raw.specAsks ?? [])];
+  for (let i = pending.length - 1; i >= 0; i--) {
+    const choice = pending[i];
+    if (!choice.autoPick && isBareRacao(choice.query) && racaoStagesMixed(choice.options.map((o) => o.name))) {
+      specAsks.push({ kind: "racao", query: choice.query, qty: choice.qty, ...(choice.qtyExplicit ? { qtyExplicit: true } : {}) });
+      pending.splice(i, 1);
+    }
+  }
+  if (specAsks.length) turnSpecAsks.set(phone, specAsks);
+  // Só havia item com especificação faltando: a pergunta é a resposta inteira.
+  if (specAsks.length && !pending.length && !notFoundLines.length && !raw.autoAdded.length && !containsMedicine) return;
 
   // ÚLTIMA CHANCE antes de dizer "não tenho": as linhas que o pipeline inteiro
   // descartou (piso + rerank) vão ao fornecedor de cauda longa mesmo que alguma
