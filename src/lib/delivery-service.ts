@@ -31,7 +31,7 @@ import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-a
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import { CEP_RE_GLOBAL, expandShoppingShorthand } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
+import { dropAddressOnlyItems, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
@@ -1907,6 +1907,7 @@ async function handleDeliveryTurn(
   const stale = Boolean((ctx.basket?.length || ctx.pending?.length) && idleSince && idleMs > CART_TTL_MS) || pendingTooOld;
   if (stale) {
     // (hadBasket removido 25/09: a lista vencida some em silêncio.)
+    const expiredCart = snapshotExpiredCart(ctx, idleMs);
     const keptCep = ctx.cep;
     const keptAddr = ctx.deliveryAddress;
     const keptAddrVerified = ctx.deliveryAddressVerified;
@@ -1915,6 +1916,7 @@ async function handleDeliveryTurn(
     ctx.cep = keptCep;
     ctx.deliveryAddress = keptAddr;
     ctx.deliveryAddressVerified = keptAddrVerified;
+    if (expiredCart) ctx.expiredCart = expiredCart;
     // Persist before any early return (especially greeting). Previously the clear
     // lived only in memory, so the same stale warning repeated on every new message.
     await writeCtx(convo.id, ctx);
@@ -1974,9 +1976,11 @@ async function handleDeliveryTurn(
       }
     }
     if (!lostRaceToOperator) {
+      const expiredCart = snapshotExpiredCart(ctx, quoteIdleMs, true);
       const fresh = addressOnlyCtx(ctx);
       for (const key of Object.keys(ctx)) delete (ctx as Record<string, unknown>)[key];
       Object.assign(ctx, fresh);
+      if (expiredCart) ctx.expiredCart = expiredCart;
       await writeCtx(convo.id, ctx);
       // 08/10 (dono, teste da lista): SEM "cancelei o pedido por inatividade". Quem parou na
       // compra e volta um dia depois pedindo outra coisa só quer a coisa nova — o pedido velho
@@ -1989,6 +1993,39 @@ async function handleDeliveryTurn(
         return;
       }
     }
+  }
+
+  // Cesta/cotação vencida (09/10, rodada 1): quem volta com "oi", "1", "pagar" é avisado e retoma com "sim";
+  // quem já chega com um pedido novo segue com ele (o aviso só atrapalharia, 25/09).
+  if (ctx.expiredCart) {
+    const expired = ctx.expiredCart;
+    const nText = normalizeMsg(text).replace(/[!.?,]+/g, " ").trim();
+    const resumeYes = intent.kind === "affirm" || /^(1|um)$/.test(nText);
+    const nudge = ["greeting", "pay", "status", "paid_claim", "choose_payment", "done", "resume_where", "more_options", "thanks"].includes(intent.kind);
+    const stillFresh = Date.now() - expired.at < 3 * 24 * 60 * 60_000;
+    if (stillFresh && (user.defaultAddress || ctx.deliveryAddressVerified) && expired.items.length) {
+      if (resumeYes) {
+        ctx.expiredCart = undefined;
+        ctx.flow = "delivery";
+        ctx.step = "collecting";
+        await writeCtx(convo.id, ctx);
+        await handleSearch(phone, convo.id, user.cep, ctx, expired.items.join(", "), user.id);
+        return;
+      }
+      if (intent.kind === "reject" || intent.kind === "cancel" || intent.kind === "clear_cart") {
+        ctx.expiredCart = undefined;
+        await writeCtx(convo.id, ctx);
+        await reply(phone, copy.cartExpiredDropped());
+        return;
+      }
+      if (nudge || /^(1|um)$/.test(nText)) {
+        await reply(phone, copy.cartExpired(expired.items, Boolean(expired.quote)));
+        return;
+      }
+    }
+    // Qualquer outra mensagem é assunto novo: a cesta velha sai de cena.
+    ctx.expiredCart = undefined;
+    await writeCtx(convo.id, ctx);
   }
 
   // Depois dos dois resets acima, para a marca não morrer na mesma mensagem que a criou.
@@ -3431,6 +3468,12 @@ async function handleDeliveryTurn(
   // A CEP identifies the neighbourhood, not the door. Do not send an address-like
   // message to a courier until the customer confirms street + number.
   if (ctx.step === "need_address") {
+    // "pagar"/"pix"/"só isso" com o endereço incompleto (09/10, rodada 1): diz o que falta em vez de repetir a pergunta ou mandar "👍".
+    if (["pay", "choose_payment", "done"].includes(intent.kind) && !ctx.deliveryAddressVerified) {
+      const place = ctx.cepPlace;
+      await reply(phone, copy.payNeedsAddressNumber(place?.street, place?.district));
+      return;
+    }
     await handleDeliveryAddress(phone, user.id, convo.id, ctx, user.cep, text);
     return;
   }
@@ -3807,6 +3850,18 @@ async function handleDeliveryTurn(
         return;
       }
       if (result.expired) await reply(phone, copy.quoteExpired());
+      return;
+    }
+  }
+  // "pix"/"cartão" sem cesta, escolha nem pedido aberto (09/10, rodada 1): resposta curta de que não há o que pagar.
+  // Antes rodava a busca inteira (12 s) e caía no FAQ de pagamento ou em "não achei cartão".
+  if (intent.kind === "choose_payment" && !(ctx.basket?.length ?? 0) && !(ctx.pending?.length ?? 0)) {
+    const openOrder = await prisma.deliveryOrder.findFirst({
+      where: { userId: user.id, status: { in: [AWAITING_OPERATOR_QUOTE_STATUS, "awaiting_payment", "awaiting_quote_confirmation"] } },
+      select: { id: true }
+    });
+    if (!openOrder) {
+      await reply(phone, copy.noOpenOrderToPay());
       return;
     }
   }
@@ -4843,17 +4898,22 @@ async function handleNewCep(
     .replace(/\s+/g, " ")
     .trim();
   const place = { street, district, city };
-  const house = !split && rawRest ? parseHouseNumberReply(rawRest, place) : null;
+  const plainHouse = !split && rawRest ? parseHouseNumberReply(rawRest, place) : null;
+  // "meu cep é X, número 1000, quero pão de forma" (09/10, rodada 1): o número rotulado salva e o resto segue como pedido.
+  const labeled = !split && !plainHouse && rawRest ? extractLabeledHouseNumber(rawRest) : null;
+  const house = plainHouse ?? (labeled ? { numero: labeled.numero, ...(labeled.complemento ? { complemento: labeled.complemento } : {}) } : null);
   const streetOnly = !split && !house && Boolean(rawRest) && mentionsStreetWithoutNumber(rawRest, street);
   const firstAddress = !user?.defaultAddress;
   // Antes do cadastro, só o que tem cara de produto vira item (cortesia e apresentação não).
-  const items = split
+  const items = dropAddressOnlyItems(split
     ? (split.items ? onboardingNote(split.items).text : "") || undefined
-    : house || streetOnly
-      ? undefined
-      : firstAddress && rawRest
-        ? onboardingNote(rawRest).text || undefined
-        : restItems;
+    : labeled
+      ? (labeled.rest ? onboardingNote(labeled.rest).text : "") || undefined
+      : house || streetOnly
+        ? undefined
+        : firstAddress && rawRest
+          ? onboardingNote(rawRest).text || undefined
+          : restItems, { city, district, street });
 
   // Cliente com endereço confirmado mandou um CEP solto (A4): pergunta antes de trocar. O
   // endereço salvo continua valendo; "deixa o antigo" ou qualquer pedido segue com ele.
@@ -5023,11 +5083,25 @@ async function runQueuedRequest(
   if (text) await handleSearch(phone, convoId, cep, ctx, text, searchUserId);
 }
 
+// O que o cliente tinha na cesta/escolha quando ela venceu, para avisar na volta (09/10, rodada 1).
+function snapshotExpiredCart(ctx: DeliveryContext, idleMs: number, quote = false): DeliveryContext["expiredCart"] | undefined {
+  // Opções soltas (sem nada na cesta) de uma ausência curta continuam sumindo em silêncio (decisão 25/09,
+  // conversation.eval); "voltou horas depois" (3 h+) é avisado.
+  const longAway = idleMs >= 3 * 60 * 60_000;
+  if (!ctx.basket?.length && !longAway) return undefined;
+  const items = [
+    ...(ctx.basket ?? []).map((b) => ((b.qty > 1 ? `${b.qty} ` : "") + (b.ask ?? b.name)).trim()),
+    ...(ctx.pending ?? []).map((p) => (p.qtyExplicit && p.qty > 1 ? `${p.qty} ` : "") + p.query)
+  ].filter(Boolean);
+  return items.length ? { items, at: Date.now(), ...(quote ? { quote: true } : {}) } : undefined;
+}
+
 function looksLikeDeliveryAddress(text: string): boolean {
   const address = text.trim();
   const hasStreet = /\b(?:rua|r(?:\.|(?=\s+[a-zà-ú]))|avenida|av\.?|alameda|al(?=\.)|travessa|estrada|rodovia|pra[çc]a|largo)\b/i.test(address);
-  const hasNumber = /(?:\d|\bs\/?n\b)/i.test(address);
-  return address.length >= 12 && hasStreet && hasNumber;
+  // Número 0 ("rua sem nome 0") e rua sem nome não são endereço (09/10, rodada 1); o CEP não conta como número da casa.
+  const hasNumber = /(?:\b(?!0+\b)\d+|\bs\/?n\b)/i.test(address.replace(CEP_RE_GLOBAL, " "));
+  return address.length >= 12 && hasStreet && hasNumber && !/\bsem nome\b/i.test(address);
 }
 
 async function handleDeliveryAddress(
@@ -5151,6 +5225,13 @@ async function handleDeliveryAddress(
     // pra rodar a busca assim que o endereço chegar. Só PEDIDO entra no estoque:
     // "pode ser amanhã" (affirm), "obrigado" e afins ficam de fora (24/08). Número solto
     // ("1500") e cortesia ("sou a Clara") também não (06/10).
+    // Endereço inválido ("rua sem nome 0") nunca vira item: pede rua com número e o CEP (09/10, rodada 1).
+    if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(address) && (/\b0+\b/.test(address) || /\bsem nome\b/i.test(address))) {
+      ctx.step = "need_address";
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.addressNotValid(Boolean(knownCep)));
+      return;
+    }
     const note = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
     if (note && queryTokens(note).length && !blocksMedicine(address)) {
       addPendingRequest(ctx, note);
@@ -5233,8 +5314,10 @@ async function handlePendingAddressQuestion(
 ): Promise<boolean> {
   const fresh = (at: number) => Date.now() - at < 30 * 60_000;
   const n = normalizeMsg(text).replace(/[!.?,]+/g, " ").trim();
+  // "1" com a pergunta de sim/não na tela é a opção única = sim, não o número da casa (09/10, rodada 1).
   const yes =
     intent.kind === "affirm" ||
+    /^(1|um)$/.test(n) ||
     /^(sim|s|pode|pode sim|pode trocar|troca|trocar|quero trocar|muda|mudar|isso|esse|esse mesmo|ta certo|esta certo|certo|correto|confirmo|confirma|o cep (ta|esta) certo)\b/.test(n);
   const no = isKeepOldAddress(text) || intent.kind === "reject" || /^(nao|n)\b/.test(n);
   if (ctx.cepSwap) {
@@ -5695,7 +5778,8 @@ async function handleChoosing(
     const asked = ctx.packConfirm;
     const option = current.options.find((o) => o.sku === asked.sku);
     const n = normalizeMsg(text);
-    if (option && (intent.kind === "affirm" || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
+    // "1" = a única opção da pergunta (sim); antes o "1" caía em "👍"/"Por nada!" e o cliente travava (09/10, rodada 1).
+    if (option && (intent.kind === "affirm" || /^(1|um)$/.test(n) || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
       return;
     }
