@@ -58,6 +58,8 @@ export type ResolveListItemsOptions = {
 // Comparado em forma normalizada; "&" vale como "e".
 const ALWAYS_ONE = ["romeu e julieta", "cookies e cream", "black e white", "johnson e johnson", "head e shoulders", "dolce e gabbana", "procter e gamble", "marks e spencer"];
 
+const COOKIE_AGUA_E_SAL_RE = /\b(?:bolachas?|biscoitos?|torradas?|crackers?|cream cracker)\b(?:\s+\S+){0,3}?\s+(?:de\s+)?agua e sal\b/;
+
 // Cabeça de kit/combo: "kit shampoo e condicionador" é UM produto.
 const KIT_HEAD_RE = /^(?:(?:um|uma|o|a)\s+)?(?:kit|combo|conjunto|duo|trio|dupla|par)\b/;
 
@@ -214,6 +216,9 @@ function decidePair(left: string, leftTail: string, right: string, pieceCount: n
   // 1. nome composto curado e kit
   const pairNorm = `${nrm(leftTail)} e ${nrm(R)}`;
   if (ALWAYS_ONE.some((entry) => pairNorm.includes(entry))) return { kind: "join", reason: "nome_composto" };
+  // "bolacha de água e sal" (10/10, rodada 14 g40): virava "bolacha de água" + "sal" (e a Lia oferecia sal marinho de
+  // R$ 60). Biscoito/bolacha/torrada "de água e sal" é UM produto; "água e sal" sem o biscoito continua 2 itens.
+  if (COOKIE_AGUA_E_SAL_RE.test(pairNorm)) return { kind: "join", reason: "nome_composto" };
   // marca composta com "e"/"&" no nome (09/10, rodada 1: "shampoo head e shoulders" virava 2 shampoos)
   if (ctx.conjoinedBrand(L, R)) return { kind: "join", reason: "marca_composta" };
   // cauda com quantidade própria ("2 coca e 1 ruffles"): é outro item, sem dúvida

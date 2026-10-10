@@ -360,6 +360,11 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // aniversario da minha filha, 8 anos" virava os itens "to organizando o aniversario da…" e "8x anos".
       "(eu |a gente |nos )?(to|tou|estou|estamos|tamo|ando|vou|vamos|quero|queria|preciso) (organizando|planejando|preparando|montando|fazendo|organizar|planejar|preparar|montar|fazer|dar) (o |a |um |uma |uns |umas )?(aniversario|niver|festa|festinha|churrasco|cha( de [a-z]+)?|casamento|batizado|evento|reuniao|confraternizacao|comemoracao|piquenique|mudanca)\\b.*",
       "(de |com |que faz |fazendo |vai fazer |completa |completando )?\\d{1,2} anos( de idade)?",
+      // Idade de quem o pedido atende (10/10, rodada 14 g40): "meu cachorro tem 13 anos" virava item ("não achei").
+      "(e |mas )?((o |a )?(meu|minha|meus|minhas|nosso|nossa) [a-zà-ú]+( [a-zà-ú]+)?|ele|ela|eles|elas) (tem|tinha|ja tem|fez|faz|completou|completa|vai fazer|vai completar) (uns |umas |quase |mais de )?\\d{1,2} (anos?|meses|mes|semanas)( de idade)?( .*)?",
+      // Troca de endereço contada antes do endereço (10/10, rodada 14 g40): "ah, na real vou pedir pra entregar na casa da
+      // minha sogra: Rua…" deixava o item fantasma "na real vou pra" até o resumo.
+      "((ah|ahn|opa|ei|na real|na verdade|pensando bem|melhor) )*(eu )?(vou|vamos|quero|queria|prefiro|preferia) (pedir )?(pra|para|que)( (entregar|entregue|mandar|mande|levar|leve)\\b.*)?",
       // Lista da escola (10/10, rodada 6 M4): "material escolar do meu filho" e "3º ano" descrevem a lista, nunca são item.
       "(e |a |o |os |as |do |da |essa |esta |aqui )?(lista( de)?( material)?|materia(l|is))( escolar(es)?)? (do|da|dos|das|pro|pra|para o|para a) (meu|minha|meus|minhas|colegio|escola|creche)\\b[^:]*",
       "(ele |ela )?(e |eh |ta |esta |do |da |pro |pra |no |na )?\\d{1,2} ?(o|a|º|ª|°)? (ano|serie)( do (fundamental|medio|ensino [a-z]+))?",
@@ -3437,7 +3442,10 @@ export function parseStoreReference(
   const wanted = m[1].trim();
   const matches = (label?: string) => {
     const l = normalizeMsg(label ?? "");
-    return Boolean(l) && (l === wanted || (wanted.length >= 4 && l.includes(wanted)) || (l.length >= 4 && wanted.includes(l)));
+    // "telha norte" × "Telhanorte", "pague-menos" × "Pague Menos" (10/10, rodada 14 g40): compara também sem espaço/hífen.
+    const sq = (s: string) => s.replace(/[^a-z0-9]/g, "");
+    const [ls, ws] = [sq(l), sq(wanted)];
+    return Boolean(l) && (l === wanted || (wanted.length >= 4 && l.includes(wanted)) || (l.length >= 4 && wanted.includes(l)) || (ws.length >= 4 && ls === ws));
   };
   const indices = options.map((o, i) => (matches(o.storeLabel) ? i : -1)).filter((i) => i >= 0);
   if (indices.length) return { label: options[indices[0]].storeLabel!, indices };

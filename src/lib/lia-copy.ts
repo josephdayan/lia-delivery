@@ -1927,6 +1927,11 @@ export function packCountAsk(name: string, qty: number, packSize: number, total:
   return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
 }
 
+// "o primeiro" em resposta a "Levo 6 pacotes?" (10/10, rodada 14 g40): não diz sim nem não — repete a pergunta com o valor.
+export function packAskAgain(question: string): string {
+  return `Essa opção já está escolhida 👍 Falta só a quantidade:\n${question}`;
+}
+
 // Contagem de unidades × pacote por peso (10/10, rodada 13 g39: "meia dúzia de pão de alho" com o pacote de 400g).
 export function packMeasureCountAsk(name: string, qty: number, total: number): string {
   return `Só pra confirmar: *${name}* é um pacote, e o card não diz quantas unidades vêm nele. ${qty} pacotes ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
