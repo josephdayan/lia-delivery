@@ -90,6 +90,8 @@ export type PendingChoice = {
   // "pra hoje" (04/09): `urgent` = só opções com entrega da loja em menos de 1 dia;
   // `noneToday` = pediu hoje, ninguém entrega hoje — o cabeçalho diz isso e mostra o mais rápido.
   urgent?: boolean;
+  // Dia real das opções urgentes (10/10, rodada 5 g16): ausente = todas chegam hoje; "amanha" = alguma só amanhã.
+  urgentWhen?: "amanha" | "rapido";
   noneToday?: boolean;
   // O cliente DISSE a quantidade ("uma coca", "2 leites") — não re-perguntar depois
   // da escolha; a pergunta de quantidade é só pra pedido sem quantidade.

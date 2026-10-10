@@ -522,7 +522,10 @@ export function rejectedAskAgain(): string {
 
 // ---------- choices ----------
 
-export function choicesHeaderToday(query: string): string {
+export function choicesHeaderToday(query: string, when?: "amanha" | "rapido"): string {
+  // Só diz "hoje" quando as opções chegam hoje (10/10, rodada 5 g16: o resumo dizia "amanhã, 6h–8h").
+  if (when === "amanha") return `Chega até amanhã — opções de *${query}*:`;
+  if (when === "rapido") return `Entrega mais rápida — opções de *${query}*:`;
   return `Chega hoje — opções de *${query}*:`;
 }
 
@@ -748,8 +751,9 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
 
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
 export function deadlineMissNote(label: string, promise?: string): string {
-  const prazo = promiseForCustomer(promise);
-  return `⚠️ Você precisou pra *${label}*, mas essa entrega ${prazo ? `sai em *${prazo}*` : "não chega a tempo"}. Se não der, me avisa antes de pagar.`;
+  // Sem o "2 entregas ·" da linha de entrega (10/10, rodada 5 g16: "sai em 2 entregas · 2 dias úteis").
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  return `⚠️ Você disse que precisa pra *${label}*, mas essa entrega não chega a tempo${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {

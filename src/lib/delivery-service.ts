@@ -14,7 +14,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { estimateDay, humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
@@ -397,6 +397,7 @@ async function buildChoices(
       // sem estoque). Sem estoque/sem entrega no endereço sai daqui; confirmado ganha o
       // prazo real e vem antes do não-verificável.
       let noneToday = false;
+      let urgentWhen: PendingChoice["urgentWhen"];
       let unconfirmed = false;
       if (cep) {
         // Quantidade que o card confere na loja = a que vai ser cobrada (06/10, M3).
@@ -471,8 +472,12 @@ async function buildChoices(
             const check = liveChecks.get(liveKey(c.store.key, c.item.sku));
             return check?.available && check.fastEtaMinutes != null && check.fastEtaMinutes < sameDayMaxMinutes();
           });
-          if (today.length) candidates = today;
-          else noneToday = true;
+          if (today.length) {
+            candidates = today;
+            // O cabeçalho diz o dia de verdade (10/10, rodada 5 g16): "menos de 24h" com janela de amanhã não é "hoje".
+            const days = today.map((c) => estimateDay(liveChecks.get(liveKey(c.store.key, c.item.sku))?.fastEstimate));
+            urgentWhen = days.every((d) => d === "hoje") ? undefined : days.every((d) => d === "hoje" || d === "amanhã") ? "amanha" : "rapido";
+          } else noneToday = true;
         }
       }
       // Pedido de UM item com teto: o teto é do TOTAL (produto + entrega da loja para o CEP). Entre os candidatos
@@ -495,7 +500,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, unconfirmed, sizeSplit };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, sizeSplit };
     })
   );
 
@@ -568,7 +573,7 @@ async function buildChoices(
   const unconfirmedLines = perLine.filter((entry) => entry.unconfirmed).map((entry) => entry.line.phrase);
   let firstStore: StoreConnector | undefined;
   for (const entry of perLine) {
-    const { line, candidates, noneToday } = entry;
+    const { line, candidates, noneToday, urgentWhen } = entry;
     const bySku = new Map(candidates.map((c) => [c.item.sku, c]));
     const chosen = rerankedSkus.get(entry);
     // Equivalente de remédio (reserva de gatherCrossStoreCandidates) nunca entra como opção comum:
@@ -657,7 +662,7 @@ async function buildChoices(
       ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
       ...(closestFalta ? { closestFalta } : {}),
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
-      ...(urgent && !noneToday && cep ? { urgent: true } : {}),
+      ...(urgent && !noneToday && cep ? { urgent: true, ...(urgentWhen ? { urgentWhen } : {}) } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
       options: (cheapestFirst ? sortedOptions : medicineBaseFirst(line.phrase, exactPackFirst(line.phrase, line.qty, sortedOptions), Boolean(closestFalta))).slice(0, vitrineLimit())
     });
@@ -1100,7 +1105,7 @@ function shownQuery(p: PendingChoice): string {
 function choicesHeaderFor(p: PendingChoice): string {
   if (p.closestFalta) return copy.closestHeader(p.query, p.closestFalta);
   if (p.cheapestFirst) return copy.cheapestFirstHeader(p.query);
-  if (p.urgent) return copy.choicesHeaderToday(p.query);
+  if (p.urgent) return copy.choicesHeaderToday(p.query, p.urgentWhen);
   if (p.noneToday) return copy.noneTodayHeader(p.query);
   return copy.choicesHeader(p.query);
 }
@@ -9790,6 +9795,9 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     deliveryOrderId: order.id,
     step: AWAITING_OPERATOR_QUOTE_STATUS,
     ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+    // Prazo dito ("aniversário amanhã"): o resumo do total avisa se a entrega não cumpre — sobrevive ao fechamento
+    // (10/10, rodada 5 g16: sumia aqui e o aviso nunca saía).
+    ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
     // Complemento (08/10, fase 4): "editar itens" reabre ESTE pedido — não pergunta de novo nem oferece o recusado.
     ...(ctx.complementAsked ? { complementAsked: ctx.complementAsked } : {}),
     ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {}),
@@ -10034,7 +10042,8 @@ async function tryPublishInstantQuote(
         deliveryOrderId: orderId,
         step: "choosing_freight",
         freightChoice: choice,
-        ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {})
+        ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {})
       });
       await sendFreightChoice(phone, choice);
       return { handled: true };
@@ -10060,7 +10069,8 @@ async function tryPublishInstantQuote(
         deliveryOrderId: orderId,
         step: "choosing_freight",
         freightChoice: choice,
-        ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {})
+        ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {})
       });
       await sendFreightChoice(phone, choice);
       return { handled: true };

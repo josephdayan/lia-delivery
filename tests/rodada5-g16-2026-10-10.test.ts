@@ -8,7 +8,8 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage, cheaperSwapPool } from "../src/lib/delivery-service";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
-import { __setPreflightForTests } from "../src/lib/live-freight";
+import { __setPreflightForTests, estimateDay } from "../src/lib/live-freight";
+import * as copy from "../src/lib/lia-copy";
 import type { BasketItem, ChoiceOption } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -103,4 +104,29 @@ test("'troca o protetor por um mais barato': o 200 ml mais barato do carrossel m
   const ctx = await ctxOf(c.convoId);
   const skus = [...(ctx.basket ?? []).map((b: BasketItem) => b.sku), ...((ctx.pending?.[0]?.options ?? []) as ChoiceOption[]).map((o) => o.sku)];
   assert.ok(skus.includes("g16-cenoura-200"), `${skus.join(",")} :: ${out.slice(0, 400)}`);
+});
+
+// 2) Prazo: "aniversário amanhã" chega ao resumo; "urgente" com janela de amanhã não diz "Chega hoje" ----------------
+test("estimateDay: janela agendada de amanhã é 'amanhã'; SLA em horas segue 'hoje'", () => {
+  const now = new Date("2026-10-10T02:00:00Z"); // 23h de 09/10 em SP
+  assert.equal(estimateDay("9h@2026-10-10T09:00:00+00:00~2026-10-10T11:00:59+00:00", now), "amanhã");
+  assert.equal(estimateDay("9h@2026-10-10T00:30:00+00:00~2026-10-10T01:30:59+00:00", now), "hoje");
+  assert.equal(estimateDay("2h", now), "hoje");
+  assert.equal(estimateDay("30m", now), "hoje");
+  assert.equal(estimateDay("0bd", now), "hoje");
+  assert.equal(estimateDay("2bd", now), null);
+  assert.doesNotMatch(copy.choicesHeaderToday("arroz", "amanha"), /hoje/i);
+  assert.match(copy.choicesHeaderToday("arroz"), /Chega hoje/);
+});
+
+test("prazo dito ('amanhã') sobrevive ao fechamento: o resumo avisa que a entrega não chega a tempo", async (t) => {
+  if (!dbOk) return t.skip();
+  const leite = await item("leite integral piracanjuba", "carrefour", 2, /Piracanjuba/);
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const tomorrow = new Date(Date.now() + 86_400_000).toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const c = await customerWith({ basket: [leite, arroz], neededBy: { date: tomorrow, label: "amanhã" } });
+  const out = await send(c.phone, "só isso");
+  const ctx = await ctxOf(c.convoId);
+  assert.deepEqual(ctx.neededBy, { date: tomorrow, label: "amanhã" }, out.slice(0, 600));
+  if (/Total/.test(out) && /dias? úte/.test(out)) assert.match(out, /precisa pra \*amanhã\*/, out.slice(0, 600));
 });

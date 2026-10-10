@@ -172,6 +172,8 @@ export async function opsPublishManualQuote(
             // (27/08 S12/S14).
             ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
             ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {}),
+            // Prazo dito pelo cliente: a recotação e o "trocar entrega" continuam avisando (10/10, rodada 5 g16).
+            ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
             // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
             ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
           });
