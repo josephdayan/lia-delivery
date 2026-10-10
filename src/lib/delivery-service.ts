@@ -2208,6 +2208,17 @@ async function handleDeliveryTurn(
   // Loja pedida para a lista toda ("da cobasi tudo", 10/10, rodada 5 M9): vale para as próximas escolhas da lista.
   {
     const wholeStore = user.defaultAddress ? parseWholeListStore(text, mentionableStoreNames()) : null;
+    // O trecho que só diz a loja ("..., da cobasi tudo") não é item (10/10, rodada 6 g19: "*da cobasi tudo* eu não achei").
+    if (wholeStore) {
+      const FILLER = new Set(["tudo", "todos", "todas", "os", "as", "itens", "coisas", "lista", "toda", "inteira", "a", "o", "da", "do", "das", "dos", "de", "na", "no", "pela", "pelo", "loja", "farmacia", "mercado", "se", "der", "puder", "possivel", "quero", "queria", "prefiro", "pode", "ser", "e", "mas", "ai", "por", "favor", "pfv"]);
+      const storeWords = new Set(normalizeMsg(wholeStore).split(/[^a-z0-9]+/).filter(Boolean));
+      const segments = text.split(/(?<=[,;\n])/);
+      const kept = segments.filter((seg) => {
+        if (!parseWholeListStore(seg, [wholeStore])) return true;
+        return normalizeMsg(seg).split(/[^a-z0-9]+/).filter(Boolean).some((w) => !FILLER.has(w) && !storeWords.has(w));
+      });
+      if (kept.length && kept.length < segments.length) text = kept.join("").replace(/[,;\s]+$/, "").trim();
+    }
     if (wholeStore && wholeStore !== ctx.preferredStore) {
       ctx.preferredStore = wholeStore;
       // A escolha que já está na tela não muda de ordem (a numeração que o cliente vê); as da fila, sim.
@@ -3100,6 +3111,11 @@ async function handleDeliveryTurn(
   // cesta e o que falta escolher (antes caía na apresentação genérica da Lia).
   {
     const asked = asksBasketContents(text);
+    // Cesta vazia (10/10, rodada 6 g19): diz isso — antes caía em "Não entendi" ou na apresentação da Lia.
+    if (asked && !ctx.basket?.length && !ctx.pending?.length && !asked.item && (!ctx.step || ctx.step === "collecting")) {
+      await reply(phone, copy.emptyCartTotal());
+      return;
+    }
     if (asked && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
@@ -7077,8 +7093,9 @@ async function handleChoosing(
         await reply(phone, copy.choiceSkipped(current.query));
         return;
       }
-      await reply(phone, copy.choiceSkipped(current.query));
-      await advancePending(phone, convoId, ctx, userCep);
+      // O "Deixei de fora" vai como corpo do acompanhamento (10/10, rodada 6 g19: saía solto e depois um "Escolhe aí
+      // embaixo" vazio).
+      await advancePending(phone, convoId, ctx, userCep, copy.choiceSkipped(current.query));
       return;
     }
     // "mais barato"/"mais caro" SEM verbo de escolha: mostrar opções nessa faixa —

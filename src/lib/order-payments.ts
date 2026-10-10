@@ -362,7 +362,8 @@ export async function reopenOrderForEdit(
   ctx.step = "collecting";
   ctx.cep = ctx.cep ?? userCep ?? undefined;
   await writeCtx(convoId, ctx);
-  if (!opts?.quiet) await reply(phone, copy.orderReopened());
+  // Pedido que ainda esperava cotação nunca mostrou total (10/10, rodada 6 g19): "o total anterior não vale mais" não cabe.
+  if (!opts?.quiet && order.status !== AWAITING_OPERATOR_QUOTE_STATUS) await reply(phone, copy.orderReopened());
   return true;
 }
 

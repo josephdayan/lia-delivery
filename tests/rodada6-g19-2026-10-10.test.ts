@@ -11,7 +11,7 @@ import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { deadlineVerdict, type LiveItemCheck } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
-import { detectIntent, parseDropClause } from "../src/lib/lia-intents";
+import { asksBasketContents, detectIntent, parseDropClause } from "../src/lib/lia-intents";
 import { planActions } from "../src/lib/dialogue/plan";
 import { buildDialogueState } from "../src/lib/dialogue/state";
 import { dialogueBypassReason } from "../src/lib/dialogue";
@@ -232,4 +232,31 @@ test("'tem um mais em conta?' não passa pela IA (caminho fixo pergunta de qual 
   for (const text of ["tem um mais em conta?", "tem algum mais barato?"]) {
     assert.equal(dialogueBypassReason({ text, intent: detectIntent(text), ctx, hasAddress: true, looksLikeList: false }) !== null, true, text);
   }
+});
+
+// 5) Polimentos: cesta vazia, "pula essa" sem acompanhamento vazio, "da cobasi tudo" não vira item ---------------------
+test("'o que tem na minha cesta' / 'mostra minha cesta' com a cesta vazia diz que está vazia", async (t) => {
+  if (!dbOk) return t.skip();
+  assert.ok(asksBasketContents("mostra minha cesta"));
+  assert.ok(asksBasketContents("o que tem no carrinho?"));
+  const c = await customerWith({});
+  const out = await send(c.phone, "o que tem na minha cesta");
+  assert.match(out, /cesta está vazia/, out.slice(0, 300));
+});
+
+test("'pula essa' no último item: o 'Deixei de fora' vai junto do acompanhamento, sem mensagem vazia", async (t) => {
+  if (!dbOk) return t.skip();
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const velas = [{ sku: "v1", name: "Vela de Aniversário Número 5", unitPrice: 5, storeKey: "carrefour", storeLabel: "Carrefour" }, { sku: "v2", name: "Vela Palito Colorida", unitPrice: 4, storeKey: "carrefour", storeLabel: "Carrefour" }];
+  const c = await customerWith({ basket: [arroz], pending: [{ query: "vela", qty: 1, options: velas }] }, "choosing");
+  const out = await send(c.phone, "pula essa");
+  assert.match(out, /Deixei \*vela\* de fora/, out.slice(0, 300));
+  assert.doesNotMatch(out, /Escolhe aí embaixo/, out.slice(0, 300));
+});
+
+test("'..., da cobasi tudo' no fim da lista não vira item 'não achado'", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({});
+  const out = await send(c.phone, "arroz, feijao, da cobasi tudo");
+  assert.doesNotMatch(out, /da cobasi tudo/i, out.slice(0, 500));
 });

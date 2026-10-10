@@ -3048,7 +3048,9 @@ export function asksBasketContents(text: string): { item?: string } | null {
   const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
   if (!n || n.length > 70) return null;
   if (/^(?:e )?(?:o )?(?:que|oq|q) (?:que )?(?:ainda )?(?:falta|faltou|ta faltando|esta faltando)(?: (?:escolher|pedir|eu escolher|na lista|da lista))?$/.test(n)) return {};
-  if (/^(?:e )?(?:o )?(?:que|oq|q) (?:que )?(?:eu )?(?:ja )?(?:pedi|escolhi|coloquei|tem na (?:minha )?(?:cesta|lista|sacola))(?: ate agora)?$/.test(n)) return {};
+  if (/^(?:e )?(?:o )?(?:que|oq|q) (?:que )?(?:eu )?(?:ja )?(?:pedi|escolhi|coloquei|tem na (?:minha )?(?:cesta|lista|sacola)|tem no (?:meu )?carrinho)(?: ate agora)?$/.test(n)) return {};
+  // "mostra minha cesta", "ver o carrinho", "como ta minha cesta" (10/10, rodada 6 g19).
+  if (/^(?:me )?(?:mostra|mostrar|ver|veja|como (?:ta|esta|ficou))(?: ai)? (?:a |o |minha |meu )?(?:minha |meu )?(?:cesta|carrinho|sacola)(?: ate agora)?$/.test(n)) return {};
   const qty = /^(?:e )?(?:quant[oa]s?)\s+(.+?)\s+(?:eu\s+)?(?:ja\s+)?(?:pedi|coloquei|escolhi|botei|tem na (?:cesta|lista|sacola)|ta(?:o)? na (?:cesta|lista|sacola)|estao na (?:cesta|lista))$/.exec(n);
   if (qty) return { item: qty[1].replace(/^(?:de |do |da )/, "").trim() };
   return null;
