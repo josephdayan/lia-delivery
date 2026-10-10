@@ -470,6 +470,11 @@ export function cancelAllKept(): string {
   return "Certo, mantive a cesta.";
 }
 
+// Desistência com o total na mesa, antes de qualquer cobrança (10/10, rodada 8 g25).
+export function quoteDroppedByCustomer(): string {
+  return "Combinado, deixei esse pedido de lado — nada foi cobrado. Se precisar de alguma coisa, é só me chamar 🙂";
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }
@@ -566,8 +571,47 @@ export function packCountAnswer(name: string, units: number): string {
 }
 
 // "põe o papel de volta" (10/10, rodada 7 M5): o mesmo item que saiu, com o mesmo preço.
+// Pedido guardado ANTES do cadastro (10/10, rodada 9 A4): edição do que foi anotado, sem cesta ainda.
+export function pendingRemoved(names: string[]): string {
+  return `Tirei ${names.map((n) => `*${n}*`).join(", ")} da lista.`;
+}
+export function pendingRestored(names: string[]): string {
+  return `Voltei ${names.map((n) => `*${n}*`).join(", ")} pra lista. ✅`;
+}
+export function pendingKept(name: string): string {
+  return `Combinado, *${name}* continua na lista ✅`;
+}
+export function pendingCheapestAll(): string {
+  return "Combinado: de cada item eu te mostro primeiro o mais barato.";
+}
+export function pendingListOnly(noted: string[]): string {
+  return noted.length ? `Até agora anotei:\n${noted.map((i) => `• ${i}`).join("\n")}\n\nOs preços saem quando eu tiver seu endereço.` : "Ainda não anotei nada. Me diz o que você precisa.";
+}
+
+// "o que tem na cesta?" com o resumo já na mesa (10/10, rodada 9 A4): os itens do pedido aberto e o total dele.
+export function openOrderContents(items: { qty: number; name: string }[], total: number): string {
+  return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n*Total: ${brl(total)}* (com a entrega)\n_Pra mudar, diz *tira* ou *põe* o item; pra pagar, escolhe Pix ou cartão no resumo._`;
+}
+
 export function removedRestored(names: string): string {
   return `Voltei *${names}* pra cesta. ✅`;
+}
+
+// "não, pera, continua com as taças" (10/10, rodada 9 A7): a remoção que acabou de acontecer foi desfeita.
+export function removalUndone(names: string): string {
+  return `Combinado, mantive *${names}* no pedido. ✅`;
+}
+
+// "esquece tudo" seguido de "não, pera, continua" (10/10, rodada 9 M5).
+export function clearUndone(names: string[]): string {
+  const shown = names.slice(0, 4).map((n) => `*${n}*`).join(", ");
+  const rest = names.length > 4 ? ` e mais ${names.length - 4}` : "";
+  return names.length ? `Tá bom, não limpei nada: voltei ${shown}${rest}. ✅` : "Tá bom, não limpei nada. ✅";
+}
+
+// "esquece as taças" antes do cadastro (10/10, rodada 9 A7): o item sai do pedido guardado.
+export function pendingNoteRemoved(names: string): string {
+  return `Tirei *${names}* do pedido.`;
 }
 
 export function swapUndone(names: string): string {
@@ -674,14 +718,35 @@ export function priceSortedHeader(query: string, cheapest: boolean): string {
   return cheapest ? `As mais baratas de *${query}*:` : `As mais caras de *${query}*:`;
 }
 
-export function noMoreOptions(query: string): string {
-  return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.`;
+export function noMoreOptions(query: string, swapOpen = false): string {
+  return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
+}
+
+// Desabafo/reclamação sem pedir uma pessoa (10/10, rodada 8 g25): não chama o responsável nem cita o que o cliente não disse.
+export function frustrationAck(): string {
+  return "Sinto muito 😕 Sigo aqui com o seu pedido. Se preferir falar com uma pessoa, é só dizer *atendente*.";
+}
+
+// Itens comuns que vieram junto de uma recomendação (10/10, rodada 8 g25): nada some calado.
+export function recommendRestNoted(input: { queued: string[]; added: string[]; notFound: string[]; medicine?: boolean }): string {
+  const list = (names: string[]) => names.map((n) => `*${n}*`).join(", ");
+  const lines: string[] = [];
+  if (input.queued.length) lines.push(`Anotei também ${list(input.queued)} — escolhe aí em cima primeiro que eu mostro ${input.queued.length > 1 ? "as opções deles" : "as opções"} em seguida.`);
+  if (input.added.length) lines.push(`Já pus na cesta: ${list(input.added)}.`);
+  if (input.notFound.length) lines.push(`${list(input.notFound)} eu não achei em nenhuma loja agora — me diz outro nome que eu procuro.`);
+  if (input.medicine) lines.push("Remédio eu não consigo comprar por aqui, então deixei de fora.");
+  return lines.join("\n");
+}
+
+// A oferta de troca de loja do pedido mínimo continua valendo depois de uma pergunta lateral (10/10, rodada 8 g25).
+export function minSwapStillOpen(): string {
+  return "_A troca de loja sem pedido mínimo que eu ofereci continua valendo: é só dizer *trocar de loja*._";
 }
 
 // Segundo "outras" com o pool esgotado NÃO repete a mesma frase (rodada 27/08 S4):
 // convida a reformular, que é a única saída real.
-export function noMoreOptionsAskReword(query: string): string {
-  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente, ou *pula* pra seguir sem esse item.`;
+export function noMoreOptionsAskReword(query: string, swapOpen = false): string {
+  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
 }
 
 // Toque num botão de card de uma mensagem antiga: dizer ISSO, em vez do
@@ -1397,6 +1462,11 @@ export function cheaperAfterQuoteNeedsItem(): string {
 // ---------- perguntas de confiança/logística (rodada 28/08 — ficavam sem resposta) ----------
 
 // "é seguro? como sei que não é golpe?" — na hora do dinheiro, resposta ESPECÍFICA.
+// "chega inteiro os ovos?" / "tem seguro?" antes da compra (10/10, rodada 9 M3).
+export function fragileArrivalAnswer(): string {
+  return "Quem embala e entrega é a própria loja, do jeito que ela manda os pedidos dela (ovos e vidro vão protegidos). Se algo chegar quebrado, me chama aqui com uma foto que eu abro a troca ou o reembolso com a loja pra você. 🙂";
+}
+
 export function trustAnswer(): string {
   return [
     "Pergunta justa 🙂 Funciona assim, na ordem que te protege:",
@@ -1752,6 +1822,11 @@ export function packMismatchAsk(name: string, requested: number, packSize: numbe
 // "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
 export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
   return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
+}
+
+// "jogo de 4 copos" com a opção avulsa (10/10, rodada 9 A7).
+export function setAsSinglesNote(count: number, query: string): string {
+  return `_Essa opção vem avulsa — coloquei ${count} unidades pra fechar o *${query}*. Pra mudar, é só dizer a quantidade._`;
 }
 
 export function packMismatchDeclined(): string {
@@ -2179,6 +2254,16 @@ export function overBudgetNone(cap: number, total: number, name: string, cheapes
 }
 
 // Teto dito depois de já ter o item na cesta: a Lia confere no total e só então avisa se não cabe.
+// "quanto ainda posso gastar?" com o teto dito antes (10/10, rodada 8 g25). Produtos só; a entrega entra no total.
+export function budgetLeftAnswer(cap: number, produtos: number, estimate: number, pendingCount = 0): string {
+  const falta = pendingCount ? ` (ainda falta escolher ${pendingCount === 1 ? "1 item" : `${pendingCount} itens`})` : "";
+  if (estimate <= cap + 0.005) {
+    const left = Math.round((cap - estimate) * 100) / 100;
+    return `Cabe, sim: do seu teto de *${brl(cap)}*, o que você escolheu dá uns *${brl(estimate)}* já com a entrega${falta} — sobram uns *${brl(left)}*. O total exato aparece antes de você pagar.`;
+  }
+  return `Do seu teto de *${brl(cap)}*: os produtos somam *${brl(produtos)}* e, com a entrega, fica em uns *${brl(estimate)}* — passa do limite${falta}. Se quiser, diz *tira* e o item, ou *mais barato* que eu procuro uma opção que caiba.`;
+}
+
 export function budgetNoted(cap: number): string {
   return `Anotado: *${brl(cap)}* no total, já com a entrega. Se passar eu te aviso e mostro o que cabe. Quer mais alguma coisa? Quando fechar, diz *"só isso"*.`;
 }
@@ -2327,7 +2412,7 @@ function shortNotFoundLabel(phrase: string): string {
 // ---------- Flow da lista e faltantes (07/10, Etapas 2 e 3) ----------
 // Cada linha da lista termina em UM status; o MESMO texto aparece na mensagem antes do botão,
 // no bloco "Não encontrei" do Flow (plain) e no resumo depois de confirmar.
-export type MissStatus = "closest" | "not_found" | "unbuyable";
+export type MissStatus = "closest" | "not_found" | "unbuyable" | "unchecked";
 export type MissEntry = { status: MissStatus; label: string; qty?: number; falta?: string };
 
 export const MISS_CLOSING = "Me manda outro nome ou marca pra qualquer um desses que eu procuro de novo.";
@@ -2341,6 +2426,8 @@ export function missLine(m: MissEntry, plain = false): string {
       ? `🔎 *${label}* — o mais perto que achei ${m.falta ?? "é diferente do pedido"}; escolha uma opção ou *Não quero*`
       : m.status === "unbuyable"
         ? `🚫 *${label}* — nenhuma loja entrega no seu endereço agora`
+        : m.status === "unchecked"
+          ? `⏳ *${label}* — as lojas não responderam a tempo; me diz *tenta de novo* que eu confiro`
         : `❌ *${label}* — não achei em nenhuma loja`;
   return plain ? stripMarks(line) : line;
 }
@@ -2600,6 +2687,12 @@ export function itemsNotAvailable(items: string[], info?: MissInfo[]): string {
 
 // 06/10 (teste real): o item existe nas lojas, mas nenhuma confirmou estoque/entrega para o
 // CEP. Mostrar a opção virava beco no "pagar"; o honesto é dizer que não dá pra comprar agora.
+// Busca parcial (10/10, rodada 9 A4): a loja não respondeu a tempo — nunca "não achei" com certeza.
+export function itemsNotCheckedNow(items: string[]): string {
+  const labels = items.map(shortNotFoundLabel).map((l) => `*${l}*`).join(", ");
+  return `Não consegui confirmar ${labels} agora: as lojas não responderam a tempo. Me diz *tenta de novo* que eu confiro.`;
+}
+
 export function itemsNotBuyableNow(items: string[]): string {
   const labels = items.map(shortNotFoundLabel);
   return labels.length === 1
@@ -3424,11 +3517,26 @@ export function cheapestOptionAnswer(n: number, name: string, price: number, che
 }
 
 // "chega hoje?"/"o 2 chega hoje?" com as opções na tela: os prazos que a loja informou.
-export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean }>, askedToday: boolean): string {
+// `deadline` (10/10, rodada 9 A4: "preciso que chegue até sexta, dá?" com os cards na tela): abre com sim/não pro dia;
+// `onTime` de cada linha = chega até o dia (null = prazo ilegível).
+export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean; onTime?: boolean | null }>, askedToday: boolean, deadline?: string): string {
   const known = rows.filter((r) => r.delivery);
   if (!known.length) return "O prazo de cada loja sai no total, logo depois que você escolher. Responde o número 👇";
   const lines = rows.map((r) => `*${r.n})* ${r.name} — ${r.delivery ?? "prazo no total"}`);
   let head = "Prazo de cada opção:";
+  const judged = deadline ? rows.filter((r) => r.onTime != null) : [];
+  if (deadline && judged.length) {
+    const fits = judged.filter((r) => r.onTime);
+    head =
+      rows.length === 1
+        ? fits.length ? `Dá, chega até *${deadline}* 🙂` : `Não, essa não chega até *${deadline}*. O prazo dela:`
+        : fits.length === rows.length
+          ? `Dá, todas chegam até *${deadline}*:`
+          : fits.length
+            ? `Depende da loja. Chega até *${deadline}*: ${fits.map((r) => `*${r.n}*`).join(", ")}. Os prazos:`
+            : `Não, nenhuma dessas chega até *${deadline}*. Os prazos:`;
+    return [head, ...lines].join("\n");
+  }
   if (askedToday) {
     const today = rows.filter((r) => r.today);
     head =

@@ -8,7 +8,7 @@ import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice }
 import * as copy from "../lia-copy";
 import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
-import { handleRecommend } from "../recommend/handle";
+import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -82,7 +82,7 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const runAll = async () => {
     for (let i = 0; i < steps.length; i++) {
       const nextIsSearch = steps[i + 1]?.type === "search";
-      const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick" });
+      const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick", afterRefine: steps.slice(0, i).some((st) => st.type === "refine") });
       if (result === "invalid") {
         // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
         // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
@@ -131,7 +131,7 @@ function locate(ctx: DeliveryContext, target: Target): BasketItem | undefined {
   return basket.find((item) => item.name.slice(0, 90) === target.name);
 }
 
-async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean; nextIsPick: boolean }): Promise<StepResult> {
+async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean; nextIsPick: boolean; afterRefine?: boolean }): Promise<StepResult> {
   const { ctx, phone, convoId, userCep, userId, h } = env;
   const choosing = ctx.step === "choosing" && Boolean(ctx.pending?.length);
   const current = choosing ? ctx.pending![0] : undefined;
@@ -139,7 +139,11 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
 
   switch (step.type) {
     case "search": {
-      let text = step.lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
+      // A contagem/tamanho que a IA leu é conferida com a fala do cliente (10/10, rodada 9: "um par de pilhas AA" → 1x ou
+      // 2 cartelas; "água sanitária de 5 litros, uma só" → 2x).
+      const said = turnMeta.getStore()?.inboundText ?? env.text;
+      const lines = reconcileLineCounts(step.lines.map((l) => ({ ...l, phrase: l.query })), said).map((l) => ({ ...l, query: l.phrase }));
+      let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
       if (step.retry && miss) text = "tenta de novo";
@@ -203,7 +207,10 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
         current.qty = next;
         current.qtyExplicit = true;
         await writeCtx(convoId, ctx);
-        await h.sendChoices(phone, current, copy.qtyNotedPickOne(next, current.query));
+        // Refino logo antes já mostrou os cards (10/10, rodada 9 B-307: "tem de 2 litros? eu queria 3 de 2l" mandava o
+        // mesmo carrossel duas vezes): a quantidade vai só em texto.
+        if (opts.afterRefine) await reply(phone, copy.qtyNotedPickOne(next, current.query));
+        else await h.sendChoices(phone, current, copy.qtyNotedPickOne(next, current.query));
         return "done";
       }
       const item = locate(ctx, step.target);
@@ -295,7 +302,8 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
     case "recommend": {
       // Recomendação (08/10): a execução (prateleiras → busca no CEP → juiz → cards) é do handler. Com
       // opções na tela, ele recebe o contexto inteiro e decide (continuar a escolha ou recomendar de novo).
-      await handleRecommend({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text });
+      // O resto da mensagem ("e um sabonete íntimo") entra na fila atrás dos cards (10/10, rodada 8 g25).
+      await h.recommendAndQueueRest({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text }, env.text);
       return "done";
     }
 

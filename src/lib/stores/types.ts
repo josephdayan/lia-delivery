@@ -349,8 +349,9 @@ function isDrinkPack(nameNorm: string): boolean {
 }
 // Variantes "de dieta/estilo" usadas só como DESEMPATE (quem pede "arroz" quer o comum;
 // quem pede "leite" aceita integral/desnatado — ambos são leite). Termos veterinários
-// entram aqui: "ração" genérica não deve dar Veterinary Diets/Hipoalergênica primeiro.
-const TIEBREAK_VARIANTS = new Set(["integral", "desnatado", "desnatada", "semidesnatado", "zero", "diet", "light", "organico", "organica", "vegano", "vegana", "hipoalergenica", "hipoalergenico", "veterinary", "vet", "terapeutica", "terapeutico", "castrados", "castrado", "castradas", "gas"]);
+// entram aqui: "ração" genérica não deve dar Veterinary Diets/Hipoalergênica primeiro. "Íntimo" (10/10, rodada 8 g25): "lenço
+// umedecido" numa lista de bebê trazia "Lenço Umedecido Dauf Íntimo" primeiro.
+const TIEBREAK_VARIANTS = new Set(["integral", "desnatado", "desnatada", "semidesnatado", "zero", "diet", "light", "organico", "organica", "vegano", "vegana", "hipoalergenica", "hipoalergenico", "veterinary", "vet", "terapeutica", "terapeutico", "castrados", "castrado", "castradas", "gas", "intimo", "intima", "intimos", "intimas"]);
 
 // Nº de palavras de variante no nome que o cliente NÃO pediu — usado como desempate
 // (menos variantes = mais "produto básico"). O que vem depois de "sabor" é descrição

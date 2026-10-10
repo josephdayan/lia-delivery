@@ -132,3 +132,9 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
   });
   return { kept, dropped, checks };
 }
+
+// Candidatos que saíram SEM resposta da loja (regional calada: timeout/fora do ar), não por "sem estoque" nem por estar
+// fora da área (10/10, rodada 9 A4): a busca foi parcial e a Lia não pode dizer "não achei em nenhuma loja".
+export function unansweredDrops<T extends LiveCandidate>(dropped: T[], checks: Map<string, LiveItemCheck>, cep: string | null | undefined): T[] {
+  return dropped.filter((c) => !checks.has(liveKey(c.storeKey, c.sku)) && storeServesCep(c.storeKey, cep));
+}

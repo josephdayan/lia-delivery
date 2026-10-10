@@ -7,7 +7,8 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { hasMissMatching } from "../list-misses";
+import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, asksDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -113,7 +114,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // Logo depois de escolher (lastChoice, ainda coletando), "mais um" soma ao item recém-escolhido, mesmo com outros na cesta.
   if (i.intent.kind === "qty_adjust" && !i.ctx.pending?.length && (i.ctx.basket?.length === 1 || (i.ctx.lastChoice && (!i.ctx.step || i.ctx.step === "collecting")))) return "intent:qty_single";
   // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério; o cérebro resolve o item sem IA.
-  if (i.intent.kind === "swap_item" && /^(?:o |a )?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
+  // "troca a areia por uma opção mais barata" (o "sim" à pergunta da própria Lia vira essa frase, 10/10, rodada 8 g25): idem.
+  if (i.intent.kind === "swap_item" && /^(?:(?:o|a|um|uma|outr[oa])\s+)?(?:(?:opcao|versao|marca|op[cç]ao)\s+)?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
   if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
   if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
   // "vocês entregam hoje?": sim/não direto, calculado dos prazos reais (não passa pela IA, que perde o "hoje").
@@ -125,7 +127,16 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "total"/"quanto tá?" com carrossel ou pergunta aberta (10/10, rodada 7 M6/N4): a IA devolvia outra pergunta
   // ("quer saber o total ou escolher?") ou "comparo, sim". O cérebro já responde o parcial em qualquer passo.
   if (asksRunningTotal(text) && trimmed.split(/\s+/).length <= 6 && (ctx.basket?.length || ctx.pending?.length)) return "intent:running_total";
+  // "tira o gelo" com o gelo entre os não achados (10/10, rodada 8 g25): o cérebro tira da lista de faltantes e diz que
+  // ele já estava de fora; a IA só via a cesta e perguntava "você quis tirar outro item?".
+  if (i.intent.kind === "remove_item" && !i.intent.andAdd && hasMissMatching(ctx, i.intent.target)) return "intent:remove_miss";
   if (extractCpf(text)) return "cpf";
+  // "preciso que chegue até sexta, dá?" / "sábado que vem, chega?" com os cards na tela (10/10, rodada 9 A4): sim/não pro
+  // dia, calculado do prazo de cada opção. A IA reescrevia para "qual o prazo?" ou "agendar" e o dia se perdia.
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksDeadline(text)) return "intent:deadline_ask";
+  // "põe o papel de volta" logo depois de um "tira" (10/10, rodada 9 A3): o cérebro devolve o MESMO item; a IA perguntava
+  // "Qual papel você quer colocar de volta?".
+  if (ctx.lastRemoved && trimmed.length <= 80 && /\b(?:de volta|devolta)\b|^(?:pode )?(?:repoe|recoloca|reponha|devolve)\b/.test(normalizeMsg(text))) return "intent:restore_removed";
   // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".

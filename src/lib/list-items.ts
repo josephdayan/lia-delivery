@@ -25,6 +25,7 @@ import {
   isNonItemSegment,
   mergeShoppingLines,
   normalizeMsg,
+  sharesProductNoun,
   parseBasketLines,
   type ConjunctionPart,
   type ListItemDecision,
@@ -354,4 +355,60 @@ export function countDistinctItems(text: string, opts: ResolveListItemsOptions =
 // "2x coca zero 2l" — o formato do "Já anotei".
 export function notedItemLabels(text: string, opts: ResolveListItemsOptions = {}): string[] {
   return resolveListItems(text, opts).map((line) => `${line.qty}x ${line.phrase}`);
+}
+
+// ---------- quantidade × tamanho × contagem (10/10, rodada 9 A1/A2/A4) ----------
+// A IA (extração e gerente de diálogo) às vezes lê a quantidade diferente do que a mensagem diz: "um par de pilhas AA"
+// virava 1 (ou 2 cartelas), "água sanitária 5 litros" e "sachê gato sênior e areia" viravam 2x sem número nenhum na
+// mensagem, e "3 refrigerantes guaraná 2l" perdia o "2l". O parser determinístico lê a contagem da própria frase; aqui as
+// linhas da IA se acertam com ele:
+//   1. contagem dita por palavra (par, dúzia, "duas") que a IA deixou em 1 → vale a do parser;
+//   2. quantidade > 1 sem NENHUM número/palavra de contagem na mensagem (tamanho, preço, idade e índice de lista não
+//      contam) → 1, a IA inventou;
+//   3. tamanho dito ("2l", "5 litros", "3kg") que a IA tirou da busca → volta para a frase.
+const SIZE_TOKEN_RE = /\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|mg|ml|l|lt|lts|litros?|cm|mm|m|w|v|mah|gb|tb|polegadas?|pol)\b/gi;
+const COUNT_WORD_RE = /\b(?:\d+|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|quinze|vinte|trinta|duzias?|dezenas?|pares|par)\b/;
+export function textHasCount(text: string): boolean {
+  const n = normalizeMsg(text)
+    .replace(SIZE_TOKEN_RE, " ")
+    .replace(/r\$\s*\d+(?:[.,]\d+)?/g, " ")
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:reais|real|conto|contos|pila|anos?|meses|mes|dias?|horas?|h|min)\b/g, " ")
+    .replace(/(?:^|\s)\d{1,2}\s*[).:-](?=\s|$)/g, " ")
+    .replace(/\b\d{5}-?\d{3}\b/g, " ");
+  return COUNT_WORD_RE.test(n);
+}
+function sizeTokens(phrase: string): string[] {
+  return (phrase.match(SIZE_TOKEN_RE) ?? []).map((t) => t.trim());
+}
+export function reconcileLineCounts<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(lines: T[], said: string): T[] {
+  if (!said.trim() || !lines.length) return lines;
+  const det = resolveListItems(said);
+  const hasCount = textHasCount(said);
+  return lines.map((line) => {
+    const twins = det.filter((d) => sharesProductNoun(d.phrase, line.phrase));
+    // Só gêmeo de um para um: a lista numerada que o parser não separou ("1) 2x carvão 3kg 2) …") casa com toda linha
+    // da IA e não diz nada sobre nenhuma.
+    const twin = twins.length === 1 && lines.filter((l) => sharesProductNoun(twins[0].phrase, l.phrase)).length === 1 ? twins[0] : undefined;
+    let out = line;
+    if (twin?.qtyExplicit && twin.qty > 1 && line.qty === 1) out = { ...out, qty: twin.qty, qtyExplicit: true };
+    // (O parser soma a linha repetida, "arroz, feijão, arroz" = 2x arroz: aí o gêmeo dele também diz 2.)
+    else if (line.qty > 1 && !hasCount && (!twin || twin.qty === 1)) out = { ...out, qty: 1, qtyExplicit: false };
+    if (twin) {
+      const have = sizeTokens(out.phrase);
+      const missing = sizeTokens(twin.phrase);
+      if (missing.length && !have.length) out = { ...out, phrase: `${out.phrase} ${missing.join(" ")}` };
+    }
+    return out;
+  });
+}
+
+// "presente pra um menino de 7 anos até R$ 80. Também um cartão de aniversário e embalagem de presente" (10/10, rodada 9
+// A3): a recomendação levava a mensagem inteira e o cartão e a embalagem sumiam calados. O que vem depois de "também"
+// (ou "além disso") é pedido à parte: os itens desse trecho, no formato de busca ("2 pilhas, cartão"), ou null.
+export function itemsAfterAlso(text: string): string | null {
+  const m = text.match(/(?:^|[.,;!?]\s*|\s)(?:e\s+)?(?:tamb[eé]m|al[eé]m disso)\b[,:]?\s+(.+)$/i);
+  if (!m || m.index === 0) return null;
+  const rest = m[1].replace(/^(?:quero|queria|preciso(?:\s+de)?|vou querer|me (?:v[eê]|manda))\s+/i, "").trim();
+  const lines = resolveListItems(rest).filter((line) => !isNonItemSegment(line.phrase));
+  return lines.length ? lines.map((line) => (line.qty > 1 ? `${line.qty} ${line.phrase}` : line.phrase)).join(", ") : null;
 }
