@@ -11,7 +11,11 @@ import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { deadlineVerdict, type LiveItemCheck } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
-import type { BasketItem } from "../src/lib/conversation-types";
+import { detectIntent, parseDropClause } from "../src/lib/lia-intents";
+import { planActions } from "../src/lib/dialogue/plan";
+import { buildDialogueState } from "../src/lib/dialogue/state";
+import { dialogueBypassReason } from "../src/lib/dialogue";
+import type { BasketItem, DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
 const PREFIX = `+5578${String(Date.now()).slice(-5)}${String(process.pid).slice(-2)}`;
@@ -182,4 +186,50 @@ test("escolher o copo C/50 com '40 copos' pergunta a embalagem antes de pôr na 
   const after = await ctxOf(c.convoId);
   const line = (after.basket ?? []).find((b: BasketItem) => b.sku === "g19-copo50");
   assert.equal(line?.qty, 1, JSON.stringify(after.basket));
+});
+
+// 4) "só o cartão, sem vela", "2 latas" na troca, teto em busca nova, "tem um mais em conta?" sem IA ----------------
+test("parseDropClause e 'cartão de aniversário' não é forma de pagamento", () => {
+  assert.deepEqual(parseDropClause("so o cartao, sem vela"), { drop: "vela", rest: "cartao" });
+  assert.deepEqual(parseDropClause("sem a vela, so o cartao"), { drop: "vela", rest: "cartao" });
+  assert.equal(parseDropClause("arroz sem gluten"), null);
+  assert.equal(detectIntent("cartão de aniversário").kind, "free_text");
+  assert.equal(detectIntent("um cartão de presente pra minha mãe").kind, "free_text");
+  assert.equal(detectIntent("cartão").kind, "choose_payment");
+  assert.equal(detectIntent("cartão de crédito").kind, "choose_payment");
+});
+
+test("'so o cartao, sem vela' com o sabonete na tela e a vela na fila: tira a vela e volta ao cartão não achado", async (t) => {
+  if (!dbOk) return t.skip();
+  const opts = [{ sku: "s1", name: "Sabonete Dove 90g", unitPrice: 7, storeKey: "carrefour", storeLabel: "Carrefour" }, { sku: "s2", name: "Sabonete Lux 85g", unitPrice: 3, storeKey: "carrefour", storeLabel: "Carrefour" }];
+  const velas = [{ sku: "v1", name: "Vela de Aniversário Número 5", unitPrice: 5, storeKey: "carrefour", storeLabel: "Carrefour" }, { sku: "v2", name: "Vela Palito Colorida", unitPrice: 4, storeKey: "carrefour", storeLabel: "Carrefour" }];
+  const c = await customerWith({
+    pending: [{ query: "sabonetes", qty: 2, qtyExplicit: true, options: opts }, { query: "vela", qty: 1, options: velas }],
+    listMisses: [{ query: "cartão de aniversário", qty: 1, reason: "not_found", at: Date.now() }]
+  }, "choosing");
+  const out = await send(c.phone, "so o cartao, sem vela");
+  assert.match(out, /Tirei vela/, out.slice(0, 500));
+  assert.doesNotMatch(out, /Não peguei qual|so o cartao sem vela|Antes de pagar/, out.slice(0, 500));
+  const ctx = await ctxOf(c.convoId);
+  assert.ok(!(ctx.pending ?? []).some((p: { query: string }) => p.query === "vela"), JSON.stringify(ctx.pending?.map((p: { query: string }) => p.query)));
+  assert.equal(ctx.pending?.[0]?.query, "sabonetes", "a escolha na tela continua");
+});
+
+test("troca com '2 latas' leva a quantidade; busca com teto mantém o teto que a IA tirou", () => {
+  const state = buildDialogueState(
+    { flow: "delivery", step: "collecting", basket: [{ sku: "l1", name: "Leite Integral Ninho 1L", qty: 1, unitPrice: 7, lineTotal: 7, storeKey: "mambo", storeLabel: "Mambo" }] } as unknown as DeliveryContext,
+    { hasAddress: true }
+  );
+  const swap = planActions({ actions: [{ type: "swap" as const, from: 1, to: "leite Ninho em pó" }] }, state, { text: "o leite ninho eu quis dizer o leite em po, 2 latas" });
+  assert.equal((swap as { steps: { to: string }[] }).steps[0].to, "2 leite Ninho em pó");
+  const empty = buildDialogueState({ flow: "delivery", step: "collecting" } as DeliveryContext, { hasAddress: true });
+  const search = planActions({ actions: [{ type: "search" as const, query: "perfume feminino", qty: 1 }] }, empty, { text: "perfume feminino ate 60 reais" });
+  assert.match((search as { steps: { lines: { query: string }[] }[] }).steps[0].lines[0].query, /perfume feminino até 60 reais/);
+});
+
+test("'tem um mais em conta?' não passa pela IA (caminho fixo pergunta de qual item)", () => {
+  const ctx = { flow: "delivery", step: "collecting", basket: [{ sku: "a", name: "Fralda", qty: 1, unitPrice: 50 }, { sku: "b", name: "Protetor", qty: 1, unitPrice: 40 }] } as unknown as DeliveryContext;
+  for (const text of ["tem um mais em conta?", "tem algum mais barato?"]) {
+    assert.equal(dialogueBypassReason({ text, intent: detectIntent(text), ctx, hasAddress: true, looksLikeList: false }) !== null, true, text);
+  }
 });

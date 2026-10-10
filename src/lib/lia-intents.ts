@@ -1145,6 +1145,20 @@ export function looksLikeSymptomAsk(text: string): boolean {
 // "muda/altera" (10/10, rodada 5 M5): "tira os balões e o salgadinho, e muda o guardanapo pra 4" era uma cláusula só.
 const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece|muda|mudar|altera|alterar";
 
+// "só o cartão, sem vela" (10/10, rodada 6 g19): uma cláusula de tirar ("sem/tira/não quero/esquece X") junto de outra
+// coisa na mesma mensagem. Devolve o alvo e o resto (sem o "só"/"somente" da frente), ou null.
+export function parseDropClause(text: string): { drop: string; rest: string } | null {
+  const n = normalizeMsg(text).replace(/[!?.]+$/g, "").trim();
+  const m = n.match(/^(.+?)(?:\s*[,;]\s*|\s+e\s+)(?:e\s+)?(?:sem|tira|tirar|tirando|nao quero|n quero|esquece|pula|menos)\s+(?:(?:o|a|os|as|aquel[ea]s?)\s+)?(.+)$/)
+    ?? n.match(/^(?:sem|tira|tirar|nao quero|n quero|esquece|pula|menos)\s+(?:(?:o|a|os|as)\s+)?(.+?)(?:\s*[,;]\s*|\s+e\s+)(.+)$/);
+  if (!m) return null;
+  const leadDrop = /^(?:sem|tira|tirar|nao quero|n quero|esquece|pula|menos)\b/.test(n);
+  const drop = (leadDrop ? m[1] : m[2]).trim();
+  const rest = (leadDrop ? m[2] : m[1]).replace(/^(?:e\s+)?(?:so|soh|somente|apenas|quero|queria|fica|deixa)\s+/, "").replace(/^(?:o|a|os|as|um|uma)\s+/, "").trim();
+  if (!drop || !rest || drop.split(/\s+/).length > 5) return null;
+  return { drop, rest };
+}
+
 export function splitCommandClauses(text: string): string[] {
   const n = normalizeMsg(text);
   const parts = n
@@ -1901,9 +1915,12 @@ export function detectIntent(text: string): Intent {
   return { kind: "free_text" };
 }
 
+// Cartão que é PRODUTO ("cartão de aniversário", "cartão de presente", "cartão de memória", 10/10, rodada 6 g19: virava
+// "Antes de pagar, escolhe..."). "cartão de crédito/débito" continua forma de pagamento.
+const CARD_PRODUCT_RE = /\bcartao(?:zinho)?s?\s+(?:de\s+|do\s+|da\s+|pra\s+|para\s+)?(?:aniversario|presente|natal|felicitac\w*|parabens|visita|memoria|sd|micro ?sd|dia das maes|dia dos pais|namorad\w*|casamento|condolencia\w*|agradecimento|boas festas|recado|mensagem|bilhete)\b/;
 function paymentMethodIn(n: string): "pix" | "card" | undefined {
   if (/\bpix\b/.test(n)) return "pix";
-  if (/\b(cartao|credito|debito|cred)\b/.test(n)) return "card";
+  if (/\b(cartao|credito|debito|cred)\b/.test(CARD_PRODUCT_RE.test(n) ? n.replace(CARD_PRODUCT_RE, " ") : n)) return "card";
   return undefined;
 }
 
