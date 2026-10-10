@@ -470,6 +470,11 @@ export function cancelAllKept(): string {
   return "Certo, mantive a cesta.";
 }
 
+// Desistência com o total na mesa, antes de qualquer cobrança (10/10, rodada 8 g25).
+export function quoteDroppedByCustomer(): string {
+  return "Combinado, deixei esse pedido de lado — nada foi cobrado. Se precisar de alguma coisa, é só me chamar 🙂";
+}
+
 export function cartCleared(): string {
   return "Carrinho limpo. O que você quer agora?";
 }
@@ -676,6 +681,11 @@ export function priceSortedHeader(query: string, cheapest: boolean): string {
 
 export function noMoreOptions(query: string, swapOpen = false): string {
   return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
+}
+
+// Desabafo/reclamação sem pedir uma pessoa (10/10, rodada 8 g25): não chama o responsável nem cita o que o cliente não disse.
+export function frustrationAck(): string {
+  return "Sinto muito 😕 Sigo aqui com o seu pedido. Se preferir falar com uma pessoa, é só dizer *atendente*.";
 }
 
 // Itens comuns que vieram junto de uma recomendação (10/10, rodada 8 g25): nada some calado.

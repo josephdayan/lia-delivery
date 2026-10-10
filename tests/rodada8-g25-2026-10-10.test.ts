@@ -86,7 +86,6 @@ const bi = (sku: string, name: string, unitPrice: number, extra: Partial<BasketI
 });
 const opt = (sku: string, name: string, unitPrice: number, storeKey = "americanas", storeLabel = "Americanas", extra: Partial<ChoiceOption> = {}): ChoiceOption => ({ sku, name, unitPrice, storeKey, storeLabel, ...extra });
 const pend = (query: string, options: ChoiceOption[], extra: Partial<PendingChoice> = {}): PendingChoice => ({ query, qty: 1, options, ...extra }) as PendingChoice;
-void pend;
 
 // 1 ------------------------------------------------------------------------------------------------------------------
 test("1: o resumo do fechamento real ('só isso') avisa o que ficou de fora; 'tira o gelo' depois não reabre o pedido", async (t) => {
@@ -155,6 +154,51 @@ test("3: 'aceito a troca, pode ser' aceita a troca de loja (não vira edição d
   const out = await send(c.phone, "aceito a troca, pode ser");
   assert.doesNotMatch(out, /já é o que está na sua cesta/i, out.slice(0, 300));
   assert.match(out, /Troquei de loja/i, out.slice(0, 300));
+});
+
+// 4 ------------------------------------------------------------------------------------------------------------------
+test("4: reclamação que a IA lê como 'quero um atendente' não escala nem cita frase inventada", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "human" }] }));
+  const c = await customerWith({ pending: [pend("arroz", [opt("swift-7694", "Arroz Branco Swift 1kg", 4.37, "swift", "Swift")])] }, "choosing");
+  const start = outbox.length;
+  const out = await send(c.phone, "voces sao uma porcaria, demora demais");
+  const all = outbox.slice(start).map((m) => m.text).join("\n");
+  assert.doesNotMatch(all, /quero falar com um atendente/i, all.slice(0, 500));
+  assert.doesNotMatch(out, /Avisei o responsável|Já avisei o responsável/i, out.slice(0, 300));
+  assert.match(out, /Sinto muito[\s\S]*atendente/, out.slice(0, 300));
+  const ctx = await ctxOf(c.convoId);
+  assert.equal(ctx.attendance, undefined);
+  assert.equal(ctx.pending?.[0]?.query, "arroz", "a escolha continua aberta");
+});
+
+test("4: pedido de pessoa pela IA ('me passa pra alguém aí') ainda escala, citando o que o cliente escreveu", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "human" }] }));
+  const c = await customerWith({ basket: [bi("swift-7694", "Arroz Branco Swift 1kg", 4.37, { storeKey: "swift", storeLabel: "Swift" })] });
+  const start = outbox.length;
+  await send(c.phone, "me passa pra alguém aí por favor");
+  const all = outbox.slice(start).map((m) => m.text).join("\n");
+  assert.doesNotMatch(all, /"quero falar com um atendente"/i, all.slice(0, 500));
+  assert.ok((await ctxOf(c.convoId)).attendance, all.slice(0, 500));
+});
+
+test("4: 'melhor deixar, não preciso de mais nada disso' com o total na mesa é desistência, não cobrança", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({});
+  await send(c.phone, "quero arroz");
+  await send(c.phone, "1");
+  const quote = await send(c.phone, "só isso");
+  assert.match(quote, /Seu pedido/, quote.slice(0, 300));
+  const out = await send(c.phone, "melhor deixar, não preciso de mais nada disso, obrigado");
+  assert.doesNotMatch(out, /Como prefere pagar|pix/i, out.slice(0, 300));
+  assert.match(out, /nada foi cobrado/, out.slice(0, 300));
+  const ctx = await ctxOf(c.convoId);
+  assert.ok(!ctx.basket?.length && !ctx.deliveryOrderId);
+  const order = await prisma.deliveryOrder.findFirst({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
+  assert.notEqual(order?.status, "awaiting_quote_confirmation");
 });
 
 // 6 ------------------------------------------------------------------------------------------------------------------

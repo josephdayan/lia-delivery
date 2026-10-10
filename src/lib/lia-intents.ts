@@ -1332,6 +1332,13 @@ const TOTAL_PREVIEW_RE =
 const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
 
+// O cliente pediu uma PESSOA? (10/10, rodada 8 g25) Mais largo que o HUMAN_RE: a IA reconhece "me passa pra alguém",
+// "chama o dono"; reclamação sem nada disso ("vocês são uma porcaria") não é pedido de atendente.
+export function asksForPerson(text: string): boolean {
+  const n = normalizeMsg(text);
+  return HUMAN_RE.test(n) || /\b(alguem|pessoa|gente de verdade|responsavel|dono|gerente|equipe|funcionari[oa]|operador|ligar|ligacao|telefone)\b/.test(n);
+}
+
 // Reclamação pós-pedido: "veio errado", "faltou", "estragado" — pedir desculpa e
 // acionar o operador, nunca oferecer produto.
 const COMPLAINT_RE =
