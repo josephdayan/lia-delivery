@@ -195,6 +195,10 @@ export type DeliveryContext = {
   // 05/10 (dono): nome + CPF pedidos no CADASTRO, logo depois do endereço. Neste modo a
   // resposta sem CPF não trava nada: segue como mensagem normal.
   cpfOnboarding?: boolean;
+  // "ok" no pedido de nome + CPF já respondido uma vez (10/10, rodada 7): o 2º "ok" segue a conversa.
+  cpfAckAt?: number;
+  // Botões do pedido mínimo ("tirar" / "completar") enviados (10/10, rodada 7): "1"/"2" digitado responde a eles.
+  minimumButtonsAt?: number;
   // 09/10 (rodada 3): o CPF do formulário/texto não conferiu. Os passos seguintes seguem, mas o pedido não vai
   // para o total/pagamento sem um CPF válido guardado (a Lia pede de novo antes de fechar).
   cpfRequired?: boolean;
@@ -308,8 +312,15 @@ export type DeliveryContext = {
   // responde ELA ("o integral mesmo, e o pão de forma" = leite integral + pão de forma), nunca vira lista nova.
   // `said` = a fala do cliente que gerou a pergunta (10/10, rodada 6 M3: o "2" que responde "A ou B?" volta com ela).
   openQuestion?: { text: string; at: number; said?: string };
-  askEither?: { base: string; alternatives: [string, string]; at: number };
+  // `cap` = teto por item dito junto ("caneta ou caderninho até 50 no total", 10/10, rodada 7 M10) — vale na busca da resposta.
+  askEither?: { base: string; alternatives: [string, string]; at: number; cap?: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
+  // Último "tira X" (10/10, rodada 7 M5): "põe o papel de volta" devolve o MESMO item (sku, preço, loja), sem nova busca.
+  // `queries` = escolhas ainda abertas que saíram junto (voltam pra fila).
+  lastRemoved?: { items: BasketItem[]; queries: string[]; at: number };
+  // "duas entregas: casa e trabalho" (10/10, rodada 7 M11): a Lia faz UM endereço por pedido. Marca quando o cliente pediu
+  // pra dividir; "no trabalho: X" depois disso não entra no pedido de casa calado.
+  multiAddressAt?: number;
   // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4 M2): a Lia perguntou de qual;
   // a próxima fala ("a fralda", "2") escolhe o item e a troca pelo mais barato segue.
   cheaperAsk?: { at: number };
@@ -393,7 +404,8 @@ export type DeliveryContext = {
   // O CEP é de outra cidade que a escrita no endereço: nada salvo até confirmar.
   cepCityCheck?: { cep: string; raw: string; askedAt: number; via: "cep" | "address" };
   // Cesta/cotação que venceu por inatividade (09/10, rodada 1): quem volta horas depois é avisado e retoma com "sim".
-  expiredCart?: { items: string[]; at: number; quote?: boolean };
+  // soft (10/10, rodada 7 N6): só opções em escolha, ausência curta — o aviso sai só se o cliente responder a elas.
+  expiredCart?: { items: string[]; at: number; quote?: boolean; soft?: boolean; noticed?: boolean };
   // Endereço de antes de uma troca, para "deixa o antigo"/"usa o de antes".
   previousAddress?: { cep: string; address: string; city?: string; uf?: string };
   // Último CEP recusado por estar fora da área: a mensagem seguinte lembra o motivo.

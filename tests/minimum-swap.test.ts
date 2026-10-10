@@ -139,3 +139,26 @@ test("'Deixar como está' (minswap:no) mantém a cesta intacta", async (t) => {
   const basket = JSON.parse(convo!.context ?? "{}").basket as Array<{ name: string }>;
   assert.equal(basket.length, 1, "a cesta continua intacta");
 });
+
+// Rodada 7 g20 (10/10, A1): troca oferecida e aceita, depois "Não tenho ... para entregar no seu endereço agora" — o item
+// sumia. A loja nova passa pela conferência ao vivo ANTES da oferta: não entrega no CEP → nada de oferta de troca.
+test("troca de loja só é oferecida se a loja nova confirma entrega no CEP", async (t) => {
+  if (!dbOk) return t.skip();
+  const live = await import("../src/lib/live-availability");
+  const c = await returningCustomer();
+  await c.send("quero creme dental colgate máxima proteção do carrefour");
+  const afterChoice = await c.send(await carrefourPick(c.userId));
+  if (/quantas unidades/i.test(afterChoice)) await c.send("1");
+  live.__setLiveSimulateForTests(
+    async (_store, skus) => new Map(skus.map((sku) => [sku, { sku, available: false }])),
+    (key) => key !== "carrefour"
+  );
+  try {
+    const wall = await c.send("pagar");
+    assert.match(wall, /pedido mínimo/i, wall.slice(0, 300));
+    assert.doesNotMatch(wall, /outra loja SEM pedido mínimo|Trocar de loja/i, wall.slice(0, 400));
+  } finally {
+    live.__setLiveSimulateForTests(null);
+    live.__clearLiveCheckCacheForTests();
+  }
+});

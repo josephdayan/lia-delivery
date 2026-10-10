@@ -470,6 +470,15 @@ function specToken(t: string): boolean {
   return t.length >= 3 || SHORT_SPEC_RE.test(t);
 }
 
+// Fragmentos que só descrevem o item vizinho (10/10, rodada 7 N5): "pra minha gata", "10kg cada", "a normal sem receita".
+const FOR_WHOM_FRAGMENT_RE = /^(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\s+[a-z]+(?:\s+[a-z]+)?$/;
+const EACH_SIZE_FRAGMENT_RE = /^(?:cada\s+(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))|(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))\s+cada)$/;
+const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:sem receita|que nao precisa(?: de)? receita)$/;
+export function isDescriptorFragment(phrase: string): boolean {
+  const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
+  return FOR_WHOM_FRAGMENT_RE.test(n) || EACH_SIZE_FRAGMENT_RE.test(n) || OTC_QUALIFIER_FRAGMENT_RE.test(n);
+}
+
 export function parseBasketLines(text: string, opts?: ParseBasketOptions): ParsedLine[] {
   let source = expandShoppingShorthand(text);
   // Lista enumerada ("1 arroz\n2 feijão\n3 óleo"): índices sequenciais a partir de 1 em
@@ -515,6 +524,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/§/g, ",")
         .replace(/¤/g, ".")
         .trim()
+        // "*arroz 5kg" (asterisco de correção do WhatsApp, 10/10, rodada 7) nunca fica no nome do item.
+        .replace(/^\*+\s*(?=[^*\s])(?!.*\*)/, "")
         .replace(/^((oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)( lia)?[\s,!.?]*)+/i, "")
         .replace(/^(tudo (bem|bom)|td bem|como vai)[\s,!.?]*/i, "")
         .replace(/^(ah+|hm+|hmm+|dai|tipo|ne|entao|ok+|okay|blz|beleza|ta|certo)\s+/i, "")
@@ -659,6 +670,29 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       const prev = merged[merged.length - 1];
       if (prev) prev.phrase = `${prev.phrase} ${pron[1].trim()}`.replace(/\s+/g, " ");
       continue;
+    }
+    // Fragmentos que descrevem o item vizinho (10/10, rodada 7 N5) nunca são item próprio:
+    // - "ração pro meu cachorro e outra pra minha gata": o "pra minha gata" é OUTRA ração — herda o produto anterior;
+    // - "10kg cada": o tamanho vale para os itens de antes que não disseram tamanho;
+    // - "dipirona 500mg gotas, a normal sem receita": diz só que o remédio é o isento, sem produto.
+    if (merged.length) {
+      const n = normalizeMsg(line.phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
+      const forWhom = FOR_WHOM_FRAGMENT_RE.test(n);
+      if (forWhom) {
+        const prev = merged[merged.length - 1];
+        const head = prev.phrase.replace(/\s+(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\b.*$/i, "").trim();
+        if (head && head !== prev.phrase) {
+          merged.push({ ...line, phrase: `${head} ${line.phrase}`.replace(/\s+/g, " ").trim(), additive: undefined });
+          continue;
+        }
+      }
+      const each = EACH_SIZE_FRAGMENT_RE.exec(n);
+      if (each) {
+        const size = (each[1] ?? each[2]).replace(/\s+/g, "");
+        for (const prev of merged) if (!/\d\s?(?:kg|g|l|ml|litros?)\b/i.test(prev.phrase)) prev.phrase = `${prev.phrase} ${size}`;
+        continue;
+      }
+      if (OTC_QUALIFIER_FRAGMENT_RE.test(n)) continue;
     }
     // Adição RELATIVA dentro da MESMA mensagem: "…30 litros, qualquer marca; mais um
     // desses" e "leite sem lactose; mais dois leites" somam na linha ANTERIOR — nunca
@@ -1320,6 +1354,45 @@ export function isKeepSeparateReply(text: string): boolean {
   return /^(nao|n|nop|nope|negativo|melhor|prefiro)$/.test(words[0]) && words.every((w) => KEEP_FILLER.has(w));
 }
 
+// Resposta à oferta de TROCA que está na mesa (10/10, rodada 7 A1/A2): "sim, pode trocar", "pode trocar de loja",
+// "sim, troca pela outra loja", "aceito a troca". Só palavras de aceite + o verbo + destino genérico ("de loja",
+// "pela outra"): nenhum produto no meio — "troca o arroz pelo feijão" é edição de item e não casa.
+const SWAP_ACCEPT_RE =
+  /^(?:(?:sim|ok|okay|pode|podes|bora|quero|isso|claro|vamos|beleza|blz|show|fechado|fechou|aceito|por favor|pf|pfv|entao|perfeito|otimo|ta bom|tudo bem|manda|faz|faca|pode ser)\b[\s,.!]*)*(?:pode\s+)?(?:troca|trocar|troque|troco|trocamos|muda|mudar|mude|aceito a troca|faz a troca|faca a troca|fazer a troca|pode fazer a troca)(?:\s+(?:sim|entao|ai|isso|ela|ele|essa|esse|pra mim|por favor|pf))*(?:\s+(?:de loja|a loja|pela outra(?: loja)?|pra outra(?: loja)?|para outra(?: loja)?|na outra(?: loja)?|por essa|por esse|pela que voce (?:falou|disse|mostrou)|pela sugerida|pela sugestao|pelo sugerido))?(?:\s+(?:sim|entao|por favor|pf|pfv))*[\s!.]*$/;
+export function acceptsSwapOffer(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
+  return Boolean(s) && SWAP_ACCEPT_RE.test(s);
+}
+
+// Recusa da oferta de troca: "mantém como está", "deixa assim", "não troca", "prefiro manter". Mesmo léxico da recusa
+// de juntar (isKeepSeparateReply), mais o "não troca".
+export function declinesSwapOffer(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").trim();
+  if (!s || acceptsSwapOffer(text)) return false;
+  if (/^(?:nao|n)\b[\s,]*(?:precisa\s+)?(?:troca\w*|mud\w*)(?:\s+n(?:ao|ada))?(?:\s+(?:obrigad[oa]|valeu))?$/.test(s)) return true;
+  if (/^(?:nao|n)?[\s,]*(?:quero|prefiro)?\s*(?:nao\s+)?(?:troca\w*|mud\w*)\s+(?:de loja\s+)?nao$/.test(s)) return true;
+  if (/\bjunt/.test(s)) return false;
+  return isKeepSeparateReply(text);
+}
+
+// "o mais barato de tudo", "o mais barato em todos", "pode ser o mais barato pra tudo" (10/10, rodada 7 M4): a preferência
+// de preço vale para TODOS os itens ainda em escolha, não só o da vez.
+export function wantsCheapestForAll(text: string): boolean {
+  const n = normalizeMsg(text);
+  return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+}
+
+// Indiferença de marca/tipo ("de qualquer marca", "tanto faz a marca", "qualquer uma") é FILTRO, nunca termo de busca
+// (10/10, rodada 7 A5: "ração cachorro filhote 10kg qualquer marca" virava a frase buscada e nada casava).
+const INDIFFERENCE_RE =
+  /\b(?:(?:de|da|do|em)\s+)?qualquer\s+(?:marca|uma|um|tipo|modelo|sabor|cor|loja)\b|\b(?:tanto faz|nao importa|pouco importa)(?:\s+(?:a|o)\s+(?:marca|tipo|modelo|loja))?\b|\b(?:a\s+)?marca\s+(?:tanto faz|nao importa)\b|\bsem\s+marca\s+especifica\b|\bqualquer\b(?=\s*$)/g;
+export function stripIndifference(text: string): string {
+  return normalizeMsg(text).replace(INDIFFERENCE_RE, " ").replace(/\s+/g, " ").trim();
+}
+export function saysAnyBrand(text: string): boolean {
+  return new RegExp(INDIFFERENCE_RE.source).test(normalizeMsg(text));
+}
+
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
 // pede o pedido anterior (sem produto no meio) — vai direto ao ramo de repetir, sem passar pela IA do diálogo.
 const REPEAT_ORDER_RE =
@@ -1442,6 +1515,12 @@ export function parseCancelReason(text: string, asked: boolean): CancelReasonKey
   if (/^outro( motivo)?$/.test(n)) return "outro";
   return null;
 }
+
+const WEEKDAY_SRC = "(?:sabado|domingo|segunda|terca|quarta|quinta|sexta)(?:[- ]feira)?";
+const DAY_PICK_RE = new RegExp(
+  `^(?:entao |ai |pode )?(?:me )?(?:entrega|entregue|entregar|manda|mande)(?: (?:ela|ele|isso|tudo|o pedido))? (?:(?:n[oa]|pra|para|ate) )?(?:${WEEKDAY_SRC}|dia \\d{1,2})(?: (?:entao|mesmo|por favor|pf))?$`
+);
+const IN_DAYS_PICK_RE = /^(?:entao )?(?:pode ser|tudo bem|ok|beleza|blz|serve|aceito)?\s*(?:em|daqui a|daqui|com) \d{1,2} dias?(?: uteis)?(?: (?:entao|mesmo|tudo bem|sem problema))?$/;
 
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
@@ -1613,7 +1692,12 @@ export function detectIntent(text: string): Intent {
   }
 
   // "posso agendar a entrega pra amanhã de manhã?" (29/08 S19 — virou busca).
-  if (/\bagendar\b|\bagendamento\b|\bmarcar (a )?entrega\b|\bentrega (marcada|agendada)\b|\bhorario (marcado|certo) de entrega\b/.test(n)) {
+  // "então me entrega no sábado", "pode ser em 3 dias então" (10/10, rodada 7 M2): dia escolhido pelo cliente também é
+  // agendamento — a IA chegava a oferecer "quer agendar pra daqui a 3 dias?", que a Lia não faz.
+  if (
+    /\bagendar\b|\bagendamento\b|\bmarcar (a )?entrega\b|\bentrega (marcada|agendada)\b|\bhorario (marcado|certo) de entrega\b/.test(n) ||
+    (!/\?\s*$/.test(text) && (DAY_PICK_RE.test(n) || IN_DAYS_PICK_RE.test(n)))
+  ) {
     return { kind: "scheduling_question" };
   }
 
@@ -2468,6 +2552,49 @@ export function parseOnlyKeep(text: string): { target: string } | { demonstrativ
 // "veja se tem kerasys de coco", "tem de coco?", "eu pedi com 4 bolas", "queria sem
 // açúcar" — o MESMO produto com uma característica (Claire e o tio Semy, 06/10). Devolve a
 // frase da característica, sem o verbo, ou null.
+// "quantas canetas vem?", "quantas unidades tem?", "vem quantas?" (10/10, rodada 7 M6): pergunta sobre a embalagem do produto
+// escolhido — caía na apresentação genérica da Lia. Devolve o substantivo ("canetas") ou "" quando não diz.
+export function parsePackCountAsk(text: string): { noun: string } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  if (n.split(" ").length > 9) return null;
+  const m =
+    n.match(/^(?:e |mas )?quant[oa]s\s+(?:(?!vem|veem|tem|sao|unidades?)([a-z]+(?: [a-z]+)?)\s+)?(?:unidades?\s+)?(?:vem|veem|tem|sao|ve|vai|vao|ta|esta)\b(?:\s+(?:no|na|em|nesse|nessa|desse|dessa|neste|nesta)\s+(?:pacote|caixa|embalagem|kit|pack|cartela|unidade))?(?:\s+[a-z]+)?\s*\??$/) ??
+    n.match(/^(?:e |mas )?(?:vem|veem|tem)\s+quant[oa]s(?:\s+([a-z]+))?\s*\??$/);
+  if (!m) return null;
+  const noun = (m[1] ?? "").replace(/\b(?:unidades?|o|a|os|as)\b/g, " ").trim();
+  if (/^(?:dias?|horas?|reais|minutos?|lojas?|entregas?|itens?|vezes|parcelas?)$/.test(noun)) return null;
+  return { noun };
+}
+
+// Refino de TAMANHO troca o tamanho anterior (10/10, rodada 7 M7): "fralda RN" + "muda pra tamanho P" buscava
+// "fralda RN pacote grande tamanho p" e não achava nada. Letra solta (p/m/g) só conta como tamanho com "tamanho" na
+// frente — "500 g" é peso.
+const SIZE_WORD = String.raw`(?:rn|xxg|xg|exg|eg|recem[- ]nascid[oa]s?)`;
+const SIZE_ATTR_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)|^(?:p|m|g)$`);
+const BASE_SIZE_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)`, "g");
+export function replaceRefinedSize(base: string, attrs: string[]): string {
+  const said = normalizeMsg(attrs.join(" ")).trim();
+  if (!SIZE_ATTR_RE.test(said)) return base;
+  const stripped = normalizeMsg(base).replace(BASE_SIZE_RE, " ").replace(/\s+/g, " ").trim();
+  return stripped || base;
+}
+
+// Pedido de entregar em DOIS endereços (10/10, rodada 7 M11): "duas entregas: uma em casa e outra no trabalho".
+const PLACE_SRC = "(?:casa|trabalho|escritorio|servico|empresa|loja|faculdade|escola|minha mae|meu pai|minha sogra|vo|avo)";
+const MULTI_ADDRESS_RE = new RegExp(
+  `\\b(?:duas|2|dois) (?:entregas|enderecos|pedidos|lugares)\\b|\\bentreg\\w* (?:em|pra|para|n?os) (?:dois|2) (?:enderecos|lugares)\\b|\\bum[a]? (?:em|pra|para|n[oa]) ${PLACE_SRC} e (?:outr[ao]|um[a]?) (?:em|pra|para|n[oa]) ${PLACE_SRC}\\b|\\b(?:dividir|separar) (?:em|o pedido em) (?:duas|2) entregas\\b`
+);
+export function asksMultiAddress(text: string): boolean {
+  return MULTI_ADDRESS_RE.test(normalizeMsg(text));
+}
+// "em casa: ração e shampoo" / "no trabalho: papel A4" — o rótulo do lugar antes da lista.
+export function parsePlaceLabel(text: string): { place: string; home: boolean; rest: string } | null {
+  const m = text.match(/^\s*(?:e\s+)?(?:(?:em|pra|para|n[oa]|pro|pr[oa])\s+)?(?:minha\s+|meu\s+|o\s+|a\s+)?(casa|trabalho|escrit[oó]rio|servi[cç]o|empresa)\s*[:\-–]\s*([\s\S]+)$/i);
+  if (!m) return null;
+  const place = normalizeMsg(m[1]);
+  return { place, home: place === "casa", rest: m[2].trim() };
+}
+
 export function parseAttributeAsk(text: string): string | null {
   const n = normalizeMsg(text).replace(/[?!.]+$/g, "").trim();
   const ask = n.match(
@@ -2772,7 +2899,7 @@ export function parseWholeListStore(text: string, labels: string[]): string | nu
 
 // "qual o horário de vocês?", "vcs abrem que horas?", "funcionam domingo?" (09/10): horário de
 // ATENDIMENTO, não prazo de entrega — antes caía no texto de prazo. "que horas chega" segue prazo.
-const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;
+const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada)|entrega\w* (?:(?:n[oa]s?|aos?|de|em) )?(?:domingo|feriado|sabado|fim de semana|final de semana|a noite|de madrugada)|qual (?:e )?(?:o )?horario(?! (?:d[ae] entrega|que chega))|que horario (?:voces|vcs?) (?:entrega\w*|atende\w*|funciona\w*))\b|^(?:e |qual )?(?:o )?horario\??$/;
 export function isHoursAsk(text: string): boolean {
   return HOURS_ASK_RE.test(normalizeMsg(text).replace(/[!.?]+$/g, "").trim());
 }
@@ -2826,6 +2953,8 @@ export function asksDeliveryToday(text: string): boolean {
 export function parseChoiceEtaAsk(text: string): { option?: number; today: boolean } | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
   if (!/\b(chega|chegam|chegaria|entrega|entregam|entregaria|prazo|demora|demoram)\b/.test(n)) return null;
+  // "vocês entregam domingo? qual o horário?" (10/10, rodada 7 M1): dia/horário de funcionamento, não o prazo das opções.
+  if (HOURS_ASK_RE.test(n.replace(/[?]+/g, " ").replace(/\s+/g, " ").trim()) || /\b(?:domingo|sabado|feriado|fim de semana|final de semana)\b/.test(n)) return null;
   // "vocês entregam no rio?"/"entrega em campinas?" (09/10): pergunta de ÁREA, não do prazo das opções.
   if (/\b(?:entrega\w*|chega\w*|atende\w*)\s+(?:em|no|na|nos|nas|pra|para|ate)\s+(?!(?:\d|quanto|qual|que|quando|hoje|amanha|casa|minha casa|meu endereco|o \d|a \d)\b)\w/.test(n)) return null;
   if (!/\?$/.test(n) && !/^(?:qual|quais|quando|quanto tempo|o que|que|e |o \d|a \d|qual delas)/.test(n)) return null;
@@ -3036,7 +3165,7 @@ export function parseKeepItem(text: string): string | null {
   for (let i = 0; i < 3; i++) n = n.replace(/^(?:nao|n|nn|ah|ok|okay|tudo bem|beleza|blz|na verdade|melhor)[,\s]+/, "").trim();
   const m = /^(?:pode\s+)?(?:deixa|deixe|deixar|mantem|mantenha|manter|mantém|fica com|fico com)\s+(?:o|a|os|as)\s+(.+)$/.exec(n);
   if (!m) return null;
-  let item = m[1].replace(/\s+(?:mesmo|mesma|ai|la|como (?:esta|ta)|na cesta|no carrinho|que (?:ta|esta) bom|por favor|pf)\b.*$/, "").trim();
+  let item = m[1].replace(/\s+(?:mesmo|mesma|ai|la|como (?:esta|ta|estava|tava|era)|do jeito que (?:esta|ta|estava|tava)|que (?:estava|tava)|na cesta|no carrinho|que (?:ta|esta) bom|por favor|pf)\b.*$/, "").trim();
   if (/\b(?:de fora|fora|pra la|pra depois|sem)\b/.test(m[1]) || /^(?:so|apenas)\b/.test(item)) return null;
   item = item.replace(/\s+/g, " ").trim();
   return item && item.split(" ").length <= 5 ? item : null;
@@ -3065,4 +3194,24 @@ export function openQuestionAlternative(question: string, n: number): string | n
   const parts = tail.split(/\s*,\s*|\s+ou\s+/i).map((x) => x.trim()).filter(Boolean);
   if (parts.length < 2 || parts.length > 5 || parts.some((p) => p.split(/\s+/).length > 6)) return null;
   return n >= 1 && n <= parts.length ? parts[n - 1] : null;
+}
+
+// "sim" respondendo a uma pergunta de sim/não da própria Lia (10/10, rodada 7 N1): "Você quer trocar a areia escolhida
+// por outra mais barata?" + "sim" = "troca a areia escolhida por outra mais barata". Com outro carrossel aberto, o "sim"
+// caía na escolha ("Não peguei qual você quer"). Pergunta com alternativas ("A ou B?") não se resolve com "sim".
+const YES_VERB: Record<string, string> = {
+  procure: "procura", troque: "troca", busque: "busca", coloque: "coloca", ponha: "poe", tire: "tira", junte: "junta",
+  mostre: "mostra", adicione: "adiciona", inclua: "inclui", remova: "remove", ache: "acha", ver: "mostra", veja: "mostra"
+};
+export function openQuestionYes(question: string): string | null {
+  const raw = question.replace(/\s+/g, " ").trim();
+  if (!/\?\s*$/.test(raw)) return null;
+  const lastSentence = raw.replace(/\?\s*$/, "").split(/(?<=[.!])\s+/).pop() ?? "";
+  const n = normalizeMsg(lastSentence).replace(/[?!.\s]+$/, "").trim();
+  if (/\sou\s/.test(n)) return null;
+  const m = /^(?:(?:entao|beleza|certo|ok)[,\s]+)?(?:(?:voce|vc)\s+)?(?:quer|gostaria de|prefere|deseja)\s+(?:que eu\s+)?([a-z]+)\s+(.+)$/.exec(n);
+  if (!m) return null;
+  const verb = YES_VERB[m[1]] ?? (/[^aeiou]ar$/.test(m[1]) ? m[1].slice(0, -1) : m[1]);
+  const rest = `${verb} ${m[2]}`.replace(/\s+/g, " ").trim();
+  return rest.length <= 100 ? rest : null;
 }

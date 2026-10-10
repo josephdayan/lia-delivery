@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, wantsCheapestForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -56,7 +56,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "refund_request",
   "charge_complaint",
   // Troca/devolução tem resposta fixa (10/10, rodada 6 M1).
-  "return_question"
+  "return_question",
+  // Agendar/dia escolhido (10/10, rodada 7 M2): a IA oferecia agendamento, que a Lia não faz.
+  "scheduling_question"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
 const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
@@ -98,6 +100,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   const trimmed = text.trim();
   // id de botão ("optsku:123", "frete:barato", "adicionar_mais"): string de máquina, não linguagem.
   if (/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(trimmed)) return "botao";
+  // "*caixinhas de 1 litro, longa vida" (10/10, rodada 7): o asterisco do WhatsApp corrige o item da fila — o cérebro
+  // aplica a correção (applyAsteriskCorrection); a IA lia a vírgula como dois itens novos com o "*" no nome.
+  if (/^\*\s*[^*\s]/.test(trimmed) && !trimmed.slice(1).includes("*") && ctx.pending?.length) return "correcao_asterisco";
   // "tô com uma dor de cabeça horrível" o regex lê como reclamação; com sintoma de verdade é pedido de
   // recomendação (08/10) e a IA decide.
   const symptomComplaint = i.intent.kind === "complaint" && recommendEnabled() && Boolean(detectRecommendation(text)?.symptom);
@@ -115,6 +120,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "tem um mais em conta?" (5 palavras) ia pra IA e 1 em 3 vezes ela inventava opções e depois tirava o item errado
   // (10/10, rodada 6 g19). Pedido de mais barato sem nome é caminho fixo (pergunta "de qual item?" com 2+ itens).
   if (i.intent.kind === "more_options" && i.intent.cheaper && trimmed.split(/\s+/).length <= 7) return "intent:more_cheaper";
+  // "total"/"quanto tá?" com carrossel ou pergunta aberta (10/10, rodada 7 M6/N4): a IA devolvia outra pergunta
+  // ("quer saber o total ou escolher?") ou "comparo, sim". O cérebro já responde o parcial em qualquer passo.
+  if (asksRunningTotal(text) && trimmed.split(/\s+/).length <= 6 && (ctx.basket?.length || ctx.pending?.length)) return "intent:running_total";
   if (extractCpf(text)) return "cpf";
   // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
@@ -123,6 +131,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
   // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";
+  // "QUERO O MAIS BARATO DE TUDO" com vários itens em escolha (10/10, rodada 7 M4): o roteador escolhe o mais barato de
+  // CADA item; a IA escolhia só o da vez.
+  if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsCheapestForAll(text)) return "intent:cheapest_all";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto
