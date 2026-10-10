@@ -367,6 +367,9 @@ export type DeliveryContext = {
   // Prazo que o cliente disse ("amanhã", "hoje", "até sexta"): data (yyyy-mm-dd, fuso de SP) e rótulo. O total avisa em uma
   // linha quando a entrega prometida não cumpre (rodada 4, M6).
   neededBy?: { date: string; label: string };
+  // Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3: "se passar de 100 me avisa"): vale para o total com
+  // entrega. A escolha que passa dele e o resumo avisam; `warned` = a escolha já avisou (não repete a cada item).
+  orderBudget?: { cap: number; warned?: boolean };
   // Último pedido cancelado NESTA conversa: "cadê meu pedido?" logo depois de um
   // cancelamento fala primeiro dele — sem isso, o fallback achava um pedido pago de
   // dias atrás e o cliente entendia que o cancelado tinha "virado pago" (27/08 S17).

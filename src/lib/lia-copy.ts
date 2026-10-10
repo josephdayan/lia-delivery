@@ -528,6 +528,24 @@ export function askEitherItem(a: string, b: string, cap?: number): string {
   return `Você quer *${a}* ou *${b}*? Responde *1* (${a}), *2* (${b}) ou *os dois*.${budget}`;
 }
 
+// Dois pagadores / "dois pedidos" no mesmo endereço (10/10, rodada 8 A2): o pagamento é por pedido, não por pessoa; a
+// Lia faz um pedido por vez. A oferta de juntar lojas na mesa continua valendo.
+export function splitOrdersAnswer(input: { payer: boolean; hasItems: boolean; offerOpen?: boolean; example?: string }): string {
+  const lines = [
+    input.payer
+      ? "Dá, mas em *dois pedidos*: cada pedido tem *um pagamento só* (o pagamento é por pedido, não por pessoa)."
+      : "Dá, mas eu faço *um pedido por vez*."
+  ];
+  lines.push(
+    input.hasItems
+      ? `Fecha primeiro o seu: tira daqui o que é da outra pessoa${input.example ? ` (ex.: *tira ${input.example}*)` : ""}, diz *só isso* e paga. Depois me manda os itens dela que eu monto o *segundo pedido*, no mesmo endereço.`
+      : "Me manda primeiro os itens do primeiro pedido; quando ele fechar e for pago, me manda os do segundo, no mesmo endereço."
+  );
+  if (input.payer) lines.push("Se preferir um pedido só, o Pix é copia-e-cola: dá pra encaminhar pra quem for pagar e vocês acertam a parte de cada um.");
+  if (input.offerOpen) lines.push("A oferta de juntar lojas continua valendo: responde *1* pra juntar ou *2* pra manter.");
+  return lines.join("\n");
+}
+
 // Duas entregas (10/10, rodada 7 M11): a Lia ainda faz um endereço por pedido — diz isso e propõe a ordem.
 export function multiAddressOnePerOrder(address?: string): string {
   return [
@@ -2008,7 +2026,7 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null }): string {
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
   const joinedStores = input.joinedStores ?? 1;
@@ -2021,8 +2039,19 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
     ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
     ...(input.deadlineNote ? [input.deadlineNote] : []),
+    ...(input.minimumNote ? [input.minimumNote] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
+}
+
+// Pedido mínimo na oferta de juntar (10/10, rodada 8 M5): a forma que não fecha diz o mínimo antes da escolha.
+export function consolidationMinimumNote(kept: Array<{ store: string; min: number; falta: number }>, joined: Array<{ store: string; min: number; falta: number }>): string {
+  const phrase = (rows: Array<{ store: string; min: number; falta: number }>) =>
+    rows.map((r) => `a *${r.store}* tem pedido mínimo de *${brl(r.min)}* (faltam ${brl(r.falta)})`).join(" e ");
+  const parts: string[] = [];
+  if (kept.length) parts.push(`mantendo como está, ${phrase(kept)} — aí precisa somar um item de lá ou tirar o dela`);
+  if (joined.length) parts.push(`juntando, ${phrase(joined)}`);
+  return `⚠️ ${parts.join("; ")}.`.replace(/^⚠️ m/, "⚠️ M").replace(/^⚠️ j/, "⚠️ J");
 }
 
 // "junta" pedido por texto sem nada a juntar (10/10, rodada 5 A4): diz por quê; o total na mesa continua valendo.
@@ -2238,11 +2267,17 @@ export function todayVerdictHead(whens: string[]): string {
 }
 
 // "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
-export function basketEtaAnswer(rows: EtaRow[], askedToday = false): string {
+// `deadline` (10/10, rodada 8 M4: "preciso que chegue até sexta, dá?"): abre com o sim/não e as lojas que atrasam.
+export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: { label: string; late: string[] }): string {
   const body = rows.length === 1
     ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pro seu endereço, contado da compra.`
     : `Pro seu endereço: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`;
-  const head = askedToday ? `${todayVerdictHead(rows.map((r) => r.when))} ` : "";
+  const deadlineHead = deadline
+    ? deadline.late.length
+      ? `Até *${deadline.label}* não chega tudo: ${deadline.late.map((s) => `a *${s}*`).join(" e ")} entrega depois. Se quiser, me diz qual item trocar ou tirar.`
+      : `Dá, chega até *${deadline.label}*.`
+    : "";
+  const head = deadlineHead ? `${deadlineHead}\n` : askedToday ? `${todayVerdictHead(rows.map((r) => r.when))} ` : "";
   return `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
 }
 
@@ -2633,7 +2668,7 @@ export function cheapestForAllNote(items: { qty: number; name: string; total: nu
 }
 
 // Escolha que cria entrega extra ou atrasa o pedido (10/10, rodada 7 M4): o custo vem junto da confirmação, não só no resumo.
-export function choiceDeliveryCostNote(input: { deliveries: number; newStores: string[]; fee?: number; later?: { prazo: string; store?: string } }): string {
+export function choiceDeliveryCostNote(input: { deliveries: number; newStores: string[]; fee?: number; later?: { prazo: string; store?: string; long?: boolean } }): string {
   const parts: string[] = [];
   if (input.newStores.length) {
     const who = input.newStores.length > 1 ? `de ${input.newStores.length} lojas (${input.newStores.map((s) => `*${s}*`).join(", ")})` : `da *${input.newStores[0]}*`;
@@ -2641,14 +2676,42 @@ export function choiceDeliveryCostNote(input: { deliveries: number; newStores: s
   }
   if (input.later) {
     const prazo = promiseForCustomer(input.later.prazo) || input.later.prazo;
-    parts.push(`${parts.length ? "e " : ""}${input.later.store ? `a *${input.later.store}* ` : ""}só entrega em *${prazo}* — o pedido chega mais tarde`);
+    parts.push(`${parts.length ? "e " : ""}${input.later.store ? `a *${input.later.store}* ` : ""}só entrega em *${prazo}* — ${input.later.long ? "é um prazo longo" : "o pedido chega mais tarde"}`);
   }
-  return `_⚠️ Essa escolha ${parts.join(" ")}. Se preferir, diz *outras* que eu mostro opções das lojas que você já tem._`;
+  // Prazo longo sem outra loja na cesta (rodada 8 M9): "outras" mostra outras opções, não "das lojas que você já tem".
+  const tail = input.later?.long && !input.newStores.length ? "Se preferir, diz *outras* que eu mostro outras opções." : "Se preferir, diz *outras* que eu mostro opções das lojas que você já tem.";
+  return `_⚠️ Essa escolha ${parts.join(" ")}. ${tail}_`;
 }
 
 export function missRemoved(items: string[]): string {
   const names = items.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ");
   return `Combinado: ${names} já ${items.length > 1 ? "tinham" : "tinha"} ficado de fora (não achei) — não entra no pedido.`;
+}
+
+// Orçamento do pedido (10/10, rodada 8 M3): "se passar de 100 me avisa" — o resumo diz que passou e como baixar.
+export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number }, deliveries?: number): string {
+  const ways = [
+    priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
+    ...((deliveries ?? 1) > 1 ? ["*juntar* as lojas pra baixar o frete"] : [])
+  ];
+  return `⚠️ Passou do seu limite de *${brl(cap)}*: deu *${brl(total)}* (${brl(Math.round((total - cap) * 100) / 100)} a mais). Se quiser, dá pra ${ways.join(" ou ")} — é só me dizer.`;
+}
+
+// A escolha fez o pedido passar do orçamento dito (10/10, rodada 8 M3). Estimativa: produtos + frete das lojas.
+export function overBudgetChoiceNote(cap: number, estimate: number): string {
+  return `_💰 Com essa escolha o pedido passa do seu limite de *${brl(cap)}*: fica em ~*${brl(estimate)}* com a entrega. Se quiser, diz *tira* e o item, ou *outras* pra ver opções mais baratas._`;
+}
+
+// "só quero saber quanto tá o leite, não vou comprar agora" (10/10, rodada 8 M4): consulta de preço sem compromisso.
+export function browseOnlyNote(): string {
+  return "Sem compromisso 🙂 Te mostro os preços; se quiser algum, é só escolher.";
+}
+
+// O prazo confirmado agora no checkout da loja mudou desde o aviso da escolha (10/10, rodada 8 M8): diz a mudança.
+export function etaUpdatedByStore(rows: Array<{ store: string; before: string; now: string }>): string {
+  const line = (r: { store: string; before: string; now: string }) =>
+    `a *${r.store}* confirmou *${promiseForCustomer(r.now)}* (antes aparecia ${promiseForCustomer(r.before.replace(/^[^·]*·\s*/, "")) || r.before})`;
+  return `🚚 Conferi o prazo agora na loja: ${rows.map(line).join("; ")}. O resumo abaixo já usa o prazo novo.`;
 }
 
 export function leftOutNote(items: string[]): string {
@@ -2680,6 +2743,8 @@ export function manualQuoteSummary(input: {
   addressButton?: boolean;
   // Itens pedidos que ficaram sem produto (10/10, rodada 7 A4): o resumo final diz o que NÃO vem.
   leftOut?: string[];
+  // Orçamento do pedido dito na conversa e estourado (10/10, rodada 8 M3).
+  overBudget?: { cap: number; priciest?: { name: string; lineTotal: number } };
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -2692,6 +2757,7 @@ export function manualQuoteSummary(input: {
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
+    ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries)] : []),
     ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
   ];
   if (input.leftOut?.length) out.push("", leftOutNote(input.leftOut));
