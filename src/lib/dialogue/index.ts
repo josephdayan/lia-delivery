@@ -8,7 +8,7 @@ import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
 import { hasMissMatching } from "../list-misses";
-import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, asksDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, statesDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -133,7 +133,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (extractCpf(text)) return "cpf";
   // "preciso que chegue até sexta, dá?" / "sábado que vem, chega?" com os cards na tela (10/10, rodada 9 A4): sim/não pro
   // dia, calculado do prazo de cada opção. A IA reescrevia para "qual o prazo?" ou "agendar" e o dia se perdia.
-  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksDeadline(text)) return "intent:deadline_ask";
+  // Prazo dito sem pergunta ("se puder chegar até sexta, tá bom", rodada 10 g29) também.
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && statesDeadline(text)) return "intent:deadline_ask";
   // "põe o papel de volta" logo depois de um "tira" (10/10, rodada 9 A3): o cérebro devolve o MESMO item; a IA perguntava
   // "Qual papel você quer colocar de volta?".
   if (ctx.lastRemoved && trimmed.length <= 80 && /\b(?:de volta|devolta)\b|^(?:pode )?(?:repoe|recoloca|reponha|devolve)\b/.test(normalizeMsg(text))) return "intent:restore_removed";

@@ -9,7 +9,7 @@
 import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { looksLikeMedicine, parsePriceCap, type Intent } from "../lia-intents";
+import { looksLikeMedicine, parseNeededBy, parsePriceCap, type Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { emergencyFlag } from "../recommend/fallback";
@@ -371,7 +371,9 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   }
   // A IA do gerente já classificou a mensagem: o roteador de fallback (outra chamada) não repete.
   if (meta) meta.llmUsed = true;
-  const plan = planPreSignup(decision, { preBudget: ctx.preBudget, text: input.text });
+  // Teto do PEDIDO já guardado neste turno ("gasto até 60 reais", 10/10, rodada 10 g29): numa LISTA não vira o "até 60 reais"
+  // de uma linha (com um item só, o teto do pedido é o desse item e segue na frase).
+  const plan = planPreSignup(ctx.orderBudget && decision.budget === ctx.orderBudget.cap && Math.max(decision.items.length, resolveListItems(input.text).length) >= 2 ? { ...decision, budget: null } : decision, { preBudget: ctx.preBudget, text: input.text });
   // A IA devolveu MENOS itens do que a lista tem (09/10, rodada 3): item perdido calado é o pior erro. O caminho
   // determinístico anota todos.
   if (plan.ok && decision.items.length >= 1 && !decision.recommend && resolveListItems(input.text).length >= decision.items.length + 2) {
@@ -398,9 +400,20 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           await h.attendanceWait(phone, convoId, ctx);
           break;
         case "answer": {
+          // Prazo DITO ("preciso que chegue até amanhã de manhã", 10/10, rodada 10 g29) não é a pergunta genérica "demora
+          // quanto?": anota o dia e promete dizer qual entrega chega a tempo, em vez do "o prazo depende da loja".
+          const deadline = step.topics.includes("delivery_time") ? parseNeededBy(input.text) ?? ctx.neededBy : null;
+          const topics = deadline ? step.topics.filter((t) => t !== "delivery_time") : step.topics;
+          if (deadline) {
+            ctx.neededBy = deadline;
+            await writeCtx(convoId, ctx);
+            // Com itens na mesma mensagem, o prazo sai junto do "Anotei" (notedExtras); sozinho, a frase própria.
+            if (!plan.steps.some((s) => s.type === "items" || s.type === "recommend")) await reply(phone, copy.deadlineNoted(deadline));
+          }
+          if (!topics.length) break;
           // Pergunta sozinha: o roteador de sempre responde (rewrite). Junto de itens, responde antes.
-          if (plan.steps.length === 1 && step.topics.length === 1) outcome = { kind: "rewrite", text: ANSWER_TEXT[step.topics[0]], actions: plan.label };
-          else for (const topic of step.topics) await h.answerCanonical(phone, userId, convoId, ctx, ANSWER_TEXT[topic]);
+          if (plan.steps.length === 1 && topics.length === 1 && !deadline) outcome = { kind: "rewrite", text: ANSWER_TEXT[topics[0]], actions: plan.label };
+          else for (const topic of topics) await h.answerCanonical(phone, userId, convoId, ctx, ANSWER_TEXT[topic]);
           break;
         }
         case "smalltalk": {
