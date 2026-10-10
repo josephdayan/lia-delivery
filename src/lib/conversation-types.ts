@@ -87,6 +87,10 @@ export type PendingChoice = {
   qty: number;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
   storeNoted?: boolean;
+  // A loja pedida para a lista toda (ctx.preferredStore) já foi posta na frente das opções (10/10, rodada 5 M9).
+  storePrioritized?: boolean;
+  // Nome dessa loja, para o aviso "não achei na <loja>" quando a escolha é mostrada.
+  wantedStore?: string;
   // "pra hoje" (04/09): `urgent` = só opções com entrega da loja em menos de 1 dia;
   // `noneToday` = pediu hoje, ninguém entrega hoje — o cabeçalho diz isso e mostra o mais rápido.
   urgent?: boolean;
@@ -154,6 +158,9 @@ export type ListFlowCtx = { id: string; sentAt: number; basketSig: string; slots
 
 export type DeliveryContext = {
   flow?: "delivery";
+  // Loja pedida para a lista TODA ("da cobasi tudo", "tudo da pague menos se der", 10/10, rodada 5 M9): as opções
+  // dela vão na frente e, quando ela não tem o item, a Lia avisa antes das outras.
+  preferredStore?: string;
   step?:
     | "collecting"
     | "need_cep"

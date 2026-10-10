@@ -2618,6 +2618,22 @@ export function parseStoreReference(
   return known ? { label: known, indices: [] } : null;
 }
 
+// Loja pedida para a LISTA TODA (10/10, rodada 5 M9): "da cobasi tudo", "tudo da pague menos se der", "quero tudo
+// na mambo", "a lista toda da drogasil". Só com marcador de totalidade E a loja citada com preposição; a loja de um
+// item só ("areia pra gato da cobasi") não conta. Devolve o nome da loja como está em `labels`.
+const WHOLE_LIST_RE = /\b(?:tudo|todos(?: os itens)?|todas(?: as coisas)?|(?:a )?lista (?:toda|inteira)|toda a lista)\b/;
+export function parseWholeListStore(text: string, labels: string[]): string | null {
+  const n = normalizeMsg(text).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.split(" ").length > 14 || !WHOLE_LIST_RE.test(n)) return null;
+  for (const label of labels) {
+    const l = normalizeMsg(label).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    if (l.length < 4) continue;
+    const near = new RegExp(`(?:\\b(?:tudo|todos|todas|lista toda|lista inteira|toda a lista)\\b(?: [a-z]+){0,2} (?:d[oa]s?|na|no|de|pela|pelo)(?: loja| farmacia| mercado)? ${l}\\b|\\b(?:d[oa]s?|na|no|de|pela|pelo)(?: loja| farmacia| mercado)? ${l}(?: [a-z]+){0,1} (?:tudo|todos|todas)\\b)`);
+    if (near.test(n)) return label;
+  }
+  return null;
+}
+
 // "qual o horário de vocês?", "vcs abrem que horas?", "funcionam domingo?" (09/10): horário de
 // ATENDIMENTO, não prazo de entrega — antes caía no texto de prazo. "que horas chega" segue prazo.
 const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;

@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseWholeListStore, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1188,6 +1188,12 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     p.storeNoted = true;
     await reply(phone, copy.requestedStoreNotShown(missingStore, shownQuery(p)));
   }
+  // Loja pedida para a lista toda sem esse item (10/10, rodada 5 M9): avisa antes de mostrar as de outras lojas.
+  const preferred = p.wantedStore;
+  if (!missingStore && preferred && !p.storeNoted && p.options.length && !p.options.some((o) => normalizeMsg(o.storeLabel ?? "") === normalizeMsg(preferred))) {
+    p.storeNoted = true;
+    await reply(phone, copy.requestedStoreNotShown(preferred, shownQuery(p)));
+  }
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
   // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
   // ter botão?") a vitrine de remédio é de cards soltos (foto + "Adicionar"); só o carrossel
@@ -2054,6 +2060,16 @@ async function handleDeliveryTurn(
     // Pedido em inglês ("I need a phone charger and some milk"): traduz o básico e segue; fora do dicionário, como veio.
     const english = translateEnglishOrder(text);
     if (english) text = english;
+  }
+  // Loja pedida para a lista toda ("da cobasi tudo", 10/10, rodada 5 M9): vale para as próximas escolhas da lista.
+  {
+    const wholeStore = user.defaultAddress ? parseWholeListStore(text, mentionableStoreNames()) : null;
+    if (wholeStore && wholeStore !== ctx.preferredStore) {
+      ctx.preferredStore = wholeStore;
+      // A escolha que já está na tela não muda de ordem (a numeração que o cliente vê); as da fila, sim.
+      if (ctx.step === "choosing" && ctx.pending?.[0]) ctx.pending[0].storePrioritized = true;
+      await writeCtx(convo.id, ctx);
+    }
   }
   let intent = detectIntent(text);
   // "só essa" com o item já na cesta e nada em escolha (07/10, c07): é fechar a lista — não "a qual produto

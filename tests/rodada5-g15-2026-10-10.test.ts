@@ -207,6 +207,41 @@ test("busca no meio da escolha: 'replace' da IA só troca o item da tela se for 
   assert.ok(step("arroz tio joão 5kg", "arroz tio joão 5kg")?.replace);
 });
 
+// M9 ---------------------------------------------------------------------------------------------------------
+test("M9: loja pedida para a lista toda é reconhecida; loja de um item só não", async () => {
+  const { parseWholeListStore } = await import("../src/lib/lia-intents");
+  const labels = ["Cobasi", "Pague Menos", "Mambo", "Casa Santa Luzia"];
+  assert.equal(parseWholeListStore("da cobasi tudo", labels), "Cobasi");
+  assert.equal(parseWholeListStore("queria tudo da pague menos se der", labels), "Pague Menos");
+  assert.equal(parseWholeListStore("quero tudo na mambo", labels), "Mambo");
+  assert.equal(parseWholeListStore("a lista toda da cobasi por favor", labels), "Cobasi");
+  assert.equal(parseWholeListStore("areia pra gato da cobasi", labels), null);
+  assert.equal(parseWholeListStore("é tudo da mesma loja?", labels), null);
+});
+
+test("M9: 'da cobasi tudo' põe a Cobasi na frente das próximas escolhas e avisa quando ela não tem o item", async (t) => {
+  if (!dbOk) return t.skip();
+  const racao = [opt("cobasi-r1", "Ração Golden Adulto 15kg", 180, "cobasi", "Cobasi"), opt("cobasi-r2", "Ração Premier Adulto 15kg", 210, "cobasi", "Cobasi")];
+  const petisco = [opt("sl-p1", "Petisco Dog Bifinho 65g", 9, "santaluzia", "Casa Santa Luzia"), opt("mambo-p2", "Petisco Keldog 65g", 8, "mambo", "Mambo"), opt("cobasi-p3", "Petisco Bifinho Keldog 500g", 30, "cobasi", "Cobasi")];
+  const areia = [opt("mambo-a1", "Areia Higiênica Pipicat 4kg", 15, "mambo", "Mambo"), opt("sl-a2", "Areia Higiênica Chalesco 4kg", 14, "santaluzia", "Casa Santa Luzia")];
+  const c = await customerWith(
+    { basket: [], pending: [{ query: "ração golden", qty: 1, options: racao }, { query: "petisco cachorro", qty: 1, options: petisco }, { query: "areia gato", qty: 1, options: areia }] },
+    "choosing"
+  );
+  await send(c.phone, "da cobasi tudo");
+  let ctx = await ctxOf(c.convoId);
+  assert.equal(ctx.preferredStore, "Cobasi");
+  assert.equal(ctx.pending[1].options[0].storeLabel, "Cobasi", "a opção da Cobasi vai na frente");
+  assert.deepEqual(ctx.pending[0].options.map((o: { sku: string }) => o.sku), ["cobasi-r1", "cobasi-r2"], "a escolha da tela não muda de ordem");
+  await send(c.phone, "1");
+  ctx = await ctxOf(c.convoId);
+  assert.equal(ctx.pending?.[0]?.query, "petisco cachorro");
+  const out = await send(c.phone, "1");
+  ctx = await ctxOf(c.convoId);
+  assert.ok((ctx.basket ?? []).some((b: { sku: string }) => b.sku === "cobasi-p3"), "o '1' escolhe a opção da Cobasi (que estava na frente)");
+  assert.match(out, /Pra \*areia gato\*, não achei na \*Cobasi\*/i, out.slice(0, 500));
+});
+
 test("M11: 'Não achei X' com a vitrine ainda na tela é uma mensagem só, sem 'O que eu tenho é isso:' no ar", () => {
   const t = copy.refineNoResultAbove("perfume feminino nivea", "perfume feminino");
   assert.match(t, /Não achei \*perfume feminino nivea\*/);
