@@ -516,13 +516,20 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
+    // "festa do meu sobrinho sábado de manhã" (10/10, rodada 13 g37): o dia junto do evento, da hora do dia ("de manhã") ou
+    // do "preciso" também é prazo — antes só "pra/até sábado" contava e o resumo nunca confirmava o dia.
+    const day = `${name}(?:-feira)?`;
     if (
-      new RegExp(`\\b(?:ate|so ate|pra|para|chega\\w*|cheguem?|receber)\\s+(?:a\\s+|o\\s+|na\\s+|no\\s+|este\\s+|esta\\s+|essa\\s+|nesta\\s+|nessa\\s+)?${name}(?:-feira)?\\b`).test(n) ||
-      new RegExp(`\\b${name}(?:-feira)?\\s+que\\s+vem\\b`).test(n)
+      new RegExp(`\\b(?:ate|so ate|pra|para|chega\\w*|cheguem?|receber)\\s+(?:a\\s+|o\\s+|na\\s+|no\\s+|este\\s+|esta\\s+|essa\\s+|nesta\\s+|nessa\\s+)?${day}\\b`).test(n) ||
+      new RegExp(`\\b${day}\\s+que\\s+vem\\b`).test(n) ||
+      new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\b${day}\\b|\\b${day}\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) ||
+      new RegExp(`\\b${day}\\s+(?:de\\s+|a\\s+|pela\\s+|bem\\s+)?(?:manha|cedo|cedinho|tarde|noite)\\b`).test(n) ||
+      new RegExp(`\\b(?:preciso|precisa|precisando|tem que|necessito)\\b.{0,30}\\b${day}\\b`).test(n)
     ) {
       const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
       const diff = ((dow - today + 7) % 7) || 7;
-      return { date: shift(diff), label: name === "sabado" ? "sábado" : name === "terca" ? "terça" : name };
+      const morning = new RegExp(`\\b${day}\\s+(?:de\\s+|pela\\s+|bem\\s+)?(?:manha|cedo|cedinho)\\b`).test(n);
+      return { date: shift(diff), label: name === "sabado" ? "sábado" : name === "terca" ? "terça" : name, ...(morning ? { morning: true } : {}) };
     }
   }
   return null;
@@ -883,6 +890,16 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       if (bareRef || bareNoun) {
         prev.qty = Math.min(MAX_QTY, prev.qty + Math.max(1, line.qty));
         prev.qtyExplicit = true;
+        continue;
+      }
+      // "alpiste pra passarinho, 2 pacotes de alpiste" (10/10, rodada 13 g37): o item citado de novo, só com a contagem, diz
+      // QUANTOS são (não é outra linha nem soma 1 + 2). Só quando a 1ª menção não tinha número.
+      const recount = !line.additive && line.qtyExplicit && line.qty > 1 && headTokens(line.phrase).tokens.length === 1
+        ? merged.find((m) => !m.qtyExplicit && m.qty === 1 && productHead(m.phrase) !== undefined && productHead(m.phrase) === productHead(line.phrase))
+        : undefined;
+      if (recount) {
+        recount.qty = Math.min(MAX_QTY, line.qty);
+        recount.qtyExplicit = true;
         continue;
       }
     }
@@ -1296,7 +1313,11 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
       ? foldedAi.find((c) => sameProduct(line.phrase, c.phrase) && meaningfulProductTokens(c.phrase).length > 1 && productHead(c.phrase) === productHead(line.phrase))
       : undefined;
     if (host) {
-      host.qty = Math.min(MAX_QTY, host.qty + Math.max(1, line.qty));
+      // Só "mais dois leites" SOMA. A menção repetida com número ("alpiste pra passarinho, 2 pacotes de alpiste", 10/10,
+      // rodada 13 g37) diz quantos são: virava 1 + 2 = 3x e cobrava a mais.
+      // O parser já somou a linha "mais ..." no gêmeo determinístico (e ali a marca `additive` some): a soma dele é a prova.
+      const additive = line.additive || deterministic.some((d) => (d.additive && sameProduct(d.phrase, line.phrase)) || (sameProduct(d.phrase, host.phrase) && d.qty === host.qty + Math.max(1, line.qty)));
+      host.qty = Math.min(MAX_QTY, additive ? host.qty + Math.max(1, line.qty) : Math.max(1, line.qty));
       host.qtyExplicit = true;
       continue;
     }
@@ -2276,7 +2297,7 @@ export function detectIntent(text: string): Intent {
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
   if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n) || REPEAT_ORDER_RE.test(n)) return { kind: "repeat_last" };
-  if (STATUS_RE.test(n)) return { kind: "status" };
+  if (STATUS_RE.test(n) && !isOrderWithDeadline(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":
   // referência ao item que acabou de entrar — resolve pelo sku da cesta, sem nova
@@ -2323,7 +2344,9 @@ export function detectIntent(text: string): Intent {
   if (PAY_RE.test(n) && !isQuestion(n) && !paySubordinate) return { kind: "pay", ...(method ? { method } : {}) };
   // "pix" / "no cartão" as a short reply (not buried inside a shopping list). A
   // QUESTION about a method ("quanto fica no cartão?") is not a decision to charge.
-  if (method && n.split(" ").length <= 4 && !isQuestion(n)) return { kind: "choose_payment", method };
+  // "caixa de bombom, cartão" (10/10, rodada 13 g37): o cartão é item de uma lista, não a forma de pagar. Só vale
+  // como pagamento quando todas as partes da mensagem falam de pagar (ou são cortesia: "sim, no pix", "cartão, obrigado").
+  if (method && n.split(" ").length <= 4 && !isQuestion(n) && !hasNonPaymentListPart(n)) return { kind: "choose_payment", method };
 
   if (isAffirm(n)) return { kind: "affirm" };
   if (DONE_RE.test(n)) return { kind: "done" };
@@ -2373,7 +2396,18 @@ export function detectIntent(text: string): Intent {
 
 // Cartão que é PRODUTO ("cartão de aniversário", "cartão de presente", "cartão de memória", 10/10, rodada 6 g19: virava
 // "Antes de pagar, escolhe..."). "cartão de crédito/débito" continua forma de pagamento.
-const CARD_PRODUCT_RE = /\bcartao(?:zinho)?s?\s+(?:de\s+|do\s+|da\s+|pra\s+|para\s+)?(?:aniversario|presente|natal|felicitac\w*|parabens|visita|memoria|sd|micro ?sd|dia das maes|dia dos pais|namorad\w*|casamento|condolencia\w*|agradecimento|boas festas|recado|mensagem|bilhete)\b/;
+const CARD_PRODUCT_RE = /\bcartao(?:zinho)?s?\s+(?:de\s+|do\s+|da\s+|pra\s+|para\s+)?(?:aniversario|presente|natal|felicitac\w*|parabens|visita|memoria|sd|micro ?sd|dia das maes|dia dos pais|dia dos professores|professor\w*|namorad\w*|casamento|condolencia\w*|agradecimento|boas festas|recado|mensagem|bilhete)\b/;
+// Parte da mensagem que não é pagamento nem cortesia ("caixa de bombom" em "caixa de bombom, cartão").
+const PAYMENT_FILLER_RE = /\b(?:sim|ss|ok|okay|beleza|blz|msm|mesmo|vlw|tb|tbm|ai|pfvr|aqui|agora|mesma|so|dessa vez|hoje|pode|ser|vou|vai|de|do|da|no|na|em|com|o|a|um|uma|por favor|pfv|pf|mesmo|entao|então|obrigad[oa]|valeu|pagar|pago|pagamento|prefiro|quero|melhor|isso|esse|essa|credito|debito|a vista|\d+ ?x|parcelad[oa]|vezes)\b/g;
+// "cartão comemorativo"/"cartão de visita" (10/10, rodada 13 g37): o cartão com um nome de produto ao lado é item. Quem fala
+// de pagar diz o cartão sozinho, a bandeira, o final ou de quem é ("cartão da minha mãe").
+const CARD_PAYMENT_WORD_RE = /\b(?:cartao|cartoes|pix|visa|master|mastercard|elo|amex|hipercard|nubank|inter|itau|bradesco|santander|caixa|salvo|final|meu|minha|dele|dela|marido|esposa|mulher|namorad[oa]|mae|pai|filh[oa]|cadastrado|novo|outro)\b/g;
+function hasNonPaymentListPart(n: string): boolean {
+  const parts = n.split(/\s*[,;+]\s*|\s+(?:e|mais)\s+/).map((p) => p.trim()).filter(Boolean);
+  const rest = (part: string) => part.replace(PAYMENT_FILLER_RE, " ").replace(CARD_PAYMENT_WORD_RE, " ").replace(/[^a-z]+/g, " ").trim();
+  if (parts.length < 2) return /\bcartao\b/.test(n) && rest(n).length > 0;
+  return parts.some((part) => !paymentMethodIn(part) && rest(part).length > 0);
+}
 function paymentMethodIn(n: string): "pix" | "card" | undefined {
   if (/\bpix\b/.test(n)) return "pix";
   if (/\b(cartao|credito|debito|cred)\b/.test(CARD_PRODUCT_RE.test(n) ? n.replace(CARD_PRODUCT_RE, " ") : n)) return "card";
@@ -2391,6 +2425,15 @@ export function isAngerSwear(normalized: string): boolean {
   const n = normalized.replace(/[!?.]+/g, " ").replace(/\s+/g, " ").trim();
   if (!n || n.split(" ").length > 8 || /\d/.test(n)) return false;
   return /\b(?:que (?:porra|merda|bosta|droga|saco|inferno|lixo|raiva|odio)|puta (?:que|merda)|pqp|caralho|(?:isso|vc|voce|isto) (?:e|eh|ta|esta) (?:uma |um )?(?:merda|porra|droga|bosta|lixo|horrivel|pessim\w+))\b/.test(n);
+}
+
+// "preciso de papel higiênico e 2 sabonetes de jasmim, a visita chega hoje" (10/10, rodada 13 g37): produto pedido + prazo
+// é PEDIDO com prazo, nunca só a pergunta "quando chega?" (o "chega hoje" virava status e a lista sumia antes do cadastro).
+export function isOrderWithDeadline(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!parseNeededBy(n)) return false;
+  const clauses = n.split(/[,;.!?]+|\s+(?:mas|porque|pq|que)\s+/).map((c) => c.trim()).filter(Boolean);
+  return clauses.some((c) => !STATUS_RE.test(c) && !parseNeededBy(c) && /\b(?:preciso de|precisava de|quero|queria|me (?:ve|manda|traz)|manda|compra|vou querer)\s+(?:um |uma |uns |umas |o |a |\d+ )?[a-z]{3,}/.test(c));
 }
 
 export function isQuestion(text: string): boolean {
@@ -3730,13 +3773,34 @@ export function asksBasketContents(text: string): { item?: string } | null {
 
 // Número solto respondendo a uma pergunta da Lia do tipo "A ou B?" (M3: "Qual lápis você quer trocar: o de cor ou o
 // preto HB?" → "2" = "o preto HB"). Devolve a alternativa de número n, ou null se a pergunta não lista alternativas.
-export function openQuestionAlternative(question: string, n: number): string | null {
+function openQuestionAlternatives(question: string): string[] | null {
   const q = question.replace(/\?\s*$/, "").trim();
-  const tail = q.includes(":") ? q.slice(q.lastIndexOf(":") + 1) : q.replace(/^.*?\b(?:qual|quais|que)\b[^,]*?\b(?:voce|você|vc)\b[^,]*?\b(?:quer|prefere|precisa)\b/i, "");
+  // "Você prefere um cartão de agradecimento ou uma vela?" (10/10, rodada 13 g37): sem o "qual", o começo também sai.
+  const tail = q.includes(":")
+    ? q.slice(q.lastIndexOf(":") + 1)
+    : q.replace(/^.*?\b(?:qual|quais|que)\b[^,]*?\b(?:voce|você|vc)\b[^,]*?\b(?:quer|prefere|precisa)\b/i, "").replace(/^(?:e\s+)?(?:voce|você|vc)\s+(?:quer|prefere|precisa(?:\s+de)?)\s+/i, "");
   if (!/\sou\s/i.test(tail)) return null;
   const parts = tail.split(/\s*,\s*|\s+ou\s+/i).map((x) => x.trim()).filter(Boolean);
   if (parts.length < 2 || parts.length > 5 || parts.some((p) => p.split(/\s+/).length > 6)) return null;
-  return n >= 1 && n <= parts.length ? parts[n - 1] : null;
+  return parts;
+}
+export function openQuestionAlternative(question: string, n: number): string | null {
+  const parts = openQuestionAlternatives(question);
+  return parts && n >= 1 && n <= parts.length ? parts[n - 1] : null;
+}
+
+// Palavra que responde a pergunta "A ou B?" da Lia (10/10, rodada 13 g37: "Você prefere um cartão de agradecimento ou uma
+// vela?" + "cartão" era lido como forma de pagamento e o cartão sumia). Devolve a alternativa que a resposta nomeia (sem o
+// artigo), ou null se a resposta não nomeia exatamente uma.
+const PICK_FILLER_RE = /\b(?:o|a|os|as|um|uma|de|do|da|prefiro|quero|queria|pode ser|mesmo|mesma|esse|essa|isso|por favor|pf|pfv|melhor|acho que|vou de|vai de|entao|ah)\b/g;
+export function openQuestionPick(question: string, text: string): string | null {
+  const parts = openQuestionAlternatives(question);
+  if (!parts) return null;
+  const words = normalizeMsg(text).replace(/[!?.,]+/g, " ").replace(PICK_FILLER_RE, " ").split(/\s+/).filter(Boolean);
+  if (!words.length || words.length > 4) return null;
+  const has = (alt: string, w: string) => normalizeMsg(alt).split(/\s+/).some((t) => t === w || t === `${w}s` || `${t}s` === w);
+  const hits = parts.filter((alt) => words.every((w) => has(alt, w)));
+  return hits.length === 1 ? hits[0].replace(/^(?:o|a|os|as|um|uma)\s+/i, "") : null;
 }
 
 // "sim" respondendo a uma pergunta de sim/não da própria Lia (10/10, rodada 7 N1): "Você quer trocar a areia escolhida
@@ -3802,7 +3866,7 @@ const ORDER_BUDGET_RES = [
   // "cesta básica de uns R$ 100" / "compra de até 200"
   String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
 ].map((src) => new RegExp(src, "g"));
-export function parseOrderBudget(text: string): { cap: number; rest: string } | null {
+export function parseOrderBudget(text: string): { cap: number; rest: string; total?: boolean } | null {
   const folded = foldSameLength(text);
   const base = folded ?? normalizeMsg(text);
   const raw = folded ? text : base;
@@ -3821,6 +3885,24 @@ export function parseOrderBudget(text: string): { cap: number; rest: string } | 
       cap = cap == null ? value : Math.min(cap, value);
     }
   }
+  // Teto no fim de um presente com mais de uma peça ("um presente pra professora, uma caixa de bombom e um cartão até 50
+  // reais", 10/10, rodada 13 g37): é o valor do presente inteiro, não só da última peça (o teto sumia).
+  // Valor aproximado no fim de uma lista ("whey banana aveia ... e pão integral uns 70 reais", 10/10, rodada 13 g37): "uns 70"
+  // é quanto o cliente quer gastar no pedido, não o preço de um item (o resumo de R$ 96 saía sem aviso).
+  let gift = false;
+  const giftFrame = /\bpresente\b/.test(base);
+  if (cap == null) {
+    const tail = /(?:[\s,]+)(ate|no maximo|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?[\s.!]*$/.exec(base);
+    const before = tail ? base.slice(0, tail.index) : "";
+    const value = tail ? Number(tail[2].replace(",", ".")) : NaN;
+    const approx = Boolean(tail && !/^(?:ate|no maximo)$/.test(tail[1]) && tail[3]);
+    const list = /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
+    if (tail && value >= 10 && (giftFrame || approx) && list && !/\bcada\b/.test(base)) {
+      spans.push([tail.index, base.length]);
+      cap = value;
+      gift = true;
+    }
+  }
   if (cap == null) return null;
   // Dois padrões casando o mesmo trecho ("tenho 40 reais pra gastar"): junta os pedaços sobrepostos antes de cortar.
   const merged: Array<[number, number]> = [];
@@ -3829,7 +3911,7 @@ export function parseOrderBudget(text: string): { cap: number; rest: string } | 
     if (last && a <= last[1]) last[1] = Math.max(last[1], b);
     else merged.push([a, b]);
   }
-  return { cap, rest: cutSpans(raw, merged) };
+  return { cap, rest: cutSpans(raw, merged), ...(gift ? { total: true } : {}) };
 }
 
 // Consulta de preço sem compromisso (10/10, rodada 8 M4): "só quero saber quanto tá o leite, não vou comprar agora" era

@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1297,7 +1297,7 @@ async function askStreetOrSignup(phone: string, ctx: DeliveryContext, userCep: s
   const noted = notedForCopy(ctx);
   // Sem CEP nenhum, o texto pede o endereço COM CEP (06/10: "Falta o endereço: rua, número e
   // complemento" saía para quem nem tinha mandado endereço e soava como cobrança).
-  await askSignup(phone, copy.signupFormBody(noted, false), () =>
+  await askSignup(phone, copy.signupFormBody(noted, false, notedExtras(ctx)), () =>
     reply(phone, noted.length ? `${copy.notedItemsLine(noted, notedExtras(ctx))}\n\n${copy.askAddressWithCep()}` : copy.askAddressWithCep())
   );
 }
@@ -2674,7 +2674,7 @@ async function handleDeliveryTurn(
   // "até 50 reais no total" / "pra tudo" (10/10, rodada 8 g25: o presente da professora com "até 50 no total" virava teto
   // de UM item e depois "quanto ainda posso gastar?" perguntava o valor de novo): dito "no total", é o teto do pedido.
   // "tenho 50 reais" / "meu orçamento é 150" também: é o dinheiro da compra inteira (rodada 9 B M2 via g25).
-  const explicitTotal = /\b(?:no total|pra tudo|para tudo|ao todo|com tudo|pra gastar|para gastar|posso gastar|orcamento|limite)\b|\btenho\s+(?:(?:so|apenas|uns|umas)\s+)*(?:r\$\s*)?\d/.test(normalizeMsg(text));
+  const explicitTotal = Boolean(orderBudget?.total) || /\b(?:no total|pra tudo|para tudo|ao todo|com tudo|pra gastar|para gastar|posso gastar|orcamento|limite)\b|\btenho\s+(?:(?:so|apenas|uns|umas)\s+)*(?:r\$\s*)?\d/.test(normalizeMsg(text));
   // Com UM item na mesa, o teto continua o do item (o fluxo dele já oferece o que cabe); sem nada ainda, é do pedido.
   const nothingYet = !(ctx.basket?.length ?? 0) && !(ctx.pending?.length ?? 0);
   const singleItemBudget = !(explicitTotal && nothingYet) && parseBudgetStatement(text) != null && ((ctx.basket?.length ?? 0) <= 1 || (ctx.pending?.length ?? 0) > 0);
@@ -3454,6 +3454,20 @@ async function handleDeliveryTurn(
   // Número solto respondendo a uma pergunta "A ou B?" da Lia (10/10, rodada 6 M3): "Qual lápis você quer trocar: o de cor
   // ou o preto HB?" + "2" = o preto HB — nunca a opção 2 do carrossel que ficou aberto de outro item. A fala que gerou a
   // pergunta volta junto, para o resto do fluxo saber do que se trata.
+  // Palavra que nomeia uma das alternativas da pergunta "A ou B?" (10/10, rodada 13 g37): "cartão" respondendo "cartão de
+  // agradecimento ou vela?" é o produto, venha a palavra como vier (pagamento, item solto) — com a pergunta aberta, a
+  // resposta é dela.
+  if (ctx.openQuestion && intent.kind !== "number" && Date.now() - ctx.openQuestion.at < 10 * 60_000) {
+    const picked = openQuestionPick(ctx.openQuestion.text, text);
+    if (picked) {
+      console.log("[open-question:pick]", JSON.stringify(ctx.openQuestion.text), JSON.stringify(text), "->", JSON.stringify(picked));
+      ctx.openQuestion = undefined;
+      await writeCtx(convo.id, ctx);
+      text = picked;
+      intent = detectIntent(text);
+      if (intent.kind !== "free_text") intent = { kind: "free_text" };
+    }
+  }
   if (ctx.openQuestion && intent.kind === "number" && Date.now() - ctx.openQuestion.at < 10 * 60_000) {
     const alt = openQuestionAlternative(ctx.openQuestion.text, intent.value);
     if (alt) {
@@ -3886,6 +3900,19 @@ async function handleDeliveryTurn(
   // Prazo dito como frase própria (10/10, rodada 10 g29: "preciso até amanhã de manhã, qual das duas serve?" na escolha da
   // entrega e "Se puder chegar até sexta, tá bom" recebiam o texto genérico): diz qual entrega/opção chega a tempo.
   if (user.defaultAddress && savedCep && (intent.kind === "free_text" || intent.kind === "service_question" || intent.kind === "scheduling_question" || intent.kind === "status") && (await answerStatedDeadline(phone, convo.id, ctx, user.id, user.cep, text, intent.kind))) return;
+  // "me manda o de sempre" antes do cadastro, sem pedido nenhum (10/10, rodada 13 g37): a IA do pré-cadastro lia como
+  // recomendação e só repetia o convite ao cadastro; o "você ainda não tem pedido" só vinha na 2ª vez.
+  if (intent.kind === "repeat_last" && !(user.defaultAddress && savedCep) && !(ctx.basket?.length ?? 0) && !(ctx.pending?.length ?? 0)) {
+    const any = await prisma.deliveryOrder.findFirst({ where: { userId: user.id, status: { in: REPEATABLE_DELIVERY_ORDER_STATUSES } }, select: { id: true } });
+    if (!any) {
+      ctx.flow = "delivery";
+      ctx.step = "need_address";
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.noPreviousOrder());
+      await askStreetOrSignup(phone, ctx, user.cep);
+      return;
+    }
+  }
   // O que o cliente escreveu, quando a IA reencaminha outra frase: o aviso ao dono cita ISSO, nunca a frase da IA.
   let saidBeforeRewrite: string | undefined;
   if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx)) {
@@ -3954,7 +3981,7 @@ async function handleDeliveryTurn(
       ctx.step = "need_address";
       await writeCtx(convo.id, ctx);
       const noted = notedForCopy(ctx);
-      await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress()));
+      await askSignup(phone, copy.signupFormBody(noted, true, notedExtras(ctx)), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress()));
     } else if (!savedCep) {
       ctx.flow = "delivery";
       ctx.step = "need_cep";
@@ -5297,7 +5324,7 @@ async function handleDeliveryTurn(
     await writeCtx(convo.id, ctx);
     if (priceAsk && note) await reply(phone, copy.priceAfterAddress(priceAsk));
     const noted = notedForCopy(ctx);
-    await askSignup(phone, copy.signupFormBody(noted), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
+    await askSignup(phone, copy.signupFormBody(noted, true, notedExtras(ctx)), () => askAddress(phone, copy.welcomeAskFullDeliveryAddress(noted)));
     return;
   }
 
@@ -9104,7 +9131,9 @@ function removeResolvesHere(text: string, intent: Intent, ctx: DeliveryContext):
 // Pedaços do alvo de um "tira" (10/10, rodada 5 M5/M7). Alvo que casa inteiro fica inteiro; senão corta em vírgula / " e "
 // e descarta o pedaço que é motivo/conversa ("já tenho", "não precisa mais", "obrigado").
 // "tira o leite, pula essa" (10/10, rodada 7 N8): "pula essa"/"essa" repete a ordem — não é item ("*pula* não está na cesta").
-const REMOVE_REASON_RE = /^(?:ja|nao|n|pq|porque|que|pois|era|foi|so era|eh so|e so|obrigad\w*|valeu|vlw|por favor|pfv|mais|tambem|mesmo|tenho|comprei|achei|desisti|pula\w*|pule|pode pular|ess[ae]s?|isso|ele|ela)\b/;
+// "esquece o chinelo, vou levar o meu mesmo" (10/10, rodada 13 g37): levar/usar o próprio também é motivo, não item
+// ("*vou levar meu mesmo* não está na sua cesta").
+const REMOVE_REASON_RE = /^(?:ja|nao|n|pq|porque|que|pois|era|foi|so era|eh so|e so|obrigad\w*|valeu|vlw|por favor|pfv|mais|tambem|mesmo|tenho|comprei|achei|desisti|pula\w*|pule|pode pular|ess[ae]s?|isso|ele|ela|(?:eu\s+)?(?:vou\s+)?(?:levar|levo|usar|uso|trazer|trago|pegar|pego)\s+(?:o\s+|a\s+|os\s+|as\s+)?(?:meu|minha|meus|minhas|de casa|daqui)|(?:o|a|os|as)\s+(?:meu|minha|meus|minhas)|(?:la\s+)?em casa)\b/;
 // O alvo da remoção é (ou começa com) o nome exato de um item em escolha/na cesta, entre aspas ou não: só ele sai.
 function literalRemoveTarget(target: string, basket: BasketItem[], pending: PendingChoice[]): { skus?: string[]; queries?: string[] } | undefined {
   const flat = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();

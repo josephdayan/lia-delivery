@@ -87,8 +87,9 @@ export function welcomeAskFullDeliveryAddress(notedItems?: string[]): string {
 // ---------- cadastro pelo formulário (06/10, dono: "pode pedir tudo direto no começo") ----------
 // Corpo da mensagem que leva o formulário nativo do WhatsApp (botão "Fazer cadastro"). O
 // pedido em texto de antes (welcomeAskFullDeliveryAddress) continua sendo o plano B.
-export function signupFormBody(notedItems?: string[], intro = true): string {
-  const items = notedItems?.length ? notedItems.map((i) => `• ${i}`).join("\n") : "";
+// `extra` = teto e prazo ditos junto da lista (10/10, rodada 13 g37: no formulário de cadastro eles não apareciam).
+export function signupFormBody(notedItems?: string[], intro = true, extra?: string): string {
+  const items = notedItems?.length ? `${notedItems.map((i) => `• ${i}`).join("\n")}${extra ? `\n${extra}` : ""}` : "";
   if (!intro) {
     const note = items ? `✅ Anotei:\n${items}\n\n` : "";
     return `${note}Pra eu comprar pra você, falta o cadastro: nome, CPF e endereço. É uma vez só 👇`;
@@ -685,9 +686,10 @@ export function choiceSequence(queries: string[]): string {
   // Lista longa não vira parágrafo com 11 "e" (28/08 S1): cita os 3 primeiros e conta
   // o resto.
   const rest = queries.slice(1);
-  const shown = rest.slice(0, 2).map((q) => `*${q}*`);
+  // Sobrando 1 só, ele vai pelo nome ("e mais 1" soava estranho, 10/10, rodada 13 g37); 2+ = "e mais N itens".
+  const shown = rest.slice(0, rest.length === 3 ? 3 : 2).map((q) => `*${q}*`);
   const extra = rest.length - shown.length;
-  const tail = extra > 0 ? `${shown.join(", ")} e mais ${extra}` : shown.join(" e ");
+  const tail = extra > 0 ? `${shown.join(", ")} e mais ${extra} itens` : shown.length > 2 ? `${shown.slice(0, -1).join(", ")} e ${shown[shown.length - 1]}` : shown.join(" e ");
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
