@@ -3625,7 +3625,8 @@ async function handleDeliveryTurn(
   if (intent.kind === "split_orders") {
     const offerOpen = Boolean(ctx.consolidationOffer || ctx.consolidationParked);
     const hasItems = (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0 || Boolean(ctx.deliveryOrderId);
-    await reply(phone, copy.splitOrdersAnswer({ payer: intent.payer, hasItems, offerOpen }));
+    const lastName = ctx.basket?.[ctx.basket.length - 1]?.name.split(/\s+/)[0]?.toLowerCase();
+    await reply(phone, copy.splitOrdersAnswer({ payer: intent.payer, hasItems, offerOpen, ...(lastName ? { example: lastName } : {}) }));
     if (!offerOpen) await rePresentStep();
     return;
   }

@@ -2601,7 +2601,7 @@ export function asksMultiAddress(text: string): boolean {
 // Dois pagadores (10/10, rodada 8 A2): "meu colega paga separado", "cada um paga o seu", "a parte dele ele paga".
 // "dois pedidos" sem lugar nem endereço também cai aqui ("orders"): a Lia faz um pedido por vez.
 const SPLIT_PAYER_RE =
-  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai )?paga\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b/;
+  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai )?paga\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
 const TWO_ORDERS_RE = /\b(?:dois|2) pedidos\b/;
 export function parseSplitOrders(text: string): "payer" | "orders" | null {
   const n = normalizeMsg(text);

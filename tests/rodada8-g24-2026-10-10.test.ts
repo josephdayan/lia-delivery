@@ -79,6 +79,9 @@ test("A2: pagador diferente / 'dois pedidos' sem lugar não é pedido de dois en
   assert.equal(parseSplitOrders(TWO_ORDERS), "payer");
   assert.equal(parseSplitOrders("meu amigo vai pagar a parte dele separado, dá pra fazer assim?"), "payer");
   assert.equal(parseSplitOrders("dá pra fazer dois pedidos?"), "orders");
+  // 301 (nota do g23): "vamos dividir a compra... eu pago o meu" é pagador separado, não forma de pagamento.
+  assert.equal(parseSplitOrders("vamos dividir a compra... eu pago o meu"), "payer");
+  assert.equal(parseSplitOrders("quero dividir o pedido em duas entregas"), null);
   assert.equal(parseSplitOrders("dois pedidos: um em casa e um no trabalho"), null);
   assert.deepEqual(detectIntent(TWO_ORDERS), { kind: "split_orders", payer: true });
   assert.deepEqual(detectIntent("meu amigo vai pagar a parte dele separado, dá pra fazer assim?"), { kind: "split_orders", payer: true });

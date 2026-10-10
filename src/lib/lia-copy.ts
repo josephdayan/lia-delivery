@@ -530,7 +530,7 @@ export function askEitherItem(a: string, b: string, cap?: number): string {
 
 // Dois pagadores / "dois pedidos" no mesmo endereço (10/10, rodada 8 A2): o pagamento é por pedido, não por pessoa; a
 // Lia faz um pedido por vez. A oferta de juntar lojas na mesa continua valendo.
-export function splitOrdersAnswer(input: { payer: boolean; hasItems: boolean; offerOpen?: boolean }): string {
+export function splitOrdersAnswer(input: { payer: boolean; hasItems: boolean; offerOpen?: boolean; example?: string }): string {
   const lines = [
     input.payer
       ? "Dá, mas em *dois pedidos*: cada pedido tem *um pagamento só* (o pagamento é por pedido, não por pessoa)."
@@ -538,7 +538,7 @@ export function splitOrdersAnswer(input: { payer: boolean; hasItems: boolean; of
   ];
   lines.push(
     input.hasItems
-      ? "Fecha primeiro o seu: tira daqui o que é da outra pessoa (ex.: *tira o pirulito*), diz *só isso* e paga. Depois me manda os itens dela que eu monto o *segundo pedido*, no mesmo endereço."
+      ? `Fecha primeiro o seu: tira daqui o que é da outra pessoa${input.example ? ` (ex.: *tira ${input.example}*)` : ""}, diz *só isso* e paga. Depois me manda os itens dela que eu monto o *segundo pedido*, no mesmo endereço.`
       : "Me manda primeiro os itens do primeiro pedido; quando ele fechar e for pago, me manda os do segundo, no mesmo endereço."
   );
   if (input.payer) lines.push("Se preferir um pedido só, o Pix é copia-e-cola: dá pra encaminhar pra quem for pagar e vocês acertam a parte de cada um.");
