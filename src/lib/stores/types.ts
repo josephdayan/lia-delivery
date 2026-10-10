@@ -938,6 +938,8 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bsab(?:ao|oes) (?:em )?po\b/, "lava roupas em po"],
   [/\blava roupas? (?:em )?po\b/, "sabao em po"],
   [/\bxampus?\b/, "shampoo"],
+  // "Sem cheiro" é como o cliente fala; o catálogo escreve "sem perfume"/"sem fragrância" (10/10, rodada 4, B1).
+  [/\bsem (?:cheiro|aroma|odor|fragrancia|perfumacao)\b/, "sem perfume"],
   [/\bcaixas? de leite\b/, "leite longa vida"],
   [/\bleite de caixinha\b/, "leite longa vida"],
   // 08/10 (placar r4, s141): o cliente pede "leite em pó para bebê"/"leite infantil"; a farmácia

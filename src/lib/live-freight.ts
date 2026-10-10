@@ -168,7 +168,7 @@ export function effectiveSla<T extends Sla>(sla: T, now = new Date()): T & { del
   const hours = Math.max(1, Math.ceil((Date.parse(w.endDateUtc) - now.getTime()) / 3_600_000));
   return { ...sla, price: (sla.price ?? 0) + (w.price ?? 0), shippingEstimate: `${hours}h@${w.startDateUtc}~${w.endDateUtc}`, deliveryWindow: w };
 }
-type SimItem = { id?: string | number; quantity?: number; availability?: string; sellingPrice?: number; measurementUnit?: string; unitMultiplier?: number };
+type SimItem = { id?: string | number; requestIndex?: number | null; quantity?: number; availability?: string; sellingPrice?: number; measurementUnit?: string; unitMultiplier?: number };
 type LogisticsInfo = { itemIndex?: number; slas?: Sla[] };
 
 // Loja com checkout consultável (mapa VTEX_LIVE), independente do kill-switch — o plano B
@@ -348,8 +348,27 @@ export async function liveStoreFreight(
   try {
     const payload = await postSimulation(store.domain, simItems, cep);
     if (!payload) return { kind: "unavailable" };
-    const simulated = Array.isArray(payload.items) ? payload.items : [];
-    const logistics = Array.isArray(payload.logisticsInfo) ? payload.logisticsInfo : [];
+    let simulated = Array.isArray(payload.items) ? payload.items : [];
+    let logistics = Array.isArray(payload.logisticsInfo) ? payload.logisticsInfo : [];
+    // Brinde da loja (10/10, rodada 4, M5): a Época devolve uma 2ª linha (SKU que não pedimos, requestIndex nulo, preço 0)
+    // com promoção de brinde. Ela não é da nossa cesta: sai da conferência (e da logística), senão o item escolhido
+    // "não era confirmado" no fechamento.
+    const askedIds = new Set(simItems.map((item) => item.id));
+    const isGift = (item: SimItem) => !askedIds.has(String(item.id ?? "")) && (item.requestIndex == null || item.sellingPrice === 0);
+    if (simulated.some(isGift)) {
+      const remap = new Map<number, number>();
+      const kept: SimItem[] = [];
+      simulated.forEach((item, index) => {
+        if (isGift(item)) return;
+        remap.set(index, kept.length);
+        kept.push(item);
+      });
+      logistics = logistics
+        .map((info, position) => ({ info, from: typeof info.itemIndex === "number" ? info.itemIndex : position }))
+        .filter(({ from }) => remap.has(from))
+        .map(({ info, from }) => ({ ...info, itemIndex: remap.get(from)! }));
+      simulated = kept;
+    }
     // O frete é POR ITEM no VTEX (um logisticsInfo por item). Uma resposta que não cobre
     // a cesta inteira não permite calcular o frete do carrinho — sem isso, uma cesta de
     // 5 itens era cobrada pelo frete de 1 (achatava todos os SLAs e pegava o mais barato).

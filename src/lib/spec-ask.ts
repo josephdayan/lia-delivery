@@ -123,6 +123,30 @@ export function specAnswerUnknown(answer: string): boolean {
   return /^(nao sei|n sei|nao lembro|qualquer( um| uma)?|tanto faz|sei la|deixa|deixa pra la|esquece|nao precisa|nao quero|nem)\b/.test(normalizeMsg(answer));
 }
 
+// Impressora -> cartucho (10/10, rodada 4, M1): "cartucho para HP DeskJet 2774" oferecia a linha HP 664XL, que não serve.
+// Só compatibilidades CERTAS (fabricante); modelo fora da tabela segue como está (e sem número a Lia pergunta).
+const PRINTER_CARTRIDGES: Array<{ brand: string; models: string[]; cartridge: string }> = [
+  { brand: "hp", models: ["2374", "2376", "2774", "2775", "2776", "2777"], cartridge: "667" },
+  { brand: "hp", models: ["1115", "2135", "2136", "2676", "3636", "3776"], cartridge: "664" },
+  { brand: "epson", models: ["l355", "l365", "l375", "l395", "l210", "l220"], cartridge: "664" },
+  { brand: "epson", models: ["l3110", "l3150", "l3210", "l3250"], cartridge: "544" },
+  { brand: "canon", models: ["mg2510", "mg2910"], cartridge: "145" }
+];
+
+// "cartucho hp 667" quando a frase cita cartucho/tinta/toner + impressora conhecida e nenhum número de cartucho próprio.
+export function cartridgeForPrinter(phrase: string): string | null {
+  const n = normalizeMsg(phrase).replace(/-/g, " ");
+  if (!has(n, /\b(cartucho|cartuchos|tintas?|refil)\b/) || has(n, /\btoner\b/)) return null;
+  const hit = PRINTER_CARTRIDGES.find((p) => p.models.some((m) => new RegExp(`\\b${m}\\b`).test(n.replace(/\b(l)\s+(\d)/g, "$1$2"))));
+  if (!hit) return null;
+  // já pediu um cartucho por número ("hp 667", "t544"): respeita.
+  const wanted = n.replace(new RegExp(`\\b(${hit.models.join("|")})\\b`), " ");
+  if (/\b(?:hp|pg|cl|gi|t|n)?\s?\d{3}\s?(?:xl)?\b/.test(wanted)) return null;
+  const brandOk = n.includes(hit.brand) || /\b(deskjet|ink advantage|ecotank|pixma)\b/.test(n) || hit.brand !== "hp";
+  if (!brandOk) return null;
+  return hit.brand === "epson" ? `refil tinta epson ${hit.cartridge}` : hit.brand === "canon" ? `cartucho canon pg ${hit.cartridge}` : `cartucho ${hit.brand} ${hit.cartridge}`;
+}
+
 const FILLER = /^(e|eh|é|seria|sao|são|o|a|do|da|de|um|uma|pro|pra|para o|para a|modelo|meu|minha)\s+/i;
 
 function cleanAnswer(answer: string): string {
@@ -134,6 +158,8 @@ function cleanAnswer(answer: string): string {
 // Frase de busca nova: o item com a especificação (a quantidade original volta como prefixo).
 export function combineSpecQuery(ask: SpecAsk, answer: string): string {
   const a = cleanAnswer(answer);
+  const mapped = ask.kind === "cartucho" ? cartridgeForPrinter(`cartucho ${a}`) : null;
+  if (mapped) return ask.qty > 1 ? `${ask.qty} ${mapped}` : mapped;
   const q = ask.query.replace(/\s+/g, " ").trim();
   const base: Record<SpecKind, string> = {
     capa: `capa ${a}`,

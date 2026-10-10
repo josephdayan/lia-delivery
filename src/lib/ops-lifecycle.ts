@@ -209,7 +209,8 @@ export async function opsPublishManualQuote(
     etaMinutes: input.etaMinutes,
     total,
     deliveryAddress: order.deliveryAddress ?? undefined,
-    sameHour
+    sameHour,
+    deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.
