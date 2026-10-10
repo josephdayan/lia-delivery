@@ -1181,7 +1181,7 @@ const CLEAR_CART_RE =
 // Desistência da lista INTEIRA (09/10, rodada 1): "na verdade não quero nada disso" só tirava o item da vez.
 // "não quero mais nada" sozinho continua sendo fechar a lista (done) — frase ambígua, coberta por teste antigo.
 const CLEAR_ALL_RE =
-  /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei)[,\s]+)*(?:nao (?:quero|preciso (?:de )?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso|(?:deixa (?:pra|para) la|deixa quieto|esquece|esqueca|desisto|deixa)[,\s]+(?:e )?nao (?:quero|preciso(?: de)?|vou querer) (?:mais )?nada(?: (?:disso|disto|daquilo|disso tudo|de tudo isso))?)[\s,!.]*$/;
+  /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei|deixar|deixa|deixa (?:pra|para) la|deixa quieto)[,\s]+)*(?:nao (?:quero|preciso(?: de)?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso|(?:deixa (?:pra|para) la|deixa quieto|esquece|esqueca|desisto|deixa)[,\s]+(?:e )?nao (?:quero|preciso(?: de)?|vou querer) (?:mais )?nada(?: (?:disso|disto|daquilo|disso tudo|de tudo isso))?)(?:[\s,!.]+(?:obrigad[oa]|obg|brigad[oa]|valeu|vlw|mesmo|por enquanto|por hoje|ta|ok))*[\s,!.]*$/;
 export function isExplicitClearAll(text: string): boolean {
   return CLEAR_ALL_RE.test(normalizeMsg(text));
 }
@@ -1205,6 +1205,22 @@ export function splitRestartCue(text: string): { rest: string } | null {
   // "na verdade quero só" exige o "só/somente/apenas" (sem ele é correção de item: "na verdade quero de uva").
   if (/^(?:.*\s)?(?:na verdade|pensando bem)\b/.test(head) && !/\b(?:nova lista|lista nova|outra lista|novo pedido|outro pedido|recomec|comec|zera|esquec|apaga|limpa|cancela|tira|do zero)/.test(head) && !/\b(so|somente|apenas)\b/.test(head)) return null;
   return { rest: text.slice(m[0].length).replace(/^[\s,:;.!-]+|[\s,;.!]+$/g, "") };
+}
+
+// Recusa da oferta de juntar lojas (10/10, rodada 4 A1): com a oferta aberta, toda recusa é "manter separado" —
+// "prefiro deixar separado", "não, deixa como está", "não quero juntar", "não", "não precisa, obrigado". Antes só
+// "manter"/"2" valiam e o resto virava busca de produto. Pedido de item no meio ("não, quero manteiga") não casa.
+const KEEP_FILLER = new Set(["nao", "n", "nop", "nope", "negativo", "melhor", "prefiro", "precisa", "obrigado", "obrigada", "obg", "brigado", "brigada", "valeu", "vlw", "quero", "nem", "pode", "ta", "tudo", "bem", "ok", "assim", "mesmo", "por", "favor", "pf", "pfv", "agora", "eu", "acho", "que"]);
+export function isKeepSeparateReply(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").trim();
+  if (!s) return false;
+  const negatedJoin = /\b(nao|sem|nem)\b[^.,!?]{0,20}\bjunt/.test(s);
+  if (/\bjunt/.test(s) && !negatedJoin) return false;
+  if (negatedJoin) return true;
+  if (/\bseparad|\bmant(e|er|em|enha|enho|ém)\b|\bdeix\w*\s+(como|assim|do jeito|desse jeito|separad)|\bassim mesmo\b|\b(como|do jeito que|desse jeito que) (esta|ta)\b|\bcada (loja|um) (manda|entrega)/.test(s)) return true;
+  // Negação curta solta: só negação e cortesia, nenhuma outra palavra.
+  const words = s.split(/[\s,;]+/).filter(Boolean);
+  return /^(nao|n|nop|nope|negativo|melhor|prefiro)$/.test(words[0]) && words.every((w) => KEEP_FILLER.has(w));
 }
 
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
@@ -1349,7 +1365,7 @@ export function detectIntent(text: string): Intent {
   if (/^(outr[ao]s( opcoes)?|mais opcoes)[\s!.]*$/.test(n)) return { kind: "more_options" };
   // "mais barato"/"mais em conta" seco fora da escolha: reabrir a última escolha
   // ordenada por preço — antes virava modificador vazio e caía no "não entendi".
-  if (/^(tem )?(o |a |algo )?(mais barat[oa]s?|mais em conta|menor preco)( que tiver| possivel)?[\s?!.]*$/.test(n)) {
+  if (/^(tem )?(o |a |um |uma |algo |algum |alguma )?(mais barat[oa]s?|mais em conta|menor preco)( que tiver| possivel)?[\s?!.]*$/.test(n)) {
     return { kind: "more_options", cheaper: true };
   }
   // Botão "Escolher esse" (id por sku). Na escolha, o handleChoosing resolve o sku

@@ -1289,6 +1289,15 @@ export function itemCheapestAnswer(input: { item: string; name: string; price: n
     ? `Pra *${input.item}*, já está o mais barato que achei: ${tail}.`
     : `✅ Troquei pelo mais barato: ${tail}.`;
 }
+// "troca por um mais barato" quando só há mais barato em outro tamanho (10/10, rodada 4): diz o tamanho e mostra as opções.
+export function cheaperOnlyOtherSize(input: { item: string; name: string; price: number; size?: string }): string {
+  const size = input.size ? ` de *${input.size}*` : "";
+  return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
+}
+// "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
+export function cheaperWhichItem(items: string[]): string {
+  return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
+}
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
 }

@@ -290,6 +290,9 @@ export type DeliveryContext = {
   openQuestion?: { text: string; at: number };
   askEither?: { base: string; alternatives: [string, string]; at: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
+  // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4 M2): a Lia perguntou de qual;
+  // a próxima fala ("a fralda", "2") escolhe o item e a troca pelo mais barato segue.
+  cheaperAsk?: { at: number };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
   pendingRequest?: string;
   // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
