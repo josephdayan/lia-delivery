@@ -697,6 +697,22 @@ export function promiseMissesDeadline(promise: string | undefined | null, needed
   return minutes > Math.max(1, days) * 24 * 60;
 }
 
+// Prazo dito × entrega (10/10, rodada 10 g29): "ok" chega a tempo; "late" não chega; "unsure" chega no dia mas o cliente
+// pediu "de manhã" e a loja só promete o dia (prazo em dias, sem hora). `null` = promessa sem prazo legível.
+export function deadlineFit(promise: string | undefined | null, d: { date: string; morning?: boolean }, now: Date = new Date()): "ok" | "late" | "unsure" | null {
+  const miss = promiseMissesDeadline(promise, d.date, now);
+  if (miss == null) return null;
+  if (miss) return "late";
+  if (d.morning) {
+    const t = (promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    const dayUnits = /(\d+)\s*(?:dias?\s+uteis|dias?)\b/.exec(t);
+    const today = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+    const days = Math.round((Date.parse(`${d.date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
+    if (dayUnits && Number(dayUnits[1]) >= days) return "unsure";
+  }
+  return "ok";
+}
+
 // Vitrine com prazo dito (10/10, rodada 6 g19): quais opções chegam a tempo e qual a mais rápida das que não chegam.
 // `null` = nenhuma promessa legível (não dá pra dizer nada). Só opções com prazo real entram.
 export function deadlineVerdict<T extends { delivery?: string }>(

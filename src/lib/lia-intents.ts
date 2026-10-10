@@ -482,7 +482,7 @@ export function hasUrgencySignal(text: string): boolean {
 // "amanhã" solto é ambíguo ("pago amanhã", "pode ser amanhã"): só vale com sinal de necessidade/evento/entrega.
 const SP_DATE = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["terca", 2], ["quarta", 3], ["quinta", 4], ["sexta", 5], ["sabado", 6]];
-export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string } | null {
+export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
   const EVENT = "aniversario|festa|festinha|viagem|jantar|reuniao|presente|visita|casamento|formatura";
@@ -492,7 +492,10 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
     new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bamanha\\b|\\bamanha\\b.{0,30}\\b(?:${EVENT})\\b`).test(n) ||
     /\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b.{0,30}\bamanha\b/.test(n) ||
     /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n);
-  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã" };
+  // "até amanhã de manhã" (10/10, rodada 10 g29): entrega de "1 dia útil" chega amanhã, mas sem hora — `morning` marca isso.
+  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
+  // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.
+  if (new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bhoje\\b|\\bhoje\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) && !/\bhoje\s+(?:nao|n)\b/.test(n)) return { date: shift(0), label: "hoje" };
   if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
@@ -510,7 +513,7 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
 
 // Pergunta de prazo com dia dito ("preciso que chegue até sexta, dá?", "sábado que vem, chega?", "chega até sexta? me
 // responde sim ou não"): o cliente quer sim/não pro dia, não a lista de prazos.
-export function asksDeadline(text: string): { date: string; label: string } | null {
+export function asksDeadline(text: string): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   if (n.length > 90) return null;
   // "vocês entregam domingo? qual o horário?" é dia/horário de funcionamento (rodada 7 M1), não prazo do pedido.
@@ -518,6 +521,18 @@ export function asksDeadline(text: string): { date: string; label: string } | nu
   const day = parseNeededBy(text);
   if (!day) return null;
   return isQuestion(text) || /\b(?:da|consegue|rola|chega|chegue|chegam|cheguem|sim ou nao)\b/.test(n) ? day : null;
+}
+
+// Prazo dito como frase própria, pergunta ou não (10/10, rodada 10 g29: "Se puder chegar até sexta, tá bom" e "preciso até
+// amanhã de manhã, qual das duas serve?" recebiam o texto genérico de prazo): o dia, sem produto nenhum na mensagem.
+export function statesDeadline(text: string): { date: string; label: string; morning?: boolean } | null {
+  const ask = asksDeadline(text);
+  if (ask) return ask;
+  const n = normalizeMsg(text);
+  if (n.length > 90) return null;
+  const day = parseNeededBy(text);
+  if (!day) return null;
+  return parseBasketLines(text).every((line) => /^(?:qual|quais|as duas|os dois|a primeira|a segunda|serve|servem)\b/.test(normalizeMsg(line.phrase))) ? day : null;
 }
 
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
@@ -604,6 +619,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       // "tenho um cachorro labrador adulto e uma gata castrada" (10/10, rodada 6 A3): a frase INTEIRA é contexto —
       // separar no " e " antes deixava "uma gata castrada" como item.
       if (isOwnershipContext(chunk.replace(/§/g, ",").replace(/¤/g, "."))) return [];
+      // "gosta de chocolate e de creme pras mãos" (10/10, rodada 10 g29): o "de" repetido depois do "e" é do verbo.
+      if (/\b(?:gosta|gosto|gostam|adora|adoro|adoram|curte|curto|ama|amo)\s+(?:muito\s+)?(?:de|do|da)\b/i.test(chunk)) chunk = chunk.replace(/\s+e\s+(?:de|do|da|dos|das)\s+(?=[a-zà-ú]{3,})/gi, " e ");
       return opts?.conjunction ? opts.conjunction(chunk) : chunk.split(CONJUNCTION_SPLIT_RE).map((text) => ({ text }));
     })
     .map((part) => ({
@@ -658,6 +675,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // Sujeito-pronome antes do pedido ("eu quero arroz e ele quer feijão", 10/10, rodada 8 M1): sai o pronome (e o verbo
         // de pedido que sobrou); "ela é filhote" (descrição) fica para a regra do pronome abaixo.
         .replace(/^(?:eu|ele|ela|eles|elas|a gente|n[oó]s)\s+(?!(?:é|e|eh|s[aã]o|est[aá]|t[aá])(?:\s|$))(?:(?:quer|querem|queremos|precisa|precisam|precisamos|vai querer|vamos querer|vai levar|levo|leva|pego|pega)\s+(?:de\s+)?)?(?=\S)/i, "")
+        // "ela gosta de chocolate" / "ele adora café" (10/10, rodada 10 g29: virava o item "gosta de chocolate"): o gosto
+        // dito é o produto.
+        .replace(/^(?:(?:eu|ele|ela|eles|elas|a gente)\s+)?(?:gosta|gosto|gostam|adora|adoro|adoram|curte|curto|curtem|ama|amo|amam)\s+(?:muito\s+|demais\s+)?(?:de\s+|do\s+|da\s+|dos\s+|das\s+)?(?=[a-zà-ú]{3,})/i, "")
         // "é pra festa junina da igreja" (10/10, rodada 8 M1): a cópula solta não faz parte do item nem do contexto.
         .replace(/^(?:é|eh)\s+(?=(?:pra|para|pro|so|só|isso|que)\b)/i, "")
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
@@ -920,8 +940,15 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       if (parsePriceCap(line.phrase) == null) line.phrase = `${line.phrase} até ${globalCap} reais`;
     }
   }
+  // "presente pra minha amiga que faz aniversário hoje, ela gosta de chocolate e de creme pras mãos" (10/10, rodada 10
+  // g29): com produto nomeado na mesma mensagem, a moldura do presente é o motivo, não um item ("não achei presente…").
+  if (merged.length > 1) {
+    const products = merged.filter((line) => !GIFT_FRAME_RE.test(normalizeMsg(line.phrase)));
+    if (products.length && products.length < merged.length) return products;
+  }
   return merged;
 }
+const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
 
 // Quantidade respondida no passo imediatamente posterior à escolha do produto.
 // Aceita o jeito que as pessoas realmente escrevem: "2", "quero 2", "mais duas",
@@ -1390,9 +1417,20 @@ const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
 
 // "quanto ainda posso gastar?", "quanto sobra do meu orçamento?", "ainda cabe quanto?" (10/10, rodada 8 g25).
+// "vai ficar dentro dos 60 reais com a entrega?", "cabe nos 60?", "passa dos 100?" (10/10, rodada 10 g29: respondia a
+// cobertura SP/RJ): pergunta se o pedido cabe num valor DITO na própria pergunta. Devolve o valor.
+const BUDGET_FIT_ASK_RE =
+  /\b(?:fica\w*|da|dar|cabe\w*|sai\w*|passa\w*|estoura\w*|ultrapassa\w*)\s+(?:(?:dentro|abaixo)\s+)?(?:(?:d[oa]s?|n[oa]s?|em|de)\s+)?(?:meus\s+|minhas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])/;
+export function parseBudgetFitAsk(text: string): { cap: number } | null {
+  if (!/\?\s*$/.test(text.trim()) && !/^(?:sera que|sera)\b/.test(normalizeMsg(text))) return null;
+  const m = BUDGET_FIT_ASK_RE.exec(normalizeMsg(text));
+  const cap = m ? Number(m[1].replace(",", ".")) : NaN;
+  return Number.isFinite(cap) && cap >= 10 ? { cap } : null;
+}
+
 export function asksBudgetLeft(text: string): boolean {
   const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
-  return /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
+  return parseBudgetFitAsk(text) != null || /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
 }
 
 // O cliente pediu uma PESSOA? (10/10, rodada 8 g25) Mais largo que o HUMAN_RE: a IA reconhece "me passa pra alguém",
@@ -3486,6 +3524,8 @@ const ORDER_BUDGET_RES = [
   // "tenho só uns 40 reais pra gastar" / "posso gastar até 60" (10/10, rodada 9 via g25: "pra gastar" virava item "não achei").
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:tenho|posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)?\s+(?:pra|para)\s+gastar\b`,
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
+  // "gasto até 60 reais" / "gasto no máximo 80" (10/10, rodada 10 g29: o teto do presente virava parte do item).
+  String.raw`(?:^|[,.;:!?]\s*|\s(?:e|mas)\s+)(?:eu\s+)?(?:so\s+)?gasto\s+(?:ate|no maximo)\s+(?:(?:uns|umas)\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
   // "só tenho 100 reais (no total), cabe?" / "só tenho 50 conto" como frase própria (rodada 9 B M2 via g25).
   String.raw`(?:^|[,.;:!?]\s*)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
   // "meu orçamento é de 150", "meu limite é 80 reais"
