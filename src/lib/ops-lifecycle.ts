@@ -11,7 +11,7 @@ import { medicineEnabled } from "@/lib/medicine";
 import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
-import { BasketItem, FreightChoiceState, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
+import { BasketItem, FreightChoiceState, basketTriedKey, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
 import { TurnSupersededError, addressOnlyCtx, orderFactsCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
 import { deadlineFit, humanEstimate, promiseMissesDeadline } from "./live-freight";
 import { leftOutForSummary } from "./list-misses";
@@ -164,6 +164,7 @@ export async function opsPublishManualQuote(
   let conversationMovedOn = false;
   let neededBy: { date: string; label: string; morning?: boolean } | undefined;
   let orderBudget: { cap: number } | undefined;
+  let joinRuledOut = false;
   let leftOut: string[] = [];
   if (order.conversationId) {
     const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
@@ -171,6 +172,10 @@ export async function opsPublishManualQuote(
       const ctx = readCtx(convo.context);
       neededBy = ctx.neededBy;
       orderBudget = ctx.orderBudget;
+      // Juntar já descartado para ESTA cesta (10/10, rodada 14 g41): o fechamento tentou e não juntou (ou o cliente pediu e a
+      // Lia disse que não dá) — o resumo não oferece juntar de novo.
+      const signature = basketTriedKey(items);
+      joinRuledOut = ctx.joinRuledOut === signature || ctx.consolidationTried === signature;
       // O que o cliente pediu e ficou sem produto entra no resumo (10/10, rodada 7 A4) — lido antes do reset abaixo.
       leftOut = leftOutForSummary(ctx, items);
       conversationMovedOn =
@@ -237,7 +242,8 @@ export async function opsPublishManualQuote(
     deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,
     // Passou do orçamento dito na conversa (10/10, rodada 8 M3: R$ 112,55 com "se passar de 100 me avisa", sem aviso).
     ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
-    ...(leftOut.length && !conversationMovedOn ? { leftOut } : {})
+    ...(leftOut.length && !conversationMovedOn ? { leftOut } : {}),
+    ...(joinRuledOut && !conversationMovedOn ? { joinRuledOut: true } : {})
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.

@@ -923,12 +923,15 @@ export function promiseForCustomer(promise?: string | null): string {
 
 // Frete maior que os produtos (09/10, rodada 3): o cliente leigo desiste sem saber que somar itens da mesma loja dilui.
 // Só copy; o cálculo não muda.
-export function expensiveShippingNote(produtos: number, entrega: number, deliveries = 1): string[] {
+// `joinRuledOut` (10/10, rodada 14 g41): no fechamento a Lia já disse "nenhuma tem tudo (ou juntar sairia mais caro)" — o
+// resumo não promete "junto em menos lojas" logo depois; diz a saída que existe (trocar por opção de loja já no pedido).
+export function expensiveShippingNote(produtos: number, entrega: number, deliveries = 1, joinRuledOut = false): string[] {
   if (produtos > 0 && entrega > produtos + 0.009) return ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"];
   // Soma de fretes de várias lojas (10/10, rodada 4, B2): 5 entregas com frete de 44% do total saíam sem aviso.
   const share = produtos + entrega > 0 ? entrega / (produtos + entrega) : 0;
   if (deliveries >= 3 && share >= 0.25) {
-    return [`_São ${deliveries} entregas e o frete soma ${brl(entrega)} (${Math.round(share * 100)}% do total); se quiser, junto em menos lojas._`];
+    const way = joinRuledOut ? "pra baixar, me diz um item pra trocar por opção de uma loja que já está no pedido" : "se quiser, junto em menos lojas";
+    return [`_São ${deliveries} entregas e o frete soma ${brl(entrega)} (${Math.round(share * 100)}% do total); ${way}._`];
   }
   return [];
 }
@@ -2513,6 +2516,20 @@ function whenPhrase(when: string): string {
   return /^\d/.test(w) ? `em *${w}*` : `*${w}*`;
 }
 
+// "dá pra separar em duas entregas? a ração hoje e o resto outro dia" (10/10, rodada 14 g41): o mesmo endereço em dois
+// momentos. A resposta honesta: cada loja manda a parte dela de uma vez, no prazo dela — a Lia não divide a entrega de uma
+// loja. `rows` = o prazo de cada loja da cesta; `choosing` = ainda há item na tela (sem o "diz fecha").
+export function splitDeliveryByTimeAnswer(rows: EtaRow[], choosing = false): string {
+  const head = "Não consigo dividir a entrega de uma mesma loja: cada loja manda a parte dela de uma vez, no prazo dela.";
+  const when = rows.length > 1
+    ? ` Do jeito que está: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`
+    : rows.length === 1
+      ? ` Do jeito que está, tudo vem pela *${rows[0].store}* ${whenPhrase(rows[0].when)}.`
+      : "";
+  const way = "Se quiser um item antes, dá pra trocar por uma opção de loja que entrega mais rápido, ou fazer um pedido só com ele agora e o resto depois.";
+  return `${head}${when}\n${way}${choosing ? "" : " Se estiver bom assim, diz *fecha*."}`;
+}
+
 // "Chega hoje?" (09/10, rodada 3): a resposta abre com Sim / Não / Depende da loja, e só depois vem o detalhe.
 // Prazo que cabe no mesmo dia: "hoje", "hoje, 12h–15h", "3h", "45 min" (nunca "amanhã, 5h–8h" nem "1 dia útil").
 export function whenIsToday(when: string): boolean {
@@ -2973,12 +2990,19 @@ export function missRemoved(items: string[]): string {
 }
 
 // Orçamento do pedido (10/10, rodada 8 M3): "se passar de 100 me avisa" — o resumo diz que passou e como baixar.
-export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number }, deliveries?: number): string {
+// `joinRuledOut` (10/10, rodada 14 g41): a Lia já disse que não dá pra juntar essas lojas — o resumo não oferece de novo
+// (a 304 dizia "não achei em menos lojas" e logo "dá pra juntar as lojas"); a saída é trocar um item por opção de uma loja
+// que já está no pedido. Frete maior que os produtos é dito, porque é o que estoura o limite.
+export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number }, deliveries?: number, opts: { joinRuledOut?: boolean; produtos?: number; frete?: number } = {}): string {
+  const many = (deliveries ?? 1) > 1;
   const ways = [
     priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
-    ...((deliveries ?? 1) > 1 ? ["*juntar* as lojas pra baixar o frete"] : [])
+    ...(many ? [opts.joinRuledOut ? "trocar um item por uma opção de loja que já está no pedido (cai uma entrega)" : "*juntar* as lojas pra baixar o frete"] : [])
   ];
-  return `⚠️ Passou do seu limite de *${brl(cap)}*: deu *${brl(total)}* (${brl(Math.round((total - cap) * 100) / 100)} a mais). Se quiser, dá pra ${ways.join(" ou ")} — é só me dizer.`;
+  const freightHeavy = opts.frete != null && opts.produtos != null && opts.produtos > 0 && opts.frete > opts.produtos + 0.009
+    ? ` A entrega (${brl(opts.frete)}${many ? `, ${deliveries} lojas` : ""}) ficou maior que os produtos (${brl(opts.produtos)}).`
+    : "";
+  return `⚠️ Passou do seu limite de *${brl(cap)}*: deu *${brl(total)}* (${brl(Math.round((total - cap) * 100) / 100)} a mais).${freightHeavy} Se quiser, dá pra ${ways.join(" ou ")} — é só me dizer.`;
 }
 
 // A escolha fez o pedido passar do orçamento dito (10/10, rodada 8 M3). Estimativa: produtos + frete das lojas.
@@ -3050,6 +3074,8 @@ export function manualQuoteSummary(input: {
   leftOut?: string[];
   // Orçamento do pedido dito na conversa e estourado (10/10, rodada 8 M3).
   overBudget?: { cap: number; priciest?: { name: string; lineTotal: number } };
+  // Juntar já descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo.
+  joinRuledOut?: boolean;
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -3064,8 +3090,9 @@ export function manualQuoteSummary(input: {
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
-    ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries)] : []),
-    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
+    ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),
+    // Com o limite estourado, o aviso do limite já diz o frete e como baixar: "quer somar mais coisa?" subiria o total.
+    ...(input.overBudget ? [] : expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries, input.joinRuledOut))
   ];
   if (input.leftOut?.length) out.push("", leftOutNote(input.leftOut));
   if (input.deliveryAddress) {

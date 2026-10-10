@@ -502,7 +502,12 @@ const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["ter
 export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
-  const EVENT = "aniversario|festa|festinha|viagem|jantar|reuniao|presente|visita|casamento|formatura";
+  // Refeição/ocasião com dia ("café da manhã bom pra família domingo", "pizza em casa hoje", 10/10, rodada 14 g41): o dia
+  // da ocasião também é prazo — antes só festa/aniversário contavam e o resumo fechava em 3 dias úteis sem aviso.
+  const EVENT = "aniversario|festa|festinha|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour";
+  // "hoje a gente vai fazer pizza", "domingo vamos receber a família": o dia junto do plano (vai/vou/vamos fazer/ter/receber).
+  const PLAN = String.raw`(?:vai|vou|vamos|a gente vai|queria|quero)\s+(?:fazer|ter|receber|preparar|montar)`;
+  const planDay = (day: string) => new RegExp(String.raw`\b${day}\b.{0,25}\b${PLAN}\b|\b${PLAN}\b.{0,60}\b${day}\b`).test(n);
   if (/\bdepois de amanha\b/.test(n) && new RegExp(`\\b(?:preciso|precisa|ate|pra|para|chegar|chegue|entreg\\w*|receber|quero|queria|${EVENT})\\b`).test(n)) return { date: shift(2), label: "depois de amanhã" };
   const tomorrow =
     /\b(?:pra|para|ate|so ate|ate o dia)\s+amanha\b/.test(n) ||
@@ -513,7 +518,7 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
   // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.
   if (new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bhoje\\b|\\bhoje\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) && !/\bhoje\s+(?:nao|n)\b/.test(n)) return { date: shift(0), label: "hoje" };
-  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
+  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n) || (planDay("hoje") && !/\bhoje\s+(?:nao|n)\b/.test(n))) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
     // "festa do meu sobrinho sábado de manhã" (10/10, rodada 13 g37): o dia junto do evento, da hora do dia ("de manhã") ou
@@ -524,7 +529,8 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
       new RegExp(`\\b${day}\\s+que\\s+vem\\b`).test(n) ||
       new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\b${day}\\b|\\b${day}\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) ||
       new RegExp(`\\b${day}\\s+(?:de\\s+|a\\s+|pela\\s+|bem\\s+)?(?:manha|cedo|cedinho|tarde|noite)\\b`).test(n) ||
-      new RegExp(`\\b(?:preciso|precisa|precisando|tem que|necessito)\\b.{0,30}\\b${day}\\b`).test(n)
+      new RegExp(`\\b(?:preciso|precisa|precisando|tem que|necessito)\\b.{0,30}\\b${day}\\b`).test(n) ||
+      planDay(day)
     ) {
       const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
       const diff = ((dow - today + 7) % 7) || 7;
@@ -3062,6 +3068,8 @@ export function asksMultiAddress(text: string): boolean {
   const n = normalizeMsg(text);
   // "juntar em 2 entregas" é resposta à oferta de juntar lojas; quem paga separado é outro pedido (rodada 8 A2).
   if (/\bjunt/.test(n) || parseSplitOrders(n)) return false;
+  // O mesmo endereço em dois momentos ("a ração hoje e o resto outro dia") não é pedido de dois endereços (rodada 14 g41).
+  if (asksSplitDeliveryByTime(text)) return false;
   return MULTI_ADDRESS_RE.test(n);
 }
 // Dois pagadores (10/10, rodada 8 A2): "meu colega paga separado", "cada um paga o seu", "a parte dele ele paga".
@@ -3187,9 +3195,13 @@ function qtyCore(n: string): string {
 const JOIN_VERB_RE = /\b(?:junt(?:a|ar|e|em|o|ando|aria)|agrupa\w*|unifica\w*)\b/;
 const ONE_STORE_RE = /\b(?:(?:numa|em uma|uma|na mesma|da mesma|mesma) loja(?: so| soh| unica)?|loja (?:so|unica)|menos (?:lojas|entregas|fretes?)|(?:um|uma|num|numa) (?:frete|entrega|pedido) so|(?:frete|entrega) unic[ao]|equivalentes? d[aeo])\b/;
 const JOIN_NOT_RE = /\b(?:nao|n)\s+(?:quero\s+|precisa\s+|vou\s+)?junt|\bsem juntar\b|\bseparad[oa]s?\b|\bjunto com\b|\bjunto d[aeo]\b/;
+// "então deixa tudo junto, fecha" (10/10, rodada 14 g41) depois de perguntar se dava pra separar a entrega: "deixa junto" é
+// manter como está, não pedido de juntar lojas (a Lia respondia "não achei em menos lojas" e não fechava).
+const KEEP_TOGETHER_RE = /\b(?:deixa|deixar|pode deixar|deixo|mantem|manter|mantenha|manda|mandar|vem|vir|entrega|entregar)\s+(?:tudo\s+|td\s+|tudinho\s+)?junt(?:o|os|as|inho)\b/;
 export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string } | null {
   const n = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
   if (!n || n.length > 160 || JOIN_NOT_RE.test(n)) return null;
+  if (KEEP_TOGETHER_RE.test(n) && !ONE_STORE_RE.test(n)) return null;
   const store = knownLabels.find((label) => {
     const l = normalizeMsg(label).trim();
     const head = l.split(/\s+/).filter((w) => w.length >= 4 && !/^(casa|loja|lojas|farmacia|drogaria|supermercado|mercado)$/.test(w))[0];
@@ -3907,7 +3919,10 @@ export function parseOrderBudget(text: string): { cap: number; rest: string; tot
     const tail = /(?:[\s,]+)(ate|no maximo|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?[\s.!]*$/.exec(base);
     const before = tail ? base.slice(0, tail.index) : "";
     const value = tail ? Number(tail[2].replace(",", ".")) : NaN;
-    const approx = Boolean(tail && !/^(?:ate|no maximo)$/.test(tail[1]) && tail[3]);
+    // "..., presunto e queijo fatiado, no máximo uns 100 reais" (10/10, rodada 14 g41): o teto em oração própria (depois da
+    // vírgula) no fim de uma lista de 3+ itens também é do pedido — colado no item ("vinho até 40 reais") segue do item.
+    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo)$/.test(tail[1]) && /,/.test(/^[\s,]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 2);
+    const approx = Boolean(tail && !/^(?:ate|no maximo)$/.test(tail[1]) && tail[3]) || ownClause;
     const list = /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
     if (tail && value >= 10 && (giftFrame || approx) && list && !/\bcada\b/.test(base)) {
       spans.push([tail.index, base.length]);
@@ -3943,4 +3958,16 @@ export function parseBrowseOnly(text: string): string | null {
   if (!spans.length) return null;
   const rest = cutSpans(raw, spans);
   return /\b(?:quanto|qto|qnto|preco|valor)\b/.test(normalizeMsg(rest)) ? rest : null;
+}
+
+// "dá pra separar em duas entregas? a ração hoje e o resto outro dia" (10/10, rodada 14 g41): o MESMO endereço em dois
+// momentos — não dois endereços (a Lia respondia "um pedido por endereço, primeiro o de casa"). Com lugar/endereço dito
+// ("uma em casa e outra no trabalho"), segue como pedido de dois endereços.
+const SPLIT_TIME_WORD_RE = /\b(?:hoje|amanha|depois de amanha|outro dia|depois|mais tarde|antes|primeiro|semana que vem|segunda|terca|quarta|quinta|sexta|sabado|domingo)\b/;
+const SPLIT_DELIVERY_ASK_RE = /\b(?:separ\w*|divid\w*|parcel\w*|quebr\w*)\b.{0,30}\b(?:entregas?|vezes|partes|remessas?|envios?)\b|\b(?:duas|2|dois) (?:entregas|vezes|remessas|envios)\b|\b(?:o resto|a outra parte|os outros|as outras coisas|o restante)\b.{0,20}\b(?:depois|outro dia|amanha|mais tarde|semana que vem)\b|\b(?:receber|chegar|mandar|entregar)\b.{0,25}\bantes\b.{0,20}\b(?:e o resto|o resto|os outros)\b/;
+export function asksSplitDeliveryByTime(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!n || n.length > 220 || /\bjunt/.test(n) || parseSplitOrders(n)) return false;
+  if (new RegExp(`\\b(?:enderecos?|lugares|${PLACE_SRC})\\b`).test(n)) return false;
+  return SPLIT_DELIVERY_ASK_RE.test(n) && SPLIT_TIME_WORD_RE.test(n);
 }
