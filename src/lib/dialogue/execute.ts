@@ -292,6 +292,25 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
     }
 
     case "reply": {
+      // Cliente NOMEOU uma loja e a IA ficou em dúvida ("o da pague menos" com 3 cards dela, 09/10 teste real: perguntou
+      // "a 1, a 2 ou a 3?" sem reapresentar nada e o "1" pegou outro card). Decide pelo código: uma opção da loja = essa;
+      // várias = reapresenta SÓ essas, numeradas, e o "1/2/3" passa a valer para elas (a lista da tela é a lista interna).
+      if (step.kind === "unclear" && current && current.options.length > 1) {
+        const said = ` ${normalizeMsg(env.text)} `;
+        const named = current.options.filter((o) => o.storeLabel && said.includes(` ${normalizeMsg(o.storeLabel)} `));
+        if (named.length === 1) {
+          await h.confirmChosenOption(phone, convoId, ctx, userCep, store(), current, named[0]);
+          return "done";
+        }
+        if (named.length > 1 && named.length < current.options.length) {
+          const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
+          current.shownOptions = [...(current.shownOptions ?? current.options), ...current.options.filter((o) => !remembered.has(o.sku))];
+          current.options = named;
+          await writeCtx(convoId, ctx);
+          await h.sendChoices(phone, current, copy.narrowedChoices(current.query));
+          return "done";
+        }
+      }
       // Texto livre da IA passa pelo MESMO filtro anti-promessa do roteador de fallback.
       let clean = sanitizeRouterReply(step.text);
       // Pergunta que cita OUTRO item que não o da tela (09/10, rodada 3: "…ou quer escolher uma das opções de lâmpada?"

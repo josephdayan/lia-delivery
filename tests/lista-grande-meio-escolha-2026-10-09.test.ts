@@ -16,6 +16,7 @@ import type { DeliveryContext } from "../src/lib/conversation-types";
 import { consolidationYesTitle } from "../src/lib/adapters/whatsapp";
 import { detectIntent } from "../src/lib/lia-intents";
 import { consolidateBasketStores } from "../src/lib/delivery-service";
+import { cleanAddressText } from "../src/lib/address-parse";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { storeSlotsInFlight, withStoreSlot } from "../src/lib/store-throttle";
@@ -259,4 +260,10 @@ test("09/10: cesta em 2 lojas sem como juntar diz em uma linha que vai em 2 entr
   await setCtx(c.userId, { ...baseCtx, step: "collecting", basket });
   const out = await send(c.phone, "só isso");
   assert.match(out, /2 lojas diferentes.*2 entregas/i, out.slice(0, 400));
+});
+
+test("09/10: 'n 221' / 'nº 221' no endereço não guarda o 'n' de número", () => {
+  assert.equal(cleanAddressText("Rua Engenheiro Edgar Egidio de Souza n 221 ap 13, 01233-020"), "Rua Engenheiro Edgar Egidio de Souza 221 ap 13");
+  assert.equal(cleanAddressText("Av Paulista nº 1000, 01310-100"), "Av Paulista 1000");
+  assert.equal(cleanAddressText("Rua 25 de Março 100"), "Rua 25 de Março 100");
 });

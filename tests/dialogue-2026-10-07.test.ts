@@ -570,3 +570,30 @@ test("vários set_qty na cesta no mesmo turno → UMA mensagem com a lista, os p
   const items = await basket(phone);
   assert.deepEqual(items.map((i) => i.qty), [1, 4, 2]);
 });
+
+// ---------- 09/10 (teste real): cliente nomeia a loja e a IA fica em dúvida ----------
+test("'o do Mambo' com UMA opção da loja escolhe direto, sem perguntar", async (t) => {
+  if (!dbOk) return t.skip();
+  model(() => [act("unclear", { text: "Qual opção do Mambo você quer: a 1 ou a 2?" })]);
+  const phone = await customer();
+  await withChoice(phone);
+  const out = await send(phone, "o do mambo");
+  assert.doesNotMatch(out, /a 1 ou a 2/i, out.slice(0, 300));
+  assert.ok((await basket(phone)).some((l) => /Italac/i.test(l.name)), `não escolheu o Italac: ${out.slice(0, 200)}`);
+});
+
+test("'o do Carrefour' com 2 opções da loja reapresenta só essas e o '1' vale pra elas", async (t) => {
+  if (!dbOk) return t.skip();
+  model(() => [act("unclear", { text: "Qual opção do Carrefour você quer: a 1 ou a 2?" })]);
+  const phone = await customer();
+  await withChoice(phone);
+  const out = await send(phone, "o do carrefour");
+  assert.match(out, /Jussara/i, out.slice(0, 400));
+  assert.match(out, /Classic/i, out.slice(0, 400));
+  assert.doesNotMatch(out, /Italac/i, `mostrou opção de outra loja: ${out.slice(0, 400)}`);
+  const ctx = await context(phone);
+  assert.deepEqual(
+    (ctx.pending?.[0]?.options ?? []).map((o: { storeKey: string }) => o.storeKey),
+    ["carrefour", "carrefour"]
+  );
+});
