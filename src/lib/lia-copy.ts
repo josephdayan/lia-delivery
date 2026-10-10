@@ -3088,6 +3088,8 @@ export function manualQuoteSummary(input: {
   joinRuledOut?: boolean;
   // Juntar possível mas mais demorado (não ofereci sozinha): o aviso de frete diz isso.
   joinSlower?: { eta: string; saving: number };
+  // Várias entregas e a mais lenta leva 5+ dias úteis (10/10, rodada 15 g43): qual loja segura o pedido.
+  slowDelivery?: { store: string; promise: string };
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -3101,6 +3103,7 @@ export function manualQuoteSummary(input: {
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
+    ...(!input.deadlineMiss && input.slowDelivery ? [slowDeliveryNote(input.slowDelivery.store, input.slowDelivery.promise)] : []),
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),
     // Com o limite estourado, o aviso do limite já diz o frete e como baixar: "quer somar mais coisa?" subiria o total.
@@ -3113,6 +3116,12 @@ export function manualQuoteSummary(input: {
   }
   out.push("", "Escolhe abaixo como quer pagar.");
   return out.join("\n");
+}
+
+// A entrega mais lenta de uma cesta em várias lojas (10/10, rodada 15 g43, R15a-7): diz quem segura o pedido e a saída.
+export function slowDeliveryNote(store: string, promise: string): string {
+  const when = promiseForCustomer(promise) || promise;
+  return `⏳ A parte da *${store}* leva *${when}* — é ela que segura a entrega. Se tiver pressa, me diz qual item dela trocar.`;
 }
 
 // ---------- perguntas de serviço / atendimento ----------
@@ -3782,9 +3791,14 @@ export function cheapestTieNote(numbers: number[], price: number, picked: number
 
 // "o mais barato" que não ficou com a etiqueta mais baixa (10/10, rodada 11 g32): ela não chega no prazo dito, ou somava
 // uma entrega (e o pedido mínimo) de outra loja — o cliente sabe por quê e pode voltar pra ela.
-export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number } }): string {
+export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string } }): string {
   const where = input.store ? `, *${input.store}*` : "";
   const min = input.minimum ? ` e o pedido mínimo de ${brl(input.minimum)} da loja` : "";
+  // Nenhuma opção chega no prazo dito (10/10, rodada 15 g43): fica a que chega antes, por pouca diferença.
+  if (input.noneOnTime) {
+    const when = promiseForCustomer(input.noneOnTime.promise);
+    return `💡 Nenhuma opção chega até *${input.noneOnTime.label}*. O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas por pouca diferença peguei este, que chega antes${when ? ` (*${when}*)` : ""}. Se preferir aquele, é só falar.`;
+  }
   const why = input.late
     ? `não chega até *${input.late}* — peguei o mais barato que chega a tempo`
     : input.slow != null

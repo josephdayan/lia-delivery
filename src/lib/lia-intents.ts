@@ -170,6 +170,8 @@ export function normalizeMsg(input: string): string {
     // "1️⃣ mano" tem que escolher a opção 1 (28/08 S2).
     .replace(/([0-9])️?⃣/g, "$1")
     .replace(/️/g, "")
+    // "preciso hj ainda" (10/10, rodada 15 g43): "hj" é "hoje" em qualquer lugar (prazo, urgência, filtro de item).
+    .replace(/\bhj\b/g, "hoje")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -278,7 +280,8 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "sem precisar( de)? .*",
       "se (tiver|der|for possivel|possivel|rolar|puder|achar|encontrar)( .*)?",
       "((e )?(se der[, ]*)?(queria|quero|preciso|gostaria de|da pra|pode)( me)? )?(receber|entregar?|chega(r|ndo)?|mandar|enviar)( ainda| ate| para| pra| em casa| o pedido)* (hoje|amanha|rapido|logo)( se der| se possivel| se rolar)?",
-      "(hoje|amanha)",
+      "(hoje|amanha)( ainda| mesmo| sem falta)?",
+      "ainda hoje",
       // Prazo com obrigação ("tem que chegar amanhã", "precisa chegar até sexta", "tem que ser entregue amanhã"; 10/10,
       // rodada 9): é o prazo do pedido (parseNeededBy), nunca item — virava "*tem que chegar amanhã* eu não achei".
       "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*",
@@ -489,6 +492,7 @@ const URGENCY_RE = new RegExp(
       "o quanto antes",
       "(pra|para) (hoje|agora|ja)",
       "ainda hoje",
+      "hoje ainda",
       "hoje sem falta",
       "(preciso|quero|queria) (disso |dele |dela )?(hoje|agora)",
       "(receber|chega\\w*|entrega\\w*|mandar?|enviar?)( [a-z0-9]+){0,3} (hoje|agora|rapido|rapidinho)",
@@ -526,7 +530,7 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
   // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.
   if (new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bhoje\\b|\\bhoje\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) && !/\bhoje\s+(?:nao|n)\b/.test(n)) return { date: shift(0), label: "hoje" };
-  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n) || (planDay("hoje") && !/\bhoje\s+(?:nao|n)\b/.test(n))) return { date: shift(0), label: "hoje" };
+  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\bhoje ainda\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n) || (planDay("hoje") && !/\bhoje\s+(?:nao|n)\b/.test(n))) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
     // "festa do meu sobrinho sábado de manhã" (10/10, rodada 13 g37): o dia junto do evento, da hora do dia ("de manhã") ou
@@ -3943,14 +3947,17 @@ export function parseOrderBudget(text: string): { cap: number; rest: string; tot
   let gift = false;
   const giftFrame = /\bpresente\b/.test(base);
   if (cap == null) {
-    const tail = /(?:[\s,]+)(ate|no maximo|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?[\s.!]*$/.exec(base);
+    // "..., uns 30 reais no máximo" (10/10, rodada 15 g43): o "no máximo" depois do valor também fecha o teto.
+    const tail = /(?:[\s,.;]+)(ate|no maximo|nao passo de|nao passa de|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?(?:\s+no maximo)?[\s.!]*$/.exec(base);
     const before = tail ? base.slice(0, tail.index) : "";
     const value = tail ? Number(tail[2].replace(",", ".")) : NaN;
     // "..., presunto e queijo fatiado, no máximo uns 100 reais" (10/10, rodada 14 g41): o teto em oração própria (depois da
     // vírgula) no fim de uma lista de 3+ itens também é do pedido — colado no item ("vinho até 40 reais") segue do item.
-    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo)$/.test(tail[1]) && /,/.test(/^[\s,]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 2);
-    const approx = Boolean(tail && !/^(?:ate|no maximo)$/.test(tail[1]) && tail[3]) || ownClause;
-    const list = /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
+    // Lista de 2 itens também (10/10, rodada 15 g43: "quero ovos e leite, até 20 reais", "ovos e leite, não passo de 40
+    // reais" e "...e castanha de caju. no máximo 200 reais" saíam sem 💰): o que separa é a vírgula/ponto antes do teto.
+    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && /[,.;]/.test(/^[\s,.;]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 1);
+    const approx = Boolean(tail && !/^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && tail[3]) || ownClause;
+    const list = ownClause || /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
     if (tail && value >= 10 && (giftFrame || approx) && list && !/\bcada\b/.test(base)) {
       spans.push([tail.index, base.length]);
       cap = value;

@@ -404,7 +404,10 @@ async function buildChoices(
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
   // hoje, o cabeçalho diz isso e mostra o mais rápido.
-  const urgent = hasUrgencySignal(text);
+  // Prazo "hoje" guardado antes do cadastro (10/10, rodada 15 g43, R15a-6): a lista volta sem o "hoje" no texto e perdia o
+  // modo do dia ("Pra hoje não chega… 1 dia útil" com a Pacheco em 60 min). O prazo do pedido vale como a palavra dita.
+  const neededToday = turnMeta.getStore()?.neededBy;
+  const urgent = hasUrgencySignal(text) || Boolean(neededToday && neededToday.date === new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }));
 
   // Candidatos por linha. No concierge sem loja travada a busca é LARGA (todas as
   // vitrines): eleger uma loja única por palpite léxico escondia o item certo — no
@@ -1137,6 +1140,26 @@ export function dedupeProductName(name: string): string {
   return name;
 }
 
+// Prazo do card = a entrega que a cotação vai oferecer (10/10, rodada 15 g43, R15a-5/R15-7): a Casa Santa Luzia responde,
+// por item sozinho, "Econômica" R$ 15,99 em 4 dias úteis e "Expressa" R$ 16,74 em 1 dia útil; o card dizia 4 dias, o aviso
+// "não chega amanhã" saía disso e o fechamento "confirmou 1 dia útil". A entrega mais rápida vale no card quando custa quase
+// o mesmo (até LIA_CARD_FAST_MAX_EXTRA, R$ 2) ou quando é ela que cumpre o prazo dito; com urgência, sempre.
+function cardFastMaxExtra(): number {
+  const value = Number(process.env.LIA_CARD_FAST_MAX_EXTRA);
+  return Number.isFinite(value) && value >= 0 ? value : 2;
+}
+export function cardUsesFastDelivery(check: LiveItemCheck | undefined, urgent = false, neededBy: { date: string } | undefined = turnMeta.getStore()?.neededBy, now: Date = new Date()): boolean {
+  if (!check?.available || !check.fastEstimate || check.fastEstimate === check.estimate) return false;
+  if (urgent) return true;
+  const fast = check.fastEtaMinutes;
+  const cheap = check.etaMinutes;
+  if (fast == null || (cheap != null && fast >= cheap) || check.fastFee == null || check.fee == null) return false;
+  const extra = roundMoney(check.fastFee - check.fee);
+  if (extra <= cardFastMaxExtra() + 0.005) return true;
+  if (!neededBy || extra > Number(process.env.LIA_FAST_FREIGHT_MAX_EXTRA ?? 20) + 0.005) return false;
+  return promiseMissesDeadline(humanEstimate(check.estimate), neededBy.date, now) === true && promiseMissesDeadline(humanEstimate(check.fastEstimate), neededBy.date, now) === false;
+}
+
 function toChoiceOption(
   o: { sku: string; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; category?: string; freeShipping?: boolean; medicine?: "mip" },
   storeRef?: { storeKey?: string; storeLabel?: string },
@@ -1147,7 +1170,7 @@ function toChoiceOption(
   // atendida pela simulação ao vivo de 03/09). Sem simulação, nenhum prazo — nunca uma
   // estimativa nossa ou a frase genérica do anúncio. Com urgência, o prazo mostrado é o
   // da entrega MAIS RÁPIDA da loja (a cotação oferece essa opção).
-  const useFast = urgent && live?.available && Boolean(live.fastEstimate);
+  const useFast = cardUsesFastDelivery(live, urgent);
   const delivery = live?.available ? humanEstimate(useFast ? live.fastEstimate : live.estimate) : undefined;
   const eta = useFast ? live!.fastEtaMinutes : live?.etaMinutes;
   const fee = useFast ? live!.fastFee : live?.fee;
@@ -1221,7 +1244,7 @@ async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | und
     if (!check?.available) return w.o;
     // Pedido urgente (recomendação de fome/ressaca/"pra hoje", q9): o card mostra a entrega MAIS RÁPIDA da loja
     // (a cotação oferece a opção "rápido"), como a vitrine de sempre faz com o "pra hoje" (toChoiceOption urgent).
-    const fast = Boolean(opts?.urgent && check.fastEstimate);
+    const fast = cardUsesFastDelivery(check, Boolean(opts?.urgent));
     const delivery = humanEstimate(fast ? check.fastEstimate : check.estimate);
     const weighed = check.unitWeightKg && !w.o.unitWeightKg ? { name: copy.soldByWeightName(w.o.name, check.unitWeightKg), unitWeightKg: check.unitWeightKg } : {};
     return {
@@ -7556,7 +7579,7 @@ function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
 // prazo mais longo = o pedido inteiro atrasa. Nada muda → sem aviso. Só exibição: o total continua sendo o da cotação.
 const LONG_WAIT_MINUTES = 5 * 24 * 60;
 // Lojas cujo prazo da consulta ao vivo do fechamento difere do prazo que o card/aviso mostrou (rodada 8 M8).
-export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<string, string>): Array<{ store: string; before: string; now: string }> {
+export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<string, string>, fasterByStore: Map<string, string> = new Map()): Array<{ store: string; before: string; now: string }> {
   const out: Array<{ store: string; before: string; now: string }> = [];
   for (const [storeKey, estimate] of liveByStore) {
     const now = humanEstimate(estimate);
@@ -7567,6 +7590,8 @@ export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<str
       const min = promisedMinutes(i.delivery);
       return min != null && min > acc.min ? { min, when: i.delivery } : acc;
     }, { min: -1 });
+    const fasterMin = promisedMinutes(humanEstimate(fasterByStore.get(storeKey)));
+    if (fasterMin != null && fasterMin === slowest.min) continue;
     // Só prazo em DIAS (horas e janelas variam com o relógio; não é a divergência que confunde).
     if (slowest.min < 24 * 60 || nowMin < 24 * 60 || slowest.min === nowMin || !slowest.when) continue;
     out.push({ store: items[0].storeLabel ?? storeKey, before: slowest.when, now });
@@ -9902,12 +9927,29 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
     const quicker = pool.filter((i) => minutes(p.options[i]) >= 0 && minutes(p.options[i]) < LONG_WAIT_MINUTES && cost(p.options[i]) <= limit);
     if (quicker.length) index = quicker.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), quicker[0]);
   }
+  // Prazo dito e NENHUMA opção chega a tempo (10/10, rodada 15 g43, R15a-5: "o mais barato" pra "hoje" pegava a calabresa de
+  // 4 dias úteis e deixava a de 1 dia útil por R$ 2,42 a mais): a que chega antes, se custa até R$ 5 (ou 15%) a mais.
+  let noneOnTime = false;
+  if (deadline && !onTime.length && p.options.some(late)) {
+    const known = pool.filter((i) => minutes(p.options[i]) >= 0);
+    const fastest = known.length ? Math.min(...known.map((i) => minutes(p.options[i]))) : -1;
+    if (fastest >= 0 && minutes(p.options[index]) > fastest) {
+      const limit = cost(p.options[index]) + Math.max(5, cost(p.options[index]) * 0.15);
+      const quick = known.filter((i) => minutes(p.options[i]) === fastest && cost(p.options[i]) <= limit);
+      if (quick.length) {
+        index = quick.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), quick[0]);
+        noneOnTime = true;
+      }
+    }
+  }
   const picked = p.options[index];
   const tied = pool.filter((i) => cents(cost(p.options[i])) === cents(cost(picked)) && cents(display(p.options[i].unitPrice, p.options[i].medicine)) === cents(display(picked.unitPrice, picked.medicine)));
   const cheapestTag = p.options[raw.index];
   if (adultOnlyForBaby(p, cheapestTag) || cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) return { index, tied };
   const extra = extraFor(cheapestTag);
-  const reason = late(cheapestTag) && !late(picked) && deadline
+  const reason = noneOnTime && deadline
+    ? { noneOnTime: { label: deadline.label, promise: picked.delivery ?? "" } }
+    : late(cheapestTag) && !late(picked) && deadline
     ? { late: deadline.label }
     : minutes(cheapestTag) >= LONG_WAIT_MINUTES && minutes(picked) < LONG_WAIT_MINUTES && cents(extra.fee + extra.falta) === 0
       ? { slow: cheapestTag.delivery ?? "" }
@@ -12970,7 +13012,11 @@ async function tryPublishInstantQuote(
     if (prefix) await reply(phone, prefix);
     // Prazo confirmado agora na loja ≠ o prazo avisado nas escolhas (10/10, rodada 8 M8: "4 dias úteis" nos avisos e
     // "3 dias úteis" no resumo, sem explicação). Vale o da loja agora; a diferença é dita antes do resumo.
-    const etaChanges = etaChangedSinceChoice(ctx.basket ?? [], estimateByStore);
+    // A entrega rápida que a escolha "barato × rápido" vai oferecer (storeFaster) e que o card já mostrava não é "prazo
+    // mudou" (10/10, rodada 15 g43): o cliente escolhe as duas logo abaixo.
+    const fasterByStore = new Map<string, string>();
+    if (!mlFaster && storeFaster.length === 1 && freights.length === 1 && storeFaster[0].faster.estimate) fasterByStore.set(freights[storeFaster[0].index].storeKey, storeFaster[0].faster.estimate);
+    const etaChanges = etaChangedSinceChoice(ctx.basket ?? [], estimateByStore, fasterByStore);
     if (etaChanges.length) await reply(phone, copy.etaUpdatedByStore(etaChanges));
 
     // Duas formas de entrega no anúncio: QUEM ESCOLHE É O CLIENTE (dono, 17/08 — "tem q

@@ -13,7 +13,7 @@ import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
 import { BasketItem, FreightChoiceState, basketTriedKey, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
 import { TurnSupersededError, addressOnlyCtx, orderFactsCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
-import { deadlineFit, humanEstimate, promiseMissesDeadline } from "./live-freight";
+import { deadlineFit, humanEstimate, promiseMissesDeadline, promisedMinutes } from "./live-freight";
 import { leftOutForSummary } from "./list-misses";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
@@ -62,6 +62,9 @@ export async function opsRefundViaProvider(orderId: string, amount?: number) {
 // O operador publica a cotação feita à mão no /ops: grava custo real dos produtos +
 // frete + modalidade, move o pedido para awaiting_quote_confirmation e manda ao cliente
 // o resumo com os botões de pagamento — a cobrança em si é issueValidatedRetailerQuotePayment.
+// Prazo longo de uma das lojas (5+ dias úteis): o resumo diz qual (10/10, rodada 15 g43).
+const SLOW_DELIVERY_MINUTES = 5 * 24 * 60;
+
 export async function opsPublishManualQuote(
   orderId: string,
   input: {
@@ -246,7 +249,18 @@ export async function opsPublishManualQuote(
     ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
     ...(leftOut.length && !conversationMovedOn ? { leftOut } : {}),
     ...(joinRuledOut && !conversationMovedOn ? { joinRuledOut: true } : {}),
-    ...(joinSlower && !conversationMovedOn ? { joinSlower } : {})
+    ...(joinSlower && !conversationMovedOn ? { joinSlower } : {}),
+    // Entregas em várias lojas e uma delas demora 5+ dias úteis (10/10, rodada 15 g43, R15a-7: limpeza em 3 entregas e
+    // 8 dias úteis sem aviso): uma linha diz qual loja segura o pedido. Com prazo dito que não cumpre, o aviso do prazo basta.
+    ...(() => {
+      if (conversationMovedOn || !input.perStore || input.perStore.length < 2) return {};
+      if (neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date)) return {};
+      const slowest = input.perStore.reduce<{ min: number; store?: string; promise?: string }>((acc, s) => {
+        const min = promisedMinutes(s.promise);
+        return min != null && min > acc.min ? { min, store: s.storeLabel, promise: s.promise } : acc;
+      }, { min: -1 });
+      return slowest.min >= SLOW_DELIVERY_MINUTES && slowest.store && slowest.promise ? { slowDelivery: { store: slowest.store, promise: slowest.promise } } : {};
+    })()
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.
