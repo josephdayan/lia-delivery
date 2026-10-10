@@ -9,7 +9,7 @@
 import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { attributeFragment, isDescriptorFragment, isGiftFrame, isNarrativeSegment, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseNeededBy, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, type Intent } from "../lia-intents";
+import { attributeFragment, isDescriptorFragment, isGiftFrame, isNarrativeSegment, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseNeededBy, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, typoTwinLines, type Intent } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { localCatalogProbe } from "../stores/list-probe";
 import { resolveListItems } from "../list-items";
@@ -196,7 +196,8 @@ export function reconcilePreItems(items: PreItem[], text: string): PreItem[] {
   const age = /\b(\d{1,2})\s*anos?\b/.exec(normalizeMsg(text))?.[1];
   const aged = age && folded.length === 1 && !/\b\d{1,2}\s*anos?\b/.test(normalizeMsg(folded[0].query)) && /\b(?:sobrinh|filh|net|crianc|menin|afilhad|aniversari)\w*/.test(normalizeMsg(text)) ? [{ ...folded[0], query: `${folded[0].query} ${age} anos` }] : folded;
   const out = foldAlternativeLines(aged, text, (i) => i.query, (i, label) => ({ ...i, query: label }));
-  const covered = (phrase: string) => out.some((i) => (sharesProductNoun(i.query, phrase) && sameItemProduct(i.query, phrase)) || normalizeMsg(i.query).includes(normalizeMsg(phrase)));
+  // "lampda led 9w" já está na lista da IA como "lâmpada led 9w" (10/10, rodada 15 A3): erro de digitação não é outro item.
+  const covered = (phrase: string) => out.some((i) => (sharesProductNoun(i.query, phrase) && sameItemProduct(i.query, phrase)) || normalizeMsg(i.query).includes(normalizeMsg(phrase)) || typoTwinLines(i.query, phrase));
   for (const line of resolveListItems(stripMedicineNegation(text))) {
     const phrase = line.phrase.trim();
     if (!phrase || covered(phrase)) continue;

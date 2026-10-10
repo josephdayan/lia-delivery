@@ -1189,6 +1189,31 @@ export function sharesProductNoun(a: string, b: string): boolean {
 // uma: "meia dúzia de ovo" + "6 ovos" = ovo x12. Vale no parser E no merge com a IA
 // (29/08 S4: o caminho com IA mantinha "ovo x6" + "ovos x6" e o cliente terminou com
 // 6 EMBALAGENS de 10 = 60 ovos).
+// Erro de digitação ou de acento (10/10, rodada 15 A3): "lampda led 9w" (linha crua do parser) e "lâmpada led 9w" (a da IA)
+// são a MESMA linha — viravam 2 itens e 8 lâmpadas. Mesmas palavras na mesma ordem, só UMA diferente e a 1 letra de distância
+// (trocada, a mais, a menos ou invertida), palavra de 5+ letras e pelo menos outra igual: "cerveja"/"cereja" sozinhas não fundem.
+function oneEditApart(a: string, b: string): boolean {
+  if (a === b || Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (a.length === b.length) {
+    if (a.slice(i + 1) === b.slice(i + 1)) return true;
+    return a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2);
+  }
+  const [long, short] = a.length > b.length ? [a, b] : [b, a];
+  return long.slice(i + 1) === short.slice(i);
+}
+export function typoTwinLines(a: string, b: string): boolean {
+  const words = (p: string) => normalizeMsg(p).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(specToken);
+  const aw = words(a);
+  const bw = words(b);
+  if (aw.length < 2 || aw.length !== bw.length) return false;
+  const diff = aw.map((w, i) => (w === bw[i] ? -1 : i)).filter((i) => i >= 0);
+  if (diff.length !== 1) return false;
+  const [x, y] = [aw[diff[0]], bw[diff[0]]];
+  return Math.min(x.length, y.length) >= 5 && !/\d/.test(x + y) && oneEditApart(x, y);
+}
+
 export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
   const tokensOf = (p: string) => normalizeMsg(p).split(" ").filter(specToken).sort();
   const sameSpec = (a: string, b: string) => {
@@ -1199,6 +1224,13 @@ export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
   };
   const out: ParsedLine[] = [];
   for (const line of lines) {
+    // A mesma menção escrita de dois jeitos não soma: é uma linha só, com a quantidade dita.
+    const typo = out.find((m) => typoTwinLines(m.phrase, line.phrase));
+    if (typo) {
+      typo.qty = Math.max(typo.qty, line.qty);
+      typo.qtyExplicit = typo.qtyExplicit || line.qtyExplicit;
+      continue;
+    }
     const twin = out.find((m) => sameSpec(m.phrase, line.phrase));
     if (twin) {
       twin.qty = Math.min(MAX_QTY, twin.qty + line.qty);
@@ -1410,7 +1442,7 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase) || isPetBreedOnly(line.phrase)) continue;
     // Coberto = o MESMO item (núcleo igual), não só uma palavra em comum: "uns 4 tomates" não está coberto por "molho de
     // tomate", nem "escova de dente" por "fio dental" (rodada 12, itens sumiam sem aviso).
-    if (!merged.some((candidate) => (sameProduct(line.phrase, candidate.phrase) && sameItemProduct(line.phrase, candidate.phrase)) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
+    if (!merged.some((candidate) => (sameProduct(line.phrase, candidate.phrase) && sameItemProduct(line.phrase, candidate.phrase)) || shortHeadCovered(line.phrase, candidate.phrase) || typoTwinLines(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
 }
@@ -3513,6 +3545,28 @@ export function questionSubject(question: string): string | null {
   return subject.split(" ")[0];
 }
 
+// "tem em comprimido? gotas não" (10/10, rodada 15 M1): a oração negada ("gotas não", "não quero gotas", "nada de gotas") é
+// EXCLUSÃO — sai da frase e volta como lista de palavras a evitar. Pronome/demonstrativo ("esse não", "eu não") não é termo.
+const NEGATED_TAIL_RE = /^(?:(?:mas|e|so|só)\s+)?(?:(?:em|de|o|a|os|as|do|da)\s+)?([a-z][a-z0-9 ]{1,30}?)\s+n[aã]o(?:\s+(?:quero|serve|precisa|pode|gosto))?$/;
+const NEGATED_HEAD_RE = /^(?:(?:mas|e)\s+)?(?:n[aã]o\s+(?:quero|pode ser|serve|precisa(?: ser)?|gosto(?: de)?)|nada de|sem ser)\s+(?:(?:em|de|o|a|os|as|do|da|com)\s+)?([a-z][a-z0-9 ]{1,30})$/;
+const NOT_A_TERM = new Set(["esse", "essa", "esses", "essas", "isso", "eu", "ele", "ela", "aquele", "aquela", "ainda", "agora", "hoje", "sim", "por enquanto", "assim", "mais", "tambem", "nada", "nenhum", "nenhuma", "mesmo", "pode", "acho", "sei", "obrigado", "obrigada"]);
+export function splitNegatedTerms(text: string): { text: string; excluded: string[] } {
+  const clauses = text.split(/(?<=[?,.;!])\s*/).map((c) => c.trim()).filter(Boolean);
+  const kept: string[] = [];
+  const excluded: string[] = [];
+  for (const clause of clauses) {
+    const n = normalizeMsg(clause).replace(/[?,.;!]+$/g, "").trim();
+    const m = NEGATED_TAIL_RE.exec(n) ?? NEGATED_HEAD_RE.exec(n);
+    const words = m ? m[1].trim() : "";
+    if (m && words && !NOT_A_TERM.has(words) && words.split(" ").length <= 3 && !words.split(" ").some((w) => NOT_A_TERM.has(w))) {
+      excluded.push(...words.split(" ").filter((w) => w.length >= 3));
+      continue;
+    }
+    kept.push(clause);
+  }
+  return { text: kept.join(" ").replace(/[,;]\s*$/, "").trim(), excluded };
+}
+
 export function answerOpenQuestion(question: string, text: string): string | null {
   const subject = questionSubject(question);
   if (!subject) return null;
@@ -3537,7 +3591,11 @@ export function answerOpenQuestion(question: string, text: string): string | nul
   const first = head.includes(subject) ? head : `${subject} ${head}`;
   // Os itens extras saem do texto ORIGINAL (com acento), sem o artigo do começo.
   const rawParts = text.replace(/[!?]+$/g, "").trim().split(/\s*(?:,|;|\be\b|\btamb[eé]m\b)\s*/i).map((x) => x.trim()).filter(Boolean);
-  const extra = rawParts.slice(1).map((x) => x.replace(/^(?:o|a|os|as)\s+/i, "")).filter((x) => x && !/^(?:mais|tamb[eé]m)$/i.test(x));
+  // "ta barata", "é mais em conta" (10/10, rodada 15 A2): comentário de preço sobre a resposta, não item a mais.
+  const extra = rawParts
+    .slice(1)
+    .map((x) => x.replace(/^(?:o|a|os|as)\s+/i, ""))
+    .filter((x) => x && !/^(?:mais|tamb[eé]m)$/i.test(x) && !/^(?:(?:ta|t[aá]|est[aá]|eh|[eé]|que|pq|porque)\s+)?(?:(?:mais|bem|super)\s+)?(?:barat\w*|em conta|economic\w*|car[oa]s?|baratinh\w*)[\s!.]*$/i.test(normalizeMsg(x)));
   return `adiciona ${[first, ...extra].join(", ")}`;
 }
 
@@ -3810,10 +3868,12 @@ export function asksReturnPolicy(text: string): boolean {
   const n = normalizeMsg(text);
   if (!n || n.length > 200 || /\b(dinheiro|estorn\w*|pix)\b/.test(n)) return false;
   if (/\bpolitica d[eao] (troca|devoluc)|\btrocas? e devoluc|\bprazo (de|pra|para) (troca|trocar|devolv|devoluc)/.test(n)) return true;
-  const condition = /\be se\b.*\b(nao (servir|serve|couber|gostar|funcionar)|vier (errad|trocad|quebrad|com defeito|estragad|danificad|faltando)\w*|chegar (errad|quebrad|estragad|danificad)\w*|der (defeito|problema))/.test(n);
+  // "se a fralda não servir no meu bebê eu consigo trocar por P?" (10/10, rodada 15 M5): a condição pode abrir a frase (sem o
+  // "e"), e a troca condicionada ("se não servir… trocar por P") é pós-venda, não troca de item da cesta.
+  const condition = /(?:^|\b(?:e|mas|ai|e ai)\s+)se\b.*\b(nao (servir|serve|couber|caber|gostar|funcionar)|ficar (pequen|apertad|grande|larg)\w*|vier (errad|trocad|quebrad|com defeito|estragad|danificad|faltando)\w*|chegar (errad|quebrad|estragad|danificad)\w*|der (defeito|problema))/.test(n);
   const verb = /\b(troc(a|ar|o)|devolv\w*|devoluc\w*)\b/.test(n);
   const swapItem = /\btroc\w*\b.*\bpor\b/.test(n) && !/\bdevolv|\bdevoluc/.test(n);
-  if (condition && verb && !swapItem) return true;
+  if (condition && verb && (!swapItem || /\b(posso|consigo|da pra|tem como|e possivel|aceita\w*)\b/.test(n))) return true;
   if (swapItem) return false;
   if (/\b(posso|da pra|consigo|tem como|aceita\w*|faz\w*|voces fazem|como (e|faco|funciona)|e se (eu )?(quiser|precisar))\b.*\b(devolv\w*|devoluc\w*)\b/.test(n)) return true;
   // "posso trocar depois?" / "aceita troca?": troca sem item nomeado.

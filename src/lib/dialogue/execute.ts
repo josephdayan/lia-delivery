@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap } from "../lia-intents";
+import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
@@ -215,7 +215,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       const baseTokens = new Set(queryTokens(normalizeMsg(base)));
       // "lenço da Huggies, o mais barato" (10/10, rodada 12 g36): "barato" é critério de escolha, não palavra do produto — a
       // busca virava "lenço umedecido huggies barato" e o "não achei" citava isso.
-      const asked = queryTokens(normalizeMsg(step.attribute).replace(/\b(?:o |a )?mais (?:barat\w*|em conta|economic\w*)\b|\bbaratinh\w*|\bbarat[oa]s?\b|\bem conta\b/g, " "));
+      // "tem em comprimido? gotas não" (10/10, rodada 15 M1): o que o cliente negou não é palavra da busca.
+      const negated = new Set(splitNegatedTerms(env.text).excluded);
+      const asked = queryTokens(normalizeMsg(step.attribute).replace(/\b(?:o |a )?mais (?:barat\w*|em conta|economic\w*)\b|\bbaratinh\w*|\bbarat[oa]s?\b|\bem conta\b/g, " ")).filter((token) => !negated.has(token));
       const fresh = asked.filter((token) => !baseTokens.has(token));
       if (!fresh.length) {
         await h.sendChoices(phone, current);
@@ -484,6 +486,9 @@ export function refinesQueuedItem(queued: { query: string }, fresh: { query: str
 async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) {
   const { ctx, phone, convoId, h } = env;
   const current = ctx.pending![0];
+  // A marca de um card da tela ("máscara Essence barata" com as máscaras à prova d'água, 10/10, rodada 15 A2) é escolha
+  // dentro do item da vez, com os atributos dele — não um item novo na fila.
+  if (!replace && (await h.narrowToBrandOnTable(phone, convoId, ctx, current, text))) return;
   // Item já escolhido mandado de novo (10/10, rodada 7 N3): não vira pendência duplicada.
   if (!replace && (await h.replyIfAlreadyChosen(phone, ctx, text))) return;
   const added = await h.buildChoicesWithSearchNotice(phone, text, undefined, undefined, undefined, ctx.cep);

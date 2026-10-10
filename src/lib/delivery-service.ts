@@ -32,9 +32,9 @@ import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLi
 import { isServedState, servedAreaLabel } from "@/lib/coverage";
 import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-areas";
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
-import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe } from "@/lib/lia-intents";
+import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe, splitNegatedTerms } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
+import { dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
@@ -1796,6 +1796,27 @@ function brandLabel(item: { name: string; brand?: string }, brand: string): stri
   const word = item.name.split(/\s+/).find((w) => normalizeMsg(w).replace(/[^a-z0-9]/g, "") === brand);
   return word ?? brand.charAt(0).toUpperCase() + brand.slice(1);
 }
+// Cor dita no nome do produto ("Preto", "Black", "Marrom"…), para a troca de loja avisar quando muda.
+const SWAP_COLORS: Record<string, string> = {
+  preto: "preto", preta: "preto", black: "preto", negro: "preto",
+  branco: "branco", branca: "branco", white: "branco",
+  marrom: "marrom", brown: "marrom", castanho: "marrom", castanha: "marrom",
+  vermelho: "vermelho", vermelha: "vermelho", red: "vermelho",
+  azul: "azul", blue: "azul", verde: "verde", green: "verde",
+  rosa: "rosa", pink: "rosa", amarelo: "amarelo", amarela: "amarelo",
+  cinza: "cinza", grafite: "cinza", roxo: "roxo", roxa: "roxo", lilas: "roxo",
+  bege: "bege", nude: "bege", dourado: "dourado", dourada: "dourado", prata: "prata", prateado: "prata",
+  transparente: "transparente", incolor: "transparente"
+};
+function colorsOf(name: string): Set<string> {
+  return new Set(normalizeMsg(name).replace(/[^a-z\s]/g, " ").split(/\s+/).map((w) => SWAP_COLORS[w]).filter(Boolean));
+}
+export function colorChange(fromName: string, toName: string): { from: string; to: string } | null {
+  const from = colorsOf(fromName);
+  const to = colorsOf(toName);
+  if (!from.size || !to.size || [...from].some((c) => to.has(c))) return null;
+  return { from: [...from][0], to: [...to][0] };
+}
 function swapPairsForCopy(
   originals: BasketItem[],
   replacements: { fromSku: string; qty: number; option: ChoiceOption }[]
@@ -1807,11 +1828,14 @@ function swapPairsForCopy(
     // O que muda além da loja (10/10, rodada 10 g29): outra marca, ou a mesma marca em outra versão.
     const brand = realBrandOf(from);
     const sameName = normalizeMsg(from.name).replace(/\s+/g, " ") === normalizeMsg(r.option.name).replace(/\s+/g, " ");
-    const change = !keepsBrand(from, r.option)
+    const brandOrVersion = !keepsBrand(from, r.option)
       ? copy.swapChangeNote("marca", brand ? brandLabel(from, brand) : undefined)
       : !sameName && nameSimilarity(from.name, r.option.name) < 0.5
         ? copy.swapChangeNote("versao")
         : undefined;
+    // A cor muda junto (10/10, rodada 15 A2: a máscara preta virava marrom na oferta de juntar, sem aviso).
+    const color = colorChange(from.name, r.option.name);
+    const change = [brandOrVersion, color ? copy.swapColorNote(color.from, color.to) : undefined].filter(Boolean).join("; ") || undefined;
     pairs.push({
       fromName: from.name,
       fromPrice: Math.round(display(from.unitPrice, from.medicine) * from.qty * 100) / 100,
@@ -2045,13 +2069,20 @@ function measureLabel(name: string): string | null {
 }
 // "é de 500 g" para "café 2 kg" vira "é de 500 g — 4 pacotes dão 2 kg" quando a conta fecha (2 a 12 pacotes, ±5%).
 export function withPacksToReach(phrase: string, falta: string, optionName?: string): string {
+  const reach = optionName && !/pacotes? d[aã]o/.test(falta) ? packsToReachCount(phrase, optionName) : null;
+  if (!reach) return falta;
+  return `${falta.replace(/[.\s]+$/, "")} — ${copy.packsToReach(reach.packs, reach.askedLabel)}`;
+}
+// Quantos pacotes da opção fecham o tamanho pedido (2 a 12, ±5%): "linguiça 2kg" com o pacote de 500 g = 4.
+export function packsToReachCount(phrase: string, optionName: string): { packs: number; askedLabel: string; eachLabel: string } | null {
   const asked = measureOf(phrase);
-  const each = optionName ? measureOf(optionName) : null;
+  const each = measureOf(optionName);
   const askedLabel = measureLabel(phrase);
-  if (!asked || !each || !askedLabel || each >= asked || /pacotes? d[aã]o/.test(falta)) return falta;
+  const eachLabel = measureLabel(optionName);
+  if (!asked || !each || !askedLabel || !eachLabel || each >= asked) return null;
   const n = Math.round(asked / each);
-  if (n < 2 || n > 12 || Math.abs(n * each - asked) > asked * 0.05) return falta;
-  return `${falta.replace(/[.\s]+$/, "")} — ${copy.packsToReach(n, askedLabel)}`;
+  if (n < 2 || n > 12 || Math.abs(n * each - asked) > asked * 0.05) return null;
+  return { packs: n, askedLabel, eachLabel };
 }
 // O pedido tem tamanho (peso/volume ±10%) ou número de unidades da embalagem e NENHUMA opção cumpre: devolve a diferença
 // ("é de 1,6 kg") e as opções com a mais próxima na frente. Opções sem medida no nome não permitem concluir nada.
@@ -3554,7 +3585,9 @@ async function handleDeliveryTurn(
     const open = (ctx.openQuestion ?? impliedQuestion)!;
     ctx.openQuestion = undefined;
     if (Date.now() - open.at < 10 * 60_000 && intent.kind === "free_text" && !isQuestion(text)) {
-      const answered = answerOpenQuestion(open.text, text);
+      // A marca de um card da tela ("a da essence mesmo, ta barata", 10/10, rodada 15 A2) é escolha: o fluxo de escolha cuida.
+      const brandPick = Boolean(impliedQuestion && choosingNow && brandOnTable(text, choosingNow).length);
+      const answered = brandPick ? null : answerOpenQuestion(open.text, text);
       // No carrossel aberto só vale quando há item extra; a resposta sozinha é refinamento e o fluxo de escolha cuida.
       if (answered && (!impliedQuestion || answered.includes(","))) {
         console.log("[open-question:answer]", JSON.stringify(open.text), "->", JSON.stringify(answered));
@@ -3656,6 +3689,16 @@ async function handleDeliveryTurn(
       }
     }
     await writeCtx(convo.id, ctx);
+  }
+
+  // "3 de frango e 3 de carne whiskas" com os sachês de filhote na tela (10/10, rodada 15 A1): é a divisão do item da vez
+  // por sabor, não uma lista nova — virava "Somei 3x de frango" e dois itens sem o "filhote", com o sachê ainda na fila.
+  if (ctx.step === "choosing" && ctx.pending?.length && (intent.kind === "free_text" || intent.kind === "qty_adjust")) {
+    const split = parseVariantSplit(text, ctx.pending[0]);
+    if (split) {
+      await splitPendingByVariant(phone, convo.id, user.cep, ctx, split, user.id);
+      return;
+    }
   }
 
   const basketActive =
@@ -6753,9 +6796,12 @@ async function handleNewCep(
     ? (split.items ? onboardingNote(split.items).text : "") || undefined
     : labeled
       ? (labeled.rest ? onboardingNote(labeled.rest).text : "") || undefined
-      : house || streetOnly
+      : house
         ? undefined
-        : firstAddress && rawRest
+        : streetOnly
+          ? // Rua sem número e o pedido junto (10/10, rodada 15 M13): a lista depois do "preciso de" não some.
+            (firstAddress && wantClauseTail(rawRest) ? onboardingNote(wantClauseTail(rawRest)!).text || undefined : undefined)
+          : firstAddress && rawRest
           ? onboardingNote(rawRest).text || undefined
           : restItems, { city, district, street });
 
@@ -7700,6 +7746,14 @@ async function confirmChosenOption(
     setNote = copy.setAsSinglesNote(setCount, current.query);
     opts = { ...opts, packOk: true, note: [opts?.note, setNote].filter(Boolean).join("\n") };
   }
+  // "linguiça toscana 2kg" com só pacote de 500 g (10/10, rodada 15 A4): a vitrine disse "4 pacotes dão 2 kg" e a escolha
+  // punha 1 pacote. A quantidade dita pela Lia é a que entra, com o aviso de como mudar. Peso por unidade (~700 g) já converte.
+  const reach = current.closestFalta && current.qty === 1 && !current.qtyExplicit && !opts?.packOk && !chosen.unitWeightKg ? packsToReachCount(current.query, chosen.name) : null;
+  if (reach) {
+    current.qty = reach.packs;
+    current.qtyExplicit = true;
+    opts = { ...opts, packOk: true, after: [copy.packsToReachApplied(reach.packs, reach.eachLabel, reach.askedLabel), opts?.after].filter(Boolean).join("\n") };
+  }
   const packsSaid = Math.max(1, current.qty) > 1 && [inbound, current.query].some((t) => saidPackageCount(t) === Math.max(1, current.qty));
   if (packsSaid) opts = { ...opts, packOk: true };
   if (!opts?.packOk && !packAsked) {
@@ -7933,6 +7987,28 @@ async function handleChoosing(
   const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
   // "qualquer marca"/"comum" dentro de um refino não são palavras do produto (rodada 2, c20).
   if (intent.kind === "free_text") text = stripPreferenceFiller(text);
+  // "tem em comprimido? gotas não" (10/10, rodada 15 M1): o que o cliente nega sai da busca e vira filtro das opções.
+  const negation = intent.kind === "free_text" ? choiceNegation(text, current) : null;
+  if (negation) {
+    console.log("[choice:negation]", JSON.stringify(text.slice(0, 60)), negation.excluded.join(","));
+    if (negation.text) {
+      text = negation.text;
+      intent = detectIntent(text);
+      if (intent.kind !== "free_text") intent = { kind: "free_text" };
+    } else {
+      const keep = current.options.filter((o) => !mentionsAny(o.name, negation.excluded));
+      if (keep.length) {
+        current.shownOptions = current.shownOptions ?? [...current.options];
+        current.options = keep;
+        await writeCtx(convoId, ctx);
+        await sendChoices(phone, current, copy.narrowedChoices(shownQuery(current)));
+        return;
+      }
+      if (await researchChoice(phone, convoId, ctx, current, current.baseQuery ?? current.query)) return;
+      await replyRefineMiss(phone, current, current.baseQuery ?? current.query, text);
+      return;
+    }
+  }
   // "*caixinhas de 1 litro, longa vida" (10/10, rodada 6 M5): o asterisco do WhatsApp CORRIGE o item da mensagem
   // anterior — nunca abre itens novos (virava "1x *caixinhas 1 litro" + "1x longa vida").
   if (asteriskCorrection(text) != null && (await applyAsteriskCorrection(phone, convoId, userCep, ctx, text))) return;
@@ -8060,6 +8136,19 @@ async function handleChoosing(
     await writeCtx(convoId, ctx);
   }
 
+  // "outras, mostra de filhote da cobasi mesmo" (10/10, rodada 15 A1): opções do item da vez numa loja citada. A loja filtra a
+  // busca e as outras palavras refinam o item ("filhote" já estava nele) — antes virava o item novo "mostra de filhote".
+  // A vírgula de "outras, mostra..." conta como 2 itens: o que decide é sobrar no máximo 3 palavras depois dos conectivos.
+  const storeAsk = refineStoreCut(text, text);
+  const storeSaid = storeAsk ? normalizeMsg(storeAsk.query).replace(/[^a-z0-9\s]/g, " ").replace(/\b(?:outr[oa]s?|mostra|mostrar|me|ver|ve|veja|tem|teria|quero|queria|opcao|opcoes|mesmo|mesma|entao|pode|ser|so|tambem|ai|da|do|de|na|no|a|o|as|os|um|uma|uns|umas)\b/g, " ") : "";
+  if (storeAsk && queryTokens(storeSaid).length <= 3 && !["pick", "name"].includes(parseChoiceReply(text, current.options)?.type ?? "")) {
+    const said = storeSaid;
+    const { query: wanted } = mergeQueryTerms(current.baseQuery ?? current.query, said);
+    console.log("[choice:store-refine]", storeAsk.store.key, JSON.stringify(wanted));
+    if (await researchChoice(phone, convoId, ctx, current, wanted)) return;
+    await replyRefineMiss(phone, current, wanted, text);
+    return;
+  }
   // ---- varredura 06/10: escolha + outra coisa na mesma mensagem, troca, "voltar" ----
   // "quero o 1 e paga no pix" / "o 1, pode pagar no pix": escolhe e segue pro total.
   // "quero o 2 e um sabonete": escolhe o 2 e o sabonete entra na fila (virava a busca
@@ -8528,6 +8617,9 @@ async function handleChoosing(
     await handleSearch(phone, convoId, userCep, ctx, text, userId);
     return;
   }
+  // "a da essence mesmo, ta barata" com as máscaras à prova d'água na tela (10/10, rodada 15 A2): a marca de um card é
+  // escolha dentro do item da vez, com os atributos dele — virava o item novo "máscara essence" sem o "à prova d'água".
+  if (intent.kind === "free_text" && !isQuestion(text) && (await narrowToBrandOnTable(phone, convoId, ctx, current, text))) return;
   if (intent.kind === "free_text" && !isQuestion(text)) {
     // Item que JÁ foi escolhido mandado de novo (10/10, rodada 7 N3: "racao para cachorro labrador adulto 15kg" depois
     // de escolhida) virava pendência duplicada em "Falta escolher". Sem sinal de adição nem quantidade, é o mesmo item.
@@ -8944,13 +9036,28 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
     await recommendRefineFromAttribute({ phone, convoId, userCep: ctx.cep, ctx }, current, text);
     return true;
   }
-  const found = await buildChoicesWithSearchNotice(phone, text, undefined, undefined, true, ctx.cep);
+  // Loja citada no refino ("mostra de filhote da cobasi mesmo", 10/10, rodada 15 A1): é filtro de loja, não palavra do
+  // produto — a busca virava "whiskas carne filhote cobasi" e dava "não achei". A busca fica só nessa loja.
+  const negatedWords = choiceNegation(turnMeta.getStore()?.inboundText ?? "", current)?.excluded ?? [];
+  if (negatedWords.length) text = text.split(/\s+/).filter((w) => !negatedWords.includes(normalizeMsg(w).replace(/[^a-z0-9]/g, ""))).join(" ");
+  if (negatedWords.length && mustMatch) mustMatch = mustMatch.split(/\s+/).filter((w) => !negatedWords.includes(normalizeMsg(w).replace(/[^a-z0-9]/g, ""))).join(" ") || undefined;
+  const storeCut = refineStoreCut(turnMeta.getStore()?.inboundText ?? text, text);
+  if (storeCut) {
+    text = storeCut.query;
+    if (mustMatch) mustMatch = refineStoreCut(storeCut.store.label, mustMatch)?.query || undefined;
+  }
+  const found = await buildChoicesWithSearchNotice(phone, text, storeCut?.store.key, undefined, true, ctx.cep);
   const picked = found.pending.find((p) => sharesProductNoun(p.query, current.query)) ?? found.pending[0];
   // Busca nova que só achou o "mais próximo" não serve de refino (o cabeçalho diria o contrário).
   const choice = picked?.closestFalta ? undefined : picked;
   // `mustMatch` (06/10): só vale opção que tem TUDO o que foi pedido ("kerasys coco"); a
   // busca nova não pode devolver outro produto com cabeçalho de refino.
   if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
+  // A busca numa loja só não passa pelo piso de relevância da busca entre lojas: o piso vale aqui.
+  if (choice && storeCut) choice.options = choice.options.filter((o) => conciergeMatchIsStrong(text, o));
+  // O que o cliente negou na mensagem ("gotas não", 10/10, rodada 15 M1) não volta na busca nova.
+  const negated = choiceNegation(turnMeta.getStore()?.inboundText ?? "", current)?.excluded ?? [];
+  if (choice && negated.length) choice.options = choice.options.filter((o) => !mentionsAny(o.name, negated));
   // O teto que o cliente já disse continua valendo na busca nova.
   if (choice && current.cap != null) choice.options = withinBudget(choice.options, current);
   // A busca nova não achou, mas uma opção JÁ MOSTRADA tem o que foi pedido (10/10, rodada 10 g28): "então 6 do Piracanjuba
@@ -8971,6 +9078,10 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
       return true;
     }
   }
+  if (!choice?.options.length && storeCut) {
+    await reply(phone, copy.storeRefineMiss(storeCut.store.label, displayQueryName(text, current.options)));
+    return true;
+  }
   if (!choice?.options.length) return false;
   // O nome do item antes da busca nova (rodada 13 g39): "mostra de novo" volta às opções E ao nome de antes.
   current.originalQuery ??= current.baseQuery ?? current.query;
@@ -8987,6 +9098,40 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   await writeCtx(convoId, ctx);
   await sendChoices(phone, current, copy.narrowedChoices(current.query));
   return true;
+}
+
+// Palavras negadas na resposta à escolha ("gotas não"), só quando são uma característica das opções que o item não tem no
+// nome ("dipirona" × "gotas"): "leite não" com leite na tela é recusa do item, não filtro.
+function choiceNegation(text: string, current: PendingChoice): { text: string; excluded: string[] } | null {
+  const split = splitNegatedTerms(text);
+  if (!split.excluded.length) return null;
+  const item = new Set(queryTokens(current.baseQuery ?? current.query));
+  const excluded = split.excluded.filter((w) => !item.has(w) && [...current.options, ...(current.shownOptions ?? [])].some((o) => mentionsAny(o.name, [w])));
+  return excluded.length ? { text: split.text, excluded } : null;
+}
+function mentionsAny(name: string, words: string[]): boolean {
+  const n = ` ${normalizeMsg(name).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ")} `;
+  return words.some((w) => n.includes(` ${w} `) || (w.length >= 5 && n.includes(` ${w.replace(/s$/, "")} `)) || n.includes(` ${w}s `));
+}
+
+// Loja citada com preposição ("da cobasi", "na mambo", "pela drogal") numa resposta à escolha: devolve a loja e a frase de
+// busca sem o nome dela. Só lojas ligadas (quem a Lia busca). null = nenhuma loja citada.
+export function refineStoreCut(said: string, query: string): { store: { key: string; label: string }; query: string } | null {
+  const n = ` ${normalizeMsg(said).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim()} `;
+  for (const store of listStores()) {
+    // "O Boticário" é citado "da boticário": o artigo do nome da loja não conta.
+    const label = normalizeMsg(store.label).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim().replace(/^(?:o|a) /, "");
+    if (label.length < 4) continue;
+    const forms = [...new Set([label, label.replace(/\s+/g, "")])];
+    const cited = forms.find((f) => new RegExp(`\\s(?:da|do|na|no|pela|pelo|de)\\s+(?:loja\\s+)?${f}\\s`).test(n) || n.trim() === f);
+    if (!cited) continue;
+    const drop = new Set(cited.split(" "));
+    const rest = query.split(/\s+/).filter((w) => !drop.has(normalizeMsg(w).replace(/[^a-z0-9]/g, "")));
+    // "da"/"na" que sobrou no fim ("sachê ... da") sai junto.
+    while (rest.length && /^(?:da|do|na|no|pela|pelo|de|loja)$/i.test(rest[rest.length - 1])) rest.pop();
+    return { store: { key: store.key, label: store.label }, query: rest.join(" ").trim() };
+  }
+  return null;
 }
 
 // O cliente RECUSOU o que está na mesa ("nenhum desses", "esses não servem", "tem que ser tocha") e a busca
@@ -9571,6 +9716,106 @@ function splitChoiceHeadAndItems(text: string, current: PendingChoice): { head: 
 
 // A frase fala do item em escolha: nomeia o produto do carrossel ("o Pilão de 29,48" com "café pilão" aberto) ou é
 // resposta de escolha ("o segundo", "o de 29,48").
+// Marca de um card da tela dita na resposta (10/10, rodada 15 A2): "a da essence mesmo, ta barata", "máscara Essence barata".
+// Toda palavra da frase tem que ser a marca/nome que só parte dos cards tem, a palavra do item (ou de todos os cards), ou
+// moldura ("a da", "mesmo", "barata"). Devolve os índices dos cards com a marca; [] = não é isso.
+const BRAND_REPLY_FILLER = new Set(["a", "o", "as", "os", "da", "do", "de", "das", "dos", "um", "uma", "essa", "esse", "esta", "este", "aquela", "aquele", "mesmo", "mesma", "quero", "queria", "pode", "ser", "vou", "fico", "com", "entao", "ta", "e", "eh", "que", "pois", "porque", "pq", "ja", "sim", "isso", "prefiro", "melhor", "pra", "mim", "marca", "linha", "versao"]);
+export function brandOnTable(text: string, current: PendingChoice): number[] {
+  const n = normalizeMsg(text)
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\b(?:(?:mais|bem)\s+)?(?:barat\w*|em conta|economic\w*|baratinh\w*)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const words = n.split(" ").filter((w) => w && !BRAND_REPLY_FILLER.has(w) && !/^\d+$/.test(w));
+  if (!words.length || words.length > 4 || current.options.length < 2) return [];
+  const names = current.options.map((o) => ` ${normalizeMsg(`${o.name} ${o.brand ?? ""}`).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ")} `);
+  const has = (name: string, w: string) => name.includes(` ${w} `) || (w.length >= 5 && name.includes(` ${w.replace(/s$/, "")} `));
+  const itemWords = new Set(queryTokens(current.baseQuery ?? current.query));
+  const brand = words.filter((w) => names.some((name) => has(name, w)) && !names.every((name) => has(name, w)));
+  if (!brand.length) return [];
+  const rest = words.filter((w) => !brand.includes(w));
+  if (rest.some((w) => !itemWords.has(w) && !names.every((name) => has(name, w)))) return [];
+  return names.map((name, i) => (brand.every((w) => has(name, w)) ? i : -1)).filter((i) => i >= 0);
+}
+async function narrowToBrandOnTable(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string): Promise<boolean> {
+  const hits = brandOnTable(text, current);
+  if (!hits.length || hits.length === current.options.length) return false;
+  const cheap = /\b(?:barat\w*|em conta|economic\w*)\b/.test(normalizeMsg(text));
+  const options = hits.map((i) => current.options[i]);
+  if (cheap) options.sort((a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine));
+  console.log("[choice:brand-on-table]", JSON.stringify(text.slice(0, 60)), options.map((o) => o.sku).join(","));
+  current.shownOptions = current.shownOptions ?? [...current.options];
+  current.options = options;
+  await writeCtx(convoId, ctx);
+  await sendChoices(phone, current, copy.narrowedChoices(shownQuery(current)));
+  return true;
+}
+
+// Divisão do item da vez por variante (10/10, rodada 15 A1): 2+ partes, cada uma com a quantidade dita e só palavras que
+// aparecem nas opções da tela ("3 de frango e 3 de carne whiskas" com sachês Whiskas/Friskies). Marca dita numa parte vale
+// para a outra quando alguma opção tem as duas ("whiskas" + "frango"). null = não é divisão.
+const VARIANT_FILLER = new Set(["de", "do", "da", "dos", "das", "sabor", "sabores", "o", "a", "os", "as", "e", "com", "um", "uma", "uns", "umas", "cada", "mais", "outro", "outra", "outros", "outras", "x", "un", "unidades"]);
+export function parseVariantSplit(text: string, current: PendingChoice): { qty: number; words: string[] }[] | null {
+  if (current.recommendation || !current.options.length) return null;
+  const n = normalizeMsg(text).replace(/[!.?]+/g, " ");
+  if (/\b(?:tira|remove|troca|cancela|outras?|mostra)\b/.test(n)) return null;
+  const parts = n.split(/\s*(?:,|;|\be\b|\+)\s*/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2 || parts.length > 4) return null;
+  const names = [...current.options, ...(current.shownOptions ?? [])].map((o) => normalizeMsg(`${o.name} ${o.brand ?? ""}`));
+  const has = (name: string, word: string) => new RegExp(`\\b${word}`).test(name);
+  const out: { qty: number; words: string[] }[] = [];
+  for (const part of parts) {
+    const m = /^(\d{1,2})\s*x?\s+(.+)$/.exec(part);
+    if (!m) return null;
+    const words = m[2].split(/\s+/).filter((w) => !VARIANT_FILLER.has(w));
+    if (!words.length || words.some((w) => w.length < 3 || /\d/.test(w) || !names.some((name) => has(name, w)))) return null;
+    out.push({ qty: Number(m[1]), words });
+  }
+  // Ninguém repete a mesma variante, e as variantes não são a própria palavra do item ("3 sachês e 3 sachês").
+  const base = new Set(queryTokens(current.baseQuery ?? current.query));
+  if (out.some((o) => o.words.every((w) => base.has(w)))) return null;
+  if (new Set(out.map((o) => o.words.join(" "))).size !== out.length) return null;
+  for (const part of out) {
+    for (const other of out) {
+      if (other === part) continue;
+      for (const w of other.words) {
+        if (part.words.includes(w)) continue;
+        if (names.some((name) => has(name, w) && part.words.every((pw) => has(name, pw)))) part.words.push(w);
+      }
+    }
+  }
+  return out;
+}
+
+// Troca o item da vez pelas partes: cada uma herda o item ("sachê gato filhote" + "frango whiskas"); as opções da tela que já
+// têm a variante servem direto, as outras vão para a busca.
+async function splitPendingByVariant(phone: string, convoId: string, userCep: string | null | undefined, ctx: DeliveryContext, split: { qty: number; words: string[] }[], userId?: string) {
+  const current = ctx.pending![0];
+  const base = current.baseQuery ?? current.query;
+  const seen = new Set<string>();
+  const pool = [...current.options, ...(current.shownOptions ?? [])].filter((o) => !seen.has(o.sku) && seen.add(o.sku));
+  const ready: PendingChoice[] = [];
+  const toSearch: string[] = [];
+  const { replaceSku: _replaceSku, swappedOut: _swappedOut, closestFalta: _closest, shownSkus: _shown, shownOptions: _shownOptions, ...inherit } = current;
+  for (const part of split) {
+    const query = `${base} ${part.words.filter((w) => !normalizeMsg(base).includes(w)).join(" ")}`.trim();
+    const options = pool.filter((o) => part.words.every((w) => new RegExp(`\\b${w}`).test(normalizeMsg(`${o.name} ${o.brand ?? ""}`))));
+    if (options.length) ready.push({ ...inherit, query, baseQuery: undefined, attrs: undefined, qty: part.qty, qtyExplicit: true, options: options.slice(0, vitrineLimit()) });
+    else toSearch.push(`${part.qty} ${query}`);
+  }
+  console.log("[choice:variant-split]", JSON.stringify(base), split.map((p) => `${p.qty}x ${p.words.join(" ")}`).join(" | "), `prontas=${ready.length}`, `busca=${toSearch.length}`);
+  ctx.pending = [...ready, ...ctx.pending!.slice(1)];
+  await reply(phone, copy.variantSplitNoted(base, split.map((p) => ({ qty: p.qty, label: p.words.join(" ") }))));
+  if (toSearch.length) {
+    await writeCtx(convoId, ctx);
+    await handleSearch(phone, convoId, userCep, ctx, toSearch.join(", "), userId);
+    return;
+  }
+  ctx.step = "choosing";
+  await writeCtx(convoId, ctx);
+  await sendChoices(phone, ctx.pending[0]);
+}
+
 function refersToPendingChoice(phrase: string, current: PendingChoice): boolean {
   if (sharesProductNoun(phrase, current.baseQuery ?? current.query)) return true;
   const reply = parseChoiceReply(phrase, current.options);
@@ -13290,6 +13535,7 @@ export const dialogueHandlers = {
   handleChoiceSwitch,
   refineOptions,
   researchChoice,
+  narrowToBrandOnTable,
   handleQtyAdjust,
   handleRemove,
   handleSwap,
