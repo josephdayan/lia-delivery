@@ -2799,6 +2799,11 @@ export function swapChangeNote(kind: "marca" | "versao", brand?: string): string
   return kind === "marca" ? `muda a marca${brand ? `: não achei ${brand} em outra loja` : ""}` : "não é o mesmo produto (pode mudar sabor, cor ou modelo) — confere se serve";
 }
 
+// A troca de loja muda a cor do produto (10/10, rodada 15 A2): "preto → marrom" nunca passa calado.
+export function swapColorNote(from: string, to: string): string {
+  return `muda a cor: era ${from}, essa é ${to}`;
+}
+
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
@@ -3848,6 +3853,12 @@ export function storeAllSame(label: string): string {
   return `Todas essas são da *${label}* 🙂`;
 }
 
+// Refino pedido numa loja ("mostra de filhote da cobasi", 10/10, rodada 15 A1) e a loja não tem: diz qual loja, sem a loja no
+// nome do produto, e as opções de antes continuam.
+export function storeRefineMiss(label: string, item: string): string {
+  return `Na *${label}* não achei *${item}* pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra palavra pra eu tentar, ou responde *pula* pra deixar de fora.`;
+}
+
 export function storeNoneOnTable(label: string): string {
   return `Nenhuma das opções na tela é da *${label}*. As de agora são essas:`;
 }
@@ -3871,6 +3882,16 @@ export function costlyDeliverySwapHeader(item: string, storeLabel: string, fee: 
 // "4 pacotes dão 2 kg" (10/10, rodada 13 M4): a conversão do tamanho pedido em pacotes, no aviso do "mais perto".
 export function packsToReach(n: number, askedLabel: string): string {
   return `${n} pacotes dão ${askedLabel}`;
+}
+
+// A conta da vitrine aplicada na escolha (10/10, rodada 15 A4): "4 pacotes dão 2 kg" → entram 4 pacotes.
+export function packsToReachApplied(n: number, eachLabel: string, askedLabel: string): string {
+  return `_Coloquei ${n} pacotes de ${eachLabel} pra dar os ${askedLabel} que você pediu. Pra mudar, é só dizer o número de pacotes._`;
+}
+
+// "3 de frango e 3 de carne" com o sachê na tela (10/10, rodada 15 A1): a divisão do item da vez, numa linha.
+export function variantSplitNoted(item: string, parts: { qty: number; label: string }[]): string {
+  return `Dividi *${item}* em ${parts.map((p) => `*${p.qty}x ${p.label}*`).join(" e ")}. Vamos escolher cada um 👇`;
 }
 
 export function severalDeliveriesNote(stores: number): string {

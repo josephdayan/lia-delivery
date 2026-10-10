@@ -244,6 +244,16 @@ export function dropAddressOnlyItems(items: string | undefined, place?: { city?:
 }
 
 // "Rua Augusta, 01305-100", "moro na rua augusta perto do metrô": rua citada, número não.
+// O pedido que vem depois do endereço sem número ("...avenida paulista mil bela vista são paulo eu preciso de um shampoo",
+// 10/10, rodada 15 M13): a partir do verbo de pedido é lista, não endereço. undefined = não tem oração de pedido.
+const WANT_ANYWHERE_RE = /(?:^|[\s,.;!?])(?:e\s+)?(?:eu\s+)?(?:tamb[eé]m\s+)?(?:quero|queria|preciso|precisava|gostaria|me\s+(?:manda|traz|v[eê]))\b/i;
+export function wantClauseTail(raw: string): string | undefined {
+  const m = WANT_ANYWHERE_RE.exec(raw ?? "");
+  if (!m) return undefined;
+  const tail = raw.slice(m.index).replace(/^[\s,.;!?]+/, "").trim();
+  return tail || undefined;
+}
+
 export function mentionsStreetWithoutNumber(raw: string, street?: string): boolean {
   const text = (raw ?? "").replace(CEP_RE_GLOBAL, " ");
   if (/\d/.test(text)) return false;
