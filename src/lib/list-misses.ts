@@ -4,7 +4,7 @@
 // certa ("gelo em cubo", "tenta Wilson").
 import type { DeliveryContext, ListMiss } from "@/lib/conversation-types";
 import { scoreCatalogMatch } from "@/lib/stores/types";
-import { isDiscourseOnly } from "@/lib/lia-intents";
+import { isDiscourseOnly, productHead } from "@/lib/lia-intents";
 
 export const LIST_MISS_TTL_MS = 20 * 60_000;
 export const LIST_MISS_MAX = 8;
@@ -71,6 +71,15 @@ export const LEFT_OUT_TTL_MS = 3 * 60 * 60_000;
 function missMatches(query: string, name: string): boolean {
   return scoreCatalogMatch(query, { sku: "miss", name, unitPrice: 0 }) > 0 || scoreCatalogMatch(name, { sku: "miss", name: query, unitPrice: 0 }) > 0;
 }
+// O item da cesta É a faltante? (10/10, rodada 16 g46: "Macarrão Espaguete com Ovos" cobria "ovos" — o nome do item, lido
+// como busca, acha "ovos" — e os ovos sumiam do "Ficou de fora".) No sentido inverso só vale com o mesmo núcleo.
+function coversMiss(query: string, name: string): boolean {
+  if (scoreCatalogMatch(query, { sku: "miss", name, unitPrice: 0 }) > 0) return true;
+  if (scoreCatalogMatch(name, { sku: "miss", name: query, unitPrice: 0 }) <= 0) return false;
+  const a = productHead(query);
+  const b = productHead(name);
+  return !a || !b || a === b;
+}
 export function leftOutForSummary(
   ctx: Pick<DeliveryContext, "listMisses" | "lastMiss">,
   basket: { name: string; ask?: string }[],
@@ -82,7 +91,7 @@ export function leftOutForSummary(
   const out: string[] = [];
   for (const miss of all) {
     if (now - miss.at > LEFT_OUT_TTL_MS) continue;
-    const covered = basket.some((item) => missMatches(miss.query, item.name) || (item.ask ? norm(item.ask) === norm(miss.query) || missMatches(miss.query, item.ask) : false));
+    const covered = basket.some((item) => coversMiss(miss.query, item.name) || (item.ask ? norm(item.ask) === norm(miss.query) || coversMiss(miss.query, item.ask) : false));
     if (!covered && !out.some((q) => norm(q) === norm(miss.query))) out.push(miss.query);
   }
   return out;

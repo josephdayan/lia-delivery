@@ -971,7 +971,8 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
 
 // Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
 // pedido mas sem hora marcada (o cliente disse "de manhã" e a loja promete "1 dia útil").
-export type DeadlineFit = "ok" | "late" | "unsure";
+// "maybe" (10/10, rodada 16 g46): pelo calendário caberia, mas contando só dia útil (sem fim de semana e feriado) passa.
+export type DeadlineFit = "ok" | "late" | "unsure" | "maybe";
 export function deadlineLabel(d: { label: string; morning?: boolean }): string {
   return d.morning ? `${d.label} de manhã` : d.label;
 }
@@ -979,6 +980,7 @@ function fitPhrase(fit: DeadlineFit | null | undefined, d: { label: string; morn
   if (fit === "ok") return `chega até *${deadlineLabel(d)}* ✅`;
   if (fit === "late") return `não chega até *${deadlineLabel(d)}*`;
   if (fit === "unsure") return `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
+  if (fit === "maybe") return `pode não chegar até *${deadlineLabel(d)}* (dia útil não conta fim de semana nem feriado)`;
   return "prazo sem data certa";
 }
 
@@ -1008,6 +1010,7 @@ export function freightDeadlineAnswer(d: { label: string; morning?: boolean }, r
 
 // Resumo com prazo dito que a entrega cumpre (10/10, rodada 10 g29: só o atraso era dito; o cliente não sabia se servia).
 export function deadlineFitNote(d: { label: string; morning?: boolean }, fit: DeadlineFit): string {
+  if (fit === "maybe") return `⚠️ Pode não chegar até *${deadlineLabel(d)}*: o prazo da loja conta só dias úteis (sem fim de semana nem feriado).`;
   return fit === "unsure" ? `⏰ Chega *${d.label}*, mas sem hora marcada — pode não ser de manhã.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
 }
 
@@ -1017,15 +1020,20 @@ export function orderDeadlineAnswer(d: { label: string; morning?: boolean }, fit
   if (fit === "ok") return `Dá, chega até *${deadlineLabel(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""} 🙂`;
   if (fit === "late") return `Até *${deadlineLabel(d)}* não chega${prazo ? `: o prazo é *${prazo}*` : ""}. Se quiser, me diz qual item trocar ou tirar.`;
   if (fit === "unsure") return `Chega *${d.label}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas sem hora marcada — pode não ser de manhã.`;
+  if (fit === "maybe") return `Até *${deadlineLabel(d)}* pode não chegar${prazo ? `: o prazo é *${prazo}*` : ""}, e dia útil não conta fim de semana nem feriado. Se quiser, me diz qual item trocar ou tirar.`;
   return `O prazo desse pedido${prazo ? ` é *${prazo}*` : " é o da loja"}; não consigo garantir *${deadlineLabel(d)}*.`;
 }
 
 // Troca de loja que atrasa a entrega (10/10, rodada 10 g29: 1 → 4 dias úteis sem aviso).
-export function swapEtaNote(before?: string, after?: string, deadline?: { label: string; morning?: boolean; miss: boolean }, lead = "Com a troca"): string | null {
+// Com prazo dito (10/10, rodada 16 g46: "sábado" e a troca de 4 para 6 dias úteis sem dizer o que isso fazia com o sábado):
+// `maybe` = pela data real pode passar do dia; `fits` = ainda chega — os dois são ditos junto da piora.
+export function swapEtaNote(before?: string, after?: string, deadline?: { label: string; morning?: boolean; miss: boolean; maybe?: boolean; fits?: boolean }, lead = "Com a troca"): string | null {
   const b = promiseForCustomer(before);
   const a = promiseForCustomer(after);
   if (deadline?.miss) return `⚠️ ${lead} não chega até *${deadlineLabel(deadline)}*${a ? ` (prazo: *${a}*)` : ""}.`;
+  if (deadline?.maybe) return `⚠️ ${lead}${b && a ? `, o prazo passa de *${b}* para *${a}* e` : ""} pode não chegar até *${deadlineLabel(deadline)}* (dia útil não conta fim de semana nem feriado).`;
   if (!b || !a) return null;
+  if (deadline?.fits) return `⏰ ${lead}, o prazo passa de *${b}* para *${a}* — ainda chega até *${deadlineLabel(deadline)}*.`;
   return `⏰ ${lead}, o prazo passa de *${b}* para *${a}*.`;
 }
 
@@ -2797,6 +2805,20 @@ export function swapKeptOriginal(kept: string, wanted: string): string {
   return `*${wanted}* eu não achei em nenhuma loja. Mantive *${kept}* na cesta — me diz outra marca ou versão que eu troco.`;
 }
 
+// "troca o tapete por outro de outra loja" sem nenhuma outra loja que tenha (10/10, rodada 16 g46): diz isso em vez de
+// "trocar" pelo mesmo item; com o pedido mínimo travando, lembra as duas saídas.
+export function swapNoOtherStore(kept: string, item: string, store: string, belowMinimum: boolean): string {
+  const where = belowMinimum ? "em outra loja sem pedido mínimo que entregue aí" : "em outra loja que entregue aí";
+  const tira = /^(?:esses|essas) /.test(item) ? "o que tirar" : `*tira ${item.split(/\s+/)[0].toLowerCase()}*`;
+  const tail = belowMinimum ? ` Pra fechar, manda mais um item da *${store}* pra completar o mínimo — ou me diz ${tira} que eu fecho o resto.` : "";
+  return `Procurei *${item}* ${where} e não achei. Mantive *${kept}* (${store}) na cesta.${tail}`;
+}
+
+// O mesmo, com o item ainda em escolha: nenhuma opção na tela é de outra loja (sem mínimo).
+export function choiceNoOtherStore(item: string, store: string): string {
+  return `Das opções de *${item}* que eu tenho, nenhuma é de outra loja além da *${store}*. Escolhe uma delas, me diz outro nome pra eu procurar, ou *pula* pra seguir sem.`;
+}
+
 // Cada troca é nomeada ANTES e DEPOIS do aceite: na rodada 27/08, 4 sessões viram o
 // café/leite mudar de marca e gramatura em silêncio e só descobriram auditando linha
 // a linha — troca de produto sem anúncio é quebra de confiança.
@@ -2851,6 +2873,19 @@ export function etaComesWithTotal(): string {
 export function etaAfterChoice(known: EtaRow[] = []): string {
   const so = known.length ? `Do que já está na lista: ${known.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")}. ` : "";
   return `${so}O prazo de cada opção está no card — escolhe essa aqui que eu fecho o total com a entrega:`;
+}
+
+// "chega hoje?" com um item em escolha (10/10, rodada 16 g46, jornada 351): eram 3 mensagens ("Do que já está na lista…
+// escolhe essa aqui que eu fecho", "⏰ Pra hoje não chega…", "as opções continuam aí em cima"). Uma só: o que já está na
+// lista chega ou não no dia, o veredito do item da vez e onde estão as opções.
+export function etaWithChoiceDeadline(label: string, rows: Array<EtaRow & { late: boolean | null }>, itemNote: string | null, query: string): string {
+  const late = rows.filter((r) => r.late === true);
+  const basket = !rows.length
+    ? ""
+    : late.length
+      ? `Do que já está na lista, até *${label}* não chega: ${late.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")}.`
+      : `Do que já está na lista: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")}.`;
+  return [basket, itemNote ?? "", choicesStillOpen(query)].filter(Boolean).join("\n");
 }
 
 export function minimumSwapDone(pairs?: SwapPair[]): string {
@@ -3152,10 +3187,12 @@ export function slowDeliveryNote(store: string, promise: string): string {
 export function serviceAnswer(
   topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap",
   areaLabel: string,
-  ctx?: { hasCep?: boolean; hasBasket?: boolean }
+  ctx?: { hasCep?: boolean; hasBasket?: boolean; place?: string }
 ): string {
   switch (topic) {
     case "area":
+      // Bairro/zona da capital citado (10/10, rodada 16 g46: "vcs entregam na zona leste? moro no tatuape"): responde o lugar.
+      if (ctx?.place) return `Entrego em toda a cidade de São Paulo — ${ctx.place} incluído 📍 ${ctx.hasCep ? "Seu endereço já está salvo; pra conferir outro, me manda o CEP." : "Me manda seu *CEP* que eu confirmo o endereço."}`;
       return ctx?.hasCep
         ? `Atendo ${areaLabel} 📍 Seu endereço já está salvo e coberto. Pra conferir outro, me manda o CEP.`
         : `Atendo ${areaLabel} 📍 Me manda seu *CEP* que eu confirmo se chego até você.`;
