@@ -111,6 +111,9 @@ export type Intent =
   | { kind: "vague_request" }
   // "meu filho que vai pagar, manda pra ele?" — cobrança para terceiro (28/08 S7).
   | { kind: "third_party_pay" }
+  // "meu colega paga a parte dele separado, dá pra fazer dois pedidos?" (10/10, rodada 8 A2): pagadores diferentes no
+  // MESMO endereço — não é pedido de dois endereços. `payer` = falou de quem paga; sem isso, só "dois pedidos".
+  | { kind: "split_orders"; payer: boolean }
   // "emitem nota fiscal?" / "qual o CNPJ?" (28/08 S8).
   | { kind: "fiscal_question"; topic: "nf" | "cnpj" }
   // "e se o vestido não servir, posso trocar?" / "e se eu quiser devolver?" (10/10, rodada 6 M1).
@@ -352,7 +355,12 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(vai|vem|vao) (ter|ser) .*",
       "(eu )?(nao|n) (esquece|esqueca|esquecer)( de)? (nada|de nada|nenhum item)",
       "(nao esquece|nao esqueca)( nada)?",
-      "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
+      "(eu )?(moro|mora|morando|resido) (em|na|no) .*",
+      // Montar a LISTA/cesta (10/10, rodada 8 M1: "montar uma cesta básica pra doação" virava item): descreve o pedido.
+      "(eu |a gente )?(me ajuda a |ajuda a |vamos |vou |quero |queria |preciso )?(montar|fazer|organizar|preparar) (uma |a |as |um |o )?(cesta|lista|compra|compras|feira|rancho|kit)( (basica|do mes|da semana))?( (pra|para|de) [a-z ]+)?",
+      // Sou/moro/estudo (10/10, rodada 8 M1: "sou estudante, moro em república com mais 2").
+      "(eu )?(sou|somos) (estudante|aposentad[oa]|universitari[oa]|mae|pai|professor[a]?|nov[oa] aqui|cliente)( .*)?",
+      "(eu )?(moro|mora|moramos) (em|na|no|com|sozinh[oa])( .*)?"
     ].join("|") +
     ")$"
 );
@@ -398,7 +406,38 @@ export function isRequestModifier(phrase: string): boolean {
 // colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
 export function isNonItemSegment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
-  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n);
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase);
+}
+
+// Trecho SÓ de fala (10/10, rodada 8 M1): "vamos dividir a", "eu pago o meu", "ele paga o dele", "voltei", "desculpa",
+// "sabe", "aquele", "ignora", "gastar pouco", "na verdade não são esses itens" viravam item ou "não achei". Em vez de
+// mais um regex por frase: se TODA palavra do trecho é pronome, demonstrativo, muleta, verbo de conversa, palavra de
+// meta-lista ("itens", "resto") ou conectivo, não há produto nenhum ali. Um substantivo de produto qualquer salva o trecho.
+const DISCOURSE_WORDS = new Set(
+  (
+    // pronomes, possessivos, demonstrativos
+    "eu ele ela eles elas nos gente voce vc voces vcs me te se lhe mim comigo meu minha meus minhas seu sua seus suas dele dela deles delas nosso nossa nossos nossas teu tua " +
+    "esse essa esses essas este esta estes estas isso isto aquele aquela aqueles aquelas aquilo ai ali la aqui " +
+    // muletas e cortesia
+    "tipo sabe ne ta tah ok ah ahn hum hm eh entao bom bem assim enfim olha ve desculpa desculpe perdao mal voltei voltando oi opa pois cara mano obrigado obrigada " +
+    // verbos de conversa (nenhum é produto)
+    "vamos vou vai vamo pago paga pagar pagamos pagando pagam dividir divide dividimos dividindo dividi divido gastar gasto gasta gastando economizar ajuda ajudar ajude " +
+    "montar monta fazer faz quero queria quer preciso precisa tenho tem temos sou somos estou to tou tava moro mora ignora ignorar ignore ignorem desconsidera " +
+    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir " +
+    // meta-lista, quantidade vaga e advérbios
+    "itens item coisa coisas produto produtos parte resto tudo todos todas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
+    // conectivos e artigos
+    "a o os as um uma uns umas de do da dos das em no na nos nas pra pro para por pelo pela com sem que e ou mas ate"
+  ).split(" ")
+);
+export function isDiscourseOnly(phrase: string): boolean {
+  // Sentinelas do parser ("mais um" aditivo, "qualquer") não são fala solta.
+  if (/[\u0001\u0002]/.test(phrase)) return false;
+  // Valor em dinheiro é orçamento: quem decide é o parser do teto (vira o "até N reais" do item), nunca descarte.
+  if (/\d/.test(phrase) && /\b(?:r\$|reais|real|conto|contos|pila)\b|r\$/i.test(normalizeMsg(phrase))) return false;
+  const words = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const alpha = words.filter((w) => /[a-z]/.test(w));
+  return alpha.length > 0 && words.every((w) => /^\d+$/.test(w) || DISCOURSE_WORDS.has(w));
 }
 
 // Urgência de ENTREGA na mensagem ("preciso pra hoje", "urgente", "o quanto antes").
@@ -494,7 +533,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   const parsedLines = source
@@ -505,7 +544,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     // "…2 vodkas tenho uns 120 reais 3 sucos": o orçamento no MEIO da frase ganha vírgulas e vira o
     // segmento "ate N reais" (teto do item anterior), em vez de colar no nome do produto.
     .replace(
-      /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
+      /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até|s[oó]|apenas)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
       ", ate $1 reais, "
     )
     // ponto/interrogação separam sentenças ("sabao em po. ah e um refri" = 2 segmentos)
@@ -538,7 +577,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
         // "tenho uns 120 reais" é ORÇAMENTO da frase, nunca item: vira o "até N reais" que o
         // restante do parser já trata como teto (c23/c24).
-        .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
+        .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:s[oó]|apenas)\s+)?(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
         // "copo descartável pra todo mundo": o destinatário do churrasco não é parte do produto
         .replace(/\s+(?:pra|para)\s+(?:todo mundo|todos|todas|a galera|galera|geral|a familia toda|a familia)\s*$/i, "")
         // sujeito-parente ("meu neto quer um violão", "minha filha pediu suco"): o
@@ -563,6 +602,13 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // conjunção sobrando no começo do segmento ("e areia pro gato",
         // "mas entrega hoje se der" — a adversativa escondia o modificador de urgência)
         .replace(/^(e|mas|porem|porém|so que|só que|com)\s+/i, "")
+        // "me ajuda a montar até 100 reais" (10/10, rodada 8 M1): a fala antes do orçamento sai; fica o "até N reais" (teto).
+        .replace(/^(.+?)\s+(?=(?:at[eé]|no m[aá]ximo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?\d)/i, (m, lead: string) => (isDiscourseOnly(lead) ? "" : m))
+        // Sujeito-pronome antes do pedido ("eu quero arroz e ele quer feijão", 10/10, rodada 8 M1): sai o pronome (e o verbo
+        // de pedido que sobrou); "ela é filhote" (descrição) fica para a regra do pronome abaixo.
+        .replace(/^(?:eu|ele|ela|eles|elas|a gente|n[oó]s)\s+(?!(?:é|e|eh|s[aã]o|est[aá]|t[aá])(?:\s|$))(?:(?:quer|querem|queremos|precisa|precisam|precisamos|vai querer|vamos querer|vai levar|levo|leva|pego|pega)\s+(?:de\s+)?)?(?=\S)/i, "")
+        // "é pra festa junina da igreja" (10/10, rodada 8 M1): a cópula solta não faz parte do item nem do contexto.
+        .replace(/^(?:é|eh)\s+(?=(?:pra|para|pro|so|só|isso|que)\b)/i, "")
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
         // a query mostrada era "fralda pra HOJE" (28/08 S14); a flag de urgência é da
         // mensagem, não do nome do produto
@@ -585,6 +631,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         !STATE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !NARRATIVE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !isOwnershipContext(raw) &&
+        !isDiscourseOnly(raw) &&
         !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
         !isRecallFiller(raw)
     )
@@ -721,6 +768,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     const correction = line.phrase.match(
       /^(?:a?li[aá]s\s+|na verdade\s+|pensando (?:bem|melhor)\s+|ah\s+)?(?:esquece|esqueci|corta|cancela|tira)(?:\s+(?:o|a|os|as))?\s+(.{2,40})$/i
     );
+    // "tira os outros dois" / "remove o resto" (10/10, rodada 8 A3): comando sobre o resto do pedido, nunca item.
+    if (correction && /^(?:(?:os|as|o|a)\s+)?(?:outr[oa]s?|demais|resto)(?:\s+(?:dois|duas|tres|\d+))?$/i.test(normalizeMsg(correction[1]).trim())) continue;
     if (correction && merged.length) {
       const target = cleanItemPhrase(correction[1]);
       const before = merged.length;
@@ -838,7 +887,7 @@ const PRODUCT_TOKEN_ALIASES: Record<string, string> = {
   lenco: "lenco",
   bebe: "umedecido"
 };
-function meaningfulProductTokens(phrase: string): string[] {
+export function meaningfulProductTokens(phrase: string): string[] {
   return normalizeMsg(phrase)
     .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
@@ -1087,7 +1136,7 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     // O resgate só re-promove segmento com cara de PRODUTO: narrativa/modificador que a
     // IA descartou de propósito não volta (rodada 27/08 S3/S20 — o resgate desfazia o
     // descarte certo da IA e a narrativa virava "item não achado").
-    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase)) continue;
+    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase)) continue;
     if (!merged.some((candidate) => sameProduct(line.phrase, candidate.phrase) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
@@ -1245,6 +1294,9 @@ const REJECT_BARE_RE =
 const DONE_RE =
   /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?)[\s,!.]*$/;
 
+const DONE_WITH_TOTAL_RE =
+  /^(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|pronto)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
+
 // "não recebi o código", "o pix expirou", "manda o pix de novo", "perdi o link".
 const RESEND_CODE_RE =
   /\b(nao (recebi|chegou|veio|achei)( aqui)?( o)? (codigo|pix|link|qr ?code)|perdi o (codigo|pix|link)|manda (o )?(pix|codigo|link)( de novo| novamente| dnv)?|(pix|codigo|link|qr ?code) (de novo|dnv|sumiu|nao (chegou|veio|apareceu))|reenvia\w*|reemite|manda de novo)\b/;
@@ -1380,6 +1432,18 @@ export function declinesSwapOffer(text: string): boolean {
 export function wantsCheapestForAll(text: string): boolean {
   const n = normalizeMsg(text);
   return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+}
+
+// "escolhe você tudo que falta", "escolhe pra mim o resto", "o mais barato de todos que faltam" (10/10, rodada 8 M2): a
+// escolha delegada (ou o mais barato) vale para TODOS os itens ainda em escolha, não só o da vez. null = só o da vez.
+const ALL_PENDING_SCOPE_RE = /\b(?:tud[oa]|todos|todas|o resto|os outros|as outras|os demais|as demais|(?:o )?que falta(?:m)?|os que faltam|cada (?:um|item))\b|\bnao quero (?:ver )?mais (?:nenhuma )?opc/;
+const DELEGATE_CHOICE_RE = /\b(?:escolh[ea]r?|decide|seleciona)\b.*\b(?:voce|vc|pra mim|por mim)\b|\b(?:voce|vc)\s+(?:que\s+)?(?:escolhe|decide|sabe)\b|\btanto faz\b/;
+export function wantsChoiceForAll(text: string): "cheapest" | "any" | null {
+  if (wantsCheapestForAll(text)) return "cheapest";
+  const n = normalizeMsg(text);
+  if (!ALL_PENDING_SCOPE_RE.test(n)) return null;
+  if (/\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n)) return "cheapest";
+  return DELEGATE_CHOICE_RE.test(n) ? "any" : null;
 }
 
 // Indiferença de marca/tipo ("de qualquer marca", "tanto faz a marca", "qualquer uma") é FILTRO, nunca termo de busca
@@ -1579,7 +1643,7 @@ export function detectIntent(text: string): Intent {
   // "é seguro? como sei q n é golpe?" — pergunta de CONFIANÇA na hora do dinheiro:
   // resposta específica de segurança, não a apresentação genérica (28/08 S7).
   if (
-    /\b(e|eh|é|isso e|isso eh) seguro\b|\bcomo (eu )?sei\b.*\bgolpe\b|\bnao (vou|to) (ser|sendo) (roubad|enganad)|\bposso confiar\b|\bvao me roubar\b/.test(n)
+    /\b(e|eh|é|isso e|isso eh) seguro\b|\bcomo (eu )?sei\b.*\bgolpe\b|\bnao (vou|to) (ser|sendo) (roubad|enganad)|\bposso confiar\b|\bvao me roubar\b|\bconfiave(?:l|is)\b|\bda (?:pra|para) confiar\b/.test(n)
   ) {
     return { kind: "trust_question" };
   }
@@ -1639,6 +1703,10 @@ export function detectIntent(text: string): Intent {
   ) {
     return { kind: "price_dispute" };
   }
+
+  // Pagadores diferentes / "dois pedidos" sem lugar (10/10, rodada 8 A2) — antes do "meu X que paga" (terceiro).
+  const split = parseSplitOrders(n);
+  if (split) return { kind: "split_orders", payer: split === "payer" };
 
   // "meu filho que vai pagar, manda a cobrança pro zap dele?" (28/08 S7).
   if (
@@ -1750,6 +1818,8 @@ export function detectIntent(text: string): Intent {
 
   // Emoji sozinho: 👍/✅ = sim; 🙏/❤️/💚/😊/🙌 = obrigado; resto = um "oi" acenando.
   if (EMOJI_ONLY_RE.test(n)) {
+    // ❌/👎/🚫 = "não" (10/10, rodada 8 M7: respondia "Oi! Tô aqui"): o passo decide o que o "não" tira ou recusa.
+    if (/[❌✖❎🚫⛔👎🙅]/u.test(n)) return { kind: "reject" };
     if (/[👍✅🆗]/u.test(n)) return { kind: "affirm" };
     if (/[🙏❤💚😊🙌✨😍🥰]/u.test(n)) return { kind: "thanks" };
     return { kind: "greeting" };
@@ -1773,7 +1843,8 @@ export function detectIntent(text: string): Intent {
   if (COMPLAINT_RE.test(n)) return { kind: "complaint" };
   if (REFUND_REQUEST_RE.test(n)) return { kind: "refund_request" };
   if (UNSUPPORTED_PAY_RE.test(n)) return { kind: "unsupported_payment" };
-  if (REFUSE_PAY_RE.test(n)) return { kind: "cancel" };
+  // "quanto tá o leite? não vou comprar agora" (10/10, rodada 8 M4) é consulta de preço, não desistência.
+  if (REFUSE_PAY_RE.test(n) && !parseBrowseOnly(text)) return { kind: "cancel" };
   if (PIX_KEY_RE.test(n)) return { kind: "resend_code", expired: false, keyAsk: true };
   if (RESEND_CODE_RE.test(n) || CODE_EXPIRED_RE.test(n)) {
     return { kind: "resend_code", expired: CODE_EXPIRED_RE.test(n) };
@@ -1960,6 +2031,9 @@ export function detectIntent(text: string): Intent {
 
   if (isAffirm(n)) return { kind: "affirm" };
   if (DONE_RE.test(n)) return { kind: "done" };
+  // "só isso, quanto fica?" (10/10, rodada 8 M10): fechar a lista + pedir o total é UM pedido — o total; antes mostrava o
+  // parcial e pedia "diz só isso".
+  if (DONE_WITH_TOTAL_RE.test(n)) return { kind: "done" };
   if (REJECT_BARE_RE.test(n)) return { kind: "reject" };
   if (REJECT_RE.test(n)) return { kind: "reject" };
 
@@ -2269,7 +2343,7 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
     return { type: "pick", index: 0 };
   }
   // "qual você recomenda?", "escolhe você", "me sugere" — confiança na Lia = any.
-  if (/\b(recomenda|sugere|indica|escolhe (voce|vc|ai|pra mim)|o que (voce|vc) acha melhor)\b/.test(n)) {
+  if (/\b(recomenda|sugere|indica|escolhe (voce|vc|ai|pra mim)|o que (voce|vc) acha melhor)\b/.test(n) || /\bescolher?\b.*\b(?:por mim|pra mim)\b/.test(n)) {
     return { type: "any" };
   }
 
@@ -2585,7 +2659,23 @@ const MULTI_ADDRESS_RE = new RegExp(
   `\\b(?:duas|2|dois) (?:entregas|enderecos|pedidos|lugares)\\b|\\bentreg\\w* (?:em|pra|para|n?os) (?:dois|2) (?:enderecos|lugares)\\b|\\bum[a]? (?:em|pra|para|n[oa]) ${PLACE_SRC} e (?:outr[ao]|um[a]?) (?:em|pra|para|n[oa]) ${PLACE_SRC}\\b|\\b(?:dividir|separar) (?:em|o pedido em) (?:duas|2) entregas\\b`
 );
 export function asksMultiAddress(text: string): boolean {
-  return MULTI_ADDRESS_RE.test(normalizeMsg(text));
+  const n = normalizeMsg(text);
+  // "juntar em 2 entregas" é resposta à oferta de juntar lojas; quem paga separado é outro pedido (rodada 8 A2).
+  if (/\bjunt/.test(n) || parseSplitOrders(n)) return false;
+  return MULTI_ADDRESS_RE.test(n);
+}
+// Dois pagadores (10/10, rodada 8 A2): "meu colega paga separado", "cada um paga o seu", "a parte dele ele paga".
+// "dois pedidos" sem lugar nem endereço também cai aqui ("orders"): a Lia faz um pedido por vez.
+const SPLIT_PAYER_RE =
+  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai )?paga\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
+const TWO_ORDERS_RE = /\b(?:dois|2) pedidos\b/;
+export function parseSplitOrders(text: string): "payer" | "orders" | null {
+  const n = normalizeMsg(text);
+  if (SPLIT_PAYER_RE.test(n)) return "payer";
+  if (!TWO_ORDERS_RE.test(n)) return null;
+  // Lugar ou endereço dito = o pedido de dois endereços (rodada 7 M11) segue como era.
+  if (new RegExp(`\\b(?:enderecos?|${PLACE_SRC.replace("|loja|", "|")})\\b`).test(n)) return null;
+  return "orders";
 }
 // "em casa: ração e shampoo" / "no trabalho: papel A4" — o rótulo do lugar antes da lista.
 export function parsePlaceLabel(text: string): { place: string; home: boolean; rest: string } | null {
@@ -3093,6 +3183,9 @@ export function splitServiceQuestions(text: string): { rest: string; questions: 
   }
   const remainder = rest.join(" ").trim();
   if (!questions.length || !/[a-zà-ú]{3,}/i.test(remainder) || !parseBasketLines(remainder).length) return null;
+  // O que sobra é OUTRA pergunta, não pedido (10/10, rodada 8 M4: "vocês são confiáveis? como eu sei que vai chegar
+  // mesmo?" respondia a confiança e depois "Você ainda não tem pedidos"): a mensagem é uma pergunta só.
+  if (rest.every((sentence) => /\?\s*$/.test(sentence) && detectIntent(sentence).kind !== "free_text")) return null;
   return { rest: remainder, questions };
 }
 
@@ -3214,4 +3307,75 @@ export function openQuestionYes(question: string): string | null {
   const verb = YES_VERB[m[1]] ?? (/[^aeiou]ar$/.test(m[1]) ? m[1].slice(0, -1) : m[1]);
   const rest = `${verb} ${m[2]}`.replace(/\s+/g, " ").trim();
   return rest.length <= 100 ? rest : null;
+}
+
+// Dobra acento/caixa SEM mudar o comprimento: o trecho achado no texto dobrado é cortado no texto original (a grafia do
+// cliente fica). Comprimento diferente (caractere raro) = devolve null e quem chama usa o texto normalizado.
+function foldSameLength(raw: string): string | null {
+  const folded = [...raw].map((c) => c.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()).join("");
+  return folded.length === raw.length ? folded : null;
+}
+function cutSpans(raw: string, spans: Array<[number, number]>): string {
+  let out = raw;
+  for (const [start, end] of [...spans].sort((a, b) => b[0] - a[0])) out = `${out.slice(0, start)} ${out.slice(end)}`;
+  return out.replace(/\s+([,.;:!?])/g, "$1").replace(/^[\s,.;:!?-]+/, "").replace(/[\s,;:-]+$/, "").replace(/\s+/g, " ").trim();
+}
+
+// Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3): "se passar de 100 me avisa", "cesta básica de uns R$ 100:",
+// "até 150 no total", "tenho 80 reais pra tudo". Vale para o total (produtos + entrega). Devolve o teto e o texto sem o
+// trecho do orçamento (o resto segue como pedido: "pode fechar."). O teto de UM item ("vinho até 40") não entra aqui.
+const ORDER_BUDGET_NUM = String.raw`(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?`;
+const ORDER_BUDGET_RES = [
+  // "se passar de 100 me avisa" / "se der mais que 100, me fala"
+  String.raw`(?:^|[\s,.;])(?:e\s+|mas\s+)?se\s+(?:passar|passa|ultrapassar|der mais|ficar mais|sair mais)\s+(?:de|do|dos|que)\s+${ORDER_BUDGET_NUM}(?:\s+(?:no total|com (?:a )?entrega|com (?:o )?frete))?(?:[\s,]*(?:(?:vc|voce|tu)\s+)?(?:me\s+)?(?:avisa|avise|fala|fale|diz|diga|chama|para|pare)(?:\s+(?:antes|pra mim|por favor|pf))*)?`,
+  // "não pode passar de 100" / "não quero passar de 100"
+  String.raw`(?:^|[\s,.;])(?:mas\s+)?(?:nao|n)\s+(?:pode|quero|posso|da pra|vai)\s+passar\s+(?:de|dos?)\s+${ORDER_BUDGET_NUM}(?:\s+(?:no total|com (?:a )?entrega|com (?:o )?frete))?`,
+  // "uns 80 reais pra tudo" / "tenho 100 ao todo"
+  String.raw`(?:^|[\s,.;])(?:tenho\s+|gasto\s+|posso gastar\s+|quero gastar\s+)?(?:(?:ate|no maximo|uns|umas|cerca de|mais ou menos|tipo)\s+)?${ORDER_BUDGET_NUM}\s+(?:pra tudo|para tudo|com tudo|ao todo)`,
+  // "até 150 no total" / "no máximo 100 com a entrega" só como frase própria (início ou depois de pontuação): colado num
+  // item ("caderninho que fique até 50 no total") é o teto da linha, que o fluxo do item já desconta da cesta.
+  String.raw`(?:^|[,.;]\s*)(?:e\s+|mas\s+)?(?:tenho\s+|gasto\s+|posso gastar\s+|quero gastar\s+)?(?:(?:ate|no maximo|uns|umas|cerca de|mais ou menos|tipo)\s+)?${ORDER_BUDGET_NUM}\s+(?:no total|com (?:a )?entrega|com (?:o )?frete)`,
+  // "cesta básica de uns R$ 100" / "compra de até 200"
+  String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
+].map((src) => new RegExp(src, "g"));
+export function parseOrderBudget(text: string): { cap: number; rest: string } | null {
+  const folded = foldSameLength(text);
+  const base = folded ?? normalizeMsg(text);
+  const raw = folded ? text : base;
+  const spans: Array<[number, number]> = [];
+  let cap: number | null = null;
+  for (const re of ORDER_BUDGET_RES) {
+    re.lastIndex = 0;
+    for (let m = re.exec(base); m; m = re.exec(base)) {
+      const value = Number(m[1].replace(",", "."));
+      if (!Number.isFinite(value) || value < 10) continue;
+      const lead = /^[\s,.;]/.test(m[0]) ? 1 : 0;
+      // "cesta básica de uns R$ 100": só o "de uns R$ 100" sai — a cesta continua sendo o assunto.
+      const cesta = /^[\s,.;]?(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s/.test(m[0]);
+      const start = cesta ? m.index + m[0].search(/\sde\s/) : m.index + lead;
+      spans.push([start, m.index + m[0].length]);
+      cap = cap == null ? value : Math.min(cap, value);
+    }
+  }
+  if (cap == null) return null;
+  return { cap, rest: cutSpans(raw, spans) };
+}
+
+// Consulta de preço sem compromisso (10/10, rodada 8 M4): "só quero saber quanto tá o leite, não vou comprar agora" era
+// lido como CANCELAMENTO ("Não tem nada em aberto pra cancelar"). Tira o "não vou comprar agora"/"só quero saber" e
+// devolve a pergunta de preço; null = não é consulta de preço.
+const BROWSE_CLAUSE_RE = /(?:^|[\s,.;])(?:mas\s+|e\s+)?(?:eu\s+)?(?:nao|n)\s+(?:vou|quero|vamos|pretendo|to querendo)\s+(?:comprar|pedir|fechar|levar)(?:\s+(?:agora|ainda|hoje|nada|nao|ja))*|(?:^|[\s,.;])(?:e\s+)?(?:so|to so|tou so|estou so)\s+(?:pesquisando|olhando|pra saber|por curiosidade|curiosidade|vendo)/g;
+const BROWSE_LEAD_RE = /^\s*(?:eu\s+)?(?:so\s+)?(?:quero|queria|gostaria de|preciso)\s+(?:so\s+)?saber\s+(?=(?:qual|quanto|qto|qnto|o preco|o valor))/;
+export function parseBrowseOnly(text: string): string | null {
+  const folded = foldSameLength(text);
+  const base = folded ?? normalizeMsg(text);
+  const raw = folded ? text : base;
+  const spans: Array<[number, number]> = [];
+  BROWSE_CLAUSE_RE.lastIndex = 0;
+  for (let m = BROWSE_CLAUSE_RE.exec(base); m; m = BROWSE_CLAUSE_RE.exec(base)) spans.push([m.index, m.index + m[0].length]);
+  const lead = BROWSE_LEAD_RE.exec(base);
+  if (lead) spans.push([0, lead[0].length]);
+  if (!spans.length) return null;
+  const rest = cutSpans(raw, spans);
+  return /\b(?:quanto|qto|qnto|preco|valor)\b/.test(normalizeMsg(rest)) ? rest : null;
 }

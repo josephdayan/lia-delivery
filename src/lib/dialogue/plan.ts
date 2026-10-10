@@ -104,12 +104,18 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
   }
   // O modelo às vezes devolve só 3 buscas para uma lista de 6 (09/10, teste real: ração/esmalte/carregador sumiram sem aviso).
   // Plano só de buscas com MENOS linhas do que itens na mensagem = lista cortada: cai no pipeline determinístico, que conta todos.
+  // Garantia geral (10/10, rodada 8 A1): nenhum item da mensagem some calado. "quero esse leite do Ninho, e um shampoo, e
+  // ração..., e pilhas AA" voltava como pick + 2 buscas (o teto de 3 ações) e as pilhas sumiam com "Achei os 2 itens". Cada
+  // passo cobre um trecho (busca = uma linha; escolha/refino/edição = um); com trecho a mais na fala do que coberto, o
+  // pipeline determinístico (que conta todos e diz o que não achou) assume. Vale para qualquer plano com busca.
   const searchOnly = steps.length > 0 && steps.every((st) => st.type === "search" && !st.retry);
-  if (searchOnly && opts.text) {
-    const planned = steps.reduce((sum, st) => sum + (st.type === "search" ? st.lines.length : 0), 0);
-    // Só lista GRANDE (4+): frase solta ("você consegue qualquer coisa? tava pensando em sabão") conta item a mais sem ser lista.
+  const hasSearch = steps.some((st) => st.type === "search" && !st.retry);
+  if (hasSearch && opts.text) {
+    const planned = steps.reduce((sum, st) => sum + (st.type === "search" ? st.lines.length : st.type === "rewrite" || st.type === "reply" || st.type === "fixed" ? 0 : 1), 0);
+    // Só lista GRANDE (4+) quando só há buscas: frase solta ("você consegue qualquer coisa? tava pensando em sabão") conta
+    // item a mais sem ser lista. Com escolha junto, 3 trechos já bastam (a escolha pelo número nem conta como trecho).
     const counted = countDistinctItems(opts.text);
-    if (counted >= 4 && counted > planned) return { ok: false, reason: "lista_maior_que_as_acoes" };
+    if (counted >= (searchOnly ? 4 : 3) && counted > planned) return { ok: false, reason: "lista_maior_que_as_acoes" };
   }
   // "1, só amora" (pick + only_keep da tela, em qualquer ordem): primeiro larga a fila e só então escolhe —
   // senão o pick abria o próximo item da fila e o only_keep rodava em cima dele.

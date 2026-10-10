@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, wantsCheapestForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -58,7 +58,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   // Troca/devolução tem resposta fixa (10/10, rodada 6 M1).
   "return_question",
   // Agendar/dia escolhido (10/10, rodada 7 M2): a IA oferecia agendamento, que a Lia não faz.
-  "scheduling_question"
+  "scheduling_question",
+  // Dois pagadores / "dois pedidos" (10/10, rodada 8 A2): resposta fixa e a oferta de juntar fica na mesa.
+  "split_orders"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
 const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
@@ -134,6 +136,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "QUERO O MAIS BARATO DE TUDO" com vários itens em escolha (10/10, rodada 7 M4): o roteador escolhe o mais barato de
   // CADA item; a IA escolhia só o da vez.
   if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsCheapestForAll(text)) return "intent:cheapest_all";
+  // "escolhe você tudo que falta, não quero ver mais opção" (10/10, rodada 8 M2): idem, com a escolha delegada.
+  if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsChoiceForAll(text)) return "intent:choose_all";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto

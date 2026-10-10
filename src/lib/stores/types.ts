@@ -326,6 +326,17 @@ const WOMAN_ASK_RE = /\b(mulher|mulheres|feminin[oa]s?|menstrua\w*|colica)\b/;
 function isChildVariant(nameNorm: string): boolean {
   return CHILD_VARIANT_RE.test(nameNorm) && !CHILD_NATIVE_RE.test(nameNorm);
 }
+// Produto de PÚBLICO infantil (fralda de bebê, lenço umedecido, chupeta, "Baby") pedido por quem não falou de criança
+// (10/10, rodada 8 M9: "pomada pra assadura" de um adulto trouxe Fralda Huggies e lenço pela prateleira da loja).
+// O próprio produto pedido ("fralda", "lenço umedecido") nunca é desvio.
+export function childAudienceMismatch(query: string, name: string): boolean {
+  const q = normalizeText(query);
+  const n = normalizeText(name);
+  if (CHILD_VARIANT_RE.test(q) || /\b(nenem|nene|recem nascido|crianca|filho|filha)\b/.test(q)) return false;
+  if (CHILD_NATIVE_RE.test(q)) return false;
+  if (/\bfraldas?\b/.test(n) && ADULT_DIAPER_RE.test(n)) return false;
+  return CHILD_NATIVE_RE.test(n) || CHILD_VARIANT_RE.test(n);
+}
 // Fardo/pack de BEBIDA só quando pedido ("coca 2l" = 1 garrafa, não 6un) — a regra exige
 // marcador de volume no nome pra não punir fraldas/papel ("60 Unidades" é o normal lá).
 const PACK_ASK_RE = /\b(fardo|pack|caixa|kit|engradado)\b/;
