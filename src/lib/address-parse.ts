@@ -38,6 +38,8 @@ export function cleanAddressText(raw: string): string {
       .replace(PHONE_RE, " ")
       .replace(CEP_RE_GLOBAL, " ")
       .replace(/[,;-]?\s*\bcep\b\s*[.:]?\s*/gi, " ")
+      // "Rua X n 221" / "nº 221" / "número 221": o "n" de número não faz parte do endereço (09/10, teste real).
+      .replace(/\b(?:n|n[º°]|num|numero|número)\.?\s+(?=\d)/gi, " ")
       .replace(/\s+-\s*(?=,|$)/g, "")
       .replace(/\s*[-–]\s*$/g, "")
   ).replace(/[,;.\s-]+$/, "");
