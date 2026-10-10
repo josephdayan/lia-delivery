@@ -2536,7 +2536,9 @@ export function serviceAnswer(
 // Frete ao vivo por loja (06/10): o valor já é conhecido nas opções — dizer o número.
 export function feeByStore(fees: { storeLabel: string; fee: number }[]): string {
   const list = fees.map((f) => `*${f.storeLabel}*: ${f.fee > 0 ? brl(f.fee) : "grátis"}`).join(" · ");
-  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.`;
+  // Várias lojas (10/10, rodada 5 M13): o cliente que acha caro precisa saber que menos lojas = menos frete.
+  const many = fees.length >= 2 ? " Quanto menos lojas, menor o frete: trocando itens por opções de uma loja que já está no pedido, ele cai." : "";
+  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.${many}`;
 }
 
 // Quem recebe o Pix (06/10): a IA dizia "a própria loja" — falso. A Lia é MEI: o banco de

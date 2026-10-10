@@ -242,6 +242,40 @@ test("M9: 'da cobasi tudo' põe a Cobasi na frente das próximas escolhas e avis
   assert.match(out, /Pra \*areia gato\*, não achei na \*Cobasi\*/i, out.slice(0, 500));
 });
 
+// M13 --------------------------------------------------------------------------------------------------------
+test("M13: notas da cotação viram frete por loja", async () => {
+  const { storeFeesFromQuoteNotes } = await import("../src/lib/delivery-service");
+  assert.deepEqual(storeFeesFromQuoteNotes("Cotação instantânea (vitrine, entrega pelo site). Frete por loja: Mambo R$8,90 (ao vivo) + Casa Santa Luzia grátis + C&A R$19,99 (tarifa padrão)."), [
+    { storeLabel: "Mambo", fee: 8.9 },
+    { storeLabel: "Casa Santa Luzia", fee: 0 },
+    { storeLabel: "C&A", fee: 19.99 }
+  ]);
+  assert.deepEqual(storeFeesFromQuoteNotes(null), []);
+});
+
+test("M13: 'quanto ficou o frete de cada loja?' com o total na mesa responde por loja", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({}, "awaiting_quote_confirmation");
+  const order = await prisma.deliveryOrder.create({
+    data: {
+      userId: c.userId,
+      phone: c.phone,
+      status: "awaiting_quote_confirmation",
+      items: [],
+      storeKey: "concierge",
+      storeLabel: "Lia",
+      total: 120,
+      notes: "Cotação instantânea (vitrine, entrega pelo site). Frete por loja: Mambo R$8,90 + Cobasi R$12,00."
+    }
+  });
+  const ctx = await ctxOf(c.convoId);
+  await prisma.conversation.update({ where: { id: c.convoId }, data: { context: JSON.stringify({ ...ctx, deliveryOrderId: order.id }) } });
+  const out = await send(c.phone, "QUANTO FICOU O FRETE DE CADA LOJA? ESTA MUITO CARO");
+  assert.match(out, /\*Mambo\*: R\$ 8,90/, out.slice(0, 400));
+  assert.match(out, /\*Cobasi\*: R\$ 12,00/, out.slice(0, 400));
+  assert.match(out, /menos lojas/, out.slice(0, 400));
+});
+
 test("M11: 'Não achei X' com a vitrine ainda na tela é uma mensagem só, sem 'O que eu tenho é isso:' no ar", () => {
   const t = copy.refineNoResultAbove("perfume feminino nivea", "perfume feminino");
   assert.match(t, /Não achei \*perfume feminino nivea\*/);

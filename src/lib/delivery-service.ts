@@ -3000,6 +3000,16 @@ async function handleDeliveryTurn(
 
   // ---- perguntas de serviço / atendimento (funcionam em QUALQUER step) ----
   if (intent.kind === "service_question") {
+    // "quanto ficou o frete de cada loja?" com o total na mesa (10/10, rodada 5 M13): a cesta já saiu da conversa
+    // e vive no pedido — a resposta genérica "me diz o que precisa" soava como se a Lia tivesse esquecido o pedido.
+    if (intent.topic === "fee" && !knownStoreFees(ctx).length && ctx.deliveryOrderId) {
+      const order = await currentOrderForQuestions(user.id, ctx);
+      const fees = order && !PAID_OR_IN_FULFILLMENT_STATUSES.includes(order.status) ? storeFeesFromQuoteNotes(order.notes) : [];
+      if (fees.length >= 2 || (fees.length === 1 && ctx.step !== "awaiting_payment")) {
+        await reply(phone, copy.feeByStore(fees));
+        return;
+      }
+    }
     // "vai mudar o frete?"/"quanto ta o frete?" com pedido já cotado → o valor REAL.
     if (
       intent.topic === "fee" &&
@@ -9267,6 +9277,22 @@ const NOT_A_NAME_RE =
   /\b(pix|cart[aã]o|cartao|credito|debito|boleto|dinheiro|pagar|pago|paguei|pagamento|cancela\w*|desisto|desisti|sim|nao|ok|blz|beleza|oi|ola|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|tchau|quanto|qual|quero|pedido|frete|total|endereco|cep|ajuda|atendente|humano)\b/;
 // Frete ao vivo por loja que a conversa já conhece: lojas das opções na mesa e das já
 // escolhidas (a cesta não guarda o frete; a opção escolhida, sim).
+// Frete por loja da cotação instantânea, gravado nas notas do pedido ("Frete por loja: Mambo R$8,90 + Cobasi grátis.").
+export function storeFeesFromQuoteNotes(notes: string | null | undefined): { storeLabel: string; fee: number }[] {
+  const m = (notes ?? "").match(/Frete por loja: ([^\n]+?)\.(?:\s|$)/);
+  if (!m) return [];
+  return m[1]
+    .split(" + ")
+    .map((part) => part.replace(/\s*\((?:ao vivo|tarifa padrão)\)\s*$/, "").trim())
+    .map((part) => {
+      const free = part.match(/^(.+?)\s+grátis$/);
+      if (free) return { storeLabel: free[1].trim(), fee: 0 };
+      const paid = part.match(/^(.+?)\s+R\$\s?(\d+(?:,\d{1,2})?)$/);
+      return paid ? { storeLabel: paid[1].trim(), fee: Number(paid[2].replace(",", ".")) } : null;
+    })
+    .filter((f): f is { storeLabel: string; fee: number } => Boolean(f && f.storeLabel));
+}
+
 function knownStoreFees(ctx: DeliveryContext): { storeLabel: string; fee: number }[] {
   const options = [
     ...(ctx.pending ?? []).flatMap((p) => [...p.options, ...(p.shownOptions ?? [])]),
