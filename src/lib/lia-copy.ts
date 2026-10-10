@@ -2348,7 +2348,7 @@ export function budgetLeftAnswer(cap: number, produtos: number, estimate: number
   const falta = pendingCount ? ` (ainda falta escolher ${pendingCount === 1 ? "1 item" : `${pendingCount} itens`})` : "";
   // Nada escolhido ainda (10/10, rodada 11 g33): "Cabe, sim… uns R$ 0,00" afirmava sem conta nenhuma.
   if (produtos <= 0.005) {
-    return `Anotei o seu teto de *${brl(cap)}*, já com a entrega. Ainda não tem nada escolhido pra eu somar — conforme você escolhe, eu aviso se passar, e o total exato aparece antes de você pagar.`;
+    return `Do seu teto de *${brl(cap)}*, já com a entrega, ainda não tem nada escolhido pra eu somar — conforme você escolhe, eu aviso se passar, e o total exato aparece antes de você pagar.`;
   }
   if (estimate <= cap + 0.005) {
     const left = Math.round((cap - estimate) * 100) / 100;
