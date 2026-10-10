@@ -1834,6 +1834,13 @@ export function itemKept(name: string): string {
   return `Combinado, mantive *${name}* na cesta ✅`;
 }
 
+// "mantém como está" / "tá bom assim" / "não" com o resumo na tela (10/10, rodada 16 R16a-4): fica assim, e a escolha de
+// pagamento volta logo depois.
+// Com o total (R$) a fala sai igual mesmo repetida (a reescrita anti-repetição transformava em despedida).
+export function summaryKeptAsIs(total: number, skipped = false): string {
+  return `${skipped ? "No resumo não tem nada pra pular — o" : "Fechado, o"} pedido fica assim ✅ Total: *${brl(total)}*.`;
+}
+
 // "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): a resposta direta antes do resumo.
 // Item ainda em escolha também responde (10/10, rodada 7: "quantas lâmpadas eu pedi?" com as 3 lâmpadas na fila dizia
 // "Não tem *lampadas* na sua cesta").
@@ -3903,13 +3910,14 @@ export function costlyDeliverySwapHeader(item: string, storeLabel: string, fee: 
 }
 
 // "4 pacotes dão 2 kg" (10/10, rodada 13 M4): a conversão do tamanho pedido em pacotes, no aviso do "mais perto".
-export function packsToReach(n: number, askedLabel: string): string {
-  return `${n} pacotes dão ${askedLabel}`;
+// Sem conta exata (rodada 16 R16a-3): "4 pacotes dão 1,6 kg" — o total real, não o pedido.
+export function packsToReach(n: number, askedLabel: string, totalLabel?: string): string {
+  return `${n} pacotes dão ${totalLabel ?? askedLabel}`;
 }
 
 // A conta da vitrine aplicada na escolha (10/10, rodada 15 A4): "4 pacotes dão 2 kg" → entram 4 pacotes.
-export function packsToReachApplied(n: number, eachLabel: string, askedLabel: string): string {
-  return `_Coloquei ${n} pacotes de ${eachLabel} pra dar os ${askedLabel} que você pediu. Pra mudar, é só dizer o número de pacotes._`;
+export function packsToReachApplied(n: number, eachLabel: string, askedLabel: string, totalLabel?: string): string {
+  return `_Coloquei ${n} pacotes de ${eachLabel}${totalLabel ? ` (${totalLabel})` : ""} pra dar os ${askedLabel} que você pediu. Pra mudar, é só dizer o número de pacotes._`;
 }
 
 // "3 de frango e 3 de carne" com o sachê na tela (10/10, rodada 15 A1): a divisão do item da vez, numa linha.

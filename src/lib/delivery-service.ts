@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2071,18 +2071,27 @@ function measureLabel(name: string): string | null {
 export function withPacksToReach(phrase: string, falta: string, optionName?: string): string {
   const reach = optionName && !/pacotes? d[aã]o/.test(falta) ? packsToReachCount(phrase, optionName) : null;
   if (!reach) return falta;
-  return `${falta.replace(/[.\s]+$/, "")} — ${copy.packsToReach(reach.packs, reach.askedLabel)}`;
+  return `${falta.replace(/[.\s]+$/, "")} — ${copy.packsToReach(reach.packs, reach.askedLabel, reach.totalLabel)}`;
 }
 // Quantos pacotes da opção fecham o tamanho pedido (2 a 12, ±5%): "linguiça 2kg" com o pacote de 500 g = 4.
-export function packsToReachCount(phrase: string, optionName: string): { packs: number; askedLabel: string; eachLabel: string } | null {
+// Sem conta exata, o menor número de pacotes que CHEGA ao pedido, com até 10% a mais (10/10, rodada 16 R16a-3: "1,5kg de
+// linguiça calabresa" com o pacote de 400 g punha 1 pacote sem aviso; 4 pacotes dão 1,6 kg). `totalLabel` diz o total real.
+export function packsToReachCount(phrase: string, optionName: string): { packs: number; askedLabel: string; eachLabel: string; totalLabel?: string } | null {
   const asked = measureOf(phrase);
   const each = measureOf(optionName);
   const askedLabel = measureLabel(phrase);
   const eachLabel = measureLabel(optionName);
   if (!asked || !each || !askedLabel || !eachLabel || each >= asked) return null;
-  const n = Math.round(asked / each);
-  if (n < 2 || n > 12 || Math.abs(n * each - asked) > asked * 0.05) return null;
-  return { packs: n, askedLabel, eachLabel };
+  const near = Math.round(asked / each);
+  const exact = Math.abs(near * each - asked) <= asked * 0.05;
+  const n = exact ? near : Math.ceil(asked / each - 1e-9);
+  if (n < 2 || n > 12 || (!exact && n * each - asked > asked * 0.1)) return null;
+  if (exact) return { packs: n, askedLabel, eachLabel };
+  const unit = (/\b(kg|g|mg)\b/.test(eachLabel) ? "g" : "ml") as "g" | "ml";
+  const total = n * each;
+  const fmt = (v: number) => String(Math.round(v * 100) / 100).replace(".", ",");
+  const totalLabel = total >= 1000 ? `${fmt(total / 1000)} ${unit === "g" ? "kg" : "L"}` : `${fmt(total)} ${unit}`;
+  return { packs: n, askedLabel, eachLabel, totalLabel };
 }
 // O pedido tem tamanho (peso/volume ±10%) ou número de unidades da embalagem e NENHUMA opção cumpre: devolve a diferença
 // ("é de 1,6 kg") e as opções com a mais próxima na frente. Opções sem medida no nome não permitem concluir nada.
@@ -4019,6 +4028,36 @@ async function handleDeliveryTurn(
   // nomear uma opção das ORIGINAIS ("o Hillo da Pacheco") ou pedir as opções "de novo" volta às opções do item — antes
   // a resposta era "Não achei o Hillo" e o carrossel original não voltava. Antes da IA, para ela ver as opções certas.
   if (ctx.step === "choosing" && ctx.pending?.length && intent.kind !== "number" && ((await restoreRefinedChoices(phone, convo.id, ctx, text)) || (await narrowAlternativeSide(phone, convo.id, ctx, text)))) return;
+  // Oferta de troca em CARROSSEL (juntar entregas, replaceSku) e "mantém como está" (10/10, rodada 16 R16a-4): é recusar a
+  // troca — o item atual fica, como no *pula* e como na oferta de botões. A IA lia como "desistir do pão".
+  const swapOnTable = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
+  if (swapOnTable?.replaceSku && intent.kind !== "number" && declinesSwapOffer(text)) {
+    const keptItem = (ctx.basket ?? []).find((b) => b.sku === swapOnTable.replaceSku);
+    if (keptItem) {
+      ctx.pending = ctx.pending!.slice(1);
+      await advancePending(phone, convo.id, ctx, user.cep, copy.itemKept(keptItem.name));
+      return;
+    }
+  }
+  // Resumo na tela, sem oferta aberta, e "mantém como está"/"tá bom assim"/"não"/"pula" (10/10, rodada 16 R16a-4): fica
+  // assim — volta a escolha de pagamento, em vez da pergunta aberta da IA ("O que você quer pular?").
+  if (
+    ctx.step === "awaiting_quote_confirmation" &&
+    ctx.deliveryOrderId &&
+    !ctx.pending?.length &&
+    !ctx.consolidationOffer &&
+    !ctx.minSwap &&
+    !ctx.complementOffer &&
+    !ctx.packConfirm &&
+    keepsSummaryAsIs(text)
+  ) {
+    const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { status: true, userId: true, quoteExpiresAt: true, total: true } });
+    if (order?.status === "awaiting_quote_confirmation" && order.userId === user.id && !(order.quoteExpiresAt && order.quoteExpiresAt.getTime() <= Date.now())) {
+      await reply(phone, copy.summaryKeptAsIs(order.total, /^pul/.test(normalizeMsg(text))));
+      await replyChargeNotIssuedButtons(phone, user.id, ctx);
+      return;
+    }
+  }
   // O que o cliente escreveu, quando a IA reencaminha outra frase: o aviso ao dono cita ISSO, nunca a frase da IA.
   let saidBeforeRewrite: string | undefined;
   if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx)) {
@@ -6938,6 +6977,9 @@ function addPendingRequest(ctx: DeliveryContext, note: string, said?: string) {
     }
   }
   const added: string[] = [];
+  // Linhas da MESMA mensagem não se refinam entre si (10/10, rodada 16 R16a-1): "leite, leite condensado e achocolatado" —
+  // a lista já separou os itens; "leite condensado" substituía o "leite" anotado um passo antes e o leite sumia sem aviso.
+  const fresh = new Set<string>();
   for (const piece of note.split(", ").filter(Boolean)) {
     const replaced = said ? replaceInGroup(segments, said, piece) : null;
     if (replaced) {
@@ -6947,6 +6989,7 @@ function addPendingRequest(ctx: DeliveryContext, note: string, said?: string) {
     }
     const wanted = new Set(queryTokens(piece));
     const same = segments.findIndex((segment) => {
+      if (fresh.has(segment)) return false;
       const tokens = queryTokens(segment);
       // Palavras contidas só valem para o MESMO item (10/10, rodada 13 g39): "4 tomate" (a IA no singular) cabia em
       // "molho de tomate" e os tomates sumiam do "Anotei" sem aviso; "leite nude" → "leite Nude vegetal" continua refinando.
@@ -6955,9 +6998,11 @@ function addPendingRequest(ctx: DeliveryContext, note: string, said?: string) {
     if (same >= 0) {
       if (queryTokens(piece).length >= queryTokens(segments[same]).length) segments[same] = piece;
       added.push(segments[same]);
+      fresh.add(segments[same]);
     } else {
       segments.push(piece);
       added.push(piece);
+      fresh.add(piece);
     }
   }
   ctx.pendingRequest = segments.join(", ") || undefined;
@@ -7752,7 +7797,7 @@ async function confirmChosenOption(
   if (reach) {
     current.qty = reach.packs;
     current.qtyExplicit = true;
-    opts = { ...opts, packOk: true, after: [copy.packsToReachApplied(reach.packs, reach.eachLabel, reach.askedLabel), opts?.after].filter(Boolean).join("\n") };
+    opts = { ...opts, packOk: true, after: [copy.packsToReachApplied(reach.packs, reach.eachLabel, reach.askedLabel, reach.totalLabel), opts?.after].filter(Boolean).join("\n") };
   }
   const packsSaid = Math.max(1, current.qty) > 1 && [inbound, current.query].some((t) => saidPackageCount(t) === Math.max(1, current.qty));
   if (packsSaid) opts = { ...opts, packOk: true };
@@ -11010,6 +11055,7 @@ async function handleConciergeCore(
   if (carriedMisses.length && !follow) {
     const lastCarried = carriedMisses[carriedMisses.length - 1];
     text = withMissQualifiers({ ...ctx, lastMiss: { query: lastCarried.query, qty: lastCarried.qty, at: Date.now() } }, text);
+    text = inheritMissMeasure(text, carriedMisses.map((miss) => miss.query)) ?? text;
   }
   if (carriedMisses.length && follow?.kind === "retry") {
     if (carriedMisses.every((miss) => miss.retried)) {

@@ -1004,6 +1004,9 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bsab(?:ao|oes) (?:em )?po\b/, "lava roupas em po"],
   [/\blava roupas? (?:em )?po\b/, "sabao em po"],
   [/\bxampus?\b/, "shampoo"],
+  // "rímel" é o nome popular; nas lojas o produto é "Máscara de Cílios" (10/10, rodada 16 R16a-2: "rímel à prova d'água"
+  // dava "não achei" sempre que a IA não traduzia). "prova dagua" sem apóstrofo é a mesma "prova d'água" (queryAliases).
+  [/\brime(?:l|is)\b/, "mascara de cilios"],
   // "Sem cheiro" é como o cliente fala; o catálogo escreve "sem perfume"/"sem fragrância" (10/10, rodada 4, B1).
   [/\bsem (?:cheiro|aroma|odor|fragrancia|perfumacao)\b/, "sem perfume"],
   [/\bcaixas? de leite\b/, "leite longa vida"],
@@ -1073,7 +1076,7 @@ export function queryAliases(query: string): string[] {
   if (pack) return [...new Set([pack.core, ...(pack.brand ? [`pack ${pack.brand}`, `fardo ${pack.brand}`] : []), ...queryAliases(pack.core)])].filter((alias) => alias && alias !== norm);
   const out: string[] = [];
   for (const [re, alias] of QUERY_ALIASES) {
-    if (re.test(norm)) out.push(norm.replace(re, alias));
+    if (re.test(norm)) out.push(norm.replace(re, alias).replace(/\bdagua\b/g, "d agua"));
   }
   return out.filter((alias) => alias !== norm);
 }
