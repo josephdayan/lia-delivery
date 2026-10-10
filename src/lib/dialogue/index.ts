@@ -8,7 +8,7 @@ import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
 import { hasMissMatching } from "../list-misses";
-import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, statesDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { largestPackIndex, asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, statesDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -121,6 +121,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "vocês entregam hoje?": sim/não direto, calculado dos prazos reais (não passa pela IA, que perde o "hoje").
   if (asksDeliveryToday(text) && ["status", "service_question", "free_text"].includes(i.intent.kind)) return "intent:today_ask";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
+  // "nenhum, só isso mesmo. quanto fica?" / "não, pode fechar. quanto deu?" (10/10, rodada 11 M1): o regex já leu fechar +
+  // total (frase inteira, sem item); a IA respondia a recusa e o total só vinha no 3º turno.
+  if (i.intent.kind === "done" && trimmed.split(/\s+/).length <= 10) return "intent:done_total";
   // "tem um mais em conta?" (5 palavras) ia pra IA e 1 em 3 vezes ela inventava opções e depois tirava o item errado
   // (10/10, rodada 6 g19). Pedido de mais barato sem nome é caminho fixo (pergunta "de qual item?" com 2+ itens).
   if (i.intent.kind === "more_options" && i.intent.cheaper && trimmed.split(/\s+/).length <= 7) return "intent:more_cheaper";
@@ -145,6 +148,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
   // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";
+  // "a Huggies M mesmo, mas o pacote maior" (10/10, rodada 11 M7): critério de escolha (o de mais conteúdo) — a IA refinava a
+  // busca por "pacote maior" e dizia "não achei".
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && largestPackIndex(text, ctx.pending[0].options) != null) return "intent:largest_pack";
   // "QUERO O MAIS BARATO DE TUDO" com vários itens em escolha (10/10, rodada 7 M4): o roteador escolhe o mais barato de
   // CADA item; a IA escolhia só o da vez.
   if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsCheapestForAll(text)) return "intent:cheapest_all";

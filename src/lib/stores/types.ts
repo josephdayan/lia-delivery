@@ -786,6 +786,8 @@ const ACCESSORY_HEADS = new Set([
 // Item do dia a dia pedido SEM qualificador (09/10, rodada de cliente com a IA ligada): "óleo" é óleo de cozinha
 // (era "Óleo Secante Color" de unha sem a IA, e "não achei" com ela); "feijão" é o carioca; "açúcar", o refinado.
 // `accept` = o que o nome precisa ter pra ser o produto; `prefer` = a versão comum, que vem primeiro.
+const FRUIT_DERIVED_RE =
+  /\b(chips|chip|liofilizad\w*|desidratad\w*|passas?|balas?|fini|ensure|sabor|sabores|doces?|bananada|farinha|snacks?|barras?|barrinhas?|cereais|cereal|iogurtes?|vitaminas?|nectar|sucos?|whey|shakes?|refrigerantes?|refresco|gelatinas?|essencia|aroma|aromatizad\w*|geleia|polpa|creme|chas?|cha|sorvetes?|picoles?|biscoitos?|bolachas?|bolos?|torta|achocolatad\w*|leite|bebidas?|isotonic\w*|energetic\w*|sabonetes?|shampoo|hidratante|desodorante|perfume|colonia|vela|aromatizador|tempero|molho|vinagre|cerveja|licor|caipirinha|drink)\b/;
 const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer: RegExp }> = {
   oleo: {
     accept: /\b(soja|girassol|milho|canola|oliva|olliva|algodao|cozinha|composto)\b/,
@@ -795,7 +797,14 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
   feijao: { prefer: /\bcarioca\b/ },
   acucar: { prefer: /\b(refinado|cristal)\b/ },
   // "2kg de frango" (rodada 4, M8): o corte do dia a dia vem antes de passarinho/asa/coração.
-  frango: { prefer: /\b(peito|coxa|sobrecoxa|file|filezinho|inteiro)\b/ }
+  frango: { prefer: /\b(peito|coxa|sobrecoxa|file|filezinho|inteiro)\b/ },
+  // Fruta pedida solta (10/10, rodada 11 M14: "banana" só achou Banana Chips, Ensure Banana e bala "Bananas Fini", e o
+  // "o mais barato" levou o snack): produto feito COM a fruta não é a fruta — sem a fruta, vira "não achei".
+  banana: { reject: FRUIT_DERIVED_RE, prefer: /\b(nanica|prata|maca|terra|ouro|caturra)\b/ },
+  maca: { reject: FRUIT_DERIVED_RE, prefer: /\b(gala|fuji|verde|argentina|nacional)\b/ },
+  laranja: { reject: FRUIT_DERIVED_RE, prefer: /\b(pera|lima|bahia|baia|seleta)\b/ },
+  limao: { reject: FRUIT_DERIVED_RE, prefer: /\b(taiti|tahiti|siciliano|cravo)\b/ },
+  morango: { reject: FRUIT_DERIVED_RE, prefer: /\b(bandeja|caixa|organico|fresco)\b/ }
 };
 export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
   const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
@@ -846,7 +855,8 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   const head = normalizeText(item.name).split(/\s+/)[0] ?? "";
   if (ACCESSORY_HEADS.has(head) && !wordTokens.includes(head) && !wordTokens.some((t) => ACCESSORY_HEADS.has(t))) return false;
   const staple = stapleFor(query);
-  if (staple?.accept && (!staple.accept.test(normalizeText(item.name)) || staple.reject?.test(normalizeText(item.name)))) return false;
+  if (staple?.reject?.test(normalizeText(item.name))) return false;
+  if (staple?.accept && !staple.accept.test(normalizeText(item.name))) return false;
   const specMissing = wordTokens.some((token) => SPEC_TOKENS.has(token) && !nameTokens.has(token) &&
     !nameWords.some((word) => tokenMatchesWordSyn(token, word)) && !categoryWords.some((word) => tokenMatchesWord(token, word)));
   if (specMissing) return false;

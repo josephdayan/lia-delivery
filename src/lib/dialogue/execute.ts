@@ -4,9 +4,9 @@
 // aqui: viram uma frase canônica reencaminhada ao roteador de intenções (`rewrite`), então
 // dinheiro, estorno e textos fixos seguem exatamente os caminhos determinísticos de sempre.
 import { sanitizeRouterReply } from "../adapters/ai";
-import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
+import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
+import { ADDITIVE_CUE_RE, extractCep, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
@@ -178,6 +178,13 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
 
     case "refine": {
       if (!current) return "invalid";
+      // Remédio como "refino" do item na tela (10/10, rodada 11 M11: "tem dipirona pra eu colocar no kit?" com o esparadrapo
+      // aberto virou "Não achei *esparadrapo dipirona...*"): a recusa de remédio, e a escolha continua.
+      if ((looksLikeMedicine(step.attribute) || looksLikeMedicine(env.text)) && !looksLikeMedicine(current.query)) {
+        await h.refuseMedicine(phone, convoId, ctx, env.text);
+        await reply(phone, copy.choicesStillOpen(current.query));
+        return "done";
+      }
       const attrs = parseRefinement(step.attribute);
       if (attrs) {
         await h.refineOptions(phone, convoId, ctx, store(), attrs);
@@ -353,7 +360,14 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
         if (prev) {
           current.clarify = undefined;
           const said = [...prev.said, env.text];
-          const best = bestByAnswers(said, current.options);
+          // Preço dito que nenhuma opção tem ("o Pilão de 29,48" com Pilão de 26,39 e 48,39) não vira "o mais comum" — a
+          // Lia pegava o de R$ 48,39; e "o mais barato" desempata pelo preço, não pela 1ª do ranking (10/10, rodada 11 g33).
+          const best = refineByPriceCues(said, bestByAnswers(said, current.options));
+          if (best === "price_miss") {
+            await writeCtx(convoId, ctx);
+            await h.sendChoices(phone, current, copy.clarifyShowCards(current.query));
+            return "done";
+          }
           if (best.length) {
             await h.confirmChosenOption(phone, convoId, ctx, userCep, store(), current, best[0], { note: copy.clarifyResolved(best[0].name, best.length > 1) });
             return "done";
@@ -398,6 +412,38 @@ export function bestByAnswers<T extends { name: string }>(said: string[], option
   return max > 0 ? scored.filter((x) => x.s === max).map((x) => x.o) : [];
 }
 
+// Preço e "mais barato" ditos no desempate (10/10, rodada 11 g33). Preço sem opção a até R$ 1 dele = "price_miss".
+export function refineByPriceCues<T extends { name: string; unitPrice: number; medicine?: "mip" }>(said: string[], best: T[]): T[] | "price_miss" {
+  if (!best.length) return best;
+  const text = normalizeMsg(said.join(" "));
+  const price = [...text.matchAll(/(?:r\$\s*)?\b(\d{1,4})[,.](\d{2})\b/g)].map((m) => Number(`${m[1]}.${m[2]}`)).pop();
+  let pool = best;
+  if (price != null) {
+    pool = best.filter((o) => Math.abs(display(o.unitPrice, o.medicine) - price) <= 1);
+    if (!pool.length) return "price_miss";
+  }
+  if (/\bmais (?:barat[oa]|em conta)\b|\bmenor preco\b/.test(text) && pool.length > 1) {
+    const cheapest = Math.min(...pool.map((o) => display(o.unitPrice, o.medicine)));
+    pool = pool.filter((o) => display(o.unitPrice, o.medicine) === cheapest);
+  }
+  return pool;
+}
+
+// O item novo é o genérico da fila com marca/variante: a frase nova NÃO repete o nome do genérico ("Piracanjuba
+// desnatado" × "leite"; "leite condensado" segue sendo outro item) e a maioria das opções novas É aquele produto.
+export function refinesQueuedItem(queued: { query: string }, fresh: { query: string; options: { name: string }[] }): boolean {
+  const stem = (t: string) => (t.length > 3 ? t.replace(/(?:es|s)$/, "") : t);
+  const generic = queryTokens(normalizeMsg(queued.query)).map(stem);
+  if (!generic.length || generic.length > 2 || !fresh.options.length) return false;
+  const said = new Set(queryTokens(normalizeMsg(fresh.query)).map(stem));
+  if (generic.some((t) => said.has(t))) return false;
+  const hits = fresh.options.filter((o) => {
+    const words = new Set(normalizeMsg(o.name).replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/).map(stem));
+    return generic.every((t) => words.has(t));
+  }).length;
+  return hits * 2 > fresh.options.length;
+}
+
 // Produto novo no meio da escolha: entra na FILA (ou troca o item da tela, com `replace`),
 // como o caminho de hoje faz — o que já foi escolhido fica na cesta.
 async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) {
@@ -420,17 +466,42 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
     await h.sendChoices(phone, current);
     return;
   }
+  // O mesmo item que já está na FILA, agora com marca/tamanho (10/10, rodada 11 M6): corrige a linha da fila.
+  const corrected = replace || ADDITIVE_CUE_RE.test(normalizeMsg(turnMeta.getStore()?.inboundText ?? text)) ? [] : h.absorbQueuedTwins(ctx, added);
+  if (corrected.length && !added.pending.length && !added.autoAdded.length) {
+    ctx.notFound = [...(ctx.notFound ?? []), ...added.notFound];
+    await writeCtx(convoId, ctx);
+    const notes = corrected.map((q) => copy.correctedQueuedItem(h.withoutStoreMention(q)));
+    if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
+    await reply(phone, notes.join("\n"));
+    await h.sendChoices(phone, current);
+    return;
+  }
   ctx.basket = h.mergeBaskets(ctx.basket ?? [], added.autoAdded);
+  // Marca/variante de um item genérico já na fila ("6 Piracanjuba desnatado" com *leite* na tela ou na fila, 10/10,
+  // rodada 11 g33): é o mesmo item, refinado — sai o genérico, fica o novo (com a quantidade dita). Antes ficavam os dois
+  // ("falta escolher leite e Piracanjuba desnatado") e o leite saía em dobro.
+  let refinedCurrent = false;
+  if (!replace) {
+    for (const fresh of added.pending) {
+      const generic = ctx.pending!.find((q) => refinesQueuedItem(q, fresh));
+      if (!generic) continue;
+      if (fresh.qty === 1 && generic.qty > 1) fresh.qty = generic.qty;
+      if (generic === current) refinedCurrent = true;
+      else ctx.pending = ctx.pending!.filter((q) => q !== generic);
+    }
+  }
   const dropped = replace && added.pending.length ? current.query : undefined;
-  const queue: PendingChoice[] = dropped ? ctx.pending!.slice(1) : ctx.pending!;
-  ctx.pending = dropped ? [...added.pending, ...queue] : [...queue, ...added.pending];
+  const queue: PendingChoice[] = dropped || refinedCurrent ? ctx.pending!.slice(1) : ctx.pending!;
+  ctx.pending = dropped || refinedCurrent ? [...added.pending, ...queue] : [...queue, ...added.pending];
   ctx.notFound = [...(ctx.notFound ?? []), ...added.notFound];
   await writeCtx(convoId, ctx);
   const notes: string[] = [];
   if (dropped) notes.push(copy.choiceSkipped(dropped));
   if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
   // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-  if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
+  if (!dropped && !refinedCurrent && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
+  for (const q of corrected) notes.push(copy.correctedQueuedItem(h.withoutStoreMention(q)));
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
   await h.sendChoices(phone, ctx.pending[0]);
