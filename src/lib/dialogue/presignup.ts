@@ -9,7 +9,7 @@
 import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { attributeFragment, isDescriptorFragment, isNarrativeSegment, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseNeededBy, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, type Intent } from "../lia-intents";
+import { attributeFragment, isDescriptorFragment, isGiftFrame, isNarrativeSegment, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseNeededBy, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, type Intent } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { localCatalogProbe } from "../stores/list-probe";
 import { resolveListItems } from "../list-items";
@@ -297,6 +297,14 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
   const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
   const medicine = d.medicine || items.length !== d.items.length;
+  // "presente pra um menino de 7 anos, um cartão de aniversário e papel de presente" (10/10, rodada 12 g36): a IA marcava o
+  // presente como recomendação e anotava só os acessórios — o presente sumia do "Anotei". Com outros itens na mesma
+  // mensagem, o pedido de presente que a lista determinística guardou entra como item (a ocasião vai junto na frase).
+  if (items.length && opts.text) {
+    for (const seg of resolveListItems(opts.text)) {
+      if (isGiftFrame(seg.phrase) && !items.some((item) => isGiftFrame(item.query))) items.push({ query: seg.phrase, qty: 1, cheapest: false });
+    }
+  }
   // Remédio isento ligado (10/10, rodada 10 g28): "preciso de um paracetamol e um band-aid..." recebia "Remédio de receita eu
   // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
   // receita nomeado, o caminho determinístico anota o remédio isento com o resto.

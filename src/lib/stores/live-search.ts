@@ -167,6 +167,13 @@ export function categorySlug(categories: string[] | undefined): string {
     .replace(/[̀-ͯ]/g, "");
 }
 
+// Produto com várias variações (10/10, rodada 12 g36: o card do paracetamol de 10 comprimidos abria a página no de 20): o
+// link da VTEX é do produto; com `skuId` a página já abre na variação do card.
+function skuUrl(url: URL, itemId?: string): string {
+  if (itemId) url.searchParams.set("skuId", itemId);
+  return url.toString();
+}
+
 // Produto da busca inteligente → item de catálogo (puro, testável).
 export function parseLiveProducts(storeKey: string, products: IsProduct[]): CatalogItem[] {
   const store = VTEX_API_STORES[storeKey];
@@ -193,7 +200,7 @@ export function parseLiveProducts(storeKey: string, products: IsProduct[]): Cata
         unit: "un",
         category: categorySlug(product.categories),
         imageUrl: item.images?.[0]?.imageUrl,
-        productUrl: new URL(link, `https://${store.domain}`).toString()
+        productUrl: skuUrl(new URL(link, `https://${store.domain}`), (product.items ?? []).length > 1 ? item.itemId : undefined)
       };
       if (medicineShelf) {
         // Prateleira de medicamento: só pela lista positiva da própria farmácia, marcado MIP.

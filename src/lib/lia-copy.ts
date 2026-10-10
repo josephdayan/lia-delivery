@@ -510,6 +510,10 @@ export function swapRemovedPrefix(from: string, to?: string): string {
 }
 
 // "fecha" com item ainda em escolha e cesta montada (10/10, rodada 5 A1): nunca prende — oferece fechar sem.
+// Troca em aberto no parcial (10/10, rodada 12 g36): o item atual continua na cesta até a nova escolha.
+export function pendingSwapLabel(name: string): string {
+  return `a troca de ${name} (o atual fica até você escolher)`;
+}
 export function closeWithoutPendingAsk(names: string[]): string {
   const what = namesList(names);
   return names.length > 1
@@ -2940,6 +2944,8 @@ export function choiceDeliveryCostNote(input: { deliveries: number; newStores: s
   // Prazo longo sem outra loja na cesta (rodada 8 M9): "outras" mostra outras opções, não "das lojas que você já tem".
   const tail = input.later?.long && !input.newStores.length ? "Se preferir, diz *outras* que eu mostro outras opções." : "Se preferir, diz *outras* que eu mostro opções das lojas que você já tem.";
   const min = input.minimum ? ` A *${input.minimum.store}* tem pedido mínimo de *${brl(input.minimum.min)}* — faltam *${brl(input.minimum.falta)}* em itens de lá.` : "";
+  // Só o mínimo (1ª loja do pedido, 10/10, rodada 12 g36): sem "Essa escolha ." solto.
+  if (!parts.length && input.minimum) return `_⚠️${min} Se não completar, no fechamento eu ofereço trocar por outra loja sem mínimo — ou diz *outras* que eu mostro outras opções._`;
   return `_⚠️ Essa escolha ${parts.join(" ")}.${min} ${tail}_`;
 }
 
@@ -3690,14 +3696,16 @@ export function cheapestTieNote(numbers: number[], price: number, picked: number
 
 // "o mais barato" que não ficou com a etiqueta mais baixa (10/10, rodada 11 g32): ela não chega no prazo dito, ou somava
 // uma entrega (e o pedido mínimo) de outra loja — o cliente sabe por quê e pode voltar pra ela.
-export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number }): string {
+export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number } }): string {
   const where = input.store ? `, *${input.store}*` : "";
   const min = input.minimum ? ` e o pedido mínimo de ${brl(input.minimum)} da loja` : "";
   const why = input.late
     ? `não chega até *${input.late}* — peguei o mais barato que chega a tempo`
     : input.slow != null
       ? `só chega em *${promiseForCustomer(input.slow) || input.slow}* — por pouca diferença, peguei este, que chega antes`
-      : `somava mais uma entrega${input.extraFee ? ` (~${brl(input.extraFee)})` : ""}${min} — este sai mais barato no total`;
+      : input.pricierDelivery
+        ? `a entrega de lá sai ~${brl(input.pricierDelivery.theirs)} e a deste, ~${brl(input.pricierDelivery.ours)} — este sai mais barato no total`
+        : `somava mais uma entrega${input.extraFee ? ` (~${brl(input.extraFee)})` : ""}${min} — este sai mais barato no total`;
   return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas ${why}. Se preferir aquele, é só falar.`;
 }
 
