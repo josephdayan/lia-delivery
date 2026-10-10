@@ -6,7 +6,7 @@ import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
-import { handleDeliveryMessage, cheaperSwapPool } from "../src/lib/delivery-service";
+import { handleDeliveryMessage, cheaperSwapPool, splitIdentity } from "../src/lib/delivery-service";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { __setPreflightForTests, estimateDay } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
@@ -129,4 +129,29 @@ test("prazo dito ('amanhã') sobrevive ao fechamento: o resumo avisa que a entre
   const ctx = await ctxOf(c.convoId);
   assert.deepEqual(ctx.neededBy, { date: tomorrow, label: "amanhã" }, out.slice(0, 600));
   if (/Total/.test(out) && /dias? úte/.test(out)) assert.match(out, /precisa pra \*amanhã\*/, out.slice(0, 600));
+});
+
+// 3) Nome + CPF + CEP + número na mesma mensagem, em qualquer ordem ------------------------------------------------
+test("splitIdentity: nome e CPF saem em qualquer ordem; produto não vira nome", () => {
+  const cpf = "52998224725";
+  assert.deepEqual(splitIdentity("Rafael Torres, 529.982.247-25, CEP 01310-100 número 1000", cpf), { name: "Rafael Torres", rest: "CEP 01310-100 número 1000" });
+  assert.deepEqual(splitIdentity("cpf 529.982.247-25 Rafael Torres cep 01310-100 numero 500", cpf), { name: "Rafael Torres", rest: "cep 01310-100 numero 500" });
+  assert.deepEqual(splitIdentity("numero 500 Rafael Torres 529.982.247-25", cpf), { name: "Rafael Torres", rest: "numero 500" });
+  assert.deepEqual(splitIdentity("leite ninho, Carolina Mendes cpf 52998224725", cpf), { name: "Carolina Mendes", rest: "leite ninho" });
+  assert.deepEqual(splitIdentity("meu nome é Joana Prado e meu cpf é 529.982.247-25", cpf), { name: "Joana Prado", rest: "" });
+  assert.deepEqual(splitIdentity("2 sabonetes dove, cpf 52998224725", cpf), { name: null, rest: "2 sabonetes dove" });
+});
+
+test("cadastro: 'Rafael Torres, 529.982.247-25, CEP 01310-100 número 1000' salva tudo e não vira item", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  const user = await prisma.user.create({ data: { phone } });
+  await prisma.conversation.create({ data: { userId: user.id, status: "active", currentStep: "need_address", context: JSON.stringify({ flow: "delivery", step: "need_address" }) } });
+  const out = await send(phone, "Rafael Torres, 529.982.247-25, CEP 01310-100 número 1000");
+  assert.doesNotMatch(out, /1x Rafael|Rafael Torres\* eu não achei|Anotei/i, out.slice(0, 500));
+  const saved = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+  assert.equal(saved.cpf, "52998224725", out.slice(0, 500));
+  assert.equal(saved.cpfName, "Rafael Torres");
+  const convo = await prisma.conversation.findFirstOrThrow({ where: { userId: user.id } });
+  assert.doesNotMatch(convo.context ?? "", /Rafael/, "o nome não ficou na lista de itens");
 });

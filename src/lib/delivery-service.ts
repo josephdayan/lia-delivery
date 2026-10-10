@@ -5416,7 +5416,9 @@ async function handleNewCep(
   const raw = rawText ?? "";
   const split = raw ? splitAddressAndItems(raw) : null;
   if (split?.items) split.items = (await takeIdentityFromItems(userId, split.items)) ?? "";
-  const rawRest = raw
+  // Nome + CPF no mesmo texto do CEP e do número (10/10, rodada 5 g16): saem antes de ler número/itens — o "número 1000"
+  // levava o resto pro caminho do número rotulado e "Rafael Torres" virava item.
+  const rawRest = (split || !extractCpf(raw) ? raw : (await takeIdentityFromItems(userId, raw)) ?? "")
     .replace(CEP_RE_GLOBAL, " ")
     .replace(/\b(?:o\s+)?(?:meu\s+)?(?:novo\s+)?cep\s*(?:[eé]|eh|:)?\s*/gi, " ")
     .replace(/\s+/g, " ")
@@ -5630,6 +5632,12 @@ function snapshotExpiredCart(ctx: DeliveryContext, idleMs: number, quote = false
 export async function takeIdentityFromItems(userId: string, items: string | undefined): Promise<string | undefined> {
   if (!items || !looksLikeCpfAttempt(items)) return items;
   const cpf = extractCpf(items);
+  if (cpf) {
+    const taken = splitIdentity(items, cpf);
+    const name = taken.name ?? (await prisma.user.findUnique({ where: { id: userId }, select: { cpfName: true } }))?.cpfName ?? null;
+    if (name) await prisma.user.update({ where: { id: userId }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
+    return taken.rest || undefined;
+  }
   const rest: string[] = [];
   let name: string | null = null;
   for (const segment of items.split(/\s*[,;\n]\s*/).filter(Boolean)) {
@@ -5644,6 +5652,40 @@ export async function takeIdentityFromItems(userId: string, items: string | unde
   if (cpf && !name) name = (await prisma.user.findUnique({ where: { id: userId }, select: { cpfName: true } }))?.cpfName ?? null;
   if (cpf && name) await prisma.user.update({ where: { id: userId }, data: { cpf, cpfName: name, cpfConsentAt: new Date() } });
   return rest.join(", ") || undefined;
+}
+
+// Nome + CPF válido em qualquer ordem e com ou sem vírgula ("Rafael Torres, 529.982.247-25, CEP … número 1000",
+// "cep … numero 500, Fulano cpf …", 10/10, rodada 5 g16): o CPF (com o rótulo "cpf") sai do texto e vira separador; o
+// nome é o trecho colado nele (antes, depois) com cara de nome, ou um nome comum em outro trecho. O resto volta intacto.
+export function splitIdentity(text: string, cpf: string): { name: string | null; rest: string } {
+  const MARK = "\u0000";
+  const marked = text.replace(/(?:\b(?:e\s+)?(?:o\s+)?(?:meu\s+)?cpf\b\s*(?:[:=-]|é|eh|e)?\s*)?\d[\d.\s-]{9,16}\d/gi, (m) => (m.replace(/\D/g, "").includes(cpf) ? `,${MARK},` : m));
+  const segments = marked.split(/\s*[,;\n]\s*/).map((seg) => seg.trim()).filter(Boolean);
+  let at = segments.indexOf(MARK);
+  const nameOk = (seg: string | undefined) => Boolean(seg && seg !== MARK && looksLikeOnboardingName(seg) && extractFullName(seg));
+  // Sem vírgula entre o nome e o resto ("cpf … Rafael Torres cep 01310-100 numero 500"): o nome é o começo (até o
+  // CEP/número/rua) ou o fim (depois do número) do trecho vizinho.
+  for (const side of [1, -1]) {
+    const i = at + side;
+    const seg = segments[i];
+    if (i < 0 || !seg || seg === MARK || nameOk(seg)) continue;
+    const head = /^([\p{L}' -]+?)\s+((?:cep|n[uú]mero|num|n[º°o]|rua|r\.|av\.?|avenida|alameda)\b.*|\d.*)$/iu.exec(seg);
+    const tail = /^(.*\d\S*)\s+([\p{L}' -]+)$/u.exec(seg);
+    // Só nome comum do Brasil aqui: "2 sabonetes dove, cpf …" não tem nome nenhum.
+    const isName = (t: string) => nameOk(t) && looksLikeBareFirstNameFullName(t);
+    const parts = head && isName(head[1]) ? [head[1].trim(), head[2].trim()] : tail && isName(tail[2]) ? [tail[1].trim(), tail[2].trim()] : null;
+    if (parts) {
+      segments.splice(i, 1, ...parts);
+      at = segments.indexOf(MARK);
+    }
+  }
+  // Nome comum colado no CPF > nome comum em outro trecho > qualquer nome colado no CPF ("leite ninho, Rafael Torres cpf …").
+  const near = [at - 1, at + 1].filter((i) => i >= 0 && nameOk(segments[i]));
+  const bareAt = segments.findIndex((seg) => seg !== MARK && nameOk(seg) && looksLikeBareFirstNameFullName(seg));
+  const pick: number | undefined = near.find((i) => looksLikeBareFirstNameFullName(segments[i])) ?? (bareAt >= 0 ? bareAt : near[0]);
+  const name = pick != null && pick >= 0 ? extractFullName(segments[pick]) : null;
+  const rest = segments.filter((seg, i) => seg !== MARK && i !== pick && !/^(?:cpf|nome|meu cpf|e)$/i.test(seg)).join(", ");
+  return { name, rest };
 }
 
 function looksLikeDeliveryAddress(text: string): boolean {
