@@ -2630,6 +2630,8 @@ export function answerOpenQuestion(question: string, text: string): string | nul
   const head = parts[0]
     .replace(/^(?:ah |entao |ai |hm+ )?(?:eh |e )?(?:o |a |os |as |um |uma |de )?/, "")
     .replace(/\b(?:mesmo|mesma|por favor|pf|pfv|pode ser|quero|prefiro|queria|vou querer|ai|isso)\b/g, " ")
+    // "pode ser o integral" (10/10, rodada 5 g16): sem o trim antes, o artigo sobrava ("leite o integral").
+    .trim()
     .replace(/^(?:o |a |os |as |de |do |da )+/, "")
     .replace(/\s+/g, " ")
     .trim();

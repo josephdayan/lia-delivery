@@ -188,3 +188,33 @@ test("'De qual item?' + 'a fralda' segue trocando pela mais barata", async (t) =
   const out = await send(c.phone, "a fralda");
   assert.doesNotMatch(out, /mantenho|não troco nada/i, out.slice(0, 400));
 });
+
+// 5) Carrossel de leite aberto + "pode ser o semidesnatado e adiciona uma manteiga": escolhe e soma ------------------
+async function leiteOptions(): Promise<ChoiceOption[]> {
+  const cands = await gatherCrossStoreCandidates("leite", 40, 4, { noLongTail: true });
+  const pick = (re: RegExp) => cands.find((c) => re.test(c.item.name));
+  const chosen = [pick(/semidesnatad/i), pick(/integral/i), pick(/\bdesnatad/i)].filter(Boolean);
+  assert.ok(chosen.length === 3, "catálogo de teste sem os 3 leites");
+  return chosen.map((c) => ({ sku: c!.item.sku, name: c!.item.name, brand: c!.item.brand, unitPrice: c!.item.unitPrice, storeKey: c!.store.key, storeLabel: c!.store.label }));
+}
+
+for (const msg of ["pode ser o semidesnatado e adiciona uma manteiga", "pode ser o semidesnatado, e coloca uma manteiga"]) {
+  test(`carrossel de leite aberto: "${msg}" escolhe o semidesnatado e soma a manteiga`, async (t) => {
+    if (!dbOk) return t.skip();
+    const leites = await leiteOptions();
+    const deterg = bi("deterg-1", "Detergente Líquido Ype Neutro 500ml", 3.84, { ask: "detergente", storeKey: "carrefour", storeLabel: "Carrefour" });
+    const c = await customerWith({ basket: [deterg], pending: [{ query: "leite", qty: 1, options: leites }] }, "choosing");
+    const out = await send(c.phone, msg);
+    const ctx = await ctxOf(c.convoId);
+    const basketSkus = (ctx.basket ?? []).map((b: BasketItem) => b.sku);
+    const pending = (ctx.pending ?? []) as Array<{ query: string; options: ChoiceOption[] }>;
+    assert.ok(basketSkus.includes("deterg-1"), "a cesta ficou");
+    // Regra do dono (04/09): nome digitado estreita para a opção do carrossel e o cliente confirma; nunca refaz a busca.
+    const leitePend = pending.find((p) => /leite/i.test(p.query));
+    const leiteOk = basketSkus.includes(leites[0].sku) || (leitePend && leitePend.options.length === 1 && leitePend.options[0].sku === leites[0].sku);
+    assert.ok(leiteOk, `${basketSkus.join(",")} :: ${JSON.stringify(leitePend?.options.map((o) => o.sku))} :: ${out.slice(0, 500)}`);
+    assert.doesNotMatch(leitePend?.query ?? "", /semidesnatad/i, "não refez a busca do leite");
+    const names = `${(ctx.basket ?? []).map((b: BasketItem) => b.name).join(" | ")} | ${pending.map((p) => p.query).join(" | ")}`;
+    assert.match(names, /manteiga/i, out.slice(0, 500));
+  });
+}

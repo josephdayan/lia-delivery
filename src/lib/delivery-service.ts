@@ -2612,7 +2612,10 @@ async function handleDeliveryTurn(
   // Com o carrossel de UM item aberto, "o integral mesmo, e o pão de forma" também responde a esse item.
   const choosingNow = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
   const impliedQuestion =
-    !ctx.openQuestion && choosingNow && intent.kind === "free_text" && /\b(mesmo|mesma|pode ser)\b/.test(normalizeMsg(text)) && /,|\be\b/.test(text) && !/\d/.test(text)
+    !ctx.openQuestion && choosingNow && intent.kind === "free_text" && /\b(mesmo|mesma|pode ser)\b/.test(normalizeMsg(text)) && /,|\be\b/.test(text) && !/\d/.test(text) &&
+    // "pode ser o semidesnatado e adiciona uma manteiga" (10/10, rodada 5 g16): a cabeça escolhe uma opção do carrossel — a
+    // escolha cuida (escolhe e soma o resto). A pergunta implícita refazia a busca do leite.
+    !["name", "pick"].includes(parseChoiceReply(splitChoiceHeadAndItems(text, choosingNow)?.head ?? "", choosingNow.options)?.type ?? "")
       ? { text: `Qual ${choosingNow.query} você quer?`, at: Date.now() }
       : undefined;
   if (ctx.openQuestion || impliedQuestion) {
