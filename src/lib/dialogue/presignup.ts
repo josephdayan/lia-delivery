@@ -11,7 +11,7 @@ import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
 import { looksLikeMedicine, parsePriceCap, type Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { isPrescriptionDrugName } from "../medicine";
+import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled } from "../recommend/types";
 import { reply, turnMeta, writeCtx } from "../turn-runtime";
@@ -260,6 +260,10 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
   const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
   const medicine = d.medicine || items.length !== d.items.length;
+  // Remédio isento ligado (10/10, rodada 10 g28): "preciso de um paracetamol e um band-aid..." recebia "Remédio de receita eu
+  // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
+  // receita nomeado, o caminho determinístico anota o remédio isento com o resto.
+  if (medicine && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
   // Pedir pessoa vale mais que qualquer outra coisa na mesma mensagem: o dono é avisado pelo caminho fixo.
   if (d.human) return { ok: true, steps: [{ type: "human" }], label: "human" };
   const steps: PreStep[] = [];

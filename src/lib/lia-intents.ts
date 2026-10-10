@@ -430,9 +430,9 @@ const DISCOURSE_WORDS = new Set(
     // verbos de conversa (nenhum é produto)
     "vamos vou vai vamo pago paga pagar pagamos pagando pagam dividir divide dividimos dividindo dividi divido gastar gasto gasta gastando economizar ajuda ajudar ajude " +
     "montar monta fazer faz quero queria quer preciso precisa tenho tem temos sou somos estou to tou tava moro mora ignora ignorar ignore ignorem desconsidera " +
-    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir " +
+    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir mostra mostrar mostre mostrando manda mandar veja ver olhar " +
     // meta-lista, quantidade vaga e advérbios
-    "itens item coisa coisas produto produtos parte resto tudo todos todas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
+    "itens item coisa coisas produto produtos parte resto tudo todos todas ambos ambas dois duas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
     // conectivos e artigos
     "a o os as um uma uns umas de do da dos das em no na nos nas pra pro para por pelo pela com sem que e ou mas ate"
   ).split(" ")
@@ -541,7 +541,10 @@ function specToken(t: string): boolean {
 const FOR_WHOM_FRAGMENT_RE = /^(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\s+[a-z]+(?:\s+[a-z]+)?$/;
 const EACH_SIZE_FRAGMENT_RE = /^(?:cada\s+(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))|(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))\s+cada)$/;
 // "a sem receita" (10/10, rodada 8 g25: a IA encurtava "a normal sem receita" e a linha virava "Não achei: a sem receita").
-const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:(?:o|a|os|as)\s+)?(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$/;
+// "é sem receita" / "ele é sem receita" / "não precisa de receita" (10/10, rodada 10 g28): virava "Não achei: é sem receita".
+const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:ele|ela|esse|essa|isso|mas|ja)\s+)?(?:(?:e|eh)\s+)?(?:(?:o|a|os|as)\s+)?(?:(?:normal|comum|tradicional|simples|basic[oa])\s+)?(?:sem receita|que nao precisa(?: de)? receita|nao precisa(?: de)? receita|sem prescricao|isento|de venda livre)$/;
+// Só a medida, logo depois do item ("e o paracetamol? é sem receita, 750mg"): é do item anterior, não item próprio.
+const BARE_MEASURE_FRAGMENT_RE = /^(?:(?:de|com)\s+)?\d+(?:[.,]\d+)?\s?(?:mg|mcg|g|kg|ml|l|litros?)$/;
 // Só a medida do item anterior (10/10, rodada 8 g25): "3 pacotes de guardanapo, aquele de 32cm" — "de 32cm" não é item.
 const SIZE_ONLY_FRAGMENT_RE = /^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+)?(?:de|com)\s+\d+(?:[.,]\d+)?\s?(?:cm|mm|kg|g|l|ml|litros?|folhas|unidades|un|metros?|m)$/;
 export function isSizeOnlyFragment(phrase: string): boolean {
@@ -653,6 +656,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // conjunção sobrando no começo do segmento ("e areia pro gato",
         // "mas entrega hoje se der" — a adversativa escondia o modificador de urgência)
         .replace(/^(e|mas|porem|porém|so que|só que|com)\s+/i, "")
+        // "e também pão de forma" (10/10, rodada 10 g28): o "também" ficava na frase ("1x também pão de forma").
+        .replace(/^(?:tamb[eé]m|tbm|tb)\s+(?=[a-zà-ú\d])/i, "")
         // "me ajuda a montar até 100 reais" (10/10, rodada 8 M1): a fala antes do orçamento sai; fica o "até N reais" (teto).
         .replace(/^(.+?)\s+(?=(?:at[eé]|no m[aá]ximo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?\d)/i, (m, lead: string) => (isDiscourseOnly(lead) ? "" : m))
         // Sujeito-pronome antes do pedido ("eu quero arroz e ele quer feijão", 10/10, rodada 8 M1): sai o pronome (e o verbo
@@ -796,6 +801,11 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         continue;
       }
       if (OTC_QUALIFIER_FRAGMENT_RE.test(n)) continue;
+      const prevLine = merged[merged.length - 1];
+      if (BARE_MEASURE_FRAGMENT_RE.test(n) && !/\d\s?(?:mg|mcg|g|kg|ml|l|litros?)\b/i.test(prevLine.phrase)) {
+        prevLine.phrase = `${prevLine.phrase} ${n.replace(/^(?:de|com)\s+/, "").replace(/\s+/g, "")}`;
+        continue;
+      }
     }
     // Adição RELATIVA dentro da MESMA mensagem: "…30 litros, qualquer marca; mais um
     // desses" e "leite sem lactose; mais dois leites" somam na linha ANTERIOR — nunca
@@ -2739,11 +2749,28 @@ export function parsePackCountAsk(text: string): { noun: string } | null {
 const SIZE_WORD = String.raw`(?:rn|xxg|xg|exg|eg|recem[- ]nascid[oa]s?)`;
 const SIZE_ATTR_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)|^(?:p|m|g)$`);
 const BASE_SIZE_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)`, "g");
+// Peso/volume novo e variante excludente também substituem (10/10, rodada 10 g28): "ração 10kg" + "de 3kg" buscava
+// "ração cachorro adulto 10kg 3kg"; "leite ... integral" + "desnatado" buscava "integral desnatado" e dizia "não achei"
+// logo depois de mostrar o desnatado.
+const WEIGHT_RE = /(?:^|\s)\d+(?:[.,]\d+)?\s*(?:kg|g|gr|grs|gramas?|quilos?|kilos?)(?=\s|$)/g;
+const VOLUME_RE = /(?:^|\s)\d+(?:[.,]\d+)?\s*(?:ml|l|lt|lts|litros?)(?=\s|$)/g;
+const EXCLUSIVE_VARIANTS: RegExp[] = [/\b(?:integral|desnatad[oa]s?|semi ?desnatad[oa]s?)\b/g, /\b(?:tradicional|extra ?fortes?)\b/g, /\b(?:adult[oa]s?|filhotes?|senior)\b/g];
 export function replaceRefinedSize(base: string, attrs: string[]): string {
   const said = normalizeMsg(attrs.join(" ")).trim();
-  if (!SIZE_ATTR_RE.test(said)) return base;
-  const stripped = normalizeMsg(base).replace(BASE_SIZE_RE, " ").replace(/\s+/g, " ").trim();
-  return stripped || base;
+  let out = normalizeMsg(base);
+  if (SIZE_ATTR_RE.test(said)) out = out.replace(BASE_SIZE_RE, " ");
+  // Só sai a medida DIFERENTE da dita ("10kg" pedido de novo fica: a busca já tem, rodada 7 A5).
+  const compact = (m: string) => m.replace(/\s+/g, "");
+  for (const re of [WEIGHT_RE, VOLUME_RE]) {
+    const saidHits = (said.match(re) ?? []).map(compact);
+    if (saidHits.length) out = out.replace(re, (m) => (saidHits.includes(compact(m)) ? m : " "));
+  }
+  for (const re of EXCLUSIVE_VARIANTS) {
+    const saidHits = said.match(re);
+    if (saidHits) out = out.replace(re, (word) => (saidHits.includes(word) ? word : " "));
+  }
+  out = out.replace(/\s+/g, " ").trim();
+  return out && out !== normalizeMsg(base).replace(/\s+/g, " ").trim() ? out : base;
 }
 
 // Pedido de entregar em DOIS endereços (10/10, rodada 7 M11): "duas entregas: uma em casa e outra no trabalho".
@@ -3135,6 +3162,8 @@ export function answerOpenQuestion(question: string, text: string): string | nul
     .trim();
   if (!head || head.split(" ").length > 3 || /\d/.test(head)) return null;
   if (/^(?:nao|sim|nada|ok|so isso|cancela\w*|esquece|deixa|tanto faz|qualquer)$/.test(head)) return null;
+  // "as duas, me mostra" (10/10, rodada 10 g28): resposta sem produto ("as duas", "ambos", "me mostra") nunca vira item.
+  if (isDiscourseOnly(head)) return null;
   // "esse mesmo, o 1" / "o primeiro, por favor" escolhem uma OPÇÃO da tela; não são qualificador do item.
   if (/^(?:ess[ae]s?|est[ae]s?|isso|aquel[ae]s?|primeir[oa]|segund[oa]|terceir[oa]|ultim[oa]|outr[oa]s?|mesmo|mesma)\b/.test(head)) return null;
   const first = head.includes(subject) ? head : `${subject} ${head}`;
@@ -3191,7 +3220,11 @@ export function parseItemCheapest(text: string): string | null {
 export function cheaperAskTarget(text: string, basket: { name: string; ask?: string }[], pendingQueries: string[] = []): number | null {
   const n = normalizeMsg(text);
   if (!/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/.test(n)) return null;
-  const said = n.replace(/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/g, " ");
+  // Medida não nomeia item (10/10, rodada 10 g28): "o mais barato de 500g" com o café em escolha casava o macarrão 500g da
+  // cesta pelo token "500g" e a Lia respondia sobre o macarrão. Sem palavra de produto, o pedido é do carrossel aberto.
+  const said = n
+    .replace(/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/g, " ")
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|mg|ml|l|lt|litros?|un|unid\w*|cm|m|w)?\b/g, " ");
   const hits = basket.map((item, i) => (sharesProductNoun(said, `${item.ask ?? ""} ${item.name}`) ? i : -1)).filter((i) => i >= 0);
   if (hits.length !== 1) return null;
   if (pendingQueries.some((q) => sharesProductNoun(said, q))) return null;
@@ -3258,6 +3291,25 @@ export function splitFiscalClause(text: string): { text: string; asked: boolean 
   return { text: kept.join(" ").trim(), asked: true };
 }
 
+
+// Escolha pelo PREÇO de uma opção na tela (10/10, rodada 10 g28): "o Pilão de 29,48", "não, to falando do café. o de 29,48".
+// Virava "Somei 1x o Pilão de 29,48" (item novo). Vale só preço com centavos/R$/reais que bate com UMA opção, e nunca teto
+// ("até 30,00"), pergunta ou palavra que nenhuma opção tem além do produto. Devolve o índice ou null.
+export function parseChoiceByCitedPrice(text: string, options: { name: string; price: number }[], query = ""): number | null {
+  const n = normalizeMsg(text).trim();
+  if (!n || /\?\s*$/.test(n) || /\b(?:ate|menos de|abaixo de|no maximo|mais de|acima de|teto|limite|orcamento)\b/.test(n)) return null;
+  const values = [...n.matchAll(/(?:r\$\s*)?(\d{1,4}[.,]\d{2}|\d{1,4}(?=\s*reais))(?:\s*reais)?/g)]
+    .map((m) => Number(m[1].replace(",", ".")))
+    .filter((v) => Number.isFinite(v) && v > 0);
+  if (values.length !== 1) return null;
+  const hits = options.map((o, i) => (Math.abs(o.price - values[0]) < 0.015 ? i : -1)).filter((i) => i >= 0);
+  if (hits.length !== 1) return null;
+  // As outras palavras têm que descrever a opção ou o produto (marca, "café"), ou ser fala ("não, to falando do").
+  const known = ` ${normalizeMsg(`${options[hits[0]].name} ${query}`).replace(/[^a-z0-9]+/g, " ")} `;
+  const words = n.replace(/(?:r\$\s*)?\d+(?:[.,]\d+)?(?:\s*reais)?/g, " ").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length >= 4);
+  const META = /^(?:falando|falei|quero|queria|prefiro|pode|esse|essa|aquele|aquela|mesmo|mesma|opcao|entao|escolho|fico|vou|pega|pegar|manda)$/;
+  return words.every((w) => META.test(w) || known.includes(` ${w.replace(/s$/, "")}`)) ? hits[0] : null;
+}
 
 // "troca pelo de R$ 34,09", "quero o de 34", "prefiro o outro" no total / escolha de entrega (07/10, c24):
 // o cliente quer OUTRA opção da última lista, apontada pelo preço ou por "o outro". Devolve o índice

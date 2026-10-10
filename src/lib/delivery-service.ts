@@ -7,7 +7,7 @@ import { compactCardDelivery } from "@/lib/meta-carousel-card";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
-import { attrMatchesItem, conciergeMatchIsStrong, satisfiesNegation, diversifyOptions, inferCatalogRefinement, parsePackPhrase, productKindConflict, queryTokens, sameProductVariant, stapleFor, scoreCatalogMatch, variantPenalty } from "@/lib/stores/types";
+import { attrMatchesItem, conciergeMatchIsStrong, satisfiesNegation, diversifyOptions, inferCatalogRefinement, parsePackPhrase, productKindConflict, queryTokens, sameProductVariant, shelfHeadNoun, stapleFor, scoreCatalogMatch, variantPenalty } from "@/lib/stores/types";
 import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -3218,9 +3218,13 @@ async function handleDeliveryTurn(
     const cleaned = text.replace(/^\s*(?:n[aã]o|nao|ah|ai|ei)\s*[,.!]+\s*/i, "");
     const lines = resolveListItems(cleaned);
     const real = lines.filter((l) => localCatalogProbe(l.phrase).strong);
-    const repeats = real.map((l) => ({ line: l, hit: repeatedBasketLine(l.phrase, ctx.basket!) })).filter((r) => r.hit);
+    // Carrossel aberto e TODA linha fala do item em escolha (10/10, rodada 10 g28): "não, to falando do café. o Pilão de
+    // 29,48" virava "Somei 1x o Pilão de 29,48" e "feijão da Camil" somava no arroz Camil. É escolha — quem trata é a escolha.
+    const choosingNow = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0] : undefined;
+    const aboutPending = Boolean(choosingNow) && real.length > 0 && real.every((l) => refersToPendingChoice(l.phrase, choosingNow!));
+    const repeats = aboutPending ? [] : real.map((l) => ({ line: l, hit: repeatedBasketLine(l.phrase, ctx.basket!) })).filter((r) => r.hit);
     const reformulates = real.length >= 2 && repeats.length >= 2 && repeats.length * 2 >= real.length;
-    const idleNewMission = real.length > 0 && idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text);
+    const idleNewMission = real.length > 0 && !aboutPending && idleMs >= newMissionAfterMs() && looksLikeNewProductRequest(text);
     if (reformulates || idleNewMission) {
       console.log("[basket:new-list]", reformulates ? "reformula" : "parado", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`, `parado_ms=${idleMs}`);
       await startNewList(phone, convo.id, user.cep, ctx, text, user.id);
@@ -3241,7 +3245,7 @@ async function handleDeliveryTurn(
       else if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
       return;
     }
-    if (lines.length >= 2 && real.length) {
+    if (lines.length >= 2 && real.length && !aboutPending) {
       console.log("[basket:sum]", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`);
       // A medida solta ("aquele de 32cm") é do item anterior, não um item a mais (10/10, rodada 8 g25).
       const labels: string[] = [];
@@ -7301,6 +7305,14 @@ async function handleChoosing(
     await confirmChosenOption(phone, convoId, ctx, userCep, store, current, tapped);
     return;
   }
+  // "o Pilão de 29,48" (10/10, rodada 10 g28): o preço citado aponta UMA opção da tela — é escolha, não item novo.
+  if (intent.kind === "free_text") {
+    const byPrice = parseChoiceByCitedPrice(text, current.options.map((o) => ({ name: o.name, price: display(o.unitPrice, o.medicine) })), current.baseQuery ?? current.query);
+    if (byPrice != null) {
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[byPrice]);
+      return;
+    }
+  }
 
   // Assunto NOVO de recomendação no meio da escolha (09/10, rodada de cliente: com os cards de dor de cabeça na tela,
   // "tem algo doce pra comer?" virava refino da dor de cabeça e reenviava os mesmos remédios). Outra necessidade
@@ -7550,7 +7562,7 @@ async function handleChoosing(
       .replace(/^(?:quero|queria|prefiro|procura|procure|ve se tem|veja se tem|tem|pode ser|me ve|manda)\s+/, "")
       .replace(/^(?:uma?|d[aeo]s?)\s+/, "")
       .trim();
-    const base = current.baseQuery ?? current.query;
+    const base = replaceRefinedSize(current.baseQuery ?? current.query, [wantedTail]);
     const baseTokens = new Set(queryTokens(normalizeMsg(base)));
     const fresh = queryTokens(wantedTail).filter((token) => !baseTokens.has(token));
     if (fresh.length && fresh.length <= 4) {
@@ -7575,7 +7587,7 @@ async function handleChoosing(
   // "tem um mais em conta?" (10/10, rodada 8 g25) é pedido de preço, não atributo: virava a busca "protetor solar em conta".
   const attrIsPrice = attrAsk ? /\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco|mais car[oa]s?)\b/.test(normalizeMsg(attrAsk)) : false;
   if (attrAsk && !attrIsPrice && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
-    const base = current.baseQuery ?? current.query;
+    const base = replaceRefinedSize(current.baseQuery ?? current.query, [attrAsk]);
     const baseTokens = new Set(queryTokens(normalizeMsg(base)));
     const fresh = queryTokens(normalizeMsg(attrAsk)).filter((token) => !baseTokens.has(token));
     if (fresh.length && fresh.length <= 4) {
@@ -8225,6 +8237,24 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
   // O teto que o cliente já disse continua valendo na busca nova.
   if (choice && current.cap != null) choice.options = withinBudget(choice.options, current);
+  // A busca nova não achou, mas uma opção JÁ MOSTRADA tem o que foi pedido (10/10, rodada 10 g28): "então 6 do Piracanjuba
+  // desnatado mesmo" ouvia "Não achei ... desnatado" logo depois de a Lia exibir o Leite Piracanjuba Desnatado.
+  if (!choice?.options.length && mustMatch) {
+    const seen = new Set<string>();
+    const shown = [...current.options, ...(current.shownOptions ?? [])].filter((o) => !seen.has(o.sku) && seen.add(o.sku) && attrMatchesItem(mustMatch, o));
+    const kept = current.cap != null ? withinBudget(shown, current) : shown;
+    if (kept.length) {
+      current.attrs = undefined;
+      current.closestFalta = undefined;
+      current.options = kept.slice(0, vitrineLimit());
+      ctx.longTailOffer = undefined;
+      await writeCtx(convoId, ctx);
+      const head = shelfHeadNoun(current.baseQuery ?? current.query);
+      const label = head && !normalizeMsg(mustMatch).includes(head) ? `${head} ${mustMatch}` : mustMatch;
+      await sendChoices(phone, current, copy.narrowedChoices(label));
+      return true;
+    }
+  }
   if (!choice?.options.length) return false;
   current.baseQuery = undefined;
   current.attrs = undefined;
@@ -8293,7 +8323,7 @@ async function tryRejectedRefine(phone: string, convoId: string, ctx: DeliveryCo
   if (parseChoiceReply(text, current.options)?.type === "pick" || parseChoiceCombo(text, current.options)) return false;
   const required = n.match(REQUIREMENT_RE)?.[1];
   if (!required) return false;
-  const base = current.baseQuery ?? current.query;
+  const base = replaceRefinedSize(current.baseQuery ?? current.query, [required]);
   const { query: wanted, fresh, asked } = mergeQueryTerms(base, required.replace(/\//g, " ").replace(/\b(?:outras?|opcoes|opcao|mais)\b/g, " "));
   // Exige o que JÁ pediu ("essa de 3kg não serve, quero 10kg de qualquer marca", A5): a busca já foi feita em todas
   // as marcas; diz que não tem e o mais perto, com saída.
@@ -8528,8 +8558,13 @@ function repeatedBasketLine(phrase: string, basket: BasketItem[]): BasketItem | 
   const flat = (x: string) => ` ${normalizeMsg(x).replace(/[^a-z0-9]+/g, " ").trim()} `;
   const wanted = measureOf(phrase);
   const asked = tokenList(phrase);
+  // A cabeça do pedido tem que estar no item (10/10, rodada 10 g28): "feijão da Camil" com o arroz Camil na cesta casava
+  // pela marca e dobrava o arroz. Marca em comum não faz dois produtos diferentes virarem o mesmo.
+  const head = shelfHeadNoun(phrase);
+  const headStem = head && head.length >= 3 ? normalizeMsg(head).replace(/s$/, "") : "";
   return basket.find((b) => {
     if (wanted != null && measureOf(b.name) != null && wanted !== measureOf(b.name)) return false;
+    if (headStem && !flat(`${b.name} ${b.ask ?? ""}`).includes(` ${headStem}`)) return false;
     if (b.ask && same(b.ask, phrase)) return true;
     if (!sharesProductNoun(phrase, b.name) || !itemMatchesPhrase(phrase, b)) return false;
     const nameTokens = new Set(tokenList(b.name));
@@ -8649,6 +8684,14 @@ function splitChoiceHeadAndItems(text: string, current: PendingChoice): { head: 
   if (!refersToChoice) return null;
   // A cauda só conta quando traz produto (não "e paga no pix", não quantidade) e não repete o item da mesa.
   const items = resolveListItems(tail).filter((l) => localCatalogProbe(l.phrase).strong && !sharesProductNoun(l.phrase, current.baseQuery ?? current.query));  return items.length ? { head, tail } : null;
+}
+
+// A frase fala do item em escolha: nomeia o produto do carrossel ("o Pilão de 29,48" com "café pilão" aberto) ou é
+// resposta de escolha ("o segundo", "o de 29,48").
+function refersToPendingChoice(phrase: string, current: PendingChoice): boolean {
+  if (sharesProductNoun(phrase, current.baseQuery ?? current.query)) return true;
+  const reply = parseChoiceReply(phrase, current.options);
+  return Boolean(reply && reply.type !== "skip");
 }
 
 function explicitAddCue(text: string): boolean {
