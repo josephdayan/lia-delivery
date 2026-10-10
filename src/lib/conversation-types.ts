@@ -113,6 +113,9 @@ export type PendingChoice = {
   options: ChoiceOption[];
   // Original query before a refinement ("coleira" when query became "coleira azul").
   baseQuery?: string;
+  // Nome do item antes de uma BUSCA NOVA de refino ("fio dental" quando virou "fio dental fiodent extra fino 100m"), para
+  // "mostra de novo"/o nome de outra opção voltarem ao item de antes (10/10, rodada 13 g39).
+  originalQuery?: string;
   // Active refinement attributes ("azul", "2kg") — paging re-applies them.
   attrs?: string[];
   // Every sku already shown for this item, so "tem outras?" never repeats one — robust
