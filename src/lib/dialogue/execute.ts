@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { extractCep, normalizeMsg, parseRefinement } from "../lia-intents";
+import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { handleRecommend } from "../recommend/handle";
 import { getStore } from "../stores";
@@ -179,7 +179,8 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
         await h.refineOptions(phone, convoId, ctx, store(), attrs);
         return "done";
       }
-      const base = current.baseQuery ?? current.query;
+      // Tamanho novo substitui o anterior (10/10, rodada 7 M7: "fralda RN" + "muda pra tamanho P").
+      const base = replaceRefinedSize(current.baseQuery ?? current.query, [step.attribute]);
       const baseTokens = new Set(queryTokens(normalizeMsg(base)));
       const asked = queryTokens(normalizeMsg(step.attribute));
       const fresh = asked.filter((token) => !baseTokens.has(token));

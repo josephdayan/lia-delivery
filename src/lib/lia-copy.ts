@@ -518,8 +518,33 @@ export function requestedStoreNotShown(label: string, item?: string): string {
   return `${item ? `Pra *${item}*, não achei` : "Não achei isso"} na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
 }
 
-export function askEitherItem(a: string, b: string): string {
-  return `Você quer *${a}* ou *${b}*? Responde *1* (${a}), *2* (${b}) ou *os dois*.`;
+export function askEitherItem(a: string, b: string, cap?: number): string {
+  const budget = cap != null ? ` Procuro até *${brl(cap)}*.` : "";
+  return `Você quer *${a}* ou *${b}*? Responde *1* (${a}), *2* (${b}) ou *os dois*.${budget}`;
+}
+
+// Duas entregas (10/10, rodada 7 M11): a Lia ainda faz um endereço por pedido — diz isso e propõe a ordem.
+export function multiAddressOnePerOrder(address?: string): string {
+  return [
+    "Consigo, mas em *dois pedidos*: cada pedido vai pra um endereço só.",
+    `Vamos primeiro o de *casa*${address ? ` (${address})` : ""}: me manda os itens. Quando fechar e pagar, diz *trocar endereço*, manda o do trabalho e a gente faz o segundo.`
+  ].join("\n");
+}
+
+export function multiAddressSecondOrder(place: string, items: string): string {
+  return `Esses do *${place}* vão no 2º pedido (cada pedido vai pra um endereço). Fecha primeiro o de casa — diz *só isso* quando acabar. Depois do pagamento, diz *trocar endereço*, manda o endereço do ${place} e me manda de novo: _${items}_.\nSe preferir mandar tudo pra casa num pedido só, manda os itens de novo sem o "${place}:".`;
+}
+
+// "quantas canetas vem?" (10/10, rodada 7 M6): a conta é a que está no nome do produto (a loja não manda outro dado).
+export function packCountAnswer(name: string, units: number): string {
+  return units > 0
+    ? `O *${name}* vem com *${units} unidade${units === 1 ? "" : "s"}* (é o que a loja informa no produto).`
+    : `A loja não diz no produto quantas unidades vêm: *${name}*. Pelo nome é 1 embalagem — se quiser um pacote maior, me fala que eu procuro.`;
+}
+
+// "põe o papel de volta" (10/10, rodada 7 M5): o mesmo item que saiu, com o mesmo preço.
+export function removedRestored(names: string): string {
+  return `Voltei *${names}* pra cesta. ✅`;
 }
 
 export function swapUndone(names: string): string {
@@ -763,6 +788,11 @@ export type SummaryInput = {
 // Prazo como o CLIENTE lê (09/10, rodada de cliente: "pela própria loja · prazo da loja: em até 9h (hoje, 12h–15h)"
 // e "entrega em *em até 9h…*"). Só exibição: a promessa gravada no pedido continua igual (a compra confere por ela).
 // "pela própria loja (2 entregas) · prazo da loja: em até 9h (hoje, 12h–15h)" → "2 entregas · hoje, 12h–15h".
+// "10h" sozinho é duração do SLA da loja (10/10, rodada 7 M3: "Entrega: R$ 8,90 · 10h" — 10 horas? 10h da manhã?).
+export function spellStoreHours(text: string): string {
+  return text.replace(/(^|:\s*|em até\s+)(\d{1,2})h$/i, (_m, pre: string, h: string) => `${/em até/i.test(pre) ? "" : pre}em até ${h} hora${h === "1" ? "" : "s"}`);
+}
+
 export function promiseForCustomer(promise?: string | null): string {
   if (!promise) return "";
   return promise
@@ -821,7 +851,8 @@ export function consolidationDeadlineNote(label: string, joinedMiss: boolean, ke
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
-  const prazo = (deliveryPromise ? promiseForCustomer(deliveryPromise) : "") || (etaMinutes ? `chega em ~${etaMinutes} min` : null);
+  // "Entrega: R$ 8,90 · 10h" (10/10, rodada 7 M3) lia como horário: no resumo a duração sai por extenso.
+  const prazo = (deliveryPromise ? promiseForCustomer(deliveryPromise).split(" · ").map(spellStoreHours).join(" · ") : "") || (etaMinutes ? `chega em ~${etaMinutes} min` : null);
   return `Entrega: ${brl(frete)}${prazo ? ` · ${prazo}` : ""}`;
 }
 
@@ -903,7 +934,7 @@ export function shippingSpeedChoice(
   const over = (total: number) => (budgetCap != null && total > budgetCap + 0.005 ? ` · passa do seu limite de ${brl(budgetCap)}` : "");
   // ML: data do anúncio ("chega até sáb."). Loja: SLA dela ("prazo da loja: 60 min").
   const quando = (estimate?: string) =>
-    estimate ? (kind === "store" ? estimate : `chega até ${estimate}`) : kind === "store" ? "sem prazo informado" : "sem data publicada";
+    estimate ? (kind === "store" ? spellStoreHours(estimate) : `chega até ${estimate}`) : kind === "store" ? "sem prazo informado" : "sem data publicada";
   return [
     "Tem duas formas de entrega. Qual você prefere?",
     `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}${over(barato.total)}`,
@@ -2678,7 +2709,7 @@ export function serviceAnswer(
       return "O prazo depende da loja e do seu endereço — tem item que chega em horas, tem item que leva alguns dias. Me diz o que você precisa que eu mostro o prazo exato junto com o total, antes de você pagar.";
     case "hours":
       // Horário de atendimento (09/10): a Lia responde a qualquer hora; quem tem horário é a entrega da loja.
-      return "Pode pedir a *qualquer hora*, todo dia — eu respondo na hora. A entrega segue o horário de cada loja, e eu te mostro o prazo exato antes de você pagar.";
+      return "Pode pedir a *qualquer hora*, todo dia (fim de semana também) — eu respondo na hora. Já o dia e o horário da *entrega* são os de cada loja (nem toda loja entrega no domingo): eu te mostro o prazo exato junto com o total, antes de você pagar.";
     case "payment":
       return "*Pix* (sem taxa) ou *cartão* (link seguro) — tudo aqui pelo chat. Vale-refeição ainda não aceito.";
     case "service_fee":
@@ -2776,6 +2807,11 @@ export function freightFeeExplain(): string {
 
 export function freightEtaHeader(): string {
   return "O prazo depende da entrega que você escolher — está em cada opção 👇";
+}
+
+// "quanto fica o total?" na escolha da entrega (10/10, rodada 7 M3): respondia "Não peguei qual você quer".
+export function freightTotalHeader(): string {
+  return "O total depende da entrega que você escolher — o valor final está em cada opção 👇";
 }
 
 // "qual a chave pix?" com o código na mão (06/10): a IA dizia que o Pix "aparece no total".
