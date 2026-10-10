@@ -402,8 +402,13 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
         case "answer": {
           // Prazo DITO ("preciso que chegue até amanhã de manhã", 10/10, rodada 10 g29) não é a pergunta genérica "demora
           // quanto?": anota o dia e promete dizer qual entrega chega a tempo, em vez do "o prazo depende da loja".
-          const deadline = step.topics.includes("delivery_time") ? parseNeededBy(input.text) ?? ctx.neededBy : null;
-          const topics = deadline ? step.topics.filter((t) => t !== "delivery_time") : step.topics;
+          // "preciso que chegue até amanhã de manhã: carvão, ..." classificado como AGENDAMENTO (10/10, rodada 11 g32): o dia
+          // também é prazo dito — sem isso o "o mais barato" e o resumo nunca sabiam que o cliente tinha hora.
+          const timeTopic = step.topics.includes("delivery_time") || step.topics.includes("scheduling");
+          const deadline = timeTopic ? parseNeededBy(input.text) ?? (step.topics.includes("delivery_time") ? ctx.neededBy : undefined) ?? null : null;
+          // A pergunta de agendamento ("posso agendar pra amanhã?") continua respondida; a frase afirmativa, não.
+          const asked = /\?/.test(input.text);
+          const topics = deadline ? step.topics.filter((t) => t !== "delivery_time" && (asked || t !== "scheduling")) : step.topics;
           if (deadline) {
             ctx.neededBy = deadline;
             await writeCtx(convoId, ctx);

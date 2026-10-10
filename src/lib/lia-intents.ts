@@ -1472,9 +1472,13 @@ export function parseBudgetFitAsk(text: string): { cap: number } | null {
   return Number.isFinite(cap) && cap >= 10 ? { cap } : null;
 }
 
+// "tá dentro?" / "eu falei que tenho 80, fica dentro?" (10/10, rodada 11 g32: a IA devolvia "Dentro de qual valor ou
+// orçamento?"): a última oração, como pergunta, pergunta se o pedido cabe no teto já dito.
+const BUDGET_INSIDE_ASK_RE = /^(?:e\s+|mas\s+|entao\s+)?(?:isso\s+|tudo\s+|o total\s+|o pedido\s+)?(?:ainda\s+)?(?:ta|esta|fica|ficou|vai ficar|ficaria|da|deu|cabe|coube)\s+(?:dentro|no limite|no orcamento)(?:\s+(?:do|no|dos|nos)\s+(?:meu\s+|meus\s+)?(?:orcamento|limite|teto|valor|\d{2,5}(?:\s*reais)?))?(?:\s+(?:ne|ainda|mesmo))?$/;
 export function asksBudgetLeft(text: string): boolean {
   const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
-  return parseBudgetFitAsk(text) != null || /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
+  const lastClause = /\?\s*$/.test(text.trim()) ? (normalizeMsg(text).split(/[,.;!?]+/).map((c) => c.trim()).filter(Boolean).pop() ?? "") : "";
+  return parseBudgetFitAsk(text) != null || BUDGET_INSIDE_ASK_RE.test(lastClause) || /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
 }
 
 // O cliente pediu uma PESSOA? (10/10, rodada 8 g25) Mais largo que o HUMAN_RE: a IA reconhece "me passa pra alguém",
@@ -3645,7 +3649,10 @@ const ORDER_BUDGET_RES = [
   // "gasto até 60 reais" / "gasto no máximo 80" (10/10, rodada 10 g29: o teto do presente virava parte do item).
   String.raw`(?:^|[,.;:!?]\s*|\s(?:e|mas)\s+)(?:eu\s+)?(?:so\s+)?gasto\s+(?:ate|no maximo)\s+(?:(?:uns|umas)\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
   // "só tenho 100 reais (no total), cabe?" / "só tenho 50 conto" como frase própria (rodada 9 B M2 via g25).
-  String.raw`(?:^|[,.;:!?]\s*|\b(?:q|que|pq|porque|tipo)\s+)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
+  // "...e uns iogurte também mas assim eu só tenho uns 80 reais viu" (10/10, rodada 11 g32: áudio transcrito sem
+  // pontuação, o teto ia pro nome do iogurte e sumia): "mas (assim)"/"só que" no meio da frase também abrem a oração, e o
+  // "viu"/"tá" do fim sai junto (senão vira item).
+  String.raw`(?:^|[,.;:!?]\s*|\b(?:q|que|pq|porque|tipo)\s+|\s(?=(?:mas|porem|so que)\s))(?:e\s+|(?:mas|porem|so que)\s+(?:assim\s+|olha\s+|ai\s+)?|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?(?:[\s,]+(?:viu|ta|ok|ne|blz|beleza)\b[\s.!]*$)?`,
   // "meu orçamento é de 150", "meu limite é 80 reais"; sem o "meu" e sem verbo também: "orçamento R$ 150 no total",
   // "orçamento: 60", "limite de 80" (10/10, rodada 10 g30: "orçamento R$ 150 no total" passava batido e o resumo de
   // R$ 342,42 saía sem aviso).
