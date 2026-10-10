@@ -8,6 +8,7 @@ import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage, cheaperSwapPool, splitIdentity } from "../src/lib/delivery-service";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
+import { satisfiesNegation } from "../src/lib/stores/types";
 import { __setPreflightForTests, estimateDay } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
 import type { BasketItem, ChoiceOption } from "../src/lib/conversation-types";
@@ -218,3 +219,34 @@ for (const msg of ["pode ser o semidesnatado e adiciona uma manteiga", "pode ser
     assert.match(names, /manteiga/i, out.slice(0, 500));
   });
 }
+
+// 6) "total" com cesta vazia / com a pergunta da embalagem aberta; "sem perfume" no ranking ----------------------
+test("'total' com a cesta vazia diz que está vazia", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({});
+  const out = await send(c.phone, "total");
+  assert.match(out, /cesta está vazia/i, out.slice(0, 300));
+  assert.doesNotMatch(out, /não sei responder/i);
+});
+
+test("'total' com a pergunta 'sim ou outras' aberta: mostra o parcial e repete a pergunta", async (t) => {
+  if (!dbOk) return t.skip();
+  const option = { sku: "g16-ovos-10", name: "Ovos Vermelhos 10 un", unitPrice: 10, storeKey: "mambo", storeLabel: "Mambo" };
+  const c = await customerWith({ pending: [{ query: "uma dúzia de ovos", qty: 12, qtyExplicit: true, options: [option] }], packConfirm: { sku: option.sku, askedQty: 12 } }, "choosing");
+  const out = await send(c.phone, "total");
+  assert.match(out, /10 unidades.*pediu \*12\*/s, out.slice(0, 500));
+  const ctx = await ctxOf(c.convoId);
+  assert.deepEqual(ctx.packConfirm, { sku: option.sku, askedQty: 12 }, "a pergunta segue aberta");
+  const yes = await send(c.phone, "sim");
+  assert.doesNotMatch(yes, /não entendi/i, yes.slice(0, 300));
+  const after = await ctxOf(c.convoId);
+  assert.ok((after.basket ?? []).some((b: BasketItem) => b.sku === option.sku), yes.slice(0, 300));
+});
+
+test("satisfiesNegation: 'sem cheiro' aceita 'sem perfume'/'sem fragrância'; sem 'sem' no pedido é null", () => {
+  assert.equal(satisfiesNegation("areia sem cheiro 4kg", "Areia Higiênica Kets Gatíssimo sem Perfume 4 kg"), true);
+  assert.equal(satisfiesNegation("shampoo sem perfume", "Shampoo Infantil Sem Fragrância 200ml"), true);
+  assert.equal(satisfiesNegation("areia sem cheiro 4kg", "Areia Pipicat Classic 4kg"), false);
+  assert.equal(satisfiesNegation("cafe sem acucar", "Café Solúvel Zero Açúcar"), true);
+  assert.equal(satisfiesNegation("areia 4kg", "Areia Pipicat Classic 4kg"), null);
+});

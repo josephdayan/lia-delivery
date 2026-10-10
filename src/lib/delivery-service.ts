@@ -7,7 +7,7 @@ import { compactCardDelivery } from "@/lib/meta-carousel-card";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
-import { attrMatchesItem, conciergeMatchIsStrong, diversifyOptions, inferCatalogRefinement, parsePackPhrase, queryTokens, sameProductVariant, stapleFor, scoreCatalogMatch, variantPenalty } from "@/lib/stores/types";
+import { attrMatchesItem, conciergeMatchIsStrong, satisfiesNegation, diversifyOptions, inferCatalogRefinement, parsePackPhrase, queryTokens, sameProductVariant, stapleFor, scoreCatalogMatch, variantPenalty } from "@/lib/stores/types";
 import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
@@ -641,6 +641,11 @@ async function buildChoices(
       .sort(cheapestFirst ? (a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine) || byVerifiedThenEta(a, b) : byRepeatThenVerifiedThenEta(line.phrase));
     // Pediu "sabonete dove" e há 2+ Dove de verdade (09/10, rodada de cliente): o Nivea cadastrado com marca
     // "Dove" pela loja sai da vitrine. Só quando sobra escolha; o já comprado fica sempre.
+    // "areia sem cheiro" (10/10, rodada 5 g16): a ordem é por confirmação/prazo, e a Pipicat comum vinha antes da "sem
+    // Perfume". Quem diz no nome que é a versão "sem X" vai na frente (ordem estável no resto).
+    if (!cheapestFirst && sortedOptions.some((o) => satisfiesNegation(line.phrase, o.name))) {
+      sortedOptions = [...sortedOptions.filter((o) => satisfiesNegation(line.phrase, o.name)), ...sortedOptions.filter((o) => !satisfiesNegation(line.phrase, o.name))];
+    }
     const coversAsk = (o: ChoiceOption) => missingAskWords(line.phrase, { name: o.name }) === 0;
     if (!cheapestFirst && !closestFalta && sortedOptions.filter(coversAsk).length >= 2) {
       sortedOptions = sortedOptions.filter((o) => coversAsk(o) || o.repeat);
@@ -4736,6 +4741,11 @@ async function handleDeliveryTurn(
       await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
       return;
     }
+    // Cesta vazia (10/10, rodada 5 g16: depois de "Carrinho limpo" o "total" ouvia "Essa eu não sei responder").
+    if (!ctx.deliveryOrderId) {
+      await reply(phone, copy.emptyCartTotal());
+      return;
+    }
   }
 
   // ---- awaiting_payment + item novo ----
@@ -6406,6 +6416,16 @@ async function handleChoosing(
     // "1" = a única opção da pergunta (sim); antes o "1" caía em "👍"/"Por nada!" e o cliente travava (09/10, rodada 1).
     if (option && (intent.kind === "affirm" || /^(1|um)$/.test(n) || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+      return;
+    }
+    // "total" com a pergunta da embalagem aberta (10/10, rodada 5 g16): mostra o parcial e repete a pergunta — antes a
+    // pergunta morria e o cliente ouvia só "Ainda não escolhi nada".
+    if (option && asksRunningTotal(text)) {
+      const items = basketForCopy(ctx);
+      const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
+      const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+      const adjusted = packAdjusted(option, asked.askedQty, current.query, { assumedOne: current.qty === 1 && !current.qtyExplicit });
+      await reply(phone, `${partial}\n\n${copy.packMismatchAsk(option.name, asked.askedQty, declaredPack(option.name), adjusted.qty)}`);
       return;
     }
     ctx.packConfirm = undefined;

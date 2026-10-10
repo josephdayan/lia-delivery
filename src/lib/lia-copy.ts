@@ -512,6 +512,10 @@ export function noOpenOrderToPay(): string {
   return "Você ainda não tem pedido aberto pra pagar. O que você precisa?";
 }
 
+export function emptyCartTotal(): string {
+  return "Sua cesta está vazia por enquanto — nada escolhido ainda. Me diz o que você quer que eu procuro.";
+}
+
 export function emptyCartPay(): string {
   return "Sua cesta está vazia. Me diz o que você quer.";
 }

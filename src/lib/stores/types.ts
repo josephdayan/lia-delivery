@@ -251,6 +251,21 @@ function negatedWords(query: string): string[] {
   return [...normalizeText(query).matchAll(/\bsem\s+(\w{3,})\b/g)].map((m) => m[1]);
 }
 
+// "sem cheiro" = "sem perfume" = "sem fragrância" no nome do produto (10/10, rodada 5 g16).
+const ODOR_WORDS = new Set(["cheiro", "aroma", "odor", "fragrancia", "perfume", "perfumacao", "essencia"]);
+const ODOR_FREE_RE = /\b(?:sem|zero)\s+(?:cheiro|aroma|odor|fragrancia|perfume|perfumacao|essencia)\b|\bneutr[oa]s?\b|\binodor[oa]?\b/;
+function nameHasNegation(neg: string, nameNorm: string): boolean {
+  if (ODOR_WORDS.has(neg)) return ODOR_FREE_RE.test(nameNorm);
+  return new RegExp(`\\b(sem|zero)\\s+${neg}\\b`).test(nameNorm);
+}
+// Pedido com "sem X": a opção que diz no nome que é a versão sem X? `null` = o pedido não tem "sem".
+export function satisfiesNegation(query: string, name: string): boolean | null {
+  const negs = negatedWords(query);
+  if (!negs.length) return null;
+  const nameNorm = normalizeText(name);
+  return negs.every((neg) => nameHasNegation(neg, nameNorm));
+}
+
 // Produtos de higiene/beleza HUMANOS que também existem em versão pet — quando o
 // cliente não falou de bicho, a versão pet não pode nem pontuar ("shampoo" não é
 // shampoo de cachorro; "perfume" não é colônia de gato).
@@ -655,7 +670,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // Quem pediu "sem X" quer a VERSÃO sem X: o item que diz "Sem/Zero Lactose" no nome
     // deve vencer o leite comum (que também sobrevive à exclusão por nem citar X).
     for (const neg of negs) {
-      if (new RegExp(`\\b(sem|zero)\\s+${neg}\\b`).test(nameNorm)) score += 3;
+      if (nameHasNegation(neg, nameNorm)) score += 3;
     }
     // "hidratante" achava "Sabonete Líquido HIDRATANTE" (re-teste 15/08, rodada 10):
     // quando um substantivo de categoria DIFERENTE vem ANTES da palavra pedida no nome,
