@@ -61,3 +61,38 @@ export function pickMissForFragment(misses: ListMiss[], words: string): { miss: 
   if (best) return { miss: best.miss, replaces: true };
   return misses.length === 1 ? { miss: misses[0], replaces: false } : null;
 }
+
+// Item que o cliente pediu e ficou sem produto (10/10, rodada 7 A4: o gelo do churrasco virou "não achei" na 1ª
+// resposta e o resumo final, minutos depois, não dizia nada — o cliente podia pagar achando que ele vinha). Vale a
+// lista inteira da conversa (não só os 20 min da "tenta de novo"), até 3 h; o que depois entrou na cesta não conta.
+export const LEFT_OUT_TTL_MS = 3 * 60 * 60_000;
+function missMatches(query: string, name: string): boolean {
+  return scoreCatalogMatch(query, { sku: "miss", name, unitPrice: 0 }) > 0 || scoreCatalogMatch(name, { sku: "miss", name: query, unitPrice: 0 }) > 0;
+}
+export function leftOutForSummary(
+  ctx: Pick<DeliveryContext, "listMisses" | "lastMiss">,
+  basket: { name: string; ask?: string }[],
+  now = Date.now()
+): string[] {
+  const all = [...(ctx.listMisses ?? [])];
+  const legacy = ctx.lastMiss;
+  if (legacy && !all.some((m) => norm(m.query) === norm(legacy.query))) all.push({ query: legacy.query, qty: legacy.qty, reason: "not_found", at: legacy.at });
+  const out: string[] = [];
+  for (const miss of all) {
+    if (now - miss.at > LEFT_OUT_TTL_MS) continue;
+    const covered = basket.some((item) => missMatches(miss.query, item.name) || (item.ask ? norm(item.ask) === norm(miss.query) || missMatches(miss.query, item.ask) : false));
+    if (!covered && !out.some((q) => norm(q) === norm(miss.query))) out.push(miss.query);
+  }
+  return out;
+}
+
+// "tira o gelo" com o gelo entre as faltantes: sai da lista de faltantes (não aparece mais no resumo). Devolve o que saiu.
+export function dropMissesMatching(ctx: DeliveryContext, phrase: string): string[] {
+  const all = ctx.listMisses ?? [];
+  const legacy = ctx.lastMiss;
+  const dropped = all.filter((m) => missMatches(m.query, phrase)).map((m) => m.query);
+  if (legacy && missMatches(legacy.query, phrase)) dropped.push(legacy.query);
+  if (!dropped.length) return [];
+  applyListMisses(ctx, all.filter((m) => !missMatches(m.query, phrase)));
+  return [...new Set(dropped)];
+}

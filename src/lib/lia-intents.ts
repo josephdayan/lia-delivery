@@ -1320,6 +1320,45 @@ export function isKeepSeparateReply(text: string): boolean {
   return /^(nao|n|nop|nope|negativo|melhor|prefiro)$/.test(words[0]) && words.every((w) => KEEP_FILLER.has(w));
 }
 
+// Resposta à oferta de TROCA que está na mesa (10/10, rodada 7 A1/A2): "sim, pode trocar", "pode trocar de loja",
+// "sim, troca pela outra loja", "aceito a troca". Só palavras de aceite + o verbo + destino genérico ("de loja",
+// "pela outra"): nenhum produto no meio — "troca o arroz pelo feijão" é edição de item e não casa.
+const SWAP_ACCEPT_RE =
+  /^(?:(?:sim|ok|okay|pode|podes|bora|quero|isso|claro|vamos|beleza|blz|show|fechado|fechou|aceito|por favor|pf|pfv|entao|perfeito|otimo|ta bom|tudo bem|manda|faz|faca|pode ser)\b[\s,.!]*)*(?:pode\s+)?(?:troca|trocar|troque|troco|trocamos|muda|mudar|mude|aceito a troca|faz a troca|faca a troca|fazer a troca|pode fazer a troca)(?:\s+(?:sim|entao|ai|isso|ela|ele|essa|esse|pra mim|por favor|pf))*(?:\s+(?:de loja|a loja|pela outra(?: loja)?|pra outra(?: loja)?|para outra(?: loja)?|na outra(?: loja)?|por essa|por esse|pela que voce (?:falou|disse|mostrou)|pela sugerida|pela sugestao|pelo sugerido))?(?:\s+(?:sim|entao|por favor|pf|pfv))*[\s!.]*$/;
+export function acceptsSwapOffer(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
+  return Boolean(s) && SWAP_ACCEPT_RE.test(s);
+}
+
+// Recusa da oferta de troca: "mantém como está", "deixa assim", "não troca", "prefiro manter". Mesmo léxico da recusa
+// de juntar (isKeepSeparateReply), mais o "não troca".
+export function declinesSwapOffer(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").trim();
+  if (!s || acceptsSwapOffer(text)) return false;
+  if (/^(?:nao|n)\b[\s,]*(?:precisa\s+)?(?:troca\w*|mud\w*)(?:\s+n(?:ao|ada))?(?:\s+(?:obrigad[oa]|valeu))?$/.test(s)) return true;
+  if (/^(?:nao|n)?[\s,]*(?:quero|prefiro)?\s*(?:nao\s+)?(?:troca\w*|mud\w*)\s+(?:de loja\s+)?nao$/.test(s)) return true;
+  if (/\bjunt/.test(s)) return false;
+  return isKeepSeparateReply(text);
+}
+
+// "o mais barato de tudo", "o mais barato em todos", "pode ser o mais barato pra tudo" (10/10, rodada 7 M4): a preferência
+// de preço vale para TODOS os itens ainda em escolha, não só o da vez.
+export function wantsCheapestForAll(text: string): boolean {
+  const n = normalizeMsg(text);
+  return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+}
+
+// Indiferença de marca/tipo ("de qualquer marca", "tanto faz a marca", "qualquer uma") é FILTRO, nunca termo de busca
+// (10/10, rodada 7 A5: "ração cachorro filhote 10kg qualquer marca" virava a frase buscada e nada casava).
+const INDIFFERENCE_RE =
+  /\b(?:(?:de|da|do|em)\s+)?qualquer\s+(?:marca|uma|um|tipo|modelo|sabor|cor|loja)\b|\b(?:tanto faz|nao importa|pouco importa)(?:\s+(?:a|o)\s+(?:marca|tipo|modelo|loja))?\b|\b(?:a\s+)?marca\s+(?:tanto faz|nao importa)\b|\bsem\s+marca\s+especifica\b|\bqualquer\b(?=\s*$)/g;
+export function stripIndifference(text: string): string {
+  return normalizeMsg(text).replace(INDIFFERENCE_RE, " ").replace(/\s+/g, " ").trim();
+}
+export function saysAnyBrand(text: string): boolean {
+  return new RegExp(INDIFFERENCE_RE.source).test(normalizeMsg(text));
+}
+
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA
 // pede o pedido anterior (sem produto no meio) — vai direto ao ramo de repetir, sem passar pela IA do diálogo.
 const REPEAT_ORDER_RE =

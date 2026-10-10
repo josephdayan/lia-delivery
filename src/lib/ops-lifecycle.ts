@@ -14,6 +14,7 @@ import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
 import { BasketItem, FreightChoiceState, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
 import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
 import { humanEstimate, promiseMissesDeadline } from "./live-freight";
+import { leftOutForSummary } from "./list-misses";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
 import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
@@ -153,11 +154,14 @@ export async function opsPublishManualQuote(
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
   let neededBy: { date: string; label: string } | undefined;
+  let leftOut: string[] = [];
   if (order.conversationId) {
     const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
     if (convo) {
       const ctx = readCtx(convo.context);
       neededBy = ctx.neededBy;
+      // O que o cliente pediu e ficou sem produto entra no resumo (10/10, rodada 7 A4) — lido antes do reset abaixo.
+      leftOut = leftOutForSummary(ctx, items);
       conversationMovedOn =
         (Boolean(ctx.deliveryOrderId) && ctx.deliveryOrderId !== order.id) ||
         ((ctx.basket?.length ?? 0) > 0 && ctx.deliveryOrderId !== order.id) ||
@@ -215,7 +219,8 @@ export async function opsPublishManualQuote(
     deliveryAddress: order.deliveryAddress ?? undefined,
     sameHour,
     ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date) ? { deadlineMiss: { label: neededBy.label } } : {}),
-    deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size
+    deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,
+    ...(leftOut.length && !conversationMovedOn ? { leftOut } : {})
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.

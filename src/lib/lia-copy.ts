@@ -633,7 +633,7 @@ export function noMoreOptions(query: string): string {
 // Segundo "outras" com o pool esgotado NÃO repete a mesma frase (rodada 27/08 S4):
 // convida a reformular, que é a única saída real.
 export function noMoreOptionsAskReword(query: string): string {
-  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente.`;
+  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente, ou *pula* pra seguir sem esse item.`;
 }
 
 // Toque num botão de card de uma mensagem antiga: dizer ISSO, em vez do
@@ -662,6 +662,13 @@ export function cheapestFirstHeader(query: string): string {
 // Recusou as opções e pediu algo que ninguém tem: honesto, sem repetir o que ele dispensou.
 export function refineNoResultRejected(refined: string): string {
   return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
+}
+
+// O cliente repete o que já pediu e a vitrine não tem (10/10, rodada 7 A5: "quero 10kg de qualquer marca" com só 3 kg na
+// mesa): diz que não tem, qual é o mais perto, e as saídas — nunca uma busca nova com o termo duplicado.
+export function requestedNotAvailable(query: string, falta?: string, rejected = false): string {
+  const perto = falta ? `O mais perto que tenho ${falta}${rejected ? "" : " (as opções aí em cima)"}.` : "O que eu tenho são as opções aí em cima.";
+  return `Não tenho *${query}* em nenhuma loja que entrega aí — já procurei em todas as marcas. ${perto} Quer levar ${rejected ? "mesmo assim" : "uma delas"}, me diz outro tamanho ou palavra pra eu tentar, ou responde *pula* pra seguir sem esse item?`;
 }
 
 export function refineNoResultAbove(refined: string, query: string): string {
@@ -717,8 +724,9 @@ export function choiceDropped(query: string): string {
 }
 
 // Dizia só "Não peguei qual você quer" e deixava o cliente sem próximo passo.
+// Sempre com saída (10/10, rodada 7 A2): "Responde o número" repetido em laço prendia o cliente que queria outra coisa.
 export function choiceNotUnderstood(): string {
-  return "Não peguei qual você quer. Responde o número.";
+  return "Não peguei qual você quer. Responde o número da opção, ou *pula* pra seguir sem esse item.";
 }
 
 export function autoAddedNote(items: string[]): string {
@@ -2569,6 +2577,35 @@ export function addedToPendingQuote(items: string[]): string {
 // Resumo da cotação manual: itens por nome (o operador informa o custo total dos
 // produtos e o frete), com prazo/entrega e endereço. É o gêmeo de `summary` para o
 // fluxo concierge, onde não há preço por linha.
+export function cheapestForAllNote(items: { qty: number; name: string; total: number }[]): string {
+  if (!items.length) return "";
+  return [`Peguei o mais barato de cada item:`, ...items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)].join("\n");
+}
+
+// Escolha que cria entrega extra ou atrasa o pedido (10/10, rodada 7 M4): o custo vem junto da confirmação, não só no resumo.
+export function choiceDeliveryCostNote(input: { deliveries: number; newStores: string[]; fee?: number; later?: { prazo: string; store?: string } }): string {
+  const parts: string[] = [];
+  if (input.newStores.length) {
+    const who = input.newStores.length > 1 ? `de ${input.newStores.length} lojas (${input.newStores.map((s) => `*${s}*`).join(", ")})` : `da *${input.newStores[0]}*`;
+    parts.push(`vem ${who} e o pedido passa a ter *${input.deliveries} entregas*${input.fee ? ` (+ ~${brl(input.fee)} de frete)` : " (frete de cada loja)"}`);
+  }
+  if (input.later) {
+    const prazo = promiseForCustomer(input.later.prazo) || input.later.prazo;
+    parts.push(`${parts.length ? "e " : ""}${input.later.store ? `a *${input.later.store}* ` : ""}só entrega em *${prazo}* — o pedido chega mais tarde`);
+  }
+  return `_⚠️ Essa escolha ${parts.join(" ")}. Se preferir, diz *outras* que eu mostro opções das lojas que você já tem._`;
+}
+
+export function missRemoved(items: string[]): string {
+  const names = items.map((l) => `*${shortNotFoundLabel(l)}*`).join(", ");
+  return `Combinado: ${names} já ${items.length > 1 ? "tinham" : "tinha"} ficado de fora (não achei) — não entra no pedido.`;
+}
+
+export function leftOutNote(items: string[]): string {
+  const names = items.map((l) => `*${shortNotFoundLabel(l)}*`);
+  return `⚠️ Ficou de fora (não achei): ${names.join(", ")} — ${items.length > 1 ? "não vêm" : "não vem"} neste pedido. Se quiser, me diz outro nome que eu procuro antes de você pagar.`;
+}
+
 export function manualQuoteSummary(input: {
   // lineTotal (preço de exibição da linha) presente = a linha sai COM preço. Sem ele o
   // cliente somava preços velhos de mensagens anteriores e achava o subtotal "errado"
@@ -2591,6 +2628,8 @@ export function manualQuoteSummary(input: {
   // true = a mensagem sai com o botão "Trocar endereço" (dono, 11/08: ação em botão,
   // não instrução de digitar) — a dica de texto some porque o botão fala por ela.
   addressButton?: boolean;
+  // Itens pedidos que ficaram sem produto (10/10, rodada 7 A4): o resumo final diz o que NÃO vem.
+  leftOut?: string[];
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -2605,6 +2644,7 @@ export function manualQuoteSummary(input: {
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
   ];
+  if (input.leftOut?.length) out.push("", leftOutNote(input.leftOut));
   if (input.deliveryAddress) {
     out.push("", `📍 ${input.deliveryAddress}`);
     if (!input.addressButton) out.push('_Pra mudar, diz "trocar endereço"._');

@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, wantsCheapestForAll, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -123,6 +123,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
   // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";
+  // "QUERO O MAIS BARATO DE TUDO" com vários itens em escolha (10/10, rodada 7 M4): o roteador escolhe o mais barato de
+  // CADA item; a IA escolhia só o da vez.
+  if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsCheapestForAll(text)) return "intent:cheapest_all";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto

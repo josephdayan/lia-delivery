@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { handleDeliveryMessage } from "@/lib/delivery-service";
 import { runTurnScoped, TurnSupersededError } from "@/lib/turn-runtime";
 import { isTestLinePhone, testLineCapture, type CapturedSend } from "@/lib/test-line";
+import { genericError } from "@/lib/lia-copy";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -67,7 +68,11 @@ export async function POST(request: Request) {
       runTurnScoped(() => handleDeliveryMessage({ phone, text: text ?? "", messageId: `testline_${randomUUID()}`, flowResponse }))
     );
   } catch (caught) {
-    if (!(caught instanceof TurnSupersededError)) error = caught instanceof Error ? caught.message : String(caught);
+    if (!(caught instanceof TurnSupersededError)) {
+      error = caught instanceof Error ? caught.message : String(caught);
+      // Igual ao webhook (10/10, rodada 7 A4): erro no turno ainda responde ao cliente — a linha de teste mostrava vazio.
+      if (!out.some((send) => send.to === phone)) out.push({ kind: "sendMessage", to: phone, args: [genericError()] });
+    }
   }
   return NextResponse.json({ ms: Date.now() - startedAt, replies: out.map((send) => render(send, phone)), ...(error ? { error } : {}) });
 }
