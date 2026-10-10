@@ -2,7 +2,7 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
-import { compareNotShown, compareOptionsAnswer } from "./lia-copy";
+import { compareNotShown, compareOptionsAnswer, specAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
 export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
@@ -22,7 +22,59 @@ export type ProductQuestion =
   | { kind: "price"; n: number }
   | { kind: "original" }
   | { kind: "expiry" }
-  | { kind: "dietary"; term: string };
+  | { kind: "dietary"; term: string }
+  // "o primeiro serve pro rosto?", "o primeiro é 75g?", "o 2 tem 3 unidades?" (10/10, rodada 16 M5/M6): o que o NOME do card diz.
+  | { kind: "spec"; n: number; area?: BodyArea; measure?: { value: number; unit: string; label: string } };
+
+export type BodyArea = "rosto" | "corpo" | "cabelo" | "labios" | "maos" | "pes";
+const AREA_LABEL: Record<BodyArea, { ask: string; name: string }> = {
+  rosto: { ask: "pro rosto", name: "facial" },
+  corpo: { ask: "pro corpo", name: "corporal" },
+  cabelo: { ask: "pro cabelo", name: "capilar" },
+  labios: { ask: "pros lábios", name: "labial" },
+  maos: { ask: "pras mãos", name: "pras mãos" },
+  pes: { ask: "pros pés", name: "pros pés" }
+};
+// Como o cliente fala a parte do corpo / como o nome do produto diz.
+const AREA_ASK_RE: Record<BodyArea, RegExp> = {
+  rosto: /\b(rosto|facial|face|cara)\b/,
+  corpo: /\b(corpo|corporal|body)\b/,
+  cabelo: /\b(cabelos?|capilar)\b/,
+  labios: /\b(labios?|labial|boca)\b/,
+  maos: /\b(maos?)\b/,
+  pes: /\b(pes|pezinho)\b/
+};
+const AREA_NAME_RE: Record<BodyArea, RegExp> = {
+  rosto: /\b(facial|rosto|face)\b/,
+  corpo: /\b(corporal|corpo|body)\b/,
+  cabelo: /\b(capilar|cabelos?|hair)\b/,
+  labios: /\b(labial|labios?|lip)\b/,
+  maos: /\b(maos?|hand)\b/,
+  pes: /\b(pes|foot)\b/
+};
+export function bodyAreasOf(name: string): BodyArea[] {
+  const n = normalizeMsg(name);
+  return (Object.keys(AREA_NAME_RE) as BodyArea[]).filter((a) => AREA_NAME_RE[a].test(n));
+}
+
+// Medida dita ("75g", "500 folhas", "200 ml", "3 unidades"), na unidade-base (g, ml, m, un, folhas).
+const MEASURE_RE = /(\d+(?:[.,]\d+)?)\s*(kg|quilos?|g|gr|gramas?|ml|l|lt|litros?|m|metros?|cm|un|und|unid|unidades?|folhas?|pecas?|rolos?)\b/g;
+function unitBase(raw: string, value: number): { value: number; unit: string } {
+  const u = raw.toLowerCase();
+  if (/^(kg|quilos?)$/.test(u)) return { value: value * 1000, unit: "g" };
+  if (/^(g|gr|gramas?)$/.test(u)) return { value, unit: "g" };
+  if (u === "ml") return { value, unit: "ml" };
+  if (/^(l|lt|litros?)$/.test(u)) return { value: value * 1000, unit: "ml" };
+  if (/^(m|metros?)$/.test(u)) return { value: value * 100, unit: "cm" };
+  if (u === "cm") return { value, unit: "cm" };
+  if (/^(folhas?)$/.test(u)) return { value, unit: "folhas" };
+  if (/^(rolos?)$/.test(u)) return { value, unit: "rolos" };
+  return { value, unit: "un" };
+}
+export function measuresOf(text: string): { value: number; unit: string; label: string }[] {
+  const n = normalizeMsg(text);
+  return [...n.matchAll(MEASURE_RE)].map((m) => ({ ...unitBase(m[2], Number(m[1].replace(",", "."))), label: `${m[1]} ${m[2]}` }));
+}
 
 const AUDIENCE_LABEL: Record<AudienceTag, string> = {
   filhote: "filhotes",
@@ -190,6 +242,20 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
   const dietary = n.match(/\b(?:sem|zero|livre de|isento de)\s+(lactose|gluten|acucar|corante|conservante)\b/);
   if (dietary) return { kind: "dietary", term: dietary[1] };
 
+  // "o primeiro serve pro rosto também?", "o 1 é 75g?", "a segunda tem 3 unidades?" (10/10, rodada 16 M5/M6): caíam na
+  // apresentação genérica da Lia. A opção citada + uma medida ou parte do corpo = o que o nome do card diz.
+  const spec = n.match(/^(?:e\s+|mas\s+)?(?:(?:o|a)\s+)?(?:opcao\s+|numero\s+)?(\d{1,2}|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]|ultim[oa])\s+(?:tambem\s+)?(?:e|eh|tem|vem com|vem|serve|servem|da|funciona|pode (?:usar|passar))\b(.*)$/);
+  if (spec) {
+    const ref = refsIn(spec[1], optionCount)[0];
+    const tail = spec[2];
+    if (ref) {
+      const area = (Object.keys(AREA_ASK_RE) as BodyArea[]).find((a) => AREA_ASK_RE[a].test(tail));
+      const measure = measuresOf(tail)[0];
+      if (measure) return { kind: "spec", n: ref, measure };
+      if (area && /\b(pra|para|pro|p|no|na|de)\b/.test(tail)) return { kind: "spec", n: ref, area };
+    }
+  }
+
   // "essa ração serve pra filhote?", "é boa pra gato?", "pode dar pra cachorro idoso?"
   const serves = n.match(/\b(?:serve|servem|vale|pode|posso dar|da pra|e (?:boa|bom|ideal|indicad[oa]|segur[oa])|eh (?:boa|bom|ideal|indicad[oa]))\b.*\b(?:pra|para|p|pro|a)\s+(.*)$/);
   if (serves) {
@@ -272,6 +338,27 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
     }
     case "expiry":
       return "A validade não aparece no cadastro da loja, então não consigo te dizer a data antes de comprar. O produto vem da própria loja; se chegar vencido ou perto de vencer, me chama aqui que eu resolvo com a loja.";
+    case "spec": {
+      const o = options[q.n - 1];
+      const n = q.n;
+      if (q.measure) {
+        const m = q.measure;
+        const same = measuresOf(o.name).filter((x) => x.unit === m.unit);
+        if (same.some((x) => Math.abs(x.value - m.value) < 0.001)) return specAnswer({ n, name: o.name, verdict: "yes", asked: m.label });
+        const other = options.map((x, i) => ({ i: i + 1, x })).find(({ x, i }) => i !== n && measuresOf(x.name).some((y) => y.unit === m.unit && Math.abs(y.value - m.value) < 0.001));
+        if (same.length) return specAnswer({ n, name: o.name, verdict: "no", asked: m.label, has: same[0].label, other: other ? { n: other.i, name: other.x.name } : undefined });
+        return specAnswer({ n, name: o.name, verdict: "unknown", asked: m.label, other: other ? { n: other.i, name: other.x.name } : undefined });
+      }
+      const area = q.area!;
+      const areas = bodyAreasOf(o.name);
+      const other = options.map((x, i) => ({ i: i + 1, x })).find(({ x, i }) => i !== n && bodyAreasOf(x.name).includes(area));
+      if (areas.includes(area)) return specAnswer({ n, name: o.name, verdict: "yes", asked: AREA_LABEL[area].ask });
+      const base = query.replace(/\b(?:corporal|facial|capilar|labial)\b/gi, " ").replace(/\s+/g, " ").trim();
+      if (areas.length) {
+        return specAnswer({ n, name: o.name, verdict: "no", asked: AREA_LABEL[area].ask, has: AREA_LABEL[areas[0]].name, want: AREA_LABEL[area].name, other: other ? { n: other.i, name: other.x.name } : undefined, suggest: `${base} ${AREA_LABEL[area].name}` });
+      }
+      return specAnswer({ n, name: o.name, verdict: "unknown", asked: AREA_LABEL[area].ask, want: AREA_LABEL[area].name, other: other ? { n: other.i, name: other.x.name } : undefined });
+    }
     case "dietary":
       return `Isso é produto pra pet: "sem ${q.term}" é termo de alimento humano, e o nome dessas opções não diz nada sobre ${q.term}. A composição fica no rótulo da loja (posso mandar o link: é só pedir "detalhes do 1"); se o seu pet tem restrição, o veterinário indica a linha certa.`;
     case "audience": {

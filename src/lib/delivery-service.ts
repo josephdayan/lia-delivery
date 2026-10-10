@@ -950,6 +950,11 @@ function conciergeItem(phrase: string, qty: number): BasketItem {
   };
 }
 
+// Quantas UNIDADES a linha representa para quem vai trocá-la: as pedidas, quando a linha virou embalagens; senão a qty.
+function unitsAskedOf(item: BasketItem): number {
+  return item.askedUnits && item.askedUnits.packs === item.qty ? item.askedUnits.units : item.qty;
+}
+
 function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector, ask?: string): BasketItem {
   const selectedStore = o.storeKey ? getStore(o.storeKey) : store;
   return {
@@ -1824,14 +1829,43 @@ const SWAP_COLORS: Record<string, string> = {
   branco: "branco", branca: "branco", white: "branco",
   marrom: "marrom", brown: "marrom", castanho: "marrom", castanha: "marrom",
   vermelho: "vermelho", vermelha: "vermelho", red: "vermelho",
-  azul: "azul", blue: "azul", verde: "verde", green: "verde",
+  azul: "azul", azuis: "azul", blue: "azul", verde: "verde", green: "verde",
   rosa: "rosa", pink: "rosa", amarelo: "amarelo", amarela: "amarelo",
   cinza: "cinza", grafite: "cinza", roxo: "roxo", roxa: "roxo", lilas: "roxo",
   bege: "bege", nude: "bege", dourado: "dourado", dourada: "dourado", prata: "prata", prateado: "prata",
   transparente: "transparente", incolor: "transparente"
 };
 function colorsOf(name: string): Set<string> {
-  return new Set(normalizeMsg(name).replace(/[^a-z\s]/g, " ").split(/\s+/).map((w) => SWAP_COLORS[w]).filter(Boolean));
+  return new Set(normalizeMsg(name).replace(/[^a-z\s]/g, " ").split(/\s+/).map((w) => SWAP_COLORS[w.replace(/s$/, "")] ?? SWAP_COLORS[w]).filter(Boolean));
+}
+// A troca só muda a COR do item (10/10, rodada 16 A2/M8): "preta", "melhor preta", "canetas esferográficas pretas" ou o nome
+// do produto anterior + a cor nova. Devolve a busca = o pedido do cliente com a cor trocada, ou null se o destino é outro
+// produto ("troca a caneta azul por lápis preto").
+export function colorRefine(item: BasketItem, to: string): { phrase: string; color: string } | null {
+  const want = colorsOf(to);
+  if (want.size !== 1) return null;
+  const color = [...want][0];
+  const had = colorsOf(`${item.ask ?? ""} ${item.name}`);
+  if (had.has(color) && had.size === 1) return null;
+  const colorWord = (w: string) => Boolean(SWAP_COLORS[normalizeMsg(w).replace(/s$/, "")] ?? SWAP_COLORS[normalizeMsg(w)]);
+  const known = new Set(queryTokens(`${item.ask ?? ""} ${item.name}`));
+  const rest = queryTokens(to).filter((t) => !colorWord(t) && !/^(melhor|prefiro|quero|outra|outro|cor|na|da|de)$/.test(t));
+  if (rest.some((t) => !known.has(t))) return null;
+  const spoken = to.split(/\s+/).find((w) => colorWord(w.replace(/[^\p{L}]/gu, "")))?.replace(/[^\p{L}]/gu, "") ?? color;
+  const base = (item.ask?.trim() || queryTokens(item.name).slice(0, 2).join(" "))
+    .split(/\s+/)
+    .filter((w) => !colorWord(w.replace(/[^\p{L}]/gu, "")))
+    .join(" ")
+    .trim();
+  // "caneta bic" + "pretas" → "caneta bic preta": a cor concorda com o item.
+  const singular = !/s$/i.test(base.split(/\s+/)[0] ?? "") && SWAP_COLORS[normalizeMsg(spoken).replace(/s$/, "")] ? spoken.replace(/s$/i, "") : spoken;
+  return base ? { phrase: `${base} ${singular}`.trim(), color } : null;
+}
+// Opções da cor pedida: as de UMA cor só (a pedida) primeiro; kit colorido só quando não há nenhuma de uma cor.
+export function byColor<T extends { name: string }>(options: T[], color: string): T[] {
+  const withColor = options.filter((o) => colorsOf(o.name).has(color));
+  const pure = withColor.filter((o) => colorsOf(o.name).size === 1);
+  return pure.length ? pure : withColor;
 }
 export function colorChange(fromName: string, toName: string): { from: string; to: string } | null {
   const from = colorsOf(fromName);
@@ -1957,7 +1991,10 @@ async function offerMinimumSwap(
           !productKindConflict(item.name, c.item.name) &&
           !(item.ask && productKindConflict(item.ask, c.item.name)) &&
           // Mesmo público (10/10, rodada 10 g29): o desodorante masculino nunca vira o feminino.
-          sameAudience(`${item.name} ${item.ask ?? ""}`, c.item.name)
+          sameAudience(`${item.name} ${item.ask ?? ""}`, c.item.name) &&
+          // A cor que o cliente PEDIU fica (10/10, rodada 16 M7: as canetas trocadas pra preta voltavam à azul na troca de loja).
+          // Só a cor pedida E dita no produto escolhido ("arroz branco" com "Arroz Tipo 1" não prende a troca).
+          [...colorsOf(item.ask ?? "")].filter((color) => colorsOf(item.name).has(color)).every((color) => colorsOf(c.item.name).has(color))
       );
       // A troca é SÓ de loja (10/10, rodada 10 g29: o Limpol escolhido voltou a ser Ypê; o Dove Pele Sensível virou o
       // Nutritivo Karité): a mesma marca vem primeiro e, dentro dela, a versão mais parecida com a escolhida. Outra marca só
@@ -7880,7 +7917,7 @@ async function confirmChosenOption(
     // sem precisar da marca. Antes só "troca X por Y" lembrava o item tirado.
     if (replaced && replaced.sku !== chosen.sku) ctx.lastSwap = { removed: [replaced], to: current.query, addedSku: chosen.sku, at: Date.now() };
     if (replaced && !current.qtyExplicit && replaced.qty > 1) {
-      current.qty = replaced.qty;
+      current.qty = unitsAskedOf(replaced);
       current.qtyExplicit = true;
     }
   }
@@ -7900,7 +7937,11 @@ async function confirmChosenOption(
   // sem o cliente pedir — card revivido, outra linha com o mesmo sku): não soma calado; confirma o que já está.
   const already = !replaceSku && assumedOne ? (ctx.basket ?? []).find((item) => item.sku === chosen.sku) : undefined;
   if (already) console.log("[choice:already-in-basket]", chosen.sku, `qty=${already.qty}`);
-  else ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(chosen, pack.qty, chosenStore, current.query)]);
+  else {
+    const line = choiceToBasketItem(chosen, pack.qty, chosenStore, current.query);
+    if (pack.note && pack.qty !== current.qty && declaredPack(chosen.name) >= 2) line.askedUnits = { units: current.qty, packs: pack.qty };
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [line]);
+  }
   // Escolha que cria entrega extra ou atrasa o pedido avisa o custo na hora (10/10, rodada 7 M4: o café mais barato era de
   // uma loja de 3 dias úteis e o cliente só viu as 2 entregas e R$ 29,90 de frete no resumo).
   const costNote = already ? undefined : deliveryCostNote(costBefore, ctx.basket ?? [], { storeLabel: chosen.storeLabel, storeKey: chosen.storeKey, fee: chosen.freightFee });
@@ -10867,7 +10908,9 @@ async function handleSwap(
   ctx.basket = keep;
   ctx.pending = pendingKeep.length ? pendingKeep : undefined;
   const removedNames = [...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ");
-  const qty = removed[0]?.qty ?? removedPending[0]?.qty ?? 1;
+  // "5 canetas" que viraram 2 pacotes de 3 (10/10, rodada 16 A2): a troca refaz a conta das 5 unidades, não dos 2 pacotes.
+  const qty = removed[0] ? unitsAskedOf(removed[0]) : removedPending[0]?.qty ?? 1;
+  const unitsCarried = Boolean(removed[0] && qty !== removed[0].qty);
   const store = orderStore(ctx);
   // "troca X por Y" busca nas MESMAS vitrines que o pedido normal. Como no concierge
   // `ctx.storeKey` é "concierge", `orderStore` caía na loja default e o Y só era
@@ -10880,6 +10923,14 @@ async function handleSwap(
   const removedHead = removed[0] ? queryTokens(removed[0].name)[0] : undefined;
   if (attrSwap && removedHead && !queryTokens(to).includes(removedHead)) {
     searchPhrase = `${removedHead} ${to}`;
+  }
+  // Troca só de COR ("ah, as canetas melhor preta", 10/10, rodada 16 A2/M8): a busca herdava o nome do produto anterior
+  // ("canetas esferográficas Cristal Fina 3 unidades BIC preta") e trazia kits coloridos. A cor nova vai no pedido do
+  // cliente ("caneta bic azul" → "caneta bic preta"), e só ficam as opções dessa cor (as de uma cor só na frente).
+  const colorSwap = removed.length === 1 && !attrSwap ? colorRefine(removed[0], to) : null;
+  if (colorSwap) {
+    searchPhrase = colorSwap.phrase;
+    to = colorSwap.phrase;
   }
   // "troca a areia por uma SEM cheiro de 4kg" (09/10, rodada 3): o destino é só um atributo negado — compõe com o item
   // trocado e mantém o "sem" (filtro, não termo de busca: "cheiro" sozinho trazia areia perfumada).
@@ -10904,6 +10955,8 @@ async function handleSwap(
     .filter((c) => conciergeMatchIsStrong(searchPhrase, c.item))
     .filter((c) => !leavingStore || (c.store.key !== leavingStore && (!leavingBelowMin || storeMinReal(c.store) === 0)))
     .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
+  const swapColor = colorSwap?.color ?? (attrSwap && removed.length === 1 && colorsOf(to).size === 1 ? [...colorsOf(to)][0] : undefined);
+  if (swapColor) toConfirm = byColor(toConfirm, swapColor);
   if (cheapestSwap) toConfirm = cheaperSwapPool(removed[0], toConfirm, shownOptionsForItem(ctx, removed[0].sku));
   const confirmed = await confirmOptionsLive(toConfirm, ctx.cep ?? userCep);
   // Tamanho pedido na troca ("a ração tem que ser de 3kg", 09/10): só o que tem o tamanho (±10%); a busca
@@ -10985,7 +11038,8 @@ async function handleSwap(
   if (options.length === 1 && !(ctx.pending?.length)) {
     const only = options[0];
     ctx.lastSwap = { removed, to, addedSku: only.sku, at: Date.now() };
-    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, qty, only.storeKey ? getStore(only.storeKey) : store, to)]);
+    const onlyQty = unitsCarried ? packAdjusted(only, qty, to).qty : qty;
+    ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(only, onlyQty, only.storeKey ? getStore(only.storeKey) : store, to)]);
     await continueAfterBasket(phone, convoId, ctx, userCep, cheapestSwap ? copy.itemCheapestAnswer({ item: to, name: only.name, price: display(only.unitPrice, only.medicine), where: only.storeLabel, already: false }) : copy.swappedFor(removedNames, only.name));
     return;
   }
@@ -10994,6 +11048,7 @@ async function handleSwap(
     {
       query: to,
       qty,
+      ...(unitsCarried ? { qtyExplicit: true } : {}),
       options,
       // Troca com escolha aberta (10/10, rodada 5 A3): o que saiu fica guardado na escolha — fechar sem escolher o
       // substituto devolve o item à cesta (nunca some sem o cliente pedir).
@@ -12081,7 +12136,8 @@ export function splitBySize(sizeAsk: string, items: { name: string; brand?: stri
 // Descartáveis de festa e afins (10/10, rodada 6 g19: "40 copos descartáveis" virou 40 pacotes "C/50", R$ 571).
 // Papelaria contável vendida em pacote ("3 canetas" com "Caneta ... 3 Unidades", 10/10, rodada 12 A3: virava 3 pacotes =
 // 9 canetas): a conta é de unidades, como ovo/pilha. Kit de produto avulso ("Desodorante 2 unidades") continua sem converter.
-const PACK_CONTENT_NOUN_RE = /\b(canetas?|lapis|l[aá]pis|borrachas?|marca[- ]?textos?|clipes?|pinc[eé]is|giz(?:es)?|ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
+// Escova de dente vendida em kit ("Escova Dental … Com 3 Unidades", 10/10, rodada 16 A1: "3 escovas" viravam 3 kits = 9).
+const PACK_CONTENT_NOUN_RE = /\b(escovas?(?= (?:de dentes?|dentais?)\b)|canetas?|lapis|l[aá]pis|borrachas?|marca[- ]?textos?|clipes?|pinc[eé]is|giz(?:es)?|ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
 export function parseWeightAskKg(query: string): number | undefined {
   const t = normalizeMsg(query);
   if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
@@ -12125,13 +12181,15 @@ export function declaredPack(optionName: string): number {
   const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b|copos\b|pratos\b|guardanapos\b|garfos\b|colheres\b|facas\b|canudos\b|bal[oõ]es\b|velas\b|palitos\b|forminhas\b|pilhas\b|baterias\b|pe[cç]as\b)/i);
   if (m) return Number(m[1]);
   // "Blister Com 2 Peças", "Cartela com 4" (10/10, rodada 10 g30: o par de pilhas virava 2 blisters de 2 = 4 pilhas).
-  const carded = optionName.match(/\b(?:blister|cartela|pack|embalagem)\s+(?:com|c\/)\s*(\d{1,3})\b/i);
+  const carded = optionName.match(/\b(?:blister|cartela|pack|embalagem|kit)\s+(?:com|c\/)\s*(\d{1,3})\b/i);
   if (carded) return Number(carded[1]);
   // "Copo Descartável ... C/50", "c/ 100" (10/10, rodada 6 g19): contagem da embalagem sem a palavra "unidades".
   const withCount = optionName.match(/\b[cC]\s*\/\s*(\d{1,4})(?![\d.,])(?!\s*(?:kg|g|mg|ml|l|lt|cm|mm|m|gr|un\w*\s*de)\b)/);
   if (withCount) return Number(withCount[1]);
   return /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
+// Nome que declara o conjunto: "Com 3 Unidades", "Kit 3 Unidades", "Kit com 3", "c/ 3", "Leve 3", "Pack 3".
+const MULTIPACK_NAME_RE = /\b(?:com|kit(?:\s+com)?|leve|pack|c\s*\/)\s*\d{1,3}\b/i;
 const PACK_COUNT_ASK_MIN = 100;
 // Pacote por peso multiplicado 6+ vezes (rodada 13 g39): "meia dúzia de pão de alho" a R$ 14 = R$ 85 também confirma.
 const PACK_MEASURE_ASK_MIN = 50;
@@ -12164,7 +12222,10 @@ export function packAdjusted(
   const countsContent = countsPackContent(query);
   // Embalagem pequena (2–3) só converte quando o pedido conta o CONTEÚDO (10/10, rodada 9 A2: "um par de pilhas AA" com
   // a cartela de 2 virava 2 cartelas = 4 pilhas).
-  const smallPack = pack >= 2 && pack < 4 && countsContent && qty >= pack;
+  // A embalagem DIZ que é um conjunto ("Com 3 Unidades", "Kit 3", "c/ 3", 10/10, rodada 16 A1): o número igual ao do kit é
+  // 1 kit, como "3 canetas" = 1 pacote de 3. "Desodorante 2 unidades" (sem "com"/"kit") segue sem converter.
+  const statedSet = pack >= 2 && pack < 4 && qty >= pack && qty % pack === 0 && MULTIPACK_NAME_RE.test(optionName) && !PACK_UNIT_LEAD_RE.test(normalizeMsg(query ?? ""));
+  const smallPack = pack >= 2 && pack < 4 && (countsContent || statedSet) && qty >= pack;
   if (smallPack || (pack >= 4 && (qty >= pack || (countsContent && qty > 1 && qty < pack && (!/\bfraldas?\b/i.test(query ?? "") || qty > 5))))) {
     const packs = Math.max(1, Math.ceil(qty / pack));
     return { qty: packs, note: copy.packConversionNote(qty, pack, packs) };

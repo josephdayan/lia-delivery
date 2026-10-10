@@ -207,6 +207,14 @@ function namesOption(text: string, n: number): boolean {
 const FREE_BRAND_RE = /\b(?:qualquer (?:marca|uma|um)|tanto faz(?: a marca)?|sem preferencia|outra marca|nao precisa ser (?:dess|da|de))/;
 const REPLACE_CUE_RE = /\b(?:na verdade|na vdd|em vez|ao inves|no lugar|troca\w*|substitu\w*|mudei de ideia|pensando bem|melhor|prefiro|esquece|nao quero (?:ess|mais))/;
 
+// A frase traz palavra de produto que o pedido perdido não tinha ("para roedores", "de inox"), além da fala de "tenta de novo".
+const RETRY_TALK = new Set("tenta tentar tente tentou procura procurar busca buscar outra outro outras outros loja lojas novo nova denovo pode favor porfavor mesmo mesma esse essa isso aquele aquela ainda qualquer marca agora".split(" "));
+export function reformulatesMiss(text: string, missed: string): boolean {
+  const words = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length >= 4);
+  const had = new Set(words(missed).map((w) => w.replace(/s$/, "")));
+  return words(text).some((w) => !RETRY_TALK.has(w) && !had.has(w.replace(/s$/, "")));
+}
+
 function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
@@ -219,6 +227,12 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       const missed = state.naoAcheiRecente?.pedido;
       // Só quando a frase repete o PRODUTO: "pode tentar de qualquer marca" sozinho continua sendo retry (c40).
       if (FREE_BRAND_RE.test(normalizeMsg(text)) && text.trim().length <= 160 && missed && sharesProductNoun(text, missed) && (retry || normalizeMsg(query) === normalizeMsg(missed))) {
+        query = text.trim();
+        retry = false;
+      }
+      // Reformulação do produto que faltou (10/10, rodada 16 M3): "bebedouro de bico para roedores" depois de "não achei
+      // bebedouro de bico" — a IA marcava retry e a Lia refazia a busca antiga. Palavra nova de produto = busca a frase nova.
+      if (retry && missed && text.trim().length <= 160 && sharesProductNoun(text, missed) && reformulatesMiss(text, missed)) {
         query = text.trim();
         retry = false;
       }

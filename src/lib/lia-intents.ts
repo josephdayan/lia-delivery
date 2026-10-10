@@ -348,7 +348,8 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // febre desde ontem", "o pediatra falou pra dar líquido", "semana passada meu marido
       // viajou", "fiquei sozinha com as crianças", "hoje acabou tudo aqui", "acabei de me
       // mudar", "nada em casa", "moro em SP". Só o produto da mensagem vira item.
-      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (viajou|saiu|foi|chegou|nasceu|ficou|esta|ta|anda|caiu|quebrou|operou)\\b.*",
+      // Até 3 palavras entre o possessivo e o verbo (10/10, rodada 16 M1): "meu coelhinho mini lion chegou semana passada".
+      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+){0,2} (viajou|saiu|foi|chegou|chegaram|nasceu|nasceram|ficou|esta|ta|anda|caiu|quebrou|operou|adotei|adotamos)\\b.*",
       "(ele |ela |eles |elas )?(ta|esta|tava|estava|ficou|anda|andou) ((com|meio|muito|toda?|todo) )?(doente|febre|gripad\\w*|resfriad\\w*|passando mal|mal|com dor|vomitando|tossindo|internad\\w*)\\b.*",
       "(o |a )?(pediatra|medic[oa]|doutora?|dentista|veterinari[oa]|vet|farmaceutic[oa]|enfermeir[oa]) (falou|disse|mandou|receitou|pediu|recomendou|indicou|passou)\\b.*",
       "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",

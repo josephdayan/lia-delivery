@@ -4,7 +4,7 @@
 // certa ("gelo em cubo", "tenta Wilson").
 import type { DeliveryContext, ListMiss } from "@/lib/conversation-types";
 import { scoreCatalogMatch } from "@/lib/stores/types";
-import { isDiscourseOnly, productHead } from "@/lib/lia-intents";
+import { isDiscourseOnly, isNonItemSegment, productHead } from "@/lib/lia-intents";
 
 export const LIST_MISS_TTL_MS = 20 * 60_000;
 export const LIST_MISS_MAX = 8;
@@ -19,13 +19,19 @@ const norm = (text: string) =>
 
 // Faltantes ainda válidas. `lastMiss` (contexto antigo e o módulo dialogue, que ainda o grava)
 // entra como "not_found" quando a lista não o conhece.
-export function freshListMisses(ctx: Pick<DeliveryContext, "listMisses" | "lastMiss">, now = Date.now()): ListMiss[] {
+// 10/10, rodada 16 M2: o que depois ENTROU na cesta (a ração escolhida) e a fala que não é produto ("Meu coelhinho mini lion
+// chegou…") não são mais faltantes — a lista do "não achei" e o "tenta de novo" saíam desatualizados e contraditórios.
+export function freshListMisses(ctx: Pick<DeliveryContext, "listMisses" | "lastMiss"> & { basket?: { name: string; ask?: string }[] }, now = Date.now()): ListMiss[] {
   const out = (ctx.listMisses ?? []).filter((m) => now - m.at < LIST_MISS_TTL_MS);
   const legacy = ctx.lastMiss;
   if (legacy && now - legacy.at < LIST_MISS_TTL_MS && !out.some((m) => norm(m.query) === norm(legacy.query))) {
     out.push({ query: legacy.query, qty: legacy.qty, reason: "not_found", at: legacy.at, ...(legacy.retried ? { retried: true } : {}) });
   }
-  return out;
+  const basket = ctx.basket ?? [];
+  return out.filter((m) => !isNonItemSegment(m.query) && !coveredByBasket(m.query, basket));
+}
+function coveredByBasket(query: string, basket: { name: string; ask?: string }[]): boolean {
+  return basket.some((item) => coversMiss(query, item.name) || (item.ask ? norm(item.ask) === norm(query) || coversMiss(query, item.ask) : false));
 }
 
 // Grava a lista no contexto e espelha a mais recente em `lastMiss` (leitores antigos).
@@ -39,7 +45,7 @@ export function applyListMisses(ctx: DeliveryContext, misses: ListMiss[]): void 
 export function mergeListMisses(carry: ListMiss[], added: ListMiss[]): ListMiss[] {
   const out = new Map<string, ListMiss>();
   // Fala solta nunca é faltante (10/10, rodada 10 g28): "as duas", "me mostra" iam para o "Ficou de fora (não achei)".
-  for (const miss of [...carry, ...added]) if (!isDiscourseOnly(miss.query)) out.set(norm(miss.query), miss);
+  for (const miss of [...carry, ...added]) if (!isDiscourseOnly(miss.query) && !isNonItemSegment(miss.query)) out.set(norm(miss.query), miss);
   return [...out.values()].slice(-LIST_MISS_MAX);
 }
 
@@ -91,7 +97,7 @@ export function leftOutForSummary(
   const out: string[] = [];
   for (const miss of all) {
     if (now - miss.at > LEFT_OUT_TTL_MS) continue;
-    const covered = basket.some((item) => coversMiss(miss.query, item.name) || (item.ask ? norm(item.ask) === norm(miss.query) || coversMiss(miss.query, item.ask) : false));
+    const covered = coveredByBasket(miss.query, basket) || isNonItemSegment(miss.query);
     if (!covered && !out.some((q) => norm(q) === norm(miss.query))) out.push(miss.query);
   }
   return out;
