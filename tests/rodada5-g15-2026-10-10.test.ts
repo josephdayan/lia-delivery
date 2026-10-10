@@ -10,6 +10,7 @@ import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { detectIntent, isQuestion, isNonItemSegment, parseAvailabilityAsk } from "../src/lib/lia-intents";
 import { onboardingNote, parsePriceAsk } from "../src/lib/address-parse";
 import { preSignupBypassReason } from "../src/lib/dialogue/presignup";
+import * as copy from "../src/lib/lia-copy";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
 const PREFIX = `+5577${String(Date.now()).slice(-5)}${String(process.pid).slice(-2)}`;
@@ -139,4 +140,76 @@ test("M4: quantidade dita junto da escolha pelo nome ('o bolo gotas de chocolate
   const line = (ctx.basket ?? []).find((b: { sku: string }) => b.sku === "mambo-b1");
   assert.ok(line, `bolo não entrou: ${out.slice(0, 400)}`);
   assert.equal(line.qty, 3, out.slice(0, 400));
+});
+
+// M10 --------------------------------------------------------------------------------------------------------
+async function perfumeLine() {
+  const { gatherCrossStoreCandidates } = await import("../src/lib/stores");
+  const cands = (await gatherCrossStoreCandidates("perfume feminino", 40, 4, { noLongTail: true })).sort((a, b) => b.item.unitPrice - a.item.unitPrice);
+  if (cands.length < 2) return null;
+  const top = cands[0];
+  return { sku: top.item.sku, name: top.item.name, qty: 1, unitPrice: top.item.unitPrice, lineTotal: top.item.unitPrice, storeKey: top.store.key, storeLabel: top.store.label, ask: "perfume feminino" };
+}
+
+test("M10: 'troca o perfume por um mais barato, até 5 reais' sem nada no teto não troca calado acima do valor", async (t) => {
+  if (!dbOk) return t.skip();
+  const line = await perfumeLine();
+  if (!line) return t.skip("catálogo de teste sem perfumes");
+  const c = await customerWith({ basket: [line] });
+  const out = await send(c.phone, "troca o perfume por um mais barato, ate 5 reais");
+  t.diagnostic(out.slice(0, 600));
+  assert.doesNotMatch(out, /Troquei/i, out.slice(0, 400));
+  const ctx = await ctxOf(c.convoId);
+  assert.ok((ctx.basket ?? []).some((b: { sku: string }) => b.sku === line.sku), "o original fica até o cliente decidir");
+  assert.match(out, /Até R\$\s?5,00 não achei|já está o mais barato/i, out.slice(0, 400));
+});
+
+// M11 --------------------------------------------------------------------------------------------------------
+test("M11: 'não quero essa, quero com coco' quando nenhuma opção tem coco diz que não achei e dá a saída", async (t) => {
+  if (!dbOk) return t.skip();
+  const options = [opt("mambo-t1", "Tapioca Pronta Da Terrinha 500g", 8.9)];
+  const c = await customerWith({ basket: [], pending: [{ query: "tapioca pronta de coco congelada", qty: 1, options }] }, "choosing");
+  const out = await send(c.phone, "nao quero essa, quero com coco");
+  t.diagnostic(out.slice(0, 600));
+  assert.doesNotMatch(out, /continuam aí em cima/i, out.slice(0, 400));
+  assert.match(out, /Não achei \*tapioca pronta de coco congelada\*/i, out.slice(0, 400));
+  assert.match(out, /pula/i);
+});
+
+// M12 + troca indevida da tela ----------------------------------------------------------------------------------
+test("M12: 'qualquer marca' depois do 'não achei' busca a frase do cliente, não refaz a busca perdida", async () => {
+  const { planActions } = await import("../src/lib/dialogue/plan");
+  const { buildDialogueState } = await import("../src/lib/dialogue/state");
+  const state = buildDialogueState({ flow: "delivery", step: "collecting", lastMiss: { query: "ração Whiskas gatinho 1kg", qty: 1, at: Date.now() } } as never, { hasAddress: true });
+  const text = "ração pra gatinho filhote qualquer marca";
+  for (const action of [{ type: "search", query: "ração Whiskas gatinho 1kg", retry: true }, { type: "search", query: "ração whiskas gatinho 1kg" }]) {
+    const plan = planActions({ actions: [action as never] }, state, { text });
+    assert.ok(plan.ok);
+    const step = plan.ok ? (plan.steps[0] as { type: string; lines: { query: string }[]; retry?: boolean }) : null;
+    assert.equal(step?.lines[0].query, text);
+    assert.ok(!step?.retry);
+  }
+});
+
+test("busca no meio da escolha: 'replace' da IA só troca o item da tela se for o mesmo produto ou houver correção", async () => {
+  const { planActions } = await import("../src/lib/dialogue/plan");
+  const { buildDialogueState } = await import("../src/lib/dialogue/state");
+  const state = buildDialogueState(
+    { flow: "delivery", step: "choosing", pending: [{ query: "arroz camil 5kg", qty: 1, options: [opt("a1", "Arroz Camil 5kg", 30), opt("a2", "Arroz Camil Parboilizado 5kg", 31)] }] } as never,
+    { hasAddress: true }
+  );
+  const step = (text: string, query: string) => {
+    const plan = planActions({ actions: [{ type: "search", query, replace: true } as never] }, state, { text });
+    return plan.ok ? (plan.steps[0] as { replace?: boolean }) : null;
+  };
+  assert.ok(!step("ração pra gatinho filhote qualquer marca", "ração gatinho filhote")?.replace);
+  assert.ok(step("na verdade quero feijão", "feijão")?.replace);
+  assert.ok(step("arroz tio joão 5kg", "arroz tio joão 5kg")?.replace);
+});
+
+test("M11: 'Não achei X' com a vitrine ainda na tela é uma mensagem só, sem 'O que eu tenho é isso:' no ar", () => {
+  const t = copy.refineNoResultAbove("perfume feminino nivea", "perfume feminino");
+  assert.match(t, /Não achei \*perfume feminino nivea\*/);
+  assert.match(t, /aí em cima/);
+  assert.doesNotMatch(t, /O que eu tenho é isso:$/);
 });

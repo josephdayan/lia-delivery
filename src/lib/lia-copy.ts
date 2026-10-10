@@ -630,6 +630,10 @@ export function refineNoResultRejected(refined: string): string {
   return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
 }
 
+export function refineNoResultAbove(refined: string, query: string): string {
+  return `Não achei *${refined}*. O que eu tenho de *${query}* são as opções aí em cima 👆 — toca em *Adicionar ao carrinho* na que preferir, ou responde *pula* pra deixar de fora.`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }
@@ -1300,6 +1304,11 @@ export function itemCheapestAnswer(input: { item: string; name: string; price: n
 export function cheaperOnlyOtherSize(input: { item: string; name: string; price: number; size?: string }): string {
   const size = input.size ? ` de *${input.size}*` : "";
   return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
+}
+// Troca com teto ("um mais barato, até 60 reais") sem nada dentro do valor (10/10, rodada 5 M10).
+export function swapOverCap(input: { item: string; cap: number; name: string; price: number; keeping?: string }): string {
+  const keep = input.keeping ? ` Por enquanto deixei o *${input.keeping}* na lista.` : "";
+  return `Até ${brl(input.cap)} não achei *${input.item}*. O mais em conta que achei é *${input.name}* por ${brl(input.price)}.${keep} Se quiser esse, é só confirmar:`;
 }
 // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
 export function cheaperWhichItem(items: string[]): string {

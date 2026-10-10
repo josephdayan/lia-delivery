@@ -6551,6 +6551,13 @@ async function handleChoosing(
       await replyRefineMiss(phone, current, `${base} ${fresh.join(" ")}`, text);
       return;
     }
+    // "não quero essa, quero com coco" (10/10, rodada 5 M11): o que ele exige já estava no pedido e NENHUMA opção na
+    // mesa tem. Não é "as opções continuam aí": diz que não achei e dá a saída (outra palavra ou pular).
+    const asked = queryTokens(wantedTail);
+    if (!fresh.length && asked.length && !current.options.some((o) => asked.every((token) => normalizeMsg(o.name).includes(token)))) {
+      await reply(phone, copy.refineNoResultRejected(base));
+      return;
+    }
   }
   const attrAskRaw = parseAttributeAsk(text);
   // Orçamento junto do pedido de atributo ("óleo de soja, até uns 12 reais"): o teto vale para a escolha e sai das
@@ -7138,6 +7145,11 @@ const REJECTED_SHOWN_RE = /\b(nenhum(?:a)? d(?:es|ess)[ea]s?|nao (?:servem?|serv
 async function replyRefineMiss(phone: string, current: PendingChoice, refined: string, text?: string) {
   if (text && REJECTED_SHOWN_RE.test(normalizeMsg(text))) {
     await reply(phone, copy.refineNoResultRejected(refined));
+    return;
+  }
+  // Mesma vitrine ainda na tela (10/10, rodada 5 M11): "O que eu tenho é isso:" seguido só do lembrete ficava no ar.
+  if (process.env.WHATSAPP_PROVIDER === "meta" && (await choicesStillOnScreen(phone, current))) {
+    await reply(phone, copy.refineNoResultAbove(refined, shownQuery(current)));
     return;
   }
   await reply(phone, copy.refineNoResult(refined));
@@ -7737,6 +7749,11 @@ async function handleSwap(
   exactFromSku?: string
 ) {
   const basket = ctx.basket ?? [];
+  // Teto dito na troca ("troca o perfume por um mais barato, até 60 reais", 10/10, rodada 5 M10): sai da frase de
+  // busca e filtra o substituto; o gerente de diálogo às vezes manda só "mais barato", por isso também lê a frase crua.
+  const toCap = splitPriceCap(to);
+  if (toCap.cap != null) to = toCap.phrase.replace(/[\s,;.]+$/, "").trim() || to;
+  const swapCap = toCap.cap ?? (rawText ? splitPriceCap(rawText).cap : null);
   // "quero A e B; pensando bem, troca B por C" numa LISTA NOVA (cesta vazia): não há o
   // que remover — a autocorreção vale para a PRÓPRIA mensagem. Monta a lista corrigida
   // (linhas antes do "troca", menos o B, mais o C) e segue o fluxo normal de busca
@@ -7896,6 +7913,23 @@ async function handleSwap(
       return;
     }
     options = [cheapest];
+  }
+  // Nada dentro do teto: a troca não acontece calada acima do valor; mostra o mais em conta que achei e o cliente decide.
+  if (swapCap != null && options.length) {
+    const within = options.filter((o) => display(o.unitPrice, o.medicine) <= swapCap);
+    if (!within.length) {
+      const cheapestOver = [...options].sort((a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine))[0];
+      ctx.basket = basket;
+      ctx.pending = [
+        { query: to, qty, options: [cheapestOver], ...(removed[0] ? { replaceSku: removed[0].sku } : {}), cap: swapCap },
+        ...(pending.length ? pending : [])
+      ];
+      ctx.step = "choosing";
+      await writeCtx(convoId, ctx);
+      await sendChoices(phone, ctx.pending[0], copy.swapOverCap({ item: to, cap: swapCap, name: cheapestOver.name, price: display(cheapestOver.unitPrice, cheapestOver.medicine), keeping: removed[0]?.name }));
+      return;
+    }
+    options = within;
   }
 
   if (!options.length) {

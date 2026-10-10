@@ -3,7 +3,7 @@
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { countDistinctItems } from "../list-items";
-import { extractCep, normalizeMsg, parseBudgetStatement, parsePriceCap } from "../lia-intents";
+import { extractCep, normalizeMsg, parseBudgetStatement, parsePriceCap, sharesProductNoun } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
@@ -130,17 +130,31 @@ export function keepNegation(text: string, phrase: string): string {
   return out;
 }
 
+const FREE_BRAND_RE = /\b(?:qualquer (?:marca|uma|um)|tanto faz(?: a marca)?|sem preferencia|outra marca|nao precisa ser (?:dess|da|de))/;
+const REPLACE_CUE_RE = /\b(?:na verdade|na vdd|em vez|ao inves|no lugar|troca\w*|substitu\w*|mudei de ideia|pensando bem|melhor|prefiro|esquece|nao quero (?:ess|mais))/;
+
 function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
     case "search": {
-      const query = a.query ? keepNegation(text, a.query.replace(/\s+/g, " ").trim()) : undefined;
+      let query = a.query ? keepNegation(text, a.query.replace(/\s+/g, " ").trim()) : undefined;
       if (!query || query.length > 160) return "sem_busca";
+      // "ração pra gatinho filhote qualquer marca" depois do "não achei ração Whiskas" (10/10, rodada 5 M12): o cliente
+      // LIBERA a marca — refazer a busca perdida (retry ou a mesma frase) repetia o "não achei". Busca a frase dele.
+      let retry = Boolean(a.retry);
+      const missed = state.naoAcheiRecente?.pedido;
+      // Só quando a frase repete o PRODUTO: "pode tentar de qualquer marca" sozinho continua sendo retry (c40).
+      if (FREE_BRAND_RE.test(normalizeMsg(text)) && text.trim().length <= 160 && missed && sharesProductNoun(text, missed) && (retry || normalizeMsg(query) === normalizeMsg(missed))) {
+        query = text.trim();
+        retry = false;
+      }
       return {
         type: "search",
         lines: [{ query, qty: clampQty(a.qty) ?? 1 }],
-        ...(a.retry ? { retry: true } : {}),
-        ...(a.replace && onScreen ? { replace: true } : {})
+        ...(retry ? { retry: true } : {}),
+        // Trocar o item da tela só quando é o MESMO produto ou o cliente diz que corrige (10/10, rodada 5): "ração pra
+        // gatinho qualquer marca" com o arroz na tela tirava o arroz ("Deixei arroz Camil de fora").
+        ...(a.replace && onScreen && (sharesProductNoun(query, state.emEscolha!.item) || REPLACE_CUE_RE.test(normalizeMsg(text))) ? { replace: true } : {})
       };
     }
     case "pick": {
