@@ -10,6 +10,7 @@ import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, nor
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
+import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -194,6 +195,12 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       // Remédio como "refino" do item na tela (10/10, rodada 11 M11: "tem dipirona pra eu colocar no kit?" com o esparadrapo
       // aberto virou "Não achei *esparadrapo dipirona...*"): a recusa de remédio, e a escolha continua.
       if ((looksLikeMedicine(step.attribute) || looksLikeMedicine(env.text)) && !looksLikeMedicine(current.query)) {
+        // Remédio isento NOMEADO ("tem dipirona pra eu colocar no kit?", 10/10, rodada 12 g36): com remédio isento ligado,
+        // vira item novo na fila, como sem o esparadrapo na tela — antes pedia "me diz o nome" do remédio que ele já disse.
+        if (medicineEnabled() && looksLikeMedicine(step.attribute) && !isPrescriptionDrugName(step.attribute) && !looksLikePrescriptionRequest(env.text)) {
+          await searchDuringChoice(env, step.attribute, false);
+          return "done";
+        }
         await h.refuseMedicine(phone, convoId, ctx, env.text);
         await reply(phone, copy.choicesStillOpen(current.query));
         return "done";
@@ -206,7 +213,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       // Tamanho novo substitui o anterior (10/10, rodada 7 M7: "fralda RN" + "muda pra tamanho P").
       const base = replaceRefinedSize(current.baseQuery ?? current.query, [step.attribute]);
       const baseTokens = new Set(queryTokens(normalizeMsg(base)));
-      const asked = queryTokens(normalizeMsg(step.attribute));
+      // "lenço da Huggies, o mais barato" (10/10, rodada 12 g36): "barato" é critério de escolha, não palavra do produto — a
+      // busca virava "lenço umedecido huggies barato" e o "não achei" citava isso.
+      const asked = queryTokens(normalizeMsg(step.attribute).replace(/\b(?:o |a )?mais (?:barat\w*|em conta|economic\w*)\b|\bbaratinh\w*|\bbarat[oa]s?\b|\bem conta\b/g, " "));
       const fresh = asked.filter((token) => !baseTokens.has(token));
       if (!fresh.length) {
         await h.sendChoices(phone, current);
@@ -279,7 +288,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       ctx.pending = ctx.pending!.slice(1);
       // Era o único item: "Deixei de fora" já diz o próximo passo.
       // "tira o feijão e põe macarrão" (09/10, rodada 1): o cliente pediu a troca — "me diz de outro jeito" soava como erro.
-      const said = opts.nextIsSearch ? copy.choiceDropped(current.query) : copy.choiceSkipped(current.query);
+      // "peraí, açúcar não, esquece isso" (10/10, rodada 12 g36): ordem de tirar — "me diz de outro jeito que eu procuro" não cabe.
+      const removal = /\b(?:tira|tirar|remove|retira|esquece|esqueca|desconsidera|nao quero)\b/.test(normalizeMsg(env.text));
+      const said = opts.nextIsSearch || removal ? copy.choiceDropped(current.query) : copy.choiceSkipped(current.query);
       if (!ctx.pending.length && !(ctx.basket?.length ?? 0)) {
         await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
         await reply(phone, said);

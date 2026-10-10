@@ -1020,6 +1020,7 @@ export async function recommendForBench(req: RecommendRequest, cep: string): Pro
 // `timeoutMs` (4 s) = null e o fechamento segue direto pro total.
 export type ComplementFound = { suggestion: ComplementSuggestion; option: ChoiceOption; ms: number };
 
+const COMPLEMENT_MAX_PRICE = 30;
 export async function findComplement(input: {
   cep: string;
   basket: readonly BasketItem[];
@@ -1043,7 +1044,13 @@ export async function findComplement(input: {
     // Mesmas regras do juiz (restrição lembrada, porta do remédio); a escolha é o BÁSICO da prateleira:
     // conferido ao vivo, mais vendido, preço perto da mediana — complemento não é hora de item premium.
     const eligible = eligibleCandidates({ request: req, plan: { picks: [pick], source: "table" }, candidates, ...(memory ? { memory } : {}) });
-    if (!eligible.length) return null;
+    // Oferta cruzada é item barato do dia a dia (10/10, rodada 12 g36: "Manteiga Real R$ 67,10" depois de um pão): acima de
+    // R$ 30, ou de mais que o dobro da mediana da prateleira, não vira oferta.
+    const shelfPrices = eligible.map((c) => c.option.unitPrice).sort((a, b) => a - b);
+    const shelfMedian = shelfPrices[Math.floor((shelfPrices.length - 1) / 2)];
+    const affordable = eligible.filter((c) => c.option.unitPrice <= COMPLEMENT_MAX_PRICE && c.option.unitPrice <= shelfMedian * 2);
+    if (!affordable.length) return null;
+    eligible.splice(0, eligible.length, ...affordable);
     const prices = eligible.map((c) => c.option.unitPrice).sort((a, b) => a - b);
     const median = prices[Math.floor((prices.length - 1) / 2)];
     const pop = (c: ShelfCandidate) => c.popularity ?? Number.POSITIVE_INFINITY;
