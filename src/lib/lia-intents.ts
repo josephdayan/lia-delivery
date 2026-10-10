@@ -658,6 +658,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // "gostei desse leite integral" com o carrossel aberto (10/10, rodada 9 A1): a opinião não é palavra do produto.
         .replace(/^(?:eu\s+)?(?:gostei|curti|adorei|amei)\s+(?:dess[ea]s?|dest[ea]s?|daquel[ea]s?)\s+(?=[a-zà-ú]{3,})/i, "")
         .replace(/\b(?:uns|umas)\s+(?=\d+(?:[.,]\d+)?\s*(?:kg|g|quilos?|kilos?|litros?|l|ml|unidades?|pacotes?|caixas?|latas?)\b)/gi, "")
+        // "e uns 4 tomates" (10/10, rodada 12 A2): a hesitação antes do número não pode esconder a quantidade
+        // ("uns 4 tomates" virava 1x). Dinheiro ("uns 120 reais") fica de fora.
+        .replace(/^(?:uns|umas|mais ou menos|cerca de)\s+(?=\d{1,2}\s+(?!reais\b|real\b|contos?\b|pilas?\b)[a-zà-ú])/i, "")
         // gíria/vocativo antes do pedido ("mn qro 2 coca", "galera vou fazer um churrasco"): tira só o
         // prefixo, o resto segue (c92/c94). Não vira quantidade nem produto.
         .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
@@ -1212,7 +1215,9 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
   for (const line of ai) {
     const saidQty = line.qtyExplicit || line.qty > 1;
     const host = saidQty && meaningfulProductTokens(line.phrase).length === 1
-      ? foldedAi.find((c) => sameProduct(line.phrase, c.phrase) && meaningfulProductTokens(c.phrase).length > 1)
+      // Só dobra quando a palavra nua é a CABEÇA da linha rica ("leite" → "leite sem lactose"). "4 tomates" ao lado
+      // de "molho de tomate" é OUTRO produto: dobrava e virava "5x molho" sem tomates (10/10, rodada 12 A2).
+      ? foldedAi.find((c) => meaningfulProductTokens(c.phrase).length > 1 && meaningfulProductTokens(c.phrase)[0] === meaningfulProductTokens(line.phrase)[0])
       : undefined;
     if (host) {
       host.qty = Math.min(MAX_QTY, host.qty + Math.max(1, line.qty));
@@ -1225,7 +1230,12 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     // O TETO de preço vive no gêmeo determinístico (a IA remove preço da query por
     // instrução): sem re-anexar, "até R$25 cada" era ordenação e as opções passavam
     // do limite (rodada 10, 4º ciclo: card de R$29,69 com teto de R$25).
-    const twin = deterministic.find((d) => sameProduct(d.phrase, line.phrase));
+    // Gêmeo de MESMA cabeça primeiro: "4 tomates e molho de tomate" — o gêmeo do molho é o molho; casar com
+    // "4 tomates" (palavra em comum) herdava o 4 e o molho virava 4x (10/10, rodada 12 A2).
+    const head = (p: string) => meaningful(p)[0];
+    const twin =
+      deterministic.find((d) => head(d.phrase) !== undefined && head(d.phrase) === head(line.phrase)) ??
+      deterministic.find((d) => sameProduct(d.phrase, line.phrase));
     // Uma linha só de cada lado, mas a IA trocou o substantivo ("presente pra minha mãe, uns 100
     // reais" → "perfume feminino"): o orçamento é da MENSAGEM e continua valendo (placar c23).
     const capTwin = twin ?? (foldedAi.length === 1 && deterministic.length === 1 ? deterministic[0] : undefined);
@@ -1581,9 +1591,24 @@ export function isKeepSeparateReply(text: string): boolean {
 // "pela outra"): nenhum produto no meio — "troca o arroz pelo feijão" é edição de item e não casa.
 const SWAP_ACCEPT_RE =
   /^(?:(?:sim|ok|okay|pode|podes|bora|quero|isso|claro|vamos|beleza|blz|show|fechado|fechou|aceito|por favor|pf|pfv|entao|perfeito|otimo|ta bom|tudo bem|manda|faz|faca|pode ser)\b[\s,.!]*)*(?:pode\s+)?(?:troca|trocar|troque|troco|trocamos|muda|mudar|mude|aceito a troca|faz a troca|faca a troca|fazer a troca|pode fazer a troca)(?:\s+(?:sim|entao|ai|isso|ela|ele|essa|esse|pra mim|por favor|pf))*(?:\s+(?:de loja|a loja|pela outra(?: loja)?|pra outra(?: loja)?|para outra(?: loja)?|na outra(?: loja)?|por essa|por esse|pela que voce (?:falou|disse|mostrou)|pela sugerida|pela sugestao|pelo sugerido))?(?:[\s,]+(?:sim|entao|por favor|pf|pfv|pode ser|pode|ok|beleza|blz|fechado|fechou|perfeito|otimo|obrigad[oa]|valeu))*[\s!.]*$/;
+// "pode ser na outra", "manda da outra loja", "prefiro a outra loja" (10/10, rodada 12 M5): o aceite sem o verbo trocar —
+// só o destino "outra (loja)". Produto no meio não casa ("pode ser na outra cor" não é loja).
+const OTHER_STORE_ACCEPT_RE =
+  /^(?:(?:sim|ok|okay|pode|bora|isso|claro|beleza|blz|show|fechado|entao|perfeito|otimo|ta bom|tudo bem)\b[\s,.!]*)*(?:pode ser|pode|manda|vai|vamos|prefiro|quero|pega|compra|fecha|faz|faca)\s+(?:(?:n|d|pel|pr)a\s+outra(?:\s+loja)?|(?:a|o)\s+outra\s+loja)(?:\s+(?:mesmo|entao|sim|por favor|pf))*[\s!.]*$/;
 export function acceptsSwapOffer(text: string): boolean {
   const s = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
-  return Boolean(s) && SWAP_ACCEPT_RE.test(s);
+  return Boolean(s) && (SWAP_ACCEPT_RE.test(s) || OTHER_STORE_ACCEPT_RE.test(s));
+}
+
+// "deixa, esquece a vela. pode trocar de loja" (10/10, rodada 12 M5): edição + aceite da troca na MESMA mensagem. Devolve
+// o que vem antes do aceite (a edição, que roda primeiro); null = a mensagem não termina num aceite da troca.
+export function splitTrailingSwapAccept(text: string): string | null {
+  const parts = text.split(/(?<=[.;!?])\s+|\s*,\s*/);
+  if (parts.length < 2) return null;
+  const last = parts[parts.length - 1];
+  if (!acceptsSwapOffer(last)) return null;
+  const rest = parts.slice(0, -1).join(", ").replace(/[,.;!?\s]+$/, "").trim();
+  return rest && !acceptsSwapOffer(rest) ? rest : null;
 }
 
 // Recusa da oferta de troca: "mantém como está", "deixa assim", "não troca", "prefiro manter". Mesmo léxico da recusa
@@ -1837,8 +1862,19 @@ export function detectIntent(text: string): Intent {
   // "pera"/"espera aí, meu neto tá chorando"/"já volto": pedido de PAUSA — jamais
   // busca (28/08 S10: "nao pera" virou busca de PERA fruta; S20: "espera, meu neto ta
   // chorando" virou busca). "quero pera" tem verbo de pedido e não cai aqui.
+  const holdLead = n.match(/^(nao |não )?(pera(i)?|espera( ai| um pouco| so)?|calma( ai)?|aguenta( ai)?|segura( ai)?|(so |só )?um (minuto|minutinho|momento|segundo|instante)|ja volto|volto ja(zinho)?)\b/);
+  // "peraí, é só 1 molho, não 5" / "pera, melhor só 1 pacote mesmo" (10/10, rodada 12 A2/A4): o "pera" abre uma
+  // CORREÇÃO de quantidade — o resto da frase decide (sem o prefixo), nunca "te espero".
+  if (holdLead) {
+    const rest = n.slice(holdLead[0].length).replace(/^[\s,.!;:-]+/, "").replace(/^(ai|aí)\b[\s,.!;:-]*/, "");
+    const qtyFix = /\b(?:so|apenas|melhor|era|e|eh)\s+(?:so\s+)?(?:\d{1,2}|um|uma|dois|duas|tres)\b/.test(rest);
+    if (rest && qtyFix && !/\b(minutos?|minutinhos?|segundos?|horas?|min)\b/.test(rest)) {
+      const inner = detectIntent(rest);
+      if (inner.kind !== "hold") return inner;
+    }
+  }
   if (
-    /^(nao |não )?(pera(i)?|espera( ai| um pouco| so)?|calma( ai)?|aguenta( ai)?|segura( ai)?|(so |só )?um (minuto|minutinho|momento|segundo|instante)|ja volto|volto ja(zinho)?)\b/.test(n) &&
+    holdLead &&
     !/\b(quero|me ve|manda|traz|compra|adiciona|coloca|bota)\b/.test(n) &&
     // "peraí, banana chips não... tira isso" (10/10, rodada 11 M14): o "peraí" abre uma ORDEM de edição, não uma pausa.
     !/\b(tira|tirar|remove|remover|retira|troca|trocar|muda|mudar)\b/.test(n)
@@ -3030,6 +3066,29 @@ export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { 
 // "a fralda é só 1 pacote", "o bolo eram 3", "deixa o leite pra 2". Quem confere se o item está na cesta é o cérebro.
 const ITEM_QTY_EDIT_RE =
   /^(?:(?:na real|na verdade|ah|e)\s+)?(?:(?:muda|mudar|altera|alterar|ajusta|deixa|deixar|coloca|bota|poe)\s+)?(?:(?:o|a|os|as)\s+)?(.+?)\s+(?:pra|para|(?:e|eh|fica|ficam|sao|era|eram)\s+(?:so|soh|somente|apenas)|(?:e|eh|fica|ficam|sao|era|eram)|so|somente|apenas)\s+(\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis)(?:\s+(?:pacotes?|unidades?|un|caixas?|latas?|garrafas?|potes?|vidros?|kits?|x))?[\s!.]*$/;
+// Moldura de CORREÇÃO de quantidade ("pera, melhor só 1 pacote mesmo", "na verdade era 1", "errei, é 2") (10/10, rodada 12 A4):
+// com um item recém-escolhido e o da vez sem quantidade dita, a correção é do recém-escolhido.
+export function isQtyCorrectionCue(text: string): boolean {
+  const n = normalizeMsg(text);
+  return /\b(?:pera[i]?|perae|errei|corrig\w*)\b/.test(n) || /\b(?:melhor|na verdade|na real|era)\b.*\b(?:so|somente|apenas)\b|\b(?:so|somente|apenas)\b.*\bmesmo\b/.test(n);
+}
+// "peraí, é só 1 molho, não 5" / "só 1 petisco" / "era só 1 arroz" (10/10, rodada 12 A2/A4): correção da quantidade de
+// um item NOMEADO, com a moldura da correção (pera, é/era só, "não N"). null = não é correção de quantidade nomeada.
+export function parseNamedQtyCorrection(text: string): { phrase: string; qty: number } | null {
+  const n = normalizeMsg(text)
+    .replace(/^(?:pera[i]?|perae|espera(?:\s+ai)?|ops|opa|na verdade|na real|ah)\b[\s,.!]*/, "")
+    .replace(/[,;]?\s*nao\s+\d{1,2}\s*[.!]*$/, "")
+    .trim();
+  const m = n.match(/^(?:(?:e|eh|era|sao|eram)\s+)?(?:so|somente|apenas)\s+(\d{1,2}|um|uma|dois|duas|tres)\s+(?:pacotes?\s+(?:de\s+)?|unidades?\s+(?:de\s+)?|d[oa]s?\s+)?(?:(?:o|a|os|as)\s+)?([a-z][a-z\s]{1,40}?)(?:\s+mesmo)?[\s!.]*$/);
+  if (m) {
+    const words: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3 };
+    const qty = /^\d+$/.test(m[1]) ? Number(m[1]) : words[m[1]];
+    const phrase = m[2].trim();
+    if (qty && qty <= 50 && phrase && phrase.split(/\s+/).length <= 5) return { phrase, qty };
+  }
+  return parseItemQtyEdit(n);
+}
+
 export function parseItemQtyEdit(text: string): { phrase: string; qty: number } | null {
   const n = normalizeMsg(text);
   const m = n.match(ITEM_QTY_EDIT_RE);

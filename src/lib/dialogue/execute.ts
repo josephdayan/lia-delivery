@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, extractCep, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
+import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
@@ -210,6 +210,14 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
     case "qty": {
       if (step.target.kind === "screen") {
         if (!current) return "invalid";
+        // "pera, melhor só 1 pacote mesmo" logo depois de escolher a areia 2x (10/10, rodada 12 A4): a IA mirava o petisco da
+        // tela. Item da vez sem quantidade dita + moldura de correção = a correção é do recém-escolhido.
+        const lastPicked = ctx.lastChoice ? (ctx.basket ?? []).find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined;
+        if (step.mode === "set" && lastPicked && lastPicked.qty !== step.value && !current.qtyExplicit && isQtyCorrectionCue(env.text)) {
+          await h.handleQtyAdjust(phone, convoId, userCep, ctx, { set: step.value }, opts.reopened, lastPicked.sku);
+          if (ctx.step === "choosing" && ctx.pending?.length) await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
+          return "done";
+        }
         const next = Math.max(1, Math.min(50, step.mode === "set" ? step.value : current.qty + step.value));
         current.qty = next;
         current.qtyExplicit = true;

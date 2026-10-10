@@ -38,6 +38,31 @@ const CACHE_MAX = 600;
 
 // Padrão LIGADO desde o placar de 07/10 (cobertura 85,8% → 92,6% com a mesma precisão); desliga
 // com `LIA_LIVE_SEARCH=false`. Testes e golden desligam em tests/helpers (sem rede).
+
+// "nameComplete" da VTEX é "produto + SKU". Em loja que escreve o SKU como outra descrição inteira do mesmo produto
+// (10/10, rodada 12 B4: "Caneta ... 3 Unidades Bic Ponta 1.2mm Caneta Esferográfica BIC Cristal Fashion ... 3 Unidades"),
+// o nome saía repetido e gigante. Aí fica o nome do produto + só as palavras novas do SKU (cor, tamanho).
+export function completeName(nameComplete?: string, productName?: string, skuName?: string): string {
+  const clean = (x?: string) => (x ?? "").replace(/\s+/g, " ").trim();
+  const full = clean(nameComplete) || clean(skuName) || clean(productName);
+  const prod = clean(productName);
+  const sku = clean(skuName);
+  if (!prod || !sku || full.toLowerCase() !== `${prod} ${sku}`.toLowerCase()) return full;
+  const key = (w: string) => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9.]/g, "");
+  const prodKeys = new Set(prod.split(" ").map(key).filter(Boolean));
+  const skuWords = sku.split(" ");
+  const repeated = skuWords.filter((w) => prodKeys.has(key(w))).length;
+  if (skuWords.length < 4 || repeated < Math.ceil(prodKeys.size / 2)) return full;
+  const seen = new Set(prodKeys);
+  const extra = skuWords.filter((w) => {
+    const k = key(w);
+    if (!k || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  return [prod, ...extra].join(" ");
+}
+
 export function liveSearchEnabled(): boolean {
   return process.env.LIA_LIVE_SEARCH !== "false";
 }
@@ -145,7 +170,7 @@ export function parseLiveProducts(storeKey: string, products: IsProduct[]): Cata
       seen.add(item.itemId);
       const base: CatalogItem = {
         sku: `${store.skuPrefix}${item.itemId}`,
-        name: (item.nameComplete || item.name || product.productName || `Produto ${item.itemId}`).replace(/\s+/g, " ").trim(),
+        name: completeName(item.nameComplete, product.productName, item.name) || `Produto ${item.itemId}`,
         brand: product.brand || undefined,
         unitPrice: Math.round(own.commertialOffer!.Price! * 100) / 100,
         unit: "un",

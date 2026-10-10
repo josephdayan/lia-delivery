@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1700,6 +1700,31 @@ async function firstDeliverableSwap(pool: StoreCandidate[], qty: number, cep?: s
   return undefined;
 }
 
+// Aplica a troca de loja do pedido mínimo que está na mesa (ctx.minSwap). false = proposta velha (a cesta mudou).
+async function applyMinimumSwap(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined): Promise<boolean> {
+  const swap = ctx.minSwap;
+  if (!swap) return false;
+  const basket = ctx.basket ?? [];
+  const valid = swap.replacements.every((r) => basket.some((b) => b.sku === r.fromSku));
+  ctx.minSwap = undefined;
+  if (!valid) {
+    await writeCtx(convoId, ctx);
+    return false;
+  }
+  const keep = basket.filter((b) => !swap.replacements.some((r) => r.fromSku === b.sku));
+  // O que saiu e o que entrou, com preço: a troca nunca é silenciosa (27/08 S1/S2/S5
+  // — café e leite mudaram de marca/gramatura sem anúncio e o cliente só descobriu
+  // auditando linha a linha).
+  const swappedOut = basket.filter((b) => swap.replacements.some((r) => r.fromSku === b.sku));
+  const added = swap.replacements.map((r) =>
+    choiceToBasketItem(r.option, r.qty, r.option.storeKey ? getStore(r.option.storeKey) : orderStore(ctx), basket.find((b) => b.sku === r.fromSku)?.ask)
+  );
+  ctx.basket = mergeBaskets(keep, added);
+  await writeCtx(convoId, ctx);
+  await continueAfterBasket(phone, convoId, ctx, userCep ?? null, copy.minimumSwapDone(swapPairsForCopy(swappedOut, swap.replacements)));
+  return true;
+}
+
 async function offerMinimumSwap(
   phone: string,
   convoId: string,
@@ -1807,6 +1832,13 @@ async function offerMinimumSwap(
     : slower ? copy.swapEtaNote(etaBefore, etaAfter) : null;
   ctx.minSwap = { fromStoreKey: store.key, replacements, key: basketSignature(ctx.basket) };
   await writeCtx(convoId, ctx);
+  // A mesma mensagem já aceitou a troca depois de editar a cesta ("esquece a vela. pode trocar de loja", rodada 12 M5):
+  // aplica a troca nova em vez de oferecer de novo.
+  const meta = turnMeta.getStore();
+  if (meta?.acceptSwapFrom === store.key) {
+    meta.acceptSwapFrom = undefined;
+    if (await applyMinimumSwap(phone, convoId, ctx, ctx.cep)) return true;
+  }
   const body = copy.minimumSwapOffer({
     newTotal: newDisplay,
     delta: Math.round((newDisplay - oldDisplay) * 100) / 100,
@@ -2423,7 +2455,16 @@ async function handleDeliveryTurn(
     // "sim, pode trocar" / "pode trocar de loja" / "mantém como está" (10/10, rodada 7 A1/A2) também respondem à oferta:
     // antes só o botão, "trocar de loja" e o sim seco valiam — o resto tirava a oferta da mesa e a IA aplicava uma troca
     // em OUTRO item (o rodo) ou o carrossel aberto respondia "Responde o número" em laço.
-    const answers = Boolean(yesNoDigit) || said === "minswap:yes" || said === "minswap:no" || acceptsSwapOffer(text) || declinesSwapOffer(text) || answer === "affirm" || answer === "reject";
+    let answers = Boolean(yesNoDigit) || said === "minswap:yes" || said === "minswap:no" || acceptsSwapOffer(text) || declinesSwapOffer(text) || answer === "affirm" || answer === "reject";
+    // "deixa, esquece a vela. pode trocar de loja" (10/10, rodada 12 M5): a edição roda primeiro e a troca que ela
+    // gerar já sai aceita; sem edição de cesta no começo, a oferta continua valendo como aceita agora.
+    const editFirst = !answers ? splitTrailingSwapAccept(text) : null;
+    if (editFirst) {
+      const meta = turnMeta.getStore();
+      if (meta) meta.acceptSwapFrom = ctx.minSwap.fromStoreKey;
+      text = editFirst;
+      answers = false;
+    }
     const sameBasket = ctx.minSwap.key == null || ctx.minSwap.key === basketSignature(ctx.basket);
     if (!sameBasket || !answers) {
       // Fala lateral com a mesma cesta ("mostra outros cadernos"): a oferta sai da mesa, mas fica guardada.
@@ -3413,6 +3454,18 @@ async function handleDeliveryTurn(
     !ctx.consolidationOffer &&
     (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") &&
     !isQuestion(text);
+  // "peraí, é só 1 molho, não 5" com o queijo na tela (10/10, rodada 12 A2/A4): a correção vale para o item NOMEADO que
+  // já está na cesta — nunca vira item novo ("Anotei *é só 1 molho*") nem passa para o item da vez.
+  if (basketActive && (intent.kind === "free_text" || intent.kind === "qty_adjust")) {
+    const fix = parseNamedQtyCorrection(text);
+    const onScreen = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
+    const item = fix && !(onScreen && sharesProductNoun(fix.phrase, onScreen.query)) ? (ctx.basket ?? []).filter((b) => itemMatchesPhrase(fix.phrase, b)) : [];
+    if (fix && item.length === 1) {
+      await handleQtyAdjust(phone, convo.id, user.cep, ctx, { set: fix.qty }, false, item[0].sku);
+      if (onScreen) await reply(phone, copy.choicesStillOpen(onScreen.query));
+      return;
+    }
+  }
   const restart = basketActive ? splitRestartCue(text) : null;
   const restartItems = restart?.rest ? resolveListItems(restart.rest).filter((l) => localCatalogProbe(l.phrase).strong) : [];
   if (restart && (restartItems.length || !restart.rest)) {
@@ -3432,7 +3485,11 @@ async function handleDeliveryTurn(
     // "não, quero o nivea" = recusa + 1 item (a vírgula não separa dois itens).
     // "então 6 do Piracanjuba desnatado mesmo" (10/10, rodada 11 g33): a moldura de confirmação sai da frase do item
     // ("6 Piracanjuba desnatado"); quem decide se é citação é citesBasketLine, sobre a frase dita.
+    // "peraí, é só 1 molho, não 5" (10/10, rodada 12 A2): a moldura da correção ("peraí", "é só", "não 5") sai da frase.
     const cleaned = text
+      .replace(/^\s*(?:pera[ií]?|perae|espera(?:\s+a[ií])?)\s*[,.!]+\s*/i, "")
+      .replace(/^\s*(?:(?:[eé]h?|era)\s+)?(?:s[oó]|somente|apenas)\s+(?=\d{1,2}\s)/i, "")
+      .replace(/[,;]?\s*n[aã]o\s+\d{1,2}\s*[.!]*$/i, "")
       .replace(/^\s*(?:n[aã]o|nao|ah|ai|ei)\s*[,.!]+\s*/i, "")
       .replace(/^\s*(?:ent[aã]o|t[aá]|ok|beleza)\b[,\s]+/i, "")
       .replace(/^(\d{1,3})\s+d[oa]s?\s+/i, "$1 ")
@@ -4398,26 +4455,7 @@ async function handleDeliveryTurn(
   // Aceite da troca de loja do pedido mínimo (botão minswap:yes, "trocar de loja" ou
   // um sim com a proposta na mesa). Valida contra a cesta atual: proposta velha morre.
   if (ctx.minSwap && (normalizeMsg(text) === "minswap:yes" || acceptsSwapOffer(text) || intent.kind === "affirm")) {
-    const swap = ctx.minSwap;
-    const basket = ctx.basket ?? [];
-    const valid = swap.replacements.every((r) => basket.some((b) => b.sku === r.fromSku));
-    ctx.minSwap = undefined;
-    if (!valid) {
-      await writeCtx(convo.id, ctx);
-      await reply(phone, copy.didNotUnderstand());
-      return;
-    }
-    const keep = basket.filter((b) => !swap.replacements.some((r) => r.fromSku === b.sku));
-    // O que saiu e o que entrou, com preço: a troca nunca é silenciosa (27/08 S1/S2/S5
-    // — café e leite mudaram de marca/gramatura sem anúncio e o cliente só descobriu
-    // auditando linha a linha).
-    const swappedOut = basket.filter((b) => swap.replacements.some((r) => r.fromSku === b.sku));
-    const added = swap.replacements.map((r) =>
-      choiceToBasketItem(r.option, r.qty, r.option.storeKey ? getStore(r.option.storeKey) : orderStore(ctx), basket.find((b) => b.sku === r.fromSku)?.ask)
-    );
-    ctx.basket = mergeBaskets(keep, added);
-    await writeCtx(convo.id, ctx);
-    await continueAfterBasket(phone, convo.id, ctx, user.cep, copy.minimumSwapDone(swapPairsForCopy(swappedOut, swap.replacements)));
+    if (!(await applyMinimumSwap(phone, convo.id, ctx, user.cep))) await reply(phone, copy.didNotUnderstand());
     return;
   }
 
@@ -7942,6 +7980,16 @@ async function handleChoosing(
       return;
     }
     // "quero 2 unidades"/"6x" com a lista aberta: guarda a quantidade e pede qual.
+    // "pera, melhor só 1 pacote mesmo" logo depois de escolher a areia 2x (10/10, rodada 12 A4): é CORREÇÃO do último
+    // escolhido — o item da vez não teve quantidade dita e não herda a correção.
+    const lastPicked = ctx.lastChoice ? (ctx.basket ?? []).find((b) => b.sku === ctx.lastChoice!.chosenSku) : undefined;
+    if (
+      intent.kind === "qty_adjust" && intent.set && lastPicked && lastPicked.qty !== intent.set && !current.qtyExplicit && isQtyCorrectionCue(text)
+    ) {
+      await handleQtyAdjust(phone, convoId, userCep, ctx, { set: intent.set }, false, lastPicked.sku);
+      await reply(phone, copy.choicesStillOpen(current.query));
+      return;
+    }
     if (intent.kind === "qty_adjust" && intent.set) {
       current.qty = intent.set;
       current.qtyExplicit = true;
@@ -8845,7 +8893,8 @@ function pendingSupersedes(freshQuery: string, oldQuery: string): boolean {
 export function citesBasketLine(phrase: string): boolean {
   const n = normalizeMsg(phrase);
   if (/\b(?:mais|outr[oa]s?|de novo|tambem|tb|tbm|adiciona|soma|acrescenta)\b|\+/.test(n)) return false;
-  return /^(?:entao|ta|ok|beleza|pode ser)\b|\b(?:mesm[oa]s?|esse mesmo|isso)\b|\b\d+[,.]\d{2}\b|r\$/.test(n);
+  // "é só 1 molho" / "só 1 petisco" (10/10, rodada 12 A2/A4): o "só N" do item que já está na cesta corrige a quantidade.
+  return /^(?:entao|ta|ok|beleza|pode ser)\b|\b(?:mesm[oa]s?|esse mesmo|isso)\b|\b\d+[,.]\d{2}\b|r\$|\b(?:so|somente|apenas)\s+\d{1,2}\b/.test(n);
 }
 // Quantidade dita na citação ("então 6 do Piracanjuba desnatado mesmo" = 6); o preço ("de 29,48") não conta.
 export function citedQty(phrase: string): number | undefined {
@@ -9282,6 +9331,14 @@ async function handleRemove(
 
 // Quantidade do item recém-escolhido por texto (06/10): "quero 2", "6x", "bota 3" (set) e
 // "tira um", "põe mais um" (delta). O alvo é o último escolhido; sem ele, o último da cesta.
+// Quantidade corrigida DEPOIS da escolha vale também para a troca de opção (10/10, rodada 12 A4: "só 1 petisco" e, ao
+// trocar pelo "esse da Cobasi então", o petisco voltava a 2x — a troca usava a quantidade da escolha original).
+export function syncLastChoiceQty(ctx: DeliveryContext, item: BasketItem) {
+  if (ctx.lastChoice && ctx.lastChoice.chosenSku === item.sku) {
+    ctx.lastChoice.qty = item.qty;
+    ctx.lastChoice.qtyExplicit = true;
+  }
+}
 async function handleQtyAdjust(
   phone: string,
   convoId: string,
@@ -9320,6 +9377,7 @@ async function handleQtyAdjust(
   }
   target.qty = Math.min(50, next);
   target.lineTotal = Math.round(target.unitPrice * target.qty * 100) / 100;
+  syncLastChoiceQty(ctx, target);
   if (reopened) {
     await continueAfterBasket(phone, convoId, ctx, userCep, copy.qtyAdjustedShort(target.qty, target.name));
     return;
@@ -11118,7 +11176,9 @@ export function splitBySize(sizeAsk: string, items: { name: string; brand?: stri
 // embalagem ("6 ovos", "meia dúzia de ovos" com caixa de 10 = 1 caixa, não 6).
 // 06/10 (A3): item vendido por peso ("2kg de banana", unidade de ~180 g) = 11 unidades.
 // Descartáveis de festa e afins (10/10, rodada 6 g19: "40 copos descartáveis" virou 40 pacotes "C/50", R$ 571).
-const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
+// Papelaria contável vendida em pacote ("3 canetas" com "Caneta ... 3 Unidades", 10/10, rodada 12 A3: virava 3 pacotes =
+// 9 canetas): a conta é de unidades, como ovo/pilha. Kit de produto avulso ("Desodorante 2 unidades") continua sem converter.
+const PACK_CONTENT_NOUN_RE = /\b(canetas?|lapis|l[aá]pis|borrachas?|marca[- ]?textos?|clipes?|pinc[eé]is|giz(?:es)?|ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
 export function parseWeightAskKg(query: string): number | undefined {
   const t = normalizeMsg(query);
   if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
@@ -11921,7 +11981,7 @@ async function continueAfterBasket(
       ctx.step = "collecting";
       await writeCtx(convoId, ctx);
       if (prefix) await reply(phone, prefix);
-      await reply(phone, minimumOrderText(ctx, belowStore));
+      if (turnMeta.getStore()?.acceptSwapFrom !== belowStore.key) await reply(phone, minimumOrderText(ctx, belowStore));
       // A saída de verdade: mesmos itens em loja sem mínimo (teste real 24/08).
       const swapOffered = await offerMinimumSwap(phone, convoId, ctx, belowStore);
       // Sem equivalente em outra loja (09/10, teste real: detergente de R$ 3 travando lista de 12): dois botões —

@@ -2,7 +2,7 @@
 // existe, item que não está na cesta, "fechar" fora de hora…) derruba o plano inteiro e o caminho
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
-import { countDistinctItems, resolveListItems } from "../list-items";
+import { countDistinctItems, resolveListItems, textHasCount } from "../list-items";
 import { extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun, stripMedicineNegation } from "../lia-intents";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { detectRecommendation } from "../recommend/detect";
@@ -61,6 +61,13 @@ const PAY_TEXT: Record<PayMethod, string> = { pix: "pix", card: "cartão", unspe
 const SORT_TEXT: Record<Sort, string> = { next: "outras opções", cheaper: "mais barato", pricier: "mais caro" };
 
 const clampQty = (n: number | undefined) => (n && n > 0 ? Math.min(50, n) : undefined);
+// Quantidade na ESCOLHA só vale se a fala diz uma (10/10, rodada 12 A4): "o de salmão da Dreamies" vinha com qty 2 da IA
+// (a da areia, escolhida antes) e o petisco virava 2x. O número da opção ("quero o 3") não é quantidade.
+function saidPickQty(text: string | undefined, option: number, qty: number | undefined): number | undefined {
+  if (!text) return clampQty(qty);
+  const rest = normalizeMsg(text).replace(new RegExp(`\\b(?:o|a|opcao|numero)\\s+${option}\\b`), " ");
+  return textHasCount(rest) || /\b(?:so|apenas)\s+(?:um|uma)\b|\b(?:um|uma)\s+(?:so|unidade|pacote)\b/.test(rest) ? clampQty(qty) : undefined;
+}
 
 function resolveTarget(state: DialogueState, target: number | undefined): Target | null {
   if (target === undefined || !Number.isInteger(target) || target < 0) return null;
@@ -221,7 +228,7 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       // (com prazo de 9 dias, sem o cliente ver). Com "?" e sem o número/ordinal da opção na fala, a escolha não vale:
       // o caminho determinístico refina e mostra as opções que respondem à pergunta.
       if (onScreen && text && /\?/.test(text) && !namesOption(text, n)) return "pergunta_nao_escolhe";
-      if (onScreen) return n <= state.emEscolha!.opcoes.length ? { type: "pick", source: "screen", index: n - 1, qty: clampQty(a.qty) } : "opcao_fora_da_tela";
+      if (onScreen) return n <= state.emEscolha!.opcoes.length ? { type: "pick", source: "screen", index: n - 1, qty: saidPickQty(text, n, a.qty) } : "opcao_fora_da_tela";
       if (state.ultimaEscolha) {
         return n <= state.ultimaEscolha.opcoes.length ? { type: "pick", source: "last", index: n - 1 } : "opcao_fora_da_ultima";
       }
