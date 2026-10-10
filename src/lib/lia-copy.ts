@@ -432,6 +432,11 @@ export function cpfSkipped(hasQueued: boolean): string {
   return hasQueued ? "Sem problema, sigo sem o CPF 👍" : "Sem problema, sigo sem o CPF 👍 O que você precisa?";
 }
 
+// "ok"/"tá bom" no pedido de nome + CPF (10/10, rodada 7): é concordância, não despedida — antes saía "Imagina!".
+export function cpfAckAskAgain(): string {
+  return "Combinado! Manda seu *nome completo* e *CPF* numa mensagem só:\n_Maria da Silva 123.456.789-09_\n\nSe preferir não passar agora, é só me dizer o que você precisa.";
+}
+
 export function askCpfAfterName(): string {
   return "Anotei o nome ✅ Agora o *CPF*.";
 }
@@ -1104,6 +1109,13 @@ export function cartExpired(items: string[], quote: boolean): string {
     : `Sua cesta de ${count} (${shown}) expirou porque ficou parada por um tempo. Quer que eu monte de novo com os preços de hoje? Responde *sim*.`;
 }
 
+// Opções que venceram enquanto a conversa ficou parada (10/10, rodada 7 N6): o cliente responde "o primeiro" e a Lia
+// diz o que expirou, em vez de "O primeiro de quê?".
+export function choicesExpired(items: string[]): string {
+  const shown = items.slice(0, 3).map((i) => `*${i}*`).join(", ") + (items.length > 3 ? ` e mais ${items.length - 3}` : "");
+  return `As opções de ${shown} que eu tinha mandado expiraram porque a conversa ficou parada. Quer que eu procure de novo, com os preços de agora? Responde *sim*.`;
+}
+
 export function cartExpiredDropped(): string {
   return "Tudo bem, deixei a cesta antiga de lado. O que você precisa?";
 }
@@ -1440,8 +1452,12 @@ function recipientPhrase(recipient: string): string {
   const r = trimRec(recipient).replace(/^(?:minha|meu|minhas|meus|a|o)\s+/i, "");
   if (!r) return "";
   if (/^(?:criança|crianca|bebê|bebe|amig[oa] secret[oa])/i.test(r)) return `${/^amig/i.test(r) ? "o" : "a"} ${r}`;
-  const feminine = /(?:a|ã|ãe|mae|mãe|avó|avo|tia|irmã|irma|esposa|namorada|filha|sogra|madrinha|chefe)$/i.test(r) && !/^(?:pai|avô|cachorro|gato)$/i.test(r);
-  return `${feminine ? "sua" : "seu"} ${r}`;
+  // "dois filhos" → "seus filhos" (10/10, rodada 7 N10: saía "Pra seu filhos").
+  const first = r.split(/\s+/)[0];
+  const plural = /s$/i.test(first) && first.length > 3;
+  const head = plural ? first.replace(/s$/i, "") : first;
+  const feminine = /(?:a|ã|ãe|mae|mãe|avó|avo|tia|irmã|irma|esposa|namorada|filha|sogra|madrinha|chefe)$/i.test(head) && !/^(?:pai|avô|cachorro|gato)$/i.test(head);
+  return `${plural ? (feminine ? "suas" : "seus") : feminine ? "sua" : "seu"} ${r}`;
 }
 
 // Rótulo legível da necessidade: vira o `query` da escolha ("algo doce", "pra dor de barriga",
@@ -1619,9 +1635,11 @@ export function itemKept(name: string): string {
 }
 
 // "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): a resposta direta antes do resumo.
-export function basketQtyAnswer(rows: Array<{ qty: number; name: string }>, asked: string): string {
+// Item ainda em escolha também responde (10/10, rodada 7: "quantas lâmpadas eu pedi?" com as 3 lâmpadas na fila dizia
+// "Não tem *lampadas* na sua cesta").
+export function basketQtyAnswer(rows: Array<{ qty: number; name: string; pending?: boolean }>, asked: string): string {
   if (!rows.length) return `Não tem *${asked}* na sua cesta ainda.`;
-  return rows.map((r) => `Você pediu *${r.qty}x ${r.name}*.`).join("\n");
+  return rows.map((r) => (r.pending ? `Você pediu *${r.qty}x ${r.name}* — falta só escolher qual.` : `Você pediu *${r.qty}x ${r.name}*.`)).join("\n");
 }
 
 // "quem faz a entrega?"

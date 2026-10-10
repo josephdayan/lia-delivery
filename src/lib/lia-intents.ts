@@ -470,6 +470,15 @@ function specToken(t: string): boolean {
   return t.length >= 3 || SHORT_SPEC_RE.test(t);
 }
 
+// Fragmentos que só descrevem o item vizinho (10/10, rodada 7 N5): "pra minha gata", "10kg cada", "a normal sem receita".
+const FOR_WHOM_FRAGMENT_RE = /^(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\s+[a-z]+(?:\s+[a-z]+)?$/;
+const EACH_SIZE_FRAGMENT_RE = /^(?:cada\s+(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))|(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))\s+cada)$/;
+const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:sem receita|que nao precisa(?: de)? receita)$/;
+export function isDescriptorFragment(phrase: string): boolean {
+  const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
+  return FOR_WHOM_FRAGMENT_RE.test(n) || EACH_SIZE_FRAGMENT_RE.test(n) || OTC_QUALIFIER_FRAGMENT_RE.test(n);
+}
+
 export function parseBasketLines(text: string, opts?: ParseBasketOptions): ParsedLine[] {
   let source = expandShoppingShorthand(text);
   // Lista enumerada ("1 arroz\n2 feijão\n3 óleo"): índices sequenciais a partir de 1 em
@@ -515,6 +524,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/§/g, ",")
         .replace(/¤/g, ".")
         .trim()
+        // "*arroz 5kg" (asterisco de correção do WhatsApp, 10/10, rodada 7) nunca fica no nome do item.
+        .replace(/^\*+\s*(?=[^*\s])(?!.*\*)/, "")
         .replace(/^((oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)( lia)?[\s,!.?]*)+/i, "")
         .replace(/^(tudo (bem|bom)|td bem|como vai)[\s,!.?]*/i, "")
         .replace(/^(ah+|hm+|hmm+|dai|tipo|ne|entao|ok+|okay|blz|beleza|ta|certo)\s+/i, "")
@@ -659,6 +670,29 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       const prev = merged[merged.length - 1];
       if (prev) prev.phrase = `${prev.phrase} ${pron[1].trim()}`.replace(/\s+/g, " ");
       continue;
+    }
+    // Fragmentos que descrevem o item vizinho (10/10, rodada 7 N5) nunca são item próprio:
+    // - "ração pro meu cachorro e outra pra minha gata": o "pra minha gata" é OUTRA ração — herda o produto anterior;
+    // - "10kg cada": o tamanho vale para os itens de antes que não disseram tamanho;
+    // - "dipirona 500mg gotas, a normal sem receita": diz só que o remédio é o isento, sem produto.
+    if (merged.length) {
+      const n = normalizeMsg(line.phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
+      const forWhom = FOR_WHOM_FRAGMENT_RE.test(n);
+      if (forWhom) {
+        const prev = merged[merged.length - 1];
+        const head = prev.phrase.replace(/\s+(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\b.*$/i, "").trim();
+        if (head && head !== prev.phrase) {
+          merged.push({ ...line, phrase: `${head} ${line.phrase}`.replace(/\s+/g, " ").trim(), additive: undefined });
+          continue;
+        }
+      }
+      const each = EACH_SIZE_FRAGMENT_RE.exec(n);
+      if (each) {
+        const size = (each[1] ?? each[2]).replace(/\s+/g, "");
+        for (const prev of merged) if (!/\d\s?(?:kg|g|l|ml|litros?)\b/i.test(prev.phrase)) prev.phrase = `${prev.phrase} ${size}`;
+        continue;
+      }
+      if (OTC_QUALIFIER_FRAGMENT_RE.test(n)) continue;
     }
     // Adição RELATIVA dentro da MESMA mensagem: "…30 litros, qualquer marca; mais um
     // desses" e "leite sem lactose; mais dois leites" somam na linha ANTERIOR — nunca
@@ -3131,7 +3165,7 @@ export function parseKeepItem(text: string): string | null {
   for (let i = 0; i < 3; i++) n = n.replace(/^(?:nao|n|nn|ah|ok|okay|tudo bem|beleza|blz|na verdade|melhor)[,\s]+/, "").trim();
   const m = /^(?:pode\s+)?(?:deixa|deixe|deixar|mantem|mantenha|manter|mantém|fica com|fico com)\s+(?:o|a|os|as)\s+(.+)$/.exec(n);
   if (!m) return null;
-  let item = m[1].replace(/\s+(?:mesmo|mesma|ai|la|como (?:esta|ta)|na cesta|no carrinho|que (?:ta|esta) bom|por favor|pf)\b.*$/, "").trim();
+  let item = m[1].replace(/\s+(?:mesmo|mesma|ai|la|como (?:esta|ta|estava|tava|era)|do jeito que (?:esta|ta|estava|tava)|que (?:estava|tava)|na cesta|no carrinho|que (?:ta|esta) bom|por favor|pf)\b.*$/, "").trim();
   if (/\b(?:de fora|fora|pra la|pra depois|sem)\b/.test(m[1]) || /^(?:so|apenas)\b/.test(item)) return null;
   item = item.replace(/\s+/g, " ").trim();
   return item && item.split(" ").length <= 5 ? item : null;
@@ -3160,4 +3194,24 @@ export function openQuestionAlternative(question: string, n: number): string | n
   const parts = tail.split(/\s*,\s*|\s+ou\s+/i).map((x) => x.trim()).filter(Boolean);
   if (parts.length < 2 || parts.length > 5 || parts.some((p) => p.split(/\s+/).length > 6)) return null;
   return n >= 1 && n <= parts.length ? parts[n - 1] : null;
+}
+
+// "sim" respondendo a uma pergunta de sim/não da própria Lia (10/10, rodada 7 N1): "Você quer trocar a areia escolhida
+// por outra mais barata?" + "sim" = "troca a areia escolhida por outra mais barata". Com outro carrossel aberto, o "sim"
+// caía na escolha ("Não peguei qual você quer"). Pergunta com alternativas ("A ou B?") não se resolve com "sim".
+const YES_VERB: Record<string, string> = {
+  procure: "procura", troque: "troca", busque: "busca", coloque: "coloca", ponha: "poe", tire: "tira", junte: "junta",
+  mostre: "mostra", adicione: "adiciona", inclua: "inclui", remova: "remove", ache: "acha", ver: "mostra", veja: "mostra"
+};
+export function openQuestionYes(question: string): string | null {
+  const raw = question.replace(/\s+/g, " ").trim();
+  if (!/\?\s*$/.test(raw)) return null;
+  const lastSentence = raw.replace(/\?\s*$/, "").split(/(?<=[.!])\s+/).pop() ?? "";
+  const n = normalizeMsg(lastSentence).replace(/[?!.\s]+$/, "").trim();
+  if (/\sou\s/.test(n)) return null;
+  const m = /^(?:(?:entao|beleza|certo|ok)[,\s]+)?(?:(?:voce|vc)\s+)?(?:quer|gostaria de|prefere|deseja)\s+(?:que eu\s+)?([a-z]+)\s+(.+)$/.exec(n);
+  if (!m) return null;
+  const verb = YES_VERB[m[1]] ?? (/[^aeiou]ar$/.test(m[1]) ? m[1].slice(0, -1) : m[1]);
+  const rest = `${verb} ${m[2]}`.replace(/\s+/g, " ").trim();
+  return rest.length <= 100 ? rest : null;
 }

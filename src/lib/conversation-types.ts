@@ -195,6 +195,10 @@ export type DeliveryContext = {
   // 05/10 (dono): nome + CPF pedidos no CADASTRO, logo depois do endereço. Neste modo a
   // resposta sem CPF não trava nada: segue como mensagem normal.
   cpfOnboarding?: boolean;
+  // "ok" no pedido de nome + CPF já respondido uma vez (10/10, rodada 7): o 2º "ok" segue a conversa.
+  cpfAckAt?: number;
+  // Botões do pedido mínimo ("tirar" / "completar") enviados (10/10, rodada 7): "1"/"2" digitado responde a eles.
+  minimumButtonsAt?: number;
   // 09/10 (rodada 3): o CPF do formulário/texto não conferiu. Os passos seguintes seguem, mas o pedido não vai
   // para o total/pagamento sem um CPF válido guardado (a Lia pede de novo antes de fechar).
   cpfRequired?: boolean;
@@ -400,7 +404,8 @@ export type DeliveryContext = {
   // O CEP é de outra cidade que a escrita no endereço: nada salvo até confirmar.
   cepCityCheck?: { cep: string; raw: string; askedAt: number; via: "cep" | "address" };
   // Cesta/cotação que venceu por inatividade (09/10, rodada 1): quem volta horas depois é avisado e retoma com "sim".
-  expiredCart?: { items: string[]; at: number; quote?: boolean };
+  // soft (10/10, rodada 7 N6): só opções em escolha, ausência curta — o aviso sai só se o cliente responder a elas.
+  expiredCart?: { items: string[]; at: number; quote?: boolean; soft?: boolean; noticed?: boolean };
   // Endereço de antes de uma troca, para "deixa o antigo"/"usa o de antes".
   previousAddress?: { cep: string; address: string; city?: string; uf?: string };
   // Último CEP recusado por estar fora da área: a mensagem seguinte lembra o motivo.
