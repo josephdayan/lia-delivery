@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -182,7 +182,8 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     // A IA às vezes devolve contexto como item ("Para uma viagem") — o mesmo filtro de
     // modificador do parser determinístico vale pra ela (6º ciclo, rodada 1).
     const items = extraction.items.filter(
-      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query)
+      // Contexto e hesitação ('tenho um cachorro labrador', 'esqueci') também não viram item vindos da IA (10/10, rodada 6).
+      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query) && !isOwnershipContext(item.query) && !isRecallFiller(item.query)
     );
     // Remédio isento ligado (05/10): a IA às vezes marca containsMedicine para um isento que
     // ELA MESMA manteve na lista ("quero advil" → Advil na lista + aviso "remédio de receita
@@ -312,7 +313,11 @@ async function buildChoices(
       let shownPhrase = (giftSearchPhrase(rawPhrase) ?? rawPhrase)
         .replace(/\bmei[oa]\s+(quilo|kilo|kg)\b/i, "500g")
         .replace(/(\d+(?:[.,]\d+)?)\s*(quilos?|kilos?)\b/i, "$1kg")
-        .replace(/\b(um|1)\s+(quilo|kilo)\b/i, "1kg");
+        .replace(/\b(um|1)\s+(quilo|kilo)\b/i, "1kg")
+        // "leite caixinha" (10/10, rodada 6 A1): a caixinha é a embalagem de sempre do leite/suco, não palavra do nome —
+        // a busca por ela não achava leite nenhum. "caixinha de som" continua (só depois de bebida).
+        .replace(/\b(leite|leites|suco|sucos|achocolatado|bebida lactea|agua de coco|água de coco|creme de leite)\b([^,]{0,25}?)\s+(?:em\s+|de\s+|na\s+)?caixinhas?\b/i, "$1$2")
+        .trim();
       // Pack/fardo (06/10, A5): "pack de cerveja brahma 12 latas" virava 1 lata solta. A palavra
       // de embalagem e a contagem saem da busca (são identidade da EMBALAGEM, não do produto) e
       // voltam como filtro: só packs; sem pack na vitrine, N unidades soltas.
@@ -583,7 +588,12 @@ async function buildChoices(
     // Sem o juízo da IA (fora do ar/prazo): quem tem TODAS as palavras do pedido (marca, "sem fio", tamanho)
     // vem na frente do que só se parece; se ninguém tem, segue o ranking de sempre.
     const exactWords = chosen ? [] : candidates.filter((c) => !isEquivalent(c) && conciergeMatchIsStrong(line.phrase, c.item, { allTokens: true }));
-    const fallbackPool = exactWords.length ? exactWords : candidates.filter((c) => !isEquivalent(c));
+    const loosePool = exactWords.length ? exactWords : candidates.filter((c) => !isEquivalent(c));
+    // Sem IA e sem quem tenha todas as palavras: o TAMANHO pedido ainda vale (10/10, rodada 6 A3: "ração pro labrador
+    // 15kg" abria com Dog Chow 900 g e o resumo saiu com ela). Quem tem a medida pedida (±10%) vem na frente.
+    const wantedMeasure = chosen ? null : measureOf(line.phrase);
+    const sizedPool = wantedMeasure ? loosePool.filter((c) => { const m = measureOf(c.item.name); return m != null && Math.abs(m - wantedMeasure) <= wantedMeasure * 0.1; }) : [];
+    const fallbackPool = sizedPool.length ? [...sizedPool, ...loosePool.filter((c) => !sizedPool.includes(c))] : loosePool;
     let options: StoreCandidate[] = chosen
       ? chosen.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c))
       : diversifyOptions(line.phrase, fallbackPool.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
@@ -2908,7 +2918,7 @@ async function handleDeliveryTurn(
     const slot = sized ? ctx.listFlow?.slots.find((sl) => sharesProductNoun(sl.query, sized.item)) : undefined;
     const target = sized
       ? (slot ? ctx.basket.find((b) => b.sku === slotCurrentSku(slot, ctx.basket!)) : undefined) ??
-        ctx.basket.find((b) => (b.ask && sharesProductNoun(b.ask, sized.item)) || itemMatchesPhrase(sized.item, b))
+        ctx.basket.find((b) => ((b.ask && sharesProductNoun(b.ask, sized.item)) || itemMatchesPhrase(sized.item, b)) && sizedItemIsSame(sized.item, b))
       : undefined;
     if (sized && target && measureOf(target.name) !== measureOf(sized.size)) {
       const base = (slot?.query ?? target.ask ?? sized.item).replace(/\b\d+(?:[.,]\d+)?\s?(?:kg|g|ml|l|litros?)\b/gi, " ").replace(/\s+/g, " ").trim();
@@ -3218,7 +3228,9 @@ async function handleDeliveryTurn(
     intent.kind === "complaint" &&
     isMissingItemOnlyComplaint(text) &&
     ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) &&
-    !ctx.deliveryOrderId &&
+    // Com o resumo na tela (cotação ainda não paga) também é item esquecido (10/10, rodada 6 M6: "faltou a racao do
+    // labrador, 15kg" chamava o responsável). Cobrança emitida ou pedido pago continua reclamação.
+    (!ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight") &&
     !(await prisma.deliveryOrder.findFirst({ where: { userId: user.id, status: { in: [...PAID_OR_IN_FULFILLMENT_STATUSES, "delivered"] } }, select: { id: true } }))
   ) {
     intent = { kind: "free_text" };
@@ -6528,6 +6540,9 @@ async function handleChoosing(
   const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
   // "qualquer marca"/"comum" dentro de um refino não são palavras do produto (rodada 2, c20).
   if (intent.kind === "free_text") text = stripPreferenceFiller(text);
+  // "*caixinhas de 1 litro, longa vida" (10/10, rodada 6 M5): o asterisco do WhatsApp CORRIGE o item da mensagem
+  // anterior — nunca abre itens novos (virava "1x *caixinhas 1 litro" + "1x longa vida").
+  if (asteriskCorrection(text) != null && (await applyAsteriskCorrection(phone, convoId, userCep, ctx, text))) return;
   // Toque em "Escolher esse": o id carrega o SKU do card, então mesmo um card ANTIGO
   // (de antes do "outras"/refino) escolhe exatamente o produto mostrado nele. Vem antes
   // de qualquer parser: é string de máquina, não linguagem.
@@ -7043,6 +7058,12 @@ async function handleChoosing(
   // Not a selection — maybe they're adding MORE items mid-choice ("ah, e 2 leites").
   // Questions about the shown options ("qual é a desnatada?") must NOT be searched
   // as new products — re-show the options instead.
+  // "tenta de novo" com faltantes da lista (10/10, rodada 6): refaz as faltantes — a fila continua (handleConciergeCore).
+  // Antes virava o item "tenta de novo" na fila.
+  if (intent.kind === "free_text" && freshListMisses(ctx).length && parseMissFollowUp(text)?.kind === "retry") {
+    await handleSearch(phone, convoId, userCep, ctx, text, userId);
+    return;
+  }
   if (intent.kind === "free_text" && !isQuestion(text)) {
     const added = await buildChoicesWithSearchNotice(phone, withMissQualifiers(ctx, text), undefined, undefined, undefined, ctx.cep);
     // "Isqueiro maçarico" enquanto escolhe "isqueiro" (06/09): nada nas vitrines → busca
@@ -7533,6 +7554,95 @@ async function advancePending(
     await reply(phone, notes.join("\n"));
     return;
   }
+}
+
+// Correção no jeito do WhatsApp: "*arroz 5kg", "*caixinhas de 1 litro, longa vida". Um asterisco no começo e nenhum
+// fechando (senão é *negrito*). Devolve o texto corrigido, sem o asterisco, como UMA frase.
+export function asteriskCorrection(text: string): string | null {
+  const t = text.trim();
+  if (!/^\*\s*[^*\s]/.test(t) || /\*\s*$/.test(t.slice(1)) || t.slice(1).includes("*")) return null;
+  const body = t.slice(1).replace(/[,;]+/g, " ").replace(/\s+/g, " ").trim();
+  return body.length >= 2 ? body : null;
+}
+
+// Aplica a correção no item da fila que veio da mensagem anterior (10/10, rodada 6 M5). Com palavra do produto em
+// comum, a correção é o nome novo ("*arroz 5kg"); sem ela, são atributos que faltaram ("*caixinhas de 1 litro, longa
+// vida" depois de "leite integral 12 caixas"). false = não dá pra saber o alvo; segue como mensagem normal.
+async function applyAsteriskCorrection(phone: string, convoId: string, userCep: string | null | undefined, ctx: DeliveryContext, text: string): Promise<boolean> {
+  const fix = asteriskCorrection(text);
+  const queue = ctx.pending ?? [];
+  if (!fix || !queue.length) return false;
+  const previous = await prisma.message.findMany({ where: { conversationId: convoId, sender: "user" }, orderBy: { createdAt: "desc" }, take: 2, select: { text: true } });
+  const prevText = previous[1]?.text ?? "";
+  const stem = (t: string) => (t.length >= 4 ? t.replace(/s$/, "") : t);
+  const tokensOf = (t: string) => new Set(queryTokens(normalizeMsg(t)).map(stem));
+  const fixTokens = tokensOf(fix);
+  const prevTokens = tokensOf(prevText);
+  const overlap = (q: string, set: Set<string>) => [...tokensOf(q)].filter((t) => set.has(t)).length;
+  // Alvo: o item da fila que a mensagem anterior pediu; com nome em comum com a correção, esse vence.
+  const fromPrev = queue.filter((p) => overlap(p.query, prevTokens) > 0);
+  // A correção NOMEIA o produto quando a 1ª palavra dela é a do item ("*arroz 5kg"); "*caixinhas de 1 litro" só qualifica.
+  const head = queryTokens(normalizeMsg(fix)).map(stem).find((t) => !/^\d/.test(t));
+  const names = (q: string) => Boolean(head && tokensOf(q).has(head));
+  const byName = queue.filter((p) => names(p.query));
+  const best = fromPrev.length ? Math.max(...fromPrev.map((p) => overlap(p.query, prevTokens))) : 0;
+  const prevBest = fromPrev.filter((p) => overlap(p.query, prevTokens) === best);
+  const target = byName.find((p) => fromPrev.includes(p)) ?? byName[0] ?? (prevBest.length === 1 ? prevBest[0] : undefined);
+  if (!target) return false;
+  const PACKAGING = /^(?:caixinhas?|caixas?|pacotes?|pacotinhos?|unidades?|latas?|garrafas?|de|do|da)$/;
+  const extra = fix.split(/\s+/).filter((w) => !PACKAGING.test(normalizeMsg(w)) && !tokensOf(target.query).has(stem(normalizeMsg(w))));
+  const corrected = names(target.query) ? fix : `${target.query} ${extra.join(" ")}`.replace(/\s+/g, " ").trim();
+  if (normalizeMsg(corrected) === normalizeMsg(target.query) || !fixTokens.size) return false;
+  const found = await buildChoices(corrected, undefined, undefined, undefined, undefined, ctx.cep ?? userCep);
+  const fresh = found.pending[0];
+  const isCurrent = queue[0] === target;
+  if (!fresh && !found.autoAdded.length) {
+    await reply(phone, copy.notFoundNote([corrected]));
+    if (isCurrent) await sendChoices(phone, target);
+    return true;
+  }
+  if (fresh) {
+    target.query = fresh.query;
+    target.baseQuery = undefined;
+    target.options = fresh.options;
+    target.shownOptions = undefined;
+    target.shownSkus = fresh.options.map((o) => o.sku);
+    target.closestFalta = fresh.closestFalta;
+  } else {
+    ctx.basket = mergeBaskets(ctx.basket ?? [], found.autoAdded.map((item) => ({ ...item, qty: Math.max(item.qty, target.qty) })));
+    ctx.pending = queue.filter((p) => p !== target);
+    if (!ctx.pending.length) ctx.pending = undefined;
+  }
+  await writeCtx(convoId, ctx);
+  if (!fresh) {
+    await reply(phone, copy.autoAddedNote(found.autoAdded.map((i) => `${Math.max(i.qty, target.qty)}x ${i.name}`)));
+    if (ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+    else await advancePending(phone, convoId, ctx, userCep);
+    return true;
+  }
+  if (isCurrent) await sendChoices(phone, target, copy.narrowedChoices(target.query));
+  else {
+    await reply(phone, copy.correctedQueuedItem(target.query));
+    await sendChoices(phone, queue[0]);
+  }
+  return true;
+}
+
+// "ração pra gata castrada 1kg" com a ração do LABRADOR na cesta (10/10, rodada 6 A3) não é o tamanho novo da ração do
+// cachorro: toda palavra do item dito tem que estar no item da cesta (no pedido ou no nome). "a ração tem que ser de 3kg" segue.
+function sizedItemIsSame(item: string, basketItem: BasketItem): boolean {
+  const root = (t: string) => (t.length >= 4 ? t.replace(/(?:os|as|es|o|a|s)$/, "") : t);
+  const have = new Set(queryTokens(normalizeMsg(`${basketItem.ask ?? ""} ${basketItem.name}`)).map(root));
+  return queryTokens(normalizeMsg(item)).filter((t) => t.length >= 3 && !/^\d/.test(t)).every((t) => have.has(root(t)));
+}
+
+// O pedido novo reescreve o item da fila ("arroz" → "arroz 5kg", "leite caixinha" → "leite integral caixinha"):
+// todas as palavras do antigo estão no novo. "ração gata" não reescreve "ração cachorro" (10/10, rodada 6).
+function pendingSupersedes(freshQuery: string, oldQuery: string): boolean {
+  const stem = (t: string) => (t.length >= 4 ? t.replace(/s$/, "") : t);
+  const fresh = new Set(queryTokens(freshQuery).map(stem));
+  const old = queryTokens(oldQuery).map(stem);
+  return old.length > 0 && old.every((t) => fresh.has(t));
 }
 
 // Troca a cesta por uma lista nova (só com intenção explícita ou reformulação; ver o bloco [basket:new-list]).
@@ -8699,6 +8809,11 @@ async function handleConciergeCore(
     ctx.lastMiss = { query: notFoundLines[0].phrase, qty: notFoundLines[0].qty, at: Date.now() };
   }
 
+  // Fila que já estava aberta (10/10, rodada 6 A1): item pedido no meio das escolhas de uma lista longa ("leite
+  // integral 12 caixas" depois do "não achei leite") caía aqui e a fila virava SÓ o item novo — biscoito, carne,
+  // frango, ovos, frutas, desodorante e shampoo sumiam sem aviso e o pedido fechava. O que já estava na fila continua
+  // depois dos itens novos; só sai o item que o novo pedido reescreve ("arroz" → "arroz 5kg").
+  const priorQueue = (ctx.pending ?? []).filter((old) => !pending.some((fresh) => pendingSupersedes(fresh.query, old.query)));
   // "escolhe vc"/"qualquer um": a linha marcada auto-escolhe o topo do ranking, com
   // confirmação do que entrou (28/08 S6 — "escolhe vc" virava item não-achado).
   const autoPickPending = pending.filter((choice) => choice.autoPick && choice.options.length);
@@ -8717,7 +8832,7 @@ async function handleConciergeCore(
     if (autoPickPending.length === 1 && autoPickPending[0].cap != null && ctx.basket.length === 1) {
       ctx.budget = { cap: autoPickPending[0].cap!, sku: ctx.basket[0].sku };
     }
-    const rest = pending.filter((choice) => !autoPickPending.includes(choice));
+    const rest = [...pending.filter((choice) => !autoPickPending.includes(choice)), ...priorQueue];
     ctx.pending = rest.length ? rest : undefined;
     ctx.step = rest.length ? "choosing" : "collecting";
     const notes: string[] = [copy.autoAddedNote(added.map((i) => `${i.qty}x ${i.name}`)), ...packNotes];
@@ -8736,7 +8851,8 @@ async function handleConciergeCore(
 
   // Flow da lista (07/10, LIA_LIST_FLOW): 2+ linhas com opção viram um formulário nativo, com a
   // sugestão de cada uma já na cesta. Falha ou condição não atendida → segue o caminho de sempre.
-  if (pending.length >= 2) {
+  // Com fila aberta o formulário não entra: ele fecha a escolha (pending = undefined) e a fila antiga se perderia.
+  if (pending.length >= 2 && !priorQueue.length) {
     const flowNotes: string[] = [];
     if (containsMedicine) flowNotes.push(medicineSkippedCopy(prescriptionDropped));
     if (raw.containsTobacco) flowNotes.push(copy.tobaccoRefusal());
@@ -8766,7 +8882,7 @@ async function handleConciergeCore(
     };
     // "Mais próximo" (sem o tamanho/sabor pedido) nunca entra sozinho: o cliente escolhe.
     const auto = pending.filter((choice) => !choice.closestFalta && lineDisplayOf(choice) <= autopickMax);
-    const confirm = pending.filter((choice) => !auto.includes(choice));
+    const confirm = [...pending.filter((choice) => !auto.includes(choice)), ...priorQueue];
     const added: BasketItem[] = [];
     const packNotes: string[] = [];
     for (const choice of auto) {
@@ -8810,7 +8926,7 @@ async function handleConciergeCore(
 
   if (pending.length) {
     ctx.step = "choosing";
-    ctx.pending = pending;
+    ctx.pending = [...pending, ...priorQueue];
     if (raw.lines.length >= 2) ctx.listInOneMessage = true;
     await writeCtx(convoId, ctx);
     const notes: string[] = [];

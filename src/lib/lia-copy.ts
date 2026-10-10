@@ -2061,6 +2061,11 @@ export function queuedItemsNote(queries: string[]): string {
   return `Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
 }
 
+// "*caixinhas de 1 litro, longa vida" corrigiu um item que ainda está na fila (10/10, rodada 6 M5).
+export function correctedQueuedItem(query: string): string {
+  return `Corrigi para *${query}* — a gente escolhe em seguida.`;
+}
+
 // Lista nova no meio da cesta/escolha: a antiga sai; o cliente precisa saber o quê (09/10, rodada 2).
 export function newListDropped(names: string[]): string {
   const shown = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 4).map((n) => `*${n}*`);

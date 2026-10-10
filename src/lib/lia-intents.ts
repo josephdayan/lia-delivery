@@ -281,7 +281,7 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "(entrega|entregam|entregue|entregando) (hoje|amanha|rapida|rapido)( .*)?",
       // LUGAR de entrega ("entrega em belo horizonte", "pra entregar na minha casa") descreve o
       // destino, nunca é item — virava "Já anotei • 1x entrega em belo horizonte" (placar c38).
-      "(e |mas |pra |para |vou |quero |queria |preciso )*(entrega|entregar|entregue|entregam|entregando|mandar|enviar|receber)( isso| tudo| o pedido| as compras)? (em|na|no|pra|para|pro|ate) (?!hoje|amanha)[a-zà-ú][a-zà-ú ]*",
+      "(e |mas |pra |para |vou |quero |queria |preciso |na verdade |alias |agora |melhor |pode )*(entrega|entregar|entregue|entregam|entregando|mandar|enviar|receber)( isso| tudo| o pedido| as compras)? (em|na|no|pra|para|pro|ate) (?!hoje|amanha)[a-zà-ú][a-zà-ú ]*",
       // aposto classificador ("coisa simples de farmácia", "coisinhas básicas de
       // mercado") — descreve a LISTA, nunca é item (rodada 27/08 S20)
       "(umas? |so |apenas )?(coisa|coisinha)s? (simples|basica|rapida)s?( (de|do|da) [a-zà-ú]+)?",
@@ -344,6 +344,9 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // aniversario da minha filha, 8 anos" virava os itens "to organizando o aniversario da…" e "8x anos".
       "(eu |a gente |nos )?(to|tou|estou|estamos|tamo|ando|vou|vamos|quero|queria|preciso) (organizando|planejando|preparando|montando|fazendo|organizar|planejar|preparar|montar|fazer|dar) (o |a |um |uma |uns |umas )?(aniversario|niver|festa|festinha|churrasco|cha( de [a-z]+)?|casamento|batizado|evento|reuniao|confraternizacao|comemoracao|piquenique|mudanca)\\b.*",
       "(de |com |que faz |fazendo |vai fazer |completa |completando )?\\d{1,2} anos( de idade)?",
+      // Lista da escola (10/10, rodada 6 M4): "material escolar do meu filho" e "3º ano" descrevem a lista, nunca são item.
+      "(e |a |o |os |as |do |da |essa |esta |aqui )?(lista( de)?( material)?|materia(l|is))( escolar(es)?)? (do|da|dos|das|pro|pra|para o|para a) (meu|minha|meus|minhas|colegio|escola|creche)\\b[^:]*",
+      "(ele |ela )?(e |eh |ta |esta |do |da |pro |pra |no |na )?\\d{1,2} ?(o|a|º|ª|°)? (ano|serie)( do (fundamental|medio|ensino [a-z]+))?",
       "(vai|vem|vao) (ter|ser) .*",
       "(eu )?(nao|n) (esquece|esqueca|esquecer)( de)? (nada|de nada|nenhum item)",
       "(nao esquece|nao esqueca)( nada)?",
@@ -353,7 +356,28 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
 );
 
 export function isNarrativeSegment(phrase: string): boolean {
-  return NARRATIVE_SEGMENT_RE.test(normalizeMsg(phrase));
+  return NARRATIVE_SEGMENT_RE.test(normalizeMsg(phrase)) || isOwnershipContext(phrase);
+}
+
+// Quem mora com o cliente (10/10, rodada 6 A3/M6): "tenho um cachorro labrador adulto e uma gata castrada", "temos
+// dois gatos". É contexto do pedido — o item é a ração/o petisco que vem depois, nunca o animal. A cauda não aceita
+// " e <produto>" sem artigo ("tenho um cachorro e ração" segue com a ração).
+const OWNED_BEING = String.raw`(?:cachorr\w*|caes|cao|cadel\w*|dog\w*|gat\w*|filhote\w*|pets?|passar\w*|calopsita\w*|periquito\w*|papagaio\w*|coelh\w*|hamster\w*|porquinho\w*|peixe\w*|tartaruga\w*|filh[oa]s?|bebes?|criancas?|netos?|netas?)`;
+const OWNED_COUNT = String.raw`(?:um|uma|uns|umas|dois|duas|tres|\d+)`;
+const OWNED_TAIL = String.raw`(?: (?!e\b)[a-z0-9]+){0,4}`;
+const OWNERSHIP_RE = new RegExp(
+  String.raw`^(?:e |mas )?(?:eu |a gente |nos )?(?:tenho|temos|crio|criamos|la em casa (?:tem|temos)) ${OWNED_COUNT} ${OWNED_BEING}${OWNED_TAIL}(?: e ${OWNED_COUNT} ${OWNED_BEING}${OWNED_TAIL})*$`
+);
+// Hesitação de quem lembra a lista enquanto fala (10/10, rodada 6 A1): "ah esqueci", "lembrei", "deixa eu ver",
+// "acho que é só". Com objeto ("esqueci o café") é correção e o parser trata à parte; sozinha nunca é item.
+const RECALL_FILLER_RE =
+  /^(?:(?:ah+|ai|e|ih|opa|ops|nossa|putz|ixi)\s+)*(?:esqueci|eu esqueci|ja ia esquecendo|quase esqueci|lembrei|agora lembrei|deixa eu (?:ver|pensar|lembrar)|pera(?:i|ai)?|acho que (?:e|eh) (?:isso|so)(?: mesmo)?|e isso|eh isso|vou falar tudo(?: que (?:eu )?(?:lembrar|lembro))?(?: ta)?|o que (?:eu )?lembrar)(?:\s+(?:ta|tá|ne|viu))?$/;
+export function isRecallFiller(phrase: string): boolean {
+  return RECALL_FILLER_RE.test(normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim());
+}
+
+export function isOwnershipContext(phrase: string): boolean {
+  return OWNERSHIP_RE.test(normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim());
 }
 
 // Desabafo sobre o próprio estado ("to com dor de cabeça", "estou gripada", "to com
@@ -372,7 +396,7 @@ export function isRequestModifier(phrase: string): boolean {
 // colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
 export function isNonItemSegment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
-  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || MODIFIER_SEGMENT_RE.test(n);
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n);
 }
 
 // Urgência de ENTREGA na mensagem ("preciso pra hoje", "urgente", "o quanto antes").
@@ -459,7 +483,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   const parsedLines = source
@@ -477,9 +501,12 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     // " / " (com espaços) também separa itens: "2 coca / 1 shampoo / 2 sabonete" virava UMA linha
     // de quantidade 2 e a quantidade vazava pros outros itens (placar 07/10, c34). "1/2 litro" não.
     .split(/[,\n;.?]/)
-    .flatMap((chunk): ConjunctionPart[] =>
-      opts?.conjunction ? opts.conjunction(chunk) : chunk.split(CONJUNCTION_SPLIT_RE).map((text) => ({ text }))
-    )
+    .flatMap((chunk): ConjunctionPart[] => {
+      // "tenho um cachorro labrador adulto e uma gata castrada" (10/10, rodada 6 A3): a frase INTEIRA é contexto —
+      // separar no " e " antes deixava "uma gata castrada" como item.
+      if (isOwnershipContext(chunk.replace(/§/g, ",").replace(/¤/g, "."))) return [];
+      return opts?.conjunction ? opts.conjunction(chunk) : chunk.split(CONJUNCTION_SPLIT_RE).map((text) => ({ text }));
+    })
     .map((part) => ({
       meta: part,
       raw: part.text
@@ -489,6 +516,10 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/^((oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)( lia)?[\s,!.?]*)+/i, "")
         .replace(/^(tudo (bem|bom)|td bem|como vai)[\s,!.?]*/i, "")
         .replace(/^(ah+|hm+|hmm+|dai|tipo|ne|entao|ok+|okay|blz|beleza|ta|certo)\s+/i, "")
+        // Fala de quem lista de cabeça (10/10, rodada 6 A1, "áudio transcrito"): "aquele óleo de soja", "sabe o
+        // macarrão", "uns biscoitos pra criança" — o demonstrativo/hesitação não é palavra do produto.
+        .replace(/^(?:(?:ai|ah+|e|sabe(?:\s+(?:o|a|os|as))?|aquel[ea]s?|(?:uns|umas)(?=\s+\D))\s+)+(?=\S)/i, "")
+        .replace(/\b(?:uns|umas)\s+(?=\d+(?:[.,]\d+)?\s*(?:kg|g|quilos?|kilos?|litros?|l|ml|unidades?|pacotes?|caixas?|latas?)\b)/gi, "")
         // gíria/vocativo antes do pedido ("mn qro 2 coca", "galera vou fazer um churrasco"): tira só o
         // prefixo, o resto segue (c92/c94). Não vira quantidade nem produto.
         .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
@@ -503,6 +534,12 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // o "minha filha" e deixaria o verbo órfão na frase.
         .replace(
           /^(?:meu|minha)\s+(?:net[oa]|netinh[oa]|filh[oa]|filhinh[oa]|esposa?|marido|m[aã]e|pai|irm[aã]o?|sogr[oa]|av[oó]|v[oó]|sobrinh[oa]|cunhad[oa]|nora|genro|mulher|namorad[oa]|nen[eê]m?|beb[eê])\s+(?:que\s+)?(?:quer|queria|pediu|precisa(?:va)?(?:\s+de)?|ta\s+precisando\s+de|esta\s+precisando\s+de|anda\s+pedindo|adora|ama)\s+(?:de\s+)?/i,
+          ""
+        )
+        // "o menino gosta de carrinho e a menina de slime" (10/10, rodada 6 M6): a criança é o sujeito, o item é o que ela
+        // gosta; a segunda metade vem sem o verbo ("a menina de slime").
+        .replace(
+          /^(?:o|a|os|as|meu|minha)\s+(?:menin[oa]s?|garot[oa]s?|mais (?:velh|nov)[oa]|filh[oa]s?|pequen[oa]s?|caçula|cacula)\s+(?:(?:que\s+)?(?:gosta|gostam|adora|adoram|ama|amam|curte|curtem|quer|querem|pediu|pediram)\s+(?:muito\s+)?(?:de\s+|do\s+|da\s+|dos\s+|das\s+)?|(?:de|do|da)\s+(?=[a-zà-ú]))/i,
           ""
         )
         // vocativo ("minha filha, quero…", "amiga, me vê…", "lia,…") não é produto
@@ -533,7 +570,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         !NOISE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !STATE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !NARRATIVE_SEGMENT_RE.test(normalizeMsg(raw)) &&
-        !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw))
+        !isOwnershipContext(raw) &&
+        !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
+        !isRecallFiller(raw)
     )
     .map(({ raw: rawWithFlags, meta }): ParsedLine => {
       // Sentinelas dos passos anteriores: \u0001 = segmento aditivo ("mais/outro"),
@@ -569,7 +608,18 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         if (/d[uú]zia/i.test(raw) && !word[3]) return { phrase: word[4].trim(), qty: 12, qtyExplicit: true, ...flags };
         if (n && WORD_QTY[n]) return { phrase: word[4].trim(), qty: WORD_QTY[n], qtyExplicit: true, ...flags };
       }
-      return { phrase: raw, qty: 1, ...flags };
+      // Quantidade DEPOIS do produto, como se fala (10/10, rodada 6 A1): "leite 12 caixinhas", "macarrão 3 pacotes",
+      // "ovos uma dúzia". Só no FIM da frase e só com embalagem/dúzia — "papel higiênico 12 rolos" é o pacote.
+      const trailing = raw.match(/^(.+?)\s+(\d{1,2}|uma?|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|meia)\s+(d[uú]zias?|pacotes?|pacotinhos?|caixinhas?|caixas?|unidades?|latas?|latinhas?|garrafas?|potes?|sacos?|saquinhos?)$/i);
+      if (trailing && !/^\d+$/.test(trailing[1].trim())) {
+        const count = /^\d+$/.test(trailing[2]) ? Number(trailing[2]) : trailing[2].toLowerCase() === "meia" ? 0.5 : (WORD_QTY[normalizeMsg(trailing[2])] ?? 1);
+        const dozen = /^d[uú]zias?$/i.test(trailing[3]);
+        const qty = Math.min(MAX_QTY, Math.max(1, Math.round(dozen ? count * 12 : count)));
+        if (dozen || count >= 1) return { phrase: trailing[1].trim(), qty, qtyExplicit: true, ...flags };
+      }
+      const trailingDozen = raw.match(/^(.+?)\s+(?:(meia)\s+)?d[uú]zia$/i);
+      if (trailingDozen) return { phrase: trailingDozen[1].trim(), qty: trailingDozen[2] ? 6 : 12, qtyExplicit: true, ...flags };
+      return { phrase: raw.replace(/\s+(?:o|a)\s+de\s+(?=\d)/i, " "), qty: 1, ...flags };
     });
 
   // "ração pro meu dog, ele é filhote": cláusula com pronome DESCREVE o item anterior
@@ -895,7 +945,17 @@ function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedL
         }
       }
     });
-    if (!overlap.length || overlap.length === lines.length) continue;
+    // Linha da IA que é de OUTRO trecho da mensagem não conta para este (10/10, rodada 6 A3): em "tenho um cachorro
+    // labrador e uma gata castrada. … ração pro labrador 15kg, ração pra gata castrada", "ração cachorro labrador" e
+    // "ração gata castrada" (IA) tinham palavra em comum com o trecho de contexto e eram TROCADAS por ele — as duas
+    // rações sumiam. Elas pertencem às linhas "ração pro labrador"/"ração pra gata" do determinístico.
+    const others = deterministic.filter((d) => d.span !== span);
+    const own = overlap.filter((i) => !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase)));
+    overlap.splice(0, overlap.length, ...own);
+    if (!overlap.length || overlap.length === lines.length || lines.some((line) => isNonItemSegment(line.phrase))) continue;
+    // A IA separou em MAIS linhas usando palavras de fora do trecho ("um petisco pra cada" → petisco cachorro + petisco
+    // gato, pelos animais citados antes): é leitura da mensagem inteira, não corte errado de nome ("romeu" + "julieta").
+    if (overlap.length > lines.length && overlap.some((i) => [...spanTokens(out[i].phrase)].some((t) => !tokens.has(t)))) continue;
     const first = overlap[0];
     const next: ParsedLine[] = [];
     out.forEach((line, i) => {
