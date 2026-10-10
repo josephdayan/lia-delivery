@@ -73,18 +73,22 @@ export async function POST(request: Request) {
   const out: CapturedSend[] = [];
   const startedAt = Date.now();
   let error: string | undefined;
+  // Turno superado sem resposta (outra escrita venceu a corrida): o webhook fica mudo de propósito (quem venceu responde);
+  // aqui o JSON diz isso, para a lista vazia não parecer queda da linha (10/10, rodada 10 g30).
+  let superseded = false;
   try {
     await testLineCapture.run({ phone, out }, () =>
       runTurnScoped(() => handleDeliveryMessage({ phone, text: text ?? "", messageId, flowResponse }))
     );
   } catch (caught) {
-    if (!(caught instanceof TurnSupersededError)) {
+    if (caught instanceof TurnSupersededError) superseded = true;
+    else {
       error = caught instanceof Error ? caught.message : String(caught);
       // Igual ao webhook (10/10, rodada 7 A4): erro no turno ainda responde ao cliente — a linha de teste mostrava vazio.
       if (!out.some((send) => send.to === phone)) out.push({ kind: "sendMessage", to: phone, args: [genericError()] });
     }
   }
-  return NextResponse.json({ ms: Date.now() - startedAt, replies: out.map((send) => render(send, phone)), ...(error ? { error } : {}) });
+  return NextResponse.json({ ms: Date.now() - startedAt, replies: out.map((send) => render(send, phone)), ...(error ? { error } : {}), ...(superseded ? { superseded: true } : {}) });
 }
 
 export async function DELETE(request: Request) {

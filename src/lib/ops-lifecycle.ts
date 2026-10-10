@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
 import { BasketItem, FreightChoiceState, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
-import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
+import { TurnSupersededError, addressOnlyCtx, orderFactsCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
 import { deadlineFit, humanEstimate, promiseMissesDeadline } from "./live-freight";
 import { leftOutForSummary } from "./list-misses";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
@@ -185,18 +185,10 @@ export async function opsPublishManualQuote(
             step: "awaiting_quote_confirmation",
             // "mais barato"/"entrega mais rápida" DEPOIS do total dependem dos dois
             // (27/08 S12/S14).
-            ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
             ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {}),
-            // Prazo dito pelo cliente: a recotação e o "trocar entrega" continuam avisando (10/10, rodada 5 g16).
-            ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
-            // Orçamento do pedido dito na conversa (10/10, rodada 8 M3): a recotação continua avisando.
-            ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
-            // Faltantes (10/10, rodada 8 g25): "tira o gelo" depois do total e a recotação continuam sabendo o que ficou de fora.
-            ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
-            // "põe o papel de volta" depois do "tira" que refez o resumo (10/10, rodada 9 A3): o item tirado sobrevive.
-            ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
-            // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
-            ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
+            // "mais barato" depois do total, prazo, orçamento, faltantes, item tirado e recusa do ensaio: a recotação e o
+            // "tira o gelo" depois do total continuam sabendo (rodadas 5, 8, 9; ponto único na rodada 10 g30).
+            ...orderFactsCtx(ctx)
           });
         } catch (error) {
           // Turno superado no meio da publicação: o pedido volta pra fila e o turno
@@ -295,7 +287,7 @@ export async function opsPublishManualQuote(
       const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
       if (convo) {
         const ctx = readCtx(convo.context);
-        await writeCtx(convo.id, { ...addressOnlyCtx(ctx), deliveryOrderId: order.id, step: AWAITING_OPERATOR_QUOTE_STATUS });
+        await writeCtx(convo.id, { ...addressOnlyCtx(ctx), ...orderFactsCtx(ctx), deliveryOrderId: order.id, step: AWAITING_OPERATOR_QUOTE_STATUS });
       }
     }
     throw error;
