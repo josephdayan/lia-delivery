@@ -138,6 +138,13 @@ async function notifyRole(to: string | undefined, text: string, customerPhone?: 
     console.warn("[operator-alert:suppressed-self]", text.slice(0, 80));
     return;
   }
+  // Linha de teste (10/10, rodada 5 g16): aviso sobre cliente fictício (+5500995…) nunca chega ao operador de verdade.
+  // Dentro do turno da linha ele é capturado pelo adaptador (abaixo); fora dele (cron, webhook, cobrança em segundo
+  // plano) não há captura, então é só log.
+  if (customerPhone && isTestLinePhone(normalizePhone(customerPhone)) && !testLineCapture.getStore()) {
+    console.warn("[operator-alert:suppressed-test-line]", text.slice(0, 80));
+    return;
+  }
   try {
     // Operador que não escreve pra Lia há 24h está fora da janela: sem template o alerta
     // morre (03/09). Com template vai por ele; sem, tenta texto e loga — o /ops é a fonte.
@@ -219,7 +226,7 @@ export function pendingMeansChoosing(ctx: DeliveryContext): DeliveryContext {
 // turno velho PARA, sem gravar e sem falar mais nada.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { noteShopperCep, runShopperScoped } from "./store-areas";
-import { testLineCapture } from "./test-line";
+import { isTestLinePhone, testLineCapture } from "./test-line";
 
 export class TurnSupersededError extends Error {
   constructor(convoId: string) {
@@ -268,6 +275,11 @@ export const turnMeta = new AsyncLocalStorage<{
     adapter[name] = async function (this: unknown, to: string, ...rest: unknown[]) {
       // Linha de teste (test-line.ts): dentro da captura nada sai pra Meta; o envio é gravado.
       const capture = testLineCapture.getStore();
+      // Cliente fictício fora da captura (cron/webhook depois do turno): nada sai pra Meta (10/10, rodada 5 g16).
+      if (!capture && isTestLinePhone(String(to))) {
+        console.warn("[test-line:send-suppressed]", name, String(to));
+        return null;
+      }
       const result = capture
         ? (capture.out.push({ kind: name, to: String(to), args: rest }), { provider: "test-line", to, messages: [{ id: `wamid.testline.${capture.out.length}` }] })
         : await (original as (...args: unknown[]) => Promise<unknown>).apply(this, [to, ...rest]);

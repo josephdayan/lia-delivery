@@ -539,6 +539,10 @@ export function noOpenOrderToPay(): string {
   return "Você ainda não tem pedido aberto pra pagar. O que você precisa?";
 }
 
+export function emptyCartTotal(): string {
+  return "Sua cesta está vazia por enquanto — nada escolhido ainda. Me diz o que você quer que eu procuro.";
+}
+
 export function emptyCartPay(): string {
   return "Sua cesta está vazia. Me diz o que você quer.";
 }
@@ -549,7 +553,10 @@ export function rejectedAskAgain(): string {
 
 // ---------- choices ----------
 
-export function choicesHeaderToday(query: string): string {
+export function choicesHeaderToday(query: string, when?: "amanha" | "rapido"): string {
+  // Só diz "hoje" quando as opções chegam hoje (10/10, rodada 5 g16: o resumo dizia "amanhã, 6h–8h").
+  if (when === "amanha") return `Chega até amanhã — opções de *${query}*:`;
+  if (when === "rapido") return `Entrega mais rápida — opções de *${query}*:`;
   return `Chega hoje — opções de *${query}*:`;
 }
 
@@ -779,8 +786,9 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
 
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
 export function deadlineMissNote(label: string, promise?: string): string {
-  const prazo = promiseForCustomer(promise);
-  return `⚠️ Você precisou pra *${label}*, mas essa entrega ${prazo ? `sai em *${prazo}*` : "não chega a tempo"}. Se não der, me avisa antes de pagar.`;
+  // Sem o "2 entregas ·" da linha de entrega (10/10, rodada 5 g16: "sai em 2 entregas · 2 dias úteis").
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  return `⚠️ Você disse que precisa pra *${label}*, mas essa entrega não chega a tempo${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
@@ -1338,6 +1346,10 @@ export function swapOverCap(input: { item: string; cap: number; name: string; pr
   return `Até ${brl(input.cap)} não achei *${input.item}*. O mais em conta que achei é *${input.name}* por ${brl(input.price)}.${keep} Se quiser esse, é só confirmar:`;
 }
 // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
+// Recusa da pergunta "De qual item você quer um mais em conta?" (10/10, rodada 5 g16): nada muda na cesta.
+export function cheaperAskDeclined(name?: string): string {
+  return name ? `Beleza, mantenho *${name}* como está. ✅ Quer mais alguma coisa?` : "Beleza, não troco nada — a cesta fica como está. ✅ Quer mais alguma coisa?";
+}
 export function cheaperWhichItem(items: string[]): string {
   return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
 }
