@@ -293,8 +293,24 @@ export function rememberCtxSnapshot(convoId: string, context: string | null) {
   }
 }
 
+// Loja pedida para a lista toda (10/10, rodada 5 M9): na 1ª gravação de cada escolha, as opções dessa loja vão na
+// frente (ordem estável). Uma vez só por escolha — depois de mostrada, a numeração não muda por baixo do cliente.
+function prioritizePreferredStore(ctx: DeliveryContext) {
+  const wanted = ctx.preferredStore ? normalizeMsg(ctx.preferredStore) : "";
+  if (!wanted) return;
+  for (const p of ctx.pending ?? []) {
+    if (p.storePrioritized || !p.options?.length) continue;
+    p.storePrioritized = true;
+    p.wantedStore = ctx.preferredStore;
+    const isWanted = (o: { storeLabel?: string }) => normalizeMsg(o.storeLabel ?? "") === wanted;
+    const mine = p.options.filter(isWanted);
+    if (mine.length && mine.length < p.options.length) p.options = [...mine, ...p.options.filter((o) => !isWanted(o))];
+  }
+}
+
 export async function writeCtx(convoId: string, ctx: DeliveryContext) {
   pendingMeansChoosing(ctx);
+  prioritizePreferredStore(ctx);
   // Carimbo único da escolha pendente (ver DeliveryContext.pendingSince).
   if (ctx.pending?.length) ctx.pendingSince ??= Date.now();
   else delete ctx.pendingSince;

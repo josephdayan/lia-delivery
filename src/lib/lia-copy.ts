@@ -657,6 +657,10 @@ export function refineNoResultRejected(refined: string): string {
   return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
 }
 
+export function refineNoResultAbove(refined: string, query: string): string {
+  return `Não achei *${refined}*. O que eu tenho de *${query}* são as opções aí em cima 👆 — toca em *Adicionar ao carrinho* na que preferir, ou responde *pula* pra deixar de fora.`;
+}
+
 export function refineNoResult(refined: string): string {
   return `Não achei *${refined}*. O que eu tenho é isso:`;
 }
@@ -1328,6 +1332,11 @@ export function cheaperOnlyOtherSize(input: { item: string; name: string; price:
   const size = input.size ? ` de *${input.size}*` : "";
   return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
 }
+// Troca com teto ("um mais barato, até 60 reais") sem nada dentro do valor (10/10, rodada 5 M10).
+export function swapOverCap(input: { item: string; cap: number; name: string; price: number; keeping?: string }): string {
+  const keep = input.keeping ? ` Por enquanto deixei o *${input.keeping}* na lista.` : "";
+  return `Até ${brl(input.cap)} não achei *${input.item}*. O mais em conta que achei é *${input.name}* por ${brl(input.price)}.${keep} Se quiser esse, é só confirmar:`;
+}
 // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
 export function cheaperWhichItem(items: string[]): string {
   return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
@@ -1608,6 +1617,11 @@ export function weightConversionNote(askedKg: number, unitKg: number, units: num
 export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
   const total = packs * packSize;
   return `Essa opção (*${name}*) vem com *${packSize} unidades* por embalagem e você pediu *${requested}*. ${packs === 1 ? "Levo 1 embalagem" : `Levo ${packs} embalagens`} (${total} un) mesmo assim? Responde *sim*, ou *outras* pra ver outras opções.`;
+}
+
+// "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
+export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
+  return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
 }
 
 export function packMismatchDeclined(): string {
@@ -2574,7 +2588,9 @@ export function serviceAnswer(
 // Frete ao vivo por loja (06/10): o valor já é conhecido nas opções — dizer o número.
 export function feeByStore(fees: { storeLabel: string; fee: number }[]): string {
   const list = fees.map((f) => `*${f.storeLabel}*: ${f.fee > 0 ? brl(f.fee) : "grátis"}`).join(" · ");
-  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.`;
+  // Várias lojas (10/10, rodada 5 M13): o cliente que acha caro precisa saber que menos lojas = menos frete.
+  const many = fees.length >= 2 ? " Quanto menos lojas, menor o frete: trocando itens por opções de uma loja que já está no pedido, ele cai." : "";
+  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.${many}`;
 }
 
 // Quem recebe o Pix (06/10): a IA dizia "a própria loja" — falso. A Lia é MEI: o banco de
