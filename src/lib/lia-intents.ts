@@ -316,7 +316,11 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
   "^(" +
     [
       "(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (que )?(vem|veio|vai|vao|chega|volta|pediu|pedia|falou|disse|gosta|adora|mora|visita|completa|faz)\\b.*",
-      "(eu )?(vou|vamos) (receber|fazer|dar|ter|visitar|viajar|arrumar|deixar)\\b.*",
+      "((entao|beleza|bom|ok|ai|e) )*(eu )?(vou|vamos) (receber|fazer|dar|ter|visitar|viajar|arrumar|deixar)\\b.*",
+      // Condição da ENTREGA ou comentário sobre o produto (10/10, rodada 9 M10): "tem que chegar inteiro", "são frágeis",
+      // "que chegue amanhã cedo" viravam item ("1x são frágeis") e "não achei".
+      "((eu )?(preciso|quero|queria) )?(que|tem que|tem q|precisa|precisam|preciso que) (chegar|chegue|chega|cheguem|venha|venham|vir|vem|entregar|entregue|entreguem)\\b.*",
+      "(sao|e|eh|ela e|ele e|eles sao|elas sao)( muito| bem| super)? (fragil|frageis|delicad\\w*|quebradic\\w*|quebravel|quebraveis)\\b.*",
       "(eu )?(quero |queria |gostaria de )?(deixar|arrumar) (meu|minha|o|a)\\b.*",
       "que (nao )?(seja|fique|custe|passe|pese|demore)\\b.*",
       "(porque|pois|ja que) .*",
@@ -430,6 +434,11 @@ const DISCOURSE_WORDS = new Set(
     "a o os as um uma uns umas de do da dos das em no na nos nas pra pro para por pelo pela com sem que e ou mas ate"
   ).split(" ")
 );
+// Produto vendido em PAR: "um par de meias" é 1 item (o par), não 2.
+export const PAIR_PRODUCT_RE = /^(?:meias?|luvas?|brincos?|sapatos?|t[eê]nis|chinelos?|sand[aá]lias?|botas?|sapatilhas?|meiao|meioes|tamancos?|alian[cç]as?|patins|caneleiras?|joelheiras?|cotoveleiras?|munhequeiras?|palmilhas?|fones?|oculos)\b/;
+
+// Gíria e risada de chat (10/10, rodada 9 A1): "tlgd q eu so tenho 50 conto kkk" mostrava "não achei: tlgd q, kkk".
+const CHAT_SLANG_RE = /^(?:k{2,}|(?:ha){2,}h?|(?:he){2,}|(?:rs){1,}|(?:hue)+|lol|tlgd|tlg|tmj|slk|sla|vlw|flw|pfv|pfvr|plmds|mds|q|pq|tb|tbm|msm|mt|mto|vei|veio|mn|mlk|bixo|kra|cmg|ctg|vdd|blz|nd|n)$/;
 export function isDiscourseOnly(phrase: string): boolean {
   // Sentinelas do parser ("mais um" aditivo, "qualquer") não são fala solta.
   if (/[\u0001\u0002]/.test(phrase)) return false;
@@ -437,7 +446,7 @@ export function isDiscourseOnly(phrase: string): boolean {
   if (/\d/.test(phrase) && /\b(?:r\$|reais|real|conto|contos|pila)\b|r\$/i.test(normalizeMsg(phrase))) return false;
   const words = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   const alpha = words.filter((w) => /[a-z]/.test(w));
-  return alpha.length > 0 && words.every((w) => /^\d+$/.test(w) || DISCOURSE_WORDS.has(w));
+  return alpha.length > 0 && words.every((w) => /^\d+$/.test(w) || DISCOURSE_WORDS.has(w) || CHAT_SLANG_RE.test(w));
 }
 
 // Urgência de ENTREGA na mensagem ("preciso pra hoje", "urgente", "o quanto antes").
@@ -664,6 +673,11 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         if (dozen) return { phrase: dozen[1].trim(), qty: Math.min(MAX_QTY, Math.max(1, Number(m[1]) * 12)), qtyExplicit: true, ...flags };
         return { phrase: m[2].trim(), qty: Math.min(MAX_QTY, Math.max(1, Number(m[1]))), qtyExplicit: true, ...flags };
       }
+
+      // "um par de pilhas AA" (10/10, rodada 9 A2) = 2 pilhas, não 1 item "par de pilhas" (a IA às vezes lia 2 pacotes).
+      // O que se vende em par (meia, luva, brinco, sapato, chinelo) continua 1 par.
+      const pair = raw.match(/^(?:(?:um|1)\s+)?par\s+(?:de\s+)?(.+)$/i);
+      if (pair && !PAIR_PRODUCT_RE.test(normalizeMsg(pair[1]))) return { phrase: pair[1].trim(), qty: 2, qtyExplicit: true, ...flags };
 
       // "dois pães", "meia dúzia de ovo", "uma dúzia de banana"
       // ([\wà-ú]+) e não (\w+): "três" tem acento e \w é ASCII — sem isso "três
@@ -1356,6 +1370,20 @@ export function asksForPerson(text: string): boolean {
 // acionar o operador, nunca oferecer produto.
 const COMPLAINT_RE =
   /\b((veio|chegou|ta|esta) (errado|faltando|estragado|vencido|quebrado|derramado|aberto)|pedido errado|produto errado|item errado|faltou (um|uma|o|a|itens?)|nao era o que pedi|quero reclamar|absurdo|pessimo|horrivel|uma vergonha)\b/;
+
+// Pergunta ANTES da compra sobre o produto chegar inteiro ("chega inteiro os ovos? já veio quebrado outra vez", "chega
+// inteiro mesmo? tem seguro?", "as taças vêm bem embaladas?") (10/10, rodada 9 M3): era lida como reclamação (alerta ao
+// responsável) ou recebia o bloco genérico de confiança. É pergunta: tem "?" ou começa como pergunta.
+export function asksArrivalCondition(text: string): boolean {
+  const n = normalizeMsg(text);
+  const question = /\?/.test(text) || /^(?:sera|e se|como|vem|chega|chegam|vai chegar|tem seguro)\b/.test(n);
+  if (!question) return false;
+  return (
+    /\b(?:chega|chegam|chegar|chegou|vem|vêm|veem|vai|vao|entrega|entregam)\b[^?]{0,30}\b(?:inteir[oa]s?|quebrad[oa]s?|amassad[oa]s?|trincad[oa]s?|bem embalad[oa]s?|embalad[oa]s?|intact[oa]s?|seguro)\b/.test(n) ||
+    /\b(?:inteir[oa]s?|quebrad[oa]s?|amassad[oa]s?)\b[^?]{0,20}\b(?:chega|chegam|vem|vao)\b/.test(n) ||
+    /\btem seguro\b|\b(?:e se|se) (?:chegar|vier|quebrar)\b[^?]{0,20}\b(?:quebrad[oa]s?|quebrar|amassad[oa]s?)\b/.test(n)
+  );
+}
 
 // Queixa de demora/lentidão sem produto ("que demora", "vcs são lentos"): nunca vira item (09/10, rodada 2).
 // Pergunta de prazo ("quanto tempo demora?") não entra: essa é service_question.
@@ -3227,6 +3255,27 @@ export function splitServiceQuestions(text: string): { rest: string; questions: 
   // mesmo?" respondia a confiança e depois "Você ainda não tem pedidos"): a mensagem é uma pergunta só.
   if (rest.every((sentence) => /\?\s*$/.test(sentence) && detectIntent(sentence).kind !== "free_text")) return null;
   return { rest: remainder, questions };
+}
+
+// Várias perguntas do serviço numa mensagem só, sem pedido (10/10, rodada 9 M1): "como funciona isso? vocês cobram taxa?
+// quanto tempo demora? posso devolver?" era respondida só na devolução. Devolve cada pergunta com a intenção dela (sem
+// repetir tema), ou null quando há menos de 2 perguntas respondíveis ou algo que não é pergunta.
+export function splitQuestionsOnly(text: string): Intent[] | null {
+  const sentences = (text.match(/[^?]+\?+/g) ?? []).map((s) => s.trim()).filter(Boolean);
+  const tail = text.replace(/[^?]+\?+/g, "").trim();
+  if (sentences.length < 2 || /[a-zà-ú]{3,}/i.test(tail)) return null;
+  const out: Intent[] = [];
+  const seen = new Set<string>();
+  for (const sentence of sentences) {
+    const clean = sentence.replace(/^(?:oi|ola|opa|bom dia|boa tarde|boa noite|e ai|ei)[,!.\s]+/i, "");
+    const intent = detectIntent(clean);
+    if (!["service_question", "trust_question", "identity", "return_question"].includes(intent.kind)) return null;
+    const key = intent.kind === "service_question" ? `${intent.kind}:${intent.topic}` : intent.kind;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(intent);
+  }
+  return out.length >= 2 ? out : null;
 }
 
 // ---------- modo atendimento e farmácia parceira (07/10, placar c13/c30/c31/c35) ----------

@@ -575,6 +575,23 @@ export function removedRestored(names: string): string {
   return `Voltei *${names}* pra cesta. ✅`;
 }
 
+// "não, pera, continua com as taças" (10/10, rodada 9 A7): a remoção que acabou de acontecer foi desfeita.
+export function removalUndone(names: string): string {
+  return `Combinado, mantive *${names}* no pedido. ✅`;
+}
+
+// "esquece tudo" seguido de "não, pera, continua" (10/10, rodada 9 M5).
+export function clearUndone(names: string[]): string {
+  const shown = names.slice(0, 4).map((n) => `*${n}*`).join(", ");
+  const rest = names.length > 4 ? ` e mais ${names.length - 4}` : "";
+  return names.length ? `Tá bom, não limpei nada: voltei ${shown}${rest}. ✅` : "Tá bom, não limpei nada. ✅";
+}
+
+// "esquece as taças" antes do cadastro (10/10, rodada 9 A7): o item sai do pedido guardado.
+export function pendingNoteRemoved(names: string): string {
+  return `Tirei *${names}* do pedido.`;
+}
+
 export function swapUndone(names: string): string {
   return `Feito, desfiz a troca: voltou *${names}* pra cesta. ✅`;
 }
@@ -1423,6 +1440,11 @@ export function cheaperAfterQuoteNeedsItem(): string {
 // ---------- perguntas de confiança/logística (rodada 28/08 — ficavam sem resposta) ----------
 
 // "é seguro? como sei que não é golpe?" — na hora do dinheiro, resposta ESPECÍFICA.
+// "chega inteiro os ovos?" / "tem seguro?" antes da compra (10/10, rodada 9 M3).
+export function fragileArrivalAnswer(): string {
+  return "Quem embala e entrega é a própria loja, do jeito que ela manda os pedidos dela (ovos e vidro vão protegidos). Se algo chegar quebrado, me chama aqui com uma foto que eu abro a troca ou o reembolso com a loja pra você. 🙂";
+}
+
 export function trustAnswer(): string {
   return [
     "Pergunta justa 🙂 Funciona assim, na ordem que te protege:",
@@ -1778,6 +1800,11 @@ export function packMismatchAsk(name: string, requested: number, packSize: numbe
 // "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
 export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
   return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
+}
+
+// "jogo de 4 copos" com a opção avulsa (10/10, rodada 9 A7).
+export function setAsSinglesNote(count: number, query: string): string {
+  return `_Essa opção vem avulsa — coloquei ${count} unidades pra fechar o *${query}*. Pra mudar, é só dizer a quantidade._`;
 }
 
 export function packMismatchDeclined(): string {
@@ -2363,7 +2390,7 @@ function shortNotFoundLabel(phrase: string): string {
 // ---------- Flow da lista e faltantes (07/10, Etapas 2 e 3) ----------
 // Cada linha da lista termina em UM status; o MESMO texto aparece na mensagem antes do botão,
 // no bloco "Não encontrei" do Flow (plain) e no resumo depois de confirmar.
-export type MissStatus = "closest" | "not_found" | "unbuyable";
+export type MissStatus = "closest" | "not_found" | "unbuyable" | "unchecked";
 export type MissEntry = { status: MissStatus; label: string; qty?: number; falta?: string };
 
 export const MISS_CLOSING = "Me manda outro nome ou marca pra qualquer um desses que eu procuro de novo.";
@@ -2377,6 +2404,8 @@ export function missLine(m: MissEntry, plain = false): string {
       ? `🔎 *${label}* — o mais perto que achei ${m.falta ?? "é diferente do pedido"}; escolha uma opção ou *Não quero*`
       : m.status === "unbuyable"
         ? `🚫 *${label}* — nenhuma loja entrega no seu endereço agora`
+        : m.status === "unchecked"
+          ? `⏳ *${label}* — as lojas não responderam a tempo; me diz *tenta de novo* que eu confiro`
         : `❌ *${label}* — não achei em nenhuma loja`;
   return plain ? stripMarks(line) : line;
 }
@@ -2636,6 +2665,12 @@ export function itemsNotAvailable(items: string[], info?: MissInfo[]): string {
 
 // 06/10 (teste real): o item existe nas lojas, mas nenhuma confirmou estoque/entrega para o
 // CEP. Mostrar a opção virava beco no "pagar"; o honesto é dizer que não dá pra comprar agora.
+// Busca parcial (10/10, rodada 9 A4): a loja não respondeu a tempo — nunca "não achei" com certeza.
+export function itemsNotCheckedNow(items: string[]): string {
+  const labels = items.map(shortNotFoundLabel).map((l) => `*${l}*`).join(", ");
+  return `Não consegui confirmar ${labels} agora: as lojas não responderam a tempo. Me diz *tenta de novo* que eu confiro.`;
+}
+
 export function itemsNotBuyableNow(items: string[]): string {
   const labels = items.map(shortNotFoundLabel);
   return labels.length === 1

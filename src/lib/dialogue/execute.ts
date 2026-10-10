@@ -8,6 +8,7 @@ import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice }
 import * as copy from "../lia-copy";
 import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
+import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -138,7 +139,11 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
 
   switch (step.type) {
     case "search": {
-      let text = step.lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
+      // A contagem/tamanho que a IA leu é conferida com a fala do cliente (10/10, rodada 9: "um par de pilhas AA" → 1x ou
+      // 2 cartelas; "água sanitária de 5 litros, uma só" → 2x).
+      const said = turnMeta.getStore()?.inboundText ?? env.text;
+      const lines = reconcileLineCounts(step.lines.map((l) => ({ ...l, phrase: l.query })), said).map((l) => ({ ...l, query: l.phrase }));
+      let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
       if (step.retry && miss) text = "tenta de novo";

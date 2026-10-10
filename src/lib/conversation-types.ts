@@ -144,7 +144,8 @@ export type PendingChoice = {
 
 // not_found = nenhuma loja tem; unbuyable = existe, mas nenhuma entrega no CEP. ("mais perto" e
 // "proibido" não entram: o primeiro é uma vaga do Flow, o segundo não se procura de novo.)
-export type ListMissReason = "not_found" | "unbuyable";
+// unchecked = havia produto, mas a loja não respondeu a tempo na conferência ao vivo (10/10, rodada 9 A4): não é "não achei".
+export type ListMissReason = "not_found" | "unbuyable" | "unchecked";
 export type ListMiss = { query: string; qty: number; reason: ListMissReason; at: number; retried?: boolean };
 
 export type ListFlowCtxSlot = {
@@ -321,7 +322,11 @@ export type DeliveryContext = {
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
   // Último "tira X" (10/10, rodada 7 M5): "põe o papel de volta" devolve o MESMO item (sku, preço, loja), sem nova busca.
   // `queries` = escolhas ainda abertas que saíram junto (voltam pra fila).
-  lastRemoved?: { items: BasketItem[]; queries: string[]; at: number };
+  // `pending`: as escolhas tiradas inteiras (opções e quantidade), para "não, pera, quero sim os copos" voltar sem nova
+  // busca; `segments`: itens do pedido guardado antes do cadastro (10/10, rodada 9 A7).
+  lastRemoved?: { items: BasketItem[]; queries: string[]; at: number; pending?: PendingChoice[]; segments?: string[] };
+  // "esquece tudo" (10/10, rodada 9 M5): o que estava na conversa antes de limpar, para "não, pera, continua" desfazer.
+  lastCleared?: { at: number; snapshot: Partial<DeliveryContext> };
   // "duas entregas: casa e trabalho" (10/10, rodada 7 M11): a Lia faz UM endereço por pedido. Marca quando o cliente pediu
   // pra dividir; "no trabalho: X" depois disso não entra no pedido de casa calado.
   multiAddressAt?: number;
@@ -464,6 +469,8 @@ export type ChoicesResult = {
   // mas nenhuma loja confirmou ao vivo para o CEP — o cliente ouve "não consigo comprar
   // agora", não "não achei".
   unconfirmed?: string[];
+  // 10/10 (rodada 9 A4): linhas cujos candidatos caíram só porque a loja NÃO RESPONDEU a tempo — busca parcial.
+  unchecked?: string[];
   // 09/10 (g7): linhas que dependem de especificação não dita; só vêm quando o chamador pede (`askSpecs`).
   specAsks?: SpecAsk[];
 };
