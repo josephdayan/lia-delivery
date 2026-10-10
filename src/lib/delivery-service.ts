@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseOrderBudget, parseBrowseOnly, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -853,9 +853,11 @@ export function basketEtaByStore(basket: BasketItem[]): { rows: { store: string;
 const BASKET_ETA_ASK_RE = /\b(quando (chega|chegam|vai chegar|entrega|entregam|fica pronto)|chega(m)? quando|quanto tempo|quanto tenpo|em quanto tempo|que horas|qual (e |eh )?o prazo|prazo( de entrega)?|demora|demoram|chega(m)? hoje|entrega(m)? hoje|vai chegar|chega rapido|e rapido)\b/;
 function isBasketEtaAsk(text: string): boolean {
   const n = normalizeMsg(text);
-  return n.length <= 60 && BASKET_ETA_ASK_RE.test(n);
+  if (n.length <= 60 && BASKET_ETA_ASK_RE.test(n)) return true;
+  // "preciso que chegue até sexta, dá?" (10/10, rodada 8 M4): prazo com dia dito em forma de pergunta.
+  return n.length <= 90 && Boolean(parseNeededBy(text)) && (isQuestion(text) || /\b(?:da|consegue|rola|chega|chegue|chegam|cheguem)\b/.test(n));
 }
-async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null, askedToday = false) {
+async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null, askedToday = false, deadline?: { date: string; label: string } | null) {
   if (ctx.pending?.length) {
     const known = basketEtaByStore(ctx.basket ?? []);
     await reply(phone, copy.etaAfterChoice(known.rows));
@@ -864,7 +866,11 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
   }
   const eta = basketEtaByStore(ctx.basket ?? []);
   if (eta.complete && eta.rows.length) {
-    await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday));
+    // Dia dito ("até sexta, dá?"): a resposta abre com sim/não e diz qual loja não chega (rodada 8 M4).
+    // Chamado pelo gerente de diálogo também: o dia vem da mensagem do turno.
+    const day = deadline ?? parseNeededBy(turnMeta.getStore()?.inboundText ?? "");
+    const verdict = day ? { label: day.label, late: eta.rows.filter((r) => promiseMissesDeadline(r.when, day.date) === true).map((r) => r.store) } : undefined;
+    await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday, verdict));
     return;
   }
   // Sem o prazo de alguma loja na mão: o total traz o prazo de todas — fecha agora.
@@ -2280,6 +2286,27 @@ async function handleDeliveryTurn(
       await writeCtx(convo.id, ctx);
     }
   }
+  // Consulta de preço sem compromisso (10/10, rodada 8 M4): "só quero saber quanto tá o leite, não vou comprar agora"
+  // virava cancelamento. Segue como a pergunta de preço ("quanto tá o leite"), com o aviso de que não precisa comprar.
+  const browse = parseBrowseOnly(text);
+  if (browse) {
+    text = browse;
+    if (user.defaultAddress) await reply(phone, copy.browseOnlyNote());
+  }
+  // Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3): "pode fechar. se passar de 100 me avisa" — o teto vale
+  // pro total e o resto da mensagem segue ("pode fechar."). O teto de um item só (ctx.budget) continua no fluxo dele.
+  const orderBudget = parseOrderBudget(text);
+  const singleItemBudget = parseBudgetStatement(text) != null && ((ctx.basket?.length ?? 0) <= 1 || (ctx.pending?.length ?? 0) > 0);
+  if (orderBudget && !singleItemBudget) {
+    ctx.orderBudget = { cap: orderBudget.cap };
+    await writeCtx(convo.id, ctx);
+    if (!/[a-z0-9]/i.test(normalizeMsg(orderBudget.rest))) {
+      await reply(phone, copy.budgetNoted(orderBudget.cap));
+      if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
+      return;
+    }
+    text = orderBudget.rest;
+  }
   // "duas entregas: casa e trabalho" (10/10, rodada 7 M11): um endereço por pedido — diz isso em vez de juntar tudo
   // calado no endereço cadastrado. "em casa: X" segue como pedido; "no trabalho: Y" fica pro 2º pedido.
   if (user.defaultAddress && !ctx.deliveryOrderId) {
@@ -3404,7 +3431,7 @@ async function handleDeliveryTurn(
     (intent.kind === "status" || intent.kind === "service_question" || intent.kind === "free_text") &&
     isBasketEtaAsk(text)
   ) {
-    await answerBasketEta(phone, convo.id, ctx, user.cep);
+    await answerBasketEta(phone, convo.id, ctx, user.cep, false, parseNeededBy(text));
     return;
   }
 
@@ -3591,6 +3618,15 @@ async function handleDeliveryTurn(
   if (intent.kind === "vague_request" && !recommendNow) {
     await reply(phone, copy.vagueRequestAnswer());
     await rePresentStep();
+    return;
+  }
+  // Pagadores diferentes / "dois pedidos" (10/10, rodada 8 A2): um pedido por vez, no mesmo endereço; a oferta de
+  // juntar que estiver na mesa continua valendo (a resposta não a consome).
+  if (intent.kind === "split_orders") {
+    const offerOpen = Boolean(ctx.consolidationOffer || ctx.consolidationParked);
+    const hasItems = (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0 || Boolean(ctx.deliveryOrderId);
+    await reply(phone, copy.splitOrdersAnswer({ payer: intent.payer, hasItems, offerOpen }));
+    if (!offerOpen) await rePresentStep();
     return;
   }
   if (intent.kind === "third_party_pay") {
@@ -6711,12 +6747,50 @@ async function syncAwaitingQuoteOrderAddress(phone: string, convoId: string, ctx
   return true;
 }
 
+// Total estimado da cesta (produtos exibidos + frete de tabela de cada loja) contra o orçamento dito (rodada 8 M3).
+// Só exibição: o total que vale é o da cotação. Marca `warned` para não repetir a cada item.
+function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
+  const budget = ctx.orderBudget;
+  const basket = (ctx.basket ?? []).filter((i) => i.unitPrice > 0);
+  if (!budget || budget.warned || !basket.length) return undefined;
+  const byStore = new Map<string, BasketItem[]>();
+  for (const item of basket) {
+    const key = item.storeKey ?? CONCIERGE_STORE_KEY;
+    byStore.set(key, [...(byStore.get(key) ?? []), item]);
+  }
+  const produtos = basket.reduce((sum, i) => sum + display(i.unitPrice, i.medicine) * i.qty, 0);
+  const frete = [...byStore.entries()].reduce((sum, [key, items]) => sum + storeFreight(key, items[0]?.storeLabel ?? key, roundMoney(items.reduce((acc, i) => acc + i.unitPrice * i.qty, 0))).fee, 0);
+  const estimate = roundMoney(produtos + frete);
+  if (estimate <= budget.cap + 0.005) return undefined;
+  ctx.orderBudget = { ...budget, warned: true };
+  return copy.overBudgetChoiceNote(budget.cap, estimate);
+}
+
 // Caminho único de confirmação de escolha (número digitado, "a mais barata", nome ou
 // toque no card por sku): tira o item da fila, pergunta quantidade quando falta, soma na
 // cesta e segue. A loja é a do PRODUTO escolhido — com opções cross-store, a opção 2
 // pode ser de outra loja que a opção 1.
 // Antes × depois de uma escolha: mais lojas = mais entregas (frete de cada loja nova); mesma quantidade de lojas mas
 // prazo mais longo = o pedido inteiro atrasa. Nada muda → sem aviso. Só exibição: o total continua sendo o da cotação.
+const LONG_WAIT_MINUTES = 5 * 24 * 60;
+// Lojas cujo prazo da consulta ao vivo do fechamento difere do prazo que o card/aviso mostrou (rodada 8 M8).
+export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<string, string>): Array<{ store: string; before: string; now: string }> {
+  const out: Array<{ store: string; before: string; now: string }> = [];
+  for (const [storeKey, estimate] of liveByStore) {
+    const now = humanEstimate(estimate);
+    const nowMin = promisedMinutes(now);
+    const items = basket.filter((i) => i.storeKey === storeKey && i.delivery);
+    if (!now || nowMin == null || !items.length) continue;
+    const slowest = items.reduce<{ min: number; when?: string }>((acc, i) => {
+      const min = promisedMinutes(i.delivery);
+      return min != null && min > acc.min ? { min, when: i.delivery } : acc;
+    }, { min: -1 });
+    // Só prazo em DIAS (horas e janelas variam com o relógio; não é a divergência que confunde).
+    if (slowest.min < 24 * 60 || nowMin < 24 * 60 || slowest.min === nowMin || !slowest.when) continue;
+    out.push({ store: items[0].storeLabel ?? storeKey, before: slowest.when, now });
+  }
+  return out;
+}
 function deliveryCostNote(before: BasketItem[], after: BasketItem[]): string | undefined {
   if (!after.length) return undefined;
   const storeOf = (i: BasketItem) => normalizeMsg(i.storeLabel || i.storeKey || "");
@@ -6733,8 +6807,12 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[]): string | u
     const min = promisedMinutes(i.delivery);
     return min != null && min < acc ? min : acc;
   }, Number.MAX_SAFE_INTEGER);
-  const later =
-    slowAfter.min > 0 && (before.length ? slowBefore.min >= 0 && slowAfter.min > slowBefore.min : afterStores.size > 1 && slowAfter.min > fastest) ? slowAfter : undefined;
+  const laterThanRest =
+    slowAfter.min > 0 && (before.length ? slowBefore.min >= 0 && slowAfter.min > slowBefore.min : afterStores.size > 1 && slowAfter.min > fastest);
+  // Prazo LONGO (5+ dias) avisa já na escolha, mesmo sendo o 1º item (10/10, rodada 8 M9: a pomada de 9 dias úteis só
+  // apareceu no resumo, ditando o prazo do pedido inteiro).
+  const longWait = !laterThanRest && slowAfter.min >= LONG_WAIT_MINUTES && slowAfter.min > slowBefore.min;
+  const later = laterThanRest || longWait ? slowAfter : undefined;
   const fresh = [...afterStores].filter((key) => !beforeStores.has(key));
   const extra = afterStores.size > Math.max(1, beforeStores.size) && fresh.length > 0;
   if (!extra && !later) return undefined;
@@ -6746,7 +6824,7 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[]): string | u
       }, 0))
     : undefined;
   const labels = fresh.map((key) => after.find((i) => storeOf(i) === key)?.storeLabel ?? key);
-  return copy.choiceDeliveryCostNote({ deliveries: afterStores.size, newStores: extra ? labels : [], fee, later: later ? { prazo: later.promise ?? "", store: later.store } : undefined });
+  return copy.choiceDeliveryCostNote({ deliveries: afterStores.size, newStores: extra ? labels : [], fee, later: later ? { prazo: later.promise ?? "", store: later.store, ...(longWait ? { long: true } : {}) } : undefined });
 }
 
 async function confirmChosenOption(
@@ -6846,7 +6924,9 @@ async function confirmChosenOption(
   // Escolha que cria entrega extra ou atrasa o pedido avisa o custo na hora (10/10, rodada 7 M4: o café mais barato era de
   // uma loja de 3 dias úteis e o cliente só viu as 2 entregas e R$ 29,90 de frete no resumo).
   const costNote = already ? undefined : deliveryCostNote(costBefore, ctx.basket ?? []);
-  const confirmed = [opts?.note, already ? copy.alreadyInBasket(already.name, already.qty) : confirmedBase, costNote, opts?.after].filter(Boolean).join("\n");
+  // Orçamento do pedido (10/10, rodada 8 M3): a escolha que faz o total estimado passar do teto avisa na hora, uma vez.
+  const budgetNote = already ? undefined : orderBudgetChoiceNote(ctx);
+  const confirmed = [opts?.note, already ? copy.alreadyInBasket(already.name, already.qty) : confirmedBase, costNote, budgetNote, opts?.after].filter(Boolean).join("\n");
   // Teto dito na linha ("até R$100") vale para o TOTAL com entrega (07/10, c23/c24): guardado aqui, conferido
   // na cotação. `warned` sobrevive à troca de opção para não repetir a lista de "cabe no limite".
   if (current.cap != null) {
@@ -10743,11 +10823,27 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
     return false;
   }
   const deadlineNote = deadline ? copy.consolidationDeadlineNote(deadline.label, joinedMiss, keptMiss, humanEstimate(joinedEta), humanEstimate(keptEta)) : null;
+  // Pedido mínimo (10/10, rodada 8 M5: "manter como está" e "juntar em 2 entregas" com a Americanas abaixo do mínimo de
+  // R$ 33 travavam o fechamento DEPOIS da escolha). Juntar que não fecha não é oferta (pedida pelo cliente, sai com o
+  // aviso); manter que não fecha diz o mínimo já na oferta.
+  const minimumNotes = (basket: BasketItem[]) =>
+    conciergeStoresBelowMinimum({ ...ctx, basket }).map((store) => {
+      const displayMin = display(storeMinReal(store));
+      const produtos = basket.filter((i) => i.storeKey === store.key).reduce((sum, i) => sum + roundMoney(display(i.unitPrice, i.medicine) * i.qty), 0);
+      return { store: store.label, min: displayMin, falta: Math.max(0, roundMoney(displayMin - produtos)) };
+    });
+  const joinedShort = minimumNotes(joined.basket);
+  if (joinedShort.length && !force) {
+    console.warn("[basket:consolidate:below-minimum]", joinedShort.map((m) => m.store).join(","));
+    return false;
+  }
+  const keptShort = minimumNotes(ctx.basket ?? []);
+  const minimumNote = keptShort.length || joinedShort.length ? copy.consolidationMinimumNote(keptShort, joinedShort) : null;
   ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}), ...(joinedStores > 1 ? { joinedStores } : {}) };
   ctx.consolidationParked = undefined;
   await writeCtx(convoId, ctx);
   if (prefix) await reply(phone, prefix);
-  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left, deadlineNote });
+  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left, deadlineNote, minimumNote });
   markTurnReplied();
   const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
   if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
@@ -10953,7 +11049,7 @@ async function closeWithoutOperator(
     await reply(phone, copy.itemsNotDeliverableHere(names, false));
     return;
   }
-  const next: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: rest, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}) };
+  const next: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: rest, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}), ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}) };
   await writeCtx(convoId, next);
   await reply(phone, copy.itemsNotDeliverableHere(names, true));
   await createOperatorQuoteRequest(phone, convoId, next, undefined, depth + 1);
@@ -11042,6 +11138,7 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     // Prazo dito ("aniversário amanhã"): o resumo do total avisa se a entrega não cumpre — sobrevive ao fechamento
     // (10/10, rodada 5 g16: sumia aqui e o aviso nunca saía).
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+    ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
     // Complemento (08/10, fase 4): "editar itens" reabre ESTE pedido — não pergunta de novo nem oferece o recusado.
     ...(ctx.complementAsked ? { complementAsked: ctx.complementAsked } : {}),
     ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {}),
@@ -11264,6 +11361,10 @@ async function tryPublishInstantQuote(
       data: { notes: `Cotação instantânea (vitrine, entrega pelo site). Frete por loja: ${breakdown}.` }
     });
     if (prefix) await reply(phone, prefix);
+    // Prazo confirmado agora na loja ≠ o prazo avisado nas escolhas (10/10, rodada 8 M8: "4 dias úteis" nos avisos e
+    // "3 dias úteis" no resumo, sem explicação). Vale o da loja agora; a diferença é dita antes do resumo.
+    const etaChanges = etaChangedSinceChoice(ctx.basket ?? [], estimateByStore);
+    if (etaChanges.length) await reply(phone, copy.etaUpdatedByStore(etaChanges));
 
     // Duas formas de entrega no anúncio: QUEM ESCOLHE É O CLIENTE (dono, 17/08 — "tem q
     // perguntar se ele quer o mais rápido e caro ou mais demorado e barato e tem q ter
@@ -11287,7 +11388,8 @@ async function tryPublishInstantQuote(
         step: "choosing_freight",
         freightChoice: choice,
         ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
-        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {})
+        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+        ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {})
       });
       await sendFreightChoice(phone, choice);
       return { handled: true };
@@ -11314,7 +11416,8 @@ async function tryPublishInstantQuote(
         step: "choosing_freight",
         freightChoice: choice,
         ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
-        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {})
+        ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+        ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {})
       });
       await sendFreightChoice(phone, choice);
       return { handled: true };
@@ -11402,7 +11505,7 @@ async function handleOverBudget(
   );
   const ranked = measured.filter((m): m is { option: ChoiceOption; total: number } => m != null).sort((a, b) => a.total - b.total);
   const fitting = ranked.filter((m) => m.total <= budget.cap + 0.005);
-  const base: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: ctx.basket, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}) };
+  const base: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: ctx.basket, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}), ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}) };
   // Já avisamos uma vez e o novo total ainda estoura: não repete a lista — pergunta se segue.
   if (fitting.length && !budget.warned && last) {
     const { chosenSku: _chosen, replaceSku: _replace, ...lastBase } = last;

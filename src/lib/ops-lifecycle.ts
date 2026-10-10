@@ -154,12 +154,14 @@ export async function opsPublishManualQuote(
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
   let neededBy: { date: string; label: string } | undefined;
+  let orderBudget: { cap: number } | undefined;
   let leftOut: string[] = [];
   if (order.conversationId) {
     const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
     if (convo) {
       const ctx = readCtx(convo.context);
       neededBy = ctx.neededBy;
+      orderBudget = ctx.orderBudget;
       // O que o cliente pediu e ficou sem produto entra no resumo (10/10, rodada 7 A4) — lido antes do reset abaixo.
       leftOut = leftOutForSummary(ctx, items);
       conversationMovedOn =
@@ -178,6 +180,8 @@ export async function opsPublishManualQuote(
             ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {}),
             // Prazo dito pelo cliente: a recotação e o "trocar entrega" continuam avisando (10/10, rodada 5 g16).
             ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+            // Orçamento do pedido dito na conversa (10/10, rodada 8 M3): a recotação continua avisando.
+            ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
             // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
             ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
           });
@@ -220,6 +224,8 @@ export async function opsPublishManualQuote(
     sameHour,
     ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date) ? { deadlineMiss: { label: neededBy.label } } : {}),
     deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,
+    // Passou do orçamento dito na conversa (10/10, rodada 8 M3: R$ 112,55 com "se passar de 100 me avisa", sem aviso).
+    ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
     ...(leftOut.length && !conversationMovedOn ? { leftOut } : {})
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
@@ -852,4 +858,14 @@ export async function opsPurchaseFailedRefund(
     });
   }
   return order;
+}
+
+// Orçamento do pedido estourado (10/10, rodada 8 M3): o teto e o item mais caro (a sugestão de corte mais óbvia).
+function overBudgetSummaryInput(cap: number, items: BasketItem[], priced: boolean): { cap: number; priciest?: { name: string; lineTotal: number } } {
+  if (!priced || items.length < 2) return { cap };
+  const top = [...items]
+    .filter((item) => item.unitPrice > 0)
+    .map((item) => ({ name: item.name, lineTotal: roundMoney(display(item.unitPrice, item.medicine) * item.qty) }))
+    .sort((a, b) => b.lineTotal - a.lineTotal)[0];
+  return top ? { cap, priciest: top } : { cap };
 }

@@ -1,6 +1,6 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
-import { conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
+import { childAudienceMismatch, conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
 import { liveSearchByCategory, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot, withDeadline } from "./live-search";
 import { isMedicine } from "./anvisa";
 import type { ShelfNode, ShelfPick } from "../recommend/types";
@@ -549,8 +549,10 @@ export async function gatherShelfCandidates(
         const items = await shelfLiveLimiter.run(() => liveSearchByCategory(key, path, Math.max(12, perStore * 3)));
         const hits = items.map((item) => ({ store, item }));
         // Ordem dentro da prateleira: quem mais casa com a consulta da pick primeiro (zeros ficam, na ordem da loja).
+        // Zero de público infantil sem criança pedida não entra (10/10, rodada 8 M9: fralda/lenço pra "pomada pra assadura").
         return hits
           .map((hit, index) => ({ hit, index, score: Math.max(0, ...alternatives.map((alt) => scoreCatalogMatch(alt, hit.item))) }))
+          .filter((entry) => entry.score > 0 || !childAudienceMismatch(pick.query, entry.hit.item.name))
           .sort((a, b) => b.score - a.score || a.index - b.index)
           .map((entry) => entry.hit)
           .slice(0, perStore);
