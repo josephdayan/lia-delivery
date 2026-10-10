@@ -12371,6 +12371,8 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
   // não fecha o mínimo continua com a oferta (é a saída).
   if (!force && slowerJoinNotWorth({ slowerByDays: slowerBy, saving, keptTotal, deadline: Boolean(deadline), keptBelowMinimum: keptShort.length > 0 })) {
     console.warn("[basket:consolidate:slower-not-worth]", joinedEtaH, keptEtaH, saving);
+    // O resumo diz que dá pra juntar (mais devagar) em vez de "não dá" (10/10, rodada 14 g41).
+    if (joinedEtaH) ctx.joinSlower = { key: tried, eta: joinedEtaH, saving };
     return false;
   }
   const etaNote = slowerBy > 0 && keptEtaH && joinedEtaH ? copy.consolidationSlowerNote(keptEtaH, joinedEtaH, saving) : null;

@@ -165,6 +165,7 @@ export async function opsPublishManualQuote(
   let neededBy: { date: string; label: string; morning?: boolean } | undefined;
   let orderBudget: { cap: number } | undefined;
   let joinRuledOut = false;
+  let joinSlower: { eta: string; saving: number } | undefined;
   let leftOut: string[] = [];
   if (order.conversationId) {
     const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
@@ -175,7 +176,8 @@ export async function opsPublishManualQuote(
       // Juntar já descartado para ESTA cesta (10/10, rodada 14 g41): o fechamento tentou e não juntou (ou o cliente pediu e a
       // Lia disse que não dá) — o resumo não oferece juntar de novo.
       const signature = basketTriedKey(items);
-      joinRuledOut = ctx.joinRuledOut === signature || ctx.consolidationTried === signature;
+      joinSlower = ctx.joinSlower?.key === signature ? { eta: ctx.joinSlower.eta, saving: ctx.joinSlower.saving } : undefined;
+      joinRuledOut = !joinSlower && (ctx.joinRuledOut === signature || ctx.consolidationTried === signature);
       // O que o cliente pediu e ficou sem produto entra no resumo (10/10, rodada 7 A4) — lido antes do reset abaixo.
       leftOut = leftOutForSummary(ctx, items);
       conversationMovedOn =
@@ -243,7 +245,8 @@ export async function opsPublishManualQuote(
     // Passou do orçamento dito na conversa (10/10, rodada 8 M3: R$ 112,55 com "se passar de 100 me avisa", sem aviso).
     ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
     ...(leftOut.length && !conversationMovedOn ? { leftOut } : {}),
-    ...(joinRuledOut && !conversationMovedOn ? { joinRuledOut: true } : {})
+    ...(joinRuledOut && !conversationMovedOn ? { joinRuledOut: true } : {}),
+    ...(joinSlower && !conversationMovedOn ? { joinSlower } : {})
   };
   // O pedido JÁ saiu de "aguardando cotação". Se o RESUMO (a peça essencial) falhar, o
   // cliente fica sem total nenhum e o operador sem poder recotar → rollback pra fila.

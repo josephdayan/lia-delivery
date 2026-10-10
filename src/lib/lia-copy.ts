@@ -925,12 +925,15 @@ export function promiseForCustomer(promise?: string | null): string {
 // Só copy; o cálculo não muda.
 // `joinRuledOut` (10/10, rodada 14 g41): no fechamento a Lia já disse "nenhuma tem tudo (ou juntar sairia mais caro)" — o
 // resumo não promete "junto em menos lojas" logo depois; diz a saída que existe (trocar por opção de loja já no pedido).
-export function expensiveShippingNote(produtos: number, entrega: number, deliveries = 1, joinRuledOut = false): string[] {
+export function expensiveShippingNote(produtos: number, entrega: number, deliveries = 1, joinRuledOut = false, joinSlower?: { eta: string; saving: number }): string[] {
   if (produtos > 0 && entrega > produtos + 0.009) return ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"];
   // Soma de fretes de várias lojas (10/10, rodada 4, B2): 5 entregas com frete de 44% do total saíam sem aviso.
   const share = produtos + entrega > 0 ? entrega / (produtos + entrega) : 0;
   if (deliveries >= 3 && share >= 0.25) {
-    const way = joinRuledOut ? "pra baixar, me diz um item pra trocar por opção de uma loja que já está no pedido" : "se quiser, junto em menos lojas";
+    // Juntar existe mas atrasa (10/10, rodada 14 g41): a oferta não sai sozinha; o resumo diz a troca e como pedir.
+    const way = joinSlower
+      ? `dá pra juntar em menos lojas${joinSlower.saving > 0.009 ? ` (~${brl(joinSlower.saving)} a menos)` : ""}, mas chega em *${promiseForCustomer(joinSlower.eta) || joinSlower.eta}* — se quiser, diz *junta*`
+      : joinRuledOut ? "pra baixar, me diz um item pra trocar por opção de uma loja que já está no pedido" : "se quiser, junto em menos lojas";
     return [`_São ${deliveries} entregas e o frete soma ${brl(entrega)} (${Math.round(share * 100)}% do total); ${way}._`];
   }
   return [];
@@ -2786,7 +2789,9 @@ function swapPairLines(pairs: SwapPair[]): string[] {
 
 // Nota da troca que muda mais que a loja (10/10, rodada 10 g29).
 export function swapChangeNote(kind: "marca" | "versao", brand?: string): string {
-  return kind === "marca" ? `muda a marca${brand ? `: não achei ${brand} em outra loja` : ""}` : "outra versão do mesmo produto";
+  // "versao" (10/10, rodada 14 g41: Coca → Fanta e uma vela por outra saíam como "outra versão do mesmo produto"): o nome muda
+  // muito, então pode ser outro sabor/modelo — diz isso, sem prometer que é o mesmo produto.
+  return kind === "marca" ? `muda a marca${brand ? `: não achei ${brand} em outra loja` : ""}` : "não é o mesmo produto (pode mudar sabor, cor ou modelo) — confere se serve";
 }
 
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
@@ -3076,6 +3081,8 @@ export function manualQuoteSummary(input: {
   overBudget?: { cap: number; priciest?: { name: string; lineTotal: number } };
   // Juntar já descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo.
   joinRuledOut?: boolean;
+  // Juntar possível mas mais demorado (não ofereci sozinha): o aviso de frete diz isso.
+  joinSlower?: { eta: string; saving: number };
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -3092,7 +3099,7 @@ export function manualQuoteSummary(input: {
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),
     // Com o limite estourado, o aviso do limite já diz o frete e como baixar: "quer somar mais coisa?" subiria o total.
-    ...(input.overBudget ? [] : expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries, input.joinRuledOut))
+    ...(input.overBudget ? [] : expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries, input.joinRuledOut, input.joinSlower))
   ];
   if (input.leftOut?.length) out.push("", leftOutNote(input.leftOut));
   if (input.deliveryAddress) {

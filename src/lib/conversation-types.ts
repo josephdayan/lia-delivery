@@ -412,6 +412,8 @@ export type DeliveryContext = {
   // Cesta (skus×qtd) em que o cliente pediu "junta" e a Lia respondeu que não dá (10/10, rodada 14 g41): o resumo não oferece
   // juntar de novo.
   joinRuledOut?: string;
+  // Juntar possível nesta cesta, mas mais demorado — a oferta não saiu sozinha (10/10, rodada 14 g41).
+  joinSlower?: { key: string; eta: string; saving: number };
   // O cliente já fechou a lista ("só isso") e a Lia abriu uma escolha no meio do fechamento (troca do item que a loja
   // recusou, troca da entrega cara — 10/10, rodada 13): escolhida ou pulada, o fechamento continua sozinho.
   closeAfterChoices?: boolean;

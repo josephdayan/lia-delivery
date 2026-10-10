@@ -296,3 +296,71 @@ test("R14-7 (306): a resposta diz que cada loja entrega no prazo dela; 'então d
   assert.doesNotMatch(close, /menos lojas/i, close.slice(0, 600));
   assert.match(close, /Seu pedido|Total/, close.slice(0, 900));
 });
+
+// ---------------- 4. Reteste da rodada 14 (grupo A): R14a-1, R14a-3, R14a-6 ----------------
+
+const VISITA = "papel higiênico e 2 sabonetes de jasmim, a visita chega hoje";
+
+test("R14a-1: lista com 'a visita chega hoje' é pedido com prazo, não pergunta de prazo", () => {
+  for (const t of [VISITA, "preciso de papel higiênico e 2 sabonetes de jasmim, a visita chega hoje"]) {
+    assert.equal(m.intents.deadlineWithItems(t), true, t);
+    assert.equal(m.intents.asksDeadline(t), null, t);
+    assert.equal(m.intents.asksDeliveryToday(t), false, t);
+    assert.equal(m.intents.isOrderWithDeadline(t), true, t);
+    assert.notEqual(m.intents.detectIntent(t), "status", t);
+  }
+  // Pergunta de prazo sem produto continua pergunta.
+  for (const t of ["chega hoje?", "entrega hoje?", "consegue chegar até amanhã?"]) assert.equal(m.intents.deadlineWithItems(t), false, t);
+  assert.equal(m.intents.asksDeliveryToday("entrega hoje?"), true);
+  assert.ok(m.intents.asksDeadline("consegue chegar até amanhã?"));
+  // A fala da ocasião não vira item.
+  assert.ok(m.intents.parseBasketLines(VISITA).every((l) => !/visita/.test(l.phrase)), JSON.stringify(m.intents.parseBasketLines(VISITA)));
+});
+
+test("R14a-1: depois do cadastro, 'preciso de ..., a visita chega hoje' guarda o prazo E busca os itens", async (t) => {
+  if (!dbOk) return t.skip();
+  for (const text of ["preciso de papel higiênico e 2 sabonetes de jasmim, a visita chega hoje", VISITA]) {
+    const phone = await customerWith({});
+    const out = await send(phone, text);
+    assert.doesNotMatch(out, /^Anotado: precisa chegar/m, out.slice(0, 600));
+    const ctx = await ctxOf(phone);
+    assert.equal(ctx.neededBy?.label, "hoje", out.slice(0, 600));
+    const asked = [...(ctx.basket ?? []).map((b) => `${b.ask ?? ""} ${b.name}`), ...(ctx.pending ?? []).map((p) => p.query)].join(" | ");
+    assert.match(`${asked} ${out}`, /papel higi[eê]nico/i, `${asked}\n${out.slice(0, 600)}`);
+    assert.match(`${asked} ${out}`, /sabonete/i, `${asked}\n${out.slice(0, 600)}`);
+    assert.doesNotMatch(asked, /visita/i, asked);
+  }
+});
+
+test("R14a-3 (110): 'dia dos professores amanhã, ..., até 50 reais' guarda o prazo e o orçamento", () => {
+  const now = new Date("2026-10-10T15:00:00Z");
+  const text = "dia dos professores amanhã, uma caixa de bombom e um cartão de agradecimento ou vela, algo pequeno, até 50 reais";
+  assert.deepEqual(m.intents.parseNeededBy(text, now), { date: "2026-10-11", label: "amanhã" });
+  assert.equal(m.intents.parseOrderBudget(text)?.cap, 50);
+  assert.equal(m.intents.parseNeededBy("dia das mães domingo: um vaso de flor", now)?.label, "domingo");
+});
+
+test("R14a-3 (110): depois de 'me manda o de sempre' sem histórico, o pedido seguinte guarda 💰 e ⏰", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = newPhone();
+  await send(phone, "oi");
+  await send(phone, "me manda o de sempre");
+  const out = await send(phone, "dia dos professores amanhã, uma caixa de bombom e um cartão de agradecimento ou vela, algo pequeno, até 50 reais");
+  assert.match(out, /💰 Até \*R\$ 50,00\*/, out.slice(0, 700));
+  assert.match(out, /⏰[^\n]*\*amanhã\*/, out.slice(0, 700));
+  const ctx = await ctxOf(phone);
+  assert.equal(ctx.orderBudget?.cap, 50);
+  assert.equal(ctx.neededBy?.label, "amanhã");
+});
+
+test("R14a-6: troca com nome bem diferente não diz 'outra versão do mesmo produto'; juntar mais lento é dito no resumo", () => {
+  const note = m.copy.swapChangeNote("versao");
+  assert.doesNotMatch(note, /outra versão do mesmo produto/, note);
+  assert.match(note, /não é o mesmo produto/);
+  assert.match(m.copy.swapChangeNote("marca", "Coca-Cola"), /muda a marca: não achei Coca-Cola/);
+  // 3 lojas: juntar existe mas atrasa — a oferta não saiu sozinha, então o resumo diz como pedir.
+  const slow = m.copy.expensiveShippingNote(60, 30, 3, false, { eta: "3 dias úteis", saving: 7.92 })[0];
+  assert.match(slow, /dá pra juntar em menos lojas \(~R\$ 7,92 a menos\), mas chega em \*3 dias úteis\* — se quiser, diz \*junta\*/, slow);
+  const summary = m.copy.manualQuoteSummary({ items: [{ qty: 1, name: "Vela", lineTotal: 20 }], produtos: 60, frete: 30, total: 90, deliveries: 3, joinSlower: { eta: "3 dias úteis", saving: 7.92 } });
+  assert.match(summary, /diz \*junta\*/, summary);
+});

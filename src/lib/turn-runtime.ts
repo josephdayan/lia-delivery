@@ -386,7 +386,8 @@ export function orderFactsCtx(ctx: DeliveryContext): Partial<DeliveryContext> {
     // Juntar já tentado/descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo. O resumo compara
     // com os itens do pedido, então uma marca de outra cesta não vale.
     ...(ctx.consolidationTried ? { consolidationTried: ctx.consolidationTried } : {}),
-    ...(ctx.joinRuledOut ? { joinRuledOut: ctx.joinRuledOut } : {})
+    ...(ctx.joinRuledOut ? { joinRuledOut: ctx.joinRuledOut } : {}),
+    ...(ctx.joinSlower ? { joinSlower: ctx.joinSlower } : {})
   };
 }
 

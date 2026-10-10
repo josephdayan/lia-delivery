@@ -321,6 +321,8 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
   "^(" +
     [
       "(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (que )?(vem|veio|vai|vao|chega|volta|pediu|pedia|falou|disse|gosta|adora|mora|visita|completa|faz)\\b.*",
+      // "a visita chega hoje", "a festa é sábado" (10/10, rodada 14 g41): o quando da ocasião é prazo, nunca item.
+      "(a|o|as|os) [a-zà-ú]+( [a-zà-ú]+)? (chega|chegam|vem|e|eh|sera|vai ser|comeca|acontece) (hoje|amanha|depois de amanha|(no |na |nesse |nessa |este |esta )?(domingo|segunda|terca|quarta|quinta|sexta|sabado|fim de semana))\\b.*",
       "((entao|beleza|bom|ok|ai|e) )*(eu )?(vou|vamos) (receber|fazer|dar|ter|visitar|viajar|arrumar|deixar)\\b.*",
       // Condição da ENTREGA ou comentário sobre o produto (10/10, rodada 9 M10): "tem que chegar inteiro", "são frágeis",
       // "que chegue amanhã cedo" viravam item ("1x são frágeis") e "não achei".
@@ -503,8 +505,9 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   const n = normalizeMsg(text);
   const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
   // Refeição/ocasião com dia ("café da manhã bom pra família domingo", "pizza em casa hoje", 10/10, rodada 14 g41): o dia
-  // da ocasião também é prazo — antes só festa/aniversário contavam e o resumo fechava em 3 dias úteis sem aviso.
-  const EVENT = "aniversario|festa|festinha|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour";
+  // da ocasião também é prazo — antes só festa/aniversário contavam e o resumo fechava em 3 dias úteis sem aviso. "Dia dos
+  // professores amanhã" (110, R14a-3) também.
+  const EVENT = "aniversario|festa|festinha|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour|dia d[oa]s? (?:professor\\w*|pais|pai|maes|mae|namorados|criancas|avos|amigos?)";
   // "hoje a gente vai fazer pizza", "domingo vamos receber a família": o dia junto do plano (vai/vou/vamos fazer/ter/receber).
   const PLAN = String.raw`(?:vai|vou|vamos|a gente vai|queria|quero)\s+(?:fazer|ter|receber|preparar|montar)`;
   const planDay = (day: string) => new RegExp(String.raw`\b${day}\b.{0,25}\b${PLAN}\b|\b${PLAN}\b.{0,60}\b${day}\b`).test(n);
@@ -550,7 +553,19 @@ export function asksDeadline(text: string): { date: string; label: string; morni
   if (/\bhorario|\bque horas\b|\bfunciona\w*|\babre\w*|\bfecha\w*/.test(n)) return null;
   const day = parseNeededBy(text);
   if (!day) return null;
+  // Itens na mesma frase ("preciso de papel higiênico e 2 sabonetes, a visita chega hoje", 10/10, rodada 14 g41): é pedido
+  // com prazo — o prazo é guardado no caminho do pedido e os itens são buscados (antes só "Anotado: precisa chegar até hoje").
+  if (deadlineWithItems(text)) return null;
   return isQuestion(text) || /\b(?:da|consegue|rola|chega|chegue|chegam|cheguem|sim ou nao)\b/.test(n) ? day : null;
+}
+
+// A mensagem traz produto além da fala do prazo? Linhas da lista sem o dia, sem pergunta e sem o "me responde sim ou não".
+export function deadlineWithItems(text: string): boolean {
+  if (!parseNeededBy(text)) return false;
+  return parseBasketLines(text).some((line) => {
+    const p = normalizeMsg(line.phrase).trim();
+    return /[a-z]{3}/.test(p) && !parseNeededBy(line.phrase) && !/\?/.test(line.phrase) && !/\b(?:cheg\w*|entreg\w*|consegu\w*)\b/.test(p) && !/^(?:me\s+)?(?:responde|diz|fala|avisa|confirma)\b|^(?:da|consegue|rola|pode ser|sim ou nao|ok|blz|beleza|por favor|pfv?)$/.test(p);
+  });
 }
 
 // Prazo dito como frase própria, pergunta ou não (10/10, rodada 10 g29: "Se puder chegar até sexta, tá bom" e "preciso até
@@ -2451,6 +2466,8 @@ export function isOrderWithDeadline(text: string): boolean {
   const n = normalizeMsg(text);
   if (!parseNeededBy(n)) return false;
   const clauses = n.split(/[,;.!?]+|\s+(?:mas|porque|pq|que)\s+/).map((c) => c.trim()).filter(Boolean);
+  // Lista sem verbo ("papel higiênico e 2 sabonetes de jasmim, a visita chega hoje", 10/10, rodada 14 g41) também é pedido.
+  if (deadlineWithItems(text)) return true;
   return clauses.some((c) => !STATUS_RE.test(c) && !parseNeededBy(c) && /\b(?:preciso de|precisava de|quero|queria|me (?:ve|manda|traz)|manda|compra|vou querer)\s+(?:um |uma |uns |umas |o |a |\d+ )?[a-z]{3,}/.test(c));
 }
 
@@ -3494,6 +3511,8 @@ export function answerOpenQuestion(question: string, text: string): string | nul
 export function asksDeliveryToday(text: string): boolean {
   const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
   if (n.length > 60) return false;
+  // "papel higiênico e 2 sabonetes de jasmim, a visita chega hoje" (10/10, rodada 14 g41): itens com o prazo é pedido.
+  if (deadlineWithItems(text)) return false;
   return /\b(?:entreg\w*|chega\w*|chegar|enviam|manda\w*)\s+(?:ainda\s+)?hoje\b/.test(n) || /\bhoje\s+(?:ainda\s+)?(?:da|tem|rola)\s+(?:pra|para)\s+(?:entreg\w+|chegar)\b/.test(n);
 }
 
