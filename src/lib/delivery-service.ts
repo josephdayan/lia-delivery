@@ -2853,6 +2853,7 @@ async function handleDeliveryTurn(
           ctx,
           hasAddress,
           lastLiaText: turnMeta.getStore()?.prevSent?.slice(-1)[0],
+          priceAsk: intent.kind === "free_text" && Boolean(parsePriceAsk(text)),
           addressLike:
             looksLikeDeliveryAddress(text) ||
             Boolean(extractCep(text)) ||
@@ -5741,11 +5742,14 @@ async function handleDeliveryAddress(
     }
     // "Vc tem cottage?"/"quanto tá o leite?" esperando o endereço (06/10): é pedido em forma
     // de pergunta — anota o produto e segue pedindo o endereço.
-    const askedItem = kind === "free_text" ? parseAvailabilityAsk(address) ?? parsePriceAsk(address) : null;
+    const pricedItem = kind === "free_text" && !parseAvailabilityAsk(address) ? parsePriceAsk(address) : null;
+    const askedItem = kind === "free_text" ? parseAvailabilityAsk(address) ?? pricedItem : null;
     if (askedItem && !blocksMedicine(address)) {
       addPendingRequest(ctx, askedItem);
       ctx.step = "need_address";
       await writeCtx(convoId, ctx);
+      // Pergunta de preço antes do CEP (10/10, rodada 5 A2): diz que o preço sai com o endereço, em vez de só pedir o cadastro.
+      if (pricedItem) await reply(phone, copy.priceAfterAddress(pricedItem));
       await askStreetOrSignup(phone, ctx, userCep);
       return;
     }
@@ -6583,6 +6587,11 @@ async function handleChoosing(
 
   if (parsed?.type === "name") {
     current.options = [current.options[parsed.index]];
+    // Quantidade dita junto do nome ("o bolo gotas de chocolate, 3") vale na confirmação (10/10, rodada 5 M4).
+    if (parsed.qty) {
+      current.qty = parsed.qty;
+      current.qtyExplicit = true;
+    }
     await writeCtx(convoId, ctx);
     await sendChoices(phone, current, copy.narrowedChoices(current.query));
     return;
@@ -9205,7 +9214,7 @@ function mergeBaskets(existing: BasketItem[], incoming: BasketItem[]): BasketIte
 
 // Nome de quem recebe: 2 a 60 letras/espaços; nada de número, link ou frase inteira.
 const NOT_A_NAME_RE =
-  /\b(pix|cart[aã]o|cartao|credito|debito|boleto|dinheiro|pagar|pago|paguei|pagamento|cancela\w*|desisto|desisti|sim|nao|ok|blz|beleza|oi|ola|obrigad\w*|valeu|tchau|quanto|qual|quero|pedido|frete|total|endereco|cep|ajuda|atendente|humano)\b/;
+  /\b(pix|cart[aã]o|cartao|credito|debito|boleto|dinheiro|pagar|pago|paguei|pagamento|cancela\w*|desisto|desisti|sim|nao|ok|blz|beleza|oi|ola|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|tchau|quanto|qual|quero|pedido|frete|total|endereco|cep|ajuda|atendente|humano)\b/;
 // Frete ao vivo por loja que a conversa já conhece: lojas das opções na mesa e das já
 // escolhidas (a cesta não guarda o frete; a opção escolhida, sim).
 function knownStoreFees(ctx: DeliveryContext): { storeLabel: string; fee: number }[] {
@@ -9247,7 +9256,7 @@ export function looksLikeOnboardingName(text: string): boolean {
   const n = normalizeMsg(text);
   const words = n.split(" ").filter(Boolean);
   if (words.length < 2 || words.length > 5) return false;
-  if (/\b(quero|queria|preciso|precisava|manda|compra|comprar|tem|vende|pedido|pedir|oi|ola|bom|boa|tudo|obrigad\w*|cpf|sim|nao|ok)\b/.test(n)) return false;
+  if (/\b(quero|queria|preciso|precisava|manda|compra|comprar|tem|vende|pedido|pedir|oi|ola|bom|boa|tudo|obrigad(?:[oa]s?|inh[oa]s?|ao)|cpf|sim|nao|ok)\b/.test(n)) return false;
   return !parseAvailabilityAsk(text);
 }
 
@@ -9358,7 +9367,7 @@ async function handleComplementAnswer(
       // "cancela" seco com o complemento na tela (09/10, rodada 1) recusa a oferta; não apaga a cesta.
       (intent.kind === "cancel" && !intent.explicitOrder && n.split(" ").length <= 2) ||
       intent.kind === "reject" ||
-      (n.length <= 40 && /^(nao|n|nn|dispenso|deixa|so isso|obrigad\w*|valeu|nem|agora nao|dessa vez nao|nao precisa|nao quero)\b/.test(n)));
+      (n.length <= 40 && /^(nao|n|nn|dispenso|deixa|so isso|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|nem|agora nao|dessa vez nao|nao precisa|nao quero)\b/.test(n)));
   if (yes) {
     const store = getStore(offer.option.storeKey ?? orderStore(ctx).key);
     ctx.basket = mergeBaskets(ctx.basket ?? [], [choiceToBasketItem(offer.option, 1, store, offer.query)]);
