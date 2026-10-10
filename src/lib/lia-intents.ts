@@ -1060,7 +1060,8 @@ export function looksLikeSymptomAsk(text: string): boolean {
 // roteador executar em sequência (28/08 S4: virou UMA busca e nada foi feito).
 // "por" é verbo ("por o arroz"), mas "por favor"/"por enquanto" é cortesia — virava uma cláusula de busca
 // ("Tira a fita crepe, por favor." → greeting no lugar do novo total; placar c10).
-const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece";
+// "muda/altera" (10/10, rodada 5 M5): "tira os balões e o salgadinho, e muda o guardanapo pra 4" era uma cláusula só.
+const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece|muda|mudar|altera|alterar";
 
 export function splitCommandClauses(text: string): string[] {
   const n = normalizeMsg(text);
@@ -1694,6 +1695,14 @@ export function detectIntent(text: string): Intent {
     // "cancela o pagamento/pix" é desistir da cobrança, não tirar item da cesta.
     if (/^(o\s+|a\s+)?(pagamento|pix|cobranca|boleto)$/.test(target)) return { kind: "cancel", explicitOrder: true };
     return { kind: "remove_item", target, ...(andAdd ? { andAdd } : {}) };
+  }
+
+  // "não quero a vela, tira" / "a vela, pode tirar" (10/10, rodada 5 A1): o verbo de tirar vem no FIM.
+  const trailingRemove = n.match(/^((?:nao|n) quero (?:mais )?)?(?:o |a |os |as )?(.+?)\s*(,)?\s+(?:pode\s+)?(?:tira|tirar|remove|remover|tirar fora|tira fora)(?:\s+(?:ela|ele|elas|eles|isso|essa|esse|fora|da lista|da cesta|pra mim))?[\s!.]*$/);
+  if (trailingRemove && (trailingRemove[1] || trailingRemove[3]) && !/\?/.test(text)) {
+    trailingRemove[1] = trailingRemove[2];
+    const target = cleanItemPhrase(trailingRemove[1]);
+    if (target && !/^(pedido|compra|entrega|tudo|nada|isso|essa|esse|ela|ele)$/.test(target) && target.split(/\s+/).length <= 5) return { kind: "remove_item", target };
   }
 
   // "não quero mais o guaraná" / "quero cancelar o arroz" — a remove verb buried
@@ -2430,6 +2439,40 @@ function qtyCore(n: string): string {
 // "muda pra 6", "quero só 1" → set; "tira um", "põe mais um", "mais 2" → delta. O número seco
 // ("2") continua sendo o intent `number`. "um"/"uma" com verbo comum ("coloca um") fica de
 // fora: costuma ser começo de pedido, não quantidade.
+// Pedido de juntar as entregas por texto (10/10, rodada 5 A4): "sim junta", "junta tudo na mambo", "junta em menos lojas
+// pra mim", "tudo na mesma loja", "tem como juntar tudo numa loja só pra ficar mais barato o frete?", "quero trocar
+// tudo pelos equivalentes da mambo". `store` = a loja nomeada (das conhecidas). null = não é pedido de juntar.
+const JOIN_VERB_RE = /\b(?:junt(?:a|ar|e|em|o|ando|aria)|agrupa\w*|unifica\w*)\b/;
+const ONE_STORE_RE = /\b(?:(?:numa|em uma|uma|na mesma|da mesma|mesma) loja(?: so| soh| unica)?|loja (?:so|unica)|menos (?:lojas|entregas|fretes?)|(?:um|uma|num|numa) (?:frete|entrega|pedido) so|(?:frete|entrega) unic[ao]|equivalentes? d[aeo])\b/;
+const JOIN_NOT_RE = /\b(?:nao|n)\s+(?:quero\s+|precisa\s+|vou\s+)?junt|\bsem juntar\b|\bseparad[oa]s?\b|\bjunto com\b|\bjunto d[aeo]\b/;
+export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 160 || JOIN_NOT_RE.test(n)) return null;
+  const store = knownLabels.find((label) => {
+    const l = normalizeMsg(label).trim();
+    const head = l.split(/\s+/).filter((w) => w.length >= 4 && !/^(casa|loja|lojas|farmacia|drogaria|supermercado|mercado)$/.test(w))[0];
+    return (l.length >= 4 && new RegExp(`\\b${l}\\b`).test(n)) || (head ? new RegExp(`\\b${head}\\b`).test(n) : false);
+  });
+  const asks = JOIN_VERB_RE.test(n) || ONE_STORE_RE.test(n) || (Boolean(store) && /\b(?:tudo|todos|todas)\b/.test(n) && /\b(?:troca\w*|passa\w*|muda\w*|compra\w*|pede|pedir|manda\w*)\b|^(?:tudo|todos|todas) (?:na|da|pela)\b/.test(n));
+  if (!asks) return null;
+  return store ? { store } : {};
+}
+
+// Quantidade de um item NOMEADO numa cláusula de edição (10/10, rodada 5 M5/M6): "muda o guardanapo pra 4",
+// "a fralda é só 1 pacote", "o bolo eram 3", "deixa o leite pra 2". Quem confere se o item está na cesta é o cérebro.
+const ITEM_QTY_EDIT_RE =
+  /^(?:(?:na real|na verdade|ah|e)\s+)?(?:(?:muda|mudar|altera|alterar|ajusta|deixa|deixar|coloca|bota|poe)\s+)?(?:(?:o|a|os|as)\s+)?(.+?)\s+(?:pra|para|(?:e|eh|fica|ficam|sao|era|eram)\s+(?:so|soh|somente|apenas)|(?:e|eh|fica|ficam|sao|era|eram)|so|somente|apenas)\s+(\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis)(?:\s+(?:pacotes?|unidades?|un|caixas?|latas?|garrafas?|potes?|vidros?|kits?|x))?[\s!.]*$/;
+export function parseItemQtyEdit(text: string): { phrase: string; qty: number } | null {
+  const n = normalizeMsg(text);
+  const m = n.match(ITEM_QTY_EDIT_RE);
+  if (!m) return null;
+  const phrase = m[1].replace(/\b(o|a|os|as)\b/g, " ").replace(/\s+/g, " ").trim();
+  const words: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6 };
+  const qty = /^\d+$/.test(m[2]) ? Number(m[2]) : words[m[2]];
+  if (!phrase || !qty || qty > 50 || phrase.split(/\s+/).length > 5) return null;
+  return { phrase, qty };
+}
+
 export function parseQtyCommand(text: string): { set: number } | { delta: number } | null {
   const core = qtyCore(normalizeMsg(text));
   if (!core) return null;

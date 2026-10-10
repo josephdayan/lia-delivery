@@ -115,6 +115,8 @@ export type PendingChoice = {
   // Escolha REABERTA ("Outras opções" depois de já ter escolhido): o novo pick
   // SUBSTITUI esta linha da cesta em vez de somar uma segunda mochila.
   replaceSku?: string;
+  // "troca X por Y" com escolha aberta (10/10, rodada 5 A3): o X que saiu da cesta. Fechar sem escolher o Y devolve o X.
+  swappedOut?: BasketItem[];
   // O pool + a re-busca relaxada já esgotaram: o próximo "outras" pede reformulação
   // em vez de repetir "essas são todas" (27/08 S4).
   exhausted?: boolean;
@@ -353,7 +355,12 @@ export type DeliveryContext = {
   // Oferta de juntar a cesta numa loja só (09/10, dono: "oferecer, não impor"): a cesta juntada fica
   // guardada até o cliente escolher (botão consolidar:sim / consolidar:nao). `key` = a cesta de quando a
   // oferta saiu; cesta mudou → a oferta morre.
-  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string };
+  // "Fecho sem a vela?" (10/10, rodada 5 A1): "fecha" com item ainda em escolha e cesta montada. Vale 1 resposta.
+  closeWithoutOffer?: { queries: string[]; at: number };
+  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string; joinedStores?: number };
+  // Oferta de juntar que saiu da mesa por outra mensagem (10/10, rodada 5 M1): "1"/"juntar" logo depois, com a MESMA
+  // cesta, ainda responde a ela — antes o "1" virava quantidade do leite.
+  consolidationParked?: DeliveryContext["consolidationOffer"];
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

@@ -195,10 +195,18 @@ export async function getOrCreateConvo(phone: string, name?: string) {
 
 export function readCtx(context: string | null): DeliveryContext {
   try {
-    return context ? (JSON.parse(context) as DeliveryContext) : {};
+    return context ? pendingMeansChoosing(JSON.parse(context) as DeliveryContext) : {};
   } catch {
     return {};
   }
+}
+
+// Escolha aberta = passo "choosing" (10/10, rodada 5 A1/A3): uma busca que não achou nada com a escolha da vela
+// (ou de duas trocas) na mesa gravava "collecting" e deixava a escolha órfã — "tira a vela" respondia "não vejo
+// vela na lista", "pula essa" não tinha o que pular e os cards viravam "conversa antiga". Invariante num lugar só.
+export function pendingMeansChoosing(ctx: DeliveryContext): DeliveryContext {
+  if (ctx.pending?.length && (ctx.step === undefined || ctx.step === "collecting")) ctx.step = "choosing";
+  return ctx;
 }
 
 // ---------- escrita CONDICIONAL de contexto (teste 26/08, P0.1) ----------
@@ -240,6 +248,10 @@ export const turnMeta = new AsyncLocalStorage<{
   skipDialogue?: boolean;
   // Telefone do cliente deste turno (08/10): a recomendação em modo "test" só vale para dono/admins.
   phone?: string;
+  // Edição composta (10/10, rodada 5 M2/M6): o total/oferta de juntar só sai depois da ÚLTIMA edição da mensagem.
+  // `deferQuote` liga o adiamento; `quoteDeferred` marca que uma edição do meio pediu o total.
+  deferQuote?: boolean;
+  quoteDeferred?: boolean;
 }>();
 
 // A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido
@@ -282,6 +294,7 @@ export function rememberCtxSnapshot(convoId: string, context: string | null) {
 }
 
 export async function writeCtx(convoId: string, ctx: DeliveryContext) {
+  pendingMeansChoosing(ctx);
   // Carimbo único da escolha pendente (ver DeliveryContext.pendingSince).
   if (ctx.pending?.length) ctx.pendingSince ??= Date.now();
   else delete ctx.pendingSince;

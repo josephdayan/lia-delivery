@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseItemQtyEdit, parseJoinStoresAsk, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1743,13 +1743,17 @@ function nameSimilarity(a: string, b: string): number {
 }
 // Plano pra juntar a cesta numa loja só. Não muda o contexto (quem chama aplica): com teto de tempo, uma
 // busca que termina depois não pode mexer numa cesta que já seguiu.
-export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket">): Promise<{ basket: BasketItem[]; storeLabel: string; pairs: copy.SwapPair[]; delta: number } | null> {
+export type ConsolidationPlan = { basket: BasketItem[]; storeLabel: string; pairs: copy.SwapPair[]; delta: number; stores?: number; left?: string[] };
+// `target` (10/10, rodada 5 A4: "junta tudo na Mambo"): só essa loja, e o que ela não tem fica onde está (`left`).
+// `fewer`: nenhuma loja cobre tudo → tira as lojas que dá (cada item delas encontrado em outra loja da cesta).
+export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket">, opts: { target?: string; fewer?: boolean } = {}): Promise<ConsolidationPlan | null> {
   const basket = ctx.basket ?? [];
   const basketStores = [...new Set(basket.map((i) => i.storeKey))];
   if (basketStores.length < 2 || basket.some((i) => !i.storeKey || i.storeKey === CONCIERGE_STORE_KEY || !(i.unitPrice > 0))) return null;
   const auto = automaticPurchaseStores();
   const eligible = (key: string) => key !== MERCADO_LIVRE_STORE_KEY && (!auto.length || auto.includes(key));
   const lineOf = (unitPrice: number, qty: number, medicine?: "mip") => Math.round(display(unitPrice, medicine) * qty * 100) / 100;
+  const oldTotal = basket.reduce((sum, i) => sum + lineOf(i.unitPrice, i.qty, i.medicine), 0);
   const plan = async (targets: string[]) => {
     if (!targets.length) return null;
     const offers = await Promise.all(basket.map((item) => findInStores(item, targets.filter((t) => t !== item.storeKey))));
@@ -1777,28 +1781,71 @@ export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket
     }
     return best ? { ...best, offers } : null;
   };
+  // Mover linhas para outras lojas: `moves[i]` = a oferta que entra no lugar da linha i (undefined = fica).
+  const build = (moves: (ChoiceOption | undefined)[]): ConsolidationPlan | null => {
+    const moved = basket.filter((_, i) => moves[i]);
+    if (!moved.length) return null;
+    const replacements = basket
+      .map((item, i) => ({ item, offer: moves[i] }))
+      .filter((r) => r.offer)
+      .map((r) => ({ fromSku: r.item.sku, qty: r.item.qty, option: r.offer!, ask: r.item.ask }));
+    const next = mergeBaskets(
+      basket.filter((_, i) => !moves[i]).map((item) => ({ ...item })),
+      replacements.map((r) => choiceToBasketItem(r.option, r.qty, getStore(r.option.storeKey ?? ""), r.ask))
+    );
+    const stores = [...new Set(next.map((i) => i.storeKey))];
+    if (stores.length >= basketStores.length) return null;
+    const labels = stores.map((key) => next.find((i) => i.storeKey === key)?.storeLabel ?? getStore(key).label);
+    const newTotal = next.reduce((sum, i) => sum + lineOf(i.unitPrice, i.qty, i.medicine), 0);
+    return {
+      basket: next,
+      storeLabel: labels.length > 1 ? `${labels.slice(0, -1).join(", ")} e ${labels[labels.length - 1]}` : labels[0],
+      pairs: swapPairsForCopy(moved, replacements),
+      delta: Math.round((newTotal - oldTotal) * 100) / 100,
+      stores: stores.length
+    };
+  };
+  if (opts.target) {
+    const target = opts.target;
+    if (!eligible(target)) return null;
+    const offers = await Promise.all(basket.map((item) => (item.storeKey === target ? Promise.resolve(new Map<string, ChoiceOption>()) : findInStores(item, [target]))));
+    const moves = basket.map((item, i) => (item.storeKey === target ? undefined : offers[i].get(target)));
+    const result = build(moves.map((o) => (o ? { ...o, storeKey: o.storeKey ?? target } : undefined)));
+    if (!result) return null;
+    const left = basket.filter((item, i) => item.storeKey !== target && !moves[i]).map((item) => item.name);
+    return { ...result, ...(left.length ? { left } : {}) };
+  }
   // 1º as lojas que já estão na cesta (troca menor: vence a que já tem mais itens); depois as outras de
   // compra automática.
-  const inBasket = basketStores.filter(eligible);
+  const inBasket = basketStores.filter((key): key is string => Boolean(key) && eligible(key as string));
   let chosen = await plan(inBasket);
   if (!chosen && auto.length) chosen = await plan(auto.filter((k) => eligible(k) && !inBasket.includes(k)));
-  if (!chosen) return null;
-  const target = getStore(chosen.store);
-  const replacements = basket
-    .map((item, i) => ({ item, offer: chosen!.offers[i].get(chosen!.store) }))
-    .filter((r) => r.item.storeKey !== chosen!.store && r.offer)
-    .map((r) => ({ fromSku: r.item.sku, qty: r.item.qty, option: r.offer!, ask: r.item.ask }));
-  const moved = basket.filter((item) => item.storeKey !== chosen!.store);
-  const oldTotal = basket.reduce((sum, i) => sum + lineOf(i.unitPrice, i.qty, i.medicine), 0);
-  return {
-    basket: mergeBaskets(
-      basket.filter((item) => item.storeKey === chosen!.store).map((item) => ({ ...item })),
-      replacements.map((r) => choiceToBasketItem(r.option, r.qty, target, r.ask))
-    ),
-    storeLabel: target.label,
-    pairs: swapPairsForCopy(moved, replacements),
-    delta: Math.round((chosen.total - oldTotal) * 100) / 100
-  };
+  if (chosen) {
+    const target = getStore(chosen.store);
+    const moves = basket.map((item, i) => (item.storeKey === chosen!.store ? undefined : chosen!.offers[i].get(chosen!.store)));
+    const result = build(moves.map((o) => (o ? { ...o, storeKey: o.storeKey ?? target.key } : undefined)));
+    if (result) return { ...result, storeLabel: target.label, stores: 1 };
+  }
+  if (!opts.fewer || inBasket.length < 3) return null;
+  // Menos lojas (10/10, rodada 5 A4): elimina, da menor para a maior, a loja cujos itens todos existem em outra loja que
+  // fica na cesta (a mais barata), enquanto der. O mínimo de cada loja que recebe itens só cresce.
+  const offers = await Promise.all(basket.map((item) => findInStores(item, inBasket.filter((t) => t !== item.storeKey))));
+  const moves: (ChoiceOption | undefined)[] = basket.map(() => undefined);
+  const alive = new Set(inBasket);
+  const homeOf = (i: number) => moves[i]?.storeKey ?? basket[i].storeKey ?? "";
+  const bySize = [...inBasket].sort((a, b) => basket.filter((x) => x.storeKey === a).length - basket.filter((x) => x.storeKey === b).length);
+  for (const store of bySize) {
+    if (alive.size <= 2) break;
+    const lines = basket.map((_, i) => i).filter((i) => homeOf(i) === store);
+    const picks = lines.map((i) => {
+      const options = [...offers[i].entries()].filter(([key]) => key !== store && alive.has(key)).map(([key, option]) => ({ ...option, storeKey: option.storeKey ?? key }));
+      return options.sort((a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine))[0];
+    });
+    if (!lines.length || picks.some((p) => !p)) continue;
+    lines.forEach((i, k) => (moves[i] = picks[k]));
+    alive.delete(store);
+  }
+  return build(moves);
 }
 
 // ---------- the WhatsApp conversation state machine ----------
@@ -2030,6 +2077,17 @@ async function handleDeliveryTurn(
   // "1"/"2" numa pergunta de sim/não em aberto (09/10, rodada 2): os botões são "sim"/"não", e o cliente que
   // digita o número não pode ter a quantidade mexida. Vale para toda pergunta binária pendente, num lugar só.
   const yesNoDigit = /^\s*([12])[\s.!]*$/.exec(text);
+  // Oferta de juntar guardada (M1): mesma cesta, nada em escolha, e a resposta é 1/2 ou juntar/manter → volta à mesa.
+  if (!ctx.consolidationOffer && ctx.consolidationParked && !ctx.pending?.length) {
+    const parked = ctx.consolidationParked;
+    const key = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    const said = normalizeMsg(text);
+    if (parked.key !== key) ctx.consolidationParked = undefined;
+    else if (yesNoDigit || isJoinReply(said) || /^(pode )?(mante(r|m|nha)|nao junta)/.test(said)) {
+      ctx.consolidationOffer = parked;
+      ctx.consolidationParked = undefined;
+    }
+  }
   if (yesNoDigit && ctx.consolidationOffer) {
     // Oferta de juntar aberta: 1 = juntar, 2 = manter; o número nunca mexe na quantidade (09/10, rodada 3).
     text = yesNoDigit[1] === "1" ? "consolidar:sim" : "consolidar:nao";
@@ -2061,6 +2119,32 @@ async function handleDeliveryTurn(
   if (intent.kind === "free_text" && !(ctx.pending?.length) && (ctx.basket?.length ?? 0) > 0 && ctx.step === "collecting") {
     const only = parseOnlyKeep(text);
     if (only && "demonstrative" in only) intent = { kind: "done" };
+  }
+
+  // "Fecho sem a vela?" (10/10, rodada 5 A1): resposta à pergunta de fechar com item ainda em escolha. "sim",
+  // "fecha", "só isso", "pode" = fecha sem os pendentes; "não" = continua escolhendo. Outra mensagem desarma.
+  if (ctx.closeWithoutOffer) {
+    const offer = ctx.closeWithoutOffer;
+    ctx.closeWithoutOffer = undefined;
+    const names = pendingNames(ctx);
+    const live = Date.now() - offer.at < 30 * 60_000 && names.length > 0 && names.join("|") === offer.queries.join("|");
+    const yes = intent.kind === "affirm" || intent.kind === "pay" || intent.kind === "done" || /^(pode|isso|fecha\w*|sem (el[ae]s?|ess[ae]s?))\b/.test(normalizeMsg(text));
+    if (live && yes) {
+      await closeWithoutPending(phone, convo.id, ctx, user.cep, user.id);
+      return;
+    }
+    if (live && (intent.kind === "reject" && /^n(a|ã)?o+\b[\s!.]*$/.test(normalizeMsg(text)))) {
+      await writeCtx(convo.id, ctx);
+      await sendChoices(phone, ctx.pending![0]);
+      return;
+    }
+  }
+
+  // Pedido de juntar as entregas por texto (10/10, rodada 5 A4): "sim junta", "junta tudo na Mambo", "tudo na mesma
+  // loja". Antes ia para a IA, que perguntava de volta, e o "sim" seguinte virava pagar com as 4 entregas intactas.
+  if (!ctx.consolidationOffer && !ctx.pending?.length && (!ctx.step || ctx.step === "collecting" || ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight")) {
+    const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    if (joinAsk && (await handleJoinRequest(phone, convo.id, user.cep, ctx, joinAsk.store))) return;
   }
 
   // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
@@ -2828,7 +2912,9 @@ async function handleDeliveryTurn(
   // ---- gerente de diálogo (LIA_DIALOGUE_LLM=true, Fase 2 do plano-conversa-100): a IA lê a mensagem + o
   // estado e escolhe uma ação de lista fechada ANTES do roteamento por regex. Inequívoco/barato (número,
   // CEP, botões, pix/cartão, cadastro) segue determinístico; IA fora do ar ou ação inválida = caminho de hoje.
-  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue) {
+  // "tira a vela" / "tira o kuat, já tenho" com o item na cesta ou em escolha (10/10, rodada 5 A1/M7): remoção
+  // inequívoca é determinística — a IA tirava só o pendente e deixava o 2x Kuat escolhido, ou não via a vela.
+  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx)) {
     const hasAddress = Boolean(user.defaultAddress && savedCep);
     const dialogue = hasAddress
       ? await runDialogueTurn({
@@ -3439,10 +3525,14 @@ async function handleDeliveryTurn(
         ctx.minSwap = undefined;
         ctx.consolidationTried = offer.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
       }
+      ctx.consolidationParked = undefined;
       await writeCtx(convo.id, ctx);
-      await continueAfterBasket(phone, convo.id, ctx, user.cep, join ? copy.basketConsolidated(offer.storeLabel, offer.pairs, offer.delta, offer.joinedTotal != null && offer.keptTotal != null ? { saved: roundMoney(offer.keptTotal - offer.joinedTotal), eta: humanEstimate(offer.joinedEta) } : undefined) : copy.consolidationKept(offer.stores));
+      await continueAfterBasket(phone, convo.id, ctx, user.cep, join ? copy.basketConsolidated(offer.storeLabel, offer.pairs, offer.delta, offer.joinedTotal != null && offer.keptTotal != null ? { saved: roundMoney(offer.keptTotal - offer.joinedTotal), eta: humanEstimate(offer.joinedEta) } : undefined, offer.joinedStores) : copy.consolidationKept(offer.stores));
       return;
     }
+    // Outra mensagem no meio (10/10, rodada 5 M1: "troca a ração por uma mais barata" sem mudar nada): a oferta sai da
+    // mesa, mas fica guardada — "1"/"juntar" logo depois, com a MESMA cesta, ainda é resposta a ela.
+    ctx.consolidationParked = offer.key === key ? offer : undefined;
     await writeCtx(convo.id, ctx);
   }
 
@@ -4394,6 +4484,19 @@ async function handleDeliveryTurn(
       // 11/08: só item com preço entra no pedido) — a Lia pede pra terminar a escolha,
       // que é o único jeito de fechar com total na hora.
       if (ctx.pending?.length) {
+        // Com cesta montada, fechar nunca prende na escolha (10/10, rodada 5 A1: "fecha"/"só isso" voltavam a
+        // "escolhe uma das opções de vela" em loop): diz o que falta e oferece fechar sem. "fecha sem a vela" fecha já.
+        if ((ctx.basket?.length ?? 0) > 0) {
+          if (/\bsem\b|\bassim mesmo\b|\bdo jeito que (ta|esta)\b/.test(normalizeMsg(text))) {
+            await closeWithoutPending(phone, convo.id, ctx, user.cep, user.id);
+            return;
+          }
+          ctx.closeWithoutOffer = { queries: pendingNames(ctx), at: Date.now() };
+          await writeCtx(convo.id, ctx);
+          await reply(phone, copy.closeWithoutPendingAsk(pendingNames(ctx)));
+          await sendChoices(phone, ctx.pending[0]);
+          return;
+        }
         await reply(phone, copy.finishChoiceFirst(pendingNames(ctx), turnMeta.getStore()?.prevSent ?? []));
         await sendChoices(phone, ctx.pending[0]);
         return;
@@ -4490,27 +4593,35 @@ async function handleDeliveryTurn(
         const removes = parsed.filter((p) => p.intent.kind === "remove_item");
         const frees = parsed.filter((p) => p.intent.kind === "free_text");
         const swaps = parsed.filter((p) => p.intent.kind === "swap_item");
-        const adjusts: typeof frees = [];
+        const adjusts: { item: BasketItem; qty: number }[] = [];
         const searches: typeof frees = [];
         for (const part of frees) {
+          // "muda o guardanapo pra 4" / "a fralda é só 1 pacote" (10/10, rodada 5 M5/M6): quantidade de item da cesta.
+          const named = parseItemQtyEdit(part.clause);
+          const namedItem = named ? (ctx.basket ?? []).find((item) => itemMatchesPhrase(named.phrase, item)) : undefined;
+          if (named && namedItem) {
+            adjusts.push({ item: namedItem, qty: named.qty });
+            continue;
+          }
           const clauseLines = resolveListItems(part.clause);
           const single = clauseLines.length === 1 ? clauseLines[0] : undefined;
           const existing = single?.qtyExplicit
             ? (ctx.basket ?? []).find((item) => itemMatchesPhrase(single.phrase, item))
             : undefined;
-          (single && existing ? adjusts : searches).push(part);
+          if (single && existing) adjusts.push({ item: existing, qty: single.qty });
+          else searches.push(part);
         }
+        await runDeferredEdits(phone, convo.id, ctx, user.cep, async () => {
         for (const part of removes) {
           if (part.intent.kind !== "remove_item") continue;
           await handleRemove(phone, convo.id, user.cep, ctx, part.intent.target, { silentIfFound: true });
           if (part.intent.andAdd) searches.push({ clause: part.intent.andAdd, intent: { kind: "free_text" } });
         }
-        for (const part of adjusts) {
+        for (const adjust of adjusts) {
           // "bota 2 leites" com leite já na cesta = ajuste de quantidade (28/08 S4).
-          const single = resolveListItems(part.clause)[0];
-          const existing = (ctx.basket ?? []).find((item) => itemMatchesPhrase(single.phrase, item));
+          const existing = (ctx.basket ?? []).find((item) => item.sku === adjust.item.sku);
           if (existing) {
-            existing.qty = Math.max(1, single.qty);
+            existing.qty = Math.min(50, Math.max(1, adjust.qty));
             existing.lineTotal = Math.round(existing.unitPrice * existing.qty * 100) / 100;
             await writeCtx(convo.id, ctx);
             await replyBasketAdjusted(phone, copy.qtyAdjustedShort(existing.qty, existing.name), copy.qtyAdjusted(existing.qty, existing.name));
@@ -4530,6 +4641,7 @@ async function handleDeliveryTurn(
         for (const part of searches) {
           await handleSearch(phone, convo.id, user.cep, ctx, part.clause, user.id);
         }
+        });
         // Só removes/ajustes (nada re-cotou nem abriu cards): recap do estado atual,
         // senão a compound "tira X e tira Y" terminava quase muda.
         if (!swaps.length && !searches.length) {
@@ -7290,6 +7402,36 @@ function repeatedBasketLine(phrase: string, basket: BasketItem[]): BasketItem | 
   });
 }
 
+function removeResolvesHere(text: string, intent: Intent, ctx: DeliveryContext): boolean {
+  if (intent.kind !== "remove_item") return false;
+  const basket = ctx.basket ?? [];
+  const pending = ctx.pending ?? [];
+  if (!basket.length && !pending.length) return false;
+  const clauses = splitCommandClauses(text).map((clause) => ({ clause, intent: detectIntent(clause) }));
+  const removes = clauses.length > 1 ? clauses.filter((c) => c.intent.kind === "remove_item") : [{ clause: text, intent }];
+  return removes.every((c) => {
+    if (c.intent.kind !== "remove_item") return false;
+    const pieces = removeTargetPieces(c.intent.target, basket, pending);
+    return pieces.some((piece) => basket.some((item) => itemMatchesPhrase(piece, item)) || pending.some((p) => itemMatchesPhrase(piece, { sku: p.query, name: p.query, unitPrice: 0 })));
+  });
+}
+
+// Pedaços do alvo de um "tira" (10/10, rodada 5 M5/M7). Alvo que casa inteiro fica inteiro; senão corta em vírgula / " e "
+// e descarta o pedaço que é motivo/conversa ("já tenho", "não precisa mais", "obrigado").
+const REMOVE_REASON_RE = /^(?:ja|nao|n|pq|porque|que|pois|obrigad\w*|valeu|vlw|por favor|pfv|mais|tambem|mesmo|tenho|comprei|achei|desisti)\b/;
+function removeTargetPieces(target: string, basket: BasketItem[], pending: PendingChoice[]): string[] {
+  const matchesAny = (piece: string) => basket.some((item) => itemMatchesPhrase(piece, item)) || pending.some((p) => itemMatchesPhrase(piece, { sku: p.query, name: p.query, unitPrice: 0 }));
+  const pieces = normalizeMsg(target)
+    .split(/\s*[,;]\s*|\s+e\s+/)
+    .map((piece) => piece.replace(/^(?:e|tambem|o|a|os|as)\s+/, "").trim())
+    .filter((piece) => piece && !REMOVE_REASON_RE.test(piece));
+  // Vários itens nomeados e algum está na cesta: cada pedaço vale (e o que faltar é avisado). Um item só com " e " no
+  // nome ("romeu e julieta") casa inteiro.
+  if (pieces.length >= 2 && pieces.some(matchesAny)) return pieces;
+  if (matchesAny(target)) return [target];
+  return pieces.length ? pieces : [target];
+}
+
 function itemMatchesPhrase(phrase: string, item: { sku: string; name: string; unitPrice: number }): boolean {
   return scoreCatalogMatch(phrase, item) > 0;
 }
@@ -7488,16 +7630,23 @@ async function handleRemove(
     await reply(phone, copy.categoryRemoveUnknown(categoryAsk[1].trim()));
     return;
   }
-  const keep = basket.filter((item) => (exact ? !exact.skus?.includes(item.sku) : categoryAsk ? !matchesTarget(item.name) : !itemMatchesPhrase(target, item)));
+  // Alvo composto ou com motivo (10/10, rodada 5 M5/M7): "os balões e o salgadinho", "o kuat, já tenho". O alvo
+  // inteiro não casa com nada: cada pedaço vale por si; pedaço que é motivo ("já tenho") não é item.
+  const pieces = exact || categoryAsk ? [target] : removeTargetPieces(target, basket, pending);
+  const hit = (name: string, item?: BasketItem) => pieces.some((piece) => itemMatchesPhrase(piece, item ?? { sku: name, name, unitPrice: 0 }));
+  const keep = basket.filter((item) => (exact ? !exact.skus?.includes(item.sku) : categoryAsk ? !matchesTarget(item.name) : !hit(item.name, item)));
   const removed = basket.filter((item) => !keep.includes(item));
   const pendingKeep = pending.filter((p) =>
-    exact ? !exact.queries?.includes(p.query) : categoryAsk ? !matchesTarget(p.query) : !itemMatchesPhrase(target, { sku: p.query, name: p.query, unitPrice: 0 })
+    exact ? !exact.queries?.includes(p.query) : categoryAsk ? !matchesTarget(p.query) : !hit(p.query)
   );
   const removedPending = pending.filter((p) => !pendingKeep.includes(p));
   if (!removed.length && !removedPending.length) {
-    await reply(phone, copy.removeNotFound());
+    await reply(phone, pieces.length > 1 ? copy.removeNotFoundNamed(pieces) : copy.removeNotFound());
     return;
   }
+  // Pedaço que não está na cesta nem em escolha: avisa junto com o que saiu (o balão nunca tinha sido achado).
+  const missing = pieces.length > 1 ? pieces.filter((piece) => !basket.some((item) => itemMatchesPhrase(piece, item)) && !pending.some((p) => itemMatchesPhrase(piece, { sku: p.query, name: p.query, unitPrice: 0 }))) : [];
+  if (missing.length) await reply(phone, copy.removeNotFoundNamed(missing));
   ctx.basket = keep;
   ctx.pending = pendingKeep.length ? pendingKeep : undefined;
   const names = [...removed.map((i) => i.name), ...removedPending.map((p) => p.query)].join(", ");
@@ -7910,7 +8059,10 @@ async function handleSwap(
     {
       query: to,
       qty,
-      options
+      options,
+      // Troca com escolha aberta (10/10, rodada 5 A3): o que saiu fica guardado na escolha — fechar sem escolher o
+      // substituto devolve o item à cesta (nunca some sem o cliente pedir).
+      ...(removed.length ? { swappedOut: removed } : {})
     },
     ...(ctx.pending ?? [])
   ];
@@ -8437,7 +8589,7 @@ async function handleConciergeCore(
   // exatamente como estava.
   // Endereço já confirmado = o passo de endereço acabou (07/10: depois do 1º "não achei" no
   // cadastro o passo ficava em need_address e a próxima frase virava "Endereço salvo…").
-  if (hadBasket || (ctx.deliveryAddress && ctx.deliveryAddressVerified && (ctx.step === "need_address" || ctx.step === "need_cep"))) ctx.step = "collecting";
+  if (hadBasket || (ctx.deliveryAddress && ctx.deliveryAddressVerified && (ctx.step === "need_address" || ctx.step === "need_cep"))) ctx.step = ctx.pending?.length ? "choosing" : "collecting";
   await writeCtx(convoId, ctx);
   // NADA achou preço: o roteador LLM tenta entender a mensagem (pergunta? "uma 51"?
   // edição?) antes do eco de não-achado — o eco fazia "posso agendar a entrega pra…"
@@ -8446,7 +8598,7 @@ async function handleConciergeCore(
   if (missCombined && prevMiss && !pending.length && !containsMedicine && !raw.containsTobacco) {
     applyListMisses(ctx, mergeListMisses(missCarry, [{ query: missCombined, qty: prevMiss.qty, reason: "not_found", at: Date.now() }]));
     await writeCtx(convoId, ctx);
-    await reply(phone, copy.itemsNotAvailable([missCombined], await judgeMisses(text, [missCombined])));
+    await reply(phone, [copy.itemsNotAvailable([missCombined], await judgeMisses(text, [missCombined])), ctx.pending?.length ? copy.pendingStillOpen(pendingNames(ctx)) : ""].filter(Boolean).join("\n"));
     return;
   }
   if (fragmentReplaced && prevMiss && !pending.length && notFoundLines.length === 1) {
@@ -8474,6 +8626,9 @@ async function handleConciergeCore(
   if (containsMedicine) notes.push(medicineSkippedCopy(prescriptionDropped));
   if (raw.containsTobacco) notes.push(copy.tobaccoRefusal());
   notes.push(notFoundNote(false));
+  // Escolha que continua na mesa (10/10, rodada 5 A3): o "não achei" da ração dizia só isso, e o leite em pó e o
+  // shampoo das duas trocas pareciam perdidos. Diz o que falta escolher.
+  if (ctx.pending?.length) notes.push(copy.pendingStillOpen(pendingNames(ctx)));
   if (offerLongTail) {
     try {
       markTurnReplied();
@@ -8908,7 +9063,7 @@ async function rescueLongTail(
     await sendChoices(phone, rescued[0]);
     return;
   }
-  if (ctx.basket?.length) ctx.step = "collecting";
+  if (ctx.basket?.length) ctx.step = ctx.pending?.length ? "choosing" : "collecting";
   await writeCtx(convoId, ctx);
   await reply(phone, copy.itemsNotAvailable(unavailable, await judgeMisses(retryText, unavailable)));
 }
@@ -9271,6 +9426,46 @@ export function parseRecipientName(text: string): string | null {
 // Fechou a lista ("só isso", "pagar", "o 1 e pode fechar"): antes do total, UMA oferta do que costuma
 // ir junto (recommend/complement.ts + o funil da recomendação no CEP). Só uma vez por pedido, nunca com
 // remédio na cesta, nunca com teto de orçamento valendo, no máximo 4 s; sem item comprável segue calado.
+// Edições compostas (10/10, rodada 5 M2/M6): roda `edits` com o total adiado e, se alguma pediu o total e nada ficou
+// em escolha, manda UM resumo no fim — antes o resumo com botões de pagar saía no meio, com total velho, e a oferta
+// de juntar aparecia duas vezes com valores diferentes.
+async function runDeferredEdits(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined, edits: () => Promise<void>) {
+  const meta = turnMeta.getStore();
+  if (!meta || meta.deferQuote) {
+    await edits();
+    return;
+  }
+  meta.deferQuote = true;
+  meta.quoteDeferred = false;
+  try {
+    await edits();
+  } finally {
+    meta.deferQuote = false;
+  }
+  const wanted = meta.quoteDeferred;
+  meta.quoteDeferred = false;
+  if (wanted && !(ctx.pending?.length) && (ctx.basket?.length ?? 0) > 0) await continueAfterBasket(phone, convoId, ctx, userCep);
+}
+
+// Fecha a lista deixando de fora o que ainda estava em escolha (10/10, rodada 5 A1). A cesta escolhida fica intacta;
+// troca pendente (replaceSku) mantém o item antigo, que nunca saiu da cesta.
+async function closeWithoutPending(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined, userId?: string) {
+  const names = pendingNames(ctx);
+  // Troca que não chegou a ser escolhida: o item antigo volta (10/10, rodada 5 A3).
+  const restored = (ctx.pending ?? []).flatMap((p) => p.swappedOut ?? []).filter((item) => !(ctx.basket ?? []).some((b) => b.sku === item.sku));
+  if (restored.length) ctx.basket = mergeBaskets(ctx.basket ?? [], restored);
+  ctx.pending = undefined;
+  ctx.closeWithoutOffer = undefined;
+  ctx.step = "collecting";
+  if (!(ctx.basket?.length ?? 0)) {
+    await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
+    await reply(phone, copy.removedItems(names.map((n) => `*${n}*`).join(", "), true));
+    return;
+  }
+  await writeCtx(convoId, ctx);
+  await closeListOrOfferComplement(phone, convoId, ctx, userCep, userId, copy.closedWithoutPending(names, restored.map((i) => i.name)));
+}
+
 async function closeListOrOfferComplement(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined, userId?: string, prefix?: string) {
   if (await maybeOfferComplement(phone, convoId, ctx, userCep, userId, prefix)) return;
   await continueAfterBasket(phone, convoId, ctx, userCep, prefix);
@@ -9444,6 +9639,100 @@ function consolidationBudgetMs(): number {
   return Number.isFinite(configured) && configured > 0 ? configured : 15_000;
 }
 
+// "junta" pedido pelo cliente (10/10, rodada 5 A4). Loja nomeada = aplica (o que ela não tem fica onde está, com aviso);
+// sem loja = a oferta numerada de sempre, mesmo que juntar saia mais caro (ele pediu: os dois totais decidem). Nada a
+// juntar = diz por quê, e o total na mesa continua valendo. false = não havia cesta (segue o fluxo normal).
+async function handleJoinRequest(phone: string, convoId: string, userCep: string | null | undefined, ctx: DeliveryContext, storeLabel?: string): Promise<boolean> {
+  let basket = (ctx.basket ?? []).filter((i) => i.unitPrice > 0);
+  if (!basket.length && ctx.deliveryOrderId && (ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight")) {
+    const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { items: true } });
+    basket = ((order?.items as unknown as BasketItem[]) ?? []).filter((i) => i.unitPrice > 0);
+  }
+  if (!basket.length) return false;
+  const target = storeLabel ? listStores().find((store) => store.label === storeLabel) : undefined;
+  const stores = new Set(basket.map((i) => i.storeKey)).size;
+  if (stores < 2) {
+    await reply(phone, copy.joinAlreadyOneStore(basket[0].storeLabel ?? getStore(basket[0].storeKey ?? "").label, target && target.key !== basket[0].storeKey ? target.label : undefined));
+    return true;
+  }
+  const view: DeliveryContext = { ...ctx, basket };
+  const joined = await planConsolidation(view, userCep, target ? { target: target.key } : { fewer: true });
+  if (!joined) {
+    await reply(phone, copy.joinNotPossible(stores, target?.label));
+    return true;
+  }
+  // Total na mesa: reabre (nada cobrado) antes de mexer na cesta.
+  if (ctx.deliveryOrderId) await reopenOrderForEdit(phone, convoId, ctx, userCep, { quiet: true });
+  if (!ctx.basket?.length) ctx.basket = basket;
+  if (target) {
+    const [keptEst, joinedEst] = await Promise.all([estimateBasket(ctx.basket, ctx.cep ?? userCep), estimateBasket(joined.basket, ctx.cep ?? userCep)]);
+    ctx.basket = joined.basket;
+    ctx.minSwap = undefined;
+    ctx.consolidationOffer = undefined;
+    ctx.consolidationParked = undefined;
+    ctx.consolidationTried = joined.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    await writeCtx(convoId, ctx);
+    const done = copy.basketConsolidated(joined.storeLabel, joined.pairs, joined.delta, { saved: roundMoney(keptEst.total - joinedEst.total), eta: humanEstimate(joinedEst.estimate) }, joined.stores ?? 1);
+    await continueAfterBasket(phone, convoId, ctx, userCep, joined.left?.length ? `${done}\n${copy.joinLeftBehind(target.label, joined.left)}` : done);
+    return true;
+  }
+  ctx.consolidationTried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+  await sendConsolidationOfferFor(phone, convoId, ctx, joined, undefined, true);
+  return true;
+}
+
+// Plano de juntar (com o prazo do orçamento e a confirmação da loja): a loja tem que confirmar a cesta JUNTA antes de
+// a oferta existir (09/10, rodada 2: aceitou, "Juntei tudo" e logo "Não tenho estes itens").
+async function planConsolidation(ctx: DeliveryContext, userCep: string | null | undefined, opts: { target?: string; fewer?: boolean } = {}): Promise<ConsolidationPlan | null> {
+  let joined = await withDeadline(
+    consolidateBasketStores(ctx, opts).catch((error) => {
+      console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
+      return null;
+    }),
+    consolidationBudgetMs(),
+    null,
+    () => console.warn("[basket:consolidate:timeout]")
+  );
+  if (joined) {
+    const refused = await withDeadline(
+      preflightBasket(joined.basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey ?? "" })), ctx.cep ?? userCep).catch(() => null),
+      consolidationBudgetMs(),
+      null
+    );
+    if (refused) {
+      console.warn("[basket:consolidate:store-refused]", refused.storeKey, refused.kind);
+      joined = null;
+    }
+  }
+  return joined;
+}
+
+// Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A compra fecha as duas formas.
+// false = juntar sairia mais caro (sem oferta). `force`: o cliente PEDIU para juntar — a oferta sai mesmo mais cara.
+async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: DeliveryContext, joined: ConsolidationPlan, prefix?: string, force = false): Promise<boolean> {
+  const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+  const stores = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
+  const [keptEst, joinedEst] = await Promise.all([estimateBasket(ctx.basket ?? [], ctx.cep), estimateBasket(joined.basket, ctx.cep)]);
+  const { total: keptTotal, estimate: keptEta } = keptEst;
+  const { total: joinedTotal, estimate: joinedEta } = joinedEst;
+  // Juntar que sai MAIS CARO no total (produtos + frete) não é oferta (09/10, rodada 3: +R$ 44 pra poupar R$ 8,90 de frete).
+  const costlier = joinedTotal > keptTotal + 0.009 && conciergeStoresBelowMinimum(ctx).length === 0;
+  if (costlier && !force) {
+    console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
+    return false;
+  }
+  const joinedStores = joined.stores ?? 1;
+  ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}), ...(joinedStores > 1 ? { joinedStores } : {}) };
+  ctx.consolidationParked = undefined;
+  await writeCtx(convoId, ctx);
+  if (prefix) await reply(phone, prefix);
+  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left });
+  markTurnReplied();
+  const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
+  if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
+  return true;
+}
+
 async function continueAfterBasket(
   phone: string,
   convoId: string,
@@ -9451,6 +9740,14 @@ async function continueAfterBasket(
   userCep?: string | null,
   prefix?: string
 ) {
+  // Edição composta em andamento: grava e confirma a edição; o total sai uma vez, no fim da mensagem.
+  const meta = turnMeta.getStore();
+  if (meta?.deferQuote && (ctx.basket?.length ?? 0) > 0) {
+    await writeCtx(convoId, ctx);
+    if (prefix) await reply(phone, prefix);
+    meta.quoteDeferred = true;
+    return;
+  }
   if (!ctx.cep && !userCep) {
     ctx.step = "need_cep";
     await writeCtx(convoId, ctx);
@@ -9479,49 +9776,10 @@ async function continueAfterBasket(
     const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
-      let joined = await withDeadline(
-        consolidateBasketStores(ctx).catch((error) => {
-          console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
-          return null;
-        }),
-        consolidationBudgetMs(),
-        null,
-        () => console.warn("[basket:consolidate:timeout]")
-      );
-      // A loja tem que confirmar a cesta JUNTA antes de a oferta existir (09/10, rodada 2: aceitou, "Juntei tudo" e
-      // logo "Não tenho estes itens"). Recusa definitiva da loja = sem oferta; a cesta original segue intacta.
-      if (joined) {
-        const refused = await withDeadline(
-          preflightBasket(joined.basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey ?? "" })), ctx.cep ?? userCep).catch(() => null),
-          consolidationBudgetMs(),
-          null
-        );
-        if (refused) {
-          console.warn("[basket:consolidate:store-refused]", refused.storeKey, refused.kind);
-          joined = null;
-        }
-      }
-      if (joined) {
-        // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A
-        // compra fecha as duas formas — várias lojas viram um trabalho de compra por loja.
-        const stores = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
-        const [keptEst, joinedEst] = await Promise.all([estimateBasket(ctx.basket ?? [], ctx.cep), estimateBasket(joined.basket, ctx.cep)]);
-        const { total: keptTotal, estimate: keptEta } = keptEst;
-        const { total: joinedTotal, estimate: joinedEta } = joinedEst;
-        // Juntar que sai MAIS CARO no total (produtos + frete) não é oferta (09/10, rodada 3: +R$ 44 pra poupar R$ 8,90 de frete).
-        const costlier = joinedTotal > keptTotal + 0.009 && conciergeStoresBelowMinimum(ctx).length === 0;
-        if (costlier) console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
-        else {
-        ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}) };
-        await writeCtx(convoId, ctx);
-        if (prefix) await reply(phone, prefix);
-        const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta) });
-        markTurnReplied();
-        const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores).catch(() => null);
-        if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
-        return;
-        }
-      }
+      // 3+ lojas sem uma que cubra tudo: oferece juntar em MENOS lojas (10/10, rodada 5 A4 — antes só a frase passiva
+      // "se quiser, junto em menos lojas", que nenhum caminho cumpria).
+      const joined = await planConsolidation(ctx, userCep, { fewer: true });
+      if (joined && (await sendConsolidationOfferFor(phone, convoId, ctx, joined, prefix))) return;
       await writeCtx(convoId, ctx);
     }
     // Pedido mínimo é regra DA LOJA (o operador compra no site dela): fechar abaixo do
@@ -10195,6 +10453,8 @@ async function replyBasketList(phone: string, ctx: DeliveryContext) {
 
 export const dialogueHandlers = {
   replyBasketList,
+  continueAfterBasket,
+  runDeferredEdits,
   handleSearch,
   buildChoicesWithSearchNotice,
   confirmChosenOption,
