@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -56,7 +56,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "refund_request",
   "charge_complaint",
   // Troca/devolução tem resposta fixa (10/10, rodada 6 M1).
-  "return_question"
+  "return_question",
+  // Agendar/dia escolhido (10/10, rodada 7 M2): a IA oferecia agendamento, que a Lia não faz.
+  "scheduling_question"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
 const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
@@ -115,6 +117,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "tem um mais em conta?" (5 palavras) ia pra IA e 1 em 3 vezes ela inventava opções e depois tirava o item errado
   // (10/10, rodada 6 g19). Pedido de mais barato sem nome é caminho fixo (pergunta "de qual item?" com 2+ itens).
   if (i.intent.kind === "more_options" && i.intent.cheaper && trimmed.split(/\s+/).length <= 7) return "intent:more_cheaper";
+  // "total"/"quanto tá?" com carrossel ou pergunta aberta (10/10, rodada 7 M6/N4): a IA devolvia outra pergunta
+  // ("quer saber o total ou escolher?") ou "comparo, sim". O cérebro já responde o parcial em qualquer passo.
+  if (asksRunningTotal(text) && trimmed.split(/\s+/).length <= 6 && (ctx.basket?.length || ctx.pending?.length)) return "intent:running_total";
   if (extractCpf(text)) return "cpf";
   // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";

@@ -1443,6 +1443,12 @@ export function parseCancelReason(text: string, asked: boolean): CancelReasonKey
   return null;
 }
 
+const WEEKDAY_SRC = "(?:sabado|domingo|segunda|terca|quarta|quinta|sexta)(?:[- ]feira)?";
+const DAY_PICK_RE = new RegExp(
+  `^(?:entao |ai |pode )?(?:me )?(?:entrega|entregue|entregar|manda|mande)(?: (?:ela|ele|isso|tudo|o pedido))? (?:(?:n[oa]|pra|para|ate) )?(?:${WEEKDAY_SRC}|dia \\d{1,2})(?: (?:entao|mesmo|por favor|pf))?$`
+);
+const IN_DAYS_PICK_RE = /^(?:entao )?(?:pode ser|tudo bem|ok|beleza|blz|serve|aceito)?\s*(?:em|daqui a|daqui|com) \d{1,2} dias?(?: uteis)?(?: (?:entao|mesmo|tudo bem|sem problema))?$/;
+
 export function detectIntent(text: string): Intent {
   const n = normalizeMsg(text);
   if (!n) return { kind: "free_text" };
@@ -1613,7 +1619,12 @@ export function detectIntent(text: string): Intent {
   }
 
   // "posso agendar a entrega pra amanhã de manhã?" (29/08 S19 — virou busca).
-  if (/\bagendar\b|\bagendamento\b|\bmarcar (a )?entrega\b|\bentrega (marcada|agendada)\b|\bhorario (marcado|certo) de entrega\b/.test(n)) {
+  // "então me entrega no sábado", "pode ser em 3 dias então" (10/10, rodada 7 M2): dia escolhido pelo cliente também é
+  // agendamento — a IA chegava a oferecer "quer agendar pra daqui a 3 dias?", que a Lia não faz.
+  if (
+    /\bagendar\b|\bagendamento\b|\bmarcar (a )?entrega\b|\bentrega (marcada|agendada)\b|\bhorario (marcado|certo) de entrega\b/.test(n) ||
+    (!/\?\s*$/.test(text) && (DAY_PICK_RE.test(n) || IN_DAYS_PICK_RE.test(n)))
+  ) {
     return { kind: "scheduling_question" };
   }
 
@@ -2468,6 +2479,49 @@ export function parseOnlyKeep(text: string): { target: string } | { demonstrativ
 // "veja se tem kerasys de coco", "tem de coco?", "eu pedi com 4 bolas", "queria sem
 // açúcar" — o MESMO produto com uma característica (Claire e o tio Semy, 06/10). Devolve a
 // frase da característica, sem o verbo, ou null.
+// "quantas canetas vem?", "quantas unidades tem?", "vem quantas?" (10/10, rodada 7 M6): pergunta sobre a embalagem do produto
+// escolhido — caía na apresentação genérica da Lia. Devolve o substantivo ("canetas") ou "" quando não diz.
+export function parsePackCountAsk(text: string): { noun: string } | null {
+  const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
+  if (n.split(" ").length > 9) return null;
+  const m =
+    n.match(/^(?:e |mas )?quant[oa]s\s+(?:(?!vem|veem|tem|sao|unidades?)([a-z]+(?: [a-z]+)?)\s+)?(?:unidades?\s+)?(?:vem|veem|tem|sao|ve|vai|vao|ta|esta)\b(?:\s+(?:no|na|em|nesse|nessa|desse|dessa|neste|nesta)\s+(?:pacote|caixa|embalagem|kit|pack|cartela|unidade))?(?:\s+[a-z]+)?\s*\??$/) ??
+    n.match(/^(?:e |mas )?(?:vem|veem|tem)\s+quant[oa]s(?:\s+([a-z]+))?\s*\??$/);
+  if (!m) return null;
+  const noun = (m[1] ?? "").replace(/\b(?:unidades?|o|a|os|as)\b/g, " ").trim();
+  if (/^(?:dias?|horas?|reais|minutos?|lojas?|entregas?|itens?|vezes|parcelas?)$/.test(noun)) return null;
+  return { noun };
+}
+
+// Refino de TAMANHO troca o tamanho anterior (10/10, rodada 7 M7): "fralda RN" + "muda pra tamanho P" buscava
+// "fralda RN pacote grande tamanho p" e não achava nada. Letra solta (p/m/g) só conta como tamanho com "tamanho" na
+// frente — "500 g" é peso.
+const SIZE_WORD = String.raw`(?:rn|xxg|xg|exg|eg|recem[- ]nascid[oa]s?)`;
+const SIZE_ATTR_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)|^(?:p|m|g)$`);
+const BASE_SIZE_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)`, "g");
+export function replaceRefinedSize(base: string, attrs: string[]): string {
+  const said = normalizeMsg(attrs.join(" ")).trim();
+  if (!SIZE_ATTR_RE.test(said)) return base;
+  const stripped = normalizeMsg(base).replace(BASE_SIZE_RE, " ").replace(/\s+/g, " ").trim();
+  return stripped || base;
+}
+
+// Pedido de entregar em DOIS endereços (10/10, rodada 7 M11): "duas entregas: uma em casa e outra no trabalho".
+const PLACE_SRC = "(?:casa|trabalho|escritorio|servico|empresa|loja|faculdade|escola|minha mae|meu pai|minha sogra|vo|avo)";
+const MULTI_ADDRESS_RE = new RegExp(
+  `\\b(?:duas|2|dois) (?:entregas|enderecos|pedidos|lugares)\\b|\\bentreg\\w* (?:em|pra|para|n?os) (?:dois|2) (?:enderecos|lugares)\\b|\\bum[a]? (?:em|pra|para|n[oa]) ${PLACE_SRC} e (?:outr[ao]|um[a]?) (?:em|pra|para|n[oa]) ${PLACE_SRC}\\b|\\b(?:dividir|separar) (?:em|o pedido em) (?:duas|2) entregas\\b`
+);
+export function asksMultiAddress(text: string): boolean {
+  return MULTI_ADDRESS_RE.test(normalizeMsg(text));
+}
+// "em casa: ração e shampoo" / "no trabalho: papel A4" — o rótulo do lugar antes da lista.
+export function parsePlaceLabel(text: string): { place: string; home: boolean; rest: string } | null {
+  const m = text.match(/^\s*(?:e\s+)?(?:(?:em|pra|para|n[oa]|pro|pr[oa])\s+)?(?:minha\s+|meu\s+|o\s+|a\s+)?(casa|trabalho|escrit[oó]rio|servi[cç]o|empresa)\s*[:\-–]\s*([\s\S]+)$/i);
+  if (!m) return null;
+  const place = normalizeMsg(m[1]);
+  return { place, home: place === "casa", rest: m[2].trim() };
+}
+
 export function parseAttributeAsk(text: string): string | null {
   const n = normalizeMsg(text).replace(/[?!.]+$/g, "").trim();
   const ask = n.match(
@@ -2772,7 +2826,7 @@ export function parseWholeListStore(text: string, labels: string[]): string | nu
 
 // "qual o horário de vocês?", "vcs abrem que horas?", "funcionam domingo?" (09/10): horário de
 // ATENDIMENTO, não prazo de entrega — antes caía no texto de prazo. "que horas chega" segue prazo.
-const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;
+const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada)|entrega\w* (?:(?:n[oa]s?|aos?|de|em) )?(?:domingo|feriado|sabado|fim de semana|final de semana|a noite|de madrugada)|qual (?:e )?(?:o )?horario(?! (?:d[ae] entrega|que chega))|que horario (?:voces|vcs?) (?:entrega\w*|atende\w*|funciona\w*))\b|^(?:e |qual )?(?:o )?horario\??$/;
 export function isHoursAsk(text: string): boolean {
   return HOURS_ASK_RE.test(normalizeMsg(text).replace(/[!.?]+$/g, "").trim());
 }
@@ -2826,6 +2880,8 @@ export function asksDeliveryToday(text: string): boolean {
 export function parseChoiceEtaAsk(text: string): { option?: number; today: boolean } | null {
   const n = normalizeMsg(text).replace(/[!.]+$/g, "").trim();
   if (!/\b(chega|chegam|chegaria|entrega|entregam|entregaria|prazo|demora|demoram)\b/.test(n)) return null;
+  // "vocês entregam domingo? qual o horário?" (10/10, rodada 7 M1): dia/horário de funcionamento, não o prazo das opções.
+  if (HOURS_ASK_RE.test(n.replace(/[?]+/g, " ").replace(/\s+/g, " ").trim()) || /\b(?:domingo|sabado|feriado|fim de semana|final de semana)\b/.test(n)) return null;
   // "vocês entregam no rio?"/"entrega em campinas?" (09/10): pergunta de ÁREA, não do prazo das opções.
   if (/\b(?:entrega\w*|chega\w*|atende\w*)\s+(?:em|no|na|nos|nas|pra|para|ate)\s+(?!(?:\d|quanto|qual|que|quando|hoje|amanha|casa|minha casa|meu endereco|o \d|a \d)\b)\w/.test(n)) return null;
   if (!/\?$/.test(n) && !/^(?:qual|quais|quando|quanto tempo|o que|que|e |o \d|a \d|qual delas)/.test(n)) return null;

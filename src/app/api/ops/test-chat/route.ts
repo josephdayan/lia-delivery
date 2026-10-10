@@ -1,10 +1,11 @@
-import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { handleDeliveryMessage } from "@/lib/delivery-service";
 import { runTurnScoped, TurnSupersededError } from "@/lib/turn-runtime";
 import { isTestLinePhone, testLineCapture, type CapturedSend } from "@/lib/test-line";
+import { isInFlightResend, isKnownMessageId, testLineMessageId } from "@/lib/test-line-resend";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -28,6 +29,8 @@ async function authorized(request: Request): Promise<boolean> {
 const bodySchema = z.object({
   phone: z.string(),
   text: z.string().max(4000).optional(),
+  // Id do envio escolhido pelo testador: o reenvio com o MESMO id não roda de novo (dedupe do webhook).
+  messageId: z.string().min(1).max(128).optional(),
   flowResponse: z.record(z.unknown()).optional()
 });
 
@@ -59,12 +62,19 @@ export async function POST(request: Request) {
     if (charged) return NextResponse.json({ error: "pedido de teste chegou à cobrança; apague a conversa (DELETE) e recomece", order: charged }, { status: 409 });
   }
 
+  // Reenvio depois de queda da conexão (10/10, rodada 7 A3): mesmo `messageId` ou mesmo texto com o turno ainda
+  // rodando não vira um 2º turno (somava a cesta). Ver src/lib/test-line-resend.ts.
+  const messageId = testLineMessageId(parsed.data.messageId);
+  if ((parsed.data.messageId && (await isKnownMessageId(phone, messageId))) || (!parsed.data.messageId && !flowResponse && (await isInFlightResend(phone, text ?? "")))) {
+    return NextResponse.json({ ms: 0, duplicate: true, replies: [] });
+  }
+
   const out: CapturedSend[] = [];
   const startedAt = Date.now();
   let error: string | undefined;
   try {
     await testLineCapture.run({ phone, out }, () =>
-      runTurnScoped(() => handleDeliveryMessage({ phone, text: text ?? "", messageId: `testline_${randomUUID()}`, flowResponse }))
+      runTurnScoped(() => handleDeliveryMessage({ phone, text: text ?? "", messageId, flowResponse }))
     );
   } catch (caught) {
     if (!(caught instanceof TurnSupersededError)) error = caught instanceof Error ? caught.message : String(caught);

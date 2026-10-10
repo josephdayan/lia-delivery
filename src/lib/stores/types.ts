@@ -1242,6 +1242,8 @@ export function variantPenalty(query: string, name: string): number {
   // A variante PEDIDA ("vodka absolut citron") que o produto não tem conta contra ele.
   for (const token of asked) if (VARIANT_MARKERS.has(token) && !SUGAR_FREE.includes(token) && !tokens.has(token)) penalty += 1;
   if (wantsSugarFree && !SUGAR_FREE.some((t) => tokens.has(t)) && !(tokens.has("sem") && tokens.has("acucar"))) penalty += 1;
+  // "coca cola" sem pedir zero (10/10, rodada 7 M8): "Refrigerante SEM AÇÚCAR Coca-Cola" não é a original.
+  if (!wantsSugarFree && tokens.has("sem") && tokens.has("acucar") && !(asked.has("sem") && asked.has("acucar"))) penalty += 1;
   // "Suco de laranja COM maçã", "com vitaminas": algo a mais que o pedido não tem.
   if (tokens.has("com") && !asked.has("com")) penalty += 1;
   const staple = stapleFor(query);

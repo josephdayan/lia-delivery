@@ -308,8 +308,15 @@ export type DeliveryContext = {
   // responde ELA ("o integral mesmo, e o pão de forma" = leite integral + pão de forma), nunca vira lista nova.
   // `said` = a fala do cliente que gerou a pergunta (10/10, rodada 6 M3: o "2" que responde "A ou B?" volta com ela).
   openQuestion?: { text: string; at: number; said?: string };
-  askEither?: { base: string; alternatives: [string, string]; at: number };
+  // `cap` = teto por item dito junto ("caneta ou caderninho até 50 no total", 10/10, rodada 7 M10) — vale na busca da resposta.
+  askEither?: { base: string; alternatives: [string, string]; at: number; cap?: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
+  // Último "tira X" (10/10, rodada 7 M5): "põe o papel de volta" devolve o MESMO item (sku, preço, loja), sem nova busca.
+  // `queries` = escolhas ainda abertas que saíram junto (voltam pra fila).
+  lastRemoved?: { items: BasketItem[]; queries: string[]; at: number };
+  // "duas entregas: casa e trabalho" (10/10, rodada 7 M11): a Lia faz UM endereço por pedido. Marca quando o cliente pediu
+  // pra dividir; "no trabalho: X" depois disso não entra no pedido de casa calado.
+  multiAddressAt?: number;
   // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4 M2): a Lia perguntou de qual;
   // a próxima fala ("a fralda", "2") escolhe o item e a troca pelo mais barato segue.
   cheaperAsk?: { at: number };
