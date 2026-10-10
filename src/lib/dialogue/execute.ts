@@ -8,7 +8,6 @@ import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice }
 import * as copy from "../lia-copy";
 import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
-import { handleRecommend } from "../recommend/handle";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -295,7 +294,8 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
     case "recommend": {
       // Recomendação (08/10): a execução (prateleiras → busca no CEP → juiz → cards) é do handler. Com
       // opções na tela, ele recebe o contexto inteiro e decide (continuar a escolha ou recomendar de novo).
-      await handleRecommend({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text });
+      // O resto da mensagem ("e um sabonete íntimo") entra na fila atrás dos cards (10/10, rodada 8 g25).
+      await h.recommendAndQueueRest({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text }, env.text);
       return "done";
     }
 

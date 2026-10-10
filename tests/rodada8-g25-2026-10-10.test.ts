@@ -11,7 +11,7 @@ import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
-import { handleDeliveryMessage, runTurnScoped } from "../src/lib/delivery-service";
+import { handleDeliveryMessage, recommendationLeftovers, runTurnScoped } from "../src/lib/delivery-service";
 import { __setDialogueModelForTests, dialogueBypassReason } from "../src/lib/dialogue";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { detectIntent } from "../src/lib/lia-intents";
@@ -155,4 +155,24 @@ test("3: 'aceito a troca, pode ser' aceita a troca de loja (não vira edição d
   const out = await send(c.phone, "aceito a troca, pode ser");
   assert.doesNotMatch(out, /já é o que está na sua cesta/i, out.slice(0, 300));
   assert.match(out, /Troquei de loja/i, out.slice(0, 300));
+});
+
+// 6 ------------------------------------------------------------------------------------------------------------------
+test("6: recomendação + item comum na mesma frase: o item comum é o que sobra", () => {
+  assert.deepEqual(recommendationLeftovers("e pomada pra assadura, e um sabonete íntimo", { need: "pomada pra assadura", symptom: "assadura" }), ["sabonete íntimo"]);
+  assert.deepEqual(recommendationLeftovers("pomada pra assadura", { need: "pomada pra assadura", symptom: "assadura" }), []);
+});
+
+test("6: 'e pomada pra assadura, e um sabonete íntimo' com a IA escolhendo recomendação: o sabonete não some", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({
+    actions: [{ type: "recommend", form: "need", need: "pomada pra assadura", symptom: "assadura" }]
+  }));
+  const c = await customerWith({ basket: [bi("drogal-22572", "Fralda Pampers Super Sequinha Mega M 40 Unidades", 55.87, { storeKey: "drogal", storeLabel: "Drogal", ask: "fralda pampers m" })] });
+  const out = await send(c.phone, "e pomada pra assadura, e um sabonete íntimo");
+  const ctx = await ctxOf(c.convoId);
+  const where = [...(ctx.pending ?? []).map((p) => p.query), ...(ctx.basket ?? []).map((b) => `${b.name} ${b.ask ?? ""}`)].join(" | ");
+  assert.ok(/sabonete/i.test(where), `${where}\n${out.slice(0, 600)}`);
+  assert.match(out, /Anotei também \*sabonete íntimo\*|sabonete íntimo/i, out.slice(0, 600));
 });

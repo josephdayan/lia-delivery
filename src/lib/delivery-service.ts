@@ -10444,7 +10444,7 @@ async function handleSearch(
   if (recommendEnabled()) {
     const rec = detectRecommendation(text, { hasPendingChoice: Boolean(ctx.pending?.length), basketNames: ctx.basket?.map((b) => b.name) });
     if (rec) {
-      await handleRecommend({ phone, convoId, userId, userCep, ctx }, rec);
+      await recommendAndQueueRest({ phone, convoId, userId, userCep, ctx }, rec, text);
       return;
     }
   }
@@ -11682,8 +11682,56 @@ export const dialogueHandlers = {
   mergeBaskets,
   refuseMedicine,
   withoutStoreMention,
-  replyIfAlreadyChosen
+  replyIfAlreadyChosen,
+  recommendAndQueueRest
 };
+
+// Itens comuns que vieram junto de um pedido de recomendação (10/10, rodada 8 g25: "e pomada pra assadura, e um sabonete
+// íntimo" — a recomendação da pomada engolia o sabonete, que sumia sem aviso). O pedaço da recomendação é o que divide
+// palavra com a necessidade/produto/sintoma; o resto é item de lista.
+export function recommendationLeftovers(text: string, rec: { need?: string; product?: string; symptom?: string }): string[] {
+  const segments = resolveListItems(text).map((line) => (line.qtyExplicit && line.qty > 1 ? `${line.qty} ${line.phrase}` : line.phrase));
+  if (segments.length < 2) return [];
+  const recTokens = new Set(queryTokens([rec.need, rec.product, rec.symptom].filter(Boolean).join(" ")));
+  if (!recTokens.size) return [];
+  return segments.filter((seg) => {
+    const tokens = queryTokens(seg);
+    return tokens.length > 0 && !tokens.some((t) => recTokens.has(t)) && !(recommendEnabled() && detectRecommendation(seg));
+  });
+}
+
+// Recomendação + o resto da mensagem: os cards da recomendação vêm primeiro e os outros itens entram na fila (ou na
+// cesta, quando a escolha é automática), com uma linha dizendo o que foi anotado.
+async function recommendAndQueueRest(
+  env: { phone: string; convoId: string; userId?: string; userCep: string | null | undefined; ctx: DeliveryContext },
+  rec: Parameters<typeof handleRecommend>[1],
+  text: string
+) {
+  const { phone, convoId, ctx } = env;
+  const rest = recommendationLeftovers(text, rec);
+  const before = ctx.pending?.[0];
+  await handleRecommend({ ...env, userId: env.userId ?? "" }, rec);
+  if (!rest.length) return;
+  const shown = Boolean(ctx.pending?.[0]?.recommendation) && ctx.pending?.[0] !== before;
+  if (!shown) {
+    await handleSearch(phone, convoId, env.userCep, ctx, rest.join(", "), env.userId);
+    return;
+  }
+  const found = await buildChoices(rest.join(", "), undefined, undefined, undefined, undefined, ctx.cep ?? env.userCep);
+  if (found.autoAdded.length) ctx.basket = mergeBaskets(ctx.basket ?? [], found.autoAdded);
+  const queued = found.pending.filter((p) => p.options.length);
+  if (queued.length) ctx.pending = [...(ctx.pending ?? []), ...queued];
+  await writeCtx(convoId, ctx);
+  await reply(
+    phone,
+    copy.recommendRestNoted({
+      queued: queued.map((p) => p.query),
+      added: found.autoAdded.map((b) => b.name),
+      notFound: found.notFoundLines.map((l) => l.phrase),
+      medicine: found.containsMedicine
+    })
+  );
+}
 
 // Recomendação (08/10): a execução (recommend/handle.ts) reusa a vitrine daqui sem import circular.
 setRecommendDeps({

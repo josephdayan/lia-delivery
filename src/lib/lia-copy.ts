@@ -678,6 +678,17 @@ export function noMoreOptions(query: string, swapOpen = false): string {
   return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
 }
 
+// Itens comuns que vieram junto de uma recomendação (10/10, rodada 8 g25): nada some calado.
+export function recommendRestNoted(input: { queued: string[]; added: string[]; notFound: string[]; medicine?: boolean }): string {
+  const list = (names: string[]) => names.map((n) => `*${n}*`).join(", ");
+  const lines: string[] = [];
+  if (input.queued.length) lines.push(`Anotei também ${list(input.queued)} — escolhe aí em cima primeiro que eu mostro ${input.queued.length > 1 ? "as opções deles" : "as opções"} em seguida.`);
+  if (input.added.length) lines.push(`Já pus na cesta: ${list(input.added)}.`);
+  if (input.notFound.length) lines.push(`${list(input.notFound)} eu não achei em nenhuma loja agora — me diz outro nome que eu procuro.`);
+  if (input.medicine) lines.push("Remédio eu não consigo comprar por aqui, então deixei de fora.");
+  return lines.join("\n");
+}
+
 // A oferta de troca de loja do pedido mínimo continua valendo depois de uma pergunta lateral (10/10, rodada 8 g25).
 export function minSwapStillOpen(): string {
   return "_A troca de loja sem pedido mínimo que eu ofereci continua valendo: é só dizer *trocar de loja*._";
