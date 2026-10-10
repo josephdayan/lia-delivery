@@ -1248,3 +1248,31 @@ export function variantPenalty(query: string, name: string): number {
   if (staple && !staple.prefer.test(normalizeText(name))) penalty += 1;
   return penalty;
 }
+
+// Troca automática nunca muda o TIPO do produto (10/10, rodada 6 A2: "Lava-Roupas Sabão em Pó Surf" virou
+// "Lava-Louças Sabão em Pasta" na troca de loja do pedido mínimo). Os dois nomes dizem pra quê / qual forma /
+// qual espécie e discordam → conflito. Nome que não diz nada de um grupo não conflita nesse grupo.
+const KIND_GROUPS: Array<Record<string, string>> = [
+  // finalidade
+  {
+    roupa: "roupa", roupas: "roupa", lavaroupas: "roupa", louca: "louca", loucas: "louca", lavaloucas: "louca",
+    piso: "piso", pisos: "piso", vidro: "vidro", vidros: "vidro", banheiro: "banheiro", corpo: "corpo", corporal: "corpo",
+    cabelo: "cabelo", cabelos: "cabelo", capilar: "cabelo", rosto: "rosto", facial: "rosto", intimo: "intimo", intima: "intimo"
+  },
+  // forma (sabão, detergente, creme)
+  { po: "po", pasta: "pasta", barra: "barra", liquido: "liquido", gel: "gel", spray: "spray" }
+];
+function kindsOf(name: string): Array<Set<string>> {
+  const ws = normalizeText(name).replace(/\blava (roupas?|loucas?)\b/g, "lava$1").split(" ").filter(Boolean);
+  return KIND_GROUPS.map((group) => new Set(ws.map((w) => group[w]).filter((v): v is string => Boolean(v))));
+}
+export function productKindConflict(a: string, b: string): boolean {
+  const ka = kindsOf(a);
+  const kb = kindsOf(b);
+  for (let i = 0; i < ka.length; i++) {
+    if (ka[i].size && kb[i].size && ![...ka[i]].some((k) => kb[i].has(k))) return true;
+  }
+  const sa = animalOf(words(a), true);
+  const sb = animalOf(words(b), true);
+  return Boolean(sa && sb && sa !== sb);
+}

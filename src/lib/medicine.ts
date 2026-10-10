@@ -76,7 +76,12 @@ export function looksLikeMedicineName(text: string): boolean {
 // Pedido que a Lia recusa mesmo com MIP ligado: nomeia remédio de receita ou fala de
 // receita/tarja/controlado. "dipirona", "dorflex", "antigripal" passam.
 export function looksLikePrescriptionRequest(text: string): boolean {
-  const t = text ?? "";
+  // "dipirona, a normal sem receita" / "que não precisa de receita" (10/10, rodada 6 A4): a palavra "receita" NEGADA
+  // diz que o remédio é isento — não é pedido de receita. O nome do remédio continua sendo examinado abaixo.
+  const t = (text ?? "").replace(
+    /\b(?:sem|n[aã]o\s+(?:precisa|exige|pede|requer)(?:\s+de)?|isent[oa]s?\s+de|livre\s+de|dispensa(?:\s+a)?)\s+(?:receita|receitu[aá]rio|prescri[cç][aã]o)(?:\s+m[eé]dica)?\b/gi,
+    " "
+  );
   if (/\b(receita|receitu[aá]rio|prescri[cç][aã]o|tarja)\b/i.test(t)) return true;
   if (PRESCRIPTION_WORDS_RE.test(t) || PRESCRIPTION_ACTIVE_RE.test(t) || PRESCRIPTION_DOSE_RE.test(t)) return true;
   const brand = t.match(PRESCRIPTION_BRAND_RE);
