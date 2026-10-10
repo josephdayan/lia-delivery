@@ -288,6 +288,8 @@ export type DeliveryContext = {
   minSwap?: {
     fromStoreKey: string;
     replacements: { fromSku: string; qty: number; option: ChoiceOption }[];
+    // Assinatura da cesta na hora da oferta (10/10, rodada 6 A2): cesta mudou → a oferta morreu.
+    key?: string;
   };
   // Última escolha CONCLUÍDA (com o sku escolhido): "Outras opções"/"mais barato" fora
   // da escolha reabrem ela — o toque num card antigo não pode cair no "me diz de outro
@@ -302,7 +304,8 @@ export type DeliveryContext = {
   // "lego ou carrinho" (09/10, rodada 3): a Lia perguntou qual; "1"/"2"/"o carrinho"/"os dois" escolhe.
   // Pergunta de esclarecimento que a Lia acabou de fazer ("Qual leite você quer?", 09/10, rodada 3): a próxima fala
   // responde ELA ("o integral mesmo, e o pão de forma" = leite integral + pão de forma), nunca vira lista nova.
-  openQuestion?: { text: string; at: number };
+  // `said` = a fala do cliente que gerou a pergunta (10/10, rodada 6 M3: o "2" que responde "A ou B?" volta com ela).
+  openQuestion?: { text: string; at: number; said?: string };
   askEither?: { base: string; alternatives: [string, string]; at: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
   // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4 M2): a Lia perguntou de qual;

@@ -705,11 +705,27 @@ function comparatorFor(modes: JudgeMode[], group: ShelfCandidate[], pick: ShelfP
   };
 }
 
+// Presente pra MAIS DE UMA pessoa com orçamento total (10/10, rodada 6 M8: "dia das crianças, 2 filhos, uns 150 no
+// total" → card de R$ 120,99 comia o orçamento dos dois): cada presente cabe na parte de cada um. "150 cada" não divide.
+export function giftRecipientCount(text: string): number {
+  const t = normRec(text);
+  if (!/\b(presentes?|lembranc\w*|brinquedos?|dia das criancas|natal|aniversario|amigo secreto|amigo oculto)\b/.test(t)) return 1;
+  if (/\b\d+\s*(?:reais\s*)?(?:pra |para )?cada\b|\bcada (?:um|uma) (?:de |com )?(?:r\s*)?\d/.test(t)) return 1;
+  const words: Record<string, number> = { dois: 2, duas: 2, tres: 3, quatro: 4 };
+  const counted = t.match(/\b(2|3|4|dois|duas|tres|quatro)\s+(?:filh\w*|crianc\w*|sobrinh\w*|net[oa]s|menin\w*|amig\w*|pessoas)\b/);
+  if (counted) return words[counted[1]] ?? Number(counted[1]);
+  if (/\b(os dois|as duas|pros dois|pras duas|para os dois|para as duas|meus filhos|minhas filhas|cada um|cada uma)\b/.test(t)) return 2;
+  if (/\b(menino|filho)\b.*\b(menina|filha)\b|\b(menina|filha)\b.*\b(menino|filho)\b/.test(t)) return 2;
+  return 1;
+}
+
 // Candidato que fere restrição, orçamento ou porta do remédio → fora.
 export function eligibleCandidates(input: FitnessInput): ShelfCandidate[] {
   const rules = constraintRules(input.request.constraints, input.memory);
   const noMedicine = rules.some((r) => r.kind === "no_medicine");
-  const budget = input.request.budget;
+  const total = input.request.budget;
+  const shares = total != null ? giftRecipientCount(`${input.request.need ?? ""} ${input.request.text} ${input.request.recipient ?? ""}`) : 1;
+  const budget = total != null && shares > 1 ? Math.round((total / shares) * 100) / 100 : total;
   const ok = input.candidates.filter((c) => {
     if (!c?.option?.sku) return false;
     if (rules.length && violatesConstraint(`${c.option.name} ${c.option.brand ?? ""}`, rules, c.shelfId)) return false;

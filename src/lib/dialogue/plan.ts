@@ -2,8 +2,8 @@
 // existe, item que não está na cesta, "fechar" fora de hora…) derruba o plano inteiro e o caminho
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
-import { countDistinctItems } from "../list-items";
-import { extractCep, normalizeMsg, parseBudgetStatement, parsePriceCap, sharesProductNoun } from "../lia-intents";
+import { countDistinctItems, resolveListItems } from "../list-items";
+import { extractCep, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
@@ -148,9 +148,16 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
         query = text.trim();
         retry = false;
       }
+      // Quantidade dita e perdida pela IA (10/10, rodada 6 A6: "leite integral 12 caixas de 1 litro" voltava qty 1): com UM
+      // item na fala, a contagem explícita do parser vale quando a IA não trouxe nenhuma.
+      let qty = clampQty(a.qty) ?? 1;
+      if (qty === 1 && text) {
+        const said = resolveListItems(text);
+        if (said.length === 1 && said[0].qtyExplicit && said[0].qty > 1 && sharesProductNoun(said[0].phrase, query)) qty = Math.min(50, said[0].qty);
+      }
       return {
         type: "search",
-        lines: [{ query, qty: clampQty(a.qty) ?? 1 }],
+        lines: [{ query, qty }],
         ...(retry ? { retry: true } : {}),
         // Trocar o item da tela só quando é o MESMO produto ou o cliente diz que corrige (10/10, rodada 5): "ração pra
         // gatinho qualquer marca" com o arroz na tela tirava o arroz ("Deixei arroz Camil de fora").
@@ -194,6 +201,8 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       return { type: "qty", mode: "add", target, value: delta };
     }
     case "remove": {
+      // "não, deixa o arroz" é MANTER (10/10, rodada 6 A5): a IA lia "deixa" como "tira".
+      if (text && parseKeepItem(text)) return "fala_de_manter";
       const target = resolveTarget(state, a.target);
       if (!target) return "alvo_invalido";
       return target.kind === "screen" ? { type: "skip_current" } : { type: "remove", target };

@@ -1542,6 +1542,28 @@ export function fiscalAnswer(topic: "nf" | "cnpj", businessInfo?: string, inside
     : `A Lia Delivery é uma empresa registrada (MEI). Pedi agora pro responsável te mandar o CNPJ e o nome que aparece no Pix — ele te responde aqui mesmo, ${attendanceWhen(inside)}. A nota fiscal dos produtos sai da própria loja onde eu compro.`;
 }
 
+// Troca e devolução (10/10, rodada 6 M1). Não há política própria no código: vale a da loja que vende, e a Lia abre o
+// pedido de troca com a loja pelo cliente.
+export function returnPolicyAnswer(): string {
+  return "Troca e devolução seguem a política da loja que vende o produto. Se precisar trocar ou devolver, é só me chamar aqui com o pedido que eu abro com a loja pra você 🙂";
+}
+
+// "ok" logo depois de a Lia perguntar o que o cliente quer (10/10, rodada 6 M9): segue a conversa, sem despedida.
+export function affirmAskWhat(): string {
+  return "Beleza! Me diz o que você precisa que eu procuro 🙂";
+}
+
+// "não, deixa o arroz" (10/10, rodada 6 A5): manter é manter.
+export function itemKept(name: string): string {
+  return `Combinado, mantive *${name}* na cesta ✅`;
+}
+
+// "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): a resposta direta antes do resumo.
+export function basketQtyAnswer(rows: Array<{ qty: number; name: string }>, asked: string): string {
+  if (!rows.length) return `Não tem *${asked}* na sua cesta ainda.`;
+  return rows.map((r) => `Você pediu *${r.qty}x ${r.name}*.`).join("\n");
+}
+
 // "quem faz a entrega?"
 export function whoDeliversAnswer(): string {
   return "A entrega é da própria loja onde eu faço a sua compra (ou do parceiro oficial dela, tipo os correios/transportadora do Mercado Livre). Eu acompanho o pedido até chegar e te aviso de cada etapa 📦";
@@ -3112,6 +3134,14 @@ export const planBNotVerified = () => "Não consegui confirmar a disponibilidade
 // ele resolve como pessoa e a compra segue sozinha. O robô nunca resolve CAPTCHA.
 export function operatorHumanChallenge(shortId: string, storeLabel: string, minutes: number): string {
   return `🧩 A ${storeLabel} pediu verificação humana pra fechar o pedido #${shortId}. Abra a janela do comprador no Mac e resolva o desafio nos próximos ${minutes} min — a compra continua sozinha depois. Sem isso, o pedido volta pra fila e o cliente é estornado.`;
+}
+
+// Endereço trocado com a cesta montada (10/10, rodada 6 M7): avisa já na troca o que não entrega no endereço novo.
+export function itemsNotDeliverableAtNewAddress(items: string[]): string {
+  const what = items.length === 1 ? `*${items[0]}*` : items.map((i) => `• ${i}`).join("\n");
+  return items.length === 1
+    ? `⚠️ Nesse endereço a loja não confirmou entrega de ${what}, então tirei da cesta. Se quiser, peço de outra loja — é só me dizer.`
+    : `⚠️ Nesse endereço as lojas não confirmaram entrega destes itens, então tirei da cesta:\n${what}\nSe quiser, peço de outra loja — é só me dizer.`;
 }
 
 // Sem operador (25/09): o que a loja não confirma para o endereço é dito na hora, sem espera.
