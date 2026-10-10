@@ -6200,6 +6200,15 @@ async function confirmChosenOption(
       await reply(phone, copy.packMismatchAsk(chosen.name, askedQty, perPack, adjusted.qty));
       return;
     }
+    // "3 fraldas pacote grande" com pacote de 80 (10/10, rodada 5 M4): 3 pacotes (R$ 345) ou 3 fraldas (1 pacote)?
+    // Com o número dito sobre o CONTEÚDO (não "3 pacotes") e o total alto, pergunta antes de pôr na cesta.
+    const lineTotal = display(chosen.unitPrice, chosen.medicine) * askedQty;
+    if (current.qtyExplicit && askedQty >= 2 && perPack >= 10 && askedQty < perPack && lineTotal >= PACK_COUNT_ASK_MIN && !PACK_UNIT_LEAD_RE.test(normalizeMsg(current.query))) {
+      ctx.packConfirm = { sku: chosen.sku, askedQty, kind: "count" };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.packCountAsk(chosen.name, askedQty, perPack, lineTotal));
+      return;
+    }
   }
   ctx.pending = ctx.pending!.slice(1);
   // Recomendação escolhida (08/10): o RecommendLog fecha o ciclo (o que converte).
@@ -6367,6 +6376,19 @@ async function handleChoosing(
     const asked = ctx.packConfirm;
     const option = current.options.find((o) => o.sku === asked.sku);
     const n = normalizeMsg(text);
+    // "3 pacotes ou 1?" (kind count): "só 1"/"1 pacote"/"não" leva 1 pacote; "sim"/"3" leva o que ele disse.
+    if (option && asked.kind === "count") {
+      const one = /^(?:(?:so|somente|apenas)\s+)?(?:1|um|uma)(?:\s+(?:pacote|embalagem|caixa|unidade))?$/.test(n) || intent.kind === "reject" || /^(?:nao|n)\b/.test(n);
+      const all = intent.kind === "affirm" || n === String(asked.askedQty) || /^(sim|s|pode|isso|isso mesmo|ok|quero|pode ser|mesmo assim|certo)\b/.test(n);
+      if (one || all) {
+        if (one) {
+          current.qty = 1;
+          current.qtyExplicit = true;
+        }
+        await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+        return;
+      }
+    }
     // "1" = a única opção da pergunta (sim); antes o "1" caía em "👍"/"Por nada!" e o cliente travava (09/10, rodada 1).
     if (option && (intent.kind === "affirm" || /^(1|um)$/.test(n) || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
@@ -9046,6 +9068,8 @@ export function declaredPack(optionName: string): number {
   const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
   return m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
+const PACK_COUNT_ASK_MIN = 100;
+const PACK_UNIT_LEAD_RE = /^(?:pacotes?|pcts?|caixas?|cxs?|fardos?|kits?|embalage[nm]s?|latas?|bandejas?|packs?|cartelas?|unidades?)\b/;
 // O pedido conta o CONTEÚDO ("6 ovos", "12 rolos") e não embalagens ("2 caixas de ovos").
 function countsPackContent(query: string | undefined): boolean {
   return Boolean(query && PACK_CONTENT_NOUN_RE.test(query) && !/\b(caixas?|cartelas?|bandejas?|pacotes?|embalage[nm]s?|fardos?|packs?)\b/i.test(query));

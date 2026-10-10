@@ -1592,6 +1592,11 @@ export function packMismatchAsk(name: string, requested: number, packSize: numbe
   return `Essa opção (*${name}*) vem com *${packSize} unidades* por embalagem e você pediu *${requested}*. ${packs === 1 ? "Levo 1 embalagem" : `Levo ${packs} embalagens`} (${total} un) mesmo assim? Responde *sim*, ou *outras* pra ver outras opções.`;
 }
 
+// "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
+export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
+  return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
+}
+
 export function packMismatchDeclined(): string {
   return "Sem problema — escolhe outra opção:";
 }

@@ -261,7 +261,8 @@ export type DeliveryContext = {
   budget?: { cap: number; sku: string; warned?: boolean; awaiting?: boolean; override?: boolean };
   // Embalagem diferente da pedida (07/10, c28: "12 ovos" → caixa de 20): a Lia pergunta ANTES de pôr
   // na cesta. Guarda a opção e a quantidade pedida; "sim" confirma, "outras" volta às opções.
-  packConfirm?: { sku: string; askedQty: number };
+  // kind "count" (10/10, rodada 5): "3 fraldas" com pacote de 80 — 3 pacotes ou 1 pacote? (total alto).
+  packConfirm?: { sku: string; askedQty: number; kind?: "count" };
   // Últimas falas da Lia (07/10, rodada 2 do plano 100): base da guarda anti-repetição — a mesma
   // mensagem não sai duas vezes seguidas para falas diferentes do cliente (src/lib/dialogue/repeat.ts).
   lastSent?: { texts: string[]; at: number };

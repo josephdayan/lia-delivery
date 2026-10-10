@@ -142,6 +142,30 @@ test("M4: quantidade dita junto da escolha pelo nome ('o bolo gotas de chocolate
   assert.equal(line.qty, 3, out.slice(0, 400));
 });
 
+for (const [answer, qty] of [["só 1", 1], ["sim", 3]] as const) {
+  test(`M4: '3 fraldas pacote grande' com pacote de 80 e total alto pergunta antes; '${answer}' leva ${qty}`, async (t) => {
+    if (!dbOk) return t.skip();
+    const options = [opt("mambo-f1", "Fralda Pampers Confort Sec G 80 Unidades", 104.9)];
+    const c = await customerWith({ basket: [], pending: [{ query: "fraldas pacote grande", qty: 3, qtyExplicit: true, options }] }, "choosing");
+    const ask = await send(c.phone, "1");
+    assert.match(ask, /80 unidades/, ask.slice(0, 400));
+    assert.match(ask, /só 1/, ask.slice(0, 400));
+    assert.equal((await ctxOf(c.convoId)).basket?.length ?? 0, 0, "nada entra antes da resposta");
+    await send(c.phone, answer);
+    const line = ((await ctxOf(c.convoId)).basket ?? []).find((b: { sku: string }) => b.sku === "mambo-f1");
+    assert.equal(line?.qty, qty);
+  });
+}
+
+test("M4: '3 pacotes de fralda' é pedido de pacotes: não pergunta", async (t) => {
+  if (!dbOk) return t.skip();
+  const options = [opt("mambo-f1", "Fralda Pampers Confort Sec G 80 Unidades", 104.9)];
+  const c = await customerWith({ basket: [], pending: [{ query: "pacotes de fralda", qty: 3, qtyExplicit: true, options }] }, "choosing");
+  await send(c.phone, "1");
+  const line = ((await ctxOf(c.convoId)).basket ?? []).find((b: { sku: string }) => b.sku === "mambo-f1");
+  assert.equal(line?.qty, 3);
+});
+
 // M10 --------------------------------------------------------------------------------------------------------
 async function perfumeLine() {
   const { gatherCrossStoreCandidates } = await import("../src/lib/stores");
