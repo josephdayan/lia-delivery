@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -34,7 +34,7 @@ import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-a
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { dropAddressOnlyItems, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
+import { dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
@@ -175,8 +175,8 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     .filter((line) => queryTokens(line.phrase).length)
     .filter((line) => !blocksMedicine(line.phrase))
     .filter((line) => !looksLikeTobacco(line.phrase))
-    // "aniversário hoje" é a ocasião e o prazo, não item (10/10, rodada 11 g33).
-    .filter((line) => !isOccasionWhen(line.phrase));
+    // "aniversário hoje" é a ocasião e o prazo, não item (10/10, rodada 11 g33); "um shih tzu" é o pet (rodada 15 g42).
+    .filter((line) => !isOccasionWhen(line.phrase) && !isPetBreedOnly(line.phrase));
   // Remédio de receita que saiu da lista, pelo nome (dono, 08/10): a nota diz QUAL ficou de fora.
   const prescriptionDropped = prescriptionDrugNamesIn(
     resolveListItems(sanitized)
@@ -196,7 +196,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     }
     const items = folded.filter(
       // Contexto e hesitação ('tenho um cachorro labrador', 'esqueci') também não viram item vindos da IA (10/10, rodada 6).
-      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query) && !isOwnershipContext(item.query) && !isRecallFiller(item.query) && !isDescriptorFragment(item.query) && !isDiscourseOnly(item.query) && !isOccasionWhen(item.query)
+      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query) && !isOwnershipContext(item.query) && !isRecallFiller(item.query) && !isDescriptorFragment(item.query) && !isDiscourseOnly(item.query) && !isOccasionWhen(item.query) && !isPetBreedOnly(item.query)
     );
     // Remédio isento ligado (05/10): a IA às vezes marca containsMedicine para um isento que
     // ELA MESMA manteve na lista ("quero advil" → Advil na lista + aviso "remédio de receita
@@ -6693,6 +6693,13 @@ async function handleNewCep(
   // número (a rua vem do CEP), só a rua sem número, ou itens.
   const raw = rawText ?? "";
   const split = raw ? splitAddressAndItems(raw) : null;
+  // "Meu nome é João Pereira, CPF …, moro na …" (10/10, rodada 15 g42): a apresentação sai dos itens no split; o nome fica
+  // guardado antes, para o CPF que vem junto (ou depois) completar o cadastro sem pedir o nome de novo.
+  const intro = split ? introducedName(raw) : undefined;
+  if (intro && looksLikeOnboardingName(intro)) {
+    const known = await prisma.user.findUnique({ where: { id: userId }, select: { cpfName: true } });
+    if (!known?.cpfName) await prisma.user.update({ where: { id: userId }, data: { cpfName: extractFullName(intro) ?? intro } });
+  }
   if (split?.items) split.items = (await takeIdentityFromItems(userId, split.items)) ?? "";
   // "Fulano Silva, Avenida Paulista 1000…" (10/10, rodada 13 g39 / rodada 14 g40): o nome antes da rua é cadastro, não
   // item — virava "1x Fulano Silva" e, depois do CPF, "*Fulano Silva* eu não achei". Guarda o nome (o CPF vem depois).
@@ -9444,10 +9451,28 @@ function sameTokenSet(a: string, b: string): boolean {
   return ta.size > 0 && ta.size === tb.size && [...ta].every((t) => tb.has(t));
 }
 
-function removalHits(pieces: string[], basket: BasketItem[], pending: PendingChoice[]): { basket: Set<BasketItem>; pending: Set<PendingChoice> } {
-  const out = { basket: new Set<BasketItem>(), pending: new Set<PendingChoice>() };
+// O alvo do "tira" só aparece DENTRO do nome de outro produto, como complemento (10/10, rodada 15 g42): "sal" em
+// "Biscoito Aymoré Água e Sal", "chocolate" em "Biscoito Recheado com Chocolate". Não é o item: o cliente não pediu um sal.
+// Vale quando as palavras do alvo vêm logo depois de "e"/"com"/"sem" no nome e o item não foi pedido com essas palavras.
+function removeTargetOnlyInsideName(piece: string, item: BasketItem): boolean {
+  const words = (x: string) => normalizeMsg(x).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const target = words(piece).filter((w) => !/^(?:o|a|os|as|um|uma)$/.test(w));
+  const name = words(item.name);
+  if (!target.length || target.length > 3 || name[0] === target[0]) return false;
+  if (item.ask && sameTokenSet(item.ask, piece)) return false;
+  for (let i = 1; i + target.length <= name.length; i++) {
+    if (target.every((w, k) => name[i + k] === w || name[i + k] === `${w}s` || `${name[i + k]}s` === w)) return /^(?:e|com|sem)$/.test(name[i - 1]);
+  }
+  return false;
+}
+
+function removalHits(pieces: string[], basket: BasketItem[], pending: PendingChoice[]): { basket: Set<BasketItem>; pending: Set<PendingChoice>; insideName: Map<string, BasketItem[]> } {
+  const out = { basket: new Set<BasketItem>(), pending: new Set<PendingChoice>(), insideName: new Map<string, BasketItem[]>() };
   for (const piece of pieces) {
-    const fromBasket = basket.filter((item) => itemMatchesPhrase(piece, item)).map((item) => ({ item, cov: removalCoverage(piece, [item.name, item.ask]) }));
+    const matched = basket.filter((item) => itemMatchesPhrase(piece, item));
+    const inside = matched.filter((item) => removeTargetOnlyInsideName(piece, item));
+    if (inside.length) out.insideName.set(piece, inside);
+    const fromBasket = matched.filter((item) => !inside.includes(item)).map((item) => ({ item, cov: removalCoverage(piece, [item.name, item.ask]) }));
     const fromPending = pending
       .filter((p) => itemMatchesPhrase(piece, { sku: p.query, name: p.query, unitPrice: 0 }))
       .map((p) => ({ p, cov: removalCoverage(piece, [p.query, p.baseQuery]) }));
@@ -9698,6 +9723,12 @@ async function handleRemove(
     return;
   }
   if (!removed.length && !removedPending.length) {
+    // "tira o sal" com só o "Biscoito Água e Sal" (10/10, rodada 15 g42): diz que não há esse item separado e pergunta.
+    const inside = hits ? [...hits.insideName.entries()] : [];
+    if (inside.length) {
+      await reply(phone, copy.removeOnlyInsideName(inside[0][0].trim(), [...new Set(inside.flatMap(([, items]) => items.map((i) => i.name)))]));
+      return;
+    }
     await reply(phone, pieces.length > 1 ? copy.removeNotFoundNamed(pieces) : copy.removeNotFound());
     return;
   }

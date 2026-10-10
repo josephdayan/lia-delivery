@@ -494,6 +494,15 @@ export function removeNotFound(): string {
   return "Não achei esse item na sua cesta. Me diz o nome como está na lista.";
 }
 
+// "tira o sal" com só o "Biscoito Água e Sal" na cesta (10/10, rodada 15 g42): a palavra é parte do nome de outro item, não
+// um item. Não tira nada e pergunta — antes o biscoito que o cliente acabara de dizer que queria sumia calado.
+export function removeOnlyInsideName(word: string, items: string[]): string {
+  const shown = items.filter(Boolean);
+  const head = shown.length === 1 ? shown[0].split(/\s+/)[0]?.toLowerCase() : undefined;
+  const ask = head ? `Quer tirar o *${shown[0]}*? Se sim, me diz *tira o ${head}*.` : "Se quiser tirar um deles, me diz qual.";
+  return `Não tem *${word}* separado na sua cesta — "${word}" é parte do nome de ${namesList(shown)}. Não tirei nada.\n${ask}`;
+}
+
 // "tira os balões e o salgadinho" (10/10, rodada 5 M5): diz QUAL não está na cesta.
 export function removeNotFoundNamed(names: string[]): string {
   const shown = names.filter(Boolean);

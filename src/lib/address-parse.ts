@@ -325,6 +325,22 @@ export function stripCourtesy(raw: string): { text: string; wantsToOrder: boolea
   return { text, wantsToOrder };
 }
 
+// Nome dito com apresentação ("Meu nome é João Pereira, CPF …, moro na …", 10/10, rodada 15 g42): o stripCourtesy tira a
+// apresentação da lista de itens e o nome se perdia — a Lia pedia "nome completo e CPF" de novo. Devolve só o nome (até a
+// vírgula, o número ou a próxima fala); quem confere se é nome completo é o cadastro.
+const NAME_INTRO_RE = /\b(?:meu nome (?:completo )?(?:[eé]|eh)|me chamo|aqui (?:[eé]|eh) (?:a|o)|sou (?:a|o))\s+(\p{L}[\p{L}' ]{1,80})/iu;
+const NAME_INTRO_STOP = /^(?:e|cpf|rg|moro|mora|meu|minha|quero|queria|preciso|tenho|no|na|em|aqui|sou|ta|tá|to|tô|com)$/i;
+export function introducedName(raw: string): string | undefined {
+  const m = NAME_INTRO_RE.exec(raw ?? "");
+  if (!m) return undefined;
+  const words: string[] = [];
+  for (const w of m[1].trim().split(/\s+/)) {
+    if (NAME_INTRO_STOP.test(w) || words.length >= 6) break;
+    words.push(w);
+  }
+  return words.length >= 2 ? words.join(" ") : undefined;
+}
+
 // ---------- "quanto tá o leite ninho?" no 1º contato (M2) ----------
 
 const PRICE_SERVICE_NOUN_RE =
