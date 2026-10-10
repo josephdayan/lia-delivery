@@ -9148,7 +9148,7 @@ async function handlePendingRequestEdit(
     const removed = segments.filter((segment) => matches(intent.target, segment));
     if (!removed.length) return false;
     ctx.pendingRequest = segments.filter((segment) => !removed.includes(segment)).join(", ") || undefined;
-    ctx.lastRemoved = { items: [], queries: removed, at: Date.now() };
+    ctx.lastRemoved = { items: [], queries: removed, segments: removed, at: Date.now() };
     note = copy.pendingRemoved(removed.map(withoutCheapCue));
   } else if (removedQueries.length && (isRestoreRemovedText(text, ctx.lastRemoved!) || (kept && removedQueries.some((q) => matches(kept, q))))) {
     const named = kept ?? restoreNamedTokens(text).join(" ");

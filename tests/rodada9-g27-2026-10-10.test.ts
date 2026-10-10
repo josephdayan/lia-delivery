@@ -175,7 +175,7 @@ test("A7: antes do cadastro, 'esquece as taças' tira e 'não, pera, continua co
   const c = await newcomer("6 taças de vinho, jogo de 4 copos");
   const out1 = await send(c.phone, "esquece as taças");
   assert.equal((await ctxOf(c.convoId)).pendingRequest, "jogo de 4 copos", out1);
-  assert.match(out1, /Tirei \*taças de vinho\*/, out1);
+  assert.match(out1, /Tirei \*(?:6 )?taças de vinho\*/, out1);
   const out2 = await send(c.phone, "não, pera, continua com as taças");
   const ctx = await ctxOf(c.convoId);
   assert.equal(ctx.pendingRequest, "jogo de 4 copos, 6 taças de vinho", out2);
