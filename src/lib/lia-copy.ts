@@ -2052,6 +2052,33 @@ export function compareOptionsAnswer(rows: CompareRow[]): string {
   return [...lines, "", ...notes].join("\n");
 }
 
+// Pergunta sobre o card ("o primeiro é 75g?", "o primeiro serve pro rosto?", 10/10, rodada 16 M5/M6): responde com o que o
+// NOME diz; quando o nome não diz, fala isso em vez de chutar.
+export function specAnswer(input: {
+  n: number;
+  name: string;
+  verdict: "yes" | "no" | "unknown";
+  // "75 g" (medida) ou "pro rosto" (uso)
+  asked: string;
+  has?: string;
+  want?: string;
+  other?: { n: number; name: string };
+  suggest?: string;
+}): string {
+  const measure = /^\d/.test(input.asked);
+  const card = `a opção *${input.n}* (${input.name})`;
+  const other = input.other ? ` A opção *${input.other.n}* (${input.other.name}) diz *${input.want ?? input.asked}* no nome.` : "";
+  if (input.verdict === "yes") return `Sim: pelo nome, ${card} é ${measure ? `de *${input.asked}*` : `*${input.asked}*`}. Quer essa? Responde *${input.n}*.`;
+  if (input.verdict === "no") {
+    if (!measure) {
+      const offer = input.other ? other : input.suggest ? ` Quer que eu procure? É só mandar _${input.suggest}_.` : "";
+      return `Pelo nome, ${card} é *${input.has}*. ${input.asked.replace(/^p/, "P")} o indicado é um *${input.want}*.${offer}`;
+    }
+    return `Não: pelo nome, ${card} é de *${input.has}*, não de ${input.asked}.${other}`;
+  }
+  return `O nome da opção *${input.n}* (${input.name}) não diz ${measure ? `se é de ${input.asked}` : `se serve ${input.asked}`}, e eu não quero chutar. Se quiser, mando o link da loja: é só pedir _detalhes do ${input.n}_.${other}`;
+}
+
 // Comparação com produto fora da tela (10/10, rodada 13 g39): "e o Fofinho, é melhor que esses?" caía na FAQ do serviço.
 export function compareNotShown(term: string, query: string): string {
   const shown = term.replace(/(^|\s)(\p{L})/gu, (_, sp: string, c: string) => sp + c.toUpperCase());

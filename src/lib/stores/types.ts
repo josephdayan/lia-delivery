@@ -1285,7 +1285,9 @@ const VARIANT_MARKERS = new Set([
   "infantil", "shoot", "sprite", "tonic", "tonica", "aromatizada", "saborizada", "sabor", "vitaminas",
   "proteina", "veggies", "blend", "special", "doce", "white", "black", "gold", "premium", "reserva",
   // "leite ninho" sem pedir "sem lactose" (10/10, rodada 5 B2): a versão sem lactose não é a básica.
-  "lactose"
+  "lactose",
+  // Miniatura de chaveiro (10/10, rodada 16 M7: "Mini Grampeador … Chaveiro" oferecido no lugar do grampeador de mesa).
+  "chaveiro"
 ]);
 const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
 export function variantPenalty(query: string, name: string): number {

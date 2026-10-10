@@ -46,6 +46,9 @@ export type BasketItem = {
   // Frete que a LOJA respondeu na consulta ao vivo do card (10/10, rodada 11 g32): a estimativa do teto, o aviso de
   // entrega extra e o "o mais barato" usam o mesmo valor (antes a tabela dizia R$ 18 e a cotação, R$ 4,90).
   freightFee?: number;
+  // Unidades que o cliente pediu quando a linha virou embalagens ("5 canetas" = 2 pacotes de 3; 10/10, rodada 16 A2): a
+  // troca de cor/produto refaz a conta a partir das 5 unidades, não dos 2 pacotes. Vale só enquanto `qty` = `packs`.
+  askedUnits?: { units: number; packs: number };
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
