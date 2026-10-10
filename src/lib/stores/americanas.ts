@@ -2,6 +2,7 @@ import type { StoreConnector, StoreUnit } from "./types";
 import { catalogWithImages, rankCatalog } from "./types";
 import { withoutMedicine } from "./anvisa";
 import { CATALOG } from "./americanas-catalog";
+import { tidyRepeatedName } from "./live-search";
 
 // Americanas — loja de departamentos (mercado, bebê, beleza, limpeza, pet, casa, papelaria,
 // brinquedos, livros, eletroportáteis). VTEX com checkout aberto por API: pedido real criado
@@ -10,7 +11,8 @@ import { CATALOG } from "./americanas-catalog";
 // A loja exige R$30 no carrinho (ORD079). SEM medicamento (ANVISA): deny na colheita +
 // `withoutMedicine` em runtime. Recebedor do Pix é "Americanas s.a - em Recup" (recuperação
 // judicial): pós-venda/estorno da loja é risco a acompanhar.
-const ITEMS = withoutMedicine(catalogWithImages(CATALOG));
+// Nome "produto + SKU" repetido da colheita sai enxuto (10/10, rodada 12 B4).
+const ITEMS = withoutMedicine(catalogWithImages(CATALOG)).map((item) => ({ ...item, name: tidyRepeatedName(item.name) }));
 
 export const americanasStore: StoreConnector = {
   key: "americanas",

@@ -2,15 +2,18 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
+import { compareOptionsAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
-export type ProductOption = { name: string; price: number; storeLabel?: string };
+export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
 
 export type AudienceTag = "filhote" | "adulto" | "senior" | "gato" | "cao" | "pequeno" | "grande";
 
 export type ProductQuestion =
   | { kind: "audience"; tag: AudienceTag }
   | { kind: "compare"; a: number; b: number }
+  // "qual a diferença entre esses dois?" sem dizer quais (10/10, rodada 12): compara as opções da tela.
+  | { kind: "compare_all" }
   | { kind: "explain"; n: number }
   | { kind: "price"; n: number }
   | { kind: "original" }
@@ -74,7 +77,26 @@ function refsIn(n: string, count: number): number[] {
 
 const QUESTION_START_RE = /^(e |eh |sera |sao |isso e |esse e |essa e |qual |quais |quando |tem |ate quando |da pra |pode |posso |serve |servem )/;
 
-export function parseProductQuestion(text: string, optionCount: number): ProductQuestion | null {
+// Opções citadas pelo NOME ("o Heinz bolonhesa e o tradicional com pedaços", "o Acnezil e o Dauf", 10/10, rodada 12): cada
+// trecho casa com a opção que tem mais palavras dele que as outras não têm. Empate = não adivinha.
+function refsByName(tail: string, names: string[]): number[] {
+  const tok = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length >= 3 && !STOP.has(w));
+  const nameTokens = names.map((n) => new Set(tok(n)));
+  const common = (w: string) => nameTokens.every((set) => set.has(w));
+  const out: number[] = [];
+  for (const seg of normalizeMsg(tail).split(/\s*,\s*|\s+(?:e|ou|vs|versus|x|com o|com a|pro|pra)\s+(?=(?:o|a|os|as|do|da)\s)|\s+(?:e|ou|vs|versus)\s+/)) {
+    const words = tok(seg).filter((w) => !["entre", "qual", "diferenca"].includes(w));
+    if (!words.length) continue;
+    const scores = nameTokens.map((set) => words.filter((w) => set.has(w) && !common(w)).length);
+    const best = Math.max(...scores);
+    if (best <= 0 || scores.filter((s) => s === best).length > 1) continue;
+    const idx = scores.indexOf(best) + 1;
+    if (!out.includes(idx)) out.push(idx);
+  }
+  return out;
+}
+
+export function parseProductQuestion(text: string, optionCount: number, names?: string[]): ProductQuestion | null {
   if (optionCount < 1) return null;
   const n = normalizeMsg(text).replace(/[!.?\s]+$/g, "").trim();
   if (!n || n.length > 120) return null;
@@ -85,6 +107,12 @@ export function parseProductQuestion(text: string, optionCount: number): Product
   if (diff) {
     const refs = refsIn(diff[1], optionCount);
     if (refs.length >= 2) return { kind: "compare", a: refs[0], b: refs[1] };
+    // Com os nomes da tela: pelo nome citado; sem citar quais ("esses dois", "qual a diferença?"), todas as da tela.
+    if (names?.length === optionCount) {
+      const byName = refsByName(diff[1], names);
+      if (byName.length >= 2) return { kind: "compare", a: byName[0], b: byName[1] };
+      if (optionCount >= 2 && /\b(?:diferenca|diferencas)\b/.test(n) && !/\b(?:frete|entrega|preco do frete|pix|cartao|taxa)\b/.test(n)) return { kind: "compare_all" };
+    }
     return null;
   }
 
@@ -150,9 +178,13 @@ function differences(a: string, b: string): { onlyA: string[]; onlyB: string[] }
 
 export function answerProductQuestion(q: ProductQuestion, options: ProductOption[], query: string): string {
   switch (q.kind) {
+    case "compare_all":
+      return compareOptionsAnswer(options.map((o, i) => ({ n: i + 1, ...o })));
     case "compare": {
       const a = options[q.a - 1];
       const b = options[q.b - 1];
+      // Com prazo/loja nos cards (rodada 12): a comparação diz tamanho, preço por medida e prazo, não só as palavras do nome.
+      if (a.delivery || b.delivery) return compareOptionsAnswer([{ n: q.a, ...a }, { n: q.b, ...b }]);
       const d = differences(a.name, b.name);
       const lines = [`*${q.a}* — ${a.name} — ${brl(a.price)}${where(a)}`, `*${q.b}* — ${b.name} — ${brl(b.price)}${where(b)}`];
       const notes: string[] = [];
