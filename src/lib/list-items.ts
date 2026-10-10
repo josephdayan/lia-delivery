@@ -378,7 +378,7 @@ export function resolveListItems(text: string, opts: ResolveListItemsOptions = {
   const deterministic = foldCountOnlyLines(parseBasketLines(markSharedBrand(text), { conjunction: makeConjunction(ctx, Boolean(opts.log)) }));
   if (!opts.aiItems?.length) return deterministic.map((line) => withDefaults(line, false));
   const detKeys = new Set(deterministic);
-  return dropSameTokenTwins(foldCountOnlyLines(mergeShoppingLines(foldCountOnlyLines(opts.aiItems), deterministic))).map((line) => withDefaults(line, !detKeys.has(line) && !line.span));
+  return dropSameTokenTwins(foldCountOnlyLines(mergeShoppingLines(foldCountOnlyLines(opts.aiItems.map(stripCountWords)), deterministic))).map((line) => withDefaults(line, !detKeys.has(line) && !line.span));
 }
 
 // A mesma linha duas vezes, uma da IA e outra do parser, diferindo só em conectivo (10/10, rodada 10 g30, M6: "lenço
@@ -433,9 +433,26 @@ export function textHasCount(text: string): boolean {
 function sizeTokens(phrase: string): string[] {
   return (phrase.match(SIZE_TOKEN_RE) ?? []).map((t) => t.trim());
 }
+// Contagem por palavra que ficou DENTRO da frase de busca (10/10, rodada 11 g33: a IA às vezes devolvia "ovos uma dúzia"
+// e a busca por "ovos uma dúzia" dava "não achei" — 1 em 3 vezes, conforme a extração). Sai da frase; vira a quantidade.
+const IN_PHRASE_COUNT: Array<[RegExp, number]> = [
+  [/\(?\s*\bmeia\s+d[uú]zia\b(?:\s+de\b)?\s*\)?/i, 6],
+  [/\(?\s*\b(?:uma|1|a)?\s*d[uú]zia\b(?:\s+de\b)?\s*\)?/i, 12],
+  [/\(?\s*\b(?:um|1|o)?\s*par\b(?:\s+de\b)?\s*\)?/i, 2]
+];
+export function stripCountWords<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(line: T): T {
+  for (const [re, count] of IN_PHRASE_COUNT) {
+    if (!re.test(line.phrase)) continue;
+    const phrase = line.phrase.replace(re, " ").replace(/\s+/g, " ").replace(/^\s*(?:de|d[oa]s?)\s+/i, "").trim();
+    if (!phrase || countOnlyQty(line.phrase) != null) return line;
+    return { ...line, phrase, qty: line.qty > 1 ? line.qty : count, qtyExplicit: true };
+  }
+  return line;
+}
+
 export function reconcileLineCounts<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(lines: T[], said: string): T[] {
   if (!said.trim() || !lines.length) return lines;
-  lines = dropSameTokenTwins(foldCountOnlyLines(lines));
+  lines = dropSameTokenTwins(foldCountOnlyLines(lines)).map(stripCountWords);
   const det = resolveListItems(said);
   const hasCount = textHasCount(said);
   return lines.map((line) => {

@@ -413,7 +413,18 @@ export function isRequestModifier(phrase: string): boolean {
 // colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
 export function isNonItemSegment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
-  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase);
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase) || isOccasionWhen(n);
+}
+
+// Ocasião + quando, sem produto (10/10, rodada 11 g33: "aniversário hoje" saía como "não achei"): "aniversário hoje",
+// "é aniversário dela amanhã", "festa sábado". Com produto junto ("vela de aniversário") o trecho segue item.
+const OCCASION_WORDS = new Set("aniversario aniversarios niver festa festinha casamento formatura cha bebe revelacao natal pascoa reveillon churrasco evento comemoracao".split(" "));
+const WHEN_WORDS = new Set("hoje amanha ontem noite tarde manha cedo semana mes fim sabado domingo segunda terca quarta quinta sexta feira vem que proxima proximo dia".split(" "));
+export function isOccasionWhen(text: string): boolean {
+  const n = normalizeMsg(text);
+  const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  if (!words.some((w) => OCCASION_WORDS.has(w)) || !words.some((w) => WHEN_WORDS.has(w))) return false;
+  return words.every((w) => OCCASION_WORDS.has(w) || WHEN_WORDS.has(w) || DISCOURSE_WORDS.has(w) || /^\d+$/.test(w));
 }
 
 // Trecho SÓ de fala (10/10, rodada 8 M1): "vamos dividir a", "eu pago o meu", "ele paga o dele", "voltei", "desculpa",

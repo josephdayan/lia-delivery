@@ -2334,6 +2334,10 @@ export function overBudgetNone(cap: number, total: number, name: string, cheapes
 // "quanto ainda posso gastar?" com o teto dito antes (10/10, rodada 8 g25). Produtos só; a entrega entra no total.
 export function budgetLeftAnswer(cap: number, produtos: number, estimate: number, pendingCount = 0): string {
   const falta = pendingCount ? ` (ainda falta escolher ${pendingCount === 1 ? "1 item" : `${pendingCount} itens`})` : "";
+  // Nada escolhido ainda (10/10, rodada 11 g33): "Cabe, sim… uns R$ 0,00" afirmava sem conta nenhuma.
+  if (produtos <= 0.005) {
+    return `Anotei o seu teto de *${brl(cap)}*, já com a entrega. Ainda não tem nada escolhido pra eu somar — conforme você escolhe, eu aviso se passar, e o total exato aparece antes de você pagar.`;
+  }
   if (estimate <= cap + 0.005) {
     const left = Math.round((cap - estimate) * 100) / 100;
     return `Cabe, sim: do seu teto de *${brl(cap)}*, o que você escolheu dá uns *${brl(estimate)}* já com a entrega${falta} — sobram uns *${brl(left)}*. O total exato aparece antes de você pagar.`;
@@ -2388,6 +2392,16 @@ export function repeatedItemMerged(lines: { name: string; qty: number; added: nu
   const parts = lines.map((l) => `*${l.name}* (+${l.added}, agora *${l.qty}x*)`);
   const was = lines.length === 1 ? ` pra *${lines[0].qty - lines[0].added}x*` : "";
   return `${parts.join(", ")} já estava na cesta — somei na mesma linha. Se foi repetido sem querer, me diz que eu volto${was}.`;
+}
+
+// Item da cesta citado ("então 6 do Piracanjuba mesmo", "o Pilão de 29,48"), não pedido de novo (10/10, rodada 11 g33).
+export function repeatedItemKept(lines: { name: string; qty: number; changed: boolean }[]): string {
+  const changed = lines.filter((l) => l.changed);
+  const same = lines.filter((l) => !l.changed);
+  const parts: string[] = [];
+  if (changed.length) parts.push(`Certo: ${changed.map((l) => `*${l.name}* fica em *${l.qty}x*`).join(", ")}. ✅`);
+  if (same.length) parts.push(`${same.map((l) => `*${l.name}* (*${l.qty}x*)`).join(", ")} já está na cesta — deixei como está.`);
+  return parts.join("\n");
 }
 
 // "vai mudar o frete?" com pedido já cotado → o número real, não a explicação genérica.
