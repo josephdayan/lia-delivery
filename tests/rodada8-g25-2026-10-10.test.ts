@@ -14,7 +14,7 @@ import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage, recommendationLeftovers, runTurnScoped } from "../src/lib/delivery-service";
 import { __setDialogueModelForTests, dialogueBypassReason } from "../src/lib/dialogue";
 import { __setPreflightForTests } from "../src/lib/live-freight";
-import { detectIntent } from "../src/lib/lia-intents";
+import { cheaperAskTarget, detectIntent } from "../src/lib/lia-intents";
 import type { BasketItem, ChoiceOption, DeliveryContext, PendingChoice } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -154,6 +154,46 @@ test("3: 'aceito a troca, pode ser' aceita a troca de loja (não vira edição d
   const out = await send(c.phone, "aceito a troca, pode ser");
   assert.doesNotMatch(out, /já é o que está na sua cesta/i, out.slice(0, 300));
   assert.match(out, /Troquei de loja/i, out.slice(0, 300));
+});
+
+const areia = bi("cobasi-203572", "Areia para Gato Mitzi Granulado Sanitário Kelco 4kg", 17.59, { storeKey: "cobasi", storeLabel: "Cobasi", ask: "areia sanitária gato 4kg" });
+const leitePend = () => pend("leite", [opt("mambo-8057", "Leite Semidesnatado Longa Vida Parmalat 1 Litro", 5.49, "mambo", "Mambo"), opt("mambo-8058", "Leite Integral Italac 1L", 4.99, "mambo", "Mambo")], { qty: 12 });
+
+test("3: 'tem mais barato? 4kg da areia ta 65' nomeia a areia escolhida — vai direto ao mais barato dela, sem perguntar", async (t) => {
+  assert.equal(cheaperAskTarget("tem mais barato? 4kg da areia ta 65 na farmacia", [areia], ["leite"]), 0);
+  assert.equal(cheaperAskTarget("a areia que eu já escolhi, tem uma mais barata?", [areia], ["leite"]), 0);
+  assert.equal(cheaperAskTarget("tem leite mais barato?", [areia], ["leite"]), null);
+  assert.equal(cheaperAskTarget("tem mais barato?", [areia], ["leite"]), null);
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  let asked = 0;
+  __setDialogueModelForTests(async () => {
+    asked++;
+    return { actions: [{ type: "unclear", text: "Você quer ver leites mais baratos ou buscar uma areia de gato mais barata?" }] };
+  });
+  const c = await customerWith({ basket: [areia], pending: [leitePend()] }, "choosing");
+  const out = await send(c.phone, "tem mais barato? 4kg da areia ta 65 na farmacia");
+  assert.equal(asked, 0, "não pergunta 'leite ou areia?'");
+  assert.doesNotMatch(out, /Não peguei|leites mais baratos ou/i, out.slice(0, 400));
+  assert.match(out, /areia/i, out.slice(0, 400));
+});
+
+test("3: 'sim' à pergunta da Lia 'Você quer trocar a areia escolhida por uma opção mais barata?' faz a troca, sem repetir a pergunta", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  let asked = 0;
+  __setDialogueModelForTests(async () => {
+    asked++;
+    return { actions: [{ type: "unclear", text: "Você quer trocar a areia por outra opção mais barata?" }] };
+  });
+  const c = await customerWith(
+    { basket: [areia], pending: [leitePend()], openQuestion: { text: "Você quer trocar a areia escolhida por uma opção mais barata?", at: Date.now() } },
+    "choosing"
+  );
+  const out = await send(c.phone, "sim");
+  assert.equal(asked, 0, out.slice(0, 300));
+  assert.doesNotMatch(out, /Não peguei|Você quer trocar a areia|Não achei esse item/i, out.slice(0, 400));
+  assert.match(out, /areia/i, out.slice(0, 400));
 });
 
 // 4 ------------------------------------------------------------------------------------------------------------------

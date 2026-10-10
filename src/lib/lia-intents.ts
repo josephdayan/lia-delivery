@@ -3078,6 +3078,20 @@ export function parseItemCheapest(text: string): string | null {
   return null;
 }
 
+// Pedido de "mais barato" que NOMEIA um item já escolhido (10/10, rodada 8 g25): "tem mais barato? 4kg da areia ta 65 na
+// farmacia", "a areia que eu já escolhi, tem uma mais barata?". Com outro carrossel aberto a IA perguntava "areia ou
+// leite?" e o "sim" seguinte caía em "Não peguei qual você quer". Devolve o índice do único item da cesta nomeado (que
+// não seja o item em escolha), ou null.
+export function cheaperAskTarget(text: string, basket: { name: string; ask?: string }[], pendingQueries: string[] = []): number | null {
+  const n = normalizeMsg(text);
+  if (!/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/.test(n)) return null;
+  const said = n.replace(/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/g, " ");
+  const hits = basket.map((item, i) => (sharesProductNoun(said, `${item.ask ?? ""} ${item.name}`) ? i : -1)).filter((i) => i >= 0);
+  if (hits.length !== 1) return null;
+  if (pendingQueries.some((q) => sharesProductNoun(said, q))) return null;
+  return hits[0];
+}
+
 // "a ração tem que ser de 3kg", "quero a ração de 3kg", "o leite de 2 litros" com a lista montada (09/10, rodada com
 // a IA: ela ora trocava pelo mesmo 1kg, ora tentava refinar sem opções na tela). Devolve o item e o tamanho.
 export function parseItemSize(text: string): { item: string; size: string } | null {

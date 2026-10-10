@@ -114,7 +114,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // Logo depois de escolher (lastChoice, ainda coletando), "mais um" soma ao item recém-escolhido, mesmo com outros na cesta.
   if (i.intent.kind === "qty_adjust" && !i.ctx.pending?.length && (i.ctx.basket?.length === 1 || (i.ctx.lastChoice && (!i.ctx.step || i.ctx.step === "collecting")))) return "intent:qty_single";
   // "troca o arroz pelo mais barato" (09/10, rodada 1): "mais barato" é critério; o cérebro resolve o item sem IA.
-  if (i.intent.kind === "swap_item" && /^(?:o |a )?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
+  // "troca a areia por uma opção mais barata" (o "sim" à pergunta da própria Lia vira essa frase, 10/10, rodada 8 g25): idem.
+  if (i.intent.kind === "swap_item" && /^(?:(?:o|a|um|uma|outr[oa])\s+)?(?:(?:opcao|versao|marca|op[cç]ao)\s+)?mais (?:barat|em conta)/.test(normalizeMsg(i.intent.to)) && (i.ctx.basket?.length ?? 0) > 0) return "intent:swap_cheapest";
   if (i.intent.kind === "clear_cart" && isExplicitClearAll(text)) return "intent:clear_all";
   if (i.intent.kind === "repeat_last" && isExplicitRepeatOrder(text)) return "intent:repeat_order";
   // "vocês entregam hoje?": sim/não direto, calculado dos prazos reais (não passa pela IA, que perde o "hoje").

@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -3322,6 +3322,17 @@ async function handleDeliveryTurn(
           ]
         : [];
       await reply(phone, asked.item ? `${copy.basketQtyAnswer(rows, asked.item)}\n\n${summary}` : summary);
+      return;
+    }
+  }
+  // "tem mais barato? 4kg da areia ta 65 na farmacia" com a areia já escolhida (10/10, rodada 8 g25): troca ESSE item
+  // pelo mais barato (ou diz que já é), mesmo com outro carrossel aberto — a IA perguntava "areia ou leite?" em laço.
+  if (!ctx.deliveryOrderId && (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") && ctx.basket?.length && intent.kind === "free_text") {
+    const lines = ctx.basket.filter((item) => item.unitPrice > 0);
+    const idx = cheaperAskTarget(text, lines, (ctx.pending ?? []).map((p) => p.query));
+    if (idx != null) {
+      const target = lines[idx];
+      await handleSwap(phone, convo.id, user.cep, ctx, target.name, "um mais barato", text, undefined, target.sku);
       return;
     }
   }
@@ -8969,6 +8980,9 @@ async function handleSwap(
   exactFromSku?: string
 ) {
   const basket = ctx.basket ?? [];
+  // "troca a areia ESCOLHIDA por…" / "a areia que eu já escolhi" (10/10, rodada 8 g25: o "sim" à pergunta da Lia vira essa
+  // frase): o qualificador aponta pra cesta, não é parte do nome do produto.
+  from = from.replace(/\s+(?:(?:que\s+)?(?:eu\s+)?(?:ja\s+|já\s+)?(?:escolhid[oa]s?|escolhi|pedi|coloquei|botei)|d[ao]\s+(?:cesta|carrinho|lista))\b.*$/i, "").trim() || from;
   // Teto dito na troca ("troca o perfume por um mais barato, até 60 reais", 10/10, rodada 5 M10): sai da frase de
   // busca e filtra o substituto; o gerente de diálogo às vezes manda só "mais barato", por isso também lê a frase crua.
   const toCap = splitPriceCap(to);
