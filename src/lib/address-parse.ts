@@ -2,7 +2,7 @@
 // é pedido e o que é cortesia numa mensagem só. Tudo puro (sem banco, sem rede) — testado em
 // tests/feedback-2026-10-06-cadastro.test.ts.
 import { resolveListItems } from "@/lib/list-items";
-import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, type ParsedLine } from "@/lib/lia-intents";
+import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
 // "praça", "estrada") só com a palavra seguinte em maiúscula — "calça larga" não é endereço.
@@ -413,11 +413,20 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   // Marcador de lista ("- sabonete dove") não é parte do produto.
   const courtesy = stripCourtesy((raw ?? "").replace(NAME_AT_START_RE, "").replace(/^\s*[-•*–]\s+/gm, ""));
   const cleaned = courtesy.text.replace(URL_RE, (url) => ` ${urlSlug(url)} `).replace(REMINDER_RE, "");
-  const lines = resolveListItems(cleaned).filter((line) => {
+  const resolved = resolveListItems(cleaned);
+  // "caixa de bombom, cartão" (10/10, rodada 13 g37): o cartão solto ao lado de outro produto é item (cartão de presente);
+  // sozinho, ou com "no"/"pago no", continua sendo a forma de pagar.
+  const bareCardIsItem = resolved.length >= 2 && resolved.some((line) => !ONBOARDING_NOISE_RE.test(normalizeMsg(line.phrase)));
+  const lines = resolved.filter((line) => {
     const n = normalizeMsg(line.phrase);
+    if (bareCardIsItem && /^(?:um |uns )?cartao(?:zinho)?s?$/.test(n)) return true;
+    // "a visita chega hoje", "a festa é sábado" (10/10, rodada 13 g37): o prazo é anotado à parte, não é item.
+    if (parseNeededBy(line.phrase) && /\b(?:chega\w*|cheg[ao]u?|vem|vai ser|e|eh|sera|comeca|acontece)\b/.test(n)) return false;
     if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(line.phrase.trim()) && (/\b0+\b/.test(line.phrase) || /\bsem nome\b/i.test(line.phrase))) return false;
     return !/^(?:o\s+)?(?:n[uú]mero|num|n[º°]\.?|nro\.?)\s*(?:[eé]|eh|:)?\s*\d{1,5}[a-z]?$/i.test(line.phrase.trim()) && !PHONE_ONLY_RE.test(line.phrase) && !isWaitGripe(line.phrase) && !ONBOARDING_NOISE_RE.test(n) && !isNarrativeSegment(line.phrase) && /\p{L}{2,}/u.test(line.phrase);
   });
-  const text = lines.map((line) => (line.qtyExplicit || line.qty > 1 ? `${line.qty} ${line.phrase}` : line.phrase)).join(", ");
+  // O cartão solto que ficou como item é o de presente (a busca por "cartão" sozinho não acha nada).
+  const phraseOf = (line: ParsedLine) => (bareCardIsItem && /^(?:um |uns )?cartao(?:zinho)?s?$/.test(normalizeMsg(line.phrase)) ? "cartão de presente" : line.phrase);
+  const text = lines.map((line) => (line.qtyExplicit || line.qty > 1 ? `${line.qty} ${phraseOf(line)}` : phraseOf(line))).join(", ");
   return { text, lines, wantsToOrder: courtesy.wantsToOrder };
 }

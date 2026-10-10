@@ -87,8 +87,9 @@ export function welcomeAskFullDeliveryAddress(notedItems?: string[]): string {
 // ---------- cadastro pelo formulário (06/10, dono: "pode pedir tudo direto no começo") ----------
 // Corpo da mensagem que leva o formulário nativo do WhatsApp (botão "Fazer cadastro"). O
 // pedido em texto de antes (welcomeAskFullDeliveryAddress) continua sendo o plano B.
-export function signupFormBody(notedItems?: string[], intro = true): string {
-  const items = notedItems?.length ? notedItems.map((i) => `• ${i}`).join("\n") : "";
+// `extra` = teto e prazo ditos junto da lista (10/10, rodada 13 g37: no formulário de cadastro eles não apareciam).
+export function signupFormBody(notedItems?: string[], intro = true, extra?: string): string {
+  const items = notedItems?.length ? `${notedItems.map((i) => `• ${i}`).join("\n")}${extra ? `\n${extra}` : ""}` : "";
   if (!intro) {
     const note = items ? `✅ Anotei:\n${items}\n\n` : "";
     return `${note}Pra eu comprar pra você, falta o cadastro: nome, CPF e endereço. É uma vez só 👇`;
@@ -685,9 +686,10 @@ export function choiceSequence(queries: string[]): string {
   // Lista longa não vira parágrafo com 11 "e" (28/08 S1): cita os 3 primeiros e conta
   // o resto.
   const rest = queries.slice(1);
-  const shown = rest.slice(0, 2).map((q) => `*${q}*`);
+  // Sobrando 1 só, ele vai pelo nome ("e mais 1" soava estranho, 10/10, rodada 13 g37); 2+ = "e mais N itens".
+  const shown = rest.slice(0, rest.length === 3 ? 3 : 2).map((q) => `*${q}*`);
   const extra = rest.length - shown.length;
-  const tail = extra > 0 ? `${shown.join(", ")} e mais ${extra}` : shown.join(" e ");
+  const tail = extra > 0 ? `${shown.join(", ")} e mais ${extra} itens` : shown.length > 2 ? `${shown.slice(0, -1).join(", ")} e ${shown[shown.length - 1]}` : shown.join(" e ");
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
@@ -2980,7 +2982,24 @@ export function etaUpdatedByStore(rows: Array<{ store: string; before: string; n
   return `🚚 Conferi o prazo agora na loja: ${rows.map(line).join("; ")}. O resumo abaixo já usa o prazo novo.`;
 }
 
+// "carne moída 1kg", "carne moída", "carne moída patinho" (10/10, rodada 13 M1): a mesma falta pedida 3 vezes saía 3 vezes.
+// Chave = as 2 primeiras palavras do produto (sem medida e sem conectivo); a 1ª forma dita fica.
+export function dedupeMissLabels(items: string[]): string[] {
+  const key = (label: string) =>
+    label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
+      .filter((w) => w && !/^\d/.test(w) && !["de", "da", "do", "das", "dos", "um", "uma", "kg", "g", "ml", "l", "litro", "litros"].includes(w))
+      .slice(0, 2).join(" ");
+  const seen = new Set<string>();
+  return items.filter((label) => {
+    const k = key(label) || label;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
 export function leftOutNote(items: string[]): string {
+  items = dedupeMissLabels(items);
   const names = items.map((l) => `*${shortNotFoundLabel(l)}*`);
   return `⚠️ Ficou de fora (não achei): ${names.join(", ")} — ${items.length > 1 ? "não vêm" : "não vem"} neste pedido. Se quiser, me diz outro nome que eu procuro antes de você pagar.`;
 }
@@ -3628,6 +3647,18 @@ export function itemsNotDeliverableHere(items: string[], closingRest: boolean): 
   return closingRest ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, é só me pedir de novo.` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
 }
 
+// Fechamento com item recusado pela loja (10/10, rodada 13 A3): diz qual item e de qual loja, que o resto ficou, e
+// abre a troca por outra loja (o cartão abaixo). `dropped` = recusados sem alternativa que confirme entrega.
+export function itemsRefusedPickAnother(swappable: string[], dropped: string[], kept: number): string {
+  const list = (items: string[]) => (items.length === 1 ? `*${items[0]}*` : items.map((i) => `\n• ${i}`).join(""));
+  const head = swappable.length === 1
+    ? `A loja não confirmou entrega de ${list(swappable)} no seu endereço agora.`
+    : `As lojas não confirmaram entrega destes itens no seu endereço agora:${list(swappable)}`;
+  const out = dropped.length ? `\nSem outra opção que entregue aí, ficou de fora: ${list(dropped)}.` : "";
+  const keep = kept ? `\nO resto da cesta continua (${kept} ${kept === 1 ? "item" : "itens"}).` : "";
+  return `${head}${out}${keep}\nEscolhe uma opção de outra loja 👇 ou responde *pula* pra seguir sem.`;
+}
+
 // A escolha não tem entrega no endereço, mas a vitrine tem outras: elas vêm logo abaixo.
 export function itemNotDeliverableShowOthers(item: string): string {
   return `A loja não confirmou *${item}* para o seu endereço agora. Escolhe outra opção 👇`;
@@ -3776,6 +3807,17 @@ export function previousPurchaseNotHere(): string {
 }
 
 // Várias lojas e nenhuma cobre a cesta toda (ou juntar sai mais caro): uma linha antes do total (09/10).
+// Frete pesando e nenhuma loja junta tudo (10/10, rodada 13 M3): o item que abre a entrega mais cara, e as opções do mesmo
+// tipo nas lojas que já estão na cesta (o atual fica até escolher).
+export function costlyDeliverySwapHeader(item: string, storeLabel: string, fee: number, stores: number, freight: number): string {
+  return `💡 São ${stores} entregas (~${brl(freight)} de frete). A da *${storeLabel}* é só pro *${item}* e custa ~${brl(fee)}. Estas opções são de lojas que já estão na sua cesta — escolhendo uma, sai uma entrega. Ou responde *pula* que eu mantenho como está.`;
+}
+
+// "4 pacotes dão 2 kg" (10/10, rodada 13 M4): a conversão do tamanho pedido em pacotes, no aviso do "mais perto".
+export function packsToReach(n: number, askedLabel: string): string {
+  return `${n} pacotes dão ${askedLabel}`;
+}
+
 export function severalDeliveriesNote(stores: number): string {
   return `Esses itens estão em ${stores} lojas diferentes e nenhuma tem tudo (ou juntar sairia mais caro), então vai em ${stores} entregas.`;
 }

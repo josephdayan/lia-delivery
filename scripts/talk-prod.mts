@@ -6,7 +6,8 @@
 //
 // Uso (banco LOCAL — nunca o de produção):
 //   DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54329/lia_test npx tsx scripts/talk-prod.mts "oi" "01310-100" "arroz"
-//   ... interativo sem argumentos. Comandos: /form (envia o formulário da lista como veio), /quit.
+//   ... interativo sem argumentos. Comandos: /form (envia o formulário da lista como veio), /cadastro [nome]
+//   (responde o formulário de cadastro; com LIA_FLOW_SIGNUP_ID=qualquer a Lia manda o formulário como em produção), /quit.
 //   Botão: digite o id ou o título que aparece entre [ ].
 //
 // Trava de dinheiro: sem MERCADO_PAGO_ACCESS_TOKEN / Pagar.me / Asaas o Pix e o cartão são mock.
@@ -86,7 +87,11 @@ async function send(input: { text?: string; flowResponse?: Record<string, unknow
 
 async function turn(line: string) {
   console.log(`\n🧑 ${line}`);
-  const input = line === "/form" ? { text: "", flowResponse: { lia_lista: lastFlowToken ?? "" } } : { text: line };
+  // "/cadastro [nome]" (10/10, rodada 13 g37): responde o formulário de cadastro como o WhatsApp manda (nome, CPF, CEP, número).
+  const signup = line.match(/^\/cadastro(?:\s+(.+))?$/);
+  const input = signup
+    ? { text: "", flowResponse: { nome: signup[1] ?? "Teste Silva", cpf: "52998224725", cep: "01310100", numero: "1000", complemento: "", flow_token: lastFlowToken ?? "lia-cadastro" } }
+    : line === "/form" ? { text: "", flowResponse: { lia_lista: lastFlowToken ?? "" } } : { text: line };
   const { out, ms } = await send(input);
   if (!out.length) console.log("(sem resposta)");
   for (const o of out) console.log(`🤖 [${o.kind}] ${o.text.split("\n").join("\n     ")}`);

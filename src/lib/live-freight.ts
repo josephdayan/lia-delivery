@@ -349,11 +349,20 @@ const quicker = (a: { fee: number; minutes: number }, b: { fee: number; minutes:
   return a.minutes < b.minutes || (a.minutes === b.minutes && a.fee < b.fee);
 };
 
-export async function liveStoreFreight(
+// `refusedSkus` (10/10, rodada 13 A3): QUAIS itens da cesta a loja recusou, quando a resposta diz (linha sem entrega,
+// linha sem estoque). Ausente = a loja inteira (fora da área, resposta sem culpado). O fechamento tira só esses.
+export type LiveFreightDetailed = LiveFreightOutcome & { refusedSkus?: string[] };
+
+export async function liveStoreFreight(storeKey: string, items: { sku: string; qty: number }[], cep: string): Promise<LiveFreightOutcome> {
+  const { refusedSkus: _refused, ...outcome } = await liveStoreFreightDetailed(storeKey, items, cep);
+  return outcome as LiveFreightOutcome;
+}
+
+export async function liveStoreFreightDetailed(
   storeKey: string,
   items: { sku: string; qty: number }[],
   cep: string
-): Promise<LiveFreightOutcome> {
+): Promise<LiveFreightDetailed> {
   // Loja regional fora da área do CEP: resposta definitiva, sem rede (store-areas.ts).
   if (items.length && !storeServesCep(storeKey, cep)) return { kind: "no-delivery" };
   const store = VTEX_LIVE[storeKey];
@@ -419,7 +428,8 @@ export async function liveStoreFreight(
     // ela não entrega. Vai pro operador. (`availability` ausente = a loja não informou;
     // não inventamos indisponibilidade.)
     if (simulated.some((item) => item.availability && item.availability !== "available")) {
-      return { kind: "item-unavailable" };
+      const missing = new Set(simulated.filter((item) => item.availability && item.availability !== "available").map((item) => String(item.id ?? "")));
+      return { kind: "item-unavailable", refusedSkus: items.filter((item) => missing.has(store.sku.exec(item.sku)?.[1] ?? "")).map((item) => item.sku) };
     }
 
     // logisticsInfo aponta pro item via itemIndex (quando presente); cada item precisa
@@ -433,6 +443,9 @@ export async function liveStoreFreight(
     }
 
     const lines: CartLine[] = [];
+    // Linhas sem entrega para o CEP (10/10, rodada 13 A3): a Americanas devolve o guardanapo só com "Retirada"
+    // quando vai junto de 3 Cocas — antes a cesta inteira (vela, guardanapo, Coca) caía; agora sai só o guardanapo.
+    const undeliverable = new Set<string>();
     for (const index of [...infoByItem.keys()].sort((a, b) => a - b)) {
       const info = infoByItem.get(index)!;
       const deliveries = (info.slas ?? []).map((sla) => effectiveSla(sla)).filter(
@@ -446,9 +459,13 @@ export async function liveStoreFreight(
           sla.price >= 0
       );
       // Um item sem opção de entrega = a loja não entrega essa cesta nesse CEP.
-      if (!deliveries.length) return { kind: "no-delivery" };
+      if (!deliveries.length) {
+        undeliverable.add(String(simulated[index]?.id ?? ""));
+        continue;
+      }
       lines.push({ sku: String(simulated[index]?.id ?? index), slas: deliveries });
     }
+    if (undeliverable.size) return { kind: "no-delivery", refusedSkus: items.filter((item) => undeliverable.has(store.sku.exec(item.sku)?.[1] ?? "")).map((item) => item.sku) };
     // Uma entrega por loja (06/10, M2): a SLA comum de menor total; resposta sem rateio é
     // conferida com o 1º item sozinho (1 simulação a mais, só quando ambígua).
     const ambiguous = new Set<string>();
