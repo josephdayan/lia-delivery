@@ -9,6 +9,8 @@ import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage, cheaperSwapPool, splitIdentity } from "../src/lib/delivery-service";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { satisfiesNegation } from "../src/lib/stores/types";
+import { notifyOwner } from "../src/lib/turn-runtime";
+import { testLineCapture, type CapturedSend } from "../src/lib/test-line";
 import { __setPreflightForTests, estimateDay } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
 import type { BasketItem, ChoiceOption } from "../src/lib/conversation-types";
@@ -234,7 +236,7 @@ test("'total' com a pergunta 'sim ou outras' aberta: mostra o parcial e repete a
   const option = { sku: "g16-ovos-10", name: "Ovos Vermelhos 10 un", unitPrice: 10, storeKey: "mambo", storeLabel: "Mambo" };
   const c = await customerWith({ pending: [{ query: "uma dúzia de ovos", qty: 12, qtyExplicit: true, options: [option] }], packConfirm: { sku: option.sku, askedQty: 12 } }, "choosing");
   const out = await send(c.phone, "total");
-  assert.match(out, /10 unidades.*pediu \*12\*/s, out.slice(0, 500));
+  assert.match(out, /10 unidades[\s\S]*pediu \*12\*/, out.slice(0, 500));
   const ctx = await ctxOf(c.convoId);
   assert.deepEqual(ctx.packConfirm, { sku: option.sku, askedQty: 12 }, "a pergunta segue aberta");
   const yes = await send(c.phone, "sim");
@@ -249,4 +251,28 @@ test("satisfiesNegation: 'sem cheiro' aceita 'sem perfume'/'sem fragrância'; se
   assert.equal(satisfiesNegation("areia sem cheiro 4kg", "Areia Pipicat Classic 4kg"), false);
   assert.equal(satisfiesNegation("cafe sem acucar", "Café Solúvel Zero Açúcar"), true);
   assert.equal(satisfiesNegation("areia 4kg", "Areia Pipicat Classic 4kg"), null);
+});
+
+// 7) Linha de teste: aviso ao operador sobre cliente fictício nunca sai ------------------------------------------
+test("linha de teste: aviso ao dono sobre +5500995… fora da captura não é enviado; cliente real segue avisando", async () => {
+  const prev = process.env.LIA_OWNER_PHONE;
+  process.env.LIA_OWNER_PHONE = "+5511900000001";
+  try {
+    const start = outbox.length;
+    await notifyOwner("🎭 Ensaio da compra barrou a cobrança: teste", "+5500995000123");
+    assert.equal(outbox.slice(start).filter((m) => m.to === "+5511900000001").length, 0);
+    await notifyOwner("aviso de cliente real", "+5511988887777");
+    assert.equal(outbox.slice(start).filter((m) => m.to === "+5511900000001").length, 1);
+  } finally {
+    if (prev === undefined) delete process.env.LIA_OWNER_PHONE;
+    else process.env.LIA_OWNER_PHONE = prev;
+  }
+});
+
+test("linha de teste: envio ao cliente fictício fora da captura não sai; dentro, o aviso ao dono é capturado e marcado", async () => {
+  const wrapped = original.sendMessage as (to: string, text: string) => Promise<unknown>;
+  assert.equal(await wrapped("+5500995000123", "lembrete do cron"), null);
+  const out: CapturedSend[] = [];
+  await testLineCapture.run({ phone: "+5500995000123", out }, () => wrapped("+5511900000001", "aviso ao dono"));
+  assert.deepEqual(out.map((o) => o.to), ["+5511900000001"]);
 });
