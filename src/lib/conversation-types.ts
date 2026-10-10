@@ -87,6 +87,8 @@ export type PendingChoice = {
   qty: number;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
   storeNoted?: boolean;
+  // O aviso "pra amanhã não chega" da vitrine já saiu para esta escolha (10/10, rodada 6 g19).
+  deadlineNoted?: boolean;
   // A loja pedida para a lista toda (ctx.preferredStore) já foi posta na frente das opções (10/10, rodada 5 M9).
   storePrioritized?: boolean;
   // Nome dessa loja, para o aviso "não achei na <loja>" quando a escolha é mostrada.
@@ -377,6 +379,9 @@ export type DeliveryContext = {
   // Oferta de juntar que saiu da mesa por outra mensagem (10/10, rodada 5 M1): "1"/"juntar" logo depois, com a MESMA
   // cesta, ainda responde a ela — antes o "1" virava quantidade do leite.
   consolidationParked?: DeliveryContext["consolidationOffer"];
+  // "tudo numa loja só" dito no meio das escolhas (10/10, rodada 6 g19): no fechamento, a Lia junta (na loja pedida, se
+  // houver) em vez de perguntar de volta. `at` = quando foi pedido.
+  joinWanted?: { store?: string; at: number };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

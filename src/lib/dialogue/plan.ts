@@ -150,6 +150,10 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       }
       // Quantidade dita e perdida pela IA (10/10, rodada 6 A6: "leite integral 12 caixas de 1 litro" voltava qty 1): com UM
       // item na fala, a contagem explícita do parser vale quando a IA não trouxe nenhuma.
+      // Teto dito ("perfume feminino até 60 reais", 10/10, rodada 6 g19) que a IA tirou da frase: volta na busca de um item
+      // só — sem ele, a vitrine de R$ 83 a R$ 94 saía sem aviso.
+      const saidCap = text ? parsePriceCap(text) : null;
+      if (saidCap != null && parsePriceCap(query) == null && resolveListItems(text).length <= 1 && sharesProductNoun(text, query)) query = `${query} até ${saidCap} reais`;
       let qty = clampQty(a.qty) ?? 1;
       if (qty === 1 && text) {
         const said = resolveListItems(text);
@@ -214,7 +218,10 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       if (!to || to.length > 100) return "sem_destino";
       // "troca por bolacha água e sal e coloca 3" (09/10, teste real): a quantidade dita junto da troca se perdia — o
       // modelo não tem campo de quantidade no swap. Quantidade de unidades depois de coloca/bota/quero entra na busca.
-      const said = text.match(/\b(?:coloca|bota|poe|põe|quero|manda)\s+(\d{1,2}|dois|duas|tr[eê]s|quatro|cinco|seis)\b/i);
+      // "o leite ninho eu quis dizer o leite em pó, 2 latas" (10/10, rodada 6 g19): número + embalagem também é a quantidade.
+      const said =
+        text.match(/\b(?:coloca|bota|poe|põe|quero|manda)\s+(\d{1,2}|dois|duas|tr[eê]s|quatro|cinco|seis)\b/i) ??
+        text.match(/\b(\d{1,2}|dois|duas|tr[eê]s|quatro|cinco|seis)\s+(?:latas?|latinhas?|pacotes?|caixas?|potes?|garrafas?|vidros?|sacos?|fardos?|kits?|unidades?|un)\b/i);
       const words: Record<string, string> = { dois: "2", duas: "2", tres: "3", "três": "3", quatro: "4", cinco: "5", seis: "6" };
       const qty = said ? words[said[1].toLowerCase()] ?? said[1] : undefined;
       return { type: "swap", from, to: qty && !/\d/.test(to) && Number(qty) > 1 ? `${qty} ${to}` : to };

@@ -14,7 +14,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { estimateDay, humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, parseDropClause, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1250,6 +1250,19 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     p.storeNoted = true;
     await reply(phone, copy.requestedStoreNotShown(preferred, shownQuery(p)));
   }
+  // Prazo dito ("é aniversário amanhã", "pilha pra amanhã"): as opções que não chegam a tempo não saem caladas (10/10,
+  // rodada 6 g19 — antes só o resumo lia o prazo). Uma vez por escolha; tudo a tempo = nada a dizer.
+  const deadline = turnMeta.getStore()?.neededBy;
+  // "Nada chega hoje" no cabeçalho já diz isso quando o prazo é hoje.
+  if (deadline && !p.deadlineNoted && p.options.length && !(p.noneToday && deadline.label === "hoje")) {
+    const verdict = deadlineVerdict(p.options, deadline.date);
+    // Já avisado nas últimas falas (o p.deadlineNoted nem sempre volta gravado): "outras" não repete.
+    const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`));
+    if (verdict?.late.length && !said) {
+      p.deadlineNoted = true;
+      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined));
+    }
+  }
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
   // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
   // ter botão?") a vitrine de remédio é de cards soltos (foto + "Adicionar"); só o carrossel
@@ -2195,6 +2208,17 @@ async function handleDeliveryTurn(
   // Loja pedida para a lista toda ("da cobasi tudo", 10/10, rodada 5 M9): vale para as próximas escolhas da lista.
   {
     const wholeStore = user.defaultAddress ? parseWholeListStore(text, mentionableStoreNames()) : null;
+    // O trecho que só diz a loja ("..., da cobasi tudo") não é item (10/10, rodada 6 g19: "*da cobasi tudo* eu não achei").
+    if (wholeStore) {
+      const FILLER = new Set(["tudo", "todos", "todas", "os", "as", "itens", "coisas", "lista", "toda", "inteira", "a", "o", "da", "do", "das", "dos", "de", "na", "no", "pela", "pelo", "loja", "farmacia", "mercado", "se", "der", "puder", "possivel", "quero", "queria", "prefiro", "pode", "ser", "e", "mas", "ai", "por", "favor", "pfv"]);
+      const storeWords = new Set(normalizeMsg(wholeStore).split(/[^a-z0-9]+/).filter(Boolean));
+      const segments = text.split(/(?<=[,;\n])/);
+      const kept = segments.filter((seg) => {
+        if (!parseWholeListStore(seg, [wholeStore])) return true;
+        return normalizeMsg(seg).split(/[^a-z0-9]+/).filter(Boolean).some((w) => !FILLER.has(w) && !storeWords.has(w));
+      });
+      if (kept.length && kept.length < segments.length) text = kept.join("").replace(/[,;\s]+$/, "").trim();
+    }
     if (wholeStore && wholeStore !== ctx.preferredStore) {
       ctx.preferredStore = wholeStore;
       // A escolha que já está na tela não muda de ordem (a numeração que o cliente vê); as da fila, sim.
@@ -2208,6 +2232,24 @@ async function handleDeliveryTurn(
   if (intent.kind === "free_text" && !(ctx.pending?.length) && (ctx.basket?.length ?? 0) > 0 && ctx.step === "collecting") {
     const only = parseOnlyKeep(text);
     if (only && "demonstrative" in only) intent = { kind: "done" };
+  }
+
+  // "só o cartão, sem vela" com outro item na tela e a vela na fila (10/10, rodada 6 g19: "Não peguei qual você quer" ou
+  // "Anotei *so o cartao sem vela*"). A cláusula de tirar sai da fila e o resto segue como mensagem própria.
+  if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) >= 2) {
+    const drop = parseDropClause(text);
+    const queued = drop ? ctx.pending!.slice(1).filter((p) => itemMatchesPhrase(drop.drop, { sku: p.query, name: p.baseQuery ?? p.query, unitPrice: 0 })) : [];
+    if (drop && queued.length) {
+      ctx.pending = ctx.pending!.filter((p) => !queued.includes(p));
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.removedItems(queued.map((p) => shownQuery(p)).join(", "), false));
+      // "só o cartão": o resto nomeia o item que não foi achado na lista ("cartão de aniversário") — volta como esse
+      // pedido (sozinho, "cartão" seria forma de pagamento).
+      const restWords = normalizeMsg(drop.rest).split(/\s+/).filter((w) => w.length >= 4);
+      const miss = (ctx.listMisses ?? []).find((m) => restWords.length > 0 && restWords.every((w) => normalizeMsg(m.query).includes(w)));
+      text = miss ? miss.query : drop.rest;
+      intent = detectIntent(text);
+    }
   }
 
   // "Fecho sem a vela?" (10/10, rodada 5 A1): resposta à pergunta de fechar com item ainda em escolha. "sim",
@@ -2234,6 +2276,19 @@ async function handleDeliveryTurn(
   if (!ctx.consolidationOffer && !ctx.pending?.length && (!ctx.step || ctx.step === "collecting" || ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight")) {
     const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
     if (joinAsk && (await handleJoinRequest(phone, convo.id, user.cep, ctx, joinAsk.store))) return;
+  }
+  // Mesmo pedido com itens ainda em escolha (10/10, rodada 6 g19: "tudo numa loja so" virava pergunta aberta da IA e o
+  // "sim" seguinte ia ao resumo com as 4 entregas). Anota e junta no fechamento; a escolha na tela continua.
+  if (!ctx.consolidationOffer && ctx.pending?.length && ctx.step === "choosing") {
+    const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    if (joinAsk) {
+      ctx.joinWanted = { ...(joinAsk.store ? { store: joinAsk.store } : {}), at: Date.now() };
+      if (joinAsk.store) ctx.preferredStore = joinAsk.store;
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.joinNotedForClose(joinAsk.store));
+      await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
+      return;
+    }
   }
 
   // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
@@ -2460,6 +2515,9 @@ async function handleDeliveryTurn(
   // Prazo dito ("é aniversário da minha mãe amanhã"): o total avisa se a entrega não cumpre (rodada 4, M6).
   const neededBy = parseNeededBy(text);
   if (neededBy) ctx.neededBy = neededBy;
+  // A vitrine deste turno também avisa (10/10, rodada 6 g19: só o resumo do operador lia o prazo; em produção as
+  // opções de 3 a 8 dias úteis saíam sem aviso).
+  { const meta = turnMeta.getStore(); if (meta && ctx.neededBy) meta.neededBy = ctx.neededBy; }
 
   // ---- endereço: pergunta da Lia em aberto (troca de CEP / cidade ≠ CEP), 06/10 ----
   if ((ctx.cepSwap || ctx.cepCityCheck) && (await handlePendingAddressQuestion(phone, user, convo.id, ctx, text, intent))) return;
@@ -3053,6 +3111,11 @@ async function handleDeliveryTurn(
   // cesta e o que falta escolher (antes caía na apresentação genérica da Lia).
   {
     const asked = asksBasketContents(text);
+    // Cesta vazia (10/10, rodada 6 g19): diz isso — antes caía em "Não entendi" ou na apresentação da Lia.
+    if (asked && !ctx.basket?.length && !ctx.pending?.length && !asked.item && (!ctx.step || ctx.step === "collecting")) {
+      await reply(phone, copy.emptyCartTotal());
+      return;
+    }
     if (asked && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
@@ -3685,6 +3748,19 @@ async function handleDeliveryTurn(
     if (vagueOk && offer.key === key && !keep) {
       await reply(phone, copy.consolidationAsk());
       return;
+    }
+    // "junta tudo na cobasi" com a oferta de outra junção na mesa (10/10, rodada 6 g19: aceitava a de 2 lojas calado):
+    // a loja pedida manda — junta nela e diz o que ficou fora.
+    const named = offer.key === key && !keep ? parseJoinStoresAsk(text, listStores().map((store) => store.label))?.store : undefined;
+    if (named && (normalizeMsg(named) !== normalizeMsg(offer.storeLabel) || (offer.joinedStores ?? 1) > 1)) {
+      // A oferta de antes fica guardada (resposta "1"/"2" logo depois ainda vale) enquanto a loja pedida é tentada.
+      ctx.consolidationOffer = undefined;
+      ctx.consolidationParked = offer;
+      if (await handleJoinRequest(phone, convo.id, user.cep, ctx, named)) {
+        if (ctx.consolidationParked) await writeCtx(convo.id, ctx);
+        return;
+      }
+      ctx.consolidationParked = undefined;
     }
     ctx.consolidationOffer = undefined;
     if (offer.key === key && (join || keep)) {
@@ -7017,8 +7093,9 @@ async function handleChoosing(
         await reply(phone, copy.choiceSkipped(current.query));
         return;
       }
-      await reply(phone, copy.choiceSkipped(current.query));
-      await advancePending(phone, convoId, ctx, userCep);
+      // O "Deixei de fora" vai como corpo do acompanhamento (10/10, rodada 6 g19: saía solto e depois um "Escolhe aí
+      // embaixo" vazio).
+      await advancePending(phone, convoId, ctx, userCep, copy.choiceSkipped(current.query));
       return;
     }
     // "mais barato"/"mais caro" SEM verbo de escolha: mostrar opções nessa faixa —
@@ -9581,7 +9658,8 @@ export function splitBySize(sizeAsk: string, items: { name: string; brand?: stri
 // também quando o pedido é MENOR que a caixa, se o número conta o próprio conteúdo da
 // embalagem ("6 ovos", "meia dúzia de ovos" com caixa de 10 = 1 caixa, não 6).
 // 06/10 (A3): item vendido por peso ("2kg de banana", unidade de ~180 g) = 11 unidades.
-const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?)\b/i;
+// Descartáveis de festa e afins (10/10, rodada 6 g19: "40 copos descartáveis" virou 40 pacotes "C/50", R$ 571).
+const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
 export function parseWeightAskKg(query: string): number | undefined {
   const t = normalizeMsg(query);
   if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
@@ -9593,8 +9671,12 @@ export function parseWeightAskKg(query: string): number | undefined {
 }
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
 export function declaredPack(optionName: string): number {
-  const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
-  return m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
+  const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b|copos\b|pratos\b|guardanapos\b|garfos\b|colheres\b|facas\b|canudos\b|bal[oõ]es\b|velas\b|palitos\b|forminhas\b)/i);
+  if (m) return Number(m[1]);
+  // "Copo Descartável ... C/50", "c/ 100" (10/10, rodada 6 g19): contagem da embalagem sem a palavra "unidades".
+  const withCount = optionName.match(/\b[cC]\s*\/\s*(\d{1,4})(?![\d.,])(?!\s*(?:kg|g|mg|ml|l|lt|cm|mm|m|gr|un\w*\s*de)\b)/);
+  if (withCount) return Number(withCount[1]);
+  return /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
 const PACK_COUNT_ASK_MIN = 100;
 const PACK_UNIT_LEAD_RE = /^(?:pacotes?|pcts?|caixas?|cxs?|fardos?|kits?|embalage[nm]s?|latas?|bandejas?|packs?|cartelas?|unidades?)\b/;
@@ -10140,7 +10222,8 @@ async function handleJoinRequest(phone: string, convoId: string, userCep: string
   const view: DeliveryContext = { ...ctx, basket };
   const joined = await planConsolidation(view, userCep, target ? { target: target.key } : { fewer: true });
   if (!joined) {
-    await reply(phone, copy.joinNotPossible(stores, target?.label));
+    const others = target && basket.some((i) => i.storeKey === target.key) ? basket.filter((i) => i.storeKey !== target.key).map((i) => i.name) : [];
+    await reply(phone, target && others.length ? copy.joinTargetLacksOthers(target.label, others, stores, Boolean(ctx.consolidationParked)) : copy.joinNotPossible(stores, target?.label));
     return true;
   }
   // Total na mesa: reabre (nada cobrado) antes de mexer na cesta.
@@ -10209,11 +10292,21 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
     return false;
   }
   const joinedStores = joined.stores ?? 1;
+  // Prazo dito (10/10, rodada 6 g19): juntar que não chega a tempo quando o como-está chega não é oferta; pedida pelo
+  // cliente, sai com o aviso. As duas formas atrasando também avisam.
+  const deadline = ctx.neededBy;
+  const joinedMiss = deadline ? promiseMissesDeadline(humanEstimate(joinedEta), deadline.date) === true : false;
+  const keptMiss = deadline ? promiseMissesDeadline(humanEstimate(keptEta), deadline.date) === true : false;
+  if (joinedMiss && !keptMiss && !force) {
+    console.warn("[basket:consolidate:misses-deadline]", joinedEta, keptEta);
+    return false;
+  }
+  const deadlineNote = deadline ? copy.consolidationDeadlineNote(deadline.label, joinedMiss, keptMiss, humanEstimate(joinedEta), humanEstimate(keptEta)) : null;
   ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}), ...(joinedStores > 1 ? { joinedStores } : {}) };
   ctx.consolidationParked = undefined;
   await writeCtx(convoId, ctx);
   if (prefix) await reply(phone, prefix);
-  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left });
+  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left, deadlineNote });
   markTurnReplied();
   const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
   if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
@@ -10261,6 +10354,16 @@ async function continueAfterBasket(
     // Uma loja por pedido (08/10 noite): lista espalhada em várias lojas é juntada numa só ANTES do
     // pedido mínimo (juntar costuma resolver o mínimo também). A troca nunca é silenciosa.
     const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    // Pedido de juntar feito durante as escolhas (10/10, rodada 6 g19): vale agora, como se dito no fechamento.
+    if (ctx.joinWanted && new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1) {
+      const wanted = ctx.joinWanted;
+      ctx.joinWanted = undefined;
+      if (Date.now() - wanted.at < 2 * 60 * 60_000) {
+        if (prefix) await reply(phone, prefix);
+        if (await handleJoinRequest(phone, convoId, userCep, ctx, wanted.store)) return;
+        prefix = undefined;
+      }
+    }
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
       // 3+ lojas sem uma que cubra tudo: oferece juntar em MENOS lojas (10/10, rodada 5 A4 — antes só a frase passiva

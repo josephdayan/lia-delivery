@@ -112,6 +112,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "vocês entregam hoje?": sim/não direto, calculado dos prazos reais (não passa pela IA, que perde o "hoje").
   if (asksDeliveryToday(text) && ["status", "service_question", "free_text"].includes(i.intent.kind)) return "intent:today_ask";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
+  // "tem um mais em conta?" (5 palavras) ia pra IA e 1 em 3 vezes ela inventava opções e depois tirava o item errado
+  // (10/10, rodada 6 g19). Pedido de mais barato sem nome é caminho fixo (pergunta "de qual item?" com 2+ itens).
+  if (i.intent.kind === "more_options" && i.intent.cheaper && trimmed.split(/\s+/).length <= 7) return "intent:more_cheaper";
   if (extractCpf(text)) return "cpf";
   // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
