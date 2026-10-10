@@ -707,6 +707,7 @@ export type SummaryInput = {
   deliveryAddress?: string;
   notFound?: string[];
   pickupCount?: number;
+  deliveries?: number;
 };
 
 // O prazo do resumo é o ÚNICO lugar onde a Lia fala em tempo — e só quando existe dado
@@ -735,8 +736,14 @@ export function promiseForCustomer(promise?: string | null): string {
 
 // Frete maior que os produtos (09/10, rodada 3): o cliente leigo desiste sem saber que somar itens da mesma loja dilui.
 // Só copy; o cálculo não muda.
-export function expensiveShippingNote(produtos: number, entrega: number): string[] {
-  return entrega > produtos + 0.009 && produtos > 0 ? ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"] : [];
+export function expensiveShippingNote(produtos: number, entrega: number, deliveries = 1): string[] {
+  if (produtos > 0 && entrega > produtos + 0.009) return ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"];
+  // Soma de fretes de várias lojas (10/10, rodada 4, B2): 5 entregas com frete de 44% do total saíam sem aviso.
+  const share = produtos + entrega > 0 ? entrega / (produtos + entrega) : 0;
+  if (deliveries >= 3 && share >= 0.25) {
+    return [`_São ${deliveries} entregas e o frete soma ${brl(entrega)} (${Math.round(share * 100)}% do total); se quiser, junto em menos lojas._`];
+  }
+  return [];
 }
 
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
@@ -759,7 +766,7 @@ export function summary(input: SummaryInput): string {
     `Produtos: ${brl(input.produtos)}`,
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
-    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
+    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
   ];
   if (input.notFound?.length) {
     out.push("", notFoundNote(input.notFound));
@@ -1288,6 +1295,15 @@ export function itemCheapestAnswer(input: { item: string; name: string; price: n
   return input.already
     ? `Pra *${input.item}*, já está o mais barato que achei: ${tail}.`
     : `✅ Troquei pelo mais barato: ${tail}.`;
+}
+// "troca por um mais barato" quando só há mais barato em outro tamanho (10/10, rodada 4): diz o tamanho e mostra as opções.
+export function cheaperOnlyOtherSize(input: { item: string; name: string; price: number; size?: string }): string {
+  const size = input.size ? ` de *${input.size}*` : "";
+  return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
+}
+// "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
+export function cheaperWhichItem(items: string[]): string {
+  return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
 }
 export function outOfScopeServiceAnswer(): string {
   return "Isso eu não faço 😅 Eu compro *produtos* em lojas online (mercado, farmácia, pet, beleza, casa, brinquedo) e a loja entrega aí. Precisa de algum produto?";
@@ -1839,11 +1855,12 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[] }): string {
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
   return [
-    `Dá pra juntar tudo na *${input.storeLabel}* por ${brl(input.joinedTotal)} com uma entrega, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas.`,
+    // O total já traz produtos + frete; o prazo de cada forma sai junto (10/10, rodada 4, B2: juntar passava de 3 para 8 dias úteis sem aviso).
+    `Dá pra juntar tudo na *${input.storeLabel}* por ${brl(input.joinedTotal)} com uma entrega${input.joinedEta ? ` (${input.joinedEta})` : ""}, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas${input.keptEta ? ` (${input.keptEta})` : ""}.`,
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
@@ -2270,7 +2287,12 @@ export function minimumSwapOffer(input: { newTotal: number; delta: number; store
 
 // Uma loja por pedido (08/10 noite): a lista estava em várias lojas e a Lia juntou tudo numa só. Nunca
 // silencioso — o que mudou, com preço, e a diferença no total.
-export function basketConsolidated(store: string, pairs: SwapPair[], delta: number): string {
+export function basketConsolidated(store: string, pairs: SwapPair[], delta: number, total?: { saved: number; eta?: string }): string {
+  // Com os dois totais da oferta, a diferença mostrada é a do TOTAL (produtos + frete), com o prazo novo.
+  if (total) {
+    const money = total.saved > 0.009 ? ` (${brl(total.saved)} a menos no total` : total.saved < -0.009 ? ` (${brl(Math.abs(total.saved))} a mais no total` : " (mesmo total";
+    return [`Juntei tudo na *${store}* pra vir num pedido só${money}${total.eta ? `, ${total.eta}` : ""}):`, ...swapPairLines(pairs)].join("\n");
+  }
   const diff = delta > 0.009 ? ` (${brl(delta)} a mais nos produtos, numa entrega só)` : delta < -0.009 ? ` (${brl(Math.abs(delta))} a menos)` : "";
   return [`Juntei tudo na *${store}* pra vir num pedido só${diff}:`, ...swapPairLines(pairs)].join("\n");
 }
@@ -2431,6 +2453,8 @@ export function manualQuoteSummary(input: {
   sameHour?: boolean;
   // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
   deadlineMiss?: { label: string };
+  // Nº de lojas/entregas do pedido (aviso de frete somado).
+  deliveries?: number;
   // true = a mensagem sai com o botão "Trocar endereço" (dono, 11/08: ação em botão,
   // não instrução de digitar) — a dica de texto some porque o botão fala por ela.
   addressButton?: boolean;
@@ -2446,7 +2470,7 @@ export function manualQuoteSummary(input: {
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
-    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
+    ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
   ];
   if (input.deliveryAddress) {
     out.push("", `📍 ${input.deliveryAddress}`);

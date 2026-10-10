@@ -23,6 +23,8 @@ function withinOneEdit(a: string, b: string): boolean {
   return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
 }
 
+const STOP_WORDS = new Set(["sem", "com", "para", "pra", "pro", "por", "uma", "uns", "que", "dos", "das", "nao", "mais", "bem"]);
+
 export function displayQueryName(query: string, options: { name: string; brand?: string }[]): string {
   const vocab = new Map<string, string>(); // forma sem acento → forma do catálogo
   for (const option of options.slice(0, 3)) {
@@ -38,6 +40,9 @@ export function displayQueryName(query: string, options: { name: string; brand?:
     .map((token) => {
       const key = plain(token);
       if (key.length < 3 || /\d/.test(key)) return token;
+      // Preposição/negação nunca é "erro de digitação" (10/10, rodada 4, B1): "sem cheiro" virava "Ser cheiro" por
+      // causa de "Cansei de Ser Gato" no nome da areia.
+      if (STOP_WORDS.has(key)) return token;
       const exact = vocab.get(key);
       if (exact) {
         // Mesma palavra: só corrige o acento ("ype" → "Ypê"); "leite" continua "leite".

@@ -290,6 +290,9 @@ export type DeliveryContext = {
   openQuestion?: { text: string; at: number };
   askEither?: { base: string; alternatives: [string, string]; at: number };
   lastSwap?: { removed: BasketItem[]; to: string; addedSku?: string; at: number };
+  // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4 M2): a Lia perguntou de qual;
+  // a próxima fala ("a fralda", "2") escolhe o item e a troca pelo mais barato segue.
+  cheaperAsk?: { at: number };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
   pendingRequest?: string;
   // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
@@ -350,7 +353,7 @@ export type DeliveryContext = {
   // Oferta de juntar a cesta numa loja só (09/10, dono: "oferecer, não impor"): a cesta juntada fica
   // guardada até o cliente escolher (botão consolidar:sim / consolidar:nao). `key` = a cesta de quando a
   // oferta saiu; cesta mudou → a oferta morre.
-  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number };
+  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;
