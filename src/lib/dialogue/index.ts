@@ -7,7 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
-import { asksCheapestQuestion, asksDeliveryToday, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
+import { asksCheapestQuestion, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -54,7 +54,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "human",
   "complaint",
   "refund_request",
-  "charge_complaint"
+  "charge_complaint",
+  // Troca/devolução tem resposta fixa (10/10, rodada 6 M1).
+  "return_question"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
 const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
@@ -111,6 +113,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (asksDeliveryToday(text) && ["status", "service_question", "free_text"].includes(i.intent.kind)) return "intent:today_ask";
   if (SHORT_ONLY_INTENTS.has(i.intent.kind) && trimmed.split(/\s+/).length <= 4) return `intent:${i.intent.kind}`;
   if (extractCpf(text)) return "cpf";
+  // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
+  if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".
   if (i.intent.kind === "service_question" && i.intent.topic === "hours") return "intent:hours";
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a

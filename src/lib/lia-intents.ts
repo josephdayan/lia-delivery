@@ -113,6 +113,8 @@ export type Intent =
   | { kind: "third_party_pay" }
   // "emitem nota fiscal?" / "qual o CNPJ?" (28/08 S8).
   | { kind: "fiscal_question"; topic: "nf" | "cnpj" }
+  // "e se o vestido não servir, posso trocar?" / "e se eu quiser devolver?" (10/10, rodada 6 M1).
+  | { kind: "return_question" }
   // "quem faz a entrega?" (28/08 S8).
   | { kind: "who_delivers" }
   // "vc é burrinha né" — xingamento leve; resposta digna, nunca busca (28/08 S13).
@@ -607,6 +609,15 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         if (word[1]) return { phrase: word[4].trim(), qty: 6, qtyExplicit: true, ...flags };
         if (/d[uú]zia/i.test(raw) && !word[3]) return { phrase: word[4].trim(), qty: 12, qtyExplicit: true, ...flags };
         if (n && WORD_QTY[n]) return { phrase: word[4].trim(), qty: WORD_QTY[n], qtyExplicit: true, ...flags };
+      }
+      // Contagem DEPOIS do produto, com embalagem (10/10, rodada 6 A6): "leite integral 12 caixas de 1 litro", "macarrão
+      // 3 pacotes", "cerveja 12 latas" = 12×. Rolos/unidades/folhas ficam de fora: "papel higiênico 12 rolos" é o pacote.
+      const trailingPack = raw.match(/^(.+?)\s+(\d{1,2}|[a-zà-ú]+)\s+(caixas?|caixinhas?|pacotes?|pacotinhos?|latas?|latinhas?|garrafas?|garrafinhas?|potes?|sach[eê]s?|saquinhos?|vidros?|bandejas?|embalagens?)\b\s*(?:de\s+)?(.*)$/i);
+      if (trailingPack) {
+        const count = /^\d+$/.test(trailingPack[2]) ? Number(trailingPack[2]) : WORD_QTY[normalizeMsg(trailingPack[2])];
+        // Lata × garrafa é especificação do produto (cerveja): fica no nome, no singular.
+        const pack = /^(lat|garraf)/i.test(trailingPack[3]) ? trailingPack[3].toLowerCase().replace(/s$/, "") : "";
+        if (count && count > 1) return { phrase: `${trailingPack[1]} ${pack} ${trailingPack[4]}`.replace(/\s+/g, " ").trim(), qty: Math.min(MAX_QTY, count), qtyExplicit: true, ...flags };
       }
       // Quantidade DEPOIS do produto, como se fala (10/10, rodada 6 A1): "leite 12 caixinhas", "macarrão 3 pacotes",
       // "ovos uma dúzia". Só no FIM da frase e só com embalagem/dúzia — "papel higiênico 12 rolos" é o pacote.
@@ -1548,6 +1559,7 @@ export function detectIntent(text: string): Intent {
   if (/\bnota fiscal\b|\bemitem? nota\b|\bvem com nota\b|\bquero (a )?nota\b|\bnfe?\b/.test(n) && n.length <= 80) {
     return { kind: "fiscal_question", topic: "nf" };
   }
+  if (asksReturnPolicy(n)) return { kind: "return_question" };
   if (/\bcnpj\b|\brazao social\b|\bempresa (registrada|de voces|e registrada)\b/.test(n) && n.length <= 80) {
     return { kind: "fiscal_question", topic: "cnpj" };
   }
@@ -2977,4 +2989,60 @@ export function asksToSeeChoicesAgain(text: string): boolean {
   const n = normalizeMsg(text);
   if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?)\b/.test(n)) return false;
   return /\b(?:mostr\w*|mand\w*|reenvi\w*|ver|ve|quais|cade|de novo|novamente|dnv|sumi\w*|nao (?:vi|apareceu|apareceram|chegou|chegaram|veio|vieram|carregou|carregaram))\b/.test(n);
+}
+
+// ---------- rodada 6 (10/10, grupo g18) ----------
+
+// Pergunta de troca/devolução (M1): "e se o vestido não servir, posso trocar?", "dá pra devolver?", "e se eu quiser
+// devolver tudo?", "qual a política de troca?". "troca o arroz por feijão" / "posso trocar o arroz por um mais barato?"
+// é troca de ITEM (tem "por"), nunca política; dinheiro/estorno é pedido de estorno.
+export function asksReturnPolicy(text: string): boolean {
+  const n = normalizeMsg(text);
+  if (!n || n.length > 200 || /\b(dinheiro|estorn\w*|pix)\b/.test(n)) return false;
+  if (/\bpolitica d[eao] (troca|devoluc)|\btrocas? e devoluc|\bprazo (de|pra|para) (troca|trocar|devolv|devoluc)/.test(n)) return true;
+  const condition = /\be se\b.*\b(nao (servir|serve|couber|gostar|funcionar)|vier (errad|trocad|quebrad|com defeito|estragad|danificad|faltando)\w*|chegar (errad|quebrad|estragad|danificad)\w*|der (defeito|problema))/.test(n);
+  const verb = /\b(troc(a|ar|o)|devolv\w*|devoluc\w*)\b/.test(n);
+  const swapItem = /\btroc\w*\b.*\bpor\b/.test(n) && !/\bdevolv|\bdevoluc/.test(n);
+  if (condition && verb && !swapItem) return true;
+  if (swapItem) return false;
+  if (/\b(posso|da pra|consigo|tem como|aceita\w*|faz\w*|voces fazem|como (e|faco|funciona)|e se (eu )?(quiser|precisar))\b.*\b(devolv\w*|devoluc\w*)\b/.test(n)) return true;
+  // "posso trocar depois?" / "aceita troca?": troca sem item nomeado.
+  return /\b(posso|da pra|consigo|tem como|aceita\w*|voces fazem)\s+(trocar|troca)(\s+(depois|se precisar|se nao servir))?\s*\??$/.test(n);
+}
+
+// "não, deixa o arroz" / "pode deixar o arroz" / "mantém o arroz" (A5): MANTER o item, nunca tirar. Devolve o item dito.
+// "deixa o arroz de fora", "deixa sem arroz", "deixa pra lá", "deixa só o arroz" não são manter.
+export function parseKeepItem(text: string): string | null {
+  let n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  if (!n || n.length > 60) return null;
+  for (let i = 0; i < 3; i++) n = n.replace(/^(?:nao|n|nn|ah|ok|okay|tudo bem|beleza|blz|na verdade|melhor)[,\s]+/, "").trim();
+  const m = /^(?:pode\s+)?(?:deixa|deixe|deixar|mantem|mantenha|manter|mantém|fica com|fico com)\s+(?:o|a|os|as)\s+(.+)$/.exec(n);
+  if (!m) return null;
+  let item = m[1].replace(/\s+(?:mesmo|mesma|ai|la|como (?:esta|ta)|na cesta|no carrinho|que (?:ta|esta) bom|por favor|pf)\b.*$/, "").trim();
+  if (/\b(?:de fora|fora|pra la|pra depois|sem)\b/.test(m[1]) || /^(?:so|apenas)\b/.test(item)) return null;
+  item = item.replace(/\s+/g, " ").trim();
+  return item && item.split(" ").length <= 5 ? item : null;
+}
+
+// "o que falta?", "o que falta escolher?", "o que eu já pedi?", "quantas lâmpadas eu pedi?" (M2): pergunta sobre a
+// PRÓPRIA cesta, respondida com o que está nela e o que falta escolher. `item` = o produto da pergunta de quantidade.
+export function asksBasketContents(text: string): { item?: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").trim();
+  if (!n || n.length > 70) return null;
+  if (/^(?:e )?(?:o )?(?:que|oq|q) (?:que )?(?:ainda )?(?:falta|faltou|ta faltando|esta faltando)(?: (?:escolher|pedir|eu escolher|na lista|da lista))?$/.test(n)) return {};
+  if (/^(?:e )?(?:o )?(?:que|oq|q) (?:que )?(?:eu )?(?:ja )?(?:pedi|escolhi|coloquei|tem na (?:minha )?(?:cesta|lista|sacola))(?: ate agora)?$/.test(n)) return {};
+  const qty = /^(?:e )?(?:quant[oa]s?)\s+(.+?)\s+(?:eu\s+)?(?:ja\s+)?(?:pedi|coloquei|escolhi|botei|tem na (?:cesta|lista|sacola)|ta(?:o)? na (?:cesta|lista|sacola)|estao na (?:cesta|lista))$/.exec(n);
+  if (qty) return { item: qty[1].replace(/^(?:de |do |da )/, "").trim() };
+  return null;
+}
+
+// Número solto respondendo a uma pergunta da Lia do tipo "A ou B?" (M3: "Qual lápis você quer trocar: o de cor ou o
+// preto HB?" → "2" = "o preto HB"). Devolve a alternativa de número n, ou null se a pergunta não lista alternativas.
+export function openQuestionAlternative(question: string, n: number): string | null {
+  const q = question.replace(/\?\s*$/, "").trim();
+  const tail = q.includes(":") ? q.slice(q.lastIndexOf(":") + 1) : q.replace(/^.*?\b(?:qual|quais|que)\b[^,]*?\b(?:voce|você|vc)\b[^,]*?\b(?:quer|prefere|precisa)\b/i, "");
+  if (!/\sou\s/i.test(tail)) return null;
+  const parts = tail.split(/\s*,\s*|\s+ou\s+/i).map((x) => x.trim()).filter(Boolean);
+  if (parts.length < 2 || parts.length > 5 || parts.some((p) => p.split(/\s+/).length > 6)) return null;
+  return n >= 1 && n <= parts.length ? parts[n - 1] : null;
 }

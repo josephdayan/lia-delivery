@@ -72,7 +72,7 @@ const REPEAT_SYSTEM_PROMPT = `Você é o GERENTE DE DIÁLOGO da Lia, concierge d
 REGRAS:
 1. Responda ao que o cliente disse AGORA, em português do Brasil, informal, até 2 frases curtas e no máximo 1 emoji. Não repita a frase anterior.
 2. Use SÓ fatos que aparecem em "falas_recentes_da_lia". Nunca invente preço, prazo, loja, estoque, telefone nem promessa; nada de desconto, cupom ou confirmar pagamento/estorno.
-3. Despedida, agradecimento ou emoji ("👍", "ok", "valeu", "tchau", "FIM"): uma confirmação curta e calorosa ("Combinado! Quando precisar é só chamar 💚"), sem repetir o resto.
+3. Despedida, agradecimento ou emoji ("👍", "ok", "valeu", "tchau", "FIM"): uma confirmação curta e calorosa ("Combinado! Quando precisar é só chamar 💚"), sem repetir o resto. EXCETO quando "lia_ia_repetir" pede algo ao cliente (endereço, nome, CPF, escolha): aí lembre em uma frase curta o que falta, sem se despedir.
 4. Se o cliente pede de novo algo que a Lia já disse que não consegue: reconheça que ele insistiu e diga com clareza que o resultado é o mesmo. Se ele pede para tentar de novo ou em mais lojas, ACRESCENTE a informação nova que as falas permitem: a Lia já conferiu todas as lojas que entregam no endereço dele e nenhuma tem (não prometa buscar em outras lojas). Se ele FIXOU marca, versão, tamanho ou uso ("tem que ser exatamente esse", "só aceito Yorgus"), NUNCA sugira outra marca, outra versão ou produto parecido: diga que não achou aquilo e que, se precisar de outra coisa, é só pedir. Se as falas dizem que a Lia não compra aquela categoria (móveis grandes, eletrodomésticos grandes, veículos, imóveis), repita que ela não compra isso, sem oferecer "tentar outra versão". Só repita um próximo passo (outro endereço numa cidade atendida…) quando o cliente não fixou nada e esse passo já foi dito.
 5. Se o cliente pediu para ser avisado ou para a Lia anotar algo e as falas dizem que isso já foi feito, confirme em uma frase só o que elas dizem. NUNCA prometa avisar nem chamar quando a Lia chegar na região dele: não existe aviso automático; diga só que a cidade foi anotada para priorizar, sem data nem garantia.
 6. Se a mensagem repetida diz que a Lia NÃO ACHOU o produto, a resposta nova TEM que dizer, com clareza, que não achou (nunca só repetir o que o cliente procura).
@@ -133,7 +133,16 @@ export function __setRepeatModelForTests(fn: ((input: RepeatInput) => Promise<st
 // nova, a próxima da lista que ainda não foi dita. Nada aqui promete nada.
 const SHORT_ACKS = ["👍", "Tudo certo 💚", "Por nada! 💚", "Combinado 🙂", "Fechado 💚", "Até a próxima 💚"];
 
+// A fala repetida PEDE um dado do cadastro (endereço, CEP, nome, CPF): "ok" em resposta não encerra a conversa (10/10,
+// rodada 6 M9: "ok" no cadastro virava "Combinado! Quando precisar é só chamar 💚" e o cadastro parava).
+export function asksCustomerSomething(text: string): boolean {
+  const n = canon(text);
+  return /\b(endereco|cep|nome completo|seu nome|cpf|numero da casa)\b/.test(n) && (/\?\s*$/.test(text.trim()) || /\b(me manda|manda seu|manda o|me diz|me passa|me fala|qual)\b/.test(n));
+}
+const FAREWELL_RE = /\b(quando precisar|qualquer coisa|so chamar|ate a proxima|ate mais|tchau)\b/;
+
 function shortAck(input: RepeatInput): string | null {
+  if (asksCustomerSomething(input.said)) return null;
   const n = canon(input.customer);
   if (!n || n.split(" ").length > 4 || /\?/.test(input.customer)) return null;
   // Só agradecimento/despedida/emoji ganha "Por nada!"/"👍". "1", "pagar", "sim" repetindo a pergunta da Lia não: o cliente
@@ -154,6 +163,8 @@ export async function rewriteRepeated(input: RepeatInput): Promise<string | null
   if (seamActive || process.env.OPENAI_API_KEY) {
     const raw = await modelImpl(input).catch(() => null);
     const clean = sanitizeRouterReply(raw ?? undefined);
+    // Despedida no lugar de um pedido de dado: vale o texto original (que pede o que falta).
+    if (clean && asksCustomerSomething(input.said) && FAREWELL_RE.test(canon(clean))) return null;
     if (clean && !sameAsRecent(clean, input.recent, false)) {
       // A reescrita apagou o "não achei": vale o texto original, que diz isso.
       if (conveysMiss(input.said) && !conveysMiss(clean)) return null;

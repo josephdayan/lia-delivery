@@ -339,7 +339,7 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
         await reply(phone, clean);
         // Pergunta de esclarecimento ("Qual leite você quer?"): a próxima fala responde ELA (09/10, rodada 3).
         if (step.kind === "unclear" && /\?\s*$/.test(clean)) {
-          ctx.openQuestion = { text: clean, at: Date.now() };
+          ctx.openQuestion = { text: clean, at: Date.now(), said: env.text.slice(0, 200) };
           await writeCtx(env.convoId, ctx);
         }
         return "done";
