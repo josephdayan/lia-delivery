@@ -3165,3 +3165,8 @@ export function previousPurchaseFound(): string {
 export function previousPurchaseNotHere(): string {
   return "Não achei nenhuma dessas nas suas compras anteriores. Escolhe uma das opções 👇";
 }
+
+// Várias lojas e nenhuma cobre a cesta toda (ou juntar sai mais caro): uma linha antes do total (09/10).
+export function severalDeliveriesNote(stores: number): string {
+  return `Esses itens estão em ${stores} lojas diferentes e nenhuma tem tudo (ou juntar sairia mais caro), então vai em ${stores} entregas.`;
+}

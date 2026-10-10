@@ -240,11 +240,23 @@ test("09/10: botão 'Completar' do pedido mínimo pede um item da loja e diz qua
 
 test("09/10: juntar lojas — 'exclude' pula a loja que recusou a cesta e tenta a próxima", async () => {
   const basket = [
-    { sku: "carrefour-a", name: "Arroz Branco Tipo 1 Camil 5kg", qty: 1, unitPrice: 25, lineTotal: 25, storeKey: "carrefour", storeLabel: "Carrefour", ask: "arroz 5kg" },
+    { sku: "carrefour-a", name: "Arroz Branco Tipo 1 Camil 5kg", qty: 1, unitPrice: 45, lineTotal: 45, storeKey: "carrefour", storeLabel: "Carrefour", ask: "arroz 5kg" },
     { sku: "mambo-a", name: "Pão de Forma Tradicional Bauducco 390g", qty: 1, unitPrice: 5.9, lineTotal: 5.9, storeKey: "mambo", storeLabel: "Mambo", ask: "pão de forma" }
   ] as never[];
   const free = await consolidateBasketStores({ basket });
   const skipped = await consolidateBasketStores({ basket }, { exclude: free ? [free.storeKey] : ["carrefour"] });
   if (free) assert.ok(!skipped || skipped.storeKey !== free.storeKey, `voltou à loja excluída: ${skipped?.storeKey}`);
   assert.ok(free === null || typeof free.storeKey === "string");
+});
+
+test("09/10: cesta em 2 lojas sem como juntar diz em uma linha que vai em 2 entregas", async (t) => {
+  if (!dbOk) return t.skip("sem banco");
+  const c = await customer();
+  const basket = [
+    { sku: "carrefour-a", name: "Arroz Branco Tipo 1 Camil 5kg", qty: 1, unitPrice: 45, lineTotal: 45, storeKey: "carrefour", storeLabel: "Carrefour", ask: "arroz 5kg" },
+    { sku: "boticario-zz", name: "Perfume Exclusivo Boticário Egeo Dolce Colônia 90ml", qty: 1, unitPrice: 160, lineTotal: 160, storeKey: "boticario", storeLabel: "O Boticário", ask: "egeo dolce" }
+  ];
+  await setCtx(c.userId, { ...baseCtx, step: "collecting", basket });
+  const out = await send(c.phone, "só isso");
+  assert.match(out, /2 lojas diferentes.*2 entregas/i, out.slice(0, 400));
 });

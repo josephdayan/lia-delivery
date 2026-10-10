@@ -9482,6 +9482,7 @@ async function continueAfterBasket(
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
       let joined: Awaited<ReturnType<typeof consolidateBasketStores>> = null;
+      let noJoinNote = false;
       const refusedStores: string[] = [];
       // A loja tem que confirmar a cesta JUNTA antes de a oferta existir (09/10, rodada 2: aceitou, "Juntei tudo" e
       // logo "Não tenho estes itens"). Recusa definitiva da loja = tenta a próxima melhor (até 2 tentativas, 09/10: a
@@ -9516,8 +9517,10 @@ async function continueAfterBasket(
         const { total: joinedTotal, estimate: joinedEta } = joinedEst;
         // Juntar que sai MAIS CARO no total (produtos + frete) não é oferta (09/10, rodada 3: +R$ 44 pra poupar R$ 8,90 de frete).
         const costlier = joinedTotal > keptTotal + 0.009 && conciergeStoresBelowMinimum(ctx).length === 0;
-        if (costlier) console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
-        else {
+        if (costlier) {
+          console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
+          noJoinNote = true;
+        } else {
         ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}) };
         await writeCtx(convoId, ctx);
         if (prefix) await reply(phone, prefix);
@@ -9527,6 +9530,11 @@ async function continueAfterBasket(
         if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
         return;
         }
+      }
+      // Sem como juntar (nenhuma loja tem tudo, ou juntar sai mais caro): diz em uma linha por que são várias entregas.
+      if ((!joined || noJoinNote) && conciergeStoresBelowMinimum(ctx).length === 0) {
+        const n = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
+        prefix = [prefix, copy.severalDeliveriesNote(n)].filter(Boolean).join("\n");
       }
       await writeCtx(convoId, ctx);
     }
