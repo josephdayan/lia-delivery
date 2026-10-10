@@ -39,6 +39,23 @@ const CACHE_MAX = 600;
 // Padrão LIGADO desde o placar de 07/10 (cobertura 85,8% → 92,6% com a mesma precisão); desliga
 // com `LIA_LIVE_SEARCH=false`. Testes e golden desligam em tests/helpers (sem rede).
 
+// Catálogo já gravado com "produto + SKU" colado (Americanas, 10/10, rodada 12 B4): acha onde a 2ª descrição começa (as
+// duas primeiras palavras do nome de novo) e aplica a mesma limpeza do completeName.
+export function tidyRepeatedName(name: string): string {
+  const words = name.replace(/\s+/g, " ").trim().split(" ");
+  if (words.length < 8) return name;
+  const key = (w: string) => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const [a, b] = [key(words[0]), key(words[1])];
+  for (let i = 2; i < words.length - 1; i++) {
+    if (key(words[i]) === a && key(words[i + 1]) === b) {
+      const prod = words.slice(0, i).join(" ");
+      const sku = words.slice(i).join(" ");
+      return completeName(`${prod} ${sku}`, prod, sku);
+    }
+  }
+  return name;
+}
+
 // "nameComplete" da VTEX é "produto + SKU". Em loja que escreve o SKU como outra descrição inteira do mesmo produto
 // (10/10, rodada 12 B4: "Caneta ... 3 Unidades Bic Ponta 1.2mm Caneta Esferográfica BIC Cristal Fashion ... 3 Unidades"),
 // o nome saía repetido e gigante. Aí fica o nome do produto + só as palavras novas do SKU (cor, tamanho).

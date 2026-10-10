@@ -18,7 +18,7 @@ import { planActions } from "../src/lib/dialogue/plan";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { acceptsSwapOffer, detectIntent, mergeShoppingLines, parseBasketLines, splitTrailingSwapAccept } from "../src/lib/lia-intents";
-import { completeName } from "../src/lib/stores/live-search";
+import { completeName, tidyRepeatedName } from "../src/lib/stores/live-search";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 import type { DialogueState } from "../src/lib/dialogue/types";
 
@@ -145,6 +145,8 @@ test("1b: '3 canetas' com a opção 'Caneta ... 3 Unidades' = 1 pacote (nunca 3 
   const sku = "Caneta Esferográfica BIC Cristal Fashion Ponta Média 1.2mm Azul Tampa Ventilada 3 Unidades";
   assert.equal(completeName(`${prod} ${sku}`, prod, sku), caneta);
   assert.equal(completeName("Leite Integral Italac 1L Caixa", "Leite Integral Italac", "1L Caixa"), "Leite Integral Italac 1L Caixa");
+  assert.equal(tidyRepeatedName(`${prod} ${sku}`), caneta);
+  assert.equal(tidyRepeatedName("Leite em Pó Integral Ninho 380g Lata Instantâneo Enriquecido"), "Leite em Pó Integral Ninho 380g Lata Instantâneo Enriquecido");
 });
 
 test("1c: quantidade da IA numa escolha sem número na fala não vale ('o de salmão da Dreamies' → 2x)", () => {

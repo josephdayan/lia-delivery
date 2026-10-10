@@ -1701,6 +1701,24 @@ async function firstDeliverableSwap(pool: StoreCandidate[], qty: number, cep?: s
 }
 
 // Aplica a troca de loja do pedido mínimo que está na mesa (ctx.minSwap). false = proposta velha (a cesta mudou).
+// "deixa, esquece o caderno. pode trocar de loja" (10/10, rodada 12 M5): a edição rodou e só confirmou ("Tirei…"), sem
+// refazer a oferta. O aceite dito no fim da mensagem ainda vale: se a loja continua abaixo do mínimo, a troca é feita agora.
+async function finishTrailingSwapAccept(phone: string, convoId: string) {
+  const meta = turnMeta.getStore();
+  const storeKey = meta?.acceptSwapFrom;
+  if (!meta || !storeKey) return;
+  meta.acceptSwapFrom = undefined;
+  const convo = await prisma.conversation.findUnique({ where: { id: convoId } });
+  if (!convo) return;
+  const ctx = readCtx(convo.context);
+  if (ctx.pending?.length || ctx.deliveryOrderId) return;
+  const below = conciergeStoresBelowMinimum(ctx).find((store) => store.key === storeKey);
+  if (!below) return;
+  meta.acceptSwapFrom = storeKey;
+  await offerMinimumSwap(phone, convoId, ctx, below);
+  meta.acceptSwapFrom = undefined;
+}
+
 async function applyMinimumSwap(phone: string, convoId: string, ctx: DeliveryContext, userCep: string | null | undefined): Promise<boolean> {
   const swap = ctx.minSwap;
   if (!swap) return false;
@@ -2339,6 +2357,7 @@ export async function handleDeliveryMessage(input: {
       if (signupForm) await handleSignupForm(phone, signupForm, user, c);
       else if (listForm) await handleListFlowReply(phone, listForm, user, c);
       else await handleDeliveryTurn(phone, text, user, c, inboundMessageId);
+      await finishTrailingSwapAccept(phone, c.id);
     };
     try {
       await runTurn(freshConvo);
