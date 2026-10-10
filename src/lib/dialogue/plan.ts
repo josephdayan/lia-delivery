@@ -3,7 +3,8 @@
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { countDistinctItems, resolveListItems } from "../list-items";
-import { extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun, stripMedicineNegation } from "../lia-intents";
+import { splitAlternativeLine } from "../alt-items";
+import { attributeFragment, extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun, stripMedicineNegation } from "../lia-intents";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
@@ -101,6 +102,29 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
     } else {
       steps.push(step);
     }
+  }
+  // Atributo solto como busca (10/10, rodada 12: "faltou a escova de dente, tem que ser macia" virava o item "tem que ser
+  // macia" e 47 s de busca): refina a linha anterior da mesma busca; sozinho, com as opções na tela, é refino delas.
+  for (let i = 0; i < steps.length; i++) {
+    const st = steps[i];
+    // "tem algo de carrinho ou lego pra 5 anos?" com o "brinquedo" na tela: não é refino ("brinquedo carrinho ou lego anos"
+    // não acha nada), é o item da tela trocado por UM item com duas buscas.
+    if (st.type === "refine" && splitAlternativeLine(st.attribute)) {
+      steps[i] = { type: "search", lines: [{ query: st.attribute, qty: 1 }], replace: true };
+      continue;
+    }
+    if (st.type !== "search") continue;
+    const kept: { query: string; qty: number }[] = [];
+    let lone: string | undefined;
+    for (const line of st.lines) {
+      const attr = attributeFragment(line.query);
+      if (!attr) kept.push(line);
+      else if (kept.length) kept[kept.length - 1] = { ...kept[kept.length - 1], query: normalizeMsg(kept[kept.length - 1].query).includes(attr) ? kept[kept.length - 1].query : `${kept[kept.length - 1].query} ${attr}` };
+      else lone = attr;
+    }
+    if (kept.length) st.lines = kept;
+    else if (lone && state.passo === "escolhendo_opcao" && state.emEscolha) steps[i] = { type: "refine", attribute: lone };
+    else if (lone) return { ok: false, reason: "search:atributo_solto" };
   }
   // O modelo às vezes devolve só 3 buscas para uma lista de 6 (09/10, teste real: ração/esmalte/carregador sumiram sem aviso).
   // Plano só de buscas com MENOS linhas do que itens na mensagem = lista cortada: cai no pipeline determinístico, que conta todos.

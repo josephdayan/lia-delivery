@@ -16,6 +16,8 @@ export type ParsedLine = {
   additive?: boolean;
   // "qualquer um, escolhe vc": a Lia escolhe o topo do ranking sozinha (28/08 S6).
   autoPick?: boolean;
+  // Uma das buscas de um item "X ou Y" (10/10, rodada 12): as linhas com o mesmo rótulo viram UMA escolha.
+  altOf?: string;
   // Frase COMPLETA do cliente quando a IA encurtou ("isqueiro pra charuto" → "isqueiro",
   // 06/09, pai do dono): o Mercado Livre busca com ela, porque o qualificador muda o produto.
   raw?: string;
@@ -35,7 +37,7 @@ export type ListItemDecision = "split" | "joined" | "inherited_head" | "brand_sh
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview";
+export type ServiceTopic = "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap";
 
 export type Intent =
   | { kind: "thanks" }
@@ -580,6 +582,17 @@ const SIZE_ONLY_FRAGMENT_RE = /^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+
 export function isSizeOnlyFragment(phrase: string): boolean {
   return SIZE_ONLY_FRAGMENT_RE.test(normalizeMsg(phrase).replace(/\s+/g, " ").trim());
 }
+// Atributo solto do item vizinho (10/10, rodada 12 g35): "faltou a escova de dente, tem que ser macia" criava o item
+// fantasma "tem que ser macia". "tem que ser X" / "precisa ser X" / "que seja X" é refino do item a que se refere.
+const ATTRIBUTE_FRAGMENT_RE = /^(?:(?:mas|e|so que|ah)\s+)?(?:(?:ele|ela|eles|elas|esse|essa|o|a)\s+)?(?:tem que|tem de|tenha que|precisa|precisaria|deve|devia|teria que|tinha que|tem q|precisa q)\s+(?:ser|estar|vir)\s+(?:de\s+|do\s+|da\s+|com\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$|^(?:(?:mas|e)\s+)?que seja\s+(?:de\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$/;
+export function attributeFragment(phrase: string): string | null {
+  const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,-]/g, " ").replace(/\s+/g, " ").replace(/[.,\s]+$/, "").trim();
+  const m = ATTRIBUTE_FRAGMENT_RE.exec(n);
+  const attr = (m?.[1] ?? m?.[2])?.trim();
+  // "tem que ser o da Nestlé" é escolha de opção, não atributo; mais de 4 palavras já é outra frase.
+  if (!attr || attr.split(/\s+/).length > 4 || /^(?:o|a|os|as|esse|essa|aquel[ea])\b/.test(attr)) return null;
+  return attr;
+}
 export function isDescriptorFragment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
   return FOR_WHOM_FRAGMENT_RE.test(n) || EACH_SIZE_FRAGMENT_RE.test(n) || OTC_QUALIFIER_FRAGMENT_RE.test(n);
@@ -814,6 +827,13 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       if (prev) prev.phrase = `${prev.phrase} ${pron[1].trim()}`.replace(/\s+/g, " ");
       continue;
     }
+    // "escova de dente, tem que ser macia" (rodada 12): o atributo vai para o item anterior, nunca vira item.
+    const attr = merged.length ? attributeFragment(line.phrase) : null;
+    if (attr) {
+      const prev = merged[merged.length - 1];
+      prev.phrase = `${prev.phrase} ${attr}`.replace(/\s+/g, " ");
+      continue;
+    }
     // Fragmentos que descrevem o item vizinho (10/10, rodada 7 N5) nunca são item próprio:
     // - "ração pro meu cachorro e outra pra minha gata": o "pra minha gata" é OUTRA ração — herda o produto anterior;
     // - "10kg cada": o tamanho vale para os itens de antes que não disseram tamanho;
@@ -987,8 +1007,9 @@ const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:presente|presentinho|lembr
 // sinônimos que o cliente realmente usa). Serve ao merge IA×determinístico e ao
 // esclarecimento durante a escolha ("só shampoo normal" enquanto escolhe shampoo).
 const PRODUCT_TOKEN_ALIASES: Record<string, string> = {
+  // "pasta de dente" ≈ "creme dental" pelo "creme" (10/10, rodada 12: o antigo dente→dental fazia "escova de dente" ser
+  // o mesmo item que "fio dental" — a escova sumia do merge e trocava o fio dental na escolha).
   pasta: "creme",
-  dente: "dental",
   refri: "refrigerante",
   refrigerantes: "refrigerante",
   coca: "coca",
@@ -1158,7 +1179,9 @@ function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedL
     // "ração gata castrada" (IA) tinham palavra em comum com o trecho de contexto e eram TROCADAS por ele — as duas
     // rações sumiam. Elas pertencem às linhas "ração pro labrador"/"ração pra gata" do determinístico.
     const others = deterministic.filter((d) => d.span !== span);
-    const own = overlap.filter((i) => !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase)));
+    // Pertencer a outro trecho = ser o MESMO item dele, não só dividir uma palavra (rodada 12: "tomate" da IA não é o "molho de
+    // tomate" do trecho vizinho, é o "uns 4 tomates" deste).
+    const own = overlap.filter((i) => !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase) && sameItemProduct(out[i].phrase, d.phrase)));
     overlap.splice(0, overlap.length, ...own);
     if (!overlap.length || overlap.length === lines.length || lines.some((line) => isNonItemSegment(line.phrase))) continue;
     // A IA separou em MAIS linhas usando palavras de fora do trecho ("um petisco pra cada" → petisco cachorro + petisco
@@ -1176,6 +1199,48 @@ function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedL
 }
 
 // "sal" (determinístico) já está coberto por "sal grosso" (IA): a palavra curta é a CABEÇA da outra.
+// Núcleo do produto de uma linha (10/10, rodada 12 g35): "molho de tomate" é MOLHO, "uns 4 tomates" é TOMATE, "escova de
+// dente" é ESCOVA e "fio dental" é FIO. Dividir uma palavra ("tomate", "dental") não faz duas linhas serem o mesmo item:
+// o merge com a IA dobrava "4 tomates" em "5x molho de tomate" e "escova de dente" sumia coberta por "fio dental".
+const HEAD_SKIP = new Set(
+  "de da do das dos para pra pro pros pras com sem e ou um uma uns umas o a os as no na nos nas em tipo algum alguma cerca mais menos quero queria preciso precisava faltou esqueci tambem manda traz".split(" ")
+);
+const PACKAGING_WORDS = new Set("pacote pacotes caixa caixas caixinha lata latas garrafa garrafas saco sacos fardo fardos kit kits pack packs unidade unidades frasco frascos pote potes vidro vidros galao galoes rolo rolos refil refis duzia duzias bandeja bandejas".split(" "));
+function headTokens(phrase: string): { tokens: string[]; complements: Set<string> } {
+  const words = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const tokens: string[] = [];
+  const complements = new Set<string>();
+  let afterDe = false;
+  for (const raw of words) {
+    if (raw === "de" || raw === "da" || raw === "do" || raw === "das" || raw === "dos") {
+      afterDe = tokens.length > 0;
+      continue;
+    }
+    if (HEAD_SKIP.has(raw) || /^\d/.test(raw) || raw.length < 3) continue;
+    const sing = raw.length >= 5 ? raw.replace(/s$/, "") : raw;
+    const token = PRODUCT_TOKEN_ALIASES[sing] ?? PRODUCT_TOKEN_ALIASES[raw] ?? sing;
+    if (!tokens.length && PACKAGING_WORDS.has(raw)) continue;
+    if (afterDe) complements.add(token);
+    afterDe = false;
+    tokens.push(token);
+  }
+  return { tokens, complements };
+}
+export function productHead(phrase: string): string | undefined {
+  return headTokens(phrase).tokens[0];
+}
+// Duas linhas são o MESMO item? Mesmo núcleo ("leite" e "leite sem lactose", "creme dental" e "pasta de dente"), ou todas as
+// palavras de uma estão na outra sem ser o complemento dela ("pampers" em "fralda pampers" sim; "tomate" em "molho de
+// tomate" não).
+export function sameItemProduct(a: string, b: string): boolean {
+  const ta = headTokens(a);
+  const tb = headTokens(b);
+  if (!ta.tokens.length || !tb.tokens.length) return sharesProductNoun(a, b);
+  if (ta.tokens[0] === tb.tokens[0]) return true;
+  const inside = (x: typeof ta, y: typeof tb) => x.tokens.every((t) => y.tokens.includes(t)) && !y.complements.has(x.tokens[0]);
+  return inside(ta, tb) || inside(tb, ta);
+}
+
 function shortHeadCovered(short: string, other: string): boolean {
   const flat = (x: string) => normalizeMsg(x).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   const a = flat(short);
@@ -1211,8 +1276,9 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
   const foldedAi: ParsedLine[] = [];
   for (const line of ai) {
     const saidQty = line.qtyExplicit || line.qty > 1;
+    // Só se dobra no item de MESMO núcleo ("leite" em "leite sem lactose"); "4 tomates" não é "molho de tomate" (rodada 12).
     const host = saidQty && meaningfulProductTokens(line.phrase).length === 1
-      ? foldedAi.find((c) => sameProduct(line.phrase, c.phrase) && meaningfulProductTokens(c.phrase).length > 1)
+      ? foldedAi.find((c) => sameProduct(line.phrase, c.phrase) && meaningfulProductTokens(c.phrase).length > 1 && productHead(c.phrase) === productHead(line.phrase))
       : undefined;
     if (host) {
       host.qty = Math.min(MAX_QTY, host.qty + Math.max(1, line.qty));
@@ -1250,7 +1316,9 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     // IA descartou de propósito não volta (rodada 27/08 S3/S20 — o resgate desfazia o
     // descarte certo da IA e a narrativa virava "item não achado").
     if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase)) continue;
-    if (!merged.some((candidate) => sameProduct(line.phrase, candidate.phrase) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
+    // Coberto = o MESMO item (núcleo igual), não só uma palavra em comum: "uns 4 tomates" não está coberto por "molho de
+    // tomate", nem "escova de dente" por "fio dental" (rodada 12, itens sumiam sem aviso).
+    if (!merged.some((candidate) => (sameProduct(line.phrase, candidate.phrase) && sameItemProduct(line.phrase, candidate.phrase)) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
 }
@@ -1959,6 +2027,8 @@ export function detectIntent(text: string): Intent {
   // (06/10, Clara e Claire): a ORIGEM do produto. A resposta nomeia a loja das opções.
   // "tem taxa?", "quanto vc cobra?", "qual sua comissão?" (06/10): resposta fixa e verdadeira
   // (o serviço vem embutido no preço) — a IA respondia só o frete e dava a entender "sem taxa".
+  // "vocês embrulham pra presente?" (10/10, rodada 12 M6): respondida com o que é verdade (a entrega é da loja), nunca a FAQ.
+  if (GIFT_WRAP_ASK_RE.test(n) && (/\?/.test(text) || /^(?:voces|vcs|vc|voce|da pra|tem como|consegue|pode|podem|vem|faz|fazem)\b/.test(n))) return { kind: "service_question", topic: "gift_wrap" };
   if (SERVICE_FEE_RE.test(n) && !/\b(frete|entrega|envio)\b/.test(n)) return { kind: "service_question", topic: "service_fee" };
   // "quem recebe esse pix?", "por que aparece nome de pessoa?" (06/10): a IA dizia "a loja".
   if (PIX_RECEIVER_RE.test(n)) return { kind: "service_question", topic: "pix_receiver" };
@@ -2952,6 +3022,7 @@ const OUT_OF_SCOPE_SERVICE_RE =
   /\b(?:chama(?:r)? (?:um |uma )?(?:uber|99|taxi|motorista|motoboy)|pede (?:um |uma )?(?:uber|99|taxi)|encanador|eletricista|diarista|faxineira|manicure|recarga de celular|recarregar (?:o )?celular|paga(?:r)? (?:um |o |a |minha |meu )?(?:boleto|conta de luz|conta de agua|fatura)|passagem (?:de onibus|aerea)|reserva(?:r)? (?:uma )?mesa)\b/;
 const VAGUE_REQUEST_RE =
   /^(?:(?:quero|queria|preciso de|me ve|manda|me manda)\s+)?(?:algo|alguma coisa|qualquer coisa|uma coisa)(?:\s+(?:gostos[oa]|bom|boa|legal|diferente|rapid[oa]))?\s+(?:pra|para|de)\s+(?:comer|beber|jantar|almocar|lanchar|o jantar|o almoco|hoje)\b|^me surpreend[ae]\b/;
+const GIFT_WRAP_ASK_RE = /\b(?:(?<!papel de |papel pra |papel para )embrulh(?:a|am|ar|o pra presente|ado|ada|ados|adas|amos)\b|embala\w* (?:pra|para|de) presente|vem (?:embalad\w*|embrulhad\w*)|(?:mandar?|vai|vem|manda|colocar?|por|poe) (?:um )?(?:cartao(?:zinho)?|bilhete(?:zinho)?) junto)/;
 const SERVICE_FEE_RE =
   /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b|^(?:e|eh) (?:de graca|gratis)\b/;
 const PIX_RECEIVER_RE =
