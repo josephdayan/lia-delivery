@@ -15,6 +15,7 @@ import { buildDialogueState } from "../src/lib/dialogue/state";
 import type { DeliveryContext } from "../src/lib/conversation-types";
 import { consolidationYesTitle } from "../src/lib/adapters/whatsapp";
 import { detectIntent } from "../src/lib/lia-intents";
+import { consolidateBasketStores } from "../src/lib/delivery-service";
 import { parseDecision } from "../src/lib/dialogue/model";
 import { handleDeliveryMessage } from "../src/lib/delivery-service";
 import { storeSlotsInFlight, withStoreSlot } from "../src/lib/store-throttle";
@@ -235,4 +236,15 @@ test("09/10: botão 'Completar' do pedido mínimo pede um item da loja e diz qua
   assert.match(out, /Carrefour.*faltam R\$/i, out.slice(0, 300));
   const ctx = (await ctxOf(c.userId)) as { basket?: unknown[] };
   assert.equal(ctx.basket?.length, 1, "completar não mexe na cesta");
+});
+
+test("09/10: juntar lojas — 'exclude' pula a loja que recusou a cesta e tenta a próxima", async () => {
+  const basket = [
+    { sku: "carrefour-a", name: "Arroz Branco Tipo 1 Camil 5kg", qty: 1, unitPrice: 25, lineTotal: 25, storeKey: "carrefour", storeLabel: "Carrefour", ask: "arroz 5kg" },
+    { sku: "mambo-a", name: "Pão de Forma Tradicional Bauducco 390g", qty: 1, unitPrice: 5.9, lineTotal: 5.9, storeKey: "mambo", storeLabel: "Mambo", ask: "pão de forma" }
+  ] as never[];
+  const free = await consolidateBasketStores({ basket });
+  const skipped = await consolidateBasketStores({ basket }, { exclude: free ? [free.storeKey] : ["carrefour"] });
+  if (free) assert.ok(!skipped || skipped.storeKey !== free.storeKey, `voltou à loja excluída: ${skipped?.storeKey}`);
+  assert.ok(free === null || typeof free.storeKey === "string");
 });

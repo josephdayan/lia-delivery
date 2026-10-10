@@ -1743,12 +1743,13 @@ function nameSimilarity(a: string, b: string): number {
 }
 // Plano pra juntar a cesta numa loja só. Não muda o contexto (quem chama aplica): com teto de tempo, uma
 // busca que termina depois não pode mexer numa cesta que já seguiu.
-export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket">): Promise<{ basket: BasketItem[]; storeLabel: string; pairs: copy.SwapPair[]; delta: number } | null> {
+export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket">, opts: { exclude?: string[] } = {}): Promise<{ basket: BasketItem[]; storeKey: string; storeLabel: string; pairs: copy.SwapPair[]; delta: number } | null> {
   const basket = ctx.basket ?? [];
   const basketStores = [...new Set(basket.map((i) => i.storeKey))];
   if (basketStores.length < 2 || basket.some((i) => !i.storeKey || i.storeKey === CONCIERGE_STORE_KEY || !(i.unitPrice > 0))) return null;
   const auto = automaticPurchaseStores();
-  const eligible = (key: string) => key !== MERCADO_LIVRE_STORE_KEY && (!auto.length || auto.includes(key));
+  // `exclude` = lojas que já recusaram a cesta junta (09/10: a 1ª escolha recusada matava a oferta sem tentar a 2ª loja).
+  const eligible = (key: string) => key !== MERCADO_LIVRE_STORE_KEY && !(opts.exclude ?? []).includes(key) && (!auto.length || auto.includes(key));
   const lineOf = (unitPrice: number, qty: number, medicine?: "mip") => Math.round(display(unitPrice, medicine) * qty * 100) / 100;
   const plan = async (targets: string[]) => {
     if (!targets.length) return null;
@@ -1795,6 +1796,7 @@ export async function consolidateBasketStores(ctx: Pick<DeliveryContext, "basket
       basket.filter((item) => item.storeKey === chosen!.store).map((item) => ({ ...item })),
       replacements.map((r) => choiceToBasketItem(r.option, r.qty, target, r.ask))
     ),
+    storeKey: chosen.store,
     storeLabel: target.label,
     pairs: swapPairsForCopy(moved, replacements),
     delta: Math.round((chosen.total - oldTotal) * 100) / 100
@@ -9479,27 +9481,31 @@ async function continueAfterBasket(
     const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
-      let joined = await withDeadline(
-        consolidateBasketStores(ctx).catch((error) => {
-          console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
-          return null;
-        }),
-        consolidationBudgetMs(),
-        null,
-        () => console.warn("[basket:consolidate:timeout]")
-      );
+      let joined: Awaited<ReturnType<typeof consolidateBasketStores>> = null;
+      const refusedStores: string[] = [];
       // A loja tem que confirmar a cesta JUNTA antes de a oferta existir (09/10, rodada 2: aceitou, "Juntei tudo" e
-      // logo "Não tenho estes itens"). Recusa definitiva da loja = sem oferta; a cesta original segue intacta.
-      if (joined) {
+      // logo "Não tenho estes itens"). Recusa definitiva da loja = tenta a próxima melhor (até 2 tentativas, 09/10: a
+      // 1ª recusada matava a oferta); sem nenhuma, sem oferta e a cesta original segue intacta.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        joined = await withDeadline(
+          consolidateBasketStores(ctx, { exclude: refusedStores }).catch((error) => {
+            console.warn("[basket:consolidate:failed]", error instanceof Error ? error.message : error);
+            return null;
+          }),
+          consolidationBudgetMs(),
+          null,
+          () => console.warn("[basket:consolidate:timeout]")
+        );
+        if (!joined) break;
         const refused = await withDeadline(
           preflightBasket(joined.basket.map((i) => ({ sku: i.sku, qty: i.qty, storeKey: i.storeKey ?? "" })), ctx.cep ?? userCep).catch(() => null),
           consolidationBudgetMs(),
           null
         );
-        if (refused) {
-          console.warn("[basket:consolidate:store-refused]", refused.storeKey, refused.kind);
-          joined = null;
-        }
+        if (!refused) break;
+        console.warn("[basket:consolidate:store-refused]", refused.storeKey, refused.kind);
+        refusedStores.push(joined.storeKey);
+        joined = null;
       }
       if (joined) {
         // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A
