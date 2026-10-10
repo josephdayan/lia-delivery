@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -39,6 +39,7 @@ import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
+import { discardsLastNote, keepOnlyInGroup, replaceInGroup } from "@/lib/pending-edits";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
 import { detectRecommendation } from "@/lib/recommend/detect";
 import { findComplement, handleRecommend, markComplementOutcome, markRecommendChosen, recommendByPrice, recommendFollowUp, recommendMore, recommendRefineFromAttribute, recordComplementOffer, setRecommendDeps, type RecommendEnv } from "@/lib/recommend/handle";
@@ -183,7 +184,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     // modificador do parser determinístico vale pra ela (6º ciclo, rodada 1).
     const items = extraction.items.filter(
       // Contexto e hesitação ('tenho um cachorro labrador', 'esqueci') também não viram item vindos da IA (10/10, rodada 6).
-      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query) && !isOwnershipContext(item.query) && !isRecallFiller(item.query) && !isDescriptorFragment(item.query)
+      (item) => !blocksMedicine(item.query) && !looksLikeTobacco(item.query) && !isRequestModifier(item.query) && !isOwnershipContext(item.query) && !isRecallFiller(item.query) && !isDescriptorFragment(item.query) && !isDiscourseOnly(item.query)
     );
     // Remédio isento ligado (05/10): a IA às vezes marca containsMedicine para um isento que
     // ELA MESMA manteve na lista ("quero advil" → Advil na lista + aviso "remédio de receita
@@ -4495,7 +4496,7 @@ async function handleDeliveryTurn(
     // (endereço de alguém na área); o produto pedido fica anotado pra depois.
     if (ctx.outsideArea) {
       const note = isQuestion(text) ? "" : onboardingNote(text).text;
-      if (note) addPendingRequest(ctx, note);
+      if (note) addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? text);
       await writeCtx(convo.id, ctx);
       await reply(phone, copy.stillOutsideArea(ctx.outsideArea.city, servedAreaLabel()));
       return;
@@ -4649,7 +4650,7 @@ async function handleDeliveryTurn(
       await reply(phone, copy.medicineFarewell());
       return;
     }
-    if (note) addPendingRequest(ctx, note);
+    if (note) addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? text);
     ctx.flow = "delivery";
     ctx.step = "need_address";
     await writeCtx(convo.id, ctx);
@@ -4694,7 +4695,7 @@ async function handleDeliveryTurn(
     }
     const note = !recNote && intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
     const lines = note ? resolveListItems(note) : [];
-    if (note) addPendingRequest(ctx, note);
+    if (note) addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? text);
     if (recNote) ctx.pendingRecommend = recNote.text;
     ctx.flow = "delivery";
     ctx.step = "need_cep";
@@ -6084,19 +6085,44 @@ async function handleNewCep(
 // Pedido guardado para depois do cadastro (07/10, c06): "leite nude" e depois "um leite Nude de origem
 // vegetal sem açúcar" são o MESMO pedido refinado — o mais completo substitui o curto em vez de somar
 // (o resumo saía com o leite duplicado).
-function addPendingRequest(ctx: DeliveryContext, note: string) {
-  const segments = (ctx.pendingRequest ?? "").split(", ").filter(Boolean);
-  const wanted = new Set(queryTokens(note));
-  const same = segments.findIndex((segment) => {
-    const tokens = queryTokens(segment);
-    return tokens.length > 0 && wanted.size > 0 && (tokens.every((t) => wanted.has(t)) || [...wanted].every((t) => tokens.includes(t)));
-  });
-  if (same >= 0) {
-    if (queryTokens(note).length >= queryTokens(segments[same]).length) segments[same] = note;
-  } else {
-    segments.push(note);
+// `said` = a fala do cliente neste turno (10/10, rodada 8 A3/M6/M1; pending-edits.ts): "ignora" tira o que a mensagem
+// anterior anotou, "só quero 1 desodorante, o roll-on. tira os outros dois" mantém só o roll-on do grupo e "não, melhor
+// aerosol" troca o desodorante anterior em vez de somar um segundo.
+function addPendingRequest(ctx: DeliveryContext, note: string, said?: string) {
+  let segments = (ctx.pendingRequest ?? "").split(", ").filter(Boolean);
+  if (said) {
+    const last = ctx.pendingLastAdded ?? [];
+    if (last.length && discardsLastNote(said)) segments = segments.filter((segment) => !last.includes(segment));
+    const keep = keepOnlyInGroup(segments, said);
+    if (keep) {
+      ctx.pendingRequest = keep.segments.join(", ") || undefined;
+      ctx.pendingLastAdded = [keep.kept];
+      return;
+    }
+  }
+  const added: string[] = [];
+  for (const piece of note.split(", ").filter(Boolean)) {
+    const replaced = said ? replaceInGroup(segments, said, piece) : null;
+    if (replaced) {
+      segments = replaced;
+      added.push(piece);
+      continue;
+    }
+    const wanted = new Set(queryTokens(piece));
+    const same = segments.findIndex((segment) => {
+      const tokens = queryTokens(segment);
+      return tokens.length > 0 && wanted.size > 0 && (tokens.every((t) => wanted.has(t)) || [...wanted].every((t) => tokens.includes(t)));
+    });
+    if (same >= 0) {
+      if (queryTokens(piece).length >= queryTokens(segments[same]).length) segments[same] = piece;
+      added.push(segments[same]);
+    } else {
+      segments.push(piece);
+      added.push(piece);
+    }
   }
   ctx.pendingRequest = segments.join(", ") || undefined;
+  ctx.pendingLastAdded = added.length ? added : undefined;
 }
 
 // ---- recomendação no onboarding (08/10, plano-recomendacoes; dono: CEP no 1º contato) ----
@@ -6368,7 +6394,7 @@ async function handleDeliveryAddress(
     }
     const note = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
     if (note && queryTokens(note).length && !blocksMedicine(address)) {
-      addPendingRequest(ctx, note);
+      addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? address);
     }
     ctx.step = "need_address";
     await writeCtx(convoId, ctx);
@@ -7334,18 +7360,20 @@ async function handleChoosing(
     const tied = parsed.type === "cheapest" ? cheapestWithTies(current.options).tied : [];
     // "o mais barato de tudo" (10/10, rodada 7 M4): vale para o PEDIDO inteiro — cada item ainda em escolha leva a opção
     // mais barata dele (antes só o item da vez; o cliente repetiu 4 vezes). O aviso de entregas/prazo vê o conjunto.
-    if (parsed.type === "cheapest" && wantsCheapestForAll(text) && (ctx.pending?.length ?? 0) > 1) {
+    // "escolhe você tudo que falta" (10/10, rodada 8 M2) é o mesmo caminho, com a 1ª opção (a que a Lia recomenda) de cada.
+    const forAll = parsed.type === "cheapest" || parsed.type === "any" ? wantsChoiceForAll(text) : null;
+    if (forAll && (ctx.pending?.length ?? 0) > 1) {
       const costBefore = [...(ctx.basket ?? [])];
       const rest = ctx.pending!.slice(1);
       const picked = rest.filter((p) => p.options.length && !p.recommendation);
       const added = picked.map((p) => {
-        const o = p.options[cheapestWithTies(p.options).index];
+        const o = p.options[forAll === "cheapest" ? cheapestWithTies(p.options).index : 0];
         const pack = packAdjusted(o, p.qty, p.query, { assumedOne: p.qty === 1 && !p.qtyExplicit });
         return choiceToBasketItem(o, pack.qty, o.storeKey ? getStore(o.storeKey) : store, p.query);
       });
       ctx.basket = mergeBaskets(ctx.basket ?? [], added);
       ctx.pending = [current, ...rest.filter((p) => !picked.includes(p))];
-      const note = copy.cheapestForAllNote(added.map((i) => ({ qty: i.qty, name: i.name, total: roundMoney(display(i.unitPrice, i.medicine) * i.qty) })));
+      const note = copy.cheapestForAllNote(added.map((i) => ({ qty: i.qty, name: i.name, total: roundMoney(display(i.unitPrice, i.medicine) * i.qty) })), forAll);
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], { note, costBefore });
       return;
     }

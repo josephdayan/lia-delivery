@@ -326,6 +326,8 @@ export type DeliveryContext = {
   cheaperAsk?: { at: number };
   // Pedido em texto cru aguardando o CEP do onboarding — vira busca COM OPÇÕES depois.
   pendingRequest?: string;
+  // Trechos do pendingRequest que a ÚLTIMA mensagem anotou (10/10, rodada 8 M1): "ignora" tira só esses.
+  pendingLastAdded?: string[];
   // Pedido de RECOMENDAÇÃO guardado até o CEP (08/10), inteiro ("tô com muita fome, quero algo doce"):
   // o `pendingRequest` separa por ", " e só guarda o que parece produto. Depois do CEP vira recomendação.
   pendingRecommend?: string;

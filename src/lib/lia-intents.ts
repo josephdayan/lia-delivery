@@ -352,7 +352,12 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(vai|vem|vao) (ter|ser) .*",
       "(eu )?(nao|n) (esquece|esqueca|esquecer)( de)? (nada|de nada|nenhum item)",
       "(nao esquece|nao esqueca)( nada)?",
-      "(eu )?(moro|mora|morando|resido) (em|na|no) .*"
+      "(eu )?(moro|mora|morando|resido) (em|na|no) .*",
+      // Montar a LISTA/cesta (10/10, rodada 8 M1: "montar uma cesta básica pra doação" virava item): descreve o pedido.
+      "(eu |a gente )?(me ajuda a |ajuda a |vamos |vou |quero |queria |preciso )?(montar|fazer|organizar|preparar) (uma |a |as |um |o )?(cesta|lista|compra|compras|feira|rancho|kit)( (basica|do mes|da semana))?( (pra|para|de) [a-z ]+)?",
+      // Sou/moro/estudo (10/10, rodada 8 M1: "sou estudante, moro em república com mais 2").
+      "(eu )?(sou|somos) (estudante|aposentad[oa]|universitari[oa]|mae|pai|professor[a]?|nov[oa] aqui|cliente)( .*)?",
+      "(eu )?(moro|mora|moramos) (em|na|no|com|sozinh[oa])( .*)?"
     ].join("|") +
     ")$"
 );
@@ -398,7 +403,38 @@ export function isRequestModifier(phrase: string): boolean {
 // colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
 export function isNonItemSegment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
-  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n);
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase);
+}
+
+// Trecho SÓ de fala (10/10, rodada 8 M1): "vamos dividir a", "eu pago o meu", "ele paga o dele", "voltei", "desculpa",
+// "sabe", "aquele", "ignora", "gastar pouco", "na verdade não são esses itens" viravam item ou "não achei". Em vez de
+// mais um regex por frase: se TODA palavra do trecho é pronome, demonstrativo, muleta, verbo de conversa, palavra de
+// meta-lista ("itens", "resto") ou conectivo, não há produto nenhum ali. Um substantivo de produto qualquer salva o trecho.
+const DISCOURSE_WORDS = new Set(
+  (
+    // pronomes, possessivos, demonstrativos
+    "eu ele ela eles elas nos gente voce vc voces vcs me te se lhe mim comigo meu minha meus minhas seu sua seus suas dele dela deles delas nosso nossa nossos nossas teu tua " +
+    "esse essa esses essas este esta estes estas isso isto aquele aquela aqueles aquelas aquilo ai ali la aqui " +
+    // muletas e cortesia
+    "tipo sabe ne ta tah ok ah ahn hum hm eh entao bom bem assim enfim olha ve desculpa desculpe perdao mal voltei voltando oi opa pois cara mano obrigado obrigada " +
+    // verbos de conversa (nenhum é produto)
+    "vamos vou vai vamo pago paga pagar pagamos pagando pagam dividir divide dividimos dividindo dividi divido gastar gasto gasta gastando economizar ajuda ajudar ajude " +
+    "montar monta fazer faz quero queria quer preciso precisa tenho tem temos sou somos estou to tou tava moro mora ignora ignorar ignore ignorem desconsidera " +
+    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir " +
+    // meta-lista, quantidade vaga e advérbios
+    "itens item coisa coisas produto produtos parte resto tudo todos todas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
+    // conectivos e artigos
+    "a o os as um uma uns umas de do da dos das em no na nos nas pra pro para por pelo pela com sem que e ou mas ate"
+  ).split(" ")
+);
+export function isDiscourseOnly(phrase: string): boolean {
+  // Sentinelas do parser ("mais um" aditivo, "qualquer") não são fala solta.
+  if (/[\u0001\u0002]/.test(phrase)) return false;
+  // Valor em dinheiro é orçamento: quem decide é o parser do teto (vira o "até N reais" do item), nunca descarte.
+  if (/\d/.test(phrase) && /\b(?:r\$|reais|real|conto|contos|pila)\b|r\$/i.test(normalizeMsg(phrase))) return false;
+  const words = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const alpha = words.filter((w) => /[a-z]/.test(w));
+  return alpha.length > 0 && words.every((w) => /^\d+$/.test(w) || DISCOURSE_WORDS.has(w));
 }
 
 // Urgência de ENTREGA na mensagem ("preciso pra hoje", "urgente", "o quanto antes").
@@ -494,7 +530,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   const parsedLines = source
@@ -505,7 +541,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     // "…2 vodkas tenho uns 120 reais 3 sucos": o orçamento no MEIO da frase ganha vírgulas e vira o
     // segmento "ate N reais" (teto do item anterior), em vez de colar no nome do produto.
     .replace(
-      /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
+      /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até|s[oó]|apenas)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
       ", ate $1 reais, "
     )
     // ponto/interrogação separam sentenças ("sabao em po. ah e um refri" = 2 segmentos)
@@ -538,7 +574,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
         // "tenho uns 120 reais" é ORÇAMENTO da frase, nunca item: vira o "até N reais" que o
         // restante do parser já trata como teto (c23/c24).
-        .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
+        .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:s[oó]|apenas)\s+)?(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
         // "copo descartável pra todo mundo": o destinatário do churrasco não é parte do produto
         .replace(/\s+(?:pra|para)\s+(?:todo mundo|todos|todas|a galera|galera|geral|a familia toda|a familia)\s*$/i, "")
         // sujeito-parente ("meu neto quer um violão", "minha filha pediu suco"): o
@@ -563,6 +599,13 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // conjunção sobrando no começo do segmento ("e areia pro gato",
         // "mas entrega hoje se der" — a adversativa escondia o modificador de urgência)
         .replace(/^(e|mas|porem|porém|so que|só que|com)\s+/i, "")
+        // "me ajuda a montar até 100 reais" (10/10, rodada 8 M1): a fala antes do orçamento sai; fica o "até N reais" (teto).
+        .replace(/^(.+?)\s+(?=(?:at[eé]|no m[aá]ximo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?\d)/i, (m, lead: string) => (isDiscourseOnly(lead) ? "" : m))
+        // Sujeito-pronome antes do pedido ("eu quero arroz e ele quer feijão", 10/10, rodada 8 M1): sai o pronome (e o verbo
+        // de pedido que sobrou); "ela é filhote" (descrição) fica para a regra do pronome abaixo.
+        .replace(/^(?:eu|ele|ela|eles|elas|a gente|n[oó]s)\s+(?!(?:é|e|eh|s[aã]o|est[aá]|t[aá])(?:\s|$))(?:(?:quer|querem|queremos|precisa|precisam|precisamos|vai querer|vamos querer|vai levar|levo|leva|pego|pega)\s+(?:de\s+)?)?(?=\S)/i, "")
+        // "é pra festa junina da igreja" (10/10, rodada 8 M1): a cópula solta não faz parte do item nem do contexto.
+        .replace(/^(?:é|eh)\s+(?=(?:pra|para|pro|so|só|isso|que)\b)/i, "")
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
         // a query mostrada era "fralda pra HOJE" (28/08 S14); a flag de urgência é da
         // mensagem, não do nome do produto
@@ -585,6 +628,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         !STATE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !NARRATIVE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !isOwnershipContext(raw) &&
+        !isDiscourseOnly(raw) &&
         !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
         !isRecallFiller(raw)
     )
@@ -721,6 +765,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     const correction = line.phrase.match(
       /^(?:a?li[aá]s\s+|na verdade\s+|pensando (?:bem|melhor)\s+|ah\s+)?(?:esquece|esqueci|corta|cancela|tira)(?:\s+(?:o|a|os|as))?\s+(.{2,40})$/i
     );
+    // "tira os outros dois" / "remove o resto" (10/10, rodada 8 A3): comando sobre o resto do pedido, nunca item.
+    if (correction && /^(?:(?:os|as|o|a)\s+)?(?:outr[oa]s?|demais|resto)(?:\s+(?:dois|duas|tres|\d+))?$/i.test(normalizeMsg(correction[1]).trim())) continue;
     if (correction && merged.length) {
       const target = cleanItemPhrase(correction[1]);
       const before = merged.length;
@@ -838,7 +884,7 @@ const PRODUCT_TOKEN_ALIASES: Record<string, string> = {
   lenco: "lenco",
   bebe: "umedecido"
 };
-function meaningfulProductTokens(phrase: string): string[] {
+export function meaningfulProductTokens(phrase: string): string[] {
   return normalizeMsg(phrase)
     .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
@@ -1087,7 +1133,7 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     // O resgate só re-promove segmento com cara de PRODUTO: narrativa/modificador que a
     // IA descartou de propósito não volta (rodada 27/08 S3/S20 — o resgate desfazia o
     // descarte certo da IA e a narrativa virava "item não achado").
-    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase)) continue;
+    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase)) continue;
     if (!merged.some((candidate) => sameProduct(line.phrase, candidate.phrase) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
@@ -1245,6 +1291,9 @@ const REJECT_BARE_RE =
 const DONE_RE =
   /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?)[\s,!.]*$/;
 
+const DONE_WITH_TOTAL_RE =
+  /^(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|pronto)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
+
 // "não recebi o código", "o pix expirou", "manda o pix de novo", "perdi o link".
 const RESEND_CODE_RE =
   /\b(nao (recebi|chegou|veio|achei)( aqui)?( o)? (codigo|pix|link|qr ?code)|perdi o (codigo|pix|link)|manda (o )?(pix|codigo|link)( de novo| novamente| dnv)?|(pix|codigo|link|qr ?code) (de novo|dnv|sumiu|nao (chegou|veio|apareceu))|reenvia\w*|reemite|manda de novo)\b/;
@@ -1380,6 +1429,18 @@ export function declinesSwapOffer(text: string): boolean {
 export function wantsCheapestForAll(text: string): boolean {
   const n = normalizeMsg(text);
   return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+}
+
+// "escolhe você tudo que falta", "escolhe pra mim o resto", "o mais barato de todos que faltam" (10/10, rodada 8 M2): a
+// escolha delegada (ou o mais barato) vale para TODOS os itens ainda em escolha, não só o da vez. null = só o da vez.
+const ALL_PENDING_SCOPE_RE = /\b(?:tud[oa]|todos|todas|o resto|os outros|as outras|os demais|as demais|(?:o )?que falta(?:m)?|os que faltam|cada (?:um|item))\b|\bnao quero (?:ver )?mais (?:nenhuma )?opc/;
+const DELEGATE_CHOICE_RE = /\b(?:escolh[ea]r?|decide|seleciona)\b.*\b(?:voce|vc|pra mim|por mim)\b|\b(?:voce|vc)\s+(?:que\s+)?(?:escolhe|decide|sabe)\b|\btanto faz\b/;
+export function wantsChoiceForAll(text: string): "cheapest" | "any" | null {
+  if (wantsCheapestForAll(text)) return "cheapest";
+  const n = normalizeMsg(text);
+  if (!ALL_PENDING_SCOPE_RE.test(n)) return null;
+  if (/\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n)) return "cheapest";
+  return DELEGATE_CHOICE_RE.test(n) ? "any" : null;
 }
 
 // Indiferença de marca/tipo ("de qualquer marca", "tanto faz a marca", "qualquer uma") é FILTRO, nunca termo de busca
@@ -1750,6 +1811,8 @@ export function detectIntent(text: string): Intent {
 
   // Emoji sozinho: 👍/✅ = sim; 🙏/❤️/💚/😊/🙌 = obrigado; resto = um "oi" acenando.
   if (EMOJI_ONLY_RE.test(n)) {
+    // ❌/👎/🚫 = "não" (10/10, rodada 8 M7: respondia "Oi! Tô aqui"): o passo decide o que o "não" tira ou recusa.
+    if (/[❌✖❎🚫⛔👎🙅]/u.test(n)) return { kind: "reject" };
     if (/[👍✅🆗]/u.test(n)) return { kind: "affirm" };
     if (/[🙏❤💚😊🙌✨😍🥰]/u.test(n)) return { kind: "thanks" };
     return { kind: "greeting" };
@@ -1960,6 +2023,9 @@ export function detectIntent(text: string): Intent {
 
   if (isAffirm(n)) return { kind: "affirm" };
   if (DONE_RE.test(n)) return { kind: "done" };
+  // "só isso, quanto fica?" (10/10, rodada 8 M10): fechar a lista + pedir o total é UM pedido — o total; antes mostrava o
+  // parcial e pedia "diz só isso".
+  if (DONE_WITH_TOTAL_RE.test(n)) return { kind: "done" };
   if (REJECT_BARE_RE.test(n)) return { kind: "reject" };
   if (REJECT_RE.test(n)) return { kind: "reject" };
 
@@ -2269,7 +2335,7 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
     return { type: "pick", index: 0 };
   }
   // "qual você recomenda?", "escolhe você", "me sugere" — confiança na Lia = any.
-  if (/\b(recomenda|sugere|indica|escolhe (voce|vc|ai|pra mim)|o que (voce|vc) acha melhor)\b/.test(n)) {
+  if (/\b(recomenda|sugere|indica|escolhe (voce|vc|ai|pra mim)|o que (voce|vc) acha melhor)\b/.test(n) || /\bescolher?\b.*\b(?:por mim|pra mim)\b/.test(n)) {
     return { type: "any" };
   }
 

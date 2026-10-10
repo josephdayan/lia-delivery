@@ -2626,9 +2626,10 @@ export function addedToPendingQuote(items: string[]): string {
 // Resumo da cotação manual: itens por nome (o operador informa o custo total dos
 // produtos e o frete), com prazo/entrega e endereço. É o gêmeo de `summary` para o
 // fluxo concierge, onde não há preço por linha.
-export function cheapestForAllNote(items: { qty: number; name: string; total: number }[]): string {
+// mode "any" (10/10, rodada 8 M2): "escolhe você tudo que falta" — a Lia escolheu a 1ª opção (a recomendada) de cada um.
+export function cheapestForAllNote(items: { qty: number; name: string; total: number }[], mode: "cheapest" | "any" = "cheapest"): string {
   if (!items.length) return "";
-  return [`Peguei o mais barato de cada item:`, ...items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)].join("\n");
+  return [mode === "any" ? `Escolhi pra você o que falta:` : `Peguei o mais barato de cada item:`, ...items.map((i) => `• ${i.qty}x ${i.name} — ${brl(i.total)}`)].join("\n");
 }
 
 // Escolha que cria entrega extra ou atrasa o pedido (10/10, rodada 7 M4): o custo vem junto da confirmação, não só no resumo.
