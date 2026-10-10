@@ -86,7 +86,6 @@ const bi = (sku: string, name: string, unitPrice: number, extra: Partial<BasketI
 });
 const opt = (sku: string, name: string, unitPrice: number, storeKey = "americanas", storeLabel = "Americanas", extra: Partial<ChoiceOption> = {}): ChoiceOption => ({ sku, name, unitPrice, storeKey, storeLabel, ...extra });
 const pend = (query: string, options: ChoiceOption[], extra: Partial<PendingChoice> = {}): PendingChoice => ({ query, qty: 1, options, ...extra }) as PendingChoice;
-void opt;
 void pend;
 
 // 1 ------------------------------------------------------------------------------------------------------------------
@@ -108,4 +107,52 @@ test("1: o resumo do fechamento real ('só isso') avisa o que ficou de fora; 'ti
   const after = await ctxOf(c.convoId);
   assert.equal(after.step, "awaiting_quote_confirmation", "o total continua na mesa");
   assert.ok(after.deliveryOrderId);
+});
+
+// 2/3 ----------------------------------------------------------------------------------------------------------------
+const sig = (basket: BasketItem[]) => basket.map((i) => `${i.sku}:${i.qty}`).sort().join("|");
+const caderno = bi("americanas-4042685", "Caderno Soho Grampeado Pequeno 32 Folhas Tilibra Pautado", 16.99, { ask: "caderno pequeno" });
+const bombom = bi("paguemenos-57318", "Bombom Ouro Branco 20g", 2.99, { storeKey: "paguemenos", storeLabel: "Pague Menos", ask: "bombom" });
+const caderneta = opt("livrariascuritiba-368320", "Caderneta Grampeada Fitto Flexível Soho", 13.58, "livrariascuritiba", "Livrarias Curitiba");
+const swapCtx = () => {
+  const basket = [bombom, caderno];
+  return { basket, minSwap: { fromStoreKey: "americanas", key: sig(basket), replacements: [{ fromSku: caderno.sku, qty: 1, option: caderneta }] } };
+};
+async function itemsAfter(c: { convoId: string; userId: string }): Promise<BasketItem[]> {
+  const ctx = await ctxOf(c.convoId);
+  if (ctx.basket?.length) return ctx.basket;
+  const order = await prisma.deliveryOrder.findFirst({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
+  return (order?.items as unknown as BasketItem[]) ?? [];
+}
+
+test("2: 'tem outro caderno pequeno?' / 'mostra outros cadernos' não recusam a troca; a oferta sobrevive e 'pode trocar de loja' aceita", async (t) => {
+  if (!dbOk) return t.skip();
+  for (const lateral of ["tem outro caderno pequeno?", "mostra outros cadernos"]) {
+    const c = await customerWith(swapCtx());
+    const first = await send(c.phone, lateral);
+    assert.doesNotMatch(first, /Troquei de loja/i, `${lateral}: ${first.slice(0, 300)}`);
+    const mid = await ctxOf(c.convoId);
+    assert.ok(mid.minSwap || mid.minSwapParked, `${lateral}: a oferta ficou guardada`);
+    const out = await send(c.phone, "pode trocar de loja");
+    assert.doesNotMatch(out, /Responde o número|Qual loja/i, out.slice(0, 300));
+    const items = await itemsAfter(c);
+    assert.ok(items.some((b) => b.sku === caderneta.sku), `${lateral}: ${out.slice(0, 400)}`);
+    assert.ok(!items.some((b) => b.sku === caderno.sku));
+  }
+});
+
+test("2: depois da fala lateral, um '1' solto não aceita a oferta guardada (rodada 6 A2 continua valendo)", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith(swapCtx());
+  await send(c.phone, "tem outro caderno pequeno?");
+  const out = await send(c.phone, "1");
+  assert.doesNotMatch(out, /Troquei de loja/i, out.slice(0, 300));
+});
+
+test("3: 'aceito a troca, pode ser' aceita a troca de loja (não vira edição de item)", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith(swapCtx());
+  const out = await send(c.phone, "aceito a troca, pode ser");
+  assert.doesNotMatch(out, /já é o que está na sua cesta/i, out.slice(0, 300));
+  assert.match(out, /Troquei de loja/i, out.slice(0, 300));
 });

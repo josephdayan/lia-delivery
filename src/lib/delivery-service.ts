@@ -2192,6 +2192,15 @@ function attendanceQuiet(ctx: DeliveryContext): boolean {
   return !ctx.step || ctx.step === "collecting" || ctx.step === "need_cep" || ctx.step === "need_address";
 }
 
+// Intenção de uma resposta à oferta de troca de loja. "tem outro caderno pequeno?" / "mostra outros cadernos" o regex lê
+// como recusa (de uma opção mostrada), mas é pergunta lateral sobre o item: com a oferta na mesa virava "recusei a troca"
+// e a oferta sumia (10/10, rodada 8 g25).
+function swapOfferIntent(text: string): Intent["kind"] {
+  const kind = detectIntent(text).kind;
+  if (kind === "reject" && /\b(?:outr[oa]s?|mais opc\w*|mostra\w*|ver mais|tem (?:um|uma)\b)/.test(normalizeMsg(text))) return "more_options";
+  return kind;
+}
+
 async function handleDeliveryTurn(
   phone: string,
   text: string,
@@ -2214,14 +2223,25 @@ async function handleDeliveryTurn(
   const yesNoDigit = /^\s*([12])[\s.!]*$/.exec(text);
   // Troca de loja do pedido mínimo (10/10, rodada 6 A2): a oferta só vale para a MESMA cesta e para a resposta logo em
   // seguida. Cesta mudou ou o cliente falou de outra coisa → ela sai da mesa; um "1" depois disso nunca a aceita.
+  if (!ctx.minSwap && ctx.minSwapParked) {
+    const said = normalizeMsg(text);
+    if (ctx.minSwapParked.key != null && ctx.minSwapParked.key !== basketSignature(ctx.basket)) ctx.minSwapParked = undefined;
+    else if (said === "minswap:yes" || said === "minswap:no" || acceptsSwapOffer(text) || declinesSwapOffer(text)) {
+      ctx.minSwap = ctx.minSwapParked;
+      ctx.minSwapParked = undefined;
+    }
+  }
   if (ctx.minSwap) {
     const said = normalizeMsg(text);
-    const answer = detectIntent(text).kind;
+    const answer = swapOfferIntent(text);
     // "sim, pode trocar" / "pode trocar de loja" / "mantém como está" (10/10, rodada 7 A1/A2) também respondem à oferta:
     // antes só o botão, "trocar de loja" e o sim seco valiam — o resto tirava a oferta da mesa e a IA aplicava uma troca
     // em OUTRO item (o rodo) ou o carrossel aberto respondia "Responde o número" em laço.
     const answers = Boolean(yesNoDigit) || said === "minswap:yes" || said === "minswap:no" || acceptsSwapOffer(text) || declinesSwapOffer(text) || answer === "affirm" || answer === "reject";
-    if ((ctx.minSwap.key != null && ctx.minSwap.key !== basketSignature(ctx.basket)) || !answers) {
+    const sameBasket = ctx.minSwap.key == null || ctx.minSwap.key === basketSignature(ctx.basket);
+    if (!sameBasket || !answers) {
+      // Fala lateral com a mesma cesta ("mostra outros cadernos"): a oferta sai da mesa, mas fica guardada.
+      ctx.minSwapParked = sameBasket && !answers ? ctx.minSwap : undefined;
       ctx.minSwap = undefined;
       await writeCtx(convo.id, ctx);
     } else if (acceptsSwapOffer(text) || declinesSwapOffer(text)) {
@@ -3977,7 +3997,7 @@ async function handleDeliveryTurn(
   }
 
   // Recusa da troca de loja: mantém a cesta e lembra o caminho de completar.
-  if (ctx.minSwap && (normalizeMsg(text) === "minswap:no" || declinesSwapOffer(text) || intent.kind === "reject")) {
+  if (ctx.minSwap && (normalizeMsg(text) === "minswap:no" || declinesSwapOffer(text) || swapOfferIntent(text) === "reject")) {
     const fromStore = getStore(ctx.minSwap.fromStoreKey);
     ctx.minSwap = undefined;
     await writeCtx(convo.id, ctx);
@@ -7946,10 +7966,10 @@ async function pageMoreOptions(phone: string, convoId: string, ctx: DeliveryCont
         console.warn("[choice:more-options:rescue-failed]", error instanceof Error ? error.message : error);
       }
       await writeCtx(convoId, ctx);
-      await reply(phone, copy.noMoreOptions(p.query));
+      await reply(phone, copy.noMoreOptions(p.query, Boolean(ctx.minSwapParked)));
       return;
     }
-    await reply(phone, copy.noMoreOptionsAskReword(p.query));
+    await reply(phone, copy.noMoreOptionsAskReword(p.query, Boolean(ctx.minSwapParked)));
     return;
   }
   // Memória de TUDO que já foi mostrado: o toque num card antigo resolve por sku.

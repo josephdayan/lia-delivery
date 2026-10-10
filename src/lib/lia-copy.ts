@@ -674,14 +674,19 @@ export function priceSortedHeader(query: string, cheapest: boolean): string {
   return cheapest ? `As mais baratas de *${query}*:` : `As mais caras de *${query}*:`;
 }
 
-export function noMoreOptions(query: string): string {
-  return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.`;
+export function noMoreOptions(query: string, swapOpen = false): string {
+  return `Essas são todas as opções de *${query}* que eu tenho. Responde o número, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
+}
+
+// A oferta de troca de loja do pedido mínimo continua valendo depois de uma pergunta lateral (10/10, rodada 8 g25).
+export function minSwapStillOpen(): string {
+  return "_A troca de loja sem pedido mínimo que eu ofereci continua valendo: é só dizer *trocar de loja*._";
 }
 
 // Segundo "outras" com o pool esgotado NÃO repete a mesma frase (rodada 27/08 S4):
 // convida a reformular, que é a única saída real.
-export function noMoreOptionsAskReword(query: string): string {
-  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente, ou *pula* pra seguir sem esse item.`;
+export function noMoreOptionsAskReword(query: string, swapOpen = false): string {
+  return `De *${query}* eu já mostrei tudo que tenho. Me diz uma marca, tipo ou faixa de preço que eu procuro diferente, ou *pula* pra seguir sem esse item.${swapOpen ? `\n${minSwapStillOpen()}` : ""}`;
 }
 
 // Toque num botão de card de uma mensagem antiga: dizer ISSO, em vez do

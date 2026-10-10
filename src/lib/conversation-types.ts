@@ -297,6 +297,10 @@ export type DeliveryContext = {
     // Assinatura da cesta na hora da oferta (10/10, rodada 6 A2): cesta mudou → a oferta morreu.
     key?: string;
   };
+  // Oferta de troca de loja guardada depois de uma fala lateral (10/10, rodada 8 g25: "tem outro caderno pequeno?" no meio
+  // apagava a oferta e o "pode trocar de loja" seguinte caía no laço "Responde o número"). Só volta à mesa com a MESMA
+  // cesta e um aceite/recusa com palavras ou o botão — o "1" solto depois disso nunca a aceita (rodada 6 A2).
+  minSwapParked?: DeliveryContext["minSwap"];
   // Última escolha CONCLUÍDA (com o sku escolhido): "Outras opções"/"mais barato" fora
   // da escolha reabrem ela — o toque num card antigo não pode cair no "me diz de outro
   // jeito" (teste real 19/08).
