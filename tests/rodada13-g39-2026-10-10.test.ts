@@ -240,3 +240,37 @@ test("4b: na escolha, 'qual a diferença entre o Deluxe Cotton e o Personal Vip?
   assert.match(fof, /Fofinho\* não está entre as opções/, fof);
   assert.doesNotMatch(fof, /procuro o produto em várias lojas/i, fof);
 });
+
+// 5 ------------------------------------------------------------------------------------------------------------------
+test("5a: 'meia dúzia de pão de alho' com pacote de 400g pergunta antes de pôr 6 pacotes; 'só 1' leva 1", async (t) => {
+  if (!dbOk) return t.skip();
+  const pao = opt("swift-1", "Pão de Alho Baguete Tradicional Swift 400g", 12.9, "swift", "Swift");
+  const phone = await customerChoosing({ pending: [{ query: "pão de alho", qty: 6, qtyExplicit: true, options: [pao, opt("swift-2", "Pão de Alho Picante Swift 400g", 19.9, "swift", "Swift")] }] } as Partial<DeliveryContext>);
+  const out = await send(phone, "1");
+  assert.match(out, /Levo \*6 pacotes\*/, out);
+  assert.ok(!(await ctxOf(phone)).basket?.length, "nada na cesta antes do sim");
+  await send(phone, "só 1");
+  const basket = (await ctxOf(phone)).basket ?? [];
+  assert.equal(basket.find((b) => b.sku === "swift-1")?.qty, 1, JSON.stringify(basket));
+});
+test("5b: pré-cadastro com a IA lendo 'um par de pilhas AA' como 1 anota 2", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setPreSignupModelForTests(async () => D({ items: [it("pilhas AA")] }));
+  const phone = newPhone();
+  await send(phone, "oi");
+  const out = await send(phone, "um par de pilhas AA");
+  assert.match(out, /2x pilhas AA/i, out);
+});
+test("5c: 'a escova tem que ser macia' com escovas macias na tela não diz 'não tenho'", async (t) => {
+  if (!dbOk) return t.skip();
+  const brushes = [
+    opt("ESC-1", "Escova Dental Colgate Classic Clean Cerdas Macia 3 Unidades", 9.9),
+    opt("ESC-2", "Escova Dental Oral-B Indicator Macia", 7.9),
+    opt("ESC-3", "Escova Dental Curaprox 5460 Ultra Soft Macia", 29.9)
+  ];
+  const phone = await customerChoosing({ pending: [{ query: "escova de dente macia", qty: 1, options: brushes }, { query: "fio dental", qty: 1, options: [opt("FD-1", "Fio Dental Hillo 100m", 6.9)] }] } as Partial<DeliveryContext>);
+  const out = await send(phone, "a escova tem que ser macia, e uma observação: pode ser de qualquer marca");
+  assert.doesNotMatch(out, /N[aã]o tenho \*escova/i, out);
+  assert.equal((await ctxOf(phone)).pending?.[0]?.options.length, 3);
+});

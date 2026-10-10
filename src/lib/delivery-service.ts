@@ -7619,6 +7619,16 @@ async function confirmChosenOption(
       await reply(phone, copy.packCountAsk(chosen.name, askedQty, perPack, lineTotal));
       return;
     }
+    // "meia dúzia de pão de alho" com o pacote de 400g (10/10, rodada 13 g39): a contagem fala de UNIDADES e o card é um
+    // pacote por peso, sem dizer quantas vêm — 6 pacotes (R$ 122,10) entravam sem pergunta. Total alto confirma antes.
+    // Só pacote por PESO e contagem de PEÇAS (6+, a meia dúzia): "4 carne" são 4 bandejas; frasco de 30 ml é a própria unidade.
+    const byMeasure = /\b\d+(?:[.,]\d+)?\s*(?:g|gr|kg)\b/i.test(chosen.name);
+    if (current.qtyExplicit && askedQty >= 6 && perPack === 0 && byMeasure && !chosen.unitWeightKg && !parseWeightAskKg(current.query) && !/\b\d+(?:[.,]\d+)?\s*(?:ml|l|lt|litros?)\b/i.test(current.query) && lineTotal >= PACK_MEASURE_ASK_MIN && !PACK_UNIT_LEAD_RE.test(normalizeMsg(current.query))) {
+      ctx.packConfirm = { sku: chosen.sku, askedQty, kind: "count" };
+      await writeCtx(convoId, ctx);
+      await reply(phone, copy.packMeasureCountAsk(chosen.name, askedQty, lineTotal));
+      return;
+    }
   }
   ctx.pending = ctx.pending!.slice(1);
   // Recomendação escolhida (08/10): o RecommendLog fecha o ciclo (o que converte).
@@ -7745,8 +7755,9 @@ async function restoreRefinedChoices(phone: string, convoId: string, ctx: Delive
   const before = preRefineOptions(current);
   if (!before.length || /^optsku:/i.test(text.trim())) return false;
   const reset = (options: ChoiceOption[]) => {
-    current.query = current.baseQuery ?? current.query;
+    current.query = current.originalQuery ?? current.baseQuery ?? current.query;
     current.baseQuery = undefined;
+    current.originalQuery = undefined;
     current.attrs = undefined;
     current.closestFalta = undefined;
     current.exhausted = undefined;
@@ -8834,6 +8845,8 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
     }
   }
   if (!choice?.options.length) return false;
+  // O nome do item antes da busca nova (rodada 13 g39): "mostra de novo" volta às opções E ao nome de antes.
+  current.originalQuery ??= current.baseQuery ?? current.query;
   current.baseQuery = undefined;
   current.attrs = undefined;
   current.closestFalta = undefined;
@@ -8898,6 +8911,27 @@ export function mergeQueryTerms(base: string, extra: string): { query: string; f
 // preciso de um estilo tocha"): é refino do MESMO produto com a exigência. Resolvido aqui, antes do gerente de
 // diálogo, para o "não achei" nunca devolver as opções que ele acabou de recusar (rodada 2, c11).
 const REQUIREMENT_RE = /\b(?:tem que ser|precisa ser|tinha que ser|preciso de|precisava de|preciso que seja|quero)\s+(?:um |uma |o |a )?(?:estilo |tipo |modelo |sabor )?([a-z0-9][a-z0-9/ -]{1,40})/;
+// "a escova tem que ser macia" com escovas macias na tela (10/10, rodada 13 g39): respondia "Não tenho escova de dente macia
+// em nenhuma loja". O que ele exige já está nas opções: diz isso (e estreita para elas quando nem todas atendem).
+async function answerAlreadyMatching(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, asked: string[]): Promise<boolean> {
+  const words = asked.filter((t) => t.length >= 3);
+  if (!words.length || current.closestFalta) return false;
+  const stem = (t: string) => (t.length > 4 ? t.replace(/[aeos]+$/, "") : t);
+  const fits = (o: ChoiceOption) => words.every((t) => normalizeMsg(o.name).includes(stem(t)));
+  const matching = current.options.filter(fits);
+  if (!matching.length) return false;
+  const attr = words.join(" ");
+  if (matching.length < current.options.length) {
+    current.shownOptions = current.shownOptions ?? [...current.options];
+    current.options = matching;
+    await writeCtx(convoId, ctx);
+    await sendChoices(phone, current, copy.narrowedChoices(`${current.baseQuery ?? current.query}`));
+    return true;
+  }
+  await reply(phone, copy.optionsAlreadyMatch(attr, shownQuery(current)));
+  return true;
+}
+
 async function tryRejectedRefine(phone: string, convoId: string, ctx: DeliveryContext, text: string): Promise<boolean> {
   const current = ctx.pending?.[0];
   if (!current) return false;
@@ -8912,6 +8946,7 @@ async function tryRejectedRefine(phone: string, convoId: string, ctx: DeliveryCo
   // Exige o que JÁ pediu ("essa de 3kg não serve, quero 10kg de qualquer marca", A5): a busca já foi feita em todas
   // as marcas; diz que não tem e o mais perto, com saída.
   if (!fresh.length && (asked.length || saysAnyBrand(required))) {
+    if (await answerAlreadyMatching(phone, convoId, ctx, current, asked)) return true;
     await reply(phone, copy.requestedNotAvailable(base, current.closestFalta, true));
     return true;
   }
@@ -8930,6 +8965,7 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
   // Termo repetido ou indiferença de marca nunca entram na frase (10/10, rodada 7 A5: "ração cachorro filhote 10kg 10kg").
   const merged = mergeQueryTerms(base, attrs.join(" "));
   if (!merged.fresh.length) {
+    if (await answerAlreadyMatching(phone, convoId, ctx, p, queryTokens(normalizeMsg(attrs.join(" "))))) return;
     await reply(phone, copy.requestedNotAvailable(base, p.closestFalta));
     if (!(process.env.WHATSAPP_PROVIDER === "meta" && (await choicesStillOnScreen(phone, p)))) await sendChoices(phone, p);
     return;
@@ -11496,6 +11532,8 @@ export function declaredPack(optionName: string): number {
   return /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
 const PACK_COUNT_ASK_MIN = 100;
+// Pacote por peso multiplicado 6+ vezes (rodada 13 g39): "meia dúzia de pão de alho" a R$ 14 = R$ 85 também confirma.
+const PACK_MEASURE_ASK_MIN = 50;
 const PACK_UNIT_LEAD_RE = /^(?:pacotes?|pcts?|caixas?|cxs?|fardos?|kits?|embalage[nm]s?|latas?|bandejas?|packs?|cartelas?|unidades?)\b/;
 // O pedido conta o CONTEÚDO ("6 ovos", "12 rolos") e não embalagens ("2 caixas de ovos").
 function countsPackContent(query: string | undefined): boolean {

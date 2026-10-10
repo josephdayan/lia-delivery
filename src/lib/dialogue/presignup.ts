@@ -211,6 +211,16 @@ export function reconcilePreItems(items: PreItem[], text: string): PreItem[] {
     const qty = count ? Number(count[1]) : line.qty;
     out.push({ query: count ? count[2] : phrase, qty: qty >= 1 ? Math.min(50, qty) : 1, cheapest: false });
   }
+  // Contagem dita por palavra que a IA deixou em 1 (10/10, rodada 13 g39: "um par de pilhas AA" → "1x pilhas AA"): vale a da
+  // lista da mensagem, quando ela tem UM gêmeo do item.
+  const said = resolveListItems(stripMedicineNegation(text));
+  for (const item of out) {
+    if (item.qty !== 1) continue;
+    const twins = said.filter((line) => sharesProductNoun(line.phrase, item.query) && sameItemProduct(line.phrase, item.query));
+    if (twins.length !== 1 || !twins[0].qtyExplicit || twins[0].qty <= 1) continue;
+    if (out.filter((other) => sharesProductNoun(twins[0].phrase, other.query)).length !== 1) continue;
+    item.qty = Math.min(50, twins[0].qty);
+  }
   return out;
 }
 

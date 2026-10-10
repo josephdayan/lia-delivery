@@ -793,6 +793,11 @@ export function refineNoResultRejected(refined: string): string {
   return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
 }
 
+// O que o cliente exige já está em todas as opções da tela (10/10, rodada 13 g39: "tem que ser macia" com escovas macias).
+export function optionsAlreadyMatch(attr: string, query: string): string {
+  return `As opções de *${query}* aí em cima já são *${attr}* 👆 — é só escolher a que preferir, ou responde *outras* pra ver mais.`;
+}
+
 // O cliente repete o que já pediu e a vitrine não tem (10/10, rodada 7 A5: "quero 10kg de qualquer marca" com só 3 kg na
 // mesa): diz que não tem, qual é o mais perto, e as saídas — nunca uma busca nova com o termo duplicado.
 export function requestedNotAvailable(query: string, falta?: string, rejected = false): string {
@@ -1912,6 +1917,11 @@ export function packMismatchAsk(name: string, requested: number, packSize: numbe
 // "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
 export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
   return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
+}
+
+// Contagem de unidades × pacote por peso (10/10, rodada 13 g39: "meia dúzia de pão de alho" com o pacote de 400g).
+export function packMeasureCountAsk(name: string, qty: number, total: number): string {
+  return `Só pra confirmar: *${name}* é um pacote, e o card não diz quantas unidades vêm nele. ${qty} pacotes ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
 }
 
 // "jogo de 4 copos" com a opção avulsa (10/10, rodada 9 A7).
