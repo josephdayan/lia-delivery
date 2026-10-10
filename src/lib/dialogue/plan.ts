@@ -3,7 +3,8 @@
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { countDistinctItems, resolveListItems } from "../list-items";
-import { extractCep, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun } from "../lia-intents";
+import { extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun, stripMedicineNegation } from "../lia-intents";
+import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { detectRecommendation } from "../recommend/detect";
 import { emergencyFlag } from "../recommend/fallback";
 import { recommendEnabled, type RecommendCriterion, type RecommendRequest } from "../recommend/types";
@@ -80,6 +81,13 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
   const actions = decision.actions;
   if (!actions.length || actions.length > 3) return { ok: false, reason: "quantidade_de_acoes" };
   if (actions.length > 1 && actions.some((a) => SOLO.has(a.type))) return { ok: false, reason: "acao_exclusiva_combinada" };
+  // Remédio no meio de uma lista (10/10, rodada 7 A4): a IA respondia "medicine" para a mensagem inteira e os outros
+  // itens ("band-aid, protetor, shampoo, leite...") sumiam. Com algum item que não é remédio, o caminho determinístico
+  // assume: deixa o remédio de fora com o aviso curto e busca o resto.
+  if (actions.some((a) => a.type === "medicine") && opts.text && listHasNonMedicineItem(opts.text)) return { ok: false, reason: "remedio_no_meio_da_lista" };
+  // Remédio isento ligado: "dipirona 500mg gotas, a normal sem receita" é pedido que a Lia compra — a recusa da IA ("remédio
+  // de receita...") só vale com remédio de receita nomeado na mensagem.
+  if (actions.some((a) => a.type === "medicine") && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
 
   const steps: Planned[] = [];
   for (let i = 0; i < actions.length; i++) {
@@ -113,6 +121,15 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
     return { ok: true, steps: [{ ...keep, dropQueueOnly: true }, pick, ...steps.filter((_, i) => i !== pickAt && i !== keepAt)] };
   }
   return { ok: true, steps };
+}
+
+const isMedicineLine = (phrase: string) => looksLikeMedicine(phrase) || isPrescriptionDrugName(phrase) || looksLikePrescriptionRequest(phrase);
+// "pode", "comprar", "consegue" não são produto ("mas eu tenho receita, pode comprar?" é pergunta sobre o remédio).
+const NOT_PRODUCT_WORD = new Set(["pode", "podem", "comprar", "compra", "consegue", "conseguem", "tem", "vende", "vendem", "quero", "preciso", "voce", "voces", "mas", "isso", "ai", "entao", "favor"]);
+const isProductLine = (phrase: string) => !isNonItemSegment(phrase) && normalizeMsg(phrase).split(/[^a-z0-9]+/).some((w) => w.length >= 3 && !NOT_PRODUCT_WORD.has(w));
+export function listHasNonMedicineItem(text: string): boolean {
+  const lines = resolveListItems(stripMedicineNegation(text)).map((line) => line.phrase).filter((phrase) => /[a-z]{3,}/i.test(phrase));
+  return lines.length >= 2 && lines.some((phrase) => !isMedicineLine(phrase) && isProductLine(phrase)) && lines.some(isMedicineLine);
 }
 
 // Negação de atributo vira filtro, nunca termo positivo (09/10, rodada 3): "troca a areia por uma SEM cheiro" → a IA

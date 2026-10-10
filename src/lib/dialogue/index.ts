@@ -98,6 +98,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   const trimmed = text.trim();
   // id de botão ("optsku:123", "frete:barato", "adicionar_mais"): string de máquina, não linguagem.
   if (/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(trimmed)) return "botao";
+  // "*caixinhas de 1 litro, longa vida" (10/10, rodada 7): o asterisco do WhatsApp corrige o item da fila — o cérebro
+  // aplica a correção (applyAsteriskCorrection); a IA lia a vírgula como dois itens novos com o "*" no nome.
+  if (/^\*\s*[^*\s]/.test(trimmed) && !trimmed.slice(1).includes("*") && ctx.pending?.length) return "correcao_asterisco";
   // "tô com uma dor de cabeça horrível" o regex lê como reclamação; com sintoma de verdade é pedido de
   // recomendação (08/10) e a IA decide.
   const symptomComplaint = i.intent.kind === "complaint" && recommendEnabled() && Boolean(detectRecommendation(text)?.symptom);

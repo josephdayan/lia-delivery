@@ -359,6 +359,8 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
 async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) {
   const { ctx, phone, convoId, h } = env;
   const current = ctx.pending![0];
+  // Item já escolhido mandado de novo (10/10, rodada 7 N3): não vira pendência duplicada.
+  if (!replace && (await h.replyIfAlreadyChosen(phone, ctx, text))) return;
   const added = await h.buildChoicesWithSearchNotice(phone, text, undefined, undefined, undefined, ctx.cep);
   if (!added.autoAdded.length && !added.pending.length) {
     if (added.containsMedicine) await reply(phone, copy.medicineSkippedNote());
