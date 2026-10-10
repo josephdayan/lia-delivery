@@ -6,7 +6,7 @@ import { test, before, after, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
-import { handleDeliveryMessage, runTurnScoped } from "../src/lib/delivery-service";
+import { handleDeliveryMessage, runTurnScoped, declaredPack, packAdjusted } from "../src/lib/delivery-service";
 import { gatherCrossStoreCandidates } from "../src/lib/stores";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { deadlineVerdict, type LiveItemCheck } from "../src/lib/live-freight";
@@ -153,4 +153,33 @@ test("'sim' puro na oferta de juntar: diz o que trocou antes de qualquer pagamen
   const juntei = out.indexOf("Juntei");
   const pay = out.search(/Como prefere pagar|Escolhe abaixo como quer pagar/);
   assert.ok(pay < 0 || juntei < pay, out.slice(0, 600));
+});
+
+// 3) "40 copos descartáveis" contra "Copo ... C/50": unidades pedidas viram pacotes (ou pergunta), nunca 40 pacotes --
+test("declaredPack/packAdjusted: 'C/50' é a contagem do pacote; 40 copos = 1 pacote", () => {
+  assert.equal(declaredPack("Copo Descartável Rosa Regina C/50"), 50);
+  assert.equal(declaredPack("Prato Descartável 15cm c/ 10"), 10);
+  assert.equal(declaredPack("Arroz Tipo 1 c/5kg"), 0);
+  assert.equal(declaredPack("Guardanapo de Papel 50 Guardanapos"), 50);
+  assert.equal(packAdjusted("Copo Descartável Rosa Regina C/50", 40, "copos descartaveis").qty, 1);
+  assert.equal(packAdjusted("Copo Descartável Rosa Regina C/50", 120, "copos descartaveis").qty, 3);
+  assert.equal(packAdjusted("Copo Descartável Rosa Regina C/50", 2, "pacotes de copo descartavel").qty, 2, "pacotes pedidos ficam");
+});
+
+test("escolher o copo C/50 com '40 copos' pergunta a embalagem antes de pôr na cesta; 'sim' leva 1 pacote", async (t) => {
+  if (!dbOk) return t.skip();
+  const options = [
+    { sku: "g19-copo50", name: "Copo Descartável Rosa Regina C/50", unitPrice: 14.28, storeKey: "carrefour", storeLabel: "Carrefour" },
+    { sku: "g19-copo100", name: "Copo Descartável Transparente 200ml C/100", unitPrice: 9.9, storeKey: "carrefour", storeLabel: "Carrefour" }
+  ];
+  const c = await customerWith({ pending: [{ query: "copos descartaveis", qty: 40, qtyExplicit: true, options }] }, "choosing");
+  const out = await send(c.phone, "1");
+  assert.match(out, /50 unidades[\s\S]*pediu \*40\*[\s\S]*Levo 1 embalagem/, out.slice(0, 500));
+  assert.doesNotMatch(out, /40x/);
+  const ctx = await ctxOf(c.convoId);
+  assert.equal((ctx.basket ?? []).length, 0, "nada na cesta antes da confirmação");
+  await send(c.phone, "sim");
+  const after = await ctxOf(c.convoId);
+  const line = (after.basket ?? []).find((b: BasketItem) => b.sku === "g19-copo50");
+  assert.equal(line?.qty, 1, JSON.stringify(after.basket));
 });

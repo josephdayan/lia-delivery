@@ -9623,7 +9623,8 @@ export function splitBySize(sizeAsk: string, items: { name: string; brand?: stri
 // também quando o pedido é MENOR que a caixa, se o número conta o próprio conteúdo da
 // embalagem ("6 ovos", "meia dúzia de ovos" com caixa de 10 = 1 caixa, não 6).
 // 06/10 (A3): item vendido por peso ("2kg de banana", unidade de ~180 g) = 11 unidades.
-const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?)\b/i;
+// Descartáveis de festa e afins (10/10, rodada 6 g19: "40 copos descartáveis" virou 40 pacotes "C/50", R$ 571).
+const PACK_CONTENT_NOUN_RE = /\b(ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
 export function parseWeightAskKg(query: string): number | undefined {
   const t = normalizeMsg(query);
   if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
@@ -9635,8 +9636,12 @@ export function parseWeightAskKg(query: string): number | undefined {
 }
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
 export function declaredPack(optionName: string): number {
-  const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b)/i);
-  return m ? Number(m[1]) : /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
+  const m = optionName.match(/(\d{1,3})\s*(?:und?s?\b|unid(?:ades)?\b|ovos\b|rolos\b|latas\b|garrafas\b|fraldas\b|c[aá]psulas\b|sach[eê]s\b|saquinhos\b|copos\b|pratos\b|guardanapos\b|garfos\b|colheres\b|facas\b|canudos\b|bal[oõ]es\b|velas\b|palitos\b|forminhas\b)/i);
+  if (m) return Number(m[1]);
+  // "Copo Descartável ... C/50", "c/ 100" (10/10, rodada 6 g19): contagem da embalagem sem a palavra "unidades".
+  const withCount = optionName.match(/\b[cC]\s*\/\s*(\d{1,4})(?![\d.,])(?!\s*(?:kg|g|mg|ml|l|lt|cm|mm|m|gr|un\w*\s*de)\b)/);
+  if (withCount) return Number(withCount[1]);
+  return /\bmeia\s+d[uú]zia\b/i.test(optionName) ? 6 : /\bd[uú]zia\b/i.test(optionName) ? 12 : 0;
 }
 const PACK_COUNT_ASK_MIN = 100;
 const PACK_UNIT_LEAD_RE = /^(?:pacotes?|pcts?|caixas?|cxs?|fardos?|kits?|embalage[nm]s?|latas?|bandejas?|packs?|cartelas?|unidades?)\b/;
