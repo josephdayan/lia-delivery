@@ -277,6 +277,9 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "se (tiver|der|for possivel|possivel|rolar|puder|achar|encontrar)( .*)?",
       "((e )?(se der[, ]*)?(queria|quero|preciso|gostaria de|da pra|pode)( me)? )?(receber|entregar?|chega(r|ndo)?|mandar|enviar)( ainda| ate| para| pra| em casa| o pedido)* (hoje|amanha|rapido|logo)( se der| se possivel| se rolar)?",
       "(hoje|amanha)",
+      // Prazo com obrigação ("tem que chegar amanhã", "precisa chegar até sexta", "tem que ser entregue amanhã"; 10/10,
+      // rodada 9): é o prazo do pedido (parseNeededBy), nunca item — virava "*tem que chegar amanhã* eu não achei".
+      "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*",
       "p(a)?ra (hoje|amanha)( se der| se possivel)?",
       "o quanto antes",
       "urgente(mente)?",
@@ -483,13 +486,29 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã" };
   if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
-    if (new RegExp(`\\b(?:ate|so ate|pra|para)\\s+(?:a\\s+|o\\s+|este\\s+|esta\\s+)?${name}(?:-feira)?\\b`).test(n)) {
+    // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
+    if (
+      new RegExp(`\\b(?:ate|so ate|pra|para|chega\\w*|cheguem?|receber)\\s+(?:a\\s+|o\\s+|na\\s+|no\\s+|este\\s+|esta\\s+|essa\\s+|nesta\\s+|nessa\\s+)?${name}(?:-feira)?\\b`).test(n) ||
+      new RegExp(`\\b${name}(?:-feira)?\\s+que\\s+vem\\b`).test(n)
+    ) {
       const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
       const diff = ((dow - today + 7) % 7) || 7;
       return { date: shift(diff), label: name === "sabado" ? "sábado" : name === "terca" ? "terça" : name };
     }
   }
   return null;
+}
+
+// Pergunta de prazo com dia dito ("preciso que chegue até sexta, dá?", "sábado que vem, chega?", "chega até sexta? me
+// responde sim ou não"): o cliente quer sim/não pro dia, não a lista de prazos.
+export function asksDeadline(text: string): { date: string; label: string } | null {
+  const n = normalizeMsg(text);
+  if (n.length > 90) return null;
+  // "vocês entregam domingo? qual o horário?" é dia/horário de funcionamento (rodada 7 M1), não prazo do pedido.
+  if (/\bhorario|\bque horas\b|\bfunciona\w*|\babre\w*|\bfecha\w*/.test(n)) return null;
+  const day = parseNeededBy(text);
+  if (!day) return null;
+  return isQuestion(text) || /\b(?:da|consegue|rola|chega|chegue|chegam|cheguem|sim ou nao)\b/.test(n) ? day : null;
 }
 
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
@@ -518,8 +537,23 @@ export function isDescriptorFragment(phrase: string): boolean {
   return FOR_WHOM_FRAGMENT_RE.test(n) || EACH_SIZE_FRAGMENT_RE.test(n) || OTC_QUALIFIER_FRAGMENT_RE.test(n);
 }
 
+// Lista numerada NA MESMA LINHA (10/10, rodada 9 B-307): "1) 2x carvão 3kg 2) duas cervejas... 6) sal grosso" era UM
+// item só para o parser — a contagem dava 1, a IA devolvia 3 buscas e pão de alho, guaraná e sal grosso sumiam sem aviso.
+// Marcadores "N)" / "N." / "N -" em sequência 1, 2, 3… (3 ou mais) viram quebras de linha.
+const INLINE_INDEX_RE = /(^|\s)(\d{1,2})(?:\)|\.(?=\s)|\s-\s)\s*/g;
+function splitInlineNumbering(text: string): string {
+  return text
+    .split("\n")
+    .map((row) => {
+      const marks = [...row.matchAll(INLINE_INDEX_RE)];
+      if (marks.length < 3 || !marks.every((m, i) => Number(m[2]) === i + 1)) return row;
+      return row.replace(INLINE_INDEX_RE, "\n").trim();
+    })
+    .join("\n");
+}
+
 export function parseBasketLines(text: string, opts?: ParseBasketOptions): ParsedLine[] {
-  let source = expandShoppingShorthand(text);
+  let source = splitInlineNumbering(expandShoppingShorthand(text));
   // Lista enumerada ("1 arroz\n2 feijão\n3 óleo"): índices sequenciais a partir de 1 em
   // 3+ linhas são NUMERAÇÃO, não quantidade — remove os índices antes de parsear.
   const lines = source.split(/\n/).map((l) => l.trim()).filter(Boolean);
@@ -571,6 +605,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // Fala de quem lista de cabeça (10/10, rodada 6 A1, "áudio transcrito"): "aquele óleo de soja", "sabe o
         // macarrão", "uns biscoitos pra criança" — o demonstrativo/hesitação não é palavra do produto.
         .replace(/^(?:(?:ai|ah+|e|sabe(?:\s+(?:o|a|os|as))?|aquel[ea]s?|(?:uns|umas)(?=\s+\D))\s+)+(?=\S)/i, "")
+        // "gostei desse leite integral" com o carrossel aberto (10/10, rodada 9 A1): a opinião não é palavra do produto.
+        .replace(/^(?:eu\s+)?(?:gostei|curti|adorei|amei)\s+(?:dess[ea]s?|dest[ea]s?|daquel[ea]s?)\s+(?=[a-zà-ú]{3,})/i, "")
         .replace(/\b(?:uns|umas)\s+(?=\d+(?:[.,]\d+)?\s*(?:kg|g|quilos?|kilos?|litros?|l|ml|unidades?|pacotes?|caixas?|latas?)\b)/gi, "")
         // gíria/vocativo antes do pedido ("mn qro 2 coca", "galera vou fazer um churrasco"): tira só o
         // prefixo, o resto segue (c92/c94). Não vira quantidade nem produto.
@@ -2253,11 +2289,14 @@ export function parseRefinement(text: string): string[] | null {
     } else if (/^\d+(?:§\d+)?$/.test(t) && /^(kg|g|ml|l|lt|litros?)$/.test(tokens[i + 1] ?? "")) {
       attrs.push(canonSize(t.replace("§", ","), tokens[i + 1])); // "2 kg" -> "2kg", "2 litros" -> "2l"
       i++;
-    } else if (!REFINE_FILLER.has(t)) {
+    } else if (/^\d{1,2}$/.test(t) && tokens[i + 1] === "de" && /^\d+(?:§\d+)?(?:kg|g|ml|l|lt|litros?)$/.test(tokens[i + 2] ?? "")) {
+      // "eu queria 3 de 2l" (10/10, rodada 9 B-307): o número antes do "de <medida>" é quantidade, não palavra do produto.
+      continue;
+    } else if (t !== "eu" && !REFINE_FILLER.has(t)) {
       rest.push(t);
     }
   }
-  return attrs.length > 0 && rest.length === 0 ? attrs : null;
+  return attrs.length > 0 && rest.length === 0 ? [...new Set(attrs)] : null;
 }
 
 // ---------- choice reply parsing (customer looking at up to 3 options) ----------
@@ -2676,6 +2715,26 @@ export function parseSplitOrders(text: string): "payer" | "orders" | null {
   // Lugar ou endereço dito = o pedido de dois endereços (rodada 7 M11) segue como era.
   if (new RegExp(`\\b(?:enderecos?|${PLACE_SRC.replace("|loja|", "|")})\\b`).test(n)) return null;
   return "orders";
+}
+// O que sobra da mensagem fora da fala de pagadores/"dois pedidos" (10/10, rodada 9 A2): "cada um paga a sua parte, somos
+// em 3 aqui. quero também arroz" respondia só os dois pedidos e o arroz sumia. Frases (e trechos com verbo de pedido)
+// que não falam de pagamento seguem como mensagem normal. null = nada além da pergunta.
+const REST_ITEM_CUE_RE = /^(?:e\s+)?(?:(?:eu\s+)?(?:quero|queria|vou querer|preciso|me ve|manda|coloca|bota|poe|adiciona|inclui|acrescenta)\b|(?:e\s+)?(?:mais|tambem|tb|tbm)\s)/;
+export function splitOrdersRest(text: string): string | null {
+  const kept: string[] = [];
+  for (const sentence of text.split(/(?<=[.!?;])\s+|\n+/)) {
+    const clean = sentence.trim();
+    if (!clean) continue;
+    if (!parseSplitOrders(clean)) {
+      kept.push(clean);
+      continue;
+    }
+    for (const clause of clean.split(/,\s*/).slice(1)) {
+      if (REST_ITEM_CUE_RE.test(normalizeMsg(clause)) && !parseSplitOrders(clause)) kept.push(clause.trim());
+    }
+  }
+  const rest = kept.join(" ").replace(/\s+/g, " ").trim();
+  return rest && rest !== text.trim() ? rest : null;
 }
 // "em casa: ração e shampoo" / "no trabalho: papel A4" — o rótulo do lugar antes da lista.
 export function parsePlaceLabel(text: string): { place: string; home: boolean; rest: string } | null {

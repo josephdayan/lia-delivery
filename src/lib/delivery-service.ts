@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, parseSplitOrders, splitOrdersRest, asksDeadline, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -1705,9 +1705,12 @@ export function sizeGapFor<T extends { name: string }>(phrase: string, options: 
   const asked = measureOf(phrase);
   if (asked != null) {
     const sizes = options.map((o) => measureOf(o.name));
-    if (sizes.some((z) => z == null)) return null;
-    if (sizes.some((z) => Math.abs((z as number) - asked) / asked <= 0.1)) return null;
-    const order = options.map((o, i) => ({ o, d: Math.abs((sizes[i] as number) - asked) }));
+    // Opção sem medida no nome não decide nada, mas também não esconde a diferença das outras (10/10, rodada 9: "ração
+    // 15kg" com 10,1 kg nos cards e um sem medida saía sem aviso). Só a maioria sem medida impede concluir.
+    const measured = sizes.filter((z): z is number => z != null);
+    if (!measured.length || measured.length * 2 < sizes.length) return null;
+    if (measured.some((z) => Math.abs(z - asked) / asked <= 0.1)) return null;
+    const order = options.map((o, i) => ({ o, d: sizes[i] == null ? Number.POSITIVE_INFINITY : Math.abs((sizes[i] as number) - asked) }));
     order.sort((a, b) => a.d - b.d);
     const label = measureLabel(order[0].o.name);
     return label ? { falta: `é de ${label}`, options: order.map((x) => x.o) } : null;
@@ -3055,7 +3058,10 @@ async function handleDeliveryTurn(
 
   // "põe o papel de volta" logo depois de "tira o papel" (10/10, rodada 7 M5): devolve o item tirado, sem nova busca
   // (virava "Não achei: papel").
-  if (ctx.lastRemoved && !ctx.deliveryOrderId && isRestoreRemovedText(text, ctx.lastRemoved)) {
+  // Com o resumo já na mesa (10/10, rodada 9 A3, regressão do R7-6): "tira o papel" refaz o resumo e o "põe de volta"
+  // seguinte reabre o pedido como as outras edições (antes só valia sem pedido e caía em "Não tenho uma lista aberta").
+  const restoreReopens = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment" || ctx.step === "choosing_freight";
+  if (ctx.lastRemoved && restoreReopens && user.defaultAddress && savedCep && isRestoreRemovedText(text, ctx.lastRemoved)) {
     if (await restoreLastRemoved(phone, convo.id, user.cep, user.id, ctx, text)) return;
   }
 
@@ -3270,6 +3276,10 @@ async function handleDeliveryTurn(
   // inequívoca é determinística — a IA tirava só o pendente e deixava o 2x Kuat escolhido, ou não via a vela.
   // "não, deixa o arroz" / "mantém o arroz" com o arroz na cesta (10/10, rodada 6 A5): manter é manter — a IA lia "deixa"
   // como "tira" e removia o item. Determinístico e antes da IA.
+  // Pedido guardado ANTES do cadastro (10/10, rodada 9 A4): "tira X" era ignorado (a Lia reescrevia "Tirei X" com o item
+  // ainda na lista), "põe o X de volta", "não, deixa o X" e "o mais barato de todos" viravam itens anotados e "o que tem
+  // na cesta?" virava a apresentação da Lia. Edição do texto guardado, determinística e antes da IA.
+  if (!(user.defaultAddress && savedCep) && (await handlePendingRequestEdit(phone, convo.id, ctx, user.cep, Boolean(user.defaultAddress), text, intent))) return;
   {
     const kept = parseKeepItem(text);
     const item = kept ? (ctx.basket ?? []).find((b) => itemMatchesPhrase(kept, b) || (b.ask ? sharesProductNoun(b.ask, kept) : false)) : undefined;
@@ -3281,6 +3291,11 @@ async function handleDeliveryTurn(
       if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
       return;
     }
+    // "tira o arroz" → "não, deixa o arroz" (10/10, rodada 9 A4): o arroz já saiu — manter é desfazer a remoção (antes a
+    // IA perguntava "Você quer retirar o arroz ou manter?" com o arroz já fora).
+    if (kept && !item && ctx.lastRemoved && user.defaultAddress && savedCep && ctx.lastRemoved.items.some((b) => itemMatchesPhrase(kept, b))) {
+      if (await restoreLastRemoved(phone, convo.id, user.cep, user.id, ctx, kept)) return;
+    }
   }
   // "o que falta?" / "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): pergunta sobre a PRÓPRIA cesta — responde com a
   // cesta e o que falta escolher (antes caía na apresentação genérica da Lia).
@@ -3290,6 +3305,14 @@ async function handleDeliveryTurn(
     if (asked && !ctx.basket?.length && !ctx.pending?.length && !asked.item && (!ctx.step || ctx.step === "collecting")) {
       await reply(phone, copy.emptyCartTotal());
       return;
+    }
+    if (asked && !asked.item && !ctx.pending?.length && ctx.deliveryOrderId && (ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment" || ctx.step === "choosing_freight")) {
+      const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { items: true, total: true, userId: true } });
+      const lines = order && order.userId === user.id ? ((order.items as unknown as BasketItem[]) ?? []).filter((i) => i.unitPrice > 0) : [];
+      if (lines.length && order!.total > 0) {
+        await reply(phone, copy.openOrderContents(lines, order!.total));
+        return;
+      }
     }
     if (asked && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
       const items = basketForCopy(ctx);
@@ -3439,7 +3462,10 @@ async function handleDeliveryTurn(
   // "chega hoje?"/"o 2 chega hoje?" com as opções na tela (06/10): os prazos das opções. Virava
   // status ("falta você escolher…") com o prazo de cada loja já na mão.
   if (ctx.step === "choosing" && ctx.pending?.length && (intent.kind === "status" || intent.kind === "service_question" || intent.kind === "free_text")) {
-    const etaAsk = parseChoiceEtaAsk(text);
+    // Dia dito ("até sexta, dá?", "sábado que vem, chega?", 10/10, rodada 9 A4): sim/não pro dia, com a data de cada
+    // opção. Vale também quando a IA reescreveu a pergunta para "qual o prazo de entrega?" (o dia vem da fala original).
+    const deadline = asksDeadline(turnMeta.getStore()?.inboundText ?? text) ?? asksDeadline(text);
+    const etaAsk = parseChoiceEtaAsk(text) ?? (deadline ? { today: deadline.label === "hoje" } : null);
     if (etaAsk) {
       const options = ctx.pending[0].options;
       const rows = options
@@ -3453,7 +3479,8 @@ async function handleDeliveryTurn(
         .map((row, i) => ({ ...row, delivery: options[i].delivery ? row.delivery : undefined }))
         .filter((row) => !etaAsk.option || row.n === etaAsk.option);
       if (rows.length) {
-        await reply(phone, copy.choiceEtaAnswer(rows, etaAsk.today));
+        const judged = deadline && deadline.label !== "hoje" ? rows.map((row) => ({ ...row, onTime: row.delivery ? (row.today ? true : promiseMissesDeadline(row.delivery, deadline.date) === null ? null : !promiseMissesDeadline(row.delivery, deadline.date)) : null })) : rows;
+        await reply(phone, copy.choiceEtaAnswer(judged, etaAsk.today, deadline && deadline.label !== "hoje" ? `${deadline.label}, ${deadline.date.slice(8, 10)}/${deadline.date.slice(5, 7)}` : undefined));
         return;
       }
     }
@@ -3625,9 +3652,17 @@ async function handleDeliveryTurn(
   // juntar que estiver na mesa continua valendo (a resposta não a consome).
   if (intent.kind === "split_orders") {
     const offerOpen = Boolean(ctx.consolidationOffer || ctx.consolidationParked);
-    const hasItems = (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0 || Boolean(ctx.deliveryOrderId);
+    const hasItems = (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0 || Boolean(ctx.deliveryOrderId) || Boolean(ctx.pendingRequest);
     const lastName = ctx.basket?.[ctx.basket.length - 1]?.name.split(/\s+/)[0]?.toLowerCase();
     await reply(phone, copy.splitOrdersAnswer({ payer: intent.payer, hasItems, offerOpen, ...(lastName ? { example: lastName } : {}) }));
+    // "cada um paga a sua parte, somos em 3 aqui. quero também arroz" (10/10, rodada 9 A2): a resposta dos pagadores não
+    // engole o resto — o pedido que veio junto segue como mensagem normal (cesta, fila ou "não achei" explícito).
+    const rest = splitOrdersRest(text);
+    if (rest && resolveListItems(rest).length && !parseSplitOrders(rest)) {
+      const fresh = (await prisma.conversation.findUnique({ where: { id: convo.id } })) ?? convo;
+      await handleDeliveryTurn(phone, rest, user, fresh);
+      return;
+    }
     if (!offerOpen) await rePresentStep();
     return;
   }
@@ -7850,6 +7885,18 @@ async function reopenLastChoice(
   // escolha trocava a fralda quando o cliente pensava no protetor. Pergunta de qual item.
   const lines = (ctx.basket ?? []).filter((item) => item.unitPrice > 0);
   if (mode === "cheaper" && lines.length >= 2) {
+    // "tem mais barato a areia?" (10/10, rodada 9): o item foi NOMEADO — troca esse, sem perguntar de qual.
+    const said = normalizeMsg(turnMeta.getStore()?.inboundText ?? "")
+      .replace(/[!.?,]+/g, " ")
+      .replace(/\b(?:mais barat\w*|mais em conta|menor preco|tem|teria|tinha|algum|alguma|um|uma|outr[oa]|opcao|opcoes)\b/g, " ")
+      .replace(/\b(?:o|a|os|as|do|da|de|pro|pra|para)\b/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const named = said ? lines.filter((item) => itemMatchesPhrase(said, item) || (item.ask ? sharesProductNoun(item.ask, said) : false)) : [];
+    if (named.length === 1) {
+      await handleSwap(phone, convoId, ctx.cep, ctx, named[0].name, "um mais barato", turnMeta.getStore()?.inboundText, undefined, named[0].sku);
+      return true;
+    }
     ctx.cheaperAsk = { at: Date.now() };
     await writeCtx(convoId, ctx);
     await reply(phone, copy.cheaperWhichItem(lines.map((item) => item.name)));
@@ -8083,6 +8130,9 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
     matches = diversifyOptions(refined, broadened, vitrineLimit());
     closest = matches.length > 0;
   }
+  // A busca nova não achou, mas a opção pedida JÁ está nos cards (10/10, rodada 9 B-307: "tem de 2 litros?" com o
+  // "Guaraná Antártica 2l" no card 5 respondia "Não achei guaraná 2l"). Os cards que atendem ao atributo valem.
+  if (!matches.length) matches = (p.shownOptions ?? p.options).filter((o) => attrs.every((a) => attrMatchesItem(a, o)));
   if (!matches.length) {
     await replyRefineMiss(phone, p, refined, text);
     return;
@@ -8779,6 +8829,60 @@ function isUndoSwapText(text: string, swap: NonNullable<DeliveryContext["lastSwa
   return named.some((t) => removedNorm.includes(t));
 }
 
+const withoutCheapCue = (segment: string) => segment.replace(/\s+mais (?:barat[oa]s?|em conta)$/i, "");
+async function handlePendingRequestEdit(
+  phone: string,
+  convoId: string,
+  ctx: DeliveryContext,
+  userCep: string | null | undefined,
+  hasAddress: boolean,
+  text: string,
+  intent: Intent
+): Promise<boolean> {
+  if (ctx.step && !["collecting", "need_address", "need_cep"].includes(ctx.step)) return false;
+  if (ctx.basket?.length || ctx.pending?.length) return false;
+  const segments = (ctx.pendingRequest ?? "").split(", ").filter(Boolean);
+  const removedQueries = ctx.lastRemoved && Date.now() - ctx.lastRemoved.at <= RESTORE_WINDOW_MS ? ctx.lastRemoved.queries : [];
+  if (!segments.length && !removedQueries.length) return false;
+  const matches = (phrase: string, segment: string) => itemMatchesPhrase(phrase, { sku: segment, name: segment, unitPrice: 0 });
+  let note: string | undefined;
+  const kept = parseKeepItem(text);
+  if (intent.kind === "remove_item" && !intent.andAdd) {
+    const removed = segments.filter((segment) => matches(intent.target, segment));
+    if (!removed.length) return false;
+    ctx.pendingRequest = segments.filter((segment) => !removed.includes(segment)).join(", ") || undefined;
+    ctx.lastRemoved = { items: [], queries: removed, at: Date.now() };
+    note = copy.pendingRemoved(removed.map(withoutCheapCue));
+  } else if (removedQueries.length && (isRestoreRemovedText(text, ctx.lastRemoved!) || (kept && removedQueries.some((q) => matches(kept, q))))) {
+    const named = kept ?? restoreNamedTokens(text).join(" ");
+    const back = named ? removedQueries.filter((q) => matches(named, q)) : removedQueries;
+    if (!back.length) return false;
+    ctx.pendingRequest = [...segments, ...back.filter((q) => !segments.includes(q))].join(", ");
+    ctx.lastRemoved = undefined;
+    note = copy.pendingRestored(back.map(withoutCheapCue));
+  } else if (kept && segments.some((segment) => matches(kept, segment))) {
+    note = copy.pendingKept(segments.find((segment) => matches(kept, segment))!);
+  } else if (segments.length && wantsCheapestForAll(text) && text.trim().split(/\s+/).length <= 8) {
+    ctx.pendingRequest = segments.map((segment) => (/\bmais (?:barat|em conta)/i.test(segment) ? segment : `${segment} mais barato`)).join(", ");
+    note = copy.pendingCheapestAll();
+  } else if (asksBasketContents(text) && !asksBasketContents(text)!.item) {
+    await reply(phone, copy.pendingListOnly(notedForCopy(ctx)));
+    return true;
+  } else {
+    return false;
+  }
+  await writeCtx(convoId, ctx);
+  console.log("[pending:edit]", JSON.stringify(ctx.pendingRequest ?? ""));
+  if (!hasAddress) {
+    await reply(phone, note);
+    await askStreetOrSignup(phone, ctx, userCep);
+    return true;
+  }
+  const noted = notedForCopy(ctx);
+  await reply(phone, `${note}\n\n${noted.length ? copy.notedAskCep(noted) : copy.askCepAgain()}`);
+  return true;
+}
+
 const RESTORE_WINDOW_MS = 30 * 60_000;
 const RESTORE_CUE_RE = /\b(?:de volta|devolta)\b|^(?:pode )?(?:repoe|recoloca|reponha|devolve)\b/;
 const RESTORE_STOP = new Set(["poe", "por", "pode", "coloca", "colocar", "bota", "botar", "volta", "voltar", "traz", "trazer", "devolve", "repoe", "reponha", "recoloca", "adiciona", "inclui", "quero", "queria", "na", "verdade", "entao", "ah", "de", "volta", "devolta", "ai", "isso", "ele", "ela", "esse", "essa", "tambem", "sim", "mesmo", "por", "favor"]);
@@ -8804,8 +8908,8 @@ async function restoreLastRemoved(phone: string, convoId: string, userCep: strin
   const items = named ? removed.items.filter((item) => itemMatchesPhrase(named, item)) : removed.items;
   const queries = named ? removed.queries.filter((q) => itemMatchesPhrase(named, { sku: q, name: q, unitPrice: 0 })) : removed.queries;
   if (!items.length && !queries.length) return false;
-  if (ctx.step === "choosing_freight" || ctx.step === "awaiting_quote_confirmation") {
-    if (!(await reopenOrderForEdit(phone, convoId, ctx, userCep))) return false;
+  if (ctx.deliveryOrderId && (ctx.step === "choosing_freight" || ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment")) {
+    if (!(await reopenOrderForEdit(phone, convoId, ctx, userCep, { quiet: true }))) return false;
   }
   const fresh = items.filter((item) => !(ctx.basket ?? []).some((b) => b.sku === item.sku));
   ctx.basket = [...(ctx.basket ?? []), ...fresh];
@@ -11164,6 +11268,9 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     deliveryOrderId: order.id,
     step: AWAITING_OPERATOR_QUOTE_STATUS,
     ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+    // "tira o papel" com o resumo na mesa refaz o resumo; o "põe o papel de volta" seguinte precisa do item tirado
+    // (10/10, rodada 9 A3 — sumia aqui e a busca nova dizia "papel eu não achei").
+    ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
     // Prazo dito ("aniversário amanhã"): o resumo do total avisa se a entrega não cumpre — sobrevive ao fechamento
     // (10/10, rodada 5 g16: sumia aqui e o aviso nunca saía).
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
@@ -11417,6 +11524,7 @@ async function tryPublishInstantQuote(
         step: "choosing_freight",
         freightChoice: choice,
         ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+        ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
         ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
         ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {})
       });
@@ -11445,6 +11553,7 @@ async function tryPublishInstantQuote(
         step: "choosing_freight",
         freightChoice: choice,
         ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+        ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
         ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
         ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {})
       });

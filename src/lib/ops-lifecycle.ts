@@ -182,6 +182,8 @@ export async function opsPublishManualQuote(
             ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
             // Orçamento do pedido dito na conversa (10/10, rodada 8 M3): a recotação continua avisando.
             ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
+            // "põe o papel de volta" depois do "tira" que refez o resumo (10/10, rodada 9 A3): o item tirado sobrevive.
+            ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
             // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
             ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
           });

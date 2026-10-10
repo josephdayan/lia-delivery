@@ -117,6 +117,17 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
     const counted = countDistinctItems(opts.text);
     if (counted >= (searchOnly ? 4 : 3) && counted > planned) return { ok: false, reason: "lista_maior_que_as_acoes" };
   }
+  // Sem busca nenhuma (10/10, rodada 9 A1): "gostei desse leite integral, mais um desodorante, ração de cachorro adulto e
+  // pilhas AAA" com o carrossel aberto voltava só como "unclear" (ou só a escolha) — a Lia perguntava qual leite e os 3
+  // itens novos sumiam. Pergunta/escolha/edição que não cobre uma lista de 3+ trechos: o caminho determinístico (que
+  // escolhe ou pergunta E enfileira o resto com "Anotei…") assume.
+  // Só com os cards na tela: sem escolha aberta, o "unclear" de uma fala hesitante ("aquele leite, não, o outro, sabe")
+  // é uma pergunta legítima.
+  if (!hasSearch && opts.text && state.passo === "escolhendo_opcao" && state.emEscolha && steps.some((st) => st.type === "pick" || st.type === "reply" || st.type === "refine" || st.type === "qty")) {
+    const planned = steps.filter((st) => st.type !== "reply").length;
+    const counted = countDistinctItems(opts.text);
+    if (counted >= 3 && counted > planned) return { ok: false, reason: "lista_maior_que_as_acoes" };
+  }
   // "1, só amora" (pick + only_keep da tela, em qualquer ordem): primeiro larga a fila e só então escolhe —
   // senão o pick abria o próximo item da fila e o only_keep rodava em cima dele.
   const pickAt = steps.findIndex((st) => st.type === "pick" && st.source === "screen");
@@ -151,6 +162,15 @@ export function keepNegation(text: string, phrase: string): string {
     out = swapped === out ? `${out} sem ${word}` : swapped;
   }
   return out;
+}
+
+const ORDINALS = ["primeir", "segund", "terceir", "quart", "quint", "sext", "setim", "oitav"];
+// A fala cita a opção n: o número solto (não medida/quantidade: "2l", "3 de 2l") ou o ordinal; "o último"/"esse" também.
+function namesOption(text: string, n: number): boolean {
+  const said = normalizeMsg(text);
+  if (new RegExp(`(?:^|[^\\d,.])${n}(?!\\d|[,.]\\d|\\s*(?:x\\b|l\\b|lt|litros?|kg|g\\b|ml|un|de\\b|pacotes?|caixas?|latas?|garrafas?|unidades?))`).test(said)) return true;
+  if (ORDINALS[n - 1] && new RegExp(`\\b${ORDINALS[n - 1]}[oa]\\b`).test(said)) return true;
+  return /\b(?:ultim[oa]|ess[ea]|est[ea]|op[cç]ao)\b/.test(said);
 }
 
 const FREE_BRAND_RE = /\b(?:qualquer (?:marca|uma|um)|tanto faz(?: a marca)?|sem preferencia|outra marca|nao precisa ser (?:dess|da|de))/;
@@ -197,6 +217,10 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       if (state.passo === "escolhendo_frete") {
         return state.opcoesDeFrete && n <= state.opcoesDeFrete.length ? { type: "pick", source: "freight", index: n - 1 } : "frete_inexistente";
       }
+      // Pergunta não escolhe (10/10, rodada 9 B-307): "tem de 2 litros? eu queria 3 de 2l" virava pick do card de 2 L
+      // (com prazo de 9 dias, sem o cliente ver). Com "?" e sem o número/ordinal da opção na fala, a escolha não vale:
+      // o caminho determinístico refina e mostra as opções que respondem à pergunta.
+      if (onScreen && text && /\?/.test(text) && !namesOption(text, n)) return "pergunta_nao_escolhe";
       if (onScreen) return n <= state.emEscolha!.opcoes.length ? { type: "pick", source: "screen", index: n - 1, qty: clampQty(a.qty) } : "opcao_fora_da_tela";
       if (state.ultimaEscolha) {
         return n <= state.ultimaEscolha.opcoes.length ? { type: "pick", source: "last", index: n - 1 } : "opcao_fora_da_ultima";

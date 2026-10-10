@@ -566,6 +566,28 @@ export function packCountAnswer(name: string, units: number): string {
 }
 
 // "põe o papel de volta" (10/10, rodada 7 M5): o mesmo item que saiu, com o mesmo preço.
+// Pedido guardado ANTES do cadastro (10/10, rodada 9 A4): edição do que foi anotado, sem cesta ainda.
+export function pendingRemoved(names: string[]): string {
+  return `Tirei ${names.map((n) => `*${n}*`).join(", ")} da lista.`;
+}
+export function pendingRestored(names: string[]): string {
+  return `Voltei ${names.map((n) => `*${n}*`).join(", ")} pra lista. ✅`;
+}
+export function pendingKept(name: string): string {
+  return `Combinado, *${name}* continua na lista ✅`;
+}
+export function pendingCheapestAll(): string {
+  return "Combinado: de cada item eu te mostro primeiro o mais barato.";
+}
+export function pendingListOnly(noted: string[]): string {
+  return noted.length ? `Até agora anotei:\n${noted.map((i) => `• ${i}`).join("\n")}\n\nOs preços saem quando eu tiver seu endereço.` : "Ainda não anotei nada. Me diz o que você precisa.";
+}
+
+// "o que tem na cesta?" com o resumo já na mesa (10/10, rodada 9 A4): os itens do pedido aberto e o total dele.
+export function openOrderContents(items: { qty: number; name: string }[], total: number): string {
+  return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n*Total: ${brl(total)}* (com a entrega)\n_Pra mudar, diz *tira* ou *põe* o item; pra pagar, escolhe Pix ou cartão no resumo._`;
+}
+
 export function removedRestored(names: string): string {
   return `Voltei *${names}* pra cesta. ✅`;
 }
@@ -3424,11 +3446,26 @@ export function cheapestOptionAnswer(n: number, name: string, price: number, che
 }
 
 // "chega hoje?"/"o 2 chega hoje?" com as opções na tela: os prazos que a loja informou.
-export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean }>, askedToday: boolean): string {
+// `deadline` (10/10, rodada 9 A4: "preciso que chegue até sexta, dá?" com os cards na tela): abre com sim/não pro dia;
+// `onTime` de cada linha = chega até o dia (null = prazo ilegível).
+export function choiceEtaAnswer(rows: Array<{ n: number; name: string; delivery?: string; today?: boolean; onTime?: boolean | null }>, askedToday: boolean, deadline?: string): string {
   const known = rows.filter((r) => r.delivery);
   if (!known.length) return "O prazo de cada loja sai no total, logo depois que você escolher. Responde o número 👇";
   const lines = rows.map((r) => `*${r.n})* ${r.name} — ${r.delivery ?? "prazo no total"}`);
   let head = "Prazo de cada opção:";
+  const judged = deadline ? rows.filter((r) => r.onTime != null) : [];
+  if (deadline && judged.length) {
+    const fits = judged.filter((r) => r.onTime);
+    head =
+      rows.length === 1
+        ? fits.length ? `Dá, chega até *${deadline}* 🙂` : `Não, essa não chega até *${deadline}*. O prazo dela:`
+        : fits.length === rows.length
+          ? `Dá, todas chegam até *${deadline}*:`
+          : fits.length
+            ? `Depende da loja. Chega até *${deadline}*: ${fits.map((r) => `*${r.n}*`).join(", ")}. Os prazos:`
+            : `Não, nenhuma dessas chega até *${deadline}*. Os prazos:`;
+    return [head, ...lines].join("\n");
+  }
   if (askedToday) {
     const today = rows.filter((r) => r.today);
     head =
