@@ -170,6 +170,8 @@ export function normalizeMsg(input: string): string {
     // "1️⃣ mano" tem que escolher a opção 1 (28/08 S2).
     .replace(/([0-9])️?⃣/g, "$1")
     .replace(/️/g, "")
+    // "preciso hj ainda" (10/10, rodada 15 g43): "hj" é "hoje" em qualquer lugar (prazo, urgência, filtro de item).
+    .replace(/\bhj\b/g, "hoje")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -278,7 +280,8 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "sem precisar( de)? .*",
       "se (tiver|der|for possivel|possivel|rolar|puder|achar|encontrar)( .*)?",
       "((e )?(se der[, ]*)?(queria|quero|preciso|gostaria de|da pra|pode)( me)? )?(receber|entregar?|chega(r|ndo)?|mandar|enviar)( ainda| ate| para| pra| em casa| o pedido)* (hoje|amanha|rapido|logo)( se der| se possivel| se rolar)?",
-      "(hoje|amanha)",
+      "(hoje|amanha)( ainda| mesmo| sem falta)?",
+      "ainda hoje",
       // Prazo com obrigação ("tem que chegar amanhã", "precisa chegar até sexta", "tem que ser entregue amanhã"; 10/10,
       // rodada 9): é o prazo do pedido (parseNeededBy), nunca item — virava "*tem que chegar amanhã* eu não achei".
       "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*",
@@ -361,7 +364,8 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(eu |a gente |nos )?(to|tou|estou|estamos|tamo|ando|vou|vamos|quero|queria|preciso) (organizando|planejando|preparando|montando|fazendo|organizar|planejar|preparar|montar|fazer|dar) (o |a |um |uma |uns |umas )?(aniversario|niver|festa|festinha|churrasco|cha( de [a-z]+)?|casamento|batizado|evento|reuniao|confraternizacao|comemoracao|piquenique|mudanca)\\b.*",
       "(de |com |que faz |fazendo |vai fazer |completa |completando )?\\d{1,2} anos( de idade)?",
       // Idade de quem o pedido atende (10/10, rodada 14 g40): "meu cachorro tem 13 anos" virava item ("não achei").
-      "(e |mas )?((o |a )?(meu|minha|meus|minhas|nosso|nossa) [a-zà-ú]+( [a-zà-ú]+)?|ele|ela|eles|elas) (tem|tinha|ja tem|fez|faz|completou|completa|vai fazer|vai completar) (uns |umas |quase |mais de )?\\d{1,2} (anos?|meses|mes|semanas)( de idade)?( .*)?",
+      // Sem o sujeito (10/10, rodada 15 g42): "meu filho tem 5 anos, preciso de…" deixava "tem 5 anos" como 3º item.
+      "(e |mas )?(((o |a )?(meu|minha|meus|minhas|nosso|nossa) [a-zà-ú]+( [a-zà-ú]+)?|ele|ela|eles|elas) )?(tem|tinha|ja tem|fez|faz|completou|completa|vai fazer|vai completar) (uns |umas |quase |mais de )?\\d{1,2} (anos?|meses|mes|semanas)( de idade)?( .*)?",
       // Troca de endereço contada antes do endereço (10/10, rodada 14 g40): "ah, na real vou pedir pra entregar na casa da
       // minha sogra: Rua…" deixava o item fantasma "na real vou pra" até o resumo.
       "((ah|ahn|opa|ei|na real|na verdade|pensando bem|melhor) )*(eu )?(vou|vamos|quero|queria|prefiro|preferia) (pedir )?(pra|para|que)( (entregar|entregue|mandar|mande|levar|leve)\\b.*)?",
@@ -402,6 +406,20 @@ export function isRecallFiller(phrase: string): boolean {
   return RECALL_FILLER_RE.test(normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim());
 }
 
+// A raça do bicho dita como aposto (10/10, rodada 15 g42): "meu cachorro tem 13 anos, um shih tzu, preciso de ração…" — o
+// "um shih tzu" virava o item "shih tzu". Trecho que é SÓ raça (com artigo, "é", "da raça") descreve o pet; ninguém compra o
+// cachorro. Com produto junto ("ração shih tzu", "petisco pro poodle") segue item.
+const PET_BREED_WORDS = new Set(
+  "shih tzu yorkshire yorkie poodle labrador golden retriever pinscher spitz pug lhasa apso maltes dachshund schnauzer beagle rottweiler pitbull chihuahua pastor alemao border collie bichon frise pequines bulldog buldogue frances ingles vira lata siames persa angora".split(" ")
+);
+const PET_BREED_GLUE = new Set("um uma e eh ele ela ta da de do raca porte pequeno pequena medio grande mini cachorro cachorrinho cao cadela gato gata gatinho".split(" "));
+const PET_BREED_WEAK = new Set("golden retriever alemao frances ingles lata pastor".split(" "));
+export function isPetBreedOnly(phrase: string): boolean {
+  const words = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+  const breed = words.filter((w) => PET_BREED_WORDS.has(w));
+  return breed.some((w) => !PET_BREED_WEAK.has(w)) && words.every((w) => PET_BREED_WORDS.has(w) || PET_BREED_GLUE.has(w));
+}
+
 export function isOwnershipContext(phrase: string): boolean {
   return OWNERSHIP_RE.test(normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim());
 }
@@ -422,15 +440,17 @@ export function isRequestModifier(phrase: string): boolean {
 // colado a um vizinho por uma conjunção ("arroz e se tiver feijão", "bom dia e tudo bem").
 export function isNonItemSegment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/^(?:e|mas|com)\s+/, "");
-  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase) || isOccasionWhen(n);
+  return NOISE_SEGMENT_RE.test(n) || STATE_SEGMENT_RE.test(n) || NARRATIVE_SEGMENT_RE.test(n) || isOwnershipContext(n) || isRecallFiller(n) || MODIFIER_SEGMENT_RE.test(n) || isDiscourseOnly(phrase) || isOccasionWhen(n) || isPetBreedOnly(n);
 }
 
 // Ocasião + quando, sem produto (10/10, rodada 11 g33: "aniversário hoje" saía como "não achei"): "aniversário hoje",
 // "é aniversário dela amanhã", "festa sábado". Com produto junto ("vela de aniversário") o trecho segue item.
-const OCCASION_WORDS = new Set("aniversario aniversarios niver festa festinha casamento formatura cha bebe revelacao natal pascoa reveillon churrasco evento comemoracao".split(" "));
+// Refeição como ocasião (10/10, rodada 15 g42): "café da manhã domingo, 6 caixas de leite…" virava o item "café da manhã
+// domingo" ("não achei" e "ficou de fora" no resumo). "café da manhã" é uma palavra só aqui; "café" sozinho segue produto.
+const OCCASION_WORDS = new Set("aniversario aniversarios niver festa festinha casamento formatura cha bebe revelacao natal pascoa reveillon churrasco evento comemoracao cafedamanha cafedatarde almoco jantar janta ceia brunch".split(" "));
 const WHEN_WORDS = new Set("hoje amanha ontem noite tarde manha cedo semana mes fim sabado domingo segunda terca quarta quinta sexta feira vem que proxima proximo dia".split(" "));
 export function isOccasionWhen(text: string): boolean {
-  const n = normalizeMsg(text);
+  const n = normalizeMsg(text).replace(/\bcafe d[ao] (manha|tarde)\b/g, "cafeda$1");
   const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   if (!words.some((w) => OCCASION_WORDS.has(w)) || !words.some((w) => WHEN_WORDS.has(w))) return false;
   return words.every((w) => OCCASION_WORDS.has(w) || WHEN_WORDS.has(w) || DISCOURSE_WORDS.has(w) || /^\d+$/.test(w));
@@ -489,6 +509,7 @@ const URGENCY_RE = new RegExp(
       "o quanto antes",
       "(pra|para) (hoje|agora|ja)",
       "ainda hoje",
+      "hoje ainda",
       "hoje sem falta",
       "(preciso|quero|queria) (disso |dele |dela )?(hoje|agora)",
       "(receber|chega\\w*|entrega\\w*|mandar?|enviar?)( [a-z0-9]+){0,3} (hoje|agora|rapido|rapidinho)",
@@ -526,7 +547,7 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
   if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
   // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.
   if (new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bhoje\\b|\\bhoje\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) && !/\bhoje\s+(?:nao|n)\b/.test(n)) return { date: shift(0), label: "hoje" };
-  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n) || (planDay("hoje") && !/\bhoje\s+(?:nao|n)\b/.test(n))) return { date: shift(0), label: "hoje" };
+  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\bhoje ainda\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n) || (planDay("hoje") && !/\bhoje\s+(?:nao|n)\b/.test(n))) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
     // "festa do meu sobrinho sábado de manhã" (10/10, rodada 13 g37): o dia junto do evento, da hora do dia ("de manhã") ou
@@ -1168,6 +1189,31 @@ export function sharesProductNoun(a: string, b: string): boolean {
 // uma: "meia dúzia de ovo" + "6 ovos" = ovo x12. Vale no parser E no merge com a IA
 // (29/08 S4: o caminho com IA mantinha "ovo x6" + "ovos x6" e o cliente terminou com
 // 6 EMBALAGENS de 10 = 60 ovos).
+// Erro de digitação ou de acento (10/10, rodada 15 A3): "lampda led 9w" (linha crua do parser) e "lâmpada led 9w" (a da IA)
+// são a MESMA linha — viravam 2 itens e 8 lâmpadas. Mesmas palavras na mesma ordem, só UMA diferente e a 1 letra de distância
+// (trocada, a mais, a menos ou invertida), palavra de 5+ letras e pelo menos outra igual: "cerveja"/"cereja" sozinhas não fundem.
+function oneEditApart(a: string, b: string): boolean {
+  if (a === b || Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (a.length === b.length) {
+    if (a.slice(i + 1) === b.slice(i + 1)) return true;
+    return a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2);
+  }
+  const [long, short] = a.length > b.length ? [a, b] : [b, a];
+  return long.slice(i + 1) === short.slice(i);
+}
+export function typoTwinLines(a: string, b: string): boolean {
+  const words = (p: string) => normalizeMsg(p).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(specToken);
+  const aw = words(a);
+  const bw = words(b);
+  if (aw.length < 2 || aw.length !== bw.length) return false;
+  const diff = aw.map((w, i) => (w === bw[i] ? -1 : i)).filter((i) => i >= 0);
+  if (diff.length !== 1) return false;
+  const [x, y] = [aw[diff[0]], bw[diff[0]]];
+  return Math.min(x.length, y.length) >= 5 && !/\d/.test(x + y) && oneEditApart(x, y);
+}
+
 export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
   const tokensOf = (p: string) => normalizeMsg(p).split(" ").filter(specToken).sort();
   const sameSpec = (a: string, b: string) => {
@@ -1178,6 +1224,13 @@ export function foldSameSpecLines(lines: ParsedLine[]): ParsedLine[] {
   };
   const out: ParsedLine[] = [];
   for (const line of lines) {
+    // A mesma menção escrita de dois jeitos não soma: é uma linha só, com a quantidade dita.
+    const typo = out.find((m) => typoTwinLines(m.phrase, line.phrase));
+    if (typo) {
+      typo.qty = Math.max(typo.qty, line.qty);
+      typo.qtyExplicit = typo.qtyExplicit || line.qtyExplicit;
+      continue;
+    }
     const twin = out.find((m) => sameSpec(m.phrase, line.phrase));
     if (twin) {
       twin.qty = Math.min(MAX_QTY, twin.qty + line.qty);
@@ -1237,7 +1290,11 @@ function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedL
     const others = deterministic.filter((d) => d.span !== span);
     // Pertencer a outro trecho = ser o MESMO item dele, não só dividir uma palavra (rodada 12: "tomate" da IA não é o "molho de
     // tomate" do trecho vizinho, é o "uns 4 tomates" deste).
-    const own = overlap.filter((i) => !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase) && sameItemProduct(out[i].phrase, d.phrase)));
+    // Linha da IA com o MESMO núcleo de uma linha deste trecho fica neste trecho (10/10, rodada 15 g42): "meu cachorro tem
+    // 13 anos, um shih tzu, preciso de ração sênior de 1kg e tapete higiênico" — a IA juntou a raça na ração ("ração
+    // cachorro sênior shih tzu 1kg"), o trecho "shih tzu" a reivindicava e a ração saía em dobro.
+    const ownHead = (i: number) => lines.some((l) => productHead(l.phrase) !== undefined && productHead(l.phrase) === productHead(out[i].phrase));
+    const own = overlap.filter((i) => ownHead(i) || !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase) && sameItemProduct(out[i].phrase, d.phrase)));
     overlap.splice(0, overlap.length, ...own);
     if (!overlap.length || overlap.length === lines.length || lines.some((line) => isNonItemSegment(line.phrase))) continue;
     // A IA separou em MAIS linhas usando palavras de fora do trecho ("um petisco pra cada" → petisco cachorro + petisco
@@ -1382,10 +1439,10 @@ export function mergeShoppingLines(aiRaw: ParsedLine[], deterministic: ParsedLin
     // O resgate só re-promove segmento com cara de PRODUTO: narrativa/modificador que a
     // IA descartou de propósito não volta (rodada 27/08 S3/S20 — o resgate desfazia o
     // descarte certo da IA e a narrativa virava "item não achado").
-    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase)) continue;
+    if (isNarrativeSegment(line.phrase) || isRequestModifier(line.phrase) || isDiscourseOnly(line.phrase) || isPetBreedOnly(line.phrase)) continue;
     // Coberto = o MESMO item (núcleo igual), não só uma palavra em comum: "uns 4 tomates" não está coberto por "molho de
     // tomate", nem "escova de dente" por "fio dental" (rodada 12, itens sumiam sem aviso).
-    if (!merged.some((candidate) => (sameProduct(line.phrase, candidate.phrase) && sameItemProduct(line.phrase, candidate.phrase)) || shortHeadCovered(line.phrase, candidate.phrase))) merged.push(line);
+    if (!merged.some((candidate) => (sameProduct(line.phrase, candidate.phrase) && sameItemProduct(line.phrase, candidate.phrase)) || shortHeadCovered(line.phrase, candidate.phrase) || typoTwinLines(line.phrase, candidate.phrase))) merged.push(line);
   }
   return foldSameSpecLines(merged);
 }
@@ -3219,7 +3276,8 @@ const ONE_STORE_RE = /\b(?:(?:numa|em uma|uma|na mesma|da mesma|mesma) loja(?: s
 const JOIN_NOT_RE = /\b(?:nao|n)\s+(?:quero\s+|precisa\s+|vou\s+)?junt|\bsem juntar\b|\bseparad[oa]s?\b|\bjunto com\b|\bjunto d[aeo]\b/;
 // "então deixa tudo junto, fecha" (10/10, rodada 14 g41) depois de perguntar se dava pra separar a entrega: "deixa junto" é
 // manter como está, não pedido de juntar lojas (a Lia respondia "não achei em menos lojas" e não fechava).
-const KEEP_TOGETHER_RE = /\b(?:deixa|deixar|pode deixar|deixo|mantem|manter|mantenha|manda|mandar|vem|vir|entrega|entregar)\s+(?:tudo\s+|td\s+|tudinho\s+)?junt(?:o|os|as|inho)\b/;
+// "então fecha tudo junto" (10/10, rodada 15 g42): fechar junto é fechar o pedido como está, não juntar lojas.
+const KEEP_TOGETHER_RE = /\b(?:deixa|deixar|pode deixar|deixo|mantem|manter|mantenha|manda|mandar|vem|vir|entrega|entregar|fecha|fechar|fecho|pode fechar|finaliza|finalizar)\s+(?:tudo\s+|td\s+|tudinho\s+)?(?:isso\s+)?junt(?:o|os|as|inho)\b/;
 export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string } | null {
   const n = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
   if (!n || n.length > 160 || JOIN_NOT_RE.test(n)) return null;
@@ -3487,6 +3545,28 @@ export function questionSubject(question: string): string | null {
   return subject.split(" ")[0];
 }
 
+// "tem em comprimido? gotas não" (10/10, rodada 15 M1): a oração negada ("gotas não", "não quero gotas", "nada de gotas") é
+// EXCLUSÃO — sai da frase e volta como lista de palavras a evitar. Pronome/demonstrativo ("esse não", "eu não") não é termo.
+const NEGATED_TAIL_RE = /^(?:(?:mas|e|so|só)\s+)?(?:(?:em|de|o|a|os|as|do|da)\s+)?([a-z][a-z0-9 ]{1,30}?)\s+n[aã]o(?:\s+(?:quero|serve|precisa|pode|gosto))?$/;
+const NEGATED_HEAD_RE = /^(?:(?:mas|e)\s+)?(?:n[aã]o\s+(?:quero|pode ser|serve|precisa(?: ser)?|gosto(?: de)?)|nada de|sem ser)\s+(?:(?:em|de|o|a|os|as|do|da|com)\s+)?([a-z][a-z0-9 ]{1,30})$/;
+const NOT_A_TERM = new Set(["esse", "essa", "esses", "essas", "isso", "eu", "ele", "ela", "aquele", "aquela", "ainda", "agora", "hoje", "sim", "por enquanto", "assim", "mais", "tambem", "nada", "nenhum", "nenhuma", "mesmo", "pode", "acho", "sei", "obrigado", "obrigada"]);
+export function splitNegatedTerms(text: string): { text: string; excluded: string[] } {
+  const clauses = text.split(/(?<=[?,.;!])\s*/).map((c) => c.trim()).filter(Boolean);
+  const kept: string[] = [];
+  const excluded: string[] = [];
+  for (const clause of clauses) {
+    const n = normalizeMsg(clause).replace(/[?,.;!]+$/g, "").trim();
+    const m = NEGATED_TAIL_RE.exec(n) ?? NEGATED_HEAD_RE.exec(n);
+    const words = m ? m[1].trim() : "";
+    if (m && words && !NOT_A_TERM.has(words) && words.split(" ").length <= 3 && !words.split(" ").some((w) => NOT_A_TERM.has(w))) {
+      excluded.push(...words.split(" ").filter((w) => w.length >= 3));
+      continue;
+    }
+    kept.push(clause);
+  }
+  return { text: kept.join(" ").replace(/[,;]\s*$/, "").trim(), excluded };
+}
+
 export function answerOpenQuestion(question: string, text: string): string | null {
   const subject = questionSubject(question);
   if (!subject) return null;
@@ -3511,7 +3591,11 @@ export function answerOpenQuestion(question: string, text: string): string | nul
   const first = head.includes(subject) ? head : `${subject} ${head}`;
   // Os itens extras saem do texto ORIGINAL (com acento), sem o artigo do começo.
   const rawParts = text.replace(/[!?]+$/g, "").trim().split(/\s*(?:,|;|\be\b|\btamb[eé]m\b)\s*/i).map((x) => x.trim()).filter(Boolean);
-  const extra = rawParts.slice(1).map((x) => x.replace(/^(?:o|a|os|as)\s+/i, "")).filter((x) => x && !/^(?:mais|tamb[eé]m)$/i.test(x));
+  // "ta barata", "é mais em conta" (10/10, rodada 15 A2): comentário de preço sobre a resposta, não item a mais.
+  const extra = rawParts
+    .slice(1)
+    .map((x) => x.replace(/^(?:o|a|os|as)\s+/i, ""))
+    .filter((x) => x && !/^(?:mais|tamb[eé]m)$/i.test(x) && !/^(?:(?:ta|t[aá]|est[aá]|eh|[eé]|que|pq|porque)\s+)?(?:(?:mais|bem|super)\s+)?(?:barat\w*|em conta|economic\w*|car[oa]s?|baratinh\w*)[\s!.]*$/i.test(normalizeMsg(x)));
   return `adiciona ${[first, ...extra].join(", ")}`;
 }
 
@@ -3784,10 +3868,12 @@ export function asksReturnPolicy(text: string): boolean {
   const n = normalizeMsg(text);
   if (!n || n.length > 200 || /\b(dinheiro|estorn\w*|pix)\b/.test(n)) return false;
   if (/\bpolitica d[eao] (troca|devoluc)|\btrocas? e devoluc|\bprazo (de|pra|para) (troca|trocar|devolv|devoluc)/.test(n)) return true;
-  const condition = /\be se\b.*\b(nao (servir|serve|couber|gostar|funcionar)|vier (errad|trocad|quebrad|com defeito|estragad|danificad|faltando)\w*|chegar (errad|quebrad|estragad|danificad)\w*|der (defeito|problema))/.test(n);
+  // "se a fralda não servir no meu bebê eu consigo trocar por P?" (10/10, rodada 15 M5): a condição pode abrir a frase (sem o
+  // "e"), e a troca condicionada ("se não servir… trocar por P") é pós-venda, não troca de item da cesta.
+  const condition = /(?:^|\b(?:e|mas|ai|e ai)\s+)se\b.*\b(nao (servir|serve|couber|caber|gostar|funcionar)|ficar (pequen|apertad|grande|larg)\w*|vier (errad|trocad|quebrad|com defeito|estragad|danificad|faltando)\w*|chegar (errad|quebrad|estragad|danificad)\w*|der (defeito|problema))/.test(n);
   const verb = /\b(troc(a|ar|o)|devolv\w*|devoluc\w*)\b/.test(n);
   const swapItem = /\btroc\w*\b.*\bpor\b/.test(n) && !/\bdevolv|\bdevoluc/.test(n);
-  if (condition && verb && !swapItem) return true;
+  if (condition && verb && (!swapItem || /\b(posso|consigo|da pra|tem como|e possivel|aceita\w*)\b/.test(n))) return true;
   if (swapItem) return false;
   if (/\b(posso|da pra|consigo|tem como|aceita\w*|faz\w*|voces fazem|como (e|faco|funciona)|e se (eu )?(quiser|precisar))\b.*\b(devolv\w*|devoluc\w*)\b/.test(n)) return true;
   // "posso trocar depois?" / "aceita troca?": troca sem item nomeado.
@@ -3943,14 +4029,17 @@ export function parseOrderBudget(text: string): { cap: number; rest: string; tot
   let gift = false;
   const giftFrame = /\bpresente\b/.test(base);
   if (cap == null) {
-    const tail = /(?:[\s,]+)(ate|no maximo|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?[\s.!]*$/.exec(base);
+    // "..., uns 30 reais no máximo" (10/10, rodada 15 g43): o "no máximo" depois do valor também fecha o teto.
+    const tail = /(?:[\s,.;]+)(ate|no maximo|nao passo de|nao passa de|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?(?:\s+no maximo)?[\s.!]*$/.exec(base);
     const before = tail ? base.slice(0, tail.index) : "";
     const value = tail ? Number(tail[2].replace(",", ".")) : NaN;
     // "..., presunto e queijo fatiado, no máximo uns 100 reais" (10/10, rodada 14 g41): o teto em oração própria (depois da
     // vírgula) no fim de uma lista de 3+ itens também é do pedido — colado no item ("vinho até 40 reais") segue do item.
-    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo)$/.test(tail[1]) && /,/.test(/^[\s,]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 2);
-    const approx = Boolean(tail && !/^(?:ate|no maximo)$/.test(tail[1]) && tail[3]) || ownClause;
-    const list = /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
+    // Lista de 2 itens também (10/10, rodada 15 g43: "quero ovos e leite, até 20 reais", "ovos e leite, não passo de 40
+    // reais" e "...e castanha de caju. no máximo 200 reais" saíam sem 💰): o que separa é a vírgula/ponto antes do teto.
+    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && /[,.;]/.test(/^[\s,.;]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 1);
+    const approx = Boolean(tail && !/^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && tail[3]) || ownClause;
+    const list = ownClause || /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
     if (tail && value >= 10 && (giftFrame || approx) && list && !/\bcada\b/.test(base)) {
       spans.push([tail.index, base.length]);
       cap = value;
@@ -3992,9 +4081,15 @@ export function parseBrowseOnly(text: string): string | null {
 // ("uma em casa e outra no trabalho"), segue como pedido de dois endereços.
 const SPLIT_TIME_WORD_RE = /\b(?:hoje|amanha|depois de amanha|outro dia|depois|mais tarde|antes|primeiro|semana que vem|segunda|terca|quarta|quinta|sexta|sabado|domingo)\b/;
 const SPLIT_DELIVERY_ASK_RE = /\b(?:separ\w*|divid\w*|parcel\w*|quebr\w*)\b.{0,30}\b(?:entregas?|vezes|partes|remessas?|envios?)\b|\b(?:duas|2|dois) (?:entregas|vezes|remessas|envios)\b|\b(?:o resto|a outra parte|os outros|as outras coisas|o restante)\b.{0,20}\b(?:depois|outro dia|amanha|mais tarde|semana que vem)\b|\b(?:receber|chegar|mandar|entregar)\b.{0,25}\bantes\b.{0,20}\b(?:e o resto|o resto|os outros)\b/;
+// Cada item com o seu dia (10/10, rodada 15 g42): "dá pra mandar o shampoo amanhã e a ração hoje?" e "só quero receber a
+// ração antes" respondiam "Agendar horário certinho eu ainda não consigo".
+const SPLIT_EACH_WHEN_RE = /\b(?:mandar|manda|entregar|entrega|receber|chegar|chega|vir|vem)\b[^,.?!]{0,40}\b(?:hoje|amanha|depois|outro dia)\b[^,.?!]{0,4}\be\s+(?:o|a|os|as)\s+[^,.?!]{1,40}\b(?:hoje|amanha|depois|outro dia|mais tarde)\b|\b(?:receber|chegar|vir|mandar|entregar)\s+(?:so\s+)?(?:o|a|os|as)\s+[a-z]+(?:\s+[a-z]+)?\s+antes\b(?!\s+d[aoe]s?\b)/;
 export function asksSplitDeliveryByTime(text: string): boolean {
-  const n = normalizeMsg(text);
-  if (!n || n.length > 220 || /\bjunt/.test(n) || parseSplitOrders(n)) return false;
+  // "no mesmo endereço" diz que é UM lugar — não é o pedido de dois endereços.
+  const n = normalizeMsg(text).replace(/\b(?:n?o|e o|eh o|pro|para o|pra o) mesmo (?:endereco|lugar)\b/g, " ");
+  // "quero a ração hoje e o resto outro dia, dá pra fazer dois pedidos?" (10/10, rodada 15 g42): "dois pedidos" com o
+  // QUANDO de cada parte é a mesma pergunta de prazo, não pagadores — respondia "tira daqui o que é da outra pessoa".
+  if (!n || n.length > 220 || /\bjunt/.test(n) || parseSplitOrders(n) === "payer") return false;
   if (new RegExp(`\\b(?:enderecos?|lugares|${PLACE_SRC})\\b`).test(n)) return false;
-  return SPLIT_DELIVERY_ASK_RE.test(n) && SPLIT_TIME_WORD_RE.test(n);
+  return (SPLIT_DELIVERY_ASK_RE.test(n) || SPLIT_EACH_WHEN_RE.test(n)) && SPLIT_TIME_WORD_RE.test(n);
 }

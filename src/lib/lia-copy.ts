@@ -494,6 +494,15 @@ export function removeNotFound(): string {
   return "Não achei esse item na sua cesta. Me diz o nome como está na lista.";
 }
 
+// "tira o sal" com só o "Biscoito Água e Sal" na cesta (10/10, rodada 15 g42): a palavra é parte do nome de outro item, não
+// um item. Não tira nada e pergunta — antes o biscoito que o cliente acabara de dizer que queria sumia calado.
+export function removeOnlyInsideName(word: string, items: string[]): string {
+  const shown = items.filter(Boolean);
+  const head = shown.length === 1 ? shown[0].split(/\s+/)[0]?.toLowerCase() : undefined;
+  const ask = head ? `Quer tirar o *${shown[0]}*? Se sim, me diz *tira o ${head}*.` : "Se quiser tirar um deles, me diz qual.";
+  return `Não tem *${word}* separado na sua cesta — "${word}" é parte do nome de ${namesList(shown)}. Não tirei nada.\n${ask}`;
+}
+
 // "tira os balões e o salgadinho" (10/10, rodada 5 M5): diz QUAL não está na cesta.
 export function removeNotFoundNamed(names: string[]): string {
   const shown = names.filter(Boolean);
@@ -2799,6 +2808,11 @@ export function swapChangeNote(kind: "marca" | "versao", brand?: string): string
   return kind === "marca" ? `muda a marca${brand ? `: não achei ${brand} em outra loja` : ""}` : "não é o mesmo produto (pode mudar sabor, cor ou modelo) — confere se serve";
 }
 
+// A troca de loja muda a cor do produto (10/10, rodada 15 A2): "preto → marrom" nunca passa calado.
+export function swapColorNote(from: string, to: string): string {
+  return `muda a cor: era ${from}, essa é ${to}`;
+}
+
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
@@ -3088,6 +3102,8 @@ export function manualQuoteSummary(input: {
   joinRuledOut?: boolean;
   // Juntar possível mas mais demorado (não ofereci sozinha): o aviso de frete diz isso.
   joinSlower?: { eta: string; saving: number };
+  // Várias entregas e a mais lenta leva 5+ dias úteis (10/10, rodada 15 g43): qual loja segura o pedido.
+  slowDelivery?: { store: string; promise: string };
 }): string {
   const lines = input.items.map((item) =>
     item.lineTotal != null ? `• ${item.qty}x ${item.name} — ${brl(item.lineTotal)}` : `• ${item.qty}x ${item.name}`
@@ -3101,6 +3117,7 @@ export function manualQuoteSummary(input: {
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
+    ...(!input.deadlineMiss && input.slowDelivery ? [slowDeliveryNote(input.slowDelivery.store, input.slowDelivery.promise)] : []),
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),
     // Com o limite estourado, o aviso do limite já diz o frete e como baixar: "quer somar mais coisa?" subiria o total.
@@ -3113,6 +3130,12 @@ export function manualQuoteSummary(input: {
   }
   out.push("", "Escolhe abaixo como quer pagar.");
   return out.join("\n");
+}
+
+// A entrega mais lenta de uma cesta em várias lojas (10/10, rodada 15 g43, R15a-7): diz quem segura o pedido e a saída.
+export function slowDeliveryNote(store: string, promise: string): string {
+  const when = promiseForCustomer(promise) || promise;
+  return `⏳ A parte da *${store}* leva *${when}* — é ela que segura a entrega. Se tiver pressa, me diz qual item dela trocar.`;
 }
 
 // ---------- perguntas de serviço / atendimento ----------
@@ -3782,9 +3805,14 @@ export function cheapestTieNote(numbers: number[], price: number, picked: number
 
 // "o mais barato" que não ficou com a etiqueta mais baixa (10/10, rodada 11 g32): ela não chega no prazo dito, ou somava
 // uma entrega (e o pedido mínimo) de outra loja — o cliente sabe por quê e pode voltar pra ela.
-export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number } }): string {
+export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string } }): string {
   const where = input.store ? `, *${input.store}*` : "";
   const min = input.minimum ? ` e o pedido mínimo de ${brl(input.minimum)} da loja` : "";
+  // Nenhuma opção chega no prazo dito (10/10, rodada 15 g43): fica a que chega antes, por pouca diferença.
+  if (input.noneOnTime) {
+    const when = promiseForCustomer(input.noneOnTime.promise);
+    return `💡 Nenhuma opção chega até *${input.noneOnTime.label}*. O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas por pouca diferença peguei este, que chega antes${when ? ` (*${when}*)` : ""}. Se preferir aquele, é só falar.`;
+  }
   const why = input.late
     ? `não chega até *${input.late}* — peguei o mais barato que chega a tempo`
     : input.slow != null
@@ -3848,6 +3876,12 @@ export function storeAllSame(label: string): string {
   return `Todas essas são da *${label}* 🙂`;
 }
 
+// Refino pedido numa loja ("mostra de filhote da cobasi", 10/10, rodada 15 A1) e a loja não tem: diz qual loja, sem a loja no
+// nome do produto, e as opções de antes continuam.
+export function storeRefineMiss(label: string, item: string): string {
+  return `Na *${label}* não achei *${item}* pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra palavra pra eu tentar, ou responde *pula* pra deixar de fora.`;
+}
+
 export function storeNoneOnTable(label: string): string {
   return `Nenhuma das opções na tela é da *${label}*. As de agora são essas:`;
 }
@@ -3871,6 +3905,16 @@ export function costlyDeliverySwapHeader(item: string, storeLabel: string, fee: 
 // "4 pacotes dão 2 kg" (10/10, rodada 13 M4): a conversão do tamanho pedido em pacotes, no aviso do "mais perto".
 export function packsToReach(n: number, askedLabel: string): string {
   return `${n} pacotes dão ${askedLabel}`;
+}
+
+// A conta da vitrine aplicada na escolha (10/10, rodada 15 A4): "4 pacotes dão 2 kg" → entram 4 pacotes.
+export function packsToReachApplied(n: number, eachLabel: string, askedLabel: string): string {
+  return `_Coloquei ${n} pacotes de ${eachLabel} pra dar os ${askedLabel} que você pediu. Pra mudar, é só dizer o número de pacotes._`;
+}
+
+// "3 de frango e 3 de carne" com o sachê na tela (10/10, rodada 15 A1): a divisão do item da vez, numa linha.
+export function variantSplitNoted(item: string, parts: { qty: number; label: string }[]): string {
+  return `Dividi *${item}* em ${parts.map((p) => `*${p.qty}x ${p.label}*`).join(" e ")}. Vamos escolher cada um 👇`;
 }
 
 export function severalDeliveriesNote(stores: number): string {

@@ -244,6 +244,16 @@ export function dropAddressOnlyItems(items: string | undefined, place?: { city?:
 }
 
 // "Rua Augusta, 01305-100", "moro na rua augusta perto do metrô": rua citada, número não.
+// O pedido que vem depois do endereço sem número ("...avenida paulista mil bela vista são paulo eu preciso de um shampoo",
+// 10/10, rodada 15 M13): a partir do verbo de pedido é lista, não endereço. undefined = não tem oração de pedido.
+const WANT_ANYWHERE_RE = /(?:^|[\s,.;!?])(?:e\s+)?(?:eu\s+)?(?:tamb[eé]m\s+)?(?:quero|queria|preciso|precisava|gostaria|me\s+(?:manda|traz|v[eê]))\b/i;
+export function wantClauseTail(raw: string): string | undefined {
+  const m = WANT_ANYWHERE_RE.exec(raw ?? "");
+  if (!m) return undefined;
+  const tail = raw.slice(m.index).replace(/^[\s,.;!?]+/, "").trim();
+  return tail || undefined;
+}
+
 export function mentionsStreetWithoutNumber(raw: string, street?: string): boolean {
   const text = (raw ?? "").replace(CEP_RE_GLOBAL, " ");
   if (/\d/.test(text)) return false;
@@ -323,6 +333,22 @@ export function stripCourtesy(raw: string): { text: string; wantsToOrder: boolea
     .replace(/^[\s,.;:!?-]+|[\s,;:-]+$/g, "")
     .trim();
   return { text, wantsToOrder };
+}
+
+// Nome dito com apresentação ("Meu nome é João Pereira, CPF …, moro na …", 10/10, rodada 15 g42): o stripCourtesy tira a
+// apresentação da lista de itens e o nome se perdia — a Lia pedia "nome completo e CPF" de novo. Devolve só o nome (até a
+// vírgula, o número ou a próxima fala); quem confere se é nome completo é o cadastro.
+const NAME_INTRO_RE = /\b(?:meu nome (?:completo )?(?:[eé]|eh)|me chamo|aqui (?:[eé]|eh) (?:a|o)|sou (?:a|o))\s+(\p{L}[\p{L}' ]{1,80})/iu;
+const NAME_INTRO_STOP = /^(?:e|cpf|rg|moro|mora|meu|minha|quero|queria|preciso|tenho|no|na|em|aqui|sou|ta|tá|to|tô|com)$/i;
+export function introducedName(raw: string): string | undefined {
+  const m = NAME_INTRO_RE.exec(raw ?? "");
+  if (!m) return undefined;
+  const words: string[] = [];
+  for (const w of m[1].trim().split(/\s+/)) {
+    if (NAME_INTRO_STOP.test(w) || words.length >= 6) break;
+    words.push(w);
+  }
+  return words.length >= 2 ? words.join(" ") : undefined;
 }
 
 // ---------- "quanto tá o leite ninho?" no 1º contato (M2) ----------
