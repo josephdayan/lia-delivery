@@ -1306,6 +1306,10 @@ export function cheaperOnlyOtherSize(input: { item: string; name: string; price:
   return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
 }
 // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
+// Recusa da pergunta "De qual item você quer um mais em conta?" (10/10, rodada 5 g16): nada muda na cesta.
+export function cheaperAskDeclined(name?: string): string {
+  return name ? `Beleza, mantenho *${name}* como está. ✅ Quer mais alguma coisa?` : "Beleza, não troco nada — a cesta fica como está. ✅ Quer mais alguma coisa?";
+}
 export function cheaperWhichItem(items: string[]): string {
   return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
 }

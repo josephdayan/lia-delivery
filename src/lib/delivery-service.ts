@@ -2654,6 +2654,21 @@ async function handleDeliveryTurn(
     const asked = ctx.cheaperAsk;
     ctx.cheaperAsk = undefined;
     const lines = (ctx.basket ?? []).filter((item) => item.unitPrice > 0);
+    // "não, quero a fralda de antes" / "deixa, fica com essa" (10/10, rodada 5 g16): é recusa da troca, não o alvo dela —
+    // virava "Troquei pelo mais barato". A pergunta fecha e a cesta fica como está.
+    const nAsk = normalizeMsg(text);
+    const saidTokens = queryTokens(nAsk);
+    const named = lines.filter((item) => saidTokens.some((t) => t.length >= 4 && normalizeMsg(`${item.name} ${item.ask ?? ""}`).includes(t)));
+    // "não, o protetor" (com item e sem "de antes") ainda é escolha do alvo.
+    const declines =
+      UNDO_SWAP_CUE_RE.test(nAsk) ||
+      /\b(?:fica com (?:ess[ae]s?|o mesmo|a mesma)|mantem|mantenha|deixa como esta)\b/.test(nAsk) ||
+      (/^(?:nao|nem|deixa|esquece|nenhum\w*|melhor nao)\b/.test(nAsk) && !named.length);
+    if (declines && Date.now() - asked.at < 15 * 60_000 && lines.length) {
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.cheaperAskDeclined(named.length === 1 ? named[0].name : undefined));
+      return;
+    }
     if (Date.now() - asked.at < 15 * 60_000 && lines.length && (!ctx.step || ctx.step === "collecting")) {
       const said = normalizeMsg(text)
         .replace(/[!.?]+/g, " ")
@@ -7766,6 +7781,8 @@ async function undoLastSwap(phone: string, convoId: string, userCep: string | nu
   ctx.basket = mergeBaskets(basket, restored);
   ctx.pending = pending.length ? pending : undefined;
   ctx.lastSwap = undefined;
+  // Desfazer responde também o "De qual item?" que estivesse aberto (10/10, rodada 5 g16).
+  ctx.cheaperAsk = undefined;
   ctx.step = ctx.pending?.length ? "choosing" : "collecting";
   await writeCtx(convoId, ctx);
   const names = restored.map((r) => r.name).join(", ");

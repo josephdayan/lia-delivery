@@ -155,3 +155,36 @@ test("cadastro: 'Rafael Torres, 529.982.247-25, CEP 01310-100 número 1000' salv
   const convo = await prisma.conversation.findFirstOrThrow({ where: { userId: user.id } });
   assert.doesNotMatch(convo.context ?? "", /Rafael/, "o nome não ficou na lista de itens");
 });
+
+// 4) "De qual item?" + "não, quero a fralda de antes": recusa, não alvo -------------------------------------------
+async function catalogOptions(query: string, re: RegExp, n: number): Promise<ChoiceOption[]> {
+  const cands = (await gatherCrossStoreCandidates(query, 40, 4, { noLongTail: true })).filter((c) => re.test(c.item.name)).slice(0, n);
+  assert.ok(cands.length >= n, `catálogo de teste sem ${query}`);
+  return cands.map((c) => ({ sku: c.item.sku, name: c.item.name, brand: c.item.brand, unitPrice: c.item.unitPrice, storeKey: c.store.key, storeLabel: c.store.label }));
+}
+const asItem = (o: ChoiceOption, ask: string): BasketItem => ({ ...o, storeKey: o.storeKey ?? "", storeLabel: o.storeLabel ?? "", qty: 1, lineTotal: o.unitPrice, ask });
+
+for (const decline of ["não, quero a fralda de antes", "deixa, fica com essa mesmo", "não, deixa como está"]) {
+  test(`'De qual item?' + "${decline}": a cesta fica e a pergunta fecha`, async (t) => {
+    if (!dbOk) return t.skip();
+    const [prot] = await catalogOptions("protetor solar", /protetor/i, 1);
+    const fraldas = await catalogOptions("fralda", /fralda/i, 2);
+    const basket = [asItem(prot, "protetor solar"), asItem(fraldas[1], "fralda")];
+    const c = await customerWith({ basket, cheaperAsk: { at: Date.now() } });
+    const out = await send(c.phone, decline);
+    assert.doesNotMatch(out, /Troquei|mais barat|De qual item/i, out.slice(0, 400));
+    const ctx = await ctxOf(c.convoId);
+    assert.equal(ctx.cheaperAsk, undefined);
+    assert.deepEqual((ctx.basket ?? []).map((b: BasketItem) => b.sku).sort(), basket.map((b) => b.sku).sort(), out.slice(0, 400));
+    assert.equal((ctx.pending ?? []).length, 0);
+  });
+}
+
+test("'De qual item?' + 'a fralda' segue trocando pela mais barata", async (t) => {
+  if (!dbOk) return t.skip();
+  const [prot] = await catalogOptions("protetor solar", /protetor/i, 1);
+  const fraldas = await catalogOptions("fralda", /fralda/i, 2);
+  const c = await customerWith({ basket: [asItem(prot, "protetor solar"), asItem(fraldas[1], "fralda")], cheaperAsk: { at: Date.now() } });
+  const out = await send(c.phone, "a fralda");
+  assert.doesNotMatch(out, /mantenho|não troco nada/i, out.slice(0, 400));
+});
