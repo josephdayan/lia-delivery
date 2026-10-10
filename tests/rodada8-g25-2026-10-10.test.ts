@@ -176,3 +176,14 @@ test("6: 'e pomada pra assadura, e um sabonete íntimo' com a IA escolhendo reco
   assert.ok(/sabonete/i.test(where), `${where}\n${out.slice(0, 600)}`);
   assert.match(out, /Anotei também \*sabonete íntimo\*|sabonete íntimo/i, out.slice(0, 600));
 });
+
+test("6: com a IA recusando como remédio, o sabonete segue para a busca (remédio sai com aviso)", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "medicine" }] }));
+  const c = await customerWith({ basket: [bi("drogal-22572", "Fralda Pampers Super Sequinha Mega M 40 Unidades", 55.87, { storeKey: "drogal", storeLabel: "Drogal", ask: "fralda pampers m" })] });
+  const out = await send(c.phone, "e uma dipirona, e um sabonete íntimo");
+  const ctx = await ctxOf(c.convoId);
+  const where = [...(ctx.pending ?? []).map((p) => p.query), ...(ctx.basket ?? []).map((b) => `${b.name} ${b.ask ?? ""}`), ...(ctx.listMisses ?? []).map((m) => m.query)].join(" | ");
+  assert.ok(/sabonete/i.test(where), `${where}\n${out.slice(0, 600)}`);
+});
