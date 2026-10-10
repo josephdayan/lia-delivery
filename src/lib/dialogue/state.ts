@@ -20,7 +20,9 @@ function optionView(o: ChoiceOption, n: number, chosenSku?: string): StateOption
 }
 
 export function buildDialogueState(ctx: DeliveryContext, opts: { hasAddress: boolean; order?: OpenOrderView | null }): DialogueState {
-  const choosing = ctx.step === "choosing" && Boolean(ctx.pending?.length);
+  // Escolha aberta vale pelo que está na mesa, não só pelo passo gravado (10/10, rodada 5 A1): com o passo em
+  // "collecting" a vela pendente sumia do estado e a IA respondia "não vejo vela na lista".
+  const choosing = (ctx.step === "choosing" || ctx.step === undefined || ctx.step === "collecting") && Boolean(ctx.pending?.length);
   const passo: DialogueState["passo"] =
     ctx.step === "awaiting_quote_confirmation"
       ? "total_na_mesa"

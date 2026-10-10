@@ -34,9 +34,16 @@ const bodySchema = z.object({
 // Status em que o pedido já está (ou passou) da cobrança: a linha de teste não fala mais nessa conversa.
 const CHARGED_STATUSES = ["payment_issuing", "awaiting_payment", "paid", "operator_buying", "retailer_preparing", "retailer_out_for_delivery", "ready_for_pickup", "dispatched", "delivered", "refund_pending", "refunded"];
 
-function render(send: CapturedSend) {
+// Envio a outro número (aviso ao dono/operador) aparece marcado: foi capturado como as respostas e NÃO saiu (10/10,
+// rodada 5 g16: o testador leu o aviso "Ensaio da compra" na lista e achou que tinha ido ao operador).
+function render(send: CapturedSend, phone: string) {
   const [first, second] = send.args;
-  return { kind: send.kind, to: send.to, ...(send.kind === "sendMessage" ? { text: first } : { args: send.args.length === 1 ? first : [first, second, ...send.args.slice(2)] }) };
+  return {
+    kind: send.kind,
+    to: send.to,
+    ...(send.to !== phone ? { internal: "aviso interno capturado, não enviado" } : {}),
+    ...(send.kind === "sendMessage" ? { text: first } : { args: send.args.length === 1 ? first : [first, second, ...send.args.slice(2)] })
+  };
 }
 
 export async function POST(request: Request) {
@@ -62,7 +69,7 @@ export async function POST(request: Request) {
   } catch (caught) {
     if (!(caught instanceof TurnSupersededError)) error = caught instanceof Error ? caught.message : String(caught);
   }
-  return NextResponse.json({ ms: Date.now() - startedAt, replies: out.map(render), ...(error ? { error } : {}) });
+  return NextResponse.json({ ms: Date.now() - startedAt, replies: out.map((send) => render(send, phone)), ...(error ? { error } : {}) });
 }
 
 export async function DELETE(request: Request) {

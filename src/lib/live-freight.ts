@@ -199,6 +199,28 @@ function windowText(start: string, end: string): string {
   const endHour = new Date(e.getTime() + 60_000); // janelas terminam em hh:00:59
   return `${when}, ${hour(s)}–${hour(endHour)}`;
 }
+// Dia em que a entrega cai (10/10, rodada 5 g16): "hoje", "amanhã" ou null (mais longe / não dá pra saber). A janela
+// agendada ("9h@amanhã 6h–8h") tem prazo curto em horas mas cai amanhã — o cabeçalho "Chega hoje" mentia.
+export function estimateDay(estimate: string | undefined, now: Date = new Date()): "hoje" | "amanhã" | null {
+  const t = (estimate ?? "").trim();
+  if (!t) return null;
+  const tz = "America/Sao_Paulo";
+  const day = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: tz });
+  const label = (d: Date) => (day(d) === day(now) ? "hoje" : day(d) === day(new Date(now.getTime() + 86_400_000)) ? "amanhã" : null);
+  const windowed = /^\d+h@([^~]+)~/.exec(t);
+  if (windowed) {
+    const start = new Date(windowed[1]);
+    return Number.isFinite(start.getTime()) ? label(start) : null;
+  }
+  const m = /^(\d+)\s*(bd|d|h|m)$/i.exec(t);
+  if (!m) return null;
+  const value = Number(m[1]);
+  const unit = m[2].toLowerCase();
+  if (unit === "d" || unit === "bd") return value === 0 ? "hoje" : null;
+  // SLA em horas/minutos é o "entrega no dia" da loja (como no resto do fluxo); só a janela agendada tem data.
+  return value * (unit === "h" ? 60 : 1) < 24 * 60 ? "hoje" : null;
+}
+
 export function humanEstimate(estimate?: string): string | undefined {
   const windowed = /^(\d+)h@([^~]+)~(.+)$/.exec((estimate ?? "").trim());
   if (windowed) return `prazo da loja: em até ${windowed[1]}h (${windowText(windowed[2], windowed[3])})`;

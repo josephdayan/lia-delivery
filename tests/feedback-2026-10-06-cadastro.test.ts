@@ -38,7 +38,7 @@ test("A1: endereço separado do pedido que veio junto", () => {
   // Endereço sozinho continua inteiro; telefone e traço sobrando saem (B4/B5).
   assert.deepEqual(splitAddressAndItems("Av Paulista 1000, Bela Vista, São Paulo, 01310-100"), { address: "Av Paulista 1000, Bela Vista, São Paulo" });
   assert.deepEqual(splitAddressAndItems("Rua Augusta 1500 apto 32, 01305-100, tel 11 91234-5678"), { address: "Rua Augusta 1500 apto 32" });
-  assert.deepEqual(splitAddressAndItems("Rua Augusta, nº 1500 - Consolação - SP - 01305100"), { address: "Rua Augusta, nº 1500 - Consolação - SP" });
+  assert.deepEqual(splitAddressAndItems("Rua Augusta, nº 1500 - Consolação - SP - 01305100"), { address: "Rua Augusta, 1500 - Consolação - SP" }); // d81fa48 (09/10): o "nº" sai do endereço
   assert.deepEqual(splitAddressAndItems("Al. Santos 1000, 01418-100"), { address: "Al. Santos 1000" });
   assert.equal(splitAddressAndItems("quero shampoo 01233020"), null);
 });

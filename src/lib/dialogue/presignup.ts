@@ -192,6 +192,9 @@ export type PreBypassInput = {
   hasAddress: boolean;
   // A mensagem é (ou carrega) endereço/CEP/CPF/número de casa: o fluxo de endereço decide, sem IA.
   addressLike: boolean;
+  // "qto custa ração golden 15kg" (10/10, rodada 5 A2): o caminho determinístico anota o item e diz que o preço
+  // sai com o CEP; a IA às vezes lia como pergunta do serviço e o pedido sumia.
+  priceAsk?: boolean;
 };
 
 export function preSignupBypassReason(i: PreBypassInput): string | null {
@@ -200,6 +203,7 @@ export function preSignupBypassReason(i: PreBypassInput): string | null {
   if (!COLLECTING_STEPS.has(ctx.step)) return "passo";
   if (ctx.cepSwap || ctx.cepCityCheck || ctx.cpfOnboarding || ctx.cancelReason || ctx.withdrawConfirm || ctx.clearAllConfirm) return "pergunta_aberta";
   if (i.addressLike) return "endereco";
+  if (i.priceAsk) return "pergunta_preco";
   if (!CONSULTED_INTENTS.has(i.intent.kind)) return `intent:${i.intent.kind}`;
   if (!i.text.trim() || i.text.length > 600) return "tamanho";
   // id de botão ("optsku:123", "cadastrar_endereco"): string de máquina, não linguagem.

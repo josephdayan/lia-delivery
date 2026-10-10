@@ -477,6 +477,13 @@ export function removeNotFound(): string {
   return "Não achei esse item na sua cesta. Me diz o nome como está na lista.";
 }
 
+// "tira os balões e o salgadinho" (10/10, rodada 5 M5): diz QUAL não está na cesta.
+export function removeNotFoundNamed(names: string[]): string {
+  const shown = names.filter(Boolean);
+  if (!shown.length) return removeNotFound();
+  return shown.length > 1 ? `${namesList(shown)} não estão na sua cesta.` : `*${shown[0]}* não está na sua cesta.`;
+}
+
 export function swapAskWhat(from: string): string {
   return `Trocar ${from} por qual?`;
 }
@@ -485,6 +492,26 @@ export function swapRemovedPrefix(from: string, to?: string): string {
   // "a ração tem que ser de 3kg" (09/10): "Tirei Ração… 1kg." soava como se tivesse só tirado. Diz a troca.
   return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
+
+// "fecha" com item ainda em escolha e cesta montada (10/10, rodada 5 A1): nunca prende — oferece fechar sem.
+export function closeWithoutPendingAsk(names: string[]): string {
+  const what = namesList(names);
+  return names.length > 1
+    ? `Ainda faltam ${what}. Fecho o pedido sem eles? Responde *sim* — ou escolhe aí embaixo pra incluir.`
+    : `Ainda falta ${what}. Fecho o pedido sem esse item? Responde *sim* — ou escolhe uma opção aí embaixo pra incluir.`;
+}
+export function closedWithoutPending(names: string[], restored: string[] = []): string {
+  // Troca não escolhida: o item antigo voltou (rodada 5 A3).
+  return restored.length ? `Fechei sem ${namesList(names)} — mantive ${namesList(restored)} como estava.` : `Fechei sem ${namesList(names)}.`;
+}
+
+// Busca que não achou nada com escolha aberta (10/10, rodada 5 A3): o que ainda falta escolher continua valendo.
+export function pendingStillOpen(names: string[]): string {
+  return names.length > 1
+    ? `Ainda falta escolher: ${namesList(names)} — as opções continuam valendo 👆`
+    : `Ainda falta escolher *${names[0] ?? "o item"}* — as opções continuam aí em cima 👆`;
+}
+
 
 export function requestedStoreNotShown(label: string, item?: string): string {
   // Nomeia o item (rodada 4, M1): sem isso o aviso parecia ser da escolha que o cliente acabou de fazer.
@@ -512,6 +539,10 @@ export function noOpenOrderToPay(): string {
   return "Você ainda não tem pedido aberto pra pagar. O que você precisa?";
 }
 
+export function emptyCartTotal(): string {
+  return "Sua cesta está vazia por enquanto — nada escolhido ainda. Me diz o que você quer que eu procuro.";
+}
+
 export function emptyCartPay(): string {
   return "Sua cesta está vazia. Me diz o que você quer.";
 }
@@ -522,7 +553,10 @@ export function rejectedAskAgain(): string {
 
 // ---------- choices ----------
 
-export function choicesHeaderToday(query: string): string {
+export function choicesHeaderToday(query: string, when?: "amanha" | "rapido"): string {
+  // Só diz "hoje" quando as opções chegam hoje (10/10, rodada 5 g16: o resumo dizia "amanhã, 6h–8h").
+  if (when === "amanha") return `Chega até amanhã — opções de *${query}*:`;
+  if (when === "rapido") return `Entrega mais rápida — opções de *${query}*:`;
   return `Chega hoje — opções de *${query}*:`;
 }
 
@@ -628,6 +662,10 @@ export function cheapestFirstHeader(query: string): string {
 // Recusou as opções e pediu algo que ninguém tem: honesto, sem repetir o que ele dispensou.
 export function refineNoResultRejected(refined: string): string {
   return `Não achei *${refined}* nas lojas que entregam aí. Não vou te mostrar de novo o que você dispensou. Me diz outra palavra pra eu tentar, responde *pula* pra deixar esse item de fora, ou *outras* pra ver o que mais existe.`;
+}
+
+export function refineNoResultAbove(refined: string, query: string): string {
+  return `Não achei *${refined}*. O que eu tenho de *${query}* são as opções aí em cima 👆 — toca em *Adicionar ao carrinho* na que preferir, ou responde *pula* pra deixar de fora.`;
 }
 
 export function refineNoResult(refined: string): string {
@@ -748,8 +786,9 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
 
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
 export function deadlineMissNote(label: string, promise?: string): string {
-  const prazo = promiseForCustomer(promise);
-  return `⚠️ Você precisou pra *${label}*, mas essa entrega ${prazo ? `sai em *${prazo}*` : "não chega a tempo"}. Se não der, me avisa antes de pagar.`;
+  // Sem o "2 entregas ·" da linha de entrega (10/10, rodada 5 g16: "sai em 2 entregas · 2 dias úteis").
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  return `⚠️ Você disse que precisa pra *${label}*, mas essa entrega não chega a tempo${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
@@ -1301,7 +1340,16 @@ export function cheaperOnlyOtherSize(input: { item: string; name: string; price:
   const size = input.size ? ` de *${input.size}*` : "";
   return `No mesmo tamanho${size}, o *${input.name}* (${brl(input.price)}) já é o mais barato que achei. Mais em conta só em outro tamanho — se quiser, escolhe uma que eu troco (atenção ao tamanho de cada uma):`;
 }
+// Troca com teto ("um mais barato, até 60 reais") sem nada dentro do valor (10/10, rodada 5 M10).
+export function swapOverCap(input: { item: string; cap: number; name: string; price: number; keeping?: string }): string {
+  const keep = input.keeping ? ` Por enquanto deixei o *${input.keeping}* na lista.` : "";
+  return `Até ${brl(input.cap)} não achei *${input.item}*. O mais em conta que achei é *${input.name}* por ${brl(input.price)}.${keep} Se quiser esse, é só confirmar:`;
+}
 // "tem um mais em conta?" sem dizer o item, com 2+ itens na cesta (10/10, rodada 4).
+// Recusa da pergunta "De qual item você quer um mais em conta?" (10/10, rodada 5 g16): nada muda na cesta.
+export function cheaperAskDeclined(name?: string): string {
+  return name ? `Beleza, mantenho *${name}* como está. ✅ Quer mais alguma coisa?` : "Beleza, não troco nada — a cesta fica como está. ✅ Quer mais alguma coisa?";
+}
 export function cheaperWhichItem(items: string[]): string {
   return [`De qual item você quer um mais em conta?`, ...items.map((name, i) => `*${i + 1}.* ${name}`), `Responde o número ou o nome.`].join("\n");
 }
@@ -1583,6 +1631,11 @@ export function packMismatchAsk(name: string, requested: number, packSize: numbe
   return `Essa opção (*${name}*) vem com *${packSize} unidades* por embalagem e você pediu *${requested}*. ${packs === 1 ? "Levo 1 embalagem" : `Levo ${packs} embalagens`} (${total} un) mesmo assim? Responde *sim*, ou *outras* pra ver outras opções.`;
 }
 
+// "3 fraldas" com pacote de 80 e total alto (10/10, rodada 5 M4): pacotes ou conteúdo?
+export function packCountAsk(name: string, qty: number, packSize: number, total: number): string {
+  return `Só pra confirmar: *${name}* vem com *${packSize} unidades* no pacote. ${qty} pacotes dão ${qty * packSize} unidades e ficam em *${brl(total)}*. Levo *${qty} pacotes*? Responde *sim*, ou *só 1* pra levar 1 pacote.`;
+}
+
 export function packMismatchDeclined(): string {
   return "Sem problema — escolhe outra opção:";
 }
@@ -1855,15 +1908,33 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string }): string {
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[] }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
+  const joinedStores = input.joinedStores ?? 1;
+  // Juntar em MENOS lojas, não numa só (10/10, rodada 5 A4).
+  const joinedWhere = joinedStores > 1 ? `em ${joinedStores} entregas (*${input.storeLabel}*)` : input.left?.length ? `na *${input.storeLabel}* o que ela tem` : `tudo na *${input.storeLabel}*`;
+  const joinedHow = joinedStores > 1 ? "" : input.left?.length ? "" : " com uma entrega";
   return [
     // O total já traz produtos + frete; o prazo de cada forma sai junto (10/10, rodada 4, B2: juntar passava de 3 para 8 dias úteis sem aviso).
-    `Dá pra juntar tudo na *${input.storeLabel}* por ${brl(input.joinedTotal)} com uma entrega${input.joinedEta ? ` (${input.joinedEta})` : ""}, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas${input.keptEta ? ` (${input.keptEta})` : ""}.`,
+    `Dá pra juntar ${joinedWhere} por ${brl(input.joinedTotal)}${joinedHow}${input.joinedEta ? ` (${input.joinedEta})` : ""}, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas${input.keptEta ? ` (${input.keptEta})` : ""}.`,
+    ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
+}
+
+// "junta" pedido por texto sem nada a juntar (10/10, rodada 5 A4): diz por quê; o total na mesa continua valendo.
+export function joinNotPossible(stores: number, storeLabel?: string): string {
+  return storeLabel
+    ? `A *${storeLabel}* não tem nenhum desses itens pra entregar aí — mantive as ${stores} lojas. Se quiser, me diz qual item trocar.`
+    : `Não achei os mesmos itens em menos lojas pra entregar aí — cada loja tem uma parte que as outras não têm. Mantive as ${stores} entregas; se quiser, me diz qual item tirar ou trocar.`;
+}
+export function joinAlreadyOneStore(storeLabel: string, asked?: string): string {
+  return asked ? `Já está tudo numa loja só, a *${storeLabel}*. Quer trocar algum item pra *${asked}*? Me diz qual.` : `Já está tudo numa loja só, a *${storeLabel}* — uma entrega.`;
+}
+export function joinLeftBehind(storeLabel: string, left: string[]): string {
+  return `A *${storeLabel}* não tem ${left.map((n) => `*${n}*`).join(", ")} — ${left.length > 1 ? "esses ficaram" : "esse ficou"} na loja de antes.`;
 }
 
 export function consolidationAsk(): string {
@@ -2287,11 +2358,13 @@ export function minimumSwapOffer(input: { newTotal: number; delta: number; store
 
 // Uma loja por pedido (08/10 noite): a lista estava em várias lojas e a Lia juntou tudo numa só. Nunca
 // silencioso — o que mudou, com preço, e a diferença no total.
-export function basketConsolidated(store: string, pairs: SwapPair[], delta: number, total?: { saved: number; eta?: string }): string {
+export function basketConsolidated(store: string, pairs: SwapPair[], delta: number, total?: { saved: number; eta?: string }, joinedStores = 1): string {
   // Com os dois totais da oferta, a diferença mostrada é a do TOTAL (produtos + frete), com o prazo novo.
   if (total) {
     const money = total.saved > 0.009 ? ` (${brl(total.saved)} a menos no total` : total.saved < -0.009 ? ` (${brl(Math.abs(total.saved))} a mais no total` : " (mesmo total";
-    return [`Juntei tudo na *${store}* pra vir num pedido só${money}${total.eta ? `, ${total.eta}` : ""}):`, ...swapPairLines(pairs)].join("\n");
+    // Menos lojas, não uma (10/10, rodada 5 A4).
+    const where = joinedStores > 1 ? `Juntei em ${joinedStores} entregas (*${store}*)` : `Juntei tudo na *${store}* pra vir num pedido só`;
+    return [`${where}${money}${total.eta ? `, ${total.eta}` : ""}):`, ...swapPairLines(pairs)].join("\n");
   }
   const diff = delta > 0.009 ? ` (${brl(delta)} a mais nos produtos, numa entrega só)` : delta < -0.009 ? ` (${brl(Math.abs(delta))} a menos)` : "";
   return [`Juntei tudo na *${store}* pra vir num pedido só${diff}:`, ...swapPairLines(pairs)].join("\n");
@@ -2527,7 +2600,9 @@ export function serviceAnswer(
 // Frete ao vivo por loja (06/10): o valor já é conhecido nas opções — dizer o número.
 export function feeByStore(fees: { storeLabel: string; fee: number }[]): string {
   const list = fees.map((f) => `*${f.storeLabel}*: ${f.fee > 0 ? brl(f.fee) : "grátis"}`).join(" · ");
-  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.`;
+  // Várias lojas (10/10, rodada 5 M13): o cliente que acha caro precisa saber que menos lojas = menos frete.
+  const many = fees.length >= 2 ? " Quanto menos lojas, menor o frete: trocando itens por opções de uma loja que já está no pedido, ele cai." : "";
+  return `Frete até o seu endereço — ${list}. É cobrado uma vez por loja; o total exato aparece antes de você pagar.${many}`;
 }
 
 // Quem recebe o Pix (06/10): a IA dizia "a própria loja" — falso. A Lia é MEI: o banco de

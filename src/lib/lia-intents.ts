@@ -204,6 +204,9 @@ export function expandShoppingShorthand(text: string): string {
     // Abreviações de produto (09/10, rodada 1: "req. tirolez" virava o item "req" → "não achei" e depois achava).
     .replace(/\breq\b\.?/gi, "requeijão")
     .replace(/\bcerva\b/gi, "cerveja")
+    // "2 cx leite ninho", "1 pct de fralda" (10/10, rodada 5 B2): unidade abreviada não é palavra do produto.
+    // Sai a abreviação (e o "de" logo depois): "2 cx leite ninho" = 2 leite ninho; a busca por "caixa" trazia bombom.
+    .replace(/\b(?:cxs?|pcts?)\b\.?\s+(?:de\s+|do\s+|da\s+)?(?=\S)/gi, "")
     // (09/10, rodada 2) abreviação com ponto vira palavra inteira; sem o ponto "mac"/"ref" podem ser outra coisa.
     .replace(/\bpres\./gi, "presunto")
     .replace(/\bref\./gi, "refrigerante")
@@ -218,7 +221,7 @@ export function expandShoppingShorthand(text: string): string {
 
 // Segmentos que são conversa, não produto ("bom dia", "por favor", "lista:").
 const NOISE_SEGMENT_RE =
-  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad\w*|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|o que .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
+  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|(o que|oq|oque) .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
 
 // ORÇAMENTO (rodada 2 de 07/10): as formas reais de dizer o teto — "até uns R$60", "cerca de 60", "por volta
 // de R$150", "no máximo 150", "tenho uns 120 reais", "R$120 no total com entrega". Uma só fonte para o
@@ -272,6 +275,9 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "p(a)?ra (hoje|amanha)( se der| se possivel)?",
       "o quanto antes",
       "urgente(mente)?",
+      // Pressa solta ("rapido pfv", "agiliza ai", "tenho pressa") é sobre a ENTREGA, nunca item (10/10, rodada 5 A2).
+      "(e |mas )?(bem |mais |o mais |muito |vai |anda |seja )?(rapido|rapida|rapidinho|depressa|ligeiro|agiliza(r)?|correndo)( ai| la| possivel| por favor| pfv)*",
+      "(e |mas )?(eu )?(tenho|to com|tou com|estou com|com) (muita |um pouco de )?pressa( .*)?",
       "(entrega|entregam|entregue|entregando) (hoje|amanha|rapida|rapido)( .*)?",
       // LUGAR de entrega ("entrega em belo horizonte", "pra entregar na minha casa") descreve o
       // destino, nunca é item — virava "Já anotei • 1x entrega em belo horizonte" (placar c38).
@@ -334,6 +340,10 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // churrasco narrado (c94), nunca item.
       "(uns |umas |pra |para |mais ou menos |cerca de )*\\d+ (convidados|pessoas|amigos|adultos|criancas|gente)( .*)?",
       "(a )?(familia|galera) (toda|inteira)( .*)?",
+      // O EVENTO que o cliente está organizando e a idade do aniversariante (10/10, rodada 5 M3): "to organizando o
+      // aniversario da minha filha, 8 anos" virava os itens "to organizando o aniversario da…" e "8x anos".
+      "(eu |a gente |nos )?(to|tou|estou|estamos|tamo|ando|vou|vamos|quero|queria|preciso) (organizando|planejando|preparando|montando|fazendo|organizar|planejar|preparar|montar|fazer|dar) (o |a |um |uma |uns |umas )?(aniversario|niver|festa|festinha|churrasco|cha( de [a-z]+)?|casamento|batizado|evento|reuniao|confraternizacao|comemoracao|piquenique|mudanca)\\b.*",
+      "(de |com |que faz |fazendo |vai fazer |completa |completando )?\\d{1,2} anos( de idade)?",
       "(vai|vem|vao) (ter|ser) .*",
       "(eu )?(nao|n) (esquece|esqueca|esquecer)( de)? (nada|de nada|nenhum item)",
       "(nao esquece|nao esqueca)( nada)?",
@@ -1060,7 +1070,8 @@ export function looksLikeSymptomAsk(text: string): boolean {
 // roteador executar em sequência (28/08 S4: virou UMA busca e nada foi feito).
 // "por" é verbo ("por o arroz"), mas "por favor"/"por enquanto" é cortesia — virava uma cláusula de busca
 // ("Tira a fita crepe, por favor." → greeting no lugar do novo total; placar c10).
-const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece";
+// "muda/altera" (10/10, rodada 5 M5): "tira os balões e o salgadinho, e muda o guardanapo pra 4" era uma cláusula só.
+const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece|muda|mudar|altera|alterar";
 
 export function splitCommandClauses(text: string): string[] {
   const n = normalizeMsg(text);
@@ -1083,7 +1094,7 @@ const GREETING_RE =
 // ONLY genuine thanks here. Words like "perfeito"/"show"/"top" are AFFIRMATIONS —
 // at the quote step they mean "yes, close the order", so they live in AFFIRM_CORE.
 const THANKS_RE =
-  /^((muito|mto|mt)\s+)?(obrigad\w*|brigad\w*|valeu+|vlw+|obg( dms)?)(\s+(lia|viu|mesmo|demais|dms))?[\s!?.😊💚❤️🙏👍]*$/;
+  /^((muito|mto|mt)\s+)?(obrigad(?:[oa]s?|inh[oa]s?|ao)|brigad(?:[oa]s?|inh[oa]s?|ao)|valeu+|vlw+|obg( dms)?)(\s+(lia|viu|mesmo|demais|dms))?[\s!?.😊💚❤️🙏👍]*$/;
 
 const HELP_RE = /^(ajuda|help|menu|como funciona\??|o que (voce|vc) faz\??|como (te )?uso\??|comandos)[\s!?.]*$/;
 
@@ -1108,7 +1119,7 @@ const REFUSE_PAY_RE = /\bn(a|ã)o (vou|quero|vamos|pretendo) (pagar|comprar|leva
 // Negação/desistência SECA — a resposta mais comum do WhatsApp. Sem isto, "não" vira
 // busca de produto e casa com "Esponja NÃO Risca" no catálogo.
 const REJECT_BARE_RE =
-  /^(?:(?:ah+|ok|certo|entendi|beleza)[,.!\s]+)*(?:entao[,\s]+)?(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|nao[,\s]+deixa( pra la| quieto| assim| como (esta|ta))?|deixa( pra la| quieto| assim| como (esta|ta))?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad\w*|valeu|brigad\w*|vlw)?[\s,!.]*$/;
+  /^(?:(?:ah+|ok|certo|entendi|beleza)[,.!\s]+)*(?:entao[,\s]+)?(n+|nn+|nao+( nao)?|hoje nao|agora nao|por enquanto nao|melhor nao|acho que nao|nao quero( nao)?|nao precisa( mais)?|nem precisa|nao[,\s]+deixa( pra la| quieto| assim| como (esta|ta))?|deixa( pra la| quieto| assim| como (esta|ta))?|esquece|to de boa|dispenso)[\s,!.]*((muito |mto )?obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|brigad(?:[oa]s?|inh[oa]s?|ao)|vlw)?[\s,!.]*$/;
 
 // "só isso", "mais nada", "é só" — o cliente FECHOU a lista; hora de mostrar o total.
 const DONE_RE =
@@ -1696,6 +1707,14 @@ export function detectIntent(text: string): Intent {
     return { kind: "remove_item", target, ...(andAdd ? { andAdd } : {}) };
   }
 
+  // "não quero a vela, tira" / "a vela, pode tirar" (10/10, rodada 5 A1): o verbo de tirar vem no FIM.
+  const trailingRemove = n.match(/^((?:nao|n) quero (?:mais )?)?(?:o |a |os |as )?(.+?)\s*(,)?\s+(?:pode\s+)?(?:tira|tirar|remove|remover|tirar fora|tira fora)(?:\s+(?:ela|ele|elas|eles|isso|essa|esse|fora|da lista|da cesta|pra mim))?[\s!.]*$/);
+  if (trailingRemove && (trailingRemove[1] || trailingRemove[3]) && !/\?/.test(text)) {
+    trailingRemove[1] = trailingRemove[2];
+    const target = cleanItemPhrase(trailingRemove[1]);
+    if (target && !/^(pedido|compra|entrega|tudo|nada|isso|essa|esse|ela|ele)$/.test(target) && target.split(/\s+/).length <= 5) return { kind: "remove_item", target };
+  }
+
   // "não quero mais o guaraná" / "quero cancelar o arroz" — a remove verb buried
   // mid-sentence still targets ONE item, not the whole cart/order.
   const cancelItem = n.match(/\b(?:nao quero mais|quero (?:cancelar|tirar|remover)|pode (?:tirar|remover))\s+(?:o |a |os |as )?(.+)$/);
@@ -1830,7 +1849,8 @@ export function isAngerSwear(normalized: string): boolean {
 
 export function isQuestion(text: string): boolean {
   const n = normalizeMsg(text);
-  return /\?\s*$/.test(n) || /^(quanto|quanta|qual|quais|como|quando|onde|por que|pq|sera que|tem como|voce tem|vcs tem|tem)\b/.test(n);
+  // "oq vcs vendem" (10/10, rodada 5 A2): pergunta sobre o serviço sem "?" virava item.
+  return /\?\s*$/.test(n) || /^(quanto|qto|quanta|qual|quais|como|quando|onde|por que|pq|sera que|tem como|voce tem|vcs tem|tem)\b/.test(n) || /^(o que|oq|oque|q) (e que )?(voce|voces|vc|vcs|ce|ces) (vende\w*|tem|faz\w*|entrega\w*|compra\w*|trabalha\w*)\b/.test(n);
 }
 
 // Strip articles/politeness from an item phrase ("o arroz da cesta pff" -> "arroz").
@@ -2001,7 +2021,7 @@ export type ChoiceReply =
   // compras anteriores do cliente.
   | { type: "previous" }
   // Texto que nomeia UMA opção (marca/nome): estreita, não escolhe (04/09).
-  | { type: "name"; index: number }
+  | { type: "name"; index: number; qty?: number }
   | { type: "any" }
   | { type: "cheapest" }
   // "mais barato"/"mais caro" SEM verbo de escolha: o cliente quer VER opções nessa
@@ -2046,6 +2066,7 @@ export function parseChoiceReply(text: string, options: { name: string; unitPric
   if (withQty) {
     const inner = parseChoiceReply(withQty.rest, options);
     if (inner?.type === "pick") return { type: "pick", index: inner.index, qty: withQty.qty };
+    if (inner?.type === "name") return { type: "name", index: inner.index, qty: withQty.qty };
     if (inner?.type === "cheapest") {
       const idx = options.reduce((best, o, i) => (o.unitPrice < options[best].unitPrice ? i : best), 0);
       return { type: "pick", index: idx, qty: withQty.qty };
@@ -2391,7 +2412,8 @@ export function parseAvailabilityAsk(text: string): string | null {
   );
   if (!m) return null;
   const item = m[1].trim();
-  if (SERVICE_ASK_NOUNS.test(item) || /^(?:em|no|na|pra|para|aqui|hoje|amanha|domingo|sabado)\b/.test(item)) return null;
+  // "tem q dar cep antes?" / "tem que pagar antes?" é obrigação, não disponibilidade (10/10, rodada 5 A2).
+  if (SERVICE_ASK_NOUNS.test(item) || /^(?:em|no|na|pra|para|aqui|hoje|amanha|domingo|sabado|q|que|k|de|como|jeito)\b/.test(item)) return null;
   // Devolve com a grafia do cliente (acento): as últimas palavras da mensagem original.
   const words = text.replace(/[?!.]+\s*$/g, "").trim().split(/\s+/);
   const k = item.split(" ").length;
@@ -2430,6 +2452,40 @@ function qtyCore(n: string): string {
 // "muda pra 6", "quero só 1" → set; "tira um", "põe mais um", "mais 2" → delta. O número seco
 // ("2") continua sendo o intent `number`. "um"/"uma" com verbo comum ("coloca um") fica de
 // fora: costuma ser começo de pedido, não quantidade.
+// Pedido de juntar as entregas por texto (10/10, rodada 5 A4): "sim junta", "junta tudo na mambo", "junta em menos lojas
+// pra mim", "tudo na mesma loja", "tem como juntar tudo numa loja só pra ficar mais barato o frete?", "quero trocar
+// tudo pelos equivalentes da mambo". `store` = a loja nomeada (das conhecidas). null = não é pedido de juntar.
+const JOIN_VERB_RE = /\b(?:junt(?:a|ar|e|em|o|ando|aria)|agrupa\w*|unifica\w*)\b/;
+const ONE_STORE_RE = /\b(?:(?:numa|em uma|uma|na mesma|da mesma|mesma) loja(?: so| soh| unica)?|loja (?:so|unica)|menos (?:lojas|entregas|fretes?)|(?:um|uma|num|numa) (?:frete|entrega|pedido) so|(?:frete|entrega) unic[ao]|equivalentes? d[aeo])\b/;
+const JOIN_NOT_RE = /\b(?:nao|n)\s+(?:quero\s+|precisa\s+|vou\s+)?junt|\bsem juntar\b|\bseparad[oa]s?\b|\bjunto com\b|\bjunto d[aeo]\b/;
+export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 160 || JOIN_NOT_RE.test(n)) return null;
+  const store = knownLabels.find((label) => {
+    const l = normalizeMsg(label).trim();
+    const head = l.split(/\s+/).filter((w) => w.length >= 4 && !/^(casa|loja|lojas|farmacia|drogaria|supermercado|mercado)$/.test(w))[0];
+    return (l.length >= 4 && new RegExp(`\\b${l}\\b`).test(n)) || (head ? new RegExp(`\\b${head}\\b`).test(n) : false);
+  });
+  const asks = JOIN_VERB_RE.test(n) || ONE_STORE_RE.test(n) || (Boolean(store) && /\b(?:tudo|todos|todas)\b/.test(n) && /\b(?:troca\w*|passa\w*|muda\w*|compra\w*|pede|pedir|manda\w*)\b|^(?:tudo|todos|todas) (?:na|da|pela)\b/.test(n));
+  if (!asks) return null;
+  return store ? { store } : {};
+}
+
+// Quantidade de um item NOMEADO numa cláusula de edição (10/10, rodada 5 M5/M6): "muda o guardanapo pra 4",
+// "a fralda é só 1 pacote", "o bolo eram 3", "deixa o leite pra 2". Quem confere se o item está na cesta é o cérebro.
+const ITEM_QTY_EDIT_RE =
+  /^(?:(?:na real|na verdade|ah|e)\s+)?(?:(?:muda|mudar|altera|alterar|ajusta|deixa|deixar|coloca|bota|poe)\s+)?(?:(?:o|a|os|as)\s+)?(.+?)\s+(?:pra|para|(?:e|eh|fica|ficam|sao|era|eram)\s+(?:so|soh|somente|apenas)|(?:e|eh|fica|ficam|sao|era|eram)|so|somente|apenas)\s+(\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis)(?:\s+(?:pacotes?|unidades?|un|caixas?|latas?|garrafas?|potes?|vidros?|kits?|x))?[\s!.]*$/;
+export function parseItemQtyEdit(text: string): { phrase: string; qty: number } | null {
+  const n = normalizeMsg(text);
+  const m = n.match(ITEM_QTY_EDIT_RE);
+  if (!m) return null;
+  const phrase = m[1].replace(/\b(o|a|os|as)\b/g, " ").replace(/\s+/g, " ").trim();
+  const words: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6 };
+  const qty = /^\d+$/.test(m[2]) ? Number(m[2]) : words[m[2]];
+  if (!phrase || !qty || qty > 50 || phrase.split(/\s+/).length > 5) return null;
+  return { phrase, qty };
+}
+
 export function parseQtyCommand(text: string): { set: number } | { delta: number } | null {
   const core = qtyCore(normalizeMsg(text));
   if (!core) return null;
@@ -2509,6 +2565,12 @@ function splitChoiceQty(n: string): { qty: number; rest: string } | null {
   if (back) {
     const qty = qtyValue(back[2]);
     if (qty) return { qty, rest: back[1].replace(/[,;\s]+$/, "").trim() };
+  }
+  // "o bolo gotas de chocolate, 3" (10/10, rodada 5 M4): número solto depois da vírgula também é a quantidade.
+  const comma = n.match(new RegExp(`^(.+?)\\s*[,;]\\s*${QTY_N}$`));
+  if (comma) {
+    const qty = qtyValue(comma[2]);
+    if (qty) return { qty, rest: comma[1].trim() };
   }
   return null;
 }
@@ -2602,6 +2664,22 @@ export function parseStoreReference(
   return known ? { label: known, indices: [] } : null;
 }
 
+// Loja pedida para a LISTA TODA (10/10, rodada 5 M9): "da cobasi tudo", "tudo da pague menos se der", "quero tudo
+// na mambo", "a lista toda da drogasil". Só com marcador de totalidade E a loja citada com preposição; a loja de um
+// item só ("areia pra gato da cobasi") não conta. Devolve o nome da loja como está em `labels`.
+const WHOLE_LIST_RE = /\b(?:tudo|todos(?: os itens)?|todas(?: as coisas)?|(?:a )?lista (?:toda|inteira)|toda a lista)\b/;
+export function parseWholeListStore(text: string, labels: string[]): string | null {
+  const n = normalizeMsg(text).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.split(" ").length > 14 || !WHOLE_LIST_RE.test(n)) return null;
+  for (const label of labels) {
+    const l = normalizeMsg(label).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    if (l.length < 4) continue;
+    const near = new RegExp(`(?:\\b(?:tudo|todos|todas|lista toda|lista inteira|toda a lista)\\b(?: [a-z]+){0,2} (?:d[oa]s?|na|no|de|pela|pelo)(?: loja| farmacia| mercado)? ${l}\\b|\\b(?:d[oa]s?|na|no|de|pela|pelo)(?: loja| farmacia| mercado)? ${l}(?: [a-z]+){0,1} (?:tudo|todos|todas)\\b)`);
+    if (near.test(n)) return label;
+  }
+  return null;
+}
+
 // "qual o horário de vocês?", "vcs abrem que horas?", "funcionam domingo?" (09/10): horário de
 // ATENDIMENTO, não prazo de entrega — antes caía no texto de prazo. "que horas chega" segue prazo.
 const HOURS_ASK_RE = /\b(?:horario (?:de (?:atendimento|funcionamento)|de (?:voces|vcs?)|(?:voces|vcs?) (?:atende\w*|funciona\w*|abre\w*))|que horas (?:voces|vcs?) (?:abre\w*|fecha\w*|atende\w*|funciona\w*)|(?:voces|vcs?) (?:abre\w*|fecha\w*|funciona\w*) (?:que horas|ate que horas|domingo|feriado|sabado|de madrugada|a noite)|ate que horas (?:voces|vcs?)|(?:abre\w*|funciona\w*) (?:domingo|feriado|sabado|de madrugada))\b|^(?:e |qual )?(?:o )?horario\??$/;
@@ -2630,6 +2708,8 @@ export function answerOpenQuestion(question: string, text: string): string | nul
   const head = parts[0]
     .replace(/^(?:ah |entao |ai |hm+ )?(?:eh |e )?(?:o |a |os |as |um |uma |de )?/, "")
     .replace(/\b(?:mesmo|mesma|por favor|pf|pfv|pode ser|quero|prefiro|queria|vou querer|ai|isso)\b/g, " ")
+    // "pode ser o integral" (10/10, rodada 5 g16): sem o trim antes, o artigo sobrava ("leite o integral").
+    .trim()
     .replace(/^(?:o |a |os |as |de |do |da )+/, "")
     .replace(/\s+/g, " ")
     .trim();

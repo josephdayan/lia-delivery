@@ -66,7 +66,7 @@ function streetStart(text: string): number {
   return -1;
 }
 
-const FILLER_ONLY_RE = /^(?:na verdade|entao|bom|ok|certo|sim|obrigad\w*|por favor|pfv|pf|valeu|e|ai|tchau|bjs?|beijos?|abs|abraco)?$/;
+const FILLER_ONLY_RE = /^(?:na verdade|entao|bom|ok|certo|sim|obrigad(?:[oa]s?|inh[oa]s?|ao)|por favor|pfv|pf|valeu|e|ai|tchau|bjs?|beijos?|abs|abraco)?$/;
 
 // Pedido + endereço na mesma mensagem (A1): "quero 2 sabonetes dove e um shampoo seda, entrega
 // em Rua X 221 ap 13 … 01233020", "Rua Augusta 1500, 01305-100. quero arroz e feijão", a mensagem
@@ -335,7 +335,7 @@ export function parsePriceAsk(raw: string): string | null {
     .replace(/^(?:(?:oi+e?|ola|opa|bom dia|boa tarde|boa noite|eai|e ai)\s*[,!.]?\s+)+/, "")
     .trim();
   const m = n.match(
-    /^(?:(?:e\s+)?(?:qual|quanto)\s+(?:e\s+|eh\s+)?(?:o\s+)?(?:preco|valor)\s+d[oae]s?\s+|(?:e\s+)?quanto\s+(?:que\s+)?(?:ta|tá|esta|está|custa|custam|sai|fica|e|eh|vale|ta saindo)\s+(?:o|a|os|as|um|uma)?\s*)(.{2,60})$/
+    /^(?:(?:e\s+)?(?:qual|quanto|qto|qnto)\s+(?:e\s+|eh\s+)?(?:o\s+)?(?:preco|valor)\s+d[oae]s?\s+|(?:e\s+)?(?:quanto|qto|qnto|qnt|qt|quantu)\s+(?:que\s+)?(?:ta|tá|esta|está|custa|custam|sai|fica|e|eh|vale|ta saindo)\s+(?:o|a|os|as|um|uma)?\s*)(.{2,60})$/
   );
   if (!m) return null;
   const item = m[1].replace(/\b(?:ai|aí|hoje|agora|ai com voces|com voces|com vcs)$/, "").trim();
@@ -380,7 +380,7 @@ export function looksLikePersonName(raw: string): boolean {
   const real = words.filter((w) => !/^(da|de|do|dos|das|e)$/i.test(w));
   if (real.length < 2 || real.length > 5) return false;
   if (!real.every((w) => /^\p{Lu}[\p{Ll}'-]+$/u.test(w))) return false;
-  return !/\b(quero|queria|preciso|manda|oi|ola|bom|boa|obrigad\w*|cpf|sim|nao|ok)\b/.test(normalizeMsg(text));
+  return !/\b(quero|queria|preciso|manda|oi|ola|bom|boa|obrigad(?:[oa]s?|inh[oa]s?|ao)|cpf|sim|nao|ok)\b/.test(normalizeMsg(text));
 }
 
 // ---------- o que anotar antes do cadastro (M1 + testadores 06/10) ----------

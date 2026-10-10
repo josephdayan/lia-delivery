@@ -87,9 +87,15 @@ export type PendingChoice = {
   qty: number;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
   storeNoted?: boolean;
+  // A loja pedida para a lista toda (ctx.preferredStore) já foi posta na frente das opções (10/10, rodada 5 M9).
+  storePrioritized?: boolean;
+  // Nome dessa loja, para o aviso "não achei na <loja>" quando a escolha é mostrada.
+  wantedStore?: string;
   // "pra hoje" (04/09): `urgent` = só opções com entrega da loja em menos de 1 dia;
   // `noneToday` = pediu hoje, ninguém entrega hoje — o cabeçalho diz isso e mostra o mais rápido.
   urgent?: boolean;
+  // Dia real das opções urgentes (10/10, rodada 5 g16): ausente = todas chegam hoje; "amanha" = alguma só amanhã.
+  urgentWhen?: "amanha" | "rapido";
   noneToday?: boolean;
   // O cliente DISSE a quantidade ("uma coca", "2 leites") — não re-perguntar depois
   // da escolha; a pergunta de quantidade é só pra pedido sem quantidade.
@@ -115,6 +121,8 @@ export type PendingChoice = {
   // Escolha REABERTA ("Outras opções" depois de já ter escolhido): o novo pick
   // SUBSTITUI esta linha da cesta em vez de somar uma segunda mochila.
   replaceSku?: string;
+  // "troca X por Y" com escolha aberta (10/10, rodada 5 A3): o X que saiu da cesta. Fechar sem escolher o Y devolve o X.
+  swappedOut?: BasketItem[];
   // O pool + a re-busca relaxada já esgotaram: o próximo "outras" pede reformulação
   // em vez de repetir "essas são todas" (27/08 S4).
   exhausted?: boolean;
@@ -154,6 +162,9 @@ export type ListFlowCtx = { id: string; sentAt: number; basketSig: string; slots
 
 export type DeliveryContext = {
   flow?: "delivery";
+  // Loja pedida para a lista TODA ("da cobasi tudo", "tudo da pague menos se der", 10/10, rodada 5 M9): as opções
+  // dela vão na frente e, quando ela não tem o item, a Lia avisa antes das outras.
+  preferredStore?: string;
   step?:
     | "collecting"
     | "need_cep"
@@ -254,7 +265,8 @@ export type DeliveryContext = {
   budget?: { cap: number; sku: string; warned?: boolean; awaiting?: boolean; override?: boolean };
   // Embalagem diferente da pedida (07/10, c28: "12 ovos" → caixa de 20): a Lia pergunta ANTES de pôr
   // na cesta. Guarda a opção e a quantidade pedida; "sim" confirma, "outras" volta às opções.
-  packConfirm?: { sku: string; askedQty: number };
+  // kind "count" (10/10, rodada 5): "3 fraldas" com pacote de 80 — 3 pacotes ou 1 pacote? (total alto).
+  packConfirm?: { sku: string; askedQty: number; kind?: "count" };
   // Últimas falas da Lia (07/10, rodada 2 do plano 100): base da guarda anti-repetição — a mesma
   // mensagem não sai duas vezes seguidas para falas diferentes do cliente (src/lib/dialogue/repeat.ts).
   lastSent?: { texts: string[]; at: number };
@@ -281,6 +293,9 @@ export type DeliveryContext = {
   // da escolha reabrem ela — o toque num card antigo não pode cair no "me diz de outro
   // jeito" (teste real 19/08).
   lastChoice?: PendingChoice & { chosenSku: string };
+  // Opções mostradas nas últimas escolhas concluídas (10/10, rodada 5 g16): "troca pelo mais barato" compara também
+  // com o carrossel que o cliente já viu daquele item, não só com uma busca nova.
+  recentShown?: Array<{ sku: string; options: ChoiceOption[] }>;
   // Última TROCA feita pela Lia (09/10, rodada 3): "não, quero o nivea de antes" / "volta o anterior" desfaz a troca
   // (devolve o item tirado à cesta) em vez de virar lista nova. `addedSku` = o que entrou no lugar (troca de 1 opção);
   // `to` = a busca que ficou pendente (várias opções).
@@ -353,7 +368,12 @@ export type DeliveryContext = {
   // Oferta de juntar a cesta numa loja só (09/10, dono: "oferecer, não impor"): a cesta juntada fica
   // guardada até o cliente escolher (botão consolidar:sim / consolidar:nao). `key` = a cesta de quando a
   // oferta saiu; cesta mudou → a oferta morre.
-  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string };
+  // "Fecho sem a vela?" (10/10, rodada 5 A1): "fecha" com item ainda em escolha e cesta montada. Vale 1 resposta.
+  closeWithoutOffer?: { queries: string[]; at: number };
+  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string; joinedStores?: number };
+  // Oferta de juntar que saiu da mesa por outra mensagem (10/10, rodada 5 M1): "1"/"juntar" logo depois, com a MESMA
+  // cesta, ainda responde a ela — antes o "1" virava quantidade do leite.
+  consolidationParked?: DeliveryContext["consolidationOffer"];
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

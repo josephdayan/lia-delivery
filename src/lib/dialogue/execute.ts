@@ -77,16 +77,23 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
     }
   }
 
-  for (let i = 0; i < steps.length; i++) {
-    const nextIsSearch = steps[i + 1]?.type === "search";
-    const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick" });
-    if (result === "invalid") {
-      // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
-      // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
-      return i === 0 && !reopened ? { kind: "fallthrough", reason: `passo_invalido:${describe(steps[i])}` } : { kind: "handled", actions: label };
+  // Várias edições numa mensagem: o total sai uma vez, depois da última (10/10, rodada 5 M2/M6).
+  let outcome: PlanOutcome = { kind: "handled", actions: label };
+  const runAll = async () => {
+    for (let i = 0; i < steps.length; i++) {
+      const nextIsSearch = steps[i + 1]?.type === "search";
+      const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick" });
+      if (result === "invalid") {
+        // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
+        // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
+        outcome = i === 0 && !reopened ? { kind: "fallthrough", reason: `passo_invalido:${describe(steps[i])}` } : { kind: "handled", actions: label };
+        return;
+      }
     }
-  }
-  return { kind: "handled", actions: label };
+  };
+  if (steps.length >= 2 && editing) await env.h.runDeferredEdits(phone, convoId, ctx, userCep, runAll);
+  else await runAll();
+  return outcome;
 }
 
 function moreText(sort: "next" | "cheaper" | "pricier"): string {
@@ -377,7 +384,7 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
   if (dropped) notes.push(copy.choiceSkipped(dropped));
   if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
   // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-  if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => p.query)));
+  if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
   await h.sendChoices(phone, ctx.pending[0]);

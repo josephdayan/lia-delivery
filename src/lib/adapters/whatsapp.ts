@@ -745,10 +745,11 @@ export const whatsappAdapter = {
   },
 
   // Oferta de juntar a cesta numa loja só (09/10): o toque volta como `consolidar:sim` / `consolidar:nao`.
-  async sendConsolidationOffer(to: string, body: string, storeLabel: string, stores: number) {
+  async sendConsolidationOffer(to: string, body: string, storeLabel: string, stores: number, joinedStores = 1) {
     if (process.env.WHATSAPP_PROVIDER !== "meta") return null;
     return sendMetaSimpleButtons(to, body, [
-      { id: "consolidar:sim", title: consolidationYesTitle(storeLabel) },
+      // Juntar em menos lojas (10/10, rodada 5 A4): "Juntar em 2 lojas".
+      { id: "consolidar:sim", title: joinedStores > 1 ? `Juntar em ${joinedStores} lojas` : consolidationYesTitle(storeLabel) },
       { id: "consolidar:nao", title: `Manter ${stores} lojas`.slice(0, 20) }
     ]);
   },

@@ -245,7 +245,7 @@ test("09/10: juntar lojas — 'exclude' pula a loja que recusou a cesta e tenta 
     { sku: "mambo-a", name: "Pão de Forma Tradicional Bauducco 390g", qty: 1, unitPrice: 5.9, lineTotal: 5.9, storeKey: "mambo", storeLabel: "Mambo", ask: "pão de forma" }
   ] as never[];
   const free = await consolidateBasketStores({ basket });
-  const skipped = await consolidateBasketStores({ basket }, { exclude: free ? [free.storeKey] : ["carrefour"] });
+  const skipped = await consolidateBasketStores({ basket }, { exclude: free ? [free.storeKey!] : ["carrefour"] });
   if (free) assert.ok(!skipped || skipped.storeKey !== free.storeKey, `voltou à loja excluída: ${skipped?.storeKey}`);
   assert.ok(free === null || typeof free.storeKey === "string");
 });
