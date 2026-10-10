@@ -204,6 +204,9 @@ export function expandShoppingShorthand(text: string): string {
     // Abreviações de produto (09/10, rodada 1: "req. tirolez" virava o item "req" → "não achei" e depois achava).
     .replace(/\breq\b\.?/gi, "requeijão")
     .replace(/\bcerva\b/gi, "cerveja")
+    // "2 cx leite ninho", "1 pct de fralda" (10/10, rodada 5 B2): unidade abreviada não é palavra do produto.
+    // Sai a abreviação (e o "de" logo depois): "2 cx leite ninho" = 2 leite ninho; a busca por "caixa" trazia bombom.
+    .replace(/\b(?:cxs?|pcts?)\b\.?\s+(?:de\s+|do\s+|da\s+)?(?=\S)/gi, "")
     // (09/10, rodada 2) abreviação com ponto vira palavra inteira; sem o ponto "mac"/"ref" podem ser outra coisa.
     .replace(/\bpres\./gi, "presunto")
     .replace(/\bref\./gi, "refrigerante")

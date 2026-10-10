@@ -300,6 +300,34 @@ test("M13: 'quanto ficou o frete de cada loja?' com o total na mesa responde por
   assert.match(out, /menos lojas/, out.slice(0, 400));
 });
 
+// Baixas -----------------------------------------------------------------------------------------------------
+test("B1: nome SEO com a 2ª metade repetindo a 1ª em outra ordem é limpo", async () => {
+  const { dedupeProductName } = await import("../src/lib/delivery-service");
+  assert.equal(
+    dedupeProductName("Bombom Chocolate ao Leite Ferrero Rocher 8 Unidades 100g Caixa com Avelã Inteira Bombom Ferrero Rocher Chocolate ao Leite 8 Unidades 100g"),
+    "Bombom Chocolate ao Leite Ferrero Rocher 8 Unidades 100g Caixa com Avelã Inteira"
+  );
+  assert.equal(dedupeProductName("Kit Shampoo Kit Condicionador"), "Kit Shampoo Kit Condicionador");
+  assert.equal(dedupeProductName("Sabonete Dove Original 90g Sabonete Hidratante"), "Sabonete Dove Original 90g Sabonete Hidratante");
+});
+
+test("B2: 'cx'/'pct' abreviado não entra no produto; 'sem lactose' não é a versão básica", async () => {
+  const { expandShoppingShorthand } = await import("../src/lib/lia-intents");
+  const { variantPenalty } = await import("../src/lib/stores/types");
+  assert.equal(expandShoppingShorthand("2 cx leite ninho"), "2 leite ninho");
+  assert.equal(expandShoppingShorthand("1 pct de fralda"), "1 fralda");
+  assert.ok(variantPenalty("leite ninho", "Leite Integral Forti+ Sem Lactose Ninho 1L") > variantPenalty("leite ninho", "Leite Integral Forti+ Ninho 1L"));
+  assert.equal(variantPenalty("leite ninho sem lactose", "Leite Integral Forti+ Sem Lactose Ninho 1L"), variantPenalty("leite ninho", "Leite Integral Forti+ Ninho 1L"));
+});
+
+test("B4: o nome da loja não entra no nome do item que o cliente lê", async () => {
+  const { withoutStoreMention } = await import("../src/lib/delivery-service");
+  assert.equal(withoutStoreMention("areia pra gato da cobasi"), "areia pra gato");
+  assert.equal(withoutStoreMention("chocolate da Kopenhagen"), "chocolate da Kopenhagen", "loja que é a marca fica");
+  assert.equal(withoutStoreMention("shampoo infantil da mambo"), "shampoo infantil");
+  assert.equal(withoutStoreMention("leite ninho"), "leite ninho");
+});
+
 test("M11: 'Não achei X' com a vitrine ainda na tela é uma mensagem só, sem 'O que eu tenho é isso:' no ar", () => {
   const t = copy.refineNoResultAbove("perfume feminino nivea", "perfume feminino");
   assert.match(t, /Não achei \*perfume feminino nivea\*/);

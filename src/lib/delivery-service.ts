@@ -898,7 +898,9 @@ export function dedupeProductName(name: string): string {
     const a = new Set(words.slice(0, i).map((w) => normalizeMsg(w)));
     const b = new Set(words.slice(i).map((w) => normalizeMsg(w)));
     const common = [...b].filter((w) => a.has(w)).length;
-    if (common / Math.max(a.size, b.size) >= 0.7) return words.slice(0, i).join(" ");
+    // A 2ª metade inteira repete a 1ª com outra ordem ("Bombom ... Ferrero Rocher 8 Unidades 100g Caixa com Avelã Inteira
+    // Bombom Ferrero Rocher Chocolate ao Leite 8 Unidades 100g", 10/10, rodada 5 B1): também é nome duplicado.
+    if (common / Math.max(a.size, b.size) >= 0.7 || (b.size >= 4 && common / b.size >= 0.85)) return words.slice(0, i).join(" ");
   }
   return name;
 }
@@ -1094,7 +1096,19 @@ function vitrineLimit(): number {
 
 // Nome do item nos cabeçalhos ("Agora *Omo*"): a digitação errada do cliente não volta como está (09/10, rodada 1).
 function shownQuery(p: PendingChoice): string {
-  return displayQueryName(p.query, p.options);
+  return displayQueryName(withoutStoreMention(p.query), p.options);
+}
+
+// "areia pra gato da cobasi" (10/10, rodada 5 B4): a loja é preferência, não nome do item — some do que o cliente lê
+// ("Anotei *areia pra gato*", "Agora *areia pra gato*"). A busca continua com a frase inteira.
+function withoutStoreMention(query: string): string {
+  let out = query;
+  for (const name of mentionableStoreNames()) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`\\s+(?:d[aoe]s?|na|no|pela|pelo)\\s+(?:loja\\s+)?${escaped}(?=$|[\\s,.!?])`, "i"), "");
+  }
+  // Uma palavra só sobrando ("chocolate da Kopenhagen"): a loja é a própria marca, fica.
+  return out.trim().split(/\s+/).length >= 2 ? out.trim() : query;
 }
 
 function choicesHeaderFor(p: PendingChoice): string {
@@ -6440,7 +6454,7 @@ async function handleChoosing(
     ctx.pending = [...(ctx.pending ?? []), ...added.pending];
     await writeCtx(convoId, ctx);
     const notes: string[] = [];
-    if (added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => p.query)));
+    if (added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => withoutStoreMention(p.query))));
     if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
     if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
     if (notes.length) await reply(phone, notes.join("\n"));
@@ -6869,7 +6883,7 @@ async function handleChoosing(
       await writeCtx(convoId, ctx);
       const notes: string[] = [];
       if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
-      if (others.length) notes.push(copy.queuedItemsNote(others.map((pending) => pending.query)));
+      if (others.length) notes.push(copy.queuedItemsNote(others.map((pending) => withoutStoreMention(pending.query))));
       if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
       if (notes.length) await reply(phone, notes.join("\n"));
       await sendChoices(phone, current, copy.narrowedChoices(current.query));
@@ -6906,7 +6920,7 @@ async function handleChoosing(
       if (dropped) notes.push(copy.choiceSkipped(dropped));
       if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
       // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-      if (!pivot && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => p.query)));
+      if (!pivot && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => withoutStoreMention(p.query))));
       if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
       if (notes.length) await reply(phone, notes.join("\n"));
       await sendChoices(phone, ctx.pending![0]);
@@ -10316,7 +10330,8 @@ export const dialogueHandlers = {
   advancePending,
   sendChoices,
   mergeBaskets,
-  refuseMedicine
+  refuseMedicine,
+  withoutStoreMention
 };
 
 // Recomendação (08/10): a execução (recommend/handle.ts) reusa a vitrine daqui sem import circular.
@@ -10329,4 +10344,4 @@ setRecommendDeps({
 });
 
 // Expostos só para os testes (rodada 3, g8).
-export { sameSubtypeForCheaper, requestedStoreMissing, isUndoSwapText };
+export { sameSubtypeForCheaper, requestedStoreMissing, isUndoSwapText, withoutStoreMention };

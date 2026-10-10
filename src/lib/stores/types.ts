@@ -1211,7 +1211,9 @@ const VARIANT_MARKERS = new Set([
   "hortela", "caramelo", "canela", "tangerina", "abacaxi", "kiwi", "pitaya", "goiaba", "sugarfree", "sugar",
   "zero", "diet", "light", "edition", "edicao", "summer", "winter", "rose", "pink", "citrus", "mix", "kids",
   "infantil", "shoot", "sprite", "tonic", "tonica", "aromatizada", "saborizada", "sabor", "vitaminas",
-  "proteina", "veggies", "blend", "special", "doce", "white", "black", "gold", "premium", "reserva"
+  "proteina", "veggies", "blend", "special", "doce", "white", "black", "gold", "premium", "reserva",
+  // "leite ninho" sem pedir "sem lactose" (10/10, rodada 5 B2): a versão sem lactose não é a básica.
+  "lactose"
 ]);
 const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
 export function variantPenalty(query: string, name: string): number {

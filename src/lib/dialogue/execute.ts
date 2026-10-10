@@ -358,7 +358,7 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
   if (dropped) notes.push(copy.choiceSkipped(dropped));
   if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
   // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-  if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => p.query)));
+  if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
   await h.sendChoices(phone, ctx.pending[0]);
