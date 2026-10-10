@@ -2248,6 +2248,19 @@ async function handleDeliveryTurn(
     const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
     if (joinAsk && (await handleJoinRequest(phone, convo.id, user.cep, ctx, joinAsk.store))) return;
   }
+  // Mesmo pedido com itens ainda em escolha (10/10, rodada 6 g19: "tudo numa loja so" virava pergunta aberta da IA e o
+  // "sim" seguinte ia ao resumo com as 4 entregas). Anota e junta no fechamento; a escolha na tela continua.
+  if (!ctx.consolidationOffer && ctx.pending?.length && ctx.step === "choosing") {
+    const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    if (joinAsk) {
+      ctx.joinWanted = { ...(joinAsk.store ? { store: joinAsk.store } : {}), at: Date.now() };
+      if (joinAsk.store) ctx.preferredStore = joinAsk.store;
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.joinNotedForClose(joinAsk.store));
+      await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
+      return;
+    }
+  }
 
   // Motivo do cancelamento (06/10): o toque na lista (ou número/palavra curta logo depois de
   // perguntar) vira nota no pedido cancelado. Pergunta vale 30 min e UMA resposta; qualquer
@@ -3701,6 +3714,19 @@ async function handleDeliveryTurn(
     if (vagueOk && offer.key === key && !keep) {
       await reply(phone, copy.consolidationAsk());
       return;
+    }
+    // "junta tudo na cobasi" com a oferta de outra junção na mesa (10/10, rodada 6 g19: aceitava a de 2 lojas calado):
+    // a loja pedida manda — junta nela e diz o que ficou fora.
+    const named = offer.key === key && !keep ? parseJoinStoresAsk(text, listStores().map((store) => store.label))?.store : undefined;
+    if (named && (normalizeMsg(named) !== normalizeMsg(offer.storeLabel) || (offer.joinedStores ?? 1) > 1)) {
+      // A oferta de antes fica guardada (resposta "1"/"2" logo depois ainda vale) enquanto a loja pedida é tentada.
+      ctx.consolidationOffer = undefined;
+      ctx.consolidationParked = offer;
+      if (await handleJoinRequest(phone, convo.id, user.cep, ctx, named)) {
+        if (ctx.consolidationParked) await writeCtx(convo.id, ctx);
+        return;
+      }
+      ctx.consolidationParked = undefined;
     }
     ctx.consolidationOffer = undefined;
     if (offer.key === key && (join || keep)) {
@@ -10156,7 +10182,8 @@ async function handleJoinRequest(phone: string, convoId: string, userCep: string
   const view: DeliveryContext = { ...ctx, basket };
   const joined = await planConsolidation(view, userCep, target ? { target: target.key } : { fewer: true });
   if (!joined) {
-    await reply(phone, copy.joinNotPossible(stores, target?.label));
+    const others = target && basket.some((i) => i.storeKey === target.key) ? basket.filter((i) => i.storeKey !== target.key).map((i) => i.name) : [];
+    await reply(phone, target && others.length ? copy.joinTargetLacksOthers(target.label, others, stores, Boolean(ctx.consolidationParked)) : copy.joinNotPossible(stores, target?.label));
     return true;
   }
   // Total na mesa: reabre (nada cobrado) antes de mexer na cesta.
@@ -10287,6 +10314,16 @@ async function continueAfterBasket(
     // Uma loja por pedido (08/10 noite): lista espalhada em várias lojas é juntada numa só ANTES do
     // pedido mínimo (juntar costuma resolver o mínimo também). A troca nunca é silenciosa.
     const tried = (ctx.basket ?? []).map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+    // Pedido de juntar feito durante as escolhas (10/10, rodada 6 g19): vale agora, como se dito no fechamento.
+    if (ctx.joinWanted && new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1) {
+      const wanted = ctx.joinWanted;
+      ctx.joinWanted = undefined;
+      if (Date.now() - wanted.at < 2 * 60 * 60_000) {
+        if (prefix) await reply(phone, prefix);
+        if (await handleJoinRequest(phone, convoId, userCep, ctx, wanted.store)) return;
+        prefix = undefined;
+      }
+    }
     if (new Set((ctx.basket ?? []).map((i) => i.storeKey)).size > 1 && ctx.consolidationTried !== tried) {
       ctx.consolidationTried = tried;
       // 3+ lojas sem uma que cubra tudo: oferece juntar em MENOS lojas (10/10, rodada 5 A4 — antes só a frase passiva

@@ -1974,6 +1974,17 @@ export function joinNotPossible(stores: number, storeLabel?: string): string {
     ? `A *${storeLabel}* não tem nenhum desses itens pra entregar aí — mantive as ${stores} lojas. Se quiser, me diz qual item trocar.`
     : `Não achei os mesmos itens em menos lojas pra entregar aí — cada loja tem uma parte que as outras não têm. Mantive as ${stores} entregas; se quiser, me diz qual item tirar ou trocar.`;
 }
+// "tudo numa loja só" com itens ainda por escolher (10/10, rodada 6 g19): anota e junta no fechamento.
+export function joinNotedForClose(storeLabel?: string): string {
+  return storeLabel
+    ? `Combinado: quando terminar de escolher, eu passo o que der pra *${storeLabel}* e te mostro o que mudou antes do total.`
+    : "Combinado: quando terminar de escolher, eu junto tudo no menor número de lojas e te mostro o que muda antes do total.";
+}
+// "junta tudo na Cobasi" quando a Cobasi já tem parte da cesta e nenhum dos outros itens (10/10, rodada 6 g19: dizia
+// "não tem nenhum desses itens" com a ração da Cobasi na cesta).
+export function joinTargetLacksOthers(storeLabel: string, others: string[], stores: number, offerOpen = false): string {
+  return `A *${storeLabel}* não tem ${others.map((n) => `*${n}*`).join(", ")} pra entregar aí — por isso mantive as ${stores} lojas. ${offerOpen ? "A junção em menos lojas de cima continua valendo: responde *1* pra juntar ou *2* pra manter." : "Se quiser, me diz qual item trocar ou tirar."}`;
+}
 export function joinAlreadyOneStore(storeLabel: string, asked?: string): string {
   return asked ? `Já está tudo numa loja só, a *${storeLabel}*. Quer trocar algum item pra *${asked}*? Me diz qual.` : `Já está tudo numa loja só, a *${storeLabel}* — uma entrega.`;
 }

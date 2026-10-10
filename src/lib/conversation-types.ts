@@ -379,6 +379,9 @@ export type DeliveryContext = {
   // Oferta de juntar que saiu da mesa por outra mensagem (10/10, rodada 5 M1): "1"/"juntar" logo depois, com a MESMA
   // cesta, ainda responde a ela — antes o "1" virava quantidade do leite.
   consolidationParked?: DeliveryContext["consolidationOffer"];
+  // "tudo numa loja só" dito no meio das escolhas (10/10, rodada 6 g19): no fechamento, a Lia junta (na loja pedida, se
+  // houver) em vez de perguntar de volta. `at` = quando foi pedido.
+  joinWanted?: { store?: string; at: number };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

@@ -118,3 +118,39 @@ test("oferta de juntar com prazo dito: a forma que não chega a tempo é dita na
   const body = copy.consolidationOffer({ storeLabel: "Drogal", joinedTotal: 80, keptTotal: 90, keptStores: 2, pairs: [], joinedEta: "prazo da loja: 4 dias úteis", keptEta: "prazo da loja: 1 dia útil", deadlineNote: copy.consolidationDeadlineNote("amanhã", true, false, "prazo da loja: 4 dias úteis") });
   assert.match(body, /não chega a tempo[\s\S]*Qual prefere/);
 });
+
+// 2) Juntar lojas pedido no meio das escolhas: anota e junta no fechamento (antes: pergunta aberta da IA) -------------
+test("'tudo numa loja so' com item ainda em escolha: anota o pedido de juntar e mantém a escolha na tela", async (t) => {
+  if (!dbOk) return t.skip();
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const pending = [{ query: "feijão", qty: 1, options: [{ sku: "x1", name: "Feijão Carioca 1kg", unitPrice: 8, storeKey: "carrefour", storeLabel: "Carrefour" }, { sku: "x2", name: "Feijão Preto 1kg", unitPrice: 9, storeKey: "carrefour", storeLabel: "Carrefour" }] }];
+  for (const msg of ["tudo numa loja so", "tudo na mesma loja"]) {
+    const c = await customerWith({ basket: [arroz], pending }, "choosing");
+    const out = await send(c.phone, msg);
+    assert.match(out, /quando terminar de escolher, eu junto tudo/, `${msg} :: ${out.slice(0, 400)}`);
+    assert.match(out, /feijão/i);
+    const ctx = await ctxOf(c.convoId);
+    assert.ok(ctx.joinWanted, msg);
+    assert.equal(ctx.pending?.length, 1);
+  }
+});
+
+test("'junta tudo na X' sem os outros itens na X: diz quais itens a loja não tem", () => {
+  assert.match(copy.joinTargetLacksOthers("Cobasi", ["Sabonete Dove", "Protetor FPS 30"], 3), /A \*Cobasi\* não tem \*Sabonete Dove\*, \*Protetor FPS 30\*.*mantive as 3 lojas/);
+});
+
+test("'sim' puro na oferta de juntar: diz o que trocou antes de qualquer pagamento", async (t) => {
+  if (!dbOk) return t.skip();
+  const arroz = await item("arroz branco camil 5kg", "carrefour", 1, /Camil.*5kg/i);
+  const sab = { sku: "g19-sab", name: "Sabonete Dove 90g", qty: 1, unitPrice: 7.14, lineTotal: 7.14, storeKey: "mambo", storeLabel: "Mambo" } as BasketItem;
+  const swapped = { ...sab, sku: "g19-sab2", name: "Sabonete Dove Pele Sensível 90g", unitPrice: 5.71, lineTotal: 5.71, storeKey: "carrefour", storeLabel: "Carrefour" } as BasketItem;
+  const basket = [arroz, sab];
+  const key = basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
+  const offer = { key, basket: [arroz, swapped], storeLabel: "Carrefour", stores: 2, pairs: [{ fromName: sab.name, fromPrice: 7.14, toName: swapped.name, toPrice: 5.71 }], delta: -1.43, joinedTotal: 30, keptTotal: 40 };
+  const c = await customerWith({ basket, consolidationOffer: offer });
+  const out = await send(c.phone, "sim");
+  assert.match(out, /Juntei tudo na \*Carrefour\*[\s\S]*Sabonete Dove 90g[\s\S]*Pele Sensível/, out.slice(0, 600));
+  const juntei = out.indexOf("Juntei");
+  const pay = out.search(/Como prefere pagar|Escolhe abaixo como quer pagar/);
+  assert.ok(pay < 0 || juntei < pay, out.slice(0, 600));
+});
