@@ -338,12 +338,18 @@ export function parsePriceAsk(raw: string): string | null {
     /^(?:(?:e\s+)?(?:qual|quanto|qto|qnto)\s+(?:e\s+|eh\s+)?(?:o\s+)?(?:preco|valor)\s+d[oae]s?\s+|(?:e\s+)?(?:quanto|qto|qnto|qnt|qt|quantu)\s+(?:que\s+)?(?:ta|tá|esta|está|custa|custam|sai|fica|e|eh|vale|ta saindo)\s+(?:o|a|os|as|um|uma)?\s*)(.{2,60})$/
   );
   if (!m) return null;
-  const item = m[1].replace(/\b(?:ai|aí|hoje|agora|ai com voces|com voces|com vcs)$/, "").trim();
+  // "quanto custa o sabão em pó omo? antes de eu me cadastrar" (10/10, rodada 11 M3): o item termina na pergunta; o que vem
+  // depois do "?" é conversa — virava "sabão em pó omo? antes de eu me cadastrar" e um 2º item.
+  const cut = m[1].split(/\s*[?!]+\s*/)[0];
+  const item = cut.replace(/\b(?:ai|aí|hoje|agora|ai com voces|com voces|com vcs)$/, "").trim();
   if (!item || PRICE_SERVICE_NOUN_RE.test(item)) return null;
-  // Com a grafia do cliente: as últimas palavras da mensagem original.
+  // Com a grafia do cliente: as palavras da mensagem original na posição do item.
   const words = (raw ?? "").replace(/[?!.]+\s*$/g, "").trim().split(/\s+/);
   const k = item.split(" ").length;
-  return words.length >= k ? words.slice(-k).join(" ") : item;
+  const tail = m[1].split(" ").length - k;
+  const end = words.length - Math.max(0, tail);
+  const picked = end >= k ? words.slice(end - k, end).join(" ").replace(/[?!.,]+$/, "") : "";
+  return picked && normalizeMsg(picked) === item ? picked : item;
 }
 
 // ---------- "deixa o endereço antigo" (A4) e "não sei meu cep" (M6) ----------

@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
+import { ADDITIVE_CUE_RE, extractCep, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
@@ -178,6 +178,13 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
 
     case "refine": {
       if (!current) return "invalid";
+      // Remédio como "refino" do item na tela (10/10, rodada 11 M11: "tem dipirona pra eu colocar no kit?" com o esparadrapo
+      // aberto virou "Não achei *esparadrapo dipirona...*"): a recusa de remédio, e a escolha continua.
+      if ((looksLikeMedicine(step.attribute) || looksLikeMedicine(env.text)) && !looksLikeMedicine(current.query)) {
+        await h.refuseMedicine(phone, convoId, ctx, env.text);
+        await reply(phone, copy.choicesStillOpen(current.query));
+        return "done";
+      }
       const attrs = parseRefinement(step.attribute);
       if (attrs) {
         await h.refineOptions(phone, convoId, ctx, store(), attrs);
@@ -420,6 +427,17 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
     await h.sendChoices(phone, current);
     return;
   }
+  // O mesmo item que já está na FILA, agora com marca/tamanho (10/10, rodada 11 M6): corrige a linha da fila.
+  const corrected = replace || ADDITIVE_CUE_RE.test(normalizeMsg(turnMeta.getStore()?.inboundText ?? text)) ? [] : h.absorbQueuedTwins(ctx, added);
+  if (corrected.length && !added.pending.length && !added.autoAdded.length) {
+    ctx.notFound = [...(ctx.notFound ?? []), ...added.notFound];
+    await writeCtx(convoId, ctx);
+    const notes = corrected.map((q) => copy.correctedQueuedItem(h.withoutStoreMention(q)));
+    if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
+    await reply(phone, notes.join("\n"));
+    await h.sendChoices(phone, current);
+    return;
+  }
   ctx.basket = h.mergeBaskets(ctx.basket ?? [], added.autoAdded);
   const dropped = replace && added.pending.length ? current.query : undefined;
   const queue: PendingChoice[] = dropped ? ctx.pending!.slice(1) : ctx.pending!;
@@ -431,6 +449,7 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
   if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
   // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
   if (!dropped && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
+  for (const q of corrected) notes.push(copy.correctedQueuedItem(h.withoutStoreMention(q)));
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
   await h.sendChoices(phone, ctx.pending[0]);
