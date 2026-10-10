@@ -555,7 +555,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
         // a query mostrada era "fralda pra HOJE" (28/08 S14); a flag de urgência é da
         // mensagem, não do nome do produto
-        .replace(/\s*\b(pra|para)\s+(hoje|amanha)\b/gi, "")
+        // "amanhã" com til e "de manhã/cedo/à tarde" junto (10/10, rodada 6 g19: "pilha aa pra amanhã" era buscado inteiro).
+        .replace(/\s*\b(pra|para|ate|até)\s+(?:depois\s+de\s+)?(hoje|amanh[aã])(?![\wà-ú])(?:\s+(?:de\s+manh[aã]|cedo|[àa]\s+tarde|[àa]\s+noite|de\s+tarde|de\s+noite))?/gi, "")
         .replace(/\s*\burgente(mente)?\b/gi, "")
         // "um shampoo QUALQUER" = tanto faz → a Lia pode escolher (28/08 S6)
         .replace(/\s+qualquer(\s+uma?)?\s*$/i, "\u0002")

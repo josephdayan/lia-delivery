@@ -696,3 +696,23 @@ export function promiseMissesDeadline(promise: string | undefined | null, needed
   if (minutes == null) return null;
   return minutes > Math.max(1, days) * 24 * 60;
 }
+
+// Vitrine com prazo dito (10/10, rodada 6 g19): quais opções chegam a tempo e qual a mais rápida das que não chegam.
+// `null` = nenhuma promessa legível (não dá pra dizer nada). Só opções com prazo real entram.
+export function deadlineVerdict<T extends { delivery?: string }>(
+  options: T[],
+  neededByDate: string,
+  now: Date = new Date()
+): { onTime: T[]; late: T[]; fastest?: T } | null {
+  const onTime: T[] = [];
+  const late: T[] = [];
+  for (const o of options) {
+    const miss = promiseMissesDeadline(o.delivery, neededByDate, now);
+    if (miss === true) late.push(o);
+    else if (miss === false) onTime.push(o);
+  }
+  if (!onTime.length && !late.length) return null;
+  const minutes = (o: T) => promisedMinutes(o.delivery) ?? Number.POSITIVE_INFINITY;
+  const fastest = [...late].sort((a, b) => minutes(a) - minutes(b))[0];
+  return { onTime, late, ...(fastest ? { fastest } : {}) };
+}

@@ -87,6 +87,8 @@ export type PendingChoice = {
   qty: number;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
   storeNoted?: boolean;
+  // O aviso "pra amanhã não chega" da vitrine já saiu para esta escolha (10/10, rodada 6 g19).
+  deadlineNoted?: boolean;
   // A loja pedida para a lista toda (ctx.preferredStore) já foi posta na frente das opções (10/10, rodada 5 M9).
   storePrioritized?: boolean;
   // Nome dessa loja, para o aviso "não achei na <loja>" quando a escolha é mostrada.

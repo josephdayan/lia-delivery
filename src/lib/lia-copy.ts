@@ -791,6 +791,27 @@ export function deadlineMissNote(label: string, promise?: string): string {
   return `⚠️ Você disse que precisa pra *${label}*, mas essa entrega não chega a tempo${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
 }
 
+// Vitrine com prazo dito (10/10, rodada 6 g19): "pra amanhã não chega; o mais rápido é X" antes das opções. `onTime` = lojas
+// das opções que chegam a tempo (vazio = nenhuma chega); `fastest` = a mais rápida das que não chegam.
+export function choicesDeadlineNote(label: string, onTimeStores: string[], fastest?: { store?: string; promise?: string }): string {
+  if (onTimeStores.length) {
+    const who = [...new Set(onTimeStores)].map((s) => `*${s}*`).join(", ");
+    return `⏰ Você precisa pra *${label}*: chega a tempo só pela ${who} — as outras opções demoram mais.`;
+  }
+  const prazo = promiseForCustomer(fastest?.promise);
+  return `⏰ Pra *${label}* não chega: nenhuma dessas opções entrega a tempo${prazo ? ` — o mais rápido é *${prazo}*${fastest?.store ? ` (${fastest.store})` : ""}` : ""}. Se quiser, me diz outro item que eu procuro.`;
+}
+
+// Oferta de juntar com prazo dito (10/10, rodada 6 g19): diz qual forma chega a tempo.
+export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string): string | null {
+  const j = promiseForCustomer(joinedEta);
+  const k = promiseForCustomer(keptEta);
+  if (joinedMiss && !keptMiss) return `⚠️ Você precisa pra *${label}*: juntando não chega a tempo${j ? ` (${j})` : ""} — mantendo como está, chega.`;
+  if (!joinedMiss && keptMiss) return `⏰ Você precisa pra *${label}*: só juntando chega a tempo — como está${k ? ` (${k})` : ""} não chega.`;
+  if (joinedMiss && keptMiss) return `⚠️ Pra *${label}* não chega de nenhum jeito — o mais rápido é *${(j && k ? (j.length <= k.length ? j : k) : j || k) || "o prazo da loja"}*.`;
+  return null;
+}
+
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
   const prazo = (deliveryPromise ? promiseForCustomer(deliveryPromise) : "") || (etaMinutes ? `chega em ~${etaMinutes} min` : null);
   return `Entrega: ${brl(frete)}${prazo ? ` · ${prazo}` : ""}`;
@@ -1930,7 +1951,7 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[] }): string {
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
   const joinedStores = input.joinedStores ?? 1;
@@ -1942,6 +1963,7 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
     `Dá pra juntar ${joinedWhere} por ${brl(input.joinedTotal)}${joinedHow}${input.joinedEta ? ` (${input.joinedEta})` : ""}, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas${input.keptEta ? ` (${input.keptEta})` : ""}.`,
     ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
+    ...(input.deadlineNote ? [input.deadlineNote] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
 }

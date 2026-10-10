@@ -259,6 +259,8 @@ export const turnMeta = new AsyncLocalStorage<{
   // `deferQuote` liga o adiamento; `quoteDeferred` marca que uma edição do meio pediu o total.
   deferQuote?: boolean;
   quoteDeferred?: boolean;
+  // Prazo dito pelo cliente (ctx.neededBy) neste turno: a vitrine avisa quando as opções não chegam a tempo (10/10, rodada 6 g19).
+  neededBy?: { date: string; label: string };
 }>();
 
 // A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido

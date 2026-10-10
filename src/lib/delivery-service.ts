@@ -14,7 +14,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { estimateDay, humanEstimate, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, liveCheckSupported, liveFreightEnabled, liveStoreFreight, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, resolveListItems } from "@/lib/list-items";
@@ -1250,6 +1250,19 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     p.storeNoted = true;
     await reply(phone, copy.requestedStoreNotShown(preferred, shownQuery(p)));
   }
+  // Prazo dito ("é aniversário amanhã", "pilha pra amanhã"): as opções que não chegam a tempo não saem caladas (10/10,
+  // rodada 6 g19 — antes só o resumo lia o prazo). Uma vez por escolha; tudo a tempo = nada a dizer.
+  const deadline = turnMeta.getStore()?.neededBy;
+  // "Nada chega hoje" no cabeçalho já diz isso quando o prazo é hoje.
+  if (deadline && !p.deadlineNoted && p.options.length && !(p.noneToday && deadline.label === "hoje")) {
+    const verdict = deadlineVerdict(p.options, deadline.date);
+    // Já avisado nas últimas falas (o p.deadlineNoted nem sempre volta gravado): "outras" não repete.
+    const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`));
+    if (verdict?.late.length && !said) {
+      p.deadlineNoted = true;
+      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined));
+    }
+  }
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
   // WhatsApp para remédio — não foto nem botão comum. Desde 05/10 (dono: "por que não pode
   // ter botão?") a vitrine de remédio é de cards soltos (foto + "Adicionar"); só o carrossel
@@ -2460,6 +2473,9 @@ async function handleDeliveryTurn(
   // Prazo dito ("é aniversário da minha mãe amanhã"): o total avisa se a entrega não cumpre (rodada 4, M6).
   const neededBy = parseNeededBy(text);
   if (neededBy) ctx.neededBy = neededBy;
+  // A vitrine deste turno também avisa (10/10, rodada 6 g19: só o resumo do operador lia o prazo; em produção as
+  // opções de 3 a 8 dias úteis saíam sem aviso).
+  { const meta = turnMeta.getStore(); if (meta && ctx.neededBy) meta.neededBy = ctx.neededBy; }
 
   // ---- endereço: pergunta da Lia em aberto (troca de CEP / cidade ≠ CEP), 06/10 ----
   if ((ctx.cepSwap || ctx.cepCityCheck) && (await handlePendingAddressQuestion(phone, user, convo.id, ctx, text, intent))) return;
@@ -10209,11 +10225,21 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
     return false;
   }
   const joinedStores = joined.stores ?? 1;
+  // Prazo dito (10/10, rodada 6 g19): juntar que não chega a tempo quando o como-está chega não é oferta; pedida pelo
+  // cliente, sai com o aviso. As duas formas atrasando também avisam.
+  const deadline = ctx.neededBy;
+  const joinedMiss = deadline ? promiseMissesDeadline(humanEstimate(joinedEta), deadline.date) === true : false;
+  const keptMiss = deadline ? promiseMissesDeadline(humanEstimate(keptEta), deadline.date) === true : false;
+  if (joinedMiss && !keptMiss && !force) {
+    console.warn("[basket:consolidate:misses-deadline]", joinedEta, keptEta);
+    return false;
+  }
+  const deadlineNote = deadline ? copy.consolidationDeadlineNote(deadline.label, joinedMiss, keptMiss, humanEstimate(joinedEta), humanEstimate(keptEta)) : null;
   ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}), ...(joinedStores > 1 ? { joinedStores } : {}) };
   ctx.consolidationParked = undefined;
   await writeCtx(convoId, ctx);
   if (prefix) await reply(phone, prefix);
-  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left });
+  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta), joinedStores, left: joined.left, deadlineNote });
   markTurnReplied();
   const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
   if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
