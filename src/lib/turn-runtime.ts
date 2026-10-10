@@ -382,7 +382,12 @@ export function orderFactsCtx(ctx: DeliveryContext): Partial<DeliveryContext> {
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
     ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
     ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
-    ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
+    ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {}),
+    // Juntar já tentado/descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo. O resumo compara
+    // com os itens do pedido, então uma marca de outra cesta não vale.
+    ...(ctx.consolidationTried ? { consolidationTried: ctx.consolidationTried } : {}),
+    ...(ctx.joinRuledOut ? { joinRuledOut: ctx.joinRuledOut } : {}),
+    ...(ctx.joinSlower ? { joinSlower: ctx.joinSlower } : {})
   };
 }
 

@@ -709,6 +709,11 @@ export function promiseMissesDeadline(promise: string | undefined | null, needed
   if (!Number.isFinite(days) || days < 0) return null;
   const dayUnits = /(\d+)\s*(?:dias?\s+uteis|dias?)\b/.exec(t);
   if (dayUnits) return Number(dayUnits[1]) > days;
+  // A promessa diz o dia (10/10, rodada 14 g41: "amanhã, 5h–8h" contava como "chega a tempo pra hoje" na pizza — o teto de
+  // 24h abaixo trata "hoje" como 1 dia): amanhã não serve pra hoje; depois de amanhã não serve pra amanhã.
+  if (/\bdepois de amanha\b/.test(t)) return days < 2;
+  if (/\bamanha\b/.test(t)) return days < 1;
+  if (/\bhoje\b/.test(t)) return false;
   const minutes = promisedMinutes(promise ?? undefined);
   if (minutes == null) return null;
   return minutes > Math.max(1, days) * 24 * 60;

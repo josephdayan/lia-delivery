@@ -106,6 +106,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "pode levar as 2 embalagens de ovos" com "Levo 2 embalagens?" aberto (10/10, rodada 12 g36): é a resposta da pergunta
   // da embalagem — o cérebro a aplica; a IA lia "2 unidades" e reabria as opções.
   if (ctx.packConfirm && /^(?:sim|pode|isso|ok|beleza|quero|leva|manda|bota|pode ser)\b|\b(?:embalage\w*|pacotes?|caixas?|bandejas?)\b/.test(normalizeMsg(text)) && !/\b(?:nao|outr[oa]s?)\b/.test(normalizeMsg(text))) return "pergunta_embalagem";
+  // "só uma mesmo" / "o primeiro" com "Levo 6 pacotes?" aberto (10/10, rodada 14 g40): a IA lia "o primeiro" como escolha
+  // do card e fechava 6x sem repetir o valor. O cérebro responde a pergunta (1 pacote) ou a repete com o total.
+  if (ctx.packConfirm && /^(?:(?:nao|n)\s+)?(?:so|somente|apenas)\s+(?:1|um|uma)\b|^(?:(?:quero|pode ser|vou de)\s+)?(?:o|a)?\s*(?:primeir[oa]|segund[oa]|terceir[oa]|ultim[oa])\b/.test(normalizeMsg(text).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim())) return "pergunta_embalagem";
   // id de botão ("optsku:123", "frete:barato", "adicionar_mais"): string de máquina, não linguagem.
   if (/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(trimmed)) return "botao";
   // "*caixinhas de 1 litro, longa vida" (10/10, rodada 7): o asterisco do WhatsApp corrige o item da fila — o cérebro
