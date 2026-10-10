@@ -419,6 +419,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   // Itens da IA conferidos com a lista da própria mensagem (10/10, rodada 12): o que ela deixou de fora volta, o atributo
   // solto refina o vizinho e "X ou Y" é um item só. Antes, com 1 item a menos ("uns 4 tomates") nada voltava, e com 2 a
   // menos o caminho determinístico assumia e anotava o contexto ("to querendo cuidar mais da minha pele").
+  const rawItems = decision.items.map((i) => `${i.qty}x ${i.query}`).join(" | ");
   if (decision.items.length && !decision.recommend) decision = { ...decision, items: reconcilePreItems(decision.items, input.text) };
   // Teto do PEDIDO já guardado neste turno ("gasto até 60 reais", 10/10, rodada 10 g29): numa LISTA não vira o "até 60 reais"
   // de uma linha (com um item só, o teto do pedido é o desse item e segue na frase).
@@ -493,7 +494,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           break;
       }
     }
-    console.log(`[dialogue:pre] ação=${plan.label} ms=${Date.now() - started} resultado=${outcome.kind}`);
+    console.log(`[dialogue:pre] ação=${plan.label} ms=${Date.now() - started} resultado=${outcome.kind}${rawItems ? ` itens_ia=[${rawItems}]` : ""}${outcome.kind === "rewrite" ? ` texto=${JSON.stringify(outcome.text)}` : ""}`);
     return outcome;
   } catch (error) {
     if ((meta?.replies ?? 0) > repliesBefore) throw error;

@@ -1673,9 +1673,21 @@ const SWAP_ACCEPT_RE =
 // só o destino "outra (loja)". Produto no meio não casa ("pode ser na outra cor" não é loja).
 const OTHER_STORE_ACCEPT_RE =
   /^(?:(?:sim|ok|okay|pode|bora|isso|claro|beleza|blz|show|fechado|entao|perfeito|otimo|ta bom|tudo bem)\b[\s,.!]*)*(?:pode ser|pode|manda|vai|vamos|prefiro|quero|pega|compra|fecha|faz|faca)\s+(?:(?:n|d|pel|pr)a\s+outra(?:\s+loja)?|(?:a|o)\s+outra\s+loja)(?:\s+(?:mesmo|entao|sim|por favor|pf))*[\s!.]*$/;
-export function acceptsSwapOffer(text: string): boolean {
-  const s = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
-  return Boolean(s) && (SWAP_ACCEPT_RE.test(s) || OTHER_STORE_ACCEPT_RE.test(s));
+// Fecho de cortesia depois do aceite ("pode trocar de loja então, sem problema", 10/10, rodada 13 g39): não muda a resposta.
+const SWAP_COURTESY_TAIL_RE = /[\s,]+(?:sem problemas?|tranquilo|de boa|tudo certo|por mim tudo bem|por mim|tudo bem|ta bom|pode ser|ok|beleza|blz|valeu|obrigad[oa])$/;
+// "aceito, pode trocar a caneta de loja" (10/10, rodada 13 g39): o item citado entre o verbo e a loja.
+const SWAP_CITED_ITEM_RE = /\b(troca|trocar|troque|troco|muda|mudar|mude)\s+(?:(?:o|a|os|as|esse|essa|esses|essas|so|só)\s+)*(.+?)\s+(de loja|pra outra loja|para outra loja|pela outra loja|na outra loja)\b/;
+// `offerItems` = os itens da oferta aberta (nome/pedido). Citar um deles confirma a oferta; citar OUTRO item não é aceite
+// dela (é outro pedido, que segue o caminho de sempre).
+export function acceptsSwapOffer(text: string, offerItems: string[] = []): boolean {
+  let s = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
+  const test = (x: string) => Boolean(x) && (SWAP_ACCEPT_RE.test(x) || OTHER_STORE_ACCEPT_RE.test(x));
+  if (test(s)) return true;
+  for (let i = 0; i < 3 && SWAP_COURTESY_TAIL_RE.test(s); i++) s = s.replace(SWAP_COURTESY_TAIL_RE, "").trim();
+  if (test(s)) return true;
+  const cited = SWAP_CITED_ITEM_RE.exec(s);
+  if (!cited || !offerItems.some((item) => sharesProductNoun(cited[2], item))) return false;
+  return test(s.replace(cited[0], `${cited[1]} ${cited[3]}`).trim());
 }
 
 // "deixa, esquece a vela. pode trocar de loja" (10/10, rodada 12 M5): edição + aceite da troca na MESMA mensagem. Devolve

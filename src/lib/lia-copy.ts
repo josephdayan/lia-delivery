@@ -2020,6 +2020,12 @@ export function compareOptionsAnswer(rows: CompareRow[]): string {
   return [...lines, "", ...notes].join("\n");
 }
 
+// Comparação com produto fora da tela (10/10, rodada 13 g39): "e o Fofinho, é melhor que esses?" caía na FAQ do serviço.
+export function compareNotShown(term: string, query: string): string {
+  const shown = term.replace(/(^|\s)(\p{L})/gu, (_, sp: string, c: string) => sp + c.toUpperCase());
+  return `*${shown}* não está entre as opções de *${query}* aí em cima, então não tenho como comparar. Se quiser, eu procuro: é só mandar _${query} ${shown}_.`;
+}
+
 export function optionComparison(options: { name: string; price: number; storeLabel?: string }[]): string {
   const lines = options.map(
     (o, i) => `*${i + 1})* ${o.name} — ${brl(o.price)}${o.storeLabel ? ` (${o.storeLabel})` : ""}`

@@ -2,7 +2,7 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
-import { compareOptionsAnswer } from "./lia-copy";
+import { compareNotShown, compareOptionsAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
 export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
@@ -14,6 +14,10 @@ export type ProductQuestion =
   | { kind: "compare"; a: number; b: number }
   // "qual a diferença entre esses dois?" sem dizer quais (10/10, rodada 12): compara as opções da tela.
   | { kind: "compare_all" }
+  // Só as opções citadas (10/10, rodada 13 g39): "o Deluxe Cotton e o Personal Vip" com 3 cards Personal Vip na tela.
+  | { kind: "compare_set"; ns: number[] }
+  // Comparação com um produto que NÃO está na tela ("e o Fofinho, é melhor que esses?").
+  | { kind: "not_shown"; term: string }
   | { kind: "explain"; n: number }
   | { kind: "price"; n: number }
   | { kind: "original" }
@@ -96,6 +100,41 @@ function refsByName(tail: string, names: string[]): number[] {
   return out;
 }
 
+// Grupos citados pelo nome (10/10, rodada 13 g39): como refsByName, mas um trecho que casa IGUAL com várias opções ("o
+// Personal Vip" com 3 cards Personal Vip) cita todas elas; e as palavras que não casam com nenhuma opção ("Fofinho") voltam
+// à parte, para a resposta dizer que esse produto não está na tela.
+const COMPARE_FILLER = new Set(["entre", "qual", "quais", "diferenca", "diferencas", "diferente", "diferentes", "melhor", "pior", "igual", "iguais", "mesmo", "mesma", "esses", "essas", "esse", "essa", "isso", "outros", "outras", "outro", "outra", "que", "sao", "eles", "elas", "dele", "dela", "deles", "delas", "opcoes", "opcao", "mais", "menos", "bom", "boa", "compensa", "vale", "pena", "tem", "voce", "acha", "comparar", "compara", "comparacao", "dois", "duas", "tres", "todos", "todas", "aqui", "tela", "cima", "card", "cards"]);
+function refGroupsByName(text: string, names: string[]): { groups: number[][]; unknown: string[] } {
+  const tok = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length >= 3 && !STOP.has(w));
+  const nameTokens = names.map((n) => new Set(tok(n)));
+  const common = (w: string) => nameTokens.every((set) => set.has(w));
+  const groups: number[][] = [];
+  const unknown: string[] = [];
+  for (const seg of normalizeMsg(text).split(/\s*,\s*|\s+(?:e|ou|vs|versus|x|com o|com a|pro|pra)\s+(?=(?:o|a|os|as|do|da)\s)|\s+(?:e|ou|vs|versus)\s+/)) {
+    const words = tok(seg).filter((w) => !COMPARE_FILLER.has(w));
+    if (!words.length) continue;
+    unknown.push(...words.filter((w) => !/^\d/.test(w) && !nameTokens.some((set) => set.has(w))));
+    const scores = nameTokens.map((set) => words.filter((w) => set.has(w) && !common(w)).length);
+    const best = Math.max(...scores);
+    if (best <= 0) continue;
+    const tied = scores.map((sc, i) => (sc === best ? i + 1 : 0)).filter(Boolean);
+    if (tied.length < names.length) groups.push(tied);
+  }
+  return { groups, unknown };
+}
+const COMPARATIVE_RE = /\b(?:melhor|pior)\s+(?:que|do que|q|d[oa]s?)\b|\b(?:e|eh|sao|seria)\s+(?:melhor|pior|diferente|diferentes|igual|iguais|o mesmo|a mesma)\b|\bqual (?:e |eh )?(?:o |a )?(?:melhor|mais indicad\w*)\b|\bdiferente d[oae]s?\b/;
+const OTHERS_RE = /\b(?:ess[ea]s|outr[oa]s|del[ea]s|das opcoes|da tela|ai em cima)\b/;
+// Pergunta comparativa citando opções pelo nome (10/10, rodada 13 g39).
+function namedComparison(n: string, names: string[]): ProductQuestion | null {
+  const { groups, unknown } = refGroupsByName(n, names);
+  const union = [...new Set(groups.flat())].sort((a, b) => a - b);
+  if (union.length >= 2) return union.length === names.length ? { kind: "compare_all" } : { kind: "compare_set", ns: union };
+  // Um produto citado que não está na tela: a resposta diz isso (não compara às cegas).
+  if (unknown.length) return { kind: "not_shown", term: unknown.slice(0, 3).join(" ") };
+  if (union.length === 1 && OTHERS_RE.test(n) && names.length >= 2) return { kind: "compare_all" };
+  return null;
+}
+
 export function parseProductQuestion(text: string, optionCount: number, names?: string[]): ProductQuestion | null {
   if (optionCount < 1) return null;
   const n = normalizeMsg(text).replace(/[!.?\s]+$/g, "").trim();
@@ -111,6 +150,10 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
     if (names?.length === optionCount) {
       const byName = refsByName(diff[1], names);
       if (byName.length >= 2) return { kind: "compare", a: byName[0], b: byName[1] };
+      // Citou pelo nome, mas um nome casa com várias opções (ou citou antes da palavra "diferente"): só as citadas.
+      const named = namedComparison(n, names);
+      if (named && named.kind !== "not_shown") return named;
+      if (named && /\?/.test(text) && optionCount >= 2) return named;
       if (optionCount >= 2 && /\b(?:diferenca|diferencas)\b/.test(n) && !/\b(?:frete|entrega|preco do frete|pix|cartao|taxa)\b/.test(n)) return { kind: "compare_all" };
     }
     return null;
@@ -126,6 +169,13 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
   }
 
   if (!isQuestion) return null;
+
+  // "e o Fofinho, é melhor que esses?", "qual é melhor, o neutro ou o familiar?" (10/10, rodada 13 g39): comparação sobre as
+  // opções da tela, não a pergunta do serviço.
+  if (names?.length === optionCount && optionCount >= 2 && COMPARATIVE_RE.test(n)) {
+    const named = namedComparison(n, names);
+    if (named) return named;
+  }
 
   // "qual o preço do primeiro?", "quanto custa o 2?" (09/10, rodada 3): responde o preço da opção citada.
   const price = n.match(/\b(?:preco|valor|quanto\s+(?:custa|e|eh|ta|esta|fica|sai|vale))\b(.*)$/);
@@ -180,6 +230,10 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
   switch (q.kind) {
     case "compare_all":
       return compareOptionsAnswer(options.map((o, i) => ({ n: i + 1, ...o })));
+    case "compare_set":
+      return compareOptionsAnswer(q.ns.map((n) => ({ n, ...options[n - 1] })));
+    case "not_shown":
+      return compareNotShown(q.term, query);
     case "compare": {
       const a = options[q.a - 1];
       const b = options[q.b - 1];
