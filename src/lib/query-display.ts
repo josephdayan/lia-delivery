@@ -46,11 +46,19 @@ export function displayQueryName(query: string, options: { name: string; brand?:
       const exact = vocab.get(key);
       if (exact) {
         // Mesma palavra: só corrige o acento ("ype" → "Ypê"); "leite" continua "leite".
+        // Sigla do catálogo ("AAA", "LED", "FPS") volta em maiúsculas (10/10, rodada 10 g30: "pilha aaa").
+        if (/^[A-Z]{2,4}$/.test(exact) && token === token.toLowerCase()) return exact;
         return plain(exact) === key && exact.toLowerCase() !== token.toLowerCase() && /[^\x00-\x7f]/.test(exact) ? exact : token;
       }
       // Palavra pequena demais para chutar (uma letra de diferença em 3 letras é ambíguo): só com candidato único.
       const near = keys.filter((k) => k[0] === key[0] && withinOneEdit(key, k));
-      return near.length === 1 ? vocab.get(near[0])! : token;
+      if (near.length !== 1) return token;
+      const fixed = vocab.get(near[0])!;
+      // Só o gênero/número ("recheada" × "Recheado") não é erro de digitação: o cliente escreveu certo (10/10, rodada 10
+      // g30: "bolacha Recheado").
+      if (key.slice(0, -1) === near[0].slice(0, -1) && /[aoe]$/.test(key) && /[aoe]$/.test(near[0])) return token;
+      if (key.replace(/s$/, "").slice(0, -1) === near[0].replace(/s$/, "").slice(0, -1) && /[aoe]s?$/.test(key)) return token;
+      return fixed;
     })
     .join("");
 }

@@ -23,6 +23,7 @@
 // Cada linha devolvida carrega `decision` e `reason`; o log `[list-split]` registra o que foi feito.
 import {
   isNonItemSegment,
+  meaningfulProductTokens,
   mergeShoppingLines,
   normalizeMsg,
   sharesProductNoun,
@@ -338,12 +339,64 @@ function withDefaults(line: ParsedLine, aiOnly: boolean): ResolvedListItem {
   };
 }
 
+// Trecho que é só a contagem do item anterior (10/10, rodada 10 g30: "preciso de pilhas AAA, um par" virava o item "par"
+// — "não achei" — e a quantidade se perdia; idem ", uma dúzia", ", meia dúzia", ", duas"). Soma na linha de antes.
+const COUNT_ONLY: Array<[RegExp, number]> = [
+  [/^(?:(?:um|o)\s+)?par(?:zinho)?$/, 2],
+  [/^(?:(?:uma|a)\s+)?duzia$/, 12],
+  [/^meia(?:\s+duzia)?$/, 6],
+  [/^(?:(?:uma|a)\s+)?dezena$/, 10],
+  [/^(?:dois|duas)(?:\s+(?:unidades?|un|pacotes?|caixas?))?$/, 2],
+  [/^tres(?:\s+(?:unidades?|un|pacotes?|caixas?))?$/, 3],
+  [/^(\d{1,2})\s*(?:unidades?|un|pacotes?|caixas?)$/, 0]
+];
+function countOnlyQty(phrase: string): number | null {
+  const n = normalizeMsg(phrase).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  for (const [re, value] of COUNT_ONLY) {
+    const m = n.match(re);
+    if (!m) continue;
+    return value === 0 ? Number(m[1]) || null : value;
+  }
+  return null;
+}
+export function foldCountOnlyLines<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(lines: T[]): T[] {
+  const out: T[] = [];
+  for (const line of lines) {
+    const count = out.length ? countOnlyQty(line.phrase) : null;
+    if (count && count > 1) {
+      const prev = out[out.length - 1];
+      out[out.length - 1] = { ...prev, qty: count, qtyExplicit: true };
+      continue;
+    }
+    out.push(line);
+  }
+  return out;
+}
+
 export function resolveListItems(text: string, opts: ResolveListItemsOptions = {}): ResolvedListItem[] {
   const ctx: Ctx = { probe: opts.catalogProbe ?? localCatalogProbe, isBrand: opts.isBrand ?? localIsBrand, conjoinedBrand: opts.isConjoinedBrand ?? localIsConjoinedBrand };
-  const deterministic = parseBasketLines(markSharedBrand(text), { conjunction: makeConjunction(ctx, Boolean(opts.log)) });
+  const deterministic = foldCountOnlyLines(parseBasketLines(markSharedBrand(text), { conjunction: makeConjunction(ctx, Boolean(opts.log)) }));
   if (!opts.aiItems?.length) return deterministic.map((line) => withDefaults(line, false));
   const detKeys = new Set(deterministic);
-  return mergeShoppingLines(opts.aiItems, deterministic).map((line) => withDefaults(line, !detKeys.has(line) && !line.span));
+  return dropSameTokenTwins(foldCountOnlyLines(mergeShoppingLines(foldCountOnlyLines(opts.aiItems), deterministic))).map((line) => withDefaults(line, !detKeys.has(line) && !line.span));
+}
+
+// A mesma linha duas vezes, uma da IA e outra do parser, diferindo só em conectivo (10/10, rodada 10 g30, M6: "lenço
+// umedecido recém-nascido" + "lenço umedecido pra recém-nascido" — o cliente era perguntado duas vezes pelo lenço). Mesmo
+// conjunto de palavras de produto = o mesmo item; fica a 1ª, com a maior quantidade.
+export function dropSameTokenTwins<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(lines: T[]): T[] {
+  const key = (phrase: string) => [...new Set(meaningfulProductTokens(phrase))].sort().join(" ");
+  const out: T[] = [];
+  for (const line of lines) {
+    const k = key(line.phrase);
+    const twin = k ? out.findIndex((o) => key(o.phrase) === k) : -1;
+    if (twin >= 0) {
+      if (line.qty > out[twin].qty) out[twin] = { ...out[twin], qty: line.qty, qtyExplicit: line.qtyExplicit ?? out[twin].qtyExplicit };
+      continue;
+    }
+    out.push(line);
+  }
+  return out;
 }
 
 // Quantos itens DISTINTOS o texto pede. Fonte única de contagem (sinais multiItem / looksLikeProductList,
@@ -382,6 +435,7 @@ function sizeTokens(phrase: string): string[] {
 }
 export function reconcileLineCounts<T extends { phrase: string; qty: number; qtyExplicit?: boolean }>(lines: T[], said: string): T[] {
   if (!said.trim() || !lines.length) return lines;
+  lines = dropSameTokenTwins(foldCountOnlyLines(lines));
   const det = resolveListItems(said);
   const hasCount = textHasCount(said);
   return lines.map((line) => {

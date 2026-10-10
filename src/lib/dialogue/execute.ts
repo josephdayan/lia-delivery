@@ -82,7 +82,7 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const runAll = async () => {
     for (let i = 0; i < steps.length; i++) {
       const nextIsSearch = steps[i + 1]?.type === "search";
-      const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick", afterRefine: steps.slice(0, i).some((st) => st.type === "refine") });
+      const result = await runStep(env, steps[i], { reopened, multi: steps.length > 1, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick", afterRefine: steps.slice(0, i).some((st) => st.type === "refine") });
       if (result === "invalid") {
         // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
         // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
@@ -131,7 +131,7 @@ function locate(ctx: DeliveryContext, target: Target): BasketItem | undefined {
   return basket.find((item) => item.name.slice(0, 90) === target.name);
 }
 
-async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean; nextIsPick: boolean; afterRefine?: boolean }): Promise<StepResult> {
+async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; multi?: boolean; nextIsSearch: boolean; nextIsPick: boolean; afterRefine?: boolean }): Promise<StepResult> {
   const { ctx, phone, convoId, userCep, userId, h } = env;
   const choosing = ctx.step === "choosing" && Boolean(ctx.pending?.length);
   const current = choosing ? ctx.pending![0] : undefined;
@@ -225,13 +225,14 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       if (step.target.kind === "basket") {
         const item = locate(ctx, step.target);
         if (!item) return "invalid";
-        await h.handleRemove(phone, convoId, userCep, ctx, item.name, { silentIfFound: opts.nextIsSearch, exact: { skus: [item.sku] } });
+        // Remoção sozinha sem total na mesa só confirma (rodada 10 g30); várias edições juntas mantêm o resumo único do fim (rodada 5 g14).
+        await h.handleRemove(phone, convoId, userCep, ctx, item.name, { silentIfFound: opts.nextIsSearch, exact: { skus: [item.sku] }, reopened: opts.multi ? undefined : opts.reopened });
         return "done";
       }
       if (step.target.kind === "queue") {
         const queued = ctx.pending?.[1 + step.target.idx];
         if (!queued) return "invalid";
-        await h.handleRemove(phone, convoId, userCep, ctx, queued.query, { silentIfFound: opts.nextIsSearch, exact: { queries: [queued.query] } });
+        await h.handleRemove(phone, convoId, userCep, ctx, queued.query, { silentIfFound: opts.nextIsSearch, exact: { queries: [queued.query] }, reopened: opts.multi ? undefined : opts.reopened });
         return "done";
       }
       return "invalid";

@@ -593,6 +593,12 @@ export function openOrderContents(items: { qty: number; name: string }[], total:
   return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n*Total: ${brl(total)}* (com a entrega)\n_Pra mudar, diz *tira* ou *põe* o item; pra pagar, escolhe Pix ou cartão no resumo._`;
 }
 
+// "o que tem na cesta?" com a escolha de entrega aberta (10/10, rodada 10 g30, M4): os itens, e o total sai da entrega
+// escolhida — antes vinha "Você quer saber o total da cesta?" ou o texto de apresentação da Lia.
+export function freightStepContents(items: { qty: number; name: string }[]): string {
+  return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n_Falta só escolher a entrega — o total de cada opção está logo abaixo._`;
+}
+
 export function removedRestored(names: string): string {
   return `Voltei *${names}* pra cesta. ✅`;
 }

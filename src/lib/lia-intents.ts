@@ -431,6 +431,8 @@ const DISCOURSE_WORDS = new Set(
     "vamos vou vai vamo pago paga pagar pagamos pagando pagam dividir divide dividimos dividindo dividi divido gastar gasto gasta gastando economizar ajuda ajudar ajude " +
     "montar monta fazer faz quero queria quer preciso precisa tenho tem temos sou somos estou to tou tava moro mora ignora ignorar ignore ignorem desconsidera " +
     "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir " +
+    // "…, cabe?" / "chega?" / "rola?" (10/10, rodada 10 g30, M5: "cabe" virava item "não achei")
+    "cabe cabem caber chega chegam rola serve " +
     // meta-lista, quantidade vaga e advérbios
     "itens item coisa coisas produto produtos parte resto tudo todos todas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
     // conectivos e artigos
@@ -2758,9 +2760,10 @@ export function asksMultiAddress(text: string): boolean {
   return MULTI_ADDRESS_RE.test(n);
 }
 // Dois pagadores (10/10, rodada 8 A2): "meu colega paga separado", "cada um paga o seu", "a parte dele ele paga".
+// "cada um vai pagar o seu" (rodada 10 g30): o infinitivo caía no "pagar" do menu e o "quero café" seguinte sumia.
 // "dois pedidos" sem lugar nem endereço também cai aqui ("orders"): a Lia faz um pedido por vez.
 const SPLIT_PAYER_RE =
-  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai )?paga\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
+  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai |vamos |vai querer )?(?:paga|pagar|pagam|pagando)\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
 const TWO_ORDERS_RE = /\b(?:dois|2) pedidos\b/;
 export function parseSplitOrders(text: string): "payer" | "orders" | null {
   const n = normalizeMsg(text);
@@ -3487,9 +3490,11 @@ const ORDER_BUDGET_RES = [
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:tenho|posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)?\s+(?:pra|para)\s+gastar\b`,
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
   // "só tenho 100 reais (no total), cabe?" / "só tenho 50 conto" como frase própria (rodada 9 B M2 via g25).
-  String.raw`(?:^|[,.;:!?]\s*)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
-  // "meu orçamento é de 150", "meu limite é 80 reais"
-  String.raw`(?:^|[\s,.;])(?:o\s+)?(?:meu|minha)\s+(?:orcamento|limite|teto|verba)\s+(?:e|eh|de|é|e de|eh de|ta em|esta em)\s+(?:(?:uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
+  String.raw`(?:^|[,.;:!?]\s*|\b(?:q|que|pq|porque|tipo)\s+)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
+  // "meu orçamento é de 150", "meu limite é 80 reais"; sem o "meu" e sem verbo também: "orçamento R$ 150 no total",
+  // "orçamento: 60", "limite de 80" (10/10, rodada 10 g30: "orçamento R$ 150 no total" passava batido e o resumo de
+  // R$ 342,42 saía sem aviso).
+  String.raw`(?:^|[\s,.;])(?:(?:o|meu|minha|nosso|nossa)\s+)?(?:orcamento|limite|teto|verba)(?:\s+(?:total|maximo|max))?(?:\s*:|\s+(?:e|eh|de|é|e de|eh de|ta em|esta em|fica em|vai ate))?\s+(?:(?:uns|umas|ate|no maximo|de)\s+)*${ORDER_BUDGET_NUM}(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?(?=$|[\s,.;:!?])`,
   // "cesta básica de uns R$ 100" / "compra de até 200"
   String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
 ].map((src) => new RegExp(src, "g"));
