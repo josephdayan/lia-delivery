@@ -719,9 +719,27 @@ export function promiseMissesDeadline(promise: string | undefined | null, needed
   return minutes > Math.max(1, days) * 24 * 60;
 }
 
+// Feriados nacionais fixos (10/10, rodada 16 g46): o "dia útil" da loja não conta sábado, domingo nem feriado.
+const NATIONAL_HOLIDAYS = new Set(["01-01", "04-21", "05-01", "09-07", "10-12", "11-02", "11-15", "11-20", "12-25"]);
+// Dia em que cai a entrega de N dias úteis a partir de `today` (YYYY-MM-DD, fuso de SP), contando só segunda a sexta
+// fora de feriado: "6 dias úteis" pedido no sábado 10/10 cai na terça 20/10.
+export function businessDaysArrival(today: string, businessDays: number): string {
+  let t = Date.parse(`${today}T12:00:00Z`);
+  let left = businessDays;
+  while (left > 0) {
+    t += 86_400_000;
+    const d = new Date(t);
+    const dow = d.getUTCDay();
+    if (dow !== 0 && dow !== 6 && !NATIONAL_HOLIDAYS.has(d.toISOString().slice(5, 10))) left--;
+  }
+  return new Date(t).toISOString().slice(0, 10);
+}
+
 // Prazo dito × entrega (10/10, rodada 10 g29): "ok" chega a tempo; "late" não chega; "unsure" chega no dia mas o cliente
 // pediu "de manhã" e a loja só promete o dia (prazo em dias, sem hora). `null` = promessa sem prazo legível.
-export function deadlineFit(promise: string | undefined | null, d: { date: string; morning?: boolean }, now: Date = new Date()): "ok" | "late" | "unsure" | null {
+// "maybe" (10/10, rodada 16 g46): o "não chega" segue o limite de baixo (dia útil = dia corrido), mas o "✅ chega a tempo"
+// só sai quando a data real cumpre — "6 dias úteis" num sábado pra "até sábado" dizia "Chega a tempo" (cai na terça 20).
+export function deadlineFit(promise: string | undefined | null, d: { date: string; morning?: boolean }, now: Date = new Date()): "ok" | "late" | "unsure" | "maybe" | null {
   const miss = promiseMissesDeadline(promise, d.date, now);
   if (miss == null) return null;
   if (miss) return "late";
@@ -732,6 +750,8 @@ export function deadlineFit(promise: string | undefined | null, d: { date: strin
     const days = Math.round((Date.parse(`${d.date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
     if (dayUnits && Number(dayUnits[1]) >= days) return "unsure";
   }
+  const business = /(\d+)\s*dias?\s+uteis\b/.exec((promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase());
+  if (business && businessDaysArrival(now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }), Number(business[1])) > d.date) return "maybe";
   return "ok";
 }
 

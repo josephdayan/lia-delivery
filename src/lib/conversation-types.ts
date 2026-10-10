@@ -148,6 +148,9 @@ export type PendingChoice = {
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
+  // As opções foram estreitadas por uma exigência do cliente ("pode ser branca fria", 10/10, rodada 16 g46): "mostra as
+  // opções de novo" reenvia ESTAS, não as de antes do filtro.
+  narrowedBy?: string;
   // Bebê citado em qualquer parte do pedido (10/10, rodada 12 g36): "o mais barato" desse item nunca escolhe a versão só de
   // adulto (lenço antisséptico, íntimo) quando há outra.
   babyContext?: boolean;
