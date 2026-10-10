@@ -780,6 +780,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/\s+qualquer(\s+uma?)?\s*$/i, "\u0002")
         // "to sem café" é jeito real de PEDIR café — o item é o que falta
         .replace(/^(?:eu\s+)?(?:t[oô]|tou|estou)\s+sem\s+/i, "")
+        // "acabou minha base" (10/10, rodada 16 R16a-2) também é pedido do que acabou: o item é "base", não a frase inteira
+        // (virava o item fantasma "acabou minha base" ao lado de "base clara"). "acabou tudo"/"acabou a lista" seguem fora.
+        .replace(/^(?:(?:aqui|j[aá]|hoje)\s+)?(?:acabou|acabaram|faltou|faltaram)\s+(?:(?:o|a|os|as|meu|minha|meus|minhas|nosso|nossa)\s+)?(?!(?:tudo|a lista|as coisas|o que|de|que|aqui)(?:\s|$))(?=[a-zà-ú]{3,})/i, "")
         // "coca zero de 2l" → "coca zero 2l": o "de" antes de uma medida é só fala (c92)
         .replace(/\bde\s+(\d+(?:[.,]\d+)?\s?(?:l|lt|litros?|ml|kg|g)\b)/gi, "$1")
         .replace(/\s+/g, " ")
@@ -1171,6 +1174,27 @@ export function inheritMissQualifiers(text: string, missQuery: string): string |
   return null;
 }
 
+// O PESO/VOLUME do item não achado continua valendo quando o cliente volta a pedir o mesmo produto com outras palavras
+// (10/10, rodada 16 R16a-3, jornada 352: "ração de coelho filhote 1,5kg" sem achado → "e ração pra coelho então? tem alguma
+// que sirva pra filhote?" buscava sem o 1,5 kg, e o pacote de 500 g entrava 1x sem aviso). Só com UMA faltante do mesmo
+// núcleo e com medida, e texto sem número nenhum: a medida entra logo depois da palavra do produto.
+const MISS_MEASURE_RE = /\b(\d+(?:[.,]\d+)?\s*(?:kg|g|ml|l|litros?))\b/i;
+export function inheritMissMeasure(text: string, missQueries: string[]): string | null {
+  if (/\d/.test(text)) return null;
+  const head = productHead(text.replace(/^\s*(?:e|mas|entao|então)\s+/i, ""));
+  if (!head) return null;
+  const twins = missQueries.filter((q) => productHead(q) === head && MISS_MEASURE_RE.test(q));
+  if (twins.length !== 1) return null;
+  const measure = MISS_MEASURE_RE.exec(twins[0])![1].replace(/\s+/g, "");
+  const words = text.split(/(\s+)/);
+  const at = words.findIndex((w) => w.trim() && productHead(w) === head);
+  if (at < 0 || words.filter((w) => w.trim() && productHead(w) === head).length !== 1) return null;
+  const word = words[at];
+  const trailing = word.match(/[^\p{L}\p{N}]+$/u)?.[0] ?? "";
+  words[at] = `${word.slice(0, word.length - trailing.length)} ${measure}${trailing}`;
+  return words.join("");
+}
+
 export function sharesProductNoun(a: string, b: string): boolean {
   const aTokens = meaningfulProductTokens(a);
   const bTokens = new Set(meaningfulProductTokens(b));
@@ -1294,7 +1318,16 @@ function reconcileBySpan(ai: ParsedLine[], deterministic: ParsedLine[]): ParsedL
     // 13 anos, um shih tzu, preciso de ração sênior de 1kg e tapete higiênico" — a IA juntou a raça na ração ("ração
     // cachorro sênior shih tzu 1kg"), o trecho "shih tzu" a reivindicava e a ração saía em dobro.
     const ownHead = (i: number) => lines.some((l) => productHead(l.phrase) !== undefined && productHead(l.phrase) === productHead(out[i].phrase));
-    const own = overlap.filter((i) => ownHead(i) || !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase) && sameItemProduct(out[i].phrase, d.phrase)));
+    // Mas a linha da IA que é EXATAMENTE a linha de outro trecho é daquele trecho (10/10, rodada 16 R16a-1): em "sabonete,
+    // sabonete líquido e shampoo" o "sabonete" da IA tinha a cabeça do "sabonete líquido", era trocado junto com o trecho
+    // "sabonete líquido e shampoo" e o sabonete sumia sem aviso (o mesmo com leite/leite condensado e arroz/arroz integral).
+    const sameWords = (a: string, b: string) => {
+      const ta = spanTokens(a);
+      const tb = spanTokens(b);
+      return ta.size > 0 && ta.size === tb.size && [...ta].every((t) => tb.has(t));
+    };
+    const otherExact = (i: number) => others.some((d) => sameWords(out[i].phrase, d.phrase)) && !lines.some((l) => sameWords(out[i].phrase, l.phrase));
+    const own = overlap.filter((i) => !otherExact(i) && (ownHead(i) || !others.some((d) => sharesProductNoun(out[i].phrase, d.phrase) && sameItemProduct(out[i].phrase, d.phrase))));
     overlap.splice(0, overlap.length, ...own);
     if (!overlap.length || overlap.length === lines.length || lines.some((line) => isNonItemSegment(line.phrase))) continue;
     // A IA separou em MAIS linhas usando palavras de fora do trecho ("um petisco pra cada" → petisco cachorro + petisco
@@ -1803,6 +1836,16 @@ export function splitTrailingSwapAccept(text: string): string | null {
   if (!acceptsSwapOffer(last)) return null;
   const rest = parts.slice(0, -1).join(", ").replace(/[,.;!?\s]+$/, "").trim();
   return rest && !acceptsSwapOffer(rest) ? rest : null;
+}
+
+// "Fica assim" com o resumo na tela e NENHUMA oferta aberta (10/10, rodada 16 R16a-4): "mantém como está", "tá bom assim",
+// "pode deixar assim", "não", "não, obrigado", "pula". Iam para a IA de conversa, que devolvia pergunta aberta ("O que você
+// quer pular?"). Quem diz isso aceita o pedido como está: o caminho é a escolha de pagamento. Pedido de mudança não casa.
+const KEEP_SUMMARY_RE =
+  /^(?:(?:ok|ta|beleza|blz|certo|pode|entao|nao|n)\s+)*(?:mant(?:e|em|er|enha|enho)(?: (?:tudo|isso|ai))?(?: (?:como|do jeito que) (?:esta|ta))?(?: assim)?|(?:ta|esta) (?:bom|otimo|certo|perfeito|ok)(?: assim)?(?: mesmo)?|(?:pode )?(?:deixa|deixar|fica|ficar) (?:assim|como (?:esta|ta))(?: mesmo)?|assim mesmo|assim ta bom|pula|pular|nao|n|nada|nao precisa|nao quero mudar nada)(?: (?:obrigad[oa]|valeu|vlw|obg|brigad[oa]))?$/;
+export function keepsSummaryAsIs(text: string): boolean {
+  const s = normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim();
+  return Boolean(s) && s.length <= 60 && KEEP_SUMMARY_RE.test(s);
 }
 
 // Recusa da oferta de troca: "mantém como está", "deixa assim", "não troca", "prefiro manter". Mesmo léxico da recusa
