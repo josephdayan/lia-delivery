@@ -512,7 +512,13 @@ function specToken(t: string): boolean {
 // Fragmentos que só descrevem o item vizinho (10/10, rodada 7 N5): "pra minha gata", "10kg cada", "a normal sem receita".
 const FOR_WHOM_FRAGMENT_RE = /^(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\s+[a-z]+(?:\s+[a-z]+)?$/;
 const EACH_SIZE_FRAGMENT_RE = /^(?:cada\s+(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))|(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))\s+cada)$/;
-const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:sem receita|que nao precisa(?: de)? receita)$/;
+// "a sem receita" (10/10, rodada 8 g25: a IA encurtava "a normal sem receita" e a linha virava "Não achei: a sem receita").
+const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:(?:o|a|os|as)\s+)?(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$/;
+// Só a medida do item anterior (10/10, rodada 8 g25): "3 pacotes de guardanapo, aquele de 32cm" — "de 32cm" não é item.
+const SIZE_ONLY_FRAGMENT_RE = /^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+)?(?:de|com)\s+\d+(?:[.,]\d+)?\s?(?:cm|mm|kg|g|l|ml|litros?|folhas|unidades|un|metros?|m)$/;
+export function isSizeOnlyFragment(phrase: string): boolean {
+  return SIZE_ONLY_FRAGMENT_RE.test(normalizeMsg(phrase).replace(/\s+/g, " ").trim());
+}
 export function isDescriptorFragment(phrase: string): boolean {
   const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,]/g, " ").replace(/\s+/g, " ").trim();
   return FOR_WHOM_FRAGMENT_RE.test(n) || EACH_SIZE_FRAGMENT_RE.test(n) || OTC_QUALIFIER_FRAGMENT_RE.test(n);
@@ -1226,7 +1232,8 @@ export function looksLikeSymptomAsk(text: string): boolean {
 // "por" é verbo ("por o arroz"), mas "por favor"/"por enquanto" é cortesia — virava uma cláusula de busca
 // ("Tira a fita crepe, por favor." → greeting no lugar do novo total; placar c10).
 // "muda/altera" (10/10, rodada 5 M5): "tira os balões e o salgadinho, e muda o guardanapo pra 4" era uma cláusula só.
-const COMMAND_VERB = "troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece|muda|mudar|altera|alterar";
+// "pula" (10/10, rodada 8 g25): "tira o leite, pula essa" — o "pula essa" é a 2ª ordem, não parte do alvo do "tira".
+const COMMAND_VERB = "pula|troca|trocar|tira|tirar|remove|remover|bota|botar|poe|por(?!\\s+(?:favor|gentileza|enquanto|hoje|mim))|coloca|colocar|adiciona|adicionar|inclui|incluir|acrescenta|acrescentar|manda|me ve|quero|cancela|esquece|muda|mudar|altera|alterar";
 
 // "só o cartão, sem vela" (10/10, rodada 6 g19): uma cláusula de tirar ("sem/tira/não quero/esquece X") junto de outra
 // coisa na mesma mensagem. Devolve o alvo e o resto (sem o "só"/"somente" da frente), ou null.
@@ -1331,6 +1338,12 @@ const TOTAL_PREVIEW_RE =
 // "quero falar com um atendente/humano/pessoa de verdade".
 const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
+
+// "quanto ainda posso gastar?", "quanto sobra do meu orçamento?", "ainda cabe quanto?" (10/10, rodada 8 g25).
+export function asksBudgetLeft(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
+  return /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
+}
 
 // O cliente pediu uma PESSOA? (10/10, rodada 8 g25) Mais largo que o HUMAN_RE: a IA reconhece "me passa pra alguém",
 // "chama o dono"; reclamação sem nada disso ("vocês são uma porcaria") não é pedido de atendente.
@@ -1439,6 +1452,12 @@ export function declinesSwapOffer(text: string): boolean {
 export function wantsCheapestForAll(text: string): boolean {
   const n = normalizeMsg(text);
   return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+}
+
+// Lista com "pode ser o mais barato" no fim (10/10, rodada 9 via g25): o mais barato de CADA item da mensagem.
+export function wantsCheapestEach(text: string): boolean {
+  const n = normalizeMsg(text).replace(/\s+/g, " ").trim();
+  return wantsCheapestForAll(text) || /(?:^|[,.;]\s*|\s+e\s+)(?:(?:pode ser|quero|manda|traz|prefiro|pega|sempre)\s+)?(?:o|os|a|as)\s+mais (?:barat[oa]s?|em conta)[\s!.]*$/.test(n);
 }
 
 // "escolhe você tudo que falta", "escolhe pra mim o resto", "o mais barato de todos que faltam" (10/10, rodada 8 M2): a
@@ -3356,6 +3375,13 @@ const ORDER_BUDGET_RES = [
   // "até 150 no total" / "no máximo 100 com a entrega" só como frase própria (início ou depois de pontuação): colado num
   // item ("caderninho que fique até 50 no total") é o teto da linha, que o fluxo do item já desconta da cesta.
   String.raw`(?:^|[,.;]\s*)(?:e\s+|mas\s+)?(?:tenho\s+|gasto\s+|posso gastar\s+|quero gastar\s+)?(?:(?:ate|no maximo|uns|umas|cerca de|mais ou menos|tipo)\s+)?${ORDER_BUDGET_NUM}\s+(?:no total|com (?:a )?entrega|com (?:o )?frete)`,
+  // "tenho só uns 40 reais pra gastar" / "posso gastar até 60" (10/10, rodada 9 via g25: "pra gastar" virava item "não achei").
+  String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:tenho|posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)?\s+(?:pra|para)\s+gastar\b`,
+  String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
+  // "só tenho 100 reais (no total), cabe?" / "só tenho 50 conto" como frase própria (rodada 9 B M2 via g25).
+  String.raw`(?:^|[,.;:!?]\s*)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
+  // "meu orçamento é de 150", "meu limite é 80 reais"
+  String.raw`(?:^|[\s,.;])(?:o\s+)?(?:meu|minha)\s+(?:orcamento|limite|teto|verba)\s+(?:e|eh|de|é|e de|eh de|ta em|esta em)\s+(?:(?:uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
   // "cesta básica de uns R$ 100" / "compra de até 200"
   String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
 ].map((src) => new RegExp(src, "g"));
@@ -3379,7 +3405,14 @@ export function parseOrderBudget(text: string): { cap: number; rest: string } | 
     }
   }
   if (cap == null) return null;
-  return { cap, rest: cutSpans(raw, spans) };
+  // Dois padrões casando o mesmo trecho ("tenho 40 reais pra gastar"): junta os pedaços sobrepostos antes de cortar.
+  const merged: Array<[number, number]> = [];
+  for (const [a, b] of [...spans].sort((x, y) => x[0] - y[0])) {
+    const last = merged[merged.length - 1];
+    if (last && a <= last[1]) last[1] = Math.max(last[1], b);
+    else merged.push([a, b]);
+  }
+  return { cap, rest: cutSpans(raw, merged) };
 }
 
 // Consulta de preço sem compromisso (10/10, rodada 8 M4): "só quero saber quanto tá o leite, não vou comprar agora" era

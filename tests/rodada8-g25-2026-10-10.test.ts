@@ -14,7 +14,7 @@ import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
 import { handleDeliveryMessage, recommendationLeftovers, runTurnScoped } from "../src/lib/delivery-service";
 import { __setDialogueModelForTests, dialogueBypassReason } from "../src/lib/dialogue";
 import { __setPreflightForTests } from "../src/lib/live-freight";
-import { cheaperAskTarget, detectIntent } from "../src/lib/lia-intents";
+import { asksBudgetLeft, cheaperAskTarget, detectIntent, isDescriptorFragment, isSizeOnlyFragment, parseOrderBudget, splitCommandClauses, wantsCheapestEach } from "../src/lib/lia-intents";
 import type { BasketItem, ChoiceOption, DeliveryContext, PendingChoice } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -239,6 +239,71 @@ test("4: 'melhor deixar, não preciso de mais nada disso' com o total na mesa é
   assert.ok(!ctx.basket?.length && !ctx.deliveryOrderId);
   const order = await prisma.deliveryOrder.findFirst({ where: { userId: c.userId }, orderBy: { createdAt: "desc" } });
   assert.notEqual(order?.status, "awaiting_quote_confirmation");
+});
+
+// 5 ------------------------------------------------------------------------------------------------------------------
+test("5: baixas puras — 'a sem receita' e 'aquele de 32cm' não são item; orçamento 'pra gastar'; 'quanto ainda posso gastar?'", () => {
+  assert.equal(isDescriptorFragment("a sem receita"), true);
+  assert.equal(isDescriptorFragment("a normal sem receita"), true);
+  assert.equal(isSizeOnlyFragment("aquele de 32cm"), true);
+  assert.equal(isSizeOnlyFragment("de 32cm"), true);
+  assert.equal(isSizeOnlyFragment("guardanapo de 32cm"), false);
+  assert.deepEqual(parseOrderBudget("tenho só uns 40 reais pra gastar. quero arroz, feijão e óleo, pode ser o mais barato"), { cap: 40, rest: "quero arroz, feijão e óleo, pode ser o mais barato" });
+  assert.equal(parseOrderBudget("tenho 2 gatos"), null);
+  for (const t of ["quanto ainda posso gastar?", "quanto eu ainda posso gastar", "quanto sobra do meu orçamento?"]) assert.equal(asksBudgetLeft(t), true, t);
+  assert.equal(asksBudgetLeft("quanto custa o arroz?"), false);
+  assert.equal(wantsCheapestEach("quero arroz, feijão e óleo, pode ser o mais barato"), true);
+  assert.equal(wantsCheapestEach("quero o arroz mais barato"), false);
+  assert.deepEqual(splitCommandClauses("tira o leite, pula essa"), ["tira o leite", "pula essa"]);
+});
+
+test("5: 'até 50 reais no total' vale para o pedido e 'quanto ainda posso gastar?' responde com ele", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({});
+  await send(c.phone, "até 50 reais no total");
+  assert.equal((await ctxOf(c.convoId)).orderBudget?.cap, 50);
+  const out = await send(c.phone, "quanto ainda posso gastar?");
+  assert.match(out, /teto de \*R\$ 50,00\*[\s\S]*com a entrega/, out.slice(0, 300));
+});
+
+test("5: 'só tenho 100 reais no total, cabe?' guarda o teto e responde com o número (produtos + entrega)", async (t) => {
+  if (!dbOk) return t.skip();
+  const items = [
+    bi("am-1", "Protetor Solar Corporal FPS 50 200ml", 69.9, { storeKey: "americanas", storeLabel: "Americanas" }),
+    bi("pm-1", "Repelente Off Loção 200ml", 29.9, { storeKey: "paguemenos", storeLabel: "Pague Menos" })
+  ];
+  const c = await customerWith({ basket: items });
+  const out = await send(c.phone, "só tenho 100 reais no total, cabe?");
+  assert.equal((await ctxOf(c.convoId)).orderBudget?.cap, 100);
+  assert.match(out, /teto de \*R\$ 100,00\*[\s\S]*passa do limite/, out.slice(0, 400));
+});
+
+test("5: orçamento dentro da lista ('quero 2 sabonetes, tenho 30 reais') fica no contexto", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({});
+  await send(c.phone, "quero 2 sabonetes, tenho 30 reais");
+  assert.equal((await ctxOf(c.convoId)).orderBudget?.cap, 30);
+});
+
+test("5: 'tira o leite, pula essa' tira o leite E pula a escolha da vez", async (t) => {
+  if (!dbOk) return t.skip();
+  const leite = bi("mambo-8057", "Leite Semidesnatado Longa Vida Parmalat 1 Litro", 5.49, { storeKey: "mambo", storeLabel: "Mambo", ask: "leite" });
+  const c = await customerWith(
+    { basket: [leite], pending: [pend("manteiga", [opt("mambo-22499", "Manteiga com Sal Momento Mambo 200g", 11.65, "mambo", "Mambo")]), pend("pão de forma", [opt("mambo-20734", "Pão de Forma Tradicional Bauducco 390g", 6.59, "mambo", "Mambo")])] },
+    "choosing"
+  );
+  const out = await send(c.phone, "tira o leite, pula essa");
+  const ctx = await ctxOf(c.convoId);
+  assert.ok(!ctx.basket?.some((b) => b.sku === leite.sku), out.slice(0, 300));
+  assert.deepEqual(ctx.pending?.map((p) => p.query), ["pão de forma"], out.slice(0, 300));
+  assert.doesNotMatch(out, /\*pula essa\*/i, out.slice(0, 300));
+});
+
+test("5: 'tem um mais em conta?' com o carrossel aberto ordena por preço (não busca 'em conta')", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({ pending: [pend("protetor solar", [opt("pm-1", "Protetor Solar Facial Nivea FPS60 50ml", 21.89, "paguemenos", "Pague Menos"), opt("pm-2", "Protetor Solar Sundown FPS30 120ml", 39.9, "paguemenos", "Pague Menos")])] }, "choosing");
+  const out = await send(c.phone, "tem um mais em conta?");
+  assert.doesNotMatch(out, /Não achei \*protetor solar em conta\*/i, out.slice(0, 300));
 });
 
 // 6 ------------------------------------------------------------------------------------------------------------------

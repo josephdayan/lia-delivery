@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
+import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2317,7 +2317,13 @@ async function handleDeliveryTurn(
   // Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3): "pode fechar. se passar de 100 me avisa" — o teto vale
   // pro total e o resto da mensagem segue ("pode fechar."). O teto de um item só (ctx.budget) continua no fluxo dele.
   const orderBudget = parseOrderBudget(text);
-  const singleItemBudget = parseBudgetStatement(text) != null && ((ctx.basket?.length ?? 0) <= 1 || (ctx.pending?.length ?? 0) > 0);
+  // "até 50 reais no total" / "pra tudo" (10/10, rodada 8 g25: o presente da professora com "até 50 no total" virava teto
+  // de UM item e depois "quanto ainda posso gastar?" perguntava o valor de novo): dito "no total", é o teto do pedido.
+  // "tenho 50 reais" / "meu orçamento é 150" também: é o dinheiro da compra inteira (rodada 9 B M2 via g25).
+  const explicitTotal = /\b(?:no total|pra tudo|para tudo|ao todo|com tudo|pra gastar|para gastar|posso gastar|orcamento|limite)\b|\btenho\s+(?:(?:so|apenas|uns|umas)\s+)*(?:r\$\s*)?\d/.test(normalizeMsg(text));
+  // Com UM item na mesa, o teto continua o do item (o fluxo dele já oferece o que cabe); sem nada ainda, é do pedido.
+  const nothingYet = !(ctx.basket?.length ?? 0) && !(ctx.pending?.length ?? 0);
+  const singleItemBudget = !(explicitTotal && nothingYet) && parseBudgetStatement(text) != null && ((ctx.basket?.length ?? 0) <= 1 || (ctx.pending?.length ?? 0) > 0);
   if (orderBudget && !singleItemBudget) {
     ctx.orderBudget = { cap: orderBudget.cap };
     await writeCtx(convo.id, ctx);
@@ -2326,7 +2332,18 @@ async function handleDeliveryTurn(
       if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
       return;
     }
-    text = orderBudget.rest;
+    // Pedido de recomendação ("presente pra professora, até 50 no total") fica inteiro: o teto também filtra os cards.
+    if (!(recommendEnabled() && detectRecommendation(text))) text = orderBudget.rest;
+  }
+  // "quanto ainda posso gastar?" (10/10, rodada 8 g25): o teto dito antes (do pedido ou do item) e o que já foi usado.
+  if (asksBudgetLeft(text)) {
+    const cap = ctx.orderBudget?.cap ?? ctx.budget?.cap ?? ctx.pending?.find((p) => p.cap != null)?.cap;
+    if (cap != null) {
+      const est = basketEstimate(ctx);
+      await reply(phone, copy.budgetLeftAnswer(cap, est.produtos, est.total, ctx.pending?.length ?? 0));
+      if (ctx.step === "choosing" && ctx.pending?.length && choicesNudgeAllowed()) await reply(phone, copy.choicesStillOpen(ctx.pending[0].query));
+      return;
+    }
   }
   // "duas entregas: casa e trabalho" (10/10, rodada 7 M11): um endereço por pedido — diz isso em vez de juntar tudo
   // calado no endereço cadastrado. "em casa: X" segue como pedido; "no trabalho: Y" fica pro 2º pedido.
@@ -3178,7 +3195,13 @@ async function handleDeliveryTurn(
     }
     if (lines.length >= 2 && real.length) {
       console.log("[basket:sum]", JSON.stringify(text.slice(0, 60)), `itens_velhos=${ctx.basket!.length}`);
-      await reply(phone, copy.summedToBasket(real.map((l) => `${l.qty}x ${l.phrase}`)));
+      // A medida solta ("aquele de 32cm") é do item anterior, não um item a mais (10/10, rodada 8 g25).
+      const labels: string[] = [];
+      for (const l of real) {
+        if (labels.length && isSizeOnlyFragment(l.phrase)) labels[labels.length - 1] += ` ${l.phrase.replace(/^(?:aquel[ea]s?|ess[ea]s?)\s+/i, "")}`;
+        else labels.push(`${l.qty}x ${l.phrase}`);
+      }
+      await reply(phone, copy.summedToBasket(labels));
       await handleSearch(phone, convo.id, user.cep, ctx, text, user.id);
       return;
     }
@@ -5094,7 +5117,13 @@ async function handleDeliveryTurn(
         const swaps = parsed.filter((p) => p.intent.kind === "swap_item");
         const adjusts: { item: BasketItem; qty: number }[] = [];
         const searches: typeof frees = [];
+        // "pula essa" junto de outra ordem (10/10, rodada 8 g25): pula a escolha da vez, nunca vira busca.
+        let skipCurrent = false;
         for (const part of frees) {
+          if (/^(?:pula|pular)(?:\s+(?:ess[ae]|est[ae]|isso|ela|ele|ess[ae] ai|ess[ae] item|por enquanto|por agora))?[\s!.]*$/.test(part.clause)) {
+            skipCurrent = true;
+            continue;
+          }
           // "muda o guardanapo pra 4" / "a fralda é só 1 pacote" (10/10, rodada 5 M5/M6): quantidade de item da cesta.
           const named = parseItemQtyEdit(part.clause);
           const namedItem = named ? (ctx.basket ?? []).find((item) => itemMatchesPhrase(named.phrase, item)) : undefined;
@@ -5110,11 +5139,22 @@ async function handleDeliveryTurn(
           if (single && existing) adjusts.push({ item: existing, qty: single.qty });
           else searches.push(part);
         }
+        // "pula essa" fala da escolha que estava na tela: se o "tira" já levou ela, não pula a próxima.
+        const onScreen = ctx.step === "choosing" ? ctx.pending?.[0]?.query : undefined;
         await runDeferredEdits(phone, convo.id, ctx, user.cep, async () => {
         for (const part of removes) {
           if (part.intent.kind !== "remove_item") continue;
           await handleRemove(phone, convo.id, user.cep, ctx, part.intent.target, { silentIfFound: true });
           if (part.intent.andAdd) searches.push({ clause: part.intent.andAdd, intent: { kind: "free_text" } });
+        }
+        if (skipCurrent && ctx.step === "choosing" && ctx.pending?.length && onScreen != null && ctx.pending[0].query === onScreen) {
+          const skipped = ctx.pending.shift()!;
+          console.log("[clauses:skip]", JSON.stringify(skipped.query));
+          if (!ctx.pending.length) {
+            ctx.pending = undefined;
+            ctx.step = "collecting";
+          }
+          await writeCtx(convo.id, ctx);
         }
         for (const adjust of adjusts) {
           // "bota 2 leites" com leite já na cesta = ajuste de quantidade (28/08 S4).
@@ -5143,6 +5183,10 @@ async function handleDeliveryTurn(
         });
         // Só removes/ajustes (nada re-cotou nem abriu cards): recap do estado atual,
         // senão a compound "tira X e tira Y" terminava quase muda.
+        if (!swaps.length && !searches.length && skipCurrent && ctx.pending?.length) {
+          await sendChoices(phone, ctx.pending[0], copy.nextChoiceHeader(shownQuery(ctx.pending[0]), ctx.pending.length, ctx.pending[0].closestFalta));
+          return;
+        }
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
@@ -6842,10 +6886,8 @@ async function syncAwaitingQuoteOrderAddress(phone: string, convoId: string, ctx
 
 // Total estimado da cesta (produtos exibidos + frete de tabela de cada loja) contra o orçamento dito (rodada 8 M3).
 // Só exibição: o total que vale é o da cotação. Marca `warned` para não repetir a cada item.
-function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
-  const budget = ctx.orderBudget;
+function basketEstimate(ctx: DeliveryContext): { produtos: number; total: number } {
   const basket = (ctx.basket ?? []).filter((i) => i.unitPrice > 0);
-  if (!budget || budget.warned || !basket.length) return undefined;
   const byStore = new Map<string, BasketItem[]>();
   for (const item of basket) {
     const key = item.storeKey ?? CONCIERGE_STORE_KEY;
@@ -6853,7 +6895,13 @@ function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
   }
   const produtos = basket.reduce((sum, i) => sum + display(i.unitPrice, i.medicine) * i.qty, 0);
   const frete = [...byStore.entries()].reduce((sum, [key, items]) => sum + storeFreight(key, items[0]?.storeLabel ?? key, roundMoney(items.reduce((acc, i) => acc + i.unitPrice * i.qty, 0))).fee, 0);
-  const estimate = roundMoney(produtos + frete);
+  return { produtos: roundMoney(produtos), total: roundMoney(produtos + frete) };
+}
+function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
+  const budget = ctx.orderBudget;
+  const basket = (ctx.basket ?? []).filter((i) => i.unitPrice > 0);
+  if (!budget || budget.warned || !basket.length) return undefined;
+  const estimate = basketEstimate(ctx).total;
   if (estimate <= budget.cap + 0.005) return undefined;
   ctx.orderBudget = { ...budget, warned: true };
   return copy.overBudgetChoiceNote(budget.cap, estimate);
@@ -7403,7 +7451,9 @@ async function handleChoosing(
   const attrBudget = attrAskRaw ? splitPriceCap(attrAskRaw) : null;
   const attrAsk = attrBudget?.cap != null ? attrBudget.phrase : attrAskRaw;
   if (attrBudget?.cap != null) current.cap = attrBudget.cap;
-  if (attrAsk && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
+  // "tem um mais em conta?" (10/10, rodada 8 g25) é pedido de preço, não atributo: virava a busca "protetor solar em conta".
+  const attrIsPrice = attrAsk ? /\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco|mais car[oa]s?)\b/.test(normalizeMsg(attrAsk)) : false;
+  if (attrAsk && !attrIsPrice && !parseRefinement(attrAsk) && !wantsMoreOptions(text)) {
     const base = current.baseQuery ?? current.query;
     const baseTokens = new Set(queryTokens(normalizeMsg(base)));
     const fresh = queryTokens(normalizeMsg(attrAsk)).filter((token) => !baseTokens.has(token));
@@ -9603,6 +9653,17 @@ async function handleConciergeCore(
   const priorQueue = (ctx.pending ?? []).filter((old) => !pending.some((fresh) => pendingSupersedes(fresh.query, old.query)));
   // "escolhe vc"/"qualquer um": a linha marcada auto-escolhe o topo do ranking, com
   // confirmação do que entrou (28/08 S6 — "escolhe vc" virava item não-achado).
+  // "quero arroz, feijão e óleo, pode ser o mais barato" (10/10, rodada 9 via g25): a preferência de preço vale para a
+  // lista inteira desta mensagem — cada item entra pelo mais barato confirmado (antes o arroz abria carrossel).
+  // A IA às vezes já reparte a preferência em cada linha ("arroz mais barato, feijão mais barato"): vale igual.
+  const cheapLines = pending.length + notFoundLines.length >= 2 && pending.every((p) => /\bmais (?:barat\w*|em conta)$/.test(normalizeMsg(p.query)));
+  if (pending.length >= 2 && (wantsCheapestEach(text) || cheapLines)) {
+    for (const choice of pending) {
+      if (!choice.options.length || choice.closestFalta || choice.recommendation) continue;
+      choice.options = [...choice.options].sort((a, b) => display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine));
+      choice.autoPick = true;
+    }
+  }
   const autoPickPending = pending.filter((choice) => choice.autoPick && choice.options.length);
   if (autoPickPending.length) {
     const packNotes: string[] = [];
@@ -11742,6 +11803,8 @@ async function recommendAndQueueRest(
   text: string
 ) {
   const { phone, convoId, ctx } = env;
+  // Teto dito no pedido de recomendação ("presente até 80 reais") vale também para o pedido (rodada 9 B M2 via g25).
+  if (rec.budget != null && !ctx.orderBudget) ctx.orderBudget = { cap: rec.budget };
   const rest = recommendationLeftovers(text, rec);
   const before = ctx.pending?.[0];
   await handleRecommend({ ...env, userId: env.userId ?? "" }, rec);

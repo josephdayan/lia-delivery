@@ -2205,6 +2205,16 @@ export function overBudgetNone(cap: number, total: number, name: string, cheapes
 }
 
 // Teto dito depois de já ter o item na cesta: a Lia confere no total e só então avisa se não cabe.
+// "quanto ainda posso gastar?" com o teto dito antes (10/10, rodada 8 g25). Produtos só; a entrega entra no total.
+export function budgetLeftAnswer(cap: number, produtos: number, estimate: number, pendingCount = 0): string {
+  const falta = pendingCount ? ` (ainda falta escolher ${pendingCount === 1 ? "1 item" : `${pendingCount} itens`})` : "";
+  if (estimate <= cap + 0.005) {
+    const left = Math.round((cap - estimate) * 100) / 100;
+    return `Cabe, sim: do seu teto de *${brl(cap)}*, o que você escolheu dá uns *${brl(estimate)}* já com a entrega${falta} — sobram uns *${brl(left)}*. O total exato aparece antes de você pagar.`;
+  }
+  return `Do seu teto de *${brl(cap)}*: os produtos somam *${brl(produtos)}* e, com a entrega, fica em uns *${brl(estimate)}* — passa do limite${falta}. Se quiser, diz *tira* e o item, ou *mais barato* que eu procuro uma opção que caiba.`;
+}
+
 export function budgetNoted(cap: number): string {
   return `Anotado: *${brl(cap)}* no total, já com a entrega. Se passar eu te aviso e mostro o que cabe. Quer mais alguma coisa? Quando fechar, diz *"só isso"*.`;
 }
