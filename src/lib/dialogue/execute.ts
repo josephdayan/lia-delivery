@@ -6,7 +6,8 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
+import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap } from "../lia-intents";
+import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
@@ -142,7 +143,19 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       // A contagem/tamanho que a IA leu é conferida com a fala do cliente (10/10, rodada 9: "um par de pilhas AA" → 1x ou
       // 2 cartelas; "água sanitária de 5 litros, uma só" → 2x).
       const said = turnMeta.getStore()?.inboundText ?? env.text;
-      const lines = reconcileLineCounts(step.lines.map((l) => ({ ...l, phrase: l.query })), said).map((l) => ({ ...l, query: l.phrase }));
+      // "carrinho ou lego pra 5 anos" (10/10, rodada 12): as duas buscas da IA são UM item com duas buscas. Trocar o item da
+      // tela herda o teto dele ("brinquedo até 80 reais" → o Lego de R$ 251 não aparece).
+      const current = choosing ? ctx.pending?.[0] : undefined;
+      // Sem teto no item, o teto do PEDIDO ("tenho até 80 reais") menos o que já está na cesta.
+      const basketNow = (ctx.basket ?? []).reduce((sum, i) => sum + display(i.unitPrice, i.medicine) * i.qty, 0);
+      const orderLeft = ctx.orderBudget ? Math.floor(ctx.orderBudget.cap - basketNow) : undefined;
+      const inheritCap = step.replace && parsePriceCap(said) == null ? current?.cap ?? (orderLeft != null && orderLeft > 0 ? orderLeft : undefined) : undefined;
+      const lines = foldAlternativeLines(
+        reconcileLineCounts(step.lines.map((l) => ({ ...l, phrase: l.query })), said).map((l) => ({ ...l, query: l.phrase })),
+        said,
+        (l) => l.query,
+        (l, label) => ({ ...l, query: label })
+      ).map((l) => (inheritCap != null && parsePriceCap(l.query) == null ? { ...l, query: `${l.query} até ${Math.floor(inheritCap)} reais` } : l));
       let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
@@ -202,8 +215,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       const wanted = `${base} ${fresh.join(" ")}`;
       // Tudo o que o cliente pediu tem que estar no produto, não só a palavra nova.
       if (await h.researchChoice(phone, convoId, ctx, current, wanted, asked.join(" "))) return "done";
-      await reply(phone, copy.refineNoResult(wanted));
-      await h.sendChoices(phone, current);
+      // O mesmo "não achei" do caminho de sempre (10/10, rodada 12): com a vitrine ainda na tela, "O que eu tenho é isso:"
+      // ficava pela metade, sem nada depois.
+      await h.replyRefineMiss(phone, current, wanted, env.text);
       return "done";
     }
 

@@ -9,7 +9,9 @@
 import { liaTextModel, sanitizeRouterReply } from "../adapters/ai";
 import type { DeliveryContext } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { looksLikeMedicine, parseNeededBy, parsePriceCap, type Intent } from "../lia-intents";
+import { attributeFragment, isDescriptorFragment, isNarrativeSegment, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseNeededBy, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, type Intent } from "../lia-intents";
+import { foldAlternativeLines } from "../alt-items";
+import { localCatalogProbe } from "../stores/list-probe";
 import { resolveListItems } from "../list-items";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { emergencyFlag } from "../recommend/fallback";
@@ -175,6 +177,41 @@ export function __setPreSignupModelForTests(fn: ((input: PreModelInput) => Promi
 }
 export function preSignupModelAvailable(): boolean {
   return seamActive || Boolean(process.env.OPENAI_API_KEY);
+}
+
+// Itens da IA × lista da mensagem (10/10, rodada 12 g35). Puro (fora o índice local do catálogo):
+// - atributo solto ("tem que ser macia") refina o item anterior;
+// - as duas pontas de "X ou Y" viram UM item ("carrinho ou lego para 5 anos");
+// - linha da mensagem que nenhum item da IA cobre e que tem produto de verdade no catálogo volta ("uns 4 tomates");
+//   contexto ("to querendo cuidar mais da minha pele", "pele meio oleosa", "receber hoje à noite") não volta.
+export function reconcilePreItems(items: PreItem[], text: string): PreItem[] {
+  const folded: PreItem[] = [];
+  for (const item of items) {
+    const attr = attributeFragment(item.query);
+    const prev = folded[folded.length - 1];
+    if (attr && prev) prev.query = normalizeMsg(prev.query).includes(attr) ? prev.query : `${prev.query} ${attr}`;
+    else if (!attr) folded.push({ ...item });
+  }
+  // A idade dita ("pro meu sobrinho de 5 anos") define o brinquedo: o item que a IA encurtou para "brinquedo" a leva junto.
+  const age = /\b(\d{1,2})\s*anos?\b/.exec(normalizeMsg(text))?.[1];
+  const aged = age && folded.length === 1 && !/\b\d{1,2}\s*anos?\b/.test(normalizeMsg(folded[0].query)) && /\b(?:sobrinh|filh|net|crianc|menin|afilhad|aniversari)\w*/.test(normalizeMsg(text)) ? [{ ...folded[0], query: `${folded[0].query} ${age} anos` }] : folded;
+  const out = foldAlternativeLines(aged, text, (i) => i.query, (i, label) => ({ ...i, query: label }));
+  const covered = (phrase: string) => out.some((i) => (sharesProductNoun(i.query, phrase) && sameItemProduct(i.query, phrase)) || normalizeMsg(i.query).includes(normalizeMsg(phrase)));
+  for (const line of resolveListItems(stripMedicineNegation(text))) {
+    const phrase = line.phrase.trim();
+    if (!phrase || covered(phrase)) continue;
+    // Comentário/pergunta sobre o que foi mostrado ("o T-Rex é pra bebê né?") não é pedido.
+    const at = text.toLowerCase().indexOf(phrase.toLowerCase());
+    if (/(?:^|\s)(?:é|eh|são|sao|está|tá|era|foi)\s/i.test(phrase) || /\s(?:né|ne)$/i.test(phrase) || (at >= 0 && /^\s*\?/.test(text.slice(at + phrase.length)))) continue;
+    if (isNonItemSegment(phrase) || isNarrativeSegment(phrase) || isDescriptorFragment(phrase) || attributeFragment(phrase) || looksLikeMedicine(phrase) || isPrescriptionDrugName(phrase)) continue;
+    // Ponta de uma alternativa já juntada ("lego" em "carrinho ou lego") não é item próprio.
+    if (out.some((i) => /\bou\b/.test(i.query) && sharesProductNoun(i.query, phrase))) continue;
+    if (!localCatalogProbe(phrase).strong) continue;
+    const count = /^(?:(?:uns|umas|mais|tipo)\s+)?(\d{1,2})\s+(.+)$/i.exec(phrase);
+    const qty = count ? Number(count[1]) : line.qty;
+    out.push({ query: count ? count[2] : phrase, qty: qty >= 1 ? Math.min(50, qty) : 1, cheapest: false });
+  }
+  return out;
 }
 
 // ---------- quando consultar ----------
@@ -371,15 +408,13 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   }
   // A IA do gerente já classificou a mensagem: o roteador de fallback (outra chamada) não repete.
   if (meta) meta.llmUsed = true;
+  // Itens da IA conferidos com a lista da própria mensagem (10/10, rodada 12): o que ela deixou de fora volta, o atributo
+  // solto refina o vizinho e "X ou Y" é um item só. Antes, com 1 item a menos ("uns 4 tomates") nada voltava, e com 2 a
+  // menos o caminho determinístico assumia e anotava o contexto ("to querendo cuidar mais da minha pele").
+  if (decision.items.length && !decision.recommend) decision = { ...decision, items: reconcilePreItems(decision.items, input.text) };
   // Teto do PEDIDO já guardado neste turno ("gasto até 60 reais", 10/10, rodada 10 g29): numa LISTA não vira o "até 60 reais"
   // de uma linha (com um item só, o teto do pedido é o desse item e segue na frase).
   const plan = planPreSignup(ctx.orderBudget && decision.budget === ctx.orderBudget.cap && Math.max(decision.items.length, resolveListItems(input.text).length) >= 2 ? { ...decision, budget: null } : decision, { preBudget: ctx.preBudget, text: input.text });
-  // A IA devolveu MENOS itens do que a lista tem (09/10, rodada 3): item perdido calado é o pior erro. O caminho
-  // determinístico anota todos.
-  if (plan.ok && decision.items.length >= 1 && !decision.recommend && resolveListItems(input.text).length >= decision.items.length + 2) {
-    console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=itens_a_menos`);
-    return { kind: "fallthrough", reason: "itens_a_menos" };
-  }
   if (!plan.ok) {
     console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=${plan.reason}`);
     return { kind: "fallthrough", reason: plan.reason };

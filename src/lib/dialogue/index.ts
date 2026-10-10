@@ -145,6 +145,8 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
   // "qual o horário de vocês?" (09/10): o regex já sabe que é horário de atendimento; a IA perguntava "da Lia ou da loja?".
   if (i.intent.kind === "service_question" && i.intent.topic === "hours") return "intent:hours";
+  // "vocês embrulham pra presente?" (10/10, rodada 12 M6): resposta fixa e verdadeira; a IA mandava o "como funciona".
+  if (i.intent.kind === "service_question" && i.intent.topic === "gift_wrap") return "intent:gift_wrap";
   // "qual o mais barato?" com as opções na tela: o roteador de sempre responde QUAL é (sem pôr na cesta) — a
   // IA entendia como pergunta de serviço e dizia "comparo, sim" (placar c54).
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && asksCheapestQuestion(text)) return "pergunta_menor_preco";

@@ -1963,6 +1963,59 @@ export function metaProbeAnswer(): string {
 
 // "qual a diferença entre o 1 e o 2?" — compara pelo que a Lia sabe: nome, preço e
 // loja; especificação técnica fica honesta (29/08 S17).
+// "qual a diferença entre esses dois?" / "entre o Heinz bolonhesa e o tradicional com pedaços?" (10/10, rodada 12 M1):
+// resposta pelos dados dos cards — tamanho/quantidade, preço (e por medida, quando dá pra comparar), marca/tipo que muda,
+// loja e prazo. Detalhe técnico que o card não tem a Lia diz que não sabe.
+type CompareRow = { n: number; name: string; price: number; storeLabel?: string; delivery?: string };
+const CMP_STOP = new Set("de da do das dos para pra com sem e em a o os as um uma kg g ml l lt un unidade unidades".split(" "));
+function cmpWords(name: string): { key: string; shown: string }[] {
+  return name
+    .split(/[\s,/()–-]+/)
+    .map((w) => ({ key: w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(), shown: w }))
+    .filter((w) => w.key.length > 1 && !CMP_STOP.has(w.key) && !/^\d/.test(w.key));
+}
+function cmpMeasure(name: string): { value: number; unit: "g" | "ml" | "m" | "un"; label: string } | null {
+  const n = name.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/(\d),(\d)/g, "$1.$2");
+  const m = /(\d+(?:\.\d+)?)\s*(kg|g|ml|l|lt|litros?|m|metros?|un|unid|unidades|rolos?|folhas|caps|capsulas|comprimidos|sacos?)\b/.exec(n);
+  if (!m) return null;
+  const v = Number(m[1]);
+  const u = m[2];
+  const label = `${m[1].replace(".", ",")}${/^(kg|g|ml|l|lt|m)$/.test(u) ? u : ` ${u}`}`;
+  if (u === "kg") return { value: v * 1000, unit: "g", label };
+  if (u === "g") return { value: v, unit: "g", label };
+  if (u === "ml") return { value: v, unit: "ml", label };
+  if (/^(l|lt|litros?)$/.test(u)) return { value: v * 1000, unit: "ml", label };
+  if (/^(m|metros?)$/.test(u)) return { value: v, unit: "m", label };
+  return { value: v, unit: "un", label };
+}
+export function compareOptionsAnswer(rows: CompareRow[]): string {
+  const shown = rows.slice(0, 5);
+  const measures = shown.map((r) => cmpMeasure(r.name));
+  const sameUnit = measures.every((m) => m && m.unit === measures[0]!.unit);
+  const per = (r: CompareRow, m: ReturnType<typeof cmpMeasure>) => {
+    if (!sameUnit || !m || m.value <= 0) return "";
+    const base = m.unit === "g" || m.unit === "ml" ? 100 : 1;
+    const unitLabel = m.unit === "g" ? "100 g" : m.unit === "ml" ? "100 ml" : m.unit === "m" ? "metro" : "unidade";
+    return ` (${brl((r.price / m.value) * base)} por ${unitLabel})`;
+  };
+  const lines = shown.map((r, i) => `*${r.n})* ${r.name} — ${brl(r.price)}${per(r, measures[i])}${r.storeLabel || r.delivery ? ` · ${[r.storeLabel, r.delivery].filter(Boolean).join(", ")}` : ""}`);
+  const words = shown.map((r) => cmpWords(r.name));
+  const everywhere = (key: string) => words.every((ws) => ws.some((w) => w.key === key));
+  const diffs = shown
+    .map((r, i) => ({ n: r.n, only: [...new Map(words[i].filter((w) => !everywhere(w.key)).map((w) => [w.key, w.shown])).values()].slice(0, 5) }))
+    .filter((d) => d.only.length);
+  const notes: string[] = [];
+  if (diffs.length) notes.push(`O que muda pelo nome: ${diffs.map((d) => `a *${d.n}* é ${d.only.join(" ")}`).join("; ")}.`);
+  else notes.push("Pelo nome é o mesmo produto — muda a loja e o preço.");
+  const labels = measures.map((m) => m?.label);
+  if (labels.every(Boolean) && new Set(labels).size > 1) notes.push(`Tamanho: ${shown.map((r, i) => `*${r.n}* ${labels[i]}`).join(", ")}.`);
+  else if (labels.every(Boolean)) notes.push(`Mesmo tamanho (${labels[0]}).`);
+  const cheapest = shown.reduce((best, r) => (r.price < best.price ? r : best), shown[0]);
+  if (shown.some((r) => r.price !== cheapest.price)) notes.push(`A mais barata é a *${cheapest.n}*.`);
+  notes.push("Detalhe técnico além do que está no card (composição, fórmula) eu não tenho aqui. Qual você quer?");
+  return [...lines, "", ...notes].join("\n");
+}
+
 export function optionComparison(options: { name: string; price: number; storeLabel?: string }[]): string {
   const lines = options.map(
     (o, i) => `*${i + 1})* ${o.name} — ${brl(o.price)}${o.storeLabel ? ` (${o.storeLabel})` : ""}`
@@ -2987,7 +3040,7 @@ export function manualQuoteSummary(input: {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview",
+  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean }
 ): string {
@@ -3021,6 +3074,9 @@ export function serviceAnswer(
       return storesAnswer([]);
     case "price_compare":
       return priceCompareAnswer(Boolean(ctx?.hasBasket));
+    case "gift_wrap":
+      // Verdade operacional (10/10, rodada 12): quem embala e entrega é a loja; a Lia não garante embrulho nem bilhete.
+      return "Embrulho pra presente eu não consigo garantir: quem embala e entrega é a *própria loja*, na embalagem dela, e não dá pra mandar bilhete junto. Se quiser, procuro um *papel ou sacola de presente* pra ir no mesmo pedido.";
     default:
       return "Eu procuro o que você pedir nas lojas que entregam no seu endereço, mostro o total e o prazo antes, e você paga por Pix ou cartão aqui no chat. Eu compro pra você depois que pagar. O que você precisa?";
   }

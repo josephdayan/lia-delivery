@@ -88,6 +88,8 @@ export type StoreFulfillment = {
 export type PendingChoice = {
   query: string;
   qty: number;
+  // Só durante a montagem das escolhas (10/10, rodada 12): ponta de um item "X ou Y", juntada antes de sair do buildChoices.
+  altOf?: string;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
   storeNoted?: boolean;
   // O aviso "pra amanhã não chega" da vitrine já saiu para esta escolha (10/10, rodada 6 g19).
