@@ -6178,6 +6178,7 @@ async function confirmChosenOption(
   // esta mesma escolha (e o novo pick substitui o item na cesta, não soma outro).
   const { replaceSku, ...lastBase } = current;
   ctx.lastChoice = { ...lastBase, chosenSku: chosen.sku };
+  rememberShown(ctx, chosen.sku, current);
   if (replaceSku) {
     // Escolha reaberta ("voltar", "na verdade quero o 2", "outras"): a linha antiga sai e a
     // quantidade dela vale para a nova (06/10). Escolher o MESMO produto de novo não soma.
@@ -7636,6 +7637,49 @@ const USE_QUALIFIER_RE = /\b(intim\w*|antissept\w*|demaquilant\w*|facial|pet|cac
 // público que o candidato tem e o atual não = outro produto. Junto do tamanho (±10%) e de uma economia que valha (≥ 5%).
 const CHEAPER_SUBTYPE_RE = /\b(intim\w*|antissept\w*|demaquilant\w*|facial|corporal|labial|labios?|capilar|maos|pes|pet|cachorro|gato|geriatric\w*|adulto|infantil|kids|baby|bebe|aerossol|spray|bastao|stick|roll ?on|gel|mousse|serum|oleo|po compacto|compacto|stick)\b/g;
 const CHEAPER_MIN_SAVING = 0.05;
+// Opções já mostradas na escolha que pôs `sku` na cesta (10/10, rodada 5 g16): a última escolha e a memória curta
+// das escolhas anteriores (`recentShown`).
+function shownOptionsForItem(ctx: DeliveryContext, sku: string): ChoiceOption[] {
+  const out: ChoiceOption[] = [];
+  if (ctx.lastChoice?.chosenSku === sku) out.push(...(ctx.lastChoice.shownOptions ?? []), ...ctx.lastChoice.options);
+  for (const r of ctx.recentShown ?? []) if (r.sku === sku) out.push(...r.options);
+  return out;
+}
+
+// Guarda as opções mostradas de uma escolha concluída (no máx. 4 escolhas × 10 opções).
+function rememberShown(ctx: DeliveryContext, sku: string, choice: PendingChoice) {
+  const options = [...new Map([...(choice.shownOptions ?? []), ...choice.options].map((o) => [o.sku, o])).values()].slice(0, 10);
+  ctx.recentShown = [{ sku, options }, ...(ctx.recentShown ?? []).filter((r) => r.sku !== sku)].slice(0, 4);
+}
+
+// Candidatos do "mais barato" (10/10, rodada 5 g16): busca nova + o que o cliente já viu, só o mesmo tipo e mais barato
+// que o atual; mesmo tamanho primeiro, depois por preço. São esses que vão à confirmação ao vivo.
+export function cheaperSwapPool(current: BasketItem, fresh: ChoiceOption[], shown: ChoiceOption[]): ChoiceOption[] {
+  const currentNorm = normalizeMsg(`${current.name} ${current.ask ?? ""}`);
+  const currentPrice = display(current.unitPrice, current.medicine);
+  const base = measureOf(current.name);
+  const sameSize = (o: ChoiceOption) => {
+    if (base == null) return true;
+    const size = measureOf(o.name);
+    return size != null && Math.abs(size - base) / base <= 0.1;
+  };
+  // Número que o cliente pediu e não é tamanho ("fps 30", "hp 667"), e que o item atual tem, vem antes: a busca larga
+  // trazia FPS 50 na frente (preferência, não filtro: sem nenhum FPS 30 mais barato, o resto ainda serve).
+  const askSpecs = [...normalizeMsg(current.ask ?? "")
+    .replace(/\d+(?:[.,]\d+)?\s?(?:kg|g|mg|ml|l|litros?|un|unidades?|cm|m)\b/g, " ")
+    .matchAll(/\b([a-z]+)\s?(\d+)\b/g)].map((m) => new RegExp(`\\b${m[1]}\\s?${m[2]}\\b`)).filter((re) => re.test(normalizeMsg(current.name)));
+  const specOk = (o: ChoiceOption) => { const name = normalizeMsg(o.name); return askSpecs.every((re) => re.test(name)); };
+  const merged = new Map<string, ChoiceOption>();
+  for (const o of [...shown, ...fresh]) if (!merged.has(o.sku)) merged.set(o.sku, o);
+  return [...merged.values()]
+    .filter((o) => o.sku !== current.sku)
+    .filter((o) => display(o.unitPrice, o.medicine) <= currentPrice * (1 - CHEAPER_MIN_SAVING))
+    .filter((o) => { const q = USE_QUALIFIER_RE.exec(normalizeMsg(o.name)); return !q || currentNorm.includes(q[0]); })
+    .filter((o) => sameSubtypeForCheaper(currentNorm, o.name))
+    .sort((a, b) => Number(specOk(b)) - Number(specOk(a)) || Number(sameSize(b)) - Number(sameSize(a)) || display(a.unitPrice, a.medicine) - display(b.unitPrice, b.medicine))
+    .slice(0, 12);
+}
+
 function sameSubtypeForCheaper(current: string, candidate: string): boolean {
   // Corpo é a zona padrão (10/10, rodada 4 A2): "Protetor Solar Sundown Praia e Piscina" é corporal sem dizer; o
   // "Basic+ Corporal" do mesmo carrossel não é outro subtipo. Facial/labial/capilar/mãos/pés continuam separando.
@@ -7825,20 +7869,23 @@ async function handleSwap(
     searchPhrase = `${removed[0].ask?.trim() || removed[0].name.split(/\s+/).slice(0, 2).join(" ")} ${negatedOnly}`;
     to = searchPhrase;
   }
+  // "troca pelo mais barato" (10/10, rodada 5 g16): o conjunto comparado era só a busca nova com 12 candidatos — o
+  // carrossel daquele item tinha 200 ml mais baratos (Cenoura e Bronze, OAZ) que nem entravam, e a Lia dizia "já é o
+  // mais barato". Agora a busca é mais larga, as opções JÁ MOSTRADAS na escolha do item entram, e só os mais baratos
+  // do mesmo tipo vão à confirmação ao vivo (mesmo de antes: no máximo 12).
   const candidates: StoreCandidate[] = crossStore
-    ? await gatherCrossStoreCandidates(searchPhrase, 12)
-    : (await store.searchItems(searchPhrase, 3)).map((item) => ({ store, item }));
+    ? await gatherCrossStoreCandidates(searchPhrase, cheapestSwap ? 40 : 12)
+    : (await store.searchItems(searchPhrase, cheapestSwap ? 12 : 3)).map((item) => ({ store, item }));
   // 06/10: a troca também só oferece o que a loja confirmou para o CEP (sem operador, o
   // não confirmado é beco no "pagar").
   const leaving = otherBrand ? removed[0] : undefined;
   const leavingBrand = leaving ? normalizeMsg(leaving.brand ?? "") : "";
-  const confirmed = await confirmOptionsLive(
-    candidates
-      .filter((c) => !leaving || (c.item.sku !== leaving.sku && !(leavingBrand.length > 2 && normalizeMsg(`${c.item.brand ?? ""} ${c.item.name}`).includes(leavingBrand))))
-      .filter((c) => conciergeMatchIsStrong(searchPhrase, c.item))
-      .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label })),
-    ctx.cep ?? userCep
-  );
+  let toConfirm = candidates
+    .filter((c) => !leaving || (c.item.sku !== leaving.sku && !(leavingBrand.length > 2 && normalizeMsg(`${c.item.brand ?? ""} ${c.item.name}`).includes(leavingBrand))))
+    .filter((c) => conciergeMatchIsStrong(searchPhrase, c.item))
+    .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
+  if (cheapestSwap) toConfirm = cheaperSwapPool(removed[0], toConfirm, shownOptionsForItem(ctx, removed[0].sku));
+  const confirmed = await confirmOptionsLive(toConfirm, ctx.cep ?? userCep);
   // Tamanho pedido na troca ("a ração tem que ser de 3kg", 09/10): só o que tem o tamanho (±10%); a busca
   // mostrava as de 1kg de novo. Sem nenhuma do tamanho, a troca não acontece (o original fica, com aviso).
   const askedSize = measureOf(searchPhrase);
