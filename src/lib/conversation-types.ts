@@ -406,6 +406,11 @@ export type DeliveryContext = {
   rehearsalRefused?: { storeKey: string; skus: string[]; count: number; at: number };
   // Uma loja por pedido (08/10 noite): cesta (skus×qtd) que já tentou juntar numa loja só — não busca de novo.
   consolidationTried?: string;
+  // O cliente já fechou a lista ("só isso") e a Lia abriu uma escolha no meio do fechamento (troca do item que a loja
+  // recusou, troca da entrega cara — 10/10, rodada 13): escolhida ou pulada, o fechamento continua sozinho.
+  closeAfterChoices?: boolean;
+  // A troca da entrega cara já foi oferecida nesta cesta (uma vez por pedido, 10/10, rodada 13 M3).
+  costlySwapOffered?: boolean;
   // Oferta de juntar a cesta numa loja só (09/10, dono: "oferecer, não impor"): a cesta juntada fica
   // guardada até o cliente escolher (botão consolidar:sim / consolidar:nao). `key` = a cesta de quando a
   // oferta saiu; cesta mudou → a oferta morre.
