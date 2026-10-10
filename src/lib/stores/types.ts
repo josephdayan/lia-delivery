@@ -787,7 +787,7 @@ const ACCESSORY_HEADS = new Set([
 // (era "Óleo Secante Color" de unha sem a IA, e "não achei" com ela); "feijão" é o carioca; "açúcar", o refinado.
 // `accept` = o que o nome precisa ter pra ser o produto; `prefer` = a versão comum, que vem primeiro.
 const FRUIT_DERIVED_RE =
-  /\b(chips|chip|liofilizad\w*|desidratad\w*|passas?|balas?|fini|ensure|sabor|sabores|doces?|bananada|farinha|snacks?|barras?|barrinhas?|cereais|cereal|iogurtes?|vitaminas?|nectar|sucos?|whey|shakes?|refrigerantes?|refresco|gelatinas?|essencia|aroma|aromatizad\w*|geleia|polpa|creme|chas?|cha|sorvetes?|picoles?|biscoitos?|bolachas?|bolos?|torta|achocolatad\w*|leite|bebidas?|isotonic\w*|energetic\w*|sabonetes?|shampoo|hidratante|desodorante|perfume|colonia|vela|aromatizador|tempero|molho|vinagre|cerveja|licor|caipirinha|drink)\b/;
+  /\b(bread|cookies?|trufas?|minitrufas?|muffins?|brownies?|chips|chip|liofilizad\w*|desidratad\w*|passas?|balas?|fini|ensure|sabor|sabores|doces?|bananada|farinha|snacks?|barras?|barrinhas?|cereais|cereal|iogurtes?|vitaminas?|nectar|sucos?|whey|shakes?|refrigerantes?|refresco|gelatinas?|essencia|aroma|aromatizad\w*|geleia|polpa|creme|chas?|cha|sorvetes?|picoles?|biscoitos?|bolachas?|bolos?|torta|achocolatad\w*|leite|bebidas?|isotonic\w*|energetic\w*|sabonetes?|shampoo|hidratante|desodorante|perfume|colonia|vela|aromatizador|tempero|molho|vinagre|cerveja|licor|caipirinha|drink)\b/;
 const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer: RegExp }> = {
   oleo: {
     accept: /\b(soja|girassol|milho|canola|oliva|olliva|algodao|cozinha|composto)\b/,
@@ -809,6 +809,25 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
 export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
   const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
   return core.length === 1 ? STAPLE_DEFAULTS[core[0]] : undefined;
+}
+// Alimento fresco pedido solto (10/10, rodada 13 M10: "banana" trouxe "Brinquedo Double Banana Buddy" e "Óleo Banana
+// Farmax"; "peito de peru", Batata Lay's e biscoito): fruta, verdura, legume e carne são o PRODUTO só quando abrem o nome
+// (1ª palavra, ou a 1ª depois da marca). Nome em que a palavra vem depois é outra coisa com esse sabor, cheiro ou tema.
+const FRESH_HEADS = new Set([
+  "banana", "maca", "laranja", "limao", "morango", "uva", "abacaxi", "mamao", "manga", "melancia", "melao", "pera", "kiwi", "abacate", "goiaba", "maracuja", "tangerina", "mexerica",
+  "alface", "tomate", "cebola", "alho", "cenoura", "pepino", "abobrinha", "abobora", "brocolis", "couve", "repolho", "rucula", "agriao", "beterraba", "chuchu", "mandioca", "berinjela", "pimentao", "espinafre",
+  "carne", "frango", "peito", "picanha", "alcatra", "patinho", "acem", "costela", "maminha", "fraldinha", "contrafile", "linguica", "presunto", "mortadela", "peixe", "tilapia", "salmao"
+]);
+const FRESH_CUTS = new Set(["file", "filezinho", "coxa", "sobrecoxa", "asa", "coracao", "bife", "cubo", "isca", "tira", "lombo", "posta", "medalhao", "moida", "moido", "pe", "cabeca", "folha", "maco"]);
+function freshHeadMisplaced(head: string, text: ItemText): boolean {
+  if (!FRESH_HEADS.has(singularPt(head))) return false;
+  const raw = text.nameWords;
+  if (raw[0] && headNounMatch(head, raw[0])) return false;
+  // Corte/peça do mesmo alimento abrindo o nome ("Filé de Peito de Frango", "Coxa de Frango") continua sendo ele.
+  if (raw[0] && (FRESH_HEADS.has(singularPt(raw[0])) || FRESH_CUTS.has(singularPt(raw[0]))) && raw.some((word) => headNounMatch(head, word))) return false;
+  const brand = new Set(text.brandWords);
+  const firstOwn = raw.find((word) => !brand.has(word) && !STOPWORDS.has(word) && !/^\d/.test(word));
+  return !(firstOwn && headNounMatch(head, firstOwn));
 }
 export function conciergeMatchIsStrong(rawQuery: string, item: CatalogItem, opts?: { allTokens?: boolean }): boolean {
   const query = joinMeasures(rawQuery);
@@ -854,6 +873,7 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   // o produto é o COPO, não a bebida. Nome que começa com acessório não pedido nunca é o produto pedido.
   const head = normalizeText(item.name).split(/\s+/)[0] ?? "";
   if (ACCESSORY_HEADS.has(head) && !wordTokens.includes(head) && !wordTokens.some((t) => ACCESSORY_HEADS.has(t))) return false;
+  if (wordTokens.length <= 3 && freshHeadMisplaced(wordTokens[0], text)) return false;
   const staple = stapleFor(query);
   if (staple?.reject?.test(normalizeText(item.name))) return false;
   if (staple?.accept && !staple.accept.test(normalizeText(item.name))) return false;
@@ -997,6 +1017,11 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   // Item do dia a dia sem qualificador (09/10): a busca da loja por "óleo" traz secante de unha e óleo corporal.
   [/^oleos?$/, "oleo de soja"],
   [/^feijao$/, "feijao carioca"],
+  // 10/10, rodada 13 M4: o catálogo chama o café em pó de "torrado e moído" (o Pilão da Santa Luzia, R$ 26,80, não
+  // aparecia para "café em pó" e só sobrava o Três Corações da Americanas a R$ 53,89).
+  [/\bcafes? (?:em )?po\b/, "cafe torrado e moido"],
+  // "bexiga" é o balão de festa (rodada 13, 308): as lojas escrevem "Balão de Látex"; "balão" solto casava com bala.
+  [/\bbexigas?\b|^bal(?:ao|oes)$/, "balao de latex"],
   // Termos populares que o catálogo não usa (09/10, rodada 2, g4). Todos exigem a palavra INTEIRA ou a frase
   // inteira, para nunca virar produto errado ("massa" fica de fora: pode ser massa de pastel, lasanha ou corrida).
   [/\bcervas?\b|\bcervejinhas?\b|\bbrejas?\b/, "cerveja"],

@@ -290,7 +290,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       // "tira o feijão e põe macarrão" (09/10, rodada 1): o cliente pediu a troca — "me diz de outro jeito" soava como erro.
       // "peraí, açúcar não, esquece isso" (10/10, rodada 12 g36): ordem de tirar — "me diz de outro jeito que eu procuro" não cabe.
       const removal = /\b(?:tira|tirar|remove|retira|esquece|esqueca|desconsidera|nao quero)\b/.test(normalizeMsg(env.text));
-      const said = opts.nextIsSearch || removal ? copy.choiceDropped(current.query) : copy.choiceSkipped(current.query);
+      // "pula" numa TROCA (replaceSku, 10/10, rodada 13 M3): o item atual nunca saiu da cesta — fica, e a Lia diz isso.
+      const keptItem = current.replaceSku && !removal ? (ctx.basket ?? []).find((b) => b.sku === current.replaceSku) : undefined;
+      const said = keptItem ? copy.itemKept(keptItem.name) : opts.nextIsSearch || removal ? copy.choiceDropped(current.query) : copy.choiceSkipped(current.query);
       if (!ctx.pending.length && !(ctx.basket?.length ?? 0)) {
         await writeCtx(convoId, addressOnlyCtx(ctx, userCep));
         await reply(phone, said);
