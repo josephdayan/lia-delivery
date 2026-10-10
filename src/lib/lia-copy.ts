@@ -196,8 +196,14 @@ export function addressSavedAskCep(): string {
 // ---------- cadastro e endereço em texto (06/10, relatório do testador) ----------
 
 // Itens que vieram junto do endereço: aparecem na confirmação pra o cliente ver que não sumiram.
-export function notedItemsLine(notedItems: string[]): string {
-  return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}` : "";
+export function notedItemsLine(notedItems: string[], extra?: string): string {
+  return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}${extra ? `\n${extra}` : ""}` : "";
+}
+export function notedBudget(cap: number): string {
+  return `💰 Até *${brl(cap)}* no total, já com a entrega.`;
+}
+export function notedDeadline(d: { label: string; morning?: boolean }): string {
+  return `⏰ Pra chegar até *${deadlineLabel(d)}* — te digo qual entrega chega a tempo.`;
 }
 
 // CEP recebido e a rua veio do ViaCEP: confirma a rua e pede SÓ o número.
@@ -593,6 +599,12 @@ export function openOrderContents(items: { qty: number; name: string }[], total:
   return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n*Total: ${brl(total)}* (com a entrega)\n_Pra mudar, diz *tira* ou *põe* o item; pra pagar, escolhe Pix ou cartão no resumo._`;
 }
 
+// "o que tem na cesta?" com a escolha de entrega aberta (10/10, rodada 10 g30, M4): os itens, e o total sai da entrega
+// escolhida — antes vinha "Você quer saber o total da cesta?" ou o texto de apresentação da Lia.
+export function freightStepContents(items: { qty: number; name: string }[]): string {
+  return `🛒 *No seu pedido:*\n${items.map((i) => `• ${i.qty}x ${i.name}`).join("\n")}\n_Falta só escolher a entrega — o total de cada opção está logo abaixo._`;
+}
+
 export function removedRestored(names: string): string {
   return `Voltei *${names}* pra cesta. ✅`;
 }
@@ -928,6 +940,66 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
   return `⏰ Pra *${label}* não chega: nenhuma dessas opções entrega a tempo${prazo ? ` — o mais rápido é *${prazo}*${fastest?.store ? ` (${fastest.store})` : ""}` : ""}. Se quiser, me diz outro item que eu procuro.`;
 }
 
+// Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
+// pedido mas sem hora marcada (o cliente disse "de manhã" e a loja promete "1 dia útil").
+export type DeadlineFit = "ok" | "late" | "unsure";
+export function deadlineLabel(d: { label: string; morning?: boolean }): string {
+  return d.morning ? `${d.label} de manhã` : d.label;
+}
+function fitPhrase(fit: DeadlineFit | null | undefined, d: { label: string; morning?: boolean }): string {
+  if (fit === "ok") return `chega até *${deadlineLabel(d)}* ✅`;
+  if (fit === "late") return `não chega até *${deadlineLabel(d)}*`;
+  if (fit === "unsure") return `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
+  return "prazo sem data certa";
+}
+
+// Desempate resolvido sem nova pergunta (10/10, rodada 10 g29: o café recebeu 3 perguntas seguidas).
+export function clarifyResolved(name: string, tie: boolean): string {
+  return tie ? `Fiquei com o *${name}*, o mais comum do que você falou — se era outro, me diz que eu troco.` : `Pelo que você falou, é o *${name}* 👍`;
+}
+export function clarifyShowCards(query: string): string {
+  return `Pra não te perguntar de novo: estas são as opções de *${query}* — toca na que você quer 👇`;
+}
+
+// Prazo dito sem nada pra conferir ainda ("preciso que chegue até amanhã de manhã" junto da lista, antes do cadastro).
+export function deadlineNoted(d: { label: string; morning?: boolean }): string {
+  return `Anotado: precisa chegar até *${deadlineLabel(d)}* ⏰ Quando eu te mostrar as opções e o total, digo qual entrega chega a tempo.`;
+}
+
+// "preciso até amanhã de manhã, qual das duas serve?" na escolha da entrega (10/10, rodada 10 g29): diz qual serve.
+export function freightDeadlineAnswer(d: { label: string; morning?: boolean }, rows: Array<{ n: number; title: string; when?: string; fit: DeadlineFit | null }>): string {
+  const ok = rows.filter((r) => r.fit === "ok");
+  const head = ok.length === rows.length
+    ? `As ${rows.length === 2 ? "duas" : "opções"} chegam até *${deadlineLabel(d)}*:`
+    : ok.length
+      ? `Pra *${deadlineLabel(d)}*, a que serve é a ${ok.map((r) => `*${r.n}) ${r.title}*`).join(" e ")}:`
+      : `Nenhuma chega com certeza até *${deadlineLabel(d)}*:`;
+  return [head, ...rows.map((r) => `• *${r.n})* ${r.title}${r.when ? ` (${r.when})` : ""}: ${fitPhrase(r.fit, d)}`)].join("\n");
+}
+
+// Resumo com prazo dito que a entrega cumpre (10/10, rodada 10 g29: só o atraso era dito; o cliente não sabia se servia).
+export function deadlineFitNote(d: { label: string; morning?: boolean }, fit: DeadlineFit): string {
+  return fit === "unsure" ? `⏰ Chega *${d.label}*, mas sem hora marcada — pode não ser de manhã.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
+}
+
+// Pedido com resumo na mesa e prazo dito ("até sexta, dá?").
+export function orderDeadlineAnswer(d: { label: string; morning?: boolean }, fit: DeadlineFit | null, promise?: string): string {
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  if (fit === "ok") return `Dá, chega até *${deadlineLabel(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""} 🙂`;
+  if (fit === "late") return `Até *${deadlineLabel(d)}* não chega${prazo ? `: o prazo é *${prazo}*` : ""}. Se quiser, me diz qual item trocar ou tirar.`;
+  if (fit === "unsure") return `Chega *${d.label}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas sem hora marcada — pode não ser de manhã.`;
+  return `O prazo desse pedido${prazo ? ` é *${prazo}*` : " é o da loja"}; não consigo garantir *${deadlineLabel(d)}*.`;
+}
+
+// Troca de loja que atrasa a entrega (10/10, rodada 10 g29: 1 → 4 dias úteis sem aviso).
+export function swapEtaNote(before?: string, after?: string, deadline?: { label: string; morning?: boolean; miss: boolean }, lead = "Com a troca"): string | null {
+  const b = promiseForCustomer(before);
+  const a = promiseForCustomer(after);
+  if (deadline?.miss) return `⚠️ ${lead} não chega até *${deadlineLabel(deadline)}*${a ? ` (prazo: *${a}*)` : ""}.`;
+  if (!b || !a) return null;
+  return `⏰ ${lead}, o prazo passa de *${b}* para *${a}*.`;
+}
+
 // Oferta de juntar com prazo dito (10/10, rodada 6 g19): diz qual forma chega a tempo.
 export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string): string | null {
   const j = promiseForCustomer(joinedEta);
@@ -1017,16 +1089,19 @@ export function shippingSpeedChoice(
   barato: { total: number; estimate?: string },
   rapido: { total: number; estimate?: string },
   kind: "ml" | "store" = "ml",
-  budgetCap?: number
+  budgetCap?: number,
+  // Prazo dito (10/10, rodada 10 g29): cada forma diz se chega a tempo.
+  deadline?: { label: string; morning?: boolean; fits: [DeadlineFit | null, DeadlineFit | null] }
 ): string {
   const over = (total: number) => (budgetCap != null && total > budgetCap + 0.005 ? ` · passa do seu limite de ${brl(budgetCap)}` : "");
+  const fit = (i: 0 | 1) => (deadline && deadline.fits[i] ? ` · ${fitPhrase(deadline.fits[i], deadline)}` : "");
   // ML: data do anúncio ("chega até sáb."). Loja: SLA dela ("prazo da loja: 60 min").
   const quando = (estimate?: string) =>
     estimate ? (kind === "store" ? spellStoreHours(estimate) : `chega até ${estimate}`) : kind === "store" ? "sem prazo informado" : "sem data publicada";
   return [
     "Tem duas formas de entrega. Qual você prefere?",
-    `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}${over(barato.total)}`,
-    `*2)* Mais rápida — total ${brl(rapido.total)} · ${quando(rapido.estimate)}${over(rapido.total)}`,
+    `*1)* Mais barata — total ${brl(barato.total)} · ${quando(barato.estimate)}${over(barato.total)}${fit(0)}`,
+    `*2)* Mais rápida — total ${brl(rapido.total)} · ${quando(rapido.estimate)}${over(rapido.total)}${fit(1)}`,
     "",
     "Toca no botão ou responde *1* ou *2*."
   ].join("\n");
@@ -2101,9 +2176,11 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null }): string {
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null; etaNote?: string | null }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
-  const real = input.pairs.filter((p) => !(p.fromName.trim().toLowerCase() === p.toName.trim().toLowerCase() && Math.abs(p.fromPrice - p.toPrice) < 0.005));
+  // Espaço/acento a mais no nome do catálogo da outra loja também é o mesmo produto (10/10, rodada 10 g29, B5).
+  const flat = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const real = input.pairs.filter((p) => !(flat(p.fromName) === flat(p.toName) && Math.abs(p.fromPrice - p.toPrice) < 0.005));
   const joinedStores = input.joinedStores ?? 1;
   // Juntar em MENOS lojas, não numa só (10/10, rodada 5 A4).
   const joinedWhere = joinedStores > 1 ? `em ${joinedStores} entregas (*${input.storeLabel}*)` : input.left?.length ? `na *${input.storeLabel}* o que ela tem` : `tudo na *${input.storeLabel}*`;
@@ -2113,7 +2190,7 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
     `Dá pra juntar ${joinedWhere} por ${brl(input.joinedTotal)}${joinedHow}${input.joinedEta ? ` (${input.joinedEta})` : ""}, ou manter como está por ${brl(input.keptTotal)} com ${input.keptStores} entregas${input.keptEta ? ` (${input.keptEta})` : ""}.`,
     ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
-    ...(input.deadlineNote ? [input.deadlineNote] : []),
+    ...(input.deadlineNote ? [input.deadlineNote] : input.etaNote ? [input.etaNote] : []),
     ...(input.minimumNote ? [input.minimumNote] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
@@ -2581,16 +2658,24 @@ export function swapKeptOriginal(kept: string, wanted: string): string {
 // Cada troca é nomeada ANTES e DEPOIS do aceite: na rodada 27/08, 4 sessões viram o
 // café/leite mudar de marca e gramatura em silêncio e só descobriram auditando linha
 // a linha — troca de produto sem anúncio é quebra de confiança.
-export type SwapPair = { fromName: string; fromPrice: number; toName: string; toPrice: number };
+// `change` (10/10, rodada 10 g29): o que muda além da loja ("outra marca", "outra versão") — sem isso o cliente via a
+// marca que tinha escolhido sumir no meio de uma lista de trocas.
+export type SwapPair = { fromName: string; fromPrice: number; toName: string; toPrice: number; change?: string };
 
 function swapPairLines(pairs: SwapPair[]): string[] {
-  return pairs.map((p) => `• ${p.fromName} (${brl(p.fromPrice)}) → *${p.toName}* (${brl(p.toPrice)})`);
+  return pairs.map((p) => `• ${p.fromName} (${brl(p.fromPrice)}) → *${p.toName}* (${brl(p.toPrice)})${p.change ? ` — ⚠️ _${p.change}_` : ""}`);
 }
 
-export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[] }): string {
+// Nota da troca que muda mais que a loja (10/10, rodada 10 g29).
+export function swapChangeNote(kind: "marca" | "versao", brand?: string): string {
+  return kind === "marca" ? `muda a marca${brand ? `: não achei ${brand} em outra loja` : ""}` : "outra versão do mesmo produto";
+}
+
+export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
   if (input.pairs?.length) out.push(...swapPairLines(input.pairs));
+  if (input.etaNote) out.push(input.etaNote);
   out.push(`Toca em *Trocar de loja* — ou manda mais um item de ${input.storeLabel} que eu fecho como está.`);
   return out.join("\n");
 }
@@ -2829,6 +2914,10 @@ export function manualQuoteSummary(input: {
   sameHour?: boolean;
   // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
   deadlineMiss?: { label: string };
+  // Prazo dito que a entrega cumpre (10/10, rodada 10 g29): o resumo diz que serve (ou que chega sem hora marcada).
+  deadlineFit?: { label: string; morning?: boolean; fit: DeadlineFit };
+  // Orçamento do pedido dito e respeitado (10/10, rodada 10 g29: "vai ficar dentro dos 60?" ficava sem resposta).
+  withinBudget?: { cap: number };
   // Nº de lojas/entregas do pedido (aviso de frete somado).
   deliveries?: number;
   // true = a mensagem sai com o botão "Trocar endereço" (dono, 11/08: ação em botão,
@@ -2850,6 +2939,8 @@ export function manualQuoteSummary(input: {
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
+    ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
+    ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries)] : []),
     ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0), input.deliveries)
   ];

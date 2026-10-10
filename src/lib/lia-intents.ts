@@ -430,9 +430,11 @@ const DISCOURSE_WORDS = new Set(
     // verbos de conversa (nenhum é produto)
     "vamos vou vai vamo pago paga pagar pagamos pagando pagam dividir divide dividimos dividindo dividi divido gastar gasto gasta gastando economizar ajuda ajudar ajude " +
     "montar monta fazer faz quero queria quer preciso precisa tenho tem temos sou somos estou to tou tava moro mora ignora ignorar ignore ignorem desconsidera " +
-    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir " +
+    "sei acho achei pode podia consegue conseguir dar ser sao era foi seria fica ficar ficou falei disse falar pedi pedir mostra mostrar mostre mostrando manda mandar veja ver olhar " +
+    // "…, cabe?" / "chega?" / "rola?" (10/10, rodada 10 g30, M5: "cabe" virava item "não achei")
+    "cabe cabem caber chega chegam rola serve " +
     // meta-lista, quantidade vaga e advérbios
-    "itens item coisa coisas produto produtos parte resto tudo todos todas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
+    "itens item coisa coisas produto produtos parte resto tudo todos todas ambos ambas dois duas nada pouco pouquinho muito mais menos so apenas ainda ja agora depois verdade nao sim " +
     // conectivos e artigos
     "a o os as um uma uns umas de do da dos das em no na nos nas pra pro para por pelo pela com sem que e ou mas ate"
   ).split(" ")
@@ -482,7 +484,7 @@ export function hasUrgencySignal(text: string): boolean {
 // "amanhã" solto é ambíguo ("pago amanhã", "pode ser amanhã"): só vale com sinal de necessidade/evento/entrega.
 const SP_DATE = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["terca", 2], ["quarta", 3], ["quinta", 4], ["sexta", 5], ["sabado", 6]];
-export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string } | null {
+export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
   const EVENT = "aniversario|festa|festinha|viagem|jantar|reuniao|presente|visita|casamento|formatura";
@@ -492,7 +494,10 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
     new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bamanha\\b|\\bamanha\\b.{0,30}\\b(?:${EVENT})\\b`).test(n) ||
     /\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b.{0,30}\bamanha\b/.test(n) ||
     /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n);
-  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã" };
+  // "até amanhã de manhã" (10/10, rodada 10 g29): entrega de "1 dia útil" chega amanhã, mas sem hora — `morning` marca isso.
+  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
+  // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.
+  if (new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bhoje\\b|\\bhoje\\b.{0,25}\\b(?:${EVENT})\\b`).test(n) && !/\bhoje\s+(?:nao|n)\b/.test(n)) return { date: shift(0), label: "hoje" };
   if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
   for (const [name, dow] of WEEKDAYS) {
     // "chega sexta?", "chegar na sexta", "sábado que vem, chega?" (10/10, rodada 9 A4) também são prazo com dia.
@@ -510,7 +515,7 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
 
 // Pergunta de prazo com dia dito ("preciso que chegue até sexta, dá?", "sábado que vem, chega?", "chega até sexta? me
 // responde sim ou não"): o cliente quer sim/não pro dia, não a lista de prazos.
-export function asksDeadline(text: string): { date: string; label: string } | null {
+export function asksDeadline(text: string): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   if (n.length > 90) return null;
   // "vocês entregam domingo? qual o horário?" é dia/horário de funcionamento (rodada 7 M1), não prazo do pedido.
@@ -518,6 +523,18 @@ export function asksDeadline(text: string): { date: string; label: string } | nu
   const day = parseNeededBy(text);
   if (!day) return null;
   return isQuestion(text) || /\b(?:da|consegue|rola|chega|chegue|chegam|cheguem|sim ou nao)\b/.test(n) ? day : null;
+}
+
+// Prazo dito como frase própria, pergunta ou não (10/10, rodada 10 g29: "Se puder chegar até sexta, tá bom" e "preciso até
+// amanhã de manhã, qual das duas serve?" recebiam o texto genérico de prazo): o dia, sem produto nenhum na mensagem.
+export function statesDeadline(text: string): { date: string; label: string; morning?: boolean } | null {
+  const ask = asksDeadline(text);
+  if (ask) return ask;
+  const n = normalizeMsg(text);
+  if (n.length > 90) return null;
+  const day = parseNeededBy(text);
+  if (!day) return null;
+  return parseBasketLines(text).every((line) => /^(?:qual|quais|as duas|os dois|a primeira|a segunda|serve|servem)\b/.test(normalizeMsg(line.phrase))) ? day : null;
 }
 
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
@@ -541,7 +558,10 @@ function specToken(t: string): boolean {
 const FOR_WHOM_FRAGMENT_RE = /^(?:pra|para|pro|pros|pras|do|da|dos|das)\s+(?:o\s+|a\s+)?(?:meu|minha|meus|minhas|seu|sua|nosso|nossa)\s+[a-z]+(?:\s+[a-z]+)?$/;
 const EACH_SIZE_FRAGMENT_RE = /^(?:cada\s+(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))|(\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?))\s+cada)$/;
 // "a sem receita" (10/10, rodada 8 g25: a IA encurtava "a normal sem receita" e a linha virava "Não achei: a sem receita").
-const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:o|a|os|as)\s+)?(?:normal|comum|tradicional|simples|basic[oa])\s+(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$|^(?:(?:o|a|os|as)\s+)?(?:sem receita|que nao precisa(?: de)? receita|sem prescricao)$/;
+// "é sem receita" / "ele é sem receita" / "não precisa de receita" (10/10, rodada 10 g28): virava "Não achei: é sem receita".
+const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:ele|ela|esse|essa|isso|mas|ja)\s+)?(?:(?:e|eh)\s+)?(?:(?:o|a|os|as)\s+)?(?:(?:normal|comum|tradicional|simples|basic[oa])\s+)?(?:sem receita|que nao precisa(?: de)? receita|nao precisa(?: de)? receita|sem prescricao|isento|de venda livre)$/;
+// Só a medida, logo depois do item ("e o paracetamol? é sem receita, 750mg"): é do item anterior, não item próprio.
+const BARE_MEASURE_FRAGMENT_RE = /^(?:(?:de|com)\s+)?\d+(?:[.,]\d+)?\s?(?:mg|mcg|g|kg|ml|l|litros?)$/;
 // Só a medida do item anterior (10/10, rodada 8 g25): "3 pacotes de guardanapo, aquele de 32cm" — "de 32cm" não é item.
 const SIZE_ONLY_FRAGMENT_RE = /^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+)?(?:de|com)\s+\d+(?:[.,]\d+)?\s?(?:cm|mm|kg|g|l|ml|litros?|folhas|unidades|un|metros?|m)$/;
 export function isSizeOnlyFragment(phrase: string): boolean {
@@ -604,6 +624,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       // "tenho um cachorro labrador adulto e uma gata castrada" (10/10, rodada 6 A3): a frase INTEIRA é contexto —
       // separar no " e " antes deixava "uma gata castrada" como item.
       if (isOwnershipContext(chunk.replace(/§/g, ",").replace(/¤/g, "."))) return [];
+      // "gosta de chocolate e de creme pras mãos" (10/10, rodada 10 g29): o "de" repetido depois do "e" é do verbo.
+      if (/\b(?:gosta|gosto|gostam|adora|adoro|adoram|curte|curto|ama|amo)\s+(?:muito\s+)?(?:de|do|da)\b/i.test(chunk)) chunk = chunk.replace(/\s+e\s+(?:de|do|da|dos|das)\s+(?=[a-zà-ú]{3,})/gi, " e ");
       return opts?.conjunction ? opts.conjunction(chunk) : chunk.split(CONJUNCTION_SPLIT_RE).map((text) => ({ text }));
     })
     .map((part) => ({
@@ -653,11 +675,16 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // conjunção sobrando no começo do segmento ("e areia pro gato",
         // "mas entrega hoje se der" — a adversativa escondia o modificador de urgência)
         .replace(/^(e|mas|porem|porém|so que|só que|com)\s+/i, "")
+        // "e também pão de forma" (10/10, rodada 10 g28): o "também" ficava na frase ("1x também pão de forma").
+        .replace(/^(?:tamb[eé]m|tbm|tb)\s+(?=[a-zà-ú\d])/i, "")
         // "me ajuda a montar até 100 reais" (10/10, rodada 8 M1): a fala antes do orçamento sai; fica o "até N reais" (teto).
         .replace(/^(.+?)\s+(?=(?:at[eé]|no m[aá]ximo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?\d)/i, (m, lead: string) => (isDiscourseOnly(lead) ? "" : m))
         // Sujeito-pronome antes do pedido ("eu quero arroz e ele quer feijão", 10/10, rodada 8 M1): sai o pronome (e o verbo
         // de pedido que sobrou); "ela é filhote" (descrição) fica para a regra do pronome abaixo.
         .replace(/^(?:eu|ele|ela|eles|elas|a gente|n[oó]s)\s+(?!(?:é|e|eh|s[aã]o|est[aá]|t[aá])(?:\s|$))(?:(?:quer|querem|queremos|precisa|precisam|precisamos|vai querer|vamos querer|vai levar|levo|leva|pego|pega)\s+(?:de\s+)?)?(?=\S)/i, "")
+        // "ela gosta de chocolate" / "ele adora café" (10/10, rodada 10 g29: virava o item "gosta de chocolate"): o gosto
+        // dito é o produto.
+        .replace(/^(?:(?:eu|ele|ela|eles|elas|a gente)\s+)?(?:gosta|gosto|gostam|adora|adoro|adoram|curte|curto|curtem|ama|amo|amam)\s+(?:muito\s+|demais\s+)?(?:de\s+|do\s+|da\s+|dos\s+|das\s+)?(?=[a-zà-ú]{3,})/i, "")
         // "é pra festa junina da igreja" (10/10, rodada 8 M1): a cópula solta não faz parte do item nem do contexto.
         .replace(/^(?:é|eh)\s+(?=(?:pra|para|pro|so|só|isso|que)\b)/i, "")
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
@@ -796,6 +823,11 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         continue;
       }
       if (OTC_QUALIFIER_FRAGMENT_RE.test(n)) continue;
+      const prevLine = merged[merged.length - 1];
+      if (BARE_MEASURE_FRAGMENT_RE.test(n) && !/\d\s?(?:mg|mcg|g|kg|ml|l|litros?)\b/i.test(prevLine.phrase)) {
+        prevLine.phrase = `${prevLine.phrase} ${n.replace(/^(?:de|com)\s+/, "").replace(/\s+/g, "")}`;
+        continue;
+      }
     }
     // Adição RELATIVA dentro da MESMA mensagem: "…30 litros, qualquer marca; mais um
     // desses" e "leite sem lactose; mais dois leites" somam na linha ANTERIOR — nunca
@@ -920,8 +952,15 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       if (parsePriceCap(line.phrase) == null) line.phrase = `${line.phrase} até ${globalCap} reais`;
     }
   }
+  // "presente pra minha amiga que faz aniversário hoje, ela gosta de chocolate e de creme pras mãos" (10/10, rodada 10
+  // g29): com produto nomeado na mesma mensagem, a moldura do presente é o motivo, não um item ("não achei presente…").
+  if (merged.length > 1) {
+    const products = merged.filter((line) => !GIFT_FRAME_RE.test(normalizeMsg(line.phrase)));
+    if (products.length && products.length < merged.length) return products;
+  }
   return merged;
 }
+const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
 
 // Quantidade respondida no passo imediatamente posterior à escolha do produto.
 // Aceita o jeito que as pessoas realmente escrevem: "2", "quero 2", "mais duas",
@@ -1390,9 +1429,20 @@ const HUMAN_RE =
   /\b(atendente|humano|falar com (alguem|uma pessoa|um humano|um atendente|o dono|o responsavel)|pessoa (de verdade|real)|sac\b|suporte|ouvidoria)\b/;
 
 // "quanto ainda posso gastar?", "quanto sobra do meu orçamento?", "ainda cabe quanto?" (10/10, rodada 8 g25).
+// "vai ficar dentro dos 60 reais com a entrega?", "cabe nos 60?", "passa dos 100?" (10/10, rodada 10 g29: respondia a
+// cobertura SP/RJ): pergunta se o pedido cabe num valor DITO na própria pergunta. Devolve o valor.
+const BUDGET_FIT_ASK_RE =
+  /\b(?:fica\w*|da|dar|cabe\w*|sai\w*|passa\w*|estoura\w*|ultrapassa\w*)\s+(?:(?:dentro|abaixo)\s+)?(?:(?:d[oa]s?|n[oa]s?|em|de)\s+)?(?:meus\s+|minhas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])/;
+export function parseBudgetFitAsk(text: string): { cap: number } | null {
+  if (!/\?\s*$/.test(text.trim()) && !/^(?:sera que|sera)\b/.test(normalizeMsg(text))) return null;
+  const m = BUDGET_FIT_ASK_RE.exec(normalizeMsg(text));
+  const cap = m ? Number(m[1].replace(",", ".")) : NaN;
+  return Number.isFinite(cap) && cap >= 10 ? { cap } : null;
+}
+
 export function asksBudgetLeft(text: string): boolean {
   const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
-  return /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
+  return parseBudgetFitAsk(text) != null || /\b(?:quanto|qto|qt)\s+(?:(?:eu\s+)?ainda\s+)?(?:eu\s+)?(?:posso|da pra|consigo)\s+gastar\b/.test(n) || /^(?:e\s+|mas\s+|sera que\s+)?(?:isso\s+|tudo\s+)?(?:ainda\s+)?(?:cabe|da|fecha|passa)(?:\s+(?:no|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto))?$/.test(n) || /\b(?:cabe|passa|estoura)\s+(?:no|do|dentro do)\s+(?:meu\s+)?(?:orcamento|limite|teto)\b/.test(n) || /\bquanto\s+(?:ainda\s+)?(?:sobra|resta|falta)\s+(?:d[oa]\s+)?(?:meu\s+|minha\s+)?(?:orcamento|limite|teto|verba|dinheiro)\b/.test(n) || /\bainda cabe quanto\b/.test(n);
 }
 
 // O cliente pediu uma PESSOA? (10/10, rodada 8 g25) Mais largo que o HUMAN_RE: a IA reconhece "me passa pra alguém",
@@ -2739,11 +2789,28 @@ export function parsePackCountAsk(text: string): { noun: string } | null {
 const SIZE_WORD = String.raw`(?:rn|xxg|xg|exg|eg|recem[- ]nascid[oa]s?)`;
 const SIZE_ATTR_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)|^(?:p|m|g)$`);
 const BASE_SIZE_RE = new RegExp(String.raw`(?:^|\s)(?:tamanho\s+(?:p|m|g|${SIZE_WORD})|${SIZE_WORD})(?=\s|$)`, "g");
+// Peso/volume novo e variante excludente também substituem (10/10, rodada 10 g28): "ração 10kg" + "de 3kg" buscava
+// "ração cachorro adulto 10kg 3kg"; "leite ... integral" + "desnatado" buscava "integral desnatado" e dizia "não achei"
+// logo depois de mostrar o desnatado.
+const WEIGHT_RE = /(?:^|\s)\d+(?:[.,]\d+)?\s*(?:kg|g|gr|grs|gramas?|quilos?|kilos?)(?=\s|$)/g;
+const VOLUME_RE = /(?:^|\s)\d+(?:[.,]\d+)?\s*(?:ml|l|lt|lts|litros?)(?=\s|$)/g;
+const EXCLUSIVE_VARIANTS: RegExp[] = [/\b(?:integral|desnatad[oa]s?|semi ?desnatad[oa]s?)\b/g, /\b(?:tradicional|extra ?fortes?)\b/g, /\b(?:adult[oa]s?|filhotes?|senior)\b/g];
 export function replaceRefinedSize(base: string, attrs: string[]): string {
   const said = normalizeMsg(attrs.join(" ")).trim();
-  if (!SIZE_ATTR_RE.test(said)) return base;
-  const stripped = normalizeMsg(base).replace(BASE_SIZE_RE, " ").replace(/\s+/g, " ").trim();
-  return stripped || base;
+  let out = normalizeMsg(base);
+  if (SIZE_ATTR_RE.test(said)) out = out.replace(BASE_SIZE_RE, " ");
+  // Só sai a medida DIFERENTE da dita ("10kg" pedido de novo fica: a busca já tem, rodada 7 A5).
+  const compact = (m: string) => m.replace(/\s+/g, "");
+  for (const re of [WEIGHT_RE, VOLUME_RE]) {
+    const saidHits = (said.match(re) ?? []).map(compact);
+    if (saidHits.length) out = out.replace(re, (m) => (saidHits.includes(compact(m)) ? m : " "));
+  }
+  for (const re of EXCLUSIVE_VARIANTS) {
+    const saidHits = said.match(re);
+    if (saidHits) out = out.replace(re, (word) => (saidHits.includes(word) ? word : " "));
+  }
+  out = out.replace(/\s+/g, " ").trim();
+  return out && out !== normalizeMsg(base).replace(/\s+/g, " ").trim() ? out : base;
 }
 
 // Pedido de entregar em DOIS endereços (10/10, rodada 7 M11): "duas entregas: uma em casa e outra no trabalho".
@@ -2758,9 +2825,10 @@ export function asksMultiAddress(text: string): boolean {
   return MULTI_ADDRESS_RE.test(n);
 }
 // Dois pagadores (10/10, rodada 8 A2): "meu colega paga separado", "cada um paga o seu", "a parte dele ele paga".
+// "cada um vai pagar o seu" (rodada 10 g30): o infinitivo caía no "pagar" do menu e o "quero café" seguinte sumia.
 // "dois pedidos" sem lugar nem endereço também cai aqui ("orders"): a Lia faz um pedido por vez.
 const SPLIT_PAYER_RE =
-  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai )?paga\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
+  /\b(?:paga|pagar|pagam|pagando|pago)\b[^.?!]{0,30}\b(?:separad[oa]s?|a parte del[ea]|a sua parte|a parte dela|o del[ea]|a del[ea])\b|\b(?:separad[oa]|a parte del[ea])\b[^.?!]{0,15}\bpaga(?:r|m)?\b|\bcada um[a]? (?:vai |vamos |vai querer )?(?:paga|pagar|pagam|pagando)\b|\bdividi\w* (?:a conta|o pagamento|o valor|o pix|o total)\b|\b(?:dois|2|duas) (?:pagamentos|pagadores|cobrancas)\b|\b(?:dividir|dividimos|divide|rachar|racha|rachamos) (?:a |as |o )?(?:compras?|conta|valor)\b|\beu pago (?:o |a )?(?:meu|minha|minha parte|a minha parte)\b/;
 const TWO_ORDERS_RE = /\b(?:dois|2) pedidos\b/;
 export function parseSplitOrders(text: string): "payer" | "orders" | null {
   const n = normalizeMsg(text);
@@ -3135,6 +3203,8 @@ export function answerOpenQuestion(question: string, text: string): string | nul
     .trim();
   if (!head || head.split(" ").length > 3 || /\d/.test(head)) return null;
   if (/^(?:nao|sim|nada|ok|so isso|cancela\w*|esquece|deixa|tanto faz|qualquer)$/.test(head)) return null;
+  // "as duas, me mostra" (10/10, rodada 10 g28): resposta sem produto ("as duas", "ambos", "me mostra") nunca vira item.
+  if (isDiscourseOnly(head)) return null;
   // "esse mesmo, o 1" / "o primeiro, por favor" escolhem uma OPÇÃO da tela; não são qualificador do item.
   if (/^(?:ess[ae]s?|est[ae]s?|isso|aquel[ae]s?|primeir[oa]|segund[oa]|terceir[oa]|ultim[oa]|outr[oa]s?|mesmo|mesma)\b/.test(head)) return null;
   const first = head.includes(subject) ? head : `${subject} ${head}`;
@@ -3191,7 +3261,11 @@ export function parseItemCheapest(text: string): string | null {
 export function cheaperAskTarget(text: string, basket: { name: string; ask?: string }[], pendingQueries: string[] = []): number | null {
   const n = normalizeMsg(text);
   if (!/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/.test(n)) return null;
-  const said = n.replace(/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/g, " ");
+  // Medida não nomeia item (10/10, rodada 10 g28): "o mais barato de 500g" com o café em escolha casava o macarrão 500g da
+  // cesta pelo token "500g" e a Lia respondia sobre o macarrão. Sem palavra de produto, o pedido é do carrossel aberto.
+  const said = n
+    .replace(/\b(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)\b/g, " ")
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|mg|ml|l|lt|litros?|un|unid\w*|cm|m|w)?\b/g, " ");
   const hits = basket.map((item, i) => (sharesProductNoun(said, `${item.ask ?? ""} ${item.name}`) ? i : -1)).filter((i) => i >= 0);
   if (hits.length !== 1) return null;
   if (pendingQueries.some((q) => sharesProductNoun(said, q))) return null;
@@ -3258,6 +3332,25 @@ export function splitFiscalClause(text: string): { text: string; asked: boolean 
   return { text: kept.join(" ").trim(), asked: true };
 }
 
+
+// Escolha pelo PREÇO de uma opção na tela (10/10, rodada 10 g28): "o Pilão de 29,48", "não, to falando do café. o de 29,48".
+// Virava "Somei 1x o Pilão de 29,48" (item novo). Vale só preço com centavos/R$/reais que bate com UMA opção, e nunca teto
+// ("até 30,00"), pergunta ou palavra que nenhuma opção tem além do produto. Devolve o índice ou null.
+export function parseChoiceByCitedPrice(text: string, options: { name: string; price: number }[], query = ""): number | null {
+  const n = normalizeMsg(text).trim();
+  if (!n || /\?\s*$/.test(n) || /\b(?:ate|menos de|abaixo de|no maximo|mais de|acima de|teto|limite|orcamento)\b/.test(n)) return null;
+  const values = [...n.matchAll(/(?:r\$\s*)?(\d{1,4}[.,]\d{2}|\d{1,4}(?=\s*reais))(?:\s*reais)?/g)]
+    .map((m) => Number(m[1].replace(",", ".")))
+    .filter((v) => Number.isFinite(v) && v > 0);
+  if (values.length !== 1) return null;
+  const hits = options.map((o, i) => (Math.abs(o.price - values[0]) < 0.015 ? i : -1)).filter((i) => i >= 0);
+  if (hits.length !== 1) return null;
+  // As outras palavras têm que descrever a opção ou o produto (marca, "café"), ou ser fala ("não, to falando do").
+  const known = ` ${normalizeMsg(`${options[hits[0]].name} ${query}`).replace(/[^a-z0-9]+/g, " ")} `;
+  const words = n.replace(/(?:r\$\s*)?\d+(?:[.,]\d+)?(?:\s*reais)?/g, " ").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length >= 4);
+  const META = /^(?:falando|falei|quero|queria|prefiro|pode|esse|essa|aquele|aquela|mesmo|mesma|opcao|entao|escolho|fico|vou|pega|pegar|manda)$/;
+  return words.every((w) => META.test(w) || known.includes(` ${w.replace(/s$/, "")}`)) ? hits[0] : null;
+}
 
 // "troca pelo de R$ 34,09", "quero o de 34", "prefiro o outro" no total / escolha de entrega (07/10, c24):
 // o cliente quer OUTRA opção da última lista, apontada pelo preço ou por "o outro". Devolve o índice
@@ -3486,10 +3579,14 @@ const ORDER_BUDGET_RES = [
   // "tenho só uns 40 reais pra gastar" / "posso gastar até 60" (10/10, rodada 9 via g25: "pra gastar" virava item "não achei").
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:tenho|posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)?\s+(?:pra|para)\s+gastar\b`,
   String.raw`(?:^|[\s,.;])(?:eu\s+)?(?:so\s+)?(?:posso gastar|quero gastar|da pra gastar|vou gastar)\s+(?:(?:so|apenas|uns|umas|ate|no maximo|mais ou menos|tipo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
+  // "gasto até 60 reais" / "gasto no máximo 80" (10/10, rodada 10 g29: o teto do presente virava parte do item).
+  String.raw`(?:^|[,.;:!?]\s*|\s(?:e|mas)\s+)(?:eu\s+)?(?:so\s+)?gasto\s+(?:ate|no maximo)\s+(?:(?:uns|umas)\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
   // "só tenho 100 reais (no total), cabe?" / "só tenho 50 conto" como frase própria (rodada 9 B M2 via g25).
-  String.raw`(?:^|[,.;:!?]\s*)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
-  // "meu orçamento é de 150", "meu limite é 80 reais"
-  String.raw`(?:^|[\s,.;])(?:o\s+)?(?:meu|minha)\s+(?:orcamento|limite|teto|verba)\s+(?:e|eh|de|é|e de|eh de|ta em|esta em)\s+(?:(?:uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)(?:\s*(?:reais|real|conto|contos|pila))?(?=$|[\s,.;:!?])`,
+  String.raw`(?:^|[,.;:!?]\s*|\b(?:q|que|pq|porque|tipo)\s+)(?:e\s+|mas\s+|ah\s+|olha\s+)?(?:eu\s+)?(?:so\s+)?tenho\s+(?:(?:so|apenas|uns|umas|ate|no maximo)\s+)*(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(?:reais|real|conto|contos|pila)\b(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?`,
+  // "meu orçamento é de 150", "meu limite é 80 reais"; sem o "meu" e sem verbo também: "orçamento R$ 150 no total",
+  // "orçamento: 60", "limite de 80" (10/10, rodada 10 g30: "orçamento R$ 150 no total" passava batido e o resumo de
+  // R$ 342,42 saía sem aviso).
+  String.raw`(?:^|[\s,.;])(?:(?:o|meu|minha|nosso|nossa)\s+)?(?:orcamento|limite|teto|verba)(?:\s+(?:total|maximo|max))?(?:\s*:|\s+(?:e|eh|de|é|e de|eh de|ta em|esta em|fica em|vai ate))?\s+(?:(?:uns|umas|ate|no maximo|de)\s+)*${ORDER_BUDGET_NUM}(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?(?=$|[\s,.;:!?])`,
   // "cesta básica de uns R$ 100" / "compra de até 200"
   String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
 ].map((src) => new RegExp(src, "g"));

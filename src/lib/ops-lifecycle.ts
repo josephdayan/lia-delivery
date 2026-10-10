@@ -12,14 +12,22 @@ import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
 import { PURCHASE_BLOCKED_PREFIX } from "@/lib/order-monitor";
 import { BasketItem, FreightChoiceState, cardTotal, display, orderDateLabel, quoteTtlMinutes, roundMoney } from "./conversation-types";
-import { TurnSupersededError, addressOnlyCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
-import { humanEstimate, promiseMissesDeadline } from "./live-freight";
+import { TurnSupersededError, addressOnlyCtx, orderFactsCtx, deliverNotice, markTurnReplied, normalizePhone, notifyOperator, readCtx, reply, resetConversationForClosedOrder, writeCtx, notifyOwner, operatorIsHired } from "./turn-runtime";
+import { deadlineFit, humanEstimate, promiseMissesDeadline } from "./live-freight";
 import { leftOutForSummary } from "./list-misses";
 import { PLAN_B_ACCEPTED_PREFIX, PLAN_B_NONE_PREFIX, PLAN_B_OFFERED_PREFIX, blockedReasonOf, planBMarkerAt } from "./plan-b";
 import { issueValidatedRetailerQuotePayment } from "./order-payments";
 import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
 
-export async function sendFreightChoice(phone: string, choice: FreightChoiceState) {
+// Prazo dito × as duas formas de entrega (10/10, rodada 10 g29). `null` = nenhuma tem prazo legível.
+export function freightDeadlineFits(choice: FreightChoiceState, neededBy: { date: string; morning?: boolean }): [copy.DeadlineFit | null, copy.DeadlineFit | null] | null {
+  const kind = choice.kind ?? "ml";
+  const label = (estimate?: string) => (kind === "store" ? humanEstimate(estimate) : estimate);
+  const fits: [copy.DeadlineFit | null, copy.DeadlineFit | null] = [deadlineFit(label(choice.barato.estimate), neededBy), deadlineFit(label(choice.rapido.estimate), neededBy)];
+  return fits[0] || fits[1] ? fits : null;
+}
+
+export async function sendFreightChoice(phone: string, choice: FreightChoiceState, neededBy?: { date: string; label: string; morning?: boolean }) {
   const totalFor = (fee: number) =>
     roundMoney(choice.itemsSubtotal + (choice.serviceFee ?? serviceFeeForSubtotal(choice.itemsSubtotal)) + fee);
   // Loja: o SLA cru ("60m") vira "prazo da loja: 60 min" no texto e "60 min" no botão.
@@ -28,7 +36,8 @@ export async function sendFreightChoice(phone: string, choice: FreightChoiceStat
   const short = (estimate?: string) => (kind === "store" ? humanEstimate(estimate)?.replace(/^prazo da loja: /, "") : estimate);
   const barato = { total: totalFor(choice.barato.fee), estimate: label(choice.barato.estimate) };
   const rapido = { total: totalFor(choice.rapido.fee), estimate: label(choice.rapido.estimate) };
-  const body = copy.shippingSpeedChoice(barato, rapido, kind, choice.budgetCap);
+  const fits = neededBy ? freightDeadlineFits(choice, neededBy) : null;
+  const body = copy.shippingSpeedChoice(barato, rapido, kind, choice.budgetCap, fits && neededBy ? { label: neededBy.label, morning: neededBy.morning, fits } : undefined);
   try {
     markTurnReplied();
     const interactive = await whatsappAdapter.sendShippingChoices(phone, body, { estimate: short(choice.barato.estimate) }, { estimate: short(choice.rapido.estimate) });
@@ -153,7 +162,7 @@ export async function opsPublishManualQuote(
   // sem isso, uma cotação atrasada apagava a compra em andamento e despejava o resumo
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
-  let neededBy: { date: string; label: string } | undefined;
+  let neededBy: { date: string; label: string; morning?: boolean } | undefined;
   let orderBudget: { cap: number } | undefined;
   let leftOut: string[] = [];
   if (order.conversationId) {
@@ -176,18 +185,10 @@ export async function opsPublishManualQuote(
             step: "awaiting_quote_confirmation",
             // "mais barato"/"entrega mais rápida" DEPOIS do total dependem dos dois
             // (27/08 S12/S14).
-            ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
             ...(ctx.freightChoice?.orderId === order.id ? { freightChoice: ctx.freightChoice } : {}),
-            // Prazo dito pelo cliente: a recotação e o "trocar entrega" continuam avisando (10/10, rodada 5 g16).
-            ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
-            // Orçamento do pedido dito na conversa (10/10, rodada 8 M3): a recotação continua avisando.
-            ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
-            // Faltantes (10/10, rodada 8 g25): "tira o gelo" depois do total e a recotação continuam sabendo o que ficou de fora.
-            ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
-            // "põe o papel de volta" depois do "tira" que refez o resumo (10/10, rodada 9 A3): o item tirado sobrevive.
-            ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
-            // Ensaio da compra (08/10 noite): a recusa anterior acompanha a recotação — a 2ª da mesma loja troca de loja.
-            ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
+            // "mais barato" depois do total, prazo, orçamento, faltantes, item tirado e recusa do ensaio: a recotação e o
+            // "tira o gelo" depois do total continuam sabendo (rodadas 5, 8, 9; ponto único na rodada 10 g30).
+            ...orderFactsCtx(ctx)
           });
         } catch (error) {
           // Turno superado no meio da publicação: o pedido volta pra fila e o turno
@@ -227,6 +228,12 @@ export async function opsPublishManualQuote(
     deliveryAddress: order.deliveryAddress ?? undefined,
     sameHour,
     ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date) ? { deadlineMiss: { label: neededBy.label } } : {}),
+    // Prazo dito e cumprido (10/10, rodada 10 g29): o resumo diz que serve.
+    ...(() => {
+      const fit = neededBy && !conversationMovedOn ? deadlineFit(input.deliveryPromise, neededBy) : null;
+      return neededBy && (fit === "ok" || fit === "unsure") ? { deadlineFit: { label: neededBy.label, morning: neededBy.morning, fit } } : {};
+    })(),
+    ...(orderBudget && total <= orderBudget.cap + 0.005 && !conversationMovedOn ? { withinBudget: { cap: orderBudget.cap } } : {}),
     deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,
     // Passou do orçamento dito na conversa (10/10, rodada 8 M3: R$ 112,55 com "se passar de 100 me avisa", sem aviso).
     ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
@@ -280,7 +287,7 @@ export async function opsPublishManualQuote(
       const convo = await prisma.conversation.findUnique({ where: { id: order.conversationId } });
       if (convo) {
         const ctx = readCtx(convo.context);
-        await writeCtx(convo.id, { ...addressOnlyCtx(ctx), deliveryOrderId: order.id, step: AWAITING_OPERATOR_QUOTE_STATUS });
+        await writeCtx(convo.id, { ...addressOnlyCtx(ctx), ...orderFactsCtx(ctx), deliveryOrderId: order.id, step: AWAITING_OPERATOR_QUOTE_STATUS });
       }
     }
     throw error;

@@ -4,6 +4,7 @@
 // certa ("gelo em cubo", "tenta Wilson").
 import type { DeliveryContext, ListMiss } from "@/lib/conversation-types";
 import { scoreCatalogMatch } from "@/lib/stores/types";
+import { isDiscourseOnly } from "@/lib/lia-intents";
 
 export const LIST_MISS_TTL_MS = 20 * 60_000;
 export const LIST_MISS_MAX = 8;
@@ -37,7 +38,8 @@ export function applyListMisses(ctx: DeliveryContext, misses: ListMiss[]): void 
 // A mesma query não aparece duas vezes (a mais nova vence); no máximo LIST_MISS_MAX.
 export function mergeListMisses(carry: ListMiss[], added: ListMiss[]): ListMiss[] {
   const out = new Map<string, ListMiss>();
-  for (const miss of [...carry, ...added]) out.set(norm(miss.query), miss);
+  // Fala solta nunca é faltante (10/10, rodada 10 g28): "as duas", "me mostra" iam para o "Ficou de fora (não achei)".
+  for (const miss of [...carry, ...added]) if (!isDiscourseOnly(miss.query)) out.set(norm(miss.query), miss);
   return [...out.values()].slice(-LIST_MISS_MAX);
 }
 

@@ -82,7 +82,7 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   const runAll = async () => {
     for (let i = 0; i < steps.length; i++) {
       const nextIsSearch = steps[i + 1]?.type === "search";
-      const result = await runStep(env, steps[i], { reopened, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick", afterRefine: steps.slice(0, i).some((st) => st.type === "refine") });
+      const result = await runStep(env, steps[i], { reopened, multi: steps.length > 1, nextIsSearch, nextIsPick: steps[i + 1]?.type === "pick", afterRefine: steps.slice(0, i).some((st) => st.type === "refine") });
       if (result === "invalid") {
         // Primeiro passo inválido: nada foi dito ao cliente, o caminho de hoje assume.
         // Passo posterior: o que veio antes já respondeu; o resto não se improvisa.
@@ -131,7 +131,7 @@ function locate(ctx: DeliveryContext, target: Target): BasketItem | undefined {
   return basket.find((item) => item.name.slice(0, 90) === target.name);
 }
 
-async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; nextIsSearch: boolean; nextIsPick: boolean; afterRefine?: boolean }): Promise<StepResult> {
+async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; multi?: boolean; nextIsSearch: boolean; nextIsPick: boolean; afterRefine?: boolean }): Promise<StepResult> {
   const { ctx, phone, convoId, userCep, userId, h } = env;
   const choosing = ctx.step === "choosing" && Boolean(ctx.pending?.length);
   const current = choosing ? ctx.pending![0] : undefined;
@@ -225,13 +225,14 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       if (step.target.kind === "basket") {
         const item = locate(ctx, step.target);
         if (!item) return "invalid";
-        await h.handleRemove(phone, convoId, userCep, ctx, item.name, { silentIfFound: opts.nextIsSearch, exact: { skus: [item.sku] } });
+        // Remoção sozinha sem total na mesa só confirma (rodada 10 g30); várias edições juntas mantêm o resumo único do fim (rodada 5 g14).
+        await h.handleRemove(phone, convoId, userCep, ctx, item.name, { silentIfFound: opts.nextIsSearch, exact: { skus: [item.sku] }, reopened: opts.multi ? undefined : opts.reopened });
         return "done";
       }
       if (step.target.kind === "queue") {
         const queued = ctx.pending?.[1 + step.target.idx];
         if (!queued) return "invalid";
-        await h.handleRemove(phone, convoId, userCep, ctx, queued.query, { silentIfFound: opts.nextIsSearch, exact: { queries: [queued.query] } });
+        await h.handleRemove(phone, convoId, userCep, ctx, queued.query, { silentIfFound: opts.nextIsSearch, exact: { queries: [queued.query] }, reopened: opts.multi ? undefined : opts.reopened });
         return "done";
       }
       return "invalid";
@@ -344,6 +345,25 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
         if (current) await h.sendChoices(phone, current);
         return "done";
       }
+      // Desempate repetido (10/10, rodada 10 g29: "o tradicional" → "250g ou drip?", "o de 250g" → "tradicional ou extra
+      // forte?"): depois de UMA resposta que não resolveu, nada de outra pergunta — cruza tudo o que o cliente disse e fica
+      // com a opção que bate (a 1ª do ranking, a mais comum, quando empata); sem nenhuma que bata, mostra os cards.
+      if (clean && step.kind === "unclear" && /\?\s*$/.test(clean) && current && current.options.length > 1) {
+        const prev = current.clarify && Date.now() - current.clarify.at < 10 * 60_000 ? current.clarify : undefined;
+        if (prev) {
+          current.clarify = undefined;
+          const said = [...prev.said, env.text];
+          const best = bestByAnswers(said, current.options);
+          if (best.length) {
+            await h.confirmChosenOption(phone, convoId, ctx, userCep, store(), current, best[0], { note: copy.clarifyResolved(best[0].name, best.length > 1) });
+            return "done";
+          }
+          await writeCtx(convoId, ctx);
+          await h.sendChoices(phone, current, copy.clarifyShowCards(current.query));
+          return "done";
+        }
+        current.clarify = { at: Date.now(), said: [env.text.slice(0, 120)] };
+      }
       if (clean) {
         await reply(phone, clean);
         // Pergunta de esclarecimento ("Qual leite você quer?"): a próxima fala responde ELA (09/10, rodada 3).
@@ -361,6 +381,21 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
     default:
       return "invalid";
   }
+}
+
+// As respostas do cliente às perguntas de desempate, cruzadas (10/10, rodada 10 g29): as opções cujo nome tem MAIS palavras
+// ditas ("tradicional" + "250g"), na ordem do ranking. Vazio = nenhuma palavra dita está em nenhuma opção.
+const ANSWER_STOP = new Set("o a os as um uma de do da dos das que quero queria pode ser esse essa esses essas mesmo mesma tipo mais com sem pra para pro e ou eu prefiro so isso aquele aquela ai sim nao".split(" "));
+export function bestByAnswers<T extends { name: string }>(said: string[], options: T[]): T[] {
+  const norm = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").replace(/(\d)\s+(g|kg|ml|l|un)\b/g, "$1$2");
+  const tokens = [...new Set(said.flatMap((s) => norm(s).split(/\s+/)).filter((t) => (t.length > 2 || /\d/.test(t)) && !ANSWER_STOP.has(t)))];
+  if (!tokens.length) return [];
+  const scored = options.map((o) => {
+    const words = new Set(norm(o.name).split(/\s+/));
+    return { o, s: tokens.filter((t) => words.has(t)).length };
+  });
+  const max = Math.max(...scored.map((x) => x.s));
+  return max > 0 ? scored.filter((x) => x.s === max).map((x) => x.o) : [];
 }
 
 // Produto novo no meio da escolha: entra na FILA (ou troca o item da tela, com `replace`),

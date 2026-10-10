@@ -89,6 +89,9 @@ export type PendingChoice = {
   storeNoted?: boolean;
   // O aviso "pra amanhã não chega" da vitrine já saiu para esta escolha (10/10, rodada 6 g19).
   deadlineNoted?: boolean;
+  // Pergunta de desempate da IA já feita para esta escolha e o que o cliente respondeu (10/10, rodada 10 g29: o café
+  // recebeu 3 perguntas seguidas). Na 2ª, a Lia cruza as respostas e decide (ou mostra os cards) em vez de perguntar.
+  clarify?: { at: number; said: string[] };
   // A loja pedida para a lista toda (ctx.preferredStore) já foi posta na frente das opções (10/10, rodada 5 M9).
   storePrioritized?: boolean;
   // Nome dessa loja, para o aviso "não achei na <loja>" quando a escolha é mostrada.
@@ -375,7 +378,7 @@ export type DeliveryContext = {
   urgent?: boolean;
   // Prazo que o cliente disse ("amanhã", "hoje", "até sexta"): data (yyyy-mm-dd, fuso de SP) e rótulo. O total avisa em uma
   // linha quando a entrega prometida não cumpre (rodada 4, M6).
-  neededBy?: { date: string; label: string };
+  neededBy?: { date: string; label: string; morning?: boolean };
   // Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3: "se passar de 100 me avisa"): vale para o total com
   // entrega. A escolha que passa dele e o resumo avisam; `warned` = a escolha já avisou (não repete a cada item).
   orderBudget?: { cap: number; warned?: boolean };

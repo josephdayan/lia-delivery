@@ -175,11 +175,19 @@ export function normalizePhone(phone?: string) {
 }
 
 export async function getOrCreateConvo(phone: string, name?: string) {
-  const user = await prisma.user.upsert({
-    where: { phone },
-    update: name ? { name } : {},
-    create: { phone, name }
-  });
+  // Duas mensagens do 1º contato chegando juntas (10/10, rodada 10 g30: "oi" + cadastro em paralelo): o upsert do Prisma
+  // não é atômico no Postgres — o 2º insert batia no índice único de `phone` e o cliente ouvia "Deu um erro aqui".
+  // Quem perdeu a corrida lê o usuário que o outro acabou de criar.
+  const user = await prisma.user
+    .upsert({
+      where: { phone },
+      update: name ? { name } : {},
+      create: { phone, name }
+    })
+    .catch(async (error: unknown) => {
+      if ((error as { code?: string })?.code !== "P2002") throw error;
+      return prisma.user.findUniqueOrThrow({ where: { phone } });
+    });
   let convo = await prisma.conversation.findFirst({
     where: { userId: user.id, status: "active" },
     orderBy: { updatedAt: "desc" }
@@ -260,8 +268,7 @@ export const turnMeta = new AsyncLocalStorage<{
   deferQuote?: boolean;
   quoteDeferred?: boolean;
   // Prazo dito pelo cliente (ctx.neededBy) neste turno: a vitrine avisa quando as opções não chegam a tempo (10/10, rodada 6 g19).
-  neededBy?: { date: string; label: string };
-}>();
+  neededBy?: { date: string; label: string; morning?: boolean };}>();
 
 // A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido
 // do dono): com LIA_NATIVE_PIX=1 o Pix saía só como bolha nativa (`sendPixOrderDetails`), o
@@ -359,6 +366,21 @@ export function addressOnlyCtx(ctx: DeliveryContext, userCep?: string | null): D
     cep: ctx.cep ?? userCep ?? undefined,
     deliveryAddress: ctx.deliveryAddress,
     deliveryAddressVerified: ctx.deliveryAddressVerified
+  };
+}
+
+// O que o resumo do total LÊ do contexto e precisa sobreviver a toda escrita entre o fechamento e a publicação
+// (10/10, rodada 10 g30: a escolha de entrega barata × rápida regravava o contexto sem `listMisses` e o resumo saía
+// sem "Ficou de fora: gelo em cubos" — 3ª rodada seguida; cada caminho copiava os campos à mão e um esquecia).
+// Ponto único: quem reescreve o contexto de um pedido em fechamento espalha isto.
+export function orderFactsCtx(ctx: DeliveryContext): Partial<DeliveryContext> {
+  return {
+    ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
+    ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
+    ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+    ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
+    ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
+    ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {})
   };
 }
 
