@@ -9,6 +9,7 @@ import * as copy from "../lia-copy";
 import { extractCep, normalizeMsg, parseRefinement, replaceRefinedSize } from "../lia-intents";
 import { reopenOrderForEdit } from "../order-payments";
 import { handleRecommend } from "../recommend/handle";
+import { itemsAfterAlso, reconcileLineCounts } from "../list-items";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
 import { turnMeta, writeCtx, reply, addressOnlyCtx } from "../turn-runtime";
@@ -139,7 +140,11 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
 
   switch (step.type) {
     case "search": {
-      let text = step.lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
+      // A contagem/tamanho que a IA leu é conferida com a fala do cliente (10/10, rodada 9: "um par de pilhas AA" → 1x ou
+      // 2 cartelas; "água sanitária de 5 litros, uma só" → 2x).
+      const said = turnMeta.getStore()?.inboundText ?? env.text;
+      const lines = reconcileLineCounts(step.lines.map((l) => ({ ...l, phrase: l.query })), said).map((l) => ({ ...l, query: l.phrase }));
+      let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
       if (step.retry && miss) text = "tenta de novo";
@@ -296,6 +301,10 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       // Recomendação (08/10): a execução (prateleiras → busca no CEP → juiz → cards) é do handler. Com
       // opções na tela, ele recebe o contexto inteiro e decide (continuar a escolha ou recomendar de novo).
       await handleRecommend({ phone, convoId, userId, userCep, ctx }, { ...step.request, text: step.request.text || env.text });
+      // "… Também um cartão de aniversário e embalagem de presente" (10/10, rodada 9 A3): os itens pedidos junto com a
+      // ideia de presente entram na fila (com aviso), em vez de sumir calados.
+      const extras = itemsAfterAlso(turnMeta.getStore()?.inboundText ?? env.text);
+      if (extras && ctx.step === "choosing" && ctx.pending?.length) await searchDuringChoice(env, extras, false);
       return "done";
     }
 
