@@ -43,6 +43,9 @@ export type BasketItem = {
   // Prazo que a LOJA informou pro CEP na consulta ao vivo do card ("prazo da loja: 1 dia útil"), 09/10: a lista
   // e o "quanto tempo demora?" mostram o prazo direto, antes do total.
   delivery?: string;
+  // Frete que a LOJA respondeu na consulta ao vivo do card (10/10, rodada 11 g32): a estimativa do teto, o aviso de
+  // entrega extra e o "o mais barato" usam o mesmo valor (antes a tabela dizia R$ 18 e a cotação, R$ 4,90).
+  freightFee?: number;
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para

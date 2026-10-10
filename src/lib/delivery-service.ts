@@ -840,8 +840,16 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector,
     ...(o.freeShipping ? { freeShipping: true } : {}),
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(ask?.trim() ? { ask: ask.trim().slice(0, 120) } : {}),
-    ...(o.delivery ? { delivery: o.delivery } : {})
+    ...(o.delivery ? { delivery: o.delivery } : {}),
+    ...(o.freightFee != null ? { freightFee: o.freightFee } : {})
   };
+}
+
+// Frete estimado de uma loja da cesta: o que a loja respondeu ao vivo para os itens dela (o maior), senão a tabela.
+function storeFeeEstimate(storeKey: string, storeLabel: string, items: BasketItem[]): number {
+  const known = items.map((i) => i.freightFee).filter((fee): fee is number => fee != null && Number.isFinite(fee));
+  if (known.length) return Math.max(...known);
+  return storeFreight(storeKey, storeLabel, roundMoney(items.reduce((acc, i) => acc + i.unitPrice * i.qty, 0))).fee;
 }
 
 // Prazo por loja da cesta (09/10, dono: "devia mostrar o prazo direto"): o que a loja informou na consulta
@@ -1339,10 +1347,11 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   if (deadline && !p.deadlineNoted && p.options.length && !(p.noneToday && deadline.label === "hoje")) {
     const verdict = deadlineVerdict(p.options, deadline.date);
     // Já avisado nas últimas falas (o p.deadlineNoted nem sempre volta gravado): "outras" não repete.
-    const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`));
+    const item = shownQuery(p);
+    const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`) && t.includes(`*${item}*`));
     if (verdict?.late.length && !said) {
       p.deadlineNoted = true;
-      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined));
+      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item));
     }
   }
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
@@ -2867,7 +2876,9 @@ async function handleDeliveryTurn(
   // Persistida pelo writeCtx do handler que tratar a mensagem (toda rota de pedido grava).
   if (!ctx.urgent && hasUrgencySignal(text)) ctx.urgent = true;
   // Prazo dito ("é aniversário da minha mãe amanhã"): o total avisa se a entrega não cumpre (rodada 4, M6).
-  const neededBy = parseNeededBy(text);
+  // A frase do cliente vale mesmo quando o turno segue com um texto reescrito (o pré-cadastro devolve só os itens).
+  const inboundForDeadline = turnMeta.getStore()?.inboundText;
+  const neededBy = parseNeededBy(text) ?? (inboundForDeadline && inboundForDeadline !== text ? parseNeededBy(inboundForDeadline) : null);
   if (neededBy) ctx.neededBy = neededBy;
   // A vitrine deste turno também avisa (10/10, rodada 6 g19: só o resumo do operador lia o prazo; em produção as
   // opções de 3 a 8 dias úteis saíam sem aviso).
@@ -3474,10 +3485,10 @@ async function handleDeliveryTurn(
   // primeira (melhor relevância) e a Lia diz que estavam empatadas, em vez de perguntar "a 1 ou a 5?".
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && intent.kind === "free_text" && CHEAPEST_PICK_RE.test(normalizeMsg(text))) {
     const current = ctx.pending[0];
-    const { index, tied } = cheapestWithTies(current.options);
+    const { index, tied, note } = cheapestForOrder(ctx, current);
     const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
     const o = current.options[index];
-    await confirmChosenOption(phone, convo.id, ctx, user.cep, store, current, o, tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(o.unitPrice, o.medicine), index + 1) } : undefined);
+    await confirmChosenOption(phone, convo.id, ctx, user.cep, store, current, o, note ? { note } : tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(o.unitPrice, o.medicine), index + 1) } : undefined);
     return;
   }
 
@@ -7191,7 +7202,7 @@ function basketEstimate(ctx: DeliveryContext): { produtos: number; total: number
     byStore.set(key, [...(byStore.get(key) ?? []), item]);
   }
   const produtos = basket.reduce((sum, i) => sum + display(i.unitPrice, i.medicine) * i.qty, 0);
-  const frete = [...byStore.entries()].reduce((sum, [key, items]) => sum + storeFreight(key, items[0]?.storeLabel ?? key, roundMoney(items.reduce((acc, i) => acc + i.unitPrice * i.qty, 0))).fee, 0);
+  const frete = [...byStore.entries()].reduce((sum, [key, items]) => sum + storeFeeEstimate(key, items[0]?.storeLabel ?? key, items), 0);
   return { produtos: roundMoney(produtos), total: roundMoney(produtos + frete) };
 }
 function orderBudgetChoiceNote(ctx: DeliveryContext): string | undefined {
@@ -7229,6 +7240,8 @@ export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<str
   }
   return out;
 }
+// O frete da loja nova é o que ela respondeu ao vivo (storeFeeEstimate), o mesmo da conta do "o mais barato" (10/10,
+// rodada 11 g32: a escolha via frete ao vivo de R$ 4,90 e a nota dizia "+ ~R$ 18,00" da tabela).
 function deliveryCostNote(before: BasketItem[], after: BasketItem[]): string | undefined {
   if (!after.length) return undefined;
   const storeOf = (i: BasketItem) => normalizeMsg(i.storeLabel || i.storeKey || "");
@@ -7257,12 +7270,24 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[]): string | u
   const fee = extra
     ? roundMoney(fresh.reduce((sum, key) => {
         const items = after.filter((i) => storeOf(i) === key);
-        const subtotal = roundMoney(items.reduce((acc, i) => acc + i.unitPrice * i.qty, 0));
-        return sum + storeFreight(items[0]?.storeKey ?? key, items[0]?.storeLabel ?? key, subtotal).fee;
+        return sum + storeFeeEstimate(items[0]?.storeKey ?? key, items[0]?.storeLabel ?? key, items);
       }, 0))
     : undefined;
   const labels = fresh.map((key) => after.find((i) => storeOf(i) === key)?.storeLabel ?? key);
-  return copy.choiceDeliveryCostNote({ deliveries: afterStores.size, newStores: extra ? labels : [], fee, later: later ? { prazo: later.promise ?? "", store: later.store, ...(longWait ? { long: true } : {}) } : undefined });
+  // Loja nova com pedido mínimo que a escolha não fecha (10/10, rodada 11 g32: o pão de R$ 7,69 da Americanas só esbarrava
+  // no mínimo de R$ 33 no "só isso"): o aviso vem na hora da escolha, junto do frete.
+  const minimum = extra
+    ? fresh.map((key) => {
+        const items = after.filter((i) => storeOf(i) === key);
+        const storeKey = items[0]?.storeKey;
+        const store = storeKey ? getStore(storeKey) : undefined;
+        if (!store || store.key !== storeKey) return undefined;
+        const min = display(storeMinReal(store));
+        const produtos = roundMoney(items.reduce((acc, i) => acc + display(i.unitPrice, i.medicine) * i.qty, 0));
+        return min > 0 && produtos < min ? { store: store.label, min, falta: roundMoney(min - produtos) } : undefined;
+      }).find(Boolean)
+    : undefined;
+  return copy.choiceDeliveryCostNote({ deliveries: afterStores.size, newStores: extra ? labels : [], fee, later: later ? { prazo: later.promise ?? "", store: later.store, ...(longWait ? { long: true } : {}) } : undefined, ...(minimum ? { minimum } : {}) });
 }
 
 async function confirmChosenOption(
@@ -7863,13 +7888,9 @@ async function handleChoosing(
       await showPriceSortedOptions(phone, convoId, ctx, store, parsed.type === "cheaper" ? "asc" : "desc");
       return;
     }
-    const index =
-      parsed.type === "pick"
-        ? parsed.index
-        : parsed.type === "cheapest"
-          ? cheapestWithTies(current.options).index
-          : 0;
-    const tied = parsed.type === "cheapest" ? cheapestWithTies(current.options).tied : [];
+    const smart = parsed.type === "cheapest" ? cheapestForOrder(ctx, current, wantsChoiceForAll(text) && (ctx.pending?.length ?? 0) > 1 ? [] : undefined) : undefined;
+    const index = parsed.type === "pick" ? parsed.index : smart ? smart.index : 0;
+    const tied = smart?.tied ?? [];
     // "o mais barato de tudo" (10/10, rodada 7 M4): vale para o PEDIDO inteiro — cada item ainda em escolha leva a opção
     // mais barata dele (antes só o item da vez; o cliente repetiu 4 vezes). O aviso de entregas/prazo vê o conjunto.
     // "escolhe você tudo que falta" (10/10, rodada 8 M2) é o mesmo caminho, com a 1ª opção (a que a Lia recomenda) de cada.
@@ -7878,8 +7899,10 @@ async function handleChoosing(
       const costBefore = [...(ctx.basket ?? [])];
       const rest = ctx.pending!.slice(1);
       const picked = rest.filter((p) => p.options.length && !p.recommendation);
+      // "o mais barato de TUDO" segue a etiqueta mais baixa de cada item, com o aviso das entregas extras no fim (rodada 7
+      // M4, coberto por teste); o prazo dito vale aqui também (só as que chegam a tempo, quando alguma chega).
       const added = picked.map((p) => {
-        const o = p.options[forAll === "cheapest" ? cheapestWithTies(p.options).index : 0];
+        const o = p.options[forAll === "cheapest" ? cheapestForOrder(ctx, p, []).index : 0];
         const pack = packAdjusted(o, p.qty, p.query, { assumedOne: p.qty === 1 && !p.qtyExplicit });
         return choiceToBasketItem(o, pack.qty, o.storeKey ? getStore(o.storeKey) : store, p.query);
       });
@@ -7889,7 +7912,7 @@ async function handleChoosing(
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], { note, costBefore });
       return;
     }
-    await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(current.options[index].unitPrice, current.options[index].medicine), index + 1) } : undefined);
+    await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], smart?.note ? { note: smart.note } : tied.length > 1 ? { note: copy.cheapestTieNote(tied.map((i) => i + 1), display(current.options[index].unitPrice, current.options[index].medicine), index + 1) } : undefined);
     return;
   }
 
@@ -9186,6 +9209,58 @@ function cheapestWithTies(options: ChoiceOption[]): { index: number; tied: numbe
   const price = (o: ChoiceOption) => Math.round(display(o.unitPrice, o.medicine) * 100);
   const index = options.reduce((best, o, i, arr) => (price(o) < price(arr[best]) ? i : best), 0);
   return { index, tied: options.map((o, i) => (price(o) === price(options[index]) ? i : -1)).filter((i) => i >= 0) };
+}
+// "o mais barato" com o PEDIDO em vista (10/10, rodada 11 g32): o guaraná de R$ 10,99 da loja de 8 dias úteis com o
+// cliente pedindo "até amanhã de manhã"; o desinfetante de centavos a menos que somava a 4ª entrega (+R$ 18). Com prazo
+// dito, vale a mais barata ENTRE as que chegam a tempo (se alguma chega); e a conta é o que o cliente paga: produto +
+// a entrega de uma loja que ainda não está na cesta + o que faltaria pro pedido mínimo dela. Quando isso muda a escolha
+// em relação à etiqueta mais baixa, a nota diz por quê (o cliente pode voltar pra ela).
+function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: BasketItem[] = ctx.basket ?? []): { index: number; tied: number[]; note?: string } {
+  const raw = cheapestWithTies(p.options);
+  if (p.options.length < 2) return raw;
+  const deadline = ctx.neededBy;
+  const late = (o: ChoiceOption) => (deadline ? promiseMissesDeadline(o.delivery, deadline.date) === true : false);
+  const onTime = p.options.map((_, i) => i).filter((i) => deadline && promiseMissesDeadline(p.options[i].delivery, deadline.date) === false);
+  const pool = onTime.length && p.options.some(late) ? onTime : p.options.map((_, i) => i);
+  const storeOf = (key?: string, label?: string) => normalizeMsg(label || key || "");
+  const have = new Set(basket.map((i) => storeOf(i.storeKey, i.storeLabel)).filter(Boolean));
+  const qty = Math.max(1, p.qty);
+  const cents = (v: number) => Math.round(v * 100);
+  const extraFor = (o: ChoiceOption): { fee: number; falta: number; min: number } => {
+    const key = storeOf(o.storeKey, o.storeLabel);
+    if (!have.size || !key || have.has(key)) return { fee: 0, falta: 0, min: 0 };
+    const price = display(o.unitPrice, o.medicine) * qty;
+    const fee = o.freightFee ?? storeFreight(o.storeKey ?? CONCIERGE_STORE_KEY, o.storeLabel ?? "", roundMoney(o.unitPrice * qty)).fee;
+    const store = o.storeKey ? getStore(o.storeKey) : undefined;
+    const min = store?.key === o.storeKey && store ? display(storeMinReal(store)) : 0;
+    return { fee, falta: Math.max(0, min - price), min };
+  };
+  const cost = (o: ChoiceOption) => {
+    const extra = extraFor(o);
+    return display(o.unitPrice, o.medicine) * qty + extra.fee + extra.falta;
+  };
+  let index = pool.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), pool[0]);
+  // Prazo LONGO por pouco (10/10, rodada 11 g32: o band-aid de 9 dias úteis puxava o kit inteiro pra lá): se a mais barata
+  // só chega em 5+ dias e atrasa o pedido, e outra que não atrasa custa até R$ 5 (ou 15%) a mais, fica a que chega antes.
+  const minutes = (o: ChoiceOption) => promisedMinutes(o.delivery) ?? -1;
+  const slowestNow = basket.reduce((acc, i) => Math.max(acc, promisedMinutes(i.delivery) ?? -1), -1);
+  const slowPick = minutes(p.options[index]) >= LONG_WAIT_MINUTES && minutes(p.options[index]) > slowestNow;
+  if (slowPick) {
+    const limit = cost(p.options[index]) + Math.max(5, cost(p.options[index]) * 0.15);
+    const quicker = pool.filter((i) => minutes(p.options[i]) >= 0 && minutes(p.options[i]) < LONG_WAIT_MINUTES && cost(p.options[i]) <= limit);
+    if (quicker.length) index = quicker.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), quicker[0]);
+  }
+  const picked = p.options[index];
+  const tied = pool.filter((i) => cents(cost(p.options[i])) === cents(cost(picked)) && cents(display(p.options[i].unitPrice, p.options[i].medicine)) === cents(display(picked.unitPrice, picked.medicine)));
+  const cheapestTag = p.options[raw.index];
+  if (cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) return { index, tied };
+  const extra = extraFor(cheapestTag);
+  const reason = late(cheapestTag) && !late(picked) && deadline
+    ? { late: deadline.label }
+    : minutes(cheapestTag) >= LONG_WAIT_MINUTES && minutes(picked) < LONG_WAIT_MINUTES && cents(extra.fee + extra.falta) === 0
+      ? { slow: cheapestTag.delivery ?? "" }
+      : { extraFee: roundMoney(extra.fee), ...(extra.falta > 0 ? { minimum: extra.min } : {}) };
+  return { index, tied: [index], note: copy.cheapestForOrderNote({ name: cheapestTag.name, price: display(cheapestTag.unitPrice, cheapestTag.medicine), store: cheapestTag.storeLabel, ...reason }) };
 }
 const CHEAPEST_PICK_RE = /^(?:(?:pode ser|quero|vou de|vou no|vou na|fico com|prefiro|me ve|manda|bota|pega)\s+(?:o |a )?mais barat\w+|(?:(?:pode ser|quero|vou de|fico com|prefiro|me ve)\s+)?(?:o |a )?mais baratinh[oa])(?:\s+(?:mesmo|ai|por favor|pfv))?$/;
 const CHEAPEST_TO_RE = /^(?:(?:o|a|um|uma)\s+)?(?:\S+\s+){0,3}?(?:mais barat\w*|mais em conta|mais economic\w*|menor preco)$|^(?:o |a )?(?:mais barat\w*|mais em conta)$/;
@@ -11508,6 +11583,13 @@ async function planConsolidation(ctx: DeliveryContext, userCep: string | null | 
   return null;
 }
 
+// Juntar que ATRASA não vale a oferta espontânea (10/10, rodada 11 g32): com prazo dito, qualquer atraso; sem prazo, 2+ dias
+// a mais por uma economia pequena (menos de R$ 10 ou de 10% do total). Manter abaixo do mínimo da loja = juntar é a saída.
+export function slowerJoinNotWorth(i: { slowerByDays: number; saving: number; keptTotal: number; deadline: boolean; keptBelowMinimum: boolean }): boolean {
+  if (i.keptBelowMinimum || !(i.slowerByDays > 0)) return false;
+  return i.deadline || (i.slowerByDays >= 2 && i.saving < Math.max(10, i.keptTotal * 0.1));
+}
+
 // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A compra fecha as duas formas.
 // false = juntar sairia mais caro (sem oferta). `force`: o cliente PEDIU para juntar — a oferta sai mesmo mais cara.
 async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: DeliveryContext, joined: ConsolidationPlan, prefix?: string, force = false): Promise<boolean> {
@@ -11549,15 +11631,24 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
   }
   const keptShort = minimumNotes(ctx.basket ?? []);
   const minimumNote = keptShort.length || joinedShort.length ? copy.consolidationMinimumNote(keptShort, joinedShort) : null;
+  // Juntar que atrasa (10/10, rodada 10 g29): diz antes do toque, não só entre parênteses — e em DESTAQUE, logo depois dos
+  // totais, com quanto economiza (10/10, rodada 11 g32: o kit de primeiros socorros ia a 8 dias úteis por R$ 5,90).
+  const joinedEtaH = humanEstimate(joinedEta);
+  const keptEtaH = humanEstimate(keptEta);
+  const etaMin = (eta: string) => deliveryMinutes(copy.promiseForCustomer(eta).replace(/^\d+ entregas\s*·\s*/, ""));
+  const slowerBy = joinedEtaH && keptEtaH && etaMin(joinedEtaH) !== Number.MAX_SAFE_INTEGER && etaMin(joinedEtaH) > etaMin(keptEtaH) ? (etaMin(joinedEtaH) - etaMin(keptEtaH)) / (24 * 60) : 0;
+  const saving = roundMoney(keptTotal - joinedTotal);
+  // Não é oferta (sem o cliente pedir): prazo pior com prazo dito, ou 2+ dias a mais por uma economia pequena. Manter que
+  // não fecha o mínimo continua com a oferta (é a saída).
+  if (!force && slowerJoinNotWorth({ slowerByDays: slowerBy, saving, keptTotal, deadline: Boolean(deadline), keptBelowMinimum: keptShort.length > 0 })) {
+    console.warn("[basket:consolidate:slower-not-worth]", joinedEtaH, keptEtaH, saving);
+    return false;
+  }
+  const etaNote = slowerBy > 0 && keptEtaH && joinedEtaH ? copy.consolidationSlowerNote(keptEtaH, joinedEtaH, saving) : null;
   ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}), ...(joinedStores > 1 ? { joinedStores } : {}) };
   ctx.consolidationParked = undefined;
   await writeCtx(convoId, ctx);
   if (prefix) await reply(phone, prefix);
-  // Juntar que atrasa (10/10, rodada 10 g29): diz antes do toque, não só entre parênteses.
-  const joinedEtaH = humanEstimate(joinedEta);
-  const keptEtaH = humanEstimate(keptEta);
-  const etaMin = (eta: string) => deliveryMinutes(copy.promiseForCustomer(eta).replace(/^\d+ entregas\s*·\s*/, ""));
-  const etaNote = joinedEtaH && keptEtaH && etaMin(joinedEtaH) > etaMin(keptEtaH) ? copy.swapEtaNote(keptEtaH, joinedEtaH, undefined, "Juntando") : null;
   const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: joinedEtaH, keptEta: keptEtaH, joinedStores, left: joined.left, deadlineNote, minimumNote, etaNote });
   markTurnReplied();
   const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
