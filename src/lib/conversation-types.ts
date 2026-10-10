@@ -353,7 +353,7 @@ export type DeliveryContext = {
   // Oferta de juntar a cesta numa loja só (09/10, dono: "oferecer, não impor"): a cesta juntada fica
   // guardada até o cliente escolher (botão consolidar:sim / consolidar:nao). `key` = a cesta de quando a
   // oferta saiu; cesta mudou → a oferta morre.
-  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number };
+  consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

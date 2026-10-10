@@ -54,7 +54,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 // dashboard drives. Intent detection lives in lia-intents (pure, unit-tested) and
 // every customer-facing string lives in lia-copy.
 import type { ListFlowCtx, ListFlowCtxSlot, ListMiss } from "./conversation-types";
-import { isBareRacao, racaoStagesMixed, specKindOf, specAnswerLooksValid, specAnswerUnknown, combineSpecQuery, type SpecAsk } from "./spec-ask";
+import { isBareRacao, racaoStagesMixed, specKindOf, specAnswerLooksValid, specAnswerUnknown, combineSpecQuery, cartridgeForPrinter, type SpecAsk } from "./spec-ask";
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
@@ -279,14 +279,18 @@ async function buildChoices(
   const { greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = extracted;
   // Item que depende de especificação não dita ("capa de celular" sem modelo, 09/10 g7): não busca, pergunta.
   const specAsks: SpecAsk[] = [];
-  const lines = opts?.askSpecs
+  const lines = (opts?.askSpecs
     ? extracted.lines.filter((line) => {
         const kind = specKindOf(line.phrase);
         if (!kind || (line.raw && !specKindOf(line.raw))) return true;
         specAsks.push({ kind, query: line.phrase, qty: line.qty, ...(line.qtyExplicit ? { qtyExplicit: true } : {}) });
         return false;
       })
-    : extracted.lines;
+    : extracted.lines
+  ).map((line) => {
+    const cartridge = cartridgeForPrinter(line.phrase);
+    return cartridge ? { ...line, phrase: cartridge } : line;
+  });
   const perfExtracted = Date.now();
   // "Preciso pra HOJE" (dono, 04/09): quando tem urgência, a vitrine fica só com o que a
   // loja entrega em menos de 1 dia (prazo da entrega mais rápida); se ninguém entrega
@@ -2042,7 +2046,9 @@ async function handleDeliveryTurn(
     const linkless = stripLinks(text);
     if (linkless.hadLink && !/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(text.trim())) {
       await reply(phone, copy.productLinkNotOpened());
-      if (!/[a-zà-ú]{2,}/i.test(linkless.text)) return;
+      // "olha esse <link>": sobra só enrolação, nenhum produto — a linha acima já pede o nome (antes vinham 2 mensagens, 10/10).
+      const LINK_FILLER = new Set(["olha", "olhe", "ve", "veja", "acha", "achar", "procura", "procure", "busca", "quero", "queria", "me", "manda", "esse", "essa", "isso", "este", "esta", "aqui", "ai", "o", "a", "um", "uma", "link", "produto", "item", "pra", "para", "mim", "por", "favor", "pf", "pfv", "aquele", "aquela", "desse", "dessa", "disso", "tem", "se", "comprar", "compra"]);
+      if (!normalizeMsg(linkless.text).split(/\s+/).some((word) => word.length >= 2 && !LINK_FILLER.has(word))) return;
       text = linkless.text;
     }
     // Pedido em inglês ("I need a phone charger and some milk"): traduz o básico e segue; fora do dicionário, como veio.
@@ -3434,7 +3440,7 @@ async function handleDeliveryTurn(
         ctx.consolidationTried = offer.basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|");
       }
       await writeCtx(convo.id, ctx);
-      await continueAfterBasket(phone, convo.id, ctx, user.cep, join ? copy.basketConsolidated(offer.storeLabel, offer.pairs, offer.delta) : copy.consolidationKept(offer.stores));
+      await continueAfterBasket(phone, convo.id, ctx, user.cep, join ? copy.basketConsolidated(offer.storeLabel, offer.pairs, offer.delta, offer.joinedTotal != null && offer.keptTotal != null ? { saved: roundMoney(offer.keptTotal - offer.joinedTotal), eta: humanEstimate(offer.joinedEta) } : undefined) : copy.consolidationKept(offer.stores));
       return;
     }
     await writeCtx(convo.id, ctx);
@@ -9411,9 +9417,10 @@ async function handlePreferenceStatement(
 
 // Total estimado de uma cesta (produtos + margem + frete de cada loja) para a oferta de juntar: frete
 // da loja ao vivo para o CEP quando dá, senão a política de frete dela. O total de verdade sai na cotação.
-async function estimateBasketTotal(basket: BasketItem[], cep?: string | null): Promise<number> {
+async function estimateBasket(basket: BasketItem[], cep?: string | null): Promise<{ total: number; estimate?: string }> {
   const items = basket as InstantQuoteItem[];
   const freights = computeStoreFreights(items).freights;
+  const estimates: string[] = [];
   if (liveFreightEnabled() && cep) {
     const outcomes = await withDeadline(
       Promise.all(freights.map((f) => liveStoreFreight(f.storeKey, basket.filter((i) => i.storeKey === f.storeKey).map((i) => ({ sku: i.sku, qty: i.qty })), cep).catch(() => null))),
@@ -9421,11 +9428,15 @@ async function estimateBasketTotal(basket: BasketItem[], cep?: string | null): P
       null
     );
     outcomes?.forEach((outcome, i) => {
-      if (outcome?.kind === "ok") freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
+      if (outcome?.kind === "ok") {
+        freights[i] = { ...freights[i], fee: outcome.fee, source: "vivo" };
+        if (outcome.estimate) estimates.push(outcome.estimate);
+      }
     });
   }
   const subtotal = basket.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
-  return roundMoney(subtotal + serviceFeeForItems(basket as { unitPrice: number; qty: number }[]) + freights.reduce((sum, f) => sum + f.fee, 0));
+  const total = roundMoney(subtotal + serviceFeeForItems(basket as { unitPrice: number; qty: number }[]) + freights.reduce((sum, f) => sum + f.fee, 0));
+  return { total, estimate: slowestEstimate(estimates) };
 }
 
 function consolidationBudgetMs(): number {
@@ -9494,15 +9505,17 @@ async function continueAfterBasket(
         // Oferecer, não impor (09/10, dono): o cliente vê os dois totais com o frete e escolhe. A
         // compra fecha as duas formas — várias lojas viram um trabalho de compra por loja.
         const stores = new Set((ctx.basket ?? []).map((i) => i.storeKey)).size;
-        const [keptTotal, joinedTotal] = await Promise.all([estimateBasketTotal(ctx.basket ?? [], ctx.cep), estimateBasketTotal(joined.basket, ctx.cep)]);
+        const [keptEst, joinedEst] = await Promise.all([estimateBasket(ctx.basket ?? [], ctx.cep), estimateBasket(joined.basket, ctx.cep)]);
+        const { total: keptTotal, estimate: keptEta } = keptEst;
+        const { total: joinedTotal, estimate: joinedEta } = joinedEst;
         // Juntar que sai MAIS CARO no total (produtos + frete) não é oferta (09/10, rodada 3: +R$ 44 pra poupar R$ 8,90 de frete).
         const costlier = joinedTotal > keptTotal + 0.009 && conciergeStoresBelowMinimum(ctx).length === 0;
         if (costlier) console.warn("[basket:consolidate:costlier]", joinedTotal, keptTotal);
         else {
-        ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta };
+        ctx.consolidationOffer = { key: tried, basket: joined.basket, storeLabel: joined.storeLabel, stores, pairs: joined.pairs, delta: joined.delta, joinedTotal, keptTotal, ...(joinedEta ? { joinedEta } : {}) };
         await writeCtx(convoId, ctx);
         if (prefix) await reply(phone, prefix);
-        const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs });
+        const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: humanEstimate(joinedEta), keptEta: humanEstimate(keptEta) });
         markTurnReplied();
         const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores).catch(() => null);
         if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
