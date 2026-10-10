@@ -143,6 +143,9 @@ export type PendingChoice = {
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
+  // Bebê citado em qualquer parte do pedido (10/10, rodada 12 g36): "o mais barato" desse item nunca escolhe a versão só de
+  // adulto (lenço antisséptico, íntimo) quando há outra.
+  babyContext?: boolean;
   // Escolha montada por uma recomendação (08/10): "outras"/"mais barato"/refino seguem a recomendação
   // (próximas prateleiras, re-julgamento, re-plano) em vez de paginar variantes de uma busca.
   recommendation?: RecommendationState;

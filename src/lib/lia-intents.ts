@@ -970,11 +970,21 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   }
   // "presente pra minha amiga que faz aniversário hoje, ela gosta de chocolate e de creme pras mãos" (10/10, rodada 10
   // g29): com produto nomeado na mesma mensagem, a moldura do presente é o motivo, não um item ("não achei presente…").
+  // "presente pra um menino de 7 anos, um cartão de aniversário, embalagem e papel de presente" (10/10, rodada 12 g36):
+  // acessório da ocasião (cartão, embalagem, papel, vela de aniversário) não é o presente — a moldura fica como item.
   if (merged.length > 1) {
-    const products = merged.filter((line) => !GIFT_FRAME_RE.test(normalizeMsg(line.phrase)));
-    if (products.length && products.length < merged.length) return products;
+    const products = merged.filter((line) => !isGiftFrame(line.phrase));
+    if (products.some((line) => !isGiftAccessory(line.phrase)) && products.length < merged.length) return products;
   }
   return merged;
+}
+export function isGiftFrame(phrase: string): boolean {
+  return GIFT_FRAME_RE.test(normalizeMsg(phrase));
+}
+// Item que acompanha o presente/a festa, mas não é ele: "cartão de aniversário", "papel de presente", "vela de aniversário".
+export function isGiftAccessory(phrase: string): boolean {
+  const n = normalizeMsg(phrase);
+  return !isGiftFrame(n) && /\b(?:de|pra|para|do|da)\s+(?:presente|aniversario|natal|festa)\b/.test(n);
 }
 const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
 
@@ -1367,11 +1377,11 @@ export function parseDropClause(text: string): { drop: string; rest: string } | 
 }
 
 // "peraí, banana chips não... tira isso" / "esse lenço da Huggies repetiu, tira ele" (10/10, rodada 11 M14/M7): ordem de
-// tirar com PRONOME no lugar do item. `context` = o que vem antes (onde o item foi citado); `rest` = o que vem depois
+// tirar com PRONOME no lugar do item. "peraí, açúcar não, esquece isso" (10/10, rodada 12 g36) também. `context` = o que vem antes (onde o item foi citado); `rest` = o que vem depois
 // ("o lenço umedecido pode ser o mais barato"), que segue como mensagem própria. null = não é esse formato.
 export function parsePronounRemove(text: string): { context: string; rest: string } | null {
   const n = normalizeMsg(text);
-  const m = n.match(/(?:^|[\s,.;!]+)(?:(?:entao|pode|por favor|pf)\s+)?(?:tira|tirar|remove|remover|retira|tirar fora|tira fora)\s+(?:ela|ele|elas|eles|isso|isto|essa|esse|essas|esses|ess[ae] ai|isso ai)(?:\s+(?:fora|da lista|da cesta|do carrinho|pra mim|por favor|pf))?(?=$|[\s,.;!?]+)/);
+  const m = n.match(/(?:^|[\s,.;!]+)(?:(?:entao|pode|por favor|pf)\s+)?(?:tira|tirar|remove|remover|retira|tirar fora|tira fora|esquece|esqueca|desconsidera)\s+(?:ela|ele|elas|eles|isso|isto|essa|esse|essas|esses|ess[ae] ai|isso ai)(?:\s+(?:fora|da lista|da cesta|do carrinho|pra mim|por favor|pf))?(?=$|[\s,.;!?]+)/);
   if (!m) return null;
   const context = n.slice(0, m.index).replace(/[\s,.;!]+$/, "").trim();
   const rest = n.slice((m.index ?? 0) + m[0].length).replace(/^[\s,.;!?]+/, "").replace(/^(?:e\s+)/, "").trim();
@@ -1877,7 +1887,9 @@ export function detectIntent(text: string): Intent {
     holdLead &&
     !/\b(quero|me ve|manda|traz|compra|adiciona|coloca|bota)\b/.test(n) &&
     // "peraí, banana chips não... tira isso" (10/10, rodada 11 M14): o "peraí" abre uma ORDEM de edição, não uma pausa.
-    !/\b(tira|tirar|remove|remover|retira|troca|trocar|muda|mudar)\b/.test(n)
+    !/\b(tira|tirar|remove|remover|retira|troca|trocar|muda|mudar)\b/.test(n) &&
+    // "peraí, açúcar não, esquece isso" (10/10, rodada 12 g36): "esquece/desconsidera/deixa de fora/não quero" também é ordem.
+    !/\b(esquece|esqueca|desconsidera|deixa (?:de fora|pra la|para la)|nao quero|n quero)\b/.test(n)
   ) {
     return { kind: "hold" };
   }

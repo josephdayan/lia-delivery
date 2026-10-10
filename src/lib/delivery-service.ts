@@ -271,6 +271,14 @@ export function babyContextOptions<T extends { name: string }>(phrase: string, o
   const baby = (o: T) => BABY_PRODUCT_RE.test(normalizeMsg(o.name));
   return [...pool.filter(baby), ...pool.filter((o) => !baby(o))];
 }
+function babyAmbiguous(phrase: string): boolean {
+  const n = normalizeMsg(phrase);
+  return BABY_AMBIGUOUS_RE.test(n) && !BABY_PRODUCT_RE.test(n);
+}
+// Opção só de adulto num item de bebê (10/10, rodada 12 g36): fora da conta do "o mais barato" quando há outra.
+function adultOnlyForBaby(p: PendingChoice, o: ChoiceOption): boolean {
+  return Boolean(p.babyContext) && ADULT_ONLY_RE.test(normalizeMsg(o.name));
+}
 export function hasBabyContext(text: string): boolean {
   return BABY_CONTEXT_RE.test(normalizeMsg(text));
 }
@@ -725,6 +733,7 @@ async function buildChoices(
       ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
       ...(closestFalta ? { closestFalta } : {}),
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
+      ...(babyContext && babyAmbiguous(line.phrase) ? { babyContext: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true, ...(urgentWhen ? { urgentWhen } : {}) } : {}),
       ...(urgent && noneToday ? { noneToday: true } : {}),
       options: (cheapestFirst ? sortedOptions : medicineBaseFirst(line.phrase, exactPackFirst(line.phrase, line.qty, sortedOptions), Boolean(closestFalta))).slice(0, vitrineLimit())
@@ -1282,6 +1291,15 @@ function sameDayMaxMinutes(): number {
 }
 
 // Itens ainda sem escolha, pelo nome que o cliente usou (09/10, rodada 2): "fecha"/"pagar"/"quanto tá" dizem QUAIS faltam.
+// "Falta escolher" do parcial (10/10, rodada 12 g36): escolha que TROCA um item da cesta (troca de loja/opção) não é item
+// faltando — o caderno aparecia na cesta e em "falta escolher: caderno" ao mesmo tempo.
+function pendingSummaryNames(ctx: DeliveryContext): string[] {
+  const names = (ctx.pending ?? []).map((p) => {
+    const name = (p.baseQuery ?? p.query).trim();
+    return name && p.replaceSku && (ctx.basket ?? []).some((b) => b.sku === p.replaceSku) ? copy.pendingSwapLabel(name) : name;
+  }).filter(Boolean);
+  return [...new Set(names)];
+}
 function pendingNames(ctx: DeliveryContext): string[] {
   const names = (ctx.pending ?? []).map((p) => (p.baseQuery ?? p.query).trim()).filter(Boolean);
   return [...new Set(names)];
@@ -2606,6 +2624,17 @@ async function handleDeliveryTurn(
       text = rest;
     }
   }
+  // "essa estoura meus 100 reais, tem uma mais em conta ou de 3kg?" (10/10, rodada 12 g36): o valor é o MOTIVO; a pergunta
+  // é por outra opção (mais barata / outro tamanho). Guarda o teto e segue só com o pedido de opções — antes vinha a
+  // resposta genérica do teto ("ainda não tem nada escolhido pra eu somar").
+  if (asksBudgetLeft(text)) {
+    const optionsAsk = text.split(/[,.;!]+/).map((c) => c.trim()).filter((c) => OPTIONS_ASK_RE.test(normalizeMsg(c)));
+    if (optionsAsk.length && (ctx.pending?.length || ctx.basket?.length)) {
+      const fitCap = parseBudgetFitAsk(`${text.replace(/\?+\s*$/, "")}?`)?.cap;
+      if (fitCap != null && !ctx.budget) ctx.orderBudget = { ...(ctx.orderBudget ?? {}), cap: fitCap };
+      text = optionsAsk.join(", ");
+    }
+  }
   if (asksBudgetLeft(text)) {
     // O valor dito na própria pergunta ("vai ficar dentro dos 60?") vale como o teto do pedido (rodada 10 g29).
     const fitAsk = parseBudgetFitAsk(text);
@@ -2711,7 +2740,11 @@ async function handleDeliveryTurn(
     ctx.closeWithoutOffer = undefined;
     const names = pendingNames(ctx);
     const live = Date.now() - offer.at < 30 * 60_000 && names.length > 0 && names.join("|") === offer.queries.join("|");
-    const yes = intent.kind === "affirm" || intent.kind === "pay" || intent.kind === "done" || /^(pode|isso|fecha\w*|sem (el[ae]s?|ess[ae]s?))\b/.test(normalizeMsg(text));
+    // "pode levar as 2 embalagens de ovos" com "Levo 2 embalagens?" E "Fecho sem ovos?" abertos (10/10, rodada 12 g36):
+    // frase afirmativa que CITA o item pendente (ou a embalagem) responde a pergunta DESSE item — inclui, não fecha sem.
+    const nText = normalizeMsg(text);
+    const citesPending = !/\bsem\b/.test(nText) && ((ctx.pending ?? []).some((p) => sharesProductNoun(text, p.baseQuery ?? p.query)) || (Boolean(ctx.packConfirm) && /\b(embalage\w*|pacotes?|caixas?|bandejas?)\b/.test(nText)));
+    const yes = !citesPending && (intent.kind === "affirm" || intent.kind === "pay" || intent.kind === "done" || /^(pode|isso|fecha\w*|sem (el[ae]s?|ess[ae]s?))\b/.test(nText));
     if (live && yes) {
       await closeWithoutPending(phone, convo.id, ctx, user.cep, user.id);
       return;
@@ -3731,7 +3764,7 @@ async function handleDeliveryTurn(
     if (asked && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      const summary = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+      const summary = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
       const rows = asked.item
         ? [
             ...(ctx.basket ?? []).filter((b) => itemMatchesPhrase(asked.item!, b)).map((b) => ({ qty: b.qty, name: b.name })),
@@ -4212,7 +4245,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx))}`);
+      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx))}`);
       return;
     }
     if ((ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment") && ctx.deliveryOrderId) {
@@ -4496,7 +4529,7 @@ async function handleDeliveryTurn(
     }
     if (ctx.basket?.length) {
       const produtos = Math.round(basketForCopy(ctx).reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
+      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -5602,7 +5635,7 @@ async function handleDeliveryTurn(
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
+          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
         }
         return;
       }
@@ -5798,7 +5831,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
       return;
     }
     // Cesta vazia (10/10, rodada 5 g16: depois de "Carrinho limpo" o "total" ouvia "Essa eu não sei responder").
@@ -5988,7 +6021,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx)));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
     return;
   }
   // Cancelou agora há pouco e perguntou "cadê meu pedido?": o assunto é o CANCELADO.
@@ -7399,7 +7432,19 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[], live?: { st
   const later = laterThanRest || longWait ? slowAfter : undefined;
   const fresh = [...afterStores].filter((key) => !beforeStores.has(key));
   const extra = afterStores.size > Math.max(1, beforeStores.size) && fresh.length > 0;
-  if (!extra && !later) return undefined;
+  // Loja nova com pedido mínimo que a escolha não fecha (10/10, rodada 11 g32: o pão de R$ 7,69 da Americanas só esbarrava
+  // no mínimo de R$ 33 no "só isso"): o aviso vem na hora da escolha, junto do frete. Vale também para a 1ª loja do pedido
+  // (10/10, rodada 12 g36: o pão era o 1º item escolhido e o mínimo continuava só no fechamento).
+  const minimum = fresh.map((key) => {
+    const items = after.filter((i) => storeOf(i) === key);
+    const storeKey = items[0]?.storeKey;
+    const store = storeKey ? getStore(storeKey) : undefined;
+    if (!store || store.key !== storeKey) return undefined;
+    const min = display(storeMinReal(store));
+    const produtos = roundMoney(items.reduce((acc, i) => acc + display(i.unitPrice, i.medicine) * i.qty, 0));
+    return min > 0 && produtos < min ? { store: store.label, min, falta: roundMoney(min - produtos) } : undefined;
+  }).find(Boolean);
+  if (!extra && !later && !minimum) return undefined;
   const fee = extra
     ? roundMoney(fresh.reduce((sum, key) => {
         const items = after.filter((i) => storeOf(i) === key);
@@ -7408,19 +7453,6 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[], live?: { st
       }, 0))
     : undefined;
   const labels = fresh.map((key) => after.find((i) => storeOf(i) === key)?.storeLabel ?? key);
-  // Loja nova com pedido mínimo que a escolha não fecha (10/10, rodada 11 g32: o pão de R$ 7,69 da Americanas só esbarrava
-  // no mínimo de R$ 33 no "só isso"): o aviso vem na hora da escolha, junto do frete.
-  const minimum = extra
-    ? fresh.map((key) => {
-        const items = after.filter((i) => storeOf(i) === key);
-        const storeKey = items[0]?.storeKey;
-        const store = storeKey ? getStore(storeKey) : undefined;
-        if (!store || store.key !== storeKey) return undefined;
-        const min = display(storeMinReal(store));
-        const produtos = roundMoney(items.reduce((acc, i) => acc + display(i.unitPrice, i.medicine) * i.qty, 0));
-        return min > 0 && produtos < min ? { store: store.label, min, falta: roundMoney(min - produtos) } : undefined;
-      }).find(Boolean)
-    : undefined;
   return copy.choiceDeliveryCostNote({ deliveries: afterStores.size, newStores: extra ? labels : [], fee, later: later ? { prazo: later.promise ?? "", store: later.store, ...(longWait ? { long: true } : {}) } : undefined, ...(minimum ? { minimum } : {}) });
 }
 
@@ -7708,7 +7740,7 @@ async function handleChoosing(
     if (option && asksRunningTotal(text)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+      const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
       const adjusted = packAdjusted(option, asked.askedQty, current.query, { assumedOne: current.qty === 1 && !current.qtyExplicit });
       await reply(phone, `${partial}\n\n${copy.packMismatchAsk(option.name, asked.askedQty, declaredPack(option.name), adjusted.qty)}`);
       return;
@@ -8082,7 +8114,7 @@ async function handleChoosing(
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
     // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
     // não se repete em falas seguidas (rodada 2).
-    const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingNames(ctx));
+    const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
     await reply(phone, choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
     return;
   }
@@ -9149,10 +9181,13 @@ function explicitAddCue(text: string): boolean {
 
 // Ampliar a cesta sem "adiciona": "também", "e mais", "mais 2", "junta" (09/10: lista com uma dessas palavras soma).
 // "e uma coca e um guaraná" começa com "e": continua a lista de antes.
+// Pedido de OUTRA opção numa oração: "tem uma mais em conta ou de 3kg?", "tem outra?", "mostra de 2 litros" (10/10, rodada 12 g36).
+const OPTIONS_ASK_RE = /\b(?:tem|teria|existe|mostra|me mostra|ve|quero|queria|prefiro)\b.{0,30}\b(?:mais (?:barat\w*|em conta|economic\w*)|outr[oa]s?|de \d+(?:[.,]\d+)?\s?(?:kg|g|ml|l|litros?|quilos?))\b/;
 const ADD_TO_BASKET_RE = /^e\b|\b(tambem|tbm|tb|tmb|e mais|mais \d|mais dois|mais duas|mais tres|junta|junto|alem disso|faltou|esqueci)\b/;
 // Mexe na cesta ou na escolha, não é pedido novo: "tira o gin e a vodka", "troca", "2 do primeiro e 1 do segundo".
 // Correção também ("não quero de uva, quero de laranja", "na verdade…", "em vez de…", "prefiro…").
-const EDIT_OR_CHOICE_RE = /\b(tira|tirar|remove|remover|retira|exclui|troca|trocar|muda|mudar|diminui|aumenta|deixa|so|somente|apenas|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|ultim[oa]|opcao|opcoes|esse|essa|desse|dessa|desses|dessas|numero|nao quero|na verdade|em vez|ao inves|no lugar|prefiro|melhor|errei|corrig\w*)\b/;
+// "leite não, esquece isso" (10/10, rodada 12 g36): "esquece" é tirar, não item novo ("Somei 1x leite não").
+const EDIT_OR_CHOICE_RE = /\b(tira|tirar|remove|remover|retira|exclui|troca|trocar|muda|mudar|diminui|aumenta|deixa|so|somente|apenas|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|ultim[oa]|opcao|opcoes|esse|essa|desse|dessa|desses|dessas|numero|nao quero|na verdade|em vez|ao inves|no lugar|prefiro|melhor|errei|corrig\w*|esquece|esqueca|desconsidera)\b/;
 
 // Pedido de produto do nada ("preciso de um shampoo", "quero 2 cocas", lista) — o que, com um
 // pedido parado na mesa, vira outra missão de compra (04/09 no Pix; 08/10 no total/entrega).
@@ -9473,7 +9508,9 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
   const deadline = ctx.neededBy;
   const late = (o: ChoiceOption) => (deadline ? promiseMissesDeadline(o.delivery, deadline.date) === true : false);
   const onTime = p.options.map((_, i) => i).filter((i) => deadline && promiseMissesDeadline(p.options[i].delivery, deadline.date) === false);
-  const pool = onTime.length && p.options.some(late) ? onTime : p.options.map((_, i) => i);
+  const timed = onTime.length && p.options.some(late) ? onTime : p.options.map((_, i) => i);
+  const babySafe = timed.filter((i) => !adultOnlyForBaby(p, p.options[i]));
+  const pool = babySafe.length ? babySafe : timed;
   const storeOf = (key?: string, label?: string) => normalizeMsg(label || key || "");
   const have = new Set(basket.map((i) => storeOf(i.storeKey, i.storeLabel)).filter(Boolean));
   const qty = Math.max(1, p.qty);
@@ -9487,9 +9524,16 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
     const min = store?.key === o.storeKey && store ? display(storeMinReal(store)) : 0;
     return { fee, falta: Math.max(0, min - price), min };
   };
+  // Loja nova que também tem opção para os itens que ainda faltam escolher (10/10, rodada 12 g36: "o mais barato" repetido
+  // abria uma loja a cada item — 3–4 entregas): a entrega dela tende a ser dividida com eles, então pesa menos na conta.
+  const later = (ctx.pending ?? []).filter((q) => q !== p);
+  const sharers = (o: ChoiceOption) => {
+    const key = storeOf(o.storeKey, o.storeLabel);
+    return key ? later.filter((q) => q.options.some((x) => storeOf(x.storeKey, x.storeLabel) === key)).length : 0;
+  };
   const cost = (o: ChoiceOption) => {
     const extra = extraFor(o);
-    return display(o.unitPrice, o.medicine) * qty + extra.fee + extra.falta;
+    return display(o.unitPrice, o.medicine) * qty + extra.fee / (1 + sharers(o)) + extra.falta;
   };
   let index = pool.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), pool[0]);
   // Prazo LONGO por pouco (10/10, rodada 11 g32: o band-aid de 9 dias úteis puxava o kit inteiro pra lá): se a mais barata
@@ -9505,13 +9549,16 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
   const picked = p.options[index];
   const tied = pool.filter((i) => cents(cost(p.options[i])) === cents(cost(picked)) && cents(display(p.options[i].unitPrice, p.options[i].medicine)) === cents(display(picked.unitPrice, picked.medicine)));
   const cheapestTag = p.options[raw.index];
-  if (cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) return { index, tied };
+  if (adultOnlyForBaby(p, cheapestTag) || cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) return { index, tied };
   const extra = extraFor(cheapestTag);
   const reason = late(cheapestTag) && !late(picked) && deadline
     ? { late: deadline.label }
     : minutes(cheapestTag) >= LONG_WAIT_MINUTES && minutes(picked) < LONG_WAIT_MINUTES && cents(extra.fee + extra.falta) === 0
       ? { slow: cheapestTag.delivery ?? "" }
-      : { extraFee: roundMoney(extra.fee), ...(extra.falta > 0 ? { minimum: extra.min } : {}) };
+      : extraFor(picked).fee > 0 && extra.falta === 0
+        // As duas abrem entrega nova (nenhuma é das lojas da cesta): o motivo é a entrega mais cara, não "mais uma entrega".
+        ? { pricierDelivery: { theirs: roundMoney(extra.fee), ours: roundMoney(extraFor(picked).fee) } }
+        : { extraFee: roundMoney(extra.fee), ...(extra.falta > 0 ? { minimum: extra.min } : {}) };
   return { index, tied: [index], note: copy.cheapestForOrderNote({ name: cheapestTag.name, price: display(cheapestTag.unitPrice, cheapestTag.medicine), store: cheapestTag.storeLabel, ...reason }) };
 }
 const CHEAPEST_PICK_RE = /^(?:(?:pode ser|quero|vou de|vou no|vou na|fico com|prefiro|me ve|manda|bota|pega)\s+(?:o |a )?mais barat\w+|(?:(?:pode ser|quero|vou de|fico com|prefiro|me ve)\s+)?(?:o |a )?mais baratinh[oa])(?:\s+(?:mesmo|ai|por favor|pfv))?$/;

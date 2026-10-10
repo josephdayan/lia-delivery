@@ -83,6 +83,8 @@ export function isPlainShoppingList(text: string): boolean {
   return segments.length >= 1 && segments.every((seg) => seg.split(/\s+/).length <= 5);
 }
 
+// "o mais barato de novo" / "o mais barato também" / "pode ser o mais barato desse" — só o critério, sem outro produto na frase.
+const CHEAPEST_REPEAT_RE = /^(?:(?:entao|e|pode ser|quero|vou de|fico com|prefiro|me ve|manda|pega|de novo)\s+)*(?:o|a)\s+mais (?:barat[oa]|baratinh[oa]|em conta)(?:\s+(?:de novo|tambem|tb|desse|dessa|dele|dela|aqui|ai|mesmo|por favor|pf|ne|entao|outra vez|de novo tambem))*$/;
 export type BypassInput = {
   text: string;
   intent: Intent;
@@ -101,6 +103,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
     return "pergunta_aberta";
   }
   const trimmed = text.trim();
+  // "pode levar as 2 embalagens de ovos" com "Levo 2 embalagens?" aberto (10/10, rodada 12 g36): é a resposta da pergunta
+  // da embalagem — o cérebro a aplica; a IA lia "2 unidades" e reabria as opções.
+  if (ctx.packConfirm && /^(?:sim|pode|isso|ok|beleza|quero|leva|manda|bota|pode ser)\b|\b(?:embalage\w*|pacotes?|caixas?|bandejas?)\b/.test(normalizeMsg(text)) && !/\b(?:nao|outr[oa]s?)\b/.test(normalizeMsg(text))) return "pergunta_embalagem";
   // id de botão ("optsku:123", "frete:barato", "adicionar_mais"): string de máquina, não linguagem.
   if (/^[a-z][a-z0-9]*(?:[:_][a-z0-9:._-]+)+$/i.test(trimmed)) return "botao";
   // "*caixinhas de 1 litro, longa vida" (10/10, rodada 7): o asterisco do WhatsApp corrige o item da fila — o cérebro
@@ -156,6 +161,10 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsCheapestForAll(text)) return "intent:cheapest_all";
   // "escolhe você tudo que falta, não quero ver mais opção" (10/10, rodada 8 M2): idem, com a escolha delegada.
   if (ctx.step === "choosing" && (ctx.pending?.length ?? 0) > 1 && wantsChoiceForAll(text)) return "intent:choose_all";
+  // "o mais barato de novo" / "o mais barato também" (10/10, rodada 12 g36): a IA escolhia a etiqueta mais baixa (pick n) e
+  // ignorava o frete da loja nova — repetido, o pedido se espalhava em 3–4 entregas. A escolha do mais barato é do cérebro,
+  // que soma a entrega e o mínimo da loja nova (cheapestForOrder).
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && CHEAPEST_REPEAT_RE.test(normalizeMsg(text).replace(/[!.,]+/g, " ").replace(/\s+/g, " ").trim())) return "intent:cheapest_pick";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão
   // em pó, pode ser daqueles mais em conta") conta como duas linhas no regex e vira produto
