@@ -34,7 +34,7 @@ import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-a
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { dropAddressOnlyItems, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
+import { dropAddressOnlyItems, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
@@ -4984,7 +4984,10 @@ async function handleDeliveryTurn(
   // ("não achei *Teste Silva 529…*"). Guarda no cadastro e devolve a conversa onde estava.
   if (ctx.step !== "need_cpf" && !ctx.cpfDraft) {
     const strayCpf = extractCpf(text);
-    const strayName = strayCpf ? extractFullName(text) : null;
+    // CPF sozinho com o nome já dito antes (junto do endereço, 10/10, rodada 14 g40): virava a busca "****.***.247-25".
+    const strayName = strayCpf
+      ? extractFullName(text) ?? (!user.cpf && text.replace(/\D/g, "") === strayCpf ? ((await prisma.user.findUnique({ where: { id: user.id }, select: { cpfName: true } }))?.cpfName ?? null) : null)
+      : null;
     if (strayCpf && strayName) {
       await prisma.user.update({ where: { id: user.id }, data: { cpf: strayCpf, cpfName: strayName, cpfConsentAt: new Date() } });
       if (ctx.step === "choosing" && ctx.pending?.length) {
@@ -5082,7 +5085,8 @@ async function handleDeliveryTurn(
       await reply(phone, looksLikeCpfAttempt(text) ? copy.cpfInvalid() : ctx.cpfRequired ? copy.askCpfBeforeQuote() : copy.askCpfForMedicine());
       return;
     }
-    const name = extractFullName(text) ?? ctx.cpfDraft?.name;
+    // Nome dito antes (junto do endereço, 10/10, rodada 14 g40): vale com o CPF que chegou sozinho.
+    const name = extractFullName(text) ?? ctx.cpfDraft?.name ?? (ctx.cpfOnboarding ? ((await prisma.user.findUnique({ where: { id: user.id }, select: { cpfName: true } }))?.cpfName ?? undefined) : undefined);
     if (!name) {
       ctx.cpfDraft = { cpf };
       await writeCtx(convo.id, ctx);
@@ -6672,6 +6676,16 @@ async function handleNewCep(
   const raw = rawText ?? "";
   const split = raw ? splitAddressAndItems(raw) : null;
   if (split?.items) split.items = (await takeIdentityFromItems(userId, split.items)) ?? "";
+  // "Fulano Silva, Avenida Paulista 1000…" (10/10, rodada 13 g39 / rodada 14 g40): o nome antes da rua é cadastro, não
+  // item — virava "1x Fulano Silva" e, depois do CPF, "*Fulano Silva* eu não achei". Guarda o nome (o CPF vem depois).
+  if (split?.items) {
+    const peeled = peelPersonName(split.items);
+    if (peeled.name) {
+      const known = await prisma.user.findUnique({ where: { id: userId }, select: { cpf: true, cpfName: true } });
+      if (!known?.cpf && !known?.cpfName) await prisma.user.update({ where: { id: userId }, data: { cpfName: peeled.name } });
+      split.items = peeled.rest ?? "";
+    }
+  }
   // Nome + CPF no mesmo texto do CEP e do número (10/10, rodada 5 g16): saem antes de ler número/itens — o "número 1000"
   // levava o resto pro caminho do número rotulado e "Rafael Torres" virava item.
   const rawRest = (split || !extractCpf(raw) ? raw : (await takeIdentityFromItems(userId, raw)) ?? "")
@@ -7950,6 +7964,27 @@ async function handleChoosing(
         await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
         return;
       }
+    }
+    // "o primeiro"/"o 1º" em resposta a "Levo 6 pacotes? Responde sim" (10/10, rodada 14 g40): virava 6x (R$ 122,10) sem o
+    // cliente ver o valor de novo. Ordinal não é sim nem não: repete a pergunta com o total.
+    if (option && /^(?:(?:quero|pode ser|vou de)\s+)?(?:o|a)?\s*(?:primeir[oa]|segund[oa]|terceir[oa]|ultim[oa]|1[oº°ª]|(?:opcao|numero)\s*\d)(?:\s+(?:mesmo|ai|dai))?$/.test(n.replace(/[^a-z0-9º°ª\s]/g, " ").replace(/\s+/g, " ").trim())) {
+      const lineTotal = display(option.unitPrice, option.medicine) * asked.askedQty;
+      const perPack = declaredPack(option.name);
+      const question = asked.kind === "count"
+        ? perPack >= 2 ? copy.packCountAsk(option.name, asked.askedQty, perPack, lineTotal) : copy.packMeasureCountAsk(option.name, asked.askedQty, lineTotal)
+        : copy.packMismatchAsk(option.name, asked.askedQty, perPack, packAdjusted(option, asked.askedQty, current.query, { assumedOne: current.qty === 1 && !current.qtyExplicit }).qty);
+      await reply(phone, copy.packAskAgain(question));
+      return;
+    }
+    // "Levo 2 embalagens (20 un)?" → "só 1 caixa de 10 mesmo" / "só uma" / "3 pacotes" (10/10, rodada 14 g40): a resposta diz
+    // quantas EMBALAGENS levar; antes virava busca nova ("Opções de *ovos caixa com 10*"). O "1" sozinho continua sendo o "sim".
+    const packsNow = option && asked.kind !== "count" ? (saidPackageCount(text) ?? (/^(?:(?:nao|n)\s+)?(?:so|somente|apenas)\s+(?:1|um|uma)(?:\s+mesmo)?$/.test(n.replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim()) ? 1 : null)) : null;
+    if (option && packsNow && packsNow >= 1 && packsNow <= 50) {
+      current.qty = packsNow;
+      current.qtyExplicit = true;
+      ctx.packConfirm = undefined;
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+      return;
     }
     // "1" = a única opção da pergunta (sim); antes o "1" caía em "👍"/"Por nada!" e o cliente travava (09/10, rodada 1).
     if (option && (intent.kind === "affirm" || /^(1|um)$/.test(n) || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
@@ -9384,6 +9419,13 @@ function removalCoverage(piece: string, labels: Array<string | undefined>): numb
   );
 }
 
+function sameTokenSet(a: string, b: string): boolean {
+  const stem = (t: string) => (t.length >= 4 ? t.replace(/s$/, "") : t);
+  const ta = new Set(queryTokens(normalizeMsg(a)).map(stem));
+  const tb = new Set(queryTokens(normalizeMsg(b)).map(stem));
+  return ta.size > 0 && ta.size === tb.size && [...ta].every((t) => tb.has(t));
+}
+
 function removalHits(pieces: string[], basket: BasketItem[], pending: PendingChoice[]): { basket: Set<BasketItem>; pending: Set<PendingChoice> } {
   const out = { basket: new Set<BasketItem>(), pending: new Set<PendingChoice>() };
   for (const piece of pieces) {
@@ -9392,8 +9434,12 @@ function removalHits(pieces: string[], basket: BasketItem[], pending: PendingCho
       .filter((p) => itemMatchesPhrase(piece, { sku: p.query, name: p.query, unitPrice: 0 }))
       .map((p) => ({ p, cov: removalCoverage(piece, [p.query, p.baseQuery]) }));
     const best = Math.max(0, ...fromBasket.map((x) => x.cov), ...fromPending.map((x) => x.cov));
-    for (const x of fromBasket) if (x.cov >= best) out.basket.add(x.item);
-    for (const x of fromPending) if (x.cov >= best) out.pending.add(x.p);
+    // Empate: o item cujo PRÓPRIO pedido é o alvo vence quem só o contém no nome (10/10, rodada 14 g40: "pode tirar o
+    // sal" tirava o sal fantasma E o "Biscoito Água e Sal" já escolhido).
+    const exact = (labels: Array<string | undefined>) => labels.some((label) => label && sameTokenSet(label, piece));
+    const anyExact = fromBasket.some((x) => x.cov >= best && exact([x.item.ask])) || fromPending.some((x) => x.cov >= best && exact([x.p.query, x.p.baseQuery]));
+    for (const x of fromBasket) if (x.cov >= best && (!anyExact || exact([x.item.ask, x.item.name]))) out.basket.add(x.item);
+    for (const x of fromPending) if (x.cov >= best && (!anyExact || exact([x.p.query, x.p.baseQuery]))) out.pending.add(x.p);
   }
   return out;
 }

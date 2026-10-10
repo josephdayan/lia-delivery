@@ -143,6 +143,8 @@ const WET_WORDS = new Set(["umida", "umido", "sache", "lata", "pate"]);
 // Específicas Bulldog Francês" é de cachorro e aparecia para "ração premier gato 1kg").
 // Só lado do item: o cliente que fala "shih tzu" já é coberto pela busca normal.
 const DOG_BREED_WORDS = new Set(["bulldog", "buldogue", "shih", "yorkshire", "poodle", "labrador", "pinscher", "spitz", "pug", "lhasa", "maltes", "dachshund", "schnauzer", "beagle", "rottweiler", "pitbull", "chihuahua", "pastor", "border", "dogs"]);
+const SMALL_BREED_WORDS = new Set(["shih", "tzu", "yorkshire", "yorkie", "poodle", "pinscher", "spitz", "pug", "lhasa", "apso", "maltes", "chihuahua", "bichon", "pequines"]);
+const SMALL_SIZE_WORDS = new Set(["pequeno", "pequenos", "pequena", "pequenas"]);
 function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | null {
   const dog = wordList.some((w) => DOG_WORDS.has(w) || (itemSide && DOG_BREED_WORDS.has(w)));
   const cat = wordList.some((w) => CAT_WORDS.has(w));
@@ -167,6 +169,9 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
   if ((token === "miojo" || token === "miojos" || token === "lamen") && (word === "lamen" || word === "miojo")) return true;
   // 27/09 (golden "carregador veicular"): a Drogal chama o mesmo produto de "Carregador Carro".
   if (VEHICLE_WORDS.has(token) && VEHICLE_WORDS.has(word)) return true;
+  // Raça pequena ≈ porte pequeno (10/10, rodada 14 g40: "ração sênior cachorro shih tzu 1kg" não achava nada — a ração
+  // sênior de raça pequena diz "Mini e Pequeno"/"Porte Pequeno", não a raça). O nome com a raça continua casando direto.
+  if (SMALL_BREED_WORDS.has(token) && SMALL_SIZE_WORDS.has(word)) return true;
   return false;
 }
 const COOKIE_WORDS = new Set(["bolacha", "bolachas", "biscoito", "biscoitos"]);
@@ -256,6 +261,8 @@ const ODOR_WORDS = new Set(["cheiro", "aroma", "odor", "fragrancia", "perfume", 
 const ODOR_FREE_RE = /\b(?:sem|zero)\s+(?:cheiro|aroma|odor|fragrancia|perfume|perfumacao|essencia)\b|\bneutr[oa]s?\b|\binodor[oa]?\b/;
 function nameHasNegation(neg: string, nameNorm: string): boolean {
   if (ODOR_WORDS.has(neg)) return ODOR_FREE_RE.test(nameNorm);
+  // "tesoura sem ponta" = "Ponta Arredondada"/"Ponta Redonda" no nome (10/10, rodada 14 g40, M4).
+  if (neg === "ponta") return /\b(?:sem|zero)\s+ponta\b|\bponta\s+(?:arredondada|redonda|romba)\b/.test(nameNorm);
   return new RegExp(`\\b(sem|zero)\\s+${neg}\\b`).test(nameNorm);
 }
 // Pedido com "sem X": a opção que diz no nome que é a versão sem X? `null` = o pedido não tem "sem".
@@ -1022,6 +1029,9 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/\bcafes? (?:em )?po\b/, "cafe torrado e moido"],
   // "bexiga" é o balão de festa (rodada 13, 308): as lojas escrevem "Balão de Látex"; "balão" solto casava com bala.
   [/\bbexigas?\b|^bal(?:ao|oes)$/, "balao de latex"],
+  // "tesoura sem ponta" é a tesoura escolar (10/10, rodada 14 g40, M4): a busca dava "não achei" e só "tesoura escolar",
+  // pedida depois, achava a Leonora de R$ 8,79. A frase do cliente também roda; o rerank julga as duas listas.
+  [/\btesouras? (?:sem ponta|de ponta (?:redonda|arredondada)|ponta redonda|infantil|pra crianca|para crianca)\b/, "tesoura escolar"],
   // Termos populares que o catálogo não usa (09/10, rodada 2, g4). Todos exigem a palavra INTEIRA ou a frase
   // inteira, para nunca virar produto errado ("massa" fica de fora: pode ser massa de pastel, lasanha ou corrida).
   [/\bcervas?\b|\bcervejinhas?\b|\bbrejas?\b/, "cerveja"],

@@ -2,6 +2,7 @@
 // é pedido e o que é cortesia numa mensagem só. Tudo puro (sem banco, sem rede) — testado em
 // tests/feedback-2026-10-06-cadastro.test.ts.
 import { resolveListItems } from "@/lib/list-items";
+import { localCatalogProbe } from "@/lib/stores/list-probe";
 import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
@@ -20,7 +21,7 @@ const SENTENCE_BREAK_RE = /(?:(?<=\d|\p{L}{5}|\))[.;]\s+|[!?]+\s*|\n+)/u;
 
 // Restos de "entrega em", "moro na", "meu endereço é" no fim da parte que veio antes da rua.
 const LEAD_IN_RE =
-  /(?:[\s,;:-]|\b(?:e|entao|então|ai|aí)\b)*(?:(?:\bna verdade|\bpode|\bfavor|\bpor favor)\s+)*(?:\b(?:me\s+)?(?:entrega|entregar|entregue|manda|mandar|envia|enviar|leva|levar|traz|trazer)(?:\s+(?:tudo|isso|aqui|pra mim))?(?:\s+(?:em|na|no|para|pra|pro|at[eé]))?(?:\s+(?:a|o))?(?:\s+(?:casa|ap(?:to|artamento)?|trabalho|escrit[oó]rio|endere[cç]o)(?:\s+d[aeo]s?)?(?:\s+(?:minha|meu))?(?:\s+\p{L}+)?)?|\b(?:eu\s+)?(?:moro|mora|morando|resido|fico)\s+(?:na|no|em)|\b(?:o\s+)?(?:meu\s+)?endere[cç]o(?:\s+(?:[eé]|eh|fica))?(?:\s+(?:na|no|em))?\s*:?|\b(?:na|no)\s+(?:casa|ap(?:to|artamento)?)\s+d[aeo]s?\s+(?:minha|meu)?\s*\p{L}+)?[\s,;:-]*$/iu;
+  /(?:[\s,;:-]|\b(?:e|entao|então|ai|aí)\b)*(?:(?:\bna verdade|\bna real|\bpensando bem|\bah+|\bopa|\b(?:eu\s+)?(?:vou|quero|queria|prefiro|preferia)(?:\s+pedir)?\s+(?:pra|para|que)|\bpode|\bfavor|\bpor favor)[\s,;:]+)*(?:\b(?:me\s+)?(?:entrega|entregar|entregue|manda|mandar|envia|enviar|leva|levar|traz|trazer)(?:\s+(?:tudo|isso|aqui|pra mim))?(?:\s+(?:em|na|no|para|pra|pro|at[eé]))?(?:\s+(?:a|o))?(?:\s+(?:casa|ap(?:to|artamento)?|trabalho|escrit[oó]rio|endere[cç]o)(?:\s+d[aeo]s?)?(?:\s+(?:minha|meu))?(?:\s+\p{L}+)?)?|\b(?:eu\s+)?(?:moro|mora|morando|resido|fico)\s+(?:na|no|em)|\b(?:o\s+)?(?:meu\s+)?endere[cç]o(?:\s+(?:[eé]|eh|fica))?(?:\s+(?:na|no|em))?\s*:?|\b(?:na|no)\s+(?:casa|ap(?:to|artamento)?)\s+d[aeo]s?\s+(?:minha|meu)?\s*\p{L}+)?[\s,;:-]*$/iu;
 
 function squash(text: string): string {
   return text
@@ -387,6 +388,25 @@ export function looksLikePersonName(raw: string): boolean {
   if (real.length < 2 || real.length > 5) return false;
   if (!real.every((w) => /^\p{Lu}[\p{Ll}'-]+$/u.test(w))) return false;
   return !/\b(quero|queria|preciso|manda|oi|ola|bom|boa|obrigad(?:[oa]s?|inh[oa]s?|ao)|cpf|sim|nao|ok)\b/.test(normalizeMsg(text));
+}
+
+// Nome de gente no que sobrou do endereço ("Teste Silva, Avenida Paulista 1000…", 10/10, rodada 13 g39 / rodada 14 g40):
+// é o cliente se apresentando, nunca item ("não achei Teste Silva" e depois "ficou de fora"). Sai da lista e volta à parte
+// para o cadastro guardar. Nome que é produto (marca do catálogo, "Coca Cola") fica na lista.
+export function peelPersonName(items: string | undefined): { name?: string; rest?: string } {
+  if (!items?.trim()) return { rest: items };
+  let name: string | undefined;
+  const rest = items
+    .split(/\s*[,;]\s*/)
+    .map((part) => part.trim())
+    .filter((part) => {
+      const clean = part.replace(/[.:!-]+$/, "").trim();
+      if (name || !looksLikePersonName(clean) || localCatalogProbe(clean).strong) return Boolean(part);
+      name = clean;
+      return false;
+    })
+    .join(", ");
+  return { ...(name ? { name } : {}), ...(rest ? { rest } : {}) };
 }
 
 // ---------- o que anotar antes do cadastro (M1 + testadores 06/10) ----------
