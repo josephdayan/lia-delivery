@@ -22,7 +22,7 @@ import { localCatalogProbe } from "@/lib/stores/list-probe";
 import { detectAlternativeItem, parseAltAnswer } from "@/lib/alt-items";
 import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildListFlowData, isListFlowReply, parseListFlowReply } from "@/lib/list-flow";
 import { fetchThumbs } from "@/lib/flow-thumbs";
-import { applyListMisses, dropMissesMatching, freshListMisses, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
+import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
 import { detectIntent, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg,  parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionYes, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, type Intent, type ParsedLine } from "@/lib/lia-intents";
@@ -5107,6 +5107,21 @@ async function handleDeliveryTurn(
     return;
   }
   if (intent.kind === "remove_item") {
+    // "tira o gelo" quando o gelo só existe entre os não achados (10/10, rodada 8 g25): sai da lista de faltantes e o
+    // total na mesa continua valendo — reabrir o pedido apagava o resumo por um item que nunca esteve nele.
+    if (!intent.andAdd && hasMissMatching(ctx, intent.target)) {
+      const openItems = ctx.deliveryOrderId
+        ? (((await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { items: true } }))?.items as unknown as BasketItem[]) ?? [])
+        : [];
+      const inCart = [...(ctx.basket ?? []), ...openItems].some((item) => itemMatchesPhrase(intent.target, item)) || (ctx.pending ?? []).some((p) => itemMatchesPhrase(intent.target, { sku: p.query, name: p.query, unitPrice: 0 }));
+      if (!inCart) {
+        const dropped = dropMissesMatching(ctx, intent.target);
+        await writeCtx(convo.id, ctx);
+        await reply(phone, copy.missRemoved(dropped));
+        if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+        return;
+      }
+    }
     await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
     await handleRemove(phone, convo.id, user.cep, ctx, intent.target, { silentIfFound: Boolean(intent.andAdd) });
     // Multi-intenção "tira o arroz E coloca feijão": o remove acima, o add agora.
@@ -11168,6 +11183,9 @@ async function createOperatorQuoteRequest(phone: string, convoId: string, ctx: D
     // (10/10, rodada 5 g16: sumia aqui e o aviso nunca saía).
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
     ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
+    // Faltantes da lista (10/10, rodada 8 g25): o resumo do total lê `listMisses` DEPOIS desta escrita — sem carregar,
+    // o "gelo em cubos não achei" do começo nunca chegava ao resumo (o aviso do g20 só valia no teste direto).
+    ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
     // Complemento (08/10, fase 4): "editar itens" reabre ESTE pedido — não pergunta de novo nem oferece o recusado.
     ...(ctx.complementAsked ? { complementAsked: ctx.complementAsked } : {}),
     ...(ctx.complementDeclined?.length ? { complementDeclined: ctx.complementDeclined } : {}),

@@ -86,6 +86,12 @@ export function leftOutForSummary(
   return out;
 }
 
+// O pedaço de "tira X" casa com alguma faltante? (10/10, rodada 8 g25: "tira o gelo" depois do resumo ia pra IA, que
+// respondia "Não encontrei gelo na sua lista" — o cérebro sabe que ele já tinha ficado de fora.)
+export function hasMissMatching(ctx: Pick<DeliveryContext, "listMisses" | "lastMiss">, phrase: string): boolean {
+  return Boolean((ctx.listMisses ?? []).some((m) => missMatches(m.query, phrase)) || (ctx.lastMiss && missMatches(ctx.lastMiss.query, phrase)));
+}
+
 // "tira o gelo" com o gelo entre as faltantes: sai da lista de faltantes (não aparece mais no resumo). Devolve o que saiu.
 export function dropMissesMatching(ctx: DeliveryContext, phrase: string): string[] {
   const all = ctx.listMisses ?? [];

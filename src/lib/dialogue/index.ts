@@ -7,6 +7,7 @@
 import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
+import { hasMissMatching } from "../list-misses";
 import { asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
@@ -125,6 +126,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "total"/"quanto tá?" com carrossel ou pergunta aberta (10/10, rodada 7 M6/N4): a IA devolvia outra pergunta
   // ("quer saber o total ou escolher?") ou "comparo, sim". O cérebro já responde o parcial em qualquer passo.
   if (asksRunningTotal(text) && trimmed.split(/\s+/).length <= 6 && (ctx.basket?.length || ctx.pending?.length)) return "intent:running_total";
+  // "tira o gelo" com o gelo entre os não achados (10/10, rodada 8 g25): o cérebro tira da lista de faltantes e diz que
+  // ele já estava de fora; a IA só via a cesta e perguntava "você quis tirar outro item?".
+  if (i.intent.kind === "remove_item" && !i.intent.andAdd && hasMissMatching(ctx, i.intent.target)) return "intent:remove_miss";
   if (extractCpf(text)) return "cpf";
   // "dão nota fiscal? e se vier errado, troca?" (10/10, rodada 6 M1): a IA respondia só a nota; o roteador responde as duas.
   if (i.intent.kind === "fiscal_question" && asksReturnPolicy(text)) return "intent:fiscal_return";
