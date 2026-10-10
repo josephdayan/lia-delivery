@@ -299,6 +299,11 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; n
       if (clean && current && step.kind !== "smalltalk" && namesOtherItem(clean, current.query, ctx)) {
         clean = copy.finishChoiceFirst([current.query]);
       }
+      // "Não achei a opção de 8 unidades" com uma de 8 unidades na tela (rodada 4, M5): o aviso não pode contradizer as opções.
+      if (clean && current && claimsMissingWhatIsShown(clean, current.options)) {
+        await h.sendChoices(phone, current);
+        return "done";
+      }
       if (step.kind === "smalltalk") {
         await reply(phone, clean ?? copy.thanks());
         if (current) await h.sendChoices(phone, current);
@@ -360,6 +365,18 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
 }
 
 // A frase cita o nome de algum outro item da cesta/fila e nenhuma palavra do item que está na tela?
+// A IA diz "não achei ... de <tamanho>" e algum card na tela TEM esse tamanho/quantidade: a frase está errada.
+export function claimsMissingWhatIsShown(text: string, options: { name: string }[]): boolean {
+  const said = normalizeMsg(text).replace(/(\d),(\d)/g, "$1.$2");
+  if (!/\bnao (?:achei|encontrei|tenho|consegui achar)\b|\bnao ha\b|\bsem (?:a )?opcao\b/.test(said)) return false;
+  const specs = [...said.matchAll(/(\d+(?:\.\d+)?)\s*(kg|g|ml|l|lt|litros?|un|unid|unidades?)\b/g)].map((m) => `${m[1]}${/^(?:un|unid|unidades?)$/.test(m[2]) ? "un" : m[2].startsWith("lit") || m[2] === "lt" ? "l" : m[2]}`);
+  if (!specs.length) return false;
+  const have = options.map((o) =>
+    [...normalizeMsg(o.name).replace(/(\d),(\d)/g, "$1.$2").matchAll(/(\d+(?:\.\d+)?)\s*(kg|g|ml|l|lt|litros?|un|unid|unidades?)\b/g)].map((m) => `${m[1]}${/^(?:un|unid|unidades?)$/.test(m[2]) ? "un" : m[2].startsWith("lit") || m[2] === "lt" ? "l" : m[2]}`)
+  );
+  return specs.every((sp) => have.some((h2) => h2.includes(sp)));
+}
+
 export function namesOtherItem(text: string, currentQuery: string, ctx: DeliveryContext): boolean {
   const said = normalizeMsg(text);
   if (!/\bopcoes? d[eoa]s?\b/.test(said)) return false;

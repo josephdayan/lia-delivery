@@ -328,6 +328,9 @@ export type DeliveryContext = {
   // Cliente sinalizou que quer receber HOJE/agora ("urgente", "pra hoje"). Vira a tag
   // "⚡ URGENTE" no pedido do /ops — o operador escolhe o canal por isso na cotação.
   urgent?: boolean;
+  // Prazo que o cliente disse ("amanhã", "hoje", "até sexta"): data (yyyy-mm-dd, fuso de SP) e rótulo. O total avisa em uma
+  // linha quando a entrega prometida não cumpre (rodada 4, M6).
+  neededBy?: { date: string; label: string };
   // Último pedido cancelado NESTA conversa: "cadê meu pedido?" logo depois de um
   // cancelamento fala primeiro dele — sem isso, o fallback achava um pedido pago de
   // dias atrás e o cliente entendia que o cancelado tinha "virado pago" (27/08 S17).

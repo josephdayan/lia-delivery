@@ -2,6 +2,7 @@
 // resposta ao cliente e alerta ao operador. Zero regra de negócio de compra.
 import { whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { normalizeMsg } from "@/lib/lia-intents";
+import { extractCpf, maskCpf } from "@/lib/medicine";
 import { displayPrice, serviceFeeForItems } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import * as copy from "@/lib/lia-copy";
@@ -369,7 +370,8 @@ export async function mergeDecisionRequestFor(order: { id: string; conversationI
 export async function reply(phone: string, text: string) {
   const meta = turnMeta.getStore();
   if (meta) meta.replies += 1;
-  let out = text;
+  // CPF nunca volta ao cliente em claro, em nenhuma etapa (rodada 4, M4): "não achei *Carolina cpf 529…*" ecoava o número.
+  let out = text.length < 400 ? text.replace(/\d[\d.\s-]{9,16}\d/g, (m) => (/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/.test(m.trim()) && extractCpf(m) ? maskCpf(m) : m)) : text;
   // Mesma mensagem duas vezes seguidas para falas diferentes do cliente (placar c02/c10/c24/c38/c64):
   // o gerente de diálogo escreve outra, sabendo o que já foi dito. Só prosa de conversa; dinheiro, link e Pix saem iguais.
   if (meta?.inboundText && meta.prevSent?.length && repeatGuardEnabled() && !isRepeatableVerbatim(text) && sameAsRecent(text, meta.prevSent)) {

@@ -391,6 +391,32 @@ export function hasUrgencySignal(text: string): boolean {
   return URGENCY_RE.test(normalizeMsg(text));
 }
 
+// Prazo dito pelo cliente (rodada 4, M6): "é aniversário da minha mãe amanhã", "preciso pra hoje", "até sexta".
+// "amanhã" solto é ambíguo ("pago amanhã", "pode ser amanhã"): só vale com sinal de necessidade/evento/entrega.
+const SP_DATE = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["terca", 2], ["quarta", 3], ["quinta", 4], ["sexta", 5], ["sabado", 6]];
+export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string } | null {
+  const n = normalizeMsg(text);
+  const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
+  const EVENT = "aniversario|festa|festinha|viagem|jantar|reuniao|presente|visita|casamento|formatura";
+  if (/\bdepois de amanha\b/.test(n) && new RegExp(`\\b(?:preciso|precisa|ate|pra|para|chegar|chegue|entreg\\w*|receber|quero|queria|${EVENT})\\b`).test(n)) return { date: shift(2), label: "depois de amanhã" };
+  const tomorrow =
+    /\b(?:pra|para|ate|so ate|ate o dia)\s+amanha\b/.test(n) ||
+    new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bamanha\\b|\\bamanha\\b.{0,30}\\b(?:${EVENT})\\b`).test(n) ||
+    /\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b.{0,30}\bamanha\b/.test(n) ||
+    /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n);
+  if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã" };
+  if (/\b(?:pra|para|ate|so ate)\s+hoje\b|\bainda hoje\b|\b(?:preciso|precisa|quero|queria|tem que)\b.{0,25}\bhoje\b|\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bhoje\b/.test(n)) return { date: shift(0), label: "hoje" };
+  for (const [name, dow] of WEEKDAYS) {
+    if (new RegExp(`\\b(?:ate|so ate|pra|para)\\s+(?:a\\s+|o\\s+|este\\s+|esta\\s+)?${name}(?:-feira)?\\b`).test(n)) {
+      const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
+      const diff = ((dow - today + 7) % 7) || 7;
+      return { date: shift(diff), label: name === "sabado" ? "sábado" : name === "terca" ? "terça" : name };
+    }
+  }
+  return null;
+}
+
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
 // " e " separava itens; agora quem decide se separa é o resolvedor de list-items.ts.
 const CONJUNCTION_SPLIT_RE = /\s+e\s+|\s*\+\s*|\s+\/\s+/i;
@@ -1158,6 +1184,27 @@ const CLEAR_ALL_RE =
   /^(?:(?:na verdade|ah|olha|entao|pensando bem|melhor|ai|desculpa|desculpe|opa|nao|errei)[,\s]+)*(?:nao (?:quero|preciso (?:de )?|vou querer) (?:mais )?nada (?:disso|disto|daquilo|disso tudo|de tudo isso)|(?:esquece|esqueca|deixa|deixe) (?:tudo|isso tudo|tudo isso)(?: (?:pra|para) la)?|deixa (?:isso )?(?:pra|para) la(?: tudo| isso tudo)|(?:eu )?desisto de tudo|(?:cancela|cancelar) tudo isso|(?:deixa (?:pra|para) la|deixa quieto|esquece|esqueca|desisto|deixa)[,\s]+(?:e )?nao (?:quero|preciso(?: de)?|vou querer) (?:mais )?nada(?: (?:disso|disto|daquilo|disso tudo|de tudo isso))?)[\s,!.]*$/;
 export function isExplicitClearAll(text: string): boolean {
   return CLEAR_ALL_RE.test(normalizeMsg(text));
+}
+
+// Intenção EXPLÍCITA de trocar a lista inteira (09/10, rodada 4): com a cesta ativa, só isto recomeça; o resto soma.
+// "nova lista: …", "começa de novo, …", "esquece tudo e manda …", "na verdade quero só …". Devolve o que sobra (os
+// itens da lista nova, no texto original) ou null quando não há pista de recomeço.
+const RESTART_HEAD_RE = new RegExp(
+  "^\\s*(?:(?:ah|ai|ops|opa|olha|ent[aã]o|pensando bem|na verdade|desculpa|errei)[,!.\\s]+)*" +
+    "(?:(?:faz|faça|fa[cç]a|bora|vamos|quero)\\s+(?:uma\\s+|um\\s+)?)?" +
+    "(?:nova lista|lista nova|outra lista|novo pedido|outro pedido|recome[cç]a(?:r)?(?: tudo)?|come[cç]a(?:r)? (?:de novo|do zero|tudo de novo)|do zero|zera(?:r)?(?: tudo| a lista| a cesta| o carrinho)?" +
+    "|(?:esquece|esque[cç]a|apaga|limpa|cancela|tira)(?: tudo| isso tudo| tudo isso| a lista| a cesta| o carrinho| o que eu pedi| o resto)" +
+    "|(?:na verdade|pensando bem),?\\s+(?:eu\\s+)?(?:quero|preciso(?: de)?|vou querer|s[oó] quero|manda|me v[eê])(?:\\s+(?:s[oó]|somente|apenas))?(?=\\s+\\S))" +
+    "(?:\\s*[,:;.!-]+\\s*|\\s+)?(?:(?:e|agora|ai|a[ií])\\s+)?(?:(?:manda|quero|me v[eê]|traz|preciso(?: de)?|coloca|p[oõ]e|s[oó])\\s+)?",
+  "i"
+);
+export function splitRestartCue(text: string): { rest: string } | null {
+  const m = text.match(RESTART_HEAD_RE);
+  if (!m) return null;
+  const head = normalizeMsg(m[0]);
+  // "na verdade quero só" exige o "só/somente/apenas" (sem ele é correção de item: "na verdade quero de uva").
+  if (/^(?:.*\s)?(?:na verdade|pensando bem)\b/.test(head) && !/\b(?:nova lista|lista nova|outra lista|novo pedido|outro pedido|recomec|comec|zera|esquec|apaga|limpa|cancela|tira|do zero)/.test(head) && !/\b(so|somente|apenas)\b/.test(head)) return null;
+  return { rest: text.slice(m[0].length).replace(/^[\s,:;.!-]+|[\s,;.!]+$/g, "") };
 }
 
 // "quero o mesmo de ontem" / "repete meu último pedido" / "o mesmo da última vez" (09/10, rodada 1): a frase INTEIRA

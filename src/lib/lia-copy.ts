@@ -486,8 +486,9 @@ export function swapRemovedPrefix(from: string, to?: string): string {
   return to ? `Tirei *${from}*. Escolhe uma opção de *${to}* pra entrar no lugar:` : `Tirei ${from}.`;
 }
 
-export function requestedStoreNotShown(label: string): string {
-  return `Não achei isso na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
+export function requestedStoreNotShown(label: string, item?: string): string {
+  // Nomeia o item (rodada 4, M1): sem isso o aviso parecia ser da escolha que o cliente acabou de fazer.
+  return `${item ? `Pra *${item}*, não achei` : "Não achei isso"} na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
 }
 
 export function askEitherItem(a: string, b: string): string {
@@ -736,6 +737,12 @@ export function promiseForCustomer(promise?: string | null): string {
 // Só copy; o cálculo não muda.
 export function expensiveShippingNote(produtos: number, entrega: number): string[] {
   return entrega > produtos + 0.009 && produtos > 0 ? ["_A entrega sai mais cara que os produtos; quer somar mais coisa da mesma loja?_"] : [];
+}
+
+// "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
+export function deadlineMissNote(label: string, promise?: string): string {
+  const prazo = promiseForCustomer(promise);
+  return `⚠️ Você precisou pra *${label}*, mas essa entrega ${prazo ? `sai em *${prazo}*` : "não chega a tempo"}. Se não der, me avisa antes de pagar.`;
 }
 
 function deliveryLine(frete: number, deliveryPromise?: string, etaMinutes?: number): string {
@@ -1973,6 +1980,20 @@ export function newListDropped(names: string[]): string {
   return `Comecei uma lista nova e deixei de fora o que estava antes (${shown.join(", ")}${more}). Se era pra somar, é só pedir de novo com *adiciona*.`;
 }
 
+// Cesta ativa + lista sem pista de recomeço (09/10, rodada 4): soma e diz como trocar tudo, numa linha.
+export function summedToBasket(labels: string[]): string {
+  const shown = [...new Set(labels.map((n) => n.trim()).filter(Boolean))].slice(0, 4).map((n) => `*${n}*`);
+  const more = labels.length > shown.length ? ` e mais ${labels.length - shown.length}` : "";
+  return `Somei ${shown.join(", ")}${more} ao que você já tinha; se era pra trocar tudo, diga *nova lista*.`;
+}
+
+// Item pedido de novo que já estava na cesta (09/10, rodada 4, M3): uma linha só, quantidade somada.
+export function repeatedItemMerged(lines: { name: string; qty: number; added: number }[]): string {
+  const parts = lines.map((l) => `*${l.name}* (+${l.added}, agora *${l.qty}x*)`);
+  const was = lines.length === 1 ? ` pra *${lines[0].qty - lines[0].added}x*` : "";
+  return `${parts.join(", ")} já estava na cesta — somei na mesma linha. Se foi repetido sem querer, me diz que eu volto${was}.`;
+}
+
 // "vai mudar o frete?" com pedido já cotado → o número real, não a explicação genérica.
 export function currentFee(fee: number): string {
   return `A entrega do seu pedido está em *${brl(fee)}*. Se mudar endereço ou cesta, eu recalculo.`;
@@ -2408,6 +2429,8 @@ export function manualQuoteSummary(input: {
   total: number;
   deliveryAddress?: string;
   sameHour?: boolean;
+  // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
+  deadlineMiss?: { label: string };
   // true = a mensagem sai com o botão "Trocar endereço" (dono, 11/08: ação em botão,
   // não instrução de digitar) — a dica de texto some porque o botão fala por ela.
   addressButton?: boolean;
@@ -2422,6 +2445,7 @@ export function manualQuoteSummary(input: {
     `Produtos: ${brl(input.produtos)}`,
     deliveryLine(input.frete + (input.serviceLine ?? 0), input.deliveryPromise, input.etaMinutes),
     `*Total: ${brl(input.total)}*`,
+    ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...expensiveShippingNote(input.produtos, input.frete + (input.serviceLine ?? 0))
   ];
   if (input.deliveryAddress) {
