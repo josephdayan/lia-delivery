@@ -47,6 +47,10 @@ const PET_TREAT_RE = /\b(petisco|petiscos|bifinho|bifinhos|osso|ossinho|ossinhos
 // Item de pet: só puxa complemento de pet — "Ração Carne e Arroz" não pede feijão (09/10, rodada 2).
 const PET_ITEM_RE = /\b(racao|racoes|petisco|petiscos|pet|cao|caes|cachorro|cachorros|cachorrinho|filhote|filhotes|gato|gatos|felino|felinos|canino|caninos|dog|cat|areia higienica|granulado sanitario|dentastix|whiskas|friskies|pedigree|golden|premier|guabi|biofresh|sache)\b/;
 
+// Utensílio, decoração ou perfumaria que só CITA a comida no nome (11/10, rodada 21 g58, R21-8): "Caneca Cerâmica ... Café
+// e Chá" num amigo secreto oferecia filtro de café. O complemento sai só do item da categoria (café em pó, chá em sachê).
+const NOT_CONSUMABLE_RE = /\b(canecas?|xicaras?|bules?|chaleiras?|garrafas? termicas?|porta \w+|copos?|tacas?|jarras?|pratos?|talheres?|jogo de|kit presente|velas?|sabonetes?|perfumes?|colonias?|hidratantes?|aromatizador\w*|difusor\w*|essencias?|home spray|almofadas?|camisetas?|chaveiros?|imas?|quadros?|placas? decorativas?|toalhas?|panos?|avental|aventais|bonecos?|pelucias?|livros?|cadernos?)\b/;
+
 // ≥ 40 pares. Ordem = prioridade quando a cesta dispara mais de um.
 export const COMPLEMENT_PAIRS: readonly Pair[] = [
   { trigger: "carvão", when: /\bcarvao\b/, query: "pao de alho", shelfId: "padaria.pao_de_alho", why: "Quem leva carvão costuma levar pão de alho 🧄", has: /\bpao de alho\b/ },
@@ -111,7 +115,7 @@ export function suggestComplement(
   for (const pair of COMPLEMENT_PAIRS) {
     const petPair = pair.shelfId.startsWith("pet.");
     // Item de pet só dispara par de pet; par de comida/higiene humana nunca olha item de pet.
-    const triggered = names.some((n) => pair.when.test(n) && !(pair.unless?.test(n) ?? false) && (PET_ITEM_RE.test(n) ? petPair : true));
+    const triggered = names.some((n) => !NOT_CONSUMABLE_RE.test(n) && pair.when.test(n) && !(pair.unless?.test(n) ?? false) && (PET_ITEM_RE.test(n) ? petPair : true));
     if (!triggered) continue;
     if (pair.notWithBasket && names.some((n) => pair.notWithBasket!.test(n))) continue;
     // "Já tem": olha os OUTROS itens (o próprio gatilho "pão de hambúrguer" contém "hambúrguer").

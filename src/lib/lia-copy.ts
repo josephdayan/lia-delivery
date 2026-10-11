@@ -183,6 +183,12 @@ export function outsideSaoPauloNote(uf?: string | null): string {
   return uf && uf.toUpperCase() !== "SP" ? "\n_Fora de SP o prazo de entrega é mais longo (alguns dias úteis) e há menos lojas._" : "";
 }
 
+// Nome, CPF e endereço por texto numa mensagem (11/10, rodada 21 g58, R21-11 B5): o cadastro fechou — diz isso antes do
+// endereço salvo (com o CEP), como o formulário.
+export function signupDoneByText(firstName: string | undefined, savedLine: string): string {
+  return `✅ Cadastro feito${firstName ? `, ${firstName}` : ""}!\n${savedLine}`;
+}
+
 export function addressSavedPrefix(address: string, cep?: string, uf?: string | null): string {
   return `📍 Endereço salvo: ${withCep(address, cep)}${outsideSaoPauloNote(uf)}`;
 }
@@ -3236,7 +3242,9 @@ export function quoteForOrderLabel(shortId: string, dateLabel?: string): string 
 // Cancelar) vão junto — o texto não repete o que os botões já dizem. O fallback sem
 // botões continua sendo conciergeKeepAdding().
 export function conciergeChooseNext(): string {
-  return "Escolhe aí embaixo — ou manda o próximo item direto.";
+  // "Escolhe aí embaixo" sem cartões (11/10, rodada 21 g58, R21a-7): depois de "deixa pra lá o papel" o cliente procurava
+  // opções; o que fica embaixo são os botões do pedido.
+  return "Pronto ✅ Pra fechar, toca em *Pagar* aí embaixo — ou manda o próximo item direto.";
 }
 
 // Item pedido ENQUANTO a cotação do operador está em andamento: entra no mesmo pedido
@@ -3260,7 +3268,9 @@ export function choiceDeliveryCostNote(input: { deliveries: number; newStores: s
   const parts: string[] = [];
   if (input.newStores.length) {
     const who = input.newStores.length > 1 ? `de ${input.newStores.length} lojas (${input.newStores.map((s) => `*${s}*`).join(", ")})` : `da *${input.newStores[0]}*`;
-    parts.push(`vem ${who} e o pedido passa a ter *${input.deliveries} entregas*${input.fee ? ` (+ ~${brl(input.fee)} de frete)` : " (frete de cada loja)"}`);
+    // "a partir de" (11/10, rodada 21 g58, R21-7): o frete é o que a loja cotou pra ESTE item; com mais itens de lá (peso,
+    // volume) ele sobe — o aviso de "+ ~R$ 14,99" virava R$ 30 no resumo sem explicação.
+    parts.push(`vem ${who} e o pedido passa a ter *${input.deliveries} entregas*${input.fee ? ` (+ frete a partir de ~${brl(input.fee)})` : " (frete de cada loja)"}`);
   }
   if (input.later) {
     const prazo = promiseForCustomer(input.later.prazo) || input.later.prazo;
@@ -4111,6 +4121,13 @@ export function cheapestForOrderNote(input: { name: string; price: number; store
         ? `a entrega de lá sai ~${brl(input.pricierDelivery.theirs)} e a deste, ~${brl(input.pricierDelivery.ours)} — este sai mais barato no total`
         : `somava mais uma entrega${input.extraFee ? ` (~${brl(input.extraFee)})` : ""}${min} — este sai mais barato no total`;
   return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas ${why}. Se preferir aquele, é só falar.`;
+}
+
+// "o mais barato" que só chega em prazo longo (11/10, rodada 21 g58, R21-11 B8): diz a opção que chega antes e por quanto.
+export function cheapestSlowAlternativeNote(input: { promise: string; name: string; price: number; store?: string; altPromise: string }): string {
+  const slow = promiseForCustomer(input.promise) || input.promise;
+  const quick = promiseForCustomer(input.altPromise) || input.altPromise;
+  return `💡 Peguei o mais barato, mas ele só chega em *${slow}*. O *${input.name}* (${brl(input.price)}${input.store ? `, *${input.store}*` : ""}) chega em *${quick}* — se preferir esse, é só falar.`;
 }
 
 export function cheapestOptionAnswer(n: number, name: string, price: number, cheapest: boolean): string {

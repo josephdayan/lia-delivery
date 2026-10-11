@@ -185,6 +185,8 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
   // Raça pequena ≈ porte pequeno (10/10, rodada 14 g40: "ração sênior cachorro shih tzu 1kg" não achava nada — a ração
   // sênior de raça pequena diz "Mini e Pequeno"/"Porte Pequeno", não a raça). O nome com a raça continua casando direto.
   if (SMALL_BREED_WORDS.has(token) && SMALL_SIZE_WORDS.has(word)) return true;
+  // "mão" ≈ "mãos" (11/10, rodada 21 g58, R21-8): palavra curta demais pro singular; "creme de mão" não casava "para Mãos".
+  if ((token === "mao" || token === "maos") && (word === "mao" || word === "maos")) return true;
   return false;
 }
 const COOKIE_WORDS = new Set(["bolacha", "bolachas", "biscoito", "biscoitos"]);
@@ -893,7 +895,9 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
   pao: { prefer: /\b(forma|frances|francesinho|bisnaguinha|de leite|integral)\b/ },
   // "parafuso" solto (11/10, rodada 20 g56, R20-8: prateleira abria com parafuso de vaso sanitário e de telha): o de uso geral
   // (atarraxante, madeira, com bucha) vem antes do de peça específica.
-  parafuso: { prefer: /^(?!.*\b(?:vaso|sanitario|bide|lavatorio|coluna|telhas?|fibrocimento|automotiv\w*|motos?|carros?)\b).*\b(?:atarraxante|chipboard|madeira|buchas?|phillips|fenda|sextavad\w*|kit|sortidos?|drywall)\b/, lead: true },
+  // R21a-6 (11/10, rodada 21 g58): os de vaso/lavatório/telha ainda vinham nos cartões 2–5 — pedido solto não os mostra
+  // ("parafuso para telha" tem qualificador e não passa por aqui).
+  parafuso: { reject: /\b(vaso|sanitario|bide|lavatorio|coluna|telhas?|fibrocimento)\b/, prefer: /^(?!.*\b(?:vaso|sanitario|bide|lavatorio|coluna|telhas?|fibrocimento|automotiv\w*|motos?|carros?)\b).*\b(?:atarraxante|chipboard|madeira|buchas?|phillips|fenda|sextavad\w*|kit|sortidos?|drywall)\b/, lead: true },
   esponja: { reject: /\b(filtro|aquarios?|bomba|refil para filtro|maquiagem|po compacto)\b/, prefer: /\b(dupla face|multiuso|louca|loucas|cozinha|limpeza|lava)\b/ }
 };
 export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp; lead?: boolean } | undefined {
