@@ -1940,6 +1940,25 @@ export function parseStoreRemoval(text: string): { store: string; close: boolean
   return { store, close: Boolean(m[2]) };
 }
 
+// Medida trocada pela Lia (11/10, rodada 18 g50): "o que são esses 6 litros? eu pedi 3,6" com o cartão de "tinta branca 6
+// litros" na tela não tinha explicação nem saída. Com a medida da busca e a medida que o cliente diz que pediu, devolve as
+// duas (a pedida herda a unidade da busca: "3,6" → "3,6 litros"). null = não é isso, ou a medida já é a pedida.
+const MIXUP_UNIT = String.raw`(?:litros?|lts?|l|ml|kg|quilos?|kilos?|g|gramas?|metros?|m|cm)`;
+export function parseMeasureMixup(text: string, query: string): { wrong: string; want: string } | null {
+  const n = normalizeMsg(text);
+  const q = normalizeMsg(query);
+  const inQuery = new RegExp(String.raw`\b(\d+(?:[.,]\d+)?)\s*(${MIXUP_UNIT})\b`).exec(q);
+  if (!inQuery) return null;
+  const said = new RegExp(String.raw`\b(?:eu\s+)?(?:pedi|falei|disse|escrevi|queria|era)\s+(?:de\s+|o\s+de\s+|a\s+de\s+)?(\d+(?:[.,]\d+)?)\s*(${MIXUP_UNIT})?(?=$|[\s,.;!?])`).exec(n);
+  if (!said) return null;
+  // Só com sinal de estranhamento da medida: pergunta sobre ela ou "eu pedi".
+  if (!/\b(?:pedi|falei|disse|escrevi)\b/.test(n) && !/\b(?:o que (?:e|sao)|por ?que|pq)\b/.test(n)) return null;
+  const unit = said[2] ?? inQuery[2];
+  const want = `${said[1]} ${unit}`;
+  if (said[1].replace(",", ".") === inQuery[1].replace(",", ".") && (!said[2] || said[2][0] === inQuery[2][0])) return null;
+  return { wrong: `${inQuery[1]} ${inQuery[2]}`, want };
+}
+
 export function parseStoreSwapAsk(text: string): { item?: string } | null {
   const clauses = normalizeMsg(text).split(/[.;!?\n]+/).map((c) => c.replace(/[,]+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean);
   const clause = [...clauses].reverse().find((c) => /\bloja\b/.test(c));

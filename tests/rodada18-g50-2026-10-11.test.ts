@@ -11,7 +11,8 @@ import { __setDialogueModelForTests } from "../src/lib/dialogue";
 import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
-import { parseBasketLines, parseNeededBy, parseStoreRemoval } from "../src/lib/lia-intents";
+import { parseBasketLines, parseMeasureMixup, parseNeededBy, parseStoreRemoval } from "../src/lib/lia-intents";
+import * as copy from "../src/lib/lia-copy";
 import { nameColor, nameSize, parseChosenItemQuestion } from "../src/lib/product-question";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
@@ -201,4 +202,15 @@ test("R18-12: 'mostra as opções do vaso de novo' reenvia o cartão e não esco
   assert.equal((ctx.basket ?? []).length, 0, out);
   assert.doesNotMatch(out, /Fiquei com|✅/);
   assert.ok(outbox.slice(start).some((m) => m.to === c.phone && /Carousel|Choices/.test(m.kind)) || /Vaso De Plástico/.test(out), out);
+});
+
+// ---------------------------------------------------------------- R18-9: "o que são esses 6 litros? eu pedi 3,6"
+
+test("R18-9: a medida trocada é reconhecida e corrigida com a unidade da busca", () => {
+  assert.deepEqual(parseMeasureMixup("o da universo, mas o que são esses 6 litros? eu pedi 3,6", "tinta branca 6 litros"), { wrong: "6 litros", want: "3,6 litros" });
+  assert.deepEqual(parseMeasureMixup("eu pedi 2 kg", "arroz 5kg"), { wrong: "5 kg", want: "2 kg" });
+  // Escolha comum e a mesma medida não são engano.
+  assert.equal(parseMeasureMixup("o primeiro", "tinta branca 6 litros"), null);
+  assert.equal(parseMeasureMixup("eu pedi 6 litros", "tinta branca 6 litros"), null);
+  assert.match(copy.measureMixupFixed("6 litros", "3,6 litros"), /anotei \*6 litros\*, mas você pediu \*3,6 litros\*/);
 });

@@ -1642,6 +1642,10 @@ export function chosenItemAnswer(input: { name: string; price: number; qty: numb
   const tail = lines.length ? `\n${lines.join("\n")}` : "";
   return `${head}${tail}\nSe quiser trocar, é só dizer por qual.`;
 }
+// Medida da busca errada (11/10, rodada 18 g50: "o que são esses 6 litros? eu pedi 3,6"): a Lia assume o engano.
+export function measureMixupFixed(wrong: string, want: string): string {
+  return `Foi engano meu: anotei *${wrong}*, mas você pediu *${want}*. Procurei de novo com ${want}:`;
+}
 // "esquece isso, era só uma pergunta" sem nada novo anotado (11/10, rodada 18 g50): nada sai da cesta.
 export function notItemAck(): string {
   return "Certo, não anotei nada disso — sua cesta continua igual.";
