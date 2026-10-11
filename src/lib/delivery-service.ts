@@ -25,6 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
+import { normalizeSpokenWeights } from "@/lib/lia-intents";
 import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, refineBaseQuery, asksFreightPriceDiff, isNoNeedAside, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseItemAtStore, parseStoreRemoval, splitLeadingSwapDecline, parseMeasureMixup, spCapitalPlace, relaxAnyAttribute, otherBrandAsk, inheritSwapQualifiers } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
@@ -535,6 +536,13 @@ async function buildChoices(
         } else if (pack.count) {
           packQty = pack.count;
         }
+      }
+      // "meia dúzia de ovos" (11/10, rodada 23 g64, R23-10 B5): a embalagem com EXATAMENTE a contagem pedida ("Ovos … 6
+      // Unidades") ficava fora dos primeiros candidatos e o cliente só via caixas de 10. Sem nenhuma, uma busca a mais por ela.
+      if (crossStore && !pack && line.qty >= 4 && line.qty <= 30 && countsPackContent(searchPhrase) && !candidates.some((c) => declaredPack(c.item.name) === line.qty)) {
+        const extra = await gatherCrossStoreCandidates(`${searchPhrase} ${line.qty} unidades`, 12, 4).catch(() => [] as StoreCandidate[]);
+        const exact = extra.filter((c) => declaredPack(c.item.name) === line.qty && conciergeMatchIsStrong(searchPhrase, c.item));
+        if (exact.length) candidates = [...candidates, ...exact.filter((c) => !candidates.some((x) => x.store.key === c.store.key && x.item.sku === c.item.sku))];
       }
       if (cap != null) candidates = candidates.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
       // Tamanho/volume pedido ("30 litros", "2kg") vale para TODOS os cards, não só a
@@ -4041,6 +4049,28 @@ async function handleDeliveryTurn(
   // Palavra que nomeia uma das alternativas da pergunta "A ou B?" (10/10, rodada 13 g37): "cartão" respondendo "cartão de
   // agradecimento ou vela?" é o produto, venha a palavra como vier (pagamento, item solto) — com a pergunta aberta, a
   // resposta é dela.
+  // Peso de um item da cesta vendido por unidade ("deixa as laranjas em 2 kg", ou "sim, deixa 2 kg" respondendo a uma
+  // pergunta sobre as laranjas — 11/10, rodada 23 g64, R23-3): vale para ESSE item, convertido em unidades. Antes a IA do
+  // diálogo mirava o último escolhido (o acém foi de 3 para 4) e as laranjas ficavam com o dobro.
+  {
+    const fresh = ctx.openQuestion && Date.now() - ctx.openQuestion.at < 10 * 60_000 ? ctx.openQuestion.text : undefined;
+    const adjust = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" ? weightAdjustTarget(text, ctx.basket ?? [], fresh) : null;
+    if (adjust) {
+      console.log("[weight-adjust]", JSON.stringify(text), "->", adjust.sku, adjust.units);
+      ctx.openQuestion = undefined;
+      const item = (ctx.basket ?? []).find((b) => b.sku === adjust.sku)!;
+      if (item.qty === adjust.units) {
+        await writeCtx(convo.id, ctx);
+        await reply(phone, copy.weightAlreadyMatches(item.name, item.qty, adjust.unitKg, adjust.askedKg));
+        return;
+      }
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep, { quiet: true });
+      await reply(phone, copy.weightConversionNote(adjust.askedKg, adjust.unitKg, adjust.units));
+      await handleQtyAdjust(phone, convo.id, user.cep, ctx, { set: adjust.units }, reopened, adjust.sku);
+      if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
+  }
   if (ctx.openQuestion && intent.kind !== "number" && Date.now() - ctx.openQuestion.at < 10 * 60_000) {
     const picked = openQuestionPick(ctx.openQuestion.text, text);
     if (picked) {
@@ -9487,14 +9517,17 @@ async function handleChoosing(
       const picked = rest.filter((p) => p.options.length && !p.recommendation);
       // "o mais barato de TUDO" segue a etiqueta mais baixa de cada item, com o aviso das entregas extras no fim (rodada 7
       // M4, coberto por teste); o prazo dito vale aqui também (só as que chegam a tempo, quando alguma chega).
+      // A nota de peso/embalagem de cada um vai junto (11/10, rodada 23 g64: "1x presunto ~200 g" pro pedido de 300 g sem aviso).
+      const packNotes: string[] = [];
       const added = picked.map((p) => {
         const o = p.options[forAll === "cheapest" ? cheapestForOrder(ctx, p, []).index : 0];
         const pack = packAdjusted(o, p.qty, p.query, { assumedOne: p.qty === 1 && !p.qtyExplicit });
+        if (pack.note) packNotes.push(pack.note);
         return choiceToBasketItem(o, pack.qty, o.storeKey ? getStore(o.storeKey) : store, p.query);
       });
       ctx.basket = mergeBaskets(ctx.basket ?? [], added);
       ctx.pending = [current, ...rest.filter((p) => !picked.includes(p))];
-      const note = copy.cheapestForAllNote(added.map((i) => ({ qty: i.qty, name: i.name, total: roundMoney(display(i.unitPrice, i.medicine) * i.qty) })), forAll);
+      const note = [copy.cheapestForAllNote(added.map((i) => ({ qty: i.qty, name: i.name, total: roundMoney(display(i.unitPrice, i.medicine) * i.qty) })), forAll), ...packNotes].filter(Boolean).join("\n");
       await confirmChosenOption(phone, convoId, ctx, userCep, store, current, current.options[index], { note, costBefore });
       return;
     }
@@ -13470,6 +13503,50 @@ export function parseWeightAskKg(query: string): number | undefined {
   if (!Number.isFinite(value) || value <= 0) return undefined;
   return /^(g|gramas?|gr)$/.test(m[2]) ? value / 1000 : value;
 }
+// Peso da unidade que o nome mostrado declara ("Laranja Pêra (unidade ~280 g)", soldByWeightName).
+export function unitWeightFromName(name: string): number | undefined {
+  const m = name.match(/\(unidade ~(\d+(?:,\d+)?)\s*(kg|g)\)/i);
+  if (!m) return undefined;
+  const v = Number(m[1].replace(",", "."));
+  return v > 0 ? (m[2].toLowerCase() === "kg" ? v : v / 1000) : undefined;
+}
+// "deixa as laranjas em 2 kg" / "sim, deixa 2 kg" (com a pergunta aberta citando as laranjas): o item da cesta vendido por
+// unidade que recebe o peso, e quantas unidades dão esse peso. null = a fala não é isso (pergunta, outro produto, nenhum ou
+// vários itens possíveis).
+const WEIGHT_ADJUST_FILLER = new Set(
+  "sim isso pode ok okay deixa deixe deixar fica ficar fique coloca coloque bota poe quero queria mesmo so em com de da do das dos as os a o e entao pra para por favor ta bom beleza manda faz faca ajusta ajuste muda mude kg g quilo quilos gramas grama certo claro exato exatamente perfeito isso ai baixa abaixa diminui aumenta sobe".split(" ")
+);
+export function weightAdjustTarget(
+  text: string,
+  basket: Array<{ sku: string; name: string; qty: number; ask?: string }>,
+  openQuestion?: string
+): { sku: string; units: number; unitKg: number; askedKg: number } | null {
+  if (isQuestion(text) || /\b(?:mais|outr[oa]s?|tamb[eé]m|tbm|adiciona|acrescenta|soma)\b/i.test(normalizeMsg(text))) return null;
+  const said = normalizeSpokenWeights(text);
+  const askedKg = parseWeightAskKg(said);
+  if (!askedKg) return null;
+  const weighed = basket.filter((b) => unitWeightFromName(b.name));
+  if (!weighed.length) return null;
+  const rest = normalizeMsg(said)
+    .replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ")
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w && !WEIGHT_ADJUST_FILLER.has(w));
+  const named = (src: string) => weighed.filter((b) => sharesProductNoun(src, b.ask ?? b.name) || sharesProductNoun(src, b.name));
+  let hits: typeof weighed;
+  if (rest.length) {
+    // Fala curta que nomeia o item ("as laranjas em 2 kg"); pedido novo ("2 kg de batata") não é ajuste.
+    if (rest.length > 3) return null;
+    hits = named(rest.join(" "));
+  } else {
+    if (!openQuestion) return null;
+    hits = named(openQuestion);
+  }
+  if (hits.length !== 1) return null;
+  const unitKg = unitWeightFromName(hits[0].name)!;
+  const units = Math.max(1, Math.min(50, Math.round(askedKg / unitKg + 1e-9)));
+  return { sku: hits[0].sku, units, unitKg, askedKg };
+}
+
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
 // ", coca cola" ao lado de "6 refrigerantes" (10/10, rodada 7 M8): se a maioria das opções da linha solta é do TIPO do
 // item ("Refrigerante Coca-Cola…"), ela é a marca dele. Devolve as opções desse tipo, ou null.
@@ -13537,7 +13614,8 @@ export function packAdjusted(
   const unitKg = typeof option === "string" ? undefined : option.unitWeightKg;
   const askedKg = unitKg && query ? parseWeightAskKg(query) : undefined;
   if (unitKg && askedKg) {
-    const units = Math.max(1, Math.round((askedKg / unitKg) * Math.max(1, qty)));
+    // + epsilon (11/10, rodada 23 g64): 0,3 / 0,2 dá 1,4999… em ponto flutuante — "300 g" com unidade de ~200 g virava 1.
+    const units = Math.max(1, Math.round((askedKg / unitKg) * Math.max(1, qty) + 1e-9));
     return { qty: units, note: copy.weightConversionNote(askedKg * Math.max(1, qty), unitKg, units) };
   }
   if (opts?.assumedOne) return { qty };
@@ -14473,6 +14551,24 @@ function operatorQuoteEnabled(): boolean {
 // 10/10, rodada 13 A3: a Americanas recusou o GUARDANAPO (só "Retirada" junto das 3 Cocas) e a cesta inteira
 // (vela, guardanapo, Coca) sumia com "me diz outra coisa". Agora: sai só o item que a loja recusou (`holdupSkus`), o
 // resto fica, e o recusado volta como escolha com as opções de OUTRAS lojas que confirmam entrega no CEP.
+// Os itens que a loja recusa quando a recusa veio para a cesta inteira dela: cada item é simulado sozinho (em paralelo,
+// com prazo). Só vale quando ao menos um passa — sem isso (loja fora do ar, CEP fora da área) a recusa continua da loja.
+async function isolateRefusedItems(basket: BasketItem[], holdupStores: string[] | undefined, cep: string | null | undefined): Promise<string[] | undefined> {
+  if (!cep || holdupStores?.length !== 1) return undefined;
+  const storeItems = basket.filter((i) => i.storeKey === holdupStores[0]);
+  if (storeItems.length < 2 || storeItems.length > 12) return undefined;
+  const solo = await withDeadline(
+    Promise.all(storeItems.map((i) => liveStoreFreightDetailed(holdupStores[0], [{ sku: i.sku, qty: i.qty }], cep).catch(() => null))),
+    8_000,
+    null
+  );
+  if (!solo) return undefined;
+  const failing = storeItems.filter((_, k) => solo[k]?.kind !== "ok");
+  if (!failing.length || failing.length === storeItems.length) return undefined;
+  console.log("[close:isolated-refusal]", holdupStores[0], failing.map((i) => i.sku).join(","));
+  return failing.map((i) => i.sku);
+}
+
 async function closeWithoutOperator(
   phone: string,
   convoId: string,
@@ -14484,6 +14580,10 @@ async function closeWithoutOperator(
   holdupSkus?: string[]
 ) {
   const basket = ctx.basket ?? [];
+  // Loja recusou a cesta dela inteira, sem dizer qual item ou com todos (11/10, rodada 23 g64, R23-2: a quantidade absurda do presunto derrubava
+  // pão, ovos, café e mamão da Mambo junto). Cada item dela é conferido sozinho: os que a loja confirma ficam.
+  const storeWide = holdupStores?.length === 1 && basket.filter((i) => i.storeKey === holdupStores[0]).every((i) => !holdupSkus?.length || holdupSkus.includes(i.sku));
+  if (storeWide) holdupSkus = (await isolateRefusedItems(basket, holdupStores, ctx.cep)) ?? holdupSkus;
   const bySku = holdupSkus?.length ? basket.filter((i) => holdupSkus.includes(i.sku)) : [];
   const blocked = bySku.length ? bySku : holdupStores?.length ? basket.filter((i) => holdupStores.includes(i.storeKey ?? CONCIERGE_STORE_KEY)) : [];
   const rest = basket.filter((i) => !blocked.includes(i));
@@ -14521,13 +14621,18 @@ async function closeWithoutOperator(
     })
   );
   const swappable = alternatives.filter((a) => a.options.length);
+  // O que saiu fica como faltante (R23-2): "tenta de novo" procura de novo em outra loja, e o resumo diz o que ficou de fora.
+  const missesFor = (items: BasketItem[]): ListMiss[] => [
+    ...(ctx.listMisses ?? []),
+    ...items.map((i) => ({ query: (i.ask ?? i.name).slice(0, 120), qty: i.askedUnits && i.askedUnits.packs === i.qty ? i.askedUnits.units : i.qty, reason: "unbuyable" as const, at: Date.now() }))
+  ];
   if (swappable.length) {
     const queue: PendingChoice[] = swappable.map(({ item, options }) => {
       const base = ctx.lastChoice?.chosenSku === item.sku ? (({ chosenSku: _c, replaceSku: _r, ...b }) => b)(ctx.lastChoice) : undefined;
       return { ...(base ?? {}), query: base?.query ?? item.ask ?? item.name, qty: item.qty, qtyExplicit: Boolean(base?.qtyExplicit) || item.qty > 1, options } as PendingChoice;
     });
     const dropped = alternatives.filter((a) => !a.options.length).map((a) => named(a.item));
-    const next: DeliveryContext = { ...addressOnlyCtx(ctx), ...orderFactsCtx(ctx), storeKey: CONCIERGE_STORE_KEY, step: "choosing", pending: queue, ...(rest.length ? { basket: rest, closeAfterChoices: true } : {}), ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}) };
+    const next: DeliveryContext = { ...addressOnlyCtx(ctx), ...orderFactsCtx(ctx), storeKey: CONCIERGE_STORE_KEY, step: "choosing", pending: queue, ...(rest.length ? { basket: rest, closeAfterChoices: true } : {}), ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), listMisses: missesFor(alternatives.filter((a) => !a.options.length).map((a) => a.item)) };
     await writeCtx(convoId, next);
     const header = blocked.length === 1 && !rest.length
       ? copy.itemNotDeliverableShowOthers(names[0])
@@ -14535,12 +14640,13 @@ async function closeWithoutOperator(
     await sendChoices(phone, queue[0], header);
     return;
   }
+  const refusedMisses = missesFor(blocked);
   if (!rest.length || depth >= 3) {
-    await writeCtx(convoId, { ...addressOnlyCtx(ctx) });
+    await writeCtx(convoId, { ...addressOnlyCtx(ctx), listMisses: refusedMisses });
     await reply(phone, copy.itemsNotDeliverableHere(names, false));
     return;
   }
-  const next: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: rest, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}), ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}), ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}) };
+  const next: DeliveryContext = { ...addressOnlyCtx(ctx), storeKey: CONCIERGE_STORE_KEY, basket: rest, ...(ctx.recipientName ? { recipientName: ctx.recipientName } : {}), ...(ctx.urgent ? { urgent: ctx.urgent } : {}), ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}), ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}), listMisses: refusedMisses };
   await writeCtx(convoId, next);
   await reply(phone, copy.itemsNotDeliverableHere(names, true));
   await createOperatorQuoteRequest(phone, convoId, next, undefined, depth + 1);
