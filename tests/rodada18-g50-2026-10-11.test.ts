@@ -13,6 +13,7 @@ import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { parseBasketLines, parseMeasureMixup, parseNeededBy, parseStoreRemoval } from "../src/lib/lia-intents";
 import * as copy from "../src/lib/lia-copy";
+import { canonicalTypedAddress } from "../src/lib/address-parse";
 import { nameColor, nameSize, parseChosenItemQuestion } from "../src/lib/product-question";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
@@ -213,4 +214,57 @@ test("R18-9: a medida trocada é reconhecida e corrigida com a unidade da busca"
   assert.equal(parseMeasureMixup("o primeiro", "tinta branca 6 litros"), null);
   assert.equal(parseMeasureMixup("eu pedi 6 litros", "tinta branca 6 litros"), null);
   assert.match(copy.measureMixupFixed("6 litros", "3,6 litros"), /anotei \*6 litros\*, mas você pediu \*3,6 litros\*/);
+});
+
+// ---------------------------------------------------------------- R18-14 (g50): cadastro, endereço e avisos
+
+test("R18-14: endereço digitado com a rua do CEP sai no formato do cadastro", () => {
+  const paulista = { street: "Avenida Paulista", district: "Bela Vista", city: "São Paulo", uf: "SP" };
+  assert.equal(canonicalTypedAddress("av paulista 1000", paulista), "Avenida Paulista, 1000, Bela Vista, São Paulo - SP");
+  assert.equal(canonicalTypedAddress("Avenida Paulista 1000 apto 52", paulista), "Avenida Paulista, 1000, apto 52, Bela Vista, São Paulo - SP");
+  assert.equal(
+    canonicalTypedAddress("Rua Augusta 1500, Consolação, São Paulo", { street: "Rua Augusta", district: "Consolação", city: "São Paulo", uf: "SP" }),
+    "Rua Augusta, 1500, Consolação, São Paulo - SP"
+  );
+  // Rua diferente da do CEP, ou resto desconhecido: o texto do cliente fica.
+  assert.equal(canonicalTypedAddress("Rua Augusta 1500", paulista), null);
+  assert.equal(canonicalTypedAddress("Avenida Paulista 1000 fundos do mercado", paulista), null);
+});
+
+test("R18-14: formulário de cadastro já mandado vira lembrete; avisos de prazo repetidos encurtam", () => {
+  const body = copy.signupFormBody(["1x peito de frango 1kg", "1x batata doce"], false);
+  const reminder = copy.signupFormReminder(body);
+  assert.match(reminder, /✅ Anotei:\n• 1x peito de frango 1kg\n• 1x batata doce/);
+  assert.match(reminder, /botão \*Fazer cadastro\* da mensagem acima/);
+  assert.doesNotMatch(reminder, /É uma vez só 👇/);
+  assert.match(copy.choicesDeadlineAlsoLate("hoje às 18h", "soro fisiológico"), /^⏰ \*soro fisiológico\* também não chega pra \*hoje às 18h\*/);
+});
+
+test("R18-14: o formulário de cadastro sai uma vez; as linhas seguintes do pedido só anotam", async (t) => {
+  if (!dbOk) return t.skip();
+  const prev = { provider: process.env.WHATSAPP_PROVIDER, flow: process.env.LIA_FLOW_SIGNUP_ID };
+  process.env.WHATSAPP_PROVIDER = "meta";
+  process.env.LIA_FLOW_SIGNUP_ID = "flow-test";
+  const sendFlow = adapter.sendFlowMessage;
+  adapter.sendFlowMessage = async (to: string, input: { body?: string }) => {
+    outbox.push({ to, kind: "sendFlowMessage", text: input.body ?? "" });
+    return { provider: "test", to };
+  };
+  try {
+    const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+    await prisma.user.create({ data: { phone } });
+    await send(phone, "oi");
+    await send(phone, "peito de frango 1kg");
+    const third = await send(phone, "batata doce");
+    const forms = outbox.filter((m) => m.to === phone && m.kind === "sendFlowMessage");
+    assert.equal(forms.length, 1, JSON.stringify(outbox.filter((m) => m.to === phone)));
+    assert.match(third, /batata doce/);
+    assert.match(third, /Fazer cadastro\* da mensagem acima/);
+  } finally {
+    adapter.sendFlowMessage = sendFlow;
+    if (prev.provider === undefined) delete process.env.WHATSAPP_PROVIDER;
+    else process.env.WHATSAPP_PROVIDER = prev.provider;
+    if (prev.flow === undefined) delete process.env.LIA_FLOW_SIGNUP_ID;
+    else process.env.LIA_FLOW_SIGNUP_ID = prev.flow;
+  }
 });

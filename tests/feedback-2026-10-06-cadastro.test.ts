@@ -174,9 +174,10 @@ test("A1: pedido + endereço na mesma mensagem salva só o endereço e guarda os
   if (!dbOk) return t.skip();
   const phone = newPhone();
   const out = await send(phone, "quero 2 sabonetes dove e um shampoo seda, entrega em Rua Eng. Edgar Egidio de Souza 221 ap 13 Santa Cecília São Paulo 01233020");
-  assert.match(out, /Endereço salvo: Rua Eng\. Edgar Egidio de Souza 221 ap 13 Santa Cecília São Paulo — CEP 01233-020/);
+  // Rua digitada = rua do CEP (11/10, rodada 18 g50): o endereço sai no formato do formulário, com o complemento.
+  assert.match(out, /Endereço salvo: Rua Engenheiro Edgar Egidio de Souza, 221, ap 13, Santa Cecília, São Paulo - SP — CEP 01233-020/);
   assert.match(out, /Anotei:[\s\S]*2x sabonetes dove[\s\S]*shampoo seda/);
-  assert.equal((await userOf(phone)).defaultAddress, "Rua Eng. Edgar Egidio de Souza 221 ap 13 Santa Cecília São Paulo");
+  assert.equal((await userOf(phone)).defaultAddress, "Rua Engenheiro Edgar Egidio de Souza, 221, ap 13, Santa Cecília, São Paulo - SP");
   const ctx = await ctxOf(phone);
   assert.match(ctx.pendingRequest ?? "", /sabonetes dove[\s\S]*shampoo seda/, "itens guardados para depois do CPF");
 });
@@ -185,7 +186,7 @@ test("A1: 'Rua Augusta 1500, 01305-100. quero arroz e feijão'", async (t) => {
   if (!dbOk) return t.skip();
   const phone = newPhone();
   await send(phone, "Rua Augusta 1500, 01305-100. quero arroz e feijão");
-  assert.equal((await userOf(phone)).defaultAddress, "Rua Augusta 1500");
+  assert.equal((await userOf(phone)).defaultAddress, "Rua Augusta, 1500, Consolação, São Paulo - SP");
   assert.match((await ctxOf(phone)).pendingRequest ?? "", /arroz[\s\S]*feij/);
 });
 
@@ -266,7 +267,7 @@ test("A5: rua de São Paulo com CEP do Rio pergunta antes de salvar", async (t) 
   assert.equal(user.cep, null);
   assert.match(await send(phone, "não"), /CEP certo/);
   const fixed = await send(phone, "Rua Augusta 1500, Consolação, São Paulo, 01305-100");
-  assert.match(fixed, /Endereço salvo: Rua Augusta 1500, Consolação, São Paulo — CEP 01305-100/);
+  assert.match(fixed, /Endereço salvo: Rua Augusta, 1500, Consolação, São Paulo - SP — CEP 01305-100/);
 });
 
 test("A5: 'sim' confirma o CEP de outra cidade", async (t) => {
@@ -281,13 +282,13 @@ test("M7 + M6: CEP com espaço, 'Augusta 1500' sem 'Rua', 'Al. Santos' e 'não s
   if (!dbOk) return t.skip();
   const a = newPhone();
   await send(a, "Rua Augusta 1500, 01305 100");
-  assert.equal((await userOf(a)).defaultAddress, "Rua Augusta 1500");
+  assert.equal((await userOf(a)).defaultAddress, "Rua Augusta, 1500, Consolação, São Paulo - SP");
   const b = newPhone();
   await send(b, "Augusta 1500, 01305-100");
   assert.equal((await userOf(b)).defaultAddress, "Rua Augusta, 1500, Consolação, São Paulo - SP");
   const c = newPhone();
   await send(c, "Al. Santos 1000, 01418-100");
-  assert.equal((await userOf(c)).defaultAddress, "Al. Santos 1000");
+  assert.equal((await userOf(c)).defaultAddress, "Alameda Santos, 1000, Cerqueira César, São Paulo - SP");
   const d = newPhone();
   await send(d, "oi");
   assert.match(await send(d, "não sei meu cep"), /buscacep\.correios\.com\.br/);

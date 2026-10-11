@@ -34,7 +34,7 @@ import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-a
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe, splitNegatedTerms } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
+import { canonicalTypedAddress, dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseProductQuestion } from "./product-question";
@@ -418,7 +418,7 @@ async function buildChoices(
   // Prazo "hoje" guardado antes do cadastro (10/10, rodada 15 g43, R15a-6): a lista volta sem o "hoje" no texto e perdia o
   // modo do dia ("Pra hoje não chega… 1 dia útil" com a Pacheco em 60 min). O prazo do pedido vale como a palavra dita.
   const neededToday = turnMeta.getStore()?.neededBy;
-  const urgent = hasUrgencySignal(text) || Boolean(neededToday && neededToday.date === new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }));
+  const urgent = hasUrgencySignal(text) || Boolean(turnMeta.getStore()?.urgentOrder) || Boolean(neededToday && neededToday.date === new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" }));
 
   // Candidatos por linha. No concierge sem loja travada a busca é LARGA (todas as
   // vitrines): eleger uma loja única por palpite léxico escondia o item certo — no
@@ -1396,8 +1396,17 @@ async function askAddress(phone: string, text: string) {
 // publicado pelo cron /api/cron/meta-templates). A resposta volta pelo webhook e cai em
 // handleSignupForm. Sem Flow publicado, fora da Meta ou com falha no envio, o plano B é o
 // pedido em texto de sempre (`fallback`): endereço, depois nome e CPF.
+const SIGNUP_FORM_MARK = "[formulário de cadastro] ";
 async function askSignup(phone: string, body: string, fallback: () => Promise<void>) {
   if (process.env.WHATSAPP_PROVIDER === "meta") {
+    // Formulário já mandado nas últimas falas (11/10, rodada 18 g50: o botão voltava a cada linha do pedido — 6 vezes):
+    // a 2ª vez em diante é o "Anotei" com um lembrete do botão acima, sem outro formulário.
+    const meta = turnMeta.getStore();
+    const asksForm = /\b(?:formulario|cadastro|botao|link)\b/.test(normalizeMsg(meta?.inboundText ?? ""));
+    if (!asksForm && (meta?.prevSent ?? []).some((t) => t.startsWith(SIGNUP_FORM_MARK))) {
+      await reply(phone, copy.signupFormReminder(body));
+      return;
+    }
     try {
       const { activeSignupFlowId, SIGNUP_FLOW_CTA, SIGNUP_FLOW_SCREEN } = await import("@/lib/meta-setup");
       const flowId = await activeSignupFlowId();
@@ -1410,7 +1419,11 @@ async function askSignup(phone: string, body: string, fallback: () => Promise<vo
           screen: SIGNUP_FLOW_SCREEN,
           token: `lia-cadastro-${Date.now()}`
         });
-        if (sent) return;
+        if (sent) {
+          // Marca o envio nas falas do turno (o formulário não passa pelo reply): o próximo turno vê e não repete.
+          if (meta) meta.sent = [...(meta.sent ?? []), `${SIGNUP_FORM_MARK}${body}`];
+          return;
+        }
       }
     } catch (error) {
       console.warn("[whatsapp:meta:signup-flow:fallback-text]", error instanceof Error ? error.message : error);
@@ -1617,7 +1630,14 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
     // Já avisado nas últimas falas (o p.deadlineNoted nem sempre volta gravado): "outras" não repete.
     const item = shownQuery(p);
     const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`) && t.includes(`*${item}*`));
-    if (verdict?.late.length && !said) {
+    // Mesmo "não chega" para outro item da fila (11/10, rodada 18 g50: o aviso inteiro saía 3 vezes na conversa): a 2ª vez
+    // em diante é uma linha curta ("*soro* também não chega pra hoje às 18h").
+    const noneOnTime = Boolean(verdict && !verdict.onTime.length && !(verdict.unsure ?? []).length);
+    const saidNone = noneOnTime && (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith(`⏰ Pra *${deadline.label}* não chega`) || t.startsWith("⏰ *") && t.includes(`também não chega pra *${deadline.label}*`));
+    if (verdict?.late.length && !said && saidNone) {
+      p.deadlineNoted = true;
+      await reply(phone, copy.choicesDeadlineAlsoLate(deadline.label, item));
+    } else if (verdict?.late.length && !said) {
       p.deadlineNoted = true;
       await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item, (verdict.unsure ?? []).map((o) => o.storeLabel ?? "").filter(Boolean)));
     }
@@ -3387,7 +3407,7 @@ async function handleDeliveryTurn(
   if (neededBy) ctx.neededBy = neededBy;
   // A vitrine deste turno também avisa (10/10, rodada 6 g19: só o resumo do operador lia o prazo; em produção as
   // opções de 3 a 8 dias úteis saíam sem aviso).
-  { const meta = turnMeta.getStore(); if (meta && ctx.neededBy) meta.neededBy = ctx.neededBy; }
+  { const meta = turnMeta.getStore(); if (meta && ctx.neededBy) meta.neededBy = ctx.neededBy; if (meta && ctx.urgent) meta.urgentOrder = true; }
 
   // ---- endereço: pergunta da Lia em aberto (troca de CEP / cidade ≠ CEP), 06/10 ----
   if ((ctx.cepSwap || ctx.cepCityCheck) && (await handlePendingAddressQuestion(phone, user, convo.id, ctx, text, intent))) return;
@@ -7169,8 +7189,11 @@ async function handleNewCep(
   // Endereço escrito sem a cidade ("Rua Funchal 418, Vila Olímpia, 04551-060", 09/10, rodada 3): a cidade do CEP completa o
   // rótulo, como no cadastro ("..., São Paulo"); o resumo do pedido não pode ficar sem ela.
   const withCity = (addr: string) => (city && !normalizeMsg(addr).includes(normalizeMsg(city)) ? `${addr.replace(/[\s,]+$/, "")}, ${city}` : addr);
+  // Rua digitada = rua do CEP (11/10, rodada 18 g50): o endereço sai no formato do formulário ("Avenida Paulista, 1000, Bela
+  // Vista, São Paulo - SP"), não cru ("av paulista 1000"). Rua diferente ou resto desconhecido: o texto do cliente fica.
+  const canonical = split?.address ? canonicalTypedAddress(split.address, { street, district, city, uf }) : null;
   const typedAddress = split?.address
-    ? (firstAddress ? split.address : withCity(split.address))
+    ? (canonical ?? (firstAddress ? split.address : withCity(split.address)))
     : // Número dito junto do CEP vale MESMO com endereço confirmado (10/10, rodada 10 g30: "CEP 01310-100, número 1578" no
       // meio da escolha respondia "Endereço atualizado: Avenida Paulista 1000" e a entrega ia pro número antigo).
       house && street
@@ -8013,7 +8036,7 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[], live?: { st
   // Loja nova com pedido mínimo que a escolha não fecha (10/10, rodada 11 g32: o pão de R$ 7,69 da Americanas só esbarrava
   // no mínimo de R$ 33 no "só isso"): o aviso vem na hora da escolha, junto do frete. Vale também para a 1ª loja do pedido
   // (10/10, rodada 12 g36: o pão era o 1º item escolhido e o mínimo continuava só no fechamento).
-  const minimum = fresh.map((key) => {
+  let minimum = fresh.map((key) => {
     const items = after.filter((i) => storeOf(i) === key);
     const storeKey = items[0]?.storeKey;
     const store = storeKey ? getStore(storeKey) : undefined;
@@ -8022,6 +8045,10 @@ function deliveryCostNote(before: BasketItem[], after: BasketItem[], live?: { st
     const produtos = roundMoney(items.reduce((acc, i) => acc + display(i.unitPrice, i.medicine) * i.qty, 0));
     return min > 0 && produtos < min ? { store: store.label, min, falta: roundMoney(min - produtos) } : undefined;
   }).find(Boolean);
+  // Mínimo da loja já avisado nas últimas falas (11/10, rodada 18 g50: o aviso saía a cada item, com valores diferentes):
+  // o fechamento cobra de novo; aqui não repete.
+  const minimumSaid = minimum && (turnMeta.getStore()?.prevSent ?? []).some((t) => t.includes(`*${minimum!.store}* tem pedido mínimo`));
+  if (minimumSaid) minimum = undefined;
   if (!extra && !later && !minimum) return undefined;
   const fee = extra
     ? roundMoney(fresh.reduce((sum, key) => {

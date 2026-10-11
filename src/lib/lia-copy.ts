@@ -84,6 +84,14 @@ export function welcomeAskFullDeliveryAddress(notedItems?: string[]): string {
   return `${INTRO}${note}\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍`;
 }
 
+// Formulário de cadastro já mandado (11/10, rodada 18 g50): o "Anotei" segue, o pedido do cadastro vira lembrete do
+// botão acima — sem outro formulário a cada linha do pedido.
+export function signupFormReminder(body: string): string {
+  const noted = /✅ Anotei:[\s\S]*?(?=\n\n|$)|Já anotei:[\s\S]*?(?=\n\n|$)/.exec(body)?.[0]?.replace(/^Já anotei:/, "✅ Anotei:");
+  const nudge = "_Pra eu comprar, falta só o cadastro: é no botão *Fazer cadastro* da mensagem acima 👆 (ou me manda nome, CPF e endereço com CEP aqui)._";
+  return noted ? `${noted}\n\n${nudge}` : nudge;
+}
+
 // ---------- cadastro pelo formulário (06/10, dono: "pode pedir tudo direto no começo") ----------
 // Corpo da mensagem que leva o formulário nativo do WhatsApp (botão "Fazer cadastro"). O
 // pedido em texto de antes (welcomeAskFullDeliveryAddress) continua sendo o plano B.
@@ -981,6 +989,11 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
   const prazo = promiseForCustomer(fastest?.promise);
   const none = item ? `nenhuma opção de *${item}* entrega a tempo` : "nenhuma dessas opções entrega a tempo";
   return `⏰ Pra *${label}* não chega: ${none}${prazo ? ` — o mais rápido é *${prazo}*${fastest?.store ? ` (${fastest.store})` : ""}` : ""}. Se quiser, me diz outro item que eu procuro.`;
+}
+
+// O mesmo "não chega" já dito para outro item (11/10, rodada 18 g50): uma linha, sem repetir o aviso inteiro.
+export function choicesDeadlineAlsoLate(label: string, item: string): string {
+  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo.`;
 }
 
 // Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
