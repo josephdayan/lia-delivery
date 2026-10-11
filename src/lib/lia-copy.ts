@@ -2669,7 +2669,15 @@ function partialBudgetLine(produtos: number, cap?: number): string | null {
   return `💰 Do seu limite de *${brl(cap)}*, sobram ${brl(Math.round((cap - produtos) * 100) / 100)} pra entrega e o resto.`;
 }
 
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number): string {
+// "chega hoje?" junto do "e o total?" (11/10, rodada 17 R17-13): sim/não direto, antes da lista.
+function todayVerdictLine(rows: Array<EtaRow & { today: boolean | null }>): string | null {
+  if (!rows.length || rows.some((r) => r.today == null)) return null;
+  const late = rows.filter((r) => !r.today);
+  if (!late.length) return "Chega hoje sim ✅ (contando da compra).";
+  return `Hoje não chega: ${late.map((r) => `*${r.store}* é ${promiseForCustomer(r.when).replace(/^prazo da loja:\s*/, "")}`).join(", ")}.`;
+}
+
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number, today?: Array<EtaRow & { today: boolean | null }>): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
@@ -2684,7 +2692,8 @@ export function partialTotal(items: CopyBasketItem[], produtos: number, pendingC
         : `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
       : '_Diz *"só isso"* que eu mando o total com a entrega._';
   const budget = partialBudgetLine(produtos, budgetCap);
-  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), ...(budget ? [budget] : []), tail].join("\n");
+  const verdict = today ? todayVerdictLine(today) : null;
+  return [...(verdict ? [verdict] : []), "🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), ...(budget ? [budget] : []), tail].join("\n");
 }
 
 // ---------- concierge manual (largura + cotação do operador) ----------

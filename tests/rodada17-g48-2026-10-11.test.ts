@@ -230,3 +230,35 @@ test("R17-10: limite do pedido no 'Até agora' e na oferta de juntar; corte suge
   // Sem o total, como antes: a linha mais cara.
   assert.equal(overBudgetSummaryInput(300, basket as never, true).priciest?.name, "Molho de Tomate Genovese 340g");
 });
+
+test("R17-13: 'e o total? chega hoje ainda?' abre com sim/não para hoje", async (t) => {
+  if (!dbOk) return t.skip();
+  // Como na produção: a IA reencaminha só o "quanto deu tudo?".
+  const { __setDialogueModelForTests } = await import("../src/lib/dialogue");
+  const prevLlm = process.env.LIA_DIALOGUE_LLM;
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "answer", topic: "order_total" }] }) as never);
+  try {
+    const pilha = { sku: "farmaciaindiana-1", name: "Pilha Alcalina Duracell AA 4 unidades", qty: 1, unitPrice: 15.5, lineTotal: 15.5, storeKey: "farmaciaindiana", storeLabel: "Farmácia Indiana", ask: "pilha aa", delivery: "prazo da loja: 3 dias úteis" };
+    const phone = await customer({ basket: [pilha] });
+    const out = await send(phone, "e o total? chega hoje ainda?");
+    assert.match(out, /Hoje não chega: \*Farmácia Indiana\* é 3 dias úteis/, out.slice(0, 500));
+  } finally {
+    __setDialogueModelForTests(null);
+    if (prevLlm === undefined) delete process.env.LIA_DIALOGUE_LLM;
+    else process.env.LIA_DIALOGUE_LLM = prevLlm;
+  }
+});
+
+test("R17-13: o mesmo item perguntado de outro jeito sai uma vez só no 'Ficou de fora'", async () => {
+  const { leftOutForSummary, sameMissItem } = await import("../src/lib/list-misses");
+  const at = Date.now();
+  const ctx = { listMisses: [
+    { query: "ração gastrointestinal cachorro", qty: 1, reason: "not_found" as const, at },
+    { query: "gelo", qty: 1, reason: "not_found" as const, at },
+    { query: "ração cachorro estômago sensível", qty: 1, reason: "not_found" as const, at }
+  ] };
+  assert.deepEqual(leftOutForSummary(ctx, []), ["ração cachorro estômago sensível", "gelo"]);
+  assert.equal(sameMissItem("ração gato", "ração cachorro"), false);
+  assert.equal(sameMissItem("leite integral", "leite desnatado"), false);
+});

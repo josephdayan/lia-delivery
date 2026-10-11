@@ -98,9 +98,27 @@ export function leftOutForSummary(
   for (const miss of all) {
     if (now - miss.at > LEFT_OUT_TTL_MS) continue;
     const covered = coveredByBasket(miss.query, basket) || isNonItemSegment(miss.query);
-    if (!covered && !out.some((q) => norm(q) === norm(miss.query))) out.push(miss.query);
+    if (covered || out.some((q) => norm(q) === norm(miss.query))) continue;
+    // O mesmo item perguntado de outro jeito (11/10, rodada 17 R17-13: "ração gastrointestinal cachorro" e depois "ração
+    // cachorro estômago sensível" saíam as duas no "Ficou de fora"): fica só o mais recente.
+    const twin = out.findIndex((q) => sameMissItem(q, miss.query));
+    if (twin >= 0) out[twin] = miss.query;
+    else out.push(miss.query);
   }
   return out;
+}
+
+// Mesma cabeça ("ração") e mais uma palavra do produto em comum ("cachorro"): é o mesmo item. "ração gato" × "ração
+// cachorro" (só a cabeça) seguem dois.
+const MISS_STOP = new Set(["de", "da", "do", "das", "dos", "pra", "pro", "para", "com", "sem", "uma", "um", "que", "meu", "minha"]);
+function missWords(text: string): string[] {
+  return norm(text).split(/\s+/).filter((w) => w.length >= 3 && !MISS_STOP.has(w) && !/^\d/.test(w));
+}
+export function sameMissItem(a: string, b: string): boolean {
+  const wa = missWords(a);
+  const wb = missWords(b);
+  if (!wa.length || !wb.length || wa[0] !== wb[0]) return false;
+  return wa.filter((w) => wb.includes(w)).length >= 2;
 }
 
 // O pedaço de "tira X" casa com alguma faltante? (10/10, rodada 8 g25: "tira o gelo" depois do resumo ia pra IA, que
