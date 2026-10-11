@@ -3,7 +3,7 @@
 // tests/feedback-2026-10-06-cadastro.test.ts.
 import { resolveListItems } from "@/lib/list-items";
 import { localCatalogProbe } from "@/lib/stores/list-probe";
-import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
+import { CEP_RE, CEP_RE_GLOBAL, isKeepSeparateReply, isNarrativeSegment, isWaitGripe, keepsSummaryAsIs, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
 // "praça", "estrada") só com a palavra seguinte em maiúscula — "calça larga" não é endereço.
@@ -466,6 +466,9 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   const lines = resolved.filter((line) => {
     const n = normalizeMsg(line.phrase);
     if (bareCardIsItem && /^(?:um |uns )?cartao(?:zinho)?s?$/.test(n)) return true;
+    // "mantém como está" / "deixa assim" antes do cadastro (11/10, rodada 18 g50, R18a-6): resposta de confirmação, nunca
+    // item ("✅ Anotei: 1x mantém como está" e depois "não achei").
+    if (keepsSummaryAsIs(line.phrase) || isKeepSeparateReply(line.phrase)) return false;
     // "a visita chega hoje", "a festa é sábado" (10/10, rodada 13 g37): o prazo é anotado à parte, não é item.
     if (parseNeededBy(line.phrase) && /\b(?:chega\w*|cheg[ao]u?|vem|vai ser|e|eh|sera|comeca|acontece)\b/.test(n)) return false;
     if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(line.phrase.trim()) && (/\b0+\b/.test(line.phrase) || /\bsem nome\b/i.test(line.phrase))) return false;
@@ -476,4 +479,35 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   // "tapete higiênico 30 unidades" volta como foi dito (11/10, rodada 17 g49): "30 tapete" virava "30x tapete" no "Anotei".
   const text = lines.map((line) => (line.units ? `${phraseOf(line)} ${line.qty} unidades` : line.qtyExplicit || line.qty > 1 ? `${line.qty} ${phraseOf(line)}` : phraseOf(line))).join(", ");
   return { text, lines, wantsToOrder: courtesy.wantsToOrder };
+}
+
+// Endereço DIGITADO no formato do cadastro (11/10, rodada 18 g50; r17 A4): "av paulista 1000" e "Rua Augusta 1500,
+// Consolação, São Paulo" ficavam crus no resumo, enquanto o formulário gera "Avenida Paulista, 1000, Bela Vista, São
+// Paulo - SP". Só quando a rua digitada é a rua do CEP (abreviações e um erro de digitação valem) e o que sobra depois do
+// número é complemento, bairro, cidade ou UF do próprio CEP. Qualquer outra coisa = null (o texto do cliente fica).
+export function canonicalTypedAddress(typed: string, place: { street?: string; district?: string; city?: string; uf?: string }): string | null {
+  if (!place.street) return null;
+  const text = cleanAddressText(typed).replace(CEP_RE_GLOBAL, " ").replace(/\bcep\b\s*:?/gi, " ").replace(/\s+/g, " ").trim();
+  const m = /^(.*?)[\s,]+(?:n[º°o.]?\s*)?(\d{1,5}[a-z]?)(?![\d/])(.*)$/i.exec(text);
+  if (!m) return null;
+  const known = new Set(streetTokens(place.street));
+  const typedWords = streetTokens(m[1]);
+  if (!known.size || !typedWords.length || !typedWords.every((w) => nearStreetWord(w, known))) return null;
+  // O nome da rua tem de estar inteiro ("Paulista" e não só "Avenida"; "Augusta").
+  const covered = [...known].filter((k) => typedWords.some((w) => nearStreetWord(w, new Set([k]))));
+  if (covered.length < Math.min(known.size, 2) && covered.length < known.size) return null;
+  let tail = m[3].replace(/^[\s,;.-]+/, "");
+  const placeWords = new Set([...streetTokens(place.district), ...streetTokens(place.city), ...(place.uf ? [normalizeMsg(place.uf)] : [])]);
+  // Tira do fim bairro/cidade/UF do CEP; o que sobrar antes é o complemento.
+  const parts = tail.split(/\s*[,;-]\s*|\s+(?=[\p{Lu}])/u).map((p) => p.trim()).filter(Boolean);
+  const isPlace = (p: string) => {
+    const words = normalizeMsg(p).replace(/[^a-z0-9\s]/g, " ").split(" ").filter(Boolean);
+    return words.length > 0 && words.every((w) => placeWords.has(w) || STREET_WORDS.test(w) || w === "sp");
+  };
+  while (parts.length && isPlace(parts[parts.length - 1])) parts.pop();
+  tail = parts.join(" ").trim();
+  const complemento = tail ? parseAddressComplement(tail) : undefined;
+  if (tail && !complemento) return null;
+  const city = place.city ? `${place.city}${place.uf ? ` - ${place.uf}` : ""}` : "";
+  return [`${place.street}, ${m[2]}`, complemento, place.district, city].filter(Boolean).join(", ");
 }

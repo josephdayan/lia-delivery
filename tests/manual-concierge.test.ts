@@ -228,9 +228,10 @@ test("onboarding: endereço com CEP na mesma mensagem é salvo (não vira '1x ap
   assert.match(out, /Endere(ç|c)o salvo/i);
   // O texto do endereço nunca pode aparecer como item anotado.
   assert.doesNotMatch(out, /1x apto|1x Av|Já anotei/i);
-  // E vai pro courier como o cliente escreveu — com acento, maiúscula e vírgula.
+  // E vai pro courier com acento, maiúscula e vírgula. Rua digitada = rua do CEP (11/10, rodada 18 g50, decisão do
+  // Joseph): sai no formato do formulário de cadastro, com o complemento que o cliente escreveu.
   const user = await prisma.user.findUnique({ where: { phone } });
-  assert.equal(user?.defaultAddress, "Av. Paulista 1000, apto 5, Bela Vista, São Paulo");
+  assert.equal(user?.defaultAddress, "Avenida Paulista, 1000, apto 5, Bela Vista, São Paulo - SP");
   assert.equal(user?.cep, "01310-100");
 });
 

@@ -84,6 +84,14 @@ export function welcomeAskFullDeliveryAddress(notedItems?: string[]): string {
   return `${INTRO}${note}\n\nMe manda seu *endereço completo* com CEP — rua, número, bairro e cidade. Só peço uma vez. 📍`;
 }
 
+// Formulário de cadastro já mandado (11/10, rodada 18 g50): o "Anotei" segue, o pedido do cadastro vira lembrete do
+// botão acima — sem outro formulário a cada linha do pedido.
+export function signupFormReminder(body: string): string {
+  const noted = /✅ Anotei:[\s\S]*?(?=\n\n|$)|Já anotei:[\s\S]*?(?=\n\n|$)/.exec(body)?.[0]?.replace(/^Já anotei:/, "✅ Anotei:");
+  const nudge = "_Pra eu comprar, falta só o cadastro: é no botão *Fazer cadastro* da mensagem acima 👆 (ou me manda nome, CPF e endereço com CEP aqui)._";
+  return noted ? `${noted}\n\n${nudge}` : nudge;
+}
+
 // ---------- cadastro pelo formulário (06/10, dono: "pode pedir tudo direto no começo") ----------
 // Corpo da mensagem que leva o formulário nativo do WhatsApp (botão "Fazer cadastro"). O
 // pedido em texto de antes (welcomeAskFullDeliveryAddress) continua sendo o plano B.
@@ -983,6 +991,11 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
   return `⏰ Pra *${label}* não chega: ${none}${prazo ? ` — o mais rápido é *${prazo}*${fastest?.store ? ` (${fastest.store})` : ""}` : ""}. Se quiser, me diz outro item que eu procuro.`;
 }
 
+// O mesmo "não chega" já dito para outro item (11/10, rodada 18 g50): uma linha, sem repetir o aviso inteiro.
+export function choicesDeadlineAlsoLate(label: string, item: string): string {
+  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo.`;
+}
+
 // Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
 // pedido mas sem hora marcada (o cliente disse "de manhã" e a loja promete "1 dia útil").
 // "maybe" (10/10, rodada 16 g46): pelo calendário caberia, mas contando só dia útil (sem fim de semana e feriado) passa.
@@ -1628,6 +1641,27 @@ export function trustAnswer(): string {
 // era repetitivo (e com o corpo "Olha o que achei", parecia busca nova). Uma linha lembra a escolha.
 export function choicesStillOpen(query: string): string {
   return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
+}
+// Pergunta sobre o item JÁ escolhido (11/10, rodada 18 g50: "o vaso ficou de que cor? e o tamanho"): responde com o nome
+// do produto da cesta e o que o nome diz; o que o nome não diz, diz que não sabe (nunca inventa).
+export function chosenItemAnswer(input: { name: string; price: number; qty: number; storeLabel?: string; aspects: Array<"cor" | "tamanho" | "marca" | "loja" | "preco">; color?: string; size?: string; brand?: string }): string {
+  const head = `Na sua cesta está ${input.qty > 1 ? `${input.qty}x ` : ""}*${input.name}* — ${brl(input.price)}${input.storeLabel ? ` · _${input.storeLabel}_` : ""}.`;
+  const lines: string[] = [];
+  for (const aspect of input.aspects) {
+    if (aspect === "cor") lines.push(input.color ? `• Cor: *${input.color}* (pelo nome do produto)` : "• Cor: o nome do produto não diz a cor");
+    if (aspect === "tamanho") lines.push(input.size ? `• Tamanho: *${input.size}* (pelo nome do produto)` : "• Tamanho: o nome do produto não diz a medida");
+    if (aspect === "marca") lines.push(input.brand ? `• Marca: *${input.brand}*` : "• Marca: a loja não informa no nome");
+  }
+  const tail = lines.length ? `\n${lines.join("\n")}` : "";
+  return `${head}${tail}\nSe quiser trocar, é só dizer por qual.`;
+}
+// Medida da busca errada (11/10, rodada 18 g50: "o que são esses 6 litros? eu pedi 3,6"): a Lia assume o engano.
+export function measureMixupFixed(wrong: string, want: string): string {
+  return `Foi engano meu: anotei *${wrong}*, mas você pediu *${want}*. Procurei de novo com ${want}:`;
+}
+// "esquece isso, era só uma pergunta" sem nada novo anotado (11/10, rodada 18 g50): nada sai da cesta.
+export function notItemAck(): string {
+  return "Certo, não anotei nada disso — sua cesta continua igual.";
 }
 // "oi?"/"tá aí?" com a mesma vitrine recém-enviada (09/10, rodada 1): lembra em vez de reenviar.
 export function greetingChoicesStillOpen(query: string): string {
@@ -2404,6 +2438,10 @@ export function consolidationMinimumNote(kept: Array<{ store: string; min: numbe
   return `⚠️ ${parts.join("; ")}.`.replace(/^⚠️ m/, "⚠️ M").replace(/^⚠️ j/, "⚠️ J");
 }
 
+// "pode juntar" com a oferta de troca em carrossel na tela (11/10, rodada 18 g50): diz o que fazer nela.
+export function joinPickCardHint(item: string): string {
+  return `Pra juntar, toca em *Adicionar ao carrinho* no cartão de *${item}* que você quer (ele entra no lugar do que está na cesta) — ou diz *pula* pra manter como está.`;
+}
 // "junta" pedido por texto sem nada a juntar (10/10, rodada 5 A4): diz por quê; o total na mesa continua valendo.
 export function joinNotPossible(stores: number, storeLabel?: string): string {
   return storeLabel
@@ -4037,6 +4075,18 @@ export function storeAllSame(label: string): string {
 // nome do produto, e as opções de antes continuam.
 export function storeRefineMiss(label: string, item: string): string {
   return `Na *${label}* não achei *${item}* pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra palavra pra eu tentar, ou responde *pula* pra deixar de fora.`;
+}
+
+// "tem outro de marca? tipo boticário ou natura" (11/10, rodada 18 g51): a marca pedida do item da vez.
+export function brandAltChoices(item: string, brands: string[]): string {
+  return `Achei estas de *${item}* da ${joinOr(brands)}:`;
+}
+export function brandAltMiss(item: string, brands: string[]): string {
+  return `Não achei *${item}* da ${joinOr(brands)} pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra marca, ou responde *pula* pra deixar de fora.`;
+}
+function joinOr(brands: string[]): string {
+  const shown = brands.map((b) => `*${b}*`);
+  return shown.length > 1 ? `${shown.slice(0, -1).join(", ")} ou ${shown[shown.length - 1]}` : shown[0] ?? "";
 }
 
 export function storeNoneOnTable(label: string): string {

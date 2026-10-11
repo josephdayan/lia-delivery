@@ -221,7 +221,7 @@ export async function runDialogueTurn(input: DialogueTurnInput): Promise<PlanOut
     }
     // O gerente já classificou a mensagem: o roteador de fallback (outra chamada de IA) não repete.
     if (meta) meta.llmUsed = true;
-    const plan = planActions(decision, state, { text: input.text });
+    const plan = planActions(decision, state, { text: input.text, recentRefusal: input.ctx.medicineRefusedAt != null && Date.now() - input.ctx.medicineRefusedAt < 60 * 60_000 });
     if (!plan.ok) {
       console.log(`[dialogue] ação=${decision.actions.map((a) => a.type).join("+")} ms=${modelMs} motivo=invalida:${plan.reason}`);
       return { kind: "fallthrough", reason: plan.reason };

@@ -261,6 +261,9 @@ export const turnMeta = new AsyncLocalStorage<{
   prevSent?: string[];
   sent?: string[];
   skipDialogue?: boolean;
+  // Pedido marcado urgente (ctx.urgent, 11/10, rodada 18 g50): a vitrine avisa por item mesmo quando o texto do turno já
+  // veio sem o "urgente" (pedido guardado antes do cadastro).
+  urgentOrder?: boolean;
   // Telefone do cliente deste turno (08/10): a recomendação em modo "test" só vale para dono/admins.
   phone?: string;
   // Edição composta (10/10, rodada 5 M2/M6): o total/oferta de juntar só sai depois da ÚLTIMA edição da mensagem.

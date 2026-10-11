@@ -265,7 +265,8 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
   }
 
   // "essa ração serve pra filhote?", "é boa pra gato?", "pode dar pra cachorro idoso?"
-  const serves = n.match(/\b(?:serve|servem|vale|pode|posso dar|da pra|e (?:boa|bom|ideal|indicad[oa]|segur[oa])|eh (?:boa|bom|ideal|indicad[oa]))\b.*\b(?:pra|para|p|pro|a)\s+(.*)$/);
+  // "tem alguma que sirva pra filhote?" (11/10, rodada 18 g51): o subjuntivo também é a pergunta do público.
+  const serves = n.match(/\b(?:serve|servem|sirva|sirvam|serviria|vale|pode|posso dar|da pra|e (?:boa|bom|ideal|indicad[oa]|segur[oa])|eh (?:boa|bom|ideal|indicad[oa]))\b.*\b(?:pra|para|p|pro|a)\s+(.*)$/);
   if (serves) {
     for (const [tag, re] of AUDIENCE_ASK) if (re.test(serves[1])) return { kind: "audience", tag };
   }
@@ -414,4 +415,56 @@ function nameSays(name: string, word: string): boolean {
 // Termos que só fazem sentido em alimento humano: em ração/petisco a pergunta "tem sem lactose?" não se aplica.
 export function isPetFood(options: ProductOption[]): boolean {
   return options.length > 0 && options.every((o) => /\b(racao|petisco|sache|areia|bifinho|osso)\b/.test(normalizeMsg(o.name)));
+}
+
+// Pergunta sobre um item JÁ ESCOLHIDO (11/10, rodada 18 g50): "o vaso ficou de que cor? e o tamanho" com o vaso na cesta
+// e o regador na tela virava dois itens ("o vaso ficou de que cor", "o tamanho") e cartão de vasos aleatórios. Aqui: a
+// mensagem pergunta cor/tamanho/marca/loja/preço e cita um item da cesta pelo nome (só um) → índice + o que foi perguntado.
+export type ChosenAspect = "cor" | "tamanho" | "marca" | "loja" | "preco";
+const CHOSEN_ASPECT_RE: Array<[ChosenAspect, RegExp]> = [
+  ["cor", /\b(?:cor|cores|colorid[oa])\b/],
+  ["tamanho", /\b(?:tamanho|medida|medidas|altura|largura|diametro|quantos? (?:litros?|cm|centimetros?|ml|kg|gramas?|metros?)|qual (?:o )?numero|de que numero)\b/],
+  ["marca", /\b(?:marca|fabricante)\b/],
+  ["loja", /\b(?:loja|de onde (?:vem|e))\b/],
+  ["preco", /\b(?:preco|quanto (?:custa|ficou|deu|foi|e))\b/]
+];
+const CHOSEN_STOP = new Set(["que", "qual", "quais", "ficou", "fica", "esta", "era", "voce", "escolheu", "escolhi", "pegou", "peguei", "esse", "essa", "aquele", "aquela", "isso", "cor", "cores", "tamanho", "medida", "marca", "loja", "preco", "quanto", "custa", "tem", "como", "sobre", "pra", "para", "mim", "meu", "minha", "dele", "dela", "numero", "ele", "ela"]);
+export function parseChosenItemQuestion(text: string, basketNames: string[]): { index: number; aspects: ChosenAspect[] } | null {
+  if (!basketNames.length) return null;
+  const n = normalizeMsg(text).replace(/[!.\s]+$/g, "").trim();
+  if (!n || n.length > 120) return null;
+  const asks = /\?/.test(text) || /^(?:e )?(?:qual|quais|de que|que|como|quanto)\b/.test(n) || /\bficou de que\b/.test(n);
+  if (!asks) return null;
+  // Pedido de troca/compra ("quero de outra cor", "tem de cor azul?") é refinamento, não pergunta sobre o escolhido.
+  if (/\b(?:quero|queria|prefiro|troca|trocar|muda|mudar|outra|outro|tem (?:de|em|na|no))\b/.test(n)) return null;
+  const aspects = CHOSEN_ASPECT_RE.filter(([, re]) => re.test(n)).map(([a]) => a);
+  if (!aspects.length) return null;
+  const stem = (t: string) => (t.length >= 4 ? t.replace(/s$/, "") : t);
+  const words = n.split(/[^a-z0-9]+/).filter((t) => t.length >= 3 && !CHOSEN_STOP.has(t)).map(stem);
+  if (!words.length) return null;
+  const hits = basketNames
+    .map((name, index) => ({ index, tokens: new Set(normalizeMsg(name).split(/[^a-z0-9]+/).map(stem)) }))
+    .filter(({ tokens }) => words.some((w) => tokens.has(w)));
+  return hits.length === 1 ? { index: hits[0].index, aspects } : null;
+}
+
+// O que o NOME do produto diz da cor e do tamanho (nunca inventa: sem pista, `undefined`).
+const COLOR_WORDS = "preto|preta|branco|branca|cinza|chumbo|grafite|prata|dourado|dourada|bege|creme|marrom|caramelo|argila|terracota|telha|cobre|verde|azul|vermelho|vermelha|rosa|pink|roxo|roxa|lilas|amarelo|amarela|laranja|vinho|bordo|transparente|natural|calcario|areia|nude|colorido|colorida|sortido|sortida";
+const COLOR_RE = new RegExp(`\\b(${COLOR_WORDS})\\b`, "g");
+export function nameColor(name: string): string | undefined {
+  const found = [...new Set([...normalizeMsg(name).matchAll(COLOR_RE)].map((m) => m[1]))];
+  if (!found.length) return undefined;
+  const raw = name.split(/[\s,()/-]+/);
+  // Como está escrito no nome ("Argila"), não normalizado.
+  return found.map((c) => raw.find((w) => normalizeMsg(w) === c) ?? c).join(" / ");
+}
+export function nameSize(name: string): string | undefined {
+  const pote = /\b(?:pote|n[º°o]\.?|numero|tam(?:anho)?\.?)\s*(\d{1,3})\b/i.exec(name);
+  const measures = measuresOf(name).filter((m) => m.unit !== "un");
+  const parts = [...(pote ? [pote[0].trim()] : []), ...measures.map((m) => m.label)];
+  if (!parts.length) {
+    const size = /\b(pequen[oa]|medi[oa]|grande|mini|gigante)\b/.exec(normalizeMsg(name));
+    if (size) parts.push(size[1]);
+  }
+  return parts.length ? [...new Set(parts)].join(", ") : undefined;
 }

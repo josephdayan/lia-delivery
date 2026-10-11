@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms } from "../lia-intents";
+import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms, relaxAnyAttribute } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
@@ -156,7 +156,10 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
         said,
         (l) => l.query,
         (l, label) => ({ ...l, query: label })
-      ).map((l) => (inheritCap != null && parsePriceCap(l.query) == null ? { ...l, query: `${l.query} até ${Math.floor(inheritCap)} reais` } : l));
+      )
+        // "de qualquer material" (11/10, rodada 18 g51): o atributo liberado sai da busca da IA ("poleiro material").
+        .map((l) => ({ ...l, query: relaxAnyAttribute(l.query, said) }))
+        .map((l) => (inheritCap != null && parsePriceCap(l.query) == null ? { ...l, query: `${l.query} até ${Math.floor(inheritCap)} reais` } : l));
       let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.
