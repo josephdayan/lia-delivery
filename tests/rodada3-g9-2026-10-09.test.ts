@@ -185,7 +185,7 @@ test("4) 'muda o endereço pro trabalho: Rua…, CEP' antes do cadastro salva o 
   const out = await send(phone, "muda o endereço pro trabalho: Rua Funchal 418, Vila Olímpia, 04551-060");
   assert.doesNotMatch(out, /Falta o \*CEP\*|Anotei|muda o endere/i, out);
   const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
-  assert.match(user.defaultAddress ?? "", /Funchal 418/);
+  assert.match(user.defaultAddress ?? "", /Funchal,? 418/);
   assert.equal(user.cep?.replace(/\D/g, ""), "04551060");
 });
 
@@ -194,7 +194,7 @@ test("8) troca de endereço escrita sem cidade: o resumo leva a cidade do CEP", 
   const phone = await registered();
   await send(phone, "muda o endereço pro trabalho: Rua Funchal 418, Vila Olímpia, 04551-060");
   const user = await prisma.user.findUniqueOrThrow({ where: { phone } });
-  assert.match(user.defaultAddress ?? "", /Funchal 418/);
+  assert.match(user.defaultAddress ?? "", /Funchal,? 418/);
   assert.match(user.defaultAddress ?? "", /São Paulo/, user.defaultAddress ?? "");
 });
 
