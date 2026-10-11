@@ -26,6 +26,8 @@ type Pair = {
   has: RegExp;
   // Nome curto do gatilho (log e teste).
   trigger: string;
+  // Cesta com este contexto não recebe o par (11/10, rodada 19 g53: "Pão pede uma manteiga" num churrasco).
+  notWithBasket?: RegExp;
 };
 
 export function normComplement(input: string | undefined | null): string {
@@ -53,7 +55,7 @@ export const COMPLEMENT_PAIRS: readonly Pair[] = [
   { trigger: "macarrão", when: /\b(macarrao|espaguete|spaghetti|penne|parafuso|talharim|fettuccine|massa para lasanha|lasanha massa|nhoque|rigatoni|fusilli)\b/, unless: /\binstantaneo|miojo|cup noodles|lamen\b/, query: "molho de tomate", shelfId: "mercado.molho_tomate", why: "Quem leva macarrão costuma levar molho de tomate 🍝", has: /\b(molho de tomate|molho tomate|extrato de tomate|polpa de tomate|passata|molho pronto|pomarola|tomate pelado)\b/ },
   { trigger: "molho de tomate", when: /\b(molho de tomate|molho tomate|pomarola|passata|polpa de tomate)\b/, query: "macarrao espaguete", shelfId: "mercado.macarrao", why: "Molho de tomate pede um macarrão 🍝", has: /\b(macarrao|espaguete|penne|parafuso|talharim|nhoque|lasanha)\b/ },
   { trigger: "café", when: /\bcafe\b/, unless: /\b(capsula|capsulas|soluvel|cafeteira|cappuccino|capuccino|filtro|dolce gusto|nespresso|tres coracoes capsula|com leite|gelado|bebida)\b/, query: "filtro de papel para cafe", shelfId: "produto", why: "Quem leva café em pó costuma levar filtro de papel ☕", has: /\bfiltro\b/ },
-  { trigger: "pão", when: /\b(pao frances|pao de forma|pao forma|bisnaguinha|pao integral|pao de leite|pao sovado|pao caseiro|pao italiano|baguete)\b/, query: "manteiga", shelfId: "frios.requeijao_manteiga", why: "Pão pede uma manteiga 🧈", has: /\b(manteiga|margarina|requeijao|cream cheese)\b/ },
+  { trigger: "pão", when: /\b(pao frances|pao de forma|pao forma|bisnaguinha|pao integral|pao de leite|pao sovado|pao caseiro|pao italiano|baguete)\b/, unless: /\bpao de alho\b/, notWithBasket: /\b(carvao|picanha|fraldinha|alcatra|maminha|cupim|costela|linguica toscana|linguica para churrasco|kit churrasco|pao de alho)\b/, query: "manteiga", shelfId: "frios.requeijao_manteiga", why: "Pão pede uma manteiga 🧈", has: /\b(manteiga|margarina|requeijao|cream cheese)\b/ },
   { trigger: "torrada", when: /\btorrada/, query: "requeijao", shelfId: "frios.requeijao_manteiga", why: "Torrada combina com requeijão 😋", has: /\b(manteiga|margarina|requeijao|cream cheese|geleia)\b/ },
   { trigger: "ração de cachorro", when: /\bracao\b.*\b(cao|caes|cachorro|cachorros|dog|canin\w*|adulto raca|filhote raca)\b|\b(pedigree|golden formula|premier pet|special dog|dog chow|biofresh|guabi natural)\b/, unless: /\bgat|\b(petisco|bifinho|snack|dentastix|osso)\b/, query: "petisco cachorro", shelfId: "pet.petisco_cachorro", why: "Quem leva ração costuma levar um petisco pro cachorro 🐶", has: PET_TREAT_RE },
   { trigger: "ração de gato", when: /\bracao\b.*\b(gato|gatos|felin\w*|cat)\b|\b(whiskas|cat chow|friskies|gran plus gato|golden gatos)\b/, unless: /\b(petisco|sache|snack|churu|dreamies)\b/, query: "petisco gato", shelfId: "pet.petisco_gato", why: "Quem leva ração costuma levar um petisco pro gato 🐱", has: /\b(petisco|sache|churu|dreamies|snack|bifinho|stick|sticks)\b/ },
@@ -111,6 +113,7 @@ export function suggestComplement(
     // Item de pet só dispara par de pet; par de comida/higiene humana nunca olha item de pet.
     const triggered = names.some((n) => pair.when.test(n) && !(pair.unless?.test(n) ?? false) && (PET_ITEM_RE.test(n) ? petPair : true));
     if (!triggered) continue;
+    if (pair.notWithBasket && names.some((n) => pair.notWithBasket!.test(n))) continue;
     // "Já tem": olha os OUTROS itens (o próprio gatilho "pão de hambúrguer" contém "hambúrguer").
     if (names.some((n) => !pair.when.test(n) && pair.has.test(n))) continue;
     if (declined.has(normComplement(pair.query)) || declined.has(normComplement(pair.shelfId))) continue;
