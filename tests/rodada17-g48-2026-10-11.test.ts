@@ -1,7 +1,7 @@
 // Rodada 17, grupo G48 (11/10): prazo por hora, pergunta no meio da cesta, cadastro + pedido na 1ª mensagem e orçamento,
 // de /mnt/project-files/testes-whatsapp/rodada17/grupo-b.md (R17-1, R17-3, R17-4, R17-10, R17-13).
 import "./helpers/load-env";
-import { test } from "node:test";
+import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { parseBasketLines, parseNeededBy, parseNeededHour } from "../src/lib/lia-intents";
 import { deadlineFit, deadlineVerdict, promiseHourFit, promiseMissesDeadline } from "../src/lib/live-freight";
@@ -82,4 +82,97 @@ test("R17-1: a vitrine separa quem chega, quem pode chegar e quem atrasa; a copy
   assert.match(join ?? "", /juntando pode chegar a tempo/);
   // O aviso de prazo por item é o mesmo modelo para cada item: a guarda anti-repetição não pode reescrever.
   assert.equal(isRepeatableVerbatim("⏰ Você precisa pra *amanhã às 7h*: de *presunto*, só *Mambo* pode chegar a tempo (a janela de entrega começa antes) — as outras opções demoram mais."), true);
+});
+
+// ---------------- conversa pelo caminho real ----------------
+
+const PREFIX = `+5548${String(Date.now()).slice(-5)}${String(process.pid).slice(-2)}`;
+const RUN = `${Date.now().toString(36)}${process.pid}`;
+const ADDRESS = "Avenida Paulista, 1000, Bela Vista, São Paulo - SP";
+let seq = 0;
+let dbOk = false;
+const outbox: { to: string; text: string }[] = [];
+type Mods = {
+  prisma: typeof import("../src/lib/prisma").prisma;
+  service: typeof import("../src/lib/delivery-service");
+  live: typeof import("../src/lib/live-availability");
+  stores: typeof import("../src/lib/stores");
+  freight: typeof import("../src/lib/live-freight");
+};
+let m: Mods;
+async function wipe() {
+  const users = await m.prisma.user.findMany({ where: { phone: { startsWith: PREFIX } }, select: { id: true } });
+  const ids = users.map((u) => u.id);
+  if (!ids.length) return;
+  await m.prisma.message.deleteMany({ where: { conversation: { userId: { in: ids } } } });
+  await m.prisma.deliveryOrder.deleteMany({ where: { userId: { in: ids } } });
+  await m.prisma.conversation.deleteMany({ where: { userId: { in: ids } } });
+  await m.prisma.user.deleteMany({ where: { id: { in: ids } } });
+}
+before(async () => {
+  const { prisma } = await import("../src/lib/prisma");
+  const { whatsappAdapter } = await import("../src/lib/adapters/whatsapp");
+  m = { prisma, service: await import("../src/lib/delivery-service"), live: await import("../src/lib/live-availability"), stores: await import("../src/lib/stores"), freight: await import("../src/lib/live-freight") };
+  const adapter = whatsappAdapter as unknown as Record<string, unknown>;
+  for (const key of Object.keys(adapter)) {
+    if (typeof adapter[key] !== "function" || !key.startsWith("send")) continue;
+    adapter[key] = async (to: string, ...rest: unknown[]) => {
+      outbox.push({ to, text: rest.map((r) => (typeof r === "string" ? r : JSON.stringify(r))).join("\n") });
+      return key === "sendMessage" || key === "sendMedia" ? { provider: "test", to } : null;
+    };
+  }
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+    await wipe();
+  } catch (error) {
+    if (process.env.LIA_REQUIRE_DB === "1") throw error;
+  }
+});
+after(async () => {
+  m.live.__setLiveSimulateForTests(null);
+  m.freight.__setPreflightForTests(null);
+  if (dbOk) await wipe();
+  await m.prisma.$disconnect();
+});
+async function send(phone: string, text: string): Promise<string> {
+  const start = outbox.length;
+  await m.service.runTurnScoped(() => m.service.handleDeliveryMessage({ phone, text, messageId: `g48_${RUN}_${++seq}` }));
+  return outbox.slice(start).filter((o) => o.to === phone).map((o) => o.text).join("\n---\n");
+}
+async function customer(ctxExtra: Record<string, unknown> = {}, step = "collecting"): Promise<string> {
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  const user = await m.prisma.user.create({ data: { phone, cep: "01310-100", defaultAddress: ADDRESS, name: "Maria da Silva", cpf: "52998224725", cpfName: "Maria da Silva" } });
+  await m.prisma.conversation.create({
+    data: { userId: user.id, status: "active", currentStep: step, context: JSON.stringify({ flow: "delivery", step, cep: "01310-100", deliveryAddress: ADDRESS, deliveryAddressVerified: true, storeKey: "concierge", ...ctxExtra }) }
+  });
+  return phone;
+}
+
+// Na produção foi o açúcar 2kg (as de 2 kg caíam na conferência da loja); no catálogo de teste, o arroz tem 2, 1 e 5 kg.
+test("R17-3: 'arroz 2kg' com o de 2 kg indisponível no CEP oferece o tamanho vizinho (o mais perto), nunca 'não achei'", async (t) => {
+  if (!dbOk) return t.skip();
+  m.freight.__setPreflightForTests(async () => null);
+  const pool = await m.stores.gatherCrossStoreCandidates("arroz 2kg", 12, 4);
+  const twoKg = new Set(pool.filter((c) => /\b2\s?kg\b/i.test(c.item.name)).map((c) => c.item.sku));
+  if (!twoKg.size || !pool.some((c) => /\b1\s?kg\b/i.test(c.item.name))) return t.skip("catálogo sem arroz de 1 e 2 kg");
+  m.live.__setLiveSimulateForTests(
+    async (_store, skus) => new Map(skus.map((sku) => [sku, twoKg.has(sku) ? { sku, available: false } : { sku, available: true, estimate: "1bd", etaMinutes: 1440, fee: 9.9 }])),
+    () => true
+  );
+  try {
+    const phone = await customer();
+    const out = await send(phone, "arroz 2kg");
+    assert.doesNotMatch(out, /n[aã]o achei em nenhuma|não consigo comprar/i, out.slice(0, 900));
+    assert.match(out, /mais perto que tenho é de (?:1|5) kg/i, out.slice(0, 900));
+    assert.doesNotMatch(out, /2\s?kg"/i, "nenhum card de 2 kg (indisponível)");
+  } finally {
+    m.live.__setLiveSimulateForTests(null);
+    m.live.__clearLiveCheckCacheForTests();
+  }
+});
+
+test("R17-3: 'tem X e Y?' no meio da escolha responde 'Tem sim' antes de anotar", () => {
+  assert.match(copy.queuedItemsNote(["açúcar", "sabão em pó"], true), /^Tem sim! Anotei \*açúcar\*, \*sabão em pó\*/);
+  assert.match(copy.queuedItemsNote(["açúcar"]), /^Anotei \*açúcar\*/);
 });

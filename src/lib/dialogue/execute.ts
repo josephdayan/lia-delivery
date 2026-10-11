@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms } from "../lia-intents";
+import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts } from "../list-items";
@@ -540,10 +540,18 @@ async function searchDuringChoice(env: ExecEnv, text: string, replace: boolean) 
   if (dropped) notes.push(copy.choiceSkipped(dropped));
   if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
   // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-  if (!dropped && !refinedCurrent && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query))));
+  // "tem açúcar e sabão em pó?" (11/10, rodada 17 g48): a pergunta é respondida ("Tem sim"), não só anotada.
+  const said = turnMeta.getStore()?.inboundText ?? text;
+  const askedHave = /^(?:e\s+)?(?:(?:voces?|vcs?|vc)\s+)?(?:tem|teria|vende|vendem)\b/.test(normalizeMsg(said)) && said.includes("?");
+  if (!dropped && !refinedCurrent && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => h.withoutStoreMention(p.query)), askedHave));
   for (const q of corrected) notes.push(copy.correctedQueuedItem(h.withoutStoreMention(q)));
   if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
   if (notes.length) await reply(phone, notes.join("\n"));
+  // "… e quanto fica no total?" junto: o parcial responde e lembra a escolha aberta (sem reenviar os cards).
+  if (asksRunningTotal(said)) {
+    await h.replyRunningTotal(phone, ctx);
+    return;
+  }
   await h.sendChoices(phone, ctx.pending[0]);
 }
 

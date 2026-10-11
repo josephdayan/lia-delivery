@@ -486,13 +486,33 @@ async function buildChoices(
       let sizeSplit = false;
       const bestScore = Math.max(0, ...candidates.map((c) => scoreCatalogMatch(searchPhrase, c.item)));
       const sizeAsk = searchPhrase.match(/\d+(?:[.,]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/i)?.[0];
+      // Tamanho vizinho (11/10, rodada 17 g48, R17-3/R17a-3): os outros tamanhos do MESMO produto ficam de reserva — a loja
+      // derruba o de 2 kg ou a IA recusa o único de 1 kg (tira-manchas no "sabão em pó 1kg") e o cliente ouvia "não achei
+      // açúcar 2kg" com o de 1 kg na prateleira. Só entram se nenhum do tamanho pedido sobrar (com o aviso do "mais perto").
+      const sizeReserve = new Set<string>();
       if (sizeAsk) {
-        const relevant = candidates.filter((c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }));
+        let relevant = candidates.filter((c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }));
+        // A busca com o peso só trouxe outro produto ("ração coelho filhote 1,5kg" → ração de cão e gato de 1 kg): busca de
+        // novo sem o peso — a de coelho de 500 g aparece e vira o "mais perto" com quantos pacotes dão o pedido.
+        if (!relevant.length && crossStore) {
+          const bare = searchPhrase.replace(/\d+(?:[.,§]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/gi, " ").replace(/(?:^|\s)[\d.,§]+(?=\s|$)/g, " ").replace(/\s+/g, " ").trim();
+          if (/[a-zà-ú]{3}/i.test(bare)) {
+            let more = (await gatherCrossStoreCandidates(bare, 12, 4)).filter((c) => conciergeMatchIsStrong(bare, c.item, { allTokens: true }));
+            if (cap != null) more = more.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
+            if (more.length) {
+              console.log("[size:bare-search]", searchPhrase, "→", bare, more.length);
+              candidates = more;
+              relevant = more;
+            }
+          }
+        }
         const isWeight = /(kg|g)$/i.test(sizeAsk.replace(/\s+/g, ""));
         const fits = (c: StoreCandidate) => attrMatchesItem(sizeAsk, c.item) || (isWeight && /\bkg\.?$/i.test(c.item.name.trim()));
         const sized = relevant.filter(fits);
         if (sized.length) {
-          candidates = sized;
+          const reserve = relevant.filter((c) => !fits(c)).slice(0, 6);
+          for (const c of reserve) sizeReserve.add(`${c.store.key}:${c.item.sku}`);
+          candidates = [...sized, ...reserve];
           sizeOk = (c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }) && fits(c);
         }
         else {
@@ -635,7 +655,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, unanswered, sizeSplit, cheapAsk };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, unanswered, sizeSplit, cheapAsk, sizeReserve };
     })
   );
 
@@ -727,6 +747,7 @@ async function buildChoices(
     let options: StoreCandidate[] = chosen
       ? chosen.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c))
       : diversifyOptions(line.phrase, fallbackPool.map((c) => c.item), vitrineLimit()).map((item) => bySku.get(item.sku)!);
+
     // Ninguém cumpre tudo o que o cliente pediu (tamanho, sabor…) mas há produto do tipo certo:
     // vira escolha com o aviso da diferença; nunca entra na cesta sem o cliente tocar.
     let closestFalta: string | undefined;
@@ -735,6 +756,10 @@ async function buildChoices(
       options = closest.skus.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c));
       closestFalta = options.length ? closest.falta : undefined;
     }
+    // Tamanho pedido na vitrine: a reserva de outros tamanhos sai (rodada 7: todos os cards no tamanho pedido); só sem
+    // nenhum do tamanho ela fica, e o aviso do "mais perto" (sizeGapFor, abaixo) diz a diferença.
+    const inReserve = (c: StoreCandidate) => entry.sizeReserve.has(`${c.store.key}:${c.item.sku}`);
+    if (entry.sizeReserve.size && options.some((c) => !inReserve(c))) options = options.filter((c) => !inReserve(c));
     // Remédio (dono, 08/10): marca sem estoque, ou só o genérico na prateleira → o equivalente de
     // MESMO princípio ativo vira "o mais perto que tenho", nunca como se fosse o pedido. Os
     // candidatos já passaram pela checagem ao vivo; a reserva veio de gatherCrossStoreCandidates.
@@ -8637,12 +8662,7 @@ async function handleChoosing(
 
   // "quanto deu tudo?" no meio das escolhas → parcial honesto e volta pras opções.
   if (asksRunningTotal(text)) {
-    const items = basketForCopy(ctx);
-    const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
-    // não se repete em falas seguidas (rodada 2).
-    const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
-    await reply(phone, choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
+    await replyRunningTotal(phone, ctx);
     return;
   }
 
@@ -13750,7 +13770,21 @@ async function replyBasketList(phone: string, ctx: DeliveryContext) {
   await replyBasketAdjusted(phone, body, `${body}\n\nDiz *pagar* que eu fecho, ou me manda o que mudar.`);
 }
 
+// "quanto deu tudo?" no meio das escolhas: o parcial e uma linha que lembra a escolha aberta.
+// Também depois de anotar item novo pedido na mesma fala ("tem açúcar e sabão em pó? e quanto fica no total?", 11/10,
+// rodada 17 g48: a pergunta do total ficava sem resposta).
+async function replyRunningTotal(phone: string, ctx: DeliveryContext) {
+  const items = basketForCopy(ctx);
+  const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
+  // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
+  // não se repete em falas seguidas (rodada 2).
+  const partial = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
+  const current = ctx.pending?.[0];
+  await reply(phone, current && choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
+}
+
 export const dialogueHandlers = {
+  replyRunningTotal,
   replyRefineMiss,
   replyBasketList,
   continueAfterBasket,

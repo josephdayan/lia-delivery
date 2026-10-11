@@ -2530,8 +2530,9 @@ export function nonePriceCap(cap: number): string {
 
 // Item novo anotado ENQUANTO o cliente ainda escolhe outro — sem isto o item entra
 // mudo na fila e o cliente acha que a Lia ignorou.
-export function queuedItemsNote(queries: string[]): string {
-  return `Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
+export function queuedItemsNote(queries: string[], askedHave = false): string {
+  // "tem açúcar e sabão em pó?" (11/10, rodada 17 g48): responde a pergunta antes de anotar.
+  return `${askedHave ? "Tem sim! " : ""}Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
 }
 
 // "*caixinhas de 1 litro, longa vida" corrigiu um item que ainda está na fila (10/10, rodada 6 M5).
