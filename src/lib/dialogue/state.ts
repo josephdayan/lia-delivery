@@ -54,7 +54,10 @@ export function buildDialogueState(ctx: DeliveryContext, opts: { hasAddress: boo
   const last = !choosing ? ctx.lastChoice : undefined;
   const ultimaEscolha = last ? { item: last.query, opcoes: last.options.map((o, i) => optionView(o, i + 1, last.chosenSku)) } : null;
 
-  const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
+  // A faltante da lista também conta (11/10, rodada 23 g64, R23-2): o item que a loja recusou no fechamento fica em
+  // `listMisses`, e "tenta de novo" com o total na mesa virava "o que você quer tentar de novo?".
+  const listMiss = (ctx.listMisses ?? []).filter((m) => Date.now() - m.at < 20 * 60_000).slice(-1)[0];
+  const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : listMiss;
   const freight = ctx.step === "choosing_freight" ? ctx.freightChoice : undefined;
 
   return {

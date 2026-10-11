@@ -90,7 +90,8 @@ const ATTR_WORDS = new Set(
 const MEASURE_RE = /^\d+(?:[.,]\d+)?(?:l|lt|ml|kg|g|mg|un|cm|mm|m|v|w|gb|tb|pol)?$/;
 
 const SHARE_MARK = "\u0006";
-const SEP_RE = /(\s+e\s+|\s*\+\s*|\s+\/\s+|\s+&\s+)/i;
+// "Basic+ Care Baby" (11/10, rodada 23 g65): o "+" colado no fim da palavra é da marca.
+const SEP_RE = /(\s+e\s+|\s+\+\s*|\+(?=\S)|\s+\/\s+|\s+&\s+)/i;
 const LEADING_QTY_RE = /^(?:\d+\s*(?:x|un|unidades?)?|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|meia\s+duzia(?:\s+de)?|duzia(?:\s+de)?)(?:\s+|$)/;
 const COMMAND_RE = /^(?:esquece|esqueci|tira|corta|cancela|deixa|nao|alias|na verdade|pensando|mais|outr[oa]s?)\b/;
 

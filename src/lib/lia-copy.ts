@@ -724,6 +724,11 @@ export function noneTodayHeader(query: string): string {
   return `Nada chega hoje para *${query}* nas lojas que consigo confirmar. O mais rápido que tenho:`;
 }
 
+// Do 2º item sem entrega hoje em diante (11/10, rodada 23 g65, R23a-5): o aviso já foi dado, só o item e o mais rápido.
+export function noneTodayAgainHeader(query: string): string {
+  return `Agora *${query}* (também sem entrega hoje) — o mais rápido:`;
+}
+
 // Abertura da vitrine (dono, 05/10: "só põe um olha o que achei e esse emojizinho").
 export function choicesHeader(_query: string): string {
   return "Olha o que achei 👇";
@@ -786,6 +791,8 @@ export function moreChoicesHeader(query: string): string {
 }
 
 export function priceSortedHeader(query: string, cheapest: boolean): string {
+  // Rótulo de recomendação ("pra dor de garganta", 11/10, rodada 23 g65, R23a-3): "As mais baratas de *pra dor…*" não fecha.
+  if (/^(?:pra|para|pro)\s/i.test(query.trim())) return cheapest ? `As opções mais em conta ${query.trim()}:` : `As opções mais caras ${query.trim()}:`;
   return cheapest ? `As mais baratas de *${query}*:` : `As mais caras de *${query}*:`;
 }
 
@@ -2093,6 +2100,11 @@ export function weightConversionNote(askedKg: number, unitKg: number, units: num
   return `_Vendido por unidade de ~${weightLabel(unitKg)}: coloquei ${units} ${units === 1 ? "unidade" : "unidades"} (~${weightLabel(units * unitKg)}) pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar. Pra mudar, é só dizer o número de unidades._`;
 }
 
+// "sim, deixa 2 kg" quando a cesta já tem esse peso (11/10, rodada 23 g64, R23-3): diz o que está lá, sem mexer.
+export function weightAlreadyMatches(name: string, units: number, unitKg: number, askedKg: number): string {
+  return `Já está assim 👍 *${units}x ${name}* dá ~${weightLabel(units * unitKg)} pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar.`;
+}
+
 // Embalagem que NÃO fecha com o número pedido (07/10, c28): pergunta antes de pôr na cesta.
 export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
   const total = packs * packSize;
@@ -2334,6 +2346,13 @@ export function categoryRemoveUnknown(category: string): string {
 // "n" na pergunta de quantidade: 1 unidade + a saída honesta (28/08 S16).
 // Demonstrativo sem substantivo ("quero 2 desse") COM opções na mesa: a resposta é
 // perguntar qual, não buscar a palavra "desse" (caso real 15/09, depois de uma foto).
+// "essa mesma" / "pode ser essa" com vários cards (11/10, rodada 23 g65, R23a-2): pergunta QUAL, com os números e nomes curtos
+// (antes: "As opções continuam aí em cima" ou "Não peguei qual você quer").
+export function demonstrativeWhich(names: string[]): string {
+  const short = (name: string) => name.replace(/\s*\(.*?\)\s*/g, " ").split(/\s+/).slice(0, 5).join(" ");
+  return `Qual delas? Me diz o número 🙂\n${names.slice(0, 6).map((n, i) => `*${i + 1}* — ${short(n)}`).join("\n")}`;
+}
+
 export function demonstrativeNeedsChoice(): string {
   return "De qual deles? 🙂 Toca em *Adicionar ao carrinho* no card que você quer — ou me diz o número.";
 }
@@ -3470,11 +3489,14 @@ export function slowDeliveryNote(store: string, promise: string): string {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap" | "minimum",
+  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap" | "minimum" | "hot_meal",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean; place?: string }
 ): string {
   switch (topic) {
+    case "hot_meal":
+      // (11/10, rodada 23 g65, R23-9) "vocês entregam marmita pronta quentinha? ou só congelada?"
+      return "Quentinha pronta, feita na hora, eu não tenho — compro em mercado, farmácia e lojas, então de marmita são as *congeladas* ou *refrigeradas*, é só esquentar 🙂";
     case "area":
       // Bairro/zona da capital citado (10/10, rodada 16 g46: "vcs entregam na zona leste? moro no tatuape"): responde o lugar.
       if (ctx?.place) return `Entrego em toda a cidade de São Paulo — ${ctx.place} incluído 📍 ${ctx.hasCep ? "Seu endereço já está salvo; pra conferir outro, me manda o CEP." : "Me manda seu *CEP* que eu confirmo o endereço."}`;
@@ -4060,13 +4082,18 @@ export function itemsNotDeliverableAtNewAddress(items: string[]): string {
 }
 
 // Sem operador (25/09): o que a loja não confirma para o endereço é dito na hora, sem espera.
-export function itemsNotDeliverableHere(items: string[], closingRest: boolean): string {
+export function itemsNotDeliverableHere(items: string[], closingRest: boolean, canRetry = false): string {
   const what = items.length === 1 ? `*${items[0]}*` : items.map((i) => `• ${i}`).join("\n");
   const head = items.length === 1
     ? `Não tenho ${what} para entregar no seu endereço agora — a loja não confirmou estoque ou entrega.`
     : `Não tenho estes itens para entregar no seu endereço agora — a loja não confirmou estoque ou entrega:\n${what}`;
   const again = items.length === 1 ? "esse item" : "esses itens";
-  return closingRest ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, é só me pedir de novo.` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
+  // Cesta inteira recusada (11/10, rodada 23 g65, R23-6): a lista fica guardada; o cliente pode tirar um item e tentar de novo.
+  if (!closingRest && canRetry) return `${head}\nGuardei sua lista: se quiser, diz *tenta de novo* (ou *tira X e tenta de novo*) que eu procuro tudo outra vez — ou me diz outra coisa.`;
+  // "tenta de novo" procura o que saiu em outra loja (11/10, rodada 23 g64, R23-2): antes a cesta sumia com "me diz outra coisa".
+  return closingRest
+    ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, responde *tenta de novo* que eu procuro.`
+    : `${head}\nSe quiser, responde *tenta de novo* que eu procuro ${again} em outra loja, ou me diz outra coisa.`;
 }
 
 // Fechamento com item recusado pela loja (10/10, rodada 13 A3): diz qual item e de qual loja, que o resto ficou, e
@@ -4076,7 +4103,7 @@ export function itemsRefusedPickAnother(swappable: string[], dropped: string[], 
   const head = swappable.length === 1
     ? `A loja não confirmou entrega de ${list(swappable)} no seu endereço agora.`
     : `As lojas não confirmaram entrega destes itens no seu endereço agora:${list(swappable)}`;
-  const out = dropped.length ? `\nSem outra opção que entregue aí, ficou de fora: ${list(dropped)}.` : "";
+  const out = dropped.length ? `\nSem outra opção que entregue aí, ficou de fora: ${list(dropped)}. Depois, se quiser, responde *tenta de novo* que eu procuro em outra loja.` : "";
   const keep = kept ? `\nO resto da cesta continua (${kept} ${kept === 1 ? "item" : "itens"}).` : "";
   return `${head}${out}${keep}\nEscolhe uma opção de outra loja 👇 ou responde *pula* pra seguir sem.`;
 }
@@ -4120,6 +4147,33 @@ export function qtyNotedPickOne(qty: number, query: string): string {
 // "na verdade quero o 2" depois de escolher: a troca é anunciada.
 export function choiceSwitchedOut(oldName: string): string {
   return `Troquei: saiu *${oldName}*.`;
+}
+
+// "amaciante eu já disse que nao quero" com o amaciante já fora (11/10, rodada 23 g65, R23a-5).
+export function alreadyDeclinedItem(item: string): string {
+  return `Certo, *${item}* já está fora da lista — não vou oferecer de novo 👍`;
+}
+
+// "tira a alface e tenta de novo" depois da recusa da cesta inteira (11/10, rodada 23 g65, R23-6).
+export function refusedRetryStart(removed: string[], keep: string[]): string {
+  const out = removed.length ? `Tirei *${removed.join("*, *")}*. ` : "";
+  return `${out}Procurando de novo: ${keep.map((k) => `*${k}*`).join(", ")} 🔎`;
+}
+export function refusedRetryEmpty(removed: string[], listOpen = false): string {
+  if (listOpen) return `*${removed.join("*, *")}* já tinha ficado de fora — tá fora do pedido 👍`;
+  return `Tirei *${removed.join("*, *")}* — não sobrou nada da lista. Me diz o que você quer que eu procuro.`;
+}
+
+// "quanto ta dando o frango?" (11/10, rodada 23 g65, R23-10): o preço do item citado, não a cesta inteira.
+export function basketItemPrice(input: { name: string; qty: number; lineTotal: number; unitPrice: number; store?: string }): string {
+  const where = input.store ? ` (${input.store})` : "";
+  const each = input.qty > 1 ? ` — ${input.qty}x de ${brl(input.unitPrice)}` : "";
+  return `*${input.name}*${where} está saindo *${brl(input.lineTotal)}*${each}. A entrega entra no total quando você fechar.`;
+}
+
+// "troca o mamão por um papaya" com o Mamão Papaya na cesta (11/10, rodada 23 g65, R23-7).
+export function swapAlreadyIs(name: string, asked: string): string {
+  return `*${name}* já é *${asked.trim()}* 🙂 Deixei na cesta. Se quiser outro tamanho ou marca, é só dizer.`;
 }
 
 export function choiceSameAsBasket(name: string): string {

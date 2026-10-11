@@ -639,11 +639,31 @@ async function runChain(reqIn: RecommendRequest, cep: string, opts: { basketName
   if (req.symptom && !/\b(crianc|bebe|filh|nenem|menin|infantil|pediatr)/.test(normRec(`${req.recipient ?? ""} ${req.text}`))) {
     candidates = candidates.filter((c) => !/\b(pediatric\w*|infantil|kids?|baby|bebe)\b/.test(normRec(c.option.name)));
   }
+  // "pastilha para garganta" (11/10, rodada 23 g65, R23a-3): o produto foi dito junto do sintoma — só ele, nunca o chá ou o
+  // mel que a tabela do sintoma também traz. Sem nenhum candidato com o nome dito, fica como antes.
+  const named = req.symptom ? namedProductWords(req.text, req.symptom) : [];
+  if (named.length) {
+    const hits = candidates.filter((c) => named.some((w) => new RegExp(`\\b${w}`).test(normRec(c.option.name))));
+    if (hits.length) candidates = hits;
+  }
   const emptyShelves = picks.map((p) => p.shelfId).filter((id) => !candidates.some((c) => c.shelfId === id));
   const t2 = Date.now();
   const cards = await pickCards(req, { ...plan, picks }, candidates, hour, td, recommendMaxCards(), { memory: opts.memory });
   const t3 = Date.now();
   return { plan: { ...plan, picks }, picks, candidates, cards, emptyShelves, timings: { mapMs: t1 - t0, searchMs: t2 - t1, judgeMs: t3 - t2 } };
+}
+
+// Palavras de PRODUTO ditas junto do sintoma ("pastilha" em "pastilha para garganta"): fora o sintoma e a fala.
+const NAMED_STOP = new Set("para pra pro algo alguma algum coisa coisinha remedio remedios remedinho tenho estou esta minha meu muito quero queria preciso precisando sinto sentindo forte fortes doendo bastante tambem favor".split(" "));
+export function namedProductWords(text: string, symptom: string): string[] {
+  const sym = new Set(normRec(symptom).split(/\s+/));
+  return [...new Set(normRec(text).split(/[^a-z]+/).filter((w) => w.length >= 4 && !sym.has(w) && !NAMED_STOP.has(w)).map((w) => w.replace(/s$/, "")))];
+}
+// Título da escolha: o produto dito ("pastilha para garganta") quando todos os cards são dele; senão o rótulo do sintoma.
+function recommendQueryLabel(req: RecommendRequest, options: ChoiceOption[]): string {
+  const named = req.symptom ? namedProductWords(req.text, req.symptom) : [];
+  if (named.length && options.length && options.every((o) => named.some((w) => new RegExp(`\\b${w}`).test(normRec(o.name))))) return req.text.trim().replace(/[?!.]+$/, "");
+  return copy.recommendLabel(req);
 }
 
 function shelfLabels(ids: string[]): string[] {
@@ -829,7 +849,7 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
   const logId = await recordRecommendation({ env, req, plan: chain.plan, cards: shown, emptyShelves: chain.emptyShelves, outcome: "shown", timings: chain.timings });
   const options = shown.map(cardOption);
   const pending: PendingChoice = {
-    query: copy.recommendLabel(req),
+    query: recommendQueryLabel(req, options),
     qty: 1,
     options,
     shownSkus: options.map((o) => o.sku),

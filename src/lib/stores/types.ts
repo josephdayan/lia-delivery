@@ -670,6 +670,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
 
   let score = 0;
   let strongHit = false;
+  let nonBrandHit = false;
   for (const token of effTokens) {
     // Token de TAMANHO ("2kg", "350ml") nunca segura a relevância sozinho — senão
     // "arroz 2kg" traz "Areia Higiênica 2Kg" (só o peso em comum). Ele soma score,
@@ -681,6 +682,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
       score += 4; // explicit brand match is the strongest signal
       if (!isSizeToken) strongHit = true;
     } else if (nameWords.some((word) => tokenMatchesWordSyn(token, word))) {
+      nonBrandHit = true;
       score += token.length >= 4 ? 2 : 1;
       // Forte = token de 4+ letras, OU palavra curta que casa EXATA ("pão", "sal", "chá").
       if (!isSizeToken && (token.length >= 4 || (token.length >= 3 && nameWords.includes(token)))) strongHit = true;
@@ -693,6 +695,9 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // Piso de relevância: sem pelo menos UM token forte, é ruído conversacional —
   // devolver vazio honesto em vez de "Esponja Não Risca".
   if (!strongHit) return 0;
+  // Item pet que só casa pela MARCA (11/10, rodada 23 g65, R23-7): "papaya" trazia "Petisco Bonão Bacon Cães … Papaya
+  // Pets" — a fruta pedida era só o nome da marca. Sem bicho nem palavra de pet no pedido, e sem a marca inteira dita, sai.
+  if (!nonBrandHit && !queryAnimal && !PET_INTRINSIC_RE.test(q.norm) && PET_SPECIES_RE.test(`${nameNorm} ${text.categoryNorm}`) && !brandWords.every((word) => effTokens.some((t) => tokenMatchesBrand(t, word)))) return 0;
   // Especificação técnica pedida (usb, usb-c, hdmi, bluetooth…) é identidade: item sem ela
   // não é o produto (27/09: "cabo usb c" trazia "Cabo Flexível 6mm² por metro" da Obramax).
   const specAsked = effTokens.filter((t) => SPEC_TOKENS.has(t));
@@ -1428,7 +1433,9 @@ const VARIANT_MARKERS = new Set([
   // Miniatura de chaveiro (10/10, rodada 16 M7: "Mini Grampeador … Chaveiro" oferecido no lugar do grampeador de mesa).
   "chaveiro",
   // Tema de Natal sem o cliente falar de Natal (11/10, rodada 19 g53, R19-8: papel de presente de Natal para aniversário).
-  "natal", "natalino", "natalina", "natalinos", "natalinas", "noel"
+  "natal", "natalino", "natalina", "natalinos", "natalinas", "noel",
+  // "Pepsi Twist" é a de limão (11/10, rodada 23 g65, R23-10): "refrigerante de 2 litros" no "mais barato" levava ela.
+  "twist"
 ]);
 // Fora da época de Natal (11/10, rodada 20 g56, R20a-5: "papel de presente" em outubro trazia 4 de 5 cards de Natal com a IA
 // ligada, e "o mais barato" levava o de Natal pro aniversário): novembro e dezembro são a época; no resto do ano o tema só
@@ -1441,6 +1448,12 @@ export function unaskedChristmas(query: string, name: string): boolean {
   return CHRISTMAS_RE.test(normalizeText(name)) && !CHRISTMAS_RE.test(normalizeText(query));
 }
 const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
+// Só o sabor/edição não pedidos (11/10, rodada 23 g65, R23-10): "com 10 unidades" ou a regra de produto básico não contam.
+export function unaskedVariantMarker(query: string, name: string): boolean {
+  const asked = new Set(words(query));
+  if ((asked.has("sem") && asked.has("acucar")) || SUGAR_FREE.some((t) => asked.has(t))) for (const t of [...SUGAR_FREE, "free"]) asked.add(t);
+  return words(name).some((t) => VARIANT_MARKERS.has(t) && !asked.has(t));
+}
 export function variantPenalty(query: string, name: string): number {
   const asked = new Set(words(query));
   // "sem açúcar"/"zero"/"diet" pedidos: as grafias da loja (Sugarfree, Sugar Free, Zero, Diet) são o pedido.
