@@ -509,6 +509,9 @@ export function canonicalTypedAddress(typed: string, place: { street?: string; d
     return words.length > 0 && words.every((w) => placeWords.has(w) || STREET_WORDS.test(w) || w === "sp");
   };
   while (parts.length && isPlace(parts[parts.length - 1])) parts.pop();
+  // Bairro dito do jeito do cliente ("Jardins" com o CEP do Jardim Paulista, 11/10, rodada 21 g58, R21-11 B5): o último
+  // pedaço sem número e que não é complemento é o bairro informal — o do CEP vale. Antes o endereço ficava cru, sem UF.
+  if (parts.length && !/\d/.test(parts[parts.length - 1]) && !parseAddressComplement(parts[parts.length - 1]) && parts[parts.length - 1].split(/\s+/).length === 1) parts.pop();
   tail = parts.join(" ").trim();
   const complemento = tail ? parseAddressComplement(tail) : undefined;
   if (tail && !complemento) return null;
