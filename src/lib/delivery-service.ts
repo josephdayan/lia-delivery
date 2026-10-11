@@ -816,6 +816,8 @@ async function buildChoices(
       const common = candidates.find((c) => !isEquivalent(c) && staplePrefer.test(normalizeMsg(c.item.name)) && conciergeMatchIsStrong(line.phrase, c.item));
       if (common) options = [common, ...options];
     }
+    // A versão do dia a dia abre a vitrine (11/10, rodada 18 g51): "arroz" com o Thai Jasmin em 1º e o arroz branco em 3º.
+    if (staplePrefer && !chosen) options = [...options.filter((o) => staplePrefer.test(normalizeMsg(o.item.name))), ...options.filter((o) => !staplePrefer.test(normalizeMsg(o.item.name)))];
     // Nenhuma opção é a versão básica (11/10, rodada 17 g49: "6 coca cola 2L" abria com "Coca Cola Sem Açúcar 2L" e a
     // Original só aparecia em "outras"): a candidata básica que a loja confirmou e que tem todas as palavras entra na frente.
     // Com o juízo da IA, só a versão comum de uma opção aprovada sem açúcar (a IA aprovou "Coca Sem Açúcar", a Original da
@@ -2006,7 +2008,9 @@ function swapPairsForCopy(
     const brand = realBrandOf(from);
     const sameName = normalizeMsg(from.name).replace(/\s+/g, " ") === normalizeMsg(r.option.name).replace(/\s+/g, " ");
     const brandOrVersion = !keepsBrand(from, r.option)
-      ? copy.swapChangeNote("marca", brand ? brandLabel(from, brand) : undefined)
+      // A marca só é citada quando o NOME a diz (11/10, rodada 18 g51: "não achei Bayer" para o "Aspdip", que a loja cadastra
+      // com o fabricante Bayer — o cliente não conhece o produto por esse nome).
+      ? copy.swapChangeNote("marca", brand && normalizeMsg(from.name).replace(/[^a-z0-9\s]/g, " ").includes(brand) ? brandLabel(from, brand) : undefined)
       : !sameName && nameSimilarity(from.name, r.option.name) < 0.5
         ? copy.swapChangeNote("versao")
         : undefined;
@@ -4273,7 +4277,7 @@ async function handleDeliveryTurn(
   // O nome de um card da tela (com a loja dele) a escolha resolve sem a IA (11/10, rodada 18 g51).
   const namesCardOnTable =
     ctx.step === "choosing" && Boolean(ctx.pending?.length) &&
-    ((intent.kind === "free_text" && optionNamedOnTable(text, ctx.pending![0]).length > 0) || ((intent.kind === "free_text" || intent.kind === "reject") && brandAlternatives(text, ctx.pending![0]).length > 0));
+    ((intent.kind === "free_text" && optionNamedOnTable(text, ctx.pending![0], { cuedOnly: true }).length > 0) || ((intent.kind === "free_text" || intent.kind === "reject") && brandAlternatives(text, ctx.pending![0]).length > 0));
   if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx) && !namesCardOnTable) {
     const hasAddress = Boolean(user.defaultAddress && savedCep);
     const dialogue = hasAddress
@@ -8423,7 +8427,9 @@ async function handleChoosing(
     await writeCtx(convoId, ctx);
   }
 
-  const namedOnTable = intent.kind === "free_text" ? optionNamedOnTable(text, current) : [];
+  // Só a loja citada ou a contagem da embalagem, e só quando a escolha comum não resolve ("o bolo gotas de chocolate, 3" e
+  // "vou no 1, Omo" já escolhem, com a quantidade); o nome puro segue para o estreitamento por nome mais abaixo.
+  const namedOnTable = intent.kind === "free_text" && !parseChoiceReply(text, current.options) ? optionNamedOnTable(text, current, { cuedOnly: true }) : [];
   if (namedOnTable.length) {
     // Estreita (e com um card só, o cliente confirma no botão), como o nome que discrimina mais abaixo.
     current.shownOptions = current.shownOptions ?? [...current.options];
@@ -9572,7 +9578,10 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
     // A busca larga achou o que atende (10/10, rodada 16 g46, jornada 353: "Não achei exatamente *2l*" em cima dos cards
     // "Coca-Cola 2L"): os que atendem vêm primeiro e não há "mais perto".
     // Só medida ("2l", "500g"): é ela que a régua de tamanho confere com certeza; "grande" segue "o mais perto".
-    const exact = attrs.every((a) => /^\d/.test(a)) ? matches.filter((o) => attrs.every((a) => attrMatchesItem(a, o))) : [];
+    // Palavra que o nome diz ("filhote", 11/10, rodada 18 g51: "Não achei exatamente *filhote*" em cima de rações de filhote)
+    // também confere; tamanho por adjetivo ("grande") segue "o mais perto".
+    const checkable = (a: string) => /^\d/.test(a) || !/^(?:grande|grandes|pequen[oa]s?|medi[oa]s?|maior|menor|mini|maxi)$/.test(normalizeMsg(a));
+    const exact = attrs.every(checkable) ? matches.filter((o) => attrs.every((a) => attrMatchesItem(a, o))) : [];
     if (exact.length) matches = [...exact, ...matches.filter((o) => !exact.includes(o))];
     closest = matches.length > 0 && !exact.length;
   }
@@ -10028,6 +10037,9 @@ export function brandAlternatives(text: string, current: PendingChoice): string[
     if (w.length < 4 || have.has(w) || out.includes(w) || !localIsBrand(w)) continue;
     out.push(w);
   }
+  // "tem da boticário?" com o sachê na tela: uma marca só que também é loja, sem pedir marca, é filtro de loja (R15-3).
+  const store = out.length === 1 && !/\b(?:marca|tipo)\b/.test(n) ? refineStoreCut(text, text) : null;
+  if (store && normalizeMsg(store.store.label).replace(/[^a-z0-9\s]/g, " ").includes(out[0])) return [];
   return out.slice(0, 3);
 }
 async function showBrandAlternatives(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string): Promise<boolean> {
@@ -10081,7 +10093,7 @@ async function showBrandAlternatives(phone: string, convoId: string, ctx: Delive
 // "a de mel e limão da drogaria são paulo" com as pastilhas na tela (11/10, rodada 18 g51): o nome de um card, com a loja dele
 // no fim, é escolha — o " e " do sabor e o "da <loja>" partiam a frase em dois itens novos ("Somei 1x a de mel").
 // Devolve os índices dos cards que têm TODAS as palavras ditas (e são da loja citada); [] = não fala dos cards.
-export function optionNamedOnTable(text: string, current: PendingChoice): number[] {
+export function optionNamedOnTable(text: string, current: PendingChoice, opts?: { cuedOnly?: boolean }): number[] {
   const options = current.options;
   if (options.length < 2) return [];
   let rest = ` ${normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim()} `;
@@ -10106,7 +10118,7 @@ export function optionNamedOnTable(text: string, current: PendingChoice): number
     const hits = options.map((o, i) => (has.test(normalizeMsg(o.name)) ? i : -1)).filter((i) => i >= 0 && (!storeIdx || storeIdx.includes(i)));
     return hits.length && hits.length < options.length ? hits : [];
   }
-  if (queryTokens(said).length < 2) return [];
+  if (queryTokens(said).length < 2 || (opts?.cuedOnly && !storeIdx)) return [];
   const named = narrowChoiceByName(said, options).filter((i) => !storeIdx || storeIdx.includes(i));
   if (!named.length) return [];
   return storeIdx || named.length < options.length ? named : [];

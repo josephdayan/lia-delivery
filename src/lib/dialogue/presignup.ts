@@ -300,13 +300,18 @@ export function recommendText(text: string, budget: number | null): string {
 }
 
 // `text` = a mensagem original (a recomendação guarda a frase inteira, não um item extraído).
+const SCHOOL_LIST_RE = /^(?:o |a |os |as )?(?:lista de |lista do |lista da )?materia(?:l|is)(?: (?:escolar(?:es)?|de escola|pra escola|de papelaria|de escritorio))$/;
 export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?: string; recentRefusal?: boolean } = {}): PrePlan {
   // Emergência (dor no peito, falta de ar, desmaio, sangue…) vale mais que tudo na mensagem, decida a IA
   // o que decidir: responde o alerta já, nada de "me passa o CEP" (revisão A2, 08/10).
   const emergency = emergencyFlag(opts.text);
   if (emergency) return { ok: true, steps: [{ type: "fixed", key: "red_flag", reason: emergency }], label: "red_flag" };
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
-  const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
+  // "preciso de material escolar pra minha filha, tenho só 60 reais" (11/10, rodada 18 g51): a IA anotava "1x material escolar" e
+  // depois do cadastro o "1" pegava um kit esportivo. A lista da escola é o assunto (a lista determinística não vê item): sem
+  // item, a Lia pergunta o que vai na lista.
+  const listCategory = (q: string) => SCHOOL_LIST_RE.test(normalizeMsg(q).trim()) && Boolean(opts.text) && !resolveListItems(opts.text!).some((seg) => sharesProductNoun(seg.phrase, q));
+  const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query) && !listCategory(item.query));
   // "pastilha pra garganta, soro fisiológico e um termômetro" (11/10, rodada 18 g51): a IA marcava a pastilha como remédio e
   // a 1ª resposta era "Remédio de receita eu não consigo comprar" sem ninguém pedir. Com o isento ligado, a recusa da IA ao
   // lado de outros itens só vale com remédio de receita nomeado (ou insistência logo depois de uma recusa).

@@ -876,7 +876,13 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
   maca: { reject: FRUIT_DERIVED_RE, prefer: /\b(gala|fuji|verde|argentina|nacional)\b/ },
   laranja: { reject: FRUIT_DERIVED_RE, prefer: /\b(pera|lima|bahia|baia|seleta)\b/ },
   limao: { reject: FRUIT_DERIVED_RE, prefer: /\b(taiti|tahiti|siciliano|cravo)\b/ },
-  morango: { reject: FRUIT_DERIVED_RE, prefer: /\b(bandeja|caixa|organico|fresco)\b/ }
+  morango: { reject: FRUIT_DERIVED_RE, prefer: /\b(bandeja|caixa|organico|fresco)\b/ },
+  // Básicos pedidos soltos (11/10, rodada 18 g51, R18a-8): o 1º card era "Arroz Thai Jasmin", "Linguine Barilla", "Pão Baguete
+  // Mini"/"Pão Nórdico" e, para esponja, "Refil Esponja para Filtro" de aquário. A versão do dia a dia vem antes.
+  arroz: { prefer: /\b(branco|tipo 1|agulhinha|parboilizado|polido)\b/ },
+  macarrao: { prefer: /\b(espaguete|spaghetti|parafuso|penne|fusilli|padre nosso|ave maria|furadinho|talharim|semola|com ovos|instantaneo)\b/ },
+  pao: { prefer: /\b(forma|frances|francesinho|bisnaguinha|de leite|integral)\b/ },
+  esponja: { reject: /\b(filtro|aquarios?|bomba|refil para filtro|maquiagem|po compacto)\b/, prefer: /\b(dupla face|multiuso|louca|loucas|cozinha|limpeza|lava)\b/ }
 };
 export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
   const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
@@ -1399,10 +1405,15 @@ const KIND_GROUPS: Array<Record<string, string>> = [
     cabelo: "cabelo", cabelos: "cabelo", capilar: "cabelo", rosto: "rosto", facial: "rosto", intimo: "intimo", intima: "intimo"
   },
   // forma (sabão, detergente, creme)
-  { po: "po", pasta: "pasta", barra: "barra", liquido: "liquido", gel: "gel", spray: "spray" }
+  { po: "po", pasta: "pasta", barra: "barra", liquido: "liquido", gel: "gel", spray: "spray" },
+  // uso: escolar × maquiagem (11/10, rodada 18 g51: "Lápis de Cor 24 Cores" virava "Lápis de Sobrancelhas Cor 01" na troca de loja)
+  {
+    escolar: "escolar", colorir: "escolar", cores: "escolar", sextavado: "escolar", aquarelavel: "escolar",
+    sobrancelha: "maquiagem", sobrancelhas: "maquiagem", olhos: "maquiagem", labial: "maquiagem", boca: "maquiagem", delineador: "maquiagem", maquiagem: "maquiagem"
+  }
 ];
 function kindsOf(name: string): Array<Set<string>> {
-  const ws = normalizeText(name).replace(/\blava (roupas?|loucas?)\b/g, "lava$1").split(" ").filter(Boolean);
+  const ws = normalizeText(name).replace(/\blava (roupas?|loucas?)\b/g, "lava$1").replace(/\blapis de cor(?:es)?\b/g, "colorir").split(" ").filter(Boolean);
   return KIND_GROUPS.map((group) => new Set(ws.map((w) => group[w]).filter((v): v is string => Boolean(v))));
 }
 export function productKindConflict(a: string, b: string): boolean {

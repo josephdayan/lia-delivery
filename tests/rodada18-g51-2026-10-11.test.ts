@@ -12,7 +12,8 @@ import { buildDialogueState } from "../src/lib/dialogue/state";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { parseAvailabilityAsk, relaxAnyAttribute } from "../src/lib/lia-intents";
-import { rankCatalog } from "../src/lib/stores/types";
+import { conciergeMatchIsStrong, productKindConflict, rankCatalog, stapleFor } from "../src/lib/stores/types";
+import { parseProductQuestion } from "../src/lib/product-question";
 import { isQualifierOnly, resolveListItems } from "../src/lib/list-items";
 import type { ChoiceOption, DeliveryContext, PendingChoice } from "../src/lib/conversation-types";
 
@@ -272,4 +273,46 @@ test("R18a-2: 'quero a coca de 2 litros, 2 garrafas' com o guaraná na tela e a 
   // A troca do MESMO item da tela continua ("na verdade guaraná antarctica").
   const swap = planActions({ actions: [{ type: "search", query: "guaraná antarctica 2 litros", qty: 1, replace: true }] } as never, state, { text: "na verdade guaraná antarctica" });
   assert.ok(swap.ok && swap.steps.some((s) => s.type === "search" && s.replace), JSON.stringify(swap));
+});
+
+// ---------------------------------------------------------------- R18-5: lápis de cor não troca por lápis de sobrancelha; "material escolar" não vira item
+
+test("R18-5: lápis de cor e lápis de sobrancelha são produtos diferentes", () => {
+  assert.equal(productKindConflict("lapis de cor", "Lápis para Sobrancelha Boticário Make B. Marrom"), true);
+  assert.equal(productKindConflict("lapis de cor 24 cores", "Lápis de Olhos Preto Vult"), true);
+  assert.equal(productKindConflict("lapis de cor", "Lápis de Cor Faber-Castell 24 Cores Sextavado"), false);
+  assert.equal(productKindConflict("lapis de sobrancelha", "Lápis para Sobrancelha Boticário Make B. Marrom"), false);
+});
+
+test("R18-5: 'material escolar' que a IA lista como item cai quando o pedido não nomeia esse produto", () => {
+  const text = "preciso de material escolar pra minha filha: caderno, lapis de cor e borracha. tenho so 60 reais";
+  const plan = planPreSignup(
+    D({ items: [{ query: "material escolar", qty: 1, cheapest: false }, { query: "caderno", qty: 1, cheapest: false }, { query: "lápis de cor", qty: 1, cheapest: false }, { query: "borracha", qty: 1, cheapest: false }], budget: 60 }),
+    { text }
+  );
+  const dump = JSON.stringify(plan);
+  assert.ok(plan.ok, dump);
+  assert.ok(!/material escolar/i.test(dump), dump);
+  assert.ok(/caderno/.test(dump) && /borracha/.test(dump), dump);
+});
+
+// ---------------------------------------------------------------- R18a-7: "sirva pra filhote" é pergunta sobre os cards
+
+test("R18a-7: 'tem alguma que sirva pra filhote?' com cards abertos é pergunta de público, não busca", () => {
+  const q = parseProductQuestion("tem alguma que sirva pra filhote?", 3, ["Ração Golden Filhotes 3kg", "Ração Pedigree Adulto 3kg", "Ração Premier Filhote 2,5kg"]);
+  assert.ok(q, "deveria ser pergunta");
+  assert.ok(JSON.stringify(q).includes("filhote"), JSON.stringify(q));
+});
+
+// ---------------------------------------------------------------- R18a-8: básico mostra a variante comum primeiro
+
+test("R18a-8: arroz/macarrão/pão/esponja têm variante básica preferida; esponja de filtro não é esponja", () => {
+  assert.ok(stapleFor("arroz")?.prefer.test("arroz branco tipo 1 5kg"));
+  assert.ok(stapleFor("macarrao")?.prefer.test("macarrao espaguete 500g"));
+  assert.ok(stapleFor("pao")?.prefer.test("pao frances"));
+  const esponja = stapleFor("esponja");
+  assert.ok(esponja?.prefer.test("esponja dupla face"));
+  assert.ok(esponja?.reject?.test("refil esponja para filtro"));
+  assert.equal(conciergeMatchIsStrong("esponja", { sku: "x", name: "Refil Esponja para Filtro de Aquário", brand: "", unitPrice: 10, category: "" } as never), false);
+  assert.equal(conciergeMatchIsStrong("esponja", { sku: "y", name: "Esponja Multiuso Scotch-Brite 4 Unidades", brand: "", unitPrice: 10, category: "" } as never), true);
 });
