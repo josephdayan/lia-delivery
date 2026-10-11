@@ -2626,6 +2626,43 @@ export function joinLeftBehind(storeLabel: string, left: string[]): string {
   return `A *${storeLabel}* não tem ${left.map((n) => `*${n}*`).join(", ")} — ${left.length > 1 ? "esses ficaram" : "esse ficou"} na loja de antes.`;
 }
 
+// "qual a diferença entre o shampoo de 17,15 e o de 23,09?" com a oferta de juntar na mesa (11/10, rodada 25 g69, R25-1):
+// compara o item da cesta com o da troca (mesmo produto = muda só loja e preço) e a oferta continua valendo.
+export function consolidationPairCompare(rows: Array<{ same: boolean; fromName: string; fromPrice: number; fromStore?: string; toName: string; toPrice: number; toStore: string }>): string {
+  const lines = rows.map((r) => {
+    const kept = `o de ${brl(r.fromPrice)}${r.fromStore ? ` é o da *${r.fromStore}*` : ""}, que já está na cesta`;
+    const joined = `o de ${brl(r.toPrice)} é o da *${r.toStore}*, que entra se juntar tudo lá`;
+    return r.same
+      ? `É o mesmo produto (*${r.fromName}*): ${kept}; ${joined}. Muda só a loja e o preço.`
+      : `Na cesta está *${r.fromName}* (${brl(r.fromPrice)}${r.fromStore ? `, *${r.fromStore}*` : ""}); juntando, entra *${r.toName}* (${brl(r.toPrice)}, *${r.toStore}*).`;
+  });
+  return [...lines, "Responde *1* pra juntar ou *2* pra manter como está."].join("\n");
+}
+
+// "Quanto compro por convidado?" (11/10, rodada 25 g69, R25-2): a conta de referência por pessoa (tabela de festa), sem mexer
+// na cesta — o cliente decide e pede o ajuste.
+export function perGuestAnswer(rows: Array<{ noun: string; per: number; unit: "g" | "ml" | "un"; total?: number }>, people?: number): string {
+  if (!rows.length) {
+    return people
+      ? `Pra ${people} pessoas eu não tenho uma conta pronta pra esses itens. Me diz quantos de cada que eu ajusto.`
+      : "Não tenho uma conta pronta pra esses itens. Me diz quantas pessoas e quantos de cada que eu ajusto.";
+  }
+  const num = (v: number) => (Math.round(v * 10) / 10).toString().replace(".", ",");
+  const per = (r: (typeof rows)[number]) =>
+    r.unit === "un" ? `1 por pessoa` : r.unit === "ml" ? `~${r.per} ml por pessoa` : `~${r.per} g por pessoa${r.noun === "docinhos" ? " (2 a 3 docinhos)" : r.noun === "bolo" ? " (uma fatia)" : ""}`;
+  const total = (r: (typeof rows)[number]) => {
+    if (r.total == null || !people) return "";
+    if (r.unit === "un") return ` → pra ${people}, ${r.total} ${r.noun === "copo" ? "copos" : "pratos"} (vale levar uma folga)`;
+    if (r.unit === "ml") return ` → pra ${people}, uns ${num(r.total / 1000)} L (${Math.ceil(r.total / 2000)} garrafas de 2 L)`;
+    return ` → pra ${people}, uns ${r.total >= 1000 ? `${num(r.total / 1000)} kg` : `${r.total} g`}`;
+  };
+  return [
+    "Uma conta de referência de festa (média por pessoa):",
+    ...rows.map((r) => `• ${r.noun}: ${per(r)}${total(r)}`),
+    people ? "É uma média, dá pra ajustar pro seu caso. Quer que eu mude as quantidades? Me diz, por exemplo, *põe 5 refrigerantes*." :"Me diz quantas pessoas que eu faço a conta — ou quantos de cada que eu ajusto."
+  ].join("\n");
+}
+
 export function consolidationAsk(): string {
   return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter* (ou 1 / 2).";
 }
@@ -4239,8 +4276,12 @@ export function cheapestTieNote(numbers: number[], price: number, picked: number
 
 // "o mais barato" que não ficou com a etiqueta mais baixa (10/10, rodada 11 g32): ela não chega no prazo dito, ou somava
 // uma entrega (e o pedido mínimo) de outra loja — o cliente sabe por quê e pode voltar pra ela.
-export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string } }): string {
+export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string }; portion?: boolean; variant?: boolean }): string {
   const where = input.store ? `, *${input.store}*` : "";
+  // Porção individual (sachê/dose, 11/10, rodada 25 g69, R25-3): a etiqueta mais baixa era de outro tamanho de compra.
+  if (input.portion) return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas é uma porção individual — peguei o mais barato do tamanho normal. Se preferir aquele, é só falar.`;
+  // Versão diferente da pedida (premium, sabor, zero…: a regra do básico, R23-10) — dizia "somava mais uma entrega" (R25-6 B3).
+  if (input.variant) return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas é uma versão diferente da que você pediu — peguei o mais barato da versão comum. Se preferir aquele, é só falar.`;
   const min = input.minimum ? ` e o pedido mínimo de ${brl(input.minimum)} da loja` : "";
   // Nenhuma opção chega no prazo dito (10/10, rodada 15 g43): fica a que chega antes, por pouca diferença.
   if (input.noneOnTime) {

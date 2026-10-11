@@ -4483,6 +4483,22 @@ function serviceAskCore(n: string): string {
     .trim();
 }
 
+// "Quanto compro por convidado?" / "quanto eu compro de refrigerante pra 20 crianças?" (11/10, rodada 25 g69, R25-2): pergunta
+// de quantidade pela gente da festa. Devolve a frase da pergunta, o resto da mensagem (pode ser a lista) e o item citado.
+const GUEST_QTY_ASK_RE = /\bquant[oa]s?\b(?:\s+[a-z]+){0,4}?\s+(?:compr\w*|lev\w*|pe[cç]\w*|precis\w*|calcul\w*|ponh\w*|bot\w*|serve|servir|rende|render)\b/;
+const GUEST_WHO_RE = /\bpor (?:convidad[oa]s?|pessoas?|crianc[ao]s?|cabecas?|adultos?)\b|\b(?:pra|para)\s+(?:umas?\s+|uns\s+)?\d{1,3}\s+(?:convidad[oa]s?|pessoas?|crianc[ao]s?|adultos?|amig[oa]s?)\b|\bcada (?:convidad[oa]|pessoa|crianca)\b/;
+export function parseGuestQtyAsk(text: string): { question: string; rest: string; item?: string } | null {
+  const sentences = (text.match(/[^.!?]+(?:[.!?]+|$)/g) ?? []).map((s) => s.trim()).filter(Boolean);
+  const idx = sentences.findIndex((s) => {
+    const n = normalizeMsg(s);
+    return GUEST_QTY_ASK_RE.test(n) && GUEST_WHO_RE.test(n);
+  });
+  if (idx < 0) return null;
+  const question = sentences[idx];
+  const item = /\bde ([a-z][a-z ]{2,30}?)\s+(?:pra|para|por)\b/.exec(normalizeMsg(question))?.[1]?.trim();
+  return { question, rest: sentences.filter((_, i) => i !== idx).join(" ").trim(), ...(item ? { item } : {}) };
+}
+
 export function splitQuestionsOnly(text: string): Intent[] | null {
   const sentences = (text.match(/[^?]+\?+/g) ?? []).map((s) => s.trim()).filter(Boolean);
   const tail = text.replace(/[^?]+\?+/g, "").trim();

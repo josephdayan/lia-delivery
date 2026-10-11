@@ -176,3 +176,28 @@ export function suggestedWhy(existing: string | undefined, s: Suggested): string
   const sug = `sugestão: ${s.text}`;
   return base ? `${base} — ${sug}` : sug.charAt(0).toUpperCase() + sug.slice(1);
 }
+
+// "Quanto compro por convidado?" (11/10, rodada 25 g69, R25-2): a mesma tabela por pessoa, em resposta à pergunta (sem
+// card). Só itens com regra; o resto fica de fora da conta (nunca chuta). Puro.
+export type GuestGuideRow = { noun: string; per: number; unit: "g" | "ml" | "un"; total?: number };
+const GUEST_GUIDE: Array<{ re: RegExp; noun: string; per: number; unit: "g" | "ml" | "un" }> = [
+  { re: /\b(?:refri\w*|refrigerantes?|coca|guarana)\b/, noun: "refrigerante", per: 500, unit: "ml" },
+  { re: /\bsucos?\b/, noun: "suco", per: 400, unit: "ml" },
+  { re: /\bcervejas?\b/, noun: "cerveja", per: 600, unit: "ml" },
+  { re: /\b(?:salgadinhos?|chips)\b/, noun: "salgadinho", per: 40, unit: "g" },
+  { re: /\b(?:salgados|coxinhas?|esfirras?|kibes?|quibes?)\b/, noun: "salgados", per: 120, unit: "g" },
+  { re: /\bbolos?\b/, noun: "bolo", per: 100, unit: "g" },
+  { re: /\b(?:brigadeiros?|docinhos?|doces)\b/, noun: "docinhos", per: 40, unit: "g" },
+  { re: /\bcopos?\b/, noun: "copo", per: 1, unit: "un" },
+  { re: /\bpratos?\b/, noun: "prato", per: 1, unit: "un" }
+];
+export function perGuestGuide(phrases: readonly string[], people?: number): GuestGuideRow[] {
+  const rows: GuestGuideRow[] = [];
+  for (const phrase of phrases) {
+    const t = normQ(phrase);
+    const rule = GUEST_GUIDE.find((r) => r.re.test(t));
+    if (!rule || rows.some((row) => row.noun === rule.noun)) continue;
+    rows.push({ noun: rule.noun, per: rule.per, unit: rule.unit, ...(people ? { total: rule.per * people } : {}) });
+  }
+  return rows;
+}
