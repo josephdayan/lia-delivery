@@ -107,7 +107,8 @@ test("R23-6: 'tira a alface e tenta de novo' é refazer a lista recusada sem a a
 test("R23-6: a recusa diz que a lista ficou guardada e como tentar de novo", () => {
   const msg = copy.itemsNotDeliverableHere(["alface", "tomate"], false, true);
   assert.match(msg, /tenta de novo/, msg);
-  assert.doesNotMatch(copy.itemsNotDeliverableHere(["alface"], false), /tenta de novo/);
+  // Sem lista guardada, não promete "Guardei sua lista" (o "tenta de novo" de outra loja é do g64).
+  assert.doesNotMatch(copy.itemsNotDeliverableHere(["alface"], false), /Guardei sua lista/);
 });
 
 test("R23-6: na falta de alternativa já vista, só vale o MESMO hortifrúti (sem molho, picado ou em cubos)", () => {

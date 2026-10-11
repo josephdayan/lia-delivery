@@ -865,7 +865,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     .split("\n")
     // A ocasião antes dos dois-pontos ("café da manhã: pão…", 11/10, rodada 23 g64) também é título: virava a linha
     // "café da manhã: pão francês" e o "10 unidades" do pão passava para o café da IA.
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|comprando|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta|caf[eé] da manh[aã]|almo[cç]o|jantar|janta|lanche|churrasco|feira|festa)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|comprando|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta|caf[eé] da manh|almo[cç]o|jantar|janta|lanche|churrasco|feira|festa)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   // Autocorreção na MESMA frase (11/10, rodada 20 g55, R20-2): "em vez de álcool em gel quero álcool 70 líquido", "quero Y

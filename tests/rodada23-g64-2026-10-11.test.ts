@@ -280,12 +280,15 @@ test("R23-2: a Mambo recusa a cesta por causa de UM item — só ele sai, o rest
   const phone = await customerWith({ basket, consolidationTried: basket.map((i) => `${i.sku}x${i.qty}`).sort().join("|") });
   const out = await send(phone, "só isso");
   assert.match(out, /Presunto/, out.slice(0, 800));
-  assert.match(out, /tenta de novo/i, out.slice(0, 800));
-  for (const kept of [pao, ovos, mamao]) assert.match(out, new RegExp(kept.name.split(" ")[0]), `${kept.name} segue no pedido: ${out.slice(0, 800)}`);
+  // O que saiu é oferecido de outra loja na hora (g65) ou fica para "tenta de novo" (g64).
+  const offeredElsewhere = /outra loja/i.test(out);
+  assert.match(out, /tenta de novo|outra loja/i, out.slice(0, 800));
+  if (offeredElsewhere) assert.match(out, /resto da cesta continua \(3 itens\)/, out.slice(0, 800));
+  else for (const kept of [pao, ovos, mamao]) assert.match(out, new RegExp(kept.name.split(" ")[0]), `${kept.name} segue no pedido: ${out.slice(0, 800)}`);
   const order = await m.prisma.deliveryOrder.findFirst({ where: { phone, status: { not: "canceled" } }, orderBy: { createdAt: "desc" } });
   const ctx = await ctxOf(phone);
   const skus = [...((order?.items as Array<{ sku: string }> | null) ?? []), ...(ctx.basket ?? [])].map((i) => i.sku);
   for (const kept of [pao, ovos, mamao]) assert.ok(skus.includes(kept.sku), `${kept.sku} no pedido/cesta: ${skus.join(",")}`);
   assert.ok(!skus.includes(presunto.sku), "o presunto sai");
-  assert.ok((ctx.listMisses ?? []).some((miss) => /presunto/.test(miss.query)), "o presunto fica como faltante para 'tenta de novo'");
+  assert.ok(offeredElsewhere || (ctx.listMisses ?? []).some((miss) => /presunto/.test(miss.query)), "o presunto é oferecido de outra loja ou fica como faltante para 'tenta de novo'");
 });
