@@ -370,6 +370,7 @@ const CATEGORY_NOUNS = new Set([
 // Versão "para mulher" de um produto sem gênero (Advil Mulher, Dorflex Mulher): variante de
 // público, só na frente quando pedida (05/10: "advil" mostrou Advil Mulher em 1º).
 const WOMAN_VARIANT_RE = /\bmulher(es)?\b/;
+const MEDICAL_PART_RE = /\b(inalador\w*|nebuliza\w*|coletor\w*|seringas?|sondas?|cateter\w*|urina|fezes|escarro)\b/;
 const MEDICAL_DEVICE_RE = /\b(inalador\w*|nebuliza\w*|coletor\w*|seringas?|sondas?|cateter\w*|esteril\w*|urina|fezes|escarro)\b/;
 const WOMAN_ASK_RE = /\b(mulher|mulheres|feminin[oa]s?|menstrua\w*|colica)\b/;
 function isChildVariant(nameNorm: string): boolean {
@@ -572,6 +573,10 @@ function itemText(item: CatalogItem): ItemText {
   return text;
 }
 
+const MANUFACTURER_LINES: [RegExp, RegExp][] = [
+  [/\bcoca\b/, /\b(?:sprite|fanta|kuat|schweppes|crystal|del valle|powerade|monster|burn|aquarius|ades)\b/],
+  [/\bguarana antarctica\b/, /\b(?:pepsi|sukita|h2oh|soda limonada|brahma|skol)\b/]
+];
 function scoreQuery(query: string, item: CatalogItem): number {
   const q = queryFacts(query);
   const tokens = q.tokens;
@@ -601,6 +606,15 @@ function scoreQuery(query: string, item: CatalogItem): number {
     }
   }
   if (SUGAR_FREE_NAME_RE.test(nameNorm) && wantsRegularVersion(query)) return 0;
+  // Peça de aparelho de saúde que o pedido não citou (11/10, rodada 18 g51: "Copo Inalador Descartável NS 20 Unidades" seguia em
+  // 1º para "20 copos descartáveis" — a contagem igual vencia a penalidade). "Estéril" fica de fora: a gaze estéril é a gaze.
+  if (MEDICAL_PART_RE.test(nameNorm) && !MEDICAL_DEVICE_RE.test(q.norm)) return 0;
+  // Marca do FABRICANTE no campo de marca (11/10, rodada 18 g51): a Casa Santa Luzia cadastra Sprite e Fanta com marca
+  // "Coca-Cola" — "a coca normal" trazia Sprite e Fanta nos primeiros cards (e "o primeiro" fechava com 6x Sprite). Pedido da
+  // marca-mãe só vale para o item que diz a marca no NOME; outra linha do fabricante não é o produto.
+  for (const [parent, lines] of MANUFACTURER_LINES) {
+    if (parent.test(q.norm) && !parent.test(nameNorm) && lines.test(nameNorm)) return 0;
+  }
 
   // Embalagem nunca é o presente (06/10, A7: "presente pra minha mãe até R$100" → "Sacola
   // Presenteável P" de R$5,49). Pedido de presente só traz sacola/papel/cartão-presente quando

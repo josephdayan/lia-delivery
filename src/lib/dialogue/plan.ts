@@ -217,6 +217,17 @@ export function reformulatesMiss(text: string, missed: string): boolean {
   return words(text).some((w) => !RETRY_TALK.has(w) && !had.has(w.replace(/s$/, "")));
 }
 
+const PLAIN_WORDS = (s: string) =>
+  normalizeMsg(s)
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 4 && !/\d/.test(w) && !/^(?:litros?|garrafas?|latas?|unidades?|pacotes?|caixas?|quero|queria|refrigerantes?)$/.test(w));
+function namesQueuedItem(query: string, state: DialogueState): boolean {
+  const screen = new Set(PLAIN_WORDS(state.emEscolha?.item ?? ""));
+  const own = PLAIN_WORDS(query).filter((w) => !screen.has(w));
+  return own.length > 0 && (state.fila ?? []).some((f) => PLAIN_WORDS(f.item).some((w) => own.includes(w)));
+}
+
 function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
@@ -255,7 +266,9 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
         ...(retry ? { retry: true } : {}),
         // Trocar o item da tela só quando é o MESMO produto ou o cliente diz que corrige (10/10, rodada 5): "ração pra
         // gatinho qualquer marca" com o arroz na tela tirava o arroz ("Deixei arroz Camil de fora").
-        ...(a.replace && onScreen && (sharesProductNoun(query, state.emEscolha!.item) || REPLACE_CUE_RE.test(normalizeMsg(text))) ? { replace: true } : {})
+        // "quero a coca de 2 litros, 2 garrafas" com o guaraná na tela e a coca na fila (11/10, rodada 18 g51): é o item da FILA,
+        // não troca do guaraná ("refrigerante 2 litros" é comum aos dois) — o guaraná sumia e a coca virava 2 itens.
+        ...(a.replace && onScreen && !namesQueuedItem(query, state) && (sharesProductNoun(query, state.emEscolha!.item) || REPLACE_CUE_RE.test(normalizeMsg(text))) ? { replace: true } : {})
       };
     }
     case "pick": {

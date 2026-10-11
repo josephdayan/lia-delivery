@@ -12,6 +12,7 @@ import { buildDialogueState } from "../src/lib/dialogue/state";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { parseAvailabilityAsk, relaxAnyAttribute } from "../src/lib/lia-intents";
+import { rankCatalog } from "../src/lib/stores/types";
 import { isQualifierOnly, resolveListItems } from "../src/lib/list-items";
 import type { ChoiceOption, DeliveryContext, PendingChoice } from "../src/lib/conversation-types";
 
@@ -229,4 +230,46 @@ test("R18-14: 'tem poleiro de qualquer material então' busca poleiro, sem o atr
   assert.equal(relaxAnyAttribute(said, said), "tem poleiro então");
   assert.equal(relaxAnyAttribute("camiseta qualquer cor", "camiseta de qualquer cor"), "camiseta");
   assert.equal(relaxAnyAttribute("poleiro de madeira", "poleiro de madeira"), "poleiro de madeira");
+});
+
+// ---------------------------------------------------------------- R18a-1 / R18a-3: marca do fabricante e copo inalador
+
+const cat = (rows: Array<[string, string?]>) => rows.map(([name, brand], i) => ({ sku: `s${i}`, name, brand: brand ?? "", unitPrice: 10, category: "" }));
+const names = (q: string, items: ReturnType<typeof cat>) => rankCatalog(q, items as never, 10).map((it) => it.name);
+
+test("R18a-1: 'Coca-Cola normal 2L' não traz Sprite nem Fanta cadastradas com a marca Coca-Cola", () => {
+  const items = cat([["Sprite Original - 2L", "Coca-Cola"], ["Refrigerante Fanta Laranja - 2L", "Coca-Cola"], ["Refrigerante Coca-Cola 2L Original", "Coca-Cola"], ["Coca-Cola Garrafa 2l", "Coca-Cola"]]);
+  const got = names("Coca-Cola normal 2L", items);
+  assert.ok(got.length >= 2, JSON.stringify(got));
+  assert.ok(got.every((n) => /coca/i.test(n)), JSON.stringify(got));
+  // Quem pede Sprite continua achando.
+  assert.deepEqual(names("sprite 2l", items), ["Sprite Original - 2L"]);
+});
+
+test("R18a-3: '20 copos descartáveis' não traz o copo do inalador", () => {
+  const items = cat([["Copo Inalador Descartável NS 20 Unidades"], ["Copo Descartável para Festa 200ml 50 Unidades"], ["Copos Descartáveis Silver Plastic 12 Unidades"]]);
+  const got = names("20 copos descartaveis", items);
+  assert.ok(!got.some((n) => /inalador/i.test(n)), JSON.stringify(got));
+  assert.ok(got.length >= 1);
+  assert.equal(names("copo inalador", items)[0], "Copo Inalador Descartável NS 20 Unidades");
+});
+
+// ---------------------------------------------------------------- R18a-2: a coca da fila não troca o guaraná da tela
+
+test("R18a-2: 'quero a coca de 2 litros, 2 garrafas' com o guaraná na tela e a coca na fila não é troca", () => {
+  const ctx = {
+    flow: "delivery",
+    step: "choosing",
+    pending: [
+      pending("refrigerante de guaraná 2 litros", [opt("mambo-1", "Refrigerante de Guaraná Kuat Pet 2 Litros", 8.46, "mambo", "Mambo")]),
+      pending("Coca-Cola 2l", [opt("drogal-1", "Refrigerante Coca-Cola Garrafa Pet 2 Litros", 14.73, "drogal", "Drogal")])
+    ]
+  } as unknown as DeliveryContext;
+  const state = buildDialogueState(ctx, { hasAddress: true });
+  const plan = planActions({ actions: [{ type: "search", query: "Coca-Cola 2 litros", qty: 2, replace: true }] } as never, state, { text: "quero a coca de 2 litros, 2 garrafas" });
+  assert.ok(plan.ok, JSON.stringify(plan));
+  assert.ok(plan.ok && plan.steps.every((s) => !(s.type === "search" && s.replace)), JSON.stringify(plan));
+  // A troca do MESMO item da tela continua ("na verdade guaraná antarctica").
+  const swap = planActions({ actions: [{ type: "search", query: "guaraná antarctica 2 litros", qty: 1, replace: true }] } as never, state, { text: "na verdade guaraná antarctica" });
+  assert.ok(swap.ok && swap.steps.some((s) => s.type === "search" && s.replace), JSON.stringify(swap));
 });
