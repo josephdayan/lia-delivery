@@ -1027,15 +1027,15 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
     if (day) {
       const p = ctx.pending[0];
       const item = shownQuery(p);
-      const verdict = deadlineVerdict(p.options, day.date);
+      const verdict = deadlineVerdict(p.options, day);
       const itemNote = !verdict
         ? null
         : verdict.late.length
-          ? copy.choicesDeadlineNote(day.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item)
+          ? copy.choicesDeadlineNote(day.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item, (verdict.unsure ?? []).map((o) => o.storeLabel ?? "").filter(Boolean))
           : `De *${item}*, as opções chegam até *${day.label}*.`;
       p.deadlineNoted = true;
       await writeCtx(convoId, ctx);
-      await reply(phone, copy.etaWithChoiceDeadline(day.label, known.rows.map((r) => ({ ...r, late: promiseMissesDeadline(r.when, day.date) })), itemNote, item));
+      await reply(phone, copy.etaWithChoiceDeadline(day.label, known.rows.map((r) => ({ ...r, late: promiseMissesDeadline(r.when, day) })), itemNote, item));
       return;
     }
     await reply(phone, copy.etaAfterChoice(known.rows));
@@ -1047,7 +1047,7 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
     // Dia dito ("até sexta, dá?"): a resposta abre com sim/não e diz qual loja não chega (rodada 8 M4).
     // Chamado pelo gerente de diálogo também: o dia vem da mensagem do turno.
     const day = deadline ?? parseNeededBy(turnMeta.getStore()?.inboundText ?? "");
-    const verdict = day ? { label: day.label, late: eta.rows.filter((r) => promiseMissesDeadline(r.when, day.date) === true).map((r) => r.store) } : undefined;
+    const verdict = day ? { label: day.label, late: eta.rows.filter((r) => promiseMissesDeadline(r.when, day) === true).map((r) => r.store) } : undefined;
     await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday, verdict));
     return;
   }
@@ -1169,7 +1169,7 @@ function cardFastMaxExtra(): number {
   const value = Number(process.env.LIA_CARD_FAST_MAX_EXTRA);
   return Number.isFinite(value) && value >= 0 ? value : 2;
 }
-export function cardUsesFastDelivery(check: LiveItemCheck | undefined, urgent = false, neededBy: { date: string } | undefined = turnMeta.getStore()?.neededBy, now: Date = new Date()): boolean {
+export function cardUsesFastDelivery(check: LiveItemCheck | undefined, urgent = false, neededBy: { date: string; hour?: number } | undefined = turnMeta.getStore()?.neededBy, now: Date = new Date()): boolean {
   if (!check?.available || !check.fastEstimate || check.fastEstimate === check.estimate) return false;
   if (urgent) return true;
   const fast = check.fastEtaMinutes;
@@ -1184,7 +1184,7 @@ export function cardUsesFastDelivery(check: LiveItemCheck | undefined, urgent = 
   const perDay = Number(process.env.LIA_CARD_FAST_PER_DAY ?? 1.25);
   if (extra <= Math.max(cardFastMaxExtra(), (Number.isFinite(perDay) ? perDay : 1.25) * daysSaved) + 0.005) return true;
   if (!neededBy || extra > Number(process.env.LIA_FAST_FREIGHT_MAX_EXTRA ?? 20) + 0.005) return false;
-  return promiseMissesDeadline(humanEstimate(check.estimate), neededBy.date, now) === true && promiseMissesDeadline(humanEstimate(check.fastEstimate), neededBy.date, now) === false;
+  return promiseMissesDeadline(humanEstimate(check.estimate), neededBy, now) === true && promiseMissesDeadline(humanEstimate(check.fastEstimate), neededBy, now) === false;
 }
 
 function toChoiceOption(
@@ -1514,7 +1514,7 @@ function requestedStoreMissing(text: string, p: PendingChoice): string | null {
 // então o aviso "chega a tempo só pela X" bate com os primeiros cards. Sem prazo, ou sem promessa legível, nada muda.
 export function onTimeFirst<T extends { delivery?: string }>(options: T[], neededBy = turnMeta.getStore()?.neededBy, now: Date = new Date()): T[] {
   if (!neededBy || options.length < 2) return options;
-  const late = new Set(options.filter((o) => promiseMissesDeadline(o.delivery, neededBy.date, now) === true));
+  const late = new Set(options.filter((o) => promiseMissesDeadline(o.delivery, neededBy, now) === true));
   if (!late.size || late.size === options.length) return options;
   return [...options.filter((o) => !late.has(o)), ...options.filter((o) => late.has(o))];
 }
@@ -1536,13 +1536,13 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
   const deadline = turnMeta.getStore()?.neededBy;
   // "Nada chega hoje" no cabeçalho já diz isso quando o prazo é hoje.
   if (deadline && !p.deadlineNoted && p.options.length && !(p.noneToday && deadline.label === "hoje")) {
-    const verdict = deadlineVerdict(p.options, deadline.date);
+    const verdict = deadlineVerdict(p.options, deadline);
     // Já avisado nas últimas falas (o p.deadlineNoted nem sempre volta gravado): "outras" não repete.
     const item = shownQuery(p);
     const said = (turnMeta.getStore()?.prevSent ?? []).some((t) => t.startsWith("⏰") && t.includes(`*${deadline.label}*`) && t.includes(`*${item}*`));
     if (verdict?.late.length && !said) {
       p.deadlineNoted = true;
-      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item));
+      await reply(phone, copy.choicesDeadlineNote(deadline.label, verdict.onTime.map((o) => o.storeLabel ?? "").filter(Boolean), verdict.fastest ? { store: verdict.fastest.storeLabel, promise: verdict.fastest.delivery } : undefined, item, (verdict.unsure ?? []).map((o) => o.storeLabel ?? "").filter(Boolean)));
     }
   }
   // Remédio isento: a política da Meta veta CATÁLOGO, carrinho e pagamento nativo do
@@ -2064,8 +2064,8 @@ async function offerMinimumSwap(
   const rest = (ctx.basket ?? []).filter((i) => i.storeKey !== store.key);
   const etaBefore = slowest(ctx.basket ?? []);
   const etaAfter = slowest([...rest, ...replacements.map((r) => r.option)]);
-  const missAfter = ctx.neededBy && etaAfter ? promiseMissesDeadline(etaAfter, ctx.neededBy.date) === true : false;
-  const missBefore = ctx.neededBy && etaBefore ? promiseMissesDeadline(etaBefore, ctx.neededBy.date) === true : false;
+  const missAfter = ctx.neededBy && etaAfter ? promiseMissesDeadline(etaAfter, ctx.neededBy) === true : false;
+  const missBefore = ctx.neededBy && etaBefore ? promiseMissesDeadline(etaBefore, ctx.neededBy) === true : false;
   const slower = etaBefore && etaAfter && deliveryMinutes(etaAfter) > deliveryMinutes(etaBefore);
   // Prazo dito (10/10, rodada 16 g46): a piora diz o que acontece com o dia — "pode não chegar" pela data real ou "ainda chega".
   const fitBefore = ctx.neededBy && etaBefore ? deadlineFit(etaBefore, ctx.neededBy) : null;
@@ -4288,7 +4288,7 @@ async function handleDeliveryTurn(
         .map((row, i) => ({ ...row, delivery: options[i].delivery ? row.delivery : undefined }))
         .filter((row) => !etaAsk.option || row.n === etaAsk.option);
       if (rows.length) {
-        const judged = deadline && deadline.label !== "hoje" ? rows.map((row) => ({ ...row, onTime: row.delivery ? (row.today ? true : promiseMissesDeadline(row.delivery, deadline.date) === null ? null : !promiseMissesDeadline(row.delivery, deadline.date)) : null })) : rows;
+        const judged = deadline && deadline.label !== "hoje" ? rows.map((row) => ({ ...row, onTime: row.delivery ? (row.today ? true : promiseMissesDeadline(row.delivery, deadline) === null ? null : !promiseMissesDeadline(row.delivery, deadline)) : null })) : rows;
         await reply(phone, copy.choiceEtaAnswer(judged, etaAsk.today, deadline && deadline.label !== "hoje" ? `${deadline.label}, ${deadline.date.slice(8, 10)}/${deadline.date.slice(5, 7)}` : undefined));
         return;
       }
@@ -10302,8 +10302,8 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
   const raw = cheapestWithTies(p.options);
   if (p.options.length < 2) return raw;
   const deadline = ctx.neededBy;
-  const late = (o: ChoiceOption) => (deadline ? promiseMissesDeadline(o.delivery, deadline.date) === true : false);
-  const onTime = p.options.map((_, i) => i).filter((i) => deadline && promiseMissesDeadline(p.options[i].delivery, deadline.date) === false);
+  const late = (o: ChoiceOption) => (deadline ? promiseMissesDeadline(o.delivery, deadline) === true : false);
+  const onTime = p.options.map((_, i) => i).filter((i) => deadline && promiseMissesDeadline(p.options[i].delivery, deadline) === false);
   const timed = onTime.length && p.options.some(late) ? onTime : p.options.map((_, i) => i);
   const babySafe = timed.filter((i) => !adultOnlyForBaby(p, p.options[i]));
   const pool = babySafe.length ? babySafe : timed;
@@ -12920,13 +12920,15 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
   // Prazo dito (10/10, rodada 6 g19): juntar que não chega a tempo quando o como-está chega não é oferta; pedida pelo
   // cliente, sai com o aviso. As duas formas atrasando também avisam.
   const deadline = ctx.neededBy;
-  const joinedMiss = deadline ? promiseMissesDeadline(humanEstimate(joinedEta), deadline.date) === true : false;
-  const keptMiss = deadline ? promiseMissesDeadline(humanEstimate(keptEta), deadline.date) === true : false;
+  const joinedMiss = deadline ? promiseMissesDeadline(humanEstimate(joinedEta), deadline) === true : false;
+  const keptMiss = deadline ? promiseMissesDeadline(humanEstimate(keptEta), deadline) === true : false;
   if (joinedMiss && !keptMiss && !force) {
     console.warn("[basket:consolidate:misses-deadline]", joinedEta, keptEta);
     return false;
   }
-  const deadlineNote = deadline ? copy.consolidationDeadlineNote(deadline.label, joinedMiss, keptMiss, humanEstimate(joinedEta), humanEstimate(keptEta)) : null;
+  // Janela que pode chegar a tempo ("amanhã, 5h–8h" pra "antes das 7h", 11/10, rodada 17 g48): "pode chegar", não "chega".
+  const joinedUnsure = Boolean(deadline && !joinedMiss && deadlineFit(humanEstimate(joinedEta), deadline) === "unsure");
+  const deadlineNote = deadline ? copy.consolidationDeadlineNote(deadline.label, joinedMiss, keptMiss, humanEstimate(joinedEta), humanEstimate(keptEta), joinedUnsure) : null;
   // Pedido mínimo (10/10, rodada 8 M5: "manter como está" e "juntar em 2 entregas" com a Americanas abaixo do mínimo de
   // R$ 33 travavam o fechamento DEPOIS da escolha). Juntar que não fecha não é oferta (pedida pelo cliente, sai com o
   // aviso); manter que não fecha diz o mínimo já na oferta.

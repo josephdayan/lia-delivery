@@ -289,6 +289,10 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       // "tenho 250 reais, preciso até sábado" (10/10, rodada 16 g46): o "até <dia>" que sobra do prazo é o prazo do pedido
       // (parseNeededBy), nunca item — saía "❌ até sábado — não achei" e "Ficou de fora: até sábado" no resumo.
       "(e |mas )?(preciso |precisa |precisava |necessito |quero |queria |tem que ser |e )?(so )?ate (o |a |na |no |este |esta |essa |nesta |nessa )?(dia )?(hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| a noite| que vem| sem falta| no maximo)*",
+      // Hora do dia como prazo (11/10, rodada 17 g48): "antes das 7h", "tem que chegar até as 10h", "bem cedo" é o prazo do
+      // pedido (parseNeededBy), nunca item — saía "❌ antes das 7h — não achei" e "Ficou de fora: antes das 7h".
+      "(e |mas )?((tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) )?((chegar|chegue|ser entregue|entregar|vir|estar aqui) )?(hoje |amanha )?(bem )?(cedo |cedinho )?((antes (d[ae]s?|as|a)|ate (as|a)|no maximo (as|ate as|a)) \\d{1,2}( ?(h|hs|hrs?|horas?)|:\\d{2}|h\\d{2})?|(antes|ate|no maximo) \\d{1,2} ?(h|hs|hrs?|horas?))( da (manha|tarde|noite))?( sem falta| no maximo| em ponto)?",
+      "(e |mas )?(amanha |hoje )?(bem |mais )?(cedo|cedinho)( de manha)?",
       "o quanto antes",
       "urgente(mente)?",
       // Pressa solta ("rapido pfv", "agiliza ai", "tenho pressa") é sobre a ENTREGA, nunca item (10/10, rodada 5 A2).
@@ -531,7 +535,31 @@ export function hasUrgencySignal(text: string): boolean {
 // "amanhã" solto é ambíguo ("pago amanhã", "pode ser amanhã"): só vale com sinal de necessidade/evento/entrega.
 const SP_DATE = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
 const WEEKDAYS: Array<[string, number]> = [["domingo", 0], ["segunda", 1], ["terca", 2], ["quarta", 3], ["quinta", 4], ["sexta", 5], ["sabado", 6]];
-export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean } | null {
+// Hora do dia dita como prazo (11/10, rodada 17 g48): "antes das 7h", "até as 10h", "no máximo às 9 da manhã". Só com
+// "antes/até/no máximo" na frente — "abre às 7h" não é prazo. `null` = sem hora.
+const NEEDED_HOUR_RE = /\b(?:antes\s+(?:d[ae]s?|as|a)|ate\s+(?:as|a)|no\s+maximo\s+(?:as|ate\s+as|a))\s+(\d{1,2})(?:\s*(?:h|hs|hrs?|horas?)\b|:\d{2}\b|h\d{2}\b)?(?:\s+da\s+(manha|tarde|noite))?|\b(?:antes|ate|no\s+maximo)\s+(\d{1,2})\s*(?:h|hs|hrs?|horas?)\b(?:\s+da\s+(manha|tarde|noite))?/;
+export function parseNeededHour(text: string): number | null {
+  const m = NEEDED_HOUR_RE.exec(normalizeMsg(text));
+  if (!m) return null;
+  let hour = Number(m[1] ?? m[3]);
+  const period = m[2] ?? m[4];
+  if ((period === "tarde" || period === "noite") && hour < 12) hour += 12;
+  return hour >= 1 && hour <= 23 ? hour : null;
+}
+
+export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean; hour?: number } | null {
+  const day = parseNeededDay(text, now);
+  const hour = parseNeededHour(text);
+  if (hour == null) return day;
+  // Com hora, o rótulo diz a hora ("amanhã às 7h") e a hora manda no "de manhã". Sem dia, é a próxima vez que essa hora
+  // chega: "antes das 7h" dito às 21h é amanhã às 7h.
+  if (day) return { date: day.date, label: `${day.label} às ${hour}h`, hour };
+  const spNow = Number(now.toLocaleTimeString("en-GB", { timeZone: "America/Sao_Paulo", hour: "2-digit", hour12: false }));
+  const today = spNow < hour;
+  return { date: SP_DATE(new Date(now.getTime() + (today ? 0 : 86_400_000))), label: `${today ? "hoje" : "amanhã"} às ${hour}h`, hour };
+}
+
+function parseNeededDay(text: string, now: Date): { date: string; label: string; morning?: boolean } | null {
   const n = normalizeMsg(text);
   const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
   // Refeição/ocasião com dia ("café da manhã bom pra família domingo", "pizza em casa hoje", 10/10, rodada 14 g41): o dia
@@ -546,7 +574,9 @@ export function parseNeededBy(text: string, now: Date = new Date()): { date: str
     /\b(?:pra|para|ate|so ate|ate o dia)\s+amanha\b/.test(n) ||
     new RegExp(`\\b(?:${EVENT})\\b.{0,40}\\bamanha\\b|\\bamanha\\b.{0,30}\\b(?:${EVENT})\\b`).test(n) ||
     /\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b.{0,30}\bamanha\b/.test(n) ||
-    /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n);
+    /\b(?:chegar|chegue|chega|entreg\w*|receber)\b.{0,25}\bamanha\b/.test(n) ||
+    // "amanhã cedo preciso pra lancheira" (11/10, rodada 17 g48): o "preciso" vem depois do dia.
+    (/\bamanha\s+(?:bem\s+)?(?:cedo|cedinho)\b/.test(n) && /\b(?:preciso|precisa|precisando|tem que|pra|para|chegar|chegue)\b/.test(n) && !/\b(?:pago|pagar|pagamento|volto|falo|respondo|vejo)\b/.test(n));
   // "até amanhã de manhã" (10/10, rodada 10 g29): entrega de "1 dia útil" chega amanhã, mas sem hora — `morning` marca isso.
   if (tomorrow && !/\bdepois de amanha\b/.test(n)) return { date: shift(1), label: "amanhã", ...(/\bamanha\s+(?:de\s+|pela\s+|bem\s+)?(?:manha|cedo|cedinho)\b/.test(n) ? { morning: true } : {}) };
   // "faz aniversário hoje", "a festa é hoje" (10/10, rodada 10 g29): o evento de hoje é prazo de hoje.

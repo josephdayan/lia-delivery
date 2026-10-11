@@ -20,14 +20,14 @@ import { issueValidatedRetailerQuotePayment } from "./order-payments";
 import { buildStoreFulfillments, isMultiStoreOrder, perStoreQuoteReady, STORE_SHARE_REFUNDED, type SplitItem } from "./purchase/store-split";
 
 // Prazo dito × as duas formas de entrega (10/10, rodada 10 g29). `null` = nenhuma tem prazo legível.
-export function freightDeadlineFits(choice: FreightChoiceState, neededBy: { date: string; morning?: boolean }): [copy.DeadlineFit | null, copy.DeadlineFit | null] | null {
+export function freightDeadlineFits(choice: FreightChoiceState, neededBy: { date: string; morning?: boolean; hour?: number }): [copy.DeadlineFit | null, copy.DeadlineFit | null] | null {
   const kind = choice.kind ?? "ml";
   const label = (estimate?: string) => (kind === "store" ? humanEstimate(estimate) : estimate);
   const fits: [copy.DeadlineFit | null, copy.DeadlineFit | null] = [deadlineFit(label(choice.barato.estimate), neededBy), deadlineFit(label(choice.rapido.estimate), neededBy)];
   return fits[0] || fits[1] ? fits : null;
 }
 
-export async function sendFreightChoice(phone: string, choice: FreightChoiceState, neededBy?: { date: string; label: string; morning?: boolean }) {
+export async function sendFreightChoice(phone: string, choice: FreightChoiceState, neededBy?: { date: string; label: string; morning?: boolean; hour?: number }) {
   const totalFor = (fee: number) =>
     roundMoney(choice.itemsSubtotal + (choice.serviceFee ?? serviceFeeForSubtotal(choice.itemsSubtotal)) + fee);
   // Loja: o SLA cru ("60m") vira "prazo da loja: 60 min" no texto e "60 min" no botão.
@@ -165,7 +165,7 @@ export async function opsPublishManualQuote(
   // sem isso, uma cotação atrasada apagava a compra em andamento e despejava o resumo
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
-  let neededBy: { date: string; label: string; morning?: boolean } | undefined;
+  let neededBy: { date: string; label: string; morning?: boolean; hour?: number } | undefined;
   let orderBudget: { cap: number } | undefined;
   let joinRuledOut = false;
   let joinSlower: { eta: string; saving: number } | undefined;
@@ -237,7 +237,7 @@ export async function opsPublishManualQuote(
     total,
     deliveryAddress: order.deliveryAddress ?? undefined,
     sameHour,
-    ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date) ? { deadlineMiss: { label: neededBy.label } } : {}),
+    ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy) ? { deadlineMiss: { label: neededBy.label } } : {}),
     // Prazo dito e cumprido (10/10, rodada 10 g29): o resumo diz que serve.
     ...(() => {
       const fit = neededBy && !conversationMovedOn ? deadlineFit(input.deliveryPromise, neededBy) : null;
@@ -254,7 +254,7 @@ export async function opsPublishManualQuote(
     // 8 dias úteis sem aviso): uma linha diz qual loja segura o pedido. Com prazo dito que não cumpre, o aviso do prazo basta.
     ...(() => {
       if (conversationMovedOn || !input.perStore || input.perStore.length < 2) return {};
-      if (neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy.date)) return {};
+      if (neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy)) return {};
       const slowest = input.perStore.reduce<{ min: number; store?: string; promise?: string }>((acc, s) => {
         const min = promisedMinutes(s.promise);
         return min != null && min > acc.min ? { min, store: s.storeLabel, promise: s.promise } : acc;

@@ -395,7 +395,7 @@ export type DeliveryContext = {
   urgent?: boolean;
   // Prazo que o cliente disse ("amanhã", "hoje", "até sexta"): data (yyyy-mm-dd, fuso de SP) e rótulo. O total avisa em uma
   // linha quando a entrega prometida não cumpre (rodada 4, M6).
-  neededBy?: { date: string; label: string; morning?: boolean };
+  neededBy?: { date: string; label: string; morning?: boolean; hour?: number };
   // Orçamento do PEDIDO dito na conversa (10/10, rodada 8 M3: "se passar de 100 me avisa"): vale para o total com
   // entrega. A escolha que passa dele e o resumo avisam; `warned` = a escolha já avisou (não repete a cada item).
   orderBudget?: { cap: number; warned?: boolean };

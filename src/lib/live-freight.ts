@@ -701,7 +701,54 @@ export function promisedMinutes(promise?: string): number | null {
 
 // A entrega prometida cumpre o prazo que o cliente disse ("amanhã", "até sexta")? (rodada 4, M6). `null` = não dá pra
 // concluir (promessa sem prazo legível); true = NÃO cumpre. Dia útil conta como dia corrido (limite inferior).
-export function promiseMissesDeadline(promise: string | undefined | null, neededByDate: string, now: Date = new Date()): boolean | null {
+// Prazo com hora (11/10, rodada 17 g48: "antes das 7h"): o dia sozinho não basta — "1 dia útil" chega amanhã, mas não
+// às 7h. Com hora: "ok"/"late" pela hora; "unsure" (chega no dia, sem hora) vira `null` aqui — nem chega nem atrasa.
+export type NeededByLike = string | { date: string; hour?: number };
+export function promiseMissesDeadline(promise: string | undefined | null, neededBy: NeededByLike, now: Date = new Date()): boolean | null {
+  const day = promiseMissesDay(promise, typeof neededBy === "string" ? neededBy : neededBy.date, now);
+  if (typeof neededBy === "string" || neededBy.hour == null || day !== false) return day;
+  const fit = promiseHourFit(promise, { date: neededBy.date, hour: neededBy.hour }, now);
+  return fit === "ok" ? false : fit === "late" ? true : null;
+}
+
+// Entrega × prazo com hora, já sabendo que cai até o dia: janela agendada ("amanhã, 5h–8h") compara a hora; SLA curto
+// ("60 min", "6h") soma ao agora; prazo só em dias chega no dia sem hora — antes das 8h a loja não entrega ("late"),
+// depois disso "unsure". Chegar num dia ANTES do pedido é "ok".
+const SP_OFFSET = "-03:00";
+export function promiseHourFit(promise: string | undefined | null, d: { date: string; hour: number }, now: Date = new Date()): "ok" | "late" | "unsure" | null {
+  const t = (promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  if (!t) return null;
+  const today = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const days = Math.round((Date.parse(`${d.date}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
+  if (!Number.isFinite(days) || days < 0) return null;
+  const noHour = d.hour <= 8 ? "late" : "unsure";
+  const win = /\b(hoje|amanha),\s*(\d{1,2})h\s*[–-]\s*(\d{1,2})h\b/.exec(t);
+  if (win) {
+    const winDay = win[1] === "hoje" ? 0 : 1;
+    if (winDay !== days) return winDay < days ? "ok" : "late";
+    const start = Number(win[2]);
+    const end = Number(win[3]);
+    return end <= d.hour ? "ok" : start >= d.hour ? "late" : "unsure";
+  }
+  const dayUnits = /(\d+)\s*(?:dias?\s+uteis|dias?)\b/.exec(t);
+  if (dayUnits) return Number(dayUnits[1]) < days ? "ok" : noHour;
+  if (/\bdepois de amanha\b/.test(t)) return days > 2 ? "ok" : noHour;
+  if (/\bamanha\b/.test(t)) return days > 1 ? "ok" : noHour;
+  const short = /(\d+)\s*(min|h\b|horas?)/.exec(t);
+  if (short) {
+    const minutes = Number(short[1]) * (short[2].startsWith("min") ? 1 : 60);
+    const limit = Date.parse(`${d.date}T${String(d.hour).padStart(2, "0")}:00:00${SP_OFFSET}`);
+    const arrival = new Date(now.getTime() + minutes * 60_000);
+    if (arrival.getTime() > limit) return "late";
+    // Cairia de madrugada (pedido às 23h com "6h"): a loja não entrega nessa hora, então fica pra manhã.
+    const arrivalHour = Number(arrival.toLocaleTimeString("en-GB", { timeZone: "America/Sao_Paulo", hour: "2-digit", hour12: false }));
+    return arrivalHour < 7 ? noHour : "ok";
+  }
+  if (/\bhoje\b/.test(t)) return days > 0 ? "ok" : "unsure";
+  return null;
+}
+
+function promiseMissesDay(promise: string | undefined | null, neededByDate: string, now: Date): boolean | null {
   const t = (promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   if (!t) return null;
   const today = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
@@ -739,11 +786,15 @@ export function businessDaysArrival(today: string, businessDays: number): string
 // pediu "de manhã" e a loja só promete o dia (prazo em dias, sem hora). `null` = promessa sem prazo legível.
 // "maybe" (10/10, rodada 16 g46): o "não chega" segue o limite de baixo (dia útil = dia corrido), mas o "✅ chega a tempo"
 // só sai quando a data real cumpre — "6 dias úteis" num sábado pra "até sábado" dizia "Chega a tempo" (cai na terça 20).
-export function deadlineFit(promise: string | undefined | null, d: { date: string; morning?: boolean }, now: Date = new Date()): "ok" | "late" | "unsure" | "maybe" | null {
-  const miss = promiseMissesDeadline(promise, d.date, now);
+export function deadlineFit(promise: string | undefined | null, d: { date: string; morning?: boolean; hour?: number }, now: Date = new Date()): "ok" | "late" | "unsure" | "maybe" | null {
+  const miss = promiseMissesDay(promise, d.date, now);
   if (miss == null) return null;
   if (miss) return "late";
-  if (d.morning) {
+  // Hora dita ("antes das 7h", 11/10, rodada 17 g48): quem decide é a hora.
+  if (d.hour != null) {
+    const fit = promiseHourFit(promise, { date: d.date, hour: d.hour }, now);
+    if (fit && fit !== "ok") return fit;
+  } else if (d.morning) {
     const t = (promise ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
     const dayUnits = /(\d+)\s*(?:dias?\s+uteis|dias?)\b/.exec(t);
     const today = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
@@ -759,17 +810,26 @@ export function deadlineFit(promise: string | undefined | null, d: { date: strin
 // `null` = nenhuma promessa legível (não dá pra dizer nada). Só opções com prazo real entram.
 export function deadlineVerdict<T extends { delivery?: string }>(
   options: T[],
-  neededByDate: string,
+  neededByDate: NeededByLike,
   now: Date = new Date()
-): { onTime: T[]; late: T[]; fastest?: T } | null {
+): { onTime: T[]; late: T[]; fastest?: T; unsure?: T[] } | null {
   const onTime: T[] = [];
   const late: T[] = [];
+  // Prazo com hora (11/10, rodada 17 g48): a janela "amanhã, 5h–8h" pra "antes das 7h" pode chegar a tempo — nem a tempo
+  // nem atrasada; vai à parte pro aviso não dizer "nenhuma opção chega".
+  const unsure: T[] = [];
   for (const o of options) {
     const miss = promiseMissesDeadline(o.delivery, neededByDate, now);
     if (miss === true) late.push(o);
     else if (miss === false) onTime.push(o);
+    else if (typeof neededByDate !== "string" && neededByDate.hour != null && promiseHourFit(o.delivery, { date: neededByDate.date, hour: neededByDate.hour }, now) === "unsure") unsure.push(o);
   }
   if (!onTime.length && !late.length) return null;
+  if (unsure.length) {
+    const minutes = (o: T) => promisedMinutes(o.delivery) ?? Number.POSITIVE_INFINITY;
+    const fastest = [...late].sort((a, b) => minutes(a) - minutes(b))[0];
+    return { onTime, late, unsure, ...(fastest ? { fastest } : {}) };
+  }
   const minutes = (o: T) => promisedMinutes(o.delivery) ?? Number.POSITIVE_INFINITY;
   const fastest = [...late].sort((a, b) => minutes(a) - minutes(b))[0];
   return { onTime, late, ...(fastest ? { fastest } : {}) };

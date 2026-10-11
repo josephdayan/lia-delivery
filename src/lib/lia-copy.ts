@@ -959,7 +959,13 @@ export function deadlineMissNote(label: string, promise?: string): string {
 // das opções que chegam a tempo (vazio = nenhuma chega); `fastest` = a mais rápida das que não chegam.
 // `item` (10/10, rodada 11 g32): o aviso sai logo depois da confirmação do item anterior — sem o nome, o cliente lia
 // "não chega" como se fosse do pão de alho que acabou de escolher, e não do sal grosso que vinha a seguir.
-export function choicesDeadlineNote(label: string, onTimeStores: string[], fastest?: { store?: string; promise?: string }, item?: string): string {
+export function choicesDeadlineNote(label: string, onTimeStores: string[], fastest?: { store?: string; promise?: string }, item?: string, maybeStores: string[] = []): string {
+  // Só janela que pode chegar a tempo (11/10, rodada 17 g48: "amanhã, 5h–8h" pra "antes das 7h").
+  if (!onTimeStores.length && maybeStores.length) {
+    const stores = [...new Set(maybeStores)].map((s) => `*${s}*`);
+    const who = stores.length > 1 ? `${stores.slice(0, -1).join(", ")} e ${stores[stores.length - 1]} podem` : `${stores[0]} pode`;
+    return `⏰ Você precisa pra *${label}*: ${item ? `de *${item}*, ` : ""}só ${who} chegar a tempo (a janela de entrega começa antes) — as outras opções demoram mais.`;
+  }
   if (onTimeStores.length) {
     const who = [...new Set(onTimeStores)].map((s) => `*${s}*`).join(", ");
     return `⏰ Você precisa pra *${label}*: ${item ? `de *${item}*, ` : ""}chega a tempo só pela ${who} — as outras opções demoram mais.`;
@@ -976,10 +982,20 @@ export type DeadlineFit = "ok" | "late" | "unsure" | "maybe";
 export function deadlineLabel(d: { label: string; morning?: boolean }): string {
   return d.morning ? `${d.label} de manhã` : d.label;
 }
+// Prazo com hora (11/10, rodada 17 g48): o rótulo já traz a hora ("amanhã às 7h"); o "sem hora marcada" fala do dia
+// ("chega amanhã") e da hora pedida ("pode não ser até as 7h").
+const LABEL_HOUR_RE = / às (\d{1,2})h$/;
+function deadlineDay(d: { label: string }): string {
+  return d.label.replace(LABEL_HOUR_RE, "");
+}
+function unsureTail(d: { label: string }): string {
+  const h = LABEL_HOUR_RE.exec(d.label);
+  return h ? `pode não chegar até as ${h[1]}h` : "pode não ser de manhã";
+}
 function fitPhrase(fit: DeadlineFit | null | undefined, d: { label: string; morning?: boolean }): string {
   if (fit === "ok") return `chega até *${deadlineLabel(d)}* ✅`;
   if (fit === "late") return `não chega até *${deadlineLabel(d)}*`;
-  if (fit === "unsure") return `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
+  if (fit === "unsure") return LABEL_HOUR_RE.test(d.label) ? `chega *${deadlineDay(d)}*, mas ${unsureTail(d)}` : `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
   if (fit === "maybe") return `pode não chegar até *${deadlineLabel(d)}* (dia útil não conta fim de semana nem feriado)`;
   return "prazo sem data certa";
 }
@@ -1011,7 +1027,7 @@ export function freightDeadlineAnswer(d: { label: string; morning?: boolean }, r
 // Resumo com prazo dito que a entrega cumpre (10/10, rodada 10 g29: só o atraso era dito; o cliente não sabia se servia).
 export function deadlineFitNote(d: { label: string; morning?: boolean }, fit: DeadlineFit): string {
   if (fit === "maybe") return `⚠️ Pode não chegar até *${deadlineLabel(d)}*: o prazo da loja conta só dias úteis (sem fim de semana nem feriado).`;
-  return fit === "unsure" ? `⏰ Chega *${d.label}*, mas sem hora marcada — pode não ser de manhã.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
+  return fit === "unsure" ? `⏰ Chega *${deadlineDay(d)}*, mas ${LABEL_HOUR_RE.test(d.label) ? unsureTail(d) : "sem hora marcada — pode não ser de manhã"}.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
 }
 
 // Pedido com resumo na mesa e prazo dito ("até sexta, dá?").
@@ -1019,7 +1035,7 @@ export function orderDeadlineAnswer(d: { label: string; morning?: boolean }, fit
   const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
   if (fit === "ok") return `Dá, chega até *${deadlineLabel(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""} 🙂`;
   if (fit === "late") return `Até *${deadlineLabel(d)}* não chega${prazo ? `: o prazo é *${prazo}*` : ""}. Se quiser, me diz qual item trocar ou tirar.`;
-  if (fit === "unsure") return `Chega *${d.label}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas sem hora marcada — pode não ser de manhã.`;
+  if (fit === "unsure") return `Chega *${deadlineDay(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas ${LABEL_HOUR_RE.test(d.label) ? unsureTail(d) : "sem hora marcada — pode não ser de manhã"}.`;
   if (fit === "maybe") return `Até *${deadlineLabel(d)}* pode não chegar${prazo ? `: o prazo é *${prazo}*` : ""}, e dia útil não conta fim de semana nem feriado. Se quiser, me diz qual item trocar ou tirar.`;
   return `O prazo desse pedido${prazo ? ` é *${prazo}*` : " é o da loja"}; não consigo garantir *${deadlineLabel(d)}*.`;
 }
@@ -1046,9 +1062,10 @@ export function consolidationSlowerNote(keptEta: string, joinedEta: string, savi
 }
 
 // Oferta de juntar com prazo dito (10/10, rodada 6 g19): diz qual forma chega a tempo.
-export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string): string | null {
+export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string, joinedUnsure = false): string | null {
   const j = promiseForCustomer(joinedEta);
   const k = promiseForCustomer(keptEta);
+  if (joinedUnsure && keptMiss) return `⏰ Você precisa pra *${label}*: juntando pode chegar a tempo${j ? ` (${j})` : ""}, sem garantia — como está${k ? ` (${k})` : ""} não chega.`;
   if (joinedMiss && !keptMiss) return `⚠️ Você precisa pra *${label}*: juntando não chega a tempo${j ? ` (${j})` : ""} — mantendo como está, chega.`;
   if (!joinedMiss && keptMiss) return `⏰ Você precisa pra *${label}*: só juntando chega a tempo — como está${k ? ` (${k})` : ""} não chega.`;
   if (joinedMiss && keptMiss) return `⚠️ Pra *${label}* não chega de nenhum jeito — o mais rápido é *${(j && k ? (j.length <= k.length ? j : k) : j || k) || "o prazo da loja"}*.`;
