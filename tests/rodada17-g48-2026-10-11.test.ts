@@ -176,3 +176,36 @@ test("R17-3: 'tem X e Y?' no meio da escolha responde 'Tem sim' antes de anotar"
   assert.match(copy.queuedItemsNote(["açúcar", "sabão em pó"], true), /^Tem sim! Anotei \*açúcar\*, \*sabão em pó\*/);
   assert.match(copy.queuedItemsNote(["açúcar"]), /^Anotei \*açúcar\*/);
 });
+
+test("R16a-6/R17a-1: na escolha da entrega, 'mantém como está'/'não'/'pula'/'ok' reenviam a escolha — sem IA, sem 'pula esse item'", async (t) => {
+  if (!dbOk) return t.skip();
+  const { __setDialogueModelForTests } = await import("../src/lib/dialogue");
+  const prevLlm = process.env.LIA_DIALOGUE_LLM;
+  process.env.LIA_DIALOGUE_LLM = "true";
+  let llmCalls = 0;
+  __setDialogueModelForTests(async () => {
+    llmCalls += 1;
+    return { actions: [{ type: "reply", kind: "unclear", text: "Qual opção de frete você prefere: a barata ou a rápida?" }] } as never;
+  });
+  try {
+    const freightChoice = { orderId: "x", itemsSubtotal: 150, serviceFee: 10, stores: 1, kind: "store" as const, quotedAt: Date.now(), barato: { fee: 12.19, estimate: "1bd" }, rapido: { fee: 25.1, estimate: "60m" } };
+    const phone = await customer({ freightChoice }, "choosing_freight");
+    for (const said of ["mantém como está", "não", "pula", "ok"]) {
+      const out = await send(phone, said);
+      assert.match(out, /Tem duas formas de entrega/, `${said}: ${out.slice(0, 300)}`);
+      if (said !== "ok") assert.match(out, /Escolhe a entrega: responde \*1\* \(mais barata\) ou \*2\* \(mais rápida\)/, `${said}: ${out.slice(0, 300)}`);
+      assert.doesNotMatch(out, /seguir sem esse item|Qual opção de frete/, `${said}: ${out.slice(0, 300)}`);
+    }
+    assert.match(await send(phone, "pula"), /A entrega não dá pra pular/);
+    assert.equal(llmCalls, 0);
+  } finally {
+    __setDialogueModelForTests(null);
+    if (prevLlm === undefined) delete process.env.LIA_DIALOGUE_LLM;
+    else process.env.LIA_DIALOGUE_LLM = prevLlm;
+  }
+});
+
+test("R17a-1: 'não' seco no resumo fica assim, mas pergunta o que mudar", () => {
+  assert.match(copy.summaryKeptAsIs(21.94, false, true), /pedido fica assim ✅ Total: \*R\$ 21,94\*\.\nSe era pra mudar alguma coisa, me diz o quê/);
+  assert.doesNotMatch(copy.summaryKeptAsIs(21.94), /mudar/);
+});

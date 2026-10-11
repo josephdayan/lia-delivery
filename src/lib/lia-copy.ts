@@ -1862,8 +1862,10 @@ export function itemKept(name: string): string {
 // "mantém como está" / "tá bom assim" / "não" com o resumo na tela (10/10, rodada 16 R16a-4): fica assim, e a escolha de
 // pagamento volta logo depois.
 // Com o total (R$) a fala sai igual mesmo repetida (a reescrita anti-repetição transformava em despedida).
-export function summaryKeptAsIs(total: number, skipped = false): string {
-  return `${skipped ? "No resumo não tem nada pra pular — o" : "Fechado, o"} pedido fica assim ✅ Total: *${brl(total)}*.`;
+// "não" seco (11/10, rodada 17 R17a-1): pode ser "não quero mudar" ou "não, tá errado" — fica assim, mas pergunta o que mudar.
+export function summaryKeptAsIs(total: number, skipped = false, bareNo = false): string {
+  const kept = `${skipped ? "No resumo não tem nada pra pular — o" : "Fechado, o"} pedido fica assim ✅ Total: *${brl(total)}*.`;
+  return bareNo ? `${kept}\nSe era pra mudar alguma coisa, me diz o quê — ex.: *tira o leite*, *troca o arroz*, *mais 2 sabonetes*.` : kept;
 }
 
 // "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): a resposta direta antes do resumo.
@@ -3356,6 +3358,12 @@ export function freightEtaHeader(): string {
 }
 
 // "quanto fica o total?" na escolha da entrega (10/10, rodada 7 M3): respondia "Não peguei qual você quer".
+// Resposta curta na escolha da entrega ("mantém como está", "não", "pula", "ok", 11/10, rodada 17 R16a-6/R17a-1): a
+// entrega não se pula — sem ela não sai o total. Nunca "pula pra seguir sem esse item" (isso é da escolha de produto).
+export function freightPickNudge(skip = false): string {
+  return `${skip ? "A entrega não dá pra pular — sem ela não sai o total. " : ""}Escolhe a entrega: responde *1* (mais barata) ou *2* (mais rápida) 👇`;
+}
+
 export function freightTotalHeader(): string {
   return "O total depende da entrega que você escolher — o valor final está em cada opção 👇";
 }

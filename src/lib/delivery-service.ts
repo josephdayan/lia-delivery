@@ -4146,10 +4146,17 @@ async function handleDeliveryTurn(
   ) {
     const order = await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { status: true, userId: true, quoteExpiresAt: true, total: true } });
     if (order?.status === "awaiting_quote_confirmation" && order.userId === user.id && !(order.quoteExpiresAt && order.quoteExpiresAt.getTime() <= Date.now())) {
-      await reply(phone, copy.summaryKeptAsIs(order.total, /^pul/.test(normalizeMsg(text))));
+      await reply(phone, copy.summaryKeptAsIs(order.total, /^pul/.test(normalizeMsg(text)), /^(?:nao|n)$/.test(normalizeMsg(text).replace(/[!.?,;\s]+/g, ""))));
       await replyChargeNotIssuedButtons(phone, user.id, ctx);
       return;
     }
+  }
+  // Escolha da entrega na tela e resposta curta que não escolhe ("mantém como está", "não", "pula", "ok", "tanto faz";
+  // 11/10, rodada 17 R16a-6/R17a-1): a IA respondia com uma pergunta solta. Reenvia a escolha com os botões.
+  if (ctx.step === "choosing_freight" && ctx.freightChoice && intent.kind !== "number" && (keepsSummaryAsIs(text) || /^(?:ok|okay|blz|beleza|sim|s|tanto faz|qualquer(?: uma)?|tanto faz qual|pode ser|sei la|nao sei)$/.test(normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim()))) {
+    await reply(phone, copy.freightPickNudge(/^pul/.test(normalizeMsg(text))));
+    await sendFreightChoice(phone, ctx.freightChoice, ctx.neededBy);
+    return;
   }
   // O que o cliente escreveu, quando a IA reencaminha outra frase: o aviso ao dono cita ISSO, nunca a frase da IA.
   let saidBeforeRewrite: string | undefined;
@@ -5480,7 +5487,7 @@ async function handleDeliveryTurn(
       const asksFee = /\b(frete|taxa|caro|cara|entrega)\b/.test(n) && !/\b(prazo|demora|quando|horas?|chega)\b/.test(n);
       const asksEta = /\b(prazo|demora\w*|quando|horas?|chega\w*|tempo)\b/.test(n);
       const asksTotal = asksRunningTotal(text);
-      await reply(phone, asksPay ? copy.freightBeforePayment() : asksTotal ? copy.freightTotalHeader() : asksFee ? copy.freightFeeExplain() : asksEta ? copy.freightEtaHeader() : copy.choiceNotUnderstood());
+      await reply(phone, asksPay ? copy.freightBeforePayment() : asksTotal ? copy.freightTotalHeader() : asksFee ? copy.freightFeeExplain() : asksEta ? copy.freightEtaHeader() : copy.freightPickNudge(/^pul/.test(n)));
       await sendFreightChoice(phone, choice, ctx.neededBy);
       return;
     }
