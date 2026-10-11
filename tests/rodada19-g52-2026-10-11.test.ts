@@ -16,7 +16,7 @@ import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src
 import { declinesSwapOffer, meaningfulProductTokens, mergeShoppingLines, parseBasketLines, parseNeededBy, parseChoiceReply, parseStoreSwapAsk, replaceRefinedSize, splitLeadingSwapDecline } from "../src/lib/lia-intents";
 import { resolveListItems } from "../src/lib/list-items";
 import { dropAddressOnlyItems, onboardingNote, peelPersonName } from "../src/lib/address-parse";
-import type { LiveItemCheck } from "../src/lib/live-availability";
+import type { LiveItemCheck } from "../src/lib/live-freight";
 import * as copy from "../src/lib/lia-copy";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
@@ -359,4 +359,42 @@ test("R19a-5: 'urgente' sem dia e entrega que não é hoje — o resumo repete o
   assert.doesNotMatch(copy.manualQuoteSummary(base), /urgente/);
   // Com prazo dito, quem fala é o aviso do prazo (uma linha só).
   assert.doesNotMatch(copy.manualQuoteSummary({ ...base, urgentMiss: true, deadlineMiss: { label: "amanhã" } }), /urgente/);
+});
+
+// ---------------------------------------------------------------- R19a-6: pastilha do cartão do sintoma fecha o item da fila
+
+test("R19a-6: a pastilha escolhida no cartão 'Pra dor de garganta' fecha a 'pastilha para garganta' da fila", async (t) => {
+  if (!dbOk) return t.skip();
+  const recommendation = { request: { form: "symptom", symptom: "dor de garganta" }, plan: { shelves: [] }, shownShelfIds: [], emptyShelves: [] } as unknown as NonNullable<DeliveryContext["pending"]>[number]["recommendation"];
+  const c = await customerWith({
+    pending: [
+      { query: "dor de garganta", qty: 1, recommendation, options: [opt("g52-strep", "Pastilhas para Garganta Strepsils Mel e Limão 8 Unidades", 17.69, "carrefour", "Carrefour"), opt("g52-ibu", "Ibuprofeno 400mg 10 Cápsulas", 12.5, "carrefour", "Carrefour")] },
+      { query: "pastilha para garganta", qty: 1, options: [opt("g52-strep2", "Pastilhas Strepsils Laranja 8 Unidades", 15.9, "carrefour", "Carrefour")] },
+      { query: "termômetro", qty: 1, options: [opt("g52-termo", "Termômetro Digital G-Tech", 19.9, "carrefour", "Carrefour")] },
+    ],
+  }, "choosing");
+  const out = await send(c.phone, "1");
+  assert.match(out, /Strepsils Mel e Limão/);
+  assert.match(out, /Já conta como \*pastilha para garganta\*/, out.slice(0, 600));
+  assert.match(out, /termômetro/i);
+  const ctx = await ctxOf(c.convoId);
+  assert.deepEqual((ctx.pending ?? []).map((p) => p.query), ["termômetro"]);
+  // Escolher o ibuprofeno no cartão NÃO tira a pastilha da fila.
+  const d = await customerWith({
+    pending: [
+      { query: "dor de garganta", qty: 1, recommendation, options: [opt("g52-ibu", "Ibuprofeno 400mg 10 Cápsulas", 12.5, "carrefour", "Carrefour")] },
+      { query: "pastilha para garganta", qty: 1, options: [opt("g52-strep2", "Pastilhas Strepsils Laranja 8 Unidades", 15.9, "carrefour", "Carrefour")] },
+    ],
+  }, "choosing");
+  await send(d.phone, "1");
+  assert.deepEqual(((await ctxOf(d.convoId)).pending ?? []).map((p) => p.query), ["pastilha para garganta"]);
+});
+
+test("R19a-6: 'oi, antes: tem X?' com outro cartão aberto responde 'Tem sim!' antes de anotar", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({
+    pending: [{ query: "arroz", qty: 1, options: [opt("g52-arroz", "Arroz Branco Tipo 1 5kg", 25.9, "carrefour", "Carrefour")] }],
+  }, "choosing");
+  const out = await send(c.phone, "oi, antes: tem açúcar?");
+  assert.match(out, /Tem sim! Anotei \*açúcar\*/i, out.slice(0, 500));
 });

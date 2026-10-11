@@ -964,6 +964,11 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
   return [];
 }
 
+// A escolha do cartão do sintoma já é um item da lista (11/10, rodada 19 g52, R19a-6): ele sai da fila, sem 2ª escolha.
+export function recommendationCoversQueued(items: string[]): string {
+  return `_Já conta como ${items.map((i) => `*${i}*`).join(" e ")} da sua lista._`;
+}
+
 // "urgente" sem dia dito e a entrega não chega hoje (11/10, rodada 19 g52, R19a-5): o resumo repete o aviso do 1º cartão.
 export function urgentMissNote(promise?: string): string {
   const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");

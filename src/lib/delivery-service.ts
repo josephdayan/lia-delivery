@@ -8266,6 +8266,15 @@ async function confirmChosenOption(
   ctx.pending = ctx.pending!.slice(1);
   // Recomendação escolhida (08/10): o RecommendLog fecha o ciclo (o que converte).
   if (current.recommendation) await markRecommendChosen(current.recommendation, chosen);
+  // Escolha no cartão do sintoma que já é o item da fila (11/10, rodada 19 g52, R19a-6): "pastilha pra garganta" anotada
+  // e a Strepsils escolhida em "Pra dor de garganta" — a fila pedia a pastilha de novo e o resumo vinha com duas.
+  if (current.recommendation?.request.symptom && ctx.pending.length) {
+    const covered = ctx.pending.filter((p) => !p.recommendation && sameItemProduct(p.query, chosen.name));
+    if (covered.length) {
+      ctx.pending = ctx.pending.filter((p) => !covered.includes(p));
+      opts = { ...opts, after: [opts?.after, copy.recommendationCoversQueued(covered.map((p) => p.query))].filter(Boolean).join("\n") };
+    }
+  }
   // Memória da escolha concluída: "Outras opções"/"mais barato" depois dela reabrem
   // esta mesma escolha (e o novo pick substitui o item na cesta, não soma outro).
   const { replaceSku, ...lastBase } = current;
@@ -9131,9 +9140,14 @@ async function handleChoosing(
   if (intent.kind === "free_text" && !isQuestion(text) && (await narrowToBrandOnTable(phone, convoId, ctx, current, text))) return;
   // "oi, antes: tem ibuprofeno?" com o soro na mesa (11/10, rodada 18 g51): a pergunta de disponibilidade de OUTRO produto é
   // o pedido dele (entra na fila como qualquer item novo) — antes caía no "Não peguei qual você quer".
+  // A resposta diz "Tem sim!" antes do "Anotei" (11/10, rodada 19 g52, R19a-6): a pergunta ficava sem resposta.
+  let askedHave = false;
   if (intent.kind === "free_text" && isQuestion(text) && countDistinctItems(text) <= 1) {
     const askedItem = parseAvailabilityAsk(text);
-    if (askedItem && !sharesProductNoun(askedItem, current.query) && !sharesProductNoun(askedItem, current.baseQuery ?? current.query)) text = askedItem;
+    if (askedItem && !sharesProductNoun(askedItem, current.query) && !sharesProductNoun(askedItem, current.baseQuery ?? current.query)) {
+      text = askedItem;
+      askedHave = true;
+    }
   }
   if (intent.kind === "free_text" && !isQuestion(text)) {
     // Item que JÁ foi escolhido mandado de novo (10/10, rodada 7 N3: "racao para cachorro labrador adulto 15kg" depois
@@ -9229,7 +9243,7 @@ async function handleChoosing(
       if (dropped) notes.push(copy.choiceSkipped(dropped));
       if (added.autoAdded.length) notes.push(copy.autoAddedNote(added.autoAdded.map((i) => `${i.qty}x ${i.name}`)));
       // Item novo no meio de uma escolha entra na FILA — avisar, senão parece ignorado.
-      if (!pivot && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => withoutStoreMention(p.query))));
+      if (!pivot && added.pending.length) notes.push(copy.queuedItemsNote(added.pending.map((p) => withoutStoreMention(p.query)), askedHave));
       for (const q of corrected) notes.push(copy.correctedQueuedItem(withoutStoreMention(q)));
       if (added.notFound.length) notes.push(copy.notFoundNote(added.notFound));
       if (notes.length) await reply(phone, notes.join("\n"));
