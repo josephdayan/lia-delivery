@@ -39,7 +39,7 @@ export type ListItemDecision = "split" | "joined" | "inherited_head" | "brand_sh
 
 // "stores" e "price_compare" (06/10): "qual a loja?"/"de onde vc compra?" e "você compara
 // preços?" — a IA improvisava ("não faço comparativo de preços", falso).
-export type ServiceTopic = "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap" | "minimum";
+export type ServiceTopic = "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap" | "minimum" | "hot_meal";
 
 export type Intent =
   | { kind: "thanks" }
@@ -336,6 +336,11 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
   "^(" +
     [
       "(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (que )?(vem|veio|vai|vao|chega|volta|pediu|pedia|falou|disse|gosta|adora|mora|visita|completa|faz)\\b.*",
+      // Para quem é a compra e como a pessoa está (11/10, rodada 23 g65, R23-8): "to comprando pra minha sogra, ela ta de
+      // cama" e "compra do mês apertada" viravam itens fantasmas ("não achei" e "Ficou de fora" no resumo).
+      "(eu |a gente )?(to|tou|estou|t[oô]|estamos|tamo|vou|vamos) (comprando|pedindo|fazendo (a |as |essa |essas )?compras?|fazendo o pedido|cuidando)( (isso|tudo|aqui))? (pra|para|pro|da|do|de) (o |a )?(meu|minha|meus|minhas|nosso|nossa|uma|um)\\b[^:]*",
+      "(e |mas |que |porque |pq )?(ela|ele|eles|elas|(o |a )?(meu|minha) [a-zà-ú]+) (ta|esta|anda|ficou|tava|estava) (de cama|doente|acamad\\w*|internad\\w*|operad\\w*|gripad\\w*|resfriad\\w*|mal|ruim|de resguardo|de repouso|em repouso|se recuperando|sem (poder )?(sair|andar))\\b[^:]*",
+      "((a|minha|essa) )?((compra|feira|grana|dinheiro|orcamento|mes) )?(do mes )?((ta|esta|anda) )?((meio|bem|muito|super) )?(apertad[oa]|curt[oa]|contad[oa])( (esse mes|este mes|esse mes|agora))?",
       // "a visita chega hoje", "a festa é sábado" (10/10, rodada 14 g41): o quando da ocasião é prazo, nunca item.
       "(a|o|as|os) [a-zà-ú]+( [a-zà-ú]+)? (chega|chegam|vem|e|eh|sera|vai ser|comeca|acontece) (hoje|amanha|depois de amanha|(no |na |nesse |nessa |este |esta )?(domingo|segunda|terca|quarta|quinta|sexta|sabado|fim de semana))\\b.*",
       // "Vou pintar o quarto sábado de manhã" (11/10, rodada 18 g50): o plano (pintar, reformar, mudar…) é contexto do
@@ -697,7 +702,8 @@ export function statesDeadline(text: string): { date: string; label: string; mor
 
 // Separadores de conjunção dentro de um trecho ("A e B", "A + B", "A / B"). Antes da Etapa 1 todo
 // " e " separava itens; agora quem decide se separa é o resolvedor de list-items.ts.
-const CONJUNCTION_SPLIT_RE = /\s+e\s+|\s*\+\s*|\s+\/\s+/i;
+// "Basic+ Care Baby" (11/10, rodada 23 g65, R23a-5): o "+" colado no fim de uma palavra é parte da marca, não "e".
+const CONJUNCTION_SPLIT_RE = /\s+e\s+|\s+\+\s*|\+(?=\S)|\s+\/\s+/i;
 export type ConjunctionPart = { text: string; decision?: ListItemDecision; reason?: string; span?: string };
 export type ParseBasketOptions = {
   // Recebe cada trecho entre separadores duros (vírgula, ponto, quebra de linha) e devolve os
@@ -805,7 +811,7 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta)\b[^:\n]*:\s*/i, ""))
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|comprando|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta|caf[eé] da manh[aã]|almo[cç]o|jantar|janta|lanche)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   // Autocorreção na MESMA frase (11/10, rodada 20 g55, R20-2): "em vez de álcool em gel quero álcool 70 líquido", "quero Y
@@ -815,8 +821,10 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     .replace(/(^|[,.;!?\n]\s*|\s(?:e|mas|ai|ah|ou)\s+)(?:(?:mas|e|ah)\s+)?(?:em vez|ao inv[eé]s)\s+d[eoa]s?\s+([^,.;!?\n]+?)\s*,?\s+(?:eu\s+)?(?:quero|queria|prefiro|vou querer|coloca|bota|p[oõ]e|manda|me v[eê]|pode ser|traz)\s+/gi, "$1\u0003$2, ")
     .replace(/(^|[,.;!?\n]\s*)([^,.;!?\n\u0003]+?)\s+(?:em vez|ao inv[eé]s)\s+d[eoa]s?\s+([^,.;!?\n]+)/gi, "$1\u0003$3, $2")
     .replace(/(^|[,.;!?\n]\s*)(?:(?:mas|e|ah)\s+)?n[aã]o\s+(?:quero|queria|vou querer|precisa(?:\s+de)?)\s+(?:o\s+|a\s+|os\s+|as\s+)?([^,.;!?\n]+?)\s*[,;]?\s+(?:eu\s+)?(?:quero|queria|prefiro|vou querer)\s+/gi, "$1\u0003$2, ");
+  // "preciso hoje de desinfetante, ..." (11/10, rodada 23 g65, R23a-4): o dia entre o "preciso" e o "de" é prazo (lido à
+  // parte), nunca palavra do item — antes sobrava o fantasma "hoje de desinfetante".
   const parsedLines = source
-    .replace(/\bvou querer\b|\bquero\b|\bqueria\b|\bme manda\b|\bme ve\b|\bmanda\b|\b(?:preciso|presiso)(?: de| d)?\b|\bpode ser\b|\bcoloca\b|\bpoe\b|\bbota\b|\btraz\b|\badiciona\b|\binclui\b|\bcomprar\b|\bpedir\b|\bencomendar\b|\bcompra\b|\btambem\b|\btbm?\b|\bpor favor\b/gi, "")
+    .replace(/\bvou querer\b|\bquero\b|\bqueria\b|\bme manda\b|\bme ve\b|\bmanda\b|\b(?:preciso|presiso)(?: (?:hoje|hj|amanh[aã]|agora|urgente|rapido|r[aá]pido|logo|ainda hoje)(?=\s+d[eoa]s?\b))?(?: de| d)?\b|\bpode ser\b|\bcoloca\b|\bpoe\b|\bbota\b|\btraz\b|\badiciona\b|\binclui\b|\bcomprar\b|\bpedir\b|\bencomendar\b|\bcompra\b|\btambem\b|\btbm?\b|\bpor favor\b/gi, "")
     // protege decimais ("1,5l" / "1.5l") do split por vírgula/ponto
     .replace(/(\d),(\d)/g, "$1§$2")
     .replace(/(\d)\.(\d)/g, "$1¤$2")
@@ -2471,6 +2479,12 @@ export function detectIntent(text: string): Intent {
     const inner = detectIntent(backLead[1]);
     if (inner.kind !== "resume_where" && inner.kind !== "greeting") return inner;
   }
+  // "voltei. sim pode ser os ovos de 10" (11/10, rodada 23 g65, R23-6): a volta abre a RESPOSTA da pergunta que ficou aberta
+  // ("Levo 1 embalagem?") — antes virava "Que bom te ver de novo" e o carrossel de ovos voltava.
+  if (backLead && /^(?:sim|s|pode|pode ser|isso|ok|beleza|blz|claro|fechado|nao|n|outr[oa]s)\b/.test(backLead[1].trim())) {
+    const inner = detectIntent(backLead[1]);
+    if (inner.kind !== "resume_where" && inner.kind !== "greeting") return inner;
+  }
   // "pronto voltei, onde a gente tava?" — retomar com resumo do estado (28/08 S20).
   if (
     /\b(pronto )?voltei\b|\bonde (a gente |nos |que )?(tava(mos)?|estava(mos)?|parou|paramos)\b|\bvamos continuar\b|\bcontinua(r)? (de onde|dali|o pedido)\b/.test(n) &&
@@ -2853,6 +2867,9 @@ export function detectIntent(text: string): Intent {
   // sem dizer O QUÊ. Buscar isso vira "Não entendi seu pedido" — frio. Perguntamos.
   if (WANT_ITEMS_RE.test(n) || ASK_ANYTHING_RE.test(n) || isVagueWant(n)) return { kind: "want_items" };
 
+  // "vocês entregam marmita pronta quentinha? ou só congelada?" (11/10, rodada 23 g65, R23-9): comida quente de restaurante
+  // não é o que as lojas vendem — a resposta é essa, não a cobertura ("Atendo os estados…") que o "entregam" puxava.
+  if (HOT_MEAL_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n))) return { kind: "service_question", topic: "hot_meal" };
   // Pergunta operacional (frete/prazo/área/pagamento) SEM cara de produto — responder
   // com copy de serviço; cair em busca aqui gera "sabonete pra quem pergunta de frete".
   if (n.split(" ").length <= 10 && HOURS_ASK_RE.test(n.replace(/[!.?]+$/g, "").trim())) return { kind: "service_question", topic: "hours" };
@@ -3427,6 +3444,48 @@ export function asksRunningTotal(text: string): boolean {
   return RUNNING_TOTAL_RE.test(normalizeMsg(text));
 }
 
+// "amaciante eu já disse que nao quero" (11/10, rodada 23 g65, R23a-5): o cliente repete que NÃO quer um item. Devolve o item.
+const DECLINED_AFTER_RE = /^(?:(?:mas|ah|e|o|a|os|as)\s+)*(.+?)\s+(?:eu\s+)?(?:ja\s+)?(?:te\s+)?(?:disse|falei|tinha dito|tinha falado|avisei)\s+que\s+(?:eu\s+)?(?:nao|n)\s+(?:quero|preciso|vou querer|precisa)\b[\s!.]*$/;
+const DECLINED_BEFORE_RE = /^(?:(?:mas|ah|e)\s+)*(?:eu\s+)?(?:ja\s+)?(?:te\s+)?(?:disse|falei|tinha dito|tinha falado|avisei)\s+que\s+(?:eu\s+)?(?:nao|n)\s+(?:quero|preciso(?:\s+de)?|vou querer)\s+(?:(?:o|a|os|as)\s+)?(.+?)[\s!.]*$/;
+export function parseAlreadyDeclined(text: string): string | null {
+  const n = normalizeMsg(text).trim();
+  const m = DECLINED_AFTER_RE.exec(n) ?? DECLINED_BEFORE_RE.exec(n);
+  const phrase = m?.[1]?.replace(/^(?:o|a|os|as)\s+/, "").trim();
+  return phrase && phrase.split(/\s+/).length <= 4 && !/\b(?:isso|nada|tudo|ele|ela)\b/.test(phrase) ? phrase : null;
+}
+
+// "voltei. sim pode ser os ovos de 10" depois do "já volto" (11/10, rodada 23 g65, R23-6): a volta não é a resposta; a
+// resposta da pergunta aberta é o que vem depois. Recebe e devolve texto já normalizado.
+export function stripReturnLead(n: string): string {
+  return n.replace(/^(?:(?:voltei|to de volta|tou de volta|estou de volta|cheguei|oi+|ola|opa|pronto|desculpa(?: a demora)?|foi mal(?: a demora)?)[\s,.!]+)+(?=\S)/, "");
+}
+
+// Depois de a loja recusar a cesta INTEIRA (11/10, rodada 23 g65, R23-6): "tira a alface e tenta de novo", "tenta de novo",
+// "procura de novo sem a alface". Devolve as frases que o cliente mandou tirar (vazio = refaz tudo), ou null se não é isso.
+const RETRY_CUE_RE = /\b(?:tenta(?:r)?|tente|procura(?:r)?|procure|busca(?:r)?|faz|faca|refaz(?:er)?|manda(?:r)?)\b(?:\s+\S+){0,3}?\s+(?:de novo|denovo|novamente|outra vez|mais uma vez)\b|^(?:de novo|denovo|outra vez|tenta(?:r)? ai|tenta)[\s!.]*$/;
+const RETRY_DROP_RE = /\b(?:tira|tirar|tire|remove|remover|sem|menos|exceto|tirando)\s+(?:(?:o|a|os|as)\s+)?(.+?)(?=\s+e\s+(?:tenta|tente|procura|busca|faz|refaz|manda)\b|\s+(?:e\s+)?(?:tenta|tente|procura|busca|refaz)\b|[,.;!?]|$)/g;
+export function parseRefusedRetry(text: string): { drop: string[]; retry: boolean } | null {
+  const n = normalizeMsg(text).trim();
+  const drop = [...n.matchAll(RETRY_DROP_RE)].map((m) => m[1].replace(/\s+(?:de novo|denovo|novamente|outra vez)$/, "").trim()).filter(Boolean);
+  const retry = RETRY_CUE_RE.test(n);
+  if (!retry && !drop.length) return null;
+  return { drop, retry };
+}
+
+// "quanto ta dando o frango?" (11/10, rodada 23 g65, R23-10): o preço de UM item da cesta, não o parcial inteiro. Devolve o
+// produto citado; tudo/total/pedido/frete seguem como pergunta do total.
+const ITEM_PRICE_ASK_RE =
+  /^(?:e\s+)?(?:(?:quanto|qto|qnto)\s+(?:que\s+)?(?:(?:ta|esta|ficou|fica|deu|da|saiu|sai|custa|custou|e|eh|vai ficar|vai sair)\s+)?(?:(?:dando|saindo|ficando|custando)\s+)?|qual\s+(?:e\s+|eh\s+|foi\s+)?o\s+(?:preco|valor)\s+(?:d[oa]s?|que\s+(?:ficou|deu)\s+(?:o|a|os|as))\s+)(?:(?:o|a|os|as)\s+)?(.+?)[\s?!.]*$/;
+export function parseItemPriceAsk(text: string): string | null {
+  const m = ITEM_PRICE_ASK_RE.exec(normalizeMsg(text).trim());
+  if (!m) return null;
+  const phrase = m[1].replace(/\s+(?:ai|mesmo|ao todo|no total|agora|hoje)$/, "").trim();
+  if (!phrase || phrase.split(/\s+/).length > 4) return null;
+  if (/^(?:dando|saindo|ficando|custando|ficou|deu|fica)$/.test(phrase)) return null;
+  if (/\b(?:tudo|total|pedido|compra|cesta|carrinho|frete|entrega|taxa|conta|isso|ele|ela|eles|elas|cada|tempo|demora|falta|sobra|resta)\b/.test(phrase)) return null;
+  return phrase;
+}
+
 
 // ---------- retorno dos testadores, 06/10/2026 ----------
 
@@ -3645,6 +3704,8 @@ export function parseAttributeAsk(text: string): string | null {
 // depois do endereço. Devolve o produto perguntado, ou null se a pergunta é sobre o serviço.
 const SERVICE_ASK_NOUNS =
   /^(?:como|jeito|frete|taxa|entrega|entregas|horario|prazo|desconto|cupom|cnpj|site|app|aplicativo|loja|lojas|atendente|alguem|algum|pix|cartao|boleto|nota|garantia|troca|devolucao|limite|minimo|valor|preco|precos|promocao|ai|isso|mais|outra|outro|outras|outros|algo|alguma|alguma coisa|coisa|tudo|de tudo|o que)\b/;
+const HOT_MEAL_RE =
+  /\b(?:quentinhas?|marmitex|comida (?:pronta )?(?:quente|quentinha|de restaurante)|(?:marmitas?|refeic\w+|comidas?|pratos?) (?:prontas? |prontos? )?(?:quentes?|quentinh\w+|feitas? na hora|feitos? na hora)|prato feito|delivery de (?:comida|restaurante))\b/;
 const OUT_OF_SCOPE_SERVICE_RE =
   /\b(?:chama(?:r)? (?:um |uma )?(?:uber|99|taxi|motorista|motoboy)|pede (?:um |uma )?(?:uber|99|taxi)|encanador|eletricista|diarista|faxineira|manicure|recarga de celular|recarregar (?:o )?celular|paga(?:r)? (?:um |o |a |minha |meu )?(?:boleto|conta de luz|conta de agua|fatura)|passagem (?:de onibus|aerea)|reserva(?:r)? (?:uma )?mesa)\b/;
 const VAGUE_REQUEST_RE =

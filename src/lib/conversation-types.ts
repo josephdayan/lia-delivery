@@ -91,6 +91,8 @@ export type StoreFulfillment = {
 export type PendingChoice = {
   query: string;
   qty: number;
+  // Opção que a Lia acabou de destacar ("A mais barata é a *4*", 11/10, rodada 23 g65, R23a-2): "pode ser essa" escolhe ela.
+  highlightSku?: string;
   // Só durante a montagem das escolhas (10/10, rodada 12): ponta de um item "X ou Y", juntada antes de sair do buildChoices.
   altOf?: string;
   // O cliente pediu uma loja que não aparece nas opções e a Lia já avisou (09/10, rodada 3).
@@ -110,6 +112,8 @@ export type PendingChoice = {
   // Dia real das opções urgentes (10/10, rodada 5 g16): ausente = todas chegam hoje; "amanha" = alguma só amanhã.
   urgentWhen?: "amanha" | "rapido";
   noneToday?: boolean;
+  // O "Nada chega hoje" já foi dito para um item anterior desta lista (11/10, rodada 23 g65, R23a-5): os seguintes só lembram.
+  noneTodaySaid?: boolean;
   // O cliente DISSE a quantidade ("uma coca", "2 leites") — não re-perguntar depois
   // da escolha; a pergunta de quantidade é só pra pedido sem quantidade.
   qtyExplicit?: boolean;
@@ -419,6 +423,9 @@ export type DeliveryContext = {
   // da MESMA loja com os mesmos itens tira a loja do caminho e busca alternativas — nunca fica em loop
   // "cota → recusa → cota" e nunca cobra.
   rehearsalRefused?: { storeKey: string; skus: string[]; count: number; at: number };
+  // Cesta inteira recusada pela loja no fechamento (11/10, rodada 23 g65, R23-6): os itens ficam guardados para "tenta de
+  // novo" / "tira a alface e tenta de novo" refazer a lista sem o cliente digitar tudo outra vez.
+  refusedBasket?: { items: BasketItem[]; at: number };
   // Uma loja por pedido (08/10 noite): cesta (skus×qtd) que já tentou juntar numa loja só — não busca de novo.
   consolidationTried?: string;
   // Cesta (skus×qtd) em que o cliente pediu "junta" e a Lia respondeu que não dá (10/10, rodada 14 g41): o resumo não oferece
