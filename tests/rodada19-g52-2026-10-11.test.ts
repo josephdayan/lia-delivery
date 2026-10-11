@@ -398,3 +398,39 @@ test("R19a-6: 'oi, antes: tem X?' com outro cartão aberto responde 'Tem sim!' a
   const out = await send(c.phone, "oi, antes: tem açúcar?");
   assert.match(out, /Tem sim! Anotei \*açúcar\*/i, out.slice(0, 500));
 });
+
+// ---------------------------------------------------------------- R19a-9: teto do item que a IA deixou de fora
+
+test("R19a-9: o teto dito colado no item volta pra busca quando a IA o omite", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "search", query: "arroz branco tipo 1" }, { type: "search", query: "feijão carioca" }] as DialogueAction[] }));
+  const c = await customerWith({ pending: [{ query: "café", qty: 1, options: [opt("g52-cafe", "Café Torrado e Moído 500g", 18.9, "carrefour", "Carrefour")] }] }, "choosing");
+  const out = await send(c.phone, "e também um arroz até 10 reais e um feijão carioca");
+  const ctx = await ctxOf(c.convoId);
+  const arroz = (ctx.pending ?? []).find((p) => /arroz/.test(p.query));
+  assert.ok(arroz, out.slice(0, 600));
+  assert.equal(arroz.cap, 10);
+  assert.ok(arroz.options.every((o) => o.unitPrice * 1.1 <= 10.5), JSON.stringify(arroz.options.map((o) => [o.name, o.unitPrice])));
+  // O feijão (sem teto dito) não herda o teto do arroz.
+  const feijao = (ctx.pending ?? []).find((p) => /feij/.test(p.query));
+  assert.equal(feijao?.cap ?? null, null);
+});
+
+test("R19a-9: 'o papel higiênico mais barato' com o papel na fila não diz 'Tirei' e 'Anotei' juntos", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_DIALOGUE_LLM = "true";
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "remove", target: 1 }, { type: "search", query: "papel higiênico mais barato" }] as DialogueAction[] }));
+  const c = await customerWith({
+    pending: [
+      { query: "macarrão instantâneo", qty: 5, qtyExplicit: true, options: [opt("g52-mac", "Macarrão Instantâneo Nissin 85g", 3.5, "carrefour", "Carrefour")] },
+      { query: "papel higiênico", qty: 1, options: [opt("g52-ph", "Papel Higiênico Neve 4 Rolos", 12.9, "carrefour", "Carrefour")] },
+    ],
+  }, "choosing");
+  const out = await send(c.phone, "o papel higienico mais barato");
+  assert.doesNotMatch(out, /Tirei/, out.slice(0, 600));
+  const ctx = await ctxOf(c.convoId);
+  const queries = (ctx.pending ?? []).map((p) => p.query);
+  assert.equal(queries[0], "macarrão instantâneo");
+  assert.equal(queries.filter((q) => /papel/.test(q)).length, 1, JSON.stringify(queries));
+});

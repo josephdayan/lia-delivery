@@ -6,10 +6,10 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms, relaxAnyAttribute } from "../lia-intents";
+import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms, relaxAnyAttribute, sameItemProduct, splitPriceCap } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
-import { reconcileLineCounts } from "../list-items";
+import { reconcileLineCounts, resolveListItems } from "../list-items";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { getStore } from "../stores";
 import { queryTokens } from "../stores/types";
@@ -98,6 +98,16 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   return outcome;
 }
 
+// "um perfume floral até 150 reais e um hidratante" (11/10, rodada 19 g52, R19a-9): a IA devolvia "perfume feminino floral"
+// sem o teto e o único cartão custava R$ 642. O teto que o cliente disse colado no MESMO item volta para a busca.
+function saidItemCap(said: string, query: string): number | null {
+  for (const line of resolveListItems(said)) {
+    const { phrase, cap } = splitPriceCap(line.phrase);
+    if (cap != null && phrase && sameItemProduct(phrase, query)) return Math.floor(cap);
+  }
+  return null;
+}
+
 // O item em escolha NÃO era o da tela quando o turno começou (a remoção/troca da mesma mensagem mudou a vez).
 function offScreen(query: string): boolean {
   const meta = turnMeta.getStore();
@@ -165,7 +175,12 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       )
         // "de qualquer material" (11/10, rodada 18 g51): o atributo liberado sai da busca da IA ("poleiro material").
         .map((l) => ({ ...l, query: relaxAnyAttribute(l.query, said) }))
-        .map((l) => (inheritCap != null && parsePriceCap(l.query) == null ? { ...l, query: `${l.query} até ${Math.floor(inheritCap)} reais` } : l));
+        .map((l) => (inheritCap != null && parsePriceCap(l.query) == null ? { ...l, query: `${l.query} até ${Math.floor(inheritCap)} reais` } : l))
+        .map((l) => {
+          if (parsePriceCap(l.query) != null) return l;
+          const cap = saidItemCap(said, l.query);
+          return cap != null ? { ...l, query: `${l.query} até ${cap} reais` } : l;
+        });
       let text = lines.map((l) => (l.qty > 1 && !/^\d/.test(l.query) ? `${l.qty} ${l.query}` : l.query)).join(", ");
       const miss = ctx.lastMiss && Date.now() - ctx.lastMiss.at < 20 * 60_000 ? ctx.lastMiss : undefined;
       // "tenta de novo / em outra loja": o caminho do "não achei" refaz UMA vez e depois diz a verdade.

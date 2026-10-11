@@ -3,7 +3,7 @@
 // de hoje assume. Puro e testável. Resolve os números do estado em alvos concretos ANTES de
 // qualquer handler mexer na cesta (compostos como "tira o leite e bota 2 pães").
 import { countDistinctItems, resolveListItems, textHasCount } from "../list-items";
-import { extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sharesProductNoun, stripMedicineNegation, attributeFragment } from "../lia-intents";
+import { extractCep, isNonItemSegment, looksLikeMedicine, normalizeMsg, parseKeepItem, parseBudgetStatement, parsePriceCap, sameItemProduct, sharesProductNoun, stripMedicineNegation, attributeFragment } from "../lia-intents";
 import { splitAlternativeLine } from "../alt-items";
 import { isPrescriptionDrugName, looksLikePrescriptionRequest, medicineEnabled } from "../medicine";
 import { detectRecommendation } from "../recommend/detect";
@@ -111,6 +111,15 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
     } else {
       steps.push(step);
     }
+  }
+  // "o papel higiênico mais barato" com o papel na FILA (11/10, rodada 19 g52, R19a-9): a IA tirava o da fila e buscava de novo —
+  // "Tirei papel higiênico." + "Anotei papel higiênico" na mesma resposta. É o mesmo item corrigido: sem o "tirar", a busca
+  // substitui o da fila ("Corrigi para…").
+  for (let i = steps.length - 1; i >= 0; i--) {
+    const st = steps[i];
+    if (st.type !== "remove" || st.target.kind !== "queue") continue;
+    const name = st.target.name;
+    if (steps.some((o) => o.type === "search" && !o.retry && o.lines.some((l) => sameItemProduct(l.query, name)))) steps.splice(i, 1);
   }
   // Atributo solto como busca (10/10, rodada 12: "faltou a escova de dente, tem que ser macia" virava o item "tem que ser
   // macia" e 47 s de busca): refina a linha anterior da mesma busca; sozinho, com as opções na tela, é refino delas.
