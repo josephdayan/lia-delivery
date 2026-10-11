@@ -370,7 +370,7 @@ function redFlagText(reason: string): string {
 }
 
 export type PreHandlers = {
-  refuseMedicine: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
+  refuseMedicine: (phone: string, convoId: string, ctx: DeliveryContext, text?: string) => Promise<void>;
   attendanceWait: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
   // Responde uma pergunta do serviço pelo roteador de sempre (texto fixo do lia-copy) e devolve o contexto novo.
   answerCanonical: (phone: string, userId: string, convoId: string, ctx: DeliveryContext, canonical: string) => Promise<void>;
@@ -449,7 +449,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           outcome = { kind: "rewrite", text: "quero falar com um atendente", actions: plan.label };
           break;
         case "medicine":
-          await h.refuseMedicine(phone, convoId, ctx);
+          await h.refuseMedicine(phone, convoId, ctx, input.text);
           break;
         case "wait":
           await h.attendanceWait(phone, convoId, ctx);

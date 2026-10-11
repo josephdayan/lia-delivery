@@ -361,6 +361,14 @@ export function pharmacyPartnerAnswer(otcEnabled = false): string {
     : "Não tenho farmácia parceira que venda remédio por mim e também não consigo indicar uma unidade: remédio eu não vendo — por lei, só a farmácia pode. Pra medicação, a farmácia mais perto de você é o caminho. De mercado, higiene, pet, beleza e casa eu cuido — o que você precisa?";
 }
 
+// Remédio de bicho (11/10, rodada 17 g49): sem o exemplo de farmácia humana; quem orienta é o veterinário.
+export function vetMedicineRefusal(): string {
+  return "Vermífugo e remédio de bicho eu não consigo comprar: é medicamento veterinário, e a dose depende do peso e do caso. Se ele está doente (diarreia, vômito, sem comer), o melhor é levar ao *veterinário*. Ração, tapete, areia e petisco eu cuido — o que mais você precisa?";
+}
+export function vetMedicineSkippedNote(): string {
+  return "_Vermífugo e remédio de bicho eu não consigo comprar (é medicamento veterinário), então deixei de fora. Se ele está doente, o melhor é levar ao veterinário._";
+}
+
 export function medicineSkippedNote(): string {
   return "_Remédio eu não posso vender, então deixei ele de fora._";
 }
@@ -2113,6 +2121,17 @@ export function specAnswer(input: {
   return `O nome da opção *${input.n}* (${input.name}) não diz ${measure ? `se é de ${input.asked}` : `se serve ${input.asked}`}, e eu não quero chutar. Se quiser, mando o link da loja: é só pedir _detalhes do ${input.n}_.${other}`;
 }
 
+// "o primeiro é de quantas escovas?" / "o segundo é integral?" (11/10, R17a-4): responde com o que o NOME do card diz.
+export function specCountAnswer(input: { n: number; name: string; units: number | null }): string {
+  if (input.units) return `Pelo nome, a opção *${input.n}* (${input.name}) vem com *${input.units} ${input.units === 1 ? "unidade" : "unidades"}*. Quer essa? Responde *${input.n}*.`;
+  return `O nome da opção *${input.n}* (${input.name}) não diz quantas vêm — pelo cadastro, é *1 embalagem*. Se quiser, mando o link da loja: é só pedir _detalhes do ${input.n}_.`;
+}
+export function specWordAnswer(input: { n: number; name: string; word: string; has: boolean; other?: { n: number; name: string } }): string {
+  if (input.has) return `Sim: pelo nome, a opção *${input.n}* (${input.name}) é *${input.word}*. Quer essa? Responde *${input.n}*.`;
+  const other = input.other ? ` A opção *${input.other.n}* (${input.other.name}) diz *${input.word}* no nome.` : "";
+  return `O nome da opção *${input.n}* (${input.name}) não diz *${input.word}*, e eu não quero chutar.${other}`;
+}
+
 // Comparação com produto fora da tela (10/10, rodada 13 g39): "e o Fofinho, é melhor que esses?" caía na FAQ do serviço.
 export function compareNotShown(term: string, query: string): string {
   const shown = term.replace(/(^|\s)(\p{L})/gu, (_, sp: string, c: string) => sp + c.toUpperCase());
@@ -2918,6 +2937,11 @@ export function swapColorNote(from: string, to: string): string {
   return `muda a cor: era ${from}, essa é ${to}`;
 }
 
+// A troca de loja perde ou muda a medida (11/10, rodada 17 g49): "era 40 cm" nunca some calado.
+export function swapMeasureNote(from: string, to?: string): string {
+  return to ? `muda a medida: era ${from}, essa é ${to}` : `não confirmei a medida (era ${from})`;
+}
+
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
@@ -3581,6 +3605,11 @@ export function moreOfSameAddedShort(totalQty: number, name: string): string {
 // Número solto que não vira ajuste (09/10, rodada 2): a quantidade pedida fica como está.
 export function bareNumberKeepsQty(qty: number, name: string): string {
   return `Deixei ${qty}x ${name} como estava. Pra mudar a quantidade, manda assim: *põe 3* ou *só 1*.`;
+}
+
+// Número solto com o item já convertido em embalagens (11/10, rodada 17 g49): não muda sem o cliente dizer o quê.
+export function bareNumberPackKept(qty: number, name: string, said: number): string {
+  return `Deixei ${qty}x ${name} como estava — não tem opção aberta agora. Se quer *${said} embalagens*, manda *põe ${said}*.`;
 }
 
 export function qtyAdjustedShort(qty: number, name: string): string {

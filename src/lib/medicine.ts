@@ -17,6 +17,18 @@ export function medicineEnabled(): boolean {
   return process.env.LIA_MEDICINE_MIP === "true";
 }
 
+// Remédio de BICHO (11/10, rodada 17 g49: "vcs vendem vermifugo?" com o cachorro doente recebia a recusa de remédio
+// humano, com dipirona de exemplo). Vermífugo, antipulga, carrapaticida e "remédio pro cachorro" são medicamento
+// veterinário: a Lia não compra (nem com o isento ligado) e a resposta sugere o veterinário.
+const VET_MED_TERM_RE = /\b(?:vermifug\w*|vermes|verminose|antipulgas?|anti pulgas?|carrapat\w*|antiparasit\w*|bravecto|simparic|nexgard|frontline|drontal|seresto|credelio)\b/;
+const VET_PET_RE = /\b(?:cachorr\w*|cao|caes|cadela|gat[oa]s?|gatinh\w*|filhote\w*|pet|pets|coelh\w*|passar\w*|calopsita|hamster|felin\w*|canin\w*)\b/;
+const VET_MED_WORD_RE = /\b(?:remedios?|medicamentos?|antibioticos?|anti inflamatorios?|pomadas?|comprimidos?|injecao|vacinas?)\b/;
+export function isVetMedicineAsk(text: string): boolean {
+  const n = (text ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[-_]/g, " ");
+  if (VET_MED_TERM_RE.test(n)) return true;
+  return VET_PET_RE.test(n) && VET_MED_WORD_RE.test(n);
+}
+
 // Farmácias que vendem MIP pela Lia. Ambas fecham por API no servidor (VTEX).
 export const MIP_STORE_KEYS: readonly string[] = ["drogariasp", "paguemenos"];
 

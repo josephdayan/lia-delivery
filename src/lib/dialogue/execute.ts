@@ -338,7 +338,7 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
     }
 
     case "fixed": {
-      if (step.key === "medicine") await h.refuseMedicine(phone, convoId, ctx);
+      if (step.key === "medicine") await h.refuseMedicine(phone, convoId, ctx, env.text);
       else await reply(phone, copy.outOfScopeProductAnswer());
       if (current) await h.sendChoices(phone, current);
       return "done";

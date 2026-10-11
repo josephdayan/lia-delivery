@@ -408,9 +408,11 @@ const SHELF_SYN: Record<string, string> = {
   cao: "cachorro", caes: "cachorro", cadela: "cachorro", cachorra: "cachorro", cachorrinho: "cachorro", cachorrinha: "cachorro", dog: "cachorro", doguinho: "cachorro", catioro: "cachorro", canino: "cachorro",
   gata: "gato", gatinho: "gato", gatinha: "gato", felino: "gato", bichano: "gato",
   passarinho: "passaro", passaros: "passaro", calopsita: "passaro", peixinho: "peixe", peixes: "peixe",
+  // Roedor (11/10, R16-10: "ração pra coelho filhote" caía na prateleira de ração de cachorro).
+  coelho: "roedor", coelhinho: "roedor", coelha: "roedor", hamster: "roedor", porquinho: "roedor", chinchila: "roedor", roedore: "roedor", roedores: "roedor",
   espinha: "acne", espinhas: "acne", cravo: "acne", cravos: "acne", bombons: "bombom"
 };
-const SPECIES = ["cachorro", "gato", "peixe", "passaro"];
+const SPECIES = ["cachorro", "gato", "peixe", "passaro", "roedor"];
 const PET_WORDS = new Set(["pet", "racao", "petisco", "coleira", "sache", "arranhador", "comedouro", "areia", ...SPECIES]);
 
 function shelfTokens(text: string | undefined): string[] {
@@ -457,6 +459,9 @@ export function findShelfForProduct(product: string, shelves: readonly ShelfNode
     if (e.shelf.domain === "pet") score += petQuery ? 30 : -50;
     if (score > 0 && (!best || score > best.score)) best = { shelf: e.shelf, score };
   }
+  // A busca da prateleira precisa ser da espécie pedida: "ração pro coelho" na prateleira de "Pássaros, roedores…" buscaria
+  // "alimento para passaros" — sem a espécie na busca da prateleira, o chamador busca o próprio produto (11/10, R16-10).
+  if (best && qSpecies.length && !shelfTokens(best.shelf.query).some((t) => qSpecies.includes(t))) return undefined;
   return best?.shelf;
 }
 

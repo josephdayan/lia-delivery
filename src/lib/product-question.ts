@@ -2,7 +2,7 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
-import { compareNotShown, compareOptionsAnswer, specAnswer } from "./lia-copy";
+import { compareNotShown, compareOptionsAnswer, specAnswer, specCountAnswer, specWordAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
 export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
@@ -24,7 +24,10 @@ export type ProductQuestion =
   | { kind: "expiry" }
   | { kind: "dietary"; term: string }
   // "o primeiro serve pro rosto?", "o primeiro é 75g?", "o 2 tem 3 unidades?" (10/10, rodada 16 M5/M6): o que o NOME do card diz.
-  | { kind: "spec"; n: number; area?: BodyArea; measure?: { value: number; unit: string; label: string } };
+  | { kind: "spec"; n: number; area?: BodyArea; measure?: { value: number; unit: string; label: string } }
+  // "o primeiro é de quantas escovas?" / "o segundo é integral?" (11/10, R17a-4): quantas vêm / palavra do nome.
+  | { kind: "spec_count"; n: number }
+  | { kind: "spec_word"; n: number; word: string };
 
 export type BodyArea = "rosto" | "corpo" | "cabelo" | "labios" | "maos" | "pes";
 const AREA_LABEL: Record<BodyArea, { ask: string; name: string }> = {
@@ -187,6 +190,7 @@ function namedComparison(n: string, names: string[]): ProductQuestion | null {
   return null;
 }
 
+const SPEC_WORD_SKIP_RE = /\b(bom|boa|bons|boas|melhor|pior|caro|cara|barato|barata|confiavel|seguro|segura|gostoso|gostosa|legal|ruim|isso|esse|essa|aquele|mesmo|mesma|igual|diferente|novo|nova|entregue|entrega|hoje|amanha|rapido)\b/;
 export function parseProductQuestion(text: string, optionCount: number, names?: string[]): ProductQuestion | null {
   if (optionCount < 1) return null;
   const n = normalizeMsg(text).replace(/[!.?\s]+$/g, "").trim();
@@ -251,8 +255,12 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
     if (ref) {
       const area = (Object.keys(AREA_ASK_RE) as BodyArea[]).find((a) => AREA_ASK_RE[a].test(tail));
       const measure = measuresOf(tail)[0];
+      if (/\bquant[oa]s\b/.test(tail)) return { kind: "spec_count", n: ref };
       if (measure) return { kind: "spec", n: ref, measure };
       if (area && /\b(pra|para|pro|p|no|na|de)\b/.test(tail)) return { kind: "spec", n: ref, area };
+      // Uma ou duas palavras de tipo/versão ("integral", "sem fio", "de vidro"): o que o nome diz. Juízo ("bom", "caro") não.
+      const word = tail.replace(/^\s*(?:de|do|da|um|uma|o|a|tipo)\s+/, "").trim();
+      if (isQuestion && /^[a-z]{3,}(?: [a-z]{3,})?$/.test(word) && !SPEC_WORD_SKIP_RE.test(word) && !/^(?:pra|para|pro|p|no|na|com|sem)\b/.test(word)) return { kind: "spec_word", n: ref, word };
     }
   }
 
@@ -359,6 +367,17 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
       }
       return specAnswer({ n, name: o.name, verdict: "unknown", asked: AREA_LABEL[area].ask, want: AREA_LABEL[area].name, other: other ? { n: other.i, name: other.x.name } : undefined });
     }
+    case "spec_count": {
+      const o = options[q.n - 1];
+      const units = packCountOf(o.name);
+      return specCountAnswer({ n: q.n, name: o.name, units });
+    }
+    case "spec_word": {
+      const o = options[q.n - 1];
+      const has = (name: string) => nameSays(name, q.word);
+      const other = options.map((x, i) => ({ i: i + 1, x })).find(({ x, i }) => i !== q.n && has(x.name));
+      return specWordAnswer({ n: q.n, name: o.name, word: q.word, has: has(o.name), other: other ? { n: other.i, name: other.x.name } : undefined });
+    }
     case "dietary":
       return `Isso é produto pra pet: "sem ${q.term}" é termo de alimento humano, e o nome dessas opções não diz nada sobre ${q.term}. A composição fica no rótulo da loja (posso mandar o link: é só pedir "detalhes do 1"); se o seu pet tem restrição, o veterinário indica a linha certa.`;
     case "audience": {
@@ -377,6 +396,19 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
       return `O nome dessas opções não diz pra quem são, e eu não quero chutar. Posso procurar uma que diga *${label}* no nome — é só mandar _${suggest}_.`;
     }
   }
+}
+
+// Quantas unidades a embalagem diz ter: "3 Unidades", "Com 3", "Kit 3", "c/ 3", "Leve 3". null = o nome não diz.
+function packCountOf(name: string): number | null {
+  const n = normalizeMsg(name);
+  const m = n.match(/\b(\d{1,3})\s*(?:un|und|unid|unidades?|pecas?)\b/) ?? n.match(/\b(?:com|kit(?: com)?|c\/|leve|pack(?: com)?)\s*(\d{1,3})\b/);
+  const v = m ? Number(m[1]) : NaN;
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+const stemPt = (w: string) => (w.length > 4 ? w.replace(/(?:es|s)$/, "") : w);
+function nameSays(name: string, word: string): boolean {
+  const have = new Set(normalizeMsg(name).replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean).map(stemPt));
+  return word.split(" ").every((w) => have.has(stemPt(w)));
 }
 
 // Termos que só fazem sentido em alimento humano: em ração/petisco a pergunta "tem sem lactose?" não se aplica.
