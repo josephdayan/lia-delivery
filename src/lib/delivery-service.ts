@@ -15,7 +15,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses, rerankRaw, shapeApproved, type RerankLineResult, type RerankResult } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
 import { deadlineFit, deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, promisedMinutes, liveCheckSupported, liveFreightEnabled, liveStoreFreight, liveStoreFreightDetailed, preflightBasket, simulationGeo, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
-import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey, unansweredDrops } from "@/lib/live-availability";
+import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, forgetLiveChecks, liveKey, unansweredDrops } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, isQualifierOnly, reconcileLineCounts, resolveListItems } from "@/lib/list-items";
 import { localCatalogProbe, localIsBrand } from "@/lib/stores/list-probe";
@@ -3527,8 +3527,14 @@ async function handleDeliveryTurn(
         const units = /\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|gramas?|quilos?|kilos?)\b/i.test(ask) && !item.askedUnits ? 1 : unitsAskedOf(item);
         return units > 1 ? `${units} ${ask}` : ask;
       };
-      await reply(phone, copy.refusedRetryStart(removed.map((i) => i.ask ?? i.name), keep.map((i) => i.ask ?? i.name)));
-      await handleSearch(phone, convo.id, user.cep, ctx, keep.map(lineOf).join(", "), user.id);
+      // As escolhas feitas não se perdem (11/10, rodada 24 g68, R24a-3): o que a loja confirma AGORA (conferência nova, sem o
+      // cache da recusa) volta para a cesta como estava; só o resto é procurado de novo.
+      const restored = await reconfirmRefusedItems(keep, ctx.cep ?? user.cep);
+      const again = keep.filter((item) => !restored.some((r) => r.sku === item.sku && r.storeKey === item.storeKey));
+      if (restored.length) ctx.basket = mergeBaskets(ctx.basket ?? [], restored);
+      await reply(phone, copy.refusedRetryStart(removed.map((i) => i.ask ?? i.name), again.map((i) => i.ask ?? i.name), restored.map((i) => i.name)));
+      if (again.length) await handleSearch(phone, convo.id, user.cep, ctx, again.map(lineOf).join(", "), user.id);
+      else await continueAfterBasket(phone, convo.id, ctx, user.cep);
       return;
     }
   }
@@ -4272,6 +4278,13 @@ async function handleDeliveryTurn(
   // diálogo mirava o último escolhido (o acém foi de 3 para 4) e as laranjas ficavam com o dobro.
   {
     const fresh = ctx.openQuestion && Date.now() - ctx.openQuestion.at < 10 * 60_000 ? ctx.openQuestion.text : undefined;
+    const asked = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" ? weightQuestionTarget(text, ctx.basket ?? []) : null;
+    if (asked) {
+      console.log("[weight-question]", JSON.stringify(text), "->", asked.name, asked.totalKg);
+      await reply(phone, copy.weightQuestionAnswer(asked.name, asked.qty, asked.totalKg, asked.askedKg));
+      if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
     const adjust = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" ? weightAdjustTarget(text, ctx.basket ?? [], fresh) : null;
     if (adjust) {
       console.log("[weight-adjust]", JSON.stringify(text), "->", adjust.sku, adjust.units);
@@ -4617,6 +4630,14 @@ async function handleDeliveryTurn(
       await reply(phone, copy.repeatedItemMerged(merged));
       if (rest.length) await handleSearch(phone, convo.id, user.cep, ctx, rest.map((l) => `${l.qty} ${l.phrase}`).join(", "), user.id);
       else if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
+    // "o de bebê, o Basic+ Care Baby" (11/10, rodada 24 g68, R24a-4): toda linha é artigo + descrição/marca, sem produto
+    // próprio — é a correção de UM item da cesta, não dois itens novos ("Somei 1x o de bebê").
+    const refTarget = aboutPending ? undefined : articleOnlyCorrection(lines.map((l) => l.phrase), ctx.basket!);
+    if (refTarget) {
+      console.log("[basket:article-fix]", JSON.stringify(text.slice(0, 60)), "->", JSON.stringify(refTarget.to));
+      await handleSwap(phone, convo.id, user.cep, ctx, refTarget.item.name, refTarget.to, text, undefined, refTarget.item.sku);
       return;
     }
     if (lines.length >= 2 && real.length && !aboutPending) {
@@ -10844,6 +10865,54 @@ async function startNewList(phone: string, convoId: string, userCep: string | nu
   await handleSearch(phone, convoId, userCep, ctx, text, userId);
 }
 
+// Itens recusados no fechamento que a loja confirma agora, na quantidade da cesta (11/10, rodada 24 g68, R24a-3). Só a
+// confirmação positiva conta; loja calada, erro ou item da Lia sem loja voltam para a busca.
+async function reconfirmRefusedItems(items: BasketItem[], cep: string | null | undefined): Promise<BasketItem[]> {
+  const real = items.filter((i) => i.storeKey && i.storeKey !== CONCIERGE_STORE_KEY && i.unitPrice > 0);
+  if (!cep || !real.length) return [];
+  try {
+    const live = await withDeadline(checkCandidatesLive(real.map((item) => ({ storeKey: item.storeKey!, sku: item.sku, qty: item.qty, item })), cep), 8_000, null);
+    if (!live) return [];
+    return live.kept.flatMap(({ item }) => {
+      const check = live.checks.get(liveKey(item.storeKey!, item.sku));
+      if (!check?.available) return [];
+      const unitPrice = check.unitPrice ?? item.unitPrice;
+      return [{ ...item, unitPrice, lineTotal: Math.round(unitPrice * item.qty * 100) / 100 }];
+    });
+  } catch {
+    return [];
+  }
+}
+
+// Correção só por artigo (11/10, rodada 24 g68, R24a-4): "o de bebê, o Basic+ Care Baby". Toda linha começa com o/a, e pelo
+// menos uma é a elipse "o de X" (referência a algo que já existe, nunca pedido novo); vale quando UM só item da cesta,
+// somado a essas palavras, existe no catálogo.
+const ARTICLE_REF_RE = /^(?:o|a|os|as)\s+((?:de|da|do|das|dos)\s+)?(.+)$/i;
+export function articleOnlyCorrection(phrases: string[], basket: BasketItem[]): { item: BasketItem; to: string } | null {
+  if (!phrases.length || !basket.length) return null;
+  const descs: string[] = [];
+  let elliptic = false;
+  for (const phrase of phrases) {
+    const m = ARTICLE_REF_RE.exec(phrase.trim());
+    if (!m) return null;
+    if (m[1]) elliptic = true;
+    descs.push(m[2].trim());
+  }
+  if (!elliptic) return null;
+  const extra = descs.filter((d) => !basket.every((b) => normalizeMsg(b.ask ?? "").includes(normalizeMsg(d))));
+  if (!extra.length) return null;
+  const hits = basket.filter((b) => {
+    const base = (b.ask ?? "").trim();
+    if (!base) return false;
+    const missing = extra.filter((d) => !normalizeMsg(base).includes(normalizeMsg(d)));
+    return missing.length > 0 && localCatalogProbe(`${base} ${missing.join(" ")}`, { all: true }).strong;
+  });
+  if (hits.length !== 1) return null;
+  const base = hits[0].ask!.trim();
+  const add = extra.filter((d) => !normalizeMsg(base).includes(normalizeMsg(d)));
+  return { item: hits[0], to: `${base} ${add.join(" ")}` };
+}
+
 // Linha da cesta que a frase pede DE NOVO (09/10, rodada 4, M3: "latão de Skol" e depois "cerveja skol latão").
 // Mesmo produto = o catálogo casa a frase com o item, a marca do item está na frase (ou a frase é a mesma do pedido
 // original) e nenhuma medida diferente foi pedida. "leite" não casa com "Leite Condensado Moça".
@@ -12472,7 +12541,11 @@ async function handleSwap(
     const nameWords = new Set(queryTokens(removed[0].name));
     // "troca o leite por leite em pó": o "pó" conta, e repetir só o pedido de antes ("leite") não é "já é".
     const askWords = new Set(queryTokens(normalizeMsg(removed[0].ask ?? "")));
-    if (toWords.length && toWords.every((t) => nameWords.has(t)) && toWords.some((t) => !askWords.has(t)) && !CHEAPEST_TO_RE.test(normalizeMsg(to)) && !OTHER_BRAND_RE.test(normalizeMsg(to)) && !/\boutr[oa]s?\b|\bmais\b/.test(normalizeMsg(to))) {
+    // "troca o algodão pelo de 100 unidades" com o de 50 na cesta (11/10, rodada 24 g68, R24a-2): o número pedido (tamanho,
+    // contagem, medida) que o nome não tem é outra variante — não "já é".
+    const nameNums = new Set(normalizeMsg(removed[0].name).match(/\d+(?:[.,]\d+)?/g) ?? []);
+    const sameNums = (normalizeMsg(toBare).match(/\d+(?:[.,]\d+)?/g) ?? []).every((n) => nameNums.has(n));
+    if (toWords.length && sameNums &&toWords.every((t) => nameWords.has(t)) && toWords.some((t) => !askWords.has(t)) && !CHEAPEST_TO_RE.test(normalizeMsg(to)) && !OTHER_BRAND_RE.test(normalizeMsg(to)) && !/\boutr[oa]s?\b|\bmais\b/.test(normalizeMsg(to))) {
       await reply(phone, copy.swapAlreadyIs(removed[0].name, toBare));
       return;
     }
@@ -13793,7 +13866,14 @@ export function weightAdjustTarget(
   const said = normalizeSpokenWeights(text);
   const askedKg = parseWeightAskKg(said);
   if (!askedKg) return null;
-  const weighed = basket.filter((b) => unitWeightFromName(b.name));
+  // Embalagem com o peso no nome ("Laranja Pêra 2kg", 11/10, rodada 24 g68, R24a-5) vale quando o peso pedido é um número
+  // inteiro de embalagens; antes "sim, deixa 2 kg" sobre a laranja de 2 kg ecoava o acém.
+  const packKg = (name: string) => {
+    if (unitWeightFromName(name)) return undefined;
+    const kg = parseWeightAskKg(name);
+    return kg && Math.abs(askedKg / kg - Math.round(askedKg / kg)) <= 0.15 && Math.round(askedKg / kg) >= 1 ? kg : undefined;
+  };
+  const weighed = basket.filter((b) => unitWeightFromName(b.name) || packKg(b.name));
   if (!weighed.length) return null;
   const rest = normalizeMsg(said)
     .replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ")
@@ -13810,9 +13890,27 @@ export function weightAdjustTarget(
     hits = named(openQuestion);
   }
   if (hits.length !== 1) return null;
-  const unitKg = unitWeightFromName(hits[0].name)!;
+  const unitKg = unitWeightFromName(hits[0].name) ?? packKg(hits[0].name)!;
   const units = Math.max(1, Math.min(50, Math.round(askedKg / unitKg + 1e-9)));
   return { sku: hits[0].sku, units, unitKg, askedKg };
+}
+
+// "e as laranjas, são 2 kg mesmo ou ficou mais?" (11/10, rodada 24 g68, R24a-5): pergunta de peso sobre UM item da cesta —
+// responde com o peso que a cesta tem (unidade pesada × quantidade, ou o peso da embalagem), sem mexer em nada.
+export function weightQuestionTarget(
+  text: string,
+  basket: Array<{ sku: string; name: string; qty: number; ask?: string }>
+): { name: string; qty: number; totalKg: number; askedKg: number } | null {
+  // Conferência do que está na cesta ("são 2 kg mesmo?", "deu quanto?"), nunca "tem arroz 5kg?" (pedido/disponibilidade).
+  if (!isQuestion(text) || !/\b(?:mesmo|ficou|deu|pesa|sao|eh)\b/.test(normalizeMsg(text)) || /^(?:e\s+)?(?:tem|vcs tem|voces tem)\b/.test(normalizeMsg(text))) return null;
+  const askedKg = parseWeightAskKg(normalizeSpokenWeights(text));
+  if (!askedKg) return null;
+  const words = normalizeMsg(text).replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ");
+  const hits = basket.filter((b) => (unitWeightFromName(b.name) || parseWeightAskKg(b.name)) && (sharesProductNoun(words, b.ask ?? b.name) || sharesProductNoun(words, b.name)));
+  if (hits.length !== 1) return null;
+  const unit = unitWeightFromName(hits[0].name);
+  const totalKg = unit ? unit * hits[0].qty : parseWeightAskKg(hits[0].name)! * hits[0].qty;
+  return { name: hits[0].name, qty: hits[0].qty, totalKg, askedKg };
 }
 
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
@@ -14886,6 +14984,7 @@ async function closeWithoutOperator(
   const bySku = holdupSkus?.length ? basket.filter((i) => holdupSkus.includes(i.sku)) : [];
   const blocked = bySku.length ? bySku : holdupStores?.length ? basket.filter((i) => holdupStores.includes(i.storeKey ?? CONCIERGE_STORE_KEY)) : [];
   const rest = basket.filter((i) => !blocked.includes(i));
+  forgetLiveChecks(blocked);
   const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
   await prisma.deliveryOrder.updateMany({
     where: { id: orderId, status: AWAITING_OPERATOR_QUOTE_STATUS },

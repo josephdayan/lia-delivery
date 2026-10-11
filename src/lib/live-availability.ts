@@ -56,6 +56,13 @@ export function __clearLiveCheckCacheForTests() {
   liveInFlight.clear();
 }
 
+// A cotação recusou estes itens (11/10, rodada 24 g68, R24a-3): o "disponível" guardado ficou velho — o "tenta de novo"
+// confere na loja de verdade.
+export function forgetLiveChecks(items: { storeKey?: string; sku: string }[]) {
+  const prefixes = items.filter((i) => i.storeKey).map((i) => `${i.storeKey}|${i.sku}|`);
+  for (const key of [...liveCache.keys()]) if (prefixes.some((p) => key.startsWith(p))) liveCache.delete(key);
+}
+
 export function liveKey(storeKey: string, sku: string): string {
   return `${storeKey}:${sku}`;
 }

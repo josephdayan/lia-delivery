@@ -2105,6 +2105,13 @@ export function weightAlreadyMatches(name: string, units: number, unitKg: number
   return `Já está assim 👍 *${units}x ${name}* dá ~${weightLabel(units * unitKg)} pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar.`;
 }
 
+// "e as laranjas, são 2 kg mesmo?" (11/10, rodada 24 g68, R24a-5): o peso que a cesta tem, e como mudar se não bate.
+export function weightQuestionAnswer(name: string, qty: number, totalKg: number, askedKg: number): string {
+  const close = Math.abs(totalKg - askedKg) <= Math.max(0.15, askedKg * 0.15);
+  if (close) return `Sim 🙂 *${qty}x ${name}* dá ~${weightLabel(totalKg)}. O peso final é o que a loja pesar.`;
+  return `Hoje está *${qty}x ${name}*, ~${weightLabel(totalKg)}. Se quiser ${weightLabel(askedKg)}, é só dizer *deixa ${weightLabel(askedKg)}*.`;
+}
+
 // Embalagem que NÃO fecha com o número pedido (07/10, c28): pergunta antes de pôr na cesta.
 export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
   const total = packs * packSize;
@@ -4155,9 +4162,12 @@ export function alreadyDeclinedItem(item: string): string {
 }
 
 // "tira a alface e tenta de novo" depois da recusa da cesta inteira (11/10, rodada 23 g65, R23-6).
-export function refusedRetryStart(removed: string[], keep: string[]): string {
+// "tenta de novo" depois da recusa (11/10, rodada 24 g68, R24a-3): o que a loja confirmou agora volta como o cliente escolheu.
+export function refusedRetryStart(removed: string[], keep: string[], restored: string[] = []): string {
   const out = removed.length ? `Tirei *${removed.join("*, *")}*. ` : "";
-  return `${out}Procurando de novo: ${keep.map((k) => `*${k}*`).join(", ")} 🔎`;
+  const back = restored.length ? `${restored.length === 1 ? "Voltou pra cesta, como você escolheu" : "Voltaram pra cesta, como você escolheu"}: ${restored.map((k) => `*${k}*`).join(", ")} ✅` : "";
+  const search = keep.length ? `Procurando de novo: ${keep.map((k) => `*${k}*`).join(", ")} 🔎` : "";
+  return `${out}${[back, search].filter(Boolean).join("\n")}`;
 }
 export function refusedRetryEmpty(removed: string[], listOpen = false): string {
   if (listOpen) return `*${removed.join("*, *")}* já tinha ficado de fora — tá fora do pedido 👍`;

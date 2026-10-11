@@ -283,8 +283,9 @@ export function expandShoppingShorthand(text: string): string {
 }
 
 // Segmentos que são conversa, não produto ("bom dia", "por favor", "lista:").
+// "bom dia filha" (11/10, rodada 24 g68, R24a-5): o vocativo sozinho depois da saudação também é conversa.
 const NOISE_SEGMENT_RE =
-  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|(o que|oq|oque) .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
+  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|(o que|oq|oque) .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|filh[ao]|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
 
 // ORÇAMENTO (rodada 2 de 07/10): as formas reais de dizer o teto — "até uns R$60", "cerca de 60", "por volta
 // de R$150", "no máximo 150", "tenho uns 120 reais", "R$120 no total com entrega". Uma só fonte para o
@@ -1354,6 +1355,15 @@ const PRODUCT_TOKEN_ALIASES: Record<string, string> = {
   lenco: "lenco",
   bebe: "umedecido"
 };
+// Plural → singular de UMA palavra do pedido, igual para o merge (meaningfulProductTokens) e o núcleo (headTokens).
+// "-eses" → "-ês" (11/10, rodada 24 g68, R24a-1): "pães franceses" (parser) × "pão francês" (IA) eram 2 itens e o
+// resumo saía com 30x pão; o núcleo ainda via "limoe" × "limao" e "uns três limões" virava 6x.
+function singularProductToken(token: string): string {
+  if (token === "paes" || token === "caes") return `${token.slice(0, -3)}ao`;
+  if (token.length < 5) return token;
+  if (token.endsWith("oes")) return `${token.slice(0, -3)}ao`;
+  return token.replace(/(?<=.{3})eses$/, "es").replace(/(?<=[rlz])es$/, "").replace(/s$/, "");
+}
 export function meaningfulProductTokens(phrase: string): string[] {
   const raw = normalizeMsg(phrase)
     .replace(/[^a-z0-9\s]/g, " ")
@@ -1363,8 +1373,7 @@ export function meaningfulProductTokens(phrase: string): string[] {
     // Plural em -res/-les/-zes (11/10, rodada 19 g52, R19a-3): "apontadores" e "apontador" (a IA no singular) são o mesmo
     // item — "apontadore" ≠ "apontador" duplicava a linha e a cesta ficava com 4 apontadores.
     // Plural em -ões (11/10, rodada 23 g64): "limões" (parser) e "limão" (IA) são o mesmo item — viravam 6x + 3x limão.
-    .map((token) => (token.length >= 5 && token.endsWith("oes") ? `${token.slice(0, -3)}ao` : token === "paes" ? "pao" : token))
-    .map((token) => (token.length >= 5 ? token.replace(/(?<=[rlz])es$/, "").replace(/s$/, "") : token));
+    .map(singularProductToken);
   // "bebê" só é o "umedecido" do LENÇO ("lenço de bebê" = "lenço umedecido"). Em outro item é público, não produto
   // (10/10, rodada 11: "pomada para assadura bebê" casava com "lenço umedecido" e sumia da lista no merge com a IA).
   const lenco = raw.includes("lenco");
@@ -1643,7 +1652,7 @@ function headTokens(phrase: string): { tokens: string[]; complements: Set<string
       continue;
     }
     if (HEAD_SKIP.has(raw) || /^\d/.test(raw) || raw.length < 3) continue;
-    const sing = raw.length >= 5 ? raw.replace(/s$/, "") : raw;
+    const sing = singularProductToken(raw);
     const token = PRODUCT_TOKEN_ALIASES[sing] ?? PRODUCT_TOKEN_ALIASES[raw] ?? sing;
     if (!tokens.length && PACKAGING_WORDS.has(raw)) continue;
     if (afterDe) complements.add(token);
