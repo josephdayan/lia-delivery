@@ -450,6 +450,9 @@ export type DeliveryContext = {
   // "tudo numa loja só" dito no meio das escolhas (10/10, rodada 6 g19): no fechamento, a Lia junta (na loja pedida, se
   // houver) em vez de perguntar de volta. `at` = quando foi pedido.
   joinWanted?: { store?: string; at: number };
+  // "não quero dessa loja, quero comprar numa outra" sem dizer qual (11/10, rodada 24 g67, M5): a Lia perguntou qual loja
+  // sai; a resposta com o nome de uma delas (com 2 lojas) junta tudo na outra.
+  storeChangeAsk?: { stores: string[]; at: number };
   // "o de sempre" restaurou a cesta antiga e está esperando o "sim" de conferência
   // antes de fechar o total (27/08 S16).
   repeatConfirm?: boolean;

@@ -1740,6 +1740,18 @@ export function scentAnswer(input: { n: number; name: string; scent?: string; mi
     : "";
   return `${head}${mild}\nQuer essa? Responde *${input.n}* — ou me diz o cheiro que ela gosta que eu procuro.`;
 }
+// Tamanho de fralda pelo peso (11/10, rodada 24 g67, M2/M3): "é a M mesmo pra bebê de 7 kg?" / "o RN serve pra 3,2 kg?".
+// Responde com a faixa costumeira (varia por marca; a exata vem no pacote) e, se não cobre, o tamanho que costuma servir.
+export function diaperFitAnswer(input: { size: string; kg: number; min: number; max: number; fits: boolean; suggested: string[]; name?: string; inBasket: boolean }): string {
+  const kg = String(input.kg).replace(".", ",");
+  const range = input.min <= 0 ? `até uns ${String(input.max).replace(".", ",")} kg` : input.max >= 99 ? `acima de uns ${String(input.min).replace(".", ",")} kg` : `de uns ${String(input.min).replace(".", ",")} a ${String(input.max).replace(".", ",")} kg`;
+  const note = "_(a faixa muda um pouco de marca pra marca; a exata vem no pacote)_";
+  const item = input.name ? ` A da sua cesta é *${input.name}*.` : "";
+  if (input.fits) return `Serve, sim: fralda *${input.size}* costuma ser ${range}, e ${kg} kg está dentro.${item}\n${note}`;
+  const other = input.suggested.length ? ` Pra ${kg} kg costuma servir a *${input.suggested.join("* ou *")}*.` : "";
+  const swap = input.inBasket && input.suggested.length ? " Se quiser trocar, é só dizer." : "";
+  return `Pelo peso, a *${input.size}* não é a ideal: costuma ser ${range}.${other}${item}${swap}\n${note}`;
+}
 // "o termômetro é digital mesmo?" (11/10, rodada 20 g55, R20-5): pelo nome do item da cesta; sem a palavra no nome, diz que não sabe.
 export function chosenTraitAnswer(name: string, trait: string, known: boolean): string {
   return known ? `Sim — o da sua cesta é *${name}* (está no nome do produto).` : `O nome do produto (*${name}*) não diz se é ${trait}, então não consigo garantir.`;
@@ -2594,6 +2606,12 @@ export function joinNotedForClose(storeLabel?: string): string {
 export function joinTargetLacksOthers(storeLabel: string, others: string[], stores: number, offerOpen = false): string {
   return `A *${storeLabel}* não tem ${others.map((n) => `*${n}*`).join(", ")} pra entregar aí — por isso mantive as ${stores} lojas. ${offerOpen ? "A junção em menos lojas de cima continua valendo: responde *1* pra juntar ou *2* pra manter." : "Se quiser, me diz qual item trocar ou tirar."}`;
 }
+// "não quero dessa loja, quero comprar numa outra" sem dizer qual (11/10, rodada 24 g67, M5): pergunta qual sai.
+export function whichStoreToDrop(stores: string[]): string {
+  const list = stores.map((s) => `*${s}*`);
+  const options = list.length > 1 ? `${list.slice(0, -1).join(", ")} ou ${list[list.length - 1]}` : list[0];
+  return `Qual loja você quer tirar do pedido: ${options}? Me diz o nome que eu tento passar os itens dela pra outra. Se preferir manter como está, é só dizer *manter*.`;
+}
 export function joinAlreadyOneStore(storeLabel: string, asked?: string): string {
   return asked ? `Já está tudo numa loja só, a *${storeLabel}*. Quer trocar algum item pra *${asked}*? Me diz qual.` : `Já está tudo numa loja só, a *${storeLabel}* — uma entrega.`;
 }
@@ -3128,8 +3146,14 @@ export function swapColorNote(from: string, to: string): string {
 }
 
 // A troca de loja perde ou muda a medida (11/10, rodada 17 g49): "era 40 cm" nunca some calado.
-export function swapMeasureNote(from: string, to?: string): string {
+// Medida menor (11/10, rodada 24 g67, M6): "vem menos produto" e, sem desconto, "pelo mesmo preço (ou mais)" — nunca só "mesmo valor".
+export function swapMeasureNote(from: string, to?: string, opts?: { less?: boolean; samePriceOrMore?: boolean }): string {
+  if (to && opts?.less) return `vem menos produto: ${to} em vez de ${from}${opts.samePriceOrMore ? ", sem ficar mais barato" : ""}`;
   return to ? `muda a medida: era ${from}, essa é ${to}` : `não confirmei a medida (era ${from})`;
+}
+// Embalagens somadas que mantêm a medida (11/10, rodada 24 g67, M6): "2× 1 l = os mesmos 2 l".
+export function swapPacksNote(packs: number, each: string, total: string): string {
+  return `${packs} embalagens de ${each} = os mesmos ${total}`;
 }
 
 // Recusa da troca de loja dita junto de outro pedido (11/10, rodada 19 g52, R19-6): confirma e segue com o resto.
@@ -3138,7 +3162,9 @@ export function minimumSwapDeclined(storeLabel: string): string {
 }
 
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
-  const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
+  // Menos produto na troca (11/10, rodada 24 g67, M6): "mesmo valor" escondia que vinha metade.
+  const less = (input.pairs ?? []).some((p) => p.change?.includes("vem menos produto"));
+  const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : less ? " (mesmo valor, mas com *menos produto*)" : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
   if (input.pairs?.length) out.push(...swapPairLines(input.pairs));
   if (input.etaNote) out.push(input.etaNote);
