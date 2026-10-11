@@ -6,7 +6,7 @@
 import { sanitizeRouterReply } from "../adapters/ai";
 import { display, orderStore, type BasketItem, type DeliveryContext, type PendingChoice } from "../conversation-types";
 import * as copy from "../lia-copy";
-import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, replaceRefinedSize, parsePriceCap, splitNegatedTerms, relaxAnyAttribute, sameItemProduct, splitPriceCap } from "../lia-intents";
+import { ADDITIVE_CUE_RE, asksRunningTotal, extractCep, isQtyCorrectionCue, looksLikeMedicine, normalizeMsg, parseRefinement, refineBaseQuery, replaceRefinedSize, parsePriceCap, splitNegatedTerms, relaxAnyAttribute, sameItemProduct, splitPriceCap } from "../lia-intents";
 import { foldAlternativeLines } from "../alt-items";
 import { reopenOrderForEdit } from "../order-payments";
 import { reconcileLineCounts, resolveListItems } from "../list-items";
@@ -235,13 +235,16 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
         return "done";
       }
       // Tamanho novo substitui o anterior (10/10, rodada 7 M7: "fralda RN" + "muda pra tamanho P").
-      const base = replaceRefinedSize(current.baseQuery ?? current.query, [step.attribute]);
+      const negated = new Set(splitNegatedTerms(env.text).excluded);
+      const base = refineBaseQuery(replaceRefinedSize(current.baseQuery ?? current.query, [step.attribute]), `${step.attribute} ${env.text}`, [...negated]);
       const baseTokens = new Set(queryTokens(normalizeMsg(base)));
       // "lenço da Huggies, o mais barato" (10/10, rodada 12 g36): "barato" é critério de escolha, não palavra do produto — a
       // busca virava "lenço umedecido huggies barato" e o "não achei" citava isso.
       // "tem em comprimido? gotas não" (10/10, rodada 15 M1): o que o cliente negou não é palavra da busca.
-      const negated = new Set(splitNegatedTerms(env.text).excluded);
       const asked = queryTokens(normalizeMsg(step.attribute).replace(/\b(?:o |a )?mais (?:barat\w*|em conta|economic\w*)\b|\bbaratinh\w*|\bbarat[oa]s?\b|\bem conta\b/g, " ")).filter((token) => !negated.has(token));
+      // Número de um dígito ("tem a vela numero 6?", 11/10, rodada 20 g55, R20-5): a busca de tokens descarta, e o refino
+      // virava "vela de aniversário número" com as velas 1, 3 e 8.
+      for (const digit of normalizeMsg(step.attribute).match(/(?<![\d.,])\d(?![\d.,])/g) ?? []) if (!asked.includes(digit)) asked.push(digit);
       const fresh = asked.filter((token) => !baseTokens.has(token));
       if (!fresh.length) {
         await h.sendChoices(phone, current);

@@ -2,7 +2,7 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
-import { compareNotShown, compareOptionsAnswer, specAnswer, specCountAnswer, specWordAnswer } from "./lia-copy";
+import { compareNotShown, compareOptionsAnswer, scentAnswer, specAnswer, specCountAnswer, specWordAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
 export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
@@ -27,7 +27,9 @@ export type ProductQuestion =
   | { kind: "spec"; n: number; area?: BodyArea; measure?: { value: number; unit: string; label: string } }
   // "o primeiro é de quantas escovas?" / "o segundo é integral?" (11/10, R17a-4): quantas vêm / palavra do nome.
   | { kind: "spec_count"; n: number }
-  | { kind: "spec_word"; n: number; word: string };
+  | { kind: "spec_word"; n: number; word: string }
+  // "o segundo tem cheiro de quê? ela gosta de coisa suave" (11/10, rodada 20 g55, R20-5): o cheiro que o NOME diz, ou que não sabe.
+  | { kind: "scent"; n: number; mild: boolean };
 
 export type BodyArea = "rosto" | "corpo" | "cabelo" | "labios" | "maos" | "pes";
 const AREA_LABEL: Record<BodyArea, { ask: string; name: string }> = {
@@ -233,6 +235,12 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
     if (named) return named;
   }
 
+  // "o segundo tem cheiro de quê?", "qual a fragrância do 1?" (R20-5): uma opção citada + cheiro.
+  if (/\b(?:cheiro|cheirinho|cheira|fragrancia|perfume|aroma)\b/.test(n) && /\b(?:que|qual|como|quais)\b/.test(n)) {
+    const refs = refsIn(n, optionCount);
+    if (refs.length === 1) return { kind: "scent", n: refs[0], mild: /\b(?:suave|suaves|leve|leves|neutr[oa]|fraquinh[oa]|fraco|fraca|delicad[oa])\b/.test(n) };
+  }
+
   // "qual o preço do primeiro?", "quanto custa o 2?" (09/10, rodada 3): responde o preço da opção citada.
   const price = n.match(/\b(?:preco|valor|quanto\s+(?:custa|e|eh|ta|esta|fica|sai|vale))\b(.*)$/);
   if (price) {
@@ -379,6 +387,11 @@ export function answerProductQuestion(q: ProductQuestion, options: ProductOption
       const other = options.map((x, i) => ({ i: i + 1, x })).find(({ x, i }) => i !== q.n && has(x.name));
       return specWordAnswer({ n: q.n, name: o.name, word: q.word, has: has(o.name), other: other ? { n: other.i, name: other.x.name } : undefined });
     }
+    case "scent": {
+      const o = options[q.n - 1];
+      const mild = q.mild ? options.map((x, i) => ({ n: i + 1, name: x.name })).filter((x) => MILD_SCENT_RE.test(normalizeMsg(x.name))) : [];
+      return scentAnswer({ n: q.n, name: o.name, scent: nameScent(o.name), mild });
+    }
     case "dietary":
       return `Isso é produto pra pet: "sem ${q.term}" é termo de alimento humano, e o nome dessas opções não diz nada sobre ${q.term}. A composição fica no rótulo da loja (posso mandar o link: é só pedir "detalhes do 1"); se o seu pet tem restrição, o veterinário indica a linha certa.`;
     case "audience": {
@@ -467,4 +480,34 @@ export function nameSize(name: string): string | undefined {
     if (size) parts.push(size[1]);
   }
   return parts.length ? [...new Set(parts)].join(", ") : undefined;
+}
+
+// "o termômetro é digital mesmo?" com o termômetro na cesta (11/10, rodada 20 g55, R20-5): a pergunta sim/não sobre um traço
+// do item JÁ escolhido é respondida pelo NOME do produto (diz que sim quando o nome tem a palavra; senão, que não sabe).
+// Antes era descartada calada. Só com um item da cesta citado pelo nome (um só) e um traço curto (1 a 3 palavras).
+const TRAIT_STOP = new Set(["mesmo", "msm", "mesma", "ne", "certo", "isso", "bom", "boa", "caro", "cara", "barato", "barata", "original", "pra", "para", "de", "do", "da", "o", "a", "um", "uma", "que", "qual"]);
+export function parseChosenItemTrait(text: string, basketNames: string[]): { index: number; trait: string; known: boolean } | null {
+  if (!basketNames.length || !/\?/.test(text)) return null;
+  const n = normalizeMsg(text).replace(/[?!.\s]+$/g, "").trim();
+  const m = /^(?:e\s+)?(?:o|a|os|as|esse|essa|esses|essas)\s+([a-z0-9][a-z0-9 -]{1,40}?)\s+(?:e|eh|sao|vem|veio)\s+(?:de\s+|com\s+)?([a-z0-9][a-z0-9 -]{1,30}?)(?:\s+(?:mesmo|msm|ne|certo|ai))*$/.exec(n);
+  if (!m) return null;
+  const stem = (t: string) => (t.length >= 4 ? t.replace(/s$/, "") : t);
+  const subject = m[1].split(/\s+/).filter((t) => t.length >= 3).map(stem);
+  const trait = m[2].split(/\s+/).filter((t) => !TRAIT_STOP.has(t));
+  if (!subject.length || !trait.length || trait.length > 3) return null;
+  const hits = basketNames
+    .map((name, index) => ({ index, tokens: new Set(normalizeMsg(name).split(/[^a-z0-9]+/).map(stem)) }))
+    .filter(({ tokens }) => subject.every((w) => tokens.has(w)));
+  if (hits.length !== 1) return null;
+  const tokens = hits[0].tokens;
+  return { index: hits[0].index, trait: trait.join(" "), known: trait.every((w) => tokens.has(stem(w))) };
+}
+
+// O cheiro que o nome do produto diz ("Lavanda", "Flor de Cerejeira", "Neutro"); sem pista, `undefined` (nunca inventa).
+const SCENT_RE = /\b(lavanda|alfazema|floral|flores?(?: de [a-z]+)?|flor de [a-z]+|rosas?|jasmim|baunilha|vanilla|coco|amendoas?|aloe(?: vera)?|camomila|erva[ -]doce|citric[oa]|citrus|limao|laranja|tangerina|frutas?(?: vermelhas)?|morango|pessego|maracuja|maca|melancia|uva|cereja|cerejeira|ameixa|chocolate|cacau|canela|mel|algodao|talco|neutr[oa]|sem perfume|sem fragrancia|suave|fresh|marine|oceano|verbena|alecrim|hortela|menta|eucalipto|cedro|sandalo|oud|ambar|musk|almiscar|patchouli|bergamota|figo|framboesa|amora|cassis|lirio|orquidea|magnolia|peonia|violeta|gardenia|tiare|monoi|karite|macadamia|oliva|argan)\b/g;
+const MILD_SCENT_RE = /\b(?:suave|neutr[oa]|sem perfume|sem fragrancia|delicad[oa]|baby|bebe|infantil|camomila|algodao|talco)\b/;
+export function nameScent(name: string): string | undefined {
+  const n = normalizeMsg(name);
+  const found = [...new Set([...n.matchAll(SCENT_RE)].map((m) => m[1]))];
+  return found.length ? found.join(", ") : undefined;
 }

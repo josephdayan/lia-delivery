@@ -250,6 +250,12 @@ export function priceAfterAddress(item: string): string {
   return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
 }
 
+// "tem caderno 10 matérias?" antes do cadastro (11/10, rodada 20 g55, R20-5): a pergunta é respondida — o item ficava
+// anotado calado e o cliente não sabia se tinha.
+export function availabilityAfterAddress(item: string): string {
+  return `Se tem *${item}* eu vejo nas lojas que entregam no seu endereço — anotei e te mostro as opções assim que tiver o endereço 🙂`;
+}
+
 export function dontKnowCep(): string {
   return "Sem problema 🙂 Você acha o CEP pelo nome da rua em *buscacep.correios.com.br*. Depois me manda *rua, número e CEP* juntos.";
 }
@@ -1025,7 +1031,7 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
 
 // O mesmo "não chega" já dito para outro item (11/10, rodada 18 g50): uma linha, sem repetir o aviso inteiro.
 export function choicesDeadlineAlsoLate(label: string, item: string): string {
-  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo.`;
+  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo. Pros próximos itens que também não chegarem eu não repito: o resumo mostra o prazo de cada um.`;
 }
 
 // Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
@@ -1686,6 +1692,28 @@ export function chosenItemAnswer(input: { name: string; price: number; qty: numb
   }
   const tail = lines.length ? `\n${lines.join("\n")}` : "";
   return `${head}${tail}\nSe quiser trocar, é só dizer por qual.`;
+}
+// "o segundo tem cheiro de quê? ela gosta de coisa suave" (11/10, rodada 20 g55, R20-5): o que o nome diz do cheiro; sem
+// pista, diz que não sabe (antes perguntava de volta "quer que eu procure um com cheiro suave?").
+export function scentAnswer(input: { n: number; name: string; scent?: string; mild: { n: number; name: string }[] }): string {
+  const head = input.scent
+    ? `Pelo nome, a opção *${input.n}* (*${input.name}*) é de *${input.scent}*.`
+    : `O nome da opção *${input.n}* (*${input.name}*) não diz o cheiro, e a loja não informa — não quero chutar.`;
+  const others = input.mild.filter((m) => m.n !== input.n);
+  const mild = input.mild.length
+    ? others.length && !input.mild.some((m) => m.n === input.n)
+      ? `\nPra quem gosta de cheiro suave, o nome diz isso na ${others.map((m) => `*${m.n}*`).join(", ")}.`
+      : ""
+    : "";
+  return `${head}${mild}\nQuer essa? Responde *${input.n}* — ou me diz o cheiro que ela gosta que eu procuro.`;
+}
+// "o termômetro é digital mesmo?" (11/10, rodada 20 g55, R20-5): pelo nome do item da cesta; sem a palavra no nome, diz que não sabe.
+export function chosenTraitAnswer(name: string, trait: string, known: boolean): string {
+  return known ? `Sim — o da sua cesta é *${name}* (está no nome do produto).` : `O nome do produto (*${name}*) não diz se é ${trait}, então não consigo garantir.`;
+}
+// "qual a diferença de preço?" com as duas entregas na tela (11/10, rodada 20 g55, R20-5): os produtos são os mesmos, só a entrega muda.
+export function freightPriceDifference(diff: number): string {
+  return diff > 0.009 ? `A diferença é só na entrega: a *mais rápida* sai *${brl(diff)}* a mais que a *mais barata* — os produtos são os mesmos.` : "As duas saem pelo mesmo preço — muda só o prazo.";
 }
 // Medida da busca errada (11/10, rodada 18 g50: "o que são esses 6 litros? eu pedi 3,6"): a Lia assume o engano.
 export function measureMixupFixed(wrong: string, want: string): string {

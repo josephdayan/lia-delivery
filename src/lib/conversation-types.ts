@@ -297,6 +297,9 @@ export type DeliveryContext = {
   // Últimas falas da Lia (07/10, rodada 2 do plano 100): base da guarda anti-repetição — a mesma
   // mensagem não sai duas vezes seguidas para falas diferentes do cliente (src/lib/dialogue/repeat.ts).
   lastSent?: { texts: string[]; at: number };
+  // "⏰ X também não chega pra <prazo>" já dito (11/10, rodada 20 g55, R20-9): os próximos itens que também não chegam não
+  // repetem a linha (saía uma por item, 5 vezes). `label` = o prazo; vale 2 h.
+  deadlineLateNoted?: { label: string; at: number };
   // Orçamento dito ANTES do cadastro, sem produto ainda ("tenho uns 120 reais"): vale para o 1º pedido.
   preBudget?: number;
   // Última recusa de remédio (07/10, c35): a 2ª em pouco tempo troca de texto em vez de repetir.
