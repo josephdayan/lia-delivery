@@ -230,8 +230,10 @@ const ADDRESS_STATE_WORDS = ["sao paulo", "rio de janeiro", "rio", "campinas", "
 export function dropAddressOnlyItems(items: string | undefined, place?: { city?: string; uf?: string; district?: string; street?: string }): string | undefined {
   if (!items) return items;
   const known = new Set([...streetTokens(place?.city), ...streetTokens(place?.district)]);
+  // Vírgula decimal ("tinta branca 3,6 litros") não separa (11/10, rodada 19 g52, R19a-1: voltava "3, 6 litros" e a busca
+  // ia por "tinta branca 6 litros", com "3x" na escolha).
   const kept = items
-    .split(/\s*,\s*/)
+    .split(/\s*(?:(?<!\d),|,(?!\d))\s*/)
     .map((part) => part.trim())
     .filter(Boolean)
     .filter((part) => {
@@ -422,8 +424,10 @@ export function looksLikePersonName(raw: string): boolean {
 export function peelPersonName(items: string | undefined): { name?: string; rest?: string } {
   if (!items?.trim()) return { rest: items };
   let name: string | undefined;
+  // Vírgula decimal ("tinta branca 3,6 litros", 11/10, rodada 19 R19a-1) não separa: voltava "3, 6 litros" e a busca ia
+  // por "tinta branca 6 litros".
   const rest = items
-    .split(/\s*[,;]\s*/)
+    .split(/\s*(?:;|(?<!\d),|,(?!\d))\s*/)
     .map((part) => part.trim())
     .filter((part) => {
       const clean = part.replace(/[.:!-]+$/, "").trim();

@@ -1368,7 +1368,9 @@ const VARIANT_MARKERS = new Set([
   // "leite ninho" sem pedir "sem lactose" (10/10, rodada 5 B2): a versão sem lactose não é a básica.
   "lactose",
   // Miniatura de chaveiro (10/10, rodada 16 M7: "Mini Grampeador … Chaveiro" oferecido no lugar do grampeador de mesa).
-  "chaveiro"
+  "chaveiro",
+  // Tema de Natal sem o cliente falar de Natal (11/10, rodada 19 g53, R19-8: papel de presente de Natal para aniversário).
+  "natal", "natalino", "natalina", "natalinos", "natalinas", "noel"
 ]);
 const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
 export function variantPenalty(query: string, name: string): number {
@@ -1389,6 +1391,16 @@ export function variantPenalty(query: string, name: string): number {
   const staple = stapleFor(query);
   if (staple && !staple.prefer.test(normalizeText(name))) penalty += 1;
   penalty += teaVariantPenalty(query, name);
+  // Copo descartável sem medida pedida (11/10, rodada 19 g53, R19-12/707: "Copo Descartável Bello Festas 50ml" em 1º para
+  // refrigerante num churrasco): copinho de café/dose (até 100 ml) não é o copo de sempre.
+  {
+    const qn = normalizeText(query);
+    const nn = normalizeText(name);
+    if (/\bcopos?\b/.test(qn) && !/\b(?:cafe|cafezinho|dose|doses|shot|shots|degustacao|cachaca|\d+\s*ml)\b/.test(qn)) {
+      const ml = /(\d+)\s*ml\b/.exec(nn);
+      if ((ml && Number(ml[1]) <= 100) || /\bcafe(?:zinho)?\b/.test(nn)) penalty += 1;
+    }
+  }
   // Peça de aparelho de saúde que o pedido não citou (11/10, R16-11: "Copo Inalador Descartável" para "copo descartável").
   if (MEDICAL_DEVICE_RE.test(normalizeText(name)) && !MEDICAL_DEVICE_RE.test(normalizeText(query))) penalty += 1;
   return penalty;
@@ -1409,7 +1421,9 @@ const KIND_GROUPS: Array<Record<string, string>> = [
   // uso: escolar × maquiagem (11/10, rodada 18 g51: "Lápis de Cor 24 Cores" virava "Lápis de Sobrancelhas Cor 01" na troca de loja)
   {
     escolar: "escolar", colorir: "escolar", cores: "escolar", sextavado: "escolar", aquarelavel: "escolar",
-    sobrancelha: "maquiagem", sobrancelhas: "maquiagem", olhos: "maquiagem", labial: "maquiagem", boca: "maquiagem", delineador: "maquiagem", maquiagem: "maquiagem"
+    sobrancelha: "maquiagem", sobrancelhas: "maquiagem", olhos: "maquiagem", labial: "maquiagem", boca: "maquiagem", delineador: "maquiagem", maquiagem: "maquiagem",
+    // escolar × jardinagem (11/10, rodada 19 g53, R19a-7: "Tesoura de Poda" no lugar da tesoura escolar)
+    poda: "jardim", jardinagem: "jardim", jardim: "jardim", grama: "jardim"
   }
 ];
 function kindsOf(name: string): Array<Set<string>> {

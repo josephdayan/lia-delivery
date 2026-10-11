@@ -561,7 +561,7 @@ export function pendingStillOpen(names: string[]): string {
 
 export function requestedStoreNotShown(label: string, item?: string): string {
   // Nomeia o item (rodada 4, M1): sem isso o aviso parecia ser da escolha que o cliente acabou de fazer.
-  return `${item ? `Pra *${item}*, não achei` : "Não achei isso"} na *${label}* pra entregar aí agora — estas são parecidas, de outras lojas:`;
+  return `${item ? `Pra *${item}*, não achei` : "Não achei isso"} na *${label}* pra entregar aí agora — estas são de outras lojas:`;
 }
 
 export function askEitherItem(a: string, b: string, cap?: number): string {
@@ -832,6 +832,22 @@ export function requestedNotAvailable(query: string, falta?: string, rejected = 
   return `Não tenho *${query}* em nenhuma loja que entrega aí — já procurei em todas as marcas. ${perto} Quer levar ${rejected ? "mesmo assim" : "uma delas"}, me diz outro tamanho ou palavra pra eu tentar, ou responde *pula* pra seguir sem esse item?`;
 }
 
+// Outra marca com prazo (11/10, rodada 19 g53, R19-10).
+export function otherBrandNotOnTime(item: string, day: string, keeping: string): string {
+  return `Procurei *${item}* de outra marca e nenhuma chega até *${day}* nas lojas que entregam aí. Deixei *${keeping}* no pedido, do jeito que estava.`;
+}
+export function otherBrandOnTimeHeader(item: string, day: string, replacing: string, reopened = false): string {
+  return `${reopened ? "O total anterior não vale mais (mando o novo depois da escolha). " : ""}De outra marca, estas de *${item}* chegam até *${day}* — a que você escolher entra no lugar de *${replacing}*:`;
+}
+
+// Refino com tema negado sem resultado novo (11/10, rodada 19 g53, R19-8: "é aniversário, não natal").
+export function choicesWithoutTerm(query: string, terms: string[]): string {
+  return `Sem *${terms.join(" ")}*, o que eu tenho de *${query}* é isto:`;
+}
+export function onlyChoicesWithTerm(query: string, terms: string[]): string {
+  return `De *${query}* agora só tenho com *${terms.join(" ")}* nas lojas que entregam aí — são as opções aí em cima 👆. Quer levar uma delas, me diz outra palavra pra eu procurar, ou responde *pula* pra deixar de fora?`;
+}
+
 export function refineNoResultAbove(refined: string, query: string): string {
   return `Não achei *${refined}*. O que eu tenho de *${query}* são as opções aí em cima 👆 — toca em *Adicionar ao carrinho* na que preferir, ou responde *pula* pra deixar de fora.`;
 }
@@ -961,7 +977,23 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
       : joinRuledOut ? "pra baixar, me diz um item pra trocar por opção de uma loja que já está no pedido" : "se quiser, junto em menos lojas";
     return [`_São ${deliveries} entregas e o frete soma ${brl(entrega)} (${Math.round(share * 100)}% do total); ${way}._`];
   }
+  // Frete de mais de metade dos produtos em 2 entregas (11/10, rodada 19 g53, R19-12/705: R$ 118,20 de frete para R$ 188,76
+  // de tinta e rolo saiu sem aviso). Só o aviso; o valor não muda.
+  if (deliveries >= 2 && produtos > 0 && entrega > produtos * 0.5 + 0.009) {
+    return [`_O frete das ${deliveries} entregas (${brl(entrega)}) passa da metade do valor dos produtos (${brl(produtos)}). É o que as lojas cobram pro seu endereço; pra baixar, me diz um item pra trocar ou tirar._`];
+  }
   return [];
+}
+
+// A escolha do cartão do sintoma já é um item da lista (11/10, rodada 19 g52, R19a-6): ele sai da fila, sem 2ª escolha.
+export function recommendationCoversQueued(items: string[]): string {
+  return `_Já conta como ${items.map((i) => `*${i}*`).join(" e ")} da sua lista._`;
+}
+
+// "urgente" sem dia dito e a entrega não chega hoje (11/10, rodada 19 g52, R19a-5): o resumo repete o aviso do 1º cartão.
+export function urgentMissNote(promise?: string): string {
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  return `⚠️ Você disse que é urgente, mas essa entrega não chega hoje${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
 }
 
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
@@ -2959,8 +2991,16 @@ export function choiceNoOtherStore(item: string, store: string): string {
 // marca que tinha escolhido sumir no meio de uma lista de trocas.
 export type SwapPair = { fromName: string; fromPrice: number; toName: string; toPrice: number; change?: string };
 
+// Mesmo produto pelo mesmo preço, só em outra loja (11/10, rodada 19 g53, R19-12/703: "Lenço X (R$ 10,57) → *Lenço X*
+// (R$ 10,57)" parecia troca que não troca): a linha sai; se nenhuma sobra, uma linha diz que só muda a loja.
+function samePairProduct(p: SwapPair): boolean {
+  const flat = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return !p.change && flat(p.fromName) === flat(p.toName) && Math.abs(p.fromPrice - p.toPrice) < 0.01;
+}
 function swapPairLines(pairs: SwapPair[]): string[] {
-  return pairs.map((p) => `• ${p.fromName} (${brl(p.fromPrice)}) → *${p.toName}* (${brl(p.toPrice)})${p.change ? ` — ⚠️ _${p.change}_` : ""}`);
+  const changed = pairs.filter((p) => !samePairProduct(p));
+  if (!changed.length && pairs.length) return ["• Os mesmos produtos, pelo mesmo preço — só muda a loja."];
+  return changed.map((p) => `• ${p.fromName} (${brl(p.fromPrice)}) → *${p.toName}* (${brl(p.toPrice)})${p.change ? ` — ⚠️ _${p.change}_` : ""}`);
 }
 
 // Nota da troca que muda mais que a loja (10/10, rodada 10 g29).
@@ -2978,6 +3018,11 @@ export function swapColorNote(from: string, to: string): string {
 // A troca de loja perde ou muda a medida (11/10, rodada 17 g49): "era 40 cm" nunca some calado.
 export function swapMeasureNote(from: string, to?: string): string {
   return to ? `muda a medida: era ${from}, essa é ${to}` : `não confirmei a medida (era ${from})`;
+}
+
+// Recusa da troca de loja dita junto de outro pedido (11/10, rodada 19 g52, R19-6): confirma e segue com o resto.
+export function minimumSwapDeclined(storeLabel: string): string {
+  return `Ok, mantenho na *${storeLabel}* 👍`;
 }
 
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
@@ -3267,6 +3312,8 @@ export function manualQuoteSummary(input: {
   sameHour?: boolean;
   // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
   deadlineMiss?: { label: string };
+  // Cliente disse "urgente" sem dia e a entrega não é hoje (11/10, rodada 19 g52, R19a-5).
+  urgentMiss?: boolean;
   // Prazo dito que a entrega cumpre (10/10, rodada 10 g29): o resumo diz que serve (ou que chega sem hora marcada).
   deadlineFit?: { label: string; morning?: boolean; fit: DeadlineFit };
   // Orçamento do pedido dito e respeitado (10/10, rodada 10 g29: "vai ficar dentro dos 60?" ficava sem resposta).
@@ -3299,6 +3346,7 @@ export function manualQuoteSummary(input: {
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
+    ...(!input.deadlineMiss && input.urgentMiss ? [urgentMissNote(input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.slowDelivery ? [slowDeliveryNote(input.slowDelivery.store, input.slowDelivery.promise)] : []),
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),

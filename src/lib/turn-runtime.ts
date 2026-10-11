@@ -273,7 +273,12 @@ export const turnMeta = new AsyncLocalStorage<{
   // Prazo dito pelo cliente (ctx.neededBy) neste turno: a vitrine avisa quando as opções não chegam a tempo (10/10, rodada 6 g19).
   neededBy?: { date: string; label: string; morning?: boolean; hour?: number };
   // Aceite da troca de loja dito DEPOIS de uma edição na mesma mensagem (10/10, rodada 12 M5): a loja cuja troca já vale.
-  acceptSwapFrom?: string;}>();
+  acceptSwapFrom?: string;
+  // Item cujas opções estavam na tela quando o turno começou (11/10, rodada 19 g52, R19-7); null = nenhum.
+  onScreenQuery?: string | null;
+  // Mensagens anteriores do cliente (até 6 h, da mais nova à mais velha; 11/10, rodada 19 g53): o sentido do item sai do
+  // contexto da conversa ("tenho uma gata" → "ração pra ela" é de gato; "make… base" é base de rosto).
+  contextTexts?: string[];}>();
 
 // A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido
 // do dono): com LIA_NATIVE_PIX=1 o Pix saía só como bolha nativa (`sendPixOrderDetails`), o
