@@ -62,7 +62,7 @@ import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, Choice
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
 import { derivedMessageLabel, understandMedia, type InboundMedia } from "./media-understanding";
 import { refreshPausedStores } from "./store-pause";
-import { TURN_LOCK_TTL_MS, TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, orderFactsCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
+import { TURN_LOCK_TTL_MS, TurnSupersededError, type TurnTicket, skipTurnTicket, acquireTurnLock, addressOnlyCtx, orderFactsCtx, getOrCreateConvo, isFreightChoicePayload, isRecentDuplicateInbound, lastActivityAt, markTurnReplied, prefetchForTurn, prefetchLastActivityAt, takePrefetched, withTurnConvo, normalizePhone, notifyOperator, persistSentTexts, quoteAbandonTtlMs, readCtx, releaseTurnLock, rememberCtxSnapshot, reply, replyQuoteNotice, searchNoticeTimer, sleep, turnMeta, writeCtx, isAdminPhone, notifyOwner, phoneRole, withinOperatorHours } from "./turn-runtime";
 import { cancelPendingRetailerQuote, closeUnpaidOrder, createCardAttempt, flagLatestOrder, handleSavedCardOther, handleSavedCardPay, issueValidatedRetailerQuotePayment, markDeliveryOrderPaid, markPixExpired, methodFromIntent, recheckOpenCharge, reopenOrderForEdit, resendCharge, switchPaymentMethod } from "./order-payments";
 import { freightDeadlineFits, opsPublishManualQuote, recordWaitlistLead, sendFreightChoice } from "./ops-lifecycle";
 
@@ -2041,10 +2041,11 @@ async function sendChoices(phone: string, p: PendingChoice, header?: string) {
 async function rememberCarousel(phone: string, messageId: string | undefined, p: PendingChoice, header: string) {
   if (!messageId) return;
   try {
-    const { convo } = await getOrCreateConvo(phone);
-    await prisma.message.create({
-      data: { conversationId: convo.id, sender: "carousel", metadata: messageId, text: JSON.stringify({ header, pending: p }) }
-    });
+    await withTurnConvo(phone, (convoId) =>
+      prisma.message.create({
+        data: { conversationId: convoId, sender: "carousel", metadata: messageId, text: JSON.stringify({ header, pending: p }) }
+      })
+    );
   } catch (error) {
     console.warn("[carousel:remember-failed]", error instanceof Error ? error.message : error);
   }
@@ -2054,8 +2055,9 @@ async function rememberCarousel(phone: string, messageId: string | undefined, p:
 // ainda está na tela (choicesStillOnScreen). O resgate de toque velho continua só nos carrosséis.
 async function rememberChoicesShown(phone: string, p: PendingChoice, header: string) {
   try {
-    const { convo } = await getOrCreateConvo(phone);
-    await prisma.message.create({ data: { conversationId: convo.id, sender: "choices", text: JSON.stringify({ header, pending: p }) } });
+    await withTurnConvo(phone, (convoId) =>
+      prisma.message.create({ data: { conversationId: convoId, sender: "choices", text: JSON.stringify({ header, pending: p }) } })
+    );
   } catch (error) {
     console.warn("[choices:remember-failed]", error instanceof Error ? error.message : error);
   }
@@ -2072,12 +2074,13 @@ async function choicesStillOnScreen(phone: string, p: PendingChoice): Promise<bo
   const windowMs = choicesRepeatWindowMs();
   if (!windowMs) return false;
   try {
-    const { convo } = await getOrCreateConvo(phone);
-    const last = await prisma.message.findFirst({
-      where: { conversationId: convo.id, sender: { in: ["carousel", "carousel-recovered", "choices"] } },
-      orderBy: { createdAt: "desc" },
-      select: { text: true, createdAt: true }
-    });
+    const last = await withTurnConvo(phone, (convoId) =>
+      prisma.message.findFirst({
+        where: { conversationId: convoId, sender: { in: ["carousel", "carousel-recovered", "choices"] } },
+        orderBy: { createdAt: "desc" },
+        select: { text: true, createdAt: true }
+      })
+    );
     if (!last || Date.now() - last.createdAt.getTime() > windowMs) return false;
     const saved = JSON.parse(last.text) as { pending?: PendingChoice };
     return Boolean(saved.pending?.options?.length) && vitrineKey(saved.pending!) === vitrineKey(p);
@@ -2951,9 +2954,11 @@ export async function handleDeliveryMessage(input: {
   const tagged = stripAcquisitionTag(signupForm ? SIGNUP_FORM_MESSAGE : listForm ? LIST_FLOW_MESSAGE : (input.text ?? "").trim());
   let text = tagged.text;
   const acquisition = mergeAcquisition(input.acquisition, tagged.campaignCode);
+  // Loja pausada pelo vigia ou pelo dono (09/10) sai da vitrine deste turno (cache de 30 s). A leitura sai junto com a
+  // da conversa (11/10, g66: em produção cada ida ao banco custa ~0,3 s); nunca lança.
+  const pausedRefresh = refreshPausedStores();
   const { user, convo } = await getOrCreateConvo(phone, input.name);
-  // Loja pausada pelo vigia ou pelo dono (09/10) sai da vitrine deste turno (cache de 30 s).
-  await refreshPausedStores();
+  await pausedRefresh;
 
   // Twilio/Meta retry the webhook when a turn is slow — never process the same inbound
   // message twice (a duplicated "2 arroz" would silently double the basket). O dedupe é
@@ -3059,6 +3064,14 @@ export async function handleDeliveryMessage(input: {
   try {
     // Recarrega a conversa DEPOIS do lock: o turno anterior pode ter gravado contexto
     // enquanto esperávamos — processar sobre o snapshot velho recriaria a corrida.
+    // As leituras do início do turno saem JUNTAS (11/10, g66): conversa recarregada, falas anteriores do cliente e, para o
+    // turno de conversa, o relógio de inatividade e as compras anteriores (ranking da vitrine) — antes eram 4–5 idas em série.
+    const turnMetaNow = turnMeta.getStore();
+    if (!signupForm && !listForm) {
+      prefetchLastActivityAt(convo.id, inboundMessageId);
+      prefetchPreferredSkuCounts(user.id);
+    }
+    const contextTextsRead = turnMetaNow ? recentCustomerTexts(convo.id, inboundMessageId) : undefined;
     const freshConvo = (await prisma.conversation.findUnique({ where: { id: convo.id } })) ?? convo;
     // O snapshot do CAS também precisa avançar para o contexto recarregado; senão a
     // primeira escrita deste turno colide com a do turno que terminou enquanto
@@ -3079,7 +3092,7 @@ export async function handleDeliveryMessage(input: {
         if (startCtx.neededBy && !meta.neededBy) meta.neededBy = startCtx.neededBy;
         if (startCtx.urgent) meta.urgentOrder = true;
         // Contexto da conversa para o sentido do item (11/10, rodada 19 g53, R19-2/R19-3).
-        meta.contextTexts = await recentCustomerTexts(convo.id, inboundMessageId);
+        meta.contextTexts = await (contextTextsRead ?? recentCustomerTexts(convo.id, inboundMessageId));
       }
     }
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
@@ -14056,7 +14069,16 @@ async function handleSearch(
   await handleConciergeRequest(phone, convoId, userCep, ctx, text, userId);
 }
 
+// Compras anteriores do cliente: lidas junto com o início do turno (g66) e consumidas uma vez pela busca.
+function prefetchPreferredSkuCounts(userId: string): void {
+  prefetchForTurn(`preferredSkus:${userId}`, () => readPreferredSkuCounts(userId));
+}
+
 async function preferredSkuCounts(userId: string): Promise<Map<string, number>> {
+  return takePrefetched(`preferredSkus:${userId}`, () => readPreferredSkuCounts(userId));
+}
+
+async function readPreferredSkuCounts(userId: string): Promise<Map<string, number>> {
   const orders = await prisma.deliveryOrder.findMany({
     where: { userId, status: { in: REPEATABLE_DELIVERY_ORDER_STATUSES } },
     orderBy: { createdAt: "desc" },
