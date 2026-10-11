@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseStoreRemoval, parseMeasureMixup, spCapitalPlace, relaxAnyAttribute } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseStoreRemoval, splitLeadingSwapDecline, parseMeasureMixup, spCapitalPlace, relaxAnyAttribute } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, isVetMedicineAsk, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -2119,6 +2119,15 @@ async function applyMinimumSwap(phone: string, convoId: string, ctx: DeliveryCon
   return true;
 }
 
+// Botões do pedido mínimo (tirar o item da loja / completar): a saída que sempre leva ao resumo (09/10; rodada 19 R19-6).
+async function sendMinimumButtons(phone: string, convoId: string, ctx: DeliveryContext, store: StoreConnector) {
+  const stuckItem = (ctx.basket ?? []).find((item) => item.storeKey === store.key);
+  ctx.minimumButtonsAt = Date.now();
+  await writeCtx(convoId, ctx);
+  markTurnReplied();
+  await whatsappAdapter.sendMinimumOptions(phone, "O que prefere?", stuckItem?.name.split(" ")[0] ?? "item", store.label).catch(() => null);
+}
+
 async function offerMinimumSwap(
   phone: string,
   convoId: string,
@@ -2755,10 +2764,12 @@ export async function handleDeliveryMessage(input: {
     {
       // Guarda anti-repetição: o que o cliente disse e as últimas falas da Lia (até 10 min atrás).
       const meta = turnMeta.getStore();
-      const lastSent = readCtx(freshConvo.context ?? null).lastSent;
+      const startCtx = readCtx(freshConvo.context ?? null);
+      const lastSent = startCtx.lastSent;
       if (meta) {
         meta.inboundText = text;
         meta.prevSent = lastSent && Date.now() - lastSent.at < REPEAT_WINDOW_MS ? lastSent.texts : [];
+        meta.onScreenQuery = startCtx.step === "choosing" ? startCtx.pending?.[0]?.query ?? null : null;
       }
     }
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.
@@ -2873,6 +2884,29 @@ async function handleDeliveryTurn(
     const skus = new Set((offer?.replacements ?? []).map((r) => r.fromSku));
     return (ctx.basket ?? []).filter((item) => skus.has(item.sku)).flatMap((item) => [item.name, item.ask ?? ""]).filter(Boolean);
   };
+  // "não quero trocar de loja. põe de volta o papel…" (11/10, rodada 19 g52, R19-6): a recusa na frente vale (a oferta sai e
+  // não volta para essa loja) e o resto segue como mensagem. Antes a frase inteira não era recusa e a oferta se repetia.
+  {
+    const offer = ctx.minSwap ?? ctx.minSwapParked;
+    const joinOffer = ctx.consolidationOffer ?? ctx.consolidationParked;
+    const rest = offer || joinOffer ? splitLeadingSwapDecline(text) : null;
+    if (offer && rest) {
+      ctx.minSwap = undefined;
+      ctx.minSwapParked = undefined;
+      ctx.minSwapDeclined = [...new Set([...(ctx.minSwapDeclined ?? []), offer.fromStoreKey])];
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.minimumSwapDeclined(getStore(offer.fromStoreKey).label));
+      text = rest;
+    } else if (joinOffer && rest) {
+      // Mesma recusa com a oferta de JUNTAR na mesa: é "manter as lojas" (virava o item "não trocar de loja").
+      ctx.consolidationOffer = undefined;
+      ctx.consolidationParked = undefined;
+      ctx.consolidationTried = joinOffer.key;
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.consolidationKept(joinOffer.stores));
+      text = rest;
+    }
+  }
   // Troca de loja do pedido mínimo (10/10, rodada 6 A2): a oferta só vale para a MESMA cesta e para a resposta logo em
   // seguida. Cesta mudou ou o cliente falou de outra coisa → ela sai da mesa; um "1" depois disso nunca a aceita.
   if (!ctx.minSwap && ctx.minSwapParked) {
@@ -5092,8 +5126,12 @@ async function handleDeliveryTurn(
   if (ctx.minSwap && (normalizeMsg(text) === "minswap:no" || declinesSwapOffer(text) || swapOfferIntent(text) === "reject")) {
     const fromStore = getStore(ctx.minSwap.fromStoreKey);
     ctx.minSwap = undefined;
+    // A recusa vale para a loja (11/10, rodada 19 g52, R19-6): o fechamento não oferece a mesma troca de novo e a saída fica
+    // nos botões de tirar/completar.
+    ctx.minSwapDeclined = [...new Set([...(ctx.minSwapDeclined ?? []), fromStore.key])];
     await writeCtx(convo.id, ctx);
     await reply(phone, minimumOrderText(ctx, fromStore));
+    await sendMinimumButtons(phone, convo.id, ctx, fromStore);
     return;
   }
 
@@ -5117,7 +5155,7 @@ async function handleDeliveryTurn(
     const below = conciergeStoresBelowMinimum(ctx)[0];
     if (below) {
       await reply(phone, minimumOrderText(ctx, below));
-      if (!ctx.minSwap) await offerMinimumSwap(phone, convo.id, ctx, below);
+      if (!ctx.minSwap && !ctx.minSwapDeclined?.includes(below.key)) await offerMinimumSwap(phone, convo.id, ctx, below);
       return;
     }
     if (ctx.basket?.length) {
@@ -6187,6 +6225,7 @@ async function handleDeliveryTurn(
         }
         // "pula essa" fala da escolha que estava na tela: se o "tira" já levou ela, não pula a próxima.
         const onScreen = ctx.step === "choosing" ? ctx.pending?.[0]?.query : undefined;
+        const removedBefore = ctx.lastRemoved;
         await runDeferredEdits(phone, convo.id, ctx, user.cep, async () => {
         for (const part of removes) {
           if (part.intent.kind !== "remove_item") continue;
@@ -6223,8 +6262,10 @@ async function handleDeliveryTurn(
               : part.intent.to;
           await handleSwap(phone, convo.id, user.cep, ctx, part.intent.from, composed, part.clause, part.intent.attr);
         }
+        const justRemoved = ctx.lastRemoved && ctx.lastRemoved !== removedBefore ? ctx.lastRemoved.items : [];
         for (const part of searches) {
-          await handleSearch(phone, convo.id, user.cep, ctx, part.clause, user.id);
+          const elliptic = removes.length ? ellipticReplacementQuery(part.clause, justRemoved) : null;
+          await handleSearch(phone, convo.id, user.cep, ctx, elliptic ?? part.clause, user.id);
         }
         });
         // Só removes/ajustes (nada re-cotou nem abriu cards): recap do estado atual,
@@ -6264,10 +6305,12 @@ async function handleDeliveryTurn(
       }
     }
     const reopenedForRemove = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+    const removedBefore = ctx.lastRemoved;
     await handleRemove(phone, convo.id, user.cep, ctx, intent.target, { silentIfFound: Boolean(intent.andAdd), reopened: reopenedForRemove });
     // Multi-intenção "tira o arroz E coloca feijão": o remove acima, o add agora.
     if (intent.andAdd) {
-      await handleSearch(phone, convo.id, user.cep, ctx, intent.andAdd, user.id);
+      const justRemoved = ctx.lastRemoved && ctx.lastRemoved !== removedBefore ? ctx.lastRemoved.items : [];
+      await handleSearch(phone, convo.id, user.cep, ctx, ellipticReplacementQuery(intent.andAdd, justRemoved) ?? intent.andAdd, user.id);
     }
     return;
   }
@@ -7474,22 +7517,39 @@ export async function takeIdentityFromItems(userId: string, items: string | unde
   return rest.join(", ") || undefined;
 }
 
+// "… jogo de brocas. cadastro: João Pereira Souza 529.982.247-25" (11/10, rodada 19 g52, R19-1): o ponto final e o rótulo
+// ("cadastro:", "nome:", "meus dados:") separam o pedido do nome como uma vírgula. Sem isso o trecho inteiro ("Preciso
+// de … cadastro: João Pereira Souza") não tinha cara de nome, o nome virava item e a lista sumia.
+// O ponto vira separador marcado (PERIOD): o resto volta com o ponto ("…e lixa. Tenho até 200 reais" segue com o teto da
+// frase, não "lixa até 200 reais").
+const PERIOD = "\u0003";
+function identityClauses(text: string): string {
+  return text
+    .replace(/(?<=[\p{L})])\.\s+(?=\p{L})/gu, `,${PERIOD} `)
+    .replace(/\s*\b(?:meu\s+)?(?:cadastro|nome(?:\s+completo)?|(?:meus\s+)?dados)\s*:\s*/giu, ", ");
+}
+const unPeriod = (seg: string) => seg.replace(new RegExp(`^${PERIOD}\\s*`), "");
+
 // Nome + CPF válido em qualquer ordem e com ou sem vírgula ("Rafael Torres, 529.982.247-25, CEP … número 1000",
 // "cep … numero 500, Fulano cpf …", 10/10, rodada 5 g16): o CPF (com o rótulo "cpf") sai do texto e vira separador; o
 // nome é o trecho colado nele (antes, depois) com cara de nome, ou um nome comum em outro trecho. O resto volta intacto.
 export function splitIdentity(text: string, cpf: string): { name: string | null; rest: string } {
   const MARK = "\u0000";
-  const marked = text.replace(/(?:\b(?:e\s+)?(?:o\s+)?(?:meu\s+)?cpf\b\s*(?:[:=-]|é|eh|e)?\s*)?\d[\d.\s-]{9,16}\d/gi, (m) => (m.replace(/\D/g, "").includes(cpf) ? `,${MARK},` : m));
+  const marked = identityClauses(text).replace(/(?:\b(?:e\s+)?(?:o\s+)?(?:meu\s+)?cpf\b\s*(?:[:=-]|é|eh|e)?\s*)?\d[\d.\s-]{9,16}\d/gi, (m) => (m.replace(/\D/g, "").includes(cpf) ? `,${MARK},` : m));
   // Vírgula decimal ("tinta branca 3,6 litros", 11/10, rodada 18 g50) não separa: o "3, 6 litros" que voltava virava
   // "tinta branca 3" + "6x litros" e a busca ia por "tinta branca 6 litros".
-  const segments = marked.split(IDENTITY_SPLIT_RE).map((seg) => seg.trim()).filter(Boolean);
+  const segments = marked.split(IDENTITY_SPLIT_RE).map((seg) => seg.trim()).filter((seg) => unPeriod(seg).trim());
   let at = segments.indexOf(MARK);
-  const nameOk = (seg: string | undefined) => Boolean(seg && seg !== MARK && looksLikeOnboardingName(seg) && extractFullName(seg));
+  const nameOk = (raw: string | undefined) => {
+    const seg = raw == null ? raw : unPeriod(raw);
+    return Boolean(seg && seg !== MARK && looksLikeOnboardingName(seg) && extractFullName(seg));
+  };
   // Sem vírgula entre o nome e o resto ("cpf … Rafael Torres cep 01310-100 numero 500"): o nome é o começo (até o
   // CEP/número/rua) ou o fim (depois do número) do trecho vizinho.
   for (const side of [1, -1]) {
     const i = at + side;
-    const seg = segments[i];
+    const lead = segments[i]?.startsWith(PERIOD) ? PERIOD : "";
+    const seg = segments[i] ? unPeriod(segments[i]) : segments[i];
     if (i < 0 || !seg || seg === MARK || nameOk(seg)) continue;
     const head = /^([\p{L}' -]+?)\s+((?:cep|n[uú]mero|num|n[º°o]|rua|r\.|av\.?|avenida|alameda)\b.*|\d.*)$/iu.exec(seg);
     const tail = /^(.*\d\S*)\s+([\p{L}' -]+)$/u.exec(seg);
@@ -7497,6 +7557,7 @@ export function splitIdentity(text: string, cpf: string): { name: string | null;
     const isName = (t: string) => nameOk(t) && looksLikeBareFirstNameFullName(t);
     const parts = head && isName(head[1]) ? [head[1].trim(), head[2].trim()] : tail && isName(tail[2]) ? [tail[1].trim(), tail[2].trim()] : null;
     if (parts) {
+      parts[0] = lead + parts[0];
       segments.splice(i, 1, ...parts);
       at = segments.indexOf(MARK);
     }
@@ -7505,8 +7566,9 @@ export function splitIdentity(text: string, cpf: string): { name: string | null;
   const near = [at - 1, at + 1].filter((i) => i >= 0 && nameOk(segments[i]));
   const bareAt = segments.findIndex((seg) => seg !== MARK && nameOk(seg) && looksLikeBareFirstNameFullName(seg));
   const pick: number | undefined = near.find((i) => looksLikeBareFirstNameFullName(segments[i])) ?? (bareAt >= 0 ? bareAt : near[0]);
-  const name = pick != null && pick >= 0 ? extractFullName(segments[pick]) : null;
-  const rest = segments.filter((seg, i) => seg !== MARK && i !== pick && !/^(?:cpf|nome|meu cpf|e)$/i.test(seg)).join(", ");
+  const name = pick != null && pick >= 0 ? extractFullName(unPeriod(segments[pick])) : null;
+  const kept = segments.filter((seg, i) => seg !== MARK && i !== pick && !/^(?:cpf|nome|meu cpf|e)$/i.test(unPeriod(seg)));
+  const rest = kept.reduce((out, seg) => (!out ? unPeriod(seg) : seg.startsWith(PERIOD) ? `${out.replace(/[.\s]+$/, "")}. ${unPeriod(seg)}` : `${out}, ${seg}`), "");
   return { name, rest };
 }
 
@@ -8826,6 +8888,11 @@ async function handleChoosing(
   if (parsed?.type === "skip" && more) parsed = null;
   if (!parsed && !more && !refineAttrs && intent.kind === "reject") parsed = { type: "skip" } as const;
 
+  // "o de 100 folhas" / "a da Cis" (11/10, rodada 19 g52, R19-7): artigo + "de" aponta UM card, como "o primeiro" — antes
+  // só estreitava e mostrava o mesmo card de novo. O nome solto ("tio joão") continua só estreitando (dono, 04/09).
+  if (parsed?.type === "name" && /^(?:(?:quero|queria|pode ser|prefiro|vou de|fico com|manda|me ve|entao|e)\s+)*(?:o|a|aquele|aquela|esse|essa)\s+(?:de|do|da|com)\s+\S/.test(normalizeMsg(text))) {
+    parsed = { type: "pick", index: parsed.index, ...(parsed.qty ? { qty: parsed.qty } : {}) };
+  }
   if (parsed?.type === "name") {
     current.shownOptions = current.shownOptions ?? [...current.options];
     current.options = [current.options[parsed.index]];
@@ -9475,6 +9542,15 @@ const REJECT_ONLY_RE = new RegExp(`^(?:estes|esses|essas|estas|isso|esse|essa|ne
 // Busca nova (vitrines + Mercado Livre) para a escolha ABERTA com uma frase mais
 // específica ("isqueiro maçarico", "isqueiro tocha") e troca as opções na mesa. Devolve
 // false quando nada aparece — o chamador segue o caminho de sempre.
+// Uma cor pedida no refino ("melhor preta", 11/10, rodada 19 g52, R19a-2): kit de outras cores ("2 azuis 1 vermelha e preta",
+// "azul e preta") sai quando há opção só da cor pedida.
+function preferPureColor<T extends { name: string }>(options: T[], query: string): T[] {
+  const want = colorsOf(query);
+  if (want.size !== 1) return options;
+  const pure = options.filter((o) => [...colorsOf(o.name)].every((c) => want.has(c)));
+  return pure.length ? pure : options;
+}
+
 async function researchChoice(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string, mustMatch?: string): Promise<boolean> {
   // Recomendação (08/10): o refino ("tem de morango?") refaz a recomendação com a palavra pedida.
   if (current.recommendation) {
@@ -9498,6 +9574,9 @@ async function researchChoice(phone: string, convoId: string, ctx: DeliveryConte
   // `mustMatch` (06/10): só vale opção que tem TUDO o que foi pedido ("kerasys coco"); a
   // busca nova não pode devolver outro produto com cabeçalho de refino.
   if (choice && mustMatch) choice.options = choice.options.filter((o) => attrMatchesItem(mustMatch, o));
+  // Uma cor pedida no refino ("melhor preta", 11/10, rodada 19 g52, R19a-2): kit de outras cores ("2 azuis 1 vermelha e
+  // preta", "azul e preta") sai quando há opção só da cor pedida.
+  if (choice) choice.options = preferPureColor(choice.options, text);
   // A busca numa loja só não passa pelo piso de relevância da busca entre lojas: o piso vale aqui.
   if (choice && storeCut) choice.options = choice.options.filter((o) => conciergeMatchIsStrong(text, o));
   // O que o cliente negou na mensagem ("gotas não", 10/10, rodada 15 M1) não volta na busca nova.
@@ -9722,6 +9801,7 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
   // A busca nova não achou, mas a opção pedida JÁ está nos cards (10/10, rodada 9 B-307: "tem de 2 litros?" com o
   // "Guaraná Antártica 2l" no card 5 respondia "Não achei guaraná 2l"). Os cards que atendem ao atributo valem.
   if (!matches.length) matches = (p.shownOptions ?? p.options).filter((o) => attrs.every((a) => attrMatchesItem(a, o)));
+  matches = preferPureColor(matches, refined);
   if (!matches.length) {
     await replyRefineMiss(phone, p, refined, text);
     return;
@@ -9987,6 +10067,44 @@ function literalRemoveTarget(target: string, basket: BasketItem[], pending: Pend
   const queries = pending.filter((p) => flat(p.query) === cited || flat(p.baseQuery ?? "") === cited).map((p) => p.query);
   const skus = basket.filter((b) => flat(b.name) === cited || flat(b.ask ?? "") === cited).map((b) => b.sku);
   return queries.length || skus.length ? { ...(skus.length ? { skus } : {}), ...(queries.length ? { queries } : {}) } : undefined;
+}
+
+// "tira a cola da casa e vídeo" (11/10, rodada 19 g52, R19-4): o alvo com a LOJA no fim tira só o item daquela loja. Antes
+// o "e" do nome da loja cortava o alvo ("cola da casa" + "video") e saíam as duas colas da cesta (a da Americanas também).
+const flatStore = (s: string) => normalizeMsg(s).replace(/&/g, " e ").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+export function storeQualifiedRemoveTarget(target: string, basket: BasketItem[]): { skus?: string[]; queries?: string[] } | undefined {
+  const n = flatStore(target);
+  const labels = [...new Set(basket.map((item) => item.storeLabel).filter((l): l is string => Boolean(l)))];
+  for (const label of labels.sort((a, b) => b.length - a.length)) {
+    const l = flatStore(label);
+    if (!l) continue;
+    const at = new RegExp(String.raw`^(.+?)\s+(?:que\s+(?:e|eh|veio|vem|ta|esta)\s+)?(?:da|do|na|no|de|dessa|desse)\s+(?:loja\s+)?(?:${l}|${l.replace(/\s+/g, "")})$`).exec(n);
+    if (!at) continue;
+    const head = at[1].replace(/^(?:o|a|os|as)\s+/, "").trim();
+    const sameStore = basket.filter((item) => item.storeLabel === label);
+    const skus = sameStore.filter((item) => itemMatchesPhrase(head, item)).map((item) => item.sku);
+    if (skus.length) return { skus };
+  }
+  return undefined;
+}
+
+// "… e põe a da cis da americanas" logo depois de tirar um item (11/10, rodada 19 g52, R19-4): o "a da cis" fala do item
+// que acabou de sair. Vira a busca "<o que saiu> cis" (a loja citada fica de fora da busca), em vez de o roteador ler
+// "a da cis" como troca do último item escolhido (saía "canetinha hidrocor CIS"). null = não é esse formato.
+export function ellipticReplacementQuery(clause: string, removed: BasketItem[]): string | null {
+  if (removed.length !== 1) return null;
+  const n = normalizeMsg(clause).replace(/[!?.]+$/g, "").trim();
+  const m = /^(?:e\s+)?(?:(?:poe|bota|coloca|manda|quero|adiciona|inclui|troca\s+(?:pel[ao]|por)|(?:pode\s+)?(?:por|colocar|botar))\s+)?(?:no lugar\s+)?(?:a|o|as|os|uma|um)?\s*(?:d[aoe]s?)\s+(.+)$/.exec(n);
+  if (!m) return null;
+  const labels = mentionableStoreNames().map(flatStore);
+  const qualifier = m[1]
+    .replace(/\s+(?:d[aoe]s?|na|no)\s+(?:loja\s+)?(.+)$/, (all, store: string) => (labels.some((l) => l === flatStore(store) || l.replace(/\s+/g, "") === flatStore(store).replace(/\s+/g, "")) ? "" : all))
+    .trim();
+  if (!qualifier || qualifier.split(" ").length > 4) return null;
+  const item = removed[0];
+  const head = (item.ask ?? "").trim() || productHead(item.name) || "";
+  if (!head) return null;
+  return `${head} ${qualifier}`.replace(/\s+/g, " ").trim();
 }
 
 function removeTargetPieces(target: string, basket: BasketItem[], pending: PendingChoice[]): string[] {
@@ -10532,7 +10650,7 @@ async function handleRemove(
   // não sabe separar → resposta honesta pedindo os itens.
   // Nome CITADO literalmente ("tira o 'tem que ser macia', era só a observação da escova", 10/10, rodada 12 A5): casa
   // primeiro com o item de nome igual; o resto da frase é explicação e não tira mais nada (antes saía a escova escolhida).
-  const literal = opts?.exact ? undefined : literalRemoveTarget(target, basket, pending);
+  const literal = opts?.exact ? undefined : (literalRemoveTarget(target, basket, pending) ?? storeQualifiedRemoveTarget(target, basket));
   const exact = opts?.exact ?? literal;
   const categoryAsk = exact ? null : normalizeMsg(target).match(/^(?:tudo|todos|todas)\s+(?:o\s+|os\s+|as\s+)?(?:que\s+(?:for|seja|sao|são|e|eh)\s+)?(?:de\s+|da\s+|do\s+|d[ao]s\s+)?(.+)$/);
   const matchesTarget = (name: string): boolean => {
@@ -10604,11 +10722,15 @@ async function handleRemove(
   }
   // Sem resumo na mesa (10/10, rodada 10 g30, M2: "tira o arroz" com a cesta montada já abria o resumo com total e
   // botões de pagamento sem o cliente pedir): confirma a remoção e a cesta segue aberta, como no ajuste de quantidade.
-  if (opts?.reopened === false) {
+  // "diz *tira copo* que eu fecho o resto" (11/10, rodada 19 g52, R19-12/B3): a Lia prometeu fechar depois da remoção — o
+  // "tira copo" seguinte tira E mostra o resumo, sem o cliente ter de perguntar "e agora, fecha?".
+  const promisedClose = (ctx.minimumButtonsAt != null && Date.now() - ctx.minimumButtonsAt < 30 * 60_000) || (turnMeta.getStore()?.prevSent ?? []).some((t) => /que eu fecho o resto/.test(t));
+  if (opts?.reopened === false && !promisedClose) {
     await writeCtx(convoId, ctx);
     await replyBasketAdjusted(phone, copy.removedItems(names, false), copy.removedItems(names, false));
     return;
   }
+  ctx.minimumButtonsAt = undefined;
   await continueAfterBasket(phone, convoId, ctx, userCep, copy.removedItems(names, false));
 }
 
@@ -11232,6 +11354,8 @@ async function handleStoreSwapAsk(phone: string, convoId: string, userCep: strin
   }
   const below = conciergeStoresBelowMinimum(ctx)[0];
   if (below) {
+    // Pedido explícito de trocar de loja desfaz a recusa anterior (rodada 19 R19-6).
+    if (ctx.minSwapDeclined?.includes(below.key)) ctx.minSwapDeclined = ctx.minSwapDeclined.filter((key) => key !== below.key);
     if (await offerMinimumSwap(phone, convoId, ctx, below)) return true;
     const stuck = lines.filter((item) => item.storeKey === below.key);
     const what = stuck.length === 1 ? stuck[0].ask?.trim() || stuck[0].name : "esses itens";
@@ -13502,19 +13626,12 @@ async function continueAfterBasket(
       await writeCtx(convoId, ctx);
       if (prefix) await reply(phone, prefix);
       if (turnMeta.getStore()?.acceptSwapFrom !== belowStore.key) await reply(phone, minimumOrderText(ctx, belowStore));
-      // A saída de verdade: mesmos itens em loja sem mínimo (teste real 24/08).
-      const swapOffered = await offerMinimumSwap(phone, convoId, ctx, belowStore);
+      // A saída de verdade: mesmos itens em loja sem mínimo (teste real 24/08). Troca já recusada para essa loja (rodada 19
+      // R19-6) não volta: ficam os botões de tirar/completar.
+      const swapOffered = ctx.minSwapDeclined?.includes(belowStore.key) ? false : await offerMinimumSwap(phone, convoId, ctx, belowStore);
       // Sem equivalente em outra loja (09/10, teste real: detergente de R$ 3 travando lista de 12): dois botões —
       // tirar o item que não atinge o mínimo ou completar na própria loja.
-      if (!swapOffered) {
-        const stuckItem = (ctx.basket ?? []).find((item) => item.storeKey === belowStore.key);
-        ctx.minimumButtonsAt = Date.now();
-        await writeCtx(convoId, ctx);
-        markTurnReplied();
-        await whatsappAdapter
-          .sendMinimumOptions(phone, "O que prefere?", (stuckItem?.name.split(" ")[0] ?? "item"), belowStore.label)
-          .catch(() => null);
-      }
+      if (!swapOffered) await sendMinimumButtons(phone, convoId, ctx, belowStore);
       return;
     }
     // Destinatário (11/09): só pergunta quando o perfil do WhatsApp não tem nome E a cesta

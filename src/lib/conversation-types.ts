@@ -322,6 +322,9 @@ export type DeliveryContext = {
   // apagava a oferta e o "pode trocar de loja" seguinte caía no laço "Responde o número"). Só volta à mesa com a MESMA
   // cesta e um aceite/recusa com palavras ou o botão — o "1" solto depois disso nunca a aceita (rodada 6 A2).
   minSwapParked?: DeliveryContext["minSwap"];
+  // Lojas cuja troca (pedido mínimo) o cliente recusou (11/10, rodada 19 g52, R19-6): a oferta não volta a cada mensagem;
+  // o fechamento mostra o mínimo com os botões de tirar/completar, a saída que sobra.
+  minSwapDeclined?: string[];
   // Última escolha CONCLUÍDA (com o sku escolhido): "Outras opções"/"mais barato" fora
   // da escolha reabrem ela — o toque num card antigo não pode cair no "me diz de outro
   // jeito" (teste real 19/08).

@@ -2980,6 +2980,11 @@ export function swapMeasureNote(from: string, to?: string): string {
   return to ? `muda a medida: era ${from}, essa é ${to}` : `não confirmei a medida (era ${from})`;
 }
 
+// Recusa da troca de loja dita junto de outro pedido (11/10, rodada 19 g52, R19-6): confirma e segue com o resto.
+export function minimumSwapDeclined(storeLabel: string): string {
+  return `Ok, mantenho na *${storeLabel}* 👍`;
+}
+
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];

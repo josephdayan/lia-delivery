@@ -98,6 +98,12 @@ export async function executePlan(env: ExecEnv, steps: Planned[]): Promise<PlanO
   return outcome;
 }
 
+// O item em escolha NÃO era o da tela quando o turno começou (a remoção/troca da mesma mensagem mudou a vez).
+function offScreen(query: string): boolean {
+  const meta = turnMeta.getStore();
+  return Boolean(meta && meta.onScreenQuery !== undefined && meta.onScreenQuery !== query);
+}
+
 function moreText(sort: "next" | "cheaper" | "pricier"): string {
   return sort === "cheaper" ? "mais barato" : sort === "pricier" ? "mais caro" : "outras opções";
 }
@@ -384,6 +390,13 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       }
       // "Não achei a opção de 8 unidades" com uma de 8 unidades na tela (rodada 4, M5): o aviso não pode contradizer as opções.
       if (clean && current && claimsMissingWhatIsShown(clean, current.options)) {
+        await h.sendChoices(phone, current);
+        return "done";
+      }
+      // "esquece o caderno, vamos pro papel de presente" (11/10, rodada 19 g52, R19-7): a pergunta "Qual opção de papel de
+      // presente você prefere: 1, 2, 3, 4 ou 5?" saía sem as opções na tela (a remoção da mesma mensagem trocou o item da
+      // vez). Pergunta de escolha sobre o item em escolha, depois de outra ação da mensagem ou citando números, vira os cards.
+      if (clean && step.kind === "unclear" && current && /\?\s*$/.test(clean) && (opts.multi || /\b1\s*,\s*2\b/.test(clean) || offScreen(current.query)) && /\b(?:op[cç](?:ao|ão|oes|ões)|prefere|escolhe|qual|quais)\b/i.test(clean)) {
         await h.sendChoices(phone, current);
         return "done";
       }
