@@ -749,13 +749,21 @@ export function choiceSequence(queries: string[]): string {
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
-export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string, urgency?: { urgent?: boolean; urgentWhen?: "amanha" | "rapido"; noneToday?: boolean }): string {
+// "amaciante 2 litros" sem a embalagem de 2 L (11/10, rodada 25 g70, R25a-4): diz que vão embalagens menores somando o pedido.
+export function sizeSplitHeader(asked: string, shown: string, packs: number): string {
+  const unit = /\b1\s*kg\b/i.test(shown) ? "1 kg" : "1 litro";
+  return `Não achei *${asked}* numa embalagem só — separei as de *${unit}*${packs > 1 ? ` (${packs} embalagens dão o que você pediu)` : ""}:`;
+}
+
+export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string, urgency?: { urgent?: boolean; urgentWhen?: "amanha" | "rapido"; noneToday?: boolean; sizeSplitFrom?: { asked: string; shown: string }; query?: string; qty?: number }): string {
   const left = remaining - 1;
   const tail = left > 1 ? ` — depois faltam ${left}` : left === 1 ? " — depois falta 1" : "";
   // "urgente" (11/10, rodada 20 g55, R20a-4): o "chega hoje"/"nada chega hoje" valia só no 1º item; agora vale em todos.
   const rush = closestFalta ? "" : urgency?.urgent ? `\n${choicesHeaderToday(query, urgency.urgentWhen)}` : urgency?.noneToday ? `\n${noneTodayHeader(query)}` : "";
   // 09/10 (rodada 1): o tamanho/variante que não existe é avisado em TODO item da fila, não só no primeiro.
-  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}${rush}`;
+  const split = !closestFalta && urgency?.sizeSplitFrom && urgency.sizeSplitFrom.shown === urgency.query ? urgency.sizeSplitFrom : undefined;
+  const splitNote = split ? `\n${sizeSplitHeader(split.asked, split.shown, urgency?.qty ?? 1)}` : "";
+  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}${splitNote}${rush}`;
 }
 
 export function choiceLine(index: number, name: string, displayPrice: number, delivery?: string, repeat?: boolean): string {
@@ -2124,6 +2132,30 @@ export function weightQuestionAnswer(name: string, qty: number, totalKg: number,
   return `Hoje está *${qty}x ${name}*, ~${weightLabel(totalKg)}. Se quiser ${weightLabel(askedKg)}, é só dizer *deixa ${weightLabel(askedKg)}*.`;
 }
 
+// Peso de um item que ainda vai pras opções (11/10, rodada 25 g70, R25a-1): confere ou ajusta o peso anotado, sem mexer
+// no item que está na tela.
+export function pendingWeightAnswer(label: string, currentKg: number, askedKg: number, onScreen: boolean): string {
+  const later = onScreen ? "" : " Quando chegar a vez desse item, eu converto pro peso certo.";
+  if (Math.abs(currentKg - askedKg) <= 0.01) return `Sim 🙂 anotei *${weightLabel(currentKg)}* de *${label}*.${later}`;
+  return `Anotei *${weightLabel(currentKg)}* de *${label}*. Se quiser ${weightLabel(askedKg)}, é só dizer *deixa ${weightLabel(askedKg)}*.`;
+}
+export function pendingWeightSet(label: string, kg: number, unchanged: boolean): string {
+  return unchanged ? `Fica *${weightLabel(kg)}* de *${label}*, como já estava anotado 👍` : `✅ Anotei *${weightLabel(kg)}* de *${label}*.`;
+}
+
+// Preço de um item ainda sem escolha (11/10, rodada 25 g70, R25a-3): a faixa das opções.
+export function pendingItemPriceRange(query: string, min: number, max: number, onScreen: boolean): string {
+  const range = Math.abs(max - min) < 0.005 ? `sai por *${brl(min)}*` : `vai de *${brl(min)}* a *${brl(max)}*, conforme a opção`;
+  return `*${query}* ainda não está escolhido: ${range}${onScreen ? " (as opções estão aí em cima)" : " — eu te mostro as opções quando chegar a vez dele"}.`;
+}
+
+// "o mais barato de cada" sem nada esperando escolha (11/10, rodada 25 g70, R25a-2).
+export function cheapestAllNothingPending(items: string[], example?: string): string {
+  const list = items.map((i) => `• ${i}`).join("\n");
+  const how = example ? `diz, por exemplo, *troca o ${example} pelo mais barato*` : "me diz qual";
+  return `Não tem nenhum item esperando escolha agora — a cesta já está assim:\n${list}\nSe quiser trocar algum pelo mais barato, ${how}. Se estiver tudo certo, diz *só isso* que eu mando o total com a entrega.`;
+}
+
 // Embalagem que NÃO fecha com o número pedido (07/10, c28): pergunta antes de pôr na cesta.
 export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
   const total = packs * packSize;
@@ -2626,6 +2658,43 @@ export function joinLeftBehind(storeLabel: string, left: string[]): string {
   return `A *${storeLabel}* não tem ${left.map((n) => `*${n}*`).join(", ")} — ${left.length > 1 ? "esses ficaram" : "esse ficou"} na loja de antes.`;
 }
 
+// "qual a diferença entre o shampoo de 17,15 e o de 23,09?" com a oferta de juntar na mesa (11/10, rodada 25 g69, R25-1):
+// compara o item da cesta com o da troca (mesmo produto = muda só loja e preço) e a oferta continua valendo.
+export function consolidationPairCompare(rows: Array<{ same: boolean; fromName: string; fromPrice: number; fromStore?: string; toName: string; toPrice: number; toStore: string }>): string {
+  const lines = rows.map((r) => {
+    const kept = `o de ${brl(r.fromPrice)}${r.fromStore ? ` é o da *${r.fromStore}*` : ""}, que já está na cesta`;
+    const joined = `o de ${brl(r.toPrice)} é o da *${r.toStore}*, que entra se juntar tudo lá`;
+    return r.same
+      ? `É o mesmo produto (*${r.fromName}*): ${kept}; ${joined}. Muda só a loja e o preço.`
+      : `Na cesta está *${r.fromName}* (${brl(r.fromPrice)}${r.fromStore ? `, *${r.fromStore}*` : ""}); juntando, entra *${r.toName}* (${brl(r.toPrice)}, *${r.toStore}*).`;
+  });
+  return [...lines, "Responde *1* pra juntar ou *2* pra manter como está."].join("\n");
+}
+
+// "Quanto compro por convidado?" (11/10, rodada 25 g69, R25-2): a conta de referência por pessoa (tabela de festa), sem mexer
+// na cesta — o cliente decide e pede o ajuste.
+export function perGuestAnswer(rows: Array<{ noun: string; per: number; unit: "g" | "ml" | "un"; total?: number }>, people?: number): string {
+  if (!rows.length) {
+    return people
+      ? `Pra ${people} pessoas eu não tenho uma conta pronta pra esses itens. Me diz quantos de cada que eu ajusto.`
+      : "Não tenho uma conta pronta pra esses itens. Me diz quantas pessoas e quantos de cada que eu ajusto.";
+  }
+  const num = (v: number) => (Math.round(v * 10) / 10).toString().replace(".", ",");
+  const per = (r: (typeof rows)[number]) =>
+    r.unit === "un" ? `1 por pessoa` : r.unit === "ml" ? `~${r.per} ml por pessoa` : `~${r.per} g por pessoa${r.noun === "docinhos" ? " (2 a 3 docinhos)" : r.noun === "bolo" ? " (uma fatia)" : ""}`;
+  const total = (r: (typeof rows)[number]) => {
+    if (r.total == null || !people) return "";
+    if (r.unit === "un") return ` → pra ${people}, ${r.total} ${r.noun === "copo" ? "copos" : "pratos"} (vale levar uma folga)`;
+    if (r.unit === "ml") return ` → pra ${people}, uns ${num(r.total / 1000)} L (${Math.ceil(r.total / 2000)} garrafas de 2 L)`;
+    return ` → pra ${people}, uns ${r.total >= 1000 ? `${num(r.total / 1000)} kg` : `${r.total} g`}`;
+  };
+  return [
+    "Uma conta de referência de festa (média por pessoa):",
+    ...rows.map((r) => `• ${r.noun}: ${per(r)}${total(r)}`),
+    people ? "É uma média, dá pra ajustar pro seu caso. Quer que eu mude as quantidades? Me diz, por exemplo, *põe 5 refrigerantes*." :"Me diz quantas pessoas que eu faço a conta — ou quantos de cada que eu ajusto."
+  ].join("\n");
+}
+
 export function consolidationAsk(): string {
   return "Só pra não errar: junto tudo numa loja só ou mantenho como está? Responde *juntar* ou *manter* (ou 1 / 2).";
 }
@@ -2899,7 +2968,9 @@ function todayVerdictLine(rows: Array<EtaRow & { today: boolean | null }>): stri
   return `Hoje não chega: ${late.map((r) => `*${r.store}* é ${promiseForCustomer(r.when).replace(/^prazo da loja:\s*/, "")}`).join(", ")}.`;
 }
 
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number, today?: Array<EtaRow & { today: boolean | null }>): string {
+// `waitingOn` (11/10, rodada 25 g70, R25a-4): decisão do fechamento ainda em aberto (pedido mínimo da loja) — o "qual ficou o
+// total?" diz que falta ela, em vez de pedir "só isso" de novo.
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number, today?: Array<EtaRow & { today: boolean | null }>, waitingOn?: string): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
@@ -2912,7 +2983,9 @@ export function partialTotal(items: CopyBasketItem[], produtos: number, pendingC
       ? missing.length
         ? `_Falta escolher: ${missing.join(", ")}. Aí sai o total com a entrega._`
         : `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
-      : '_Diz *"só isso"* que eu mando o total com a entrega._';
+      : waitingOn
+        ? `_Falta só você decidir ${waitingOn} (a pergunta aí em cima). Aí sai o total com a entrega._`
+        : '_Diz *"só isso"* que eu mando o total com a entrega._';
   const budget = partialBudgetLine(produtos, budgetCap);
   const verdict = today ? todayVerdictLine(today) : null;
   return [...(verdict ? [verdict] : []), "🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), ...(budget ? [budget] : []), tail].join("\n");
@@ -3340,7 +3413,9 @@ export function quoteForOrderLabel(shortId: string, dateLabel?: string): string 
 export function conciergeChooseNext(): string {
   // "Escolhe aí embaixo" sem cartões (11/10, rodada 21 g58, R21a-7): depois de "deixa pra lá o papel" o cliente procurava
   // opções; o que fica embaixo são os botões do pedido.
-  return "Pronto ✅ Pra fechar, toca em *Pagar* aí embaixo — ou manda o próximo item direto.";
+  // "Pra fechar, toca em Pagar" antes de existir total (11/10, rodada 25 g70, R25a-2) soava como cobrança direta: o toque
+  // primeiro mostra o total com a entrega.
+  return "Pronto ✅ Pra ver o total com a entrega, toca em *Pagar* aí embaixo — ou manda o próximo item direto.";
 }
 
 // Item pedido ENQUANTO a cotação do operador está em andamento: entra no mesmo pedido
@@ -3755,7 +3830,9 @@ export function cancelHowTo(hasPaidOrder: boolean): string {
 
 // Sem prometer o total na mesma hora (11/10, rodada 21 g57, R21-9): a mudança às vezes abre uma escolha antes do total novo.
 export function orderReopened(): string {
-  return "Atualizei seu pedido: o total anterior não vale mais. Te mando o novo assim que essa mudança estiver feita 👇";
+  // Sem "te mando o novo" (11/10, rodada 25 g70, R25a-4): o novo resumo quase sempre vem logo abaixo, no mesmo turno, e a
+  // promessa soava atrasada/contraditória; quando não vem, finishReopenedTotal manda o total.
+  return "Atualizei seu pedido: o total anterior não vale mais 👇";
 }
 
 export function greetingMidOrder(step: string, itemCount: number): string {
@@ -4239,8 +4316,12 @@ export function cheapestTieNote(numbers: number[], price: number, picked: number
 
 // "o mais barato" que não ficou com a etiqueta mais baixa (10/10, rodada 11 g32): ela não chega no prazo dito, ou somava
 // uma entrega (e o pedido mínimo) de outra loja — o cliente sabe por quê e pode voltar pra ela.
-export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string } }): string {
+export function cheapestForOrderNote(input: { name: string; price: number; store?: string; late?: string; slow?: string; extraFee?: number; minimum?: number; pricierDelivery?: { theirs: number; ours: number }; noneOnTime?: { label: string; promise: string }; portion?: boolean; variant?: boolean }): string {
   const where = input.store ? `, *${input.store}*` : "";
+  // Porção individual (sachê/dose, 11/10, rodada 25 g69, R25-3): a etiqueta mais baixa era de outro tamanho de compra.
+  if (input.portion) return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas é uma porção individual — peguei o mais barato do tamanho normal. Se preferir aquele, é só falar.`;
+  // Versão diferente da pedida (premium, sabor, zero…: a regra do básico, R23-10) — dizia "somava mais uma entrega" (R25-6 B3).
+  if (input.variant) return `💡 O de etiqueta mais baixa é *${input.name}* (${brl(input.price)}${where}), mas é uma versão diferente da que você pediu — peguei o mais barato da versão comum. Se preferir aquele, é só falar.`;
   const min = input.minimum ? ` e o pedido mínimo de ${brl(input.minimum)} da loja` : "";
   // Nenhuma opção chega no prazo dito (10/10, rodada 15 g43): fica a que chega antes, por pouca diferença.
   if (input.noneOnTime) {

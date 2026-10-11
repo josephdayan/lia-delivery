@@ -152,6 +152,9 @@ export type PendingChoice = {
   // MAIS PRÓXIMO, do tipo certo, e `closestFalta` diz a diferença ("é de 500 ml"). Nunca
   // entram na cesta sem o cliente escolher (sem autoPick, sem modo lista, fora do plano B).
   closestFalta?: string;
+  // "amaciante 2 litros" sem a embalagem de 2 L (11/10, rodada 25 g70, R25a-4): a busca virou "amaciante 1 litro" (×2) e
+  // o cliente segue lendo o que pediu. `shown` = a query reescrita; vale só enquanto a query for ela.
+  sizeSplitFrom?: { asked: string; shown: string };
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
@@ -443,6 +446,9 @@ export type DeliveryContext = {
   // oferta saiu; cesta mudou → a oferta morre.
   // "Fecho sem a vela?" (10/10, rodada 5 A1): "fecha" com item ainda em escolha e cesta montada. Vale 1 resposta.
   closeWithoutOffer?: { queries: string[]; at: number };
+  // Gente da festa dita junto da pergunta "quanto compro por convidado?" (11/10, rodada 25 g69, R25-2): a próxima pergunta
+  // de quantidade sem o número usa este.
+  guests?: number;
   consolidationOffer?: { key: string; basket: BasketItem[]; storeLabel: string; stores: number; pairs: Array<{ fromName: string; fromPrice: number; toName: string; toPrice: number }>; delta: number; joinedTotal?: number; keptTotal?: number; joinedEta?: string; joinedStores?: number };
   // Oferta de juntar que saiu da mesa por outra mensagem (10/10, rodada 5 M1): "1"/"juntar" logo depois, com a MESMA
   // cesta, ainda responde a ela — antes o "1" virava quantidade do leite.
