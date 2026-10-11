@@ -2118,7 +2118,11 @@ export function splitLeadingSwapDecline(text: string): string | null {
   const parts = text.split(/(?<=[.;!?])\s+|\s*[,;]\s*/);
   if (parts.length < 2) return null;
   if (!declinesSwapOffer(parts[0])) return null;
-  const rest = parts.slice(1).join(", ").replace(/^[\s,.;!?]+/, "").trim();
+  // "não, prefiro manter na Americanas. põe mais um lápis…" (11/10, rodada 20 g55, R20a-2): a recusa pode vir em mais de um
+  // pedaço; todos os da frente saem e o resto segue. Antes o 2º pedaço ("prefiro manter…") fazia o resto inteiro parecer recusa.
+  let start = 1;
+  while (start < parts.length - 1 && declinesSwapOffer(parts[start])) start++;
+  const rest = parts.slice(start).join(", ").replace(/^[\s,.;!?]+/, "").trim();
   // "não precisa, obrigado": o resto é só cortesia — a mensagem inteira é a recusa de sempre.
   const courtesyOnly = normalizeMsg(rest).split(/[^a-z0-9]+/).filter(Boolean).every((w) => KEEP_FILLER.has(w) || /^(?:obrigad\w*|brigad\w*|valeu|vlw|obg|tchau|pf|pfv|favor|por)$/.test(w));
   return rest && !courtesyOnly && !declinesSwapOffer(rest) ? rest : null;
@@ -3563,6 +3567,13 @@ const SERVICE_FEE_RE =
   /\b(?:tem taxa|cobra(?:m)? (?:alguma )?taxa|taxa de servico|taxa (?:sua|do app|da lia|de voces|de vcs)|quanto (?:voce|vc|voces|vcs|ce) (?:cobra|cobram|ganha|ganham)|qual (?:e |eh )?(?:a )?(?:sua |tua )?(?:comissao|margem|taxa)|comissao|cobra(?:m)? (?:alguma coisa |algo )?a mais|quanto custa (?:o |seu |teu )?servico|(?:o servico|isso|vc|voce|voces|vcs) (?:e|eh) (?:de graca|gratis|pago))\b|^(?:e|eh) (?:de graca|gratis)\b/;
 const PIX_RECEIVER_RE =
   /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
+
+// Frase de lado que não pede nada ("gripe feia eu não preciso de nada, tira essa", 11/10, rodada 20 g55, R20a-1): quem chama
+// confere que nenhum item da cesta/fila é citado.
+export function isNoNeedAside(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[.!?;,\s]+$/g, "").trim();
+  return /\b(?:nao (?:preciso|precisa|quero|vou querer)(?: de)? nada|tira ess[ae]|tira isso|esquece ess[ae]|esquece isso|deixa (?:pra|para) la|nao precisa)\b/.test(n);
+}
 
 // "qual a diferença de preço?", "quanto a mais é a rápida?" com as duas entregas na tela (11/10, rodada 20 g55, R20-5).
 export function asksFreightPriceDiff(text: string): boolean {

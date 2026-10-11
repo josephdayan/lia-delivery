@@ -9,9 +9,10 @@ import { __setDialogueModelForTests } from "../src/lib/dialogue";
 import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
-import { asksFreightPriceDiff, isOccasionWhen, parseAvailabilityAsk, parseBasketLines, parseNeededBy, refineBaseQuery, splitCommandClauses, splitNegatedTerms } from "../src/lib/lia-intents";
+import { asksFreightPriceDiff, splitLeadingSwapDecline, isOccasionWhen, parseAvailabilityAsk, parseBasketLines, parseNeededBy, refineBaseQuery, splitCommandClauses, splitNegatedTerms } from "../src/lib/lia-intents";
 import { nameScent, parseChosenItemTrait, parseProductQuestion } from "../src/lib/product-question";
 import * as copy from "../src/lib/lia-copy";
+import { orderFactsCtx } from "../src/lib/turn-runtime";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -272,4 +273,119 @@ test("R20-9: o 'também não chega pra hoje às 17h' sai uma vez; do item seguin
   assert.equal(also.reduce((a, b) => a + b, 0), 1, outs.join("\n=====\n"));
   // Os dois últimos itens não repetem nada sobre o prazo.
   assert.doesNotMatch(outs[2] + outs[3], /⏰/, outs.join("\n=====\n"));
+});
+
+test("R20-9: 'A gente vai um de cada vez' não sai três vezes seguidas quando o cliente insiste em fechar", () => {
+  const missing = ["termômetro", "álcool 70", "soro"];
+  const first = copy.finishChoiceFirst(missing, []);
+  assert.match(first, /um de cada vez/);
+  // Já dita (até dentro de uma confirmação "✅ ... \n Antes de pagar..."), a 2ª e a 3ª não explicam de novo.
+  const second = copy.finishChoiceFirst(missing, [`✅ Termômetro\n${first}`]);
+  assert.doesNotMatch(second, /um de cada vez/);
+  const third = copy.finishChoiceFirst(missing, [first, second]);
+  assert.doesNotMatch(third, /um de cada vez/);
+  assert.notEqual(third, second);
+  assert.match(third, /\*termômetro\*.*\*álcool 70\*.*\*soro\*/);
+});
+
+// ---------------------------------------------------------------- R20a-1: "pode ser essa" com um card só
+
+const DIPIRONA = opt("dsp-1001", "Dipirona Monoidratada 1g Aspdip 10 Comprimidos", 9.9, "drogariasp", "Drogaria São Paulo");
+const PROTETOR = opt("dsp-1002", "Protetor Solar Nivea FPS 50 200ml", 49.9, "drogariasp", "Drogaria São Paulo");
+
+for (const said of ["pode ser essa", "a dipirona pode ser essa", "gripe feia eu não preciso de nada, tira essa. a dipirona pode ser essa"]) {
+  test(`R20a-1: '${said}' com um card só de dipirona escolhe ele`, async (t) => {
+    if (!dbOk) return t.skip();
+    const prev = process.env.LIA_MEDICINE_MIP;
+    process.env.LIA_MEDICINE_MIP = "true";
+    t.after(() => {
+      if (prev === undefined) delete process.env.LIA_MEDICINE_MIP;
+      else process.env.LIA_MEDICINE_MIP = prev;
+    });
+    const c = await customerWith({ pending: [{ query: "dipirona", qty: 1, options: [DIPIRONA] }, { query: "protetor solar fps 50", qty: 1, options: [PROTETOR] }] }, "choosing");
+    const out = await send(c.phone, said);
+    const ctx = await ctxOf(c.convoId);
+    assert.ok((ctx.basket ?? []).some((b) => b.sku === DIPIRONA.sku), `${out}\n${JSON.stringify(ctx.basket)}`);
+    assert.doesNotMatch(out, /Não achei: gripe|tira essa/i, out);
+  });
+}
+
+// ---------------------------------------------------------------- R20a-2: recusa da troca em mais de um pedaço
+
+test("R20a-2: 'não, prefiro manter na Americanas. põe mais um lápis…' recusa e segue com o pedido", () => {
+  assert.equal(splitLeadingSwapDecline("não, prefiro manter na Americanas. põe mais um lápis de cor de 12 cores"), "põe mais um lápis de cor de 12 cores");
+  assert.equal(splitLeadingSwapDecline("não, põe mais um lápis de cor"), "põe mais um lápis de cor");
+});
+
+// ---------------------------------------------------------------- R20a-3: "tem ibuprofeno?" com outro remédio na tela
+
+const SORO = opt("dsp-2001", "Soro Fisiológico 0,9% 500ml", 8.9, "drogariasp", "Drogaria São Paulo");
+
+test("R20a-3: 'tem ibuprofeno?' com o soro na tela anota o ibuprofeno, sem a recusa de receita", async (t) => {
+  if (!dbOk) return t.skip();
+  const prev = process.env.LIA_MEDICINE_MIP;
+  process.env.LIA_MEDICINE_MIP = "true";
+  t.after(() => {
+    if (prev === undefined) delete process.env.LIA_MEDICINE_MIP;
+    else process.env.LIA_MEDICINE_MIP = prev;
+  });
+  const c = await customerWith({ pending: [{ query: "soro fisiológico", qty: 1, options: [SORO, opt("dsp-2002", "Soro Fisiológico 0,9% 250ml", 6.5, "drogariasp", "Drogaria São Paulo")] }] }, "choosing");
+  const out = await send(c.phone, "tem ibuprofeno?");
+  const ctx = await ctxOf(c.convoId);
+  assert.doesNotMatch(out, /receita|soro ibuprofeno|Não peguei/i, out);
+  // A semente de teste não tem ibuprofeno: ou entra na fila, ou a resposta diz que não achou — nunca refina o soro.
+  assert.ok((ctx.pending ?? []).some((p) => /ibuprofeno/i.test(p.query)) || /ibuprofeno/i.test(out), `${out}\n${JSON.stringify(ctx.pending?.map((p) => p.query))}`);
+});
+
+// ---------------------------------------------------------------- R20a-4: "nada chega hoje" + aviso de prazo "hoje às 20h"
+
+test("R20a-4: com 'nada chega hoje' no cabeçalho, o prazo 'hoje às 20h' não sai de novo no ⏰", async (t) => {
+  if (!dbOk) return t.skip();
+  const neededBy = parseNeededBy("pra hoje às 20h");
+  if (!neededBy) return t.skip();
+  const late = (sku: string, name: string, price: number): ChoiceOption => ({ ...opt(sku, name, price), delivery: "3 dias úteis" });
+  const c = await customerWith({
+    neededBy,
+    urgent: true,
+    pending: [
+      { query: "vela", qty: 1, options: [late("americanas-911-1", "Vela A", 5), late("americanas-911-2", "Vela B", 6)] },
+      { query: "balão", qty: 1, noneToday: true, options: [late("americanas-912-1", "Balão A", 5), late("americanas-912-2", "Balão B", 6)] }
+    ]
+  }, "choosing");
+  const out = await send(c.phone, "optsku:americanas-911-1");
+  // O "nada chega hoje" vale também do 2º item em diante (antes só o 1º cartão dizia), e o ⏰ não repete o mesmo.
+  assert.match(out, /Nada chega hoje para \*balão\*/, out);
+  assert.doesNotMatch(out, /⏰[^\n]*balão/, out);
+});
+
+test("R20a-4: 'urgente' sobrevive à regravação do contexto no fechamento (o resumo lê ctx.urgent)", () => {
+  assert.equal(orderFactsCtx({ flow: "delivery", urgent: true } as DeliveryContext).urgent, true);
+  assert.equal(orderFactsCtx({ flow: "delivery" } as DeliveryContext).urgent, undefined);
+});
+
+test("R20a-4: 'mais barato' de cada item da lista sai uma vez no 'Já anotei', não como sufixo", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  const out = await send(phone, "base mais barato, batom vermelho mais barato, gloss mais barato");
+  assert.match(out, /• 1x base\n• 1x batom vermelho\n• 1x gloss\n• de cada um, o mais barato/, out);
+  assert.doesNotMatch(out, /base mais barato/, out);
+});
+
+// ---------------------------------------------------------------- R20a-4: "a de mel e limão da DSP" com o soro na tela
+
+const PASTILHA_MEL = opt("dsp-3001", "Pastilha Strepsils Mel e Limão 8 Unidades", 14.9, "drogariasp", "Drogaria São Paulo");
+const PASTILHA_MENTA = opt("dsp-3002", "Pastilha Strepsils Menta 8 Unidades", 14.9, "drogariasp", "Drogaria São Paulo");
+
+test("R20a-4: 'a de mel e limão da drogaria são paulo' com o soro na tela escolhe a pastilha da fila", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({
+    pending: [
+      { query: "soro fisiológico", qty: 1, options: [SORO, opt("dsp-2002", "Soro Fisiológico 0,9% 250ml", 6.5, "drogariasp", "Drogaria São Paulo")] },
+      { query: "pastilha pra garganta", qty: 1, options: [PASTILHA_MEL, PASTILHA_MENTA] }
+    ]
+  }, "choosing");
+  const out = await send(c.phone, "a de mel e limão da drogaria são paulo");
+  const ctx = await ctxOf(c.convoId);
+  assert.ok((ctx.basket ?? []).some((b) => b.sku === PASTILHA_MEL.sku), `${out}\n${JSON.stringify(ctx.basket)}`);
+  assert.ok((ctx.pending ?? []).some((p) => /soro/.test(p.query)), JSON.stringify(ctx.pending?.map((p) => p.query)));
 });

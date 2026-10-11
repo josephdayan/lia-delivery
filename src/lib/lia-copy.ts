@@ -208,6 +208,10 @@ export function addressSavedAskCep(): string {
 export function notedItemsLine(notedItems: string[], extra?: string): string {
   return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}${extra ? `\n${extra}` : ""}` : "";
 }
+// "tipo mt barato" pra lista inteira (11/10, rodada 20 g55, R20a-4): uma linha no fim do "Anotei", não sufixo em cada item.
+export function notedCheapestEach(): string {
+  return "de cada um, o mais barato 💸";
+}
 export function notedBudget(cap: number): string {
   return `💰 Até *${brl(cap)}* no total, já com a entrega.`;
 }
@@ -724,11 +728,13 @@ export function choiceSequence(queries: string[]): string {
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
-export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string): string {
+export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string, urgency?: { urgent?: boolean; urgentWhen?: "amanha" | "rapido"; noneToday?: boolean }): string {
   const left = remaining - 1;
   const tail = left > 1 ? ` — depois faltam ${left}` : left === 1 ? " — depois falta 1" : "";
+  // "urgente" (11/10, rodada 20 g55, R20a-4): o "chega hoje"/"nada chega hoje" valia só no 1º item; agora vale em todos.
+  const rush = closestFalta ? "" : urgency?.urgent ? `\n${choicesHeaderToday(query, urgency.urgentWhen)}` : urgency?.noneToday ? `\n${noneTodayHeader(query)}` : "";
   // 09/10 (rodada 1): o tamanho/variante que não existe é avisado em TODO item da fila, não só no primeiro.
-  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}`;
+  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}${rush}`;
 }
 
 export function choiceLine(index: number, name: string, displayPrice: number, delivery?: string, repeat?: boolean): string {
@@ -2569,8 +2575,13 @@ export function finishChoiceFirst(missing: string[] = [], recent: string[] = [])
   // e perderia a lista do que falta.
   const seen = (text: string) => recent.some((r) => r.trim() === text.trim());
   if (missing.length > 1) {
-    const first = `Antes de pagar falta escolher: ${namesList(missing)}. A gente vai um de cada vez, começando por *${missing[0]}* 👇`;
-    return seen(first) ? `Ainda faltam ${missing.length} itens pra escolher (${namesList(missing)}) — termina por *${missing[0]}*, que aí eu fecho o total 👇` : first;
+    // "A gente vai um de cada vez" 3 vezes seguidas (11/10, rodada 20 g55, R20-9): já explicado nas últimas falas (mesmo
+    // dentro de outra mensagem, junto da confirmação), não explica de novo — e a 3ª vez é só a lista.
+    const explained = recent.some((r) => r.includes("A gente vai um de cada vez"));
+    const reminded = recent.some((r) => r.includes("itens pra escolher (") && r.includes("que aí eu fecho o total"));
+    if (explained && reminded) return `Falta escolher: ${namesList(missing)} 👇`;
+    if (explained) return `Ainda faltam ${missing.length} itens pra escolher (${namesList(missing)}) — termina por *${missing[0]}*, que aí eu fecho o total 👇`;
+    return `Antes de pagar falta escolher: ${namesList(missing)}. A gente vai um de cada vez, começando por *${missing[0]}* 👇`;
   }
   if (missing.length === 1) {
     const first = `Antes de pagar, escolhe uma das opções de *${missing[0]}* (toca no card ou responde o número) que aí eu fecho o total 👇`;

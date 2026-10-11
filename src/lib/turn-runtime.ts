@@ -390,6 +390,8 @@ export function orderFactsCtx(ctx: DeliveryContext): Partial<DeliveryContext> {
     ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
     ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+    // "urgente" sem dia (11/10, rodada 20 g55, R20a-4): o resumo lê `urgent`; a oferta de juntar regravava sem ele.
+    ...(ctx.urgent ? { urgent: ctx.urgent } : {}),
     ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
     ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
     ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {}),
