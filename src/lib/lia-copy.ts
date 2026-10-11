@@ -1629,6 +1629,23 @@ export function trustAnswer(): string {
 export function choicesStillOpen(query: string): string {
   return `As opções de *${query}* continuam aí em cima 👆 — é só tocar em *Adicionar ao carrinho* na que preferir.`;
 }
+// Pergunta sobre o item JÁ escolhido (11/10, rodada 18 g50: "o vaso ficou de que cor? e o tamanho"): responde com o nome
+// do produto da cesta e o que o nome diz; o que o nome não diz, diz que não sabe (nunca inventa).
+export function chosenItemAnswer(input: { name: string; price: number; qty: number; storeLabel?: string; aspects: Array<"cor" | "tamanho" | "marca" | "loja" | "preco">; color?: string; size?: string; brand?: string }): string {
+  const head = `Na sua cesta está ${input.qty > 1 ? `${input.qty}x ` : ""}*${input.name}* — ${brl(input.price)}${input.storeLabel ? ` · _${input.storeLabel}_` : ""}.`;
+  const lines: string[] = [];
+  for (const aspect of input.aspects) {
+    if (aspect === "cor") lines.push(input.color ? `• Cor: *${input.color}* (pelo nome do produto)` : "• Cor: o nome do produto não diz a cor");
+    if (aspect === "tamanho") lines.push(input.size ? `• Tamanho: *${input.size}* (pelo nome do produto)` : "• Tamanho: o nome do produto não diz a medida");
+    if (aspect === "marca") lines.push(input.brand ? `• Marca: *${input.brand}*` : "• Marca: a loja não informa no nome");
+  }
+  const tail = lines.length ? `\n${lines.join("\n")}` : "";
+  return `${head}${tail}\nSe quiser trocar, é só dizer por qual.`;
+}
+// "esquece isso, era só uma pergunta" sem nada novo anotado (11/10, rodada 18 g50): nada sai da cesta.
+export function notItemAck(): string {
+  return "Certo, não anotei nada disso — sua cesta continua igual.";
+}
 // "oi?"/"tá aí?" com a mesma vitrine recém-enviada (09/10, rodada 1): lembra em vez de reenviar.
 export function greetingChoicesStillOpen(query: string): string {
   return `Oi! 🙂 Tô aqui. ${choicesStillOpen(query)}`;

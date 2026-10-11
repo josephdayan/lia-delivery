@@ -37,7 +37,7 @@ import { displayQueryName } from "@/lib/query-display";
 import { dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
-import { answerProductQuestion, isPetFood, parseProductQuestion } from "./product-question";
+import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseProductQuestion } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { discardsLastNote, keepOnlyInGroup, replaceInGroup } from "@/lib/pending-edits";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
@@ -3026,7 +3026,25 @@ async function handleDeliveryTurn(
   // "peraí, banana chips não... tira isso" / "esse lenço da Huggies repetiu, tira ele" (10/10, rodada 11 M14/M7): o pronome
   // aponta o item citado na mesma mensagem (ou, sem citação, o último escolhido). Tira ESSE e o resto da mensagem segue.
   const pronounRemove = !ctx.step || ["collecting", "choosing", "awaiting_quote_confirmation", "choosing_freight"].includes(ctx.step) ? parsePronounRemove(text) : null;
-  const pronounTarget = pronounRemove ? resolvePronounTarget(ctx, pronounRemove.context) : undefined;
+  // "esquece isso, não é item, era pergunta" (11/10, rodada 18 g50): o "isso" é o que a Lia anotou da pergunta, nunca o
+  // item escolhido antes — tirava a terra já escolhida. Sai só o que a última fala anunciou como novo; sem isso, nada.
+  const notItemCue = pronounRemove ? NOT_ITEM_CUE_RE.test(normalizeMsg(text)) : false;
+  if (pronounRemove && notItemCue) pronounRemove.rest = pronounRemove.rest.replace(new RegExp(NOT_ITEM_CUE_RE.source, "g"), " ").replace(/^[\s,.;!]+/, "").trim();
+  const pronounTarget = pronounRemove ? (notItemCue ? lastAnnouncedTarget(ctx) : resolvePronounTarget(ctx, pronounRemove.context)) : undefined;
+  if (pronounRemove && notItemCue && !pronounTarget && ctx.listMisses?.length) {
+    const announced = announcedQueries();
+    ctx.listMisses = ctx.listMisses.filter((m) => !announced.has(normalizeMsg(m.query)));
+  }
+  if (pronounRemove && notItemCue && !pronounTarget) {
+    await writeCtx(convo.id, ctx);
+    if (!pronounRemove.rest) {
+      await reply(phone, copy.notItemAck());
+      if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
+    text = pronounRemove.rest;
+    intent = detectIntent(text);
+  }
   if (pronounRemove && pronounTarget) {
     const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
     const rest = pronounRemove.rest;
@@ -3919,6 +3937,20 @@ async function handleDeliveryTurn(
       return;
     }
   }
+  // "o vaso ficou de que cor? e o tamanho" com o vaso na cesta (11/10, rodada 18 g50): pergunta sobre o item JÁ escolhido
+  // é respondida com o produto da cesta — nunca vira item ("1x o tamanho", cartão de vasos aleatórios). O item citado
+  // não pode ser o da tela (esse é pergunta sobre as opções, mais abaixo).
+  if ((ctx.basket?.length ?? 0) > 0 && !ctx.deliveryOrderId && (!ctx.step || ctx.step === "collecting" || ctx.step === "choosing") && (intent.kind === "free_text" || intent.kind === "service_question")) {
+    const basket = ctx.basket!;
+    const asked = parseChosenItemQuestion(text, basket.map((b) => `${b.name} ${b.ask ?? ""}`));
+    const onScreen = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
+    const item = asked ? basket[asked.index] : undefined;
+    if (asked && item && !(onScreen && sharesProductNoun(text, onScreen.baseQuery ?? onScreen.query) && !sharesProductNoun(text, item.ask ?? item.name))) {
+      await reply(phone, copy.chosenItemAnswer({ name: item.name, price: display(item.unitPrice, item.medicine), qty: item.qty, storeLabel: item.storeLabel, aspects: asked.aspects, color: nameColor(item.name), size: nameSize(item.name), brand: item.brand }));
+      if (onScreen) await reply(phone, copy.choicesStillOpen(shownQuery(onScreen)));
+      return;
+    }
+  }
   const restart = basketActive ? splitRestartCue(text) : null;
   const restartItems = restart?.rest ? resolveListItems(restart.rest).filter((l) => localCatalogProbe(l.phrase).strong) : [];
   if (restart && (restartItems.length || !restart.rest)) {
@@ -4222,6 +4254,17 @@ async function handleDeliveryTurn(
   // nomear uma opção das ORIGINAIS ("o Hillo da Pacheco") ou pedir as opções "de novo" volta às opções do item — antes
   // a resposta era "Não achei o Hillo" e o carrossel original não voltava. Antes da IA, para ela ver as opções certas.
   if (ctx.step === "choosing" && ctx.pending?.length && intent.kind !== "number" && ((await restoreRefinedChoices(phone, convo.id, ctx, text)) || (await narrowAlternativeSide(phone, convo.id, ctx, text)))) return;
+  // "mostra as opções do vaso de novo" com o vaso na tela (11/10, rodada 18 g50): é reenviar o cartão e esperar a escolha —
+  // a IA escolhia sozinha ("Fiquei com o Vaso… o mais comum") ou perguntava "quer ver outras opções?". "outras/mais" é
+  // paginação (segue abaixo); citar outro item da cesta não é esta tela.
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && intent.kind !== "number" && asksToSeeChoicesAgain(text) && !wantsMoreOptionsOnly(text)) {
+    const current = ctx.pending[0];
+    const other = (ctx.basket ?? []).some((b) => sharesProductNoun(text, b.ask ?? b.name)) && !sharesProductNoun(text, current.baseQuery ?? current.query);
+    if (!other) {
+      await sendChoices(phone, current);
+      return;
+    }
+  }
   // Oferta de troca em CARROSSEL (juntar entregas, replaceSku) e "mantém como está" (10/10, rodada 16 R16a-4): é recusar a
   // troca — o item atual fica, como no *pula* e como na oferta de botões. A IA lia como "desistir do pão".
   const swapOnTable = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
@@ -9871,6 +9914,17 @@ function alreadyChosenItem(ctx: DeliveryContext, phrase: string): BasketItem | u
 
 // Alvo do "tira isso/ele" (10/10, rodada 11): o item da cesta/fila mais citado no `context`; sem citação, o último escolhido.
 // Empate entre itens diferentes = não adivinha (o caminho de sempre pergunta).
+const NOT_ITEM_CUE_RE = /(?:^|[\s,.;!]+)(?:(?:mas|isso|aquilo|ele|ela)\s+)?(?:nao\s+(?:e|era|eh|foi)\s+(?:um\s+)?(?:item|produto|pedido|pra comprar|pra procurar|pra buscar)|(?:era|foi|e|eh)\s+(?:so\s+)?(?:uma\s+)?(?:pergunta|duvida))(?=$|[\s,.;!?]+)/;
+// Itens que a Lia acabou de anunciar como novos ("Somei *1x o tamanho*", "Opções de *X*", "❌ *X* — não achei").
+function announcedQueries(): Set<string> {
+  const said = (turnMeta.getStore()?.prevSent ?? []).slice(-4).filter((t) => /^(?:Somei|Opções de|❌|Achei os)/.test(t));
+  return new Set(said.flatMap((t) => [...t.matchAll(/\*(?:\d+x )?([^*]+?)(?: \(\d+x\))?\*/g)].map((m) => normalizeMsg(m[1].replace(/…$/, "")))));
+}
+function lastAnnouncedTarget(ctx: DeliveryContext): PendingChoice | undefined {
+  const announced = announcedQueries();
+  const hits = (ctx.pending ?? []).filter((p) => announced.has(normalizeMsg(p.query)) || announced.has(normalizeMsg(shownQuery(p))));
+  return hits.length === 1 ? hits[0] : undefined;
+}
 function resolvePronounTarget(ctx: DeliveryContext, context: string): BasketItem | PendingChoice | undefined {
   const basket = ctx.basket ?? [];
   const pending = ctx.pending ?? [];

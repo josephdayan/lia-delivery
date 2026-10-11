@@ -12,6 +12,7 @@ import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
 import { parseBasketLines, parseNeededBy, parseStoreRemoval } from "../src/lib/lia-intents";
+import { nameColor, nameSize, parseChosenItemQuestion } from "../src/lib/product-question";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -156,4 +157,48 @@ test("R18-4: 'Vou pintar o quarto sábado de manhã' é contexto; '3,6 litros' f
   assert.equal(taken.rest, "tinta branca 3,6 litros, um rolo de pintura");
 });
 
-void opt;
+// ---------------------------------------------------------------- R18-3: pergunta sobre o item escolhido
+
+const VASO = bi("telhanorte-2503735", "Vaso De Plástico Cone Baixo Pote 28 Argila Vasap", 82.39, { storeKey: "telhanorte", storeLabel: "Telhanorte", ask: "vaso grande para jardim" });
+const TERRA = bi("cobasi-1011200", "Terra Vegetal Adubada para Jardinagem Terral 2 kg", 20.89, { storeKey: "cobasi", storeLabel: "Cobasi", ask: "terra adubada" });
+const REGADOR = { query: "regador", qty: 1, options: [opt("cobasi-561592", "Regador Plástico com Bico Regaplan 2 L", 25.85, "cobasi", "Cobasi"), opt("telhanorte-1629247", "Regador 3,0L Verde Nutriplan", 29.59, "telhanorte", "Telhanorte")] };
+
+test("R18-3: 'o vaso ficou de que cor? e o tamanho' é pergunta sobre o vaso da cesta", () => {
+  assert.deepEqual(parseChosenItemQuestion("o vaso ficou de que cor? e o tamanho", [VASO.name, TERRA.name]), { index: 0, aspects: ["cor", "tamanho"] });
+  assert.equal(nameColor(VASO.name), "Argila");
+  assert.equal(nameSize(VASO.name), "Pote 28");
+  // Pedido de outra cor é refinamento; item que não está na cesta não é esta pergunta.
+  assert.equal(parseChosenItemQuestion("quero o vaso de outra cor", [VASO.name]), null);
+  assert.equal(parseChosenItemQuestion("o regador é de que cor?", [VASO.name, TERRA.name]), null);
+});
+
+test("R18-3: na conversa, a pergunta não vira item e 'esquece isso, era pergunta' não tira a terra", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({ basket: [VASO, TERRA], pending: [REGADOR] }, "choosing");
+  const out = await send(c.phone, "o vaso ficou de que cor? e o tamanho");
+  let ctx = await ctxOf(c.convoId);
+  assert.match(out, /Argila/);
+  assert.match(out, /Pote 28/);
+  assert.doesNotMatch(out, /Somei|não achei|Opções de \*o vaso/i);
+  assert.deepEqual((ctx.pending ?? []).map((p) => p.query), ["regador"], out);
+  const out2 = await send(c.phone, "esquece isso, não é item, era pergunta. o que tem na minha cesta?");
+  ctx = await ctxOf(c.convoId);
+  assert.deepEqual((ctx.basket ?? []).map((b) => b.sku), [VASO.sku, TERRA.sku], out2);
+  assert.doesNotMatch(out2, /Tirei/);
+  assert.match(out2, /Terra Vegetal/);
+});
+
+// ---------------------------------------------------------------- R18-12: "mostra as opções de novo"
+
+test("R18-12: 'mostra as opções do vaso de novo' reenvia o cartão e não escolhe sozinha", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({ pending: [{ query: "vaso grande para jardim", qty: 1, options: [opt(VASO.sku, VASO.name, 82.39, "telhanorte", "Telhanorte")] }] }, "choosing");
+  // A IA de produção escolhia a opção única ("Fiquei com o Vaso…"): o reenvio vem antes dela.
+  __setDialogueModelForTests(async () => ({ actions: [{ type: "pick", option: 1 }] }) as never);
+  const start = outbox.length;
+  const out = await send(c.phone, "mostra as opções do vaso de novo");
+  const ctx = await ctxOf(c.convoId);
+  assert.equal((ctx.basket ?? []).length, 0, out);
+  assert.doesNotMatch(out, /Fiquei com|✅/);
+  assert.ok(outbox.slice(start).some((m) => m.to === c.phone && /Carousel|Choices/.test(m.kind)) || /Vaso De Plástico/.test(out), out);
+});
