@@ -3505,8 +3505,9 @@ export function splitPriceCap(phrase: string): { phrase: string; cap: number | n
 
 // "quanto deu tudo?", "qual o total?", "resumo" — pergunta pelo PARCIAL da cesta,
 // não é produto nem escolha. Usada nos steps de escolha/coleta.
+// "qual ficou o total?" (11/10, rodada 25 g70, R25a-4) também é pergunta do total.
 const RUNNING_TOTAL_RE =
-  /\b(quanto (deu|da|ta|esta|fica|ficou|foi|custou) ?(tudo|o total|o pedido|a compra)?|qual( e| o)? total|total (ate agora|parcial|do pedido)|ver (o )?total|fecha(r)? (o )?total|me (mostra|manda) o total|resumo (do pedido|da compra|do carrinho)?|(o que|q) tem no (carrinho|pedido)|meu carrinho)\b|^total[\s?!.]*$|^resumo[\s?!.]*$/;
+  /\b(quanto (deu|da|ta|esta|fica|ficou|foi|custou) ?(tudo|o total|o pedido|a compra)?|qual( e| o| (ficou|deu|fica|foi|vai ficar) o)? total|total (ate agora|parcial|do pedido)|ver (o )?total|fecha(r)? (o )?total|me (mostra|manda) o total|resumo (do pedido|da compra|do carrinho)?|(o que|q) tem no (carrinho|pedido)|meu carrinho)\b|^total[\s?!.]*$|^resumo[\s?!.]*$/;
 export function asksRunningTotal(text: string): boolean {
   return RUNNING_TOTAL_RE.test(normalizeMsg(text));
 }
