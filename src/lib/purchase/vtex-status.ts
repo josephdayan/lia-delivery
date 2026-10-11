@@ -25,8 +25,8 @@ const PRE_HANDLING = new Set(["order-created", "order-completed", "on-order-comp
 
 // Puro. Parado = loja ainda não começou e:
 //   - entrega rápida (prazo da loja ≤ 3 h): passou metade do prazo, no mínimo 20 min (30 min → 20 min);
-//   - entrega longa: o prazo da loja venceu;
-//   - sem prazo conhecido: 12 h.
+//   - entrega longa: o prazo da loja venceu (11/10: fora da madrugada e com o tempo mínimo de início);
+//   - sem prazo conhecido: 12 h úteis (11/10: a madrugada não conta).
 // Atrasado (só aviso ao dono) = já começou, mas o prazo venceu há 1 h (rápida) / 12 h (longa) sem entrega.
 // Parado além da tolerância = a Lia pede o cancelamento na própria loja (09/10, dono: "nesses casos o
 // estorno devia ser automático"). Tolerância: rápida (≤ 3 h) = prazo + 1 h; longa = prazo + 12 h; sem
@@ -58,6 +58,63 @@ export async function requestStoreCancellation(
   return { ok: r.ok, status: r.status };
 }
 
+// Relógio do vigia (11/10/2026). Mambo e Swift foram pausadas às 02:00–03:00 de 10/10 (horário de SP)
+// por "payment-approved além do prazo" e faturaram às 03:12 e 07:00, entregando no mesmo dia: alarme falso.
+// Na entrega agendada/longa e sem prazo, a madrugada (LIA_STALL_QUIET_HOURS, padrão "22-8", horário de
+// SP; "off" desliga) não conta no relógio e o alarme nunca dispara dentro dela; e a loja tem pelo menos
+// LIA_STALL_MIN_START_MIN minutos úteis (padrão 120) para começar. A Expressa (prazo ≤ 3 h) segue a régua
+// de 09/10: o prazo curto que a própria loja deu mostra que ela está aberta naquela hora.
+const SP_OFFSET_MIN = -180; // America/Sao_Paulo, sem horário de verão desde 2019.
+export function stallQuietHours(): { start: number; end: number } | null {
+  const raw = (process.env.LIA_STALL_QUIET_HOURS ?? "22-8").trim().toLowerCase();
+  const m = /^(\d{1,2})\s*-\s*(\d{1,2})$/.exec(raw);
+  if (!m) return null;
+  const start = Number(m[1]);
+  const end = Number(m[2]);
+  if (start > 23 || end > 24 || start === end) return null;
+  return { start, end: end % 24 };
+}
+export function stallMinStartMinutes(): number {
+  const n = Number(process.env.LIA_STALL_MIN_START_MIN);
+  return Number.isFinite(n) && n >= 0 && process.env.LIA_STALL_MIN_START_MIN?.trim() ? n : 120;
+}
+function spHour(at: number): number {
+  return new Date(at + SP_OFFSET_MIN * 60_000).getUTCHours();
+}
+export function inQuietHours(at: Date, quiet = stallQuietHours()): boolean {
+  if (!quiet) return false;
+  const h = spHour(at.getTime());
+  return quiet.start < quiet.end ? h >= quiet.start && h < quiet.end : h >= quiet.start || h < quiet.end;
+}
+// Puro: minutos entre `from` e `to` fora da madrugada (hora cheia de SP = hora cheia UTC).
+export function businessMinutesBetween(from: Date, to: Date, quiet = stallQuietHours()): number {
+  let t = from.getTime();
+  const end = to.getTime();
+  if (!(end > t)) return 0;
+  if (!quiet) return (end - t) / 60_000;
+  // Além de 60 dias não importa a precisão (o vigia já decidiu muito antes).
+  const cap = Math.min(end, t + 60 * 86_400_000);
+  let total = 0;
+  while (t < cap) {
+    const next = Math.min(cap, (Math.floor(t / 3_600_000) + 1) * 3_600_000);
+    if (!inQuietHours(new Date(t), quiet)) total += next - t;
+    t = next;
+  }
+  return total / 60_000;
+}
+
+// Régua de 09/10 no relógio corrido para a pré-separação. Só decide QUANDO a Lia pede o cancelamento na
+// loja (junto com stalledPastGrace) — o cancelamento automático não mudou em 11/10.
+function stalledWallClock(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): boolean {
+  if (input.delivered || !input.state || !PRE_HANDLING.has(input.state)) return false;
+  const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
+  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
+  const promiseMin = Number.isFinite(etaAt) ? (etaAt - input.boughtAt.getTime()) / 60_000 : null;
+  if (promiseMin == null) return elapsedMin >= 12 * 60;
+  if (promiseMin <= 180) return elapsedMin >= Math.max(20, promiseMin / 2);
+  return input.now.getTime() >= etaAt;
+}
+
 export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
   if (input.delivered) return "ok";
   const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
@@ -65,15 +122,24 @@ export function storeOrderHealth(input: { state: string | null; boughtAt: Date; 
   const promiseMin = Number.isFinite(etaAt) ? (etaAt - input.boughtAt.getTime()) / 60_000 : null;
   const fast = promiseMin != null && promiseMin <= 180;
   if (input.state && PRE_HANDLING.has(input.state)) {
-    if (promiseMin == null) return elapsedMin >= 12 * 60 ? "stalled" : "ok";
     if (fast) return elapsedMin >= Math.max(20, promiseMin / 2) ? "stalled" : "ok";
-    return input.now.getTime() >= etaAt ? "stalled" : "ok";
+    // Agendada/longa e sem prazo (11/10): nunca na madrugada, nunca antes do tempo normal de a loja começar.
+    const quiet = stallQuietHours();
+    if (inQuietHours(input.now, quiet)) return "ok";
+    const businessMin = businessMinutesBetween(input.boughtAt, input.now, quiet);
+    if (promiseMin == null) return businessMin >= Math.max(12 * 60, stallMinStartMinutes()) ? "stalled" : "ok";
+    return input.now.getTime() >= etaAt && businessMin >= stallMinStartMinutes() ? "stalled" : "ok";
   }
   if (promiseMin != null && input.state !== "canceled") {
     const graceMin = fast ? 60 : 12 * 60;
     if (input.now.getTime() >= etaAt + graceMin * 60_000) return "late";
   }
   return "ok";
+}
+// A loja andou com o pedido (saiu da pré-separação sem cancelar): a pausa que ele causou pode cair (11/10).
+function startedAtStore(sig: StoreOrderSignal): boolean {
+  if (sig.delivered || sig.lastMile || sig.shipped) return true;
+  return Boolean(sig.state && !PRE_HANDLING.has(sig.state) && !/cancel/i.test(sig.state));
 }
 const CANCELED_MARK = "🛑 LOJA CANCELOU O PEDIDO";
 const LAST_MILE = /sa[ií]u para (a )?entrega|em rota de entrega|rota de entrega|saiu com o entregador|out for delivery|entregador/i;
@@ -173,7 +239,8 @@ async function pollStoreOrder(input: {
   // Parado além da tolerância: a Lia pede o cancelamento na loja; quando a loja confirmar "canceled",
   // o estorno automático abaixo devolve o dinheiro. Uma vez por pedido (por loja, no pedido de várias).
   let cancelAccepted = false;
-  if (health === "stalled" && stallAutoCancelEnabled() && !notes.includes(mark(CANCEL_REQUESTED_MARK)) && stalledPastGrace({ boughtAt, eta: sig.eta, now })) {
+  const stalledByWallClock = stalledWallClock({ state: sig.state, boughtAt, eta: sig.eta, now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
+  if (stalledByWallClock && stallAutoCancelEnabled() && !notes.includes(mark(CANCEL_REQUESTED_MARK)) && stalledPastGrace({ boughtAt, eta: sig.eta, now })) {
     let outcome = "";
     try {
       const res = await requestStoreCancellation(store.domain, storeOrderNumber, details.cookies ?? {}, fetchImpl);
@@ -194,15 +261,34 @@ async function pollStoreOrder(input: {
     order.notes = (await prisma.deliveryOrder.findUnique({ where: { id: order.id }, select: { notes: true } }))?.notes ?? order.notes;
   }
   const notesNow = order.notes ?? "";
+  // Despausa automática (11/10, store-pause.ts): o pedido que tirou a loja da vitrine andou na loja.
+  if (startedAtStore(sig)) {
+    const { resumeStoreIfPausedByOrder } = await import("../store-pause");
+    if (await resumeStoreIfPausedByOrder(storeKey, storeOrderNumber)) {
+      await addNote(`✅ ${store.label} de volta na vitrine sozinha: o pedido andou na loja ("${sig.state}") em ${now.toISOString()}.`);
+      const { notifyOwner } = await import("../turn-runtime");
+      const copy = await import("../lia-copy");
+      await notifyOwner(copy.ownerStoreAutoResumed({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state) }));
+    }
+  }
   if (health === "stalled" && !notesNow.includes(mark(STALL_MARK))) {
-    const { pauseStore } = await import("../store-pause");
-    const paused = await pauseStore(storeKey, `pedido #${shortId} (${storeOrderNumber}) parado em "${sig.state}" além do prazo`, "vigia");
-    await addNote(`${mark(STALL_MARK)}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja tirada da vitrine; cliente avisado; cobrar a loja e estornar se ela não resolver.`);
+    const { pauseStore, isSilentStore, AUTO_PAUSE_BY } = await import("../store-pause");
+    // Loja que nunca sinaliza (LIA_SILENT_STORES, 11/10): falta de sinal não a pausa; só o dono é avisado.
+    // O pedido de cancelamento acima segue a régua de 09/10 igual para ela.
+    const silent = isSilentStore(storeKey);
+    const paused = silent ? false : await pauseStore(storeKey, `pedido #${shortId} (${storeOrderNumber}) parado em "${sig.state}" além do prazo`, AUTO_PAUSE_BY);
     const { deliverNotice, notifyOwner } = await import("../turn-runtime");
     const copy = await import("../lia-copy");
-    if (!cancelAccepted) await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
-    await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }));
-    console.error("[store-stall]", storeKey, shortId, storeOrderNumber, sig.state);
+    if (silent) {
+      await addNote(`${mark(STALL_MARK)}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja não sinaliza o andamento: segue na vitrine; só o dono foi avisado.`);
+      await notifyOwner(copy.ownerSilentStoreNoSignal({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state) }));
+      console.warn("[store-silent]", storeKey, shortId, storeOrderNumber, sig.state);
+    } else {
+      await addNote(`${mark(STALL_MARK)}: ainda em "${sig.state}" em ${now.toISOString()}, prazo da loja vencido. Loja tirada da vitrine; cliente avisado; cobrar a loja e estornar se ela não resolver.`);
+      if (!cancelAccepted) await deliverNotice(order.phone, copy.retailerStalled(store.label, shortId), { items: order.items }).catch((error) => console.error("[store-stall:customer-notice-failed]", error instanceof Error ? error.message : error));
+      await notifyOwner(copy.ownerStoreStalled({ storeLabel: store.label, storeKey, shortId, storeOrderNumber, state: String(sig.state), minutes: Math.round((now.getTime() - boughtAt.getTime()) / 60_000), paused }));
+      console.error("[store-stall]", storeKey, shortId, storeOrderNumber, sig.state);
+    }
     report.notices += 1;
   } else if (health === "late" && !notes.includes(mark(LATE_MARK)) && !notes.includes(mark(STALL_MARK))) {
     await addNote(`${mark(LATE_MARK)} (status "${sig.state}" em ${now.toISOString()}).`);

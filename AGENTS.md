@@ -136,6 +136,16 @@ pode a pessoa comprar e não chegar… todo mundo vai ser cliente novo… se nã
 - **Loja pausada** (`src/lib/store-pause.ts`, AppFlag `store_paused:<loja>`): `storesForShopper` tira a loja da
   vitrine; o turno do WhatsApp relê o banco (cache 30 s). Volta só com o dono: **"lia loja drogal on"** (e
   "lia loja X off" pausa à mão). Pedido já cotado antes da pausa ainda pode ser comprado.
+  **11/10 (pendente do Joseph, g59):** Mambo e Swift foram pausadas de madrugada (#W22GDO, 02–03 h de SP) e
+  faturaram horas depois. (1) **Despausa sozinha:** quando o pedido que causou a pausa sai da pré-separação sem
+  cancelar (invoiced, handling, …) e a pausa ainda é a do `vigia` por esse nº da loja, ela cai (valor "off") e o
+  dono recebe `ownerStoreAutoResumed` uma vez; pausa do dono nunca cai sozinha. (2) **Relógio:** na entrega
+  agendada/longa e sem prazo, a madrugada (`LIA_STALL_QUIET_HOURS`, padrão "22-8" de SP, "off" desliga) não conta
+  e o alarme nunca dispara nela; a loja tem `LIA_STALL_MIN_START_MIN` (120) minutos úteis para começar; sem prazo
+  = 12 h úteis. Expressa (≤ 3 h) segue a régua de 09/10. (3) **Lojas que não sinalizam** (`LIA_SILENT_STORES`,
+  padrão "mambo,cobasi"): parada não pausa nem avisa o cliente; só `ownerSilentStoreNoSignal` ao dono; pausa
+  antiga do vigia nelas é ignorada na leitura. O **cancelamento automático** (pedido à loja + `retailerStalledCanceling`)
+  não mudou: segue no relógio corrido de 09/10, inclusive para Mambo/Cobasi. Teste: `tests/pausa-loja-2026-10-11b.test.ts`.
 - O **estorno** do cliente continua sendo o toque do dono no /ops (pedido com Pix da loja pago fica fora do
   estorno automático de 6 h). O alerta diz para cobrar a loja e estornar se ela não resolver.
 - Drogal: cobrada por e-mail em 09/10 (sac@drogal.com.br, a partir do Gmail do dono; SAC 0800 771 2120,

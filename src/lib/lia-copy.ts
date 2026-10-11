@@ -2416,6 +2416,23 @@ export function ownerStoreCanceledRefunded(input: { storeLabel: string; shortId:
   ].join("\n");
 }
 
+// Loja que não sinaliza o andamento (Mambo/Cobasi, 11/10): só o dono sabe; a loja segue na vitrine.
+export function ownerSilentStoreNoSignal(input: { storeLabel: string; storeKey: string; shortId: string; storeOrderNumber: string; state: string }): string {
+  return [
+    `🔕 O pedido #${input.shortId} (${input.storeLabel}, nº ${input.storeOrderNumber}) passou do prazo ainda em "${input.state}" na loja.`,
+    `A ${input.storeLabel} costuma não atualizar o status e entregar mesmo assim, então ela segue na vitrine e o cliente não foi avisado.`,
+    `Confira com a loja; se ela não entregou, "lia loja ${input.storeKey} off" tira da vitrine.`
+  ].join("\n");
+}
+
+// Pausa automática que caiu sozinha (11/10): o pedido que tirou a loja da vitrine andou na loja.
+export function ownerStoreAutoResumed(input: { storeLabel: string; storeKey: string; shortId: string; storeOrderNumber: string; state: string }): string {
+  return [
+    `✅ A ${input.storeLabel} voltou sozinha para a vitrine: o pedido #${input.shortId} (nº ${input.storeOrderNumber}), que tinha tirado a loja, andou na loja (status "${input.state}").`,
+    `Se quiser manter a loja fora, mande "lia loja ${input.storeKey} off".`
+  ].join("\n");
+}
+
 export function ownerOrderLate(input: { storeLabel: string; shortId: string; storeOrderNumber: string; state: string }): string {
   return `⏰ O pedido #${input.shortId} (${input.storeLabel}, nº ${input.storeOrderNumber}) passou do prazo da loja e não há sinal de entrega (status na loja: "${input.state}"). Confira com a loja.`;
 }
