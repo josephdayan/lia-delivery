@@ -146,6 +146,12 @@ pode a pessoa comprar e não chegar… todo mundo vai ser cliente novo… se nã
   padrão "mambo,cobasi"): parada não pausa nem avisa o cliente; só `ownerSilentStoreNoSignal` ao dono; pausa
   antiga do vigia nelas é ignorada na leitura. O **cancelamento automático** (pedido à loja + `retailerStalledCanceling`)
   não mudou: segue no relógio corrido de 09/10, inclusive para Mambo/Cobasi. Teste: `tests/pausa-loja-2026-10-11b.test.ts`.
+  **11/10 (g62, prazo do alerta/pausa):** na entrega agendada o prazo da loja é o INÍCIO da janela (Swift pausada
+  às 06:00 SP com a janela 6h–8h, faturou às 10:00). Com janela conhecida (pedido na loja `deliveryWindow` ou a
+  evidência do fechamento `[início→fim]`), o alerta/pausa só sai depois do FIM da janela + `LIA_STALL_WINDOW_GRACE_MIN`
+  (240). Janela já vencida na compra → a mesma janela no dia seguinte; prazo sem janela já vencido na compra →
+  régua sem prazo (12 h úteis). Só o alerta/pausa (e o "atrasado" ao dono); o cancelamento automático não mudou.
+  Teste: `tests/pausa-loja-2026-10-11c.test.ts`.
 - O **estorno** do cliente continua sendo o toque do dono no /ops (pedido com Pix da loja pago fica fora do
   estorno automático de 6 h). O alerta diz para cobrar a loja e estornar se ela não resolver.
 - Drogal: cobrada por e-mail em 09/10 (sac@drogal.com.br, a partir do Gmail do dono; SAC 0800 771 2120,

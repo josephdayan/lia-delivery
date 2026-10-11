@@ -115,24 +115,68 @@ function stalledWallClock(input: { state: string | null; boughtAt: Date; eta?: s
   return input.now.getTime() >= etaAt;
 }
 
-export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
+// Prazo do ALERTA/pausa (11/10, g62; #W22GDO): na entrega agendada o prazo da loja (`shippingEstimateDate`)
+// é o INÍCIO da janela — a Swift foi pausada às 06:00 SP com a janela 6h–8h recém-aberta, e faturou às 10:00.
+// Com janela conhecida, o prazo é o FIM dela + LIA_STALL_WINDOW_GRACE_MIN (padrão 240 min). Janela já
+// vencida na compra (Mambo: prometida 13h–16h, comprada 16:54) → a mesma janela no dia seguinte. Prazo
+// sem janela já vencido na compra → régua sem prazo (antes virava "Expressa" de prazo negativo: 20 min).
+// Só o alerta/pausa usa isto; o cancelamento automático segue em stalledWallClock/stalledPastGrace.
+export type DeliveryWindowUtc = { start: string; end: string };
+export function stallWindowGraceMinutes(): number {
+  const raw = process.env.LIA_STALL_WINDOW_GRACE_MIN?.trim();
+  const n = Number(raw);
+  return raw && Number.isFinite(n) && n >= 0 ? n : 240;
+}
+export type StallAlertDeadline = { kind: "fast"; promiseMin: number } | { kind: "deadline"; at: Date } | { kind: "none" };
+export function stallAlertDeadline(input: { boughtAt: Date; eta?: string; window?: DeliveryWindowUtc }): StallAlertDeadline {
+  const bought = input.boughtAt.getTime();
+  const start = input.window ? Date.parse(input.window.start) : NaN;
+  const end = input.window ? Date.parse(input.window.end) : NaN;
+  if (Number.isFinite(start) && Number.isFinite(end) && end > start && end - start < 86_400_000) {
+    // Próxima janela equivalente: mesmo horário, dia seguinte (quantos dias forem precisos).
+    const days = end > bought ? 0 : Math.floor((bought - end) / 86_400_000) + 1;
+    const at = end + days * 86_400_000 + stallWindowGraceMinutes() * 60_000;
+    // A loja remarcou para depois disso: vale o prazo dela.
+    const storeEta = input.eta ? Date.parse(input.eta) : NaN;
+    return { kind: "deadline", at: new Date(Number.isFinite(storeEta) && storeEta > at ? storeEta : at) };
+  }
+  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
+  if (!Number.isFinite(etaAt) || etaAt <= bought) return { kind: "none" };
+  const promiseMin = (etaAt - bought) / 60_000;
+  return promiseMin <= 180 ? { kind: "fast", promiseMin } : { kind: "deadline", at: new Date(etaAt) };
+}
+// Janela gravada na evidência do fechamento ("<sla> [<início>→<fim>]", vtex-checkout snapshot): usada
+// quando o pedido na loja não devolve `deliveryWindow`. Várias lojas/linhas: a que termina por último.
+export function windowFromEvidence(evidence: unknown): DeliveryWindowUtc | undefined {
+  const option = (evidence as { deliveryOption?: unknown } | null | undefined)?.deliveryOption;
+  if (typeof option !== "string") return undefined;
+  let best: DeliveryWindowUtc | undefined;
+  for (const m of option.matchAll(/\[([^\]→]+)→([^\]]+)\]/g)) {
+    const w = { start: m[1].trim(), end: m[2].trim() };
+    if (Number.isFinite(Date.parse(w.start)) && Number.isFinite(Date.parse(w.end)) && (!best || Date.parse(w.end) > Date.parse(best.end))) best = w;
+  }
+  return best;
+}
+
+export function storeOrderHealth(input: { state: string | null; boughtAt: Date; eta?: string; window?: DeliveryWindowUtc; now: Date; delivered?: boolean }): "ok" | "stalled" | "late" {
   if (input.delivered) return "ok";
   const elapsedMin = (input.now.getTime() - input.boughtAt.getTime()) / 60_000;
-  const etaAt = input.eta ? Date.parse(input.eta) : NaN;
-  const promiseMin = Number.isFinite(etaAt) ? (etaAt - input.boughtAt.getTime()) / 60_000 : null;
-  const fast = promiseMin != null && promiseMin <= 180;
+  const deadline = stallAlertDeadline(input);
   if (input.state && PRE_HANDLING.has(input.state)) {
-    if (fast) return elapsedMin >= Math.max(20, promiseMin / 2) ? "stalled" : "ok";
+    if (deadline.kind === "fast") return elapsedMin >= Math.max(20, deadline.promiseMin / 2) ? "stalled" : "ok";
     // Agendada/longa e sem prazo (11/10): nunca na madrugada, nunca antes do tempo normal de a loja começar.
     const quiet = stallQuietHours();
     if (inQuietHours(input.now, quiet)) return "ok";
     const businessMin = businessMinutesBetween(input.boughtAt, input.now, quiet);
-    if (promiseMin == null) return businessMin >= Math.max(12 * 60, stallMinStartMinutes()) ? "stalled" : "ok";
-    return input.now.getTime() >= etaAt && businessMin >= stallMinStartMinutes() ? "stalled" : "ok";
+    if (deadline.kind === "none") return businessMin >= Math.max(12 * 60, stallMinStartMinutes()) ? "stalled" : "ok";
+    return input.now.getTime() >= deadline.at.getTime() && businessMin >= stallMinStartMinutes() ? "stalled" : "ok";
   }
-  if (promiseMin != null && input.state !== "canceled") {
-    const graceMin = fast ? 60 : 12 * 60;
-    if (input.now.getTime() >= etaAt + graceMin * 60_000) return "late";
+  // Atrasado (só aviso ao dono): rápida = prazo + 1 h; longa/agendada = o mesmo prazo do alerta + 12 h;
+  // prazo da loja já vencido na compra = 24 h depois da compra; sem prazo nenhum, nunca.
+  if (input.state !== "canceled") {
+    const hadEta = Number.isFinite(input.eta ? Date.parse(input.eta) : NaN);
+    const lateAt = deadline.kind === "fast" ? input.boughtAt.getTime() + (deadline.promiseMin + 60) * 60_000 : deadline.kind === "deadline" ? deadline.at.getTime() + 12 * 3_600_000 : hadEta ? input.boughtAt.getTime() + 24 * 3_600_000 : NaN;
+    if (Number.isFinite(lateAt) && input.now.getTime() >= lateAt) return "late";
   }
   return "ok";
 }
@@ -159,6 +203,8 @@ export function etaTextFrom(iso: string | undefined | null, now = new Date()): s
 export type StoreOrderSignal = {
   state: string | null;
   eta?: string;
+  // Janela agendada que a loja guardou no pedido (11/10, g62).
+  window?: DeliveryWindowUtc;
   trackingUrl?: string;
   delivered?: Date;
   lastMile?: Date;
@@ -170,7 +216,13 @@ export function readStoreOrder(order: Json): StoreOrderSignal {
   const logistics = (((order.shippingData as Json | undefined)?.logisticsInfo as Json[] | undefined) ?? []);
   const eta = logistics.map((l) => l.shippingEstimateDate).find((x): x is string => typeof x === "string");
   const packages = (((order.packageAttachment as Json | undefined)?.packages as Json[] | undefined) ?? []);
-  const out: StoreOrderSignal = { state, ...(eta ? { eta } : {}) };
+  let window: DeliveryWindowUtc | undefined;
+  for (const l of logistics) {
+    const w = l.deliveryWindow as { startDateUtc?: unknown; endDateUtc?: unknown } | null | undefined;
+    if (typeof w?.startDateUtc !== "string" || typeof w.endDateUtc !== "string" || !Number.isFinite(Date.parse(w.startDateUtc)) || !Number.isFinite(Date.parse(w.endDateUtc))) continue;
+    if (!window || Date.parse(w.endDateUtc) > Date.parse(window.end)) window = { start: w.startDateUtc, end: w.endDateUtc };
+  }
+  const out: StoreOrderSignal = { state, ...(eta ? { eta } : {}), ...(window ? { window } : {}) };
   for (const pkg of packages) {
     const url = typeof pkg.trackingUrl === "string" && /^https:\/\//.test(pkg.trackingUrl) ? pkg.trackingUrl : undefined;
     if (url && !out.trackingUrl) out.trackingUrl = url;
@@ -204,6 +256,8 @@ async function pollStoreOrder(input: {
   storeOrderNumber: string;
   details: { orderGroup?: string; storeOrderNumber?: string; cookies?: Record<string, string> };
   boughtAt: Date;
+  // Janela da evidência do fechamento (11/10, g62), quando o pedido na loja não a devolve.
+  evidenceWindow?: DeliveryWindowUtc;
   // Etapa da loja antes da leitura (multi: pelos eventos da loja; uma loja: pelo status do pedido).
   preparing: boolean;
   multi: boolean;
@@ -234,7 +288,8 @@ async function pollStoreOrder(input: {
   // Vigia (09/10): loja que não começa o pedido comprado dentro do prazo. Avisa o dono na hora (mesmo
   // quando o cliente é o próprio dono testando: alerta de dinheiro/loja nunca é suprimido),
   // conta a verdade ao cliente e tira a loja da vitrine até o dono religar (store-pause.ts).
-  const health = storeOrderHealth({ state: sig.state, boughtAt, eta: sig.eta, now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
+  const window = sig.window ?? input.evidenceWindow;
+  const health = storeOrderHealth({ state: sig.state, boughtAt, eta: sig.eta, ...(window ? { window } : {}), now, delivered: Boolean(sig.delivered || sig.lastMile || sig.shipped) });
   const shortId = order.id.slice(-6).toUpperCase();
   // Parado além da tolerância: a Lia pede o cancelamento na loja; quando a loja confirmar "canceled",
   // o estorno automático abaixo devolve o dinheiro. Uma vez por pedido (por loja, no pedido de várias).
@@ -366,9 +421,9 @@ export async function pollVtexOrderStatuses(input: { limit?: number; fetchImpl?:
         await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { nextCheckAt: new Date(now.getTime() + 6 * 3_600_000), lastCheckedAt: now, lastError: "sem acesso ao pedido na loja" } });
         continue;
       }
-      const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: order.id, storeKey: sub.storeKey }, orderBy: { createdAt: "desc" }, select: { completedAt: true, createdAt: true } });
+      const job = await prisma.purchaseJob.findFirst({ where: { deliveryOrderId: order.id, storeKey: sub.storeKey }, orderBy: { createdAt: "desc" }, select: { completedAt: true, createdAt: true, checkoutEvidence: true } });
       const boughtAt = job?.completedAt ?? job?.createdAt ?? sub.createdAt;
-      const polled = await pollStoreOrder({ order, storeKey: sub.storeKey, storeOrderNumber: sub.storeOrderNumber, details, boughtAt, preparing: order.status === "retailer_preparing", multi: false, fetchImpl, now, report });
+      const polled = await pollStoreOrder({ order, storeKey: sub.storeKey, storeOrderNumber: sub.storeOrderNumber, details, boughtAt, evidenceWindow: windowFromEvidence(job?.checkoutEvidence), preparing: order.status === "retailer_preparing", multi: false, fetchImpl, now, report });
       if (polled.done && !polled.every) {
         await prisma.trackingSubscription.update({ where: { id: sub.id }, data: { completedAt: now, lastCheckedAt: now } });
         continue;
@@ -411,7 +466,7 @@ async function pollMultiStoreOrders(input: { take: number; fetchImpl: FetchLike;
         if (!details.orderGroup || !details.cookies || details.storeOrderNumber !== job.storeOrderNumber) continue;
         pending = true;
         try {
-          const polled = await pollStoreOrder({ order, storeKey: job.storeKey, storeOrderNumber: job.storeOrderNumber!, details, boughtAt: job.completedAt ?? job.createdAt, preparing: stage === "bought", multi: true, fetchImpl, now, report });
+          const polled = await pollStoreOrder({ order, storeKey: job.storeKey, storeOrderNumber: job.storeOrderNumber!, details, boughtAt: job.completedAt ?? job.createdAt, evidenceWindow: windowFromEvidence(job.checkoutEvidence), preparing: stage === "bought", multi: true, fetchImpl, now, report });
           if (polled.every) next = Math.min(next ?? polled.every, polled.every);
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
