@@ -78,10 +78,23 @@ function automaticOnly<T extends { key: string }>(stores: T[]): T[] {
   return automatic.length ? stores.filter((store) => automatic.includes(store.key)) : stores;
 }
 
+// Diagnóstico (11/10, rodada 19 g53, R19a-4: a Mambo e a Drogal nunca apareceram em produção e o log não dizia por quê):
+// uma linha por processo (e quando muda) com as lojas que ficam FORA da vitrine e o motivo. Só chaves de loja, sem segredo.
+const rosterNotes = new Set<string>();
+function noteRoster(stores: { key: string }[], automatic: string[], paused: ReadonlyMap<string, string>) {
+  const outOfList = automatic.length ? stores.filter((s) => !automatic.includes(s.key)).map((s) => s.key) : [];
+  const pausedKeys = stores.filter((s) => paused.has(s.key)).map((s) => s.key);
+  const note = `fora_da_lista_automatica=${outOfList.join(",") || "-"} pausadas=${pausedKeys.join(",") || "-"}`;
+  if (rosterNotes.has(note) || rosterNotes.size >= 20) return;
+  rosterNotes.add(note);
+  console.log(`[stores:roster] registradas=${stores.length} ${note}`);
+}
+
 export function storesForShopper<T extends { key: string }>(stores: T[]): T[] {
   const scope = shopperScope.getStore();
   // Loja pausada (09/10, store-pause.ts): não começou um pedido comprado no prazo → fora da vitrine.
   const paused = pausedStoresSnapshot();
+  noteRoster(stores, automaticPurchaseStores(), paused);
   const sellable = automaticOnly(stores).filter((store) => !paused.has(store.key));
   if (!scope) return sellable;
   return sellable.filter((store) => storeServesCep(store.key, scope.cep));

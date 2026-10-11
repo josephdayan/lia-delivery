@@ -3848,13 +3848,37 @@ export function questionSubject(question: string): string | null {
 const NEGATED_TAIL_RE = /^(?:(?:mas|e|so|só)\s+)?(?:(?:em|de|o|a|os|as|do|da)\s+)?([a-z][a-z0-9 ]{1,30}?)\s+n[aã]o(?:\s+(?:quero|serve|precisa|pode|gosto))?$/;
 const NEGATED_HEAD_RE = /^(?:(?:mas|e)\s+)?(?:n[aã]o\s+(?:quero|pode ser|serve|precisa(?: ser)?|gosto(?: de)?)|nada de|sem ser)\s+(?:(?:em|de|o|a|os|as|do|da|com)\s+)?([a-z][a-z0-9 ]{1,30})$/;
 const NOT_A_TERM = new Set(["esse", "essa", "esses", "essas", "isso", "eu", "ele", "ela", "aquele", "aquela", "ainda", "agora", "hoje", "sim", "por enquanto", "assim", "mais", "tambem", "nada", "nenhum", "nenhuma", "mesmo", "pode", "acho", "sei", "obrigado", "obrigada"]);
+// "não natal" / "mas não de natal" solto numa oração (11/10, rodada 19 g53, R19-8): nome de 1-2 palavras negado sem verbo.
+// Verbo depois do "não" ("não precisa", "não sei", "não tem") é outra coisa.
+const BARE_NEGATED_RE = /^(?:(?:mas|e)\s+)?n[aã]o\s+(?:(?:de|do|da|com|o|a)\s+)?([a-z][a-z0-9]{2,20}(?: [a-z][a-z0-9]{2,20})?)$/;
+const NOT_A_NOUN = new Set(["precisa", "quero", "queria", "serve", "servem", "gostei", "gosto", "tem", "tenho", "sei", "entendi", "rola", "curti", "achei", "pode", "posso", "vou", "vai", "era", "foi", "esta", "consigo", "deu", "faz", "liga", "importa", "obrigado", "obrigada", "precisamos", "chega", "chegou", "sabia", "lembro", "achou", "conheco", "senhor", "senhora", "mesmo", "agora", "hoje", "ainda", "mais", "muito", "tanto", "esse", "essa", "isso", "aquele", "aquela", "nada", "sou", "gostaria", "encontrei", "vi", "dá", "da", "funciona", "estou", "to", "tava", "fica", "ficou", "combina", "bom", "boa"]);
+function bareNegated(n: string): RegExpExecArray | null {
+  const m = BARE_NEGATED_RE.exec(n);
+  if (!m || m[1].split(" ").some((w) => NOT_A_NOUN.has(w))) return null;
+  return m;
+}
+// "e fralda de outra marca que chegue hoje, tem?" (11/10, rodada 19 g53, R19-10): pergunta por OUTRA MARCA de um item, com
+// ou sem prazo. Devolve o item; o resto da frase só pode ser prazo/pergunta (outro produto no rabo = não é isto).
+const OTHER_BRAND_ASK_RE = /^(?:e\s+|mas\s+)?(?:(?:tem|teria|voce tem|vc tem|nao tem|consegue|acha)\s+)?(?:(?:um|uma|o|a|alguma?|algum)\s+)?([a-z][a-z0-9 ]{2,40}?)\s+(?:de|da|em|numa)\s+outra\s+marca\b(.*)$/;
+const OTHER_BRAND_TAIL_OK = new Set(["que", "chegue", "chega", "chegar", "entregue", "entrega", "entregar", "pra", "para", "ate", "hoje", "amanha", "ainda", "mais", "rapido", "rapida", "cedo", "as", "h", "tem", "teria", "ai", "voce", "vc", "a", "noite", "tarde", "manha", "de", "da", "do", "tempo", "consegue", "dia", "sabado", "domingo", "segunda", "terca", "quarta", "quinta", "sexta", "por", "favor", "pf", "pfv"]);
+export function otherBrandAsk(text: string): { item: string } | null {
+  const n = normalizeMsg(text).replace(/[?!.,;]+/g, " ").replace(/\s+/g, " ").trim();
+  const m = OTHER_BRAND_ASK_RE.exec(n);
+  if (!m) return null;
+  const item = m[1].replace(/^(?:tem|teria)\s+/, "").trim();
+  if (!item || /\b(?:troca|trocar|tira|tirar|quero|preciso)\b/.test(item)) return null;
+  const tail = m[2].split(" ").filter(Boolean).filter((w) => !/^\d{1,2}(?:h|:\d{2})?$/.test(w));
+  if (tail.some((w) => !OTHER_BRAND_TAIL_OK.has(w))) return null;
+  return { item };
+}
+
 export function splitNegatedTerms(text: string): { text: string; excluded: string[] } {
   const clauses = text.split(/(?<=[?,.;!])\s*/).map((c) => c.trim()).filter(Boolean);
   const kept: string[] = [];
   const excluded: string[] = [];
   for (const clause of clauses) {
     const n = normalizeMsg(clause).replace(/[?,.;!]+$/g, "").trim();
-    const m = NEGATED_TAIL_RE.exec(n) ?? NEGATED_HEAD_RE.exec(n);
+    const m = NEGATED_TAIL_RE.exec(n) ?? NEGATED_HEAD_RE.exec(n) ?? bareNegated(n);
     const words = m ? m[1].trim() : "";
     if (m && words && !NOT_A_TERM.has(words) && words.split(" ").length <= 3 && !words.split(" ").some((w) => NOT_A_TERM.has(w))) {
       excluded.push(...words.split(" ").filter((w) => w.length >= 3));
