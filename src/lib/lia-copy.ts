@@ -2100,6 +2100,11 @@ export function weightConversionNote(askedKg: number, unitKg: number, units: num
   return `_Vendido por unidade de ~${weightLabel(unitKg)}: coloquei ${units} ${units === 1 ? "unidade" : "unidades"} (~${weightLabel(units * unitKg)}) pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar. Pra mudar, é só dizer o número de unidades._`;
 }
 
+// "sim, deixa 2 kg" quando a cesta já tem esse peso (11/10, rodada 23 g64, R23-3): diz o que está lá, sem mexer.
+export function weightAlreadyMatches(name: string, units: number, unitKg: number, askedKg: number): string {
+  return `Já está assim 👍 *${units}x ${name}* dá ~${weightLabel(units * unitKg)} pro seu pedido de ${weightLabel(askedKg)}. O peso final é o que a loja pesar.`;
+}
+
 // Embalagem que NÃO fecha com o número pedido (07/10, c28): pergunta antes de pôr na cesta.
 export function packMismatchAsk(name: string, requested: number, packSize: number, packs: number): string {
   const total = packs * packSize;
@@ -4085,7 +4090,10 @@ export function itemsNotDeliverableHere(items: string[], closingRest: boolean, c
   const again = items.length === 1 ? "esse item" : "esses itens";
   // Cesta inteira recusada (11/10, rodada 23 g65, R23-6): a lista fica guardada; o cliente pode tirar um item e tentar de novo.
   if (!closingRest && canRetry) return `${head}\nGuardei sua lista: se quiser, diz *tenta de novo* (ou *tira X e tenta de novo*) que eu procuro tudo outra vez — ou me diz outra coisa.`;
-  return closingRest ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, é só me pedir de novo.` : `${head}\nSe quiser, me diz outra coisa que eu procuro.`;
+  // "tenta de novo" procura o que saiu em outra loja (11/10, rodada 23 g64, R23-2): antes a cesta sumia com "me diz outra coisa".
+  return closingRest
+    ? `${head}\nFecho o resto pra você — e se quiser ${again} de outra loja, responde *tenta de novo* que eu procuro.`
+    : `${head}\nSe quiser, responde *tenta de novo* que eu procuro ${again} em outra loja, ou me diz outra coisa.`;
 }
 
 // Fechamento com item recusado pela loja (10/10, rodada 13 A3): diz qual item e de qual loja, que o resto ficou, e
@@ -4095,7 +4103,7 @@ export function itemsRefusedPickAnother(swappable: string[], dropped: string[], 
   const head = swappable.length === 1
     ? `A loja não confirmou entrega de ${list(swappable)} no seu endereço agora.`
     : `As lojas não confirmaram entrega destes itens no seu endereço agora:${list(swappable)}`;
-  const out = dropped.length ? `\nSem outra opção que entregue aí, ficou de fora: ${list(dropped)}.` : "";
+  const out = dropped.length ? `\nSem outra opção que entregue aí, ficou de fora: ${list(dropped)}. Depois, se quiser, responde *tenta de novo* que eu procuro em outra loja.` : "";
   const keep = kept ? `\nO resto da cesta continua (${kept} ${kept === 1 ? "item" : "itens"}).` : "";
   return `${head}${out}${keep}\nEscolhe uma opção de outra loja 👇 ou responde *pula* pra seguir sem.`;
 }

@@ -210,8 +210,60 @@ const MAX_QTY = 50;
 // WhatsApp real vem cheio de abreviações. Expandir só as formas inequívocas antes
 // de separar a lista evita que "qro", "tb" e "pf" virem palavras do produto.
 // Mantemos isto conservador: gíria ambígua não é alterada.
-export function expandShoppingShorthand(text: string): string {
+// Peso falado vira número (11/10, rodada 23 g64, R23-1/4/5): "um quilo e meio de acém", "dois quilos de laranja", "meio
+// quilo", "1kg e meio", "duzentos gramas", "300 gramas" → "1,5kg", "2kg", "500g", "200g", "300g". Sem isso o parser lia
+// "300 gramas de presunto" como 300 unidades (teto 50x), "dois quilos" como 2× "laranja 2kg" (pedido de 4 kg) e
+// "um quilo e meio" como os itens "quilo" e "meio de acém".
+const WEIGHT_WORD_NUM: Record<string, number> = {
+  um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10,
+  vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90,
+  cem: 100, cento: 100, duzentos: 200, duzentas: 200, trezentos: 300, trezentas: 300, quatrocentos: 400, quatrocentas: 400,
+  quinhentos: 500, quinhentas: 500, seiscentos: 600, seiscentas: 600, setecentos: 700, setecentas: 700,
+  oitocentos: 800, oitocentas: 800, novecentos: 900, novecentas: 900
+};
+const WEIGHT_WORD = String.raw`(?:um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa|cem|cento|duzent[oa]s|trezent[oa]s|quatrocent[oa]s|quinhent[oa]s|seiscent[oa]s|setecent[oa]s|oitocent[oa]s|novecent[oa]s)`;
+// "duzentos e cinquenta" → 250; número → ele mesmo; null quando não é número.
+function weightNumber(raw: string): number | null {
+  const t = raw.trim().replace(",", ".");
+  if (/^\d+(?:\.\d+)?$/.test(t)) return Number(t);
+  let total = 0;
+  for (const part of normalizeMsg(t).split(/\s+e\s+/)) {
+    const v = WEIGHT_WORD_NUM[part.trim()];
+    if (v == null) return null;
+    total += v;
+  }
+  return total || null;
+}
+const WEIGHT_NUM = String.raw`(\d+(?:[.,]\d+)?|${WEIGHT_WORD}(?:\s+e\s+${WEIGHT_WORD})*)`;
+const KG_UNIT = String.raw`(?:kg|kgs|quilos?|kilos?|quilogramas?)`;
+const G_UNIT = String.raw`(?:g|gr|grs|gramas?)`;
+const fmtKg = (v: number) => `${String(Math.round(v * 1000) / 1000).replace(".", ",")}kg`;
+export function normalizeSpokenWeights(text: string): string {
+  const B = String.raw`(?<![\wà-úÀ-Ú])`;
+  const E = String.raw`(?![\wà-úÀ-Ú])`;
   return text
+    // "um quilo e meio", "1kg e meio", "2 quilos e meio" → 1,5kg / 2,5kg
+    // "linguiça 1 kg e meio quilo de tomate": o "meio quilo" é do próximo item.
+    .replace(new RegExp(`${B}${WEIGHT_NUM}\\s*${KG_UNIT}\\s+e\\s+meio${E}(?!\\s*(?:de\\s+)?${KG_UNIT}${E})`, "gi"), (m, n: string) => {
+      const v = weightNumber(n);
+      return v == null ? m : fmtKg(v + 0.5);
+    })
+    // "meio quilo", "meio kg", "1/2 kg" → 500g
+    .replace(new RegExp(`${B}(?:meio|1/2)\\s*(?:de\\s+)?${KG_UNIT}${E}`, "gi"), "500g")
+    // "dois quilos", "1 quilo", "1,5 kg" → 2kg / 1kg / 1,5kg
+    .replace(new RegExp(`${B}${WEIGHT_NUM}\\s*${KG_UNIT}${E}`, "gi"), (m, n: string) => {
+      const v = weightNumber(n);
+      return v == null ? m : fmtKg(v);
+    })
+    // "duzentos gramas", "300 gramas", "200 gr" → 200g / 300g
+    .replace(new RegExp(`${B}${WEIGHT_NUM}\\s*${G_UNIT}${E}`, "gi"), (m, n: string) => {
+      const v = weightNumber(n);
+      return v == null ? m : `${String(v).replace(".", ",")}g`;
+    });
+}
+
+export function expandShoppingShorthand(text: string): string {
+  return normalizeSpokenWeights(text)
     // Abreviações de produto (09/10, rodada 1: "req. tirolez" virava o item "req" → "não achei" e depois achava).
     .replace(/\breq\b\.?/gi, "requeijão")
     .replace(/\bcerva\b/gi, "cerveja")
@@ -811,7 +863,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   // vem antes do ":" é conversa quando tem cara de pedido/lista; só os itens ficam.
   source = source
     .split("\n")
-    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|comprando|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta|caf[eé] da manh[aã]|almo[cç]o|jantar|janta|lanche)\b[^:\n]*:\s*/i, ""))
+    // A ocasião antes dos dois-pontos ("café da manhã: pão…", 11/10, rodada 23 g64) também é título: virava a linha
+    // "café da manhã: pão francês" e o "10 unidades" do pão passava para o café da IA.
+    .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|comprando|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta|caf[eé] da manh[aã]|almo[cç]o|jantar|janta|lanche|churrasco|feira|festa)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
   // Autocorreção na MESMA frase (11/10, rodada 20 g55, R20-2): "em vez de álcool em gel quero álcool 70 líquido", "quero Y
@@ -1308,6 +1362,8 @@ export function meaningfulProductTokens(phrase: string): string[] {
     // isso o merge com a IA duplicava a linha (5º ciclo, rodada 4).
     // Plural em -res/-les/-zes (11/10, rodada 19 g52, R19a-3): "apontadores" e "apontador" (a IA no singular) são o mesmo
     // item — "apontadore" ≠ "apontador" duplicava a linha e a cesta ficava com 4 apontadores.
+    // Plural em -ões (11/10, rodada 23 g64): "limões" (parser) e "limão" (IA) são o mesmo item — viravam 6x + 3x limão.
+    .map((token) => (token.length >= 5 && token.endsWith("oes") ? `${token.slice(0, -3)}ao` : token === "paes" ? "pao" : token))
     .map((token) => (token.length >= 5 ? token.replace(/(?<=[rlz])es$/, "").replace(/s$/, "") : token));
   // "bebê" só é o "umedecido" do LENÇO ("lenço de bebê" = "lenço umedecido"). Em outro item é público, não produto
   // (10/10, rodada 11: "pomada para assadura bebê" casava com "lenço umedecido" e sumia da lista no merge com a IA).
