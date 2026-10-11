@@ -7,7 +7,7 @@ import { compactCardDelivery } from "@/lib/meta-carousel-card";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
 import { composeBasket } from "@/lib/basket-composer";
-import { attrMatchesItem, conciergeMatchIsStrong, satisfiesNegation, diversifyOptions, inferCatalogRefinement, parsePackPhrase, productKindConflict, queryTokens, sameProductVariant, shelfHeadNoun, stapleFor, scoreCatalogMatch, variantPenalty, wantsRegularVersion, isSugarFreeName } from "@/lib/stores/types";
+import { attrMatchesItem, christmasOffSeason, unaskedChristmas, conciergeMatchIsStrong, satisfiesNegation, diversifyOptions, inferCatalogRefinement, parsePackPhrase, productKindConflict, queryTokens, sameProductVariant, shelfHeadNoun, stapleFor, scoreCatalogMatch, variantPenalty, wantsRegularVersion, isSugarFreeName } from "@/lib/stores/types";
 import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
@@ -847,7 +847,22 @@ async function buildChoices(
       if (common) options = [common, ...options];
     }
     // A versão do dia a dia abre a vitrine (11/10, rodada 18 g51): "arroz" com o Thai Jasmin em 1º e o arroz branco em 3º.
-    if (staplePrefer && !chosen) options = [...options.filter((o) => staplePrefer.test(normalizeMsg(o.item.name))), ...options.filter((o) => !staplePrefer.test(normalizeMsg(o.item.name)))];
+    // Com a IA, só o básico que pede a frente sempre (`lead`: "parafuso" abria com o de vaso sanitário, rodada 20 g56, R20-8).
+    if (staplePrefer && (!chosen || stapleFor(line.phrase)?.lead)) options = [...options.filter((o) => staplePrefer.test(normalizeMsg(o.item.name))), ...options.filter((o) => !staplePrefer.test(normalizeMsg(o.item.name)))];
+    // Marca pedida abre a vitrine (11/10, rodada 20 g56, R20-8: "sabonete Dove" abria com o Nivea Pure Milk): quem tem a
+    // marca no nome ou no campo marca vem antes; a ordem entre eles e entre os outros não muda.
+    if (!closestFalta && !cheapestFirst) options = askedBrandFirst(line.phrase, options);
+    // Natal fora de época (11/10, rodada 20 g56, R20a-5): com a IA, 4 de 5 cards eram de Natal e o PR #31 só reordenava sem
+    // ela. Sobrando opção sem o tema (da vitrine ou das candidatas confirmadas), as de Natal saem — e o "mais barato" não as pega.
+    if (!closestFalta && christmasOffSeason()) {
+      const themed = (c: StoreCandidate) => unaskedChristmas(line.phrase, c.item.name);
+      if (options.some(themed)) {
+        const plain = options.filter((o) => !themed(o));
+        const more = candidates.filter((c) => !isEquivalent(c) && !options.includes(c) && !themed(c) && conciergeMatchIsStrong(line.phrase, c.item) && sameHeadProduct(line.phrase, c.item.name));
+        const kept = [...plain, ...more].slice(0, vitrineLimit());
+        if (kept.length) options = kept;
+      }
+    }
     // Nenhuma opção é a versão básica (11/10, rodada 17 g49: "6 coca cola 2L" abria com "Coca Cola Sem Açúcar 2L" e a
     // Original só aparecia em "outras"): a candidata básica que a loja confirmou e que tem todas as palavras entra na frente.
     // Com o juízo da IA, só a versão comum de uma opção aprovada sem açúcar (a IA aprovou "Coca Sem Açúcar", a Original da
@@ -971,6 +986,20 @@ async function buildChoicesWithSearchNotice(
 // barato em loja de mínimo alto obriga o cliente a completar a cesta; depois o que chega ANTES;
 // depois o mais barato posto na casa (produto + frete da loja para o CEP). Estável: quem empata
 // em tudo mantém a ordem de relevância do rerank.
+// Marca pedida abre a vitrine (11/10, rodada 20 g56, R20-8): quem tem a marca no nome ou no campo marca vem antes; a
+// ordem entre eles e entre os outros não muda. Puro, testável.
+export function askedBrandFirst<T extends { item: { name: string; brand?: string } }>(phrase: string, options: T[]): T[] {
+  // Marca = palavra que os catálogos conhecem como marca, ou o campo marca de alguma opção da tela.
+  const optionBrands = new Set(options.flatMap((o) => normalizeMsg(o.item.brand ?? "").split(/\s+/)).filter((w) => w.length >= 3));
+  const brands = normalizeMsg(phrase).split(/\s+/).filter((w) => w.length >= 3 && !/\d/.test(w) && (optionBrands.has(w) || localIsBrand(w)));
+  if (!brands.length) return options;
+  const hasBrand = (o: T) => {
+    const ws = new Set(normalizeMsg(`${o.item.name} ${o.item.brand ?? ""}`).replace(/[^a-z0-9\s]/g, " ").split(/\s+/));
+    return brands.some((b) => ws.has(b));
+  };
+  if (!options.some(hasBrand) || options.every(hasBrand)) return options;
+  return [...options.filter(hasBrand), ...options.filter((o) => !hasBrand(o))];
+}
 export function fitsStoreMinimum(o: Pick<ChoiceOption, "storeKey" | "unitPrice">): boolean {
   // getStore cai na loja padrão quando a chave está desligada: só vale o mínimo da PRÓPRIA loja.
   const store = o.storeKey ? getStore(o.storeKey) : undefined;
@@ -12866,7 +12895,7 @@ export function splitBySize(sizeAsk: string, items: { name: string; brand?: stri
 // Papelaria contável vendida em pacote ("3 canetas" com "Caneta ... 3 Unidades", 10/10, rodada 12 A3: virava 3 pacotes =
 // 9 canetas): a conta é de unidades, como ovo/pilha. Kit de produto avulso ("Desodorante 2 unidades") continua sem converter.
 // Escova de dente vendida em kit ("Escova Dental … Com 3 Unidades", 10/10, rodada 16 A1: "3 escovas" viravam 3 kits = 9).
-const PACK_CONTENT_NOUN_RE = /\b(escovas?(?= (?:de dentes?|dentais?)\b)|canetas?|lapis|l[aá]pis|borrachas?|marca[- ]?textos?|clipes?|pinc[eé]is|giz(?:es)?|ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
+const PACK_CONTENT_NOUN_RE = /\b(escovas?(?= (?:de dentes?|dentais?)\b)|canetas?|lapis|l[aá]pis|borrachas?|apontador(?:es)?|marca[- ]?textos?|clipes?|pinc[eé]is|giz(?:es)?|ovos?|rolos?|pilhas?|fraldas?|c[aá]psulas?|sach[eê]s?|saquinhos?|comprimidos?|len[cç]os?|latas?|latinhas?|garrafas?|long ?necks?|copos?|copinhos?|pratos?|pratinhos?|garfos?|garfinhos?|colher(?:es|inhas?)?|facas?|guardanapos?|canudos?|bal[aã]o|bal[oõ]es|sacos?|saquinhos?|velas?|velinhas?|absorventes?|cotonetes?|palitos?|forminhas?|esponjas?|prendedores?|toucas?|luvas?|m[aá]scaras?)\b/i;
 export function parseWeightAskKg(query: string): number | undefined {
   const t = normalizeMsg(query);
   if (/\bmei[oa] (quilo|kg|kilo)\b/.test(t)) return 0.5;
@@ -13584,9 +13613,11 @@ async function offerCostlyDeliverySwap(phone: string, convoId: string, ctx: Deli
     const query = (item.ask ?? "").trim() || queryTokens(normalizeMsg(item.name)).filter((t) => !/^\d/.test(t)).slice(0, 3).join(" ");
     if (!query) return null;
     // O MESMO produto (10/10, rodada 14 g41): "leite" não troca por "Chocolate ao Leite", "tapete higiênico" por "Areia Higiênica".
+    // E o mesmo tipo/espécie do item da cesta (11/10, rodada 20 g56, R20-3: a ração de gato virava Pedigree — a troca de loja
+    // já conferia `productKindConflict`; esta oferta não).
     const found = await withDeadline(gatherCrossStoreCandidates(query, 24, 6, { noLongTail: true, onlyStores: others }).catch(() => [] as StoreCandidate[]), 6_000, [] as StoreCandidate[]);
     const pool = found
-      .filter((c) => c.store.key !== costly.key && conciergeMatchIsStrong(query, c.item) && sameHeadProduct(query, c.item.name) && sameAudience(`${item.name} ${item.ask ?? ""}`, c.item.name) && !c.item.medicine)
+      .filter((c) => c.store.key !== costly.key && conciergeMatchIsStrong(query, c.item) && sameHeadProduct(query, c.item.name) && !productKindConflict(`${item.name} ${item.ask ?? ""}`, c.item.name) && sameAudience(`${item.name} ${item.ask ?? ""}`, c.item.name) && !c.item.medicine)
       .map((c) => toChoiceOption(c.item, { storeKey: c.store.key, storeLabel: c.store.label }));
     const live = await withDeadline(confirmOptionsLive(pool.slice(0, 8), cep), 6_000, [] as ChoiceOption[]).catch(() => [] as ChoiceOption[]);
     // Economiza de verdade: o preço novo, sem a entrega desta loja, sai abaixo do atual com ela.
@@ -13618,9 +13649,24 @@ async function offerCostlyDeliverySwap(phone: string, convoId: string, ctx: Deli
     if (!options.length) return null;
     return { costly, item, query, options };
   };
+  // Frete de cada loja no checkout (R20-9, abaixo), em paralelo com a busca das trocas.
+  const liveFeesAsk: Promise<(number | null)[]> = liveFreightEnabled() && candidates.length
+    ? withDeadline(
+        Promise.all(perStore.map((s) => liveStoreFreight(s.key ?? "", s.items.map((b) => ({ sku: b.sku, qty: b.qty })), cep).then((o) => (o.kind === "ok" ? o.fee : null)).catch(() => null))),
+        8_000,
+        [] as (number | null)[]
+      )
+    : Promise.resolve([]);
   const best = (await Promise.all(candidates.map((c) => evaluate(c).catch(() => null)))).find((r): r is NonNullable<typeof r> => Boolean(r));
   if (best) {
     const { costly, item, query, options } = best;
+    // Frete dito no cabeçalho = o do resumo (11/10, rodada 20 g56, R20-9: "~R$ 26,64" na oferta e "R$ 25,60" no resumo — a
+    // oferta somava o frete estimado dos cards; o resumo consulta o checkout com a cesta da loja). Só o número da mensagem:
+    // a decisão de oferecer e o frete cobrado seguem como antes. Sem resposta de todas as lojas, fica a estimativa.
+    const liveFees = await liveFeesAsk;
+    const allLive = liveFees.length === perStore.length && liveFees.every((fee): fee is number => typeof fee === "number");
+    const shownFee = allLive ? liveFees[perStore.indexOf(costly)] : costly.fee;
+    const shownFreight = allLive ? liveFees.reduce((sum, fee) => sum + fee, 0) : freight;
     const pending: PendingChoice = { query, qty: item.qty, qtyExplicit: true, options, replaceSku: item.sku };
     ctx.pending = [pending];
     ctx.step = "choosing";
@@ -13628,7 +13674,7 @@ async function offerCostlyDeliverySwap(phone: string, convoId: string, ctx: Deli
     ctx.costlySwapOffered = true;
     await writeCtx(convoId, ctx);
     if (prefix) await reply(phone, prefix);
-    await sendChoices(phone, pending, copy.costlyDeliverySwapHeader(item.name, costly.label, costly.fee, storeKeys.length, roundMoney(freight)));
+    await sendChoices(phone, pending, copy.costlyDeliverySwapHeader(item.name, costly.label, roundMoney(shownFee), storeKeys.length, roundMoney(shownFreight)));
     return true;
   }
   return false;

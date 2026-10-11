@@ -982,6 +982,10 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
   if (deliveries >= 2 && produtos > 0 && entrega > produtos * 0.5 + 0.009) {
     return [`_O frete das ${deliveries} entregas (${brl(entrega)}) passa da metade do valor dos produtos (${brl(produtos)}). É o que as lojas cobram pro seu endereço; pra baixar, me diz um item pra trocar ou tirar._`];
   }
+  // Uma entrega só (11/10, rodada 20 g56, R20a-5/911: R$ 22,45 de frete para R$ 44,22 saiu sem aviso; a 901, com 2, avisava).
+  if (deliveries === 1 && produtos > 0 && entrega > produtos * 0.5 + 0.009) {
+    return [`_O frete (${brl(entrega)}) passa da metade do valor dos produtos (${brl(produtos)}). É o que a loja cobra pro seu endereço; somar mais coisa da mesma loja dilui o frete._`];
+  }
   return [];
 }
 
