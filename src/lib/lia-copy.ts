@@ -256,6 +256,16 @@ export function askNumberAndCep(hasCep: boolean): string {
 
 // "quanto tá o leite ninho?" antes do cadastro (M2): o preço depende da loja que entrega no
 // endereço — anota e promete o número logo depois.
+// "ah sei la deixa essa mesmo, vlw" antes do cadastro, com a lista anotada (11/10, rodada 22 g60, R22-9).
+export function notedListKept(): string {
+  return "Combinado, deixei a lista como está 👍";
+}
+
+// "q mochila cara, tem outra mais baratinha?" antes do cadastro (11/10, rodada 22 g60, R22-9): nenhuma opção foi mostrada.
+export function noPricesShownYet(item: string): string {
+  return `Ainda não te mostrei opções de *${item}* 🙂 Anotei que você quer a opção mais em conta — assim que tiver seu endereço eu mostro as opções começando pelas mais baratas.`;
+}
+
 export function priceAfterAddress(item: string): string {
   return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
 }
@@ -2035,7 +2045,7 @@ export function holdAck(): string {
 
 // "voltei, onde a gente tava?" — cabeçalho do resumo de retomada.
 export function resumeHeader(): string {
-  return "Bem-vinda de volta! 🙂 A gente estava aqui:";
+  return "Que bom te ver de novo! 🙂 A gente estava aqui:";
 }
 
 export function resumeNothingOpen(): string {
@@ -2240,6 +2250,13 @@ export function specWordAnswer(input: { n: number; name: string; word: string; h
   if (input.has) return `Sim: pelo nome, a opção *${input.n}* (${input.name}) é *${input.word}*. Quer essa? Responde *${input.n}*.`;
   const other = input.other ? ` A opção *${input.other.n}* (${input.other.name}) diz *${input.word}* no nome.` : "";
   return `O nome da opção *${input.n}* (${input.name}) não diz *${input.word}*, e eu não quero chutar.${other}`;
+}
+
+// Pergunta sobre um item que ainda está na fila ("e o termômetro é digital mesmo?" com o caderno na tela; 11/10, rodada 22
+// g60, R22a-1): as opções dele vêm depois desta escolha, e aí dá pra ver pelo nome.
+export function queuedItemAskedLater(items: string[]): string {
+  const list = items.map((i) => `*${i}*`).join(" e ");
+  return `Sobre ${list}: as opções vêm logo depois desta escolha, com o nome completo de cada uma — aí você confere 🙂`;
 }
 
 // Comparação com produto fora da tela (10/10, rodada 13 g39): "e o Fofinho, é melhor que esses?" caía na FAQ do serviço.
@@ -3034,6 +3051,10 @@ export function haggleAnswer(): string {
 // Troca sem substituto à altura: NADA muda (26/08 P1.7 — a cesta ficava mutilada).
 export function swapKeptOriginal(kept: string, wanted: string): string {
   return `*${wanted}* eu não achei em nenhuma loja. Mantive *${kept}* na cesta — me diz outra marca ou versão que eu troco.`;
+}
+// "o sabão em pó da farmácia indiana" sem opção dessa loja que entregue aí (11/10, rodada 22 g60, R22-5).
+export function swapNotAtStore(kept: string, wanted: string, store: string): string {
+  return `Não achei *${wanted}* na *${store}* pra entregar aí agora. Mantive *${kept}* na cesta — se quiser, diz *outras* que eu procuro em outra loja.`;
 }
 
 // "troca o tapete por outro de outra loja" sem nenhuma outra loja que tenha (10/10, rodada 16 g46): diz isso em vez de
@@ -4261,6 +4282,11 @@ export function severalDeliveriesNote(stores: number): string {
 // ---------- rodada 21, g57 (11/10) ----------
 
 // Emoji de produto ambíguo sozinho ("🧴", R21-4): pergunta uma vez, sem chutar.
+// Emoji de item que já está na lista (11/10, rodada 22 g60, R22a-7).
+export function emojiAlreadyListed(items: string[]): string {
+  return `*${items.join("*, *")}* já está na sua lista 👍`;
+}
+
 export function emojiAsk(emoji: string, options: string[]): string {
   const list = options.length > 1 ? `${options.slice(0, -1).map((o) => `*${o}*`).join(", ")} ou *${options[options.length - 1]}*` : `*${options[0]}*`;
   return `Não entendi o ${emoji} 🙂 É ${list}? Me diz em palavras que eu procuro.`;

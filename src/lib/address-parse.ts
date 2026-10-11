@@ -67,6 +67,7 @@ function streetStart(text: string): number {
   return -1;
 }
 
+const ADDRESS_ASIDE_RE = /\b(?:endereco|moro|mora|morando|resido|reside|residencia)\b|\bnao (?:e |eh )?(?:o )?meu\b/;
 const FILLER_ONLY_RE = /^(?:na verdade|entao|bom|ok|certo|sim|obrigad(?:[oa]s?|inh[oa]s?|ao)|por favor|pfv|pf|valeu|e|ai|tchau|bjs?|beijos?|abs|abraco)?$/;
 
 // Pedido + endereço na mesma mensagem (A1): "quero 2 sabonetes dove e um shampoo seda, entrega
@@ -112,6 +113,9 @@ export function splitAddressAndItems(raw: string): { address: string; items?: st
   const items = [before, tail.replace(PHONE_RE, " ").replace(CEP_RE_GLOBAL, " ").replace(/[,;-]?\s*\bcep\b\s*[.:]?/gi, " ")]
     .map((part) => stripCourtesy(part).text.replace(/^[\s,.;:!?-]+|[\s,;:-]+$/g, "").trim())
     .filter((part) => part && !FILLER_ONLY_RE.test(normalizeMsg(part).replace(/[.!?,]+/g, "").trim()))
+    // "o endereço é da minha mãe, não o meu: Rua Augusta 1500…" (11/10, rodada 22 g60, R22-6): comentário sobre o endereço
+    // não é pedido — virava o item "o endereço é da minha mae" e ia ao resumo como "Ficou de fora".
+    .filter((part) => !ADDRESS_ASIDE_RE.test(normalizeMsg(part)))
     .join(", ");
   return { address, ...(items ? { items } : {}) };
 }

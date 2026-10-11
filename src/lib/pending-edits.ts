@@ -7,7 +7,7 @@
 //     desodorantes (antes: tirava o roll-on, mantinha o creme e "tira os outros dois" virava item);
 //   - descartar o que acabou de dizer: "na verdade não são esses itens, ignora" — sai o que a mensagem anterior anotou.
 // Puro e testado (tests/rodada8-g23-2026-10-10.test.ts).
-import { meaningfulProductTokens, normalizeMsg } from "./lia-intents";
+import { meaningfulProductTokens, normalizeMsg, oneEditApart } from "./lia-intents";
 
 const tokensOf = (s: string) => meaningfulProductTokens(s);
 const overlap = (a: string[], b: string[]) => a.filter((t) => b.includes(t)).length;
@@ -83,4 +83,59 @@ export function replaceInGroup(segments: string[], said: string, note: string): 
     return out;
   }
   return null;
+}
+
+// Correção do pedido guardado numa frase só (11/10, rodada 22 g60, R22-1): "ah espera, o amaciente nao, deixa so o sabao e
+// a esponja" — "X não" / "sem X" / "não quero X" tiram X, e "deixa só A e B" (lista de 2+ ou junto de um "X não") tira o
+// resto. Os itens mantidos ficam como estavam ("sabão em pó" não vira "sabão"). Antes a frase virava o item
+// "espera amaciente nao sabao", o sabão em pó sumia e o amaciante ficava. Erro de digitação de 1 letra casa
+// ("amaciente" tira "amaciante"). null = a fala não é uma correção do que está guardado.
+const CORR_FILLER_RE = /^(?:(?:ah|ahh|ai|ei|ops|opa|hmm|hum|pera|perai|espera|calma|na verdade|mas|e|entao|tipo|ow|oi)\s+)+/;
+const CORR_ARTICLE_RE = /^(?:(?:o|a|os|as|um|uma|do|da|dos|das|de)\s+)+/;
+const tokenHit = (a: string, b: string) => a === b || (Math.min(a.length, b.length) >= 5 && oneEditApart(a, b));
+export function correctionHitsSegment(phrase: string, segment: string): boolean {
+  const want = tokensOf(phrase);
+  const have = tokensOf(segment);
+  return want.length > 0 && have.length > 0 && want.every((t) => have.some((h) => tokenHit(t, h)));
+}
+const cleanTarget = (s: string) =>
+  s
+    .replace(CORR_FILLER_RE, "")
+    .replace(CORR_ARTICLE_RE, "")
+    .replace(/\s+(?:mesmo|mesma|tambem|ai|la|por favor|pf)$/, "")
+    .trim();
+export function parsePendingCorrection(said: string): { remove: string[]; keep: string[] } | null {
+  const n = normalizeMsg(said).replace(/[!?]+/g, ",");
+  if (!n || n.length > 160) return null;
+  const remove: string[] = [];
+  let keep: string[] = [];
+  for (const raw of n.split(/[,.;]+/)) {
+    const clause = `${raw.trim()} `.replace(CORR_FILLER_RE, "").trim();
+    if (!clause) continue;
+    const only = /^(?:(?:pode\s+)?(?:deixa|deixar|deixe|fica|ficar|mantem|mantenha|manter)\s+(?:so|somente|apenas)|(?:so|somente|apenas)\s+(?:fica|deixa|mantem))\s+(.+)$/.exec(clause);
+    if (only) {
+      keep = only[1].split(/\s+e\s+|\s*\/\s*/).map(cleanTarget).filter(Boolean);
+      continue;
+    }
+    const tailNo = /^(.{3,40}?)\s+(?:eu\s+)?(?:(?:ja\s+)?(?:disse|falei)\s+que\s+)?(?:nao|n)(?:\s+(?:quero|precisa|preciso|vou querer|mais|precisa mais))?$/.exec(clause);
+    const headNo = /^(?:nao\s+(?:quero|preciso|vou querer)(?:\s+mais)?|sem|tira|desisti|desiste|esquece)\s+(?:d[oa]s?\s+)?(.{3,40})$/.exec(clause);
+    const target = cleanTarget((tailNo ?? headNo)?.[1] ?? "");
+    if (target && target.split(" ").length <= 4 && tokensOf(target).length && !/\b(?:outr[oa]s?|demais|resto)\b/.test(target)) remove.push(target);
+    // Pedaço com produto que não é correção ("põe um detergente"): a fala também pede coisa nova — o caminho de sempre decide.
+    else if (!tailNo && !headNo && tokensOf(clause).length) return null;
+  }
+  if (!remove.length && keep.length < 2) return null;
+  return { remove, keep };
+}
+export function applyPendingCorrection(segments: string[], said: string): { segments: string[]; removed: string[] } | null {
+  const parsed = parsePendingCorrection(said);
+  if (!parsed || !segments.length) return null;
+  const hits = (phrase: string) => segments.filter((seg) => correctionHitsSegment(phrase, seg));
+  // Item mantido que não está guardado = pedido novo, não correção: o caminho de sempre anota.
+  if (parsed.keep.some((k) => !hits(k).length)) return null;
+  const removed = new Set<string>();
+  for (const target of parsed.remove) for (const seg of hits(target)) removed.add(seg);
+  if (parsed.keep.length) for (const seg of segments) if (!parsed.keep.some((k) => correctionHitsSegment(k, seg))) removed.add(seg);
+  if (!removed.size) return null;
+  return { segments: segments.filter((seg) => !removed.has(seg)), removed: [...removed] };
 }
