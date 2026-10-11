@@ -53,6 +53,27 @@ export function tidyRepeatedName(name: string): string {
       return completeName(`${prod} ${sku}`, prod, sku);
     }
   }
+  // Segunda descrição que repete só a 1ª palavra (11/10, rodada 20 g56, R20-9/102: "Guardanapo Papel 33x33cm Snob 50 Unidades
+  // Folha Simples Macio Guardanapo Folha Simples Snob 33×33 cm 50 Unidades"): fica o nome + as palavras novas, sem medida
+  // que o nome já tem escrita de outro jeito ("33×33 cm" de "33x33cm").
+  const flat = (w: string) => key(w).replace(/×/g, "x").replace(/[^a-z0-9.]/g, "");
+  for (let i = 3; i <= words.length - 4; i++) {
+    if (key(words[i]) !== a) continue;
+    const prod = words.slice(0, i);
+    const prodKeys = new Set(prod.map(flat).filter(Boolean));
+    const rest = words.slice(i + 1);
+    if (rest.filter((w) => prodKeys.has(flat(w))).length < Math.ceil(rest.length / 2)) continue;
+    const prodFlat = prod.map(flat).join(" ");
+    const seen = new Set(prodKeys);
+    const extra = rest.filter((w) => {
+      const k = flat(w);
+      if (!k || seen.has(k) || /^(?:de|da|do|das|dos|e|com|a|o|para|pra)$/.test(k)) return false;
+      seen.add(k);
+      if (/^[\dx.]+$|^(?:cm|mm|m|g|kg|ml|l|un|unid)$/.test(k) && prodFlat.includes(k)) return false;
+      return true;
+    });
+    return [...prod, ...extra].join(" ");
+  }
   return name;
 }
 

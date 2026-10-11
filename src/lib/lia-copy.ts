@@ -208,6 +208,10 @@ export function addressSavedAskCep(): string {
 export function notedItemsLine(notedItems: string[], extra?: string): string {
   return notedItems.length ? `✅ Anotei:\n${notedItems.map((i) => `• ${i}`).join("\n")}${extra ? `\n${extra}` : ""}` : "";
 }
+// "tipo mt barato" pra lista inteira (11/10, rodada 20 g55, R20a-4): uma linha no fim do "Anotei", não sufixo em cada item.
+export function notedCheapestEach(): string {
+  return "de cada um, o mais barato 💸";
+}
 export function notedBudget(cap: number): string {
   return `💰 Até *${brl(cap)}* no total, já com a entrega.`;
 }
@@ -248,6 +252,12 @@ export function askNumberAndCep(hasCep: boolean): string {
 // endereço — anota e promete o número logo depois.
 export function priceAfterAddress(item: string): string {
   return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
+}
+
+// "tem caderno 10 matérias?" antes do cadastro (11/10, rodada 20 g55, R20-5): a pergunta é respondida — o item ficava
+// anotado calado e o cliente não sabia se tinha.
+export function availabilityAfterAddress(item: string): string {
+  return `Se tem *${item}* eu vejo nas lojas que entregam no seu endereço — anotei e te mostro as opções assim que tiver o endereço 🙂`;
 }
 
 export function dontKnowCep(): string {
@@ -718,11 +728,13 @@ export function choiceSequence(queries: string[]): string {
   return `Achei os ${queries.length} itens. Vamos um de cada vez: *${queries[0]}*${rest.length ? `, depois ${tail}` : ""}.`;
 }
 
-export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string): string {
+export function nextChoiceHeader(query: string, remaining: number, closestFalta?: string, urgency?: { urgent?: boolean; urgentWhen?: "amanha" | "rapido"; noneToday?: boolean }): string {
   const left = remaining - 1;
   const tail = left > 1 ? ` — depois faltam ${left}` : left === 1 ? " — depois falta 1" : "";
+  // "urgente" (11/10, rodada 20 g55, R20a-4): o "chega hoje"/"nada chega hoje" valia só no 1º item; agora vale em todos.
+  const rush = closestFalta ? "" : urgency?.urgent ? `\n${choicesHeaderToday(query, urgency.urgentWhen)}` : urgency?.noneToday ? `\n${noneTodayHeader(query)}` : "";
   // 09/10 (rodada 1): o tamanho/variante que não existe é avisado em TODO item da fila, não só no primeiro.
-  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}`;
+  return `Agora *${query}*${tail}.${closestFalta ? `\n${closestHeader(query, closestFalta)}` : ""}${rush}`;
 }
 
 export function choiceLine(index: number, name: string, displayPrice: number, delivery?: string, repeat?: boolean): string {
@@ -982,6 +994,10 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
   if (deliveries >= 2 && produtos > 0 && entrega > produtos * 0.5 + 0.009) {
     return [`_O frete das ${deliveries} entregas (${brl(entrega)}) passa da metade do valor dos produtos (${brl(produtos)}). É o que as lojas cobram pro seu endereço; pra baixar, me diz um item pra trocar ou tirar._`];
   }
+  // Uma entrega só (11/10, rodada 20 g56, R20a-5/911: R$ 22,45 de frete para R$ 44,22 saiu sem aviso; a 901, com 2, avisava).
+  if (deliveries === 1 && produtos > 0 && entrega > produtos * 0.5 + 0.009) {
+    return [`_O frete (${brl(entrega)}) passa da metade do valor dos produtos (${brl(produtos)}). É o que a loja cobra pro seu endereço; somar mais coisa da mesma loja dilui o frete._`];
+  }
   return [];
 }
 
@@ -1025,7 +1041,7 @@ export function choicesDeadlineNote(label: string, onTimeStores: string[], faste
 
 // O mesmo "não chega" já dito para outro item (11/10, rodada 18 g50): uma linha, sem repetir o aviso inteiro.
 export function choicesDeadlineAlsoLate(label: string, item: string): string {
-  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo.`;
+  return `⏰ *${item}* também não chega pra *${label}* — as opções estão abaixo, se quiser assim mesmo. Pros próximos itens que também não chegarem eu não repito: o resumo mostra o prazo de cada um.`;
 }
 
 // Prazo dito cruzado com uma entrega (10/10, rodada 10 g29): "ok" chega a tempo, "late" não chega, "unsure" chega no dia
@@ -1686,6 +1702,28 @@ export function chosenItemAnswer(input: { name: string; price: number; qty: numb
   }
   const tail = lines.length ? `\n${lines.join("\n")}` : "";
   return `${head}${tail}\nSe quiser trocar, é só dizer por qual.`;
+}
+// "o segundo tem cheiro de quê? ela gosta de coisa suave" (11/10, rodada 20 g55, R20-5): o que o nome diz do cheiro; sem
+// pista, diz que não sabe (antes perguntava de volta "quer que eu procure um com cheiro suave?").
+export function scentAnswer(input: { n: number; name: string; scent?: string; mild: { n: number; name: string }[] }): string {
+  const head = input.scent
+    ? `Pelo nome, a opção *${input.n}* (*${input.name}*) é de *${input.scent}*.`
+    : `O nome da opção *${input.n}* (*${input.name}*) não diz o cheiro, e a loja não informa — não quero chutar.`;
+  const others = input.mild.filter((m) => m.n !== input.n);
+  const mild = input.mild.length
+    ? others.length && !input.mild.some((m) => m.n === input.n)
+      ? `\nPra quem gosta de cheiro suave, o nome diz isso na ${others.map((m) => `*${m.n}*`).join(", ")}.`
+      : ""
+    : "";
+  return `${head}${mild}\nQuer essa? Responde *${input.n}* — ou me diz o cheiro que ela gosta que eu procuro.`;
+}
+// "o termômetro é digital mesmo?" (11/10, rodada 20 g55, R20-5): pelo nome do item da cesta; sem a palavra no nome, diz que não sabe.
+export function chosenTraitAnswer(name: string, trait: string, known: boolean): string {
+  return known ? `Sim — o da sua cesta é *${name}* (está no nome do produto).` : `O nome do produto (*${name}*) não diz se é ${trait}, então não consigo garantir.`;
+}
+// "qual a diferença de preço?" com as duas entregas na tela (11/10, rodada 20 g55, R20-5): os produtos são os mesmos, só a entrega muda.
+export function freightPriceDifference(diff: number): string {
+  return diff > 0.009 ? `A diferença é só na entrega: a *mais rápida* sai *${brl(diff)}* a mais que a *mais barata* — os produtos são os mesmos.` : "As duas saem pelo mesmo preço — muda só o prazo.";
 }
 // Medida da busca errada (11/10, rodada 18 g50: "o que são esses 6 litros? eu pedi 3,6"): a Lia assume o engano.
 export function measureMixupFixed(wrong: string, want: string): string {
@@ -2541,8 +2579,13 @@ export function finishChoiceFirst(missing: string[] = [], recent: string[] = [])
   // e perderia a lista do que falta.
   const seen = (text: string) => recent.some((r) => r.trim() === text.trim());
   if (missing.length > 1) {
-    const first = `Antes de pagar falta escolher: ${namesList(missing)}. A gente vai um de cada vez, começando por *${missing[0]}* 👇`;
-    return seen(first) ? `Ainda faltam ${missing.length} itens pra escolher (${namesList(missing)}) — termina por *${missing[0]}*, que aí eu fecho o total 👇` : first;
+    // "A gente vai um de cada vez" 3 vezes seguidas (11/10, rodada 20 g55, R20-9): já explicado nas últimas falas (mesmo
+    // dentro de outra mensagem, junto da confirmação), não explica de novo — e a 3ª vez é só a lista.
+    const explained = recent.some((r) => r.includes("A gente vai um de cada vez"));
+    const reminded = recent.some((r) => r.includes("itens pra escolher (") && r.includes("que aí eu fecho o total"));
+    if (explained && reminded) return `Falta escolher: ${namesList(missing)} 👇`;
+    if (explained) return `Ainda faltam ${missing.length} itens pra escolher (${namesList(missing)}) — termina por *${missing[0]}*, que aí eu fecho o total 👇`;
+    return `Antes de pagar falta escolher: ${namesList(missing)}. A gente vai um de cada vez, começando por *${missing[0]}* 👇`;
   }
   if (missing.length === 1) {
     const first = `Antes de pagar, escolhe uma das opções de *${missing[0]}* (toca no card ou responde o número) que aí eu fecho o total 👇`;

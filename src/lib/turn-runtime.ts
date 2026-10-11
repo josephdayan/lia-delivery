@@ -276,6 +276,8 @@ export const turnMeta = new AsyncLocalStorage<{
   acceptSwapFrom?: string;
   // Item cujas opções estavam na tela quando o turno começou (11/10, rodada 19 g52, R19-7); null = nenhum.
   onScreenQuery?: string | null;
+  // Prazo cujo "também não chega" já saiu (ctx.deadlineLateNoted, R20-9).
+  deadlineLateNoted?: string;
   // Mensagens anteriores do cliente (até 6 h, da mais nova à mais velha; 11/10, rodada 19 g53): o sentido do item sai do
   // contexto da conversa ("tenho uma gata" → "ração pra ela" é de gato; "make… base" é base de rosto).
   contextTexts?: string[];}>();
@@ -388,6 +390,8 @@ export function orderFactsCtx(ctx: DeliveryContext): Partial<DeliveryContext> {
     ...(ctx.lastChoice ? { lastChoice: ctx.lastChoice } : {}),
     ...(ctx.lastRemoved ? { lastRemoved: ctx.lastRemoved } : {}),
     ...(ctx.neededBy ? { neededBy: ctx.neededBy } : {}),
+    // "urgente" sem dia (11/10, rodada 20 g55, R20a-4): o resumo lê `urgent`; a oferta de juntar regravava sem ele.
+    ...(ctx.urgent ? { urgent: ctx.urgent } : {}),
     ...(ctx.orderBudget ? { orderBudget: ctx.orderBudget } : {}),
     ...(ctx.listMisses?.length ? { listMisses: ctx.listMisses } : {}),
     ...(ctx.rehearsalRefused ? { rehearsalRefused: ctx.rehearsalRefused } : {}),
@@ -475,6 +479,9 @@ export async function persistSentTexts(convoId: string): Promise<void> {
     const merged = mergeSent(ctx.lastSent, meta.sent.map((t) => t.slice(0, 600)));
     if (!merged) return;
     ctx.lastSent = merged;
+    // O "também não chega pra <prazo>" fica marcado além da janela curta das últimas falas (R20-9).
+    const lateLabel = meta.sent.map((t) => /^⏰ \*[^*]+\* também não chega pra \*([^*]+)\*/.exec(t)?.[1]).find(Boolean);
+    if (lateLabel) ctx.deadlineLateNoted = { label: lateLabel, at: Date.now() };
     await prisma.conversation.updateMany({ where: { id: convoId, context: row?.context ?? null }, data: { context: JSON.stringify(ctx) } });
   } catch (error) {
     console.warn("[dialogue:repeat:persist-failed]", error instanceof Error ? error.message : error);

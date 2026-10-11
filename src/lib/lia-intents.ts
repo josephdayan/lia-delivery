@@ -483,8 +483,10 @@ export function isOccasionWhen(text: string): boolean {
   const n = normalizeMsg(text).replace(/\bcafe d[ao] (manha|tarde)\b/g, "cafeda$1");
   const words = n.replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
   if (!words.some((w) => OCCASION_WORDS.has(w)) || !words.some((w) => WHEN_WORDS.has(w))) return false;
-  return words.every((w) => OCCASION_WORDS.has(w) || WHEN_WORDS.has(w) || DISCOURSE_WORDS.has(w) || /^\d+$/.test(w));
+  // "festa da minha filha hoje as 17h" (11/10, rodada 20 g55): a hora e a pessoa da festa também são a ocasião, não item.
+  return words.every((w) => OCCASION_WORDS.has(w) || WHEN_WORDS.has(w) || DISCOURSE_WORDS.has(w) || OCCASION_WHO.has(w) || /^\d+$/.test(w) || /^\d{1,2}h(?:\d{2})?$/.test(w) || w === "as" || w === "ate");
 }
+const OCCASION_WHO = new Set("filha filho filhas filhos neta neto netos netas mae pai esposa marido sobrinha sobrinho afilhada afilhado amiga amigo namorada namorado sogra sogro irma irmao vo vovo avo tia tio prima primo bebe".split(" "));
 
 // Trecho SÓ de fala (10/10, rodada 8 M1): "vamos dividir a", "eu pago o meu", "ele paga o dele", "voltei", "desculpa",
 // "sabe", "aquele", "ignora", "gastar pouco", "na verdade não são esses itens" viravam item ou "não achei". Em vez de
@@ -770,6 +772,13 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     .map((l) => l.replace(/^[^:\n]*\b(preciso|precisava|quero|queria|lista|coisas|compras?|mercado|casa|segue|anota|manda|ve|amigo secreto|amigo oculto|material|escolar|monta|montar|cesta)\b[^:\n]*:\s*/i, ""))
     .join("\n");
 
+  // Autocorreção na MESMA frase (11/10, rodada 20 g55, R20-2): "em vez de álcool em gel quero álcool 70 líquido", "quero Y
+  // em vez de X", "não quero gel, quero álcool 70" — X sai da lista (sentinela \u0003, nunca vira item) e Y entra. Antes o
+  // gel ficava e a frase inteira virava o item "em vez de alcool em gel alcool 70 liquido".
+  source = source
+    .replace(/(^|[,.;!?\n]\s*|\s(?:e|mas|ai|ah|ou)\s+)(?:(?:mas|e|ah)\s+)?(?:em vez|ao inv[eé]s)\s+d[eoa]s?\s+([^,.;!?\n]+?)\s*,?\s+(?:eu\s+)?(?:quero|queria|prefiro|vou querer|coloca|bota|p[oõ]e|manda|me v[eê]|pode ser|traz)\s+/gi, "$1\u0003$2, ")
+    .replace(/(^|[,.;!?\n]\s*)([^,.;!?\n\u0003]+?)\s+(?:em vez|ao inv[eé]s)\s+d[eoa]s?\s+([^,.;!?\n]+)/gi, "$1\u0003$3, $2")
+    .replace(/(^|[,.;!?\n]\s*)(?:(?:mas|e|ah)\s+)?n[aã]o\s+(?:quero|queria|vou querer|precisa(?:\s+de)?)\s+(?:o\s+|a\s+|os\s+|as\s+)?([^,.;!?\n]+?)\s*[,;]?\s+(?:eu\s+)?(?:quero|queria|prefiro|vou querer)\s+/gi, "$1\u0003$2, ");
   const parsedLines = source
     .replace(/\bvou querer\b|\bquero\b|\bqueria\b|\bme manda\b|\bme ve\b|\bmanda\b|\b(?:preciso|presiso)(?: de| d)?\b|\bpode ser\b|\bcoloca\b|\bpoe\b|\bbota\b|\btraz\b|\badiciona\b|\binclui\b|\bcomprar\b|\bpedir\b|\bencomendar\b|\bcompra\b|\btambem\b|\btbm?\b|\bpor favor\b/gi, "")
     // protege decimais ("1,5l" / "1.5l") do split por vírgula/ponto
@@ -899,7 +908,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         !NARRATIVE_SEGMENT_RE.test(normalizeMsg(raw)) &&
         !isOwnershipContext(raw) &&
         !isDiscourseOnly(raw) &&
-        !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
+        // "nao, espera, em vez de…" (11/10, rodada 20 g55, R20-2): a hesitação da autocorreção nunca é item.
+        !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai|(?:nao\s+)?(?:espera|pera[ií]?|perae|peraae)(?: ai| la| um pouco| so)?)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
         !isRecallFiller(raw)
     )
     .map(({ raw: rawWithFlags, meta }): ParsedLine => {
@@ -999,6 +1009,24 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
     return at.every((t, i) => t === bt[i] || `${t}s` === bt[i] || t === `${bt[i]}s`);
   };
   for (const line of parsedLines) {
+    // "em vez de X …" (sentinela \u0003, R20-2): tira X do que já veio na frase; nunca é item.
+    if (line.phrase.includes("\u0003")) {
+      const target = cleanItemPhrase(line.phrase.replace(/\u0003/g, ""));
+      for (let i = merged.length - 1; i >= 0; i--) if (lineMentions(target, merged[i].phrase)) merged.splice(i, 1);
+      continue;
+    }
+    // "band-aid nao curativo grande" (R20-2): "A, não B" com B já na frase troca B por A ("leite nao desnatado" sem
+    // linha de desnatado antes segue como está).
+    const notB = line.phrase.match(/^(.{3,40}?)\s+n[aã]o\s+(?:(?:o|a|os|as|um|uma)\s+)?(.{3,40})$/i);
+    if (notB && meaningfulProductTokens(notB[1]).length) {
+      const target = cleanItemPhrase(notB[2]);
+      const hits = merged.filter((m) => lineMentions(target, m.phrase));
+      if (hits.length) {
+        for (const hit of hits) merged.splice(merged.indexOf(hit), 1);
+        merged.push({ ...line, phrase: notB[1].trim() });
+        continue;
+      }
+    }
     const pron = line.phrase.match(/^(?:ele|ela)s?\s+(?:é|e|eh|sao|são|esta|está|ta|tá)\s+(?:um\s+|uma\s+)?(.+)$/i);
     if (pron) {
       const prev = merged[merged.length - 1];
@@ -1737,6 +1765,11 @@ export function splitCommandClauses(text: string): string[] {
   const parts = n
     .split(new RegExp(`\\s*[,;]\\s*(?=(?:e\\s+)?(?:${COMMAND_VERB})\\b)|\\s+e\\s+(?=(?:${COMMAND_VERB})\\b)`))
     .map((p) => p.replace(/^e\s+/, "").trim())
+    .filter(Boolean)
+    // "tira a esponja de aco coloca uma esponja amarela" (11/10, rodada 20 g55, R20-4): sem vírgula nem "e", a ordem de
+    // tirar seguida de um verbo de pôr são duas ordens (só tirava). Só a partir de um "tira/remove/esquece".
+    .flatMap((p) => (/^(?:tira|tirar|tire|remove|remover|esquece|cancela)\b/.test(p) ? p.split(/\s+(?=(?:coloca|colocar|coloque|bota|botar|bote|poe|põe|adiciona|adicionar|acrescenta|inclui|me ve|quero|manda)\s+\S)/) : [p]))
+    .map((p) => p.trim())
     .filter(Boolean);
   return parts.length > 1 ? parts : [n];
 }
@@ -2085,7 +2118,11 @@ export function splitLeadingSwapDecline(text: string): string | null {
   const parts = text.split(/(?<=[.;!?])\s+|\s*[,;]\s*/);
   if (parts.length < 2) return null;
   if (!declinesSwapOffer(parts[0])) return null;
-  const rest = parts.slice(1).join(", ").replace(/^[\s,.;!?]+/, "").trim();
+  // "não, prefiro manter na Americanas. põe mais um lápis…" (11/10, rodada 20 g55, R20a-2): a recusa pode vir em mais de um
+  // pedaço; todos os da frente saem e o resto segue. Antes o 2º pedaço ("prefiro manter…") fazia o resto inteiro parecer recusa.
+  let start = 1;
+  while (start < parts.length - 1 && declinesSwapOffer(parts[start])) start++;
+  const rest = parts.slice(start).join(", ").replace(/^[\s,.;!?]+/, "").trim();
   // "não precisa, obrigado": o resto é só cortesia — a mensagem inteira é a recusa de sempre.
   const courtesyOnly = normalizeMsg(rest).split(/[^a-z0-9]+/).filter(Boolean).every((w) => KEEP_FILLER.has(w) || /^(?:obrigad\w*|brigad\w*|valeu|vlw|obg|tchau|pf|pfv|favor|por)$/.test(w));
   return rest && !courtesyOnly && !declinesSwapOffer(rest) ? rest : null;
@@ -3416,6 +3453,23 @@ const EXCLUSIVE_VARIANTS: RegExp[] = [
   /\b(?:adult[oa]s?|filhotes?|senior)\b/g,
   /\b(?:pret[oa]s?|branc[oa]s?|azul|azuis|vermelh[oa]s?|verdes?|rosa|amarel[oa]s?|rox[oa]s?|lilas|cinzas?|marrom|marrons|dourad[oa]s?|pratead[oa]s?|bege)\b/g
 ];
+// A busca de base de um refino com a escolha na tela (11/10, rodada 20 g55): o que o cliente NEGOU sai da base ("não quero
+// gel, quero álcool 70 líquido" com *álcool em gel* na tela buscava "álcool em gel 70 líquido"), e o produto dito de novo com
+// outra medida troca a medida ("bucha s6 de nylon" com *bucha 6* buscava "bucha 6 s6 nylon").
+export function refineBaseQuery(base: string, attribute: string, negated: string[] = []): string {
+  const words = normalizeMsg(base).split(" ").filter(Boolean);
+  const neg = new Set(negated.map((w) => normalizeMsg(w)));
+  const said = normalizeMsg(attribute).split(" ").filter(Boolean);
+  const head = productHead(base);
+  const restated = Boolean(head) && said.some((w) => w === head || `${w}s` === head || w === `${head}s`);
+  const newMeasure = said.some((w) => /\d/.test(w) && !words.includes(w));
+  let kept = words.filter((w) => !neg.has(w));
+  if (restated && newMeasure) kept = kept.filter((w) => !/\d/.test(w));
+  if (kept.length === words.length) return base;
+  const out = kept.join(" ").replace(/(?:\s+(?:em|de|do|da|com|sem|e))+$/, "").trim();
+  return out || base;
+}
+
 export function replaceRefinedSize(base: string, attrs: string[]): string {
   const said = normalizeMsg(attrs.join(" ")).trim();
   let out = normalizeMsg(base);
@@ -3514,10 +3568,25 @@ const SERVICE_FEE_RE =
 const PIX_RECEIVER_RE =
   /\b(?:quem recebe (?:o |esse |este |meu )?pix|pra quem (?:vai|e|eh) (?:o |esse )?pix|o pix vai pra quem|pix (?:no|em) nome de quem|(?:aparece|ta|tá|esta|vem|sai) (?:no |em |com )?nome de (?:uma )?pessoa|nome de pessoa fisica|por ?que (?:aparece|ta|tá|esta|vem) (?:o |um )?nome)\b/;
 
+// Frase de lado que não pede nada ("gripe feia eu não preciso de nada, tira essa", 11/10, rodada 20 g55, R20a-1): quem chama
+// confere que nenhum item da cesta/fila é citado.
+export function isNoNeedAside(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[.!?;,\s]+$/g, "").trim();
+  return /\b(?:nao (?:preciso|precisa|quero|vou querer)(?: de)? nada|tira ess[ae]|tira isso|esquece ess[ae]|esquece isso|deixa (?:pra|para) la|nao precisa)\b/.test(n);
+}
+
+// "qual a diferença de preço?", "quanto a mais é a rápida?" com as duas entregas na tela (11/10, rodada 20 g55, R20-5).
+export function asksFreightPriceDiff(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[?!.\s]+$/g, "").trim();
+  return /\b(?:diferenca|quanto a mais|quanto mais cara|fica quanto a mais|sai quanto a mais)\b/.test(n) && !/\b(?:entre o|entre a|do \d|da \d|opcao|opcoes)\b/.test(n);
+}
+
 export function parseAvailabilityAsk(text: string): string | null {
   const n = normalizeMsg(text)
     .replace(/[?!.]+$/g, "")
     .replace(/^(?:oi+e?|ola|opa|bom dia|boa tarde|boa noite|eai|e ai)\s*[,!.]?\s+/, "")
+    // "tendi tem caderno 10 materias?" (11/10, rodada 20 g55, R20-5): a concordância antes da pergunta não é parte dela.
+    .replace(/^(?:tendi|entendi|ah+|ok|okay|blz|beleza|certo|hm+|show|ta|ta bom)\s*[,!.]?\s+(?=(?:voces?|vcs?|vc|voce|tem|teria|vende)\b)/, "")
     // "oi, antes: tem ibuprofeno?" (11/10, rodada 18 g51): a abertura da pergunta não é parte do item.
     .replace(/^(?:antes|so (?:uma )?pergunta|uma pergunta|pergunta|me diz|me fala|e)\s*[,:!.-]?\s+(?=(?:voces?|vcs?|vc|voce|tem|teria|vende)\b)/, "")
     .trim();
