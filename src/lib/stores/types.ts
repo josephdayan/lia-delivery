@@ -149,11 +149,15 @@ const SMALL_SIZE_WORDS = new Set(["pequeno", "pequenos", "pequena", "pequenas"])
 // também barra a ração de cachorro/gato. Peixe fica de fora de propósito ("Ração Gatos Sabor Peixe" é de gato).
 const RODENT_WORDS = new Set(["coelho", "coelhos", "coelhinho", "coelhinhos", "roedor", "roedores", "hamster", "hamsters", "porquinho", "chinchila", "chinchilas", "twister", "gerbil"]);
 const BIRD_WORDS = new Set(["passaro", "passaros", "passarinho", "passarinhos", "calopsita", "calopsitas", "periquito", "periquitos", "canario", "canarios", "papagaio", "agapornis", "aves"]);
+// Marca que é de UMA espécie (11/10, rodada 20 g56, R20-3: "Ração Seca Adulto Raças Pequenas … Pedigree" não diz "cães" e
+// virou a troca da ração de gato na oferta de juntar). Só do lado do produto; marca de cão e gato (Golden, Premier) fica de fora.
+const DOG_BRAND_WORDS = new Set(["pedigree", "cesar", "dogui"]);
+const CAT_BRAND_WORDS = new Set(["whiskas", "friskies", "felix", "gatsy", "kitekat"]);
 function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | "rodent" | "bird" | null {
   const found = new Set<string>();
   for (const w of wordList) {
-    if (DOG_WORDS.has(w) || (itemSide && DOG_BREED_WORDS.has(w))) found.add("dog");
-    else if (CAT_WORDS.has(w)) found.add("cat");
+    if (DOG_WORDS.has(w) || (itemSide && (DOG_BREED_WORDS.has(w) || DOG_BRAND_WORDS.has(w)))) found.add("dog");
+    else if (CAT_WORDS.has(w) || (itemSide && CAT_BRAND_WORDS.has(w))) found.add("cat");
     else if (RODENT_WORDS.has(w)) found.add("rodent");
     else if (BIRD_WORDS.has(w)) found.add("bird");
   }
@@ -305,6 +309,8 @@ const HUMAN_PRODUCT_WORDS = new Set(["shampoo", "xampu", "condicionador", "perfu
 // Qualquer marca de "é produto pet" no nome (inclui itens "para Cães E Gatos", que o
 // species-guard deixa passar por servirem as duas espécies).
 const PET_ANY_RE = /\b(caes|cao|cachorros?|gatos?|felinos?|caninos?|pet|aquario|peixes?|roedores?|passaros?)\b/;
+// Licença/personagem infantil no nome (R20-6): marca de produto de criança, não de pet.
+const LICENSED_KIDS_RE = /\b(dc comics|marvel|disney|mulher maravilha|batman|superman|homem aranha|spider ?man|vingadores|avengers|liga da justica|frozen|patrulha canina|barbie|hot wheels|minnie|mickey|princesas?|turma da monica|peppa|galinha pintadinha|pokemon|sonic|stitch|naruto|harry potter|bob esponja|toy story|minecraft|hello kitty)\b/;
 // Palavras do cliente que JÁ são de pet mesmo sem citar o bicho ("ração", "petisco"):
 // com elas, a penalidade de item-pet não faz sentido — todo candidato é pet.
 const PET_INTRINSIC_RE = /\b(racao|racoes|petiscos?|bifinhos?|areia|coleiras?|arranhador|aquario|antipulgas|comedouro|bebedouro|guia)\b/;
@@ -629,6 +635,9 @@ function scoreQuery(query: string, item: CatalogItem): number {
   // Produto humano vs versão pet: quem pede "shampoo"/"perfume" sem falar de bicho
   // NUNCA quer a versão de cachorro/gato/aquário (nem a "para Cães e Gatos").
   if (!queryAnimal && PET_ANY_RE.test(nameNorm) && effTokens.some((t) => HUMAN_PRODUCT_WORDS.has(t))) return 0;
+  // Item de pet pedido (comedouro, coleira…) nunca é o de personagem infantil sem bicho no nome (11/10, rodada 20 g56, R20-6:
+  // "comedouro" trazia "Comedouro - DC Comics - Tigela Melamina - Mulher Maravilha" da Ri Happy entre os de cachorro).
+  if ((queryAnimal || PET_INTRINSIC_RE.test(q.norm)) && LICENSED_KIDS_RE.test(nameNorm) && !PET_ANY_RE.test(nameNorm) && !LICENSED_KIDS_RE.test(q.norm)) return 0;
 
   let score = 0;
   let strongHit = false;
@@ -860,7 +869,7 @@ const ACCESSORY_HEADS = new Set([
 // `accept` = o que o nome precisa ter pra ser o produto; `prefer` = a versão comum, que vem primeiro.
 const FRUIT_DERIVED_RE =
   /\b(bread|cookies?|trufas?|minitrufas?|muffins?|brownies?|chips|chip|liofilizad\w*|desidratad\w*|passas?|balas?|fini|ensure|sabor|sabores|doces?|bananada|farinha|snacks?|barras?|barrinhas?|cereais|cereal|iogurtes?|vitaminas?|nectar|sucos?|whey|shakes?|refrigerantes?|refresco|gelatinas?|essencia|aroma|aromatizad\w*|geleia|polpa|creme|chas?|cha|sorvetes?|picoles?|biscoitos?|bolachas?|bolos?|torta|achocolatad\w*|leite|bebidas?|isotonic\w*|energetic\w*|sabonetes?|shampoo|hidratante|desodorante|perfume|colonia|vela|aromatizador|tempero|molho|vinagre|cerveja|licor|caipirinha|drink)\b/;
-const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer: RegExp }> = {
+const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer: RegExp; lead?: boolean }> = {
   oleo: {
     accept: /\b(soja|girassol|milho|canola|oliva|olliva|algodao|cozinha|composto)\b/,
     reject: /\b(corporal|corpo|capilar|cabelo|hidratante|massagem|bebe|pele|facial|rosto|banho|unha|maquina|madeira)\b/,
@@ -882,9 +891,12 @@ const STAPLE_DEFAULTS: Record<string, { accept?: RegExp; reject?: RegExp; prefer
   arroz: { prefer: /\b(branco|tipo 1|agulhinha|parboilizado|polido)\b/ },
   macarrao: { prefer: /\b(espaguete|spaghetti|parafuso|penne|fusilli|padre nosso|ave maria|furadinho|talharim|semola|com ovos|instantaneo)\b/ },
   pao: { prefer: /\b(forma|frances|francesinho|bisnaguinha|de leite|integral)\b/ },
+  // "parafuso" solto (11/10, rodada 20 g56, R20-8: prateleira abria com parafuso de vaso sanitário e de telha): o de uso geral
+  // (atarraxante, madeira, com bucha) vem antes do de peça específica.
+  parafuso: { prefer: /^(?!.*\b(?:vaso|sanitario|bide|lavatorio|coluna|telhas?|fibrocimento|automotiv\w*|motos?|carros?)\b).*\b(?:atarraxante|chipboard|madeira|buchas?|phillips|fenda|sextavad\w*|kit|sortidos?|drywall)\b/, lead: true },
   esponja: { reject: /\b(filtro|aquarios?|bomba|refil para filtro|maquiagem|po compacto)\b/, prefer: /\b(dupla face|multiuso|louca|loucas|cozinha|limpeza|lava)\b/ }
 };
-export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp } | undefined {
+export function stapleFor(query: string): { accept?: RegExp; reject?: RegExp; prefer: RegExp; lead?: boolean } | undefined {
   const core = queryTokens(normalizeText(query)).filter((t) => !/^\d/.test(t) && !MEASURE_TOKEN_RE.test(t) && !UNIT_WORDS.has(t));
   return core.length === 1 ? STAPLE_DEFAULTS[core[0]] : undefined;
 }
@@ -1129,7 +1141,14 @@ const QUERY_ALIASES: Array<[RegExp, string]> = [
   [/^sal$/, "sal refinado"],
   [/^(pampers|huggies)$/, "fralda $1"],
   [/^toddy$/, "achocolatado toddy"],
-  [/^nescau$/, "achocolatado nescau"]
+  [/^nescau$/, "achocolatado nescau"],
+  // Pet (11/10, rodada 20 g56, R20-6): "brinquedo de morder" e "mordedor de borracha pra cachorro" davam "não achei" com o
+  // "Brinquedo Mordedor Abacaxi" no Cobasi — o catálogo diz "mordedor", sem o material. "Filhote de golden" é o cachorro
+  // (a raça), não a ração Golden.
+  [/\bbrinquedos? (?:de|pra|para) (?:morder|roer|mastigar)\b/, "brinquedo mordedor"],
+  [/\bmordedor(es)? (?:de )?(?:borracha|nylon|silicone|plastico|corda)\b/, "mordedor$1"],
+  [/\b(filhotes?|cachorros?|caes|cao) (?:de |da raca )?golden(?: retriever)?\b/, "$1 cachorro"],
+  [/\bgolden retriever\b/, "cachorro"]
 ];
 // Pack/fardo pedido (06/10, A5): a palavra de embalagem e a contagem não são o produto —
 // "Pack 8 Latas - Heineken" responde por "fardo de cerveja heineken" pela marca.
@@ -1153,9 +1172,17 @@ export function queryAliases(query: string): string[] {
   const pack = parsePackPhrase(query);
   if (pack) return [...new Set([pack.core, ...(pack.brand ? [`pack ${pack.brand}`, `fardo ${pack.brand}`] : []), ...queryAliases(pack.core)])].filter((alias) => alias && alias !== norm);
   const out: string[] = [];
+  let chained = norm;
+  let hits = 0;
   for (const [re, alias] of QUERY_ALIASES) {
     if (re.test(norm)) out.push(norm.replace(re, alias).replace(/\bdagua\b/g, "d agua"));
+    if (re.test(chained)) {
+      chained = chained.replace(re, alias);
+      hits += 1;
+    }
   }
+  // Duas trocas na mesma frase (R20-6: "brinquedo de morder filhote de golden"): cada alias sozinho deixa a outra palavra.
+  if (hits > 1) out.push(chained.replace(/\bdagua\b/g, "d agua"));
   return out.filter((alias) => alias !== norm);
 }
 const SPEC_TOKENS = new Set(["usb", "usbc", "usba", "microusb", "hdmi", "bluetooth", "lightning", "wifi", "vga", "ethernet", "rj45"]);
@@ -1372,6 +1399,16 @@ const VARIANT_MARKERS = new Set([
   // Tema de Natal sem o cliente falar de Natal (11/10, rodada 19 g53, R19-8: papel de presente de Natal para aniversário).
   "natal", "natalino", "natalina", "natalinos", "natalinas", "noel"
 ]);
+// Fora da época de Natal (11/10, rodada 20 g56, R20a-5: "papel de presente" em outubro trazia 4 de 5 cards de Natal com a IA
+// ligada, e "o mais barato" levava o de Natal pro aniversário): novembro e dezembro são a época; no resto do ano o tema só
+// vale quando o pedido fala dele.
+const CHRISTMAS_RE = /\b(?:natal|natalin[oa]s?|noel|papai noel)\b/;
+export function christmasOffSeason(now: Date = new Date()): boolean {
+  return now.getMonth() < 10;
+}
+export function unaskedChristmas(query: string, name: string): boolean {
+  return CHRISTMAS_RE.test(normalizeText(name)) && !CHRISTMAS_RE.test(normalizeText(query));
+}
 const SUGAR_FREE = ["sugarfree", "sugar", "zero", "diet"];
 export function variantPenalty(query: string, name: string): number {
   const asked = new Set(words(query));
