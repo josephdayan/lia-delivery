@@ -1204,7 +1204,9 @@ export function meaningfulProductTokens(phrase: string): string[] {
     .split(/\s+/)
     // Singulariza ANTES do alias: "cafés moídos" tem que casar com "café moído" — sem
     // isso o merge com a IA duplicava a linha (5º ciclo, rodada 4).
-    .map((token) => (token.length >= 5 ? token.replace(/s$/, "") : token));
+    // Plural em -res/-les/-zes (11/10, rodada 19 g52, R19a-3): "apontadores" e "apontador" (a IA no singular) são o mesmo
+    // item — "apontadore" ≠ "apontador" duplicava a linha e a cesta ficava com 4 apontadores.
+    .map((token) => (token.length >= 5 ? token.replace(/(?<=[rlz])es$/, "").replace(/s$/, "") : token));
   // "bebê" só é o "umedecido" do LENÇO ("lenço de bebê" = "lenço umedecido"). Em outro item é público, não produto
   // (10/10, rodada 11: "pomada para assadura bebê" casava com "lenço umedecido" e sumia da lista no merge com a IA).
   const lenco = raw.includes("lenco");

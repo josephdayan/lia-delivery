@@ -13,7 +13,8 @@ import type { DialogueAction } from "../src/lib/dialogue/types";
 import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
-import { declinesSwapOffer, parseBasketLines, parseChoiceReply, parseStoreSwapAsk, replaceRefinedSize, splitLeadingSwapDecline } from "../src/lib/lia-intents";
+import { declinesSwapOffer, meaningfulProductTokens, mergeShoppingLines, parseBasketLines, parseChoiceReply, parseStoreSwapAsk, replaceRefinedSize, splitLeadingSwapDecline } from "../src/lib/lia-intents";
+import { resolveListItems } from "../src/lib/list-items";
 import { dropAddressOnlyItems, onboardingNote, peelPersonName } from "../src/lib/address-parse";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
@@ -301,4 +302,23 @@ test("R19a-2: 'melhor preta' com caneta azul busca caneta preta (não 'caneta az
   assert.equal(replaceRefinedSize("canetas azuis", ["pretas"]), "canetas");
   // Sem cor dita, nada muda.
   assert.equal(replaceRefinedSize("caneta azul", ["ponta fina"]), "caneta azul");
+});
+
+// ---------------------------------------------------------------- R19a-3: "2 apontadores" não duplica
+
+test("R19a-3: 'e 2 apontadores' (det no plural) e 'apontador' (IA no singular) são uma linha só, 2x", () => {
+  assert.deepEqual(meaningfulProductTokens("apontadores"), meaningfulProductTokens("apontador"));
+  const raw = "lápis de cor 24 cores, tesora, cola bastão, caderno universitário e 2 apontadores";
+  const ai = [
+    { phrase: "lápis de cor 24 cores", qty: 1 },
+    { phrase: "tesoura", qty: 1 },
+    { phrase: "cola bastão", qty: 1 },
+    { phrase: "caderno universitário", qty: 1 },
+    { phrase: "apontador", qty: 2 },
+  ];
+  const merged = mergeShoppingLines(ai, resolveListItems(raw));
+  const sharpeners = merged.filter((l) => /apontador/i.test(l.phrase));
+  assert.equal(sharpeners.length, 1, JSON.stringify(merged));
+  assert.equal(sharpeners[0].qty, 2);
+  assert.equal(merged.length, 5);
 });
