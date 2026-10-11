@@ -3416,7 +3416,7 @@ export function slowDeliveryNote(store: string, promise: string): string {
 // Resposta direta a "vocês entregam em X?", "quanto custa o frete?", "demora quanto?",
 // "como pago?" — NUNCA cair em busca de produto com pergunta operacional.
 export function serviceAnswer(
-  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap",
+  topic: "area" | "fee" | "eta" | "hours" | "payment" | "generic" | "stores" | "price_compare" | "service_fee" | "pix_receiver" | "total_preview" | "gift_wrap" | "minimum",
   areaLabel: string,
   ctx?: { hasCep?: boolean; hasBasket?: boolean; place?: string }
 ): string {
@@ -3452,6 +3452,9 @@ export function serviceAnswer(
       return storesAnswer([]);
     case "price_compare":
       return priceCompareAnswer(Boolean(ctx?.hasBasket));
+    case "minimum":
+      // "tem pedido mínimo?" (11/10, rodada 21 g57, R21-5): a verdade é "depende da loja" — algumas têm.
+      return "Pedido mínimo depende da loja: a maioria não tem, mas algumas têm. Se um item cair numa loja com mínimo, eu te aviso quanto falta e ofereço trocar por outra loja sem mínimo — tudo antes de você pagar.";
     case "gift_wrap":
       // Verdade operacional (10/10, rodada 12): quem embala e entrega é a loja; a Lia não garante embrulho nem bilhete.
       return "Embrulho pra presente eu não consigo garantir: quem embala e entrega é a *própria loja*, na embalagem dela, e não dá pra mandar bilhete junto. Se quiser, procuro um *papel ou sacola de presente* pra ir no mesmo pedido.";
@@ -3641,8 +3644,9 @@ export function cancelHowTo(hasPaidOrder: boolean): string {
 }
 
 
+// Sem prometer o total na mesma hora (11/10, rodada 21 g57, R21-9): a mudança às vezes abre uma escolha antes do total novo.
 export function orderReopened(): string {
-  return "Atualizei seu pedido. O total anterior não vale mais — segue o novo 👇";
+  return "Atualizei seu pedido: o total anterior não vale mais. Te mando o novo assim que essa mudança estiver feita 👇";
 }
 
 export function greetingMidOrder(step: string, itemCount: number): string {
@@ -4218,4 +4222,42 @@ export function variantSplitNoted(item: string, parts: { qty: number; label: str
 
 export function severalDeliveriesNote(stores: number): string {
   return `Esses itens estão em ${stores} lojas diferentes e nenhuma tem tudo (ou juntar sairia mais caro), então vai em ${stores} entregas.`;
+}
+
+// ---------- rodada 21, g57 (11/10) ----------
+
+// Emoji de produto ambíguo sozinho ("🧴", R21-4): pergunta uma vez, sem chutar.
+export function emojiAsk(emoji: string, options: string[]): string {
+  const list = options.length > 1 ? `${options.slice(0, -1).map((o) => `*${o}*`).join(", ")} ou *${options[options.length - 1]}*` : `*${options[0]}*`;
+  return `Não entendi o ${emoji} 🙂 É ${list}? Me diz em palavras que eu procuro.`;
+}
+
+// "vocês demoram demais pra responder" (R21 B1): desculpa curta e direto ao ponto — não é pergunta de prazo de entrega.
+export function replySpeedApology(needsAddress: boolean): string {
+  return needsAddress
+    ? "Desculpa a demora 🙏 Me manda o que você precisa e seu *endereço com CEP* que eu já saio procurando."
+    : "Desculpa a demora 🙏 Já tô aqui — me diz o que você precisa que eu procuro na hora.";
+}
+
+// "qual dessas é preta e de 20 metros?" (R21-5): responde pela opção da tela que tem o que foi pedido.
+export function optionAttrAnswer(rows: { n: number; name: string; price: number }[], attrs: string[], partial = false): string {
+  const said = attrs.map((a) => a.replace(/^(\d+(?:\.\d+)?)(m|un)$/, (_s, num: string, unit: string) => `${num.replace(".", ",")} ${unit === "m" ? "metros" : "unidades"}`)).join(" e ");
+  const line = (r: { n: number; name: string; price: number }) => `*opção ${r.n}*: ${r.name} (${brl(r.price)})`;
+  if (partial) return `Nenhuma das opções diz *${said}* junto. A mais perto é a ${line(rows[0])}. Se quiser, me diz que eu procuro outra.`;
+  if (rows.length === 1) return `É a ${line(rows[0])} 👆`;
+  return `Essas têm *${said}*:\n${rows.map((r) => `• ${line(r)}`).join("\n")}`;
+}
+
+// Correção que aponta pra uma opção de antes (R21-1) e nenhuma das já mostradas bate.
+export function earlierOptionNotFound(item: string): string {
+  return `Não achei essa entre as opções de *${item}* que eu te mostrei. Me diz o nome ou a loja que eu procuro — ou toca num card aí em cima.`;
+}
+
+export function earlierOptionsHeader(item: string): string {
+  return `Das opções de *${item}* que eu já tinha te mostrado, essas batem com o que você disse 👇`;
+}
+
+// "tenta de novo"/"procura em outra loja" sem nenhum item a refazer (R21-3): nunca vira item.
+export function retryNeedsTarget(): string {
+  return "Procurar de novo o quê? Me diz o item (ou a marca) que eu tento outra vez.";
 }

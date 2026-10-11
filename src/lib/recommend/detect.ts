@@ -184,7 +184,7 @@ const FILLER = new Set(
     "algum alguma alguns algumas qualquer que q qual quais quem como onde aqui ai la ali agora hoje ja ainda logo " +
     "quero queria quer queremos gostaria gostava preciso precisava precisando necessito afim fim vontade desejo " +
     "pode poderia podia consegue conseguiria da tem teria tenho temos vende vendem ve manda mandar traz trazer " +
-    "compra comprar compro pedir pede peco encomendar achar acha ajuda ajudar ajude escolher escolho sei saber " +
+    "compra comprar compro pedir pede peco encomendar achar acha ajuda ajudar ajude escolher escolho sei saber montar monta montando " +
     "nao n sim ok entao assim tipo pois porque pq mesmo msm realmente serio verdade " +
     "algo coisa coisas coisinha coisinhas negocio negocinho treco parada sugestao dica dicas ideia ideias recomendacao indicacao " +
     "comer beber tomar jantar almocar lanchar beliscar petiscar usar passar levar fazer preparar servir comendo bebendo " +

@@ -244,7 +244,9 @@ async function runStep(env: ExecEnv, step: Planned, opts: { reopened: boolean; m
       const asked = queryTokens(normalizeMsg(step.attribute).replace(/\b(?:o |a )?mais (?:barat\w*|em conta|economic\w*)\b|\bbaratinh\w*|\bbarat[oa]s?\b|\bem conta\b/g, " ")).filter((token) => !negated.has(token));
       // Número de um dígito ("tem a vela numero 6?", 11/10, rodada 20 g55, R20-5): a busca de tokens descarta, e o refino
       // virava "vela de aniversário número" com as velas 1, 3 e 8.
-      for (const digit of normalizeMsg(step.attribute).match(/(?<![\d.,])\d(?![\d.,])/g) ?? []) if (!asked.includes(digit)) asked.push(digit);
+      // Dígito colado em letra ("bucha s6 de nylon", 11/10, rodada 21 g57, R21a-4) é parte do código, não número solto: virava
+      // "bucha s6 nylon 6".
+      for (const digit of normalizeMsg(step.attribute).match(/(?<![\p{L}\d.,])\d(?![\p{L}\d.,])/gu) ?? []) if (!asked.includes(digit)) asked.push(digit);
       const fresh = asked.filter((token) => !baseTokens.has(token));
       if (!fresh.length) {
         await h.sendChoices(phone, current);
