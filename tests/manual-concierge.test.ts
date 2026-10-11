@@ -481,6 +481,9 @@ test("cotação concierge vencida não libera pagamento", async (t) => {
   assert.match(expired, /preço venceu/i);
   const canceled = await prisma.deliveryOrder.findUnique({ where: { id: order!.id } });
   assert.equal(canceled!.status, "canceled");
+  // 09/10 (teste real): "Fecho um novo" é promessa — a cesta não some e algo vem depois da frase.
+  assert.match(expired, /Como prefere pagar|Seu pedido/i, `prometeu cotação nova e não entregou: ${expired.slice(0, 300)}`);
+  assert.doesNotMatch(expired, /Pix copia e cola|00020126/i, "nunca emite cobrança junto do aviso de vencida");
 });
 
 test("estorno parcial registra valor e referência antes de avisar", async (t) => {

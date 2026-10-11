@@ -5631,8 +5631,17 @@ async function handleDeliveryTurn(
           return;
         }
         if (issued.expired) {
-          await writeCtx(convo.id, addressOnlyCtx(ctx, user.cep));
+          // "Fecho um novo antes de cobrar" é promessa (09/10, teste real): a cesta zerava e nada vinha depois. Agora a
+          // cesta do pedido vencido volta pro contexto e a cotação nova sai na mesma hora, com o total atualizado.
+          const revived = {
+            ...addressOnlyCtx(ctx, user.cep),
+            basket: ((order.items as unknown as BasketItem[]) ?? []).filter((item) => item.unitPrice > 0)
+          };
+          for (const key of Object.keys(ctx)) delete (ctx as Record<string, unknown>)[key];
+          Object.assign(ctx, revived);
+          await writeCtx(convo.id, ctx);
           await reply(phone, copy.quoteExpired());
+          if (ctx.basket?.length) await continueAfterBasket(phone, convo.id, ctx, user.cep);
         }
         return;
       }
