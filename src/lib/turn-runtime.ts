@@ -178,20 +178,32 @@ export async function getOrCreateConvo(phone: string, name?: string) {
   // Duas mensagens do 1º contato chegando juntas (10/10, rodada 10 g30: "oi" + cadastro em paralelo): o upsert do Prisma
   // não é atômico no Postgres — o 2º insert batia no índice único de `phone` e o cliente ouvia "Deu um erro aqui".
   // Quem perdeu a corrida lê o usuário que o outro acabou de criar.
-  const user = await prisma.user
-    .upsert({
-      where: { phone },
-      update: name ? { name } : {},
-      create: { phone, name }
+  // A conversa ativa é lida pelo telefone JUNTO com o upsert do usuário (11/10, g66: uma ida ao banco a menos por turno;
+  // em produção ~0,3 s cada). Cliente novo (ou conversa de outro usuário, impossível com telefone único) cai na leitura
+  // por userId de sempre.
+  const [user, byPhone] = await Promise.all([
+    prisma.user
+      .upsert({
+        where: { phone },
+        update: name ? { name } : {},
+        create: { phone, name }
+      })
+      .catch(async (error: unknown) => {
+        if ((error as { code?: string })?.code !== "P2002") throw error;
+        return prisma.user.findUniqueOrThrow({ where: { phone } });
+      }),
+    prisma.conversation.findFirst({
+      where: { user: { phone }, status: "active" },
+      orderBy: { updatedAt: "desc" }
     })
-    .catch(async (error: unknown) => {
-      if ((error as { code?: string })?.code !== "P2002") throw error;
-      return prisma.user.findUniqueOrThrow({ where: { phone } });
-    });
-  let convo = await prisma.conversation.findFirst({
-    where: { userId: user.id, status: "active" },
-    orderBy: { updatedAt: "desc" }
-  });
+  ]);
+  let convo =
+    byPhone && byPhone.userId === user.id
+      ? byPhone
+      : await prisma.conversation.findFirst({
+          where: { userId: user.id, status: "active" },
+          orderBy: { updatedAt: "desc" }
+        });
   if (!convo) {
     // Id DETERMINÍSTICO por cliente: duas mensagens simultâneas do mesmo número
     // convergem para a MESMA conversa, porque upsert por chave primária é atômico.
@@ -205,6 +217,8 @@ export async function getOrCreateConvo(phone: string, name?: string) {
     });
   }
   rememberCtxSnapshot(convo.id, convo.context ?? null);
+  const meta = turnMeta.getStore();
+  if (meta) (meta.convoIds ??= new Map()).set(phone, convo.id);
   return { user, convo };
 }
 
@@ -280,7 +294,51 @@ export const turnMeta = new AsyncLocalStorage<{
   deadlineLateNoted?: string;
   // Mensagens anteriores do cliente (até 6 h, da mais nova à mais velha; 11/10, rodada 19 g53): o sentido do item sai do
   // contexto da conversa ("tenho uma gata" → "ração pra ela" é de gato; "make… base" é base de rosto).
-  contextTexts?: string[];}>();
+  contextTexts?: string[];
+  // Conversa do turno por telefone (11/10, g66, latência em produção): os ajudantes da vitrine não refazem o
+  // getOrCreateConvo (2 idas ao banco) — em produção cada ida custa ~0,3 s (função em iad1, banco em us-west-1).
+  convoIds?: Map<string, string>;
+  // Leituras antecipadas do turno (g66): disparadas em paralelo logo depois da trava; quem usa consome UMA vez.
+  prefetched?: Map<string, Promise<unknown>>;}>();
+
+// Leitura antecipada (11/10, g66): começa agora, em paralelo com as outras do início do turno; `takePrefetched` entrega
+// a MESMA promessa uma vez (a 2ª chamada no turno lê de novo, como antes). Erro não vira rejeição solta: quem consome
+// recebe o erro como receberia da leitura direta. Fora de um turno, não faz nada.
+export function prefetchForTurn<T>(key: string, load: () => Promise<T>): void {
+  const meta = turnMeta.getStore();
+  if (!meta) return;
+  const promise = load();
+  promise.catch(() => undefined);
+  (meta.prefetched ??= new Map()).set(key, promise);
+}
+
+export function takePrefetched<T>(key: string, load: () => Promise<T>): Promise<T> {
+  const map = turnMeta.getStore()?.prefetched;
+  const ready = map?.get(key) as Promise<T> | undefined;
+  if (ready) {
+    map!.delete(key);
+    return ready;
+  }
+  return load();
+}
+
+// Conversa do cliente para os ajudantes que só gravam/leem mensagens (vitrine na tela, carrossel enviado). Dentro do
+// turno: o id já conhecido + a leitura do contexto (que avança o snapshot do CAS, como o getOrCreateConvo fazia) em
+// PARALELO com o trabalho do ajudante — 1 ida ao banco em vez de 3. Fora do turno: o getOrCreateConvo de sempre.
+export async function withTurnConvo<T>(phone: string, work: (convoId: string) => Promise<T>): Promise<T> {
+  const known = turnMeta.getStore()?.convoIds?.get(phone);
+  if (!known) {
+    const { convo } = await getOrCreateConvo(phone);
+    return work(convo.id);
+  }
+  const resnapshot = prisma.conversation
+    .findUnique({ where: { id: known }, select: { context: true } })
+    .then((row) => {
+      if (row) rememberCtxSnapshot(known, row.context ?? null);
+    });
+  const [result] = await Promise.all([work(known), resnapshot]);
+  return result;
+}
 
 // A rede anti-silêncio conta QUALQUER envio ao cliente do turno, não só `reply()` (09/10, pedido
 // do dono): com LIA_NATIVE_PIX=1 o Pix saía só como bolha nativa (`sendPixOrderDetails`), o
@@ -474,15 +532,24 @@ export async function persistSentTexts(convoId: string): Promise<void> {
   const meta = turnMeta.getStore();
   if (!meta?.sent?.length || !repeatGuardEnabled()) return;
   try {
+    const sent = meta.sent;
+    const write = async (context: string | null): Promise<boolean | null> => {
+      const ctx = readCtx(context);
+      const merged = mergeSent(ctx.lastSent, sent.map((t) => t.slice(0, 600)));
+      if (!merged) return null;
+      ctx.lastSent = merged;
+      // O "também não chega pra <prazo>" fica marcado além da janela curta das últimas falas (R20-9).
+      const lateLabel = sent.map((t) => /^⏰ \*[^*]+\* também não chega pra \*([^*]+)\*/.exec(t)?.[1]).find(Boolean);
+      if (lateLabel) ctx.deadlineLateNoted = { label: lateLabel, at: Date.now() };
+      const updated = await prisma.conversation.updateMany({ where: { id: convoId, context }, data: { context: JSON.stringify(ctx) } });
+      return updated.count > 0;
+    };
+    // 1ª tentativa sobre o contexto que o turno conhece (o snapshot do CAS): sem ler antes, 1 ida ao banco (11/10, g66).
+    // Snapshot desconhecido ou contexto mudado por baixo: lê e tenta de novo, como sempre foi.
+    const snapshot = turnStore.getStore()?.get(convoId);
+    if (snapshot !== undefined && (await write(snapshot)) !== false) return;
     const row = await prisma.conversation.findUnique({ where: { id: convoId }, select: { context: true } });
-    const ctx = readCtx(row?.context ?? null);
-    const merged = mergeSent(ctx.lastSent, meta.sent.map((t) => t.slice(0, 600)));
-    if (!merged) return;
-    ctx.lastSent = merged;
-    // O "também não chega pra <prazo>" fica marcado além da janela curta das últimas falas (R20-9).
-    const lateLabel = meta.sent.map((t) => /^⏰ \*[^*]+\* também não chega pra \*([^*]+)\*/.exec(t)?.[1]).find(Boolean);
-    if (lateLabel) ctx.deadlineLateNoted = { label: lateLabel, at: Date.now() };
-    await prisma.conversation.updateMany({ where: { id: convoId, context: row?.context ?? null }, data: { context: JSON.stringify(ctx) } });
+    await write(row?.context ?? null);
   } catch (error) {
     console.warn("[dialogue:repeat:persist-failed]", error instanceof Error ? error.message : error);
   }
@@ -501,12 +568,23 @@ export function markTurnReplied() {
 // turno é reivindicado, então nunca serviria de relógio de inatividade; já a mensagem
 // anterior é a atividade real (toda mensagem, do cliente ou da Lia, conta).
 export async function lastActivityAt(convoId: string, exceptMessageId?: string): Promise<Date | undefined> {
+  return takePrefetched(lastActivityKey(convoId, exceptMessageId), () => readLastActivityAt(convoId, exceptMessageId));
+}
+
+const lastActivityKey = (convoId: string, exceptMessageId?: string) => `lastActivity:${convoId}:${exceptMessageId ?? ""}`;
+
+async function readLastActivityAt(convoId: string, exceptMessageId?: string): Promise<Date | undefined> {
   const previous = await prisma.message.findFirst({
     where: { conversationId: convoId, ...(exceptMessageId ? { id: { not: exceptMessageId } } : {}) },
     orderBy: { createdAt: "desc" },
     select: { createdAt: true }
   });
   return previous?.createdAt;
+}
+
+// A leitura do relógio de inatividade sai junto com as outras do início do turno (g66).
+export function prefetchLastActivityAt(convoId: string, exceptMessageId?: string): void {
+  prefetchForTurn(lastActivityKey(convoId, exceptMessageId), () => readLastActivityAt(convoId, exceptMessageId));
 }
 
 // Mesmo texto da mensagem anterior do cliente, há menos de LIA_DUPLICATE_INBOUND_MS (3 min):
@@ -556,6 +634,31 @@ export const TURN_FIFO_GRACE_MS = Number(process.env.LIA_TURN_FIFO_GRACE_MS ?? 3
 
 export type TurnTicket = { messageId: string; createdAt: Date };
 
+// Mensagens do cliente que chegaram até a deste turno (as mais novas primeiro), lidas SEM depender da marca d'água — por isso
+// saem em paralelo com a leitura da trava (11/10, g66: uma ida ao banco a menos por turno). A mais nova que vem ANTES da
+// nossa (data menor, ou mesma data e id menor) decide: depois da marca = ainda na fila. Se o lote só tiver mensagens do
+// mesmo milissegundo que não vêm antes, a consulta exata de sempre decide.
+const EARLIER_PEEK = 10;
+function peekEarlierMessages(convoId: string, ticket: TurnTicket) {
+  return prisma.message.findMany({
+    where: { conversationId: convoId, sender: "user", id: { not: ticket.messageId }, createdAt: { lte: ticket.createdAt } },
+    orderBy: { createdAt: "desc" },
+    take: EARLIER_PEEK,
+    select: { id: true, createdAt: true }
+  });
+}
+
+export function earlierQueuedFromPeek(
+  peek: Array<{ id: string; createdAt: Date }>,
+  ticket: TurnTicket,
+  watermark: Date
+): boolean | undefined {
+  const before = peek.find((m) => m.createdAt < ticket.createdAt || m.id < ticket.messageId);
+  if (before) return before.createdAt > watermark;
+  // Nenhuma mensagem antes da nossa no lote: lote incompleto (só empates de milissegundo) → indefinido.
+  return peek.length < EARLIER_PEEK ? false : undefined;
+}
+
 async function hasEarlierQueued(convoId: string, ticket: TurnTicket, watermark: Date): Promise<boolean> {
   const earlier = await prisma.message.findMany({
     where: {
@@ -578,7 +681,10 @@ export async function acquireTurnLock(convoId: string, ticket?: TurnTicket): Pro
     const staleBefore = new Date(Date.now() - TURN_LOCK_TTL_MS);
     let mayClaim = true;
     if (ticket) {
-      const convo = await prisma.conversation.findUnique({ where: { id: convoId }, select: { turnLock: true, turnLockAt: true } });
+      const [convo, peek] = await Promise.all([
+        prisma.conversation.findUnique({ where: { id: convoId }, select: { turnLock: true, turnLockAt: true } }),
+        peekEarlierMessages(convoId, ticket)
+      ]);
       const free = !convo?.turnLock || !convo.turnLockAt || convo.turnLockAt < staleBefore;
       if (!free) {
         mayClaim = false;
@@ -587,7 +693,7 @@ export async function acquireTurnLock(convoId: string, ticket?: TurnTicket): Pro
         // Sem marca (conversa antiga, trava vencida): só a janela recente conta como fila.
         const watermark =
           !convo?.turnLock && convo?.turnLockAt ? convo.turnLockAt : new Date(ticket.createdAt.getTime() - TURN_LOCK_MAX_WAIT_MS);
-        if (await hasEarlierQueued(convoId, ticket, watermark)) {
+        if (earlierQueuedFromPeek(peek, ticket, watermark) ?? (await hasEarlierQueued(convoId, ticket, watermark))) {
           yieldingSince ??= Date.now();
           if (Date.now() - yieldingSince < TURN_FIFO_GRACE_MS) mayClaim = false;
           else console.warn("[turn-lock:fifo-grace]", convoId);
