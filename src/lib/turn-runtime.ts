@@ -288,6 +288,8 @@ export const turnMeta = new AsyncLocalStorage<{
   neededBy?: { date: string; label: string; morning?: boolean; hour?: number };
   // Aceite da troca de loja dito DEPOIS de uma edição na mesma mensagem (10/10, rodada 12 M5): a loja cuja troca já vale.
   acceptSwapFrom?: string;
+  // O fechamento (continueAfterBasket) já rodou neste turno (11/10, rodada 24 g67): o total prometido não sai duas vezes.
+  basketClosed?: boolean;
   // Item cujas opções estavam na tela quando o turno começou (11/10, rodada 19 g52, R19-7); null = nenhum.
   onScreenQuery?: string | null;
   // Prazo cujo "também não chega" já saiu (ctx.deadlineLateNoted, R20-9).

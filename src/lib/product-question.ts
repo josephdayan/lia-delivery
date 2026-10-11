@@ -511,3 +511,43 @@ export function nameScent(name: string): string | undefined {
   const found = [...new Set([...n.matchAll(SCENT_RE)].map((m) => m[1]))];
   return found.length ? found.join(", ") : undefined;
 }
+
+// Tamanho de fralda pelo PESO do bebê (11/10, rodada 24 g67, M2/M3): "é a M mesmo pra bebê de 7 kg?", "nasceu com 3,2 kg,
+// o pampers RN serve?". Virava busca ("*é a M mesmo pra bebê 7kg* eu não achei") ou "o nome não diz a medida". Faixas
+// costumeiras das marcas no Brasil (variam um pouco; a exata vem no pacote).
+export type DiaperSize = "RN" | "P" | "M" | "G" | "XG" | "XXG";
+export const DIAPER_RANGES: Record<DiaperSize, { min: number; max: number }> = {
+  RN: { min: 0, max: 4.5 },
+  P: { min: 3, max: 6 },
+  M: { min: 5.5, max: 9.5 },
+  G: { min: 9, max: 12.5 },
+  XG: { min: 12, max: 15 },
+  XXG: { min: 14, max: 99 }
+};
+export function diaperSizeOf(text: string): DiaperSize | undefined {
+  const n = ` ${normalizeMsg(text).replace(/[^a-z0-9,\s]/g, " ").replace(/\s+/g, " ")} `;
+  if (/\b(?:rn|recem[ -]?nascido|newborn)\b/.test(n)) return "RN";
+  const m = n.match(/\b(?:tamanho|tam)\s+(xxg|xg|p|m|g)\b|\b(xxg|xg)\b|\b(?:a|o|fralda|e|eh|pampers|huggies)\s+(p|m|g)\b|\s(p|m|g)\s+(?:\d{1,3}\s*(?:un|unidades|tiras|fraldas)\b|com\s+\d)|\s(p|m|g)\s*$/);
+  const raw = (m?.[1] ?? m?.[2] ?? m?.[3] ?? m?.[4] ?? m?.[5])?.toUpperCase();
+  return raw as DiaperSize | undefined;
+}
+// `index` = a fralda da cesta da pergunta; `asked` = o tamanho citado na pergunta; `kg` = o peso dito.
+export function parseDiaperFitAsk(text: string, basketNames: string[]): { index?: number; asked?: DiaperSize; kg: number } | null {
+  const n = normalizeMsg(text);
+  if (!/\?|\bserve\b|\bque tamanho\b|\bqual tamanho\b/.test(n)) return null;
+  const diapers = basketNames.map((name, index) => ({ index, name })).filter((b) => /\bfralda/.test(normalizeMsg(b.name)));
+  if (!/\b(?:fralda|pampers|huggies|turma da monica|personal|mamypoko|babysec|tamanho|rn)\b/.test(n) && !diapers.length) return null;
+  if (!/\b(?:fralda|pampers|huggies|turma da monica|personal|mamypoko|babysec|tamanho|rn|bebe|nenem|filh[oa]|nasceu)\b/.test(n)) return null;
+  const w = n.match(/(\d{1,2}(?:[.,]\d{1,3})?)\s*(?:kg|kgs|quilos?|kilos?)\b/);
+  if (!w) return null;
+  const kg = Number(w[1].replace(",", "."));
+  if (!Number.isFinite(kg) || kg <= 0 || kg > 40) return null;
+  const asked = diaperSizeOf(n.replace(w[0], " "));
+  const same = asked ? diapers.filter((b) => diaperSizeOf(b.name) === asked) : diapers;
+  const pick = same.length === 1 ? same[0] : diapers.length === 1 ? diapers[0] : undefined;
+  if (!pick && !asked) return null;
+  return { ...(pick ? { index: pick.index } : {}), ...(asked ? { asked } : {}), kg };
+}
+export function diaperSizesFor(kg: number): DiaperSize[] {
+  return (Object.keys(DIAPER_RANGES) as DiaperSize[]).filter((s) => kg >= DIAPER_RANGES[s].min && kg <= DIAPER_RANGES[s].max);
+}

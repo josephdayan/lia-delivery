@@ -15,7 +15,7 @@ import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttem
 import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses, rerankRaw, shapeApproved, type RerankLineResult, type RerankResult } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
 import { deadlineFit, deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, promisedMinutes, liveCheckSupported, liveFreightEnabled, liveStoreFreight, liveStoreFreightDetailed, preflightBasket, simulationGeo, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
-import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey, unansweredDrops } from "@/lib/live-availability";
+import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, forgetLiveChecks, liveKey, unansweredDrops } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, isQualifierOnly, reconcileLineCounts, resolveListItems } from "@/lib/list-items";
 import { localCatalogProbe, localIsBrand } from "@/lib/stores/list-probe";
@@ -26,7 +26,7 @@ import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, 
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
 import { normalizeSpokenWeights } from "@/lib/lia-intents";
-import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, parseItemPriceAsk, parseRefusedRetry, stripReturnLead, parseAlreadyDeclined, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, refineBaseQuery, asksFreightPriceDiff, isNoNeedAside, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseItemAtStore, parseStoreRemoval, splitLeadingSwapDecline, parseMeasureMixup, spCapitalPlace, relaxAnyAttribute, otherBrandAsk, inheritSwapQualifiers } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, parseItemPriceAsk, parseRefusedRetry, stripReturnLead, parseAlreadyDeclined, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, refineBaseQuery, asksFreightPriceDiff, isNoNeedAside, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseItemAtStore, parseStoreRemoval, splitLeadingSwapDecline, parseMeasureMixup, parseSearchRedirect, rejectsUnnamedStore, storeNamedIn, spCapitalPlace, relaxAnyAttribute, otherBrandAsk, inheritSwapQualifiers } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, isVetMedicineAsk, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -38,7 +38,7 @@ import { displayQueryName } from "@/lib/query-display";
 import { canonicalTypedAddress, dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, dialogueWillDecide, isPlainShoppingList, runDialogueTurn } from "@/lib/dialogue";
-import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseChosenItemTrait, parseProductQuestion } from "./product-question";
+import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseChosenItemTrait, parseProductQuestion, parseDiaperFitAsk, diaperSizeOf, diaperSizesFor, DIAPER_RANGES } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { applyPendingCorrection, correctionHitsSegment, discardsLastNote, keepOnlyInGroup, replaceInGroup } from "@/lib/pending-edits";
 import { REPEAT_WINDOW_MS } from "@/lib/dialogue/repeat";
@@ -2325,6 +2325,31 @@ export function measureChange(fromName: string, toName: string, ask?: string): {
   }
   return null;
 }
+// Quanto do produto o substituto traz em relação ao original, na mesma medida (11/10, rodada 24 g67, M6: água sanitária
+// 2 L → 1 L "mesmo valor"): 0,5 = metade. null = sem medida comparável.
+function swapAmount(value: string): { kind: string; base: number } | null {
+  const m = /^(\d+(?:[.,]\d+)?) (\S+)$/.exec(value);
+  if (!m) return null;
+  const v = Number(m[1].replace(",", "."));
+  const kind = SWAP_MEASURE_KIND[m[2]];
+  if (!kind || !(v > 0)) return null;
+  return { kind, base: m[2] === "l" || m[2] === "kg" ? v * 1000 : m[2] === "m" ? v * 100 : m[2] === "mm" ? v / 10 : v };
+}
+export function measureRatio(fromName: string, toName: string, ask?: string): number | null {
+  const change = measureChange(fromName, toName, ask);
+  if (!change?.to) return change ? null : 1;
+  const a = swapAmount(change.from);
+  const b = swapAmount(change.to);
+  return a && b && a.kind === b.kind ? b.base / a.base : null;
+}
+// Embalagens do substituto que somam a mesma medida (2 L = 2× 1 L); null quando não fecha exato (até 4).
+export function samePackFactor(fromName: string, toName: string, ask?: string): number | null {
+  const ratio = measureRatio(fromName, toName, ask);
+  if (!ratio || ratio >= 1) return null;
+  const k = 1 / ratio;
+  return Math.abs(k - Math.round(k)) < 0.01 && Math.round(k) >= 2 && Math.round(k) <= 4 ? Math.round(k) : null;
+}
+
 function swapPairsForCopy(
   originals: BasketItem[],
   replacements: { fromSku: string; qty: number; option: ChoiceOption }[]
@@ -2346,12 +2371,23 @@ function swapPairsForCopy(
     // A cor muda junto (10/10, rodada 15 A2: a máscara preta virava marrom na oferta de juntar, sem aviso).
     const color = colorChange(from.name, r.option.name);
     const measure = measureChange(from.name, r.option.name, from.ask);
-    const change = [brandOrVersion, color ? copy.swapColorNote(color.from, color.to) : undefined, measure ? copy.swapMeasureNote(measure.from, measure.to) : undefined].filter(Boolean).join("; ") || undefined;
+    const fromPrice = Math.round(display(from.unitPrice, from.medicine) * from.qty * 100) / 100;
+    const toPrice = Math.round(display(r.option.unitPrice, r.option.medicine) * r.qty * 100) / 100;
+    // Menos produto pelo mesmo preço (ou mais caro) nunca passa como "mesmo valor" (11/10, rodada 24 g67, M6); embalagens
+    // somadas que dão a mesma medida dizem isso ("2× 1 l = os mesmos 2 l").
+    const ratio = measure?.to ? measureRatio(from.name, r.option.name, from.ask) : null;
+    const packs = r.qty > from.qty && r.qty % from.qty === 0 ? r.qty / from.qty : 1;
+    const measureNote = measure
+      ? ratio && packs > 1 && Math.abs(ratio * packs - 1) < 0.01
+        ? copy.swapPacksNote(packs, measure.to!, measure.from)
+        : copy.swapMeasureNote(measure.from, measure.to, ratio && ratio < 1 ? { less: true, samePriceOrMore: toPrice >= fromPrice - 0.009 } : undefined)
+      : undefined;
+    const change = [brandOrVersion, color ? copy.swapColorNote(color.from, color.to) : undefined, measureNote].filter(Boolean).join("; ") || undefined;
     pairs.push({
       fromName: from.name,
-      fromPrice: Math.round(display(from.unitPrice, from.medicine) * from.qty * 100) / 100,
-      toName: r.option.name,
-      toPrice: Math.round(display(r.option.unitPrice, r.option.medicine) * r.qty * 100) / 100,
+      fromPrice,
+      toName: packs > 1 ? `${packs}x ${r.option.name}` : r.option.name,
+      toPrice,
       ...(change ? { change } : {})
     });
   }
@@ -2377,6 +2413,21 @@ async function firstDeliverableSwap(pool: StoreCandidate[], qty: number, cep?: s
 // Aplica a troca de loja do pedido mínimo que está na mesa (ctx.minSwap). false = proposta velha (a cesta mudou).
 // "deixa, esquece o caderno. pode trocar de loja" (10/10, rodada 12 M5): a edição rodou e só confirmou ("Tirei…"), sem
 // refazer a oferta. O aceite dito no fim da mensagem ainda vale: se a loja continua abaixo do mínimo, a troca é feita agora.
+// Promessa do "Te mando o novo [total]" cumprida (11/10, rodada 24 g67, M1/A1): o turno reabriu o pedido e terminou sem
+// escolha aberta, sem pergunta e sem novo resumo ("e tira o band-aid" só dizia "Tirei…"; a busca que não achou nada só
+// dizia "não achei"). O total novo sai aqui, pelo mesmo caminho do "só isso".
+async function finishReopenedTotal(phone: string, convoId: string, userCep: string | null | undefined) {
+  const meta = turnMeta.getStore();
+  if (!meta?.sent?.includes(copy.orderReopened()) || meta.basketClosed) return;
+  const convo = await prisma.conversation.findUnique({ where: { id: convoId } });
+  if (!convo) return;
+  const ctx = readCtx(convo.context);
+  if (ctx.deliveryOrderId || ctx.pending?.length || !ctx.basket?.length || (ctx.step && ctx.step !== "collecting")) return;
+  if (ctx.minSwap || ctx.consolidationOffer || ctx.closeWithoutOffer || ctx.complementOffer || ctx.repeatConfirm) return;
+  console.log("[reopen:total-resent]", phone, `itens=${ctx.basket.length}`);
+  await continueAfterBasket(phone, convoId, ctx, userCep);
+}
+
 async function finishTrailingSwapAccept(phone: string, convoId: string) {
   const meta = turnMeta.getStore();
   const storeKey = meta?.acceptSwapFrom;
@@ -2468,8 +2519,15 @@ async function offerMinimumSwap(
       // Entre as lojas que servem, frete CONHECIDO ganha de tarifa padrão (R$18 numa
       // pasta de R$6 mataria a vantagem da troca), e o fee menor desempata.
       const ranked = alts
-        .map((c) => ({ c, freight: storeFreight(c.store.key, c.store.label, 0), brand: keepsBrand(item, c.item) ? 1 : 0, like: Math.round(nameSimilarity(item.name, c.item.name) * 4) }))
+        .map((c) => {
+          // A MESMA medida vem antes da marca (11/10, rodada 24 g67, M6: a Safi 2 L virou Ypê 1 L "mesmo valor"); medida
+          // maior ou embalagens que somam a mesma medida (2× 1 L) vêm antes da medida menor.
+          const ratio = measureRatio(item.name, c.item.name, item.ask);
+          const size = ratio === 1 ? 3 : ratio && ratio > 1 ? 2 : samePackFactor(item.name, c.item.name, item.ask) ? 1 : 0;
+          return { c, size, freight: storeFreight(c.store.key, c.store.label, 0), brand: keepsBrand(item, c.item) ? 1 : 0, like: Math.round(nameSimilarity(item.name, c.item.name) * 4) };
+        })
         .sort((a, b) => {
+          if (a.size !== b.size) return b.size - a.size;
           if (a.brand !== b.brand) return b.brand - a.brand;
           if (a.like !== b.like) return b.like - a.like;
           const aPad = a.freight.source === "padrao" ? 1 : 0;
@@ -2517,7 +2575,9 @@ async function offerMinimumSwap(
       }
     }
     if (!found) return false;
-    replacements.push({ fromSku: item.sku, qty: item.qty, option: found });
+    // Embalagem menor que soma a mesma medida (2 L → 2× 1 L): a quantidade acompanha, e a oferta diz isso.
+    const packs = samePackFactor(item.name, found.name, item.ask);
+    replacements.push({ fromSku: item.sku, qty: packs ? item.qty * packs : item.qty, option: found });
   }
   const oldDisplay = stuck.reduce((sum, i) => sum + Math.round(display(i.unitPrice, i.medicine) * i.qty * 100) / 100, 0);
   const newDisplay = replacements.reduce((sum, r) => sum + Math.round(display(r.option.unitPrice, r.option.medicine) * r.qty * 100) / 100, 0);
@@ -3102,6 +3162,7 @@ export async function handleDeliveryMessage(input: {
       else if (listForm) await handleListFlowReply(phone, listForm, user, c);
       else await handleDeliveryTurn(phone, text, user, c, inboundMessageId);
       await finishTrailingSwapAccept(phone, c.id);
+      if (!signupForm && !listForm) await finishReopenedTotal(phone, c.id, user.cep);
     };
     try {
       await runTurn(freshConvo);
@@ -3239,6 +3300,40 @@ async function handleDeliveryTurn(
       if (meta) meta.inboundText = text;
     }
   }
+  // "não achei a escova de dente pet, procura por escova dental para cachorro" (11/10, rodada 24 g67, A1): o nome novo é a
+  // busca; a reclamação na frente sai da frase (virava dois itens "não achados" e a escova nunca era buscada). Sem a
+  // reclamação, só vale quando há item que ficou de fora ("procura por X" solto segue o fluxo de sempre).
+  {
+    const redirect = parseSearchRedirect(text);
+    if (redirect && (redirect.afterMiss || (ctx.notFound?.length ?? 0) > 0)) {
+      console.log("[search:redirect]", JSON.stringify(text.slice(0, 80)), "->", JSON.stringify(redirect.query));
+      if (redirect.replaces && ctx.notFound?.length) ctx.notFound = ctx.notFound.filter((miss) => !sharesProductNoun(miss, redirect.replaces!));
+      text = redirect.query;
+      const meta = turnMeta.getStore();
+      if (meta) meta.inboundText = text;
+    }
+  }
+  // Dúvida de tamanho de fralda pelo peso (11/10, rodada 24 g67, M2/M3): "e a fralda, é a M mesmo pra bebê de 7 kg?" depois
+  // do total virava busca (e derrubava o total); "o pampers RN serve pra 3,2 kg?" ouvia "o nome não diz a medida". Responde
+  // com a faixa costumeira e nada muda na cesta nem no total.
+  if (!ctx.step || ["collecting", "choosing", "choosing_freight", "awaiting_quote_confirmation", "awaiting_payment", "awaiting_operator_quote"].includes(ctx.step)) {
+    const names: string[] = ctx.basket?.length
+      ? ctx.basket.map((b) => b.name)
+      : ctx.deliveryOrderId && /\d\s*(?:kg|quilo|kilo)/i.test(text)
+        ? (((await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { items: true } }))?.items ?? []) as { name?: string }[]).map((i) => i?.name ?? "")
+        : [];
+    const fit = parseDiaperFitAsk(text, names);
+    const size = fit ? fit.asked ?? (fit.index !== undefined ? diaperSizeOf(names[fit.index]) : undefined) : undefined;
+    if (fit && size) {
+      const range = DIAPER_RANGES[size];
+      const fits = fit.kg >= range.min && fit.kg <= range.max;
+      const onScreen = ctx.step === "choosing" ? ctx.pending?.[0] : undefined;
+      const answer = copy.diaperFitAnswer({ size, kg: fit.kg, min: range.min, max: range.max, fits, suggested: diaperSizesFor(fit.kg).filter((s) => s !== size), ...(fit.index !== undefined ? { name: names[fit.index] } : {}), inBasket: fit.index !== undefined });
+      console.log("[diaper:fit]", size, fit.kg, fits ? "serve" : "nao");
+      await reply(phone, onScreen ? `${answer}\n\n${copy.choicesStillOpen(shownQuery(onScreen))}` : answer);
+      return;
+    }
+  }
   // "1"/"2" numa pergunta de sim/não em aberto (09/10, rodada 2): os botões são "sim"/"não", e o cliente que
   // digita o número não pode ter a quantidade mexida. Vale para toda pergunta binária pendente, num lugar só.
   const yesNoDigit = /^\s*([12])[\s.!]*$/.exec(text);
@@ -3352,8 +3447,16 @@ async function handleDeliveryTurn(
   // Loja pedida para a lista toda ("da cobasi tudo", 10/10, rodada 5 M9): vale para as próximas escolhas da lista.
   {
     const wholeStore = user.defaultAddress ? parseWholeListStore(text, mentionableStoreNames()) : null;
+    // Cesta já montada (ou total na mesa) e nada em escolha: "mudei de ideia, prefiro tudo na Mambo, troca" é pedido de
+    // juntar na loja (11/10, rodada 24 g67, M5) — a frase segue inteira para o bloco de juntar (antes sobrava "troca" e
+    // virava busca "*troca* eu não achei").
+    const joinNow =
+      Boolean(wholeStore) &&
+      !ctx.pending?.length &&
+      ((ctx.basket?.length ?? 0) > 0 || Boolean(ctx.deliveryOrderId)) &&
+      parseJoinStoresAsk(text, listStores().map((store) => store.label))?.store === wholeStore;
     // O trecho que só diz a loja ("..., da cobasi tudo") não é item (10/10, rodada 6 g19: "*da cobasi tudo* eu não achei").
-    if (wholeStore) {
+    if (wholeStore && !joinNow) {
       const FILLER = new Set(["tudo", "todos", "todas", "os", "as", "itens", "coisas", "lista", "toda", "inteira", "a", "o", "da", "do", "das", "dos", "de", "na", "no", "pela", "pelo", "loja", "farmacia", "mercado", "se", "der", "puder", "possivel", "quero", "queria", "prefiro", "pode", "ser", "e", "mas", "ai", "por", "favor", "pfv"]);
       const storeWords = new Set(normalizeMsg(wholeStore).split(/[^a-z0-9]+/).filter(Boolean));
       const segments = text.split(/(?<=[,;\n])/);
@@ -3527,8 +3630,14 @@ async function handleDeliveryTurn(
         const units = /\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|gramas?|quilos?|kilos?)\b/i.test(ask) && !item.askedUnits ? 1 : unitsAskedOf(item);
         return units > 1 ? `${units} ${ask}` : ask;
       };
-      await reply(phone, copy.refusedRetryStart(removed.map((i) => i.ask ?? i.name), keep.map((i) => i.ask ?? i.name)));
-      await handleSearch(phone, convo.id, user.cep, ctx, keep.map(lineOf).join(", "), user.id);
+      // As escolhas feitas não se perdem (11/10, rodada 24 g68, R24a-3): o que a loja confirma AGORA (conferência nova, sem o
+      // cache da recusa) volta para a cesta como estava; só o resto é procurado de novo.
+      const restored = await reconfirmRefusedItems(keep, ctx.cep ?? user.cep);
+      const again = keep.filter((item) => !restored.some((r) => r.sku === item.sku && r.storeKey === item.storeKey));
+      if (restored.length) ctx.basket = mergeBaskets(ctx.basket ?? [], restored);
+      await reply(phone, copy.refusedRetryStart(removed.map((i) => i.ask ?? i.name), again.map((i) => i.ask ?? i.name), restored.map((i) => i.name)));
+      if (again.length) await handleSearch(phone, convo.id, user.cep, ctx, again.map(lineOf).join(", "), user.id);
+      else await continueAfterBasket(phone, convo.id, ctx, user.cep);
       return;
     }
   }
@@ -3638,6 +3747,37 @@ async function handleDeliveryTurn(
     }
   }
 
+  // "mudei de ideia, não quero dessa loja, quero comprar numa outra" (11/10, rodada 24 g67, M5): com 2+ lojas e nenhuma
+  // citada, pergunta qual sai (antes abria "Mais opções de café" e o "pula" seguinte ficava ambíguo). A resposta com o nome
+  // de uma das duas junta tudo na outra; "tudo na X"/"prefiro a X" junta na X (o bloco de juntar abaixo).
+  {
+    const asked = ctx.storeChangeAsk;
+    if (asked) {
+      ctx.storeChangeAsk = undefined;
+      await writeCtx(convo.id, ctx);
+      const named = Date.now() - asked.at < 30 * 60_000 ? storeNamedIn(text, asked.stores) : undefined;
+      const target = parseJoinStoresAsk(text, listStores().map((store) => store.label))?.store;
+      if (named && !target && asked.stores.length === 2) {
+        const other = asked.stores.find((label) => label !== named)!;
+        if (await handleJoinRequest(phone, convo.id, user.cep, ctx, other)) return;
+      }
+    }
+    if (rejectsUnnamedStore(text) && !storeNamedIn(text, listStores().map((store) => store.label)) && (!ctx.step || ["collecting", "choosing", "awaiting_quote_confirmation", "choosing_freight"].includes(ctx.step))) {
+      const items: { storeLabel?: string }[] = ctx.basket?.length
+        ? ctx.basket
+        : ctx.deliveryOrderId
+          ? (((await prisma.deliveryOrder.findUnique({ where: { id: ctx.deliveryOrderId }, select: { items: true } }))?.items ?? []) as { storeLabel?: string }[])
+          : [];
+      const stores = [...new Set(items.map((i) => i?.storeLabel).filter((l): l is string => Boolean(l)))];
+      if (stores.length >= 2) {
+        ctx.storeChangeAsk = { stores, at: Date.now() };
+        await writeCtx(convo.id, ctx);
+        await reply(phone, copy.whichStoreToDrop(stores));
+        return;
+      }
+    }
+  }
+
   // Pedido de juntar as entregas por texto (10/10, rodada 5 A4): "sim junta", "junta tudo na Mambo", "tudo na mesma
   // loja". Antes ia para a IA, que perguntava de volta, e o "sim" seguinte virava pagar com as 4 entregas intactas.
   if (!ctx.consolidationOffer && !ctx.pending?.length && (!ctx.step || ctx.step === "collecting" || ctx.step === "awaiting_quote_confirmation" || ctx.step === "choosing_freight")) {
@@ -3647,7 +3787,9 @@ async function handleDeliveryTurn(
   // Mesmo pedido com itens ainda em escolha (10/10, rodada 6 g19: "tudo numa loja so" virava pergunta aberta da IA e o
   // "sim" seguinte ia ao resumo com as 4 entregas). Anota e junta no fechamento; a escolha na tela continua.
   if (!ctx.consolidationOffer && ctx.pending?.length && ctx.step === "choosing") {
-    const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    // Só a loja ("na Mambo mesmo") com opções na tela é escolha da opção daquela loja, não pedido de juntar.
+    const joinAskRaw = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    const joinAsk = joinAskRaw?.storeOnly ? null : joinAskRaw;
     // A tela já é a oferta de troca em carrossel (11/10, rodada 18 g50, R18a-9): "pode juntar" responde com o que fazer
     // nela — tocar no cartão ou dizer "pula" —, não "quando terminar de escolher" (o cliente seguia sem escolher).
     if (joinAsk && ctx.pending[0].replaceSku && ctx.closeAfterChoices) {
@@ -4272,6 +4414,13 @@ async function handleDeliveryTurn(
   // diálogo mirava o último escolhido (o acém foi de 3 para 4) e as laranjas ficavam com o dobro.
   {
     const fresh = ctx.openQuestion && Date.now() - ctx.openQuestion.at < 10 * 60_000 ? ctx.openQuestion.text : undefined;
+    const asked = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" ? weightQuestionTarget(text, ctx.basket ?? []) : null;
+    if (asked) {
+      console.log("[weight-question]", JSON.stringify(text), "->", asked.name, asked.totalKg);
+      await reply(phone, copy.weightQuestionAnswer(asked.name, asked.qty, asked.totalKg, asked.askedKg));
+      if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
     const adjust = !ctx.deliveryOrderId || ctx.step === "awaiting_quote_confirmation" ? weightAdjustTarget(text, ctx.basket ?? [], fresh) : null;
     if (adjust) {
       console.log("[weight-adjust]", JSON.stringify(text), "->", adjust.sku, adjust.units);
@@ -4617,6 +4766,14 @@ async function handleDeliveryTurn(
       await reply(phone, copy.repeatedItemMerged(merged));
       if (rest.length) await handleSearch(phone, convo.id, user.cep, ctx, rest.map((l) => `${l.qty} ${l.phrase}`).join(", "), user.id);
       else if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
+      return;
+    }
+    // "o de bebê, o Basic+ Care Baby" (11/10, rodada 24 g68, R24a-4): toda linha é artigo + descrição/marca, sem produto
+    // próprio — é a correção de UM item da cesta, não dois itens novos ("Somei 1x o de bebê").
+    const refTarget = aboutPending ? undefined : articleOnlyCorrection(lines.map((l) => l.phrase), ctx.basket!);
+    if (refTarget) {
+      console.log("[basket:article-fix]", JSON.stringify(text.slice(0, 60)), "->", JSON.stringify(refTarget.to));
+      await handleSwap(phone, convo.id, user.cep, ctx, refTarget.item.name, refTarget.to, text, undefined, refTarget.item.sku);
       return;
     }
     if (lines.length >= 2 && real.length && !aboutPending) {
@@ -10844,6 +11001,54 @@ async function startNewList(phone: string, convoId: string, userCep: string | nu
   await handleSearch(phone, convoId, userCep, ctx, text, userId);
 }
 
+// Itens recusados no fechamento que a loja confirma agora, na quantidade da cesta (11/10, rodada 24 g68, R24a-3). Só a
+// confirmação positiva conta; loja calada, erro ou item da Lia sem loja voltam para a busca.
+async function reconfirmRefusedItems(items: BasketItem[], cep: string | null | undefined): Promise<BasketItem[]> {
+  const real = items.filter((i) => i.storeKey && i.storeKey !== CONCIERGE_STORE_KEY && i.unitPrice > 0);
+  if (!cep || !real.length) return [];
+  try {
+    const live = await withDeadline(checkCandidatesLive(real.map((item) => ({ storeKey: item.storeKey!, sku: item.sku, qty: item.qty, item })), cep), 8_000, null);
+    if (!live) return [];
+    return live.kept.flatMap(({ item }) => {
+      const check = live.checks.get(liveKey(item.storeKey!, item.sku));
+      if (!check?.available) return [];
+      const unitPrice = check.unitPrice ?? item.unitPrice;
+      return [{ ...item, unitPrice, lineTotal: Math.round(unitPrice * item.qty * 100) / 100 }];
+    });
+  } catch {
+    return [];
+  }
+}
+
+// Correção só por artigo (11/10, rodada 24 g68, R24a-4): "o de bebê, o Basic+ Care Baby". Toda linha começa com o/a, e pelo
+// menos uma é a elipse "o de X" (referência a algo que já existe, nunca pedido novo); vale quando UM só item da cesta,
+// somado a essas palavras, existe no catálogo.
+const ARTICLE_REF_RE = /^(?:o|a|os|as)\s+((?:de|da|do|das|dos)\s+)?(.+)$/i;
+export function articleOnlyCorrection(phrases: string[], basket: BasketItem[]): { item: BasketItem; to: string } | null {
+  if (!phrases.length || !basket.length) return null;
+  const descs: string[] = [];
+  let elliptic = false;
+  for (const phrase of phrases) {
+    const m = ARTICLE_REF_RE.exec(phrase.trim());
+    if (!m) return null;
+    if (m[1]) elliptic = true;
+    descs.push(m[2].trim());
+  }
+  if (!elliptic) return null;
+  const extra = descs.filter((d) => !basket.every((b) => normalizeMsg(b.ask ?? "").includes(normalizeMsg(d))));
+  if (!extra.length) return null;
+  const hits = basket.filter((b) => {
+    const base = (b.ask ?? "").trim();
+    if (!base) return false;
+    const missing = extra.filter((d) => !normalizeMsg(base).includes(normalizeMsg(d)));
+    return missing.length > 0 && localCatalogProbe(`${base} ${missing.join(" ")}`, { all: true }).strong;
+  });
+  if (hits.length !== 1) return null;
+  const base = hits[0].ask!.trim();
+  const add = extra.filter((d) => !normalizeMsg(base).includes(normalizeMsg(d)));
+  return { item: hits[0], to: `${base} ${add.join(" ")}` };
+}
+
 // Linha da cesta que a frase pede DE NOVO (09/10, rodada 4, M3: "latão de Skol" e depois "cerveja skol latão").
 // Mesmo produto = o catálogo casa a frase com o item, a marca do item está na frase (ou a frase é a mesma do pedido
 // original) e nenhuma medida diferente foi pedida. "leite" não casa com "Leite Condensado Moça".
@@ -12472,7 +12677,11 @@ async function handleSwap(
     const nameWords = new Set(queryTokens(removed[0].name));
     // "troca o leite por leite em pó": o "pó" conta, e repetir só o pedido de antes ("leite") não é "já é".
     const askWords = new Set(queryTokens(normalizeMsg(removed[0].ask ?? "")));
-    if (toWords.length && toWords.every((t) => nameWords.has(t)) && toWords.some((t) => !askWords.has(t)) && !CHEAPEST_TO_RE.test(normalizeMsg(to)) && !OTHER_BRAND_RE.test(normalizeMsg(to)) && !/\boutr[oa]s?\b|\bmais\b/.test(normalizeMsg(to))) {
+    // "troca o algodão pelo de 100 unidades" com o de 50 na cesta (11/10, rodada 24 g68, R24a-2): o número pedido (tamanho,
+    // contagem, medida) que o nome não tem é outra variante — não "já é".
+    const nameNums = new Set(normalizeMsg(removed[0].name).match(/\d+(?:[.,]\d+)?/g) ?? []);
+    const sameNums = (normalizeMsg(toBare).match(/\d+(?:[.,]\d+)?/g) ?? []).every((n) => nameNums.has(n));
+    if (toWords.length && sameNums &&toWords.every((t) => nameWords.has(t)) && toWords.some((t) => !askWords.has(t)) && !CHEAPEST_TO_RE.test(normalizeMsg(to)) && !OTHER_BRAND_RE.test(normalizeMsg(to)) && !/\boutr[oa]s?\b|\bmais\b/.test(normalizeMsg(to))) {
       await reply(phone, copy.swapAlreadyIs(removed[0].name, toBare));
       return;
     }
@@ -13793,7 +14002,14 @@ export function weightAdjustTarget(
   const said = normalizeSpokenWeights(text);
   const askedKg = parseWeightAskKg(said);
   if (!askedKg) return null;
-  const weighed = basket.filter((b) => unitWeightFromName(b.name));
+  // Embalagem com o peso no nome ("Laranja Pêra 2kg", 11/10, rodada 24 g68, R24a-5) vale quando o peso pedido é um número
+  // inteiro de embalagens; antes "sim, deixa 2 kg" sobre a laranja de 2 kg ecoava o acém.
+  const packKg = (name: string) => {
+    if (unitWeightFromName(name)) return undefined;
+    const kg = parseWeightAskKg(name);
+    return kg && Math.abs(askedKg / kg - Math.round(askedKg / kg)) <= 0.15 && Math.round(askedKg / kg) >= 1 ? kg : undefined;
+  };
+  const weighed = basket.filter((b) => unitWeightFromName(b.name) || packKg(b.name));
   if (!weighed.length) return null;
   const rest = normalizeMsg(said)
     .replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ")
@@ -13810,9 +14026,27 @@ export function weightAdjustTarget(
     hits = named(openQuestion);
   }
   if (hits.length !== 1) return null;
-  const unitKg = unitWeightFromName(hits[0].name)!;
+  const unitKg = unitWeightFromName(hits[0].name) ?? packKg(hits[0].name)!;
   const units = Math.max(1, Math.min(50, Math.round(askedKg / unitKg + 1e-9)));
   return { sku: hits[0].sku, units, unitKg, askedKg };
+}
+
+// "e as laranjas, são 2 kg mesmo ou ficou mais?" (11/10, rodada 24 g68, R24a-5): pergunta de peso sobre UM item da cesta —
+// responde com o peso que a cesta tem (unidade pesada × quantidade, ou o peso da embalagem), sem mexer em nada.
+export function weightQuestionTarget(
+  text: string,
+  basket: Array<{ sku: string; name: string; qty: number; ask?: string }>
+): { name: string; qty: number; totalKg: number; askedKg: number } | null {
+  // Conferência do que está na cesta ("são 2 kg mesmo?", "deu quanto?"), nunca "tem arroz 5kg?" (pedido/disponibilidade).
+  if (!isQuestion(text) || !/\b(?:mesmo|ficou|deu|pesa|sao|eh)\b/.test(normalizeMsg(text)) || /^(?:e\s+)?(?:tem|vcs tem|voces tem)\b/.test(normalizeMsg(text))) return null;
+  const askedKg = parseWeightAskKg(normalizeSpokenWeights(text));
+  if (!askedKg) return null;
+  const words = normalizeMsg(text).replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ");
+  const hits = basket.filter((b) => (unitWeightFromName(b.name) || parseWeightAskKg(b.name)) && (sharesProductNoun(words, b.ask ?? b.name) || sharesProductNoun(words, b.name)));
+  if (hits.length !== 1) return null;
+  const unit = unitWeightFromName(hits[0].name);
+  const totalKg = unit ? unit * hits[0].qty : parseWeightAskKg(hits[0].name)! * hits[0].qty;
+  return { name: hits[0].name, qty: hits[0].qty, totalKg, askedKg };
 }
 
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
@@ -14690,6 +14924,8 @@ async function continueAfterBasket(
 ) {
   // Edição composta em andamento: grava e confirma a edição; o total sai uma vez, no fim da mensagem.
   const meta = turnMeta.getStore();
+  // O fechamento já foi tentado neste turno (finishReopenedTotal não repete).
+  if (meta) meta.basketClosed = true;
   if (meta?.deferQuote && (ctx.basket?.length ?? 0) > 0) {
     await writeCtx(convoId, ctx);
     if (prefix) await reply(phone, prefix);
@@ -14886,6 +15122,7 @@ async function closeWithoutOperator(
   const bySku = holdupSkus?.length ? basket.filter((i) => holdupSkus.includes(i.sku)) : [];
   const blocked = bySku.length ? bySku : holdupStores?.length ? basket.filter((i) => holdupStores.includes(i.storeKey ?? CONCIERGE_STORE_KEY)) : [];
   const rest = basket.filter((i) => !blocked.includes(i));
+  forgetLiveChecks(blocked);
   const current = await prisma.deliveryOrder.findUnique({ where: { id: orderId }, select: { notes: true } });
   await prisma.deliveryOrder.updateMany({
     where: { id: orderId, status: AWAITING_OPERATOR_QUOTE_STATUS },

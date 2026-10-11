@@ -283,8 +283,9 @@ export function expandShoppingShorthand(text: string): string {
 }
 
 // Segmentos que são conversa, não produto ("bom dia", "por favor", "lista:").
+// "bom dia filha" (11/10, rodada 24 g68, R24a-5): o vocativo sozinho depois da saudação também é conversa.
 const NOISE_SEGMENT_RE =
-  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|(o que|oq|oque) .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
+  /^(oi+( lia)?|ola+( lia)?|bom dia+|boa tarde+|boa noite+|tudo (bem|bom)|td bem|e ?ai|opa+|obrigad(?:[oa]s?|inh[oa]s?|ao)|valeu|por favor|pfv*|pls|lista|segue( a lista)?|ai vai|entao|so isso|é so|e so|mais nada|nada mais|ta+|ta bom|bom|ok+|okay|blz|beleza+|show|top|firmeza|certo|entendi|pensando bem|mudei de ideia|na verdade|alias|deixa (pra la|quieto)|quer saber|nao (esquece|esqueca)( de)? (nada|de nada)|(nao|n) sei( .*)?|(o que|oq|oque) .*|(minha |meu )(filha?|filho|querid[ao]|amor|bem|anjo)|filh[ao]|querid[ao]|amig[ao]|amigona|mo[cç][ao]|(seu|dona) [a-zà-ú]+ aqui|aqui (e|eh) [a-zà-ú]+)[\s:!.?]*$/;
 
 // ORÇAMENTO (rodada 2 de 07/10): as formas reais de dizer o teto — "até uns R$60", "cerca de 60", "por volta
 // de R$150", "no máximo 150", "tenho uns 120 reais", "R$120 no total com entrega". Uma só fonte para o
@@ -1354,6 +1355,15 @@ const PRODUCT_TOKEN_ALIASES: Record<string, string> = {
   lenco: "lenco",
   bebe: "umedecido"
 };
+// Plural → singular de UMA palavra do pedido, igual para o merge (meaningfulProductTokens) e o núcleo (headTokens).
+// "-eses" → "-ês" (11/10, rodada 24 g68, R24a-1): "pães franceses" (parser) × "pão francês" (IA) eram 2 itens e o
+// resumo saía com 30x pão; o núcleo ainda via "limoe" × "limao" e "uns três limões" virava 6x.
+function singularProductToken(token: string): string {
+  if (token === "paes" || token === "caes") return `${token.slice(0, -3)}ao`;
+  if (token.length < 5) return token;
+  if (token.endsWith("oes")) return `${token.slice(0, -3)}ao`;
+  return token.replace(/(?<=.{3})eses$/, "es").replace(/(?<=[rlz])es$/, "").replace(/s$/, "");
+}
 export function meaningfulProductTokens(phrase: string): string[] {
   const raw = normalizeMsg(phrase)
     .replace(/[^a-z0-9\s]/g, " ")
@@ -1363,8 +1373,7 @@ export function meaningfulProductTokens(phrase: string): string[] {
     // Plural em -res/-les/-zes (11/10, rodada 19 g52, R19a-3): "apontadores" e "apontador" (a IA no singular) são o mesmo
     // item — "apontadore" ≠ "apontador" duplicava a linha e a cesta ficava com 4 apontadores.
     // Plural em -ões (11/10, rodada 23 g64): "limões" (parser) e "limão" (IA) são o mesmo item — viravam 6x + 3x limão.
-    .map((token) => (token.length >= 5 && token.endsWith("oes") ? `${token.slice(0, -3)}ao` : token === "paes" ? "pao" : token))
-    .map((token) => (token.length >= 5 ? token.replace(/(?<=[rlz])es$/, "").replace(/s$/, "") : token));
+    .map(singularProductToken);
   // "bebê" só é o "umedecido" do LENÇO ("lenço de bebê" = "lenço umedecido"). Em outro item é público, não produto
   // (10/10, rodada 11: "pomada para assadura bebê" casava com "lenço umedecido" e sumia da lista no merge com a IA).
   const lenco = raw.includes("lenco");
@@ -1643,7 +1652,7 @@ function headTokens(phrase: string): { tokens: string[]; complements: Set<string
       continue;
     }
     if (HEAD_SKIP.has(raw) || /^\d/.test(raw) || raw.length < 3) continue;
-    const sing = raw.length >= 5 ? raw.replace(/s$/, "") : raw;
+    const sing = singularProductToken(raw);
     const token = PRODUCT_TOKEN_ALIASES[sing] ?? PRODUCT_TOKEN_ALIASES[raw] ?? sing;
     if (!tokens.length && PACKAGING_WORDS.has(raw)) continue;
     if (afterDe) complements.add(token);
@@ -2929,7 +2938,9 @@ export function detectIntent(text: string): Intent {
   // Pergunta operacional (frete/prazo/área/pagamento) SEM cara de produto — responder
   // com copy de serviço; cair em busca aqui gera "sabonete pra quem pergunta de frete".
   if (n.split(" ").length <= 10 && HOURS_ASK_RE.test(n.replace(/[!.?]+$/g, "").trim())) return { kind: "service_question", topic: "hours" };
-  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && n.split(" ").length <= 10) {
+  // O lugar dito na pergunta ("… em quanto tempo chega na Avenida Paulista 1000, São Paulo?") e a moldura "antes de pedir:"
+  // não contam no limite de palavras (11/10, rodada 24 g67, M4): a pergunta virava conversa com a IA e pedia o CEP duas vezes.
+  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && serviceAskCore(n).split(" ").length <= 10) {
     // "tem pedido mínimo?" (11/10, rodada 21 g57, R21-5/504): tem resposta própria (depende da loja), não a apresentação.
     const topic = /\b(?:pedido|valor|compra)s? minim[oa]s?\b|\bminimo\b/.test(n)
       ? ("minimum" as const)
@@ -3849,7 +3860,28 @@ const JOIN_NOT_RE = /\b(?:nao|n)\s+(?:quero\s+|precisa\s+|vou\s+)?junt|\bsem jun
 // manter como está, não pedido de juntar lojas (a Lia respondia "não achei em menos lojas" e não fechava).
 // "então fecha tudo junto" (10/10, rodada 15 g42): fechar junto é fechar o pedido como está, não juntar lojas.
 const KEEP_TOGETHER_RE = /\b(?:deixa|deixar|pode deixar|deixo|mantem|manter|mantenha|manda|mandar|vem|vir|entrega|entregar|fecha|fechar|fecho|pode fechar|finaliza|finalizar)\s+(?:tudo\s+|td\s+|tudinho\s+)?(?:isso\s+)?junt(?:o|os|as|inho)\b/;
-export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string } | null {
+// Loja citada pelo nome (ou pela 1ª palavra marcante: "santa luzia" → "Casa Santa Luzia"). Devolve o rótulo como está.
+export function storeNamedIn(text: string, labels: string[]): string | undefined {
+  const n = normalizeMsg(text).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ");
+  return labels.find((label) => {
+    const l = normalizeMsg(label).replace(/[^a-z0-9\s]/g, " ").trim();
+    const head = l.split(/\s+/).filter((w) => w.length >= 4 && !/^(casa|loja|lojas|farmacia|drogaria|drogarias|supermercado|mercado)$/.test(w))[0];
+    return (l.length >= 3 && new RegExp(`\\b${l}\\b`).test(n)) || (head ? new RegExp(`\\b${head}\\b`).test(n) : false);
+  });
+}
+
+// "mudei de ideia, não quero dessa loja, quero comprar numa outra" (11/10, rodada 24 g67, M5): recusa de UMA loja sem dizer
+// qual. Quem chama confere que nenhuma loja foi citada.
+export function rejectsUnnamedStore(text: string): boolean {
+  const n = normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 140) return false;
+  return /\bnao (?:quero|gostei|curti|prefiro)(?: comprar| pedir)? (?:d?essa|d?esta|nessa|nesta|da|dessa ai) loja\b|\b(?:comprar|pedir|compra|pede|quero|prefiro)(?: (?:em|de|n|d))?(?: ?uma)? outra loja\b|\b(?:comprar|pedir|quero) numa outra\b/.test(n);
+}
+
+// Só a loja, sem item ("pode ser no Mambo então", "prefiro na Mambo", "na Mambo mesmo") (11/10, rodada 24 g67, M1): com o
+// pedido fechado na mesa é a loja para o pedido todo — virava item ("Suco Kapo já é o que está na sua cesta").
+const STORE_ONLY_FILLER_RE = /\b(?:pode ser|pode|entao|prefiro|preferia|quero|queria|melhor|vamos|vai|bora|faz|fazer|fecha|fechar|compra|comprar|pede|pedir|manda|mandar|tudo|so|soh|mesmo|mesma|ok|sim|beleza|blz|ta|na|no|da|do|de|pela|pelo|a|o|e|em|loja|ai|la)\b/g;
+export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { store?: string; storeOnly?: boolean } | null {
   const n = normalizeMsg(text).replace(/[!.?]+/g, " ").replace(/\s+/g, " ").trim();
   if (!n || n.length > 160 || JOIN_NOT_RE.test(n)) return null;
   if (KEEP_TOGETHER_RE.test(n) && !ONE_STORE_RE.test(n)) return null;
@@ -3859,6 +3891,13 @@ export function parseJoinStoresAsk(text: string, knownLabels: string[] = []): { 
     return (l.length >= 4 && new RegExp(`\\b${l}\\b`).test(n)) || (head ? new RegExp(`\\b${head}\\b`).test(n) : false);
   });
   const asks = JOIN_VERB_RE.test(n) || ONE_STORE_RE.test(n) || (Boolean(store) && /\b(?:tudo|todos|todas)\b/.test(n) && /\b(?:troca\w*|passa\w*|muda\w*|compra\w*|pede|pedir|manda\w*)\b|^(?:tudo|todos|todas) (?:na|da|pela)\b/.test(n));
+  if (!asks && store) {
+    const words = normalizeMsg(store).split(/\s+/).filter(Boolean);
+    let rest = n;
+    for (const w of words) rest = rest.replace(new RegExp(`\\b${w}\\b`, "g"), " ");
+    rest = rest.replace(STORE_ONLY_FILLER_RE, " ").replace(/[,;]/g, " ").trim();
+    if (!rest && /\b(?:na|no|da|do|pela|pelo|em)\s+(?:loja\s+)?\w/.test(n)) return { store, storeOnly: true };
+  }
   if (!asks) return null;
   return store ? { store } : {};
 }
@@ -3876,6 +3915,16 @@ export function isQtyCorrectionCue(text: string): boolean {
 // "peraí, é só 1 molho, não 5" / "só 1 petisco" / "era só 1 arroz" (10/10, rodada 12 A2/A4): correção da quantidade de
 // um item NOMEADO, com a moldura da correção (pera, é/era só, "não N"). null = não é correção de quantidade nomeada.
 export function parseNamedQtyCorrection(text: string): { phrase: string; qty: number } | null {
+  // "não, 4 arroz" / "na verdade 4 arroz" / "quer dizer, 4 do arroz" (11/10, rodada 24 g67): a moldura de correção na frente
+  // de "N item" é a quantidade nova da linha — não um pedido a mais (somava +4 e o arroz ia de 3x para 7x).
+  const fixLead = normalizeMsg(text).match(
+    /^(?:(?:nao|na verdade|na real|quer dizer|alias|errei|ops|opa|pera[i]?|perae|corrigindo|melhor)\b[\s,.!;]*)+(\d{1,2}|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|doze)\s+(?:(?:x|pacotes?|unidades?|un|caixas?|latas?|garrafas?|potes?)\s+)?(?:d[oa]s?\s+|de\s+)?([a-z][a-z\s]{1,40}?)(?:\s+(?:entao|mesmo|na verdade))?[\s!.]*$/
+  );
+  if (fixLead) {
+    const qty = qtyValue(fixLead[1]);
+    const phrase = fixLead[2].trim();
+    if (qty && phrase.split(/\s+/).length <= 5) return { phrase, qty };
+  }
   const n = normalizeMsg(text)
     .replace(/^(?:pera[i]?|perae|espera(?:\s+ai)?|ops|opa|na verdade|na real|ah)\b[\s,.!]*/, "")
     .replace(/[,;]?\s*nao\s+\d{1,2}\s*[.!]*$/, "")
@@ -4302,6 +4351,30 @@ const MISS_FILLER = new Set(
 const MISS_RETRY_CUE = /\b(tent|procur|busc|pesquis|novo|novamente|qualquer|tanto faz|outra marca|outro|outra loja|sem preferencia)/;
 const MISS_NEW_REQUEST = /\b(quero|queria|preciso|precisava|me manda|me ve|vou querer|cancela|cancelar|pagar|pix|cartao|status|oi|ola|obrigad)/;
 
+// "não achei a escova de dente pet, procura por escova dental para cachorro" (11/10, rodada 24 g67, A1): o pedido de
+// procurar com OUTRO nome é a busca nova; a reclamação na frente ("não achei X", "não veio X") só diz o que ela substitui.
+// Antes a frase inteira virava lista ("• não achei a escova de…", "• procura por escova…"). Devolve a busca e o item
+// reclamado (quando há); null quando não há pedido de procurar por um nome, ou quando a frente é outra coisa.
+const SEARCH_REDIRECT_RE =
+  /(?:^|[,.;!]\s*|\b(?:e|entao|mas|ai)\s+)(?:(?:entao|pode|consegue|da pra|tem como|por favor|me)\s+)*(?:procura|procurar|procure|busca|buscar|busque|pesquisa|pesquisar|pesquise|tenta|tentar|tente|ve se (?:tem|acha))\s+(?:(?:achar|encontrar|com|pelo nome(?: de)?|o nome)\s+)?(?:por|pelo|pela|por um|por uma)?\s*(.+)$/;
+const MISS_COMPLAINT_RE = /^(?:(?:ah|ei|oi|olha|entao|mas)[\s,]+)*(?:(?:voce|vc|a lia)\s+)?(?:nao|n)\s+(?:achei|achou|acharam|encontrei|encontrou|tem|tinha|veio|apareceu|aparece|existe)\b\s*(.*)$|^(?:(?:a|o)\s+)?(.+?)\s+(?:ficou de fora|nao (?:veio|tem|apareceu|achou))$|^(?:faltou|sem)\s+(.+)$/;
+export function parseSearchRedirect(text: string): { query: string; replaces?: string; afterMiss: boolean } | null {
+  const n = normalizeMsg(text).replace(/[?!]+\s*$/g, "").replace(/\s+/g, " ").trim();
+  if (!n || n.length > 160) return null;
+  const m = n.match(SEARCH_REDIRECT_RE);
+  if (!m || m.index === undefined) return null;
+  const query = m[1].replace(/^(?:o|a|os|as|um|uma)\s+/, "").replace(/[\s,.;!]+$/, "").replace(/\s+(?:pra mim|por favor|pfv|ai|entao)$/, "").trim();
+  // "tenta de novo", "procura outro", "busca em outra loja": não é um nome novo (parseMissFollowUp cuida).
+  if (!/[a-z]{3,}/.test(query) || /^(?:de novo|novamente|outra vez|outr[oa]s?\b|em outra|de outra|na outra|mais\b|melhor|direito|ai|isso|esse|essa|ele|ela)/.test(query)) return null;
+  if (query.split(" ").length > 8) return null;
+  const head = n.slice(0, m.index).replace(/[\s,.;!]+$/, "").trim();
+  if (!head) return { query, afterMiss: false };
+  const complaint = head.match(MISS_COMPLAINT_RE);
+  if (!complaint) return null;
+  const replaces = (complaint[1] ?? complaint[2] ?? complaint[3] ?? "").replace(/^(?:o|a|os|as)\s+/, "").replace(/\s+(?:nao|que voce mandou)$/, "").trim();
+  return replaces ? { query, replaces, afterMiss: true } : { query, afterMiss: true };
+}
+
 export function parseMissFollowUp(text: string): { kind: "retry" } | { kind: "fragment"; words: string } | null {
   const n = normalizeMsg(text).replace(/[?!.,;]+/g, " ").replace(/\s+/g, " ").trim();
   if (!n || n.length > 60 || MISS_NEW_REQUEST.test(n) || /\d/.test(n)) return null;
@@ -4403,6 +4476,13 @@ export function splitServiceQuestions(text: string): { rest: string; questions: 
 // Várias perguntas do serviço numa mensagem só, sem pedido (10/10, rodada 9 M1): "como funciona isso? vocês cobram taxa?
 // quanto tempo demora? posso devolver?" era respondida só na devolução. Devolve cada pergunta com a intenção dela (sem
 // repetir tema), ou null quando há menos de 2 perguntas respondíveis ou algo que não é pergunta.
+function serviceAskCore(n: string): string {
+  return n
+    .replace(/^(?:antes de (?:pedir|comprar|fechar)|antes de mais nada|uma duvida|duvida|pergunta)\s*[:,-]?\s*/, "")
+    .replace(/\s+(?:na|no|em|pra|para|ate)\s+(?:a\s+|o\s+)?(?:rua|r|av|avenida|alameda|al|travessa|tv|estrada|rodovia|praca|largo)\b[^?]*/, "")
+    .trim();
+}
+
 export function splitQuestionsOnly(text: string): Intent[] | null {
   const sentences = (text.match(/[^?]+\?+/g) ?? []).map((s) => s.trim()).filter(Boolean);
   const tail = text.replace(/[^?]+\?+/g, "").trim();
@@ -4417,6 +4497,11 @@ export function splitQuestionsOnly(text: string): Intent[] | null {
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(intent);
+    // "quanto é o frete e em quanto tempo chega?" (11/10, rodada 24 g67, M4): frete E prazo numa frase só — os dois temas.
+    if (intent.kind === "service_question" && intent.topic === "fee" && !seen.has("service_question:eta") && /\b(?:prazo|demora\w*|quanto tempo|em quanto tempo|quando chega|chega (?:quando|em quanto))\b/.test(normalizeMsg(clean))) {
+      seen.add("service_question:eta");
+      out.push({ kind: "service_question", topic: "eta" });
+    }
   }
   return out.length >= 2 ? out : null;
 }
