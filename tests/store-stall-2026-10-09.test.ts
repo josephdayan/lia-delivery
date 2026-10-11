@@ -70,7 +70,11 @@ test("09/10: saúde do pedido na loja — Expressa parada em 20 min, entrega lon
   assert.equal(storeOrderHealth({ state: "invoiced", boughtAt, eta: etaTomorrow, now: at(20 * 60 + 30) }), "ok");
   // Sem prazo conhecido: 12 h.
   assert.equal(storeOrderHealth({ state: "payment-approved", boughtAt, now: at(11 * 60) }), "ok");
+  // 11/10: 12 h caem às 07:49 de SP, madrugada — com o relógio de madrugada desligado a régua é a mesma.
+  // O caso com madrugada está em tests/pausa-loja-2026-10-11b.test.ts.
+  process.env.LIA_STALL_QUIET_HOURS = "off";
   assert.equal(storeOrderHealth({ state: "payment-approved", boughtAt, now: at(12 * 60) }), "stalled");
+  delete process.env.LIA_STALL_QUIET_HOURS;
   // Cancelada pela loja tem o caminho próprio.
   assert.equal(storeOrderHealth({ state: "canceled", boughtAt, eta: eta30, now: at(200) }), "ok");
 });
