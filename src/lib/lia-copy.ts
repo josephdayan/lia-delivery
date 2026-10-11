@@ -4077,6 +4077,18 @@ export function storeRefineMiss(label: string, item: string): string {
   return `Na *${label}* não achei *${item}* pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra palavra pra eu tentar, ou responde *pula* pra deixar de fora.`;
 }
 
+// "tem outro de marca? tipo boticário ou natura" (11/10, rodada 18 g51): a marca pedida do item da vez.
+export function brandAltChoices(item: string, brands: string[]): string {
+  return `Achei estas de *${item}* da ${joinOr(brands)}:`;
+}
+export function brandAltMiss(item: string, brands: string[]): string {
+  return `Não achei *${item}* da ${joinOr(brands)} pra entregar aí agora. As opções de antes continuam aí em cima 👆 — escolhe uma, me diz outra marca, ou responde *pula* pra deixar de fora.`;
+}
+function joinOr(brands: string[]): string {
+  const shown = brands.map((b) => `*${b}*`);
+  return shown.length > 1 ? `${shown.slice(0, -1).join(", ")} ou ${shown[shown.length - 1]}` : shown[0] ?? "";
+}
+
 export function storeNoneOnTable(label: string): string {
   return `Nenhuma das opções na tela é da *${label}*. As de agora são essas:`;
 }

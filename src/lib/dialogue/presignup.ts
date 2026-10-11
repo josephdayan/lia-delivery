@@ -300,14 +300,24 @@ export function recommendText(text: string, budget: number | null): string {
 }
 
 // `text` = a mensagem original (a recomendação guarda a frase inteira, não um item extraído).
-export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?: string } = {}): PrePlan {
+const SCHOOL_LIST_RE = /^(?:o |a |os |as )?(?:lista de |lista do |lista da )?materia(?:l|is)(?: (?:escolar(?:es)?|de escola|pra escola|de papelaria|de escritorio))$/;
+export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?: string; recentRefusal?: boolean } = {}): PrePlan {
   // Emergência (dor no peito, falta de ar, desmaio, sangue…) vale mais que tudo na mensagem, decida a IA
   // o que decidir: responde o alerta já, nada de "me passa o CEP" (revisão A2, 08/10).
   const emergency = emergencyFlag(opts.text);
   if (emergency) return { ok: true, steps: [{ type: "fixed", key: "red_flag", reason: emergency }], label: "red_flag" };
   // Remédio nunca é item, venha como vier (a IA pode errar; a guarda de regex fecha a porta).
-  const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query));
-  const medicine = d.medicine || items.length !== d.items.length;
+  // "preciso de material escolar pra minha filha, tenho só 60 reais" (11/10, rodada 18 g51): a IA anotava "1x material escolar" e
+  // depois do cadastro o "1" pegava um kit esportivo. A lista da escola é o assunto (a lista determinística não vê item): sem
+  // item, a Lia pergunta o que vai na lista.
+  const listCategory = (q: string) => SCHOOL_LIST_RE.test(normalizeMsg(q).trim()) && Boolean(opts.text) && !resolveListItems(opts.text!).some((seg) => sharesProductNoun(seg.phrase, q));
+  const items = d.items.filter((item) => !looksLikeMedicine(item.query) && !isPrescriptionDrugName(item.query) && !listCategory(item.query));
+  // "pastilha pra garganta, soro fisiológico e um termômetro" (11/10, rodada 18 g51): a IA marcava a pastilha como remédio e
+  // a 1ª resposta era "Remédio de receita eu não consigo comprar" sem ninguém pedir. Com o isento ligado, a recusa da IA ao
+  // lado de outros itens só vale com remédio de receita nomeado (ou insistência logo depois de uma recusa).
+  const isentoOnly = medicineEnabled() && Boolean(opts.text) && !looksLikePrescriptionRequest(opts.text ?? "") && !opts.recentRefusal;
+  const flagged = d.medicine || items.length !== d.items.length;
+  const medicine = (d.medicine && !(isentoOnly && items.length > 0)) || items.length !== d.items.length;
   // "presente pra um menino de 7 anos, um cartão de aniversário e papel de presente" (10/10, rodada 12 g36): a IA marcava o
   // presente como recomendação e anotava só os acessórios — o presente sumia do "Anotei". Com outros itens na mesma
   // mensagem, o pedido de presente que a lista determinística guardou entra como item (a ocasião vai junto na frase).
@@ -319,10 +329,10 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // Remédio isento ligado (10/10, rodada 10 g28): "preciso de um paracetamol e um band-aid..." recebia "Remédio de receita eu
   // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
   // receita nomeado, o caminho determinístico anota o remédio isento com o resto.
-  if (medicine && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  if (flagged && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
   // Isento + de receita na mesma mensagem ("dipirona e um antiácido, e também amoxicilina", 11/10, rodada 18 g50): o caminho
   // determinístico recusa só o de receita e anota os isentos — aqui a IA devolvia só "remédio" e os isentos sumiam.
-  if (medicine && opts.text && medicineEnabled() && looksLikePrescriptionRequest(opts.text) && resolveListItems(stripMedicineNegation(opts.text)).some((seg) => looksLikeMedicine(seg.phrase) && !looksLikePrescriptionRequest(seg.phrase))) return { ok: false, reason: "remedio_misto" };
+  if (flagged && opts.text && medicineEnabled() && looksLikePrescriptionRequest(opts.text) && resolveListItems(stripMedicineNegation(opts.text)).some((seg) => looksLikeMedicine(seg.phrase) && !looksLikePrescriptionRequest(seg.phrase))) return { ok: false, reason: "remedio_misto" };
   // Pedir pessoa vale mais que qualquer outra coisa na mesma mensagem: o dono é avisado pelo caminho fixo.
   if (d.human) return { ok: true, steps: [{ type: "human" }], label: "human" };
   const steps: PreStep[] = [];
@@ -437,7 +447,7 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
   if (decision.items.length && !decision.recommend) decision = { ...decision, items: reconcilePreItems(decision.items, input.text) };
   // Teto do PEDIDO já guardado neste turno ("gasto até 60 reais", 10/10, rodada 10 g29): numa LISTA não vira o "até 60 reais"
   // de uma linha (com um item só, o teto do pedido é o desse item e segue na frase).
-  const plan = planPreSignup(ctx.orderBudget && decision.budget === ctx.orderBudget.cap && Math.max(decision.items.length, resolveListItems(input.text).length) >= 2 ? { ...decision, budget: null } : decision, { preBudget: ctx.preBudget, text: input.text });
+  const plan = planPreSignup(ctx.orderBudget && decision.budget === ctx.orderBudget.cap && Math.max(decision.items.length, resolveListItems(input.text).length) >= 2 ? { ...decision, budget: null } : decision, { preBudget: ctx.preBudget, text: input.text, recentRefusal: ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000 });
   if (!plan.ok) {
     console.log(`[dialogue:pre] ação=nenhuma ms=${Date.now() - started} motivo=${plan.reason}`);
     return { kind: "fallthrough", reason: plan.reason };

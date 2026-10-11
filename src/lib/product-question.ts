@@ -265,7 +265,8 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
   }
 
   // "essa ração serve pra filhote?", "é boa pra gato?", "pode dar pra cachorro idoso?"
-  const serves = n.match(/\b(?:serve|servem|vale|pode|posso dar|da pra|e (?:boa|bom|ideal|indicad[oa]|segur[oa])|eh (?:boa|bom|ideal|indicad[oa]))\b.*\b(?:pra|para|p|pro|a)\s+(.*)$/);
+  // "tem alguma que sirva pra filhote?" (11/10, rodada 18 g51): o subjuntivo também é a pergunta do público.
+  const serves = n.match(/\b(?:serve|servem|sirva|sirvam|serviria|vale|pode|posso dar|da pra|e (?:boa|bom|ideal|indicad[oa]|segur[oa])|eh (?:boa|bom|ideal|indicad[oa]))\b.*\b(?:pra|para|p|pro|a)\s+(.*)$/);
   if (serves) {
     for (const [tag, re] of AUDIENCE_ASK) if (re.test(serves[1])) return { kind: "audience", tag };
   }

@@ -85,7 +85,7 @@ const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay"
 
 // `text` = a mensagem original do cliente: vira o `text` da recomendação e é de onde o CÓDIGO tira o
 // teto de preço (a IA não decide dinheiro) e os sinais determinísticos (detect.ts).
-export function planActions(decision: DialogueDecision, state: DialogueState, opts: { text?: string } = {}): Plan {
+export function planActions(decision: DialogueDecision, state: DialogueState, opts: { text?: string; recentRefusal?: boolean } = {}): Plan {
   const actions = decision.actions;
   if (!actions.length || actions.length > 3) return { ok: false, reason: "quantidade_de_acoes" };
   if (actions.length > 1 && actions.some((a) => SOLO.has(a.type))) return { ok: false, reason: "acao_exclusiva_combinada" };
@@ -95,7 +95,9 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
   if (actions.some((a) => a.type === "medicine") && opts.text && listHasNonMedicineItem(opts.text)) return { ok: false, reason: "remedio_no_meio_da_lista" };
   // Remédio isento ligado: "dipirona 500mg gotas, a normal sem receita" é pedido que a Lia compra — a recusa da IA ("remédio
   // de receita...") só vale com remédio de receita nomeado na mensagem.
-  if (actions.some((a) => a.type === "medicine") && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  // "pastilha para garganta" (11/10, rodada 18 g51) não tem palavra de remédio e recebia a recusa de receita: sem remédio de
+  // receita nomeado e sem recusa recente (insistência), a recusa da IA também não vale — a busca decide.
+  if (actions.some((a) => a.type === "medicine") && opts.text && medicineEnabled() && (looksLikeMedicine(opts.text) || !opts.recentRefusal) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
 
   const steps: Planned[] = [];
   for (let i = 0; i < actions.length; i++) {
@@ -215,6 +217,17 @@ export function reformulatesMiss(text: string, missed: string): boolean {
   return words(text).some((w) => !RETRY_TALK.has(w) && !had.has(w.replace(/s$/, "")));
 }
 
+const PLAIN_WORDS = (s: string) =>
+  normalizeMsg(s)
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 4 && !/\d/.test(w) && !/^(?:litros?|garrafas?|latas?|unidades?|pacotes?|caixas?|quero|queria|refrigerantes?)$/.test(w));
+function namesQueuedItem(query: string, state: DialogueState): boolean {
+  const screen = new Set(PLAIN_WORDS(state.emEscolha?.item ?? ""));
+  const own = PLAIN_WORDS(query).filter((w) => !screen.has(w));
+  return own.length > 0 && (state.fila ?? []).some((f) => PLAIN_WORDS(f.item).some((w) => own.includes(w)));
+}
+
 function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, text = ""): Planned | string {
   const onScreen = state.passo === "escolhendo_opcao" && state.emEscolha;
   switch (a.type) {
@@ -253,7 +266,9 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
         ...(retry ? { retry: true } : {}),
         // Trocar o item da tela só quando é o MESMO produto ou o cliente diz que corrige (10/10, rodada 5): "ração pra
         // gatinho qualquer marca" com o arroz na tela tirava o arroz ("Deixei arroz Camil de fora").
-        ...(a.replace && onScreen && (sharesProductNoun(query, state.emEscolha!.item) || REPLACE_CUE_RE.test(normalizeMsg(text))) ? { replace: true } : {})
+        // "quero a coca de 2 litros, 2 garrafas" com o guaraná na tela e a coca na fila (11/10, rodada 18 g51): é o item da FILA,
+        // não troca do guaraná ("refrigerante 2 litros" é comum aos dois) — o guaraná sumia e a coca virava 2 itens.
+        ...(a.replace && onScreen && !namesQueuedItem(query, state) && (sharesProductNoun(query, state.emEscolha!.item) || REPLACE_CUE_RE.test(normalizeMsg(text))) ? { replace: true } : {})
       };
     }
     case "pick": {

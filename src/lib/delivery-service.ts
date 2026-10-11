@@ -17,7 +17,7 @@ import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_
 import { deadlineFit, deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, promisedMinutes, liveCheckSupported, liveFreightEnabled, liveStoreFreight, liveStoreFreightDetailed, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey, unansweredDrops } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
-import { countDistinctItems, reconcileLineCounts, resolveListItems } from "@/lib/list-items";
+import { countDistinctItems, isQualifierOnly, reconcileLineCounts, resolveListItems } from "@/lib/list-items";
 import { localCatalogProbe, localIsBrand } from "@/lib/stores/list-probe";
 import { detectAlternativeItem, foldAlternativeLines, parseAltAnswer, splitAlternativeLine } from "@/lib/alt-items";
 import { LIST_FLOW_MAX_OPTIONS, LIST_FLOW_MAX_SLOTS, LIST_FLOW_MESSAGE, buildListFlowData, isListFlowReply, parseListFlowReply } from "@/lib/list-flow";
@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseStoreRemoval, parseMeasureMixup, spCapitalPlace } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseStoreRemoval, parseMeasureMixup, spCapitalPlace, relaxAnyAttribute } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, isVetMedicineAsk, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -98,6 +98,13 @@ const BRAND_GENERIC: Record<string, string> = {
   durex: "fita adesiva durex"
 };
 
+const RECOMMEND_FRAME_RE = /^(?:(?:me|nos)\s+)?(?:indica|indique|recomenda|recomende|sugere|sugira)\b/;
+// "me indica um perfume bom … feminino" (11/10, rodada 18 g51): a IA devolvia "perfume feminino" e a lista guardava "me indica um
+// perfume bom" — o pedido de indicação é a moldura do mesmo produto, não um 2º item.
+function dropRecommendFrames<T extends { phrase: string }>(lines: T[]): T[] {
+  const framed = (l: T) => RECOMMEND_FRAME_RE.test(normalizeMsg(l.phrase));
+  return lines.filter((l) => !(framed(l) && lines.some((other) => other !== l && !framed(other) && sharesProductNoun(other.phrase, l.phrase))));
+}
 function rewriteGroceryOil(lines: ParsedLine[]): ParsedLine[] {
   const staples = lines.filter((l) => queryTokens(l.phrase).some((t) => GROCERY_STAPLES.has(t))).length;
   return lines.map((l) => {
@@ -185,7 +192,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   // "sem remédio"/"não quero remédio" é negação: sai da mensagem ANTES de qualquer
   // detecção — senão a Lia avisa que removeu um medicamento que ninguém pediu
   // (rodadas 4 e 14 dos testes reais de 14/08).
-  const sanitized = expandShoppingShorthand(stripMedicineNegation(text));
+  const sanitized = expandShoppingShorthand(relaxAnyAttribute(stripMedicineNegation(text), text));
   const containsTobacco = looksLikeTobacco(sanitized);
   // Frase já reescrita pelo roteador da IA neste turno: é uma busca limpa, o parser
   // determinístico dá conta e a 2ª chamada de IA só somava até 10 s (06/10).
@@ -234,7 +241,7 @@ async function extractLines(text: string): Promise<ExtractedLines> {
     );
     return {
       // Quantidade e tamanho da IA conferidos com a própria mensagem (10/10, rodada 9: "2x água sanitária 5 litros").
-      lines: rewriteGroceryOil(reconcileLineCounts(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic), sanitized)),
+      lines: dropRecommendFrames(rewriteGroceryOil(reconcileLineCounts(mergeShoppingLines(items.map((item) => ({ phrase: item.query, qty: item.qty })), deterministic), sanitized))),
       greetingOnly: extraction.greetingOnly,
       containsMedicine: (extraction.containsMedicine && llmDroppedSomething) || blocksMedicine(sanitized),
       containsTobacco,
@@ -820,6 +827,8 @@ async function buildChoices(
       const common = candidates.find((c) => !isEquivalent(c) && staplePrefer.test(normalizeMsg(c.item.name)) && conciergeMatchIsStrong(line.phrase, c.item));
       if (common) options = [common, ...options];
     }
+    // A versão do dia a dia abre a vitrine (11/10, rodada 18 g51): "arroz" com o Thai Jasmin em 1º e o arroz branco em 3º.
+    if (staplePrefer && !chosen) options = [...options.filter((o) => staplePrefer.test(normalizeMsg(o.item.name))), ...options.filter((o) => !staplePrefer.test(normalizeMsg(o.item.name)))];
     // Nenhuma opção é a versão básica (11/10, rodada 17 g49: "6 coca cola 2L" abria com "Coca Cola Sem Açúcar 2L" e a
     // Original só aparecia em "outras"): a candidata básica que a loja confirmou e que tem todas as palavras entra na frente.
     // Com o juízo da IA, só a versão comum de uma opção aprovada sem açúcar (a IA aprovou "Coca Sem Açúcar", a Original da
@@ -974,6 +983,15 @@ function missingAskWords(query: string, option: { name: string; brand?: string }
 // que o pedido não pediu — 09/10) e depois o prazo.
 // A resposta durante a escolha nomeia um produto que não é o da vez (nem palavra de nenhuma opção)? (11/10, R17a-6)
 const OTHER_PRODUCT_FILLER = new Set(["quero", "queria", "prefiro", "manda", "pode", "ser", "tem", "mais", "outra", "outro", "tambem", "entao", "agora", "garrafa", "garrafas", "lata", "latas", "unidade", "unidades", "pacote", "pacotes", "caixa", "caixas", "litro", "litros", "kg", "ml", "grande", "pequena", "pequeno", "maior", "menor", "essa", "esse", "isso", "aquela", "aquele", "mesmo", "mesma", "por", "favor"]);
+// Teto de preço junto de OUTRO produto ("me indica um perfume bom, uns 100 reais" com o hidratante na mesa; 11/10, rodada 18
+// g51): basta uma palavra que é produto do catálogo, que nenhum card nem o item têm (a frase inteira raramente é "forte").
+function capNamesOtherProduct(text: string, current: PendingChoice): boolean {
+  if (namesOtherProduct(text, current)) return true;
+  const have = new Set(queryTokens(normalizeMsg([current.baseQuery ?? "", current.query, ...current.options.map((o) => `${o.name} ${o.brand ?? ""}`)].join(" ").replace(/-/g, " "))));
+  return queryTokens(normalizeMsg(text).replace(/-/g, " ")).some(
+    (t) => t.length >= 4 && !/\d/.test(t) && !OTHER_PRODUCT_FILLER.has(t) && !have.has(t) && !have.has(`${t}s`) && !parseRefinement(t) && !isQualifierOnly(t) && !localIsBrand(t) && localCatalogProbe(t).strong
+  );
+}
 function namesOtherProduct(text: string, current: { query: string; baseQuery?: string; options: { name: string; brand?: string }[] }): boolean {
   const have = new Set(queryTokens(normalizeMsg([current.baseQuery ?? "", current.query, ...current.options.map((o) => `${o.name} ${o.brand ?? ""}`)].join(" ").replace(/-/g, " "))));
   const said = queryTokens(normalizeMsg(text).replace(/-/g, " ")).filter((t) => t.length >= 3 && !/\d/.test(t) && !OTHER_PRODUCT_FILLER.has(t) && !parseRefinement(t));
@@ -2021,7 +2039,9 @@ function swapPairsForCopy(
     const brand = realBrandOf(from);
     const sameName = normalizeMsg(from.name).replace(/\s+/g, " ") === normalizeMsg(r.option.name).replace(/\s+/g, " ");
     const brandOrVersion = !keepsBrand(from, r.option)
-      ? copy.swapChangeNote("marca", brand ? brandLabel(from, brand) : undefined)
+      // A marca só é citada quando o NOME a diz (11/10, rodada 18 g51: "não achei Bayer" para o "Aspdip", que a loja cadastra
+      // com o fabricante Bayer — o cliente não conhece o produto por esse nome).
+      ? copy.swapChangeNote("marca", brand && normalizeMsg(from.name).replace(/[^a-z0-9\s]/g, " ").includes(brand) ? brandLabel(from, brand) : undefined)
       : !sameName && nameSimilarity(from.name, r.option.name) < 0.5
         ? copy.swapChangeNote("versao")
         : undefined;
@@ -3691,7 +3711,8 @@ async function handleDeliveryTurn(
   // diálogo — que o lia como "unclear" e perguntava de volta, deixando o total passar do limite (rodada 2).
   if (ctx.step === "choosing" && ctx.pending?.length) {
     const optionsBudget = parseBudgetStatement(text);
-    if (optionsBudget != null) {
+    // "me indica um perfume bom então, uns 100 reais" com o hidratante na mesa (11/10, rodada 18 g51): o teto é do outro produto.
+    if (optionsBudget != null && !capNamesOtherProduct(splitPriceCap(text).phrase, ctx.pending[0])) {
       const current = ctx.pending[0];
       const store = getStore(current.options[0]?.storeKey ?? ctx.storeKey ?? orderStore(ctx).key);
       await applyChoiceBudget(phone, convo.id, ctx, store, current, optionsBudget);
@@ -4000,6 +4021,7 @@ async function handleDeliveryTurn(
     intent.kind === "free_text" &&
     // Carrossel aberto e a mensagem começa respondendo a ele (A3, 10/10): quem trata é a escolha (escolhe e soma o resto).
     !(ctx.step === "choosing" && ctx.pending?.length && splitChoiceHeadAndItems(text, ctx.pending[0])) &&
+    !(ctx.step === "choosing" && ctx.pending?.length && optionNamedOnTable(text, ctx.pending[0]).length) &&
     !explicitAddCue(text) &&
     !ADD_TO_BASKET_RE.test(normalizeMsg(text)) &&
     !EDIT_OR_CHOICE_RE.test(normalizeMsg(text))
@@ -4017,7 +4039,8 @@ async function handleDeliveryTurn(
       .replace(/^(\d{1,3})\s+d[oa]s?\s+/i, "$1 ")
       .replace(/\s+mesm[oa]s?\s*[.!]*\s*$/i, "");
     const lines = resolveListItems(cleaned);
-    const real = lines.filter((l) => localCatalogProbe(l.phrase).strong);
+    // "me indica um perfume bom então, uns 100 reais, feminino" (11/10, rodada 18 g51): o qualificador solto não é produto.
+    const real = lines.filter((l) => localCatalogProbe(l.phrase).strong && !isQualifierOnly(l.phrase));
     // Carrossel aberto e TODA linha fala do item em escolha (10/10, rodada 10 g28): "não, to falando do café. o Pilão de
     // 29,48" virava "Somei 1x o Pilão de 29,48" e "feijão da Camil" somava no arroz Camil. É escolha — quem trata é a escolha.
     const choosingNow = ctx.step === "choosing" && ctx.pending?.length ? ctx.pending[0] : undefined;
@@ -4367,7 +4390,11 @@ async function handleDeliveryTurn(
   }
   // O que o cliente escreveu, quando a IA reencaminha outra frase: o aviso ao dono cita ISSO, nunca a frase da IA.
   let saidBeforeRewrite: string | undefined;
-  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx)) {
+  // O nome de um card da tela (com a loja dele) a escolha resolve sem a IA (11/10, rodada 18 g51).
+  const namesCardOnTable =
+    ctx.step === "choosing" && Boolean(ctx.pending?.length) &&
+    ((intent.kind === "free_text" && optionNamedOnTable(text, ctx.pending![0], { cuedOnly: true }).length > 0) || ((intent.kind === "free_text" || intent.kind === "reject") && brandAlternatives(text, ctx.pending![0]).length > 0));
+  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx) && !namesCardOnTable) {
     const hasAddress = Boolean(user.defaultAddress && savedCep);
     const dialogue = hasAddress
       ? await runDialogueTurn({
@@ -8534,6 +8561,18 @@ async function handleChoosing(
     await writeCtx(convoId, ctx);
   }
 
+  // Só a loja citada ou a contagem da embalagem, e só quando a escolha comum não resolve ("o bolo gotas de chocolate, 3" e
+  // "vou no 1, Omo" já escolhem, com a quantidade); o nome puro segue para o estreitamento por nome mais abaixo.
+  const namedOnTable = intent.kind === "free_text" && !parseChoiceReply(text, current.options) ? optionNamedOnTable(text, current, { cuedOnly: true }) : [];
+  if (namedOnTable.length) {
+    // Estreita (e com um card só, o cliente confirma no botão), como o nome que discrimina mais abaixo.
+    current.shownOptions = current.shownOptions ?? [...current.options];
+    current.options = namedOnTable.map((i) => current.options[i]);
+    await writeCtx(convoId, ctx);
+    await sendChoices(phone, current, copy.narrowedChoices(current.query));
+    return;
+  }
+  if ((intent.kind === "free_text" || intent.kind === "reject") && (await showBrandAlternatives(phone, convoId, ctx, current, text))) return;
   // "outras, mostra de filhote da cobasi mesmo" (10/10, rodada 15 A1): opções do item da vez numa loja citada. A loja filtra a
   // busca e as outras palavras refinam o item ("filhote" já estava nele) — antes virava o item novo "mostra de filhote".
   // A vírgula de "outras, mostra..." conta como 2 itens: o que decide é sobrar no máximo 3 palavras depois dos conectivos.
@@ -8915,8 +8954,10 @@ async function handleChoosing(
 
   // "algum até 150 reais?" — teto de preço filtra as opções na mesa (preço exibido,
   // com markup). Nenhuma dentro do teto → resposta honesta + caminhos (barato/opções).
+  // "me indica um perfume bom então, uns 100 reais" com o hidratante na mesa (11/10, rodada 18 g51): o teto é do OUTRO produto
+  // citado, não um filtro das opções da mesa.
   const priceCap = parsePriceCap(text);
-  if (priceCap != null) {
+  if (priceCap != null && !capNamesOtherProduct(splitPriceCap(text).phrase, current)) {
     await applyChoiceBudget(phone, convoId, ctx, store, current, priceCap);
     return;
   }
@@ -9017,6 +9058,12 @@ async function handleChoosing(
   // "a da essence mesmo, ta barata" com as máscaras à prova d'água na tela (10/10, rodada 15 A2): a marca de um card é
   // escolha dentro do item da vez, com os atributos dele — virava o item novo "máscara essence" sem o "à prova d'água".
   if (intent.kind === "free_text" && !isQuestion(text) && (await narrowToBrandOnTable(phone, convoId, ctx, current, text))) return;
+  // "oi, antes: tem ibuprofeno?" com o soro na mesa (11/10, rodada 18 g51): a pergunta de disponibilidade de OUTRO produto é
+  // o pedido dele (entra na fila como qualquer item novo) — antes caía no "Não peguei qual você quer".
+  if (intent.kind === "free_text" && isQuestion(text) && countDistinctItems(text) <= 1) {
+    const askedItem = parseAvailabilityAsk(text);
+    if (askedItem && !sharesProductNoun(askedItem, current.query) && !sharesProductNoun(askedItem, current.baseQuery ?? current.query)) text = askedItem;
+  }
   if (intent.kind === "free_text" && !isQuestion(text)) {
     // Item que JÁ foi escolhido mandado de novo (10/10, rodada 7 N3: "racao para cachorro labrador adulto 15kg" depois
     // de escolhida) virava pendência duplicada em "Falta escolher". Sem sinal de adição nem quantidade, é o mesmo item.
@@ -9665,7 +9712,10 @@ async function refineOptions(phone: string, convoId: string, ctx: DeliveryContex
     // A busca larga achou o que atende (10/10, rodada 16 g46, jornada 353: "Não achei exatamente *2l*" em cima dos cards
     // "Coca-Cola 2L"): os que atendem vêm primeiro e não há "mais perto".
     // Só medida ("2l", "500g"): é ela que a régua de tamanho confere com certeza; "grande" segue "o mais perto".
-    const exact = attrs.every((a) => /^\d/.test(a)) ? matches.filter((o) => attrs.every((a) => attrMatchesItem(a, o))) : [];
+    // Palavra que o nome diz ("filhote", 11/10, rodada 18 g51: "Não achei exatamente *filhote*" em cima de rações de filhote)
+    // também confere; tamanho por adjetivo ("grande") segue "o mais perto".
+    const checkable = (a: string) => /^\d/.test(a) || !/^(?:grande|grandes|pequen[oa]s?|medi[oa]s?|maior|menor|mini|maxi)$/.test(normalizeMsg(a));
+    const exact = attrs.every(checkable) ? matches.filter((o) => attrs.every((a) => attrMatchesItem(a, o))) : [];
     if (exact.length) matches = [...exact, ...matches.filter((o) => !exact.includes(o))];
     closest = matches.length > 0 && !exact.length;
   }
@@ -10116,6 +10166,109 @@ function looksLikeProductList(text: string): boolean {
 // Escolha/refino do item na mesa + item novo na mesma mensagem (10/10, rodada 4 A3): "o desnatado, e um pacote de
 // bolacha maizena" com o carrossel de leite aberto. A cabeça é resposta ao carrossel (número, nome de opção, atributo
 // como "o desnatado", ou o próprio produto da mesa); a cauda tem item de produto real. Devolve as duas partes.
+// "esse perfume não, tem outro mais bonito de marca? tipo boticário ou natura" (11/10, rodada 18 g51): marca pedida para o
+// item da vez é refinamento dele — virava "Deixei perfume de fora" (ou a busca "o boticario ou natura"). Devolve as marcas
+// citadas depois de "tipo/da/do/marca/ou/como" que o catálogo conhece e que o item ainda não tem.
+const BRAND_ALT_CUE_RE = /\b(?:outr[oa]s?|de marca|marca|tipo|prefiro|preferia|tem (?:da|do|de))\b/;
+export function brandAlternatives(text: string, current: PendingChoice): string[] {
+  const n = normalizeMsg(text).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  if (!BRAND_ALT_CUE_RE.test(n) || n.split(" ").length > 18) return [];
+  const have = new Set(queryTokens(normalizeMsg(current.baseQuery ?? current.query)));
+  const words = n.split(" ");
+  const out: string[] = [];
+  for (let i = 1; i < words.length; i++) {
+    if (!/^(?:tipo|da|do|marca|ou|como|e)$/.test(words[i - 1])) continue;
+    const w = words[i];
+    if (w.length < 4 || have.has(w) || out.includes(w) || !localIsBrand(w)) continue;
+    out.push(w);
+  }
+  // "tem da boticário?" com o sachê na tela: uma marca só que também é loja, sem pedir marca, é filtro de loja (R15-3).
+  const store = out.length === 1 && !/\b(?:marca|tipo)\b/.test(n) ? refineStoreCut(text, text) : null;
+  if (store && normalizeMsg(store.store.label).replace(/[^a-z0-9\s]/g, " ").includes(out[0])) return [];
+  return out.slice(0, 3);
+}
+async function showBrandAlternatives(phone: string, convoId: string, ctx: DeliveryContext, current: PendingChoice, text: string): Promise<boolean> {
+  const brands = brandAlternatives(text, current);
+  if (!brands.length) return false;
+  const base = current.baseQuery ?? current.query;
+  const head = shelfHeadNoun(base) ?? base;
+  // Como o cliente escreveu ("boticário"), para a resposta.
+  const spoken = (brand: string) => {
+    const w = text.split(/[^\p{L}\p{N}]+/u).find((x) => normalizeMsg(x) === brand) ?? brand;
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  };
+  // Uma busca por marca, em paralelo, com um aviso de "procurando" só (11/10: 4 buscas em série levavam 43 s).
+  let notice: ReturnType<typeof searchNoticeTimer> | undefined;
+  const results = await Promise.all(
+    brands.map((brand) => buildChoices(`${head} ${brand}`, undefined, undefined, () => void (notice ??= searchNoticeTimer(phone)), true, ctx.cep).catch(() => null))
+  ).finally(() => notice?.cancel());
+  const seen = new Set<string>();
+  const perBrand: ChoiceOption[][] = [];
+  const labels: string[] = [];
+  brands.forEach((brand, i) => {
+    const res = results[i];
+    const hasBrand = (o: ChoiceOption) => normalizeMsg(`${o.name} ${o.brand ?? ""} ${o.storeLabel ?? ""}`).replace(/[^a-z0-9\s]/g, " ").includes(brand);
+    const pick = res?.pending.find((p) => sharesProductNoun(p.query, base)) ?? res?.pending[0];
+    let found = (pick && !pick.closestFalta ? pick.options : []).filter(hasBrand);
+    if (current.cap != null) found = withinBudget(found, current);
+    found = found.filter((o) => !seen.has(o.sku) && seen.add(o.sku));
+    if (found.length) {
+      perBrand.push(found);
+      labels.push(spoken(brand));
+    }
+  });
+  const merged: ChoiceOption[] = [];
+  for (let i = 0; merged.length < vitrineLimit() && perBrand.some((list) => list[i]); i++) for (const list of perBrand) if (list[i] && merged.length < vitrineLimit()) merged.push(list[i]);
+  if (!merged.length) {
+    await reply(phone, copy.brandAltMiss(head, brands.map(spoken)));
+    return true;
+  }
+  current.originalQuery ??= base;
+  const remembered = new Set((current.shownOptions ?? current.options).map((o) => o.sku));
+  current.shownOptions = [...(current.shownOptions ?? current.options), ...merged.filter((o) => !remembered.has(o.sku))];
+  current.options = merged;
+  current.shownSkus = [...new Set([...(current.shownSkus ?? []), ...merged.map((o) => o.sku)])];
+  current.closestFalta = undefined;
+  ctx.longTailOffer = undefined;
+  await writeCtx(convoId, ctx);
+  await sendChoices(phone, current, copy.brandAltChoices(head, labels));
+  return true;
+}
+
+// "a de mel e limão da drogaria são paulo" com as pastilhas na tela (11/10, rodada 18 g51): o nome de um card, com a loja dele
+// no fim, é escolha — o " e " do sabor e o "da <loja>" partiam a frase em dois itens novos ("Somei 1x a de mel").
+// Devolve os índices dos cards que têm TODAS as palavras ditas (e são da loja citada); [] = não fala dos cards.
+export function optionNamedOnTable(text: string, current: PendingChoice, opts?: { cuedOnly?: boolean }): number[] {
+  const options = current.options;
+  if (options.length < 2) return [];
+  let rest = ` ${normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim()} `;
+  let storeIdx: number[] | null = null;
+  const flat = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  for (const label of [...new Set(options.map((o) => o.storeLabel).filter(Boolean) as string[])]) {
+    const cut = rest.match(new RegExp(`\\s(?:d[oa]s?|de|na|no)\\s+(?:loja\\s+|farmacia\\s+)?${flat(label).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`));
+    if (cut) {
+      rest = rest.slice(0, cut.index);
+      storeIdx = options.map((o, i) => (o.storeLabel === label ? i : -1)).filter((i) => i >= 0);
+      break;
+    }
+  }
+  // Moldura da escolha ("a de", "quero o", "essa") não é palavra do produto; precisa sobrar o que descreve o card.
+  const said = rest.replace(/\b(?:quero|queria|prefiro|vou de|fico com|pode ser|manda|escolho|essa|esse|aquela|aquele|e)\b/g, " ").replace(/\s+/g, " ").trim();
+  // "a de 8" depois de "a caixa com 8 pastilhas ou a com 16?" (11/10, rodada 18 g51): a contagem da embalagem escolhe entre os
+  // cards — o 8 não é a opção 8 (só há 5) e o cartão voltava começando pela caixa de 16.
+  const COUNT_UNIT = String.raw`(?:unidades?|unids?|un|pastilhas?|comprimidos?|capsulas?|rolos?|saches?|latas?|sabonetes?|fraldas?|pares?|folhas?)`;
+  const count = said.match(new RegExp(String.raw`^(?:(?:a|o|as|os)\s+)?(?:(?:caixa|pacote|embalagem|pack|frasco|cartela)\s+)?(?:de|com)\s+(\d{1,3})(?:\s*(${COUNT_UNIT}))?$`));
+  if (count && (Number(count[1]) > options.length || count[2])) {
+    const has = new RegExp(String.raw`(?:^|\D)0*${count[1]}\s*${COUNT_UNIT}\b|\b(?:caixa|c\/|com|pack|kit)\s*(?:com\s+)?0*${count[1]}\b`);
+    const hits = options.map((o, i) => (has.test(normalizeMsg(o.name)) ? i : -1)).filter((i) => i >= 0 && (!storeIdx || storeIdx.includes(i)));
+    return hits.length && hits.length < options.length ? hits : [];
+  }
+  if (queryTokens(said).length < 2 || (opts?.cuedOnly && !storeIdx)) return [];
+  const named = narrowChoiceByName(said, options).filter((i) => !storeIdx || storeIdx.includes(i));
+  if (!named.length) return [];
+  return storeIdx || named.length < options.length ? named : [];
+}
+
 function splitChoiceHeadAndItems(text: string, current: PendingChoice): { head: string; tail: string } | null {
   const parts = text.trim().match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tamb[eé]m\s+)?)(.+)$/i);
   if (!parts) return null;
@@ -10129,7 +10282,8 @@ function splitChoiceHeadAndItems(text: string, current: PendingChoice): { head: 
   const refersToChoice = (reply && reply.type !== "skip") || parseRefinement(head) != null || (sharesProductNoun(head, ask) && sameItemProduct(head, ask));
   if (!refersToChoice) return null;
   // A cauda só conta quando traz produto (não "e paga no pix", não quantidade) e não repete o item da mesa.
-  const items = resolveListItems(tail).filter((l) => localCatalogProbe(l.phrase).strong && !sharesProductNoun(l.phrase, current.baseQuery ?? current.query));  return items.length ? { head, tail } : null;
+  // O qualificador solto ("…, feminino") não é item novo (11/10, rodada 18 g51).
+  const items = resolveListItems(tail).filter((l) => localCatalogProbe(l.phrase).strong && !isQualifierOnly(l.phrase) && !sharesProductNoun(l.phrase, current.baseQuery ?? current.query));  return items.length ? { head, tail } : null;
 }
 
 // A frase fala do item em escolha: nomeia o produto do carrossel ("o Pilão de 29,48" com "café pilão" aberto) ou é
@@ -14106,7 +14260,8 @@ export function recommendationLeftovers(text: string, rec: { need?: string; prod
   return segments.filter((seg) => {
     const tokens = queryTokens(seg);
     const shared = tokens.filter((t) => recTokens.has(t)).length;
-    return tokens.length > 0 && shared * 2 <= tokens.length && !(recommendEnabled() && detectRecommendation(seg));
+    // O qualificador solto ("feminino") é da recomendação, não um item (11/10, rodada 18 g51).
+    return tokens.length > 0 && shared * 2 <= tokens.length && !(recommendEnabled() && detectRecommendation(seg)) && !isQualifierOnly(seg);
   });
 }
 
@@ -14121,6 +14276,11 @@ async function recommendAndQueueRest(
   // Teto dito no pedido de recomendação ("presente até 80 reais") vale também para o pedido (rodada 9 B M2 via g25).
   if (rec.budget != null && !ctx.orderBudget) ctx.orderBudget = { cap: rec.budget };
   const rest = recommendationLeftovers(text, rec);
+  // "…, feminino" refina o produto julgado ("perfume" → "perfume feminino"), 11/10, rodada 18 g51.
+  if (rec.product) {
+    const quals = resolveListItems(text).map((l) => l.phrase.trim()).filter((p) => isQualifierOnly(p) && !normalizeMsg(rec.product!).includes(normalizeMsg(p)));
+    if (quals.length) rec = { ...rec, product: `${rec.product} ${quals.join(" ")}` };
+  }
   const before = ctx.pending?.[0];
   await handleRecommend({ ...env, userId: env.userId ?? "" }, rec);
   if (!rest.length) return;

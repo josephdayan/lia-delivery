@@ -150,6 +150,12 @@ function isAttrOnly(s: string, ctx: Ctx): boolean {
   return ctx.isBrand(ws.join(" "));
 }
 
+// Trecho que só qualifica, sem marca ("feminino", "600ml", "sem açúcar"): 11/10, rodada 18 g51 — "me indica um perfume bom,
+// uns 100 reais, feminino" anotava o item "feminino".
+export function isQualifierOnly(s: string): boolean {
+  return isAttrOnly(s, { probe: localCatalogProbe, isBrand: () => false, conjoinedBrand: () => false } as unknown as Ctx);
+}
+
 type Head = { head: string; connector: string };
 // "leite integral" → { head: "leite", attrs começam em "integral" }; "biscoito de chocolate" →
 // { head: "biscoito", connector: "de" }. Sem cabeça (1ª palavra já é atributo/marca) ou sem
@@ -219,6 +225,9 @@ function decidePair(left: string, leftTail: string, right: string, pieceCount: n
   // "bolacha de água e sal" (10/10, rodada 14 g40): virava "bolacha de água" + "sal" (e a Lia oferecia sal marinho de
   // R$ 60). Biscoito/bolacha/torrada "de água e sal" é UM produto; "água e sal" sem o biscoito continua 2 itens.
   if (COOKIE_AGUA_E_SAL_RE.test(pairNorm)) return { kind: "join", reason: "nome_composto" };
+  // "pastilha strepsils mel e limão" (11/10, rodada 18 g51): sabor composto de um produto nomeado antes (pastilha, chá,
+  // Halls) é UM item — virava 2 pastilhas. "mel e limão" sozinhos continuam 2 itens (o mel e o limão da feira).
+  if (/\b(?:mel e limao|limao e mel)\b/.test(pairNorm) && L.split(" ").filter(Boolean).length >= 2) return { kind: "join", reason: "sabor_composto" };
   // marca composta com "e"/"&" no nome (09/10, rodada 1: "shampoo head e shoulders" virava 2 shampoos)
   if (ctx.conjoinedBrand(L, R)) return { kind: "join", reason: "marca_composta" };
   // cauda com quantidade própria ("2 coca e 1 ruffles"): é outro item, sem dúvida
