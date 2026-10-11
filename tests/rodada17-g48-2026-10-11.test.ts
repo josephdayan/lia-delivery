@@ -209,3 +209,24 @@ test("R17a-1: 'não' seco no resumo fica assim, mas pergunta o que mudar", () =>
   assert.match(copy.summaryKeptAsIs(21.94, false, true), /pedido fica assim ✅ Total: \*R\$ 21,94\*\.\nSe era pra mudar alguma coisa, me diz o quê/);
   assert.doesNotMatch(copy.summaryKeptAsIs(21.94), /mudar/);
 });
+
+test("R17-10: limite do pedido no 'Até agora' e na oferta de juntar; corte sugerido é o menor que resolve", async () => {
+  const items = [{ qty: 12, name: "Leite Integral 1L", displayLineTotal: 108.24 }, { qty: 1, name: "Arroz 5kg", displayLineTotal: 265.71 }];
+  const over = copy.partialTotal(items as never, 373.95, 0, [], [], 300);
+  assert.match(over, /Só nos produtos já passou do seu limite de \*R\$ 300,00\* \(R\$ 73,95 a mais\)/, over);
+  assert.match(copy.partialTotal(items.slice(0, 1) as never, 108.24, 1, [], [], 300), /Do seu limite de \*R\$ 300,00\*, sobram R\$ 191,76/);
+  assert.doesNotMatch(copy.partialTotal(items as never, 373.95, 0), /limite/);
+  assert.match(copy.consolidationBudgetNote(300, 371.76, 380.85) ?? "", /Dos dois jeitos passa do seu limite de \*R\$ 300,00\*/);
+  assert.match(copy.consolidationBudgetNote(300, 290, 310) ?? "", /Juntando fica dentro do seu limite/);
+  assert.equal(copy.consolidationBudgetNote(300, 290, 295), null);
+  assert.match(copy.consolidationOffer({ storeLabel: "Santa Luzia", joinedTotal: 371.76, keptTotal: 380.85, keptStores: 2, pairs: [], budgetNote: copy.consolidationBudgetNote(300, 371.76, 380.85) }), /passa do seu limite/);
+  // R$ 317,64 com limite de 300 (R$ 17,64 a mais): baixar o leite de 6 para 4 resolve; tirar o molho de R$ 79,20 é demais.
+  const { overBudgetSummaryInput } = await import("../src/lib/ops-lifecycle");
+  const b = (sku: string, name: string, unitPrice: number, qty: number) => ({ sku, name, unitPrice, qty, lineTotal: unitPrice * qty, storeKey: "santaluzia", storeLabel: "Casa Santa Luzia" });
+  const basket = [b("1", "Leite Integral Piracanjuba 1L", 8.2, 6), b("2", "Molho de Tomate Genovese 340g", 18, 4), b("3", "Arroz Camil 5kg", 30, 1), b("4", "Papel Higiênico 12 rolos", 20, 1)];
+  const cut = overBudgetSummaryInput(300, basket as never, true, 317.64).priciest;
+  assert.equal(cut?.reduceTo, 4, JSON.stringify(cut));
+  assert.match(copy.overBudgetSummaryNote(300, 317.64, cut), /baixar \*Leite Integral Piracanjuba 1L\* de 6 para 4/);
+  // Sem o total, como antes: a linha mais cara.
+  assert.equal(overBudgetSummaryInput(300, basket as never, true).priciest?.name, "Molho de Tomate Genovese 340g");
+});

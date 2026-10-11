@@ -4064,7 +4064,7 @@ async function handleDeliveryTurn(
     if (asked && ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      const summary = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
+      const summary = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap);
       const rows = asked.item
         ? [
             ...(ctx.basket ?? []).filter((b) => itemMatchesPhrase(asked.item!, b)).map((b) => ({ qty: b.qty, name: b.name })),
@@ -4603,7 +4603,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx))}`);
+      await reply(phone, `${copy.resumeHeader()}\n${copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap)}`);
       return;
     }
     if ((ctx.step === "awaiting_quote_confirmation" || ctx.step === "awaiting_payment") && ctx.deliveryOrderId) {
@@ -4887,7 +4887,7 @@ async function handleDeliveryTurn(
     }
     if (ctx.basket?.length) {
       const produtos = Math.round(basketForCopy(ctx).reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
+      await reply(phone, copy.partialTotal(basketForCopy(ctx), produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap));
       return;
     }
     await reply(phone, copy.didNotUnderstand());
@@ -5997,7 +5997,7 @@ async function handleDeliveryTurn(
         if (!swaps.length && !searches.length) {
           const items = basketForCopy(ctx);
           const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
+          await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap));
         }
         return;
       }
@@ -6193,7 +6193,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap));
       return;
     }
     // Cesta vazia (10/10, rodada 5 g16: depois de "Carrinho limpo" o "total" ouvia "Essa eu não sei responder").
@@ -6383,7 +6383,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     }
     const items = basketForCopy(ctx);
     const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx)));
+    await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap));
     return;
   }
   // Cancelou agora há pouco e perguntou "cadê meu pedido?": o assunto é o CANCELADO.
@@ -8282,7 +8282,7 @@ async function handleChoosing(
     if (option && asksRunningTotal(text)) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
+      const partial = copy.partialTotal(items, produtos, ctx.pending!.length, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap);
       const adjusted = packAdjusted(option, asked.askedQty, current.query, { assumedOne: current.qty === 1 && !current.qtyExplicit });
       await reply(phone, `${partial}\n\n${copy.packMismatchAsk(option.name, asked.askedQty, declaredPack(option.name), adjusted.qty)}`);
       return;
@@ -12992,7 +12992,8 @@ async function sendConsolidationOfferFor(phone: string, convoId: string, ctx: De
   ctx.consolidationParked = undefined;
   await writeCtx(convoId, ctx);
   if (prefix) await reply(phone, prefix);
-  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: joinedEtaH, keptEta: keptEtaH, joinedStores, left: joined.left, deadlineNote, minimumNote, etaNote });
+  const budgetNote = ctx.orderBudget ? copy.consolidationBudgetNote(ctx.orderBudget.cap, joinedTotal, keptTotal) : null;
+  const body = copy.consolidationOffer({ storeLabel: joined.storeLabel, joinedTotal, keptTotal, keptStores: stores, pairs: joined.pairs, joinedEta: joinedEtaH, keptEta: keptEtaH, joinedStores, left: joined.left, deadlineNote, minimumNote, etaNote, budgetNote });
   markTurnReplied();
   const interactive = await whatsappAdapter.sendConsolidationOffer(phone, body, joined.storeLabel, stores, joinedStores).catch(() => null);
   if (!interactive) await reply(phone, `${body}\nResponde *juntar* ou *manter* (ou 1 / 2).`);
@@ -13785,7 +13786,7 @@ async function replyRunningTotal(phone: string, ctx: DeliveryContext) {
   const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
   // Os cards acabaram de ir (09/10): uma linha lembra, sem reenviar o carrossel. Num balão só (rodada 1); o lembrete
   // não se repete em falas seguidas (rodada 2).
-  const partial = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx));
+  const partial = copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap);
   const current = ctx.pending?.[0];
   await reply(phone, current && choicesNudgeAllowed() ? `${partial}\n\n${copy.choicesStillOpen(current.query)}` : partial);
 }

@@ -246,7 +246,7 @@ export async function opsPublishManualQuote(
     ...(orderBudget && total <= orderBudget.cap + 0.005 && !conversationMovedOn ? { withinBudget: { cap: orderBudget.cap } } : {}),
     deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,
     // Passou do orçamento dito na conversa (10/10, rodada 8 M3: R$ 112,55 com "se passar de 100 me avisa", sem aviso).
-    ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null) } : {}),
+    ...(orderBudget && total > orderBudget.cap + 0.005 && !conversationMovedOn ? { overBudget: overBudgetSummaryInput(orderBudget.cap, items, input.serviceFee != null, total) } : {}),
     ...(leftOut.length && !conversationMovedOn ? { leftOut } : {}),
     ...(joinRuledOut && !conversationMovedOn ? { joinRuledOut: true } : {}),
     ...(joinSlower && !conversationMovedOn ? { joinSlower } : {}),
@@ -895,11 +895,29 @@ export async function opsPurchaseFailedRefund(
 }
 
 // Orçamento do pedido estourado (10/10, rodada 8 M3): o teto e o item mais caro (a sugestão de corte mais óbvia).
-function overBudgetSummaryInput(cap: number, items: BasketItem[], priced: boolean): { cap: number; priciest?: { name: string; lineTotal: number } } {
+// Sugestão de corte (11/10, rodada 17 R17-10: "tirar o molho de tomate (4x R$ 79,20)" num mercado de R$ 317 com R$ 17 a
+// mais): o menor corte que já põe o pedido dentro do limite — tirar a linha mais barata que cobre o excesso, ou baixar a
+// quantidade de um item repetido; sem corte único que cubra, a linha mais cara (como antes).
+export function overBudgetSummaryInput(cap: number, items: BasketItem[], priced: boolean, total?: number): { cap: number; priciest?: { name: string; lineTotal: number; reduceTo?: number; qty?: number } } {
   if (!priced || items.length < 2) return { cap };
-  const top = [...items]
+  const rows = items
     .filter((item) => item.unitPrice > 0)
-    .map((item) => ({ name: item.name, lineTotal: roundMoney(display(item.unitPrice, item.medicine) * item.qty) }))
-    .sort((a, b) => b.lineTotal - a.lineTotal)[0];
-  return top ? { cap, priciest: top } : { cap };
+    .map((item) => ({ name: item.name, qty: item.qty, unit: roundMoney(display(item.unitPrice, item.medicine)), lineTotal: roundMoney(display(item.unitPrice, item.medicine) * item.qty) }));
+  const top = [...rows].sort((a, b) => b.lineTotal - a.lineTotal)[0];
+  if (!top) return { cap };
+  const excess = total != null ? roundMoney(total - cap) : 0;
+  if (excess > 0) {
+    type Cut = { name: string; lineTotal: number; saves: number; reduceTo?: number; qty?: number };
+    const cuts: Cut[] = [
+      ...rows.filter((r) => r.lineTotal >= excess).map((r) => ({ name: r.name, lineTotal: r.lineTotal, saves: r.lineTotal })),
+      ...rows
+        .filter((r) => r.qty > 1)
+        .map((r) => ({ r, k: Math.ceil(excess / r.unit - 1e-9) }))
+        .filter(({ r, k }) => k < r.qty)
+        .map(({ r, k }) => ({ name: r.name, lineTotal: roundMoney(r.unit * k), saves: roundMoney(r.unit * k), reduceTo: r.qty - k, qty: r.qty }))
+    ].sort((a, b) => a.saves - b.saves);
+    const best = cuts[0];
+    if (best) return { cap, priciest: { name: best.name, lineTotal: best.lineTotal, ...(best.reduceTo != null ? { reduceTo: best.reduceTo, qty: best.qty } : {}) } };
+  }
+  return { cap, priciest: { name: top.name, lineTotal: top.lineTotal } };
 }

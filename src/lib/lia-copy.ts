@@ -2343,7 +2343,17 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null; etaNote?: string | null }): string {
+// Limite dito × oferta de juntar (11/10, rodada 17 R17-10): diz qual forma cabe, ou que nenhuma cabe.
+export function consolidationBudgetNote(cap: number, joinedTotal: number, keptTotal: number): string | null {
+  const joinedFits = joinedTotal <= cap + 0.005;
+  const keptFits = keptTotal <= cap + 0.005;
+  if (joinedFits && keptFits) return null;
+  if (joinedFits) return `💰 Juntando fica dentro do seu limite de *${brl(cap)}*; mantendo como está, passa.`;
+  if (keptFits) return `💰 Mantendo como está fica dentro do seu limite de *${brl(cap)}*; juntando, passa.`;
+  return `⚠️ Dos dois jeitos passa do seu limite de *${brl(cap)}* — depois eu te digo o que dá pra tirar.`;
+}
+
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null; etaNote?: string | null; budgetNote?: string | null }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   // Espaço/acento a mais no nome do catálogo da outra loja também é o mesmo produto (10/10, rodada 10 g29, B5).
   const flat = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -2360,6 +2370,7 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
     ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
     ...(input.minimumNote ? [input.minimumNote] : []),
+    ...(input.budgetNote ? [input.budgetNote] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
 }
@@ -2650,7 +2661,15 @@ export function todayOnOrder(whens: string[], info: string): string {
   return `${todayVerdictHead(whens)}${info ? ` ${info}` : ""}`;
 }
 
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = []): string {
+// Limite dito pro pedido (11/10, rodada 17 R17-10: "até 300 reais" só aparecia no resumo final): o parcial diz quanto
+// sobra ou que já passou só nos produtos (a entrega ainda vem por cima).
+function partialBudgetLine(produtos: number, cap?: number): string | null {
+  if (cap == null || cap <= 0) return null;
+  if (produtos > cap + 0.005) return `⚠️ Só nos produtos já passou do seu limite de *${brl(cap)}* (${brl(Math.round((produtos - cap) * 100) / 100)} a mais), e a entrega vem por cima.`;
+  return `💰 Do seu limite de *${brl(cap)}*, sobram ${brl(Math.round((cap - produtos) * 100) / 100)} pra entrega e o resto.`;
+}
+
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
@@ -2664,7 +2683,8 @@ export function partialTotal(items: CopyBasketItem[], produtos: number, pendingC
         ? `_Falta escolher: ${missing.join(", ")}. Aí sai o total com a entrega._`
         : `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
       : '_Diz *"só isso"* que eu mando o total com a entrega._';
-  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), tail].join("\n");
+  const budget = partialBudgetLine(produtos, budgetCap);
+  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), ...(budget ? [budget] : []), tail].join("\n");
 }
 
 // ---------- concierge manual (largura + cotação do operador) ----------
@@ -3106,10 +3126,12 @@ export function missRemoved(items: string[]): string {
 // `joinRuledOut` (10/10, rodada 14 g41): a Lia já disse que não dá pra juntar essas lojas — o resumo não oferece de novo
 // (a 304 dizia "não achei em menos lojas" e logo "dá pra juntar as lojas"); a saída é trocar um item por opção de uma loja
 // que já está no pedido. Frete maior que os produtos é dito, porque é o que estoura o limite.
-export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number }, deliveries?: number, opts: { joinRuledOut?: boolean; produtos?: number; frete?: number } = {}): string {
+export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number; reduceTo?: number; qty?: number }, deliveries?: number, opts: { joinRuledOut?: boolean; produtos?: number; frete?: number } = {}): string {
   const many = (deliveries ?? 1) > 1;
   const ways = [
-    priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
+    priciest?.reduceTo != null && priciest.qty != null
+      ? `baixar *${priciest.name}* de ${priciest.qty} para ${priciest.reduceTo} (−${brl(priciest.lineTotal)})`
+      : priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
     ...(many ? [opts.joinRuledOut ? "trocar um item por uma opção de loja que já está no pedido (cai uma entrega)" : "*juntar* as lojas pra baixar o frete"] : [])
   ];
   const freightHeavy = opts.frete != null && opts.produtos != null && opts.produtos > 0 && opts.frete > opts.produtos + 0.009
@@ -3186,7 +3208,7 @@ export function manualQuoteSummary(input: {
   // Itens pedidos que ficaram sem produto (10/10, rodada 7 A4): o resumo final diz o que NÃO vem.
   leftOut?: string[];
   // Orçamento do pedido dito na conversa e estourado (10/10, rodada 8 M3).
-  overBudget?: { cap: number; priciest?: { name: string; lineTotal: number } };
+  overBudget?: { cap: number; priciest?: { name: string; lineTotal: number; reduceTo?: number; qty?: number } };
   // Juntar já descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo.
   joinRuledOut?: boolean;
   // Juntar possível mas mais demorado (não ofereci sozinha): o aviso de frete diz isso.
