@@ -166,6 +166,7 @@ export async function opsPublishManualQuote(
   // de outra sessão no meio do papo (27/08 S19, resumo do PS5 na sessão do arroz).
   let conversationMovedOn = false;
   let neededBy: { date: string; label: string; morning?: boolean; hour?: number } | undefined;
+  let urgent = false;
   let orderBudget: { cap: number } | undefined;
   let joinRuledOut = false;
   let joinSlower: { eta: string; saving: number } | undefined;
@@ -175,6 +176,7 @@ export async function opsPublishManualQuote(
     if (convo) {
       const ctx = readCtx(convo.context);
       neededBy = ctx.neededBy;
+      urgent = Boolean(ctx.urgent);
       orderBudget = ctx.orderBudget;
       // Juntar já descartado para ESTA cesta (10/10, rodada 14 g41): o fechamento tentou e não juntou (ou o cliente pediu e a
       // Lia disse que não dá) — o resumo não oferece juntar de novo.
@@ -238,6 +240,9 @@ export async function opsPublishManualQuote(
     deliveryAddress: order.deliveryAddress ?? undefined,
     sameHour,
     ...(neededBy && promiseMissesDeadline(input.deliveryPromise, neededBy) ? { deadlineMiss: { label: neededBy.label } } : {}),
+    // "urgente / to sem nada em casa" sem dia dito (11/10, rodada 19 g52, R19a-5): o aviso saía só no 1º cartão e o resumo de
+    // 3 dias úteis fechava calado. Sem prazo dito, urgente = hoje.
+    ...(!neededBy && urgent && !conversationMovedOn && promiseMissesDeadline(input.deliveryPromise, new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" })) ? { urgentMiss: true } : {}),
     // Prazo dito e cumprido (10/10, rodada 10 g29): o resumo diz que serve.
     ...(() => {
       const fit = neededBy && !conversationMovedOn ? deadlineFit(input.deliveryPromise, neededBy) : null;

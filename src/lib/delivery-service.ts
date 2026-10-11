@@ -2770,6 +2770,10 @@ export async function handleDeliveryMessage(input: {
         meta.inboundText = text;
         meta.prevSent = lastSent && Date.now() - lastSent.at < REPEAT_WINDOW_MS ? lastSent.texts : [];
         meta.onScreenQuery = startCtx.step === "choosing" ? startCtx.pending?.[0]?.query ?? null : null;
+        // Prazo/urgência já guardados valem também no turno do formulário (11/10, rodada 19 g52, R19a-5): o cadastro não
+        // passa pelo handleDeliveryTurn, e a 1ª vitrine (coca de 3 dias úteis pra "amanhã") saía sem o "⏰ não chega".
+        if (startCtx.neededBy && !meta.neededBy) meta.neededBy = startCtx.neededBy;
+        if (startCtx.urgent) meta.urgentOrder = true;
       }
     }
     // Contexto sem CEP (conversa nova/limpa): o CEP salvo do cliente define a área da busca.

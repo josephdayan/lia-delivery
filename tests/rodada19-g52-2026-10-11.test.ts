@@ -13,9 +13,11 @@ import type { DialogueAction } from "../src/lib/dialogue/types";
 import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
-import { declinesSwapOffer, meaningfulProductTokens, mergeShoppingLines, parseBasketLines, parseChoiceReply, parseStoreSwapAsk, replaceRefinedSize, splitLeadingSwapDecline } from "../src/lib/lia-intents";
+import { declinesSwapOffer, meaningfulProductTokens, mergeShoppingLines, parseBasketLines, parseNeededBy, parseChoiceReply, parseStoreSwapAsk, replaceRefinedSize, splitLeadingSwapDecline } from "../src/lib/lia-intents";
 import { resolveListItems } from "../src/lib/list-items";
 import { dropAddressOnlyItems, onboardingNote, peelPersonName } from "../src/lib/address-parse";
+import type { LiveItemCheck } from "../src/lib/live-availability";
+import * as copy from "../src/lib/lia-copy";
 import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -321,4 +323,40 @@ test("R19a-3: 'e 2 apontadores' (det no plural) e 'apontador' (IA no singular) s
   assert.equal(sharpeners.length, 1, JSON.stringify(merged));
   assert.equal(sharpeners[0].qty, 2);
   assert.equal(merged.length, 5);
+});
+
+// ---------------------------------------------------------------- R19a-5: prazo com hora, prazo no turno do cadastro, urgente
+
+const allSlow = (estimate: string) => async (_store: string, skus: string[]) =>
+  new Map<string, LiveItemCheck>(skus.map((sku) => [sku, { sku, available: true, fee: 9.9, estimate, etaMinutes: 3 * 1440, fastFee: 9.9, fastEstimate: estimate, fastEtaMinutes: 3 * 1440 }]));
+
+test("R19a-5: 'amanhã às 10h' no fim da lista é prazo (e 'abre/pago amanhã às 10h' não é)", () => {
+  const now = new Date("2026-10-11T15:00:00Z");
+  const d = parseNeededBy("preciso de arroz 5kg e feijão carioca amanhã às 10h", now);
+  assert.equal(d?.label, "amanhã às 10h");
+  assert.equal(d?.date, "2026-10-12");
+  assert.equal(d?.hour, 10);
+  assert.equal(parseNeededBy("a loja abre amanhã às 7h", now), null);
+  assert.equal(parseNeededBy("eu pago amanhã às 10h, preciso de arroz", now), null);
+});
+
+test("R19a-5: prazo dito antes do cadastro vale na 1ª vitrine (turno do formulário)", async (t) => {
+  if (!dbOk) return t.skip();
+  __setLiveSimulateForTests(allSlow("3bd"), () => true);
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  await prisma.user.create({ data: { phone } });
+  await send(phone, "vou fazer um churrasco amanha, preciso de arroz e feijão");
+  const start = outbox.length;
+  await runTurnScoped(() => handleDeliveryMessage({ phone, text: "", messageId: `g52_${RUN}_${++seq}`, flowResponse: { nome: "Teste Silva", cpf: "52998224725", cep: "01310100", numero: "1000", complemento: "", flow_token: "lia-cadastro" } } as Parameters<typeof handleDeliveryMessage>[0]));
+  const out = outbox.slice(start).filter((m) => m.to === phone).map((m) => m.text).join("\n---\n");
+  assert.match(out, /Cadastro feito/);
+  assert.match(out, /Pra \*amanhã\* não chega/, out.slice(0, 900));
+});
+
+test("R19a-5: 'urgente' sem dia e entrega que não é hoje — o resumo repete o aviso", () => {
+  const base = { items: [{ qty: 5, name: "Macarrão Instantâneo", lineTotal: 20 }], produtos: 20, frete: 9.9, deliveryPromise: "prazo da loja: 3 dias úteis", total: 29.9 };
+  assert.match(copy.manualQuoteSummary({ ...base, urgentMiss: true }), /é urgente, mas essa entrega não chega hoje \(prazo: \*3 dias úteis\*\)/);
+  assert.doesNotMatch(copy.manualQuoteSummary(base), /urgente/);
+  // Com prazo dito, quem fala é o aviso do prazo (uma linha só).
+  assert.doesNotMatch(copy.manualQuoteSummary({ ...base, urgentMiss: true, deadlineMiss: { label: "amanhã" } }), /urgente/);
 });

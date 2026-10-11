@@ -578,8 +578,25 @@ function parseDayHour(text: string): number | null {
   return hour >= 1 && hour <= 23 ? hour : null;
 }
 
+// "preciso de arroz 5kg e feijão carioca amanhã às 10h" (11/10, rodada 19 g52, R19a-5): o dia com hora marcada, numa
+// mensagem de necessidade, é prazo mesmo longe do "preciso" — antes a lista no meio passava dos 30 caracteres e a hora
+// sumia sem aviso. "abre amanhã às 7h" / "pago amanhã às 10h" seguem fora.
+function dayWithHourNeed(text: string, now: Date): { date: string; label: string } | null {
+  const n = normalizeMsg(text);
+  const m = /\b(hoje|amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(?:-feira)?(?:\s+(?:de\s+manha|a\s+tarde|a\s+noite))?\s+(?:as|a)\s+\d{1,2}(?:\s*(?:h|hs|hrs?|horas?)\b|:\d{2}\b|h\d{2}\b)/.exec(n);
+  if (!m) return null;
+  if (!/\b(?:preciso|precisa|precisando|tem que|necessito|quero|queria)\b/.test(n)) return null;
+  if (/\b(?:abre\w*|fecha\w*|funciona\w*|horario|pago|pagar|pagamento|volto|falo|respondo|vejo|ligo)\b/.test(n)) return null;
+  const shift = (days: number) => SP_DATE(new Date(now.getTime() + days * 86_400_000));
+  if (m[1] === "hoje") return { date: shift(0), label: "hoje" };
+  if (m[1] === "amanha") return { date: shift(1), label: "amanhã" };
+  const dow = WEEKDAYS.find(([name]) => name === m[1])![1];
+  const today = new Date(`${SP_DATE(now)}T12:00:00Z`).getUTCDay();
+  return { date: shift(((dow - today + 7) % 7) || 7), label: m[1] === "sabado" ? "sábado" : m[1] === "terca" ? "terça" : m[1] };
+}
+
 export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean; hour?: number } | null {
-  const day = parseNeededDay(text, now);
+  const day = parseNeededDay(text, now) ?? dayWithHourNeed(text, now);
   // "até sexta às 19h" (11/10, rodada 18 g50): a hora colada no dia do prazo também vale — só com o dia já entendido como
   // prazo ("abre sexta às 7h" não é prazo, e o dia não passa).
   const hour = parseNeededHour(text) ?? (day ? parseDayHour(text) : null);

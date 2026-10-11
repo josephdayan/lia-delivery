@@ -964,6 +964,12 @@ export function expensiveShippingNote(produtos: number, entrega: number, deliver
   return [];
 }
 
+// "urgente" sem dia dito e a entrega não chega hoje (11/10, rodada 19 g52, R19a-5): o resumo repete o aviso do 1º cartão.
+export function urgentMissNote(promise?: string): string {
+  const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
+  return `⚠️ Você disse que é urgente, mas essa entrega não chega hoje${prazo ? ` (prazo: *${prazo}*)` : ""}. Se não der, me avisa antes de pagar.`;
+}
+
 // "Você precisa pra amanhã, mas a entrega sai em 2 dias úteis" — o cliente não deve descobrir só depois de pagar.
 export function deadlineMissNote(label: string, promise?: string): string {
   // Sem o "2 entregas ·" da linha de entrega (10/10, rodada 5 g16: "sai em 2 entregas · 2 dias úteis").
@@ -3272,6 +3278,8 @@ export function manualQuoteSummary(input: {
   sameHour?: boolean;
   // Cliente disse um prazo ("amanhã") e a entrega não cumpre: uma linha logo abaixo do total (rodada 4, M6).
   deadlineMiss?: { label: string };
+  // Cliente disse "urgente" sem dia e a entrega não é hoje (11/10, rodada 19 g52, R19a-5).
+  urgentMiss?: boolean;
   // Prazo dito que a entrega cumpre (10/10, rodada 10 g29): o resumo diz que serve (ou que chega sem hora marcada).
   deadlineFit?: { label: string; morning?: boolean; fit: DeadlineFit };
   // Orçamento do pedido dito e respeitado (10/10, rodada 10 g29: "vai ficar dentro dos 60?" ficava sem resposta).
@@ -3304,6 +3312,7 @@ export function manualQuoteSummary(input: {
     `*Total: ${brl(input.total)}*`,
     ...(input.deadlineMiss ? [deadlineMissNote(input.deadlineMiss.label, input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.deadlineFit ? [deadlineFitNote(input.deadlineFit, input.deadlineFit.fit)] : []),
+    ...(!input.deadlineMiss && input.urgentMiss ? [urgentMissNote(input.deliveryPromise)] : []),
     ...(!input.deadlineMiss && input.slowDelivery ? [slowDeliveryNote(input.slowDelivery.store, input.slowDelivery.promise)] : []),
     ...(!input.overBudget && input.withinBudget ? [`✅ Dentro do seu limite de ${brl(input.withinBudget.cap)}.`] : []),
     ...(input.overBudget ? [overBudgetSummaryNote(input.overBudget.cap, input.total, input.overBudget.priciest, input.deliveries, { joinRuledOut: input.joinRuledOut, produtos: input.produtos, frete: input.frete + (input.serviceLine ?? 0) })] : []),
