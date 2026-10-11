@@ -1389,7 +1389,7 @@ export function sharesProductNoun(a: string, b: string): boolean {
 // Erro de digitação ou de acento (10/10, rodada 15 A3): "lampda led 9w" (linha crua do parser) e "lâmpada led 9w" (a da IA)
 // são a MESMA linha — viravam 2 itens e 8 lâmpadas. Mesmas palavras na mesma ordem, só UMA diferente e a 1 letra de distância
 // (trocada, a mais, a menos ou invertida), palavra de 5+ letras e pelo menos outra igual: "cerveja"/"cereja" sozinhas não fundem.
-function oneEditApart(a: string, b: string): boolean {
+export function oneEditApart(a: string, b: string): boolean {
   if (a === b || Math.abs(a.length - b.length) > 1) return false;
   let i = 0;
   while (i < a.length && i < b.length && a[i] === b[i]) i++;
@@ -1821,12 +1821,12 @@ const REJECT_BARE_RE =
 
 // "só isso", "mais nada", "é só" — o cliente FECHOU a lista; hora de mostrar o total.
 const DONE_RE =
-  /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?)[\s,!.]*$/;
+  /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?|(isso )?(e|é|eh) tudo( mesmo)?|era so isso( mesmo)?)[\s,!.]*$/;
 
 // "nenhum, só isso mesmo. quanto fica?" / "não, pode fechar. quanto deu?" (10/10, rodada 11 M1): a recusa na frente ("não",
 // "nenhum") responde a pergunta aberta e o resto fecha a lista com o total — levava 3 turnos.
 const DONE_WITH_TOTAL_RE =
-  /^(?:(?:nao|n|nenhum\w*|nada)[\s,!.]+(?:obrigad\w*[\s,!.]+)?)?(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|pronto|pode fechar|fecha(?: ai| o pedido| pra mim)?|pode finalizar|finaliza)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
+  /^(?:(?:nao|n|nenhum\w*|nada)[\s,!.]+(?:obrigad\w*[\s,!.]+)?)?(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|(?:isso )?(?:e|eh) tudo( mesmo)?|era (?:so )?isso( mesmo)?|pronto|pode fechar|fecha(?: ai| o pedido| pra mim)?|pode finalizar|finaliza)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
 
 // "não recebi o código", "o pix expirou", "manda o pix de novo", "perdi o link".
 const RESEND_CODE_RE =
@@ -2051,6 +2051,21 @@ export function parseMeasureMixup(text: string, query: string): { wrong: string;
   const want = `${said[1]} ${unit}`;
   if (said[1].replace(",", ".") === inQuery[1].replace(",", ".") && (!said[2] || said[2][0] === inQuery[2][0])) return null;
   return { wrong: `${inQuery[1]} ${inQuery[2]}`, want };
+}
+
+// "o sabão em pó da farmácia indiana" (11/10, rodada 22 g60, R22-5): item + loja citada pelo nome, sem verbo. Com o item
+// já na cesta (de outra loja), é pedido de trocar a loja dele — virava o item novo "sabão em pó". `stores` = nomes de loja.
+export function parseItemAtStore(text: string, stores: string[]): { item: string; store: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!n || n.split(" ").length > 10) return null;
+  const body = n.replace(/^(?:(?:e|ah|entao|pode ser|quero|queria|prefiro|melhor|na verdade|troca pro|troca pelo|troca pela)\s+)+/, "");
+  for (const name of stores) {
+    const label = normalizeMsg(name).replace(/[^a-z0-9]+/g, " ").trim();
+    if (!label) continue;
+    const m = new RegExp(`^(?:(?:o|a|os|as|um|uma)\\s+)?(.{3,40}?)\\s+(?:d[aoe]s?|na|no|pela|pelo)\\s+(?:loja\\s+)?${label.replace(/\s+/g, "\\s+")}(?:\\s+(?:mesmo|entao|por favor|pf))?$`).exec(body);
+    if (m && meaningfulProductTokens(m[1]).length) return { item: m[1].trim(), store: name };
+  }
+  return null;
 }
 
 export function parseStoreSwapAsk(text: string): { item?: string } | null {
@@ -2403,6 +2418,13 @@ export function detectIntent(text: string): Intent {
     return { kind: "hold" };
   }
 
+  // "oi voltei! esqueci de falar, tira a fita adesiva ... e põe também um cabo usb c" (11/10, rodada 22 g60, R22-8): a volta
+  // é só a abertura — a ordem que vem depois é o pedido (antes: "Bem-vinda de volta" e nada mudava).
+  const backLead = /^(?:(?:oi+|ola|opa|e ai|eai|pronto|bom|ok|lia)[\s,!.]+)*voltei\b[\s,!.]*(?:(?:esqueci|esqueci de|eu esqueci de)\s+(?:falar|dizer|avisar|te falar|te dizer|pedir)[\s,!.:]*)?(.+)$/.exec(n);
+  if (backLead && /\b(tira|tirar|remove|remover|retira|troca|trocar|muda|mudar|poe|por|coloca|colocar|bota|botar|adiciona|adicionar|acrescenta|inclui|quero|preciso|manda)\b/.test(backLead[1])) {
+    const inner = detectIntent(backLead[1]);
+    if (inner.kind !== "resume_where" && inner.kind !== "greeting") return inner;
+  }
   // "pronto voltei, onde a gente tava?" — retomar com resumo do estado (28/08 S20).
   if (
     /\b(pronto )?voltei\b|\bonde (a gente |nos |que )?(tava(mos)?|estava(mos)?|parou|paramos)\b|\bvamos continuar\b|\bcontinua(r)? (de onde|dali|o pedido)\b/.test(n) &&
