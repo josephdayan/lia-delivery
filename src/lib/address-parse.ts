@@ -3,7 +3,7 @@
 // tests/feedback-2026-10-06-cadastro.test.ts.
 import { resolveListItems } from "@/lib/list-items";
 import { localCatalogProbe } from "@/lib/stores/list-probe";
-import { CEP_RE, CEP_RE_GLOBAL, isNarrativeSegment, isWaitGripe, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
+import { CEP_RE, CEP_RE_GLOBAL, isKeepSeparateReply, isNarrativeSegment, isWaitGripe, keepsSummaryAsIs, normalizeMsg, parseAddressComplement, parseNeededBy, type ParsedLine } from "@/lib/lia-intents";
 
 // Tipo de logradouro. Os fortes valem em minúscula ("rua augusta"); os fracos ("largo",
 // "praça", "estrada") só com a palavra seguinte em maiúscula — "calça larga" não é endereço.
@@ -466,6 +466,9 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   const lines = resolved.filter((line) => {
     const n = normalizeMsg(line.phrase);
     if (bareCardIsItem && /^(?:um |uns )?cartao(?:zinho)?s?$/.test(n)) return true;
+    // "mantém como está" / "deixa assim" antes do cadastro (11/10, rodada 18 g50, R18a-6): resposta de confirmação, nunca
+    // item ("✅ Anotei: 1x mantém como está" e depois "não achei").
+    if (keepsSummaryAsIs(line.phrase) || isKeepSeparateReply(line.phrase)) return false;
     // "a visita chega hoje", "a festa é sábado" (10/10, rodada 13 g37): o prazo é anotado à parte, não é item.
     if (parseNeededBy(line.phrase) && /\b(?:chega\w*|cheg[ao]u?|vem|vai ser|e|eh|sera|comeca|acontece)\b/.test(n)) return false;
     if (/^(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s/i.test(line.phrase.trim()) && (/\b0+\b/.test(line.phrase) || /\bsem nome\b/i.test(line.phrase))) return false;

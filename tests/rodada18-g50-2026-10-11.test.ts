@@ -268,3 +268,52 @@ test("R18-14: o formulário de cadastro sai uma vez; as linhas seguintes do pedi
     else process.env.LIA_FLOW_SIGNUP_ID = prev.flow;
   }
 });
+
+// ---------------------------------------------------------------- reteste (grupo A): R18a-4, R18a-6, R18a-9
+
+test("R18a-4: 'dipirona e um antiácido, e também amoxicilina' antes do cadastro recusa só a amoxicilina", async (t) => {
+  if (!dbOk) return t.skip();
+  process.env.LIA_MEDICINE_MIP = "true";
+  try {
+    const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+    await prisma.user.create({ data: { phone } });
+    await send(phone, "oi");
+    const out = await send(phone, "preciso de dipirona e um antiácido, e também amoxicilina");
+    assert.match(out, /Amoxicilina\* precisa de receita/);
+    const convo = await prisma.conversation.findFirstOrThrow({ where: { user: { phone } } });
+    const pending = (JSON.parse(convo.context ?? "{}") as DeliveryContext).pendingRequest ?? "";
+    assert.match(pending, /dipirona/);
+    assert.match(pending, /anti[aá]cido/);
+    assert.doesNotMatch(pending, /amoxicilina/i);
+  } finally {
+    delete process.env.LIA_MEDICINE_MIP;
+  }
+});
+
+test("R18a-6: 'mantém como está' antes do cadastro não é item", async (t) => {
+  if (!dbOk) return t.skip();
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  await prisma.user.create({ data: { phone } });
+  await send(phone, "oi");
+  const out = await send(phone, "mantém como está");
+  assert.doesNotMatch(out, /Anotei|mantém como está/i);
+  const convo = await prisma.conversation.findFirstOrThrow({ where: { user: { phone } } });
+  assert.equal((JSON.parse(convo.context ?? "{}") as DeliveryContext).pendingRequest, undefined);
+});
+
+test("R18a-9: 'pode juntar' com a oferta de troca em carrossel diz para tocar no cartão ou pular", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith(
+    {
+      basket: [bi("americanas-9", "Tapete Higiênico 30 Unidades", 59.9), TERRA],
+      pending: [{ query: "tapete higiênico", qty: 1, qtyExplicit: true, replaceSku: "americanas-9", options: [opt("cobasi-77", "Tapete Higiênico Super Secão 30 un", 61.9, "cobasi", "Cobasi")] }],
+      closeAfterChoices: true,
+      costlySwapOffered: true
+    },
+    "choosing"
+  );
+  const out = await send(c.phone, "pode juntar");
+  assert.match(out, /toca em \*Adicionar ao carrinho\* no cartão[\s\S]*\*pula\*/, out);
+  assert.doesNotMatch(out, /quando terminar de escolher/);
+  assert.equal((await ctxOf(c.convoId)).basket?.length, 2);
+});

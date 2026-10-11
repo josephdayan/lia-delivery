@@ -2438,6 +2438,10 @@ export function consolidationMinimumNote(kept: Array<{ store: string; min: numbe
   return `⚠️ ${parts.join("; ")}.`.replace(/^⚠️ m/, "⚠️ M").replace(/^⚠️ j/, "⚠️ J");
 }
 
+// "pode juntar" com a oferta de troca em carrossel na tela (11/10, rodada 18 g50): diz o que fazer nela.
+export function joinPickCardHint(item: string): string {
+  return `Pra juntar, toca em *Adicionar ao carrinho* no cartão de *${item}* que você quer (ele entra no lugar do que está na cesta) — ou diz *pula* pra manter como está.`;
+}
 // "junta" pedido por texto sem nada a juntar (10/10, rodada 5 A4): diz por quê; o total na mesa continua valendo.
 export function joinNotPossible(stores: number, storeLabel?: string): string {
   return storeLabel

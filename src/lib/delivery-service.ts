@@ -136,6 +136,17 @@ function refusesWholeMessage(text: string): boolean {
   // "dipirona, vê se tem em alguma farmácia": o resto é só a pergunta sobre farmácia, não item de compra.
   return lines.length <= 1 || lines.every((line) => blocksMedicine(line.phrase) || /\b(?:farmacias?|drogarias?)\b/.test(normalizeMsg(line.phrase)));
 }
+// Pedido guardado antes do cadastro com remédio de receita no meio (11/10, rodada 18 g50, R18a-4): tira só os pedaços de
+// receita (avisa com o nome) e devolve o resto. Com o isento desligado, nada muda (a mensagem já foi recusada antes).
+async function dropPrescriptionNotes(phone: string, ctx: DeliveryContext, note: string): Promise<string> {
+  if (!medicineEnabled()) return note;
+  const pieces = note.split(", ").filter(Boolean);
+  const dropped = pieces.filter((seg) => blocksMedicine(seg));
+  if (!dropped.length || dropped.length === pieces.length) return note;
+  ctx.medicineRefusedAt = Date.now();
+  await reply(phone, copy.prescriptionSkippedNote(dropped.map((seg) => seg.replace(/^\d+\s+/, ""))));
+  return pieces.filter((seg) => !blocksMedicine(seg)).join(", ");
+}
 function noMedicineCopy(text?: string): string {
   if (text && isVetMedicineAsk(text)) return copy.vetMedicineRefusal();
   if (!medicineEnabled()) return copy.noMedicine();
@@ -3159,6 +3170,12 @@ async function handleDeliveryTurn(
   // "sim" seguinte ia ao resumo com as 4 entregas). Anota e junta no fechamento; a escolha na tela continua.
   if (!ctx.consolidationOffer && ctx.pending?.length && ctx.step === "choosing") {
     const joinAsk = parseJoinStoresAsk(text, listStores().map((store) => store.label));
+    // A tela já é a oferta de troca em carrossel (11/10, rodada 18 g50, R18a-9): "pode juntar" responde com o que fazer
+    // nela — tocar no cartão ou dizer "pula" —, não "quando terminar de escolher" (o cliente seguia sem escolher).
+    if (joinAsk && ctx.pending[0].replaceSku && ctx.closeAfterChoices) {
+      await reply(phone, copy.joinPickCardHint(shownQuery(ctx.pending[0])));
+      return;
+    }
     if (joinAsk) {
       ctx.joinWanted = { ...(joinAsk.store ? { store: joinAsk.store } : {}), at: Date.now() };
       if (joinAsk.store) ctx.preferredStore = joinAsk.store;
@@ -5750,7 +5767,11 @@ async function handleDeliveryTurn(
     }
     // Só o que tem cara de produto é anotado (06/10, M1): "sou a Clara Souza", "gostaria de
     // fazer um pedido", "vi o anúncio", história pessoal e "me liga" ficam de fora.
-    const note = !recNote && intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    let note = !recNote && intent.kind === "free_text" ? onboardingNote(priceAsk ?? text).text : "";
+    // "dipirona e um antiácido, e também amoxicilina" antes do cadastro (11/10, rodada 18 g50, R18a-4): só o de receita sai
+    // (com o nome dele na nota); os isentos ficam anotados. Antes a mensagem inteira era recusada e o "só isso" depois do
+    // cadastro dava "Sua cesta está vazia".
+    if (note && blocksMedicine(text)) note = await dropPrescriptionNotes(phone, ctx, note);
     if (recNote) ctx.pendingRecommend = recNote.text;
     // Despedida depois da recusa de remédio ("vou procurar uma farmácia, obrigada"): sem pedido novo, sem
     // pedir endereço de novo (07/10, c08).
@@ -7610,8 +7631,12 @@ async function handleDeliveryAddress(
       await askStreetOrSignup(phone, ctx, userCep);
       return;
     }
-    const note = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
-    if (note && queryTokens(note).length && !blocksMedicine(address)) {
+    const rawNote = kind === "free_text" && !parseHouseNumberReply(address) ? onboardingNote(address).text : "";
+    // Isento + de receita (11/10, rodada 18 g50, R18a-4): só o de receita sai, com o nome na nota; antes a mensagem inteira
+    // sumia calada ("só isso" depois do cadastro dava "Sua cesta está vazia").
+    const rx = rawNote && blocksMedicine(address) ? await dropPrescriptionNotes(phone, ctx, rawNote) : rawNote;
+    const note = rx && !blocksMedicine(rx) ? rx : "";
+    if (note && queryTokens(note).length) {
       addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? address);
     }
     ctx.step = "need_address";

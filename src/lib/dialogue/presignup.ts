@@ -320,6 +320,9 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
   // receita nomeado, o caminho determinístico anota o remédio isento com o resto.
   if (medicine && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  // Isento + de receita na mesma mensagem ("dipirona e um antiácido, e também amoxicilina", 11/10, rodada 18 g50): o caminho
+  // determinístico recusa só o de receita e anota os isentos — aqui a IA devolvia só "remédio" e os isentos sumiam.
+  if (medicine && opts.text && medicineEnabled() && looksLikePrescriptionRequest(opts.text) && resolveListItems(stripMedicineNegation(opts.text)).some((seg) => looksLikeMedicine(seg.phrase) && !looksLikePrescriptionRequest(seg.phrase))) return { ok: false, reason: "remedio_misto" };
   // Pedir pessoa vale mais que qualquer outra coisa na mesma mensagem: o dono é avisado pelo caminho fixo.
   if (d.human) return { ok: true, steps: [{ type: "human" }], label: "human" };
   const steps: PreStep[] = [];
