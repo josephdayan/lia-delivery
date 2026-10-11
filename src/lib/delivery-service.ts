@@ -55,7 +55,7 @@ import { latestAcquisitionTouchId, mergeAcquisition, recordAcquisitionTouch, str
 // dashboard drives. Intent detection lives in lia-intents (pure, unit-tested) and
 // every customer-facing string lives in lia-copy.
 import type { ListFlowCtx, ListFlowCtxSlot, ListMiss, ListMissReason } from "./conversation-types";
-import { applyPetHint, baseSenseFor, cleanAskPhrase, petHintForTurn } from "./query-sense";
+import { applyPetHint, applyPhraseSynonyms, baseSenseFor, cleanAskPhrase, contextSenseFor, petHintForTurn } from "./query-sense";
 import { isBareRacao, racaoStagesMixed, specKindOf, specAnswerLooksValid, specAnswerUnknown, combineSpecQuery, cartridgeForPrinter, type SpecAsk } from "./spec-ask";
 import { ACTIVE_ORDER_STATUSES, BasketItem, CANCELABLE_FALLBACK_STATUSES, ChoiceOption, ChoicesResult, DeliveryContext, ExtractedLines, PendingChoice, STORE_SEARCH_URL, basketForCopy, basketTriedKey, cardTotal, conciergeStoresBelowMinimum, display, orderDateLabel, orderItemsPreview, orderStore, roundMoney, storeMinReal } from "./conversation-types";
 import { createOpsLoginToken, opsLoginUrl } from "./auth";
@@ -418,7 +418,7 @@ async function buildChoices(
   const senseCurrent = [text, turnMeta.getStore()?.inboundText];
   const senseTexts = [...senseCurrent, ...(turnMeta.getStore()?.contextTexts ?? [])];
   const petHint = petHintForTurn(senseCurrent, turnMeta.getStore()?.contextTexts ?? []);
-  const sensedLines = extracted.lines.map((line) => ({ ...line, phrase: applyPetHint(cleanAskPhrase(line.phrase), petHint) }));
+  const sensedLines = extracted.lines.map((line) => ({ ...line, phrase: applyPetHint(applyPhraseSynonyms(cleanAskPhrase(line.phrase)), petHint) }));
   const baseLines = (opts?.askSpecs
     ? sensedLines.filter((line) => {
         const kind = specKindOf(line.phrase);
@@ -471,7 +471,11 @@ async function buildChoices(
       // de embalagem e a contagem saem da busca (são identidade da EMBALAGEM, não do produto) e
       // voltam como filtro: só packs; sem pack na vitrine, N unidades soltas.
       const pack = parsePackAsk(shownPhrase);
-      const searchPhrase = pack ? pack.core : shownPhrase;
+      const typedPhrase = pack ? pack.core : shownPhrase;
+      // "vela" numa festa de aniversário, "luva de borracha" na faxina (11/10, rodada 21 g58, R21-11 B3/B4): o sentido do
+      // contexto decide; "luva de borracha" busca como "luva" (a de látex não diz "borracha") e a de segurança sai abaixo.
+      const contextSense = crossStore ? contextSenseFor(typedPhrase, senseTexts) : null;
+      const searchPhrase = contextSense?.searchAs ?? typedPhrase;
       let candidates: StoreCandidate[];
       if (crossStore) {
         candidates = await gatherCrossStoreCandidates(searchPhrase, 12, 4, {
@@ -501,6 +505,18 @@ async function buildChoices(
           have.add(key);
           return true;
         });
+      }
+      // As buscas do tipo certo vêm na frente e o outro tipo sai; se nada sobrar, ficam as opções de antes.
+      if (contextSense && !baseSense) {
+        const extra = (await Promise.all(contextSense.extraQueries.map((q) => gatherCrossStoreCandidates(q, 12, 4)))).flat();
+        const have = new Set<string>();
+        const sensed = [...extra, ...candidates].filter((c) => {
+          const key = `${c.store.key}:${c.item.sku}`;
+          if (have.has(key) || contextSense.rejects(c.item.name)) return false;
+          have.add(key);
+          return true;
+        });
+        if (sensed.some((c) => conciergeMatchIsStrong(searchPhrase, c.item))) candidates = sensed;
       }
       let packQty: number | undefined;
       let packOnly = false;
@@ -6028,6 +6044,8 @@ async function handleDeliveryTurn(
     // cadastro dava "Sua cesta está vazia".
     if (note && blocksMedicine(text)) note = await dropPrescriptionNotes(phone, ctx, note);
     if (recNote) ctx.pendingRecommend = recNote.text;
+    // Teto da recomendação guardada vale pro pedido (11/10, rodada 21 g58, R21-8): "amigo secreto, máximo 60 reais" saía sem 💰.
+    if (recNote?.budget != null && !ctx.orderBudget) ctx.orderBudget = { cap: recNote.budget };
     // Despedida depois da recusa de remédio ("vou procurar uma farmácia, obrigada"): sem pedido novo, sem
     // pedir endereço de novo (07/10, c08).
     if (!note && !recNote && intent.kind === "free_text" && !isQuestion(text) && ctx.medicineRefusedAt != null && Date.now() - ctx.medicineRefusedAt < 60 * 60_000) {
@@ -6086,6 +6104,8 @@ async function handleDeliveryTurn(
     const lines = note ? resolveListItems(note) : [];
     if (note) addPendingRequest(ctx, note, turnMeta.getStore()?.inboundText ?? text);
     if (recNote) ctx.pendingRecommend = recNote.text;
+    // Teto da recomendação guardada vale pro pedido (11/10, rodada 21 g58, R21-8): "amigo secreto, máximo 60 reais" saía sem 💰.
+    if (recNote?.budget != null && !ctx.orderBudget) ctx.orderBudget = { cap: recNote.budget };
     ctx.flow = "delivery";
     ctx.step = "need_cep";
     await writeCtx(convo.id, ctx);
@@ -7514,8 +7534,12 @@ async function handleNewCep(
   const noted = notedForCopy(ctx, queued);
   const savedWithNoted = noted.length ? `${savedMsg}\n\n${copy.notedItemsLine(noted, notedExtras(ctx))}` : savedMsg;
   if (completingSignup && (await askCpfAtOnboarding(phone, userId, convoId, ctx, savedWithNoted, queued))) return;
+  // Nome, CPF e endereço numa mensagem só (11/10, rodada 21 g58, R21-11 B5): o cadastro fechou — a confirmação diz
+  // "Cadastro feito", como no formulário, e não só "Endereço salvo".
+  const identity = completingSignup ? await prisma.user.findUnique({ where: { id: userId }, select: { cpf: true, cpfName: true } }) : null;
+  const doneMsg = identity?.cpf && identity.cpfName ? copy.signupDoneByText(identity.cpfName.split(" ")[0], savedMsg) : savedMsg;
   if (queued || ctx.pendingRecommend) {
-    await reply(phone, savedMsg);
+    await reply(phone, doneMsg);
     await runQueuedRequest(phone, convoId, null, ctx, queued || undefined, userId, undefined);
     return;
   }
@@ -7642,7 +7666,9 @@ function notedForCopy(ctx: DeliveryContext, queued: string | undefined = ctx.pen
   // sufixo de cada item ("1x base mais barato"). Todos com ele: uma linha só no fim; a busca continua com o sufixo.
   const cheapAll = lines.length >= 2 && lines.every((line) => CHEAP_MODIFIER_RE.test(line.phrase) && line.phrase.replace(CHEAP_MODIFIER_RE, "").trim());
   const items = cheapAll ? [...lines.map((line) => label({ ...line, phrase: line.phrase.replace(CHEAP_MODIFIER_RE, "").trim() })), copy.notedCheapestEach()] : lines.map(label);
-  const rec = ctx.pendingRecommend ? detectRecommendation(ctx.pendingRecommend) : null;
+  // Lista dada depois do contexto (11/10, rodada 21 g58, R21-2): "aniversário do meu filho domingo, 150 reais" + "balão, vela,
+  // prato..." — os itens SÃO o pedido; a "recomendação de festa infantil" não é anotada (teto e prazo seguem nos extras).
+  const rec = ctx.pendingRecommend && !lines.length ? detectRecommendation(ctx.pendingRecommend) : null;
   return rec ? [...items, copy.recommendNoted(rec)] : items;
 }
 
@@ -7661,13 +7687,17 @@ async function runQueuedRequest(
 ) {
   const recText = ctx.pendingRecommend;
   delete ctx.pendingRecommend;
-  const req = recText && recommendEnabled() ? detectRecommendation(recText) : null;
+  // Itens guardados mandam (11/10, rodada 21 g58, R21-2): antes a recomendação ia sozinha e os itens ficavam só no log —
+  // a festa com balão/vela/prato/copo/guardanapo abria "Pra festa infantil" (Cheetos, bolo) e o "pula" apagava a lista.
+  // Com itens, a frase da recomendação é só contexto (teto/prazo já guardados) e não vira busca.
+  const queuedItems = queued ? resolveListItems(queued) : [];
+  const req = recText && recommendEnabled() && !queuedItems.length ? detectRecommendation(recText) : null;
   if (req) {
-    if (queued) console.log(`[recommend] pedido guardado com itens; itens não buscados: ${JSON.stringify(queued.slice(0, 120))}`);
     await handleRecommend({ phone, convoId, userId, userCep: cep, ctx }, { ...req, source: "presignup" });
     return;
   }
-  const text = [queued, recText].filter(Boolean).join(", ");
+  if (recText && queuedItems.length) console.log(`[recommend] pedido guardado com itens; recomendação não aberta: ${JSON.stringify(recText.slice(0, 120))}`);
+  const text = queuedItems.length ? queued : [queued, recText].filter(Boolean).join(", ");
   if (text) await handleSearch(phone, convoId, cep, ctx, text, searchUserId);
 }
 
@@ -11143,7 +11173,7 @@ function cheapestWithTies(options: ChoiceOption[]): { index: number; tied: numbe
 // dito, vale a mais barata ENTRE as que chegam a tempo (se alguma chega); e a conta é o que o cliente paga: produto +
 // a entrega de uma loja que ainda não está na cesta + o que faltaria pro pedido mínimo dela. Quando isso muda a escolha
 // em relação à etiqueta mais baixa, a nota diz por quê (o cliente pode voltar pra ela).
-function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: BasketItem[] = ctx.basket ?? []): { index: number; tied: number[]; note?: string } {
+export function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: BasketItem[] = ctx.basket ?? []): { index: number; tied: number[]; note?: string } {
   const raw = cheapestWithTies(p.options);
   if (p.options.length < 2) return raw;
   const deadline = ctx.neededBy;
@@ -11205,6 +11235,16 @@ function cheapestForOrder(ctx: DeliveryContext, p: PendingChoice, basket: Basket
   const picked = p.options[index];
   const tied = pool.filter((i) => cents(cost(p.options[i])) === cents(cost(picked)) && cents(display(p.options[i].unitPrice, p.options[i].medicine)) === cents(display(picked.unitPrice, picked.medicine)));
   const cheapestTag = p.options[raw.index];
+  // "o algodão mais barato" de 9 dias úteis (11/10, rodada 21 g58, R21-11 B8): a escolha fica, mas a nota diz qual chega
+  // antes e por quanto — o aviso genérico de prazo longo não dava a saída.
+  if (minutes(picked) >= LONG_WAIT_MINUTES && minutes(picked) > slowestNow) {
+    const quick = pool.filter((i) => i !== index && minutes(p.options[i]) >= 0 && minutes(p.options[i]) < LONG_WAIT_MINUTES);
+    const alt = quick.length ? quick.reduce((best, i) => (cents(cost(p.options[i])) < cents(cost(p.options[best])) ? i : best), quick[0]) : -1;
+    if (alt >= 0 && cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) {
+      const o = p.options[alt];
+      return { index, tied, note: copy.cheapestSlowAlternativeNote({ promise: picked.delivery ?? "", name: o.name, price: display(o.unitPrice, o.medicine), store: o.storeLabel, altPromise: o.delivery ?? "" }) };
+    }
+  }
   if (adultOnlyForBaby(p, cheapestTag) || cents(display(cheapestTag.unitPrice, cheapestTag.medicine)) >= cents(display(picked.unitPrice, picked.medicine))) return { index, tied };
   const extra = extraFor(cheapestTag);
   const reason = noneOnTime && deadline

@@ -74,7 +74,55 @@ const NOT_NAIL_BASE_RE =
 // Só "base" solta (com cor/preço no máximo): "base de unha", "base líquida", "base boca rosa" já dizem o tipo.
 const BARE_BASE_RE = /^bases?(?: (?:clara|media|escura|bege|nude|barata|baratinha|mais barata|mais barato|boa|de cor clara|tom claro|tom medio|tom escuro))?$/;
 
-export type BaseSense = { kind: "maquiagem" | "unha"; extraQueries: string[]; rejects: (name: string) => boolean };
+export type BaseSense = { kind: string; extraQueries: string[]; rejects: (name: string) => boolean; searchAs?: string };
+
+// ---------- outros itens que o contexto decide (11/10, rodada 21 g58, R21-11) ----------
+// B3: "vela" na festa de aniversário trazia "Vela Copo Kosher" / "Vela Castiçal"; B4: "luva de borracha" na faxina trazia
+// "Luva Segurança Tricô ... Borracha". Mesma forma do "base": buscas extras do tipo certo e o outro tipo sai (quem chama
+// mantém as opções de antes se nada sobrar).
+const PARTY_CONTEXT_RE = /\b(aniversarios?|niver|festa|festinha|parabens|bolo|mesversario|anos d[oa] (?:meu|minha))\b/;
+const CLEANING_CONTEXT_RE = /\b(faxina|limpeza|limpar|desinfetante|agua sanitaria|detergente|pano de chao|rodo|vassoura|saco de lixo|lavar louca|banheiro)\b/;
+// `explicit` = a frase já diz o tipo e vale sem contexto ("luva de borracha", "tesoura escolar").
+type ContextRule = { item: RegExp; explicit?: RegExp; context?: RegExp; kind: string; extraQueries: string[]; reject: RegExp; searchAs?: string };
+const SCHOOL_CONTEXT_RE = /\b(escola|escolar|material escolar|caderno|cadernos|lapis|apontador(?:es)?|borracha escolar|mochila|estojo|cola (?:branca|bastao)|giz de cera|regua)\b/;
+const CONTEXT_RULES: ContextRule[] = [
+  {
+    item: /^velas?(?: (?:de )?(?:numero|n)?\s*\d+| colorid[ao]s?| pequen[ao]s?| comum| simples)?$/,
+    context: PARTY_CONTEXT_RE,
+    kind: "vela de aniversário",
+    extraQueries: ["vela de aniversario", "vela numero", "vela para bolo"],
+    reject: /\b(kosher|castical|7 dias|sete dias|votiva|aromatica|aromatizada|perfumada|rechaud|copo|massagem|massageadora|religios\w*|filtro|igreja|santo|ignifug\w*|lamparina|pote|lata)\b/
+  },
+  {
+    item: /^luvas?(?: de)? (?:borracha|latex|limpeza)(?: (?:p|m|g|gg|tamanho \w+))?$|^luvas?$/,
+    // "luva de borracha" sozinha já é a de limpeza; "luva" solta só com contexto de faxina.
+    explicit: /\b(?:borracha|latex|limpeza)\b/,
+    context: CLEANING_CONTEXT_RE,
+    kind: "luva de limpeza",
+    searchAs: "luva",
+    extraQueries: ["luva de limpeza", "luva latex multiuso"],
+    reject: /\b(seguranca|trico|anticorte|soldador|raspa|vaqueta|epi|pigmentad\w*|motociclista|ciclismo|boxe|goleiro|termica|procedimento|cirurgic\w*|nitrilica descartavel)\b/
+  },
+  {
+    // R21a-6 (11/10, rodada 21 g58): "tesoura" na lista da escola abria com a multiuso de inox da Obramax/Brinox.
+    item: /^tesouras?(?: (?:escolar|sem ponta|ponta redonda|infantil|pequena))?$/,
+    explicit: /\b(?:escolar|sem ponta|ponta redonda|infantil)\b/,
+    context: SCHOOL_CONTEXT_RE,
+    kind: "tesoura escolar",
+    extraQueries: ["tesoura escolar", "tesoura sem ponta"],
+    reject: /\b(multiuso|vonder|poda|jardim|cozinha|costura|cabelo|cabeleireiro|profissional|aves|frango|chapa|funileiro|picotar|alfaiate)\b/
+  }
+];
+export function contextSenseFor(phrase: string, texts: readonly (string | undefined | null)[]): BaseSense | null {
+  const p = normalizeMsg(phrase).replace(/\s+/g, " ").trim();
+  for (const rule of CONTEXT_RULES) {
+    if (!rule.item.test(p)) continue;
+    const explicit = Boolean(rule.explicit?.test(p));
+    if (!explicit && rule.context && !texts.some((raw) => raw && rule.context!.test(normalizeMsg(raw)))) continue;
+    return { kind: rule.kind, extraQueries: rule.extraQueries, rejects: (name) => rule.reject.test(normalizeMsg(name)), ...(rule.searchAs ? { searchAs: rule.searchAs } : {}) };
+  }
+  return null;
+}
 
 function senseOfText(n: string): "maquiagem" | "unha" | null {
   // A palavra "base" em si não é contexto; sobra o resto da frase.
@@ -120,4 +168,14 @@ export function cleanAskPhrase(phrase: string): string {
     .replace(/\s+/g, " ")
     .trim();
   return /[a-zà-ú]{3,}/i.test(cleaned) ? cleaned : phrase;
+}
+
+// Nome que o cliente fala × nome da prateleira (11/10, rodada 21 g58, R21-8): "hidratante de mão" dava "não achei" e
+// "creme pra mãos" trazia 5 opções. A frase vira o nome do catálogo; o resto dela (marca, tamanho) fica.
+const PHRASE_SYNONYMS: Array<[RegExp, string]> = [
+  [/\b(?:hidratantes?|cremes?(?:\s+hidratantes?)?)\s+(?:de|da|das|para|pra|p\/)\s+(?:as\s+)?m[aã]os?\b/i, "creme para mãos"]
+];
+export function applyPhraseSynonyms(phrase: string): string {
+  for (const [re, to] of PHRASE_SYNONYMS) if (re.test(phrase)) return phrase.replace(re, to).replace(/\s+/g, " ").trim();
+  return phrase;
 }

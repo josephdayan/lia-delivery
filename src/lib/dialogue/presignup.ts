@@ -493,6 +493,14 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
           const clean = sanitizeRouterReply(step.text);
           if (!clean) return { kind: "fallthrough", reason: "smalltalk_recusado" };
           await reply(phone, clean);
+          // "vou fazer o aniversário do meu filho domingo, tenho 150 reais" lido como papo (11/10, rodada 21 g58, R21-11 B2):
+          // o "domingo" se perdia (o turno lia o prazo, mas o papo não gravava) e o resumo nunca dizia se chegava a tempo. Grava e diz.
+          const said = parseNeededBy(input.text);
+          if (said) {
+            ctx.neededBy = said;
+            await writeCtx(convoId, ctx);
+            await reply(phone, copy.deadlineNoted(said));
+          }
           break;
         }
         case "fixed":

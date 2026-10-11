@@ -573,7 +573,8 @@ export function parseNeededHour(text: string): number | null {
 
 const DAY_HOUR_RE = /\b(?:hoje|amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(?:-feira)?(?:\s+(?:de\s+manha|a\s+tarde|a\s+noite))?\s+(?:as|a)\s+(\d{1,2})(?:\s*(?:h|hs|hrs?|horas?)\b|:\d{2}\b|h\d{2}\b)?(?:\s+da\s+(manha|tarde|noite))?/;
 function parseDayHour(text: string): number | null {
-  const m = DAY_HOUR_RE.exec(normalizeMsg(text));
+  // "sábado ao meio dia" (11/10, rodada 21 g58, R21a-7): a hora sumia do aviso ("Pra chegar até *sábado*").
+  const m = DAY_HOUR_RE.exec(normalizeMsg(text).replace(/\s+(?:ao|as|a|pro|para o|pelo)?\s*meio[\s-]?dia\b/g, " as 12h"));
   if (!m) return null;
   let hour = Number(m[1]);
   if ((m[2] === "tarde" || m[2] === "noite") && hour < 12) hour += 12;
@@ -617,7 +618,8 @@ function parseNeededDay(text: string, now: Date): { date: string; label: string;
   // Refeição/ocasião com dia ("café da manhã bom pra família domingo", "pizza em casa hoje", 10/10, rodada 14 g41): o dia
   // da ocasião também é prazo — antes só festa/aniversário contavam e o resumo fechava em 3 dias úteis sem aviso. "Dia dos
   // professores amanhã" (110, R14a-3) também.
-  const EVENT = "aniversario|festa|festinha|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour|dia d[oa]s? (?:professor\\w*|pais|pai|maes|mae|namorados|criancas|avos|amigos?)";
+  // "faxina pesada hoje: desinfetante, ..." (11/10, rodada 21 g58, R21-11 B4): a faxina do dia também é prazo (saía sem ⏰).
+  const EVENT = "aniversario|festa|festinha|faxina|mudanca|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour|dia d[oa]s? (?:professor\\w*|pais|pai|maes|mae|namorados|criancas|avos|amigos?)";
   // "hoje a gente vai fazer pizza", "domingo vamos receber a família": o dia junto do plano (vai/vou/vamos fazer/ter/receber).
   const PLAN = String.raw`(?:vai|vou|vamos|a gente vai|queria|quero)\s+(?:fazer|ter|receber|preparar|montar)`;
   const planDay = (day: string) => new RegExp(String.raw`\b${day}\b.{0,25}\b${PLAN}\b|\b${PLAN}\b.{0,60}\b${day}\b`).test(n);
@@ -4421,15 +4423,16 @@ export function parseOrderBudget(text: string): { cap: number; rest: string; tot
   const giftFrame = /\bpresente\b/.test(base);
   if (cap == null) {
     // "..., uns 30 reais no máximo" (10/10, rodada 15 g43): o "no máximo" depois do valor também fecha o teto.
-    const tail = /(?:[\s,.;]+)(ate|no maximo|nao passo de|nao passa de|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?(?:\s+no maximo)?[\s.!]*$/.exec(base);
+    // "amigo secreto, máximo 60 reais" (11/10, rodada 21 g58, R21-8): o "máximo" sem o "no" também (saía sem 💰).
+    const tail = /(?:[\s,.;]+)(ate|no maximo|maximo|nao passo de|nao passa de|uns|umas|mais ou menos|cerca de|tipo uns|tipo)\s+(?:uns\s+|umas\s+)?(?:r\$\s*)?(\d{2,5}(?:[.,]\d{1,2})?)\s*(reais|real|conto|contos|pila)?(?:\s+no maximo)?[\s.!]*$/.exec(base);
     const before = tail ? base.slice(0, tail.index) : "";
     const value = tail ? Number(tail[2].replace(",", ".")) : NaN;
     // "..., presunto e queijo fatiado, no máximo uns 100 reais" (10/10, rodada 14 g41): o teto em oração própria (depois da
     // vírgula) no fim de uma lista de 3+ itens também é do pedido — colado no item ("vinho até 40 reais") segue do item.
     // Lista de 2 itens também (10/10, rodada 15 g43: "quero ovos e leite, até 20 reais", "ovos e leite, não passo de 40
     // reais" e "...e castanha de caju. no máximo 200 reais" saíam sem 💰): o que separa é a vírgula/ponto antes do teto.
-    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && /[,.;]/.test(/^[\s,.;]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 1);
-    const approx = Boolean(tail && !/^(?:ate|no maximo|nao passo de|nao passa de)$/.test(tail[1]) && tail[3]) || ownClause;
+    const ownClause = Boolean(tail && tail[3] && /^(?:ate|no maximo|maximo|nao passo de|nao passa de)$/.test(tail[1]) && /[,.;]/.test(/^[\s,.;]+/.exec(tail[0])?.[0] ?? "") && (before.match(/,|\s(?:e|mais)\s/g)?.length ?? 0) >= 1);
+    const approx = Boolean(tail && !/^(?:ate|no maximo|maximo|nao passo de|nao passa de)$/.test(tail[1]) && tail[3]) || ownClause;
     const list = ownClause || /(?:,|\s(?:e|mais)\s)[^,]*\S\s*$/.test(before) && (approx ? before.split(/\s+/).length >= 4 : /\b(?:um|uma|uns|umas|\d+)\s+\S+[^,]*(?:,|\s(?:e|mais)\s)/.test(before));
     if (tail && value >= 10 && (giftFrame || approx) && list && !/\bcada\b/.test(base)) {
       spans.push([tail.index, base.length]);
