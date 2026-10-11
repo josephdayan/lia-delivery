@@ -668,6 +668,8 @@ async function buildChoices(
       // O que a reserva (mais abaixo) também tem que respeitar: o produto e o tamanho pedidos.
       let sizeOk: (c: StoreCandidate) => boolean = () => true;
       let sizeSplit = false;
+      // O que o cliente pediu antes de virar "1 litro" (11/10, rodada 25 g70, R25a-4): é o que ele lê.
+      let sizeAskedPhrase: string | undefined;
       const bestScore = Math.max(0, ...candidates.map((c) => scoreCatalogMatch(searchPhrase, c.item)));
       const sizeAsk = searchPhrase.match(/\d+(?:[.,]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/i)?.[0];
       // Tamanho vizinho (11/10, rodada 17 g48, R17-3/R17a-3): os outros tamanhos do MESMO produto ficam de reserva — a loja
@@ -708,6 +710,7 @@ async function buildChoices(
             // A IA às vezes já põe o 2 na quantidade ("2x leite 2 litros"): o mesmo número não multiplica.
             qty = line.qty === split.count ? line.qty : line.qty * split.count;
             // O rerank julga pelo pedido: "leite 2 litros" faria a IA recusar as caixas de 1 L.
+            sizeAskedPhrase = shownPhrase;
             shownPhrase = shownPhrase.replace(sizeAsk, split.unit === "1kg" ? "1kg" : "1 litro");
             sizeOk = (c) => conciergeMatchIsStrong(searchPhrase, c.item, { allTokens: true }) && attrMatchesItem(split.unit, c.item);
           }
@@ -847,7 +850,7 @@ async function buildChoices(
       }
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
-      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, unanswered, silentStrong, sizeSplit, cheapAsk, sizeReserve };
+      return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, unanswered, silentStrong, sizeSplit, cheapAsk, sizeReserve, sizeAskedPhrase };
      } finally {
       // Linha que falhou antes da busca não trava a chamada da IA das outras (resolver de novo não faz nada).
       searchedLines[lineIndex].resolve(null);
@@ -1063,6 +1066,7 @@ async function buildChoices(
       ...(line.autoPick && !closestFalta ? { autoPick: true } : {}),
       ...(closestFalta ? { closestFalta } : {}),
       ...(cheapestFirst ? { cheapestFirst: true } : {}),
+      ...(entry.sizeAskedPhrase && entry.sizeAskedPhrase !== line.phrase ? { sizeSplitFrom: { asked: entry.sizeAskedPhrase, shown: line.phrase } } : {}),
       ...(babyContext && babyAmbiguous(line.phrase) ? { babyContext: true } : {}),
       ...(urgent && !noneToday && cep ? { urgent: true, ...(urgentWhen ? { urgentWhen } : {}) } : {}),
       ...(urgent && noneToday ? { noneToday: true, ...(pending.some((p) => p.noneToday) ? { noneTodaySaid: true } : {}) } : {}),
@@ -1766,8 +1770,12 @@ function vitrineLimit(): number {
 }
 
 // Nome do item nos cabeçalhos ("Agora *Omo*"): a digitação errada do cliente não volta como está (09/10, rodada 1).
+// "amaciante 2 litros" sem a embalagem de 2 L vira "2x amaciante 1 litro" (R25a-4): o cliente continua lendo o que pediu.
+function sizeSplitActive(p: PendingChoice): PendingChoice["sizeSplitFrom"] {
+  return p.sizeSplitFrom && p.sizeSplitFrom.shown === p.query ? p.sizeSplitFrom : undefined;
+}
 function shownQuery(p: PendingChoice): string {
-  return displayQueryName(withoutStoreMention(p.query), p.options);
+  return displayQueryName(withoutStoreMention(sizeSplitActive(p)?.asked ?? p.query), p.options);
 }
 
 // "areia pra gato da cobasi" (10/10, rodada 5 B4): a loja é preferência, não nome do item — some do que o cliente lê
@@ -1784,6 +1792,8 @@ function withoutStoreMention(query: string): string {
 
 function choicesHeaderFor(p: PendingChoice): string {
   if (p.closestFalta) return copy.closestHeader(p.query, p.closestFalta);
+  const split = sizeSplitActive(p);
+  if (split) return copy.sizeSplitHeader(split.asked, p.query, p.qty);
   if (p.cheapestFirst) return copy.cheapestFirstHeader(p.query);
   if (p.urgent) return copy.choicesHeaderToday(p.query, p.urgentWhen);
   // Uma vez por lista (11/10, rodada 23 g65, R23a-5): pano, rodo e vassoura repetiam o aviso inteiro, um por item.
@@ -2466,6 +2476,18 @@ async function applyMinimumSwap(phone: string, convoId: string, ctx: DeliveryCon
   await writeCtx(convoId, ctx);
   await continueAfterBasket(phone, convoId, ctx, userCep ?? null, copy.minimumSwapDone(swapPairsForCopy(swappedOut, swap.replacements)));
   return true;
+}
+
+// O fechamento parou numa pergunta do pedido mínimo (11/10, rodada 25 g70, R25a-4): "qual ficou o total?" diz que falta ela.
+function closingDecisionOpen(ctx: DeliveryContext): string | undefined {
+  const swap = ctx.minSwap ?? (ctx.minSwapParked && (ctx.minSwapParked.key == null || ctx.minSwapParked.key === basketSignature(ctx.basket)) ? ctx.minSwapParked : undefined);
+  if (swap) {
+    const store = getStore(swap.fromStoreKey);
+    const label = (ctx.basket ?? []).find((b) => b.storeKey === swap.fromStoreKey)?.storeLabel ?? (store.key === swap.fromStoreKey ? store.label : undefined);
+    return label ? `o pedido mínimo da *${label}*` : "o pedido mínimo da loja";
+  }
+  if (ctx.minimumButtonsAt != null && Date.now() - ctx.minimumButtonsAt < 30 * 60_000) return "o pedido mínimo da loja";
+  return undefined;
 }
 
 // Botões do pedido mínimo (tirar o item da loja / completar): a saída que sempre leva ao resumo (09/10; rodada 19 R19-6).
@@ -4184,7 +4206,18 @@ async function handleDeliveryTurn(
                   ? copy.serviceAnswer(asked.topic, servedAreaLabel(), { place: askedPlace(), hasCep: Boolean(user.cep ?? ctx.cep), hasBasket: (ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0 })
                   : ""
       );
-      const next = !user.defaultAddress ? copy.askAddressWithCep() : ctx.step === "choosing" && ctx.pending?.length ? copy.choicesStillOpen(ctx.pending[0].query) : "";
+      // "quanto é o frete pra Avenida Paulista 1000, São Paulo?" (11/10, rodada 25 g70, R25a-3): o endereço já veio na
+      // pergunta — é guardado e só falta o que faltar (CEP), em vez de pedir o endereço inteiro de novo.
+      // Uma mensagem só (R24-6): as respostas e o "falta o CEP". Só sem CEP nenhum; com CEP, o pedido de endereço de sempre.
+      const embedded = !user.defaultAddress && !user.cep && !ctx.cep ? embeddedQuestionAddress(text) : null;
+      if (embedded) {
+        ctx.deliveryAddress = embedded;
+        ctx.deliveryAddressVerified = true;
+        ctx.step = "need_cep";
+        await prisma.user.update({ where: { id: user.id }, data: { defaultAddress: embedded } });
+        await writeCtx(convo.id, ctx);
+      }
+      const next = embedded ? copy.addressSavedAskCep() : !user.defaultAddress ? copy.askAddressWithCep() : ctx.step === "choosing" && ctx.pending?.length ? copy.choicesStillOpen(ctx.pending[0].query) : "";
       await reply(phone, [...answers.filter(Boolean), next].filter(Boolean).join("\n\n"));
       return;
     }
@@ -4437,6 +4470,41 @@ async function handleDeliveryTurn(
       if (ctx.step === "choosing" && ctx.pending?.length) await sendChoices(phone, ctx.pending[0]);
       return;
     }
+    // Item ainda sem escolha (11/10, rodada 25 g70, R25a-1): "são 2 kg mesmo?" / "sim, deixa 2 kg" sobre a laranja da fila.
+    const pendingWeight = ctx.step === "choosing" && ctx.pending?.length && !ctx.packConfirm ? weightPendingTarget(text, ctx.pending, fresh) : null;
+    if (pendingWeight) {
+      const target = ctx.pending![pendingWeight.index];
+      console.log("[weight-pending]", JSON.stringify(text), "->", target.query, pendingWeight.askedKg, pendingWeight.question ? "pergunta" : "ajuste");
+      if (pendingWeight.question) {
+        const answer = copy.pendingWeightAnswer(pendingWeight.label, pendingWeight.currentKg, pendingWeight.askedKg, pendingWeight.index === 0);
+        // A pergunta fica aberta: o "sim, deixa 3 kg" seguinte é desse item, não do que está na tela.
+        ctx.openQuestion = { text: answer, at: Date.now(), said: text.slice(0, 200) };
+        await writeCtx(convo.id, ctx);
+        await reply(phone, answer);
+        return;
+      }
+      ctx.openQuestion = undefined;
+      const unchanged = Math.abs(pendingWeight.currentKg - pendingWeight.askedKg) <= 0.01;
+      if (!unchanged) {
+        target.query = withAskedWeight(target.query, pendingWeight.askedKg);
+        target.qty = 1;
+        target.qtyExplicit = true;
+      }
+      await writeCtx(convo.id, ctx);
+      await reply(phone, copy.pendingWeightSet(pendingWeight.label, pendingWeight.askedKg, unchanged));
+      if (pendingWeight.index === 0 && !unchanged) await sendChoices(phone, ctx.pending![0]);
+      return;
+    }
+  }
+  // "o mais barato de cada" sem nenhuma escolha aberta (11/10, rodada 25 g70, R25a-2): a IA perguntava "Você quer trocar
+  // cada item pelo mais barato?". Não há o que escolher: diz isso, o que está na cesta e o caminho (trocar um item ou fechar).
+  if (
+    wantsCheapestForAll(text) && text.trim().split(/\s+/).length <= 8 && !/[,;]|\s+e\s+/.test(normalizeMsg(text)) && !ctx.pending?.length && ctx.basket?.length &&
+    (ctx.step === undefined || ctx.step === "collecting") && !ctx.minSwap && !ctx.consolidationOffer && !ctx.planB
+  ) {
+    console.log("[cheapest-all:nothing-pending]", ctx.basket.length);
+    await reply(phone, copy.cheapestAllNothingPending(ctx.basket.map((b) => `${b.qty}x ${b.name}`), normalizeMsg(ctx.basket[0].name).split(/[^a-z]+/).find((w) => w.length >= 3)));
+    return;
   }
   if (ctx.openQuestion && intent.kind !== "number" && Date.now() - ctx.openQuestion.at < 10 * 60_000) {
     const picked = openQuestionPick(ctx.openQuestion.text, text);
@@ -7307,7 +7375,7 @@ async function handleDeliveryTurn(
     if ((ctx.basket?.length ?? 0) > 0 || (ctx.pending?.length ?? 0) > 0) {
       const items = basketForCopy(ctx);
       const produtos = Math.round(items.reduce((sum, i) => sum + i.displayLineTotal, 0) * 100) / 100;
-      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap, todayVerdictFor(ctx)));
+      await reply(phone, copy.partialTotal(items, produtos, ctx.pending?.length ?? 0, basketEtaByStore(ctx.basket ?? []).rows, pendingSummaryNames(ctx), ctx.orderBudget?.cap, todayVerdictFor(ctx), closingDecisionOpen(ctx)));
       return;
     }
     // Cesta vazia (10/10, rodada 5 g16: depois de "Carrinho limpo" o "total" ouvia "Essa eu não sei responder").
@@ -8312,7 +8380,8 @@ function notedForCopy(ctx: DeliveryContext, queued: string | undefined = ctx.pen
   // "30x tapete higiênico 30 unidades" (11/10, rodada 17 g49): a contagem de unidades não é número de pacotes.
   const label = (line: ParsedLine) => {
     const inPhrase = normalizeMsg(line.phrase).match(/\b(\d+)\s*(?:unidades?|un)\b/);
-    if (inPhrase && Number(inPhrase[1]) === line.qty) return line.phrase;
+    // "Pampers M 40 unidades" é 1 pacote (11/10, rodada 25 g70, R25a-4): sem o "1x" a linha destoava das outras.
+    if (inPhrase && Number(inPhrase[1]) === line.qty) return `1x ${line.phrase}`;
     return line.units ? `${line.phrase}, ${line.qty} unidades` : `${line.qty}x ${line.phrase}`;
   };
   const lines = queued ? resolveListItems(queued) : [];
@@ -8460,6 +8529,14 @@ function looksLikeDeliveryAddress(text: string): boolean {
   // Número 0 ("rua sem nome 0") e rua sem nome não são endereço (09/10, rodada 1); o CEP não conta como número da casa.
   const hasNumber = /(?:\b(?!0+\b)\d+|\bs\/?n\b)/i.test(address.replace(CEP_RE_GLOBAL, " "));
   return address.length >= 12 && hasStreet && hasNumber && !/\bsem nome\b/i.test(address);
+}
+
+// Endereço dentro de uma pergunta ("frete pra Avenida Paulista 1000, São Paulo?"): rua + número (+ cidade/CEP) até o "?".
+export function embeddedQuestionAddress(text: string): string | null {
+  const m = text.match(/\b(?:rua|r\.|avenida|av\.?|alameda|al\.|travessa|estrada|rodovia|pra[çc]a|largo)\s+[^?]*?\d[^?]*?(?=\?|$)/i);
+  if (!m) return null;
+  const candidate = m[0].replace(/\s+(?:e|tem|tbm|tamb[eé]m)\s*$/i, "").replace(/[\s,.;]+$/, "").trim();
+  return looksLikeDeliveryAddress(candidate) && candidate.length <= 140 ? candidate : null;
 }
 
 async function handleDeliveryAddress(
@@ -14049,6 +14126,47 @@ export function weightQuestionTarget(
   return { name: hits[0].name, qty: hits[0].qty, totalKg, askedKg };
 }
 
+// Peso de um item que AINDA vai pras opções (11/10, rodada 25 g70, R25a-1): "e as laranjas, são 2 kg mesmo?" com a laranja
+// na fila e a banana na tela, e depois "sim, deixa 2 kg". Antes a IA lia o "2 kg" como 2 unidades da banana (que fechou com
+// 11x). Pergunta = confere o peso anotado; ajuste = o peso anotado do item passa a ser o dito (a conversão em unidades
+// acontece na escolha). Alvo: o item nomeado, o da pergunta aberta ou, sem nada disso, o da tela.
+export function weightPendingTarget(
+  text: string,
+  pending: Array<{ query: string; closestFalta?: string }>,
+  openQuestion?: string
+): { index: number; question: boolean; askedKg: number; currentKg: number; label: string } | null {
+  const n = normalizeMsg(text);
+  if (/\b(?:outr[oa]s?|tamb[eé]m|tbm|adiciona|acrescenta|soma)\b/.test(n) || /^(?:e\s+)?(?:tem|vcs tem|voces tem)\b/.test(n)) return null;
+  const askedKg = parseWeightAskKg(normalizeSpokenWeights(text));
+  if (!askedKg) return null;
+  const question = isQuestion(text);
+  if (question && !/\b(?:mesmo|ficou|deu|sao|eh|anotou|anotei|anotado|certo)\b/.test(n)) return null;
+  if (!question && /\bmais\b/.test(n)) return null;
+  // Ajuste precisa da fala de ajuste ("deixa 3 kg", "sim, fica 2 kg"); "ração filhote 10kg" repetido é pedido, não ajuste.
+  if (!question && !/\b(?:deix\w*|fic\w*|coloc\w*|bota|poe|muda\w*|ajust\w*|sim|isso|mant\w*|pode ser)\b/.test(n)) return null;
+  // Item cujo peso pedido não existe na loja (closestFalta): a conversa de peso é a do "mais perto", que já tem caminho.
+  const weighed = pending.map((p, index) => ({ index, kg: parseWeightAskKg(normalizeSpokenWeights(p.query)), query: p.query, closest: Boolean(p.closestFalta) })).filter((p) => p.kg && !p.closest);
+  if (!weighed.length) return null;
+  const words = normalizeMsg(normalizeSpokenWeights(text)).replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/g, " ");
+  const named = (src: string) => weighed.filter((p) => sharesProductNoun(src, p.query));
+  let hits = named(words);
+  if (!hits.length && !question) {
+    const rest = words.split(/[^a-z0-9]+/).filter((w) => w && !WEIGHT_ADJUST_FILLER.has(w));
+    if (rest.length) return null;
+    hits = openQuestion ? named(normalizeMsg(normalizeSpokenWeights(openQuestion))) : weighed.filter((p) => p.index === 0);
+  }
+  if (hits.length !== 1) return null;
+  const label = hits[0].query.replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/gi, " ").replace(/\s+/g, " ").trim() || hits[0].query;
+  return { index: hits[0].index, question, askedKg, currentKg: hits[0].kg!, label };
+}
+// "laranja 2kg" -> "laranja 3kg": troca só o peso anotado no pedido do item.
+export function withAskedWeight(query: string, kg: number): string {
+  const said = normalizeSpokenWeights(query);
+  const token = kg >= 1 ? `${String(Math.round(kg * 1000) / 1000).replace(".", ",")}kg` : `${Math.round(kg * 1000)}g`;
+  const swapped = said.replace(/\d+(?:[.,]\d+)?\s*(?:kg|g|gr)\b/i, token);
+  return swapped === said ? `${said} ${token}` : swapped;
+}
+
 // Quantas unidades a embalagem declara no nome ("com 10 Unidades", "Pack 12 Latas", "dúzia").
 // ", coca cola" ao lado de "6 refrigerantes" (10/10, rodada 7 M8): se a maioria das opções da linha solta é do TIPO do
 // item ("Refrigerante Coca-Cola…"), ela é a marca dele. Devolve as opções desse tipo, ou null.
@@ -15778,6 +15896,14 @@ function basketItemPriceAnswer(ctx: DeliveryContext, text?: string): string | nu
   if (!phrase) return null;
   const basket = ctx.basket ?? [];
   const hits = basket.filter((item) => sharesProductNoun(phrase, item.ask ?? item.name) || sharesProductNoun(phrase, item.name));
+  if (!hits.length) {
+    // "quanto tá dando o frango?" com o frango ainda sem escolha (11/10, rodada 25 g70, R25a-3): a faixa das opções dele,
+    // em vez de "Ainda não escolhi nada".
+    const open = (ctx.pending ?? []).map((p, index) => ({ p, index })).filter(({ p }) => p.options.length && sharesProductNoun(phrase, p.query));
+    if (open.length !== 1) return null;
+    const prices = open[0].p.options.map((o) => display(o.unitPrice, o.medicine));
+    return copy.pendingItemPriceRange(shownQuery(open[0].p), Math.min(...prices), Math.max(...prices), open[0].index === 0);
+  }
   if (hits.length !== 1) return null;
   const item = basketForCopy({ ...ctx, basket: hits, pending: undefined })[0];
   if (!item) return null;

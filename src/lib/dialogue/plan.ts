@@ -313,6 +313,9 @@ function planOne(a: DialogueAction, state: DialogueState, pickOnScreen = false, 
       const target = resolveTarget(state, a.target);
       if (!target || target.kind === "queue") return "alvo_invalido";
       if (a.type === "set_qty") {
+        // "sim, deixa 2 kg" / "deixa 2 litros" (11/10, rodada 25 g70, R25a-1): o número é peso/volume, não unidades — com a banana
+        // de 1 kg na tela virava "2 unidades de banana 1kg" e fechava 11x. Sem contagem dita, o caminho determinístico decide.
+        if (text && /\b\d+(?:[.,]\d+)?\s*(?:kg|kgs|quilos?|kilos?|g|gr|gramas?|l|lt|litros?|ml)\b|\b(?:um|uma|dois|duas|tres|meio|meia)\s+(?:quilos?|kilos?|litros?)\b/.test(normalizeMsg(text)) && !/\b(?:unidades?|pacotes?|caixas?|latas?|garrafas?|embalage\w*|sacos?|fardos?|potes?|un)\b/.test(normalizeMsg(text))) return "quantidade_em_medida";
         const qty = clampQty(a.qty);
         return qty ? { type: "qty", mode: "set", target, value: qty } : "sem_quantidade";
       }

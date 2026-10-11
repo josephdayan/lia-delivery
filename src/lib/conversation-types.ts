@@ -152,6 +152,9 @@ export type PendingChoice = {
   // MAIS PRÓXIMO, do tipo certo, e `closestFalta` diz a diferença ("é de 500 ml"). Nunca
   // entram na cesta sem o cliente escolher (sem autoPick, sem modo lista, fora do plano B).
   closestFalta?: string;
+  // "amaciante 2 litros" sem a embalagem de 2 L (11/10, rodada 25 g70, R25a-4): a busca virou "amaciante 1 litro" (×2) e
+  // o cliente segue lendo o que pediu. `shown` = a query reescrita; vale só enquanto a query for ela.
+  sizeSplitFrom?: { asked: string; shown: string };
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
