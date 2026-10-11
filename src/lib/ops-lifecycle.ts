@@ -241,7 +241,7 @@ export async function opsPublishManualQuote(
     // Prazo dito e cumprido (10/10, rodada 10 g29): o resumo diz que serve.
     ...(() => {
       const fit = neededBy && !conversationMovedOn ? deadlineFit(input.deliveryPromise, neededBy) : null;
-      return neededBy && (fit === "ok" || fit === "unsure") ? { deadlineFit: { label: neededBy.label, morning: neededBy.morning, fit } } : {};
+      return neededBy && (fit === "ok" || fit === "unsure" || fit === "maybe") ? { deadlineFit: { label: neededBy.label, morning: neededBy.morning, fit } } : {};
     })(),
     ...(orderBudget && total <= orderBudget.cap + 0.005 && !conversationMovedOn ? { withinBudget: { cap: orderBudget.cap } } : {}),
     deliveries: new Set(items.map((item) => item.storeKey).filter(Boolean)).size,

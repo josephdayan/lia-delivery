@@ -46,6 +46,9 @@ export type BasketItem = {
   // Frete que a LOJA respondeu na consulta ao vivo do card (10/10, rodada 11 g32): a estimativa do teto, o aviso de
   // entrega extra e o "o mais barato" usam o mesmo valor (antes a tabela dizia R$ 18 e a cotação, R$ 4,90).
   freightFee?: number;
+  // Unidades que o cliente pediu quando a linha virou embalagens ("5 canetas" = 2 pacotes de 3; 10/10, rodada 16 A2): a
+  // troca de cor/produto refaz a conta a partir das 5 unidades, não dos 2 pacotes. Vale só enquanto `qty` = `packs`.
+  askedUnits?: { units: number; packs: number };
 };
 
 // `verified`/`etaMinutes`/`delivery` (03/09): vêm da simulação AO VIVO no site da loja para
@@ -148,6 +151,9 @@ export type PendingChoice = {
   // O cliente pediu o mais barato desse item: as opções vêm do mais barato ao mais caro e o
   // cabeçalho diz isso (preferência explícita de preço, 07/10).
   cheapestFirst?: boolean;
+  // As opções foram estreitadas por uma exigência do cliente ("pode ser branca fria", 10/10, rodada 16 g46): "mostra as
+  // opções de novo" reenvia ESTAS, não as de antes do filtro.
+  narrowedBy?: string;
   // Bebê citado em qualquer parte do pedido (10/10, rodada 12 g36): "o mais barato" desse item nunca escolhe a versão só de
   // adulto (lenço antisséptico, íntimo) quando há outra.
   babyContext?: boolean;

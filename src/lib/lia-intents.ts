@@ -286,6 +286,9 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       // rodada 9): é o prazo do pedido (parseNeededBy), nunca item — virava "*tem que chegar amanhã* eu não achei".
       "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*",
       "p(a)?ra (hoje|amanha)( se der| se possivel)?",
+      // "tenho 250 reais, preciso até sábado" (10/10, rodada 16 g46): o "até <dia>" que sobra do prazo é o prazo do pedido
+      // (parseNeededBy), nunca item — saía "❌ até sábado — não achei" e "Ficou de fora: até sábado" no resumo.
+      "(e |mas )?(preciso |precisa |precisava |necessito |quero |queria |tem que ser |e )?(so )?ate (o |a |na |no |este |esta |essa |nesta |nessa )?(dia )?(hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| a noite| que vem| sem falta| no maximo)*",
       "o quanto antes",
       "urgente(mente)?",
       // Pressa solta ("rapido pfv", "agiliza ai", "tenho pressa") é sobre a ENTREGA, nunca item (10/10, rodada 5 A2).
@@ -345,7 +348,8 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       // febre desde ontem", "o pediatra falou pra dar líquido", "semana passada meu marido
       // viajou", "fiquei sozinha com as crianças", "hoje acabou tudo aqui", "acabei de me
       // mudar", "nada em casa", "moro em SP". Só o produto da mensagem vira item.
-      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (viajou|saiu|foi|chegou|nasceu|ficou|esta|ta|anda|caiu|quebrou|operou)\\b.*",
+      // Até 3 palavras entre o possessivo e o verbo (10/10, rodada 16 M1): "meu coelhinho mini lion chegou semana passada".
+      "((semana|mes) passad[ao] |ontem |anteontem |hoje |agora |esses dias )?(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+){0,2} (viajou|saiu|foi|chegou|chegaram|nasceu|nasceram|ficou|esta|ta|anda|caiu|quebrou|operou|adotei|adotamos)\\b.*",
       "(ele |ela |eles |elas )?(ta|esta|tava|estava|ficou|anda|andou) ((com|meio|muito|toda?|todo) )?(doente|febre|gripad\\w*|resfriad\\w*|passando mal|mal|com dor|vomitando|tossindo|internad\\w*)\\b.*",
       "(o |a )?(pediatra|medic[oa]|doutora?|dentista|veterinari[oa]|vet|farmaceutic[oa]|enfermeir[oa]) (falou|disse|mandou|receitou|pediu|recomendou|indicou|passou)\\b.*",
       "(eu )?(fiquei|fico|to|tou|estou|tava|estava) (sozinh\\w*|sem ninguem|com as criancas|com os filhos|com o bebe|de resguardo)\\b.*",
@@ -1814,6 +1818,50 @@ const OTHER_STORE_ACCEPT_RE =
 const SWAP_COURTESY_TAIL_RE = /[\s,]+(?:sem problemas?|tranquilo|de boa|tudo certo|por mim tudo bem|por mim|tudo bem|ta bom|pode ser|ok|beleza|blz|valeu|obrigad[oa])$/;
 // "aceito, pode trocar a caneta de loja" (10/10, rodada 13 g39): o item citado entre o verbo e a loja.
 const SWAP_CITED_ITEM_RE = /\b(troca|trocar|troque|troco|muda|mudar|mude)\s+(?:(?:o|a|os|as|esse|essa|esses|essas|so|só)\s+)*(.+?)\s+(de loja|pra outra loja|para outra loja|pela outra loja|na outra loja)\b/;
+// Lugar da capital paulista citado na pergunta de área (10/10, rodada 16 g46, jornada 354: "vcs entregam na zona leste?
+// moro no tatuape" recebia a resposta padrão dos estados). Zona, centro ou bairro conhecido → o nome como o cliente vai ler.
+const SP_BAIRROS: Array<[RegExp, string]> = [
+  [/\bzona (leste|oeste|norte|sul)\b/, ""],
+  ...(
+    "tatuape:Tatuapé|mooca:Mooca|penha:Penha|itaquera:Itaquera|vila formosa:Vila Formosa|vila prudente:Vila Prudente|carrao:Carrão|aricanduva:Aricanduva|belem:Belém|bras:Brás|sao mateus:São Mateus|guaianases:Guaianases|ermelino matarazzo:Ermelino Matarazzo|sao miguel paulista:São Miguel Paulista|itaim paulista:Itaim Paulista|cidade tiradentes:Cidade Tiradentes|" +
+    "pinheiros:Pinheiros|lapa:Lapa|perdizes:Perdizes|butanta:Butantã|vila madalena:Vila Madalena|pompeia:Pompeia|barra funda:Barra Funda|jaguare:Jaguaré|rio pequeno:Rio Pequeno|alto de pinheiros:Alto de Pinheiros|" +
+    "santana:Santana|tucuruvi:Tucuruvi|casa verde:Casa Verde|vila maria:Vila Maria|vila guilherme:Vila Guilherme|freguesia do o:Freguesia do Ó|pirituba:Pirituba|brasilandia:Brasilândia|jacana:Jaçanã|tremembe:Tremembé|limao:Limão|" +
+    "moema:Moema|vila mariana:Vila Mariana|saude:Saúde|ipiranga:Ipiranga|jabaquara:Jabaquara|santo amaro:Santo Amaro|campo belo:Campo Belo|brooklin:Brooklin|morumbi:Morumbi|interlagos:Interlagos|campo limpo:Campo Limpo|capao redondo:Capão Redondo|cidade ademar:Cidade Ademar|grajau:Grajaú|vila olimpia:Vila Olímpia|itaim bibi:Itaim Bibi|" +
+    "bela vista:Bela Vista|consolacao:Consolação|liberdade:Liberdade|republica:República|santa cecilia:Santa Cecília|higienopolis:Higienópolis|cambuci:Cambuci|aclimacao:Aclimação|bom retiro:Bom Retiro|jardins:Jardins|paraiso:Paraíso|centro:Centro"
+  ).split("|").map((pair): [RegExp, string] => {
+    const [k, v] = pair.split(":");
+    return [new RegExp(`\\b${k}\\b`), v];
+  })
+];
+export function spCapitalPlace(text: string): string | undefined {
+  const n = normalizeMsg(text);
+  if (!/\b(?:entreg\w*|atend\w*|chega\w*|cobr\w*|moro|mora|fico|area|regiao|bairro)\b/.test(n)) return undefined;
+  const zone = /\bzona (leste|oeste|norte|sul)\b/.exec(n);
+  const bairro = SP_BAIRROS.slice(1).find(([re]) => re.test(n))?.[1];
+  if (zone && bairro) return `${bairro} (zona ${zone[1]})`;
+  if (zone) return `zona ${zone[1]}`;
+  return bairro;
+}
+
+// Pedido de trocar de LOJA sem oferta na mesa (10/10, rodada 16 g46, jornada 354): "troca por outra loja", "troca de loja",
+// "tem em outra loja?", "troca o tapete de loja", "troca o tapete por outro de outra loja". `item` = o item citado (vazio
+// = a loja que trava o pedido). A última oração com "loja" vale ("não, o tapete. troca o tapete por outro de outra loja").
+export function parseStoreSwapAsk(text: string): { item?: string } | null {
+  const clauses = normalizeMsg(text).split(/[.;!?\n]+/).map((c) => c.replace(/[,]+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean);
+  const clause = [...clauses].reverse().find((c) => /\bloja\b/.test(c));
+  if (!clause || clause.length > 80) return null;
+  const c = clause.replace(/^(?:(?:nao|n|e|entao|ah|ok|sim|pode|mas|ai|quero|queria|prefiro|da pra|tem como|consegue|melhor)\s+)+/, "");
+  if (/^(?:e\s+)?(?:tem|acha|achou|vende|vendem|existe)\s+(?:isso\s+|esse\s+|essa\s+|ele\s+|ela\s+)?(?:em|n[ao]|numa)\s+outra\s+loja$/.test(c)) return {};
+  const m = /^(?:troca|trocar|troque|troco|muda|mudar|mude)\s+(.*?)\s*\b(?:(?:de|da|em|na|numa|pra|para|por|pela)\s+)?(?:outr[ao]s?\s+lojas?|loja)(?:\s+(?:entao|por favor|pf|pfv|ai|sim))*$/.exec(c);
+  if (!m) return null;
+  const item = m[1]
+    .replace(/\s*\b(?:por|pelo|pela|com)\s+(?:um|uma|outr[oa]|o|a)?\s*(?:outr[oa]|igual|parecid[oa]|mesm[oa])?\s*(?:de|da|em)?$/, "")
+    .replace(/^(?:(?:o|a|os|as|esse|essa|esses|essas|so|um|uma)\s+)+/, "")
+    .trim();
+  if (/^(?:isso|tudo|ele|ela|eles|elas|esse|essa|item|itens|produto)?$/.test(item)) return {};
+  return { item };
+}
+
 // `offerItems` = os itens da oferta aberta (nome/pedido). Citar um deles confirma a oferta; citar OUTRO item não é aceite
 // dela (é outro pedido, que segue o caminho de sempre).
 export function acceptsSwapOffer(text: string, offerItems: string[] = []): boolean {
