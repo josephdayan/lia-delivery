@@ -144,7 +144,16 @@ export type RerankLine = { query: string; candidates: RerankCandidate[] };
 export type RerankClosest = { sku: string; falta: string };
 // `maisBarato` = o cliente pediu explicitamente o mais barato PARA ESTE item: `skus` já vem do mais
 // barato ao mais caro (preço exibido), entre os aprovados.
+// Juízo bruto (11/10, latência): o juízo inteiro, antes do corte da vitrine — todos os aprovados na ordem da IA, se ela pediu o
+// mais barato e todos os "próximos". O rerank roda em paralelo com a conferência ao vivo: quem a loja derrubar sai e o
+// próximo da ordem da IA entra (`shapeApproved` sobre os confirmados), sem nova chamada.
+export type RerankRaw = { aprovados: string[]; maisBarato: boolean; proximos: RerankClosest[] };
 export type RerankLineResult = { skus: string[]; exigencias?: string[]; proximos?: RerankClosest[]; maisBarato?: boolean };
+// Guardado ao lado do resultado (não dentro: o formato do juízo continua o mesmo para quem o lê).
+const rawJudgement = new WeakMap<RerankLineResult, RerankRaw>();
+export function rerankRaw(line: RerankLineResult): RerankRaw | undefined {
+  return rawJudgement.get(line);
+}
 export type RerankResult = { lines: RerankLineResult[] };
 
 // A decisão de QUAL produto mostrar não é só léxica: o scorer de tokens conta palavras em comum,
@@ -306,25 +315,23 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
         // numa rodada e 3 na outra (dono, 28/09: "se tem 5, mostra as 5").
         const bySku = new Map(lines[i].candidates.map((c) => [c.sku, c]));
         const approved = skus.map((sku) => bySku.get(sku)!);
-        const proximos: RerankClosest[] = [];
+        const allProximos: RerankClosest[] = [];
         for (const p of line.proximos ?? []) {
           const falta = p?.falta?.trim().replace(/[.:;,\s]+$/, "");
           if (!p || !valid.has(p.sku) || seen.has(p.sku) || !falta) continue;
           seen.add(p.sku);
-          proximos.push({ sku: p.sku, falta });
-          if (proximos.length >= 3) break;
+          allProximos.push({ sku: p.sku, falta });
         }
-        // Preço pedido explicitamente: o mais barato dos aprovados primeiro, sem diversificar (a
-        // vitrine é "as mais baratas"). Só vale com 2+ aprovados — com 1 não há o que ordenar.
-        const cheapest = Boolean(line.maisBarato) && approved.length > 1;
-        const shown = cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : diversifyOptions(lines[i].query, approved, limit);
-        return {
-          skus: shown.map((c) => c.sku),
-          ...(cheapest ? { maisBarato: true } : {}),
+        const shaped = shapeApproved(lines[i].query, approved, Boolean(line.maisBarato), limit);
+        const result: RerankLineResult = {
+          skus: shaped.items.map((c) => c.sku),
+          ...(shaped.cheapest ? { maisBarato: true } : {}),
           exigencias: (line.exigencias ?? []).map((e) => String(e).trim()).filter(Boolean),
           // Quem foi aprovado não é "mais próximo"; sem aprovados, os próximos são o que sobra.
-          proximos: skus.length ? [] : proximos
+          proximos: skus.length ? [] : allProximos.slice(0, 3)
         };
+        rawJudgement.set(result, { aprovados: skus, maisBarato: Boolean(line.maisBarato), proximos: allProximos });
+        return result;
       })
     };
   } catch (error) {
@@ -332,6 +339,13 @@ async function rerankOnce(message: string, lines: RerankLine[], limit: number, s
     if (!signal.aborted) console.warn("[ai:rerank:error]", error);
     return null;
   }
+}
+
+// A vitrine que sai dos aprovados (ordem da IA): preço pedido explicitamente = o mais barato primeiro, sem diversificar (a
+// vitrine é "as mais baratas"; só com 2+ aprovados — com 1 não há o que ordenar); senão, distintos primeiro e variantes depois.
+export function shapeApproved<T extends { name: string; brand?: string; price: number }>(query: string, approved: T[], maisBarato: boolean, limit: number): { items: T[]; cheapest: boolean } {
+  const cheapest = maisBarato && approved.length > 1;
+  return { items: cheapest ? [...approved].sort((a, b) => a.price - b.price).slice(0, limit) : diversifyOptions(query, approved, limit), cheapest };
 }
 
 let rerankImpl: typeof rerankShoppingOptionsReal = rerankShoppingOptionsReal;
