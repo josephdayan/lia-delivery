@@ -263,6 +263,9 @@ const BUDGET_SEGMENT_SRC =
 // Sem este filtro, o merge com a IA "resgatava" esses segmentos como itens — nasceu a
 // cesta de R$167 num pedido "até 100 reais" e o "não tenho como trazer: se tiver".
 // O ORÇAMENTO não é jogado fora: vira teto de preço da linha anterior (parseBasketLines).
+// Hora colada no dia do prazo ("preciso até sexta às 19h", 11/10, rodada 18 g50): o "às 19h" é do prazo, nunca item —
+// saía "*até sexta às 19h* eu não achei" e "Ficou de fora: até sexta às 19h" no resumo.
+const DAY_HOUR_TAIL = "( (as|a|ate as|antes das?) \\d{1,2}( ?(h|hs|hrs?|horas?)|:\\d{2}|h\\d{2})?( da (manha|tarde|noite))?( sem falta| no maximo| em ponto)?)?";
 const MODIFIER_SEGMENT_RE = new RegExp(
   "^(" +
     [
@@ -286,11 +289,11 @@ const MODIFIER_SEGMENT_RE = new RegExp(
       "ainda hoje",
       // Prazo com obrigação ("tem que chegar amanhã", "precisa chegar até sexta", "tem que ser entregue amanhã"; 10/10,
       // rodada 9): é o prazo do pedido (parseNeededBy), nunca item — virava "*tem que chegar amanhã* eu não achei".
-      "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*",
+      "(e |mas )?(tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) (chegar|chegue|ser entregue|ser entregues|entregar|vir|estar aqui)( ate| pra| para| na| no| ate a| ate o)? (hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| que vem| sem falta| no maximo)*" + DAY_HOUR_TAIL,
       "p(a)?ra (hoje|amanha)( se der| se possivel)?",
       // "tenho 250 reais, preciso até sábado" (10/10, rodada 16 g46): o "até <dia>" que sobra do prazo é o prazo do pedido
       // (parseNeededBy), nunca item — saía "❌ até sábado — não achei" e "Ficou de fora: até sábado" no resumo.
-      "(e |mas )?(preciso |precisa |precisava |necessito |quero |queria |tem que ser |e )?(so )?ate (o |a |na |no |este |esta |essa |nesta |nessa )?(dia )?(hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| a noite| que vem| sem falta| no maximo)*",
+      "(e |mas )?(preciso |precisa |precisava |necessito |quero |queria |tem que ser |e )?(so )?ate (o |a |na |no |este |esta |essa |nesta |nessa )?(dia )?(hoje|amanha|depois de amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(-feira)?( de manha| cedo| a tarde| a noite| que vem| sem falta| no maximo)*" + DAY_HOUR_TAIL,
       // Hora do dia como prazo (11/10, rodada 17 g48): "antes das 7h", "tem que chegar até as 10h", "bem cedo" é o prazo do
       // pedido (parseNeededBy), nunca item — saía "❌ antes das 7h — não achei" e "Ficou de fora: antes das 7h".
       "(e |mas )?((tem que|tenho que|precisa|preciso que|precisava|necessito que|so serve se) )?((chegar|chegue|ser entregue|entregar|vir|estar aqui) )?(hoje |amanha )?(bem )?(cedo |cedinho )?((antes (d[ae]s?|as|a)|ate (as|a)|no maximo (as|ate as|a)) \\d{1,2}( ?(h|hs|hrs?|horas?)|:\\d{2}|h\\d{2})?|(antes|ate|no maximo) \\d{1,2} ?(h|hs|hrs?|horas?))( da (manha|tarde|noite))?( sem falta| no maximo| em ponto)?",
@@ -335,7 +338,9 @@ const NARRATIVE_SEGMENT_RE = new RegExp(
       "(eu |a gente |nos )?(meu|minha|meus|minhas) [a-zà-ú]+( [a-zà-ú]+)? (que )?(vem|veio|vai|vao|chega|volta|pediu|pedia|falou|disse|gosta|adora|mora|visita|completa|faz)\\b.*",
       // "a visita chega hoje", "a festa é sábado" (10/10, rodada 14 g41): o quando da ocasião é prazo, nunca item.
       "(a|o|as|os) [a-zà-ú]+( [a-zà-ú]+)? (chega|chegam|vem|e|eh|sera|vai ser|comeca|acontece) (hoje|amanha|depois de amanha|(no |na |nesse |nessa |este |esta )?(domingo|segunda|terca|quarta|quinta|sexta|sabado|fim de semana))\\b.*",
-      "((entao|beleza|bom|ok|ai|e) )*(eu )?(vou|vamos) (receber|fazer|dar|ter|visitar|viajar|arrumar|deixar)\\b.*",
+      // "Vou pintar o quarto sábado de manhã" (11/10, rodada 18 g50): o plano (pintar, reformar, mudar…) é contexto do
+      // pedido, nunca item — saía "❌ Vou pintar o quarto sábado… — não achei" e o mesmo no "Ficou de fora" do resumo.
+      "((entao|beleza|bom|ok|ai|e) )*(eu )?(vou|vamos|to indo|estou indo|tou indo) (receber|fazer|dar|ter|visitar|viajar|arrumar|deixar|pintar|repintar|reformar|montar|me mudar|mudar de casa|limpar|faxinar|organizar|decorar|consertar|plantar|comemorar|cozinhar|preparar)\\b.*",
       // Condição da ENTREGA ou comentário sobre o produto (10/10, rodada 9 M10): "tem que chegar inteiro", "são frágeis",
       // "que chegue amanhã cedo" viravam item ("1x são frágeis") e "não achei".
       "((eu )?(preciso|quero|queria) )?(que|tem que|tem q|precisa|precisam|preciso que) (chegar|chegue|chega|cheguem|venha|venham|vir|vem|entregar|entregue|entreguem)\\b.*",
@@ -549,9 +554,20 @@ export function parseNeededHour(text: string): number | null {
   return hour >= 1 && hour <= 23 ? hour : null;
 }
 
+const DAY_HOUR_RE = /\b(?:hoje|amanha|domingo|segunda|terca|quarta|quinta|sexta|sabado)(?:-feira)?(?:\s+(?:de\s+manha|a\s+tarde|a\s+noite))?\s+(?:as|a)\s+(\d{1,2})(?:\s*(?:h|hs|hrs?|horas?)\b|:\d{2}\b|h\d{2}\b)?(?:\s+da\s+(manha|tarde|noite))?/;
+function parseDayHour(text: string): number | null {
+  const m = DAY_HOUR_RE.exec(normalizeMsg(text));
+  if (!m) return null;
+  let hour = Number(m[1]);
+  if ((m[2] === "tarde" || m[2] === "noite") && hour < 12) hour += 12;
+  return hour >= 1 && hour <= 23 ? hour : null;
+}
+
 export function parseNeededBy(text: string, now: Date = new Date()): { date: string; label: string; morning?: boolean; hour?: number } | null {
   const day = parseNeededDay(text, now);
-  const hour = parseNeededHour(text);
+  // "até sexta às 19h" (11/10, rodada 18 g50): a hora colada no dia do prazo também vale — só com o dia já entendido como
+  // prazo ("abre sexta às 7h" não é prazo, e o dia não passa).
+  const hour = parseNeededHour(text) ?? (day ? parseDayHour(text) : null);
   if (hour == null) return day;
   // Com hora, o rótulo diz a hora ("amanhã às 7h") e a hora manda no "de manhã". Sem dia, é a próxima vez que essa hora
   // chega: "antes das 7h" dito às 21h é amanhã às 7h.
@@ -733,6 +749,14 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       /\s+(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:uns|umas|ate|até|s[oó]|apenas)\s+)*(?:r\$\s*)?(\d+(?:[§¤]\d{1,2})?)\s*(?:reais|real|conto|contos|pila|pilas)\b(?:\s+(?:no total|total|de or[cç]amento|com a entrega|com o frete|com frete|incluindo o frete|incluindo frete))*/gi,
       ", ate $1 reais, "
     )
+    // Contagem com embalagem no MEIO da fala sem pontuação (11/10, rodada 18 g50, áudio transcrito): "macarrão
+    // instantâneo uns 5 pacotes é energético 4 latas papel higiênico" — a contagem fecha o item dela; o que vem depois
+    // ("é"/"e" do áudio, ou outro produto de 2+ palavras) é outro item. Sem isso, o "5 pacotes" virava a quantidade do
+    // grupo inteiro e o papel higiênico saía 5x. "de 500g", "cada", "grandes" seguem no mesmo item.
+    .replace(
+      /(\b(?:\d{1,2}|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+(?:pacotes?|pacotinhos?|latas?|latinhas?|caixas?|caixinhas?|garrafas?|potes?|sach[eê]s?|saquinhos?|vidros?|bandejas?|embalagens?|fardos?))(?:\s+(?:é|e)\s+|\s+(?=(?!(?:de|do|da|dos|das|com|cada|grandes?|pequen[oa]s?|mini|cheios?|fechad[oa]s?|lacrad[oa]s?|iguais|mesm[oa]s?|pra|para|por|no|na|ou)\b)[a-zà-ú]{2,}\s+[a-zà-ú]{3,}))/gi,
+      "$1, "
+    )
     // ponto/interrogação separam sentenças ("sabao em po. ah e um refri" = 2 segmentos)
     // " / " (com espaços) também separa itens: "2 coca / 1 shampoo / 2 sabonete" virava UMA linha
     // de quantidade 2 e a quantidade vazava pros outros itens (placar 07/10, c34). "1/2 litro" não.
@@ -770,6 +794,11 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // gíria/vocativo antes do pedido ("mn qro 2 coca", "galera vou fazer um churrasco"): tira só o
         // prefixo, o resto segue (c92/c94). Não vira quantidade nem produto.
         .replace(/^(?:(?:mn|mano|mana|vei|veio|bro|brother|parceiro|galera|pessoal|gente)[\s,!]+)+/i, "")
+        // "gente tipo assim preciso de macarrão…" e "…saco de lixo to sem nada em casa kkk" (11/10, rodada 18 g50, áudio):
+        // a muleta e o desabafo não são palavras do produto.
+        .replace(/^tipo(?:\s+assim)?\s+(?=[a-zà-ú\d])/i, "")
+        .replace(/\s+(?:(?:que|pq|porque)\s+)?(?:eu\s+)?(?:t[oô]|tou|estou)\s+sem\s+nada\b.*$/i, "")
+        .replace(/\s+(?:k{3,}|rs+|haha+)\s*$/i, "")
         // "tenho uns 120 reais" é ORÇAMENTO da frase, nunca item: vira o "até N reais" que o
         // restante do parser já trata como teto (c23/c24).
         .replace(/^(?:eu\s+)?(?:s[oó]\s+)?(?:tenho|t[oô] com|tou com|estou com|posso gastar|gasto)\s+(?:(?:s[oó]|apenas)\s+)?(?=(?:(?:uns|umas|ate|até)\s+)*(?:r\$\s*)?\d)/i, "até ")
@@ -1897,6 +1926,20 @@ export function spCapitalPlace(text: string): string | undefined {
 // Pedido de trocar de LOJA sem oferta na mesa (10/10, rodada 16 g46, jornada 354): "troca por outra loja", "troca de loja",
 // "tem em outra loja?", "troca o tapete de loja", "troca o tapete por outro de outra loja". `item` = o item citado (vazio
 // = a loja que trava o pedido). A última oração com "loja" vale ("não, o tapete. troca o tapete por outro de outra loja").
+// Remoção POR LOJA (11/10, rodada 18 g50): "tira tudo da americanas e fecha o resto", "remove os itens da Cobasi",
+// "esquece o que é da Drogaria São Paulo". O "tira tudo" caía na lista nova e a cesta INTEIRA sumia (e "da americanas"
+// virava item). Devolve o nome da loja como o cliente escreveu (quem resolve contra a cesta é o delivery-service) e se o
+// cliente pediu para fechar com o que sobrou. Sem "tudo/os itens/o que é", "tira o da americanas" é item, não loja.
+const STORE_REMOVE_RE =
+  /^(?:(?:entao|ok|beleza|blz|ta|ah|olha|ai|pode|na verdade|melhor|deixa assim)[,\s]+)*(?:tira|tirar|tire|remove|remover|remova|exclui|excluir|apaga|apagar|esquece|esquecer|corta|cortar)\s+(?:(?:tudo|todos|todas)(?:\s+(?:os|as)\s+(?:itens|coisas|produtos))?(?:\s+(?:o|os|a|as))?|(?:os|as)\s+(?:itens|coisas|produtos)|o\s+que\s+(?:e|eh|for|tem|veio|vem)|(?:os|as)\s+(?:que\s+(?:sao|for|vem|vieram)))\s+(?:que\s+(?:e|eh|for|sao|vem|veio)\s+)?(?:da|do|de|na|no)\s+(?:loja\s+(?:da\s+|do\s+)?)?(.+?)(?:[\s,]+(?:e|ai|depois|pode|so)?\s*(fecha\w*|pode fechar|finaliza\w*|segue|continua|manda o total|me manda o total|o resto pode\b.*|fico com o resto|fica com o resto)\b.*)?[\s.!]*$/;
+export function parseStoreRemoval(text: string): { store: string; close: boolean } | null {
+  const m = STORE_REMOVE_RE.exec(normalizeMsg(text));
+  if (!m) return null;
+  const store = m[1].replace(/\s+(?:e|ai)$/, "").trim();
+  if (!store || store.split(" ").length > 4) return null;
+  return { store, close: Boolean(m[2]) };
+}
+
 export function parseStoreSwapAsk(text: string): { item?: string } | null {
   const clauses = normalizeMsg(text).split(/[.;!?\n]+/).map((c) => c.replace(/[,]+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean);
   const clause = [...clauses].reverse().find((c) => /\bloja\b/.test(c));

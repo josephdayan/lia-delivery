@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, spCapitalPlace } from "@/lib/lia-intents";
+import { detectIntent, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseStoreRemoval, spCapitalPlace } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
 import { baseFormulationFirst, extractCpf, extractFullName, hasMip, isMedicineLineExtension, isMipItem, isPrescriptionDrugName, isVetMedicineAsk, looksLikeCpfAttempt, looksLikeMedicineName, looksLikePrescriptionRequest, maskCpf, medicineEnabled, medicineEquivalentFor, prescriptionDrugNamesIn } from "@/lib/medicine";
@@ -3899,6 +3899,26 @@ async function handleDeliveryTurn(
       return;
     }
   }
+  // "tira tudo da americanas e fecha o resto" (11/10, rodada 18 g50): remoção por LOJA tira só os itens daquela loja e,
+  // com "fecha o resto", segue para o fechamento com o que sobrou. Antes o "tira tudo" virava lista nova (a cesta inteira
+  // sumia) e "da americanas" virava item (vale-presente).
+  const storeRemoval = (ctx.basket?.length ?? 0) > 0 && !ctx.deliveryOrderId ? parseStoreRemoval(text) : null;
+  if (storeRemoval) {
+    const wanted = storeRemoval.store;
+    const sameStore = (label: string | undefined, key: string | undefined) => {
+      const l = normalizeMsg(label ?? "");
+      const k = normalizeMsg((key ?? "").replace(/[-_]/g, " "));
+      return Boolean((l && (l === wanted || l.startsWith(`${wanted} `) || wanted.startsWith(`${l} `))) || (k && k === wanted.replace(/\s+/g, "")));
+    };
+    const skus = (ctx.basket ?? []).filter((item) => sameStore(item.storeLabel, item.storeKey)).map((item) => item.sku);
+    if (skus.length) {
+      ctx.minimumButtonsAt = undefined;
+      ctx.consolidationOffer = undefined;
+      const reopened = await reopenOrderForEdit(phone, convo.id, ctx, user.cep);
+      await handleRemove(phone, convo.id, user.cep, ctx, wanted, { exact: { skus, queries: [] }, reopened: storeRemoval.close ? undefined : reopened });
+      return;
+    }
+  }
   const restart = basketActive ? splitRestartCue(text) : null;
   const restartItems = restart?.rest ? resolveListItems(restart.rest).filter((l) => localCatalogProbe(l.phrase).strong) : [];
   if (restart && (restartItems.length || !restart.rest)) {
@@ -7298,6 +7318,7 @@ function snapshotExpiredCart(ctx: DeliveryContext, idleMs: number, quote = false
 // Nome completo e CPF colados antes do endereço ("Carla Mendes, CPF 529.982.247-25, Av Paulista 1000…", 09/10, rodada 3)
 // vão pro cadastro e saem do texto: nome e CPF nunca viram item de busca. CPF inválido também sai (a Lia pede de novo
 // depois, pelos passos de sempre); só grava quando vêm CPF válido E nome.
+const IDENTITY_SPLIT_RE = /\s*(?:[;\n]|(?<!\d),|,(?!\d))\s*/;
 export async function takeIdentityFromItems(userId: string, items: string | undefined): Promise<string | undefined> {
   if (!items || !looksLikeCpfAttempt(items)) return items;
   const cpf = extractCpf(items);
@@ -7309,7 +7330,7 @@ export async function takeIdentityFromItems(userId: string, items: string | unde
   }
   const rest: string[] = [];
   let name: string | null = null;
-  for (const segment of items.split(/\s*[,;\n]\s*/).filter(Boolean)) {
+  for (const segment of items.split(IDENTITY_SPLIT_RE).filter(Boolean)) {
     if (looksLikeCpfAttempt(segment)) {
       name = name ?? extractFullName(segment);
     } else if (!name && looksLikeOnboardingName(segment)) {
@@ -7329,7 +7350,9 @@ export async function takeIdentityFromItems(userId: string, items: string | unde
 export function splitIdentity(text: string, cpf: string): { name: string | null; rest: string } {
   const MARK = "\u0000";
   const marked = text.replace(/(?:\b(?:e\s+)?(?:o\s+)?(?:meu\s+)?cpf\b\s*(?:[:=-]|é|eh|e)?\s*)?\d[\d.\s-]{9,16}\d/gi, (m) => (m.replace(/\D/g, "").includes(cpf) ? `,${MARK},` : m));
-  const segments = marked.split(/\s*[,;\n]\s*/).map((seg) => seg.trim()).filter(Boolean);
+  // Vírgula decimal ("tinta branca 3,6 litros", 11/10, rodada 18 g50) não separa: o "3, 6 litros" que voltava virava
+  // "tinta branca 3" + "6x litros" e a busca ia por "tinta branca 6 litros".
+  const segments = marked.split(IDENTITY_SPLIT_RE).map((seg) => seg.trim()).filter(Boolean);
   let at = segments.indexOf(MARK);
   const nameOk = (seg: string | undefined) => Boolean(seg && seg !== MARK && looksLikeOnboardingName(seg) && extractFullName(seg));
   // Sem vírgula entre o nome e o resto ("cpf … Rafael Torres cep 01310-100 numero 500"): o nome é o começo (até o

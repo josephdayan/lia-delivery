@@ -1,0 +1,159 @@
+// Rodada 18, grupo G50 (11/10): remoção por loja, quantidade vizinha, prazo com hora, contexto e medida decimal, pergunta
+// sobre o item escolhido, "mostra as opções", cadastro, endereço e avisos repetidos —
+// de /mnt/project-files/testes-whatsapp/rodada18/grupo-b.md (R18-1, R18-2, R18-3, R18-4, R18-9, R18-12, R18-14).
+import "./helpers/load-env";
+import { test, before, after, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { prisma } from "../src/lib/prisma";
+import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
+import { handleDeliveryMessage, runTurnScoped, splitIdentity } from "../src/lib/delivery-service";
+import { __setDialogueModelForTests } from "../src/lib/dialogue";
+import { __setPreSignupModelForTests } from "../src/lib/dialogue/presignup";
+import { __setPreflightForTests } from "../src/lib/live-freight";
+import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
+import { parseBasketLines, parseNeededBy, parseStoreRemoval } from "../src/lib/lia-intents";
+import type { BasketItem, ChoiceOption, DeliveryContext } from "../src/lib/conversation-types";
+
+const RUN = `${Date.now().toString(36)}${process.pid}`;
+const PREFIX = `+5528${String(Date.now()).slice(-5)}${String(process.pid).slice(-2)}`;
+const ADDRESS = "Avenida Paulista, 1000, Bela Vista, São Paulo - SP";
+let seq = 0;
+let dbOk = false;
+const outbox: { to: string; kind: string; text: string }[] = [];
+const adapter = whatsappAdapter as unknown as Record<string, unknown>;
+const original = { ...adapter };
+for (const key of Object.keys(adapter)) {
+  if (typeof adapter[key] !== "function" || !key.startsWith("send")) continue;
+  adapter[key] = async (to: string, text: unknown) => {
+    outbox.push({ to, kind: key, text: typeof text === "string" ? text : JSON.stringify(text) });
+    return key === "sendMessage" || key === "sendMedia" ? { provider: "test", to } : null;
+  };
+}
+
+async function wipe() {
+  const users = await prisma.user.findMany({ where: { phone: { startsWith: PREFIX } }, select: { id: true } });
+  const ids = users.map((u) => u.id);
+  if (!ids.length) return;
+  await prisma.message.deleteMany({ where: { conversation: { userId: { in: ids } } } });
+  await prisma.deliveryOrder.deleteMany({ where: { userId: { in: ids } } });
+  await prisma.conversation.deleteMany({ where: { userId: { in: ids } } });
+  await prisma.user.deleteMany({ where: { id: { in: ids } } });
+}
+before(async () => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbOk = true;
+    await wipe();
+  } catch (error) {
+    if (process.env.LIA_REQUIRE_DB === "1") throw error;
+  }
+});
+beforeEach(() => {
+  __setDialogueModelForTests(null);
+  __setPreSignupModelForTests(null);
+  __setPreflightForTests(async () => null);
+  delete process.env.LIA_DIALOGUE_LLM;
+});
+afterEach(() => {
+  __setLiveSimulateForTests(null);
+  __clearLiveCheckCacheForTests();
+});
+after(async () => {
+  __setPreflightForTests(null);
+  __setDialogueModelForTests(null);
+  __setPreSignupModelForTests(null);
+  delete process.env.LIA_DIALOGUE_LLM;
+  if (dbOk) await wipe();
+  Object.assign(adapter, original);
+  await prisma.$disconnect();
+});
+
+async function customerWith(ctxExtra: Record<string, unknown>, step = "collecting") {
+  const phone = `${PREFIX}${String(++seq).padStart(4, "0")}`;
+  const user = await prisma.user.create({ data: { phone, cep: "01310-100", defaultAddress: ADDRESS, name: "Maria da Silva" } });
+  const convo = await prisma.conversation.create({
+    data: { userId: user.id, status: "active", currentStep: step, context: JSON.stringify({ flow: "delivery", step, cep: "01310-100", deliveryAddress: ADDRESS, deliveryAddressVerified: true, ...ctxExtra }) }
+  });
+  return { phone, userId: user.id, convoId: convo.id };
+}
+async function send(phone: string, text: string): Promise<string> {
+  const start = outbox.length;
+  await runTurnScoped(() => handleDeliveryMessage({ phone, text, messageId: `g50_${RUN}_${++seq}` }));
+  return outbox.slice(start).filter((m) => m.to === phone).map((m) => m.text).join("\n---\n");
+}
+async function ctxOf(convoId: string): Promise<DeliveryContext> {
+  return JSON.parse((await prisma.conversation.findUniqueOrThrow({ where: { id: convoId } })).context ?? "{}");
+}
+const opt = (sku: string, name: string, unitPrice: number, storeKey = "americanas", storeLabel = "Americanas"): ChoiceOption => ({ sku, name, unitPrice, storeKey, storeLabel });
+const bi = (sku: string, name: string, unitPrice: number, extra: Partial<BasketItem> = {}): BasketItem => ({
+  sku, name, qty: 1, unitPrice, lineTotal: unitPrice, storeKey: "americanas", storeLabel: "Americanas", ...extra
+});
+const phrases = (t: string) => parseBasketLines(t).map((l) => l.phrase);
+
+// 23h30 em SP do sábado 10/10 (a hora da rodada).
+const NIGHT = new Date("2026-10-11T02:30:00Z");
+
+// ---------------------------------------------------------------- R18-1: remoção por loja
+
+test("R18-1: 'tira tudo da americanas e fecha o resto' é remoção por loja com fechamento", () => {
+  assert.deepEqual(parseStoreRemoval("tira tudo da americanas e fecha o resto"), { store: "americanas", close: true });
+  assert.deepEqual(parseStoreRemoval("remove os itens da Cobasi"), { store: "cobasi", close: false });
+  assert.deepEqual(parseStoreRemoval("esquece o que é da Drogaria São Paulo, pode fechar"), { store: "drogaria sao paulo", close: true });
+  // Sem "tudo/os itens/o que é" é item ("tira o da americanas"); "tira tudo" sozinho segue sendo a lista nova.
+  assert.equal(parseStoreRemoval("tira o da americanas"), null);
+  assert.equal(parseStoreRemoval("tira tudo"), null);
+});
+
+test("R18-1: na conversa, só os itens da Americanas saem e o resto fecha", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({
+    basket: [
+      bi("americanas-1", "Lápis de Cor Resina Eco Sextavado 24 Cores Leo&Leo", 14.29),
+      bi("americanas-2", "Tesoura Escolar 1 un School Basics", 5.49),
+      bi("livrariascuritiba-1", "Cola Bastão 20g", 2.72, { storeKey: "livrariascuritiba", storeLabel: "Livrarias Curitiba" }),
+      bi("livrariascuritiba-2", "Caderno Universitário 1x1 Zip Rosa Tilibra", 17.86, { storeKey: "livrariascuritiba", storeLabel: "Livrarias Curitiba" })
+    ]
+  });
+  const out = await send(c.phone, "tira tudo da americanas e fecha o resto");
+  const ctx = await ctxOf(c.convoId);
+  assert.deepEqual((ctx.basket ?? []).map((b) => b.sku), ["livrariascuritiba-1", "livrariascuritiba-2"], out);
+  assert.doesNotMatch(out, /lista nova|Vale-Presente|Opções de \*da americanas/i);
+  assert.match(out, /Tirei .*Lápis de Cor/);
+});
+
+// ---------------------------------------------------------------- R18-2: quantidade não vaza
+
+test("R18-2: 'uns 5 pacotes' é do macarrão; o papel higiênico fica 1x", () => {
+  const lines = parseBasketLines("gente tipo assim preciso de macarrão instantâneo uns 5 pacotes é energetico 4 latas papel higienico e detergente e saco de lixo urgente to sem nada em casa kkk");
+  assert.deepEqual(
+    lines.map((l) => [l.phrase, l.qty]),
+    [["macarrão instantâneo", 5], ["energetico lata", 4], ["papel higienico", 1], ["detergente", 1], ["saco de lixo", 1]]
+  );
+  // A contagem com "de <medida>" e a marca colada continuam no mesmo item.
+  assert.deepEqual(parseBasketLines("macarrão 3 pacotes de 500g").map((l) => [l.phrase, l.qty]), [["macarrão 500g", 3]]);
+  assert.deepEqual(parseBasketLines("cerveja 12 latas heineken").map((l) => [l.phrase, l.qty]), [["cerveja lata heineken", 12]]);
+});
+
+// ---------------------------------------------------------------- R18-4: prazo com hora, contexto e decimal
+
+test("R18-4: 'preciso até sexta às 19h' é prazo com hora, nunca item", () => {
+  const text = "quero dar um presente pra minha namorada, um perfume floral até 150 reais e um hidratante corporal. preciso até sexta às 19h";
+  assert.deepEqual(parseNeededBy(text, NIGHT), { date: "2026-10-16", label: "sexta às 19h", hour: 19 });
+  assert.ok(!phrases(text).some((p) => /sexta|19h/.test(p)), JSON.stringify(phrases(text)));
+  assert.deepEqual(parseNeededBy("pão e leite, tem que chegar amanhã às 10h", NIGHT), { date: "2026-10-11", label: "amanhã às 10h", hour: 10 });
+  // Sem prazo dito, horário solto com dia não é prazo.
+  assert.equal(parseNeededBy("a loja abre sexta às 7h?", NIGHT), null);
+});
+
+test("R18-4: 'Vou pintar o quarto sábado de manhã' é contexto; '3,6 litros' fica 3,6", () => {
+  const text = "Vou pintar o quarto sábado de manhã e preciso de tinta branca 3,6 litros, um rolo de pintura, fita crepe e lixa. Tenho até 200 reais";
+  const got = phrases(text);
+  assert.ok(!got.some((p) => /pintar o quarto/i.test(p)), JSON.stringify(got));
+  assert.equal(got[0], "tinta branca 3,6 litros");
+  // O cadastro na mesma mensagem (nome + CPF) sai sem quebrar a vírgula decimal.
+  const taken = splitIdentity("Marta Oliveira, CPF 529.982.247-25, tinta branca 3,6 litros, um rolo de pintura", "52998224725");
+  assert.equal(taken.name, "Marta Oliveira");
+  assert.equal(taken.rest, "tinta branca 3,6 litros, um rolo de pintura");
+});
+
+void opt;
