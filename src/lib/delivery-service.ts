@@ -3911,6 +3911,7 @@ async function handleDeliveryTurn(
     intent.kind === "free_text" &&
     // Carrossel aberto e a mensagem começa respondendo a ele (A3, 10/10): quem trata é a escolha (escolhe e soma o resto).
     !(ctx.step === "choosing" && ctx.pending?.length && splitChoiceHeadAndItems(text, ctx.pending[0])) &&
+    !(ctx.step === "choosing" && ctx.pending?.length && optionNamedOnTable(text, ctx.pending[0]).length) &&
     !explicitAddCue(text) &&
     !ADD_TO_BASKET_RE.test(normalizeMsg(text)) &&
     !EDIT_OR_CHOICE_RE.test(normalizeMsg(text))
@@ -4251,7 +4252,9 @@ async function handleDeliveryTurn(
   }
   // O que o cliente escreveu, quando a IA reencaminha outra frase: o aviso ao dono cita ISSO, nunca a frase da IA.
   let saidBeforeRewrite: string | undefined;
-  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx)) {
+  // O nome de um card da tela (com a loja dele) a escolha resolve sem a IA (11/10, rodada 18 g51).
+  const namesCardOnTable = intent.kind === "free_text" && ctx.step === "choosing" && Boolean(ctx.pending?.length) && optionNamedOnTable(text, ctx.pending![0]).length > 0;
+  if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx) && !namesCardOnTable) {
     const hasAddress = Boolean(user.defaultAddress && savedCep);
     const dialogue = hasAddress
       ? await runDialogueTurn({
@@ -8400,6 +8403,15 @@ async function handleChoosing(
     await writeCtx(convoId, ctx);
   }
 
+  const namedOnTable = intent.kind === "free_text" ? optionNamedOnTable(text, current) : [];
+  if (namedOnTable.length) {
+    // Estreita (e com um card só, o cliente confirma no botão), como o nome que discrimina mais abaixo.
+    current.shownOptions = current.shownOptions ?? [...current.options];
+    current.options = namedOnTable.map((i) => current.options[i]);
+    await writeCtx(convoId, ctx);
+    await sendChoices(phone, current, copy.narrowedChoices(current.query));
+    return;
+  }
   // "outras, mostra de filhote da cobasi mesmo" (10/10, rodada 15 A1): opções do item da vez numa loja citada. A loja filtra a
   // busca e as outras palavras refinam o item ("filhote" já estava nele) — antes virava o item novo "mostra de filhote".
   // A vírgula de "outras, mostra..." conta como 2 itens: o que decide é sobrar no máximo 3 palavras depois dos conectivos.
@@ -8883,6 +8895,12 @@ async function handleChoosing(
   // "a da essence mesmo, ta barata" com as máscaras à prova d'água na tela (10/10, rodada 15 A2): a marca de um card é
   // escolha dentro do item da vez, com os atributos dele — virava o item novo "máscara essence" sem o "à prova d'água".
   if (intent.kind === "free_text" && !isQuestion(text) && (await narrowToBrandOnTable(phone, convoId, ctx, current, text))) return;
+  // "oi, antes: tem ibuprofeno?" com o soro na mesa (11/10, rodada 18 g51): a pergunta de disponibilidade de OUTRO produto é
+  // o pedido dele (entra na fila como qualquer item novo) — antes caía no "Não peguei qual você quer".
+  if (intent.kind === "free_text" && isQuestion(text) && countDistinctItems(text) <= 1) {
+    const askedItem = parseAvailabilityAsk(text);
+    if (askedItem && !sharesProductNoun(askedItem, current.query) && !sharesProductNoun(askedItem, current.baseQuery ?? current.query)) text = askedItem;
+  }
   if (intent.kind === "free_text" && !isQuestion(text)) {
     // Item que JÁ foi escolhido mandado de novo (10/10, rodada 7 N3: "racao para cachorro labrador adulto 15kg" depois
     // de escolhida) virava pendência duplicada em "Falta escolher". Sem sinal de adição nem quantidade, é o mesmo item.
@@ -9971,6 +9989,40 @@ function looksLikeProductList(text: string): boolean {
 // Escolha/refino do item na mesa + item novo na mesma mensagem (10/10, rodada 4 A3): "o desnatado, e um pacote de
 // bolacha maizena" com o carrossel de leite aberto. A cabeça é resposta ao carrossel (número, nome de opção, atributo
 // como "o desnatado", ou o próprio produto da mesa); a cauda tem item de produto real. Devolve as duas partes.
+// "a de mel e limão da drogaria são paulo" com as pastilhas na tela (11/10, rodada 18 g51): o nome de um card, com a loja dele
+// no fim, é escolha — o " e " do sabor e o "da <loja>" partiam a frase em dois itens novos ("Somei 1x a de mel").
+// Devolve os índices dos cards que têm TODAS as palavras ditas (e são da loja citada); [] = não fala dos cards.
+export function optionNamedOnTable(text: string, current: PendingChoice): number[] {
+  const options = current.options;
+  if (options.length < 2) return [];
+  let rest = ` ${normalizeMsg(text).replace(/[!.?,;]+/g, " ").replace(/\s+/g, " ").trim()} `;
+  let storeIdx: number[] | null = null;
+  const flat = (s: string) => normalizeMsg(s).replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  for (const label of [...new Set(options.map((o) => o.storeLabel).filter(Boolean) as string[])]) {
+    const cut = rest.match(new RegExp(`\\s(?:d[oa]s?|de|na|no)\\s+(?:loja\\s+|farmacia\\s+)?${flat(label).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`));
+    if (cut) {
+      rest = rest.slice(0, cut.index);
+      storeIdx = options.map((o, i) => (o.storeLabel === label ? i : -1)).filter((i) => i >= 0);
+      break;
+    }
+  }
+  // Moldura da escolha ("a de", "quero o", "essa") não é palavra do produto; precisa sobrar o que descreve o card.
+  const said = rest.replace(/\b(?:quero|queria|prefiro|vou de|fico com|pode ser|manda|escolho|essa|esse|aquela|aquele|e)\b/g, " ").replace(/\s+/g, " ").trim();
+  // "a de 8" depois de "a caixa com 8 pastilhas ou a com 16?" (11/10, rodada 18 g51): a contagem da embalagem escolhe entre os
+  // cards — o 8 não é a opção 8 (só há 5) e o cartão voltava começando pela caixa de 16.
+  const COUNT_UNIT = String.raw`(?:unidades?|unids?|un|pastilhas?|comprimidos?|capsulas?|rolos?|saches?|latas?|sabonetes?|fraldas?|pares?|folhas?)`;
+  const count = said.match(new RegExp(String.raw`^(?:(?:a|o|as|os)\s+)?(?:(?:caixa|pacote|embalagem|pack|frasco|cartela)\s+)?(?:de|com)\s+(\d{1,3})(?:\s*(${COUNT_UNIT}))?$`));
+  if (count && (Number(count[1]) > options.length || count[2])) {
+    const has = new RegExp(String.raw`(?:^|\D)0*${count[1]}\s*${COUNT_UNIT}\b|\b(?:caixa|c\/|com|pack|kit)\s*(?:com\s+)?0*${count[1]}\b`);
+    const hits = options.map((o, i) => (has.test(normalizeMsg(o.name)) ? i : -1)).filter((i) => i >= 0 && (!storeIdx || storeIdx.includes(i)));
+    return hits.length && hits.length < options.length ? hits : [];
+  }
+  if (queryTokens(said).length < 2) return [];
+  const named = narrowChoiceByName(said, options).filter((i) => !storeIdx || storeIdx.includes(i));
+  if (!named.length) return [];
+  return storeIdx || named.length < options.length ? named : [];
+}
+
 function splitChoiceHeadAndItems(text: string, current: PendingChoice): { head: string; tail: string } | null {
   const parts = text.trim().match(/^(.+?)(?:\s*[,;]\s*(?:e\s+)?|\s+e\s+(?:tamb[eé]m\s+)?)(.+)$/i);
   if (!parts) return null;

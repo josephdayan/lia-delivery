@@ -85,7 +85,7 @@ const SOLO = new Set(["close_list", "answer", "human", "status", "cancel", "pay"
 
 // `text` = a mensagem original do cliente: vira o `text` da recomendação e é de onde o CÓDIGO tira o
 // teto de preço (a IA não decide dinheiro) e os sinais determinísticos (detect.ts).
-export function planActions(decision: DialogueDecision, state: DialogueState, opts: { text?: string } = {}): Plan {
+export function planActions(decision: DialogueDecision, state: DialogueState, opts: { text?: string; recentRefusal?: boolean } = {}): Plan {
   const actions = decision.actions;
   if (!actions.length || actions.length > 3) return { ok: false, reason: "quantidade_de_acoes" };
   if (actions.length > 1 && actions.some((a) => SOLO.has(a.type))) return { ok: false, reason: "acao_exclusiva_combinada" };
@@ -95,7 +95,9 @@ export function planActions(decision: DialogueDecision, state: DialogueState, op
   if (actions.some((a) => a.type === "medicine") && opts.text && listHasNonMedicineItem(opts.text)) return { ok: false, reason: "remedio_no_meio_da_lista" };
   // Remédio isento ligado: "dipirona 500mg gotas, a normal sem receita" é pedido que a Lia compra — a recusa da IA ("remédio
   // de receita...") só vale com remédio de receita nomeado na mensagem.
-  if (actions.some((a) => a.type === "medicine") && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  // "pastilha para garganta" (11/10, rodada 18 g51) não tem palavra de remédio e recebia a recusa de receita: sem remédio de
+  // receita nomeado e sem recusa recente (insistência), a recusa da IA também não vale — a busca decide.
+  if (actions.some((a) => a.type === "medicine") && opts.text && medicineEnabled() && (looksLikeMedicine(opts.text) || !opts.recentRefusal) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
 
   const steps: Planned[] = [];
   for (let i = 0; i < actions.length; i++) {

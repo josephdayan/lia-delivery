@@ -3367,6 +3367,8 @@ export function parseAvailabilityAsk(text: string): string | null {
   const n = normalizeMsg(text)
     .replace(/[?!.]+$/g, "")
     .replace(/^(?:oi+e?|ola|opa|bom dia|boa tarde|boa noite|eai|e ai)\s*[,!.]?\s+/, "")
+    // "oi, antes: tem ibuprofeno?" (11/10, rodada 18 g51): a abertura da pergunta não é parte do item.
+    .replace(/^(?:antes|so (?:uma )?pergunta|uma pergunta|pergunta|me diz|me fala|e)\s*[,:!.-]?\s+(?=(?:voces?|vcs?|vc|voce|tem|teria|vende)\b)/, "")
     .trim();
   const m = n.match(
     /^(?:(?:voces?|vcs?|ce|cês|vc|voce)\s+)?(?:tem|teria|vende|vendem|vendes|trabalha(?:m)?\s+com|consegue(?:m)?\s+(?:comprar|trazer|achar|entregar)|da\s+pra\s+(?:comprar|pedir)|entrega(?:m)?)\s+(?:(?:um|uma|uns|umas|o|a)\s+)?(.{2,60})$/
