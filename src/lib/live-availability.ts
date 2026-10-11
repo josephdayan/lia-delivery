@@ -50,8 +50,10 @@ function readLiveCache(storeKey: string, sku: string, cep: string, qty: number, 
   into.set(liveKey(storeKey, sku), hit.check);
   return true;
 }
+const liveInFlight = new Map<string, Promise<Map<string, LiveItemCheck> | null>>();
 export function __clearLiveCheckCacheForTests() {
   liveCache.clear();
+  liveInFlight.clear();
 }
 
 export function liveKey(storeKey: string, sku: string): string {
@@ -97,7 +99,18 @@ export async function checkCandidatesLive<T extends LiveCandidate>(
       try {
         const subQtys: Record<string, number> = {};
         for (const sku of skus) if (qtys[sku]) subQtys[sku] = qtys[sku];
-        const result = await simulate(storeKey, skus, cep, Object.keys(subQtys).length ? subQtys : undefined);
+        const qtyArg = Object.keys(subQtys).length ? subQtys : undefined;
+        // A mesma simulação já em voo (11/10, latência: a busca especulativa durante a IA do diálogo) não sai de novo.
+        const flightKey = `${storeKey}|${[...skus].sort().join(",")}|${cep.replace(/\D/g, "")}|${JSON.stringify(qtyArg ?? {})}`;
+        let flying = cacheOn ? liveInFlight.get(flightKey) : undefined;
+        if (!flying) {
+          flying = simulate(storeKey, skus, cep, qtyArg);
+          if (cacheOn) {
+            liveInFlight.set(flightKey, flying);
+            void flying.catch(() => null).finally(() => liveInFlight.delete(flightKey));
+          }
+        }
+        const result = await flying;
         if (!result) return; // loja não respondeu → desconhecido, mantém
         for (const [sku, check] of result) {
           checks.set(liveKey(storeKey, sku), check);

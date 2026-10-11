@@ -277,9 +277,20 @@ const IS_BASE = "/api/io/_v/api/intelligent-search";
 
 // Mesmo funil para a busca textual e a por categoria: cache, timeout, parse (seller próprio,
 // estoque, filtros de remédio) e "nunca lança".
+// A mesma consulta já em voo (11/10, latência: a busca especulativa que corre enquanto a IA do diálogo pensa) não sai
+// de novo: quem chega depois espera a mesma resposta.
+const inFlight = new Map<string, Promise<CatalogItem[]>>();
 async function fetchLiveProducts(storeKey: string, url: string, key: string, fetcher: LiveFetch): Promise<CatalogItem[]> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.items;
+  const flying = inFlight.get(key);
+  if (flying) return flying;
+  const task = fetchLiveProductsNow(storeKey, url, key, fetcher).finally(() => inFlight.delete(key));
+  inFlight.set(key, task);
+  return task;
+}
+
+async function fetchLiveProductsNow(storeKey: string, url: string, key: string, fetcher: LiveFetch): Promise<CatalogItem[]> {
   // Requisição + leitura do corpo sob o MESMO prazo duro (o corpo é que travava, ver withDeadline).
   // Fila (store-throttle.ts, main 08/10): o slot cobre requisição + corpo e o prazo nasce DENTRO dele,
   // então o timeout conta da SAÍDA da fila. Timeout/abort da requisição (08/10: "não tinha gin"): UMA
@@ -433,5 +444,6 @@ export function mergeLiveWithSnapshot(_storeKey: string, snapshot: CatalogItem[]
 
 export function __clearLiveSearchCacheForTests() {
   cache.clear();
+  inFlight.clear();
   pathCache.clear();
 }

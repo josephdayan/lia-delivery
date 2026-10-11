@@ -2,7 +2,7 @@ import { customerInvoiceEnabled, displayPrice, serviceFeeForItems } from "@/lib/
 import { prisma } from "@/lib/prisma";
 import { LIST_FLOW_REOPEN_ID, carouselEnabled, whatsappAdapter } from "@/lib/adapters/whatsapp";
 import { getStore, listStores, pickStoreForQueries, gatherCrossStoreCandidates, prefetchLongTailIfNeeded, longTailOptInEnabled, type StoreCandidate, type StoreConnector } from "@/lib/stores";
-import { withDeadline } from "@/lib/stores/live-search";
+import { liveSearchEnabled, withDeadline } from "@/lib/stores/live-search";
 import { compactCardDelivery } from "@/lib/meta-carousel-card";
 import { mercadoLivreEnabled, prefetchMercadoLivre, searchMercadoLivre } from "@/lib/stores/mercadolivre";
 import { mlItemIdFrom } from "@/lib/ml-freight";
@@ -12,9 +12,9 @@ import { paymentsAreMocked, pixAdapter } from "@/lib/payments/mercadopago";
 
 import { cardOnFileEnabled, expireOpenPaymentAttempts, findPendingSavedCardAttempt, listOneClickCredentials } from "@/lib/payments/whatsapp-pay";
 
-import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses } from "@/lib/adapters/ai";
+import { extractShoppingList, rerankShoppingOptions, interpretCustomerMessage, classifyMisses, rerankRaw, shapeApproved, type RerankLineResult, type RerankResult } from "@/lib/adapters/ai";
 import { computeStoreFreights, freightBreakdownLabel, instantQuoteEligible, PER_AD_FREIGHT_STORES, storeFreight, type InstantQuoteItem } from "@/lib/instant-quote";
-import { deadlineFit, deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, promisedMinutes, liveCheckSupported, liveFreightEnabled, liveStoreFreight, liveStoreFreightDetailed, preflightBasket, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
+import { deadlineFit, deadlineVerdict, estimateDay, humanEstimate, promiseMissesDeadline, promisedMinutes, liveCheckSupported, liveFreightEnabled, liveStoreFreight, liveStoreFreightDetailed, preflightBasket, simulationGeo, type LiveItemCheck, slowestEstimate } from "@/lib/live-freight";
 import { buyableWithoutOperator, checkCandidatesLive, liveConfirmationRequired, liveKey, unansweredDrops } from "@/lib/live-availability";
 import { mlBasketFreight } from "@/lib/ml-freight";
 import { countDistinctItems, isQualifierOnly, reconcileLineCounts, resolveListItems } from "@/lib/list-items";
@@ -36,7 +36,7 @@ import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe, splitNegatedTerms,
 import { displayQueryName } from "@/lib/query-display";
 import { canonicalTypedAddress, dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
-import { dialogueEnabled, runDialogueTurn } from "@/lib/dialogue";
+import { dialogueEnabled, dialogueWillDecide, isPlainShoppingList, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseChosenItemTrait, parseProductQuestion } from "./product-question";
 import { runPreSignupTurn, type PreHandlers } from "@/lib/dialogue/presignup";
 import { applyPendingCorrection, correctionHitsSegment, discardsLastNote, keepOnlyInGroup, replaceInGroup } from "@/lib/pending-edits";
@@ -189,7 +189,7 @@ export function someRequestDropped(requested: string[], kept: string[]): boolean
 }
 // "mais barato", "o mais em conta", "mais econômico" no fim da linha (o pedido de ordenação, não o nome).
 const CHEAP_MODIFIER_RE = /(?:^|\s)(?:(?:o|a|os|as|bem|que seja)\s+)?(?:mais\s+(?:barat[oa]s?|em conta|economic[oa]s?|econômic[oa]s?)|baratinh[oa]s?)(?=\s|$|[,.!?])/i;
-async function extractLines(text: string): Promise<ExtractedLines> {
+async function extractLines(text: string, opts?: { noLlm?: boolean; onLlm?: () => void }): Promise<ExtractedLines> {
   // "sem remédio"/"não quero remédio" é negação: sai da mensagem ANTES de qualquer
   // detecção — senão a Lia avisa que removeu um medicamento que ninguém pediu
   // (rodadas 4 e 14 dos testes reais de 14/08).
@@ -198,7 +198,10 @@ async function extractLines(text: string): Promise<ExtractedLines> {
   // Frase já reescrita pelo roteador da IA neste turno: é uma busca limpa, o parser
   // determinístico dá conta e a 2ª chamada de IA só somava até 10 s (06/10).
   const routed = turnMeta.getStore()?.routerQuery;
-  const extraction = routed && normalizeMsg(routed) === normalizeMsg(text) ? null : await extractShoppingList(sanitized);
+  const useLlm = !opts?.noLlm && !(routed && normalizeMsg(routed) === normalizeMsg(text));
+  // Enquanto a IA extrai (~2 s), as linhas do parser já buscam nas lojas (especulação: só aquece os caches).
+  if (useLlm) opts?.onLlm?.();
+  const extraction = useLlm ? await extractShoppingList(sanitized) : null;
   const deterministic = resolveListItems(sanitized, { log: true })
     .filter((line) => queryTokens(line.phrase).length)
     .filter((line) => !blocksMedicine(line.phrase))
@@ -384,6 +387,98 @@ function mergeAlternativePendings(pending: PendingChoice[], lines: ParsedLine[],
   }
 }
 
+// ---------- Busca especulativa (11/10, latência) ----------
+// Enquanto a IA pensa (gerente de diálogo ou extração da lista, ~2 s), as linhas que o parser determinístico já enxerga
+// buscam nas lojas e conferem estoque/entrega para o CEP. Só leitura: aquece o cache da busca ao vivo e o da conferência
+// (com junção das chamadas em voo). Se a IA mantiver o item, a busca de verdade acha tudo pronto e os cards são os mesmos
+// que sairiam sem a especulação; se ela mudar o pedido, a especulação só se perde. Nunca chama IA nem o Mercado Livre.
+export function speculationEnabled(): boolean {
+  return process.env.LIA_SPECULATIVE_SEARCH !== "false" && liveSearchEnabled();
+}
+function speculateChoices(text: string, lockedStoreKey: string | undefined, cep: string | null | undefined): void {
+  if (!speculationEnabled() || lockedStoreKey || !cep) return;
+  void speculateChoicesNow(text, cep).catch(() => null);
+}
+// Exportada para os testes (sem a chave de liga/desliga): devolve a especulação para esperar por ela.
+export async function speculateChoicesNow(text: string, cep: string): Promise<void> {
+  await buildChoices(text, undefined, undefined, undefined, false, cep, { speculative: true });
+}
+
+// ---------- Rerank em paralelo com a conferência ao vivo (11/10, latência) ----------
+type SearchedLine = { phrase: string; sizeSplit: boolean; candidates: StoreCandidate[] };
+type EarlyRerank = { judged: { index: number; keys: Set<string> }[]; result: RerankResult | null } | null;
+
+function rerankInput(phrase: string, candidates: StoreCandidate[]) {
+  return {
+    query: phrase,
+    candidates: candidates.map((c) => ({ sku: c.item.sku, name: c.item.name, brand: c.item.brand, price: display(c.item.unitPrice, c.item.medicine), store: c.store.label }))
+  };
+}
+
+// "2 litros de leite" virou "2× leite 1 litro": a mensagem original ("2 litros") contradiz o pedido que a IA julga e ela
+// recusava todas as caixas de 1 L (placar c27) — com o tamanho reescrito, a IA recebe os pedidos já reescritos.
+function rerankMessage(text: string, lines: { phrase: string; sizeSplit: boolean }[]): string {
+  return lines.some((l) => l.sizeSplit) ? lines.map((l) => l.phrase).join(", ") : text;
+}
+
+async function rerankSearched(text: string, searched: (SearchedLine | null)[]): Promise<EarlyRerank> {
+  const judged = searched.flatMap((s, index) => (s && s.candidates.length ? [{ index, s }] : []));
+  if (!judged.length) return null;
+  const result = await rerankShoppingOptions(
+    rerankMessage(text, judged.map(({ s }) => s)),
+    judged.map(({ s }) => rerankInput(s.phrase, s.candidates)),
+    vitrineLimit()
+  ).catch(() => null);
+  return { judged: judged.map(({ index, s }) => ({ index, keys: new Set(s.candidates.map((c) => `${c.store.key}:${c.item.sku}`)) })), result };
+}
+
+// O juízo da IA (feito sobre os candidatos da busca) aplicado aos CONFIRMADOS: a ordem da IA, sem quem a loja derrubou —
+// o próximo aprovado entra no lugar, sem nova chamada. Só uma linha cujos aprovados caíram TODOS e que ganhou candidato
+// que a IA não viu (a reserva mais funda, as unidades soltas do pack) é julgada de novo, como antes.
+async function judgeAfterLiveCheck<E extends { line: ParsedLine; candidates: StoreCandidate[]; sizeSplit: boolean }>(
+  text: string,
+  early: EarlyRerank,
+  perLine: E[],
+  withCandidates: E[]
+): Promise<RerankResult | null> {
+  if (!early?.result) return null;
+  const limit = vitrineLimit();
+  const lines: RerankLineResult[] = [];
+  const rejudge: number[] = [];
+  withCandidates.forEach((entry, i) => {
+    const at = early.judged.findIndex((j) => j.index === perLine.indexOf(entry));
+    const judged = at >= 0 ? early.result!.lines[at] : undefined;
+    const bySku = new Map(entry.candidates.map((c) => [c.item.sku, c]));
+    if (!judged) {
+      lines.push({ skus: [], proximos: [] });
+      rejudge.push(i);
+      return;
+    }
+    // Sem o juízo bruto (costura de teste), a lista devolvida já é a vitrine: só sai quem a loja derrubou.
+    const bruto = rerankRaw(judged);
+    const raw = bruto ?? { aprovados: judged.skus, maisBarato: Boolean(judged.maisBarato), proximos: judged.proximos ?? [] };
+    const approved = raw.aprovados.map((sku) => bySku.get(sku)).filter((c): c is StoreCandidate => Boolean(c));
+    const shaped = bruto
+      ? shapeApproved(entry.line.phrase, approved.map((c) => ({ sku: c.item.sku, name: c.item.name, brand: c.item.brand, price: display(c.item.unitPrice, c.item.medicine) })), raw.maisBarato, limit)
+      : { items: approved.map((c) => ({ sku: c.item.sku })), cheapest: Boolean(judged.maisBarato) };
+    const proximos = approved.length ? [] : raw.proximos.filter((p) => bySku.has(p.sku)).slice(0, 3);
+    if (approved.length < raw.aprovados.length) console.log("[rerank:paralelo]", entry.line.phrase, `aprovados=${raw.aprovados.length} confirmados=${approved.length}`, raw.aprovados.filter((sku) => !bySku.has(sku)).join(","));
+    lines.push({ skus: shaped.items.map((c) => c.sku), ...(shaped.cheapest ? { maisBarato: true } : {}), exigencias: judged.exigencias, proximos });
+    const unseen = entry.candidates.some((c) => !early.judged[at].keys.has(`${c.store.key}:${c.item.sku}`));
+    if (!approved.length && !proximos.length && unseen) rejudge.push(i);
+  });
+  if (rejudge.length) {
+    const again = await rerankShoppingOptions(
+      rerankMessage(text, rejudge.map((i) => ({ phrase: withCandidates[i].line.phrase, sizeSplit: withCandidates[i].sizeSplit }))),
+      rejudge.map((i) => rerankInput(withCandidates[i].line.phrase, withCandidates[i].candidates)),
+      limit
+    ).catch(() => null);
+    if (again) rejudge.forEach((i, k) => (lines[i] = again.lines[k]));
+    console.log("[rerank:rejudge]", rejudge.map((i) => withCandidates[i].line.phrase).join(" | "), again ? "ok" : "sem resposta");
+  }
+  return { lines };
+}
+
 async function buildChoices(
   text: string,
   lockedStoreKey?: string,
@@ -391,16 +486,21 @@ async function buildChoices(
   onLongTailSearch?: () => void,
   forceLongTail?: boolean,
   cep?: string | null,
-  opts?: { askSpecs?: boolean }
+  opts?: { askSpecs?: boolean; speculative?: boolean }
 ): Promise<ChoicesResult> {
   noteShopperCep(cep);
+  // Busca ESPECULATIVA (11/10, latência): só aquece as buscas e as conferências (caches em voo/curtos) enquanto a IA do
+  // diálogo ou a extração da lista pensa. Nunca chama IA, nunca o Mercado Livre e não devolve vitrine.
+  const speculative = Boolean(opts?.speculative);
+  const gather: typeof gatherCrossStoreCandidates = (query, limit, perStore, options) =>
+    gatherCrossStoreCandidates(query, limit, perStore, speculative ? { ...options, noLongTail: true, onLongTailSearch: undefined, forceLongTail: false } : options);
   // Mapa (loja:sku → verificação ao vivo) preenchido por linha e lido ao montar os cards.
   const liveChecks = new Map<string, LiveItemCheck>();
   // Enquanto a IA extrai a lista (~2-5s), o parser determinístico já sabe quais linhas
   // não têm match local forte — o run frio do ML (~21s) começa AGORA e roda em paralelo.
   // A busca de verdade lá embaixo se acopla ao mesmo run (dedupe em voo no conector).
   const crossStore = !lockedStoreKey;
-  if (crossStore && !forceLongTail && mercadoLivreEnabled() && !longTailOptInEnabled()) {
+  if (crossStore && !speculative && !forceLongTail && mercadoLivreEnabled() && !longTailOptInEnabled()) {
     const sanitized = stripMedicineNegation(text);
     for (const line of resolveListItems(sanitized)) {
       if (!queryTokens(line.phrase).length || blocksMedicine(line.phrase)) continue;
@@ -410,7 +510,7 @@ async function buildChoices(
 
   const perfStart = Date.now();
   const babyContext = hasBabyContext(text);
-  const extracted = await extractLines(text);
+  const extracted = await extractLines(text, { noLlm: speculative, onLlm: () => speculateChoices(text, lockedStoreKey, cep) });
   const { greetingOnly, containsMedicine, containsTobacco, prescriptionDropped } = extracted;
   // Item que depende de especificação não dita ("capa de celular" sem modelo, 09/10 g7): não busca, pergunta.
   const specAsks: SpecAsk[] = [];
@@ -449,8 +549,20 @@ async function buildChoices(
   // empate a ordem do registry decidia, e "carregador usb c" caía na Petz (veicular)
   // com o carregador de parede USB-C parado na Pague Menos. No fluxo legado vale
   // "one order = one store", então a linha continua buscando numa loja só.
+  // Rerank da IA EM PARALELO com a conferência ao vivo (11/10, latência; aprovado pelo dono): cada linha entrega os
+  // candidatos da BUSCA (antes da conferência) e, quando todas entregaram, UMA chamada julga todas — enquanto as lojas
+  // conferem estoque/entrega. No fim, a vitrine é a ordem da IA filtrada pelos confirmados (`judgeAfterLiveCheck`).
+  const searchedLines = lines.map(() => {
+    let resolve!: (value: SearchedLine | null) => void;
+    const promise = new Promise<SearchedLine | null>((r) => (resolve = r));
+    return { promise, resolve };
+  });
+  const earlyRerank = speculative ? Promise.resolve(null) : Promise.all(searchedLines.map((s) => s.promise)).then((searched) => rerankSearched(text, searched));
+  // Busca especulativa / conferência: o CEP já começa a virar coordenada enquanto as lojas buscam (11/10, latência).
+  if (cep) void simulationGeo(cep).catch(() => null);
   const perLine = await Promise.all(
-    lines.map(async (line) => {
+    lines.map(async (line, lineIndex) => {
+     try {
       // "vinho até 40 reais": o teto NÃO é termo de busca — vira filtro sobre o
       // preço exibido (com markup), senão a lista mostra item acima do que pediram.
       const { phrase: rawPhrase, cap } = splitPriceCap(line.phrase);
@@ -478,7 +590,7 @@ async function buildChoices(
       const searchPhrase = contextSense?.searchAs ?? typedPhrase;
       let candidates: StoreCandidate[];
       if (crossStore) {
-        candidates = await gatherCrossStoreCandidates(searchPhrase, 12, 4, {
+        candidates = await gather(searchPhrase, 12, 4, {
           onLongTailSearch,
           forceLongTail,
           ...(line.raw ? { longTailQuery: splitPriceCap(line.raw).phrase } : {})
@@ -489,7 +601,7 @@ async function buildChoices(
       }
       // "bolacha" é "biscoito" no catálogo: busca as duas formas (09/10, "bolacha maizena" voltava só amido de milho).
       if (crossStore && /\bbolachas?\b/i.test(searchPhrase)) {
-        const alt = await gatherCrossStoreCandidates(searchPhrase.replace(/\bbolachas?\b/gi, "biscoito"), 12, 4);
+        const alt = await gather(searchPhrase.replace(/\bbolachas?\b/gi, "biscoito"), 12, 4);
         const have = new Set(candidates.map((c) => `${c.store.key}:${c.item.sku}`));
         candidates = [...candidates, ...alt.filter((c) => !have.has(`${c.store.key}:${c.item.sku}`))];
       }
@@ -497,7 +609,7 @@ async function buildChoices(
       // certo e tira o outro tipo ("Base Fortilon Salva Unhas" num pedido de make).
       const baseSense = crossStore ? baseSenseFor(searchPhrase, senseTexts) : null;
       if (baseSense) {
-        const extra = (await Promise.all(baseSense.extraQueries.map((q) => gatherCrossStoreCandidates(q, 12, 4)))).flat();
+        const extra = (await Promise.all(baseSense.extraQueries.map((q) => gather(q, 12, 4)))).flat();
         const have = new Set<string>();
         candidates = [...candidates, ...extra].filter((c) => {
           const key = `${c.store.key}:${c.item.sku}`;
@@ -508,7 +620,7 @@ async function buildChoices(
       }
       // As buscas do tipo certo vêm na frente e o outro tipo sai; se nada sobrar, ficam as opções de antes.
       if (contextSense && !baseSense) {
-        const extra = (await Promise.all(contextSense.extraQueries.map((q) => gatherCrossStoreCandidates(q, 12, 4)))).flat();
+        const extra = (await Promise.all(contextSense.extraQueries.map((q) => gather(q, 12, 4)))).flat();
         const have = new Set<string>();
         const sensed = [...extra, ...candidates].filter((c) => {
           const key = `${c.store.key}:${c.item.sku}`;
@@ -524,7 +636,7 @@ async function buildChoices(
       if (pack && crossStore) {
         // Pack da marca costuma não repetir o tipo ("Pack 8 Latas - Heineken 269ml"): busca
         // também pela marca/variante sem o substantivo genérico.
-        const extra = pack.brand ? await gatherCrossStoreCandidates(`pack ${pack.brand}`, 12, 4) : [];
+        const extra = pack.brand ? await gather(`pack ${pack.brand}`, 12, 4) : [];
         const seen = new Set(candidates.map((c) => `${c.store.key}:${c.item.sku}`));
         const pool = [...candidates, ...extra.filter((c) => !seen.has(`${c.store.key}:${c.item.sku}`))];
         const packs = pool.filter((c) => isPackItem(c.item.name) && (conciergeMatchIsStrong(searchPhrase, c.item) || (pack.brand ? conciergeMatchIsStrong(`pack ${pack.brand}`, c.item) || conciergeMatchIsStrong(`fardo ${pack.brand}`, c.item) : false)));
@@ -561,7 +673,7 @@ async function buildChoices(
         if (!relevant.length && crossStore) {
           const bare = searchPhrase.replace(/\d+(?:[.,§]\d+)?\s*(?:kg|ml|lt?s?|litros?|g(?![a-z]))\b/gi, " ").replace(/(?:^|\s)[\d.,§]+(?=\s|$)/g, " ").replace(/\s+/g, " ").trim();
           if (/[a-zà-ú]{3}/i.test(bare)) {
-            let more = (await gatherCrossStoreCandidates(bare, 12, 4)).filter((c) => conciergeMatchIsStrong(bare, c.item, { allTokens: true }));
+            let more = (await gather(bare, 12, 4)).filter((c) => conciergeMatchIsStrong(bare, c.item, { allTokens: true }));
             if (cap != null) more = more.filter((c) => display(c.item.unitPrice, c.item.medicine) <= cap);
             if (more.length) {
               console.log("[size:bare-search]", searchPhrase, "→", bare, more.length);
@@ -596,6 +708,8 @@ async function buildChoices(
       // Recompra: o que o cliente já escolheu antes sobe (sort estável preserva o
       // ranking de relevância entre itens sem histórico).
       candidates.sort((a, b) => (preferredSkus?.get(b.item.sku) ?? 0) - (preferredSkus?.get(a.item.sku) ?? 0));
+      // O que a IA julga: os candidatos da busca, antes da conferência (que roda em paralelo com ela).
+      searchedLines[lineIndex].resolve({ phrase: shownPhrase, sizeSplit, candidates: [...candidates] });
       // Verificação AO VIVO no site de cada loja para o CEP do cliente (03/09: chá cobrado
       // sem estoque). Sem estoque/sem entrega no endereço sai daqui; confirmado ganha o
       // prazo real e vem antes do não-verificável.
@@ -653,7 +767,7 @@ async function buildChoices(
           const good = (c: StoreCandidate) => scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 1;
           if (buyable.filter(good).length < 2 && (first.dropped > 0 || buyable.length < candidates.length)) {
             const tried = new Set([...liveChecks.keys()]);
-            let deeper = (await gatherCrossStoreCandidates(searchPhrase, 36, 12)).filter(
+            let deeper = (await gather(searchPhrase, 36, 12)).filter(
               // Só o mesmo produto: relevância perto da dos primeiros (no máx. 3 pontos abaixo) e o
               // tamanho pedido — "Leite de Rosas" não é reserva de leite.
               (c) => !tried.has(liveKey(c.store.key, c.item.sku)) && conciergeMatchIsStrong(searchPhrase, c.item) && sizeOk(c) && (!packOnly || isPackItem(c.item.name)) && scoreCatalogMatch(searchPhrase, c.item) >= bestScore - 3
@@ -726,6 +840,10 @@ async function buildChoices(
       // O teto viaja NA LINHA: paginação, refino e o resgate do ML re-filtram por ele
       // (26/08: "até R$50/100/200" vazou nas opções — o cap morria aqui).
       return { line: { ...line, qty, ...(qty !== line.qty ? { qtyExplicit: true } : {}), phrase: shownPhrase, ...(cap != null ? { cap } : {}) }, candidates, noneToday, urgentWhen, unconfirmed, unanswered, silentStrong, sizeSplit, cheapAsk, sizeReserve };
+     } finally {
+      // Linha que falhou antes da busca não trava a chamada da IA das outras (resolver de novo não faz nada).
+      searchedLines[lineIndex].resolve(null);
+     }
     })
   );
 
@@ -734,26 +852,12 @@ async function buildChoices(
   // livre/não-achei, que é o resultado honesto). IA off/falhou → null → ranking
   // determinístico de sempre, diversificado.
   const perfSearched = Date.now();
+  if (speculative) {
+    console.log(`[speculate] search+live=${perfSearched - perfExtracted}ms lines=${lines.length}`);
+    return { store: getStore(lockedStoreKey), autoAdded: [], pending: [], notFound: [], notFoundLines: [], lines, reranked: false, greetingOnly: false, containsMedicine, containsTobacco, prescriptionDropped };
+  }
   const withCandidates = perLine.filter((entry) => entry.candidates.length);
-  const rerank = withCandidates.length
-    ? await rerankShoppingOptions(
-        // "2 litros de leite" virou "2× leite 1 litro": a mensagem original ("2 litros") contradiz o
-        // pedido que a IA julga e ela recusava todas as caixas de 1 L (placar c27) — com o tamanho
-        // reescrito, a IA recebe os pedidos já reescritos.
-        withCandidates.some((entry) => entry.sizeSplit) ? withCandidates.map((entry) => entry.line.phrase).join(", ") : text,
-        withCandidates.map((entry) => ({
-          query: entry.line.phrase,
-          candidates: entry.candidates.map((c) => ({
-            sku: c.item.sku,
-            name: c.item.name,
-            brand: c.item.brand,
-            price: display(c.item.unitPrice, c.item.medicine),
-            store: c.store.label
-          }))
-        })),
-        vitrineLimit()
-      )
-    : null;
+  const rerank = withCandidates.length ? await judgeAfterLiveCheck(text, await earlyRerank, perLine, withCandidates) : null;
   console.log(`[perf:buildChoices] extract=${perfExtracted - perfStart}ms search+live=${perfSearched - perfExtracted}ms rerank=${Date.now() - perfSearched}ms lines=${lines.length} [${lines.map((l) => l.phrase).join(" | ").slice(0, 160)}]`);
   const rerankedSkus = new Map<(typeof perLine)[number], string[]>();
   const rerankedClosest = new Map<(typeof perLine)[number], { skus: string[]; falta: string }>();
@@ -4764,6 +4868,12 @@ async function handleDeliveryTurn(
   }
   if (dialogueEnabled() && !turnMeta.getStore()?.skipDialogue && !removeResolvesHere(text, intent, ctx) && !namesCardOnTable) {
     const hasAddress = Boolean(user.defaultAddress && savedCep);
+    // Pedido novo de item(ns) que a IA do diálogo vai ler (~2 s): as lojas já buscam e conferem em paralelo (11/10,
+    // latência). Só aquece os caches; quem decide a busca continua sendo a IA.
+    const freshAsk = !ctx.pending?.length && !ctx.basket?.length && !ctx.lastMiss && !ctx.lastChoice && (ctx.step === undefined || ctx.step === "collecting");
+    if (hasAddress && freshAsk && isPlainShoppingList(text) && !(recommendEnabled() && detectRecommendation(text)) && dialogueWillDecide({ text, intent, ctx, hasAddress, looksLikeList: looksLikeProductList(text) })) {
+      speculateChoices(text, undefined, user.cep);
+    }
     const dialogue = hasAddress
       ? await runDialogueTurn({
           phone,
