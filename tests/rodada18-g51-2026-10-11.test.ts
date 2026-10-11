@@ -4,15 +4,15 @@ import { test, before, after, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { whatsappAdapter } from "../src/lib/adapters/whatsapp";
-import { handleDeliveryMessage, optionNamedOnTable, runTurnScoped } from "../src/lib/delivery-service";
+import { brandAlternatives, handleDeliveryMessage, optionNamedOnTable, recommendationLeftovers, runTurnScoped } from "../src/lib/delivery-service";
 import { __setDialogueModelForTests } from "../src/lib/dialogue";
 import { planActions } from "../src/lib/dialogue/plan";
 import { __setPreSignupModelForTests, planPreSignup, type PreDecision } from "../src/lib/dialogue/presignup";
 import { buildDialogueState } from "../src/lib/dialogue/state";
 import { __setPreflightForTests } from "../src/lib/live-freight";
 import { __setLiveSimulateForTests, __clearLiveCheckCacheForTests } from "../src/lib/live-availability";
-import { parseAvailabilityAsk } from "../src/lib/lia-intents";
-import { resolveListItems } from "../src/lib/list-items";
+import { parseAvailabilityAsk, relaxAnyAttribute } from "../src/lib/lia-intents";
+import { isQualifierOnly, resolveListItems } from "../src/lib/list-items";
 import type { ChoiceOption, DeliveryContext, PendingChoice } from "../src/lib/conversation-types";
 
 const RUN = `${Date.now().toString(36)}${process.pid}`;
@@ -188,4 +188,45 @@ test("R18-6: na conversa, a descrição do card estreita as opções sem abrir i
   assert.equal(ctx.basket?.length, 1);
   const eight = await send(c.phone, "a de 8");
   assert.deepEqual((await ctxOf(c.convoId)).pending?.[0].options.map((o) => o.sku), ["dsp-312983"], eight);
+});
+
+// ---------------------------------------------------------------- R18-8: marca pedida e "me indica"
+
+const PERFUME = [opt("paguemenos-6841", "Colônia Seiva de Alfazema Lavanda Feminina 118ml", 23.09, "paguemenos", "Pague Menos")];
+
+test("R18-8: 'tem outro de marca? tipo boticário ou natura' são as marcas do item da vez", () => {
+  const p = pending("perfume feminino floral", PERFUME);
+  // (Natura só é marca conhecida com o catálogo de produção; Boticário existe nos dois.)
+  assert.ok(brandAlternatives("esse perfume não, tem outro mais bonito de marca? tipo boticário ou natura", p).includes("boticario"));
+  // Sem marca citada, ou "bonito" solto, nada.
+  assert.deepEqual(brandAlternatives("esse perfume não, tem outro mais bonito?", p), []);
+  assert.deepEqual(brandAlternatives("o primeiro", p), []);
+});
+
+test("R18-8: na conversa, o pedido de marca não tira o perfume da escolha", async (t) => {
+  if (!dbOk) return t.skip();
+  const c = await customerWith({ pending: [pending("perfume feminino floral", PERFUME)] }, "choosing");
+  const out = await send(c.phone, "esse perfume não, tem outro mais bonito de marca? tipo boticário ou natura");
+  assert.doesNotMatch(out, /Deixei \*perfume/, out);
+  assert.match(out, /Botic[aá]rio/, out);
+  assert.equal((await ctxOf(c.convoId)).pending?.[0]?.query, "perfume feminino floral", out);
+});
+
+test("R18-8: 'me indica um perfume bom então, uns 100 reais, feminino' não anota 'feminino' como item", () => {
+  assert.deepEqual(recommendationLeftovers("me indica um perfume bom então, uns 100 reais, feminino", { product: "perfume" }), []);
+  assert.equal(isQualifierOnly("feminino"), true);
+  assert.equal(isQualifierOnly("600ml"), true);
+  assert.equal(isQualifierOnly("perfume"), false);
+  // Item de verdade ao lado da recomendação continua.
+  assert.deepEqual(recommendationLeftovers("me indica um perfume bom, e um hidratante", { product: "perfume" }), ["hidratante"]);
+});
+
+// ---------------------------------------------------------------- R18-14 (poleiro): "de qualquer material"
+
+test("R18-14: 'tem poleiro de qualquer material então' busca poleiro, sem o atributo liberado", () => {
+  const said = "tem poleiro de qualquer material então";
+  assert.equal(relaxAnyAttribute("poleiro material", said), "poleiro");
+  assert.equal(relaxAnyAttribute(said, said), "tem poleiro então");
+  assert.equal(relaxAnyAttribute("camiseta qualquer cor", "camiseta de qualquer cor"), "camiseta");
+  assert.equal(relaxAnyAttribute("poleiro de madeira", "poleiro de madeira"), "poleiro de madeira");
 });

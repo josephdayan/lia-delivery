@@ -150,6 +150,12 @@ function isAttrOnly(s: string, ctx: Ctx): boolean {
   return ctx.isBrand(ws.join(" "));
 }
 
+// Trecho que só qualifica, sem marca ("feminino", "600ml", "sem açúcar"): 11/10, rodada 18 g51 — "me indica um perfume bom,
+// uns 100 reais, feminino" anotava o item "feminino".
+export function isQualifierOnly(s: string): boolean {
+  return isAttrOnly(s, { probe: localCatalogProbe, isBrand: () => false, conjoinedBrand: () => false } as unknown as Ctx);
+}
+
 type Head = { head: string; connector: string };
 // "leite integral" → { head: "leite", attrs começam em "integral" }; "biscoito de chocolate" →
 // { head: "biscoito", connector: "de" }. Sem cabeça (1ª palavra já é atributo/marca) ou sem

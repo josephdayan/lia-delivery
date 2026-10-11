@@ -1166,6 +1166,24 @@ export function meaningfulProductTokens(phrase: string): string[] {
     .map((token) => PRODUCT_TOKEN_ALIASES[token] ?? token)
     .filter((token) => token.length >= 4 && !["para", "umas", "mais", "cada"].includes(token));
 }
+
+// "tem poleiro de qualquer material então" (11/10, rodada 18 g51): o cliente LIBERA o atributo — "material" não é palavra do
+// produto (a busca virava "poleiro material" e a Lia repetia "continuo sem poleiro de madeira").
+const ANY_ATTR_RE = /\b(?:(?:de|com|em|na|no)\s+)?qualquer\s+(material|cor|tamanho|modelo|tipo|formato|sabor|tecido|acabamento|estampa)\b/;
+export function relaxedAttribute(said: string): string | null {
+  return normalizeMsg(said).match(ANY_ATTR_RE)?.[1] ?? null;
+}
+export function relaxAnyAttribute(query: string, said: string): string {
+  const attr = relaxedAttribute(said);
+  if (!attr) return query;
+  const out = query
+    .replace(new RegExp(`\\s*\\b(?:(?:de|com|em|na|no)\\s+)?qualquer\\s+${attr}\\b`, "gi"), " ")
+    .replace(new RegExp(`\\s*\\b(?:de|com|em)?\\s*${attr}\\b`, "gi"), " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return out || query;
+}
+
 // "procura óleo de soja comum, qualquer marca" ao refinar uma escolha: "qualquer marca"/"comum" não são palavras do
 // produto — entravam na busca como termos e a Lia respondia "não achei óleo soja comum qualquer marca"
 // (rodada 2, c20). Tira só a preferência vazia; sobra sempre pelo menos uma palavra de produto.
