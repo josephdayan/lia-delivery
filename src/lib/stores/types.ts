@@ -189,6 +189,28 @@ function tokenMatchesWordSyn(token: string, word: string): boolean {
   if ((token === "mao" || token === "maos") && (word === "mao" || word === "maos")) return true;
   return false;
 }
+// Palavras do pedido que casam com o item SÓ por erro de digitação ("caneca" × "Caneta", 11/10, rodada 22 R22a-5): quando
+// outra loja tem a palavra exata, o "parecido" é outro produto (o carrossel de caneca trazia caneta esferográfica).
+export function typoOnlyTokens(query: string, item: CatalogItem): string[] {
+  const pool = itemPool(item);
+  return queryTokens(query).filter((token) => token.length >= 5 && !hitsExactly(token, pool) && pool.some((word) => typoMatch(token, word)));
+}
+// Palavras do pedido que o item tem de verdade (sem contar a tolerância de digitação).
+export function exactTokenHits(query: string, item: CatalogItem): string[] {
+  const pool = itemPool(item);
+  return queryTokens(query).filter((token) => hitsExactly(token, pool));
+}
+function itemPool(item: CatalogItem): string[] {
+  const text = itemText(item);
+  return [...text.nameWords, ...text.brandWords, ...text.categoryWords];
+}
+// Singular × plural ("adulto" × "Adultos") é a mesma palavra, não erro de digitação.
+function samePluralWord(token: string, word: string): boolean {
+  return word === `${token}s` || token === `${word}s` || singularPt(word) === singularPt(token);
+}
+function hitsExactly(token: string, pool: string[]): boolean {
+  return pool.some((word) => word === token || samePluralWord(token, word) || (tokenMatchesWordSyn(token, word) && !typoMatch(token, word)));
+}
 const COOKIE_WORDS = new Set(["bolacha", "bolachas", "biscoito", "biscoitos"]);
 const VEHICLE_WORDS = new Set(["veicular", "veiculares", "carro", "carros", "automotivo", "automotiva", "automotivos"]);
 
@@ -227,6 +249,10 @@ function tokenMatchesWord(token: string, word: string): boolean {
   // vira "Ninho" (distância 1, produto completamente diferente). A palavra do
   // CATÁLOGO precisa de 6+ letras: em 5 letras o espaço é denso demais e palavras
   // REAIS colidem a distância 1 — "miojo" virava "Miolo" (vinho e alcatra).
+  return typoMatch(token, word);
+}
+// Só a tolerância de digitação (distância 1) — separada para saber quando um item entrou SÓ por ela (11/10, rodada 22 R22a-5).
+function typoMatch(token: string, word: string): boolean {
   if (token.length >= 5 && word.length >= 6 && Math.abs(token.length - word.length) <= 1 && token[0] === word[0]) {
     let previous = Array.from({ length: word.length + 1 }, (_, i) => i);
     for (let i = 1; i <= token.length; i++) {
@@ -379,6 +405,7 @@ const CATEGORY_NOUNS = new Set([
 // público, só na frente quando pedida (05/10: "advil" mostrou Advil Mulher em 1º).
 const WOMAN_VARIANT_RE = /\bmulher(es)?\b/;
 const MEDICAL_PART_RE = /\b(inalador\w*|nebuliza\w*|coletor\w*|seringas?|sondas?|cateter\w*|urina|fezes|escarro)\b/;
+const CHARGER_KIND_RE = /\b(?:veicular\w*|carro|automotiv\w*|power ?bank|powerbank|bateria externa|portatil|inducao|sem fio|wireless|magsafe)\b/;
 const MEDICAL_DEVICE_RE = /\b(inalador\w*|nebuliza\w*|coletor\w*|seringas?|sondas?|cateter\w*|esteril\w*|urina|fezes|escarro)\b/;
 const WOMAN_ASK_RE = /\b(mulher|mulheres|feminin[oa]s?|menstrua\w*|colica)\b/;
 function isChildVariant(nameNorm: string): boolean {
@@ -1440,6 +1467,15 @@ export function variantPenalty(query: string, name: string): number {
     if (/\bcopos?\b/.test(qn) && !/\b(?:cafe|cafezinho|dose|doses|shot|shots|degustacao|cachaca|\d+\s*ml)\b/.test(qn)) {
       const ml = /(\d+)\s*ml\b/.exec(nn);
       if ((ml && Number(ml[1]) <= 100) || /\bcafe(?:zinho)?\b/.test(nn)) penalty += 1;
+    }
+  }
+  // Carregador de outro tipo que o pedido não disse (11/10, rodada 22 R22-9): "carregador de celular usb c" abria com o
+  // veicular e o power bank antes do de parede. Quem pede carregador sem dizer o tipo quer o de tomada.
+  {
+    const qn = normalizeText(query);
+    if (/\bcarregador(?:es)?\b/.test(qn)) {
+      const kind = CHARGER_KIND_RE.exec(normalizeText(name))?.[0];
+      if (kind && !CHARGER_KIND_RE.test(qn)) penalty += 1;
     }
   }
   // Peça de aparelho de saúde que o pedido não citou (11/10, R16-11: "Copo Inalador Descartável" para "copo descartável").

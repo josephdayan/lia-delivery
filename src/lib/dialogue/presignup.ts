@@ -184,6 +184,19 @@ export function preSignupModelAvailable(): boolean {
 // - as duas pontas de "X ou Y" viram UM item ("carrinho ou lego para 5 anos");
 // - linha da mensagem que nenhum item da IA cobre e que tem produto de verdade no catálogo volta ("uns 4 tomates");
 //   contexto ("to querendo cuidar mais da minha pele", "pele meio oleosa", "receber hoje à noite") não volta.
+const LEAVING_RE = /\b(?:outro lugar|outra loja|outro app|desist\w*|deixa (?:pra|para) la|esquece|tchau|fim|cancela\w*|nao quero mais|nao preciso mais|depois eu vejo|outra hora)\b/;
+const PRICE_QUESTION_RE = /\b(?:quanto|qto|qnto)\s+(?:custa|custaria|sai|fica|ta|esta|seria|e|eh)\b|\bqual (?:e )?o (?:preco|valor)\b/;
+const QUESTION_LEAD_RE = /^(?:e\s+)?(?:quanto|quantos|quantas|qto|qnto|qual|quais|como|onde|quando|por que|porque|pq|cade)\b/;
+// "amaciente" × "amaciante" (11/10, rodada 22 g60, R22-1): uma palavra só, mesma medida, uma vogal trocada — o erro de
+// digitação não é outro item (o "Anotei" saía com os dois). Só vogal por vogal: "cerveja"/"cereja" continuam diferentes.
+function vowelTypoTwin(a: string, b: string): boolean {
+  const x = normalizeMsg(a).trim();
+  const y = normalizeMsg(b).trim();
+  if (x === y || /\s/.test(x) || /\s/.test(y) || x.length !== y.length || x.length < 7) return false;
+  const diff = [...x].map((c, i) => (c === y[i] ? -1 : i)).filter((i) => i >= 0);
+  return diff.length === 1 && /[aeiou]/.test(x[diff[0]]) && /[aeiou]/.test(y[diff[0]]);
+}
+
 export function reconcilePreItems(items: PreItem[], text: string): PreItem[] {
   const folded: PreItem[] = [];
   for (const item of items) {
@@ -197,12 +210,14 @@ export function reconcilePreItems(items: PreItem[], text: string): PreItem[] {
   const aged = age && folded.length === 1 && !/\b\d{1,2}\s*anos?\b/.test(normalizeMsg(folded[0].query)) && /\b(?:sobrinh|filh|net|crianc|menin|afilhad|aniversari)\w*/.test(normalizeMsg(text)) ? [{ ...folded[0], query: `${folded[0].query} ${age} anos` }] : folded;
   const out = foldAlternativeLines(aged, text, (i) => i.query, (i, label) => ({ ...i, query: label }));
   // "lampda led 9w" já está na lista da IA como "lâmpada led 9w" (10/10, rodada 15 A3): erro de digitação não é outro item.
-  const covered = (phrase: string) => out.some((i) => (sharesProductNoun(i.query, phrase) && sameItemProduct(i.query, phrase)) || normalizeMsg(i.query).includes(normalizeMsg(phrase)) || typoTwinLines(i.query, phrase));
+  const covered = (phrase: string) => out.some((i) => (sharesProductNoun(i.query, phrase) && sameItemProduct(i.query, phrase)) || normalizeMsg(i.query).includes(normalizeMsg(phrase)) || typoTwinLines(i.query, phrase) || vowelTypoTwin(i.query, phrase));
   for (const line of resolveListItems(stripMedicineNegation(text))) {
     const phrase = line.phrase.trim();
     if (!phrase || covered(phrase)) continue;
     // Comentário/pergunta sobre o que foi mostrado ("o T-Rex é pra bebê né?") não é pedido.
     const at = text.toLowerCase().indexOf(phrase.toLowerCase());
+    // "quanto custa mais ou menos" (11/10, rodada 22 g60, R22-1): pergunta não é item.
+    if (QUESTION_LEAD_RE.test(normalizeMsg(phrase))) continue;
     if (/(?:^|\s)(?:é|eh|são|sao|está|tá|era|foi)\s/i.test(phrase) || /\s(?:né|ne)$/i.test(phrase) || (at >= 0 && /^\s*\?/.test(text.slice(at + phrase.length)))) continue;
     if (isNonItemSegment(phrase) || isNarrativeSegment(phrase) || isDescriptorFragment(phrase) || attributeFragment(phrase) || looksLikeMedicine(phrase) || isPrescriptionDrugName(phrase)) continue;
     // Ponta de uma alternativa já juntada ("lego" em "carrinho ou lego") não é item próprio.
@@ -329,7 +344,10 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // Remédio isento ligado (10/10, rodada 10 g28): "preciso de um paracetamol e um band-aid..." recebia "Remédio de receita eu
   // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
   // receita nomeado, o caminho determinístico anota o remédio isento com o resto.
-  if (flagged && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  // "pastilha para garganta" antes do cadastro (11/10, rodada 22 R22a-6): sem palavra de remédio, a recusa de receita da IA
+  // passava. Sem remédio de receita nomeado, sem recusa recente (insistência) e sem outro item que a IA tenha anotado (com
+  // outros itens, o plano segue sem a recusa — rodada 18 g51), o caminho determinístico anota o item e a busca decide.
+  if (flagged && opts.text && medicineEnabled() && (looksLikeMedicine(opts.text) || (isentoOnly && !items.length)) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
   // Isento + de receita na mesma mensagem ("dipirona e um antiácido, e também amoxicilina", 11/10, rodada 18 g50): o caminho
   // determinístico recusa só o de receita e anota os isentos — aqui a IA devolvia só "remédio" e os isentos sumiam.
   if (flagged && opts.text && medicineEnabled() && looksLikePrescriptionRequest(opts.text) && resolveListItems(stripMedicineNegation(opts.text)).some((seg) => looksLikeMedicine(seg.phrase) && !looksLikePrescriptionRequest(seg.phrase))) return { ok: false, reason: "remedio_misto" };
@@ -342,9 +360,11 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // vago/de recomendação recebe a copy de sempre (vagueRequestAnswer) mais abaixo.
   // Com remédio na mesma mensagem ("dor de cabeça, tem dipirona?") a porta do remédio responde sozinha.
   const recommend = (d.recommend || d.vague) && !items.length && !medicine && recommendEnabled() && Boolean(opts.text?.trim());
+  // "quanto custa mais ou menos" junto do item (11/10, rodada 22 g60, R22-1): é o preço DESSE item, não "vocês comparam preços?".
+  const answers = items.length && opts.text && PRICE_QUESTION_RE.test(normalizeMsg(opts.text)) ? d.answers.filter((t) => t !== "price_compare") : d.answers;
   if (items.length || recommend) {
-    if (d.answers.length) {
-      steps.push({ type: "answer", topics: d.answers });
+    if (answers.length) {
+      steps.push({ type: "answer", topics: answers });
       parts.push("answer");
     }
     if (medicine) {
@@ -387,6 +407,8 @@ export type PreHandlers = {
   attendanceWait: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
   // Responde uma pergunta do serviço pelo roteador de sempre (texto fixo do lia-copy) e devolve o contexto novo.
   answerCanonical: (phone: string, userId: string, convoId: string, ctx: DeliveryContext, canonical: string) => Promise<void>;
+  // "ah sei la deixa essa mesmo, vlw" com a lista anotada (11/10, rodada 22 g60, R22-9): confirma a lista e pede o cadastro.
+  keepNotedList?: (phone: string, convoId: string, ctx: DeliveryContext) => Promise<void>;
 };
 
 export type PreSignupTurnInput = PreBypassInput & {
@@ -506,6 +528,8 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
         case "fixed":
           if (step.key === "red_flag") await reply(phone, redFlagText(step.reason));
           else if (step.key === "out_of_scope") await reply(phone, copy.outOfScopeProductAnswer());
+          // Lista anotada e sem sinal de ir embora: "deixa essa mesmo, vlw" mantém o pedido — despedida aqui soava como fim.
+          else if (step.key === "farewell" && ctx.pendingRequest && h.keepNotedList && !LEAVING_RE.test(normalizeMsg(input.text))) await h.keepNotedList(phone, convoId, ctx);
           else if (step.key === "farewell") await reply(phone, copy.medicineFarewell());
           // Só com LIA_RECOMMEND=false: ligada, o pedido vago/de recomendação vira o pedido guardado (acima).
           else if (step.key === "vague") await reply(phone, copy.vagueRequestAnswer());
@@ -519,6 +543,9 @@ export async function runPreSignupTurn(input: PreSignupTurnInput): Promise<PlanO
         case "recommend":
           // O fluxo de sempre anota (sem duplicar), pede o cadastro/CEP e guarda o pedido para a busca.
           outcome = { kind: "rewrite", text: step.text, actions: plan.label };
+          // "tem papel higiênico também? quanto custa mais ou menos" (11/10, rodada 22 g60, R22-1): a pergunta de preço é
+          // respondida (o preço sai com o endereço), não anotada como item.
+          if (step.type === "items" && PRICE_QUESTION_RE.test(normalizeMsg(input.text)) && decision.items.length) await reply(phone, copy.priceAfterAddress(decision.items.map((i) => i.query).join(", ")));
           if (ctx.preBudget != null) {
             ctx.preBudget = undefined;
             await writeCtx(convoId, ctx);

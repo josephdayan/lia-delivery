@@ -619,7 +619,8 @@ function parseNeededDay(text: string, now: Date): { date: string; label: string;
   // da ocasião também é prazo — antes só festa/aniversário contavam e o resumo fechava em 3 dias úteis sem aviso. "Dia dos
   // professores amanhã" (110, R14a-3) também.
   // "faxina pesada hoje: desinfetante, ..." (11/10, rodada 21 g58, R21-11 B4): a faxina do dia também é prazo (saía sem ⏰).
-  const EVENT = "aniversario|festa|festinha|faxina|mudanca|viagem|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour|dia d[oa]s? (?:professor\\w*|pais|pai|maes|mae|namorados|criancas|avos|amigos?)";
+  // "vou viajar sexta" (11/10, rodada 22 R22-7): o verbo da viagem também marca o dia (o resumo nunca confrontava a sexta).
+  const EVENT = "aniversario|festa|festinha|faxina|mudanca|viagem|viajar|viajo|viaja|viajamos|viajando|embarco|embarcar|jantar|janta|reuniao|presente|visita|casamento|formatura|churrasco|almoco|cafe da manha|piquenique|pizza|confraternizacao|happy hour|dia d[oa]s? (?:professor\\w*|pais|pai|maes|mae|namorados|criancas|avos|amigos?)";
   // "hoje a gente vai fazer pizza", "domingo vamos receber a família": o dia junto do plano (vai/vou/vamos fazer/ter/receber).
   const PLAN = String.raw`(?:vai|vou|vamos|a gente vai|queria|quero)\s+(?:fazer|ter|receber|preparar|montar)`;
   const planDay = (day: string) => new RegExp(String.raw`\b${day}\b.{0,25}\b${PLAN}\b|\b${PLAN}\b.{0,60}\b${day}\b`).test(n);
@@ -721,6 +722,39 @@ const OTC_QUALIFIER_FRAGMENT_RE = /^(?:(?:ele|ela|esse|essa|isso|mas|ja)\s+)?(?:
 const BARE_MEASURE_FRAGMENT_RE = /^(?:(?:de|com)\s+)?\d+(?:[.,]\d+)?\s?(?:mg|mcg|g|kg|ml|l|litros?)$/;
 // Só a medida do item anterior (10/10, rodada 8 g25): "3 pacotes de guardanapo, aquele de 32cm" — "de 32cm" não é item.
 const SIZE_ONLY_FRAGMENT_RE = /^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+)?(?:de|com)\s+\d+(?:[.,]\d+)?\s?(?:cm|mm|kg|g|l|ml|litros?|folhas|unidades|un|metros?|m)$/;
+// "troca a ração por uma de 10kg" com ração de FILHOTE na cesta (11/10, rodada 22 R22-4): a busca nova era "ração de 10kg"
+// e só vinha ração de cão adulto. A troca de medida/marca do MESMO item herda do pedido anterior o que define pra quem ele é
+// (espécie, idade, porte); o que o cliente disse na troca vale mais ("por uma de adulto" não herda "filhote").
+const SWAP_INHERIT_GROUPS: RegExp[] = [
+  /\b(?:cachorr\w*|caes|cao|dog|gat[oa]s?|felin\w*|canin\w*|coelh\w*|passar\w*|calopsit\w*|hamster\w*|peixe\w*)\b/g,
+  /\b(?:filhot\w*|junior|adult\w*|senior|idos\w*|kitten|puppy)\b/g,
+  /\b(?:castrad\w*)\b/g,
+  /\b(?:racas? (?:pequenas?|medias?|grandes?|mini)|porte (?:pequeno|medio|grande|mini)|mini|pequen[oa]s?|grandes?)\b/g
+];
+export function inheritSwapQualifiers(to: string, previousAsk: string): string {
+  // O motivo dito junto ("…por uma de 10kg, 1kg é pouco") não é parte do produto.
+  to = to.replace(/\s*[,;]\s*[^,;]*(?<![a-zà-ú])(?:e|é|eh|ta|tá|fica|ficou|era)\s+(?:muito\s+|meio\s+|bem\s+)?(?:pouc[oa]|demais|pequen[oa]|grande|car[oa]|barat[oa]|fraco|ruim)\b.*$/i, "").trim() || to;
+  const said = normalizeMsg(to).replace(/^(?:(?:por|pel[oa]|uma?|outr[oa])\s+)+/, "").replace(/\s+/g, " ").trim();
+  const prev = normalizeMsg(previousAsk).replace(/\s+/g, " ").trim();
+  if (!said || !prev) return to;
+  const sizeOnly = SIZE_ONLY_FRAGMENT_RE.test(said) || /^\d+(?:[.,]\d+)?\s?(?:kg|g|l|ml|litros?)$/.test(said);
+  if (!sizeOnly && productHead(said) !== productHead(prev)) return to;
+  // A palavra do produto como o cliente escreveu ("ração", não "racao").
+  const prevHead = previousAsk.trim().split(/\s+/).find((w) => normalizeMsg(w) === productHead(prev)) ?? productHead(prev) ?? "";
+  const base = sizeOnly ? `${prevHead} ${said.replace(/^(?:(?:aquel[ea]s?|ess[ea]s?|o|a|os|as|um|uma)\s+)?(?:de|com)\s+/, "")}`.trim() : to.trim();
+  const extra: string[] = [];
+  for (const group of SWAP_INHERIT_GROUPS) {
+    if (new RegExp(group.source).test(said)) continue;
+    const hits = prev.match(new RegExp(group.source, "g"));
+    if (hits) extra.push(...hits.filter((h) => !normalizeMsg(base).includes(h)));
+  }
+  if (!extra.length) return base;
+  // Na ordem do pedido anterior, logo depois do nome do produto: "ração filhote cachorro de 10kg".
+  const ordered = [...new Set(extra)].sort((a, b) => prev.indexOf(a) - prev.indexOf(b));
+  const words = base.split(/\s+/);
+  const at = words.findIndex((w) => normalizeMsg(w) === productHead(prev));
+  return at >= 0 ? [...words.slice(0, at + 1), ...ordered, ...words.slice(at + 1)].join(" ") : `${base} ${ordered.join(" ")}`;
+}
 export function isSizeOnlyFragment(phrase: string): boolean {
   return SIZE_ONLY_FRAGMENT_RE.test(normalizeMsg(phrase).replace(/\s+/g, " ").trim());
 }
@@ -882,6 +916,10 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         // "ela gosta de chocolate" / "ele adora café" (10/10, rodada 10 g29: virava o item "gosta de chocolate"): o gosto
         // dito é o produto.
         .replace(/^(?:(?:eu|ele|ela|eles|elas|a gente)\s+)?(?:gosta|gosto|gostam|adora|adoro|adoram|curte|curto|curtem|ama|amo|amam)\s+(?:muito\s+|demais\s+)?(?:de\s+|do\s+|da\s+|dos\s+|das\s+)?(?=[a-zà-ú]{3,})/i, "")
+        // "pensei num perfume ou num kit de banho" (11/10, rodada 22 R22-3): a ideia dita é o produto; "pensei num" e o
+        // "num" da alternativa são fala (virava o item fantasma "pensei num perfume ou num kit de banho").
+        .replace(/^(?:eu\s+)?(?:pensei|pensava|tinha pensado|(?:t[oô]|tou|estou|tava|estava)\s+pensando)\s+(?:em\s+)?(?:(?:num|numa|nuns|numas|no|na|nos|nas|um|uma|uns|umas)\s+)?(?=[a-zà-ú]{3,})/i, "")
+        .replace(/\s+ou\s+(?:num|numa|em\s+um|em\s+uma)\s+(?=[a-zà-ú]{3,})/gi, " ou ")
         // "é pra festa junina da igreja" (10/10, rodada 8 M1): a cópula solta não faz parte do item nem do contexto.
         .replace(/^(?:é|eh)\s+(?=(?:pra|para|pro|so|só|isso|que)\b)/i, "")
         // urgência DENTRO da linha ("fralda pra HOJE urgente") sai da frase de busca —
@@ -912,7 +950,9 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         !isDiscourseOnly(raw) &&
         // "nao, espera, em vez de…" (11/10, rodada 20 g55, R20-2): a hesitação da autocorreção nunca é item.
         !/^(ah+|hm+|hmm+|aa+|e|é|eh+|dai|tipo|ne|iss[oa]( ai)?|aquilo( ali)?|esses? ai|essas? ai|(?:nao\s+)?(?:espera|pera[ií]?|perae|peraae)(?: ai| la| um pouco| so)?)[\s!.?]*$/i.test(normalizeMsg(raw)) &&
-        !isRecallFiller(raw)
+        !isRecallFiller(raw) &&
+        // "gosto de acertar" (11/10, rodada 22 R22-3): a intenção de agradar com o presente não é produto.
+        !GIFT_INTENT_VERB_RE.test(normalizeMsg(raw))
     )
     .map(({ raw: rawWithFlags, meta }): ParsedLine => {
       // Sentinelas dos passos anteriores: \u0001 = segmento aditivo ("mais/outro"),
@@ -1216,6 +1256,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
   }
   return merged;
 }
+// Verbo de intenção do presente, sozinho no segmento ("gosto de acertar", "quero caprichar", "não quero errar").
+const GIFT_INTENT_VERB_RE = /^(?:nao\s+)?(?:(?:eu\s+)?(?:gosto|gosta|quero|queria|preciso|nao quero|nao posso|tenho que)\s+(?:de\s+)?)?(?:acertar|errar|agradar|caprichar|impressionar|surpreender|presentear|arrasar|mimar|homenagear)(?:\s+(?:ela|ele|com ela|com ele|no presente|em cheio|dessa vez|desta vez))?[\s!.]*$/;
 export function isGiftFrame(phrase: string): boolean {
   return GIFT_FRAME_RE.test(normalizeMsg(phrase));
 }
@@ -1226,7 +1268,8 @@ export function isGiftAccessory(phrase: string): boolean {
 }
 // "uma ideia de presente pra minha sogra" (11/10, rodada 17 g49): o pedido de ideia/sugestão é a mesma moldura.
 // "montar um presente de amigo secreto" (11/10, rodada 21 g57): o verbo na frente não faz da moldura um produto.
-const GIFT_FRAME_RE = /^(?:(?:montar|monta|comprar|escolher|achar)\s+)?(?:um\s+|uma\s+|o\s+|a\s+)?(?:(?:ideia|ideias|sugestao|sugestoes|dica|dicas)\s+de\s+(?:um\s+|uma\s+)?)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
+// "(é) pra presente de aniversário da minha chefe" (11/10, rodada 22 R22-2) também: a preposição na frente é a mesma moldura.
+const GIFT_FRAME_RE = /^(?:(?:é|e|eh)\s+)?(?:(?:pra|para|de)\s+(?=(?:um\s+|uma\s+)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)\b))?(?:(?:montar|monta|comprar|escolher|achar)\s+)?(?:um\s+|uma\s+|o\s+|a\s+)?(?:(?:ideia|ideias|sugestao|sugestoes|dica|dicas)\s+de\s+(?:um\s+|uma\s+)?)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
 
 // Quantidade respondida no passo imediatamente posterior à escolha do produto.
 // Aceita o jeito que as pessoas realmente escrevem: "2", "quero 2", "mais duas",
@@ -1389,7 +1432,7 @@ export function sharesProductNoun(a: string, b: string): boolean {
 // Erro de digitação ou de acento (10/10, rodada 15 A3): "lampda led 9w" (linha crua do parser) e "lâmpada led 9w" (a da IA)
 // são a MESMA linha — viravam 2 itens e 8 lâmpadas. Mesmas palavras na mesma ordem, só UMA diferente e a 1 letra de distância
 // (trocada, a mais, a menos ou invertida), palavra de 5+ letras e pelo menos outra igual: "cerveja"/"cereja" sozinhas não fundem.
-function oneEditApart(a: string, b: string): boolean {
+export function oneEditApart(a: string, b: string): boolean {
   if (a === b || Math.abs(a.length - b.length) > 1) return false;
   let i = 0;
   while (i < a.length && i < b.length && a[i] === b[i]) i++;
@@ -1821,12 +1864,12 @@ const REJECT_BARE_RE =
 
 // "só isso", "mais nada", "é só" — o cliente FECHOU a lista; hora de mostrar o total.
 const DONE_RE =
-  /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?)[\s,!.]*$/;
+  /^((e|é|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?( por (hoje|enquanto))?|mais nada|nada mais|(por (hoje|enquanto) )?(e|é|eh) ?isso( ai)?|fechou a lista|acabou( a lista)?|pronto,? (e|é|eh)? ?(so|isso)?|(isso )?(e|é|eh) tudo( mesmo)?|era so isso( mesmo)?)[\s,!.]*$/;
 
 // "nenhum, só isso mesmo. quanto fica?" / "não, pode fechar. quanto deu?" (10/10, rodada 11 M1): a recusa na frente ("não",
 // "nenhum") responde a pergunta aberta e o resto fecha a lista com o total — levava 3 turnos.
 const DONE_WITH_TOTAL_RE =
-  /^(?:(?:nao|n|nenhum\w*|nada)[\s,!.]+(?:obrigad\w*[\s,!.]+)?)?(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|pronto|pode fechar|fecha(?: ai| o pedido| pra mim)?|pode finalizar|finaliza)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
+  /^(?:(?:nao|n|nenhum\w*|nada)[\s,!.]+(?:obrigad\w*[\s,!.]+)?)?(?:(?:e|eh) ?so( isso)?( mesmo)?|so isso( mesmo)?|mais nada|nada mais|(?:e|eh) isso( ai)?|(?:isso )?(?:e|eh) tudo( mesmo)?|era (?:so )?isso( mesmo)?|pronto|pode fechar|fecha(?: ai| o pedido| pra mim)?|pode finalizar|finaliza)[\s,!.]+(?:entao[\s,]+)?(?:quanto (?:fica|ficou|deu|da|vai dar|vai ficar|e|eh|custa|sai)(?: (?:tudo|o total|no total|tudo junto))?|qual (?:e |eh |fica )?o total|(?:me )?(?:manda|passa|diz|fala) o total|ve o total|o total)[\s?!.]*$/;
 
 // "não recebi o código", "o pix expirou", "manda o pix de novo", "perdi o link".
 const RESEND_CODE_RE =
@@ -2051,6 +2094,21 @@ export function parseMeasureMixup(text: string, query: string): { wrong: string;
   const want = `${said[1]} ${unit}`;
   if (said[1].replace(",", ".") === inQuery[1].replace(",", ".") && (!said[2] || said[2][0] === inQuery[2][0])) return null;
   return { wrong: `${inQuery[1]} ${inQuery[2]}`, want };
+}
+
+// "o sabão em pó da farmácia indiana" (11/10, rodada 22 g60, R22-5): item + loja citada pelo nome, sem verbo. Com o item
+// já na cesta (de outra loja), é pedido de trocar a loja dele — virava o item novo "sabão em pó". `stores` = nomes de loja.
+export function parseItemAtStore(text: string, stores: string[]): { item: string; store: string } | null {
+  const n = normalizeMsg(text).replace(/[!.?]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!n || n.split(" ").length > 10) return null;
+  const body = n.replace(/^(?:(?:e|ah|entao|pode ser|quero|queria|prefiro|melhor|na verdade|troca pro|troca pelo|troca pela)\s+)+/, "");
+  for (const name of stores) {
+    const label = normalizeMsg(name).replace(/[^a-z0-9]+/g, " ").trim();
+    if (!label) continue;
+    const m = new RegExp(`^(?:(?:o|a|os|as|um|uma)\\s+)?(.{3,40}?)\\s+(?:d[aoe]s?|na|no|pela|pelo)\\s+(?:loja\\s+)?${label.replace(/\s+/g, "\\s+")}(?:\\s+(?:mesmo|entao|por favor|pf))?$`).exec(body);
+    if (m && meaningfulProductTokens(m[1]).length) return { item: m[1].trim(), store: name };
+  }
+  return null;
 }
 
 export function parseStoreSwapAsk(text: string): { item?: string } | null {
@@ -2333,7 +2391,10 @@ export function detectIntent(text: string): Intent {
   // com o sku preservado, nunca busca de produto nem "não entendi" (27/08 S1).
   const staleTap = n.match(/^optsku:(.+)$/);
   if (staleTap) return { kind: "stale_option_tap", sku: staleTap[1].trim() };
-  if (RECIPIENT_OTHER_RE.test(n)) return { kind: "recipient_other" };
+  // "é pra presente de aniversário da minha chefe ... pensei num perfume ou num kit de banho" (11/10, rodada 22 R22-2): com
+  // o pedido na mesma mensagem, a moldura de destinatário é contexto — segue como pedido (o nome, se a loja exigir, é
+  // perguntado antes do pagamento). Só a frase curta ("é pra outra pessoa", "entrega pra minha mãe") pede o nome agora.
+  if (RECIPIENT_OTHER_RE.test(n) && n.replace(RECIPIENT_OTHER_RE, " ").split(/\s+/).filter(Boolean).length <= 6) return { kind: "recipient_other" };
   // Botão "Ver detalhes" do card (id por sku): a Lia responde com o link real do
   // anúncio/página do produto — reviews, fotos, specs (pedido do dono, 01/09).
   const infoTap = n.match(/^optinfo:(.+)$/);
@@ -2403,6 +2464,13 @@ export function detectIntent(text: string): Intent {
     return { kind: "hold" };
   }
 
+  // "oi voltei! esqueci de falar, tira a fita adesiva ... e põe também um cabo usb c" (11/10, rodada 22 g60, R22-8): a volta
+  // é só a abertura — a ordem que vem depois é o pedido (antes: "Bem-vinda de volta" e nada mudava).
+  const backLead = /^(?:(?:oi+|ola|opa|e ai|eai|pronto|bom|ok|lia)[\s,!.]+)*voltei\b[\s,!.]*(?:(?:esqueci|esqueci de|eu esqueci de)\s+(?:falar|dizer|avisar|te falar|te dizer|pedir)[\s,!.:]*)?(.+)$/.exec(n);
+  if (backLead && /\b(tira|tirar|remove|remover|retira|troca|trocar|muda|mudar|poe|por|coloca|colocar|bota|botar|adiciona|adicionar|acrescenta|inclui|quero|preciso|manda)\b/.test(backLead[1])) {
+    const inner = detectIntent(backLead[1]);
+    if (inner.kind !== "resume_where" && inner.kind !== "greeting") return inner;
+  }
   // "pronto voltei, onde a gente tava?" — retomar com resumo do estado (28/08 S20).
   if (
     /\b(pronto )?voltei\b|\bonde (a gente |nos |que )?(tava(mos)?|estava(mos)?|parou|paramos)\b|\bvamos continuar\b|\bcontinua(r)? (de onde|dali|o pedido)\b/.test(n) &&
@@ -3257,6 +3325,8 @@ const WORD_MONEY: Record<string, number> = {
 };
 
 function digitizeMoneyWords(n: string): string {
+  // Centenas e compostos ("trezentos", "cento e cinquenta", 11/10, rodada 22 R22-7) primeiro; o resto como antes.
+  n = digitizeSpelledMoney(n);
   return n.replace(
     /\b(dois|tres|quatro|cinco|seis|sete|oito|nove|dez|doze|quinze|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa|cem|duzentos)\b(?=\s*(reais|real|conto|contos|pila|pilas|mangos?)\b)/g,
     (w) => String(WORD_MONEY[w] ?? w)
@@ -4421,10 +4491,28 @@ const ORDER_BUDGET_RES = [
   // "orçamento: 60", "limite de 80" (10/10, rodada 10 g30: "orçamento R$ 150 no total" passava batido e o resumo de
   // R$ 342,42 saía sem aviso).
   String.raw`(?:^|[\s,.;])(?:(?:o|meu|minha|nosso|nossa)\s+)?(?:orcamento|limite|teto|verba)(?:\s+(?:total|maximo|max))?(?:\s*:|\s+(?:e|eh|de|é|e de|eh de|ta em|esta em|fica em|vai ate))?\s+(?:(?:uns|umas|ate|no maximo|de)\s+)*${ORDER_BUDGET_NUM}(?:\s+(?:no total|pra tudo|ao todo|com (?:a )?entrega|com (?:o )?frete))?(?=$|[\s,.;:!?])`,
+  // "tem como deixar tudo até 150 reais?", "limita o total em 150", "fecha tudo em até 200" (11/10, rodada 22 R22-7): a Lia
+  // perguntava de novo "você quer limitar o total…?" e o teto ficava pendurado. "Tudo/o total" + valor é o teto do pedido.
+  String.raw`(?:^|[\s,.;])(?:(?:tem como|da pra|dá pra|pode|consegue|quero|queria|vamos|bora)\s+)?(?:(?:deixar|deixa|fechar|fecha|ficar|fica|sair|sai|limitar|limita|limite|manter|mantem|mantenha|segurar|segura|travar|trava)\s+)(?:(?:o|a)\s+)?(?:tudo|total|compra|pedido|conta)\s+(?:(?:em|ate|de|no maximo|por|abaixo de|dentro de)\s+)+(?:(?:uns|umas)\s+)?${ORDER_BUDGET_NUM}(?:\s+(?:no total|com (?:a )?entrega|com (?:o )?frete))?(?=$|[\s,.;:!?])`,
   // "cesta básica de uns R$ 100" / "compra de até 200"
   String.raw`(?:^|[\s,.;])(?:uma\s+|a\s+|minha\s+)?(?:cesta(?: basica)?|compra|compras|pedido|lista|feira)\s+de\s+(?:(?:uns|umas|ate|no maximo|mais ou menos|tipo|cerca de)\s+)?${ORDER_BUDGET_NUM}(?=$|[\s,.;:!?])`
 ].map((src) => new RegExp(src, "g"));
+// Valor por extenso antes da moeda ("uns trezentos reais", "cento e cinquenta reais", 11/10, rodada 22 R22-7): vira dígito
+// para o teto do pedido (saía sem 💰). Mantém o resto da frase como veio (acentos e caixa).
+const MONEY_UNITS: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9 };
+const MONEY_TENS: Record<string, number> = { dez: 10, onze: 11, doze: 12, treze: 13, quatorze: 14, catorze: 14, quinze: 15, dezesseis: 16, dezessete: 17, dezoito: 18, dezenove: 19, vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90 };
+const MONEY_HUNDREDS: Record<string, number> = { cem: 100, cento: 100, duzentos: 200, trezentos: 300, quatrocentos: 400, quinhentos: 500, seiscentos: 600, setecentos: 700, oitocentos: 800, novecentos: 900, mil: 1000 };
+const MONEY_WORD = `(?:${[...Object.keys(MONEY_HUNDREDS), ...Object.keys(MONEY_TENS), ...Object.keys(MONEY_UNITS)].map((w) => w.replace("tres", "tr[eê]s")).join("|")})`;
+const SPELLED_MONEY_RE = new RegExp(`(?<![a-zà-ú])${MONEY_WORD}(?:\\s+e\\s+${MONEY_WORD}){0,2}(?=\\s*(?:reais|real|conto|contos|pila|pilas)\\b)`, "gi");
+export function digitizeSpelledMoney(text: string): string {
+  return text.replace(SPELLED_MONEY_RE, (words) => {
+    let total = 0;
+    for (const w of normalizeMsg(words).split(/\s+e\s+/)) total += MONEY_HUNDREDS[w] ?? MONEY_TENS[w] ?? MONEY_UNITS[w] ?? 0;
+    return total ? String(total) : words;
+  });
+}
 export function parseOrderBudget(text: string): { cap: number; rest: string; total?: boolean } | null {
+  text = digitizeSpelledMoney(text);
   const folded = foldSameLength(text);
   const base = folded ?? normalizeMsg(text);
   const raw = folded ? text : base;

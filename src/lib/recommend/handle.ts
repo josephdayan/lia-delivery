@@ -763,8 +763,28 @@ function logLine(req: RecommendRequest, chain: Chain, cards: number, ms: number)
 
 // ---------------------------------------------------------------- EXECUTAR
 
+// "algo mais chique, o kit granado" (11/10, rodada 22 R22-3): o elogio não é palavra do nome — "chique" virava exigência e
+// nenhum card sobrava. Ficam as palavras do produto ("kit granado").
+export function cleanRefineWant(want: string | undefined): string | undefined {
+  return want
+    ?.replace(/\b(?:(?:algo|alguma coisa|coisa)\s+)?(?:mais\s+)?(?:chique|chic|sofisticad[oa]s?|elegantes?|bonit[oa]s?|lind[oa]s?|caprichad[oa]s?|especial|especiais|top|legal|melhor(?:zinh[oa])?|bo[am]|bons|boas)\b/gi, " ")
+    .replace(/^(?:\s*(?:(?:o|a|os|as|um|uma|de|do|da|tipo)\s+|[,.;:!?-]+))+/i, "")
+    .replace(/[\s,.;:!?-]+$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Tinha produto, mas todos passam do teto com a entrega (11/10, rodada 22 R22-3).
+function overBudgetOnly(req: RecommendRequest, candidates: ShelfCandidate[]): boolean {
+  const cap = req.budget;
+  return cap != null && cap > 0 && candidates.length > 0 && candidates.every((c) => displayPrice(c.option.unitPrice) + (c.option.freightFee ?? TYPICAL_FREIGHT) > cap);
+}
+
 export async function handleRecommend(env: RecommendEnv, req: RecommendRequest): Promise<void> {
   const { phone, convoId, ctx } = env;
+  // Teto do pedido já anotado neste turno ("quero gastar até 120 reais", 11/10, rodada 22 R22-3): o roteador tira o valor
+  // da frase antes da recomendação, e os cards vinham sem teto (Coffret de R$ 952 num presente de até R$ 120).
+  if (req.budget == null && ctx.orderBudget?.cap) req = { ...req, budget: ctx.orderBudget.cap };
   if (!recommendEnabled()) {
     await reply(phone, copy.vagueRequestAnswer());
     return;
@@ -802,7 +822,7 @@ export async function handleRecommend(env: RecommendEnv, req: RecommendRequest):
   const shown = chain.cards.slice(0, max);
   logLine(req, chain, shown.length, Date.now() - started);
   if (!shown.length) {
-    await reply(phone, copy.recommendNone(req, shelfLabels(chain.emptyShelves)));
+    await reply(phone, overBudgetOnly(req, chain.candidates) ? copy.recommendNoneInBudget(copy.recommendLabel(req), req.budget!) : copy.recommendNone(req, shelfLabels(chain.emptyShelves)));
     await recordRecommendation({ env, req, plan: chain.plan, cards: [], emptyShelves: chain.emptyShelves, outcome: "none", timings: chain.timings });
     return;
   }
@@ -924,7 +944,7 @@ export async function recommendRefine(env: RecommendEnv, current: PendingChoice,
     return;
   }
   const constraints = refinement.constraint && !rec.request.constraints.includes(refinement.constraint) ? [...rec.request.constraints, refinement.constraint] : rec.request.constraints;
-  const want = refinement.want?.trim();
+  const want = cleanRefineWant(refinement.want);
   const req: RecommendRequest = {
     ...rec.request,
     constraints,
@@ -940,7 +960,7 @@ export async function recommendRefine(env: RecommendEnv, current: PendingChoice,
   const shown = chain.cards.slice(0, recommendMaxCards());
   logLine(req, chain, shown.length, Date.now() - started);
   if (!shown.length) {
-    await reply(env.phone, copy.recommendNone(req, shelfLabels(chain.emptyShelves)));
+    await reply(env.phone, overBudgetOnly(req, chain.candidates) ? copy.recommendNoneInBudget(want || copy.recommendLabel(req), req.budget!) : copy.recommendNone(req, shelfLabels(chain.emptyShelves)));
     return;
   }
   const options = shown.map(cardOption);

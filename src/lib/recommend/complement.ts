@@ -121,6 +121,9 @@ export function suggestComplement(
     // "Já tem": olha os OUTROS itens (o próprio gatilho "pão de hambúrguer" contém "hambúrguer").
     if (names.some((n) => !pair.when.test(n) && pair.has.test(n))) continue;
     if (declined.has(normComplement(pair.query)) || declined.has(normComplement(pair.shelfId))) continue;
+    // Item que o cliente TIROU da lista ("o amaciente não", "Amaciante Comfort 1L"; 11/10, rodada 22 g60, R22-5): o nome
+    // tirado é do mesmo produto do par — não oferece de volta.
+    if ([...declined].some((d) => pair.has.test(d))) continue;
     const shelf = pair.shelfId === "produto" ? undefined : opts.shelfById(pair.shelfId);
     if (shelf?.flags?.includes("mip")) continue;
     return { query: pair.query, shelfId: pair.shelfId, why: pair.why, trigger: pair.trigger };
