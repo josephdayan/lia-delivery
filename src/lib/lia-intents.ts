@@ -18,6 +18,8 @@ export type ParsedLine = {
   autoPick?: boolean;
   // Uma das buscas de um item "X ou Y" (10/10, rodada 12): as linhas com o mesmo rótulo viram UMA escolha.
   altOf?: string;
+  // A quantidade veio como "N unidades" depois do produto (11/10, rodada 17 g49): conta unidades, não embalagens.
+  units?: boolean;
   // Frase COMPLETA do cliente quando a IA encurtou ("isqueiro pra charuto" → "isqueiro",
   // 06/09, pai do dono): o Mercado Livre busca com ela, porque o qualificador muda o produto.
   raw?: string;
@@ -642,11 +644,12 @@ export function isSizeOnlyFragment(phrase: string): boolean {
 }
 // Atributo solto do item vizinho (10/10, rodada 12 g35): "faltou a escova de dente, tem que ser macia" criava o item
 // fantasma "tem que ser macia". "tem que ser X" / "precisa ser X" / "que seja X" é refino do item a que se refere.
-const ATTRIBUTE_FRAGMENT_RE = /^(?:(?:mas|e|so que|ah)\s+)?(?:(?:ele|ela|eles|elas|esse|essa|o|a)\s+)?(?:tem que|tem de|tenha que|precisa|precisaria|deve|devia|teria que|tinha que|tem q|precisa q)\s+(?:ser|estar|vir)\s+(?:de\s+|do\s+|da\s+|com\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$|^(?:(?:mas|e)\s+)?que seja\s+(?:de\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$/;
+// "tem alguma que sirva pra filhote?", "tem pra filhote?" depois do item (11/10, R17a-5): o público/atributo do item anterior.
+const ATTRIBUTE_FRAGMENT_RE = /^(?:(?:mas|e|so que|ah)\s+)?(?:(?:ele|ela|eles|elas|esse|essa|o|a)\s+)?(?:tem que|tem de|tenha que|precisa|precisaria|deve|devia|teria que|tinha que|tem q|precisa q)\s+(?:ser|estar|vir)\s+(?:de\s+|do\s+|da\s+|com\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$|^(?:(?:mas|e)\s+)?que seja\s+(?:de\s+)?([a-z0-9][a-z0-9 ,.-]{1,40})$|^(?:(?:mas|e)\s+)?tem\s+(?:(?:algum|alguma|um|uma)\s+)?(?:(?:que|q)\s+(?:sirva|serve|seja|e)\s+)?(?:pra|para|pro|p)\s+([a-z0-9][a-z0-9 ,.-]{1,40})$/;
 export function attributeFragment(phrase: string): string | null {
   const n = normalizeMsg(phrase).replace(/[^a-z0-9\s.,-]/g, " ").replace(/\s+/g, " ").replace(/[.,\s]+$/, "").trim();
   const m = ATTRIBUTE_FRAGMENT_RE.exec(n);
-  const attr = (m?.[1] ?? m?.[2])?.trim();
+  const attr = (m?.[1] ?? m?.[2] ?? m?.[3])?.trim();
   // "tem que ser o da Nestlé" é escolha de opção, não atributo; mais de 4 palavras já é outra frase.
   if (!attr || attr.split(/\s+/).length > 4 || /^(?:o|a|os|as|esse|essa|aquel[ea])\b/.test(attr)) return null;
   return attr;
@@ -723,6 +726,8 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         .replace(/^((oi+|ola+|opa+|bom dia|boa tarde|boa noite|e ?ai)( lia)?[\s,!.?]*)+/i, "")
         .replace(/^(tudo (bem|bom)|td bem|como vai)[\s,!.?]*/i, "")
         .replace(/^(ah+|hm+|hmm+|dai|tipo|ne|entao|ok+|okay|blz|beleza|ta|certo)\s+/i, "")
+        // "e ração pra coelho então?" (11/10, R17a-5): o "então" do fim é fala, não palavra do produto.
+        .replace(/\s+(?:entao|então)[\s?!.]*$/i, "")
         // Fala de quem lista de cabeça (10/10, rodada 6 A1, "áudio transcrito"): "aquele óleo de soja", "sabe o
         // macarrão", "uns biscoitos pra criança" — o demonstrativo/hesitação não é palavra do produto.
         .replace(/^(?:(?:ai|ah+|e|sabe(?:\s+(?:o|a|os|as))?|aquel[ea]s?|(?:uns|umas)(?=\s+\D))\s+)+(?=\S)/i, "")
@@ -835,6 +840,18 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
       // "dois pães", "meia dúzia de ovo", "uma dúzia de banana"
       // ([\wà-ú]+) e não (\w+): "três" tem acento e \w é ASCII — sem isso "três
       // pacotes" não virava quantidade (re-teste 15/08, rodada 9).
+      // "um refrigerante de dois litros de guaraná e dois de coca cola" (11/10, R17a-6): "dois de X" repete a MEDIDA dita
+      // antes na frase (dois litros), não a quantidade — a coca vinha 2x sem tamanho.
+      const elliptic = raw.match(/^(\d{1,2}|um|uma|dois|duas|tres|três|quatro|cinco)\s+de\s+(.+)$/i);
+      if (elliptic) {
+        const num = normalizeMsg(elliptic[1]);
+        const unit = normalizeMsg(text).match(new RegExp(`\\b${num}\\s+(litros?|lts?|l|quilos?|kilos?|kg|ml|gramas?)\\b`));
+        if (unit && !/^(?:litros?|lts?|l|quilos?|kilos?|kg|ml|gramas?)\b/i.test(elliptic[2])) {
+          const value = /^\d+$/.test(num) ? Number(num) : WORD_QTY[num];
+          const u = /^(?:litros?|lts?|l)$/.test(unit[1]) ? "l" : /^(?:quilos?|kilos?|kg)$/.test(unit[1]) ? "kg" : /^gramas?$/.test(unit[1]) ? "g" : unit[1];
+          if (value) return { phrase: `${elliptic[2].trim()} ${value}${u}`, qty: 1, ...flags };
+        }
+      }
       const word = raw.match(/^(?:(meia)\s+d[uú]zia|(uma\s+)?d[uú]zia|([\wà-ú]+))\s+(?:de\s+)?(.+)$/i);
       if (word) {
         const n = normalizeMsg(word[3] ?? "");
@@ -858,7 +875,10 @@ export function parseBasketLines(text: string, opts?: ParseBasketOptions): Parse
         const count = /^\d+$/.test(trailing[2]) ? Number(trailing[2]) : trailing[2].toLowerCase() === "meia" ? 0.5 : (WORD_QTY[normalizeMsg(trailing[2])] ?? 1);
         const dozen = /^d[uú]zias?$/i.test(trailing[3]);
         const qty = Math.min(MAX_QTY, Math.max(1, Math.round(dozen ? count * 12 : count)));
-        if (dozen || count >= 1) return { phrase: trailing[1].trim(), qty, qtyExplicit: true, ...flags };
+        // "tapete higiênico 30 unidades" (11/10, rodada 17 g49): a contagem é de UNIDADES (vira embalagens na escolha);
+        // a marca deixa o "Anotei" dizer "30 unidades" em vez de "30x tapete".
+        const units = /^unidades?$/i.test(trailing[3]) && qty > 1 ? { units: true as const } : {};
+        if (dozen || count >= 1) return { phrase: trailing[1].trim(), qty, qtyExplicit: true, ...units, ...flags };
       }
       const trailingDozen = raw.match(/^(.+?)\s+(?:(meia)\s+)?d[uú]zia$/i);
       if (trailingDozen) return { phrase: trailingDozen[1].trim(), qty: trailingDozen[2] ? 6 : 12, qtyExplicit: true, ...flags };
@@ -1077,7 +1097,8 @@ export function isGiftAccessory(phrase: string): boolean {
   const n = normalizeMsg(phrase);
   return !isGiftFrame(n) && /\b(?:de|pra|para|do|da)\s+(?:presente|aniversario|natal|festa)\b/.test(n);
 }
-const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
+// "uma ideia de presente pra minha sogra" (11/10, rodada 17 g49): o pedido de ideia/sugestão é a mesma moldura.
+const GIFT_FRAME_RE = /^(?:um\s+|uma\s+|o\s+|a\s+)?(?:(?:ideia|ideias|sugestao|sugestoes|dica|dicas)\s+de\s+(?:um\s+|uma\s+)?)?(?:presente|presentinho|lembrancinha|lembranca|mimo|agrado)(?:\s+(?:de\s+)?(?:aniversario|natal|amigo secreto|dia das maes|dia dos pais))?(?:\s+(?:pra|para|pro|pros|pras|da|do)\s+.*)?$/;
 
 // Quantidade respondida no passo imediatamente posterior à escolha do produto.
 // Aceita o jeito que as pessoas realmente escrevem: "2", "quero 2", "mais duas",
@@ -1911,7 +1932,7 @@ export function declinesSwapOffer(text: string): boolean {
 // de preço vale para TODOS os itens ainda em escolha, não só o da vez.
 export function wantsCheapestForAll(text: string): boolean {
   const n = normalizeMsg(text);
-  return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
+  return /\b(?:mais barat[oa]s?|mais em conta|menor preco)\b/.test(n) && /\b(?:de|em|pra|para|com|pro) (?:tud[oa]|todos|todas|todos os itens|cada (?:um|item))\b|\bde cada\s*$|\btudo (?:o|no) mais barat|\bem tudo\b|\btodos (?:o|os) mais barat|\bsempre o mais barat/.test(n);
 }
 
 // Lista com "pode ser o mais barato" no fim (10/10, rodada 9 via g25): o mais barato de CADA item da mensagem.
@@ -2435,7 +2456,10 @@ export function detectIntent(text: string): Intent {
     const addSplit = rawTarget.split(
       /(?:\s+e\s+|\s*[,;]\s*(?:e\s+)?)(?:coloca|poe|bota|traz|adiciona|adicione|inclui|acrescenta|manda|me ve|quero|compra)\s+/
     );
-    const target = cleanItemPhrase(addSplit[0]);
+    // "tira o perfume, ela gosta é de chá mesmo" (11/10, rodada 17 g49): a oração depois da vírgula que começa com
+    // sujeito/conjunção explica o pedido, não é segunda remoção (o chá saía junto). "tira o arroz, o feijão" continua lista.
+    const removeClause = addSplit[0].split(/\s*[,;.!]\s*(?=(?:porque|pq|pois|ja que|que|ela|ele|elas|eles|eu|a gente|voce|vc|nos|minha|meu|so que|mas|nao precisa|ja tenho|ja comprei)\b)/)[0];
+    const target = cleanItemPhrase(removeClause);
     const andAdd = addSplit[1] ? cleanItemPhrase(addSplit[1]) : undefined;
     // "tira tudo que for de limpeza" é remoção por CATEGORIA — nunca limpa a cesta
     // inteira (28/08 S15: apagou os 12 itens, inclusive 10 que não eram de limpeza).
