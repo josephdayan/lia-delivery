@@ -145,11 +145,20 @@ const WET_WORDS = new Set(["umida", "umido", "sache", "lata", "pate"]);
 const DOG_BREED_WORDS = new Set(["bulldog", "buldogue", "shih", "yorkshire", "poodle", "labrador", "pinscher", "spitz", "pug", "lhasa", "maltes", "dachshund", "schnauzer", "beagle", "rottweiler", "pitbull", "chihuahua", "pastor", "border", "dogs"]);
 const SMALL_BREED_WORDS = new Set(["shih", "tzu", "yorkshire", "yorkie", "poodle", "pinscher", "spitz", "pug", "lhasa", "apso", "maltes", "chihuahua", "bichon", "pequines"]);
 const SMALL_SIZE_WORDS = new Set(["pequeno", "pequenos", "pequena", "pequenas"]);
-function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | null {
-  const dog = wordList.some((w) => DOG_WORDS.has(w) || (itemSide && DOG_BREED_WORDS.has(w)));
-  const cat = wordList.some((w) => CAT_WORDS.has(w));
-  if (dog === cat) return null;
-  return dog ? "dog" : "cat";
+// Roedor e pássaro (11/10, R16-10: "ração pra coelho filhote" trazia "Ração Golden Cães Filhotes"): a espécie pedida
+// também barra a ração de cachorro/gato. Peixe fica de fora de propósito ("Ração Gatos Sabor Peixe" é de gato).
+const RODENT_WORDS = new Set(["coelho", "coelhos", "coelhinho", "coelhinhos", "roedor", "roedores", "hamster", "hamsters", "porquinho", "chinchila", "chinchilas", "twister", "gerbil"]);
+const BIRD_WORDS = new Set(["passaro", "passaros", "passarinho", "passarinhos", "calopsita", "calopsitas", "periquito", "periquitos", "canario", "canarios", "papagaio", "agapornis", "aves"]);
+function animalOf(wordList: string[], itemSide = false): "dog" | "cat" | "rodent" | "bird" | null {
+  const found = new Set<string>();
+  for (const w of wordList) {
+    if (DOG_WORDS.has(w) || (itemSide && DOG_BREED_WORDS.has(w))) found.add("dog");
+    else if (CAT_WORDS.has(w)) found.add("cat");
+    else if (RODENT_WORDS.has(w)) found.add("rodent");
+    else if (BIRD_WORDS.has(w)) found.add("bird");
+  }
+  if (found.size !== 1) return null;
+  return [...found][0] as "dog" | "cat" | "rodent" | "bird";
 }
 
 // tokenMatchesWord plus synonym equivalences: pet (cachorro≈cães≈cão, gato≈felino) e
@@ -253,7 +262,23 @@ export function queryTokens(query: string): string[] {
 
 // "café SEM açúcar", "água SEM gás" — o que vem depois do "sem" é EXCLUSÃO, não busca.
 function negatedWords(query: string): string[] {
-  return [...normalizeText(query).matchAll(/\bsem\s+(\w{3,})\b/g)].map((m) => m[1]);
+  const n = normalizeText(query);
+  // "a normal, não a zero" (11/10, rodada 17 g49): "não (a) zero/diet/light" também é exclusão.
+  return [...[...n.matchAll(/\bsem\s+(\w{3,})\b/g)].map((m) => m[1]), ...[...n.matchAll(/\bnao\s+(?:quero\s+)?(?:a\s+|o\s+|e\s+)?(zero|diet|light)\b/g)].map((m) => m[1])];
+}
+// "coca normal", "a original", "não a zero" (11/10, rodada 17 g49): a versão com açúcar. Zero/diet/light/sem açúcar saem.
+const REGULAR_ASK_RE = /\b(normal|original|tradicional)\b/;
+const SUGAR_FREE_NAME_RE = /\b(zero|diet|light|sugar ?free|sugarfree|sem acucar)\b/;
+export function isSugarFreeName(name: string): boolean {
+  return SUGAR_FREE_NAME_RE.test(normalizeText(name));
+}
+export function wantsRegularVersion(query: string): boolean {
+  const n = normalizeText(query);
+  const negs = negatedWords(query);
+  if (negs.includes("acucar")) return false;
+  const positiveFree = /\b(zero|diet|light)\b/.test(n.replace(/\bnao\s+(?:quero\s+)?(?:a\s+|o\s+|e\s+)?(?:zero|diet|light)\b/g, " "));
+  if (positiveFree) return false;
+  return REGULAR_ASK_RE.test(n) || negs.some((w) => w === "zero" || w === "diet" || w === "light");
 }
 
 // "sem cheiro" = "sem perfume" = "sem fragrância" no nome do produto (10/10, rodada 5 g16).
@@ -307,6 +332,22 @@ const PROCESSED_VARIANTS = new Set(["instantaneo", "instantanea", "soy", "conden
 // "Leite DE COCO" é tão pouco "leite" quanto o de soja: quem pede leite quer o de vaca.
 // A lista existia mas estava incompleta, e o coco (barato, 200ml) vencia o desempate de
 // preço — pedir "leite" devolvia leite de coco.
+// "chá" pedido sem dizer pronto/gelado (11/10, rodada 17 g49: o chá pra presente abria com "Chá Matte Leão Natural 450ml",
+// ice tea de pêssego e "Chá Mamãe" de lactante; a camomila em sachês vinha atrás por "sachê" contar como processado). Chá é a
+// infusão: sachê/folha é a forma básica; a bebida pronta (ml/L, garrafa, ice tea) e o chá de gestante/lactante são variantes.
+const TEA_ASK_RE = /\bchas?\b/;
+const READY_TEA_ASK_RE = /\b(gelad[oa]s?|ice|pronto|garrafa|garrafinha|lata|latinha|bebida|\d+(?:[.,]\d+)?\s*(?:ml|l|lt|litros?))\b/;
+const READY_TEA_NAME_RE = /\b(ice tea|icetea|garrafa|lata|\d+(?:[.,]\d+)?\s*(?:ml|l|lt|litros?))\b/;
+const MOM_TEA_RE = /\b(mamae|amamenta\w*|lactac\w*|lactante|gestante|gravida)\b/;
+export function teaVariantPenalty(query: string, name: string): number {
+  const q = normalizeText(query);
+  if (!TEA_ASK_RE.test(q)) return 0;
+  const n = normalizeText(name);
+  let penalty = 0;
+  if (!READY_TEA_ASK_RE.test(q) && READY_TEA_NAME_RE.test(n)) penalty += 1;
+  if (!MOM_TEA_RE.test(q) && MOM_TEA_RE.test(n)) penalty += 1;
+  return penalty;
+}
 const PROCESSED_BIGRAM_RE = /\bem po\b|\bde soja\b|\bde amendoas\b|\bde coco\b|\bde castanha\b|\bde aveia\b|\bde arroz\b/;
 // Produto infantil/baby é variante: só rankeia bem se a query pedir criança.
 // Vale pra fase de vida pet também: "ração" sem falar idade = adulto (não filhote/sênior).
@@ -329,6 +370,7 @@ const CATEGORY_NOUNS = new Set([
 // Versão "para mulher" de um produto sem gênero (Advil Mulher, Dorflex Mulher): variante de
 // público, só na frente quando pedida (05/10: "advil" mostrou Advil Mulher em 1º).
 const WOMAN_VARIANT_RE = /\bmulher(es)?\b/;
+const MEDICAL_DEVICE_RE = /\b(inalador\w*|nebuliza\w*|coletor\w*|seringas?|sondas?|cateter\w*|esteril\w*|urina|fezes|escarro)\b/;
 const WOMAN_ASK_RE = /\b(mulher|mulheres|feminin[oa]s?|menstrua\w*|colica)\b/;
 function isChildVariant(nameNorm: string): boolean {
   return CHILD_VARIANT_RE.test(nameNorm) && !CHILD_NATIVE_RE.test(nameNorm);
@@ -350,6 +392,9 @@ const PACK_ASK_RE = /\b(fardo|pack|caixa|kit|engradado)\b/;
 function isDrinkPack(nameNorm: string): boolean {
   // Só é fardo de BEBIDA com marcador de volume no nome — "Pack Macarrão Instantâneo
   // Lámen … Miojo 510g 6 Unidades" é o produto normal, não um engradado de refri.
+  // Copo/prato/pote descartável "200ml 100 unidades" é o volume do copo, não fardo de bebida (11/10, R16-11: "copo
+  // descartável" punha o "Copo Inalador Descartável" na frente do copo de verdade).
+  if (/^(?:[a-z0-9]+ ){0,1}(copos?|pratos?|potes?|potinhos?|marmitas?|embalagens?|sacos?|saquinhos?|taças?|tacas?|garrafas? (?:termica|squeeze))\b/.test(nameNorm) && /\bdescartave(?:l|is)\b|\bplastic\w*\b/.test(nameNorm)) return false;
   const drinkVolume = /\b(ml|l|litros?)\b|\d(l|ml)\b/.test(nameNorm);
   if (/\b(fardo|pack|engradado)\b/.test(nameNorm)) return drinkVolume;
   return /\b\d+\s+(un|unidades|garrafas|latas)\b/.test(nameNorm) && drinkVolume;
@@ -555,6 +600,7 @@ function scoreQuery(query: string, item: CatalogItem): number {
       return 0;
     }
   }
+  if (SUGAR_FREE_NAME_RE.test(nameNorm) && wantsRegularVersion(query)) return 0;
 
   // Embalagem nunca é o presente (06/10, A7: "presente pra minha mãe até R$100" → "Sacola
   // Presenteável P" de R$5,49). Pedido de presente só traz sacola/papel/cartão-presente quando
@@ -715,7 +761,10 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // "em pó" é a forma BÁSICA do achocolatado (Nescau/Toddy) — só é variante
     // processada nos outros produtos ("leite em pó" continua perdendo pro leite).
     const processedHay = /\bachocolatado\b/.test(nameNorm) ? nameNorm.replace(/\bem po\b/g, " ") : nameNorm;
-    if (!wantsProcessed && (nameWords.some((w) => PROCESSED_VARIANTS.has(w)) || PROCESSED_BIGRAM_RE.test(processedHay))) score -= 2;
+    // Sachê é a forma básica do chá (11/10, rodada 17 g49).
+    const teaAsk = TEA_ASK_RE.test(queryNorm);
+    if (!wantsProcessed && (nameWords.some((w) => PROCESSED_VARIANTS.has(w) && !(teaAsk && /^saches?$/.test(w))) || PROCESSED_BIGRAM_RE.test(processedHay))) score -= 2;
+    score -= 2 * teaVariantPenalty(queryNorm, nameNorm);
     if (!PACK_ASK_RE.test(queryNorm) && isDrinkPack(nameNorm)) score -= 2;
     // Quem não falou de bicho não está pedindo a versão pet. A guarda dura acima só vale
     // pra higiene/beleza; aqui é a versão geral, e como PENALIDADE (não zero) porque
@@ -764,6 +813,8 @@ function scoreQuery(query: string, item: CatalogItem): number {
     // Boti Baby; "shampoo" não pode virar Johnson's Baby). Pedir "infantil" inverte.
     if (!CHILD_VARIANT_RE.test(queryNorm) && isChildVariant(nameNorm)) score -= 2;
     if (!WOMAN_ASK_RE.test(queryNorm) && WOMAN_VARIANT_RE.test(nameNorm)) score -= 2;
+    // Peça de aparelho de saúde ("Copo Inalador Descartável", "Copo Coletor") não é o utensílio comum (11/10, R16-11).
+    if (MEDICAL_DEVICE_RE.test(nameNorm) && !MEDICAL_DEVICE_RE.test(queryNorm)) score -= 3;
     if (beforePenalties > 0) score = Math.max(1, score);
   }
   return score;
@@ -848,6 +899,13 @@ function strongFor(query: string, item: CatalogItem, opts?: { allTokens?: boolea
   const wordTokens = queryTokens(query).filter(
     (token) => !negs.has(token) && !MEASURE_TOKEN_RE.test(token) && !/^\d+$/.test(token) && !UNIT_WORDS.has(token)
   );
+  // "normal"/"tradicional" qualificam a versão, não precisam estar no nome (11/10, rodada 17 g49). "de escritório"/"comum"
+  // dizem o uso de sempre ("grampeador de escritório" dava "não achei" e "grampeador" achava; R17a-7).
+  {
+    const soft = wantsRegularVersion(query) ? /^(normal|tradicional|escritorio|comum)$/ : /^(escritorio|comum)$/;
+    const core = wordTokens.filter((token) => !soft.test(token));
+    if (core.length) wordTokens.splice(0, wordTokens.length, ...core);
+  }
   // Pedido de presente/brinquedo: o público (menino, 5 anos) não precisa estar no nome.
   if (/\b(brinquedos?|presentes?)\b/.test(normalizeText(query))) {
     const core = wordTokens.filter((token) => !AUDIENCE_WORDS.has(token));
@@ -1310,6 +1368,9 @@ export function variantPenalty(query: string, name: string): number {
   if (tokens.has("com") && !asked.has("com")) penalty += 1;
   const staple = stapleFor(query);
   if (staple && !staple.prefer.test(normalizeText(name))) penalty += 1;
+  penalty += teaVariantPenalty(query, name);
+  // Peça de aparelho de saúde que o pedido não citou (11/10, R16-11: "Copo Inalador Descartável" para "copo descartável").
+  if (MEDICAL_DEVICE_RE.test(normalizeText(name)) && !MEDICAL_DEVICE_RE.test(normalizeText(query))) penalty += 1;
   return penalty;
 }
 

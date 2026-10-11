@@ -361,6 +361,14 @@ export function pharmacyPartnerAnswer(otcEnabled = false): string {
     : "Não tenho farmácia parceira que venda remédio por mim e também não consigo indicar uma unidade: remédio eu não vendo — por lei, só a farmácia pode. Pra medicação, a farmácia mais perto de você é o caminho. De mercado, higiene, pet, beleza e casa eu cuido — o que você precisa?";
 }
 
+// Remédio de bicho (11/10, rodada 17 g49): sem o exemplo de farmácia humana; quem orienta é o veterinário.
+export function vetMedicineRefusal(): string {
+  return "Vermífugo e remédio de bicho eu não consigo comprar: é medicamento veterinário, e a dose depende do peso e do caso. Se ele está doente (diarreia, vômito, sem comer), o melhor é levar ao *veterinário*. Ração, tapete, areia e petisco eu cuido — o que mais você precisa?";
+}
+export function vetMedicineSkippedNote(): string {
+  return "_Vermífugo e remédio de bicho eu não consigo comprar (é medicamento veterinário), então deixei de fora. Se ele está doente, o melhor é levar ao veterinário._";
+}
+
 export function medicineSkippedNote(): string {
   return "_Remédio eu não posso vender, então deixei ele de fora._";
 }
@@ -959,7 +967,13 @@ export function deadlineMissNote(label: string, promise?: string): string {
 // das opções que chegam a tempo (vazio = nenhuma chega); `fastest` = a mais rápida das que não chegam.
 // `item` (10/10, rodada 11 g32): o aviso sai logo depois da confirmação do item anterior — sem o nome, o cliente lia
 // "não chega" como se fosse do pão de alho que acabou de escolher, e não do sal grosso que vinha a seguir.
-export function choicesDeadlineNote(label: string, onTimeStores: string[], fastest?: { store?: string; promise?: string }, item?: string): string {
+export function choicesDeadlineNote(label: string, onTimeStores: string[], fastest?: { store?: string; promise?: string }, item?: string, maybeStores: string[] = []): string {
+  // Só janela que pode chegar a tempo (11/10, rodada 17 g48: "amanhã, 5h–8h" pra "antes das 7h").
+  if (!onTimeStores.length && maybeStores.length) {
+    const stores = [...new Set(maybeStores)].map((s) => `*${s}*`);
+    const who = stores.length > 1 ? `${stores.slice(0, -1).join(", ")} e ${stores[stores.length - 1]} podem` : `${stores[0]} pode`;
+    return `⏰ Você precisa pra *${label}*: ${item ? `de *${item}*, ` : ""}só ${who} chegar a tempo (a janela de entrega começa antes) — as outras opções demoram mais.`;
+  }
   if (onTimeStores.length) {
     const who = [...new Set(onTimeStores)].map((s) => `*${s}*`).join(", ");
     return `⏰ Você precisa pra *${label}*: ${item ? `de *${item}*, ` : ""}chega a tempo só pela ${who} — as outras opções demoram mais.`;
@@ -976,10 +990,20 @@ export type DeadlineFit = "ok" | "late" | "unsure" | "maybe";
 export function deadlineLabel(d: { label: string; morning?: boolean }): string {
   return d.morning ? `${d.label} de manhã` : d.label;
 }
+// Prazo com hora (11/10, rodada 17 g48): o rótulo já traz a hora ("amanhã às 7h"); o "sem hora marcada" fala do dia
+// ("chega amanhã") e da hora pedida ("pode não ser até as 7h").
+const LABEL_HOUR_RE = / às (\d{1,2})h$/;
+function deadlineDay(d: { label: string }): string {
+  return d.label.replace(LABEL_HOUR_RE, "");
+}
+function unsureTail(d: { label: string }): string {
+  const h = LABEL_HOUR_RE.exec(d.label);
+  return h ? `pode não chegar até as ${h[1]}h` : "pode não ser de manhã";
+}
 function fitPhrase(fit: DeadlineFit | null | undefined, d: { label: string; morning?: boolean }): string {
   if (fit === "ok") return `chega até *${deadlineLabel(d)}* ✅`;
   if (fit === "late") return `não chega até *${deadlineLabel(d)}*`;
-  if (fit === "unsure") return `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
+  if (fit === "unsure") return LABEL_HOUR_RE.test(d.label) ? `chega *${deadlineDay(d)}*, mas ${unsureTail(d)}` : `chega *${d.label}*, mas sem hora marcada (pode ser à tarde)`;
   if (fit === "maybe") return `pode não chegar até *${deadlineLabel(d)}* (dia útil não conta fim de semana nem feriado)`;
   return "prazo sem data certa";
 }
@@ -1011,7 +1035,7 @@ export function freightDeadlineAnswer(d: { label: string; morning?: boolean }, r
 // Resumo com prazo dito que a entrega cumpre (10/10, rodada 10 g29: só o atraso era dito; o cliente não sabia se servia).
 export function deadlineFitNote(d: { label: string; morning?: boolean }, fit: DeadlineFit): string {
   if (fit === "maybe") return `⚠️ Pode não chegar até *${deadlineLabel(d)}*: o prazo da loja conta só dias úteis (sem fim de semana nem feriado).`;
-  return fit === "unsure" ? `⏰ Chega *${d.label}*, mas sem hora marcada — pode não ser de manhã.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
+  return fit === "unsure" ? `⏰ Chega *${deadlineDay(d)}*, mas ${LABEL_HOUR_RE.test(d.label) ? unsureTail(d) : "sem hora marcada — pode não ser de manhã"}.` : `✅ Chega a tempo pra *${deadlineLabel(d)}*.`;
 }
 
 // Pedido com resumo na mesa e prazo dito ("até sexta, dá?").
@@ -1019,7 +1043,7 @@ export function orderDeadlineAnswer(d: { label: string; morning?: boolean }, fit
   const prazo = promiseForCustomer(promise)?.replace(/^\d+ entregas\s*·\s*/, "");
   if (fit === "ok") return `Dá, chega até *${deadlineLabel(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""} 🙂`;
   if (fit === "late") return `Até *${deadlineLabel(d)}* não chega${prazo ? `: o prazo é *${prazo}*` : ""}. Se quiser, me diz qual item trocar ou tirar.`;
-  if (fit === "unsure") return `Chega *${d.label}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas sem hora marcada — pode não ser de manhã.`;
+  if (fit === "unsure") return `Chega *${deadlineDay(d)}*${prazo ? ` (prazo: *${prazo}*)` : ""}, mas ${LABEL_HOUR_RE.test(d.label) ? unsureTail(d) : "sem hora marcada — pode não ser de manhã"}.`;
   if (fit === "maybe") return `Até *${deadlineLabel(d)}* pode não chegar${prazo ? `: o prazo é *${prazo}*` : ""}, e dia útil não conta fim de semana nem feriado. Se quiser, me diz qual item trocar ou tirar.`;
   return `O prazo desse pedido${prazo ? ` é *${prazo}*` : " é o da loja"}; não consigo garantir *${deadlineLabel(d)}*.`;
 }
@@ -1046,9 +1070,10 @@ export function consolidationSlowerNote(keptEta: string, joinedEta: string, savi
 }
 
 // Oferta de juntar com prazo dito (10/10, rodada 6 g19): diz qual forma chega a tempo.
-export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string): string | null {
+export function consolidationDeadlineNote(label: string, joinedMiss: boolean, keptMiss: boolean, joinedEta?: string, keptEta?: string, joinedUnsure = false): string | null {
   const j = promiseForCustomer(joinedEta);
   const k = promiseForCustomer(keptEta);
+  if (joinedUnsure && keptMiss) return `⏰ Você precisa pra *${label}*: juntando pode chegar a tempo${j ? ` (${j})` : ""}, sem garantia — como está${k ? ` (${k})` : ""} não chega.`;
   if (joinedMiss && !keptMiss) return `⚠️ Você precisa pra *${label}*: juntando não chega a tempo${j ? ` (${j})` : ""} — mantendo como está, chega.`;
   if (!joinedMiss && keptMiss) return `⏰ Você precisa pra *${label}*: só juntando chega a tempo — como está${k ? ` (${k})` : ""} não chega.`;
   if (joinedMiss && keptMiss) return `⚠️ Pra *${label}* não chega de nenhum jeito — o mais rápido é *${(j && k ? (j.length <= k.length ? j : k) : j || k) || "o prazo da loja"}*.`;
@@ -1845,8 +1870,10 @@ export function itemKept(name: string): string {
 // "mantém como está" / "tá bom assim" / "não" com o resumo na tela (10/10, rodada 16 R16a-4): fica assim, e a escolha de
 // pagamento volta logo depois.
 // Com o total (R$) a fala sai igual mesmo repetida (a reescrita anti-repetição transformava em despedida).
-export function summaryKeptAsIs(total: number, skipped = false): string {
-  return `${skipped ? "No resumo não tem nada pra pular — o" : "Fechado, o"} pedido fica assim ✅ Total: *${brl(total)}*.`;
+// "não" seco (11/10, rodada 17 R17a-1): pode ser "não quero mudar" ou "não, tá errado" — fica assim, mas pergunta o que mudar.
+export function summaryKeptAsIs(total: number, skipped = false, bareNo = false): string {
+  const kept = `${skipped ? "No resumo não tem nada pra pular — o" : "Fechado, o"} pedido fica assim ✅ Total: *${brl(total)}*.`;
+  return bareNo ? `${kept}\nSe era pra mudar alguma coisa, me diz o quê — ex.: *tira o leite*, *troca o arroz*, *mais 2 sabonetes*.` : kept;
 }
 
 // "quantas lâmpadas eu pedi?" (10/10, rodada 6 M2): a resposta direta antes do resumo.
@@ -2094,6 +2121,17 @@ export function specAnswer(input: {
   return `O nome da opção *${input.n}* (${input.name}) não diz ${measure ? `se é de ${input.asked}` : `se serve ${input.asked}`}, e eu não quero chutar. Se quiser, mando o link da loja: é só pedir _detalhes do ${input.n}_.${other}`;
 }
 
+// "o primeiro é de quantas escovas?" / "o segundo é integral?" (11/10, R17a-4): responde com o que o NOME do card diz.
+export function specCountAnswer(input: { n: number; name: string; units: number | null }): string {
+  if (input.units) return `Pelo nome, a opção *${input.n}* (${input.name}) vem com *${input.units} ${input.units === 1 ? "unidade" : "unidades"}*. Quer essa? Responde *${input.n}*.`;
+  return `O nome da opção *${input.n}* (${input.name}) não diz quantas vêm — pelo cadastro, é *1 embalagem*. Se quiser, mando o link da loja: é só pedir _detalhes do ${input.n}_.`;
+}
+export function specWordAnswer(input: { n: number; name: string; word: string; has: boolean; other?: { n: number; name: string } }): string {
+  if (input.has) return `Sim: pelo nome, a opção *${input.n}* (${input.name}) é *${input.word}*. Quer essa? Responde *${input.n}*.`;
+  const other = input.other ? ` A opção *${input.other.n}* (${input.other.name}) diz *${input.word}* no nome.` : "";
+  return `O nome da opção *${input.n}* (${input.name}) não diz *${input.word}*, e eu não quero chutar.${other}`;
+}
+
 // Comparação com produto fora da tela (10/10, rodada 13 g39): "e o Fofinho, é melhor que esses?" caía na FAQ do serviço.
 export function compareNotShown(term: string, query: string): string {
   const shown = term.replace(/(^|\s)(\p{L})/gu, (_, sp: string, c: string) => sp + c.toUpperCase());
@@ -2324,7 +2362,17 @@ export function operatorStoreShareRefunded(shortId: string, storeLabel: string, 
 }
 
 // Oferta de juntar numa loja só (09/10, dono: "oferecer, não impor"): o cliente decide com o frete na cara.
-export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null; etaNote?: string | null }): string {
+// Limite dito × oferta de juntar (11/10, rodada 17 R17-10): diz qual forma cabe, ou que nenhuma cabe.
+export function consolidationBudgetNote(cap: number, joinedTotal: number, keptTotal: number): string | null {
+  const joinedFits = joinedTotal <= cap + 0.005;
+  const keptFits = keptTotal <= cap + 0.005;
+  if (joinedFits && keptFits) return null;
+  if (joinedFits) return `💰 Juntando fica dentro do seu limite de *${brl(cap)}*; mantendo como está, passa.`;
+  if (keptFits) return `💰 Mantendo como está fica dentro do seu limite de *${brl(cap)}*; juntando, passa.`;
+  return `⚠️ Dos dois jeitos passa do seu limite de *${brl(cap)}* — depois eu te digo o que dá pra tirar.`;
+}
+
+export function consolidationOffer(input: { storeLabel: string; joinedTotal: number; keptTotal: number; keptStores: number; pairs: SwapPair[]; joinedEta?: string; keptEta?: string; joinedStores?: number; left?: string[]; deadlineNote?: string | null; minimumNote?: string | null; etaNote?: string | null; budgetNote?: string | null }): string {
   // Item trocado por ele mesmo (mesmo nome e preço) não é troca (09/10, rodada 3).
   // Espaço/acento a mais no nome do catálogo da outra loja também é o mesmo produto (10/10, rodada 10 g29, B5).
   const flat = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
@@ -2341,6 +2389,7 @@ export function consolidationOffer(input: { storeLabel: string; joinedTotal: num
     ...(input.left?.length ? [`Fica onde está (a *${input.storeLabel}* não tem): ${input.left.map((n) => `*${n}*`).join(", ")}.`] : []),
     ...(real.length ? ["Pra juntar, troco:", ...swapPairLines(real)] : []),
     ...(input.minimumNote ? [input.minimumNote] : []),
+    ...(input.budgetNote ? [input.budgetNote] : []),
     "Qual prefere? Responde *1* pra juntar ou *2* pra manter."
   ].join("\n");
 }
@@ -2513,8 +2562,9 @@ export function nonePriceCap(cap: number): string {
 
 // Item novo anotado ENQUANTO o cliente ainda escolhe outro — sem isto o item entra
 // mudo na fila e o cliente acha que a Lia ignorou.
-export function queuedItemsNote(queries: string[]): string {
-  return `Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
+export function queuedItemsNote(queries: string[], askedHave = false): string {
+  // "tem açúcar e sabão em pó?" (11/10, rodada 17 g48): responde a pergunta antes de anotar.
+  return `${askedHave ? "Tem sim! " : ""}Anotei ${queries.map((q) => `*${q}*`).join(", ")} — a gente escolhe em seguida.`;
 }
 
 // "*caixinhas de 1 litro, longa vida" corrigiu um item que ainda está na fila (10/10, rodada 6 M5).
@@ -2630,7 +2680,23 @@ export function todayOnOrder(whens: string[], info: string): string {
   return `${todayVerdictHead(whens)}${info ? ` ${info}` : ""}`;
 }
 
-export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = []): string {
+// Limite dito pro pedido (11/10, rodada 17 R17-10: "até 300 reais" só aparecia no resumo final): o parcial diz quanto
+// sobra ou que já passou só nos produtos (a entrega ainda vem por cima).
+function partialBudgetLine(produtos: number, cap?: number): string | null {
+  if (cap == null || cap <= 0) return null;
+  if (produtos > cap + 0.005) return `⚠️ Só nos produtos já passou do seu limite de *${brl(cap)}* (${brl(Math.round((produtos - cap) * 100) / 100)} a mais), e a entrega vem por cima.`;
+  return `💰 Do seu limite de *${brl(cap)}*, sobram ${brl(Math.round((cap - produtos) * 100) / 100)} pra entrega e o resto.`;
+}
+
+// "chega hoje?" junto do "e o total?" (11/10, rodada 17 R17-13): sim/não direto, antes da lista.
+function todayVerdictLine(rows: Array<EtaRow & { today: boolean | null }>): string | null {
+  if (!rows.length || rows.some((r) => r.today == null)) return null;
+  const late = rows.filter((r) => !r.today);
+  if (!late.length) return "Chega hoje sim ✅ (contando da compra).";
+  return `Hoje não chega: ${late.map((r) => `*${r.store}* é ${promiseForCustomer(r.when).replace(/^prazo da loja:\s*/, "")}`).join(", ")}.`;
+}
+
+export function partialTotal(items: CopyBasketItem[], produtos: number, pendingCount: number, eta: EtaRow[] = [], missing: string[] = [], budgetCap?: number, today?: Array<EtaRow & { today: boolean | null }>): string {
   if (!items.length) {
     // Responde também o "quando chega": total, entrega E prazo saem juntos após a escolha
     // (rodada 27/08 S2: "quanto ficou? e quando chega?" ouvia só "nenhum item fechado").
@@ -2644,7 +2710,9 @@ export function partialTotal(items: CopyBasketItem[], produtos: number, pendingC
         ? `_Falta escolher: ${missing.join(", ")}. Aí sai o total com a entrega._`
         : `_${pendingCount === 1 ? "Falta 1 item" : `Faltam ${pendingCount} itens`} pra escolher. Aí sai o total com a entrega._`
       : '_Diz *"só isso"* que eu mando o total com a entrega._';
-  return ["🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), tail].join("\n");
+  const budget = partialBudgetLine(produtos, budgetCap);
+  const verdict = today ? todayVerdictLine(today) : null;
+  return [...(verdict ? [verdict] : []), "🛒 *Até agora:*", ...lines, "", `Produtos: ${brl(produtos)}`, ...(eta.length ? [etaLine(eta)] : []), ...(budget ? [budget] : []), tail].join("\n");
 }
 
 // ---------- concierge manual (largura + cotação do operador) ----------
@@ -2869,6 +2937,11 @@ export function swapColorNote(from: string, to: string): string {
   return `muda a cor: era ${from}, essa é ${to}`;
 }
 
+// A troca de loja perde ou muda a medida (11/10, rodada 17 g49): "era 40 cm" nunca some calado.
+export function swapMeasureNote(from: string, to?: string): string {
+  return to ? `muda a medida: era ${from}, essa é ${to}` : `não confirmei a medida (era ${from})`;
+}
+
 export function minimumSwapOffer(input: { newTotal: number; delta: number; storeLabel: string; pairs?: SwapPair[]; etaNote?: string | null }): string {
   const diff = input.delta > 0.009 ? ` (${brl(input.delta)} a mais)` : input.delta < -0.009 ? ` (${brl(Math.abs(input.delta))} a menos)` : " (mesmo valor)";
   const out = [`Consigo em outra loja SEM pedido mínimo, por ${brl(input.newTotal)}${diff}. Fica assim:`];
@@ -3086,10 +3159,12 @@ export function missRemoved(items: string[]): string {
 // `joinRuledOut` (10/10, rodada 14 g41): a Lia já disse que não dá pra juntar essas lojas — o resumo não oferece de novo
 // (a 304 dizia "não achei em menos lojas" e logo "dá pra juntar as lojas"); a saída é trocar um item por opção de uma loja
 // que já está no pedido. Frete maior que os produtos é dito, porque é o que estoura o limite.
-export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number }, deliveries?: number, opts: { joinRuledOut?: boolean; produtos?: number; frete?: number } = {}): string {
+export function overBudgetSummaryNote(cap: number, total: number, priciest?: { name: string; lineTotal: number; reduceTo?: number; qty?: number }, deliveries?: number, opts: { joinRuledOut?: boolean; produtos?: number; frete?: number } = {}): string {
   const many = (deliveries ?? 1) > 1;
   const ways = [
-    priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
+    priciest?.reduceTo != null && priciest.qty != null
+      ? `baixar *${priciest.name}* de ${priciest.qty} para ${priciest.reduceTo} (−${brl(priciest.lineTotal)})`
+      : priciest ? `tirar *${priciest.name}* (${brl(priciest.lineTotal)})` : "tirar algum item",
     ...(many ? [opts.joinRuledOut ? "trocar um item por uma opção de loja que já está no pedido (cai uma entrega)" : "*juntar* as lojas pra baixar o frete"] : [])
   ];
   const freightHeavy = opts.frete != null && opts.produtos != null && opts.produtos > 0 && opts.frete > opts.produtos + 0.009
@@ -3166,7 +3241,7 @@ export function manualQuoteSummary(input: {
   // Itens pedidos que ficaram sem produto (10/10, rodada 7 A4): o resumo final diz o que NÃO vem.
   leftOut?: string[];
   // Orçamento do pedido dito na conversa e estourado (10/10, rodada 8 M3).
-  overBudget?: { cap: number; priciest?: { name: string; lineTotal: number } };
+  overBudget?: { cap: number; priciest?: { name: string; lineTotal: number; reduceTo?: number; qty?: number } };
   // Juntar já descartado nesta cesta (10/10, rodada 14 g41): o resumo não oferece juntar de novo.
   joinRuledOut?: boolean;
   // Juntar possível mas mais demorado (não ofereci sozinha): o aviso de frete diz isso.
@@ -3338,6 +3413,12 @@ export function freightEtaHeader(): string {
 }
 
 // "quanto fica o total?" na escolha da entrega (10/10, rodada 7 M3): respondia "Não peguei qual você quer".
+// Resposta curta na escolha da entrega ("mantém como está", "não", "pula", "ok", 11/10, rodada 17 R16a-6/R17a-1): a
+// entrega não se pula — sem ela não sai o total. Nunca "pula pra seguir sem esse item" (isso é da escolha de produto).
+export function freightPickNudge(skip = false): string {
+  return `${skip ? "A entrega não dá pra pular — sem ela não sai o total. " : ""}Escolhe a entrega: responde *1* (mais barata) ou *2* (mais rápida) 👇`;
+}
+
 export function freightTotalHeader(): string {
   return "O total depende da entrega que você escolher — o valor final está em cada opção 👇";
 }
@@ -3524,6 +3605,11 @@ export function moreOfSameAddedShort(totalQty: number, name: string): string {
 // Número solto que não vira ajuste (09/10, rodada 2): a quantidade pedida fica como está.
 export function bareNumberKeepsQty(qty: number, name: string): string {
   return `Deixei ${qty}x ${name} como estava. Pra mudar a quantidade, manda assim: *põe 3* ou *só 1*.`;
+}
+
+// Número solto com o item já convertido em embalagens (11/10, rodada 17 g49): não muda sem o cliente dizer o quê.
+export function bareNumberPackKept(qty: number, name: string, said: number): string {
+  return `Deixei ${qty}x ${name} como estava — não tem opção aberta agora. Se quer *${said} embalagens*, manda *põe ${said}*.`;
 }
 
 export function qtyAdjustedShort(qty: number, name: string): string {

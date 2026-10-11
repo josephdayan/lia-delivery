@@ -473,6 +473,7 @@ export function onboardingNote(raw: string): { text: string; lines: ParsedLine[]
   });
   // O cartão solto que ficou como item é o de presente (a busca por "cartão" sozinho não acha nada).
   const phraseOf = (line: ParsedLine) => (bareCardIsItem && /^(?:um |uns )?cartao(?:zinho)?s?$/.test(normalizeMsg(line.phrase)) ? "cartão de presente" : line.phrase);
-  const text = lines.map((line) => (line.qtyExplicit || line.qty > 1 ? `${line.qty} ${phraseOf(line)}` : phraseOf(line))).join(", ");
+  // "tapete higiênico 30 unidades" volta como foi dito (11/10, rodada 17 g49): "30 tapete" virava "30x tapete" no "Anotei".
+  const text = lines.map((line) => (line.units ? `${phraseOf(line)} ${line.qty} unidades` : line.qtyExplicit || line.qty > 1 ? `${line.qty} ${phraseOf(line)}` : phraseOf(line))).join(", ");
   return { text, lines, wantsToOrder: courtesy.wantsToOrder };
 }
