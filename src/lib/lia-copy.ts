@@ -1876,6 +1876,12 @@ export function recommendNone(req: RecommendCopyReq, emptyShelfLabels: string[] 
   return `Hoje não achei ${labels.length ? what : `*${what}*`} com entrega aí 😕 Me diz um produto que eu procuro.`;
 }
 
+// Achou o produto, mas nada cabe no teto dito (11/10, rodada 22 R22-3): "Hoje não achei perfumes femininos… com entrega aí" era
+// falso — o "kit granado" existia, só passava dos R$ 120.
+export function recommendNoneInBudget(what: string, cap: number): string {
+  return `Dentro de *${brl(cap)}* com a entrega não achei *${trimRec(what)}* 😕 Me diz outro produto, ou um valor maior, que eu procuro de novo.`;
+}
+
 // Antes dos cards de remédio isento (regra do dono, 08/10).
 export function recommendMedicineCare(): string {
   return "São remédios *isentos de receita*. Leia a bula; se não melhorar em 1–2 dias ou piorar, procure um médico.";

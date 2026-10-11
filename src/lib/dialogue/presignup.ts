@@ -344,7 +344,10 @@ export function planPreSignup(d: PreDecision, opts: { preBudget?: number; text?:
   // Remédio isento ligado (10/10, rodada 10 g28): "preciso de um paracetamol e um band-aid..." recebia "Remédio de receita eu
   // não consigo comprar" e o paracetamol sumia da lista. Mesma regra do gerente pós-cadastro (plan.ts): sem remédio de
   // receita nomeado, o caminho determinístico anota o remédio isento com o resto.
-  if (flagged && opts.text && medicineEnabled() && looksLikeMedicine(opts.text) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
+  // "pastilha para garganta" antes do cadastro (11/10, rodada 22 R22a-6): sem palavra de remédio, a recusa de receita da IA
+  // passava. Sem remédio de receita nomeado, sem recusa recente (insistência) e sem outro item que a IA tenha anotado (com
+  // outros itens, o plano segue sem a recusa — rodada 18 g51), o caminho determinístico anota o item e a busca decide.
+  if (flagged && opts.text && medicineEnabled() && (looksLikeMedicine(opts.text) || (isentoOnly && !items.length)) && !looksLikePrescriptionRequest(opts.text)) return { ok: false, reason: "remedio_isento" };
   // Isento + de receita na mesma mensagem ("dipirona e um antiácido, e também amoxicilina", 11/10, rodada 18 g50): o caminho
   // determinístico recusa só o de receita e anota os isentos — aqui a IA devolvia só "remédio" e os isentos sumiam.
   if (flagged && opts.text && medicineEnabled() && looksLikePrescriptionRequest(opts.text) && resolveListItems(stripMedicineNegation(opts.text)).some((seg) => looksLikeMedicine(seg.phrase) && !looksLikePrescriptionRequest(seg.phrase))) return { ok: false, reason: "remedio_misto" };

@@ -1,6 +1,6 @@
 import { storesForShopper } from "../store-areas";
 import type { CatalogItem, StoreConnector, StoreUnit } from "./types";
-import { childAudienceMismatch, conciergeMatchIsStrong, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, variantCount } from "./types";
+import { childAudienceMismatch, conciergeMatchIsStrong, exactTokenHits, queryAliases, rankCatalog, sameProductVariant, scoreCatalogMatch, typoOnlyTokens, variantCount } from "./types";
 import { liveSearchByCategory, liveSearchEnabled, liveSearchItems, mergeLiveWithSnapshot, withDeadline } from "./live-search";
 import { isMedicine } from "./anvisa";
 import type { ShelfNode, ShelfPick } from "../recommend/types";
@@ -292,9 +292,13 @@ export async function searchAcrossStores(query: string, limitPerStore = 4) {
 }
 
 function rankStoreCandidates(query: string, hits: StoreCandidate[]): StoreCandidate[] {
-  return hits
-    .map((hit) => ({ hit, score: scoreCatalogMatch(query, hit.item) }))
-    .filter((entry) => entry.score > 0)
+  const scored = hits.map((hit) => ({ hit, score: scoreCatalogMatch(query, hit.item) })).filter((entry) => entry.score > 0);
+  // Erro de digitação só vale quando a palavra não existe em loja nenhuma (11/10, rodada 22 R22a-5: "caneca" trazia "Caneta
+  // Esferográfica" da livraria ao lado das canecas de verdade).
+  const typos = scored.map((entry) => typoOnlyTokens(query, entry.hit.item));
+  const exactSomewhere = new Set(typos.some((t) => t.length) ? scored.flatMap((entry) => exactTokenHits(query, entry.hit.item)) : []);
+  return scored
+    .filter((_, i) => !typos[i].some((token) => exactSomewhere.has(token)))
     .sort(
       (a, b) =>
         b.score - a.score ||
