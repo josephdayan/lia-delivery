@@ -129,7 +129,8 @@ test("09/10: duas lojas no mesmo pedido — um trabalho e um Pix de saída por l
 
   // Vigia por loja: a Drogaria entrega, a Mambo não começa. O pedido não fica "entregue" e o aviso
   // de loja parada é da Mambo.
-  const eta = new Date(Date.now() - 5 * 60_000).toISOString();
+  // Prazo da loja DEPOIS da compra (11/10, g62: prazo já vencido na compra cai na régua sem prazo).
+  const eta = new Date(Date.now() + 10 * 60_000).toISOString();
   const later = new Date(Date.now() + 25 * 60_000);
   const statusFetch = async (url: string) => {
     const mambo = new URL(url).hostname === "www.mambo.com.br";
