@@ -181,6 +181,11 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   return null;
 }
 
+// A IA do diálogo vai decidir este turno (11/10, latência): a busca especulativa só aquece as lojas nesse caso.
+export function dialogueWillDecide(i: BypassInput): boolean {
+  return dialogueEnabled() && dialogueModelAvailable() && dialogueBypassReason(i) == null;
+}
+
 export type DialogueTurnInput = BypassInput & {
   phone: string;
   convoId: string;
