@@ -164,3 +164,37 @@ test("cartão salvo: a cobrança na Pagar.me leva o endereço de entrega e o des
   assert.equal(shipping.address.zip_code, "01233020");
   assert.equal(shipping.address.state, "SP");
 });
+
+test("13/10: endereço real sem 'cidade - UF' ainda vai ao antifraude, com cidade/UF do CEP", async () => {
+  const { shippingAddressWithLocality } = await import("../src/lib/payments/pagarme");
+  const loc = { city: "São Paulo", uf: "sp" };
+  assert.deepEqual(shippingAddressWithLocality("Rua Engenheiro Edgar Egidio de Souza 221 ap 13", "01233-020", loc), { line1: "Rua Engenheiro Edgar Egidio de Souza 221 ap 13", zipCode: "01233020", city: "São Paulo", state: "SP", country: "BR" });
+  assert.equal(shippingAddressWithLocality("Rua Engenheiro Edgar Egidio de Souza n 221 ap 13, São Paulo", "01233020", loc)?.state, "SP");
+  assert.equal(shippingAddressWithLocality("Rua X 12", "01233020", null), null, "sem localidade do CEP = sem shipping");
+  assert.equal(shippingAddressWithLocality("Rua X 12", "0123", loc), null);
+});
+
+test("13/10: PAGARME_ANTIFRAUD_ENABLED=false manda antifraud_enabled:false; sem a variável, não manda nada", async () => {
+  const { pagarmeAdapter } = await import("../src/lib/payments/pagarme");
+  const prev = { key: process.env.PAGARME_SECRET_KEY, af: process.env.PAGARME_ANTIFRAUD_ENABLED, fetch: global.fetch };
+  process.env.PAGARME_SECRET_KEY = "sk_test_x";
+  const bodies: Record<string, unknown>[] = [];
+  global.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+    bodies.push(JSON.parse(String(init?.body ?? "{}")));
+    return new Response(JSON.stringify({ id: "or_1", status: "failed", charges: [{ id: "ch_1", status: "failed", last_transaction: { status: "not_authorized", acquirer_return_code: "0000", antifraud_response: { status: "reproved" } } }] }), { status: 200 });
+  }) as typeof fetch;
+  try {
+    delete process.env.PAGARME_ANTIFRAUD_ENABLED;
+    const first = await pagarmeAdapter.chargeSavedCard({ orderId: "ord_1", attemptId: "att_1", amountCents: 2887, customerId: "cus_1", cardId: "card_1", description: "Lia" });
+    assert.equal(first.status, "declined");
+    assert.equal(first.providerOrderId, "or_1", "recusa devolve o id do pedido Pagar.me");
+    process.env.PAGARME_ANTIFRAUD_ENABLED = "false";
+    await pagarmeAdapter.chargeSavedCard({ orderId: "ord_1", attemptId: "att_2", amountCents: 2887, customerId: "cus_1", cardId: "card_1", description: "Lia" });
+  } finally {
+    process.env.PAGARME_SECRET_KEY = prev.key;
+    if (prev.af === undefined) delete process.env.PAGARME_ANTIFRAUD_ENABLED; else process.env.PAGARME_ANTIFRAUD_ENABLED = prev.af;
+    global.fetch = prev.fetch;
+  }
+  assert.equal("antifraud_enabled" in bodies[0], false);
+  assert.equal(bodies[1].antifraud_enabled, false);
+});
