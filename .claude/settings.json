@@ -6,7 +6,9 @@
       "mcp__Supabase__list_migrations",
       "mcp__Supabase__list_extensions",
       "Bash(psql:*)",
-      "Bash(npx prisma db execute:*)"
+      "Bash(npx prisma db execute:*)",
+      "Bash(node:*)",
+      "Bash(cat > /tmp/claude-0/*)"
     ]
   },
   "hooks": {
