@@ -3845,6 +3845,11 @@ export function savedAddressWithChange(address: string, cep?: string): string {
   return `📍 Seu endereço cadastrado: ${withCep(address, cep)}\nQuer trocar? É só me mandar o novo endereço com CEP.`;
 }
 
+// Com endereço "só desta vez" ativo (14/10, rodada 27 g72, B3): o cadastro e, à parte, para onde vai ESTE pedido.
+export function savedAddressWithOnce(home: string, homeCep: string | undefined, once: string, onceCep?: string): string {
+  return `📍 Seu endereço cadastrado: ${withCep(home, homeCep)}\nEste pedido vai pra ${withCep(once, onceCep)} (só desta vez). Se quiser que esse passe a ser o seu endereço, diz *salva esse endereço*.`;
+}
+
 export function orderAddressAnswer(shortId: string, address: string): string {
   return `📍 Seu pedido vai para: ${address}`;
 }

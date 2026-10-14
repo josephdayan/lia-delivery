@@ -25,7 +25,7 @@ import { fetchThumbs } from "@/lib/flow-thumbs";
 import { applyListMisses, dropMissesMatching, freshListMisses, hasMissMatching, mergeListMisses, missLabel, pickMissForFragment } from "@/lib/list-misses";
 import { recordSearchMisses } from "@/lib/search-misses";
 import { stripLinks, translateEnglishOrder } from "@/lib/en-order";
-import { normalizeSpokenWeights } from "@/lib/lia-intents";
+import { normalizeSpokenWeights, ordinalPickIndex } from "@/lib/lia-intents";
 import { detectIntent, splitEtaAsk, splitPromoAsk, parseMissStatusAsk, isPetBreedOnly, isMissingItemOnlyComplaint, extractCep, parseAddressComplement, parseAttributeAsk, parseAvailabilityAsk, parseOnlyKeep, withAddressComplement, isDemonstrativeOnly, isQuestion, asksRunningTotal, parseItemPriceAsk, parseRefusedRetry, stripReturnLead, parseAlreadyDeclined, looksLikeMedicine, hasUrgencySignal, parseNeededBy, isNarrativeSegment, isRequestModifier, isOwnershipContext, isRecallFiller, sharesProductNoun, stripMedicineNegation, narrowChoiceByName, normalizeMsg, parsePriceCap, parseBudgetStatement, splitPriceCap, mergeShoppingLines, parseChoiceReply, parseChoiceCombo, parseChoiceEtaAsk, isAngerSwear, asksDeliveryToday, answerOpenQuestion, parseItemCheapest, parseItemSize, parseChoiceNumber, parseStoreReference, asksCheapestQuestion, splitCommandClauses, stripListNumbering, parseRefinement, wantsMoreOptions, looksLikeTobacco, looksLikeSymptomAsk, parseCancelReason, parseMissFollowUp, inheritMissQualifiers, inheritMissMeasure, stripPreferenceFiller, splitFiscalClause, splitServiceQuestions, parseChoiceSwitch, parseQtyCommand, isAttendanceFollowUp, looksLikePharmacyPartnerAsk, parseOptionSwitchRef, asksToSeeChoicesAgain, ADDITIVE_CUE_RE, splitRestartCue, isKeepSeparateReply, acceptsSwapOffer, splitTrailingSwapAccept, wantsCheapestForAll, wantsChoiceForAll, declinesSwapOffer, keepsSummaryAsIs, stripIndifference, saysAnyBrand, parseItemQtyEdit, parseNamedQtyCorrection, isQtyCorrectionCue, parseJoinStoresAsk, parseWholeListStore, asksReturnPolicy, parseKeepItem, asksBasketContents, openQuestionAlternative, openQuestionPick, openQuestionYes, asksForPerson, cheaperAskTarget, isSizeOnlyFragment, asksBudgetLeft, wantsCheapestEach, isDescriptorFragment, isDiscourseOnly, parseDropClause, parsePronounRemove, largestPackIndex, parsePackCountAsk, replaceRefinedSize, refineBaseQuery, asksFreightPriceDiff, isNoNeedAside, asksMultiAddress, asksSplitDeliveryByTime, parsePlaceLabel, parseBrowseOnly, parseOrderBudget, splitQuestionsOnly, asksArrivalCondition, asksDeadline, splitOrdersRest, parseSplitOrders, parseChoiceByCitedPrice, statesDeadline, parseBudgetFitAsk, type Intent, type ParsedLine, isOccasionWhen, sameItemProduct, attributeFragment, productHead, parseStoreSwapAsk, parseItemAtStore, parseStoreRemoval, splitLeadingSwapDecline, parseGuestQtyAsk, parseMeasureMixup, parseSearchRedirect, rejectsUnnamedStore, storeNamedIn, spCapitalPlace, relaxAnyAttribute, otherBrandAsk, inheritSwapQualifiers } from "@/lib/lia-intents";
 import { AWAITING_OPERATOR_QUOTE_STATUS, CONCIERGE_STORE_KEY, CONCIERGE_STORE_LABEL, PAID_OR_IN_FULFILLMENT_STATUSES, REPEATABLE_DELIVERY_ORDER_STATUSES, appendOrderNote, isCardCharge, isOrderOutForDelivery } from "@/lib/order-flags";
 import { MERCADO_LIVRE_STORE_KEY, automaticPurchaseStores } from "@/lib/purchase-policy";
@@ -6198,6 +6198,12 @@ async function handleDeliveryTurn(
         return;
       }
     }
+    // Endereço "só desta vez" ativo (14/10, rodada 27 g72, B3): o cadastrado é o guardado em addressOnce — o de agora vale só
+    // para este pedido (antes respondia o temporário como cadastrado).
+    if (ctx.addressOnce && ctx.deliveryAddress) {
+      await reply(phone, copy.savedAddressWithOnce(ctx.addressOnce.address, ctx.addressOnce.cep, ctx.deliveryAddress, ctx.cep ?? undefined));
+      return;
+    }
     const saved = ctx.deliveryAddress ?? user.defaultAddress;
     if (saved) {
       await reply(phone, copy.savedAddressWithChange(saved, ctx.cep ?? user.cep ?? undefined));
@@ -8384,6 +8390,15 @@ async function handleNewCep(
     ctx.consolidationParked = undefined;
     ctx.consolidationTried = undefined;
   }
+  // A troca do item da entrega mais cara (14/10, rodada 27 g72, N1) também foi calculada com o frete do endereço antigo: sai da
+  // mesa e o fechamento logo abaixo refaz juntar/trocar com o frete novo — antes "manter como está" fechava com a conta velha.
+  if (typedAddress && (cepChanged || normalizeMsg(homeBefore?.address ?? "") !== normalizeMsg(typedAddress)) && ctx.pending?.length === 1 && ctx.pending[0].costlySwap && ctx.basket?.length) {
+    ctx.pending = undefined;
+    ctx.closeAfterChoices = undefined;
+    ctx.costlySwapOffered = undefined;
+    ctx.consolidationTried = undefined;
+    ctx.step = "collecting";
+  }
   // Itens enviados na MESMA mensagem do CEP — ou guardados no onboarding — entram no
   // fluxo NORMAL de busca (com opções e preço), nunca auto-escolhidos.
   // Nome e CPF que vieram junto do CEP (ou ficaram guardados do passo anterior) saem da lista (rodada 4, M4).
@@ -9653,6 +9668,10 @@ async function narrowAlternativeSide(phone: string, convoId: string, ctx: Delive
   const parts = normalizeMsg(label).replace(/[?!.]+$/g, "").split(/\s+ou\s+/);
   const sides = splitAlternativeLine(label) ?? (parts.length === 2 && parts.every((part) => part.trim()) ? ([parts[0].trim(), parts[1].trim()] as [string, string]) : null);
   if (!sides) return false;
+  // "o segundo" com os cards na tela (14/10, rodada 27 g72, M3) é a POSIÇÃO no carrossel, não o 2º lado do "X ou Y" —
+  // estreitava em "kit de beleza" em vez de escolher o 2º card.
+  const ordinal = ordinalPickIndex(text);
+  if (ordinal != null && ordinal < current.options.length) return false;
   const side = parseAltAnswer(text, sides);
   if (side !== 0 && side !== 1) return false;
   const head = productHead(sides[side]);
@@ -15237,7 +15256,7 @@ async function offerCostlyDeliverySwap(phone: string, convoId: string, ctx: Deli
     const allLive = liveFees.length === perStore.length && liveFees.every((fee): fee is number => typeof fee === "number");
     const shownFee = allLive ? liveFees[perStore.indexOf(costly)] : costly.fee;
     const shownFreight = allLive ? liveFees.reduce((sum, fee) => sum + fee, 0) : freight;
-    const pending: PendingChoice = { query, qty: unitsAskedOf(item), qtyExplicit: true, options, replaceSku: item.sku };
+    const pending: PendingChoice = { query, qty: unitsAskedOf(item), qtyExplicit: true, options, replaceSku: item.sku, costlySwap: true };
     ctx.pending = [pending];
     ctx.step = "choosing";
     ctx.closeAfterChoices = true;

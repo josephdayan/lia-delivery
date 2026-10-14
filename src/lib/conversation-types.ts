@@ -144,6 +144,9 @@ export type PendingChoice = {
   // Escolha REABERTA ("Outras opções" depois de já ter escolhido): o novo pick
   // SUBSTITUI esta linha da cesta em vez de somar uma segunda mochila.
   replaceSku?: string;
+  // Oferta de trocar o item que abre a entrega mais cara (offerCostlyDeliverySwap) — refeita quando o endereço muda
+  // (14/10, rodada 27 g72, N1).
+  costlySwap?: boolean;
   // "troca X por Y" com escolha aberta (10/10, rodada 5 A3): o X que saiu da cesta. Fechar sem escolher o Y devolve o X.
   swappedOut?: BasketItem[];
   // O pool + a re-busca relaxada já esgotaram: o próximo "outras" pede reformulação
