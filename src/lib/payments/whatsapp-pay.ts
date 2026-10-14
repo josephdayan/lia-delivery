@@ -2,7 +2,8 @@ import { orderHasMedicine } from "@/lib/medicine-orders";
 import { prisma } from "@/lib/prisma";
 import { whatsappAdapter, type PaymentConfirmation, type WhatsAppOrderDetailsInput } from "@/lib/adapters/whatsapp";
 import { checkoutAdapter } from "@/lib/payments/mercadopago";
-import { pagarmeAdapter, shippingAddressFromOrder, type PagarmeShipping } from "@/lib/payments/pagarme";
+import { pagarmeAdapter, shippingAddressFromOrder, shippingAddressWithLocality, type PagarmeShipping } from "@/lib/payments/pagarme";
+import { lookupCepAddress } from "@/lib/purchase/vtex-address";
 import * as copy from "@/lib/lia-copy";
 
 const ATTEMPT_TTL_MS = 60 * 60 * 1000;
@@ -353,10 +354,17 @@ async function markAttemptCaptured(attemptId: string, provider: { orderId?: stri
   return { handled: true, charged: true };
 }
 
-async function markAttemptFailed(attemptId: string, error: string | undefined) {
+// Guarda o id do pedido Pagar.me também na recusa (13/10): sem ele não dá pra abrir chamado
+// no suporte nem achar a transação no painel.
+async function markAttemptFailed(attemptId: string, error: string | undefined, provider?: { orderId?: string; chargeId?: string }) {
   const changed = await prisma.paymentAttempt.updateMany({
     where: { id: attemptId, status: "confirmed" },
-    data: { status: "failed", error: error?.slice(0, 700) ?? "Saved card was declined" }
+    data: {
+      status: "failed",
+      error: error?.slice(0, 700) ?? "Saved card was declined",
+      ...(provider?.orderId ? { providerOrderId: provider.orderId } : {}),
+      ...(provider?.chargeId ? { providerChargeId: provider.chargeId } : {})
+    }
   });
   const attempt = await prisma.paymentAttempt.findUnique({
     where: { id: attemptId },
@@ -373,9 +381,11 @@ async function markAttemptFailed(attemptId: string, error: string | undefined) {
   return { handled: true, charged: false };
 }
 
-// Endereço de entrega e destinatário pro antifraude da Pagar.me (09/10). Endereço ilegível = sem shipping (como antes).
-function shippingFor(order: { deliveryAddress: string | null; cep: string | null; deliveryFee: number; customerName: string | null; buyerName: string | null; phone: string }): PagarmeShipping | undefined {
-  const address = shippingAddressFromOrder(order.deliveryAddress, order.cep);
+// Endereço de entrega e destinatário pro antifraude da Pagar.me (09/10). Cidade/UF do CEP quando o texto
+// não traz (13/10: era o caso de todos os pedidos reais). Sem localidade = sem shipping (como antes).
+async function shippingFor(order: { deliveryAddress: string | null; cep: string | null; deliveryFee: number; customerName: string | null; buyerName: string | null; phone: string }): Promise<PagarmeShipping | undefined> {
+  const address = shippingAddressFromOrder(order.deliveryAddress, order.cep)
+    ?? (order.deliveryAddress && order.cep ? shippingAddressWithLocality(order.deliveryAddress, order.cep, await lookupCepAddress(order.cep).catch(() => null)) : null);
   if (!address) return undefined;
   return {
     amountCents: Math.max(0, Math.round((order.deliveryFee ?? 0) * 100)),
@@ -415,7 +425,7 @@ export async function chargeConfirmedPaymentAttempt(attemptId: string) {
     customerId: attempt.credential.providerCustomerId,
     cardId: attempt.credential.providerCardId,
     description: `Lia · pedido ${attempt.deliveryOrderId.slice(-6)}`,
-    shipping: shippingFor(attempt.deliveryOrder)
+    shipping: await shippingFor(attempt.deliveryOrder)
   });
 
   if (charge.status === "captured") {
@@ -438,7 +448,7 @@ export async function chargeConfirmedPaymentAttempt(attemptId: string) {
     });
     throw new Error(`Pagar.me charge outcome is unknown for attempt ${attempt.id}`);
   }
-  return markAttemptFailed(attempt.id, charge.error);
+  return markAttemptFailed(attempt.id, charge.error, { orderId: charge.providerOrderId, chargeId: charge.providerChargeId });
 }
 
 // Used in unit tests and as a safe synchronous fallback. Production webhooks start
@@ -460,7 +470,7 @@ export async function reconcilePagarmeOrder(input: { providerOrderId?: string; a
   if (!providerOrderId) return { handled: false, reason: "missing_provider_order" as const };
   const charge = await pagarmeAdapter.getOrder(providerOrderId);
   if (charge.status === "captured") return markAttemptCaptured(attempt.id, { orderId: charge.providerOrderId, chargeId: charge.providerChargeId });
-  if (charge.status === "declined") return markAttemptFailed(attempt.id, charge.error);
+  if (charge.status === "declined") return markAttemptFailed(attempt.id, charge.error, { orderId: charge.providerOrderId, chargeId: charge.providerChargeId });
   return { handled: true, pending: true as const };
 }
 

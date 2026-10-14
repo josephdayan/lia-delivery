@@ -25,6 +25,24 @@ export function shippingAddressFromOrder(deliveryAddress: string | null | undefi
   return { line1: line1.slice(0, 256), zipCode: zip, city: m[2].trim().slice(0, 64), state: m[3].toUpperCase(), country: "BR" };
 }
 
+// 13/10: o endereço real dos pedidos é "Rua X 221 ap 13" ou "Rua X n 221 ap 13, São Paulo" — quase nunca
+// termina em "cidade - UF", então shippingAddressFromOrder dava null e a entrega NUNCA ia ao antifraude.
+// Cidade/UF vêm da localidade oficial do CEP; a rua e o número, do texto do cliente.
+export function shippingAddressWithLocality(
+  deliveryAddress: string | null | undefined,
+  cep: string | null | undefined,
+  locality: { city?: string; uf?: string } | null | undefined
+): PagarmeAddress | null {
+  const parsed = shippingAddressFromOrder(deliveryAddress, cep);
+  if (parsed) return parsed;
+  const text = (deliveryAddress ?? "").replace(/\s+/g, " ").trim().replace(/[,\s]+$/, "");
+  const zip = (cep ?? "").replace(/\D/g, "");
+  const city = locality?.city?.trim();
+  const uf = locality?.uf?.trim().toUpperCase();
+  if (!text || zip.length !== 8 || !city || !uf || !/^[A-Z]{2}$/.test(uf)) return null;
+  return { line1: text.slice(0, 256), zipCode: zip, city: city.slice(0, 64), state: uf, country: "BR" };
+}
+
 export type PagarmeCustomerInput = {
   code: string;
   name: string;
@@ -47,6 +65,15 @@ export type PagarmeSavedCardCharge = {
   error?: string;
   mock: boolean;
 };
+
+// Antifraude por pedido (v5 `antifraud_enabled`). Só vale se a Pagar.me liberar na conta;
+// sem a variável, nada é enviado e a regra da conta decide (comportamento de sempre).
+function antifraudOverride(): { antifraud_enabled: boolean } | Record<string, never> {
+  const v = process.env.PAGARME_ANTIFRAUD_ENABLED?.trim().toLowerCase();
+  if (v === "false") return { antifraud_enabled: false };
+  if (v === "true") return { antifraud_enabled: true };
+  return {};
+}
 
 type PagarmeOrder = {
   id?: string;
@@ -262,6 +289,7 @@ export const pagarmeAdapter = {
               statement_descriptor: statementDescriptor()
             }
           }],
+          ...antifraudOverride(),
           metadata: { delivery_order_id: input.orderId, payment_attempt_id: input.attemptId }
         })
       }, input.attemptId);
