@@ -8,7 +8,7 @@ import type { DeliveryContext } from "../conversation-types";
 import type { Intent } from "../lia-intents";
 import { resolveListItems } from "../list-items";
 import { hasMissMatching } from "../list-misses";
-import { largestPackIndex, asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, statesDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg, stripReturnLead } from "../lia-intents";
+import { largestPackIndex, ordinalPickIndex, asksCheapestQuestion, wantsCheapestForAll, wantsChoiceForAll, asksRunningTotal, asksDeliveryToday, asksReturnPolicy, statesDeadline, isExplicitClearAll, isExplicitRepeatOrder, normalizeMsg, stripReturnLead } from "../lia-intents";
 import { detectRecommendation } from "../recommend/detect";
 import { recommendEnabled } from "../recommend/types";
 import { extractCpf } from "../medicine";
@@ -58,6 +58,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   "charge_complaint",
   // Troca/devolução tem resposta fixa (10/10, rodada 6 M1).
   "return_question",
+  // "qual endereço você tem cadastrado?" (14/10, rodada 26 g71b, B3): resposta fixa com o endereço salvo — a IA respondia
+  // a apresentação da Lia ou "quer alterar?".
+  "address_question",
   // Agendar/dia escolhido (10/10, rodada 7 M2): a IA oferecia agendamento, que a Lia não faz.
   "scheduling_question",
   // Dois pagadores / "dois pedidos" (10/10, rodada 8 A2): resposta fixa e a oferta de juntar fica na mesa.
@@ -172,6 +175,9 @@ export function dialogueBypassReason(i: BypassInput): string | null {
   // "o mais barato de novo" / "o mais barato também" (10/10, rodada 12 g36): a IA escolhia a etiqueta mais baixa (pick n) e
   // ignorava o frete da loja nova — repetido, o pedido se espalhava em 3–4 entregas. A escolha do mais barato é do cérebro,
   // que soma a entrega e o mínimo da loja nova (cheapestForOrder).
+  // "o segundo" / "quero a terceira" com o carrossel na tela (14/10, rodada 26 g71b, M3): é a posição no último carrossel. A IA
+  // lia "o segundo" do "perfume ou kit de beleza" como o 2º TIPO e estreitava os cards.
+  if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && ordinalPickIndex(text) != null && ordinalPickIndex(text)! < ctx.pending[0].options.length) return "intent:ordinal_pick";
   if (ctx.step === "choosing" && ctx.pending?.[0]?.options.length && CHEAPEST_REPEAT_RE.test(normalizeMsg(text).replace(/[!.,]+/g, " ").replace(/\s+/g, " ").trim())) return "intent:cheapest_pick";
   // Lista nova de compras sem nada em andamento: a IA não acrescenta nada à busca. Só lista
   // INEQUÍVOCA ("arroz, feijão e café"): frase com conversa no meio ("ah legal, queria um sabão

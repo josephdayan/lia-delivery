@@ -2,7 +2,7 @@
 // filhote?", "é original?", "qual a validade?", "qual a diferença entre o 1 e o 2?", "não sei o que é o dois".
 // Caía na FAQ de confiança/lojas. Aqui a pergunta é lida em código (sem IA) e respondida com o que a Lia SABE:
 // nome, preço e loja das opções — e, onde o dado não existe, diz isso com honestidade. Puro e testável.
-import { compareNotShown, compareOptionsAnswer, scentAnswer, specAnswer, specCountAnswer, specWordAnswer } from "./lia-copy";
+import { compareNotShown, compareOptionsAnswer, pairingAnswer, pairingTip, scentAnswer, specAnswer, specCountAnswer, specWordAnswer } from "./lia-copy";
 import { normalizeMsg } from "./lia-intents";
 
 export type ProductOption = { name: string; price: number; storeLabel?: string; delivery?: string };
@@ -29,7 +29,10 @@ export type ProductQuestion =
   | { kind: "spec_count"; n: number }
   | { kind: "spec_word"; n: number; word: string }
   // "o segundo tem cheiro de quê? ela gosta de coisa suave" (11/10, rodada 20 g55, R20-5): o cheiro que o NOME diz, ou que não sabe.
-  | { kind: "scent"; n: number; mild: boolean };
+  | { kind: "scent"; n: number; mild: boolean }
+  // "qual vinho combina com massa?" com o carrossel do jantar na tela (14/10, rodada 26 g71b, M3): conselho curto + as opções
+  // da tela que são desse produto. Caía em "Não peguei qual você quer".
+  | { kind: "pairing"; item: string; with: string };
 
 export type BodyArea = "rosto" | "corpo" | "cabelo" | "labios" | "maos" | "pes";
 const AREA_LABEL: Record<BodyArea, { ask: string; name: string }> = {
@@ -193,6 +196,9 @@ function namedComparison(n: string, names: string[]): ProductQuestion | null {
 }
 
 const SPEC_WORD_SKIP_RE = /\b(bom|boa|bons|boas|melhor|pior|caro|cara|barato|barata|confiavel|seguro|segura|gostoso|gostosa|legal|ruim|isso|esse|essa|aquele|mesmo|mesma|igual|diferente|novo|nova|entregue|entrega|hoje|amanha|rapido)\b/;
+// "qual vinho combina com massa?", "que vinho vai bem com carne?", "qual queijo harmoniza com vinho?".
+const PAIRING_RE = /^(?:e\s+|mas\s+)?(?:qual|quais|que|q)\s+(?:o\s+|a\s+)?(?:melhor\s+)?([a-z]{3,}(?:\s+[a-z]{3,})?)\s+(?:que\s+)?(?:combina\w*|vai bem|vao bem|harmoniza\w*|casa|fica bom|fica melhor|acompanha)\s+(?:mais\s+|melhor\s+)?com\s+(.{2,40})$/;
+
 export function parseProductQuestion(text: string, optionCount: number, names?: string[]): ProductQuestion | null {
   if (optionCount < 1) return null;
   const n = normalizeMsg(text).replace(/[!.?\s]+$/g, "").trim();
@@ -227,6 +233,9 @@ export function parseProductQuestion(text: string, optionCount: number, names?: 
   }
 
   if (!isQuestion) return null;
+
+  const pairing = n.match(PAIRING_RE);
+  if (pairing) return { kind: "pairing", item: pairing[1], with: pairing[2].replace(/^(?:o|a|os|as|um|uma)\s+/, "").trim() };
 
   // "e o Fofinho, é melhor que esses?", "qual é melhor, o neutro ou o familiar?" (10/10, rodada 13 g39): comparação sobre as
   // opções da tela, não a pergunta do serviço.
@@ -311,6 +320,17 @@ function differences(a: string, b: string): { onlyA: string[]; onlyB: string[] }
 
 export function answerProductQuestion(q: ProductQuestion, options: ProductOption[], query: string): string {
   switch (q.kind) {
+    case "pairing": {
+      // As opções da tela que SÃO o produto perguntado (o nome começa por ele: "Vinho Tinto…", não "Taça para Vinho…"); as
+      // que a dica indica vêm primeiro.
+      const stem = q.item.split(" ")[0].replace(/s$/, "");
+      const tip = pairingTip(q.item, q.with);
+      const isItem = (o: ProductOption) => new RegExp(`^(?:\\S+\\s+){0,1}${stem}s?\\b`).test(normalizeMsg(o.name));
+      const all = options.map((o, i) => ({ n: i + 1, ...o })).filter(isItem);
+      const fits = tip?.prefer ? all.filter((o) => tip.prefer!.test(normalizeMsg(o.name))) : [];
+      const picks = (fits.length ? fits : all).slice(0, 2);
+      return pairingAnswer({ item: q.item, with: q.with, tip: tip?.text, picks });
+    }
     case "compare_all":
       return compareOptionsAnswer(options.map((o, i) => ({ n: i + 1, ...o })));
     case "compare_set":

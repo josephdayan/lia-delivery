@@ -6152,7 +6152,7 @@ async function handleDeliveryTurn(
     }
     const saved = ctx.deliveryAddress ?? user.defaultAddress;
     if (saved) {
-      await reply(phone, copy.addressUpdated(saved, ctx.cep ?? user.cep ?? undefined));
+      await reply(phone, copy.savedAddressWithChange(saved, ctx.cep ?? user.cep ?? undefined));
     } else {
       await askStreetAndNumber(phone, ctx);
     }
