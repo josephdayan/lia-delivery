@@ -404,6 +404,32 @@ export function isKeepOldAddressExplicit(raw: string): boolean {
   return isKeepOldAddress(raw) && /\b(endereco|cep)\b/.test(normalizeMsg(raw));
 }
 
+// "só desta vez", "só hoje", "só nesse pedido", "dessa vez só" (14/10, rodada 26 M1): o endereço novo vale para o pedido atual,
+// não troca o do cadastro.
+export function isOneTimeAddress(raw: string): boolean {
+  const n = normalizeMsg(raw).replace(/[!.?,:;]+/g, " ").replace(/\s+/g, " ").trim();
+  return (
+    /\b(?:so|somente|apenas)\s+(?:(?:por|pra|para)\s+)?(?:desta|dessa|esta|essa)\s+vez\b/.test(n) ||
+    /\b(?:desta|dessa|esta|essa)\s+vez\s+(?:so|somente|apenas)\b/.test(n) ||
+    /\b(?:so|somente|apenas)\s+(?:hoje|agora)\b/.test(n) ||
+    /\b(?:so|somente|apenas)\s+(?:(?:n|d)?(?:este|esse)|(?:pra|para|pro|no|do|o)(?:\s+(?:este|esse))?)\s+pedido\b/.test(n) ||
+    /\bnao\s+(?:e|eh|precisa)\s+(?:pra\s+)?(?:trocar|mudar)\s+(?:o\s+)?(?:meu\s+)?(?:endereco|cadastro)\b/.test(n)
+  );
+}
+
+// "salva esse endereço", "pode deixar esse como meu endereço", "passa a ser meu endereço" (14/10, rodada 26 M1): o endereço
+// "só desta vez" vira o do cadastro.
+export function keepsOneTimeAddress(raw: string): boolean {
+  const n = normalizeMsg(raw).replace(/[!.?,:;]+/g, " ").replace(/\s+/g, " ").trim();
+  if (n.split(" ").length > 12) return false;
+  return (
+    /\b(?:salva|salve|grava|grave|guarda|guarde)\s+(?:esse|este|o novo|ele)\b(?:\s+endereco)?/.test(n) ||
+    /\b(?:pode\s+)?(?:deixa|deixar|deixe|fica|ficar)\s+(?:esse|este|ele)\s+(?:como\s+)?(?:o\s+)?meu\s+endereco\b/.test(n) ||
+    /\bpassa(?:r)?\s+a\s+ser\s+(?:o\s+)?meu\s+endereco\b/.test(n) ||
+    /\b(?:troca|muda)\s+(?:de vez|pra sempre|definitivo)\b/.test(n)
+  );
+}
+
 export function saysNoCep(raw: string): boolean {
   const n = normalizeMsg(raw);
   return /\b(nao|n)\s+(sei|lembro|tenho|conheco)\b.*\bcep\b|\bcep\b.*\b(nao|n)\s+(sei|lembro)\b|\bqual (e )?(o )?meu cep\b|\bsem cep\b/.test(n);
