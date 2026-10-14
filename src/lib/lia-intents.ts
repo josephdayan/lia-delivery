@@ -2761,6 +2761,14 @@ export function detectIntent(text: string): Intent {
   ) {
     return { kind: "address_question" };
   }
+  // "qual endereço você tem cadastrado pra mim?" (14/10, rodada 26 g71b, B3): respondia a apresentação da Lia.
+  if (
+    n.length <= 80 &&
+    !/\d{5}/.test(n) &&
+    /\b(?:qual|que|quais)\s+(?:e\s+|eh\s+)?(?:o\s+)?(?:meu\s+)?(?:endereco|cep)\b[^?]*\b(?:cadastr\w*|registr\w*|guardad\w*|(?:voce|vc|vcs|voces)\s+(?:tem|tao|estao|ta|esta)\b)|\bqual\s+(?:e\s+|eh\s+)?(?:o\s+)?meu\s+(?:endereco|cep)\b|\b(?:endereco|cep)\s+(?:cadastrad\w*|que\s+(?:voce|vc)\s+tem)\b/.test(n)
+  ) {
+    return { kind: "address_question" };
+  }
   // "pra qual endereço vai?"/"vai entregar onde?" (06/10): pergunta do destino do pedido.
   if (
     n.length <= 60 &&
@@ -3993,6 +4001,15 @@ function choiceRefIndex(ref: string): { index?: number; other?: boolean } {
   return { index: ordinals.findIndex((o) => ref.startsWith(o)) };
 }
 
+// "o segundo", "quero a terceira", "pode ser o primeiro" (14/10, rodada 26 g71b, M3): só a POSIÇÃO no carrossel, sem mais
+// nada na frase. Devolve o índice (0-based; "o último" = -1 não entra) ou null.
+export function ordinalPickIndex(text: string): number | null {
+  const n = normalizeMsg(text).replace(/[!.?,]+/g, " ").replace(/\s+/g, " ").trim();
+  const m = /^(?:(?:eu\s+)?(?:quero|queria|vou querer|prefiro|vou de|fico com|me ve|pode ser|escolho|manda|pega|entao)\s+)?(?:o|a)\s+(?:opcao\s+|numero\s+)?(primeir|segund|terceir|quart|quint)[oa](?:\s+(?:opcao|card|ai|mesmo|mesma|por favor|pf|entao))*$/.exec(n);
+  if (!m) return null;
+  return ["primeir", "segund", "terceir", "quart", "quint"].indexOf(m[1]);
+}
+
 // "na verdade quero o 2", "pensando bem quero o 1", "quero o 2 na verdade", "prefiro o 2",
 // "troca pelo 2", "troca pelo outro" (06/10): trocar pela opção N da última lista. Sem marca
 // de correção, "quero o 2" segue sendo escolha comum (a escolha aberta resolve).
@@ -4561,7 +4578,11 @@ export function looksLikePharmacyPartnerAsk(text: string): boolean {
 // rever a vitrine — esse reenvia o carrossel mesmo que ele tenha acabado de sair.
 export function asksToSeeChoicesAgain(text: string): boolean {
   const n = normalizeMsg(text);
-  if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?)\b/.test(n)) return false;
+  // "mostra de novo" / "manda de novo as ideias de presente" (14/10, rodada 26 g71b, M3): pedir pra rever o carrossel —
+  // a IA perguntava "quer ver outras ou rever essas?".
+  if (/^(?:me\s+)?(?:mostr\w*|mand\w*|reenvi\w*|rev\w*)\s+(?:de novo|novamente|dnv|denovo|outra vez)(?:\s+(?:as|os|essas|esses)\s+(?:ideias|sugestoes|opcoes|presentes)(?:\s+de\s+\w+)?)?(?:\s+(?:por favor|pf|pfv))?[\s!.?]*$/.test(n)) return true;
+  if (/^(?:quero\s+)?rever\s+(?:essas|esses|as|os)\b/.test(n)) return true;
+  if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?|ideias|sugestoes)\b/.test(n)) return false;
   return /\b(?:mostr\w*|mand\w*|reenvi\w*|ver|ve|quais|cade|de novo|novamente|dnv|sumi\w*|nao (?:vi|apareceu|apareceram|chegou|chegaram|veio|vieram|carregou|carregaram))\b/.test(n);
 }
 
@@ -4858,6 +4879,24 @@ const AMBIGUOUS_EMOJI: Record<string, string[]> = {
   "🐈": ["ração de gato", "areia", "sachê"],
   "🎁": ["presente", "papel de presente"]
 };
+// Tipos/marcas que JÁ SÃO o produto do emoji (14/10, rodada 26 g71b, A3): "2 coca 🥤" — o 🥤 ilustra a coca, não pede
+// um "refrigerante" à parte (virava a 3ª linha, que fechava com Coca-Cola Café Expresso).
+const EMOJI_KINDS: Record<string, RegExp> = {
+  refrigerante: /\b(?:refri\w*|cocas?|coca cola|guarana\w*|fanta|sprite|pepsi|soda|schweppes|tonica|kuat|dolly|itubaina|sukita|h2oh)\b/,
+  cerveja: /\b(?:brejas?|cervejas?|chopp?e?|skol|brahma|heineken|budweiser|amstel|antarctica|itaipava|stella|corona|spaten|bohemia|devassa|eisenbahn|long neck|latao|latinhas?)\b/,
+  vinho: /\b(?:vinhos?|tinto|malbec|cabernet|merlot|carmenere|chardonnay|sauvignon|espumante|champagne|champanhe|prosecco|lambrusco)\b/,
+  "café": /\b(?:cafes?|expresso|capsulas?|nescafe|pilao|melitta|tres coracoes)\b/,
+  chocolate: /\b(?:chocolates?|bombo(?:m|ns)|kit ?kat|lacta|garoto|talento|bis|ovo de pascoa|trufas?|prestigio|sonho de valsa)\b/,
+  biscoito: /\b(?:biscoitos?|bolachas?|oreo|cookies?|wafer|recheado|passatempo|trakinas|negresco|club social|cream cracker)\b/,
+  "pão": /\b(?:paes|pao|bisnaguinha|baguete|pullman|frances|sovado|brioche)\b/,
+  "macarrão": /\b(?:macarr\w*|espaguete|spaghetti|penne|lasanha|miojo|lamen|talharim|parafuso|nhoque)\b/,
+  "suco de caixinha": /\b(?:sucos?|del valle|ades|maguary|toddynho|nectar)\b/,
+  sorvete: /\b(?:sorvetes?|picoles?|acai|kibon|magnum|cornetto|paleta)\b/,
+  bala: /\b(?:balas?|chicletes?|pirulitos?|jujubas?|halls|mentos|fini|goma de mascar)\b/,
+  queijo: /\b(?:queijos?|mussarela|mucarela|parmesao|coalho|minas|provolone|gorgonzola|brie|cheddar)\b/,
+  leite: /\b(?:leites?|ninho|desnatado|semidesnatado)\b/,
+  ovos: /\b(?:ovos?|duzia)\b/,
+};
 const EMOJI_TOKEN_RE = /\p{Extended_Pictographic}\u{FE0F}?(?:‍\p{Extended_Pictographic}\u{FE0F}?)*/gu;
 const emojiBase = (e: string) => e.replace(/\u{FE0F}/gu, "");
 export function readProductEmojis(text: string): { text: string } | { ask: { emoji: string; options: string[] } } | null {
@@ -4876,7 +4915,7 @@ export function readProductEmojis(text: string): { text: string } | { ask: { emo
   // Com palavras: o emoji inequívoco que não repete uma palavra já dita vira item próprio; o resto é enfeite.
   const said = normalizeMsg(words);
   const extra = [...new Set(known.map((e) => PRODUCT_EMOJI[emojiBase(e)]).filter((w): w is string => Boolean(w)))].filter(
-    (w) => !said.includes(normalizeMsg(w).split(" ")[0])
+    (w) => !said.includes(normalizeMsg(w).split(" ")[0]) && !EMOJI_KINDS[w]?.test(said)
   );
   const out = [words.replace(/[,;\s]+$/, ""), ...extra].join(", ");
   return out === raw ? null : { text: out };

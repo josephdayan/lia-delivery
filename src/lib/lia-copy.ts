@@ -2334,6 +2334,27 @@ export function compareNotShown(term: string, query: string): string {
   return `*${shown}* não está entre as opções de *${query}* aí em cima, então não tenho como comparar. Se quiser, eu procuro: é só mandar _${query} ${shown}_.`;
 }
 
+// "qual vinho combina com massa?" (14/10, rodada 26 g71b, M3): dica curta de harmonização. `prefer` = no nome da opção,
+// o que a dica indica (pra pôr essas primeiro). Sem dica conhecida = null (a resposta só aponta as opções da tela).
+const PAIRING_TIPS: { item: RegExp; with: RegExp; text: string; prefer?: RegExp }[] = [
+  { item: /^vinhos?\b/, with: /\b(massas?|macarr\w*|lasanha|espaguete|penne|nhoque|pizza|molho de tomate|bolonhesa)\b/, text: "Com massa de molho vermelho vai bem um *tinto leve ou médio* (Merlot, Cabernet, Malbec); com molho branco, um *branco* 🍷", prefer: /\b(tinto|merlot|cabernet|malbec|pinot|chianti|sangiovese)\b/ },
+  { item: /^vinhos?\b/, with: /\b(carnes?|churrasco|picanha|bife|costela|cordeiro)\b/, text: "Carne vermelha pede um *tinto encorpado* (Cabernet, Malbec, Tannat) 🍷", prefer: /\b(tinto|cabernet|malbec|tannat|syrah)\b/ },
+  { item: /^vinhos?\b/, with: /\b(peixes?|salmao|camarao|frutos do mar|frango|salada|sushi)\b/, text: "Peixe, frango e salada vão bem com *branco* ou *espumante* 🥂", prefer: /\b(branco|chardonnay|sauvignon blanc|espumante|rose|prosecco)\b/ },
+  { item: /^vinhos?\b/, with: /\b(queijos?|frios|tabua)\b/, text: "Queijo combina com *tinto* ou *espumante* — os mais fortes pedem tinto 🧀", prefer: /\b(tinto|espumante)\b/ },
+  { item: /^vinhos?\b/, with: /\b(sobremesas?|chocolates?|doces?|bolos?|morango)\b/, text: "Com sobremesa, um *espumante* ou um vinho *suave* 🥂", prefer: /\b(espumante|moscatel|suave|demi sec)\b/ }
+];
+export function pairingTip(item: string, withWhat: string): { text: string; prefer?: RegExp } | null {
+  const hit = PAIRING_TIPS.find((t) => t.item.test(item) && t.with.test(withWhat));
+  return hit ? { text: hit.text, prefer: hit.prefer } : null;
+}
+export function pairingAnswer(input: { item: string; with: string; tip?: string; picks: { n: number; name: string; price: number; storeLabel?: string }[] }): string {
+  const lead = input.tip ?? `Pra *${input.with}* não tenho uma regra certinha de *${input.item}* — vai do gosto 🙂`;
+  if (!input.picks.length) return `${lead}\nNas opções aí em cima não tem *${input.item}*; se quiser, me pede que eu procuro.`;
+  const lines = input.picks.map((o) => `*${o.n}* — ${o.name} — ${brl(o.price)}${o.storeLabel ? ` (${o.storeLabel})` : ""}`);
+  const ask = input.picks.length === 1 ? `Quer esse? Responde *${input.picks[0].n}*.` : "Quer algum? Responde o número.";
+  return `${lead}\nDas opções aí em cima:\n${lines.join("\n")}\n${ask}`;
+}
+
 export function optionComparison(options: { name: string; price: number; storeLabel?: string }[]): string {
   const lines = options.map(
     (o, i) => `*${i + 1})* ${o.name} — ${brl(o.price)}${o.storeLabel ? ` (${o.storeLabel})` : ""}`
@@ -3770,6 +3791,12 @@ export function orderStoreAnswer(shortId: string, stores: string[]): string {
 
 export function savedAddressAnswer(address: string, cep?: string): string {
   return `📍 Seu endereço de entrega: ${withCep(address, cep)}`;
+}
+
+// "qual endereço você tem cadastrado pra mim?" (14/10, rodada 26 g71b, B3): mostra o cadastro e oferece trocar — antes
+// saía "📍 Endereço atualizado" (como se a Lia tivesse mudado algo) ou a apresentação da Lia.
+export function savedAddressWithChange(address: string, cep?: string): string {
+  return `📍 Seu endereço cadastrado: ${withCep(address, cep)}\nQuer trocar? É só me mandar o novo endereço com CEP.`;
 }
 
 export function orderAddressAnswer(shortId: string, address: string): string {
