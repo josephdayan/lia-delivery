@@ -193,6 +193,17 @@ export function addressSavedPrefix(address: string, cep?: string, uf?: string | 
   return `📍 Endereço salvo: ${withCep(address, cep)}${outsideSaoPauloNote(uf)}`;
 }
 
+// "Só desta vez" (14/10, rodada 26 M1): o endereço novo vale para este pedido; o do cadastro volta depois dele.
+export function addressForThisOrderOnly(address: string, cep: string | undefined, home: string): string {
+  return `📍 Só neste pedido, a entrega vai pra: ${withCep(address, cep)}\nDepois dele, volto pro seu endereço de cadastro (${cleanAddressForCopy(home)}). Se quiser que esse passe a ser o seu endereço, diz *salva esse endereço*.`;
+}
+export function addressOnceMadePermanent(address: string, cep?: string): string {
+  return `📍 Pronto, esse passa a ser o seu endereço: ${withCep(address, cep)}`;
+}
+export function addressBackToHome(address: string, cep?: string): string {
+  return `📍 Voltei pro seu endereço de cadastro: ${withCep(address, cep)} (o outro valeu só pro pedido anterior).`;
+}
+
 export function addressUpdated(address: string, cep?: string): string {
   return `📍 Endereço atualizado: ${withCep(address, cep)}`;
 }
@@ -264,6 +275,21 @@ export function notedListKept(): string {
 // "q mochila cara, tem outra mais baratinha?" antes do cadastro (11/10, rodada 22 g60, R22-9): nenhuma opção foi mostrada.
 export function noPricesShownYet(item: string): string {
   return `Ainda não te mostrei opções de *${item}* 🙂 Anotei que você quer a opção mais em conta — assim que tiver seu endereço eu mostro as opções começando pelas mais baratas.`;
+}
+
+// Pedido + "quando chega?" na mesma mensagem (14/10, rodada 26 g71a, A1): a lista segue e o prazo vem no total.
+export function etaWithTotalNote(): string {
+  return "Sobre o prazo: depende da loja e do seu endereço — te passo o *prazo exato junto com o total*, antes de você pagar 🚚";
+}
+
+// Pedido + "o que estiver em promoção" (14/10, rodada 26 g71a, A2): sem cupom/promoção, mas os itens seguem pelo mais barato.
+export function promoCheapestNote(): string {
+  return "Promoção eu não tenho, mas pego o *mais barato* de cada item pra você 💸";
+}
+
+// "e o pó de fada, ficou de fora?" (14/10, rodada 26 g71a, M6): confirma sem mexer na cesta nem refazer o total.
+export function missStillOut(item: string, hasTotal: boolean): string {
+  return `Isso, *${item}* ficou de fora — não achei em nenhuma loja. ${hasTotal ? "O total que te mandei continua valendo." : "O resto do pedido segue igual."} Se tiver outro nome ou marca, me manda que eu procuro de novo.`;
 }
 
 export function priceAfterAddress(item: string): string {
@@ -571,6 +597,12 @@ export function closeWithoutPendingAsk(names: string[]): string {
   return names.length > 1
     ? `Ainda faltam ${what}. Fecho o pedido sem eles? Responde *sim* — ou escolhe aí embaixo pra incluir.`
     : `Ainda falta ${what}. Fecho o pedido sem esse item? Responde *sim* — ou escolhe uma opção aí embaixo pra incluir.`;
+}
+// "só isso" com a pergunta da embalagem aberta no último item (14/10, rodada 26 M7): uma pergunta só, dizendo o que o "sim" faz.
+// `perPack` ausente = pergunta de quantidade de pacotes ("Levo 3 pacotes?").
+export function closeWithPackPending(item: string, name: string, packs: number, perPack?: number): string {
+  const what = perPack ? `${packs === 1 ? "1 embalagem" : `${packs} embalagens`} (${packs * perPack} un) de *${name}*` : `${packs}x *${name}*`;
+  return `Antes de fechar, falta responder sobre *${item}*: levo ${what}? Responde *sim* que eu ponho e fecho o pedido, ou *fecha sem ${item}* pra fechar sem esse item.`;
 }
 export function closedWithoutPending(names: string[], restored: string[] = []): string {
   // Troca não escolhida: o item antigo voltou (rodada 5 A3).
@@ -1972,6 +2004,16 @@ export function complementOffer(name: string, price: number, why: string): strin
   return `${why.trim()} Quer adicionar o *${name}* por ${brl(price)}? Responde *sim* ou *não*.`;
 }
 
+// Retomada depois de uma pergunta no meio da oferta (14/10, rodada 26 M7).
+export function resumeComplementOffer(name: string, price: number): string {
+  return `Voltando: quer adicionar o *${name}* por ${brl(price)}? Responde *sim* ou *não*.`;
+}
+export function resumeJoinOffer(storeLabel: string, joinedTotal: number | undefined, keptTotal: number | undefined, stores: number): string {
+  const joined = joinedTotal != null ? ` por ${brl(joinedTotal)}` : "";
+  const kept = keptTotal != null ? ` por ${brl(keptTotal)}` : "";
+  return `Voltando: junto tudo na *${storeLabel}*${joined}, ou mantenho como está${kept} com ${stores} entregas? Responde *1* pra juntar ou *2* pra manter.`;
+}
+
 export function complementAdded(name: string): string {
   return `✅ Adicionei *${name}*.`;
 }
@@ -2332,6 +2374,27 @@ export function queuedItemAskedLater(items: string[]): string {
 export function compareNotShown(term: string, query: string): string {
   const shown = term.replace(/(^|\s)(\p{L})/gu, (_, sp: string, c: string) => sp + c.toUpperCase());
   return `*${shown}* não está entre as opções de *${query}* aí em cima, então não tenho como comparar. Se quiser, eu procuro: é só mandar _${query} ${shown}_.`;
+}
+
+// "qual vinho combina com massa?" (14/10, rodada 26 g71b, M3): dica curta de harmonização. `prefer` = no nome da opção,
+// o que a dica indica (pra pôr essas primeiro). Sem dica conhecida = null (a resposta só aponta as opções da tela).
+const PAIRING_TIPS: { item: RegExp; with: RegExp; text: string; prefer?: RegExp }[] = [
+  { item: /^vinhos?\b/, with: /\b(massas?|macarr\w*|lasanha|espaguete|penne|nhoque|pizza|molho de tomate|bolonhesa)\b/, text: "Com massa de molho vermelho vai bem um *tinto leve ou médio* (Merlot, Cabernet, Malbec); com molho branco, um *branco* 🍷", prefer: /\b(tinto|merlot|cabernet|malbec|pinot|chianti|sangiovese)\b/ },
+  { item: /^vinhos?\b/, with: /\b(carnes?|churrasco|picanha|bife|costela|cordeiro)\b/, text: "Carne vermelha pede um *tinto encorpado* (Cabernet, Malbec, Tannat) 🍷", prefer: /\b(tinto|cabernet|malbec|tannat|syrah)\b/ },
+  { item: /^vinhos?\b/, with: /\b(peixes?|salmao|camarao|frutos do mar|frango|salada|sushi)\b/, text: "Peixe, frango e salada vão bem com *branco* ou *espumante* 🥂", prefer: /\b(branco|chardonnay|sauvignon blanc|espumante|rose|prosecco)\b/ },
+  { item: /^vinhos?\b/, with: /\b(queijos?|frios|tabua)\b/, text: "Queijo combina com *tinto* ou *espumante* — os mais fortes pedem tinto 🧀", prefer: /\b(tinto|espumante)\b/ },
+  { item: /^vinhos?\b/, with: /\b(sobremesas?|chocolates?|doces?|bolos?|morango)\b/, text: "Com sobremesa, um *espumante* ou um vinho *suave* 🥂", prefer: /\b(espumante|moscatel|suave|demi sec)\b/ }
+];
+export function pairingTip(item: string, withWhat: string): { text: string; prefer?: RegExp } | null {
+  const hit = PAIRING_TIPS.find((t) => t.item.test(item) && t.with.test(withWhat));
+  return hit ? { text: hit.text, prefer: hit.prefer } : null;
+}
+export function pairingAnswer(input: { item: string; with: string; tip?: string; picks: { n: number; name: string; price: number; storeLabel?: string }[] }): string {
+  const lead = input.tip ?? `Pra *${input.with}* não tenho uma regra certinha de *${input.item}* — vai do gosto 🙂`;
+  if (!input.picks.length) return `${lead}\nNas opções aí em cima não tem *${input.item}*; se quiser, me pede que eu procuro.`;
+  const lines = input.picks.map((o) => `*${o.n}* — ${o.name} — ${brl(o.price)}${o.storeLabel ? ` (${o.storeLabel})` : ""}`);
+  const ask = input.picks.length === 1 ? `Quer esse? Responde *${input.picks[0].n}*.` : "Quer algum? Responde o número.";
+  return `${lead}\nDas opções aí em cima:\n${lines.join("\n")}\n${ask}`;
 }
 
 export function optionComparison(options: { name: string; price: number; storeLabel?: string }[]): string {
@@ -2887,7 +2950,7 @@ export function totalAwaitingPayment(total: number): string {
 
 // "quanto deu tudo?" no meio das escolhas/coleta → parcial honesto, sem inventar frete.
 // Prazo por loja (09/10, dono: "devia mostrar o prazo direto"): "🚚 Prazo: *Mambo* — 1 dia útil".
-export type EtaRow = { store: string; when: string };
+export type EtaRow = { store: string; when: string; slow?: string };
 export function etaLine(rows: EtaRow[]): string {
   return `🚚 Prazo: ${rows.map((r) => `*${r.store}* — ${promiseForCustomer(r.when)}`).join(" · ")} _(contado da compra)_`;
 }
@@ -2929,8 +2992,12 @@ export function todayVerdictHead(whens: string[]): string {
 
 // "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
 // `deadline` (10/10, rodada 8 M4: "preciso que chegue até sexta, dá?"): abre com o sim/não e as lojas que atrasam.
-export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: { label: string; late: string[] }): string {
-  const body = rows.length === 1
+// `offerOpen` (14/10, rodada 26 M7): com uma oferta sim/não na mesa, a retomada dela vem logo depois — sem o "diz pagar".
+export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: { label: string; late: string[] }, offerOpen = false): string {
+  // Duas entregas na loja (14/10, rodada 26 M4): diz qual é qual — a escolha sai no total.
+  const body = rows.length === 1 && rows[0].slow
+    ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pela entrega mais rápida, ou ${whenPhrase(rows[0].slow)} pela mais barata — você escolhe no total. Contado da compra.`
+    : rows.length === 1
     ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pro seu endereço, contado da compra.`
     : `Pro seu endereço: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`;
   const deadlineHead = deadline
@@ -2939,7 +3006,7 @@ export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: {
       : `Dá, chega até *${deadline.label}*.`
     : "";
   const head = deadlineHead ? `${deadlineHead}\n` : askedToday ? `${todayVerdictHead(rows.map((r) => r.when))} ` : "";
-  return `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
+  return offerOpen ? `${head}${body}` : `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
 }
 
 // "Vocês entregam hoje?" sem nada na mesa: não dá pra prometer, mas a resposta abre direta.
@@ -3770,6 +3837,17 @@ export function orderStoreAnswer(shortId: string, stores: string[]): string {
 
 export function savedAddressAnswer(address: string, cep?: string): string {
   return `📍 Seu endereço de entrega: ${withCep(address, cep)}`;
+}
+
+// "qual endereço você tem cadastrado pra mim?" (14/10, rodada 26 g71b, B3): mostra o cadastro e oferece trocar — antes
+// saía "📍 Endereço atualizado" (como se a Lia tivesse mudado algo) ou a apresentação da Lia.
+export function savedAddressWithChange(address: string, cep?: string): string {
+  return `📍 Seu endereço cadastrado: ${withCep(address, cep)}\nQuer trocar? É só me mandar o novo endereço com CEP.`;
+}
+
+// Com endereço "só desta vez" ativo (14/10, rodada 27 g72, B3): o cadastro e, à parte, para onde vai ESTE pedido.
+export function savedAddressWithOnce(home: string, homeCep: string | undefined, once: string, onceCep?: string): string {
+  return `📍 Seu endereço cadastrado: ${withCep(home, homeCep)}\nEste pedido vai pra ${withCep(once, onceCep)} (só desta vez). Se quiser que esse passe a ser o seu endereço, diz *salva esse endereço*.`;
 }
 
 export function orderAddressAnswer(shortId: string, address: string): string {

@@ -2282,7 +2282,8 @@ export function wantsCheapestForAll(text: string): boolean {
 // Lista com "pode ser o mais barato" no fim (10/10, rodada 9 via g25): o mais barato de CADA item da mensagem.
 export function wantsCheapestEach(text: string): boolean {
   const n = normalizeMsg(text).replace(/\s+/g, " ").trim();
-  return wantsCheapestForAll(text) || /(?:^|[,.;]\s*|\s+e\s+)(?:(?:pode ser|quero|manda|traz|prefiro|pega|sempre)\s+)?(?:o|os|a|as)\s+mais (?:barat[oa]s?|em conta)[\s!.]*$/.test(n);
+  // "…, o que estiver em promoção" (14/10, rodada 26 g71a, A2): sem promoção, vale o mais barato de cada.
+  return wantsCheapestForAll(text) || /(?:^|[,.;]\s*|\s+e\s+)(?:(?:pode ser|quero|manda|traz|prefiro|pega|sempre)\s+)?(?:o|os|a|as)\s+mais (?:barat[oa]s?|em conta)[\s!.]*$/.test(n) || splitPromoAsk(text) != null;
 }
 
 // "escolhe você tudo que falta", "escolhe pra mim o resto", "o mais barato de todos que faltam" (10/10, rodada 8 M2): a
@@ -2636,7 +2637,9 @@ export function detectIntent(text: string): Intent {
   // Cupom/promoção ("tem cupom de desconto?", "vi promoção de 50% no insta") —
   // honestidade sobre preço, nunca busca (29/08 S12/S14).
   if (
-    /\bcupom\b|\bcupons\b|\bcodigo de desconto\b|\bpromocao\b|\bpromocoes\b|\boferta (relampago|do dia|de \d+%)\b|\bdesconto de \d+%|\b\d+% de desconto\b/.test(n)
+    /\bcupom\b|\bcupons\b|\bcodigo de desconto\b|\bpromocao\b|\bpromocoes\b|\boferta (relampago|do dia|de \d+%)\b|\bdesconto de \d+%|\b\d+% de desconto\b/.test(n) &&
+    // "quero sabão em pó e amaciante, o que estiver em promoção" (14/10, rodada 26 g71a, A2): os itens seguem (pelo mais barato).
+    !splitPromoAsk(n)
   ) {
     return { kind: "coupon_promo" };
   }
@@ -2761,6 +2764,14 @@ export function detectIntent(text: string): Intent {
   ) {
     return { kind: "address_question" };
   }
+  // "qual endereço você tem cadastrado pra mim?" (14/10, rodada 26 g71b, B3): respondia a apresentação da Lia.
+  if (
+    n.length <= 80 &&
+    !/\d{5}/.test(n) &&
+    /\b(?:qual|que|quais)\s+(?:e\s+|eh\s+)?(?:o\s+)?(?:meu\s+)?(?:endereco|cep)\b[^?]*\b(?:cadastr\w*|registr\w*|guardad\w*|(?:voce|vc|vcs|voces)\s+(?:tem|tao|estao|ta|esta)\b)|\bqual\s+(?:e\s+|eh\s+)?(?:o\s+)?meu\s+(?:endereco|cep)\b|\b(?:endereco|cep)\s+(?:cadastrad\w*|que\s+(?:voce|vc)\s+tem)\b/.test(n)
+  ) {
+    return { kind: "address_question" };
+  }
   // "pra qual endereço vai?"/"vai entregar onde?" (06/10): pergunta do destino do pedido.
   if (
     n.length <= 60 &&
@@ -2867,7 +2878,8 @@ export function detectIntent(text: string): Intent {
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
   if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n) || REPEAT_ORDER_RE.test(n)) return { kind: "repeat_last" };
-  if (STATUS_RE.test(n) && !isOrderWithDeadline(n)) return { kind: "status" };
+  // "1 dúzia de ovos e 1 manteiga. quando chega?" (14/10, rodada 26 g71a, A1): pedido com a pergunta de prazo do lado é pedido.
+  if (STATUS_RE.test(n) && !isOrderWithDeadline(n) && !splitEtaAsk(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":
   // referência ao item que acabou de entrar — resolve pelo sku da cesta, sem nova
@@ -2940,7 +2952,7 @@ export function detectIntent(text: string): Intent {
   if (n.split(" ").length <= 10 && HOURS_ASK_RE.test(n.replace(/[!.?]+$/g, "").trim())) return { kind: "service_question", topic: "hours" };
   // O lugar dito na pergunta ("… em quanto tempo chega na Avenida Paulista 1000, São Paulo?") e a moldura "antes de pedir:"
   // não contam no limite de palavras (11/10, rodada 24 g67, M4): a pergunta virava conversa com a IA e pedia o CEP duas vezes.
-  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && serviceAskCore(n).split(" ").length <= 10) {
+  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && serviceAskCore(n).split(" ").length <= 10 && !splitEtaAsk(n)) {
     // "tem pedido mínimo?" (11/10, rodada 21 g57, R21-5/504): tem resposta própria (depende da loja), não a apresentação.
     const topic = /\b(?:pedido|valor|compra)s? minim[oa]s?\b|\bminimo\b/.test(n)
       ? ("minimum" as const)
@@ -3014,6 +3026,44 @@ export function isOrderWithDeadline(text: string): boolean {
   // Lista sem verbo ("papel higiênico e 2 sabonetes de jasmim, a visita chega hoje", 10/10, rodada 14 g41) também é pedido.
   if (deadlineWithItems(text)) return true;
   return clauses.some((c) => !STATUS_RE.test(c) && !parseNeededBy(c) && /\b(?:preciso de|precisava de|quero|queria|me (?:ve|manda|traz)|manda|compra|vou querer)\s+(?:um |uma |uns |umas |o |a |\d+ )?[a-z]{3,}/.test(c));
+}
+
+// Pedido + pergunta de lado na MESMA mensagem (14/10, rodada 26 g71a, A1/A2): "1 dúzia de ovos e 1 manteiga. quando chega?" e
+// "quero sabão em pó e amaciante, o que estiver em promoção" — a pergunta vencia e os itens sumiam. A pergunta é uma frase
+// própria (separada por pontuação); o resto precisa ter produto. Devolve o resto (só os itens) ou null.
+const ETA_ASK_CLAUSE_RE =
+  /^(?:e |mas )?(?:quando (?:chega\w*|vai chegar|entrega\w*|vem)|chega (?:quando|hoje|amanha|rapido|que horas?)|que horas? (?:chega|entrega|vem)|vai chegar (?:quando|hoje|amanha)|qual (?:e |eh )?o prazo(?: de entrega)?|prazo de entrega|em quanto tempo (?:chega|entrega|vem)|demora (?:quanto|muito)|quanto tempo demora)(?: (?:isso|tudo|ai|pra mim|aqui|mais ou menos|hoje|amanha))*$/;
+const PROMO_ASK_CLAUSE_RE =
+  /^(?:e |mas )?(?:(?:de preferencia|se possivel|se tiver|pode ser|quero|prefiro|pega)\s+)?(?:(?:o|a|os|as) que (?:estiver|estiverem|tiver|tiverem|for|forem)\s+)?(?:em |na |de )?(?:promocao|promocoes|oferta|ofertas)(?: (?:hoje|ai|ta|pfv|por favor))*$/;
+function itemsBesideAsk(text: string, isAsk: (clause: string) => boolean): string | null {
+  const parts = text.split(/[;!?]+|[.,](?=\s|$)/).map((p) => p.trim()).filter(Boolean);
+  const asks = parts.filter((p) => isAsk(normalizeMsg(p).replace(/[^a-z0-9\s]+/g, " ").replace(/\s+/g, " ").trim()));
+  if (!asks.length || asks.length === parts.length) return null;
+  const rest = parts.filter((p) => !asks.includes(p)).join(", ");
+  const nr = normalizeMsg(rest);
+  // "o meu pedido de arroz, quando chega?" é status do pedido, não item.
+  if (STATUS_RE.test(nr) || /\b(?:pedido|compra|encomenda|entrega)\b/.test(nr)) return null;
+  const hasItem = parseBasketLines(rest).some((line) => /[a-z]{3}/.test(normalizeMsg(line.phrase)) && !isNonItemSegment(line.phrase) && !isDiscourseOnly(line.phrase));
+  return hasItem ? rest : null;
+}
+export function splitEtaAsk(text: string): string | null {
+  return itemsBesideAsk(text, (c) => ETA_ASK_CLAUSE_RE.test(c));
+}
+export function splitPromoAsk(text: string): string | null {
+  return itemsBesideAsk(text, (c) => PROMO_ASK_CLAUSE_RE.test(c));
+}
+
+// "e o pó de fada, ficou de fora?" (14/10, rodada 26 g71a, M6): pergunta sobre um item que a Lia já disse que não achou.
+// Devolve o item citado (quem chama confere que ele está mesmo entre os não achados).
+export function parseMissStatusAsk(text: string): string | null {
+  const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
+  if (n.length > 70) return null;
+  const OUT = String.raw`(?:ficou de fora|ficou fora|nao veio|nao vem|nao vai vir|nao entrou|nao achou|nao achei|nao encontrou|nao tem|nao tinha|sumiu|nao achou nao)`;
+  const after = new RegExp(String.raw`^(?:e |mas )?(?:(?:o|a|os|as) )?(.+?),? (?:entao |mesmo |tambem )?${OUT}(?: mesmo| entao| ne| nao)*$`).exec(n);
+  const before = new RegExp(String.raw`^(?:e |mas )?(?:cade|(?:voce |vc )?${OUT}) (?:(?:o|a|os|as) )?(.+?)(?: mesmo| entao| ne)*$`).exec(n);
+  const item = (after?.[1] ?? before?.[1])?.trim();
+  if (!item || item.split(" ").length > 5 || /\b(?:pedido|cesta|lista|nada|tudo|item|itens|isso|ele|ela)\b/.test(item)) return null;
+  return item;
 }
 
 export function isQuestion(text: string): boolean {
@@ -3993,6 +4043,15 @@ function choiceRefIndex(ref: string): { index?: number; other?: boolean } {
   return { index: ordinals.findIndex((o) => ref.startsWith(o)) };
 }
 
+// "o segundo", "quero a terceira", "pode ser o primeiro" (14/10, rodada 26 g71b, M3): só a POSIÇÃO no carrossel, sem mais
+// nada na frase. Devolve o índice (0-based; "o último" = -1 não entra) ou null.
+export function ordinalPickIndex(text: string): number | null {
+  const n = normalizeMsg(text).replace(/[!.?,]+/g, " ").replace(/\s+/g, " ").trim();
+  const m = /^(?:(?:eu\s+)?(?:quero|queria|vou querer|prefiro|vou de|fico com|me ve|pode ser|escolho|manda|pega|entao)\s+)?(?:o|a)\s+(?:opcao\s+|numero\s+)?(primeir|segund|terceir|quart|quint)[oa](?:\s+(?:opcao|card|ai|mesmo|mesma|por favor|pf|entao))*$/.exec(n);
+  if (!m) return null;
+  return ["primeir", "segund", "terceir", "quart", "quint"].indexOf(m[1]);
+}
+
 // "na verdade quero o 2", "pensando bem quero o 1", "quero o 2 na verdade", "prefiro o 2",
 // "troca pelo 2", "troca pelo outro" (06/10): trocar pela opção N da última lista. Sem marca
 // de correção, "quero o 2" segue sendo escolha comum (a escolha aberta resolve).
@@ -4561,7 +4620,11 @@ export function looksLikePharmacyPartnerAsk(text: string): boolean {
 // rever a vitrine — esse reenvia o carrossel mesmo que ele tenha acabado de sair.
 export function asksToSeeChoicesAgain(text: string): boolean {
   const n = normalizeMsg(text);
-  if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?)\b/.test(n)) return false;
+  // "mostra de novo" / "manda de novo as ideias de presente" (14/10, rodada 26 g71b, M3): pedir pra rever o carrossel —
+  // a IA perguntava "quer ver outras ou rever essas?".
+  if (/^(?:me\s+)?(?:mostr\w*|mand\w*|reenvi\w*|rev\w*)\s+(?:de novo|novamente|dnv|denovo|outra vez)(?:\s+(?:as|os|essas|esses)\s+(?:ideias|sugestoes|opcoes|presentes)(?:\s+de\s+\w+)?)?(?:\s+(?:por favor|pf|pfv))?[\s!.?]*$/.test(n)) return true;
+  if (/^(?:quero\s+)?rever\s+(?:essas|esses|as|os)\b/.test(n)) return true;
+  if (!/\b(?:op[cç](?:ao|oes)|opcoes|cards?|carross\w*|fotos?|produtos?|ideias|sugestoes)\b/.test(n)) return false;
   return /\b(?:mostr\w*|mand\w*|reenvi\w*|ver|ve|quais|cade|de novo|novamente|dnv|sumi\w*|nao (?:vi|apareceu|apareceram|chegou|chegaram|veio|vieram|carregou|carregaram))\b/.test(n);
 }
 
@@ -4858,6 +4921,24 @@ const AMBIGUOUS_EMOJI: Record<string, string[]> = {
   "🐈": ["ração de gato", "areia", "sachê"],
   "🎁": ["presente", "papel de presente"]
 };
+// Tipos/marcas que JÁ SÃO o produto do emoji (14/10, rodada 26 g71b, A3): "2 coca 🥤" — o 🥤 ilustra a coca, não pede
+// um "refrigerante" à parte (virava a 3ª linha, que fechava com Coca-Cola Café Expresso).
+const EMOJI_KINDS: Record<string, RegExp> = {
+  refrigerante: /\b(?:refri\w*|cocas?|coca cola|guarana\w*|fanta|sprite|pepsi|soda|schweppes|tonica|kuat|dolly|itubaina|sukita|h2oh)\b/,
+  cerveja: /\b(?:brejas?|cervejas?|chopp?e?|skol|brahma|heineken|budweiser|amstel|antarctica|itaipava|stella|corona|spaten|bohemia|devassa|eisenbahn|long neck|latao|latinhas?)\b/,
+  vinho: /\b(?:vinhos?|tinto|malbec|cabernet|merlot|carmenere|chardonnay|sauvignon|espumante|champagne|champanhe|prosecco|lambrusco)\b/,
+  "café": /\b(?:cafes?|expresso|capsulas?|nescafe|pilao|melitta|tres coracoes)\b/,
+  chocolate: /\b(?:chocolates?|bombo(?:m|ns)|kit ?kat|lacta|garoto|talento|bis|ovo de pascoa|trufas?|prestigio|sonho de valsa)\b/,
+  biscoito: /\b(?:biscoitos?|bolachas?|oreo|cookies?|wafer|recheado|passatempo|trakinas|negresco|club social|cream cracker)\b/,
+  "pão": /\b(?:paes|pao|bisnaguinha|baguete|pullman|frances|sovado|brioche)\b/,
+  "macarrão": /\b(?:macarr\w*|espaguete|spaghetti|penne|lasanha|miojo|lamen|talharim|parafuso|nhoque)\b/,
+  "suco de caixinha": /\b(?:sucos?|del valle|ades|maguary|toddynho|nectar)\b/,
+  sorvete: /\b(?:sorvetes?|picoles?|acai|kibon|magnum|cornetto|paleta)\b/,
+  bala: /\b(?:balas?|chicletes?|pirulitos?|jujubas?|halls|mentos|fini|goma de mascar)\b/,
+  queijo: /\b(?:queijos?|mussarela|mucarela|parmesao|coalho|minas|provolone|gorgonzola|brie|cheddar)\b/,
+  leite: /\b(?:leites?|ninho|desnatado|semidesnatado)\b/,
+  ovos: /\b(?:ovos?|duzia)\b/,
+};
 const EMOJI_TOKEN_RE = /\p{Extended_Pictographic}\u{FE0F}?(?:‍\p{Extended_Pictographic}\u{FE0F}?)*/gu;
 const emojiBase = (e: string) => e.replace(/\u{FE0F}/gu, "");
 export function readProductEmojis(text: string): { text: string } | { ask: { emoji: string; options: string[] } } | null {
@@ -4876,7 +4957,7 @@ export function readProductEmojis(text: string): { text: string } | { ask: { emo
   // Com palavras: o emoji inequívoco que não repete uma palavra já dita vira item próprio; o resto é enfeite.
   const said = normalizeMsg(words);
   const extra = [...new Set(known.map((e) => PRODUCT_EMOJI[emojiBase(e)]).filter((w): w is string => Boolean(w)))].filter(
-    (w) => !said.includes(normalizeMsg(w).split(" ")[0])
+    (w) => !said.includes(normalizeMsg(w).split(" ")[0]) && !EMOJI_KINDS[w]?.test(said)
   );
   const out = [words.replace(/[,;\s]+$/, ""), ...extra].join(", ");
   return out === raw ? null : { text: out };

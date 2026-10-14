@@ -43,6 +43,9 @@ export type BasketItem = {
   // Prazo que a LOJA informou pro CEP na consulta ao vivo do card ("prazo da loja: 1 dia útil"), 09/10: a lista
   // e o "quanto tempo demora?" mostram o prazo direto, antes do total.
   delivery?: string;
+  // Card com a entrega MAIS RÁPIDA (pra hoje/urgente/quase o mesmo preço): o prazo da entrega comum da loja (14/10, rodada 26
+  // M2/M4). Pedido de várias lojas fecha na comum; o de uma loja oferece as duas no total.
+  slowDelivery?: string;
   // Frete que a LOJA respondeu na consulta ao vivo do card (10/10, rodada 11 g32): a estimativa do teto, o aviso de
   // entrega extra e o "o mais barato" usam o mesmo valor (antes a tabela dizia R$ 18 e a cotação, R$ 4,90).
   freightFee?: number;
@@ -56,7 +59,7 @@ export type BasketItem = {
 // `repeat` (04/09): o cliente já comprou este produto — vem primeiro e com destaque.
 // `why` (08/10, recomendação): motivo de 1 linha do card ("doce e gelado", "alivia a cólica") — só em
 // opção que veio de uma recomendação; aparece abaixo do nome no card e em itálico na lista de texto.
-export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number; why?: string; suggestedQty?: number };
+export type ChoiceOption = { sku: string; freightFee?: number; name: string; brand?: string; unitPrice: number; imageUrl?: string; productUrl?: string; storeKey?: string; storeLabel?: string; delivery?: string; slowDelivery?: string; freeShipping?: boolean; verified?: boolean; etaMinutes?: number; repeat?: boolean; medicine?: "mip"; unitWeightKg?: number; why?: string; suggestedQty?: number };
 
 // Estado de uma escolha que veio de RECOMENDAÇÃO (08/10, plano-recomendacoes): o pedido entendido, o
 // plano de prateleiras, as prateleiras já mostradas/sem item e os candidatos já buscados (para "mais
@@ -141,6 +144,9 @@ export type PendingChoice = {
   // Escolha REABERTA ("Outras opções" depois de já ter escolhido): o novo pick
   // SUBSTITUI esta linha da cesta em vez de somar uma segunda mochila.
   replaceSku?: string;
+  // Oferta de trocar o item que abre a entrega mais cara (offerCostlyDeliverySwap) — refeita quando o endereço muda
+  // (14/10, rodada 27 g72, N1).
+  costlySwap?: boolean;
   // "troca X por Y" com escolha aberta (10/10, rodada 5 A3): o X que saiu da cesta. Fechar sem escolher o Y devolve o X.
   swappedOut?: BasketItem[];
   // O pool + a re-busca relaxada já esgotaram: o próximo "outras" pede reformulação
@@ -300,7 +306,8 @@ export type DeliveryContext = {
   // Embalagem diferente da pedida (07/10, c28: "12 ovos" → caixa de 20): a Lia pergunta ANTES de pôr
   // na cesta. Guarda a opção e a quantidade pedida; "sim" confirma, "outras" volta às opções.
   // kind "count" (10/10, rodada 5): "3 fraldas" com pacote de 80 — 3 pacotes ou 1 pacote? (total alto).
-  packConfirm?: { sku: string; askedQty: number; kind?: "count" };
+  // `closeAfter` (14/10, rodada 26 M7): o cliente disse "só isso" com a pergunta da embalagem aberta — o "sim" leva e fecha.
+  packConfirm?: { sku: string; askedQty: number; kind?: "count"; closeAfter?: boolean };
   // Últimas falas da Lia (07/10, rodada 2 do plano 100): base da guarda anti-repetição — a mesma
   // mensagem não sai duas vezes seguidas para falas diferentes do cliente (src/lib/dialogue/repeat.ts).
   lastSent?: { texts: string[]; at: number };
@@ -474,6 +481,9 @@ export type DeliveryContext = {
   expiredCart?: { items: string[]; at: number; quote?: boolean; soft?: boolean; noticed?: boolean };
   // Endereço de antes de uma troca, para "deixa o antigo"/"usa o de antes".
   previousAddress?: { cep: string; address: string; city?: string; uf?: string };
+  // "Só desta vez" (14/10, rodada 26 M1): o endereço novo vale para o pedido atual; aqui fica o do cadastro, que volta
+  // quando o pedido termina (pago, cancelado ou cesta zerada). `seenOrder` = já havia cesta/pedido depois da troca.
+  addressOnce?: { cep: string; address: string; city?: string; uf?: string; at: number; seenOrder?: boolean };
   // Último CEP recusado por estar fora da área: a mensagem seguinte lembra o motivo.
   outsideArea?: { city?: string };
 };
