@@ -35,7 +35,7 @@ import { currentShopperCep, noteShopperCep, storeServesCep } from "@/lib/store-a
 import { SIGNUP_FORM_MESSAGE, buildSignupAddress, isSignupFormReply, parseSignupForm } from "@/lib/signup-form";
 import { CEP_RE_GLOBAL, expandShoppingShorthand, isWaitGripe, splitNegatedTerms, isReplySpeedGripe, readProductEmojis, parseEarlierOptionRef, parseOptionAttributeAsk, optionHasAttr, splitKeepAndDone } from "@/lib/lia-intents";
 import { displayQueryName } from "@/lib/query-display";
-import { canonicalTypedAddress, dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
+import { canonicalTypedAddress, dropAddressOnlyItems, introducedName, peelPersonName, extractLabeledHouseNumber, isKeepOldAddress, isKeepOldAddressExplicit, isOneTimeAddress, keepsOneTimeAddress, looksLikePersonName, mentionsStreetWithoutNumber, onboardingNote, parseHouseNumberReply, parsePriceAsk, saysNoCep, splitAddressAndItems, typedCityMismatch, wantClauseTail } from "@/lib/address-parse";
 import * as copy from "@/lib/lia-copy";
 import { dialogueEnabled, dialogueWillDecide, isPlainShoppingList, runDialogueTurn } from "@/lib/dialogue";
 import { answerProductQuestion, isPetFood, nameColor, nameSize, parseChosenItemQuestion, parseChosenItemTrait, parseProductQuestion, parseDiaperFitAsk, diaperSizeOf, diaperSizesFor, DIAPER_RANGES } from "./product-question";
@@ -1259,6 +1259,7 @@ function choiceToBasketItem(o: ChoiceOption, qty: number, store: StoreConnector,
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(ask?.trim() ? { ask: ask.trim().slice(0, 120) } : {}),
     ...(o.delivery ? { delivery: o.delivery } : {}),
+    ...(o.slowDelivery ? { slowDelivery: o.slowDelivery } : {}),
     ...(o.freightFee != null ? { freightFee: o.freightFee } : {})
   };
 }
@@ -1296,8 +1297,10 @@ function todayVerdictFor(ctx: DeliveryContext): Array<{ store: string; when: str
   });
 }
 
-export function basketEtaByStore(basket: BasketItem[]): { rows: { store: string; when: string }[]; complete: boolean } {
+export function basketEtaByStore(basket: BasketItem[]): { rows: { store: string; when: string; slow?: string }[]; complete: boolean } {
   const byStore = new Map<string, string>();
+  // Prazo da entrega comum quando o card mostrou a rápida (14/10, rodada 26 M2/M4).
+  const slowByStore = new Map<string, string>();
   let complete = basket.length > 0;
   for (const item of basket) {
     const when = item.delivery?.replace(/^prazo da loja:\s*/i, "").trim();
@@ -1308,8 +1311,11 @@ export function basketEtaByStore(basket: BasketItem[]): { rows: { store: string;
     const store = item.storeLabel || item.storeKey;
     const prev = byStore.get(store);
     if (!prev || deliveryMinutes(when) > deliveryMinutes(prev)) byStore.set(store, when);
+    const slow = item.slowDelivery?.replace(/^prazo da loja:\s*/i, "").trim();
+    const prevSlow = slowByStore.get(store);
+    if (slow && (!prevSlow || deliveryMinutes(slow) > deliveryMinutes(prevSlow))) slowByStore.set(store, slow);
   }
-  return { rows: [...byStore].map(([store, when]) => ({ store, when })), complete };
+  return { rows: [...byStore].map(([store, when]) => ({ store, when, ...(slowByStore.has(store) && deliveryMinutes(slowByStore.get(store)!) > deliveryMinutes(when) ? { slow: slowByStore.get(store)! } : {}) })), complete };
 }
 
 // Pergunta de prazo com a lista na mesa (09/10): toda forma — "quanto tempo demora", "quando chega",
@@ -1344,13 +1350,16 @@ async function answerBasketEta(phone: string, convoId: string, ctx: DeliveryCont
     await sendChoices(phone, ctx.pending[0]);
     return;
   }
-  const eta = basketEtaByStore(ctx.basket ?? []);
+  const known = basketEtaByStore(ctx.basket ?? []);
+  // Pedido de várias lojas fecha na entrega comum de cada loja (a escolha rápida × barata só existe com uma loja): o prazo
+  // dito antes do total é o que o resumo vai trazer (14/10, rodada 26 M2/M4).
+  const eta = known.rows.length > 1 ? { ...known, rows: known.rows.map((r) => (r.slow ? { store: r.store, when: r.slow } : r)) } : known;
   if (eta.complete && eta.rows.length) {
     // Dia dito ("até sexta, dá?"): a resposta abre com sim/não e diz qual loja não chega (rodada 8 M4).
     // Chamado pelo gerente de diálogo também: o dia vem da mensagem do turno.
     const day = deadline ?? parseNeededBy(turnMeta.getStore()?.inboundText ?? "");
     const verdict = day ? { label: day.label, late: eta.rows.filter((r) => promiseMissesDeadline(r.when, day) === true).map((r) => r.store) } : undefined;
-    await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday, verdict));
+    await reply(phone, copy.basketEtaAnswer(eta.rows, askedToday, verdict, Boolean(ctx.complementOffer || ctx.consolidationOffer)));
     return;
   }
   // Sem o prazo de alguma loja na mão: o total traz o prazo de todas — fecha agora.
@@ -1558,6 +1567,7 @@ function toChoiceOption(
   // da entrega MAIS RÁPIDA da loja (a cotação oferece essa opção).
   const useFast = cardUsesFastDelivery(live, urgent);
   const delivery = live?.available ? humanEstimate(useFast ? live.fastEstimate : live.estimate) : undefined;
+  const slowDelivery = useFast ? humanEstimate(live!.estimate) : undefined;
   const eta = useFast ? live!.fastEtaMinutes : live?.etaMinutes;
   const fee = useFast ? live!.fastFee : live?.fee;
   // Vendido por peso (06/10, A3): o preço vivo é de 1 unidade de ~X g, e o nome diz isso.
@@ -1573,6 +1583,7 @@ function toChoiceOption(
     productUrl: o.productUrl ?? STORE_SEARCH_URL[storeRef?.storeKey ?? ""]?.(o.name),
     ...storeRef,
     ...(delivery ? { delivery } : {}),
+    ...(slowDelivery && slowDelivery !== delivery ? { slowDelivery } : {}),
     ...(o.freeShipping ? { freeShipping: true } : {}),
     ...(o.medicine === "mip" ? { medicine: "mip" as const } : {}),
     ...(live?.available ? { verified: true, ...(eta != null ? { etaMinutes: eta } : {}), ...(fee != null ? { freightFee: fee } : {}) } : {})
@@ -1632,6 +1643,7 @@ async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | und
     // (a cotação oferece a opção "rápido"), como a vitrine de sempre faz com o "pra hoje" (toChoiceOption urgent).
     const fast = cardUsesFastDelivery(check, Boolean(opts?.urgent));
     const delivery = humanEstimate(fast ? check.fastEstimate : check.estimate);
+    const slowDelivery = fast ? humanEstimate(check.estimate) : undefined;
     const weighed = check.unitWeightKg && !w.o.unitWeightKg ? { name: copy.soldByWeightName(w.o.name, check.unitWeightKg), unitWeightKg: check.unitWeightKg } : {};
     return {
       ...w.o,
@@ -1639,6 +1651,7 @@ async function confirmOptionsLive(pool: ChoiceOption[], cep: string | null | und
       ...weighed,
       ...(check.unitPrice != null ? { unitPrice: check.unitPrice } : {}),
       ...(delivery ? { delivery } : {}),
+      ...(slowDelivery && slowDelivery !== delivery ? { slowDelivery } : { slowDelivery: undefined }),
       ...((fast ? check.fastEtaMinutes : check.etaMinutes) != null ? { etaMinutes: fast ? check.fastEtaMinutes : check.etaMinutes } : {}),
       ...((fast ? check.fastFee : check.fee) != null ? { freightFee: fast ? check.fastFee : check.fee } : {})
     };
@@ -2439,6 +2452,39 @@ async function finishReopenedTotal(phone: string, convoId: string, userCep: stri
   await continueAfterBasket(phone, convoId, ctx, userCep);
 }
 
+// Pergunta lateral com uma oferta sim/não ou 1/2 na mesa (14/10, rodada 26 M7): "quando chega?" no meio de "quer o molho
+// de tomate?" era respondida e a oferta sumia da conversa (o "não" seguinte virava outra pergunta). Respondida a pergunta,
+// a oferta que continua aberta é retomada com "Voltando: …".
+function isSideQuestion(text: string, intent: Intent): boolean {
+  if (isBasketEtaAsk(text)) return true;
+  if (!isQuestion(text)) return false;
+  return ["status", "scheduling_question", "service_question", "address_question", "trust_question", "missing_question", "identity", "help"].includes(intent.kind);
+}
+async function finishOfferAfterSideQuestion(phone: string, convoId: string, before: DeliveryContext, text: string) {
+  const meta = turnMeta.getStore();
+  if (!meta?.sent?.length) return;
+  const openComplement = before.complementOffer;
+  const openJoin = before.consolidationOffer;
+  if (!openComplement && !openJoin) return;
+  if (!isSideQuestion(text, detectIntent(text))) return;
+  const convo = await prisma.conversation.findUnique({ where: { id: convoId } });
+  if (!convo) return;
+  const ctx = readCtx(convo.context);
+  if (ctx.deliveryOrderId || ctx.pending?.length || (ctx.step && ctx.step !== "collecting")) return;
+  if (openComplement && ctx.complementOffer?.at === openComplement.at) {
+    await reply(phone, copy.resumeComplementOffer(ctx.complementOffer.option.name, display(ctx.complementOffer.option.unitPrice, ctx.complementOffer.option.medicine)));
+    return;
+  }
+  const join = ctx.consolidationOffer ?? ctx.consolidationParked;
+  if (openJoin && join?.key === openJoin.key) {
+    // A resposta "1"/"2" logo depois vale (a oferta volta para a mesa).
+    ctx.consolidationOffer = join;
+    ctx.consolidationParked = undefined;
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.resumeJoinOffer(join.storeLabel, join.joinedTotal, join.keptTotal, join.stores));
+  }
+}
+
 async function finishTrailingSwapAccept(phone: string, convoId: string) {
   const meta = turnMeta.getStore();
   const storeKey = meta?.acceptSwapFrom;
@@ -3207,6 +3253,7 @@ export async function handleDeliveryMessage(input: {
       if (signupForm) await handleSignupForm(phone, signupForm, user, c);
       else if (listForm) await handleListFlowReply(phone, listForm, user, c);
       else await handleDeliveryTurn(phone, text, user, c, inboundMessageId);
+      if (!signupForm && !listForm) await finishOfferAfterSideQuestion(phone, c.id, readCtx(c.context ?? null), text);
       await finishTrailingSwapAccept(phone, c.id);
       if (!signupForm && !listForm) await finishReopenedTotal(phone, c.id, user.cep);
     };
@@ -3322,6 +3369,7 @@ async function handleDeliveryTurn(
     ctx.deliveryAddress = user.defaultAddress;
     ctx.deliveryAddressVerified = true;
   }
+  if (ctx.addressOnce && (await settleOneTimeAddress(phone, convo.id, user, ctx, text))) return;
   // Emoji de produto (11/10, rodada 21 g57, R21-4): "🍼" vira "mamadeira" (o "Anotei" mostra o que entendi), "👶 fralda 🧻"
   // não perde o papel higiênico e o ambíguo sozinho ("🧴") vira uma pergunta — antes era um "oi" ou sumia.
   {
@@ -7064,6 +7112,17 @@ async function handleDeliveryTurn(
             await closeWithoutPending(phone, convo.id, ctx, user.cep, user.id);
             return;
           }
+          // Pergunta da embalagem aberta no item que falta (14/10, rodada 26 M7: "Levo 2 embalagens?" e, no "só isso", "Fecho
+          // sem esse item?" — o "sim" fechava sem os ovos). Uma pergunta só, dizendo o que o "sim" faz.
+          const packAsk = ctx.packConfirm && ctx.pending.length === 1 ? ctx.pending[0].options.find((o) => o.sku === ctx.packConfirm!.sku) : undefined;
+          if (packAsk && ctx.packConfirm) {
+            ctx.packConfirm.closeAfter = true;
+            await writeCtx(convo.id, ctx);
+            const p = ctx.pending[0];
+            const packs = ctx.packConfirm.kind === "count" ? ctx.packConfirm.askedQty : packAdjusted(packAsk, ctx.packConfirm.askedQty, p.query, { assumedOne: p.qty === 1 && !p.qtyExplicit }).qty;
+            await reply(phone, copy.closeWithPackPending(shownQuery(p), packAsk.name, packs, ctx.packConfirm.kind === "count" ? undefined : declaredPack(packAsk.name)));
+            return;
+          }
           ctx.closeWithoutOffer = { queries: pendingNames(ctx), at: Date.now() };
           await writeCtx(convo.id, ctx);
           await reply(phone, copy.closeWithoutPendingAsk(pendingNames(ctx)));
@@ -7710,7 +7769,7 @@ async function handleStatus(phone: string, userId: string, ctx: DeliveryContext,
     return;
   }
   if (order.status === "awaiting_quote_confirmation") {
-    await replyChargeNotIssued(phone, userId, ctx, order);
+    await replyChargeNotIssued(phone, userId, ctx, order, { etaFirst: Boolean(text && isBasketEtaAsk(text)) });
     return;
   }
   let statusLine = copy.orderStatusLine({
@@ -8035,7 +8094,9 @@ async function replyChargeNotIssued(
   phone: string,
   userId: string,
   ctx: DeliveryContext,
-  known?: { id: string; status: string; total: number; items: unknown; storeKey: string; storeLabel: string; fulfillments: unknown } | null
+  known?: { id: string; status: string; total: number; items: unknown; storeKey: string; storeLabel: string; fulfillments: unknown } | null,
+  // "quando chega?" (14/10, rodada 26 M4): o prazo vem primeiro, sem abrir com "Ainda não gerei a cobrança".
+  opts?: { etaFirst?: boolean }
 ): Promise<boolean> {
   const order =
     known ??
@@ -8049,7 +8110,8 @@ async function replyChargeNotIssued(
   }
   if (order.status === "awaiting_quote_confirmation") {
     const info = orderDeliveryInfoLine(order);
-    await reply(phone, info ? `${copy.chargeNotIssuedChoosePayment()}\n${info}` : copy.chargeNotIssuedChoosePayment());
+    // "quando chega?" (14/10, rodada 26 M4): a linha do prazo vem primeiro; o lembrete da cobrança, depois.
+    await reply(phone, info ? (opts?.etaFirst ? `${info}\n${copy.chargeNotIssuedChoosePayment()}` : `${copy.chargeNotIssuedChoosePayment()}\n${info}`) : copy.chargeNotIssuedChoosePayment());
     const interactive = await whatsappAdapter.sendPaymentChoices(phone, order.total, cardTotal(order.total)).catch(() => null);
     if (!interactive) await reply(phone, copy.paymentMethod(order.total, cardTotal(order.total)));
     else markTurnReplied();
@@ -8136,6 +8198,8 @@ async function handleNewCep(
   // CEP novo era gravado por cima do endereço antigo sem ninguém perceber (06/10, A4).
   const previousCep = (ctx.cep ?? user?.cep ?? "").replace(/\D/g, "") || undefined;
   const cepChanged = Boolean(previousCep && previousCep !== normalizedCep);
+  // Cadastro antes da troca (14/10, rodada 26 M1): "só desta vez" guarda este para voltar depois do pedido.
+  const homeBefore = user?.defaultAddress && previousCep ? { cep: `${previousCep.slice(0, 5)}-${previousCep.slice(5)}`, address: user.defaultAddress, city: ctx.city, uf: ctx.uf } : undefined;
   const { address, street, district, city, uf, invalid } = await expandCep(cep);
   if (invalid) {
     ctx.step = "need_cep";
@@ -8271,10 +8335,22 @@ async function handleNewCep(
       house && street
       ? buildSignupAddress({ street, numero: house.numero, complemento: house.complemento, district, city, uf })
       : undefined;
+  // "entrega na casa da minha mãe só desta vez: Rua Augusta 500…" (14/10, rodada 26 M1): o endereço vale só para este
+  // pedido — o do cadastro fica guardado e volta quando o pedido termina. Troca sem "só desta vez" é definitiva.
+  const onceOnly = Boolean(typedAddress && homeBefore && isOneTimeAddress(raw) && normalizeMsg(homeBefore.address) !== normalizeMsg(typedAddress));
   if (typedAddress) {
+    if (onceOnly && homeBefore) ctx.addressOnce = ctx.addressOnce ?? { ...homeBefore, at: Date.now(), seenOrder: Boolean(ctx.basket?.length || ctx.pending?.length || ctx.deliveryOrderId) };
+    else if (!onceOnly) ctx.addressOnce = undefined;
     ctx.deliveryAddress = typedAddress;
     ctx.deliveryAddressVerified = true;
     await prisma.user.update({ where: { id: userId }, data: { defaultAddress: typedAddress } });
+  }
+  // Endereço novo = frete novo (14/10, rodada 26 M1): a oferta de juntar aberta não vira "manter" sozinha — sai da mesa e é
+  // refeita com o frete do endereço novo no fechamento logo abaixo.
+  if (typedAddress && (cepChanged || normalizeMsg(homeBefore?.address ?? "") !== normalizeMsg(typedAddress)) && (ctx.consolidationOffer || ctx.consolidationParked)) {
+    ctx.consolidationOffer = undefined;
+    ctx.consolidationParked = undefined;
+    ctx.consolidationTried = undefined;
   }
   // Itens enviados na MESMA mensagem do CEP — ou guardados no onboarding — entram no
   // fluxo NORMAL de busca (com opções e preço), nunca auto-escolhidos.
@@ -8292,7 +8368,11 @@ async function handleNewCep(
   // endereço fazia o 1º endereço sair como "atualizado" e o CPF nunca ser pedido).
   const completingSignup = firstAddress || !hadCepBefore;
   const shownAddress = ctx.deliveryAddress ?? cep;
-  const savedMsg = completingSignup ? copy.addressSavedPrefix(shownAddress, ctx.cep, ctx.uf) : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`;
+  const savedMsg = completingSignup
+    ? copy.addressSavedPrefix(shownAddress, ctx.cep, ctx.uf)
+    : onceOnly && ctx.addressOnce
+      ? `${copy.addressForThisOrderOnly(shownAddress, ctx.cep, ctx.addressOnce.address)}${await paidOrderAddressNotice(userId, shownAddress)}`
+      : `${copy.addressUpdated(shownAddress, ctx.cep)}${await paidOrderAddressNotice(userId, shownAddress)}`;
   ctx.pendingRequest = undefined;
   if (await syncAwaitingQuoteOrderAddress(phone, convoId, ctx)) return;
   // 1º CEP com o endereço já completo = fim do cadastro, venha o endereço junto ("Rua X 10,
@@ -8911,6 +8991,40 @@ async function handlePendingAddressQuestion(
   return false;
 }
 
+// Endereço "só desta vez" (14/10, rodada 26 M1). "salva esse endereço" torna o novo definitivo (true = turno respondido).
+// Pedido terminado (pago, cancelado ou cesta zerada, depois de ter havido cesta com o endereço novo): o do cadastro volta,
+// com aviso, e a mensagem do turno segue normalmente.
+async function settleOneTimeAddress(phone: string, convoId: string, user: TurnUser, ctx: DeliveryContext, text: string): Promise<boolean> {
+  const once = ctx.addressOnce!;
+  if (keepsOneTimeAddress(text)) {
+    ctx.addressOnce = undefined;
+    await writeCtx(convoId, ctx);
+    await reply(phone, copy.addressOnceMadePermanent(ctx.deliveryAddress ?? user.defaultAddress ?? "", ctx.cep ?? user.cep ?? undefined));
+    return true;
+  }
+  const open = Boolean(ctx.basket?.length || ctx.pending?.length || ctx.deliveryOrderId);
+  if (!once.seenOrder) {
+    if (open) once.seenOrder = true;
+    return false;
+  }
+  if (open || ctx.step === "need_cep" || ctx.step === "need_address") return false;
+  ctx.addressOnce = undefined;
+  ctx.cep = once.cep;
+  if (once.city) ctx.city = once.city;
+  if (once.uf) ctx.uf = once.uf;
+  ctx.deliveryAddress = once.address;
+  ctx.deliveryAddressVerified = true;
+  ctx.cepPlace = undefined;
+  ctx.previousAddress = undefined;
+  await prisma.user.update({ where: { id: user.id }, data: { cep: once.cep, defaultAddress: once.address } });
+  user.cep = once.cep;
+  user.defaultAddress = once.address;
+  noteShopperCep(once.cep);
+  await writeCtx(convoId, ctx);
+  await reply(phone, copy.addressBackToHome(once.address, once.cep));
+  return false;
+}
+
 // "deixa o endereço antigo" / "usa o de antes" (06/10, A4). No meio de uma troca (passo de
 // CEP/endereço), volta o endereço anterior inteiro — CEP, rua e cidade. Fora dela, com o
 // endereço confirmado, só diz que nada mudou. false = a mensagem não era sobre isso.
@@ -9170,8 +9284,10 @@ export function etaChangedSinceChoice(basket: BasketItem[], liveByStore: Map<str
     }, { min: -1 });
     const fasterMin = promisedMinutes(humanEstimate(fasterByStore.get(storeKey)));
     if (fasterMin != null && fasterMin === slowest.min) continue;
-    // Só prazo em DIAS (horas e janelas variam com o relógio; não é a divergência que confunde).
-    if (slowest.min < 24 * 60 || nowMin < 24 * 60 || slowest.min === nowMin || !slowest.when) continue;
+    // Só prazo em DIAS (horas e janelas variam com o relógio; não é a divergência que confunde). Exceção (14/10, rodada 26 M2):
+    // o card prometia HOJE ("60 min") e a loja confirmou dias ("1 dia útil") — isso contradiz e é dito antes do resumo.
+    const todayToDays = Boolean(slowest.when) && copy.whenIsToday(slowest.when!) && /\bdias?\b/.test(normalizeMsg(now)) && !/\bem ate\b/.test(normalizeMsg(now));
+    if (!slowest.when || (!todayToDays && (slowest.min < 24 * 60 || nowMin < 24 * 60 || slowest.min === nowMin))) continue;
     out.push({ store: items[0].storeLabel ?? storeKey, before: slowest.when, now });
   }
   return out;
@@ -9657,7 +9773,7 @@ async function handleChoosing(
           current.qty = 1;
           current.qtyExplicit = true;
         }
-        await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+        await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true, thenPay: asked.closeAfter });
         return;
       }
     }
@@ -9679,12 +9795,12 @@ async function handleChoosing(
       current.qty = packsNow;
       current.qtyExplicit = true;
       ctx.packConfirm = undefined;
-      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true, thenPay: asked.closeAfter });
       return;
     }
     // "1" = a única opção da pergunta (sim); antes o "1" caía em "👍"/"Por nada!" e o cliente travava (09/10, rodada 1).
     if (option && (intent.kind === "affirm" || /^(1|um)$/.test(n) || /^(sim|s|pode|pode sim|isso|isso mesmo|ok|beleza|blz|claro|fechado|quero|quero sim|mesmo assim|pode ser|ta bom|certo)\b/.test(n))) {
-      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true });
+      await confirmChosenOption(phone, convoId, ctx, userCep, store, current, option, { packOk: true, thenPay: asked.closeAfter });
       return;
     }
     // "total" com a pergunta da embalagem aberta (10/10, rodada 5 g16): mostra o parcial e repete a pergunta — antes a
@@ -14826,6 +14942,13 @@ async function handleComplementAnswer(
     await writeCtx(convoId, ctx);
     await continueAfterBasket(phone, convoId, ctx, user.cep, copy.complementAdded(offer.option.name));
     return true;
+  }
+  // Pergunta no meio da oferta ("quando chega?", 14/10, rodada 26 M7): não é recusa — a oferta fica na mesa, a pergunta é
+  // respondida e o fim do turno retoma ("Voltando: …"). O "não" seguinte ainda é resposta a ela.
+  if (!no && isSideQuestion(text, intent)) {
+    ctx.complementOffer = offer;
+    await writeCtx(convoId, ctx);
+    return false;
   }
   ctx.complementDeclined = [...new Set([...(ctx.complementDeclined ?? []), offer.query, offer.shelfId])].slice(-20);
   await markComplementOutcome(offer.logId, "declined");

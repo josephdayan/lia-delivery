@@ -437,7 +437,9 @@ export function addressOnlyCtx(ctx: DeliveryContext, userCep?: string | null): D
     flow: "delivery",
     cep: ctx.cep ?? userCep ?? undefined,
     deliveryAddress: ctx.deliveryAddress,
-    deliveryAddressVerified: ctx.deliveryAddressVerified
+    deliveryAddressVerified: ctx.deliveryAddressVerified,
+    // Endereço "só desta vez" (14/10, rodada 26 M1): o do cadastro sobrevive ao fim do pedido para voltar depois.
+    ...(ctx.addressOnce ? { addressOnce: ctx.addressOnce } : {})
   };
 }
 

@@ -193,6 +193,17 @@ export function addressSavedPrefix(address: string, cep?: string, uf?: string | 
   return `📍 Endereço salvo: ${withCep(address, cep)}${outsideSaoPauloNote(uf)}`;
 }
 
+// "Só desta vez" (14/10, rodada 26 M1): o endereço novo vale para este pedido; o do cadastro volta depois dele.
+export function addressForThisOrderOnly(address: string, cep: string | undefined, home: string): string {
+  return `📍 Só neste pedido, a entrega vai pra: ${withCep(address, cep)}\nDepois dele, volto pro seu endereço de cadastro (${cleanAddressForCopy(home)}). Se quiser que esse passe a ser o seu endereço, diz *salva esse endereço*.`;
+}
+export function addressOnceMadePermanent(address: string, cep?: string): string {
+  return `📍 Pronto, esse passa a ser o seu endereço: ${withCep(address, cep)}`;
+}
+export function addressBackToHome(address: string, cep?: string): string {
+  return `📍 Voltei pro seu endereço de cadastro: ${withCep(address, cep)} (o outro valeu só pro pedido anterior).`;
+}
+
 export function addressUpdated(address: string, cep?: string): string {
   return `📍 Endereço atualizado: ${withCep(address, cep)}`;
 }
@@ -571,6 +582,12 @@ export function closeWithoutPendingAsk(names: string[]): string {
   return names.length > 1
     ? `Ainda faltam ${what}. Fecho o pedido sem eles? Responde *sim* — ou escolhe aí embaixo pra incluir.`
     : `Ainda falta ${what}. Fecho o pedido sem esse item? Responde *sim* — ou escolhe uma opção aí embaixo pra incluir.`;
+}
+// "só isso" com a pergunta da embalagem aberta no último item (14/10, rodada 26 M7): uma pergunta só, dizendo o que o "sim" faz.
+// `perPack` ausente = pergunta de quantidade de pacotes ("Levo 3 pacotes?").
+export function closeWithPackPending(item: string, name: string, packs: number, perPack?: number): string {
+  const what = perPack ? `${packs === 1 ? "1 embalagem" : `${packs} embalagens`} (${packs * perPack} un) de *${name}*` : `${packs}x *${name}*`;
+  return `Antes de fechar, falta responder sobre *${item}*: levo ${what}? Responde *sim* que eu ponho e fecho o pedido, ou *fecha sem ${item}* pra fechar sem esse item.`;
 }
 export function closedWithoutPending(names: string[], restored: string[] = []): string {
   // Troca não escolhida: o item antigo voltou (rodada 5 A3).
@@ -1972,6 +1989,16 @@ export function complementOffer(name: string, price: number, why: string): strin
   return `${why.trim()} Quer adicionar o *${name}* por ${brl(price)}? Responde *sim* ou *não*.`;
 }
 
+// Retomada depois de uma pergunta no meio da oferta (14/10, rodada 26 M7).
+export function resumeComplementOffer(name: string, price: number): string {
+  return `Voltando: quer adicionar o *${name}* por ${brl(price)}? Responde *sim* ou *não*.`;
+}
+export function resumeJoinOffer(storeLabel: string, joinedTotal: number | undefined, keptTotal: number | undefined, stores: number): string {
+  const joined = joinedTotal != null ? ` por ${brl(joinedTotal)}` : "";
+  const kept = keptTotal != null ? ` por ${brl(keptTotal)}` : "";
+  return `Voltando: junto tudo na *${storeLabel}*${joined}, ou mantenho como está${kept} com ${stores} entregas? Responde *1* pra juntar ou *2* pra manter.`;
+}
+
 export function complementAdded(name: string): string {
   return `✅ Adicionei *${name}*.`;
 }
@@ -2887,7 +2914,7 @@ export function totalAwaitingPayment(total: number): string {
 
 // "quanto deu tudo?" no meio das escolhas/coleta → parcial honesto, sem inventar frete.
 // Prazo por loja (09/10, dono: "devia mostrar o prazo direto"): "🚚 Prazo: *Mambo* — 1 dia útil".
-export type EtaRow = { store: string; when: string };
+export type EtaRow = { store: string; when: string; slow?: string };
 export function etaLine(rows: EtaRow[]): string {
   return `🚚 Prazo: ${rows.map((r) => `*${r.store}* — ${promiseForCustomer(r.when)}`).join(" · ")} _(contado da compra)_`;
 }
@@ -2929,8 +2956,12 @@ export function todayVerdictHead(whens: string[]): string {
 
 // "Quanto tempo demora?" com a lista montada (09/10): o prazo direto, com o caminho pro total.
 // `deadline` (10/10, rodada 8 M4: "preciso que chegue até sexta, dá?"): abre com o sim/não e as lojas que atrasam.
-export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: { label: string; late: string[] }): string {
-  const body = rows.length === 1
+// `offerOpen` (14/10, rodada 26 M7): com uma oferta sim/não na mesa, a retomada dela vem logo depois — sem o "diz pagar".
+export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: { label: string; late: string[] }, offerOpen = false): string {
+  // Duas entregas na loja (14/10, rodada 26 M4): diz qual é qual — a escolha sai no total.
+  const body = rows.length === 1 && rows[0].slow
+    ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pela entrega mais rápida, ou ${whenPhrase(rows[0].slow)} pela mais barata — você escolhe no total. Contado da compra.`
+    : rows.length === 1
     ? `A *${rows[0].store}* entrega ${whenPhrase(rows[0].when)} pro seu endereço, contado da compra.`
     : `Pro seu endereço: ${rows.map((r) => `*${r.store}* ${whenPhrase(r.when)}`).join(", ")} — contado da compra.`;
   const deadlineHead = deadline
@@ -2939,7 +2970,7 @@ export function basketEtaAnswer(rows: EtaRow[], askedToday = false, deadline?: {
       : `Dá, chega até *${deadline.label}*.`
     : "";
   const head = deadlineHead ? `${deadlineHead}\n` : askedToday ? `${todayVerdictHead(rows.map((r) => r.when))} ` : "";
-  return `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
+  return offerOpen ? `${head}${body}` : `${head}${body}\nDiz *pagar* que eu mando o total com a entrega.`;
 }
 
 // "Vocês entregam hoje?" sem nada na mesa: não dá pra prometer, mas a resposta abre direta.
