@@ -266,6 +266,21 @@ export function noPricesShownYet(item: string): string {
   return `Ainda não te mostrei opções de *${item}* 🙂 Anotei que você quer a opção mais em conta — assim que tiver seu endereço eu mostro as opções começando pelas mais baratas.`;
 }
 
+// Pedido + "quando chega?" na mesma mensagem (14/10, rodada 26 g71a, A1): a lista segue e o prazo vem no total.
+export function etaWithTotalNote(): string {
+  return "Sobre o prazo: depende da loja e do seu endereço — te passo o *prazo exato junto com o total*, antes de você pagar 🚚";
+}
+
+// Pedido + "o que estiver em promoção" (14/10, rodada 26 g71a, A2): sem cupom/promoção, mas os itens seguem pelo mais barato.
+export function promoCheapestNote(): string {
+  return "Promoção eu não tenho, mas pego o *mais barato* de cada item pra você 💸";
+}
+
+// "e o pó de fada, ficou de fora?" (14/10, rodada 26 g71a, M6): confirma sem mexer na cesta nem refazer o total.
+export function missStillOut(item: string, hasTotal: boolean): string {
+  return `Isso, *${item}* ficou de fora — não achei em nenhuma loja. ${hasTotal ? "O total que te mandei continua valendo." : "O resto do pedido segue igual."} Se tiver outro nome ou marca, me manda que eu procuro de novo.`;
+}
+
 export function priceAfterAddress(item: string): string {
   return `O preço de *${item}* muda conforme a loja que entrega no seu endereço — anotei e te mostro assim que tiver o CEP 🙂`;
 }

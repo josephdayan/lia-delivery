@@ -2282,7 +2282,8 @@ export function wantsCheapestForAll(text: string): boolean {
 // Lista com "pode ser o mais barato" no fim (10/10, rodada 9 via g25): o mais barato de CADA item da mensagem.
 export function wantsCheapestEach(text: string): boolean {
   const n = normalizeMsg(text).replace(/\s+/g, " ").trim();
-  return wantsCheapestForAll(text) || /(?:^|[,.;]\s*|\s+e\s+)(?:(?:pode ser|quero|manda|traz|prefiro|pega|sempre)\s+)?(?:o|os|a|as)\s+mais (?:barat[oa]s?|em conta)[\s!.]*$/.test(n);
+  // "…, o que estiver em promoção" (14/10, rodada 26 g71a, A2): sem promoção, vale o mais barato de cada.
+  return wantsCheapestForAll(text) || /(?:^|[,.;]\s*|\s+e\s+)(?:(?:pode ser|quero|manda|traz|prefiro|pega|sempre)\s+)?(?:o|os|a|as)\s+mais (?:barat[oa]s?|em conta)[\s!.]*$/.test(n) || splitPromoAsk(text) != null;
 }
 
 // "escolhe você tudo que falta", "escolhe pra mim o resto", "o mais barato de todos que faltam" (10/10, rodada 8 M2): a
@@ -2636,7 +2637,9 @@ export function detectIntent(text: string): Intent {
   // Cupom/promoção ("tem cupom de desconto?", "vi promoção de 50% no insta") —
   // honestidade sobre preço, nunca busca (29/08 S12/S14).
   if (
-    /\bcupom\b|\bcupons\b|\bcodigo de desconto\b|\bpromocao\b|\bpromocoes\b|\boferta (relampago|do dia|de \d+%)\b|\bdesconto de \d+%|\b\d+% de desconto\b/.test(n)
+    /\bcupom\b|\bcupons\b|\bcodigo de desconto\b|\bpromocao\b|\bpromocoes\b|\boferta (relampago|do dia|de \d+%)\b|\bdesconto de \d+%|\b\d+% de desconto\b/.test(n) &&
+    // "quero sabão em pó e amaciante, o que estiver em promoção" (14/10, rodada 26 g71a, A2): os itens seguem (pelo mais barato).
+    !splitPromoAsk(n)
   ) {
     return { kind: "coupon_promo" };
   }
@@ -2867,7 +2870,8 @@ export function detectIntent(text: string): Intent {
     return { kind: "cancel", explicitOrder: /\b(pedido|compra|entrega)\b/.test(n) };
   }
   if (REPEAT_RE.test(n) || REPEAT_AGAIN_RE.test(n) || REPEAT_ORDER_RE.test(n)) return { kind: "repeat_last" };
-  if (STATUS_RE.test(n) && !isOrderWithDeadline(n)) return { kind: "status" };
+  // "1 dúzia de ovos e 1 manteiga. quando chega?" (14/10, rodada 26 g71a, A1): pedido com a pergunta de prazo do lado é pedido.
+  if (STATUS_RE.test(n) && !isOrderWithDeadline(n) && !splitEtaAsk(n)) return { kind: "status" };
 
   // "quero mais três (caixas) do mesmo (bombom)" / "mais 2 iguais" / "outra igual":
   // referência ao item que acabou de entrar — resolve pelo sku da cesta, sem nova
@@ -2940,7 +2944,7 @@ export function detectIntent(text: string): Intent {
   if (n.split(" ").length <= 10 && HOURS_ASK_RE.test(n.replace(/[!.?]+$/g, "").trim())) return { kind: "service_question", topic: "hours" };
   // O lugar dito na pergunta ("… em quanto tempo chega na Avenida Paulista 1000, São Paulo?") e a moldura "antes de pedir:"
   // não contam no limite de palavras (11/10, rodada 24 g67, M4): a pergunta virava conversa com a IA e pedia o CEP duas vezes.
-  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && serviceAskCore(n).split(" ").length <= 10) {
+  if (SERVICE_WORDS_RE.test(n) && (isQuestion(n) || /\b(vcs?|voces?)\b/.test(n)) && serviceAskCore(n).split(" ").length <= 10 && !splitEtaAsk(n)) {
     // "tem pedido mínimo?" (11/10, rodada 21 g57, R21-5/504): tem resposta própria (depende da loja), não a apresentação.
     const topic = /\b(?:pedido|valor|compra)s? minim[oa]s?\b|\bminimo\b/.test(n)
       ? ("minimum" as const)
@@ -3014,6 +3018,44 @@ export function isOrderWithDeadline(text: string): boolean {
   // Lista sem verbo ("papel higiênico e 2 sabonetes de jasmim, a visita chega hoje", 10/10, rodada 14 g41) também é pedido.
   if (deadlineWithItems(text)) return true;
   return clauses.some((c) => !STATUS_RE.test(c) && !parseNeededBy(c) && /\b(?:preciso de|precisava de|quero|queria|me (?:ve|manda|traz)|manda|compra|vou querer)\s+(?:um |uma |uns |umas |o |a |\d+ )?[a-z]{3,}/.test(c));
+}
+
+// Pedido + pergunta de lado na MESMA mensagem (14/10, rodada 26 g71a, A1/A2): "1 dúzia de ovos e 1 manteiga. quando chega?" e
+// "quero sabão em pó e amaciante, o que estiver em promoção" — a pergunta vencia e os itens sumiam. A pergunta é uma frase
+// própria (separada por pontuação); o resto precisa ter produto. Devolve o resto (só os itens) ou null.
+const ETA_ASK_CLAUSE_RE =
+  /^(?:e |mas )?(?:quando (?:chega\w*|vai chegar|entrega\w*|vem)|chega (?:quando|hoje|amanha|rapido|que horas?)|que horas? (?:chega|entrega|vem)|vai chegar (?:quando|hoje|amanha)|qual (?:e |eh )?o prazo(?: de entrega)?|prazo de entrega|em quanto tempo (?:chega|entrega|vem)|demora (?:quanto|muito)|quanto tempo demora)(?: (?:isso|tudo|ai|pra mim|aqui|mais ou menos|hoje|amanha))*$/;
+const PROMO_ASK_CLAUSE_RE =
+  /^(?:e |mas )?(?:(?:de preferencia|se possivel|se tiver|pode ser|quero|prefiro|pega)\s+)?(?:(?:o|a|os|as) que (?:estiver|estiverem|tiver|tiverem|for|forem)\s+)?(?:em |na |de )?(?:promocao|promocoes|oferta|ofertas)(?: (?:hoje|ai|ta|pfv|por favor))*$/;
+function itemsBesideAsk(text: string, isAsk: (clause: string) => boolean): string | null {
+  const parts = text.split(/[;!?]+|[.,](?=\s|$)/).map((p) => p.trim()).filter(Boolean);
+  const asks = parts.filter((p) => isAsk(normalizeMsg(p).replace(/[^a-z0-9\s]+/g, " ").replace(/\s+/g, " ").trim()));
+  if (!asks.length || asks.length === parts.length) return null;
+  const rest = parts.filter((p) => !asks.includes(p)).join(", ");
+  const nr = normalizeMsg(rest);
+  // "o meu pedido de arroz, quando chega?" é status do pedido, não item.
+  if (STATUS_RE.test(nr) || /\b(?:pedido|compra|encomenda|entrega)\b/.test(nr)) return null;
+  const hasItem = parseBasketLines(rest).some((line) => /[a-z]{3}/.test(normalizeMsg(line.phrase)) && !isNonItemSegment(line.phrase) && !isDiscourseOnly(line.phrase));
+  return hasItem ? rest : null;
+}
+export function splitEtaAsk(text: string): string | null {
+  return itemsBesideAsk(text, (c) => ETA_ASK_CLAUSE_RE.test(c));
+}
+export function splitPromoAsk(text: string): string | null {
+  return itemsBesideAsk(text, (c) => PROMO_ASK_CLAUSE_RE.test(c));
+}
+
+// "e o pó de fada, ficou de fora?" (14/10, rodada 26 g71a, M6): pergunta sobre um item que a Lia já disse que não achou.
+// Devolve o item citado (quem chama confere que ele está mesmo entre os não achados).
+export function parseMissStatusAsk(text: string): string | null {
+  const n = normalizeMsg(text).replace(/[?!.]+/g, " ").replace(/\s+/g, " ").trim();
+  if (n.length > 70) return null;
+  const OUT = String.raw`(?:ficou de fora|ficou fora|nao veio|nao vem|nao vai vir|nao entrou|nao achou|nao achei|nao encontrou|nao tem|nao tinha|sumiu|nao achou nao)`;
+  const after = new RegExp(String.raw`^(?:e |mas )?(?:(?:o|a|os|as) )?(.+?),? (?:entao |mesmo |tambem )?${OUT}(?: mesmo| entao| ne| nao)*$`).exec(n);
+  const before = new RegExp(String.raw`^(?:e |mas )?(?:cade|(?:voce |vc )?${OUT}) (?:(?:o|a|os|as) )?(.+?)(?: mesmo| entao| ne)*$`).exec(n);
+  const item = (after?.[1] ?? before?.[1])?.trim();
+  if (!item || item.split(" ").length > 5 || /\b(?:pedido|cesta|lista|nada|tudo|item|itens|isso|ele|ela)\b/.test(item)) return null;
+  return item;
 }
 
 export function isQuestion(text: string): boolean {

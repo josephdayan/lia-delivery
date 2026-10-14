@@ -61,7 +61,9 @@ const DETERMINISTIC_INTENTS = new Set<Intent["kind"]>([
   // Agendar/dia escolhido (10/10, rodada 7 M2): a IA oferecia agendamento, que a Lia não faz.
   "scheduling_question",
   // Dois pagadores / "dois pedidos" (10/10, rodada 8 A2): resposta fixa e a oferta de juntar fica na mesa.
-  "split_orders"
+  "split_orders",
+  // Cupom/promoção sem item (14/10, rodada 26 g71a, A2): resposta fixa; com itens o regex já não dá coupon_promo.
+  "coupon_promo"
 ]);
 // Só valem sem IA quando a mensagem é CURTA ("cancelar", "só isso"): frase longa pode ser outra coisa.
 const SHORT_ONLY_INTENTS = new Set<Intent["kind"]>(["cancel", "done", "clear_cart", "more_options"]);
